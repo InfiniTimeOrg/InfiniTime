@@ -1,0 +1,3 @@
+#!/bin/bash
+
+JLinkExe -device nrf51 -if swd -speed 4000 -autoconnect 1
