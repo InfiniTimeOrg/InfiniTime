@@ -4384,13 +4384,13 @@
 // <e> NRFX_SPIM_ENABLED - nrfx_spim - SPIM peripheral driver
 //==========================================================
 #ifndef NRFX_SPIM_ENABLED
-#define NRFX_SPIM_ENABLED 0
+#define NRFX_SPIM_ENABLED 1
 #endif
 // <q> NRFX_SPIM0_ENABLED  - Enable SPIM0 instance
- 
+
 
 #ifndef NRFX_SPIM0_ENABLED
-#define NRFX_SPIM0_ENABLED 0
+#define NRFX_SPIM0_ENABLED 1
 #endif
 
 // <q> NRFX_SPIM1_ENABLED  - Enable SPIM1 instance
@@ -4435,7 +4435,7 @@
 // <e> NRFX_SPIM_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_SPIM_CONFIG_LOG_ENABLED
-#define NRFX_SPIM_CONFIG_LOG_ENABLED 0
+#define NRFX_SPIM_CONFIG_LOG_ENABLED 1
 #endif
 // <o> NRFX_SPIM_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -4575,7 +4575,7 @@
  
 // <0=> Default 
 // <1=> Black 
-// <2=> Red 
+// <2=> Red <
 // <3=> Green 
 // <4=> Yellow 
 // <5=> Blue 
@@ -6456,7 +6456,7 @@
 // <e> SPI_ENABLED - nrf_drv_spi - SPI/SPIM peripheral driver - legacy layer
 //==========================================================
 #ifndef SPI_ENABLED
-#define SPI_ENABLED 0
+#define SPI_ENABLED 1
 #endif
 // <o> SPI_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
  
@@ -6488,7 +6488,7 @@
 // <e> SPI0_ENABLED - Enable SPI0 instance
 //==========================================================
 #ifndef SPI0_ENABLED
-#define SPI0_ENABLED 0
+#define SPI0_ENABLED 1
 #endif
 // <q> SPI0_USE_EASY_DMA  - Use EasyDMA
  
@@ -8142,7 +8142,11 @@
  
 
 #ifndef NRF_GFX_ENABLED
-#define NRF_GFX_ENABLED 0
+#define NRF_GFX_ENABLED 1
+#endif
+
+#ifndef ST7735_ENABLED
+#define ST7735_ENABLED 1
 #endif
 
 // <q> NRF_MEMOBJ_ENABLED  - nrf_memobj - Linked memory allocator module
@@ -9617,7 +9621,7 @@
 // <e> SPI_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef SPI_CONFIG_LOG_ENABLED
-#define SPI_CONFIG_LOG_ENABLED 0
+#define SPI_CONFIG_LOG_ENABLED 1
 #endif
 // <o> SPI_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -12933,6 +12937,106 @@
 #endif
 
 
+
+
+// <o> ST7735_SCK_PIN - Pin number  <0-47>
+
+
+#ifndef ST7735_SCK_PIN
+#define ST7735_SCK_PIN 2
+#endif
+
+// <o> ST7735_MISO_PIN - Pin number  <0-47>
+
+
+#ifndef ST7735_MISO_PIN
+#define ST7735_MISO_PIN 4
+#endif
+
+// <o> ST7735_MOSI_PIN - Pin number  <0-47>
+
+
+#ifndef ST7735_MOSI_PIN
+#define ST7735_MOSI_PIN 3
+#endif
+
+// <o> ST7735_SS_PIN - Pin number  <0-47>
+
+
+#ifndef ST7735_SS_PIN
+#define ST7735_SS_PIN 25
+#endif
+
+// <o> ST7735_IRQ_PRIORITY  - Interrupt priority
+
+
+// <i> Priorities 0,2 (nRF51) and 0,1,4,5 (nRF52) are reserved for SoftDevice
+// <0=> 0 (highest)
+// <1=> 1
+// <2=> 2
+// <3=> 3
+// <4=> 4
+// <5=> 5
+// <6=> 6
+// <7=> 7
+
+#ifndef ST7735_IRQ_PRIORITY
+#define ST7735_IRQ_PRIORITY 3
+#endif
+
+// </h>
+//==========================================================
+
+
+// <o> ST7735_SPI_INSTANCE
+
+// <0=> 0
+// <1=> 1
+// <2=> 2
+
+#ifndef ST7735_SPI_INSTANCE
+#define ST7735_SPI_INSTANCE 0
+#endif
+
+#ifndef ST7735_SPI_MODE
+#define ST7735_SPI_MODE 3
+#endif
+
+#ifndef ST7735_SPI_FREQUENCY
+#define ST7735_SPI_FREQUENCY 8000000
+#endif
+
+// <o> ST7735_TAB_COLOR  - Color of the tab attached to the screen.
+
+// <0=> INITR_GREENTAB
+// <1=> INITR_REDTAB
+// <2=> INITR_BLACKTAB
+// <3=> INITR_144GREENTAB
+
+#ifndef ST7735_TAB_COLOR
+#define ST7735_TAB_COLOR 2
+#endif
+
+// <o> ST7735_DC_PIN - Pin number  <0-47>
+
+
+#ifndef ST7735_DC_PIN
+#define ST7735_DC_PIN 18
+#endif
+
+// <o> ST7735_HEIGHT - ST7735 height  <0-162>
+
+
+#ifndef ST7735_HEIGHT
+#define ST7735_HEIGHT 160
+#endif
+
+// <o> ST7735_WIDTH - ST7735 width  <0-132>
+
+
+#ifndef ST7735_WIDTH
+#define ST7735_WIDTH 128
+#endif
+
 // <<< end of configuration section >>>
 #endif //SDK_CONFIG_H
-

@@ -1,4 +1,4 @@
-# nrf52-baseproject
+# PineTime
 This is a CMake project that configure everything needed to build applications for the NRF52 MCU. It configures the toolchain (arm-none-eabi) and the NRF52 SDK.
 
 The CMake files are taken from https://github.com/Polidea/cmake-nRF5x

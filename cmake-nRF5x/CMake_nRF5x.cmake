@@ -208,6 +208,8 @@ macro(nRF5x_setup)
             "${NRF5_SDK_PATH}/components/libraries/usbd/class/hid/mouse"
             "${NRF5_SDK_PATH}/components/libraries/usbd/class/msc"
             "${NRF5_SDK_PATH}/components/libraries/util"
+
+
     )
 
     # librarires sources
@@ -254,6 +256,21 @@ macro(nRF5x_setup)
             "${NRF5_SDK_PATH}/external/fprintf/nrf_fprintf.c"
             "${NRF5_SDK_PATH}/external/fprintf/nrf_fprintf_format.c"
             )
+
+    # LCD/GFX
+    include_directories(
+      "${NRF5_SDK_PATH}/external/thedotfactory_fonts"
+    )
+
+    list(APPEND SDK_SOURCE_FILES
+      "${NRF5_SDK_PATH}/components/libraries/gfx/nrf_gfx.c"
+      "${NRF5_SDK_PATH}/integration/nrfx/legacy/nrf_drv_spi.c"
+#      "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_spi.c"
+      "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_spim.c"
+      "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/prs/nrfx_prs.c"
+
+      "${NRF5_SDK_PATH}/components/drivers_ext/st7735/st7735.c"
+      )
 
     #BLE S132
     include_directories(

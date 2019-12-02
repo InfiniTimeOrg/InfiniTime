@@ -7,6 +7,8 @@
 #include <legacy/nrf_drv_clock.h>
 #include <libraries/timer/app_timer.h>
 #include <libraries/gpiote/app_gpiote.h>
+#include <libraries/gfx/nrf_lcd.h>
+#include "nrf_gfx.h"
 
 
 #if NRF_LOG_ENABLED
@@ -43,6 +45,25 @@ static void bsp_event_handler(bsp_event_t event)
   }
 }
 
+extern const nrf_lcd_t nrf_lcd_st7735;
+static nrf_lcd_t const * p_lcd = &nrf_lcd_st7735;
+static void gfx_initialization(void)
+{
+  nrf_gpio_cfg_output(14);
+  nrf_gpio_cfg_output(22);
+  nrf_gpio_cfg_output(23);
+  nrf_gpio_pin_clear(14);
+  nrf_gpio_pin_set(22);
+  nrf_gpio_pin_set(23);
+
+  APP_ERROR_CHECK(nrf_gfx_init(p_lcd));
+  nrf_gfx_rect_t rect;
+  rect.height = 10;
+  rect.width = 10;
+  rect.x = 10;
+  rect.y = 10;
+  nrf_gfx_rect_draw(p_lcd, &rect, 2, 0xffffffff, true);
+}
 
 void SystemTask(void *) {
   APP_GPIOTE_INIT(2);
@@ -51,12 +72,17 @@ void SystemTask(void *) {
   bsp_board_init(BSP_INIT_LEDS|BSP_INIT_BUTTONS);
   bsp_init(BSP_INIT_LEDS | BSP_INIT_BUTTONS, bsp_event_handler);
 
+  gfx_initialization();
+
+
   blinkApp.Start();
 
   while (1) {
     vTaskSuspend(nullptr);
   }
 }
+
+
 
 int main(void) {
   logger.Init();
