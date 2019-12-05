@@ -30,6 +30,8 @@ include_directories(.)
 list(APPEND SOURCE_FILES
   Logging/NrfLogger.cpp
   BlinkApp/BlinkApp.cpp
+  DisplayApp/DisplayApp.cpp
+  DisplayApp/lcdfont.c
   main.cpp
   drivers/st7789.cpp
   drivers/spi_master_fast.cpp
@@ -39,6 +41,8 @@ set(INCLUDE_FILES
   Logging/Logger.h
   Logging/NrfLogger.h
   BlinkApp/BlinkApp.h
+  DisplayApp/DisplayApp.h
+  DisplayApp/lcdfont.h
   drivers/st7789.h
   drivers/spi_master_fast.h
 )
