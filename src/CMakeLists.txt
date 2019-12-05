@@ -31,12 +31,16 @@ list(APPEND SOURCE_FILES
   Logging/NrfLogger.cpp
   BlinkApp/BlinkApp.cpp
   main.cpp
+  drivers/st7789.cpp
+  drivers/spi_master_fast.cpp
 )
 
 set(INCLUDE_FILES
   Logging/Logger.h
   Logging/NrfLogger.h
   BlinkApp/BlinkApp.h
+  drivers/st7789.h
+  drivers/spi_master_fast.h
 )
 
 nRF5x_addExecutable(pinetime-app "${SOURCE_FILES}")

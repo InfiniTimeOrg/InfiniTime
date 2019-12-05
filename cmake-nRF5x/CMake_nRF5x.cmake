@@ -264,12 +264,12 @@ macro(nRF5x_setup)
 
     list(APPEND SDK_SOURCE_FILES
       "${NRF5_SDK_PATH}/components/libraries/gfx/nrf_gfx.c"
-      "${NRF5_SDK_PATH}/integration/nrfx/legacy/nrf_drv_spi.c"
-#      "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_spi.c"
-      "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_spim.c"
-      "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/prs/nrfx_prs.c"
+#      "${NRF5_SDK_PATH}/integration/nrfx/legacy/nrf_drv_spi.c"
+#      "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_spim.c"
+#      "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/prs/nrfx_prs.c"
 
-      "${NRF5_SDK_PATH}/components/drivers_ext/st7735/st7735.c"
+#      "${NRF5_SDK_PATH}/components/drivers_ext/st7735/st7735.c"
+      "${NRF5_SDK_PATH}/external/thedotfactory_fonts/orkney24pts.c"
       )
 
     #BLE S132
