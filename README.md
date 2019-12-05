@@ -1,14 +1,29 @@
 # PineTime
-This is a CMake project that configure everything needed to build applications for the NRF52 MCU. It configures the toolchain (arm-none-eabi) and the NRF52 SDK.
+> The PineTime is a free and open source smartwatch capable of running custom-built open operating systems. Some of the notable features include a heart rate monitor, a week-long battery as well as a capacitive touch IPS display that is legible in direct sunlight. It is a fully community driven side-project, which means that it will ultimately be up to the developers and end-users to determine when they deem the PineTime ready to ship.
+> We envision the PineTime as a companion for not only your PinePhone but also for your favorite devices — any phone, tablet, or even PC.
 
-The CMake files are taken from https://github.com/Polidea/cmake-nRF5x
+*https://www.pine64.org/pinetime/* 
+
+The goal of this project is to build a firmware designed for the PineTime around FreeRTOS.
+It's coded using a mix of C and C++ : the NRF52-SDK and FreeRTOS are written in C, but I prefer to write my own code in C++.
+
+Please **NOTE : for now, this project is in heavy development state**. Feel free to use it, contribute to it or fork it !
+
+This project is based on https://github.com/JF002/nrf52-baseproject.
+It's a CMake project that configure everything needed to build applications for the PineTime (https://wiki.pine64.org/index.php/PineTime).
 
 I tested this project (compile only) with the following versions:
 
   * gcc-arm-none-eabi-8-2019-q3-update (from https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads)
   * nRF5_SDK_15.3.0_59ac345 (from https://www.nordicsemi.com/Software-and-Tools/Software/nRF5-SDK)
   
-I've tested this project on the NRF52-DK board.
+I've tested this project on the actual PineTime hardware.
+
+## Current state
+
+ * Project builds and runs on the Pinetime;
+ * Logs available via JLink RTT;
+ * Basic LCD driver.
 
 ## How to use it
 
