@@ -78,7 +78,7 @@ typedef struct
             uint8_t mode : 2;       /*!< SPI master mode */
             uint8_t : 5;            /*!< Padding */
         }fields;
-    }config;    
+    }config;
     uint8_t frequency;              /*!< SPI master frequency */
     uint8_t pin_SCK;                /*!< SPI master SCK pin */
     uint8_t pin_MOSI;               /*!< SPI master MOSI pin */
@@ -143,5 +143,5 @@ bool spi_master_tx(SPI_module_number_t spi_num, uint16_t transfer_size, const ui
  * @retval false if transmit/reveive of transfer_size were not complete and tx_data/rx_data points to invalid data.
  */
 bool spi_master_rx(SPI_module_number_t spi_num, uint16_t transfer_size, uint8_t *rx_data);
- 
+
 #endif

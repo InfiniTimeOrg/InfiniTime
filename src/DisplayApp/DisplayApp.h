@@ -11,7 +11,7 @@ namespace Pinetime {
       private:
         TaskHandle_t taskHandle;
         static void Process(void* instance);
-        static void gfx_initialization();
+        void gfx_initialization();
 
     };
   }

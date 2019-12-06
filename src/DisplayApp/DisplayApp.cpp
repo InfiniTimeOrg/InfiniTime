@@ -9,7 +9,7 @@ using namespace Pinetime::Applications;
 
 Pinetime::Drivers::st7789 lcd;
 ret_code_t lcd_init() {
-  lcd.Init();
+  return lcd.Init();
 }
 
 void lcd_dummy() {
@@ -38,7 +38,7 @@ static lcd_cb_t st7789_cb = {
         .width = 240
 };
 
-const nrf_lcd_t nrf_lcd_st7789 = {
+static const nrf_lcd_t nrf_lcd_st7789 = {
         .lcd_init = lcd_init,
         .lcd_uninit = lcd_dummy,
         .lcd_pixel_draw = lcd_pixel_draw,
@@ -64,7 +64,7 @@ void DisplayApp::Process(void *instance) {
   auto* app = static_cast<DisplayApp*>(instance);
 
   NRF_LOG_INFO("DisplayApp task started!");
-  gfx_initialization();
+  app->gfx_initialization();
   uint8_t hour = 0;
   uint8_t minute = 1;
   while (1) {

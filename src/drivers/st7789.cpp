@@ -8,7 +8,7 @@ using namespace Pinetime::Drivers;
 ret_code_t st7789::Init() {
   InitHw();
   InitCommands();
-
+  return 0;
 }
 
 ret_code_t st7789::InitHw() const {
