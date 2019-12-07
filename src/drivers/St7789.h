@@ -1,18 +1,21 @@
 #pragma once
+#include <cstddef>
 
 namespace Pinetime {
   namespace Drivers {
-    class st7789 {
+    class SpiMaster;
+    class St7789 {
       public:
-        ret_code_t Init();
+        explicit St7789(SpiMaster& spiMaster, uint8_t pinDataCommand);
+        void Init();
         void Uninit();
         void DrawPixel(uint16_t x, uint16_t y, uint32_t color);
-        void DrawRectangle(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint32_t color);
         void FillRectangle(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
 
+
       private:
-        ret_code_t InitHw() const;
-        void InitCommands();
+        SpiMaster& spi;
+        uint8_t pinDataCommand;
 
         void SoftwareReset();
         void SleepOut();

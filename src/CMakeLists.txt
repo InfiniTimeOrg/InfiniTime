@@ -33,8 +33,9 @@ list(APPEND SOURCE_FILES
   DisplayApp/DisplayApp.cpp
   DisplayApp/lcdfont.c
   main.cpp
-  drivers/st7789.cpp
-  drivers/spi_master_fast.cpp
+  drivers/St7789.cpp
+  drivers/SpiMaster.cpp
+  Components/Gfx/Gfx.cpp
 )
 
 set(INCLUDE_FILES
@@ -43,8 +44,9 @@ set(INCLUDE_FILES
   BlinkApp/BlinkApp.h
   DisplayApp/DisplayApp.h
   DisplayApp/lcdfont.h
-  drivers/st7789.h
-  drivers/spi_master_fast.h
+  drivers/St7789.h
+  drivers/SpiMaster.h
+  Components/Gfx/Gfx.h
 )
 
 nRF5x_addExecutable(pinetime-app "${SOURCE_FILES}")

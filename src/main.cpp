@@ -2,16 +2,11 @@
 #include <task.h>
 #include <libraries/log/nrf_log.h>
 #include <BlinkApp/BlinkApp.h>
-#include <boards.h>
 #include <libraries/bsp/bsp.h>
 #include <legacy/nrf_drv_clock.h>
 #include <libraries/timer/app_timer.h>
 #include <libraries/gpiote/app_gpiote.h>
-#include <libraries/gfx/nrf_lcd.h>
-#include <drivers/st7789.h>
 #include <DisplayApp/DisplayApp.h>
-#include "nrf_gfx.h"
-
 
 #if NRF_LOG_ENABLED
 #include "Logging/NrfLogger.h"
@@ -24,7 +19,6 @@ Pinetime::Logging::DummyLogger logger;
 Pinetime::Applications::BlinkApp blinkApp;
 Pinetime::Applications::DisplayApp displayApp;
 TaskHandle_t systemThread;
-//Pinetime::Drivers::st7789 lcd;
 
 extern "C" {
   void vApplicationIdleHook() {
@@ -48,25 +42,9 @@ static void bsp_event_handler(bsp_event_t event)
   }
 }
 
-
-
-
-
 void SystemTask(void *) {
   APP_GPIOTE_INIT(2);
   app_timer_init();
-
-  nrf_gpio_cfg_output(14);
-  nrf_gpio_cfg_output(22);
-  nrf_gpio_cfg_output(23);
-  nrf_gpio_pin_clear(14);
-  nrf_gpio_pin_clear(22);
-  nrf_gpio_pin_clear(23);
-//  lcd.Init();
-//  lcd.FillRectangle(0,0,240,240,0xffaa);
-//  lcd.FillRectangle(10,10,50,50,0x011bb);
-//
-//  lcd.FillRectangle(120,120,120,120,0x1212);
 
   blinkApp.Start();
   displayApp.Start();
@@ -75,8 +53,6 @@ void SystemTask(void *) {
     vTaskSuspend(nullptr);
   }
 }
-
-
 
 int main(void) {
   logger.Init();
