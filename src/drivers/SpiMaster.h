@@ -21,7 +21,6 @@ namespace Pinetime {
           uint8_t pinCSN;
         };
         bool Init(const SpiModule spi, const Parameters& params);
-
         bool Write(const uint8_t* data, size_t size);
 
       private:

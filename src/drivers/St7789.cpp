@@ -91,22 +91,17 @@ void St7789::DisplayOn() {
 }
 
 void St7789::FillRectangle(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
-  // rudimentary clipping (drawChar w/big text requires this)
-  if((x >= Width) || (y >= Height)) return;
-  if((x + width - 1) >= Width)  width = Width  - x;
-  if((y + height - 1) >= Height) height = Height - y;
+  BeginDrawBuffer(x, y, width, height);
 
-  SetAddrWindow(0+x, ST7789_ROW_OFFSET+y, x+width-1, y+height-1);
-
-  uint8_t hi = color >> 8, lo = color;
   uint32_t c = color + (color << 16);
+  uint8_t w = width/2;
 
-  nrf_gpio_pin_set(pinDataCommand);
   for(y=height+ST7789_ROW_OFFSET; y>ST7789_ROW_OFFSET; y--) {
-    for(x=width; x>0; x--) {
-      WriteSpi(reinterpret_cast<const uint8_t *>(&c), 4);
+    for(x=w; x>0; x--) {
+      NextDrawBuffer(reinterpret_cast<const uint8_t *>(&c), 4);
     }
   }
+  EndDrawBuffer();
 }
 
 void St7789::SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
@@ -146,4 +141,21 @@ void St7789::DrawPixel(uint16_t x, uint16_t y, uint32_t color) {
   nrf_gpio_pin_set(pinDataCommand);
   WriteSpi(reinterpret_cast<const uint8_t *>(&color), 2);
 }
+
+void St7789::BeginDrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
+  if((x >= Width) || (y >= Height)) return;
+  if((x + width - 1) >= Width)  width = Width  - x;
+  if((y + height - 1) >= Height) height = Height - y;
+
+  SetAddrWindow(0+x, ST7789_ROW_OFFSET+y, x+width-1, y+height-1);
+  nrf_gpio_pin_set(pinDataCommand);
+}
+
+void St7789::EndDrawBuffer() {
+}
+
+void St7789::NextDrawBuffer(const uint8_t *data, size_t size) {
+  spi.Write(data, size);
+}
+
 

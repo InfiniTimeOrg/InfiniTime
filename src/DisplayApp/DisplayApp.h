@@ -22,6 +22,12 @@ namespace Pinetime {
         std::unique_ptr<Drivers::St7789> lcd;
         std::unique_ptr<Components::Gfx> gfx;
         const FONT_INFO largeFont {lCD_70ptFontInfo.height, lCD_70ptFontInfo.startChar, lCD_70ptFontInfo.endChar, lCD_70ptFontInfo.spacePixels, lCD_70ptFontInfo.charInfo, lCD_70ptFontInfo.data};
+        void Refresh();
+
+        uint8_t seconds = 0;
+        uint8_t minutes = 0;
+        uint8_t hours = 0;
+        char currentChar[4];
     };
   }
 }
