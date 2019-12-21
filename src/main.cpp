@@ -682,8 +682,8 @@ static void current_time_print(ble_cts_c_evt_t * p_evt)
   NRF_LOG_INFO("\tManual update    %x",
                p_evt->params.current_time.adjust_reason.manual_time_update);
 
-  displayApp.Minutes(p_evt->params.current_time.exact_time_256.day_date_time.date_time.minutes);
-  displayApp.Hours(p_evt->params.current_time.exact_time_256.day_date_time.date_time.hours);
+  displayApp.SetTime(p_evt->params.current_time.exact_time_256.day_date_time.date_time.minutes,
+                     p_evt->params.current_time.exact_time_256.day_date_time.date_time.hours);
 }
 
 

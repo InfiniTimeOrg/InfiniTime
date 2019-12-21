@@ -67,18 +67,33 @@ void DisplayApp::InitHw() {
 }
 
 void DisplayApp::Refresh() {
-//  uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
-//  auto raw = systick_counter / 1000;
+  uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
+
+  auto raw = systick_counter / 1000;
+  auto currentDeltaSeconds = raw - deltaSeconds;
+
+
+  auto deltaMinutes = (currentDeltaSeconds / 60);
+  auto currentMinutes = minutes + deltaMinutes;
+
+  auto deltaHours = currentMinutes / 60;
+  currentMinutes -= (deltaHours * 60);
+
 //
 //   TODO make this better!
 //  minutes = raw / 60;
 //  seconds = raw - (minutes*60);
 
+
+  auto currentHours = hours + deltaHours;
+
+
+
   char minutesChar[3];
-  sprintf(minutesChar, "%02d", minutes);
+  sprintf(minutesChar, "%02d", currentMinutes);
 
   char hoursChar[3];
-  sprintf(hoursChar, "%02d", hours);
+  sprintf(hoursChar, "%02d", currentHours);
 
   uint8_t x = 7;
   if(hoursChar[0] != currentChar[0]) {
@@ -114,4 +129,10 @@ void DisplayApp::Minutes(uint8_t m) {
 void DisplayApp::Hours(uint8_t h) {
   // TODO yeah, I know, race condition too...
   hours = h;
+}
+
+void DisplayApp::SetTime(uint8_t minutes, uint8_t hours) {
+  deltaSeconds = nrf_rtc_counter_get(portNRF_RTC_REG) / 1000;
+  this->minutes = minutes;
+  this->hours = hours;
 }

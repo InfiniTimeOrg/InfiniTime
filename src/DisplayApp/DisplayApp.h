@@ -17,6 +17,8 @@ namespace Pinetime {
         void Minutes(uint8_t m);
         void Hours(uint8_t h);
 
+        void SetTime(uint8_t minutes, uint8_t hours);
+
       private:
         TaskHandle_t taskHandle;
         static void Process(void* instance);
@@ -33,6 +35,7 @@ namespace Pinetime {
         uint8_t minutes = 0;
         uint8_t hours = 0;
         char currentChar[4];
+        uint32_t deltaSeconds = 0;
     };
   }
 }

@@ -64,3 +64,7 @@ $ JLinkExe -device nrf52 -if swd -speed 4000 -autoconnect 1
 ```
 $ JLinkRTTClient
 ```
+
+## Tools
+
+ - https://github.com/eliotstock/memory : display the memory usage (FLASH/RAM) using the .map file from GCC.
