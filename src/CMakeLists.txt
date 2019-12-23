@@ -36,6 +36,7 @@ list(APPEND SOURCE_FILES
   drivers/St7789.cpp
   drivers/SpiMaster.cpp
   Components/Gfx/Gfx.cpp
+  BLE/BleManager.c
 )
 
 set(INCLUDE_FILES
@@ -47,6 +48,7 @@ set(INCLUDE_FILES
   drivers/St7789.h
   drivers/SpiMaster.h
   Components/Gfx/Gfx.h
+  BLE/BleManager.h
 )
 
 nRF5x_addExecutable(pinetime-app "${SOURCE_FILES}")
