@@ -1,12 +1,16 @@
 #include <FreeRTOS.h>
 #include <task.h>
-#include <libraries/log/nrf_log.h>
 #include <BlinkApp/BlinkApp.h>
 #include <libraries/bsp/bsp.h>
 #include <legacy/nrf_drv_clock.h>
 #include <libraries/timer/app_timer.h>
 #include <libraries/gpiote/app_gpiote.h>
 #include <DisplayApp/DisplayApp.h>
+#include <softdevice/common/nrf_sdh.h>
+
+#include <softdevice/common/nrf_sdh_freertos.h>
+
+#include "BLE/BleManager.h"
 
 #if NRF_LOG_ENABLED
 #include "Logging/NrfLogger.h"
@@ -30,23 +34,12 @@ extern "C" {
   }
 }
 
-static void bsp_event_handler(bsp_event_t event)
-{
-  switch (event)
-  {
-    case BSP_EVENT_KEY_0:
-      NRF_LOG_INFO("Button pressed");
-      break;
-    default:
-      break;
-  }
-}
-
 void SystemTask(void *) {
   APP_GPIOTE_INIT(2);
   app_timer_init();
-
-  blinkApp.Start();
+  bool erase_bonds=false;
+  nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
+//  blinkApp.Start();
   displayApp.Start();
 
   while (1) {
@@ -54,12 +47,20 @@ void SystemTask(void *) {
   }
 }
 
+void OnNewTime(uint8_t minutes, uint8_t hours) {
+  displayApp.SetTime(minutes, hours);
+}
+
 int main(void) {
   logger.Init();
   nrf_drv_clock_init();
 
+
   if (pdPASS != xTaskCreate(SystemTask, "MAIN", 256, nullptr, 0, &systemThread))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+
+  ble_manager_init();
+  ble_manager_set_callback(OnNewTime);
 
   vTaskStartScheduler();
 

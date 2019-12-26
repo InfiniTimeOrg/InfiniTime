@@ -16,7 +16,7 @@ void BlinkApp::Process(void *instance) {
 
   NRF_LOG_INFO("BlinkApp task started!");
   while (1) {
-    NRF_LOG_INFO("BlinkApp task running!");
+//    NRF_LOG_INFO("BlinkApp task running!");
 //    nrf_gpio_pin_toggle(22);
 //    nrf_gpio_pin_toggle(23);
 //    nrf_gpio_pin_toggle(14);

@@ -21,7 +21,6 @@ void DisplayApp::Process(void *instance) {
   app->InitHw();
 
   while (1) {
-    NRF_LOG_INFO("BlinkApp task running!");
 
     app->Refresh();
 
@@ -69,40 +68,71 @@ void DisplayApp::InitHw() {
 
 void DisplayApp::Refresh() {
   uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
+
   auto raw = systick_counter / 1000;
+  auto currentDeltaSeconds = raw - deltaSeconds;
 
-  // TODO make this better!
-  minutes = raw / 60;
-  seconds = raw - (minutes*60);
 
-  char secondChar[3];
-  sprintf(secondChar, "%02d", seconds);
+  auto deltaMinutes = (currentDeltaSeconds / 60);
+  auto currentMinutes = minutes + deltaMinutes;
+
+  auto deltaHours = currentMinutes / 60;
+  currentMinutes -= (deltaHours * 60);
+
+//
+//   TODO make this better!
+//  minutes = raw / 60;
+//  seconds = raw - (minutes*60);
+
+
+  auto currentHours = hours + deltaHours;
+
+
 
   char minutesChar[3];
-  sprintf(minutesChar, "%02d", minutes);
+  sprintf(minutesChar, "%02d", currentMinutes);
+
+  char hoursChar[3];
+  sprintf(hoursChar, "%02d", currentHours);
 
   uint8_t x = 7;
-  if(minutesChar[0] != currentChar[0]) {
-    gfx->DrawChar(&largeFont, minutesChar[0], &x, 78, 0xffff);
-    currentChar[0] = minutesChar[0];
+  if(hoursChar[0] != currentChar[0]) {
+    gfx->DrawChar(&largeFont, hoursChar[0], &x, 78, 0xffff);
+    currentChar[0] = hoursChar[0];
   }
 
   x = 61;
-  if(minutesChar[1] != currentChar[1]) {
-    gfx->DrawChar(&largeFont, minutesChar[1], &x, 78, 0xffff);
-    currentChar[1] = minutesChar[1];
+  if(hoursChar[1] != currentChar[1]) {
+    gfx->DrawChar(&largeFont, hoursChar[1], &x, 78, 0xffff);
+    currentChar[1] = hoursChar[1];
   }
 
   x = 127;
-  if(secondChar[0] != currentChar[2]) {
-    gfx->DrawChar(&largeFont, secondChar[0], &x, 78, 0xffff);
-    currentChar[2] = secondChar[0];
+  if(minutesChar[0] != currentChar[2]) {
+    gfx->DrawChar(&largeFont, minutesChar[0], &x, 78, 0xffff);
+    currentChar[2] = minutesChar[0];
   }
 
   x = 181;
-  if(secondChar[1] != currentChar[3]) {
-    gfx->DrawChar(&largeFont, secondChar[1], &x, 78, 0xffff);
-    currentChar[3] = secondChar[1];
+  if(minutesChar[1] != currentChar[3]) {
+    gfx->DrawChar(&largeFont, minutesChar[1], &x, 78, 0xffff);
+    currentChar[3] = minutesChar[1];
   }
 
+}
+
+void DisplayApp::Minutes(uint8_t m) {
+  // TODO yeah, I know, race condition...
+  minutes = m;
+}
+
+void DisplayApp::Hours(uint8_t h) {
+  // TODO yeah, I know, race condition too...
+  hours = h;
+}
+
+void DisplayApp::SetTime(uint8_t minutes, uint8_t hours) {
+  deltaSeconds = nrf_rtc_counter_get(portNRF_RTC_REG) / 1000;
+  this->minutes = minutes;
+  this->hours = hours;
 }

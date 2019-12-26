@@ -260,9 +260,12 @@ macro(nRF5x_setup)
     # LCD/GFX
     include_directories(
       "${NRF5_SDK_PATH}/external/thedotfactory_fonts"
+      "${NRF5_SDK_PATH}/components/ble/ble_db_discovery"
     )
 
     list(APPEND SDK_SOURCE_FILES
+      "${NRF5_SDK_PATH}/components/ble/ble_db_discovery/ble_db_discovery.c"
+      "${NRF5_SDK_PATH}/components/ble/ble_services/ble_cts_c/ble_cts_c.c"
       "${NRF5_SDK_PATH}/external/thedotfactory_fonts/orkney24pts.c"
       )
 

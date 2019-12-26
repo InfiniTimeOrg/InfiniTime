@@ -24,9 +24,12 @@ I've tested this project on the actual PineTime hardware.
 
  * Project builds and runs on the Pinetime;
  * Logs available via JLink RTT;
- * Basic LCD driver.
+ * Basic (but faster) LCD driver.
+ * One big font to display the time (hours : minutes)
+ * BLE advertising, connection and bonding
+ * BLE CTS client (retrieves the time from the connected device if it implements a CTS server)
 
-## How to use it
+## How to build
 
   * Download and unzip arm-none-eabi and NRF52 SDK
   * Clone this repo
@@ -64,3 +67,24 @@ $ JLinkExe -device nrf52 -if swd -speed 4000 -autoconnect 1
 ```
 $ JLinkRTTClient
 ```
+
+## Tools
+
+ - https://github.com/eliotstock/memory : display the memory usage (FLASH/RAM) using the .map file from GCC.
+ 
+## BLE connection, bonding and time synchronization
+At runtime, BLE advertising is started. You can then use a smartphone or computer to connect and bond to your Pinetime. 
+As soon as a device is bonded, Pinetime will look for a **CTS** server (**C**urrent **T**ime **S**ervice) on the connected device.
+
+Here is how to do it with an Android smartphone running NRFConnect:
+
+* Build and program the firmware on the Pinetime
+* Install NRFConnect (https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF-Connect-for-desktop)
+* Start NRFConnect and create a CTS server : 
+    - Tap the hamburger button on the top left and select "Configure GATT server"
+    - Tap "Add service" on the bottom
+    - Select server configuration "Current Time Service" and tap OK
+* Go back to the main screen and scan for BLE devices. A device called "PineTime" should appear
+* Tap the button "Connect" next to the PineTime device. It should connect to the PineTime and switch to a new tab.
+* On this tab, on the top right, there is a 3 dots button. Tap on it and select Bond. The bonding process begins, and if it is sucessful, the PineTime should update its time and display it on the screen.
+      
