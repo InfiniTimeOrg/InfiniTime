@@ -24,7 +24,10 @@ I've tested this project on the actual PineTime hardware.
 
  * Project builds and runs on the Pinetime;
  * Logs available via JLink RTT;
- * Basic LCD driver.
+ * Basic (but faster) LCD driver.
+ * One big font to display the time (hours : minutes)
+ * BLE advertising, connection and bonding
+ * BLE CTS client (retrieves the time from the connected device if it implements a CTS server)
 
 ## How to build
 
