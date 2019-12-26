@@ -6,6 +6,7 @@
 #include <nrf_font.h>
 #include <hal/nrf_rtc.h>
 #include "Components/Gfx/Gfx.h"
+#include <queue.h>
 
 using namespace Pinetime::Applications;
 
@@ -21,10 +22,7 @@ void DisplayApp::Process(void *instance) {
   app->InitHw();
 
   while (1) {
-
     app->Refresh();
-
-    vTaskDelay(1000);
   }
 }
 
@@ -67,6 +65,56 @@ void DisplayApp::InitHw() {
 }
 
 void DisplayApp::Refresh() {
+  TickType_t queueTimeout;
+  switch(state) {
+    case States::Idle:
+      IdleState();
+      queueTimeout = portMAX_DELAY;
+      break;
+    case States::Running:
+      RunningState();
+      queueTimeout = 1000;
+      break;
+  }
+
+  Messages msg;
+  if(xQueueReceive( msgQueue, &msg, queueTimeout)) {
+    switch(msg) {
+      case Messages::GoToSleep:
+        nrf_gpio_pin_set(23);
+        vTaskDelay(100);
+        nrf_gpio_pin_set(22);
+        vTaskDelay(100);
+        nrf_gpio_pin_set(14);
+        state = States::Idle;
+        break;
+      case Messages::GoToRunning:
+        nrf_gpio_pin_clear(23);
+        nrf_gpio_pin_clear(22);
+        nrf_gpio_pin_clear(14);
+        state = States::Running;
+        break;
+    }
+  }
+}
+
+void DisplayApp::Minutes(uint8_t m) {
+  // TODO yeah, I know, race condition...
+  minutes = m;
+}
+
+void DisplayApp::Hours(uint8_t h) {
+  // TODO yeah, I know, race condition too...
+  hours = h;
+}
+
+void DisplayApp::SetTime(uint8_t minutes, uint8_t hours) {
+  deltaSeconds = nrf_rtc_counter_get(portNRF_RTC_REG) / 1000;
+  this->minutes = minutes;
+  this->hours = hours;
+}
+
+void DisplayApp::RunningState() {
   uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
 
   auto raw = systick_counter / 1000;
@@ -118,21 +166,24 @@ void DisplayApp::Refresh() {
     gfx->DrawChar(&largeFont, minutesChar[1], &x, 78, 0xffff);
     currentChar[3] = minutesChar[1];
   }
+}
+
+void DisplayApp::IdleState() {
 
 }
 
-void DisplayApp::Minutes(uint8_t m) {
-  // TODO yeah, I know, race condition...
-  minutes = m;
+DisplayApp::DisplayApp() {
+  msgQueue = xQueueCreate(queueSize, itemSize);
 }
 
-void DisplayApp::Hours(uint8_t h) {
-  // TODO yeah, I know, race condition too...
-  hours = h;
-}
+void DisplayApp::PushMessage(DisplayApp::Messages msg) {
+  BaseType_t xHigherPriorityTaskWoken;
+  xHigherPriorityTaskWoken = pdFALSE;
+  xQueueSendFromISR( msgQueue, &msg, &xHigherPriorityTaskWoken );
 
-void DisplayApp::SetTime(uint8_t minutes, uint8_t hours) {
-  deltaSeconds = nrf_rtc_counter_get(portNRF_RTC_REG) / 1000;
-  this->minutes = minutes;
-  this->hours = hours;
+  /* Now the buffer is empty we can switch context if necessary. */
+  if(xHigherPriorityTaskWoken) {
+    /* Actual macro used here is port specific. */
+    // TODO : should I do something here?
+  }
 }
