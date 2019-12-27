@@ -12,6 +12,7 @@
 #include <libraries/log/nrf_log.h>
 #include "BLE/BleManager.h"
 #include "Components/Battery/BatteryController.h"
+#include "Components/Ble/BleController.h"
 
 #if NRF_LOG_ENABLED
 #include "Logging/NrfLogger.h"
@@ -26,6 +27,7 @@ TaskHandle_t systemThread;
 bool isSleeping = false;
 TimerHandle_t debounceTimer;
 Pinetime::Controllers::Battery batteryController;
+Pinetime::Controllers::Ble bleController;
 
 extern "C" {
   void vApplicationIdleHook() {
@@ -85,11 +87,12 @@ void SystemTask(void *) {
 }
 
 void OnNewTime(uint8_t minutes, uint8_t hours) {
+  bleController.Connect();
   displayApp->SetTime(minutes, hours);
 }
 
 int main(void) {
-  displayApp.reset(new Pinetime::Applications::DisplayApp(batteryController));
+  displayApp.reset(new Pinetime::Applications::DisplayApp(batteryController, bleController));
   logger.Init();
   nrf_drv_clock_init();
 

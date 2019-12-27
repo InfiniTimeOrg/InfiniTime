@@ -7,6 +7,7 @@
 #include <bits/unique_ptr.h>
 #include <queue.h>
 #include <Components/Battery/BatteryController.h>
+#include <Components/Ble/BleController.h>
 #include "lcdfont14.h"
 
 extern const FONT_INFO lCD_70ptFontInfo;
@@ -17,7 +18,7 @@ namespace Pinetime {
       public:
         enum class States {Idle, Running};
         enum class Messages : uint8_t {GoToSleep, GoToRunning} ;
-        DisplayApp(Pinetime::Controllers::Battery& batteryController);
+        DisplayApp(Pinetime::Controllers::Battery& batteryController, Pinetime::Controllers::Ble& bleController);
         void Start();
 
         void Minutes(uint8_t m);
@@ -53,7 +54,9 @@ namespace Pinetime {
         static constexpr uint8_t itemSize = 1;
 
         Pinetime::Controllers::Battery &batteryController;
+        Pinetime::Controllers::Ble &bleController;
         uint16_t battery = 0;
+        bool bleConnected = false;
 
     };
   }

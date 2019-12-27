@@ -29,7 +29,6 @@ I've tested this project on the actual PineTime hardware.
  * BLE advertising, connection and bonding
  * BLE CTS client (retrieves the time from the connected device if it implements a CTS server)
  * Push button to go to disable screen (and go to low power mode) / enable screen (and wake-up). **NOTE** : I'm not completely sure the power consumption is optimal, especially in sleep mode. Any help to measure and debug this is welcome.
- 
 
 
 ## How to build

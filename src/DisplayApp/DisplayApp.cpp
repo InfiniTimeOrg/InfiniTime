@@ -10,7 +10,9 @@
 
 using namespace Pinetime::Applications;
 
-DisplayApp::DisplayApp(Pinetime::Controllers::Battery &batteryController) : batteryController{batteryController} {
+DisplayApp::DisplayApp(Pinetime::Controllers::Battery &batteryController, Pinetime::Controllers::Ble &bleController) :
+        batteryController{batteryController},
+        bleController{bleController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
 }
 
@@ -66,8 +68,8 @@ void DisplayApp::InitHw() {
   x = 181;
   gfx->DrawChar(&largeFont, '0', &x, 78, 0xffff);
 
-  gfx->DrawString(10, 0, 0xffff, "BLE", &smallFont, false);
-  gfx->DrawString(20, 160, 0xffff, "FRIDAY 27 DEC 2019", &smallFont, false);
+  gfx->DrawString(10, 0, 0x0000, "BLE", &smallFont, false);
+  gfx->DrawString(20, 180, 0xffff, "FRIDAY 27 DEC 2019", &smallFont, false);
 }
 
 void DisplayApp::Refresh() {
@@ -131,6 +133,13 @@ void DisplayApp::RunningState() {
     battery = newBatteryValue;
     sprintf(batteryChar, "BAT: %d%%", battery);
     gfx->DrawString((240-108), 0, 0xffff, batteryChar, &smallFont, false);
+  }
+
+  bool newIsBleConnected = bleController.IsConnected();
+  if(newIsBleConnected != bleConnected) {
+    bleConnected = newIsBleConnected;
+    uint16_t color = (bleConnected) ? 0xffff : 0x0000;
+    gfx->DrawString(10, 0, color, "BLE", &smallFont, false);
   }
 
   auto raw = systick_counter / 1000;
