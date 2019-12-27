@@ -10,6 +10,8 @@
 #include <softdevice/common/nrf_sdh_freertos.h>
 #include <hal/nrf_rtc.h>
 #include <timers.h>
+#include <libraries/log/nrf_log.h>
+#include <drivers/include/nrfx_saadc.h>
 
 #include "BLE/BleManager.h"
 
@@ -36,8 +38,6 @@ extern "C" {
   }
 }
 
-
-
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   xTimerStartFromISR(debounceTimer, &xHigherPriorityTaskWoken);
@@ -55,6 +55,11 @@ void DebounceTimerCallback(TimerHandle_t xTimer) {
     isSleeping = true;
   }
 }
+
+void nrfx_saadc_event_handler(nrfx_saadc_evt_t const * p_event) {
+
+}
+
 
 void SystemTask(void *) {
   APP_GPIOTE_INIT(2);
@@ -76,6 +81,61 @@ void SystemTask(void *) {
   pinConfig.pull = (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pulldown;
 
   nrfx_gpiote_in_init(13, &pinConfig, nrfx_gpiote_evt_handler);
+
+  nrf_gpio_cfg_input(12, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup);
+  nrf_gpio_cfg_input(19, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup);
+
+  nrf_gpio_cfg_output(27);
+  nrf_gpio_pin_set(27);
+
+  nrfx_saadc_config_t adcConfig = NRFX_SAADC_DEFAULT_CONFIG;
+  nrfx_saadc_init(&adcConfig, nrfx_saadc_event_handler);
+  nrfx_err_t nrfx_saadc_calibrate_offset(void);
+
+  vTaskDelay(1000);
+
+  nrf_saadc_channel_config_t adcChannelConfig = {
+    .resistor_p = NRF_SAADC_RESISTOR_DISABLED,
+    .resistor_n = NRF_SAADC_RESISTOR_DISABLED,
+    .gain       = NRF_SAADC_GAIN1_5,
+    .reference  = NRF_SAADC_REFERENCE_INTERNAL,
+    .acq_time   = NRF_SAADC_ACQTIME_3US,
+    .mode       = NRF_SAADC_MODE_SINGLE_ENDED,
+    .burst      = NRF_SAADC_BURST_DISABLED,
+    .pin_p      = (nrf_saadc_input_t)(SAADC_CH_PSELP_PSELP_AnalogInput7),
+    .pin_n      = NRF_SAADC_INPUT_DISABLED
+  };
+  nrfx_saadc_channel_init(0, &adcChannelConfig);
+
+  nrf_saadc_value_t value = 0;
+  nrfx_saadc_sample_convert(0, &value);
+
+  while(true) {
+    bool charge = nrf_gpio_pin_read(12);
+    bool power =  nrf_gpio_pin_read(19);
+
+    if(!charge) {
+      NRF_LOG_INFO("CHARGE ON");
+    } else {
+      NRF_LOG_INFO("CHARGE OFF");
+    }
+
+    if(!power) {
+      NRF_LOG_INFO("POWER ON");
+    } else {
+      NRF_LOG_INFO("POWER OFF");
+    }
+    nrf_saadc_value_t value = 0;
+
+    nrfx_saadc_sample_convert(0, &value);
+    float v = (value * 2.0f) / (1024/3.0f);
+    float percent = ((v - 3.55)*100)*3.9;
+    NRF_LOG_INFO(NRF_LOG_FLOAT_MARKER "v - " NRF_LOG_FLOAT_MARKER "%%", NRF_LOG_FLOAT(v), NRF_LOG_FLOAT(percent));
+
+
+    nrf_gpio_pin_toggle(27);
+    vTaskDelay(1000);
+  }
 
   vTaskSuspend(nullptr);
 }
