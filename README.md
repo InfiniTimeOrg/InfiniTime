@@ -22,6 +22,8 @@ I've tested this project on the actual PineTime hardware.
 
 ## Current state
 
+![Pinetime](./images/pinetime.jpg "Pinetime")
+
  * Project builds and runs on the Pinetime;
  * Logs available via JLink RTT;
  * Basic (but faster) LCD driver.
