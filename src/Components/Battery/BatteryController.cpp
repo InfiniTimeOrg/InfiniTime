@@ -6,8 +6,8 @@
 using namespace Pinetime::Controllers;
 
 void Battery::Init() {
-  nrf_gpio_cfg_input(12, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup);
-  nrf_gpio_cfg_input(19, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup);
+  nrf_gpio_cfg_input(chargingPin, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup);
+  nrf_gpio_cfg_input(powerPresentPin, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup);
 
   nrfx_saadc_config_t adcConfig = NRFX_SAADC_DEFAULT_CONFIG;
   nrfx_saadc_init(&adcConfig, SaadcEventHandler);
@@ -19,19 +19,20 @@ void Battery::Init() {
           .acq_time   = NRF_SAADC_ACQTIME_3US,
           .mode       = NRF_SAADC_MODE_SINGLE_ENDED,
           .burst      = NRF_SAADC_BURST_DISABLED,
-          .pin_p      = (nrf_saadc_input_t)(SAADC_CH_PSELP_PSELP_AnalogInput7),
+          .pin_p      = batteryVoltageAdcInput,
           .pin_n      = NRF_SAADC_INPUT_DISABLED
   };
   nrfx_saadc_channel_init(0, &adcChannelConfig);
 }
 
 void Battery::Update() {
-  isCharging = !nrf_gpio_pin_read(12);
-  isPowerPresent = !nrf_gpio_pin_read(19);
+  isCharging = !nrf_gpio_pin_read(chargingPin);
+  isPowerPresent = !nrf_gpio_pin_read(powerPresentPin);
 
   nrf_saadc_value_t value = 0;
   nrfx_saadc_sample_convert(0, &value);
 
+  // see https://forum.pine64.org/showthread.php?tid=8147
   voltage = (value * 2.0f) / (1024/3.0f);
   percentRemaining = ((voltage - 3.55)*100)*3.9;
 
