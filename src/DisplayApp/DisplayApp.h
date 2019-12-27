@@ -6,6 +6,7 @@
 #include <Components/Gfx/Gfx.h>
 #include <bits/unique_ptr.h>
 #include <queue.h>
+#include "lcdfont14.h"
 
 extern const FONT_INFO lCD_70ptFontInfo;
 
@@ -33,6 +34,7 @@ namespace Pinetime {
         std::unique_ptr<Drivers::St7789> lcd;
         std::unique_ptr<Components::Gfx> gfx;
         const FONT_INFO largeFont {lCD_70ptFontInfo.height, lCD_70ptFontInfo.startChar, lCD_70ptFontInfo.endChar, lCD_70ptFontInfo.spacePixels, lCD_70ptFontInfo.charInfo, lCD_70ptFontInfo.data};
+        const FONT_INFO smallFont {lCD_14ptFontInfo.height, lCD_14ptFontInfo.startChar, lCD_14ptFontInfo.endChar, lCD_14ptFontInfo.spacePixels, lCD_14ptFontInfo.charInfo, lCD_14ptFontInfo.data};
         void Refresh();
 
         uint8_t seconds = 0;

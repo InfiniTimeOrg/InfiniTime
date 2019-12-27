@@ -13,7 +13,6 @@ using namespace Pinetime::Applications;
 void DisplayApp::Start() {
   if (pdPASS != xTaskCreate(DisplayApp::Process, "DisplayApp", 256, this, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
-
 }
 
 void DisplayApp::Process(void *instance) {
@@ -116,6 +115,10 @@ void DisplayApp::SetTime(uint8_t minutes, uint8_t hours) {
 
 void DisplayApp::RunningState() {
   uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
+
+  gfx->DrawString(10, 0, 0xffff, "BLE", &smallFont, false);
+  gfx->DrawString((240-96), 0, 0xffff, "BAT: 58%", &smallFont, false);
+  gfx->DrawString(20, 160, 0xffff, "FRIDAY 27 DEC 2019", &smallFont, false);
 
   auto raw = systick_counter / 1000;
   auto currentDeltaSeconds = raw - deltaSeconds;

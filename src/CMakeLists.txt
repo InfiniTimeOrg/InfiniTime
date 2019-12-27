@@ -31,7 +31,8 @@ list(APPEND SOURCE_FILES
   Logging/NrfLogger.cpp
   BlinkApp/BlinkApp.cpp
   DisplayApp/DisplayApp.cpp
-  DisplayApp/lcdfont.c
+  DisplayApp/lcdfont70.c
+  DisplayApp/lcdfont14.c
   main.cpp
   drivers/St7789.cpp
   drivers/SpiMaster.cpp
@@ -44,7 +45,8 @@ set(INCLUDE_FILES
   Logging/NrfLogger.h
   BlinkApp/BlinkApp.h
   DisplayApp/DisplayApp.h
-  DisplayApp/lcdfont.h
+  DisplayApp/lcdfont70.h
+  DisplayApp/lcdfont14.h
   drivers/St7789.h
   drivers/SpiMaster.h
   Components/Gfx/Gfx.h
