@@ -10,6 +10,10 @@
 
 using namespace Pinetime::Applications;
 
+DisplayApp::DisplayApp(Pinetime::Controllers::Battery &batteryController) : batteryController{batteryController} {
+  msgQueue = xQueueCreate(queueSize, itemSize);
+}
+
 void DisplayApp::Start() {
   if (pdPASS != xTaskCreate(DisplayApp::Process, "DisplayApp", 256, this, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
@@ -61,6 +65,9 @@ void DisplayApp::InitHw() {
 
   x = 181;
   gfx->DrawChar(&largeFont, '0', &x, 78, 0xffff);
+
+  gfx->DrawString(10, 0, 0xffff, "BLE", &smallFont, false);
+  gfx->DrawString(20, 160, 0xffff, "FRIDAY 27 DEC 2019", &smallFont, false);
 }
 
 void DisplayApp::Refresh() {
@@ -116,9 +123,15 @@ void DisplayApp::SetTime(uint8_t minutes, uint8_t hours) {
 void DisplayApp::RunningState() {
   uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
 
-  gfx->DrawString(10, 0, 0xffff, "BLE", &smallFont, false);
-  gfx->DrawString((240-96), 0, 0xffff, "BAT: 58%", &smallFont, false);
-  gfx->DrawString(20, 160, 0xffff, "FRIDAY 27 DEC 2019", &smallFont, false);
+  char batteryChar[11];
+  uint16_t newBatteryValue = batteryController.PercentRemaining();
+  newBatteryValue = (newBatteryValue>100) ? 100 : newBatteryValue;
+  newBatteryValue = (newBatteryValue<0) ? 0 : newBatteryValue;
+  if(newBatteryValue != battery) {
+    battery = newBatteryValue;
+    sprintf(batteryChar, "BAT: %d%%", battery);
+    gfx->DrawString((240-108), 0, 0xffff, batteryChar, &smallFont, false);
+  }
 
   auto raw = systick_counter / 1000;
   auto currentDeltaSeconds = raw - deltaSeconds;
@@ -173,10 +186,6 @@ void DisplayApp::RunningState() {
 
 void DisplayApp::IdleState() {
 
-}
-
-DisplayApp::DisplayApp() {
-  msgQueue = xQueueCreate(queueSize, itemSize);
 }
 
 void DisplayApp::PushMessage(DisplayApp::Messages msg) {
