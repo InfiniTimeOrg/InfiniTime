@@ -320,8 +320,8 @@ void ble_manager_start_advertising(void *p_erase_bonds) {
   }
 }
 
-void (*OnNewTimeCallback)(uint8_t, uint8_t);
-void ble_manager_set_callback(void (*OnNewTime)(uint8_t, uint8_t)) {
+void (*OnNewTimeCallback)(current_time_char_t*);
+void ble_manager_set_callback(void (*OnNewTime)(current_time_char_t*)) {
   OnNewTimeCallback = OnNewTime;
 }
 
@@ -485,8 +485,7 @@ void ble_manager_cts_print_time(ble_cts_c_evt_t *p_evt) {
   NRF_LOG_INFO("\tManual update    %x",
                p_evt->params.current_time.adjust_reason.manual_time_update);
 
-  OnNewTimeCallback(p_evt->params.current_time.exact_time_256.day_date_time.date_time.minutes,
-                     p_evt->params.current_time.exact_time_256.day_date_time.date_time.hours);
+  OnNewTimeCallback(&p_evt->params.current_time);
 }
 
 void ble_manager_init_connection_params() {

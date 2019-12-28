@@ -8,6 +8,7 @@
 #include <queue.h>
 #include <Components/Battery/BatteryController.h>
 #include <Components/Ble/BleController.h>
+#include <Components/DateTime/DateTimeController.h>
 #include "lcdfont14.h"
 
 extern const FONT_INFO lCD_70ptFontInfo;
@@ -17,15 +18,11 @@ namespace Pinetime {
     class DisplayApp {
       public:
         enum class States {Idle, Running};
-        enum class Messages : uint8_t {GoToSleep, GoToRunning} ;
-        DisplayApp(Pinetime::Controllers::Battery& batteryController, Pinetime::Controllers::Ble& bleController);
+        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel} ;
+        DisplayApp(Controllers::Battery &batteryController,
+                   Controllers::Ble &bleController,
+                   Controllers::DateTime& dateTimeController);
         void Start();
-
-        void Minutes(uint8_t m);
-        void Hours(uint8_t h);
-
-        void SetTime(uint8_t minutes, uint8_t hours);
-
         void PushMessage(Messages msg);
 
       private:
@@ -39,6 +36,8 @@ namespace Pinetime {
         const FONT_INFO smallFont {lCD_14ptFontInfo.height, lCD_14ptFontInfo.startChar, lCD_14ptFontInfo.endChar, lCD_14ptFontInfo.spacePixels, lCD_14ptFontInfo.charInfo, lCD_14ptFontInfo.data};
         void Refresh();
 
+        static const char* MonthToString(Pinetime::Controllers::DateTime::Months month);
+        static const char* DayOfWeekToString(Pinetime::Controllers::DateTime::Days dayOfWeek);
         uint8_t seconds = 0;
         uint8_t minutes = 0;
         uint8_t hours = 0;
@@ -55,8 +54,15 @@ namespace Pinetime {
 
         Pinetime::Controllers::Battery &batteryController;
         Pinetime::Controllers::Ble &bleController;
-        uint16_t battery = 0;
-        bool bleConnected = false;
+        Pinetime::Controllers::DateTime& dateTimeController;
+        bool bleConnectionUpdated = false;
+        bool batteryLevelUpdated = false;
+
+        static char const *DaysString[];
+
+        static char const *MonthsString[];
+
+        bool dateUpdated = false;
 
     };
   }

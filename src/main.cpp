@@ -10,6 +10,8 @@
 #include <hal/nrf_rtc.h>
 #include <timers.h>
 #include <libraries/log/nrf_log.h>
+#include <ble/ble_services/ble_cts_c/ble_cts_c.h>
+#include <Components/DateTime/DateTimeController.h>
 #include "BLE/BleManager.h"
 #include "Components/Battery/BatteryController.h"
 #include "Components/Ble/BleController.h"
@@ -28,6 +30,7 @@ bool isSleeping = false;
 TimerHandle_t debounceTimer;
 Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
+Pinetime::Controllers::DateTime dateTimeController;
 
 extern "C" {
   void vApplicationIdleHook() {
@@ -51,6 +54,7 @@ void DebounceTimerCallback(TimerHandle_t xTimer) {
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToRunning);
     isSleeping = false;
     batteryController.Update();
+    displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBatteryLevel);
   }
   else {
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
@@ -66,6 +70,7 @@ void SystemTask(void *) {
 
   batteryController.Init();
   batteryController.Update();
+  displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBatteryLevel);
 
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
@@ -81,18 +86,26 @@ void SystemTask(void *) {
   pinConfig.pull = (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pulldown;
 
   nrfx_gpiote_in_init(13, &pinConfig, nrfx_gpiote_evt_handler);
-
-
   vTaskSuspend(nullptr);
 }
 
-void OnNewTime(uint8_t minutes, uint8_t hours) {
+void OnNewTime(current_time_char_t* currentTime) {
   bleController.Connect();
-  displayApp->SetTime(minutes, hours);
+  displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBleConnection);
+
+  auto dayOfWeek = currentTime->exact_time_256.day_date_time.day_of_week;
+  auto year = currentTime->exact_time_256.day_date_time.date_time.year;
+  auto month = currentTime->exact_time_256.day_date_time.date_time.month;
+  auto day = currentTime->exact_time_256.day_date_time.date_time.day;
+  auto hour = currentTime->exact_time_256.day_date_time.date_time.hours;
+  auto minute = currentTime->exact_time_256.day_date_time.date_time.minutes;
+  auto second = currentTime->exact_time_256.day_date_time.date_time.seconds;
+  dateTimeController.UpdateTime(year, static_cast<Pinetime::Controllers::DateTime::Months >(month), day, static_cast<Pinetime::Controllers::DateTime::Days>(dayOfWeek), hour, minute, second);
+  displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateDateTime);
 }
 
 int main(void) {
-  displayApp.reset(new Pinetime::Applications::DisplayApp(batteryController, bleController));
+  displayApp.reset(new Pinetime::Applications::DisplayApp(batteryController, bleController, dateTimeController));
   logger.Init();
   nrf_drv_clock_init();
 

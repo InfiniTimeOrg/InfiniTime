@@ -40,6 +40,8 @@ list(APPEND SOURCE_FILES
   BLE/BleManager.c
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
+  Components/Pinetime/PinetimeController.cpp
+  Components/DateTime/DateTimeController.cpp
 )
 
 set(INCLUDE_FILES
@@ -55,6 +57,8 @@ set(INCLUDE_FILES
   BLE/BleManager.h
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
+  Components/Pinetime/PinetimeController.h
+  Components/DateTime/DateTimeController.h
 )
 
 nRF5x_addExecutable(pinetime-app "${SOURCE_FILES}")
