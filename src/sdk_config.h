@@ -2507,12 +2507,12 @@
 #endif
 
 #ifndef GPIOTE_LOG_ENABLED
-#define GPIOTE_LOG_ENABLED 1
+#define GPIOTE_LOG_ENABLED 0
 #endif
 
 
 #ifndef NRFX_GPIOTE_LOG_ENABLED
-#define NRFX_GPIOTE_LOG_ENABLED 1
+#define NRFX_GPIOTE_LOG_ENABLED 0
 #endif
 
 // <o> GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS - Number of lower power input pins 
@@ -3068,7 +3068,7 @@
 // <e> NRFX_GPIOTE_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_GPIOTE_CONFIG_LOG_ENABLED
-#define NRFX_GPIOTE_CONFIG_LOG_ENABLED 1
+#define NRFX_GPIOTE_CONFIG_LOG_ENABLED 0
 #endif
 // <o> NRFX_GPIOTE_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -8540,15 +8540,15 @@
 // <e> NRF_LOG_ENABLED - nrf_log - Logger
 //==========================================================
 #ifndef NRF_LOG_ENABLED
-#define NRF_LOG_ENABLED 1
+#define NRF_LOG_ENABLED 0
 #endif
 
 #ifndef NRF_LOG_BACKEND_RTT_ENABLED
-#define NRF_LOG_BACKEND_RTT_ENABLED 1
+#define NRF_LOG_BACKEND_RTT_ENABLED 0
 #endif
 
 #ifndef NRF_LOG_BACKEND_SERIAL_USES_RTT
-#define NRF_LOG_BACKEND_SERIAL_USES_RTT 1
+#define NRF_LOG_BACKEND_SERIAL_USES_RTT 0
 #endif
 // <h> Log message pool - Configuration of log message pool
 
@@ -8904,7 +8904,7 @@
 // <e> CLOCK_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef CLOCK_CONFIG_LOG_ENABLED
-#define CLOCK_CONFIG_LOG_ENABLED 1
+#define CLOCK_CONFIG_LOG_ENABLED 0
 #endif
 // <o> CLOCK_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -9006,7 +9006,7 @@
 // <e> GPIOTE_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef GPIOTE_CONFIG_LOG_ENABLED
-#define GPIOTE_CONFIG_LOG_ENABLED 1
+#define GPIOTE_CONFIG_LOG_ENABLED 0
 #endif
 // <o> GPIOTE_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -11049,7 +11049,7 @@
 // <e> NRF_SDH_BLE_LOG_ENABLED - Enable logging in SoftDevice handler (BLE) module.
 //==========================================================
 #ifndef NRF_SDH_BLE_LOG_ENABLED
-#define NRF_SDH_BLE_LOG_ENABLED 1
+#define NRF_SDH_BLE_LOG_ENABLED 0
 #endif
 // <o> NRF_SDH_BLE_LOG_LEVEL  - Default Severity level
  
@@ -11100,11 +11100,11 @@
 // <e> NRF_SDH_LOG_ENABLED - Enable logging in SoftDevice handler module.
 //==========================================================
 #ifndef NRF_SDH_LOG_ENABLED
-#define NRF_SDH_LOG_ENABLED 1
+#define NRF_SDH_LOG_ENABLED 0
 #endif
 
 #ifndef NRF_SDH_FREERTOS_LOG_ENABLED
-#define NRF_SDH_FREERTOS_LOG_ENABLED 1
+#define NRF_SDH_FREERTOS_LOG_ENABLED 0
 #endif
 
 #ifndef NRF_SDH_FREERTOS_LOG_LEVEL
@@ -11159,7 +11159,7 @@
 // <e> NRF_SDH_SOC_LOG_ENABLED - Enable logging in SoftDevice handler (SoC) module.
 //==========================================================
 #ifndef NRF_SDH_SOC_LOG_ENABLED
-#define NRF_SDH_SOC_LOG_ENABLED 1
+#define NRF_SDH_SOC_LOG_ENABLED 0
 #endif
 // <o> NRF_SDH_SOC_LOG_LEVEL  - Default Severity level
  
@@ -11312,7 +11312,7 @@
 // <e> PM_LOG_ENABLED - Enable logging in Peer Manager and its submodules.
 //==========================================================
 #ifndef PM_LOG_ENABLED
-#define PM_LOG_ENABLED 1
+#define PM_LOG_ENABLED 0
 #endif
 // <o> PM_LOG_LEVEL  - Default Severity level
  
