@@ -16,11 +16,15 @@ namespace Pinetime {
         void NextDrawBuffer(const uint8_t* data, size_t size);
         void EndDrawBuffer();
 
+        void DisplayOn();
+        void DisplayOff();
+
 
       private:
         SpiMaster& spi;
         uint8_t pinDataCommand;
 
+        void HardwareReset();
         void SoftwareReset();
         void SleepOut();
         void ColMod();
@@ -28,8 +32,7 @@ namespace Pinetime {
         void DisplayInversionOn();
         void NormalModeOn();
         void WriteToRam();
-        void DisplayOn();
-        void DisplayOff();
+
 
         void SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 

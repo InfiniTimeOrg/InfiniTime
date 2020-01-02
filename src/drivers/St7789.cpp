@@ -12,6 +12,9 @@ St7789::St7789(SpiMaster &spiMaster, uint8_t pinDataCommand) : spi{spiMaster}, p
 
 void St7789::Init() {
   nrf_gpio_cfg_output(pinDataCommand);
+  nrf_gpio_cfg_output(26);
+  nrf_gpio_pin_set(26);
+  HardwareReset();
   SoftwareReset();
   SleepOut();
   ColMod();
@@ -156,6 +159,13 @@ void St7789::EndDrawBuffer() {
 
 void St7789::NextDrawBuffer(const uint8_t *data, size_t size) {
   spi.Write(data, size);
+}
+
+void St7789::HardwareReset() {
+  nrf_gpio_pin_clear(26);
+  nrf_delay_ms(200);
+  nrf_gpio_pin_set(26);
+
 }
 
 
