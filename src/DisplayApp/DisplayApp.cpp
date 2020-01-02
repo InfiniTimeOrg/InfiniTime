@@ -125,9 +125,11 @@ void DisplayApp::Refresh() {
         nrf_gpio_pin_set(22);
         vTaskDelay(100);
         nrf_gpio_pin_set(14);
+        lcd->DisplayOff();
         state = States::Idle;
         break;
       case Messages::GoToRunning:
+        lcd->DisplayOn();
         nrf_gpio_pin_clear(23);
         nrf_gpio_pin_clear(22);
         nrf_gpio_pin_clear(14);
