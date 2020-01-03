@@ -8,6 +8,7 @@
 #include "Components/Gfx/Gfx.h"
 #include <queue.h>
 #include <Components/DateTime/DateTimeController.h>
+#include <drivers/Cst816s.h>
 
 using namespace Pinetime::Applications;
 
@@ -56,7 +57,6 @@ void DisplayApp::Process(void *instance) {
   auto *app = static_cast<DisplayApp *>(instance);
   NRF_LOG_INFO("DisplayApp task started!");
   app->InitHw();
-
   while (1) {
     app->Refresh();
   }
@@ -101,6 +101,8 @@ void DisplayApp::InitHw() {
 
   gfx->DrawString(10, 0, 0x0000, "BLE", &smallFont, false);
   gfx->DrawString(20, 180, 0xffff, "", &smallFont, false);
+
+  touchPanel.Init();
 }
 
 void DisplayApp::Refresh() {
@@ -147,6 +149,10 @@ void DisplayApp::Refresh() {
         break;
       case Messages::UpdateBatteryLevel:
         batteryLevelUpdated = true;
+        break;
+      case Messages::TouchEvent:
+        if(state != States::Running) break;
+        OnTouchEvent();
         break;
     }
   }
@@ -245,5 +251,15 @@ void DisplayApp::PushMessage(DisplayApp::Messages msg) {
   if (xHigherPriorityTaskWoken) {
     /* Actual macro used here is port specific. */
     // TODO : should I do something here?
+  }
+}
+
+static uint16_t pointColor = 0x07e0;
+void DisplayApp::OnTouchEvent() {
+  auto info = touchPanel.GetTouchInfo();
+
+  if(info.isTouch) {
+    lcd->FillRectangle(info.x-10, info.y-10, 20,20, pointColor);
+    pointColor+=10;
   }
 }

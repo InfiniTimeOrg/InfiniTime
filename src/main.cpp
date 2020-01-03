@@ -32,6 +32,10 @@ Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
 Pinetime::Controllers::DateTime dateTimeController;
 
+
+static constexpr uint8_t pinButton = 13;
+static constexpr uint8_t pinTouchIrq = 28;
+
 extern "C" {
   void vApplicationIdleHook() {
     logger.Resume();
@@ -43,6 +47,11 @@ extern "C" {
 }
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
+  if(pin == pinTouchIrq) {
+    displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::TouchEvent);
+    if(!isSleeping) return;
+  }
+
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   xTimerStartFromISR(debounceTimer, &xHigherPriorityTaskWoken);
   // TODO should I do something if xHigherPriorityTaskWoken == pdTRUE?
@@ -74,7 +83,7 @@ void SystemTask(void *) {
 
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
-  nrf_gpio_cfg_sense_input(13, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pulldown, (nrf_gpio_pin_sense_t)GPIO_PIN_CNF_SENSE_High);
+  nrf_gpio_cfg_sense_input(pinButton, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pulldown, (nrf_gpio_pin_sense_t)GPIO_PIN_CNF_SENSE_High);
   nrf_gpio_cfg_output(15);
   nrf_gpio_pin_set(15);
 
@@ -85,7 +94,17 @@ void SystemTask(void *) {
   pinConfig.sense = (nrf_gpiote_polarity_t)NRF_GPIOTE_POLARITY_HITOLO;
   pinConfig.pull = (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pulldown;
 
-  nrfx_gpiote_in_init(13, &pinConfig, nrfx_gpiote_evt_handler);
+  nrfx_gpiote_in_init(pinButton, &pinConfig, nrfx_gpiote_evt_handler);
+
+  nrf_gpio_cfg_sense_input(pinTouchIrq, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup, (nrf_gpio_pin_sense_t)GPIO_PIN_CNF_SENSE_Low);
+
+  pinConfig.skip_gpio_setup = true;
+  pinConfig.hi_accuracy = false;
+  pinConfig.is_watcher = false;
+  pinConfig.sense = (nrf_gpiote_polarity_t)NRF_GPIOTE_POLARITY_HITOLO;
+  pinConfig.pull = (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup;
+
+  nrfx_gpiote_in_init(pinTouchIrq, &pinConfig, nrfx_gpiote_evt_handler);
   vTaskSuspend(nullptr);
 }
 

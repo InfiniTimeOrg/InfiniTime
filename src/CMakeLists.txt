@@ -41,6 +41,7 @@ list(APPEND SOURCE_FILES
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
   Components/DateTime/DateTimeController.cpp
+  drivers/Cst816s.cpp
 )
 
 set(INCLUDE_FILES
@@ -57,6 +58,7 @@ set(INCLUDE_FILES
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
   Components/DateTime/DateTimeController.h
+  drivers/Cst816s.h
 )
 
 nRF5x_addExecutable(pinetime-app "${SOURCE_FILES}")

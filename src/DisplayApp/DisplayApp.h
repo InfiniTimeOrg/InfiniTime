@@ -10,6 +10,8 @@
 #include <Components/Ble/BleController.h>
 #include <Components/DateTime/DateTimeController.h>
 #include "lcdfont14.h"
+#include "../drivers/Cst816s.h"
+
 
 extern const FONT_INFO lCD_70ptFontInfo;
 
@@ -18,7 +20,7 @@ namespace Pinetime {
     class DisplayApp {
       public:
         enum class States {Idle, Running};
-        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel} ;
+        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent} ;
         DisplayApp(Controllers::Battery &batteryController,
                    Controllers::Ble &bleController,
                    Controllers::DateTime& dateTimeController);
@@ -59,11 +61,11 @@ namespace Pinetime {
         bool batteryLevelUpdated = false;
 
         static char const *DaysString[];
-
         static char const *MonthsString[];
-
         bool dateUpdated = false;
 
+        Pinetime::Drivers::Cst816S touchPanel;
+        void OnTouchEvent();
     };
   }
 }

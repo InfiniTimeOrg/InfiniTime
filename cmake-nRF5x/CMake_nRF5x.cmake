@@ -197,8 +197,6 @@ macro(nRF5x_setup)
             "${NRF5_SDK_PATH}/components/libraries/strerror"
             "${NRF5_SDK_PATH}/components/libraries/svc"
             "${NRF5_SDK_PATH}/components/libraries/timer"
-            "${NRF5_SDK_PATH}/components/libraries/twi_mngr"
-            "${NRF5_SDK_PATH}/components/libraries/twi_sensor"
             "${NRF5_SDK_PATH}/components/libraries/usbd"
             "${NRF5_SDK_PATH}/components/libraries/usbd/class/audio"
             "${NRF5_SDK_PATH}/components/libraries/usbd/class/cdc"
@@ -325,6 +323,9 @@ macro(nRF5x_setup)
       "${NRF5_SDK_PATH}/components/libraries/hardfault/nrf52/handler/hardfault_handler_gcc.c"
       )
 
+    LIST(APPEND SDK_SOURCE_FILES
+      "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_twi.c"
+      )
 
     # adds target for erasing and flashing the board with a softdevice
     add_custom_target(FLASH_SOFTDEVICE ALL
