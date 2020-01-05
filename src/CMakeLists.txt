@@ -42,6 +42,9 @@ list(APPEND SOURCE_FILES
   Components/Ble/BleController.cpp
   Components/DateTime/DateTimeController.cpp
   drivers/Cst816s.cpp
+  FreeRTOS/port.c
+  FreeRTOS/port_cmsis_systick.c
+  FreeRTOS/port_cmsis.c
 )
 
 set(INCLUDE_FILES
@@ -59,6 +62,12 @@ set(INCLUDE_FILES
   Components/Ble/BleController.h
   Components/DateTime/DateTimeController.h
   drivers/Cst816s.h
+  FreeRTOS/portmacro.h
+  FreeRTOS/portmacro_cmsis.h
+)
+
+include_directories(
+  FreeRTOS/
 )
 
 nRF5x_addExecutable(pinetime-app "${SOURCE_FILES}")

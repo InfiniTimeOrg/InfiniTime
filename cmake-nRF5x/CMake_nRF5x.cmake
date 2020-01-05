@@ -131,9 +131,6 @@ macro(nRF5x_setup)
       ${NRF5_SDK_PATH}/external/freertos/source/event_groups.c
       ${NRF5_SDK_PATH}/external/freertos/source/portable/MemMang/heap_1.c
       ${NRF5_SDK_PATH}/external/freertos/source/list.c
-      ${NRF5_SDK_PATH}/external/freertos/portable/GCC/nrf52/port.c
-      ${NRF5_SDK_PATH}/external/freertos/portable/CMSIS/nrf52/port_cmsis.c
-      ${NRF5_SDK_PATH}/external/freertos/portable/CMSIS/nrf52/port_cmsis_systick.c
       ${NRF5_SDK_PATH}/external/freertos/source/queue.c
       ${NRF5_SDK_PATH}/external/freertos/source/stream_buffer.c
       ${NRF5_SDK_PATH}/external/freertos/source/tasks.c
@@ -144,8 +141,6 @@ macro(nRF5x_setup)
     # freertos include
     include_directories(
       ${NRF5_SDK_PATH}/external/freertos/source/include
-      ${NRF5_SDK_PATH}/external/freertos/portable/CMSIS/nrf52
-      ${NRF5_SDK_PATH}/external/freertos/portable/GCC/nrf52
     )
 
     # toolchain specific

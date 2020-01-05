@@ -36,16 +36,6 @@ Pinetime::Controllers::DateTime dateTimeController;
 static constexpr uint8_t pinButton = 13;
 static constexpr uint8_t pinTouchIrq = 28;
 
-extern "C" {
-  void vApplicationIdleHook() {
-    logger.Resume();
-  }
-
-  void vApplicationStackOverflowHook( xTaskHandle *pxTask, signed portCHAR *pcTaskName ) {
-    bsp_board_led_on(3);
-  }
-}
-
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if(pin == pinTouchIrq) {
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::TouchEvent);

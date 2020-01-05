@@ -21,7 +21,7 @@ void NrfLogger::Process(void*) {
   NRF_LOG_INFO("Logger task started!");
   while (1) {
     NRF_LOG_FLUSH();
-    vTaskSuspend(nullptr);
+    vTaskDelay(100); // Not good for power consumption, it will wake up every 100ms...
   }
 }
 
