@@ -8,7 +8,7 @@ if (NOT ARM_NONE_EABI_TOOLCHAIN_PATH)
 endif ()
 
 if (NOT NRF5_SDK_PATH)
-  message(FATAL_ERROR "The path to the NRF52 SDK must be specified on the command line (add -DNRF52_SDK_PATH=<path>")
+  message(FATAL_ERROR "The path to the NRF52 SDK must be specified on the command line (add -DNRF5_SDK_PATH=<path>")
 endif ()
 
 if (NOT NRFJPROG)
