@@ -44,7 +44,7 @@ void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action
 
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   xTimerStartFromISR(debounceTimer, &xHigherPriorityTaskWoken);
-  // TODO should I do something if xHigherPriorityTaskWoken == pdTRUE?
+  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 void DebounceTimerCallback(TimerHandle_t xTimer) {
