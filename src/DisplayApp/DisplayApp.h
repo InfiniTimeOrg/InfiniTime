@@ -11,6 +11,7 @@
 #include <Components/DateTime/DateTimeController.h>
 #include "lcdfont14.h"
 #include "../drivers/Cst816s.h"
+#include <date/date.h>
 
 
 extern const FONT_INFO lCD_70ptFontInfo;
@@ -40,11 +41,10 @@ namespace Pinetime {
 
         static const char* MonthToString(Pinetime::Controllers::DateTime::Months month);
         static const char* DayOfWeekToString(Pinetime::Controllers::DateTime::Days dayOfWeek);
-        uint8_t seconds = 0;
-        uint8_t minutes = 0;
-        uint8_t hours = 0;
+
         char currentChar[4];
         uint32_t deltaSeconds = 0;
+        date::year_month_day currentYmd;
 
         States state = States::Running;
         void RunningState();
@@ -62,7 +62,6 @@ namespace Pinetime {
 
         static char const *DaysString[];
         static char const *MonthsString[];
-        bool dateUpdated = false;
 
         Pinetime::Drivers::Cst816S touchPanel;
         void OnTouchEvent();

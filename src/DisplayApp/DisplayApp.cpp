@@ -9,6 +9,9 @@
 #include <queue.h>
 #include <Components/DateTime/DateTimeController.h>
 #include <drivers/Cst816s.h>
+#include <chrono>
+#include <string>
+#include <date/date.h>
 
 using namespace Pinetime::Applications;
 
@@ -102,6 +105,11 @@ void DisplayApp::InitHw() {
   gfx->DrawString(10, 0, 0x0000, "BLE", &smallFont, false);
   gfx->DrawString(20, 180, 0xffff, "", &smallFont, false);
 
+  currentChar[0] = 0;
+  currentChar[1] = 0;
+  currentChar[2] = 0;
+  currentChar[3] = 0;
+
   touchPanel.Init();
 }
 
@@ -138,11 +146,6 @@ void DisplayApp::Refresh() {
         state = States::Running;
         break;
       case Messages::UpdateDateTime:
-        deltaSeconds = nrf_rtc_counter_get(portNRF_RTC_REG) / 1000;
-        this->seconds = dateTimeController.Seconds();
-        this->minutes = dateTimeController.Minutes();
-        this->hours = dateTimeController.Hours();
-        dateUpdated = true;
         break;
       case Messages::UpdateBleConnection:
         bleConnectionUpdated = true;
@@ -181,18 +184,35 @@ void DisplayApp::RunningState() {
   auto raw = systick_counter / 1000;
   auto currentDeltaSeconds = raw - deltaSeconds;
 
-  auto deltaMinutes = (currentDeltaSeconds / 60);
-  auto currentMinutes = minutes + deltaMinutes;
+  std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> currentDateTime;
+  currentDateTime += date::years( dateTimeController.Year()-1970);
+  currentDateTime += date::days( dateTimeController.Day() - 1);
+  currentDateTime += date::months( (int)dateTimeController.Month() - 1);
 
-  auto deltaHours = currentMinutes / 60;
-  currentMinutes -= (deltaHours * 60);
-  auto currentHours = hours + deltaHours;
+  currentDateTime += std::chrono::hours(dateTimeController.Hours());
+  currentDateTime += std::chrono::minutes (dateTimeController.Minutes());
+  currentDateTime += std::chrono::seconds(dateTimeController.Seconds() + currentDeltaSeconds);
+
+  currentDateTime -= std::chrono::hours(3); // TODO WHYYYY?
+
+  auto dp = date::floor<date::days>(currentDateTime);
+  auto time = date::make_time(currentDateTime-dp);
+  auto ymd = date::year_month_day(dp);
+
+  auto year = (int)ymd.year();
+  auto month = (unsigned)ymd.month();
+  auto day = (unsigned)ymd.day();
+  auto weekday = date::weekday(ymd);
+
+  auto hh = time.hours().count();
+  auto mm = time.minutes().count();
+  auto ss = time.seconds().count();
 
   char minutesChar[3];
-  sprintf(minutesChar, "%02d", currentMinutes);
+  sprintf(minutesChar, "%02d", mm);
 
   char hoursChar[3];
-  sprintf(hoursChar, "%02d", currentHours);
+  sprintf(hoursChar, "%02d", hh);
 
   uint8_t x = 7;
   if (hoursChar[0] != currentChar[0]) {
@@ -218,16 +238,13 @@ void DisplayApp::RunningState() {
     currentChar[3] = minutesChar[1];
   }
 
-  if (dateUpdated) {
-    auto year = dateTimeController.Year();
-    auto month = dateTimeController.Month();
-    auto day = dateTimeController.Day();
-    auto dayOfWeek = dateTimeController.DayOfWeek();
-
+  if (ymd != currentYmd) {
+    gfx->FillRectangle(0,180, 240, 15, 0x0000);
     char dateStr[22];
-    sprintf(dateStr, "%s %d %s %d", DayOfWeekToString(dayOfWeek), day, MonthToString(month), year);
+    sprintf(dateStr, "%s %d %s %d", DayOfWeekToString(Pinetime::Controllers::DateTime::Days(weekday.iso_encoding())), day, MonthToString((Pinetime::Controllers::DateTime::Months )month), year);
     gfx->DrawString(10, 180, 0xffff, dateStr, &smallFont, false);
-    dateUpdated = false;
+
+    currentYmd = ymd;
   }
 }
 
