@@ -64,10 +64,19 @@ set(INCLUDE_FILES
   drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h
+  libs/date/includes/date/tz.h
+  libs/date/includes/date/chrono_io.h
+  libs/date/includes/date/date.h
+  libs/date/includes/date/islamic.h
+  libs/date/includes/date/iso_week.h
+  libs/date/includes/date/julian.h
+  libs/date/includes/date/ptz.h
+  libs/date/includes/date/tz_private.h
 )
 
 include_directories(
   FreeRTOS/
+  libs/date/includes
 )
 
 nRF5x_addExecutable(pinetime-app "${SOURCE_FILES}")
