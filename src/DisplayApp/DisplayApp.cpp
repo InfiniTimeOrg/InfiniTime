@@ -146,6 +146,16 @@ void DisplayApp::Refresh() {
         state = States::Running;
         break;
       case Messages::UpdateDateTime:
+        currentDateTime = {};
+        currentDateTime += date::years( dateTimeController.Year()-1970);
+        currentDateTime += date::days( dateTimeController.Day() - 1);
+        currentDateTime += date::months( (int)dateTimeController.Month() - 1);
+
+        currentDateTime += std::chrono::hours(dateTimeController.Hours());
+        currentDateTime += std::chrono::minutes (dateTimeController.Minutes());
+        currentDateTime += std::chrono::seconds (dateTimeController.Seconds());
+
+        currentDateTime -= std::chrono::hours(3); // TODO WHYYYY?
         break;
       case Messages::UpdateBleConnection:
         bleConnectionUpdated = true;
@@ -163,6 +173,15 @@ void DisplayApp::Refresh() {
 
 void DisplayApp::RunningState() {
   uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
+  uint32_t systickDelta = 0;
+  if(systick_counter < previousSystickCounter) {
+    systickDelta = 0xffffff - previousSystickCounter;
+    systickDelta += systick_counter + 1;
+  } else {
+    systickDelta = systick_counter - previousSystickCounter;
+  }
+
+  previousSystickCounter = systick_counter;
 
   if (batteryLevelUpdated) {
     char batteryChar[11];
@@ -181,19 +200,8 @@ void DisplayApp::RunningState() {
     gfx->DrawString(10, 0, color, "BLE", &smallFont, false);
   }
 
-  auto raw = systick_counter / 1000;
-  auto currentDeltaSeconds = raw - deltaSeconds;
-
-  std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> currentDateTime;
-  currentDateTime += date::years( dateTimeController.Year()-1970);
-  currentDateTime += date::days( dateTimeController.Day() - 1);
-  currentDateTime += date::months( (int)dateTimeController.Month() - 1);
-
-  currentDateTime += std::chrono::hours(dateTimeController.Hours());
-  currentDateTime += std::chrono::minutes (dateTimeController.Minutes());
-  currentDateTime += std::chrono::seconds(dateTimeController.Seconds() + currentDeltaSeconds);
-
-  currentDateTime -= std::chrono::hours(3); // TODO WHYYYY?
+  // TODO date/time management should be done in module DateTimeController
+  currentDateTime += std::chrono::milliseconds(systickDelta);
 
   auto dp = date::floor<date::days>(currentDateTime);
   auto time = date::make_time(currentDateTime-dp);

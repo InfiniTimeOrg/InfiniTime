@@ -65,6 +65,8 @@ namespace Pinetime {
 
         Pinetime::Drivers::Cst816S touchPanel;
         void OnTouchEvent();
+        uint32_t previousSystickCounter = 0;
+        std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> currentDateTime;
     };
   }
 }
