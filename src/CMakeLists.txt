@@ -79,4 +79,8 @@ include_directories(
   libs/date/includes
 )
 
+link_directories(
+  ../
+)
+
 nRF5x_addExecutable(pinetime-app "${SOURCE_FILES}")
