@@ -33,6 +33,8 @@ Pinetime::Controllers::Ble bleController;
 Pinetime::Controllers::DateTime dateTimeController;
 
 
+void ble_manager_set_ble_connection_callback(void (*connection)());
+void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinButton = 13;
 static constexpr uint8_t pinTouchIrq = 28;
 
@@ -98,10 +100,17 @@ void SystemTask(void *) {
   vTaskSuspend(nullptr);
 }
 
-void OnNewTime(current_time_char_t* currentTime) {
+void OnBleConnection() {
   bleController.Connect();
   displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBleConnection);
+}
 
+void OnBleDisconnection() {
+  bleController.Disconnect();
+  displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBleConnection);
+}
+
+void OnNewTime(current_time_char_t* currentTime) {
   auto dayOfWeek = currentTime->exact_time_256.day_date_time.day_of_week;
   auto year = currentTime->exact_time_256.day_date_time.date_time.year;
   auto month = currentTime->exact_time_256.day_date_time.date_time.month;
@@ -122,7 +131,9 @@ int main(void) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 
   ble_manager_init();
-  ble_manager_set_callback(OnNewTime);
+  ble_manager_set_new_time_callback(OnNewTime);
+  ble_manager_set_ble_connection_callback(OnBleConnection);
+  ble_manager_set_ble_disconnection_callback(OnBleDisconnection);
 
   vTaskStartScheduler();
 
@@ -130,6 +141,7 @@ int main(void) {
     APP_ERROR_HANDLER(NRF_ERROR_FORBIDDEN);
   }
 }
+
 
 
 

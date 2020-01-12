@@ -35,8 +35,9 @@ void ble_manager_init();
 void ble_manager_start_advertising(void *p_erase_bonds);
 
 // TODO use signals from RTOS to notify new time
-void ble_manager_set_callback(void (*OnNewTime)(current_time_char_t* currentTime));
-
+void ble_manager_set_new_time_callback(void (*OnNewTime)(current_time_char_t* currentTime));
+void ble_manager_set_ble_disconnection_callback(void (*OnBleDisconnection)());
+void ble_manager_set_ble_connection_callback(void (*OnBleConnection)());
 
 
 #ifdef __cplusplus

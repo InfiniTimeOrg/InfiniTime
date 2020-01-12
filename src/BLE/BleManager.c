@@ -118,6 +118,22 @@ void ble_manager_init_stack() {
   NRF_SDH_BLE_OBSERVER(m_ble_observer, BLE_MANAGER__OBSERVER_PRIO, ble_manager_event_handler, NULL);
 }
 
+void (*OnNewTimeCallback)(current_time_char_t*);
+void ble_manager_set_new_time_callback(void (*OnNewTime)(current_time_char_t*)) {
+  OnNewTimeCallback = OnNewTime;
+}
+
+void (*OnBleConnectionCallback)();
+void ble_manager_set_ble_connection_callback(void (*OnBleConnection)()) {
+  OnBleConnectionCallback = OnBleConnection;
+}
+
+void (*OnBleDisconnectionCallback)();
+void ble_manager_set_ble_disconnection_callback(void (*OnBleDisconnection)()) {
+  OnBleDisconnectionCallback = OnBleDisconnection;
+}
+
+
 void ble_manager_event_handler(ble_evt_t const *p_ble_evt, void *p_context) {
   uint32_t err_code;
 
@@ -126,6 +142,7 @@ void ble_manager_event_handler(ble_evt_t const *p_ble_evt, void *p_context) {
       NRF_LOG_INFO("Connected");
       ble_manager_connection_handle = p_ble_evt->evt.gap_evt.conn_handle;
       err_code = nrf_ble_qwr_conn_handle_assign(&ble_manager_queue_write, ble_manager_connection_handle);
+      OnBleConnectionCallback();
       APP_ERROR_CHECK(err_code);
       break;
 
@@ -135,6 +152,7 @@ void ble_manager_event_handler(ble_evt_t const *p_ble_evt, void *p_context) {
       if (p_ble_evt->evt.gap_evt.conn_handle == ble_manager_cts_client.conn_handle) {
         ble_manager_cts_client.conn_handle = BLE_CONN_HANDLE_INVALID;
       }
+      OnBleDisconnectionCallback();
       break;
 
     case BLE_GAP_EVT_PHY_UPDATE_REQUEST: {
@@ -318,11 +336,6 @@ void ble_manager_start_advertising(void *p_erase_bonds) {
     ret_code_t err_code = ble_advertising_start(&ble_manager_advertising, BLE_ADV_MODE_FAST);
     APP_ERROR_CHECK(err_code);
   }
-}
-
-void (*OnNewTimeCallback)(current_time_char_t*);
-void ble_manager_set_callback(void (*OnNewTime)(current_time_char_t*)) {
-  OnNewTimeCallback = OnNewTime;
 }
 
 void ble_manager_init_services() {
