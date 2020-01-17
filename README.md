@@ -33,7 +33,7 @@ I've tested this project on the actual PineTime hardware.
  * Push button to go to disable screen (and go to low power mode) / enable screen (and wake-up). **NOTE** : I'm not completely sure the power consumption is optimal, especially in sleep mode. Any help to measure and debug this is welcome.
  * Touch panel : wake up when sleeping and draw square on screen when running 
 
-## Stub using NRF52-DL
+## Stub using NRF52-DK
 ![Pinetime stub](./images/pinetimestub1.jpg "PinetimeStub")
 
 See [this page](./doc/PinetimeStubWithNrf52DK.md)
@@ -84,22 +84,26 @@ $ make -j pinetime-app
 ## How to program
 
  * Erase
+ 
 ```
 $ make FLASH_ERASE
 ```   
 
 * Flash softdevice & application
+
 ```
 $ make FLASH_SOFTDEVICE
 $ make FLASH_pinetime-app
 ```
 
 Or, with ```mergehex```
+
 ```
 $ make FLASH_MERGED_pinetime-app
 ```
 
-* For your information : list make targets 
+* For your information : list make targets :
+
 ```
 $ make help
 ```
