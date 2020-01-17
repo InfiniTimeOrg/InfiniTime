@@ -48,7 +48,10 @@ void St7789::SoftwareReset() {
 
 void St7789::SleepOut() {
   WriteCommand(static_cast<uint8_t>(Commands::SleepOut));
-  nrf_delay_ms(500);
+}
+
+void St7789::SleepIn() {
+  WriteCommand(static_cast<uint8_t>(Commands::SleepIn));
 }
 
 void St7789::ColMod() {
@@ -90,7 +93,6 @@ void St7789::NormalModeOn() {
 
 void St7789::DisplayOn() {
   WriteCommand(static_cast<uint8_t>(Commands::DisplayOn));
-  nrf_delay_ms(500);
 }
 
 void St7789::FillRectangle(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
@@ -163,9 +165,30 @@ void St7789::NextDrawBuffer(const uint8_t *data, size_t size) {
 
 void St7789::HardwareReset() {
   nrf_gpio_pin_clear(26);
-  nrf_delay_ms(200);
+  nrf_delay_ms(10);
   nrf_gpio_pin_set(26);
+}
 
+void St7789::Sleep() {
+  SleepIn();
+  nrf_gpio_cfg_default(pinDataCommand);
+  spi.Sleep();
+}
+
+void St7789::Wakeup() {
+  spi.Wakeup();
+
+  nrf_gpio_cfg_output(pinDataCommand);
+  // TODO why do we need to reset the controller?
+  SoftwareReset();
+  SleepOut();
+  ColMod();
+  MemoryDataAccessControl();
+  ColumnAddressSet();
+  RowAddressSet();
+  DisplayInversionOn();
+  NormalModeOn();
+  DisplayOn();
 }
 
 

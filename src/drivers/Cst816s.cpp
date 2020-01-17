@@ -75,3 +75,13 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   info.action = action;
   return info;
 }
+
+void Cst816S::Sleep() {
+  nrfx_twi_disable(&twi);
+  nrf_gpio_cfg_default(6);
+  nrf_gpio_cfg_default(7);
+}
+
+void Cst816S::Wakeup() {
+  Init();
+}

@@ -16,6 +16,9 @@ namespace Pinetime {
         void DrawChar(const FONT_INFO *font, uint8_t c, uint8_t *x, uint8_t y, uint16_t color);
         void FillRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color);
 
+        void Sleep();
+        void Wakeup();
+
       private:
         Drivers::St7789& lcd;
         const uint8_t width = 240;

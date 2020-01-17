@@ -19,6 +19,9 @@ namespace Pinetime {
         void DisplayOn();
         void DisplayOff();
 
+        void Sleep();
+        void Wakeup();
+
 
       private:
         SpiMaster& spi;
@@ -27,6 +30,7 @@ namespace Pinetime {
         void HardwareReset();
         void SoftwareReset();
         void SleepOut();
+        void SleepIn();
         void ColMod();
         void MemoryDataAccessControl();
         void DisplayInversionOn();
@@ -41,6 +45,7 @@ namespace Pinetime {
 
         enum class Commands : uint8_t {
           SoftwareReset = 0x01,
+          SleepIn = 0x10,
           SleepOut = 0x11,
           NormalModeOn = 0x13,
           DisplayInversionOn = 0x21,

@@ -4,6 +4,9 @@
 using namespace Pinetime::Drivers;
 
 bool SpiMaster::Init(const SpiMaster::SpiModule spi, const SpiMaster::Parameters &params) {
+  configSpiModule = spi;
+  configParams = params;
+
   /* Configure GPIO pins used for pselsck, pselmosi, pselmiso and pselss for SPI0 */
   nrf_gpio_cfg_output(params.pinSCK);
   nrf_gpio_cfg_output(params.pinMOSI);
@@ -85,4 +88,18 @@ bool SpiMaster::Write(const uint8_t *data, size_t size) {
   nrf_gpio_pin_set(pinCsn);
 
   return true;
+}
+
+void SpiMaster::Sleep() {
+  while(NRF_SPI0->ENABLE != 0) {
+    NRF_SPI0->ENABLE = (SPIM_ENABLE_ENABLE_Disabled << SPIM_ENABLE_ENABLE_Pos);
+  }
+  nrf_gpio_cfg_default(configParams.pinSCK);
+  nrf_gpio_cfg_default(configParams.pinMOSI);
+  nrf_gpio_cfg_default(configParams.pinMISO);
+  nrf_gpio_cfg_default(configParams.pinCSN);
+}
+
+void SpiMaster::Wakeup() {
+  Init(configSpiModule, configParams);
 }

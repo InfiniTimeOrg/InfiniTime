@@ -19,6 +19,8 @@ namespace Pinetime {
         void Init();
         void Probe();
         TouchInfos GetTouchInfo();
+        void Sleep();
+        void Wakeup();
       private:
         static constexpr uint8_t pinIrq = 28;
         static constexpr uint8_t pinReset = 10;

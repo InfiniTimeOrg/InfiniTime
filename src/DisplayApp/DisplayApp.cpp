@@ -136,9 +136,14 @@ void DisplayApp::Refresh() {
         vTaskDelay(100);
         nrf_gpio_pin_set(14);
         lcd->DisplayOff();
+        lcd->Sleep();
+        touchPanel.Sleep();
         state = States::Idle;
         break;
       case Messages::GoToRunning:
+        lcd->Wakeup();
+        touchPanel.Wakeup();
+
         lcd->DisplayOn();
         nrf_gpio_pin_clear(23);
         nrf_gpio_pin_clear(22);
