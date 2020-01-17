@@ -42,22 +42,71 @@ See [this page](./doc/PinetimeStubWithNrf52DK.md)
 
   * Download and unzip arm-none-eabi and NRF52 SDK
   * Clone this repo
-  * Call CMake with the following command line argument
+  * **[JLINK]** Call CMake with the following command line argument
   
-      - -DARM_NONE_EABI_TOOLCHAIN_PATH=[Path to the toolchain] 
-      - -DNRF5_SDK_PATH=[Path to the SDK]
-      - -DNRFJPROG=[Path to NRFJProg]
+      - -DARM_NONE_EABI_TOOLCHAIN_PATH=[Path to the toolchain directory] 
+      - -DNRF5_SDK_PATH=[Path to the SDK directory]
+      - -DUSE_JLINK=1
+      - -DNRFJPROG=[Path to NRFJProg executable]
       
+   * OR
+   * **[GDB CLIENT (if you use a BlackMagicProbe, for example)]** Call CMake with the following command line argument
+                                                                        
+        - -DARM_NONE_EABI_TOOLCHAIN_PATH=[Path to the toolchain directory] 
+        - -DNRF5_SDK_PATH=[Path to the SDK directory]
+        - -DUSE_GDB_CLIENT=1
+        - -DGDB_CLIENT_BIN_PATH=[Path to arm-none-eabi-gdb executable]
+        - -DGDB_CLIENT_TARGET_REMOTE=[Target remote connetion string. Ex : /dev/ttyACM0]
+        
+   * Optionally, you can define MERGEHEX with the path to the ```mergehex``` tool from [NRF5X Command Line Tools](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrf5x_cltools%2FUG%2Fcltools%2Fnrf5x_command_line_tools_lpage.html&cp=6_1) to be able to merge the application and softdevice into one HEX file. In this case the merged file is generated in src/pinetime-app-full.hex
+
+        - -DMERGEHEX=[Path to the mergehex executable]
+
+JLINK
 ```
 $ mkdir build
 $ cd build
-$ cmake -DCMAKE_BUILD_TYPE=Debug -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DNRFJPROG=... ../
+$ cmake -DCMAKE_BUILD_TYPE=Debug -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_JLINK=1 -DNRFJPROG=... ../
+```
+
+GDB (Back Magic Probe)
+```
+$ mkdir build
+$ cd build
+$ cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_GDB_CLIENT=1 -DGDB_CLIENT_BIN_PATH=... -DGDB_CLIENT_TARGET_REMOTE=... -DMERGEHEX=... ../
 ```
 
   * Make
 ```
-$ make -j
+$ make -j pinetime-app
 ```  
+
+## How to program
+
+ * Erase
+```
+$ make FLASH_ERASE
+```   
+
+* Flash softdevice & application
+```
+$ make FLASH_SOFTDEVICE
+$ make FLASH_pinetime-app
+```
+
+Or, with ```mergehex```
+```
+$ make FLASH_MERGED_pinetime-app
+```
+
+* For your information : list make targets 
+```
+$ make help
+```
+
+
+
+ 
 
 ## RTT
 
