@@ -17,8 +17,16 @@ using namespace Pinetime::Applications;
 DisplayApp::DisplayApp(Controllers::Battery &batteryController,
                        Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController) :
-        spi{},
-        lcd{new Drivers::St7789(spi, 18)},
+        spi{Drivers::SpiMaster::SpiModule::SPI0,  {
+                Drivers::SpiMaster::BitOrder::Msb_Lsb,
+                Drivers::SpiMaster::Modes::Mode3,
+                Drivers::SpiMaster::Frequencies::Freq8Mhz,
+                pinSpiSck,
+                pinSpiMosi,
+                pinSpiMiso,
+                pinSpiCsn
+        }},
+        lcd{new Drivers::St7789(spi, pinLcdDataCommand)},
         gfx{new Components::Gfx(*lcd.get()) },
         batteryController{batteryController},
         bleController{bleController},
@@ -44,26 +52,16 @@ void DisplayApp::Process(void *instance) {
 }
 
 void DisplayApp::InitHw() {
-  nrf_gpio_cfg_output(14);
-  nrf_gpio_cfg_output(22);
-  nrf_gpio_cfg_output(23);
-  nrf_gpio_pin_clear(14);
-  nrf_gpio_pin_clear(22);
-  nrf_gpio_pin_clear(23);
+  nrf_gpio_cfg_output(pinLcdBacklight1);
+  nrf_gpio_cfg_output(pinLcdBacklight2);
+  nrf_gpio_cfg_output(pinLcdBacklight3);
+  nrf_gpio_pin_clear(pinLcdBacklight1);
+  nrf_gpio_pin_clear(pinLcdBacklight2);
+  nrf_gpio_pin_clear(pinLcdBacklight3);
 
-  Drivers::SpiMaster::Parameters params;
-  params.bitOrder = Drivers::SpiMaster::BitOrder::Msb_Lsb;
-  params.mode = Drivers::SpiMaster::Modes::Mode3;
-  params.Frequency = Drivers::SpiMaster::Frequencies::Freq8Mhz;
-  params.pinCSN = 25;
-  params.pinMISO = 4;
-  params.pinMOSI = 3;
-  params.pinSCK = 2;
-  spi.Init(Drivers::SpiMaster::SpiModule::SPI0, params);
+  spi.Init();
   gfx->Init();
-
   currentScreen->Refresh(true);
-
   touchPanel.Init();
 }
 
@@ -84,11 +82,11 @@ void DisplayApp::Refresh() {
   if (xQueueReceive(msgQueue, &msg, queueTimeout)) {
     switch (msg) {
       case Messages::GoToSleep:
-        nrf_gpio_pin_set(23);
+        nrf_gpio_pin_set(pinLcdBacklight3);
         vTaskDelay(100);
-        nrf_gpio_pin_set(22);
+        nrf_gpio_pin_set(pinLcdBacklight2);
         vTaskDelay(100);
-        nrf_gpio_pin_set(14);
+        nrf_gpio_pin_set(pinLcdBacklight1);
         lcd->DisplayOff();
         lcd->Sleep();
         touchPanel.Sleep();
@@ -99,9 +97,9 @@ void DisplayApp::Refresh() {
         touchPanel.Wakeup();
 
         lcd->DisplayOn();
-        nrf_gpio_pin_clear(23);
-        nrf_gpio_pin_clear(22);
-        nrf_gpio_pin_clear(14);
+        nrf_gpio_pin_clear(pinLcdBacklight3);
+        nrf_gpio_pin_clear(pinLcdBacklight2);
+        nrf_gpio_pin_clear(pinLcdBacklight1);
         state = States::Running;
         break;
       case Messages::UpdateDateTime:

@@ -3,10 +3,11 @@
 
 using namespace Pinetime::Drivers;
 
-bool SpiMaster::Init(const SpiMaster::SpiModule spi, const SpiMaster::Parameters &params) {
-  configSpiModule = spi;
-  configParams = params;
+SpiMaster::SpiMaster(const SpiMaster::SpiModule spi, const SpiMaster::Parameters &params) :
+        spi{spi}, params{params} {
+}
 
+bool SpiMaster::Init() {
   /* Configure GPIO pins used for pselsck, pselmosi, pselmiso and pselss for SPI0 */
   nrf_gpio_cfg_output(params.pinSCK);
   nrf_gpio_cfg_output(params.pinMOSI);
@@ -94,12 +95,12 @@ void SpiMaster::Sleep() {
   while(NRF_SPI0->ENABLE != 0) {
     NRF_SPI0->ENABLE = (SPIM_ENABLE_ENABLE_Disabled << SPIM_ENABLE_ENABLE_Pos);
   }
-  nrf_gpio_cfg_default(configParams.pinSCK);
-  nrf_gpio_cfg_default(configParams.pinMOSI);
-  nrf_gpio_cfg_default(configParams.pinMISO);
-  nrf_gpio_cfg_default(configParams.pinCSN);
+  nrf_gpio_cfg_default(params.pinSCK);
+  nrf_gpio_cfg_default(params.pinMOSI);
+  nrf_gpio_cfg_default(params.pinMISO);
+  nrf_gpio_cfg_default(params.pinCSN);
 }
 
 void SpiMaster::Wakeup() {
-  Init(configSpiModule, configParams);
+  Init();
 }

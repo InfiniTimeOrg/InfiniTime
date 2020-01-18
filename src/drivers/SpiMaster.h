@@ -20,7 +20,9 @@ namespace Pinetime {
           uint8_t pinMISO;
           uint8_t pinCSN;
         };
-        bool Init(const SpiModule spi, const Parameters& params);
+
+        SpiMaster(const SpiModule spi, const Parameters& params);
+        bool Init();
         bool Write(const uint8_t* data, size_t size);
 
         void Sleep();
@@ -30,8 +32,8 @@ namespace Pinetime {
         NRF_SPI_Type *  spiBaseAddress;
         uint8_t pinCsn;
 
-        SpiMaster::SpiModule configSpiModule;
-        SpiMaster::Parameters configParams;
+        SpiMaster::SpiModule spi;
+        SpiMaster::Parameters params;
     };
   }
 }
