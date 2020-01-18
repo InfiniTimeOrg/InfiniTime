@@ -11,6 +11,7 @@ namespace Pinetime {
     class Gfx {
       public:
         explicit Gfx(Drivers::St7789& lcd);
+        void Init();
         void ClearScreen();
         void DrawString(uint8_t x, uint8_t y, uint16_t color, const char* text, const FONT_INFO *p_font, bool wrap);
         void DrawChar(const FONT_INFO *font, uint8_t c, uint8_t *x, uint8_t y, uint16_t color);

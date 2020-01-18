@@ -19,6 +19,8 @@ namespace Pinetime {
         uint8_t Hours() const { return hour; }
         uint8_t Minutes() const { return minute; }
         uint8_t Seconds() const { return second; }
+
+        std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> CurrentDateTime() const { return currentDateTime; }
       private:
         uint16_t year = 0;
         Months month = Months::Unknown;

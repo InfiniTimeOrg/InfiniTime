@@ -4,6 +4,9 @@
 using namespace Pinetime::Components;
 
 Gfx::Gfx(Pinetime::Drivers::St7789 &lcd) : lcd{lcd} {
+}
+
+void Gfx::Init() {
   lcd.Init();
 }
 

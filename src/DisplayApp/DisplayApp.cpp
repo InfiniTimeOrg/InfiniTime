@@ -11,45 +11,22 @@
 #include <drivers/Cst816s.h>
 #include <chrono>
 #include <string>
-#include <date/date.h>
-#include "../Version.h"
 
 using namespace Pinetime::Applications;
-
-char const *DisplayApp::DaysString[] = {
-        "",
-        "MONDAY",
-        "TUESDAY",
-        "WEDNESDAY",
-        "THURSDAY",
-        "FRIDAY",
-        "SATURDAY",
-        "SUNDAY"
-};
-
-char const *DisplayApp::MonthsString[] = {
-        "",
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY",
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC"
-};
 
 DisplayApp::DisplayApp(Controllers::Battery &batteryController,
                        Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController) :
+        spi{},
+        lcd{new Drivers::St7789(spi, 18)},
+        gfx{new Components::Gfx(*lcd.get()) },
         batteryController{batteryController},
         bleController{bleController},
-        dateTimeController{dateTimeController} {
+        dateTimeController{dateTimeController},
+        clockScreen{*(gfx.get())}/*,
+        messageScreen{*(gfx.get())}*/ {
   msgQueue = xQueueCreate(queueSize, itemSize);
+  currentScreen = &clockScreen;
 }
 
 void DisplayApp::Start() {
@@ -83,38 +60,9 @@ void DisplayApp::InitHw() {
   params.pinMOSI = 3;
   params.pinSCK = 2;
   spi.Init(Drivers::SpiMaster::SpiModule::SPI0, params);
+  gfx->Init();
 
-  lcd.reset(new Drivers::St7789(spi, 18));
-  gfx.reset(new Components::Gfx(*lcd.get()));
-  gfx->ClearScreen();
-
-  uint8_t x = 7;
-  gfx->DrawChar(&largeFont, '0', &x, 78, 0xffff);
-
-  x = 61;
-  gfx->DrawChar(&largeFont, '0', &x, 78, 0xffff);
-
-  x = 94;
-  gfx->DrawChar(&largeFont, ':', &x, 78, 0xffff);
-
-  x = 127;
-  gfx->DrawChar(&largeFont, '0', &x, 78, 0xffff);
-
-  x = 181;
-  gfx->DrawChar(&largeFont, '0', &x, 78, 0xffff);
-
-  gfx->DrawString(10, 0, 0x0000, "BLE", &smallFont, false);
-  gfx->DrawString(20, 180, 0xffff, "", &smallFont, false);
-
-  char version[20];
-  sprintf(version, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
-  gfx->DrawString(20, 220, 0xffff, version, &smallFont, false);
-
-
-  currentChar[0] = 0;
-  currentChar[1] = 0;
-  currentChar[2] = 0;
-  currentChar[3] = 0;
+  currentScreen->Refresh(true);
 
   touchPanel.Init();
 }
@@ -159,10 +107,10 @@ void DisplayApp::Refresh() {
       case Messages::UpdateDateTime:
         break;
       case Messages::UpdateBleConnection:
-        bleConnectionUpdated = true;
+        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected : Screens::Clock::BleConnectionStates::NotConnected);
         break;
       case Messages::UpdateBatteryLevel:
-        batteryLevelUpdated = true;
+        clockScreen.SetBatteryPercentRemaining(batteryController.PercentRemaining());
         break;
       case Messages::TouchEvent:
         if(state != States::Running) break;
@@ -173,77 +121,18 @@ void DisplayApp::Refresh() {
 }
 
 void DisplayApp::RunningState() {
-  if (batteryLevelUpdated) {
-    char batteryChar[11];
-    uint16_t newBatteryValue = batteryController.PercentRemaining();
-    newBatteryValue = (newBatteryValue > 100) ? 100 : newBatteryValue;
-    newBatteryValue = (newBatteryValue < 0) ? 0 : newBatteryValue;
+  clockScreen.SetCurrentDateTime(dateTimeController.CurrentDateTime());
 
-    batteryLevelUpdated = false;
-    sprintf(batteryChar, "BAT: %d%%", newBatteryValue);
-    gfx->DrawString((240 - 108), 0, 0xffff, batteryChar, &smallFont, false);
+  if(currentScreen != nullptr) {
+    currentScreen->Refresh(false);
   }
 
-  if (bleConnectionUpdated) {
-    bleConnectionUpdated = false;
-    uint16_t color = (bleController.IsConnected()) ? 0xffff : 0x0000;
-    gfx->DrawString(10, 0, color, "BLE", &smallFont, false);
-  }
-
-  char minutesChar[3];
-  sprintf(minutesChar, "%02d", dateTimeController.Minutes());
-
-  char hoursChar[3];
-  sprintf(hoursChar, "%02d", dateTimeController.Hours());
-
-  uint8_t x = 7;
-  if (hoursChar[0] != currentChar[0]) {
-    gfx->DrawChar(&largeFont, hoursChar[0], &x, 78, 0xffff);
-    currentChar[0] = hoursChar[0];
-  }
-
-  x = 61;
-  if (hoursChar[1] != currentChar[1]) {
-    gfx->DrawChar(&largeFont, hoursChar[1], &x, 78, 0xffff);
-    currentChar[1] = hoursChar[1];
-  }
-
-  x = 127;
-  if (minutesChar[0] != currentChar[2]) {
-    gfx->DrawChar(&largeFont, minutesChar[0], &x, 78, 0xffff);
-    currentChar[2] = minutesChar[0];
-  }
-
-  x = 181;
-  if (minutesChar[1] != currentChar[3]) {
-    gfx->DrawChar(&largeFont, minutesChar[1], &x, 78, 0xffff);
-    currentChar[3] = minutesChar[1];
-  }
-
-  auto y = dateTimeController.Year();
-  auto m = dateTimeController.Month();
-  auto wd = dateTimeController.DayOfWeek();
-  auto d = dateTimeController.Day();
-
-  if ((y != currentYear) || (m != currentMonth) || (wd != currentDayOfWeek) || (d != currentDay)) {
-    gfx->FillRectangle(0,180, 240, 15, 0x0000);
-    char dateStr[22];
-    sprintf(dateStr, "%s %d %s %d", DayOfWeekToString(wd), d, MonthToString(m), y);
-    gfx->DrawString(10, 180, 0xffff, dateStr, &smallFont, false);
-
-    currentYear = y;
-    currentMonth = m;
-    currentDayOfWeek = wd;
-    currentDay = d;
-  }
-}
-
-const char *DisplayApp::MonthToString(Pinetime::Controllers::DateTime::Months month) {
-  return DisplayApp::MonthsString[static_cast<uint8_t>(month)];
-}
-
-const char *DisplayApp::DayOfWeekToString(Pinetime::Controllers::DateTime::Days dayOfWeek) {
-  return DisplayApp::DaysString[static_cast<uint8_t>(dayOfWeek)];
+//  if(screenState) {
+//    currentScreen = &clockScreen;
+//  } else {
+//    currentScreen = &messageScreen;
+//  }
+//  screenState = !screenState;
 }
 
 

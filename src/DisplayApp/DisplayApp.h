@@ -9,10 +9,11 @@
 #include <Components/Battery/BatteryController.h>
 #include <Components/Ble/BleController.h>
 #include <Components/DateTime/DateTimeController.h>
-#include "lcdfont14.h"
+#include "Fonts/lcdfont14.h"
 #include "../drivers/Cst816s.h"
 #include <date/date.h>
-
+#include <DisplayApp/Screens/Clock.h>
+#include <DisplayApp/Screens/Message.h>
 
 extern const FONT_INFO lCD_70ptFontInfo;
 
@@ -39,15 +40,6 @@ namespace Pinetime {
         const FONT_INFO smallFont {lCD_14ptFontInfo.height, lCD_14ptFontInfo.startChar, lCD_14ptFontInfo.endChar, lCD_14ptFontInfo.spacePixels, lCD_14ptFontInfo.charInfo, lCD_14ptFontInfo.data};
         void Refresh();
 
-        static const char* MonthToString(Pinetime::Controllers::DateTime::Months month);
-        static const char* DayOfWeekToString(Pinetime::Controllers::DateTime::Days dayOfWeek);
-
-        char currentChar[4];
-        uint16_t currentYear = 1970;
-        Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
-        Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
-        uint8_t currentDay = 0;
-
         States state = States::Running;
         void RunningState();
         void IdleState();
@@ -59,14 +51,14 @@ namespace Pinetime {
         Pinetime::Controllers::Battery &batteryController;
         Pinetime::Controllers::Ble &bleController;
         Pinetime::Controllers::DateTime& dateTimeController;
-        bool bleConnectionUpdated = false;
-        bool batteryLevelUpdated = false;
-
-        static char const *DaysString[];
-        static char const *MonthsString[];
 
         Pinetime::Drivers::Cst816S touchPanel;
         void OnTouchEvent();
+
+        Screens::Clock clockScreen;
+        Screens::Screen* currentScreen = nullptr;
+//        Screens::Message messageScreen;
+//        bool screenState = false;
     };
   }
 }
