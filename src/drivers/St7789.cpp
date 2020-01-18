@@ -180,6 +180,7 @@ void St7789::Wakeup() {
 
   nrf_gpio_cfg_output(pinDataCommand);
   // TODO why do we need to reset the controller?
+  HardwareReset();
   SoftwareReset();
   SleepOut();
   ColMod();
