@@ -79,6 +79,8 @@ void SystemTask_PushMessage(SystemTaskMessages message) {
 }
 
 // TODO The whole SystemTask should go in its own class
+// BUT... it has to work with pure C callback (nrfx_gpiote_evt_handler) and i've still not found
+// a good design for that (the callback does not allow to pass a pointer to an instance...)
 void SystemTask(void *) {
   APP_GPIOTE_INIT(2);
   bool erase_bonds=false;
