@@ -12,6 +12,7 @@
 #include <chrono>
 #include <string>
 #include <date/date.h>
+#include "../Version.h"
 
 using namespace Pinetime::Applications;
 
@@ -104,6 +105,11 @@ void DisplayApp::InitHw() {
 
   gfx->DrawString(10, 0, 0x0000, "BLE", &smallFont, false);
   gfx->DrawString(20, 180, 0xffff, "", &smallFont, false);
+
+  char version[20];
+  sprintf(version, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
+  gfx->DrawString(20, 220, 0xffff, version, &smallFont, false);
+
 
   currentChar[0] = 0;
   currentChar[1] = 0;
