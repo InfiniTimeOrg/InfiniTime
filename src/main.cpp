@@ -37,6 +37,9 @@ void ble_manager_set_ble_connection_callback(void (*connection)());
 void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinButton = 13;
 static constexpr uint8_t pinTouchIrq = 28;
+QueueHandle_t systemTaksMsgQueue;
+enum class SystemTaskMessages {GoToSleep, GoToRunning};
+void SystemTask_PushMessage(SystemTaskMessages message);
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if(pin == pinTouchIrq) {
@@ -52,17 +55,30 @@ void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action
 void DebounceTimerCallback(TimerHandle_t xTimer) {
   xTimerStop(xTimer, 0);
   if(isSleeping) {
+    SystemTask_PushMessage(SystemTaskMessages::GoToRunning);
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToRunning);
     isSleeping = false;
     batteryController.Update();
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBatteryLevel);
   }
   else {
+    SystemTask_PushMessage(SystemTaskMessages::GoToSleep);
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
     isSleeping = true;
   }
 }
 
+void SystemTask_PushMessage(SystemTaskMessages message) {
+  BaseType_t xHigherPriorityTaskWoken;
+  xHigherPriorityTaskWoken = pdFALSE;
+  xQueueSendFromISR(systemTaksMsgQueue, &message, &xHigherPriorityTaskWoken);
+  if (xHigherPriorityTaskWoken) {
+    /* Actual macro used here is port specific. */
+    // TODO : should I do something here?
+  }
+}
+
+// TODO The whole SystemTask should go in its own class
 void SystemTask(void *) {
   APP_GPIOTE_INIT(2);
   bool erase_bonds=false;
@@ -97,7 +113,24 @@ void SystemTask(void *) {
   pinConfig.pull = (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup;
 
   nrfx_gpiote_in_init(pinTouchIrq, &pinConfig, nrfx_gpiote_evt_handler);
-  vTaskSuspend(nullptr);
+
+  systemTaksMsgQueue = xQueueCreate(10, 1);
+  bool systemTaskSleeping = false;
+
+  while(true) {
+    uint8_t msg;
+
+    if (xQueueReceive(systemTaksMsgQueue, &msg, systemTaskSleeping?3600000 : 1000)) {
+      SystemTaskMessages message = static_cast<SystemTaskMessages >(msg);
+      switch(message) {
+        case SystemTaskMessages::GoToRunning: systemTaskSleeping = false; break;
+        case SystemTaskMessages::GoToSleep: systemTaskSleeping = true; break;
+        default: break;
+      }
+    }
+    uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
+    dateTimeController.UpdateTime(systick_counter);
+  }
 }
 
 void OnBleConnection() {
@@ -118,8 +151,9 @@ void OnNewTime(current_time_char_t* currentTime) {
   auto hour = currentTime->exact_time_256.day_date_time.date_time.hours;
   auto minute = currentTime->exact_time_256.day_date_time.date_time.minutes;
   auto second = currentTime->exact_time_256.day_date_time.date_time.seconds;
-  dateTimeController.UpdateTime(year, static_cast<Pinetime::Controllers::DateTime::Months >(month), day, static_cast<Pinetime::Controllers::DateTime::Days>(dayOfWeek), hour, minute, second);
-  displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateDateTime);
+
+  dateTimeController.SetTime(year, month, day,
+                             dayOfWeek, hour, minute, second, nrf_rtc_counter_get(portNRF_RTC_REG));
 }
 
 int main(void) {

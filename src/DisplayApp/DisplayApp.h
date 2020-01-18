@@ -43,8 +43,10 @@ namespace Pinetime {
         static const char* DayOfWeekToString(Pinetime::Controllers::DateTime::Days dayOfWeek);
 
         char currentChar[4];
-        uint32_t deltaSeconds = 0;
-        date::year_month_day currentYmd;
+        uint16_t currentYear = 1970;
+        Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
+        Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
+        uint8_t currentDay = 0;
 
         States state = States::Running;
         void RunningState();
@@ -65,8 +67,6 @@ namespace Pinetime {
 
         Pinetime::Drivers::Cst816S touchPanel;
         void OnTouchEvent();
-        uint32_t previousSystickCounter = 0;
-        std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds> currentDateTime;
     };
   }
 }

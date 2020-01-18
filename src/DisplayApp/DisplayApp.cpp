@@ -151,16 +151,6 @@ void DisplayApp::Refresh() {
         state = States::Running;
         break;
       case Messages::UpdateDateTime:
-        currentDateTime = {};
-        currentDateTime += date::years( dateTimeController.Year()-1970);
-        currentDateTime += date::days( dateTimeController.Day() - 1);
-        currentDateTime += date::months( (int)dateTimeController.Month() - 1);
-
-        currentDateTime += std::chrono::hours(dateTimeController.Hours());
-        currentDateTime += std::chrono::minutes (dateTimeController.Minutes());
-        currentDateTime += std::chrono::seconds (dateTimeController.Seconds());
-
-        currentDateTime -= std::chrono::hours(3); // TODO WHYYYY?
         break;
       case Messages::UpdateBleConnection:
         bleConnectionUpdated = true;
@@ -177,17 +167,6 @@ void DisplayApp::Refresh() {
 }
 
 void DisplayApp::RunningState() {
-  uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
-  uint32_t systickDelta = 0;
-  if(systick_counter < previousSystickCounter) {
-    systickDelta = 0xffffff - previousSystickCounter;
-    systickDelta += systick_counter + 1;
-  } else {
-    systickDelta = systick_counter - previousSystickCounter;
-  }
-
-  previousSystickCounter = systick_counter;
-
   if (batteryLevelUpdated) {
     char batteryChar[11];
     uint16_t newBatteryValue = batteryController.PercentRemaining();
@@ -205,27 +184,11 @@ void DisplayApp::RunningState() {
     gfx->DrawString(10, 0, color, "BLE", &smallFont, false);
   }
 
-  // TODO date/time management should be done in module DateTimeController
-  currentDateTime += std::chrono::milliseconds(systickDelta);
-
-  auto dp = date::floor<date::days>(currentDateTime);
-  auto time = date::make_time(currentDateTime-dp);
-  auto ymd = date::year_month_day(dp);
-
-  auto year = (int)ymd.year();
-  auto month = (unsigned)ymd.month();
-  auto day = (unsigned)ymd.day();
-  auto weekday = date::weekday(ymd);
-
-  auto hh = time.hours().count();
-  auto mm = time.minutes().count();
-  auto ss = time.seconds().count();
-
   char minutesChar[3];
-  sprintf(minutesChar, "%02d", mm);
+  sprintf(minutesChar, "%02d", dateTimeController.Minutes());
 
   char hoursChar[3];
-  sprintf(hoursChar, "%02d", hh);
+  sprintf(hoursChar, "%02d", dateTimeController.Hours());
 
   uint8_t x = 7;
   if (hoursChar[0] != currentChar[0]) {
@@ -251,13 +214,21 @@ void DisplayApp::RunningState() {
     currentChar[3] = minutesChar[1];
   }
 
-  if (ymd != currentYmd) {
+  auto y = dateTimeController.Year();
+  auto m = dateTimeController.Month();
+  auto wd = dateTimeController.DayOfWeek();
+  auto d = dateTimeController.Day();
+
+  if ((y != currentYear) || (m != currentMonth) || (wd != currentDayOfWeek) || (d != currentDay)) {
     gfx->FillRectangle(0,180, 240, 15, 0x0000);
     char dateStr[22];
-    sprintf(dateStr, "%s %d %s %d", DayOfWeekToString(Pinetime::Controllers::DateTime::Days(weekday.iso_encoding())), day, MonthToString((Pinetime::Controllers::DateTime::Months )month), year);
+    sprintf(dateStr, "%s %d %s %d", DayOfWeekToString(wd), d, MonthToString(m), y);
     gfx->DrawString(10, 180, 0xffff, dateStr, &smallFont, false);
 
-    currentYmd = ymd;
+    currentYear = y;
+    currentMonth = m;
+    currentDayOfWeek = wd;
+    currentDay = d;
   }
 }
 
