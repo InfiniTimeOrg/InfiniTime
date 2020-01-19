@@ -24,12 +24,17 @@ namespace Pinetime {
         SpiMaster(const SpiModule spi, const Parameters& params);
         bool Init();
         bool Write(const uint8_t* data, size_t size);
+        bool WriteFast(const uint8_t* data, size_t size);
+        void setup_workaround_for_ftpan_58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel);
 
         void Sleep();
         void Wakeup();
 
+        bool GetStatusEnd();
+        bool GetStatusStarted();
+
       private:
-        NRF_SPI_Type *  spiBaseAddress;
+        NRF_SPIM_Type *  spiBaseAddress;
         uint8_t pinCsn;
 
         SpiMaster::SpiModule spi;

@@ -31,8 +31,8 @@ DisplayApp::DisplayApp(Controllers::Battery &batteryController,
         batteryController{batteryController},
         bleController{bleController},
         dateTimeController{dateTimeController},
-        clockScreen{*(gfx.get())}/*,
-        messageScreen{*(gfx.get())}*/ {
+        clockScreen{*(gfx.get())},
+        messageScreen{*(gfx.get())} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   currentScreen = &clockScreen;
 }
@@ -121,16 +121,20 @@ void DisplayApp::Refresh() {
 void DisplayApp::RunningState() {
   clockScreen.SetCurrentDateTime(dateTimeController.CurrentDateTime());
 
+//  if(currentScreen != nullptr) {
+//    currentScreen->Refresh(false);
+//  }
+
   if(currentScreen != nullptr) {
-    currentScreen->Refresh(false);
+    currentScreen->Refresh(true);
   }
 
-//  if(screenState) {
-//    currentScreen = &clockScreen;
-//  } else {
-//    currentScreen = &messageScreen;
-//  }
-//  screenState = !screenState;
+  if(screenState) {
+    currentScreen = &clockScreen;
+  } else {
+    currentScreen = &messageScreen;
+  }
+  screenState = !screenState;
 }
 
 
@@ -153,7 +157,7 @@ void DisplayApp::OnTouchEvent() {
   auto info = touchPanel.GetTouchInfo();
 
   if(info.isTouch) {
-    lcd->FillRectangle(info.x-10, info.y-10, 20,20, pointColor);
+    gfx->FillRectangle(info.x-10, info.y-10, 20,20, pointColor);
     pointColor+=10;
   }
 }

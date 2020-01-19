@@ -21,10 +21,14 @@ namespace Pinetime {
         void Wakeup();
 
       private:
+        static constexpr uint8_t width = 240;
+        static constexpr uint8_t height = 240;
+
+        uint16_t buffer[width]; // 1 line buffer
         Drivers::St7789& lcd;
-        const uint8_t width = 240;
-        const uint8_t height = 240;
+
         void pixel_draw(uint8_t x, uint8_t y, uint16_t color);
+        void SetBackgroundColor(uint16_t color);
     };
   }
 }

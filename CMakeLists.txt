@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(pinetime VERSION 0.2.0 LANGUAGES C CXX ASM)
+project(pinetime VERSION 0.2.99 LANGUAGES C CXX ASM)
 
 set(NRF_TARGET "nrf52")
 
