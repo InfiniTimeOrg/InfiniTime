@@ -324,23 +324,23 @@ macro(nRF5x_setup)
 
     # adds target for erasing and flashing the board with a softdevice
     if(USE_JLINK)
-        add_custom_target(FLASH_SOFTDEVICE ALL
+        add_custom_target(FLASH_SOFTDEVICE
                 COMMAND ${NRFJPROG} --program ${SOFTDEVICE_PATH} -f ${NRF_TARGET} --sectorerase
                 COMMAND sleep 0.5s
                 COMMAND ${NRFJPROG} --reset -f ${NRF_TARGET}
                 COMMENT "flashing SoftDevice"
                 )
 
-        add_custom_target(FLASH_ERASE ALL
+        add_custom_target(FLASH_ERASE
                 COMMAND ${NRFJPROG} --eraseall -f ${NRF_TARGET}
                 COMMENT "erasing flashing"
                 )
     elseif(USE_GDB_CLIENT)
-        add_custom_target(FLASH_SOFTDEVICE ALL
+        add_custom_target(FLASH_SOFTDEVICE
           COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill'  ${SOFTDEVICE_PATH}
           COMMENT "flashing SoftDevice"
           )
-        add_custom_target(FLASH_ERASE ALL
+        add_custom_target(FLASH_ERASE
           COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'mon erase_mass'
           COMMENT "erasing flashing"
           )
@@ -355,7 +355,7 @@ macro(nRF5x_setup)
     endif()
 
     if(USE_JLINK)
-        add_custom_target(START_JLINK ALL
+        add_custom_target(START_JLINK
                 COMMAND ${TERMINAL} "${DIR_OF_nRF5x_CMAKE}/runJLinkGDBServer-${NRF_TARGET}"
                 COMMAND ${TERMINAL} "${DIR_OF_nRF5x_CMAKE}/runJLinkExe-${NRF_TARGET}"
                 COMMAND sleep 2s
@@ -388,7 +388,7 @@ macro(nRF5x_addExecutable EXECUTABLE_NAME SOURCE_FILES)
           COMMENT "merging HEX files")
 
         if(USE_JLINK)
-            add_custom_target("FLASH_MERGED_${EXECUTABLE_NAME}" ALL
+            add_custom_target("FLASH_MERGED_${EXECUTABLE_NAME}"
               DEPENDS ${EXECUTABLE_NAME}
               COMMAND ${NRFJPROG} --program ${EXECUTABLE_NAME}-full.hex -f ${NRF_TARGET} --sectorerase
               COMMAND sleep 0.5s
@@ -396,7 +396,7 @@ macro(nRF5x_addExecutable EXECUTABLE_NAME SOURCE_FILES)
               COMMENT "flashing ${EXECUTABLE_NAME}-full.hex"
               )
         elseif(USE_GDB_CLIENT)
-            add_custom_target("FLASH_MERGED_${EXECUTABLE_NAME}" ALL
+            add_custom_target("FLASH_MERGED_${EXECUTABLE_NAME}"
               DEPENDS ${EXECUTABLE_NAME}
               COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill'  ${EXECUTABLE_NAME}-full.hex
               COMMENT "flashing ${EXECUTABLE_NAME}-full.hex"
@@ -406,7 +406,7 @@ macro(nRF5x_addExecutable EXECUTABLE_NAME SOURCE_FILES)
 
     # custom target for flashing the board
     if(USE_JLINK)
-        add_custom_target("FLASH_${EXECUTABLE_NAME}" ALL
+        add_custom_target("FLASH_${EXECUTABLE_NAME}"
                 DEPENDS ${EXECUTABLE_NAME}
                 COMMAND ${NRFJPROG} --program ${EXECUTABLE_NAME}.hex -f ${NRF_TARGET} --sectorerase
                 COMMAND sleep 0.5s
@@ -414,7 +414,7 @@ macro(nRF5x_addExecutable EXECUTABLE_NAME SOURCE_FILES)
                 COMMENT "flashing ${EXECUTABLE_NAME}.hex"
                 )
     elseif(USE_GDB_CLIENT)
-        add_custom_target("FLASH_${EXECUTABLE_NAME}" ALL
+        add_custom_target("FLASH_${EXECUTABLE_NAME}"
           DEPENDS ${EXECUTABLE_NAME}
           COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill'  ${EXECUTABLE_NAME}.hex
           COMMENT "flashing ${EXECUTABLE_NAME}.hex"
