@@ -12,7 +12,7 @@ namespace Pinetime {
         void DrawPixel(uint16_t x, uint16_t y, uint32_t color);
 
         void BeginDrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
-        void NextDrawBuffer(const uint8_t* data, size_t size);
+        void NextDrawBuffer(const uint8_t* data, size_t size, size_t repeat = 0);
         void EndDrawBuffer();
 
         void DisplayOn();
@@ -40,7 +40,7 @@ namespace Pinetime {
         void SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
 
         void WriteCommand(uint8_t cmd);
-        void WriteSpi(const uint8_t* data, size_t size);
+        void WriteSpi(const uint8_t* data, size_t size, size_t repeat = 0);
 
         enum class Commands : uint8_t {
           SoftwareReset = 0x01,

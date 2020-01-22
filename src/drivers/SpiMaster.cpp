@@ -62,6 +62,7 @@ bool SpiMaster::Init() {
 
   NRF_SPIM0->INTENSET = ((unsigned)1 << (unsigned)6);
   NRF_SPIM0->INTENSET = ((unsigned)1 << (unsigned)1);
+  NRF_SPIM0->INTENSET = ((unsigned)1 << (unsigned)19);
 
   NRF_SPIM0->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
 
@@ -83,34 +84,61 @@ void SpiMaster::setup_workaround_for_ftpan_58(NRF_SPIM_Type *spim, uint32_t ppi_
   NRF_PPI->CHENSET = 1U << ppi_channel;
 }
 
-
-
-void SpiMaster::irq() {
+void SpiMaster::irqStarted() {
   if(busy) {
-    if(bufferSize > 0) {
-      auto currentSize = std::min((size_t)255, bufferSize);
+    auto s = currentBufferSize;
+    if(s > 0) {
+      auto currentSize = std::min((size_t)255, s);
 
-      NRF_SPIM0->TXD.PTR = (uint32_t) bufferAddr;
+      NRF_SPIM0->TXD.PTR = (uint32_t) currentBufferAddr;
       NRF_SPIM0->TXD.MAXCNT = currentSize;
       NRF_SPIM0->TXD.LIST = 0;
 
-      bufferAddr += currentSize;
-      bufferSize -= currentSize;
+      currentBufferAddr += currentSize;
+      currentBufferSize -= currentSize;
 
       NRF_SPIM0->RXD.PTR = (uint32_t) 0;
       NRF_SPIM0->RXD.MAXCNT = 0;
       NRF_SPIM0->RXD.LIST = 0;
-      NRF_SPIM0->TASKS_START = 1;
+
+      if(repeat == 0)
+        NRF_SPIM0->SHORTS = 0;
 
       return;
     }else {
+      if(repeat > 0) {
+        repeat = repeat -1;
+
+        currentBufferAddr = bufferAddr;
+        currentBufferSize = bufferSize;
+        s = currentBufferSize;
+        auto currentSize = std::min((size_t)255, s);
+        NRF_SPIM0->TXD.PTR = (uint32_t) currentBufferAddr;
+        NRF_SPIM0->TXD.MAXCNT = currentSize;
+        NRF_SPIM0->TXD.LIST = 0;
+
+        currentBufferAddr += currentSize;
+        currentBufferSize -= currentSize;
+
+        NRF_SPIM0->RXD.PTR = (uint32_t) 0;
+        NRF_SPIM0->RXD.MAXCNT = 0;
+        NRF_SPIM0->RXD.LIST = 0;
+      }
+    }
+  }
+}
+
+void SpiMaster::irqEnd() {
+  if(busy) {
+    if(repeat == 0 && currentBufferSize == 0) {
       nrf_gpio_pin_set(pinCsn);
       busy = false;
     }
   }
 }
 
-bool SpiMaster::Write(const uint8_t *data, size_t size) {
+
+bool SpiMaster::Write(const uint8_t *data, size_t size, size_t r) {
   if(data == nullptr) return false;
 
   while(busy) {
@@ -121,7 +149,7 @@ bool SpiMaster::Write(const uint8_t *data, size_t size) {
     setup_workaround_for_ftpan_58(NRF_SPIM0, 0,0);
     NRF_SPIM0->INTENCLR = (1<<6);
     NRF_SPIM0->INTENCLR = (1<<1);
-
+    NRF_SPIM0->INTENCLR = (1<<19);
   } else {
     NRF_GPIOTE->CONFIG[0] = 0;
     NRF_PPI->CH[0].EEP = 0;
@@ -129,38 +157,38 @@ bool SpiMaster::Write(const uint8_t *data, size_t size) {
     NRF_PPI->CHENSET = 0;
     NRF_SPIM0->INTENSET = (1<<6);
     NRF_SPIM0->INTENSET = (1<<1);
+    NRF_SPIM0->INTENSET = (1<<19);
   }
 
   nrf_gpio_pin_clear(pinCsn);
 
-  bufferAddr = (uint32_t)data;
-  bufferSize = size;
+  currentBufferAddr = bufferAddr = (uint32_t)data;
+  currentBufferSize = bufferSize = size;
+  repeat = r;
   busy = true;
 
-//  while(size > 0) {
-    auto currentSize = std::min((size_t)255, bufferSize);
-    NRF_SPIM0->TXD.PTR = (uint32_t) data;
-    NRF_SPIM0->TXD.MAXCNT = currentSize;
-    NRF_SPIM0->TXD.LIST = 0;
+  if(repeat > 0)
+    NRF_SPIM0->SHORTS = (1<<17);
 
-    bufferSize -= currentSize;
-    bufferAddr += currentSize;
+  auto currentSize = std::min((size_t)255, bufferSize);
+  NRF_SPIM0->TXD.PTR = bufferAddr;
+  NRF_SPIM0->TXD.MAXCNT = currentSize;
+  NRF_SPIM0->TXD.LIST = 0;
 
-    NRF_SPIM0->RXD.PTR = (uint32_t) 0;
-    NRF_SPIM0->RXD.MAXCNT = 0;
-    NRF_SPIM0->RXD.LIST = 0;
+  currentBufferSize -= currentSize;
+  currentBufferAddr += currentSize;
 
-    if(size != 1) {
-      NRF_SPIM0->EVENTS_END = 0;
-    }
+  NRF_SPIM0->RXD.PTR = (uint32_t) 0;
+  NRF_SPIM0->RXD.MAXCNT = 0;
+  NRF_SPIM0->RXD.LIST = 0;
+  NRF_SPIM0->EVENTS_END = 0;
+  NRF_SPIM0->TASKS_START = 1;
 
-    NRF_SPIM0->TASKS_START = 1;
-
-    if(size == 1) {
-      while (NRF_SPIM0->EVENTS_END == 0);
-      busy = false;
-      nrf_gpio_pin_set(pinCsn);
-    }
+  if(size == 1) {
+    while (NRF_SPIM0->EVENTS_END == 0);
+    busy = false;
+    nrf_gpio_pin_set(pinCsn);
+  }
 
 
   return true;
@@ -186,4 +214,10 @@ void SpiMaster::Sleep() {
 
 void SpiMaster::Wakeup() {
   Init();
+}
+
+void SpiMaster::Wait() {
+  while(busy) {
+    asm("nop");
+  }
 }

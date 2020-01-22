@@ -65,7 +65,28 @@ void DisplayApp::InitHw() {
   touchPanel.Init();
 }
 
+uint32_t acc = 0;
+uint32_t count = 0;
+bool toggle = true;
 void DisplayApp::Refresh() {
+
+  uint32_t before = nrf_rtc_counter_get(portNRF_RTC_REG);
+  if(toggle) {
+    gfx->FillRectangle(0,0,240,240,0x0000);
+  } else {
+    gfx->FillRectangle(0,0,240,240,0xffff);
+  }
+  uint32_t after = nrf_rtc_counter_get(portNRF_RTC_REG);
+
+  acc += (after - before);
+  if((count % 10) == 0) {
+    NRF_LOG_INFO("DRAW : %d ms", (uint32_t)(acc/10));
+    acc = 0;
+  }
+  count++;
+  toggle = !toggle;
+
+#if 0
   TickType_t queueTimeout;
   switch (state) {
     case States::Idle:
@@ -116,6 +137,7 @@ void DisplayApp::Refresh() {
         break;
     }
   }
+#endif
 }
 
 void DisplayApp::RunningState() {

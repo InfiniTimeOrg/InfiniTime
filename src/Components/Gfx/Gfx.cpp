@@ -22,9 +22,7 @@ void Gfx::ClearScreen() {
 void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color) {
   SetBackgroundColor(color);
   lcd.BeginDrawBuffer(0, 0, width, height);
-  for(int i = 0; i < height; i++) {
-    lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(buffer), width * 2);
-  }
+  lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(buffer), width * 2, 240);
   lcd.EndDrawBuffer();
 }
 

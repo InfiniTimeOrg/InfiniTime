@@ -162,7 +162,12 @@ extern  Pinetime::Drivers::SpiMaster* spiInstance;
 void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
   if(((NRF_SPIM0->INTENSET & (1<<6)) != 0) && NRF_SPIM0->EVENTS_END == 1) {
     NRF_SPIM0->EVENTS_END = 0;
-    spiInstance->irq();
+    spiInstance->irqEnd();
+  }
+
+  if(((NRF_SPIM0->INTENSET & (1<<19)) != 0) && NRF_SPIM0->EVENTS_STARTED == 1) {
+    NRF_SPIM0->EVENTS_STARTED = 0;
+    spiInstance->irqStarted();
   }
 
 

@@ -23,9 +23,9 @@ namespace Pinetime {
 
         SpiMaster(const SpiModule spi, const Parameters& params);
         bool Init();
-        bool Write(const uint8_t* data, size_t size);
-        bool WriteRepeat(const uint8_t *data, size_t size, int repeat);
+        bool Write(const uint8_t* data, size_t size, size_t r = 0);
         void setup_workaround_for_ftpan_58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel);
+        void Wait();
 
         void Sleep();
         void Wakeup();
@@ -33,7 +33,8 @@ namespace Pinetime {
         bool GetStatusEnd();
         bool GetStatusStarted();
 
-        void irq();
+        void irqEnd();
+        void irqStarted();
 
       private:
         NRF_SPIM_Type *  spiBaseAddress;
@@ -42,11 +43,13 @@ namespace Pinetime {
         SpiMaster::SpiModule spi;
         SpiMaster::Parameters params;
 
-        std::atomic<bool> busy {false};
+        volatile bool busy = false;
 
         uint32_t bufferAddr = 0;
-
+        volatile uint32_t currentBufferAddr = 0;
         size_t bufferSize = 0;
+        volatile size_t currentBufferSize = 0;
+        volatile uint32_t repeat = 0;
     };
   }
 }
