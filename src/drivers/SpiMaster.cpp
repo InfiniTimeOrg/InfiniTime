@@ -4,8 +4,10 @@
 #include <algorithm>
 using namespace Pinetime::Drivers;
 
+SpiMaster* spiInstance;
 SpiMaster::SpiMaster(const SpiMaster::SpiModule spi, const SpiMaster::Parameters &params) :
         spi{spi}, params{params} {
+  spiInstance = this;
 }
 
 bool SpiMaster::Init() {
@@ -57,49 +59,17 @@ bool SpiMaster::Init() {
   NRF_SPIM0->EVENTS_ENDRX = 0;
   NRF_SPIM0->EVENTS_ENDTX = 0;
   NRF_SPIM0->EVENTS_END = 0;
-  NRF_SPI0->EVENTS_READY = 0;
-  NRF_SPI0->ENABLE = (SPI_ENABLE_ENABLE_Enabled << SPI_ENABLE_ENABLE_Pos);
+
+  NRF_SPIM0->INTENSET = ((unsigned)1 << (unsigned)6);
+  NRF_SPIM0->INTENSET = ((unsigned)1 << (unsigned)1);
+
   NRF_SPIM0->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
 
+  NRFX_IRQ_PRIORITY_SET(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn,6);
+  NRFX_IRQ_ENABLE(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
   return true;
 }
 
-bool SpiMaster::WriteFast(const uint8_t *data, size_t size) {
-  auto spi = reinterpret_cast<NRF_SPI_Type*>(spiBaseAddress);
-  volatile uint32_t dummyread;
-
-  if(data == nullptr) return false;
-
-  /* enable slave (slave select active low) */
-  nrf_gpio_pin_clear(pinCsn);
-
-  NRF_SPI0->EVENTS_READY = 0;
-
-  NRF_SPI0->TXD = (uint32_t)*data++;
-
-  while(--size)
-  {
-    NRF_SPI0->TXD =  (uint32_t)*data++;
-
-    /* Wait for the transaction complete or timeout (about 10ms - 20 ms) */
-    while (NRF_SPI0->EVENTS_READY == 0);
-
-    /* clear the event to be ready to receive next messages */
-    NRF_SPI0->EVENTS_READY = 0;
-
-    dummyread = NRF_SPI0->RXD;
-  }
-
-  /* Wait for the transaction complete or timeout (about 10ms - 20 ms) */
-  while (NRF_SPI0->EVENTS_READY == 0);
-
-  dummyread = NRF_SPI0->RXD;
-
-  /* disable slave (slave select active low) */
-  nrf_gpio_pin_set(pinCsn);
-
-  return true;
-}
 
 void SpiMaster::setup_workaround_for_ftpan_58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel) {
   // Create an event when SCK toggles.
@@ -113,41 +83,85 @@ void SpiMaster::setup_workaround_for_ftpan_58(NRF_SPIM_Type *spim, uint32_t ppi_
   NRF_PPI->CHENSET = 1U << ppi_channel;
 }
 
+
+
+void SpiMaster::irq() {
+  if(busy) {
+    if(bufferSize > 0) {
+      auto currentSize = std::min((size_t)255, bufferSize);
+
+      NRF_SPIM0->TXD.PTR = (uint32_t) bufferAddr;
+      NRF_SPIM0->TXD.MAXCNT = currentSize;
+      NRF_SPIM0->TXD.LIST = 0;
+
+      bufferAddr += currentSize;
+      bufferSize -= currentSize;
+
+      NRF_SPIM0->RXD.PTR = (uint32_t) 0;
+      NRF_SPIM0->RXD.MAXCNT = 0;
+      NRF_SPIM0->RXD.LIST = 0;
+      NRF_SPIM0->TASKS_START = 1;
+
+      return;
+    }else {
+      nrf_gpio_pin_set(pinCsn);
+      busy = false;
+    }
+  }
+}
+
 bool SpiMaster::Write(const uint8_t *data, size_t size) {
   if(data == nullptr) return false;
 
+  while(busy) {
+    asm("nop");
+  }
+
   if(size == 1) {
     setup_workaround_for_ftpan_58(NRF_SPIM0, 0,0);
+    NRF_SPIM0->INTENCLR = (1<<6);
+    NRF_SPIM0->INTENCLR = (1<<1);
+
   } else {
     NRF_GPIOTE->CONFIG[0] = 0;
     NRF_PPI->CH[0].EEP = 0;
     NRF_PPI->CH[0].TEP = 0;
     NRF_PPI->CHENSET = 0;
+    NRF_SPIM0->INTENSET = (1<<6);
+    NRF_SPIM0->INTENSET = (1<<1);
   }
 
   nrf_gpio_pin_clear(pinCsn);
-  auto spim = reinterpret_cast<NRF_SPIM_Type *>(spiBaseAddress);
 
-  while(size > 0) {
-    auto currentSize = std::min((size_t)255, size);
-    size -= currentSize;
+  bufferAddr = (uint32_t)data;
+  bufferSize = size;
+  busy = true;
+
+//  while(size > 0) {
+    auto currentSize = std::min((size_t)255, bufferSize);
     NRF_SPIM0->TXD.PTR = (uint32_t) data;
     NRF_SPIM0->TXD.MAXCNT = currentSize;
     NRF_SPIM0->TXD.LIST = 0;
+
+    bufferSize -= currentSize;
+    bufferAddr += currentSize;
 
     NRF_SPIM0->RXD.PTR = (uint32_t) 0;
     NRF_SPIM0->RXD.MAXCNT = 0;
     NRF_SPIM0->RXD.LIST = 0;
 
-    NRF_SPIM0->EVENTS_END = 0;
+    if(size != 1) {
+      NRF_SPIM0->EVENTS_END = 0;
+    }
 
     NRF_SPIM0->TASKS_START = 1;
 
+    if(size == 1) {
+      while (NRF_SPIM0->EVENTS_END == 0);
+      busy = false;
+      nrf_gpio_pin_set(pinCsn);
+    }
 
-    while (NRF_SPIM0->EVENTS_END == 0);
-  }
-
-  nrf_gpio_pin_set(pinCsn);
 
   return true;
 }

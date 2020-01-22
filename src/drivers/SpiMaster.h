@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <cstddef>
 #include <array>
-
+#include <atomic>
 namespace Pinetime {
   namespace Drivers {
     class SpiMaster {
@@ -24,7 +24,7 @@ namespace Pinetime {
         SpiMaster(const SpiModule spi, const Parameters& params);
         bool Init();
         bool Write(const uint8_t* data, size_t size);
-        bool WriteFast(const uint8_t* data, size_t size);
+        bool WriteRepeat(const uint8_t *data, size_t size, int repeat);
         void setup_workaround_for_ftpan_58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel);
 
         void Sleep();
@@ -33,12 +33,20 @@ namespace Pinetime {
         bool GetStatusEnd();
         bool GetStatusStarted();
 
+        void irq();
+
       private:
         NRF_SPIM_Type *  spiBaseAddress;
         uint8_t pinCsn;
 
         SpiMaster::SpiModule spi;
         SpiMaster::Parameters params;
+
+        std::atomic<bool> busy {false};
+
+        uint32_t bufferAddr = 0;
+
+        size_t bufferSize = 0;
     };
   }
 }
