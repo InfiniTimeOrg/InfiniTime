@@ -44,10 +44,10 @@ See [this page](./doc/PinetimeStubWithNrf52DK.md)
   * Clone this repo
   * **[JLINK]** Call CMake with the following command line argument
   
-      - -DARM_NONE_EABI_TOOLCHAIN_PATH=[Path to the toolchain directory] 
-      - -DNRF5_SDK_PATH=[Path to the SDK directory]
-      - -DUSE_JLINK=1
-      - -DNRFJPROG=[Path to NRFJProg executable]
+         - -DARM_NONE_EABI_TOOLCHAIN_PATH=[Path to the toolchain directory] 
+         - -DNRF5_SDK_PATH=[Path to the SDK directory]
+         - -DUSE_JLINK=1
+         - -DNRFJPROG=[Path to NRFJProg executable]
       
   * OR
   * **[GDB CLIENT (if you use a BlackMagicProbe, for example)]** Call CMake with the following command line argument
@@ -58,6 +58,18 @@ See [this page](./doc/PinetimeStubWithNrf52DK.md)
         - -DGDB_CLIENT_BIN_PATH=[Path to arm-none-eabi-gdb executable]
         - -DGDB_CLIENT_TARGET_REMOTE=[Target remote connetion string. Ex : /dev/ttyACM0]
         
+  * OR
+  * **[OPENOCD (if you use a STlink v2 clone, for example)]** Call CMake with the following command line argument
+                                                                      
+        - -DARM_NONE_EABI_TOOLCHAIN_PATH=[Path to the toolchain directory] 
+        - -DNRF5_SDK_PATH=[Path to the SDK directory]
+        - -DUSE_OPENOCD=1
+        
+      * Optionally, if you want to use a another version then whats on your path
+   
+            - -DOPENOCD_BIN_PATH=[path to openocd]
+
+
   * Optionally, you can define MERGEHEX with the path to the ```mergehex``` tool from [NRF5X Command Line Tools](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrf5x_cltools%2FUG%2Fcltools%2Fnrf5x_command_line_tools_lpage.html&cp=6_1) to be able to merge the application and softdevice into one HEX file. In this case the merged file is generated in src/pinetime-app-full.hex
     
         - -DMERGEHEX=[Path to the mergehex executable]
@@ -74,6 +86,13 @@ GDB (Back Magic Probe)
 $ mkdir build
 $ cd build
 $ cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_GDB_CLIENT=1 -DGDB_CLIENT_BIN_PATH=... -DGDB_CLIENT_TARGET_REMOTE=... -DMERGEHEX=... ../
+```
+
+OpenOCD (STlink v2 clones)
+```
+$ mkdir build
+$ cd build
+$ cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_OPENOCD=1 -DGDB_CLIENT_BIN_PATH=[optional] -DMERGEHEX=... ../
 ```
 
   * Make
