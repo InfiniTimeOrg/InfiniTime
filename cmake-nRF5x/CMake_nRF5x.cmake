@@ -344,6 +344,15 @@ macro(nRF5x_setup)
           COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'mon erase_mass'
           COMMENT "erasing flashing"
           )
+    elseif(USE_OPENOCD)
+    add_custom_target(FLASH_SOFTDEVICE
+            COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${SOFTDEVICE_PATH}\""  -c reset -c shutdown
+            COMMENT "flashing SoftDevice"
+            )
+    add_custom_target(FLASH_ERASE
+            COMMAND ${OPENOCD_BIN_PATH}  -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c init -c halt -c 'nrf5 mass_erase' -c reset -c shutdown
+            COMMENT "erasing flashing"
+            )
     endif()
 
     if(${CMAKE_HOST_SYSTEM_NAME} STREQUAL "Darwin")
@@ -401,6 +410,12 @@ macro(nRF5x_addExecutable EXECUTABLE_NAME SOURCE_FILES)
               COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill'  ${EXECUTABLE_NAME}-full.hex
               COMMENT "flashing ${EXECUTABLE_NAME}-full.hex"
               )
+        elseif(USE_OPENOCD)
+            add_custom_target("FLASH_MERGED_${EXECUTABLE_NAME}"
+                DEPENDS ${EXECUTABLE_NAME}
+                COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${EXECUTABLE_NAME}-full.hex\""  -c reset -c shutdown
+                COMMENT "flashing ${EXECUTABLE_NAME}-full.hex"
+            )
         endif()
     endif()
 
@@ -419,7 +434,12 @@ macro(nRF5x_addExecutable EXECUTABLE_NAME SOURCE_FILES)
           COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill'  ${EXECUTABLE_NAME}.hex
           COMMENT "flashing ${EXECUTABLE_NAME}.hex"
           )
-
+    elseif(USE_OPENOCD)
+        add_custom_target("FLASH_${EXECUTABLE_NAME}"
+                DEPENDS ${EXECUTABLE_NAME}
+                COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${EXECUTABLE_NAME}.hex\""  -c reset -c shutdown
+                COMMENT "flashing ${EXECUTABLE_NAME}.hex"
+        )
     endif()
 
 endmacro()
