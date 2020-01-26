@@ -59,8 +59,6 @@ namespace Pinetime {
 
         Screens::Clock clockScreen;
         Screens::Screen* currentScreen = nullptr;
-        Screens::Message messageScreen;
-        bool screenState = false;
         static constexpr uint8_t pinLcdBacklight1 = 14;
         static constexpr uint8_t pinLcdBacklight2 = 22;
         static constexpr uint8_t pinLcdBacklight3 = 23;
