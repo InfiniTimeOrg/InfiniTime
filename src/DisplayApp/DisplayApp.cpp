@@ -14,25 +14,20 @@
 
 using namespace Pinetime::Applications;
 
-DisplayApp::DisplayApp(Controllers::Battery &batteryController,
+DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
+                       Pinetime::Components::Gfx& gfx,
+                       Pinetime::Drivers::Cst816S& touchPanel,
+                       Controllers::Battery &batteryController,
                        Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController) :
-        spi{Drivers::SpiMaster::SpiModule::SPI0,  {
-                Drivers::SpiMaster::BitOrder::Msb_Lsb,
-                Drivers::SpiMaster::Modes::Mode3,
-                Drivers::SpiMaster::Frequencies::Freq8Mhz,
-                pinSpiSck,
-                pinSpiMosi,
-                pinSpiMiso,
-                pinSpiCsn
-        }},
-        lcd{new Drivers::St7789(spi, pinLcdDataCommand)},
-        gfx{new Components::Gfx(*lcd.get()) },
+        lcd{lcd},
+        gfx{gfx},
+        touchPanel{touchPanel},
         batteryController{batteryController},
         bleController{bleController},
         dateTimeController{dateTimeController},
-        clockScreen{*(gfx.get())},
-        messageScreen{*(gfx.get())} {
+        clockScreen{gfx},
+        messageScreen{gfx} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   currentScreen = &clockScreen;
 }
@@ -59,22 +54,19 @@ void DisplayApp::InitHw() {
   nrf_gpio_pin_clear(pinLcdBacklight2);
   nrf_gpio_pin_clear(pinLcdBacklight3);
 
-  spi.Init();
-  gfx->Init();
   currentScreen->Refresh(true);
-  touchPanel.Init();
 }
 
 uint32_t acc = 0;
 uint32_t count = 0;
 bool toggle = true;
 void DisplayApp::Refresh() {
-
+#if 0
   uint32_t before = nrf_rtc_counter_get(portNRF_RTC_REG);
   if(toggle) {
-    gfx->FillRectangle(0,0,240,240,0x0000);
+    gfx.FillRectangle(0,0,240,240,0x0000);
   } else {
-    gfx->FillRectangle(0,0,240,240,0xffff);
+    gfx.FillRectangle(0,0,240,240,0xffff);
   }
   uint32_t after = nrf_rtc_counter_get(portNRF_RTC_REG);
 
@@ -85,8 +77,9 @@ void DisplayApp::Refresh() {
   }
   count++;
   toggle = !toggle;
+#endif
 
-#if 0
+#if 1
   TickType_t queueTimeout;
   switch (state) {
     case States::Idle:
@@ -108,16 +101,16 @@ void DisplayApp::Refresh() {
         nrf_gpio_pin_set(pinLcdBacklight2);
         vTaskDelay(100);
         nrf_gpio_pin_set(pinLcdBacklight1);
-        lcd->DisplayOff();
-        lcd->Sleep();
+        lcd.DisplayOff();
+        lcd.Sleep();
         touchPanel.Sleep();
         state = States::Idle;
         break;
       case Messages::GoToRunning:
-        lcd->Wakeup();
+        lcd.Wakeup();
         touchPanel.Wakeup();
 
-        lcd->DisplayOn();
+        lcd.DisplayOn();
         nrf_gpio_pin_clear(pinLcdBacklight3);
         nrf_gpio_pin_clear(pinLcdBacklight2);
         nrf_gpio_pin_clear(pinLcdBacklight1);
@@ -179,7 +172,7 @@ void DisplayApp::OnTouchEvent() {
   auto info = touchPanel.GetTouchInfo();
 
   if(info.isTouch) {
-    gfx->FillRectangle(info.x-10, info.y-10, 20,20, pointColor);
+    gfx.FillRectangle(info.x-10, info.y-10, 20,20, pointColor);
     pointColor+=10;
   }
 }

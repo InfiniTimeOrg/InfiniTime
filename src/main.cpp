@@ -15,6 +15,10 @@
 #include "BLE/BleManager.h"
 #include "Components/Battery/BatteryController.h"
 #include "Components/Ble/BleController.h"
+#include "../drivers/Cst816s.h"
+#include <drivers/St7789.h>
+#include <drivers/SpiMaster.h>
+#include <Components/Gfx/Gfx.h>
 
 #if NRF_LOG_ENABLED
 #include "Logging/NrfLogger.h"
@@ -23,6 +27,18 @@ Pinetime::Logging::NrfLogger logger;
 #include "Logging/DummyLogger.h"
 Pinetime::Logging::DummyLogger logger;
 #endif
+
+std::unique_ptr<Pinetime::Drivers::SpiMaster> spi;
+std::unique_ptr<Pinetime::Drivers::St7789> lcd;
+std::unique_ptr<Pinetime::Components::Gfx> gfx;
+std::unique_ptr<Pinetime::Drivers::Cst816S> touchPanel;
+
+static constexpr uint8_t pinSpiSck = 2;
+static constexpr uint8_t pinSpiMosi = 3;
+static constexpr uint8_t pinSpiMiso = 4;
+static constexpr uint8_t pinSpiCsn = 25;
+static constexpr uint8_t pinLcdDataCommand = 18;
+
 
 std::unique_ptr<Pinetime::Applications::DisplayApp> displayApp;
 TaskHandle_t systemThread;
@@ -85,9 +101,29 @@ void SystemTask(void *) {
   APP_GPIOTE_INIT(2);
   bool erase_bonds=false;
   nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
+
+  spi.reset(new Pinetime::Drivers::SpiMaster {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,  {
+          Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
+          Pinetime::Drivers::SpiMaster::Modes::Mode3,
+          Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
+          pinSpiSck,
+          pinSpiMosi,
+          pinSpiMiso,
+          pinSpiCsn
+  }});
+
+  lcd.reset(new Pinetime::Drivers::St7789(*spi, pinLcdDataCommand));
+  gfx.reset(new Pinetime::Components::Gfx(*lcd));
+  touchPanel.reset(new Pinetime::Drivers::Cst816S());
+
+  spi->Init();
+  lcd->Init();
+  touchPanel->Init();
+  batteryController.Init();
+
+  displayApp.reset(new Pinetime::Applications::DisplayApp(*lcd, *gfx, *touchPanel, batteryController, bleController, dateTimeController));
   displayApp->Start();
 
-  batteryController.Init();
   batteryController.Update();
   displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBatteryLevel);
 
@@ -158,27 +194,22 @@ void OnNewTime(current_time_char_t* currentTime) {
                              dayOfWeek, hour, minute, second, nrf_rtc_counter_get(portNRF_RTC_REG));
 }
 
-extern  Pinetime::Drivers::SpiMaster* spiInstance;
 void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
   if(((NRF_SPIM0->INTENSET & (1<<6)) != 0) && NRF_SPIM0->EVENTS_END == 1) {
     NRF_SPIM0->EVENTS_END = 0;
-    spiInstance->irqEnd();
+    spi->OnEndEvent(*gfx);
   }
 
   if(((NRF_SPIM0->INTENSET & (1<<19)) != 0) && NRF_SPIM0->EVENTS_STARTED == 1) {
     NRF_SPIM0->EVENTS_STARTED = 0;
-    spiInstance->irqStarted();
+    spi->OnStartedEvent(*gfx);
   }
-
 
   if(((NRF_SPIM0->INTENSET & (1<<1)) != 0) && NRF_SPIM0->EVENTS_STOPPED == 1) {
     NRF_SPIM0->EVENTS_STOPPED = 0;
   }
-
-  return;
 }
 int main(void) {
-  displayApp.reset(new Pinetime::Applications::DisplayApp(batteryController, bleController, dateTimeController));
   logger.Init();
   nrf_drv_clock_init();
 

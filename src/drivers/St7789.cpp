@@ -37,8 +37,8 @@ void St7789::WriteData(uint8_t data) {
 }
 
 
-void St7789::WriteSpi(const uint8_t* data, size_t size, size_t repeat) {
-    spi.Write(data, size, repeat);
+void St7789::WriteSpi(const uint8_t* data, size_t size) {
+    spi.Write(data, size);
 }
 
 void St7789::SoftwareReset() {
@@ -142,12 +142,8 @@ void St7789::BeginDrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t he
   nrf_gpio_pin_set(pinDataCommand);
 }
 
-void St7789::EndDrawBuffer() {
-  spi.Wait();
-}
-
-void St7789::NextDrawBuffer(const uint8_t *data, size_t size, size_t repeat) {
-  WriteSpi(data, size, repeat);
+void St7789::NextDrawBuffer(const uint8_t *data, size_t size) {
+  WriteSpi(data, size);
 }
 
 void St7789::HardwareReset() {
@@ -178,5 +174,3 @@ void St7789::Wakeup() {
   NormalModeOn();
   DisplayOn();
 }
-
-

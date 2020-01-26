@@ -3,6 +3,8 @@
 #include <cstddef>
 #include <array>
 #include <atomic>
+
+#include "BufferProvider.h"
 namespace Pinetime {
   namespace Drivers {
     class SpiMaster {
@@ -23,20 +25,17 @@ namespace Pinetime {
 
         SpiMaster(const SpiModule spi, const Parameters& params);
         bool Init();
-        bool Write(const uint8_t* data, size_t size, size_t r = 0);
-        void setup_workaround_for_ftpan_58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel);
-        void Wait();
+        bool Write(const uint8_t* data, size_t size);
+
+        void OnStartedEvent(BufferProvider& provider);
+        void OnEndEvent(BufferProvider& provider);
 
         void Sleep();
         void Wakeup();
 
-        bool GetStatusEnd();
-        bool GetStatusStarted();
-
-        void irqEnd();
-        void irqStarted();
-
       private:
+        void setup_workaround_for_ftpan_58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel);
+
         NRF_SPIM_Type *  spiBaseAddress;
         uint8_t pinCsn;
 
@@ -44,12 +43,8 @@ namespace Pinetime {
         SpiMaster::Parameters params;
 
         volatile bool busy = false;
-
-        uint32_t bufferAddr = 0;
         volatile uint32_t currentBufferAddr = 0;
-        size_t bufferSize = 0;
         volatile size_t currentBufferSize = 0;
-        volatile uint32_t repeat = 0;
     };
   }
 }

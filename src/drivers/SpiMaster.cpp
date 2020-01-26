@@ -4,10 +4,9 @@
 #include <algorithm>
 using namespace Pinetime::Drivers;
 
-SpiMaster* spiInstance;
 SpiMaster::SpiMaster(const SpiMaster::SpiModule spi, const SpiMaster::Parameters &params) :
         spi{spi}, params{params} {
-  spiInstance = this;
+
 }
 
 bool SpiMaster::Init() {
@@ -84,12 +83,33 @@ void SpiMaster::setup_workaround_for_ftpan_58(NRF_SPIM_Type *spim, uint32_t ppi_
   NRF_PPI->CHENSET = 1U << ppi_channel;
 }
 
-void SpiMaster::irqStarted() {
-  if(busy) {
-    auto s = currentBufferSize;
-    if(s > 0) {
-      auto currentSize = std::min((size_t)255, s);
+void SpiMaster::OnEndEvent(BufferProvider& provider) {
+  if(!busy) return;
 
+  auto s = currentBufferSize;
+  if(s > 0) {
+    auto currentSize = std::min((size_t) 255, s);
+
+    NRF_SPIM0->TXD.PTR = (uint32_t) currentBufferAddr;
+    NRF_SPIM0->TXD.MAXCNT = currentSize;
+    NRF_SPIM0->TXD.LIST = 0;
+
+    currentBufferAddr += currentSize;
+    currentBufferSize -= currentSize;
+
+    NRF_SPIM0->RXD.PTR = (uint32_t) 0;
+    NRF_SPIM0->RXD.MAXCNT = 0;
+    NRF_SPIM0->RXD.LIST = 0;
+
+    NRF_SPIM0->TASKS_START = 1;
+  } else {
+    uint8_t* buffer = nullptr;
+    size_t size = 0;
+    if(provider.GetNextBuffer(&buffer, size)) {
+      currentBufferAddr = (uint32_t) buffer;
+      currentBufferSize = size;
+      auto s = currentBufferSize;
+      auto currentSize = std::min((size_t)255, s);
       NRF_SPIM0->TXD.PTR = (uint32_t) currentBufferAddr;
       NRF_SPIM0->TXD.MAXCNT = currentSize;
       NRF_SPIM0->TXD.LIST = 0;
@@ -101,44 +121,19 @@ void SpiMaster::irqStarted() {
       NRF_SPIM0->RXD.MAXCNT = 0;
       NRF_SPIM0->RXD.LIST = 0;
 
-      if(repeat == 0)
-        NRF_SPIM0->SHORTS = 0;
-
-      return;
-    }else {
-      if(repeat > 0) {
-        repeat = repeat -1;
-
-        currentBufferAddr = bufferAddr;
-        currentBufferSize = bufferSize;
-        s = currentBufferSize;
-        auto currentSize = std::min((size_t)255, s);
-        NRF_SPIM0->TXD.PTR = (uint32_t) currentBufferAddr;
-        NRF_SPIM0->TXD.MAXCNT = currentSize;
-        NRF_SPIM0->TXD.LIST = 0;
-
-        currentBufferAddr += currentSize;
-        currentBufferSize -= currentSize;
-
-        NRF_SPIM0->RXD.PTR = (uint32_t) 0;
-        NRF_SPIM0->RXD.MAXCNT = 0;
-        NRF_SPIM0->RXD.LIST = 0;
-      }
-    }
-  }
-}
-
-void SpiMaster::irqEnd() {
-  if(busy) {
-    if(repeat == 0 && currentBufferSize == 0) {
-      nrf_gpio_pin_set(pinCsn);
+      NRF_SPIM0->TASKS_START = 1;
+    } else {
       busy = false;
+      nrf_gpio_pin_set(pinCsn);
     }
   }
 }
 
+void SpiMaster::OnStartedEvent(BufferProvider& provider) {
+  if(!busy) return;
+}
 
-bool SpiMaster::Write(const uint8_t *data, size_t size, size_t r) {
+bool SpiMaster::Write(const uint8_t *data, size_t size) {
   if(data == nullptr) return false;
 
   while(busy) {
@@ -162,16 +157,12 @@ bool SpiMaster::Write(const uint8_t *data, size_t size, size_t r) {
 
   nrf_gpio_pin_clear(pinCsn);
 
-  currentBufferAddr = bufferAddr = (uint32_t)data;
-  currentBufferSize = bufferSize = size;
-  repeat = r;
+  currentBufferAddr = (uint32_t)data;
+  currentBufferSize = size;
   busy = true;
 
-  if(repeat > 0)
-    NRF_SPIM0->SHORTS = (1<<17);
-
-  auto currentSize = std::min((size_t)255, bufferSize);
-  NRF_SPIM0->TXD.PTR = bufferAddr;
+  auto currentSize = std::min((size_t)255, (size_t)currentBufferSize);
+  NRF_SPIM0->TXD.PTR = currentBufferAddr;
   NRF_SPIM0->TXD.MAXCNT = currentSize;
   NRF_SPIM0->TXD.LIST = 0;
 
@@ -187,19 +178,9 @@ bool SpiMaster::Write(const uint8_t *data, size_t size, size_t r) {
   if(size == 1) {
     while (NRF_SPIM0->EVENTS_END == 0);
     busy = false;
-    nrf_gpio_pin_set(pinCsn);
   }
 
-
   return true;
-}
-
-bool SpiMaster::GetStatusEnd() {
-  return (bool)*(volatile uint32_t *)((uint8_t *)spiBaseAddress + (uint32_t)NRF_SPIM_EVENT_END);
-}
-
-bool SpiMaster::GetStatusStarted() {
-  return (bool)*(volatile uint32_t *)((uint8_t *)spiBaseAddress + (uint32_t)NRF_SPIM_EVENT_STARTED);
 }
 
 void SpiMaster::Sleep() {
@@ -216,8 +197,4 @@ void SpiMaster::Wakeup() {
   Init();
 }
 
-void SpiMaster::Wait() {
-  while(busy) {
-    asm("nop");
-  }
-}
+
