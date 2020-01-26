@@ -34,7 +34,9 @@ namespace Pinetime {
         void Wakeup();
 
       private:
-        void setup_workaround_for_ftpan_58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel);
+        void SetupWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel);
+        void DisableWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel);
+        void PrepareTx(const volatile uint32_t bufferAddress, const volatile size_t size);
 
         NRF_SPIM_Type *  spiBaseAddress;
         uint8_t pinCsn;

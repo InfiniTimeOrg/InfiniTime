@@ -26,9 +26,9 @@ bool SpiMaster::Init() {
   }
 
   /* Configure pins, frequency and mode */
-  NRF_SPIM0->PSELSCK  = params.pinSCK;
-  NRF_SPIM0->PSELMOSI = params.pinMOSI;
-  NRF_SPIM0->PSELMISO = params.pinMISO;
+  spiBaseAddress->PSELSCK  = params.pinSCK;
+  spiBaseAddress->PSELMOSI = params.pinMOSI;
+  spiBaseAddress->PSELMISO = params.pinMISO;
   nrf_gpio_pin_set(pinCsn); /* disable Set slave select (inactive high) */
 
   uint32_t frequency;
@@ -36,7 +36,7 @@ bool SpiMaster::Init() {
     case Frequencies::Freq8Mhz: frequency = 0x80000000; break;
     default: return false;
   }
-  NRF_SPIM0->FREQUENCY = frequency;
+  spiBaseAddress->FREQUENCY = frequency;
 
   uint32_t regConfig = 0;
   switch(params.bitOrder) {
@@ -52,26 +52,24 @@ bool SpiMaster::Init() {
     default: return false;
   }
 
-  setup_workaround_for_ftpan_58(NRF_SPIM0, 0, 0);
+  spiBaseAddress->CONFIG = regConfig;
+  spiBaseAddress->EVENTS_ENDRX = 0;
+  spiBaseAddress->EVENTS_ENDTX = 0;
+  spiBaseAddress->EVENTS_END = 0;
 
-  NRF_SPIM0->CONFIG = regConfig;
-  NRF_SPIM0->EVENTS_ENDRX = 0;
-  NRF_SPIM0->EVENTS_ENDTX = 0;
-  NRF_SPIM0->EVENTS_END = 0;
+  spiBaseAddress->INTENSET = ((unsigned)1 << (unsigned)6);
+  spiBaseAddress->INTENSET = ((unsigned)1 << (unsigned)1);
+  spiBaseAddress->INTENSET = ((unsigned)1 << (unsigned)19);
 
-  NRF_SPIM0->INTENSET = ((unsigned)1 << (unsigned)6);
-  NRF_SPIM0->INTENSET = ((unsigned)1 << (unsigned)1);
-  NRF_SPIM0->INTENSET = ((unsigned)1 << (unsigned)19);
+  spiBaseAddress->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
 
-  NRF_SPIM0->ENABLE = (SPIM_ENABLE_ENABLE_Enabled << SPIM_ENABLE_ENABLE_Pos);
-
-  NRFX_IRQ_PRIORITY_SET(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn,6);
+  NRFX_IRQ_PRIORITY_SET(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn,2);
   NRFX_IRQ_ENABLE(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
   return true;
 }
 
 
-void SpiMaster::setup_workaround_for_ftpan_58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel) {
+void SpiMaster::SetupWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel) {
   // Create an event when SCK toggles.
   NRF_GPIOTE->CONFIG[gpiote_channel] = (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos) |
                                        (spim->PSEL.SCK << GPIOTE_CONFIG_PSEL_Pos) |
@@ -81,6 +79,21 @@ void SpiMaster::setup_workaround_for_ftpan_58(NRF_SPIM_Type *spim, uint32_t ppi_
   NRF_PPI->CH[ppi_channel].EEP = (uint32_t) &NRF_GPIOTE->EVENTS_IN[gpiote_channel];
   NRF_PPI->CH[ppi_channel].TEP = (uint32_t) &spim->TASKS_STOP;
   NRF_PPI->CHENSET = 1U << ppi_channel;
+
+  // Disable IRQ
+  spim->INTENCLR = (1<<6);
+  spim->INTENCLR = (1<<1);
+  spim->INTENCLR = (1<<19);
+}
+
+void SpiMaster::DisableWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel) {
+  NRF_GPIOTE->CONFIG[gpiote_channel] = 0;
+  NRF_PPI->CH[ppi_channel].EEP = 0;
+  NRF_PPI->CH[ppi_channel].TEP = 0;
+  NRF_PPI->CHENSET = ppi_channel;
+  spim->INTENSET = (1<<6);
+  spim->INTENSET = (1<<1);
+  spim->INTENSET = (1<<19);
 }
 
 void SpiMaster::OnEndEvent(BufferProvider& provider) {
@@ -89,19 +102,11 @@ void SpiMaster::OnEndEvent(BufferProvider& provider) {
   auto s = currentBufferSize;
   if(s > 0) {
     auto currentSize = std::min((size_t) 255, s);
-
-    NRF_SPIM0->TXD.PTR = (uint32_t) currentBufferAddr;
-    NRF_SPIM0->TXD.MAXCNT = currentSize;
-    NRF_SPIM0->TXD.LIST = 0;
-
+    PrepareTx(currentBufferAddr, currentSize);
     currentBufferAddr += currentSize;
     currentBufferSize -= currentSize;
 
-    NRF_SPIM0->RXD.PTR = (uint32_t) 0;
-    NRF_SPIM0->RXD.MAXCNT = 0;
-    NRF_SPIM0->RXD.LIST = 0;
-
-    NRF_SPIM0->TASKS_START = 1;
+    spiBaseAddress->TASKS_START = 1;
   } else {
     uint8_t* buffer = nullptr;
     size_t size = 0;
@@ -110,18 +115,11 @@ void SpiMaster::OnEndEvent(BufferProvider& provider) {
       currentBufferSize = size;
       auto s = currentBufferSize;
       auto currentSize = std::min((size_t)255, s);
-      NRF_SPIM0->TXD.PTR = (uint32_t) currentBufferAddr;
-      NRF_SPIM0->TXD.MAXCNT = currentSize;
-      NRF_SPIM0->TXD.LIST = 0;
-
+      PrepareTx(currentBufferAddr, currentSize);
       currentBufferAddr += currentSize;
       currentBufferSize -= currentSize;
 
-      NRF_SPIM0->RXD.PTR = (uint32_t) 0;
-      NRF_SPIM0->RXD.MAXCNT = 0;
-      NRF_SPIM0->RXD.LIST = 0;
-
-      NRF_SPIM0->TASKS_START = 1;
+      spiBaseAddress->TASKS_START = 1;
     } else {
       busy = false;
       nrf_gpio_pin_set(pinCsn);
@@ -133,6 +131,16 @@ void SpiMaster::OnStartedEvent(BufferProvider& provider) {
   if(!busy) return;
 }
 
+void SpiMaster::PrepareTx(const volatile uint32_t bufferAddress, const volatile size_t size) {
+  spiBaseAddress->TXD.PTR = bufferAddress;
+  spiBaseAddress->TXD.MAXCNT = size;
+  spiBaseAddress->TXD.LIST = 0;
+  spiBaseAddress->RXD.PTR = 0;
+  spiBaseAddress->RXD.MAXCNT = 0;
+  spiBaseAddress->RXD.LIST = 0;
+  spiBaseAddress->EVENTS_END = 0;
+}
+
 bool SpiMaster::Write(const uint8_t *data, size_t size) {
   if(data == nullptr) return false;
 
@@ -141,18 +149,9 @@ bool SpiMaster::Write(const uint8_t *data, size_t size) {
   }
 
   if(size == 1) {
-    setup_workaround_for_ftpan_58(NRF_SPIM0, 0,0);
-    NRF_SPIM0->INTENCLR = (1<<6);
-    NRF_SPIM0->INTENCLR = (1<<1);
-    NRF_SPIM0->INTENCLR = (1<<19);
+    SetupWorkaroundForFtpan58(spiBaseAddress, 0,0);
   } else {
-    NRF_GPIOTE->CONFIG[0] = 0;
-    NRF_PPI->CH[0].EEP = 0;
-    NRF_PPI->CH[0].TEP = 0;
-    NRF_PPI->CHENSET = 0;
-    NRF_SPIM0->INTENSET = (1<<6);
-    NRF_SPIM0->INTENSET = (1<<1);
-    NRF_SPIM0->INTENSET = (1<<19);
+    DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
   }
 
   nrf_gpio_pin_clear(pinCsn);
@@ -162,21 +161,13 @@ bool SpiMaster::Write(const uint8_t *data, size_t size) {
   busy = true;
 
   auto currentSize = std::min((size_t)255, (size_t)currentBufferSize);
-  NRF_SPIM0->TXD.PTR = currentBufferAddr;
-  NRF_SPIM0->TXD.MAXCNT = currentSize;
-  NRF_SPIM0->TXD.LIST = 0;
-
+  PrepareTx(currentBufferAddr, currentSize);
   currentBufferSize -= currentSize;
   currentBufferAddr += currentSize;
-
-  NRF_SPIM0->RXD.PTR = (uint32_t) 0;
-  NRF_SPIM0->RXD.MAXCNT = 0;
-  NRF_SPIM0->RXD.LIST = 0;
-  NRF_SPIM0->EVENTS_END = 0;
-  NRF_SPIM0->TASKS_START = 1;
+  spiBaseAddress->TASKS_START = 1;
 
   if(size == 1) {
-    while (NRF_SPIM0->EVENTS_END == 0);
+    while (spiBaseAddress->EVENTS_END == 0);
     busy = false;
   }
 
@@ -184,8 +175,8 @@ bool SpiMaster::Write(const uint8_t *data, size_t size) {
 }
 
 void SpiMaster::Sleep() {
-  while(NRF_SPIM0->ENABLE != 0) {
-    NRF_SPIM0->ENABLE = (SPIM_ENABLE_ENABLE_Disabled << SPIM_ENABLE_ENABLE_Pos);
+  while(spiBaseAddress->ENABLE != 0) {
+    spiBaseAddress->ENABLE = (SPIM_ENABLE_ENABLE_Disabled << SPIM_ENABLE_ENABLE_Pos);
   }
   nrf_gpio_cfg_default(params.pinSCK);
   nrf_gpio_cfg_default(params.pinMOSI);

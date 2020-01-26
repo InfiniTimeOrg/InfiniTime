@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <nrf_font.h>
 #include <drivers/BufferProvider.h>
+#include <FreeRTOS.h>
+#include <task.h>
 
 
 namespace Pinetime {
@@ -36,6 +38,7 @@ namespace Pinetime {
           volatile FONT_INFO *font;
           volatile uint16_t color;
           volatile uint8_t character;
+          volatile TaskHandle_t taskToNotify = nullptr;
         };
 
         volatile State state;
@@ -45,6 +48,8 @@ namespace Pinetime {
 
         void pixel_draw(uint8_t x, uint8_t y, uint16_t color);
         void SetBackgroundColor(uint16_t color);
+        void WaitTransfertFinished() const;
+        void NotifyEndOfTransfert(TaskHandle_t task);
     };
   }
 }

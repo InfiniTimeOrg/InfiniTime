@@ -1,4 +1,6 @@
 #include <libraries/svc/nrf_svci.h>
+#include <FreeRTOS.h>
+#include <task.h>
 #include "Gfx.h"
 #include "../../drivers/St7789.h"
 using namespace Pinetime::Components;
@@ -17,10 +19,12 @@ void Gfx::ClearScreen() {
   state.currentIteration = 0;
   state.busy = true;
   state.action = Action::FillRectangle;
+  state.taskToNotify = xTaskGetCurrentTaskHandle();
 
   lcd.BeginDrawBuffer(0, 0, width, height);
   lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(buffer), width * 2);
-  while(state.busy) {} // TODO wait on an event/queue/... instead of polling
+  WaitTransfertFinished();
+
 }
 
 void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color) {
@@ -30,10 +34,13 @@ void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t col
   state.currentIteration = 0;
   state.busy = true;
   state.action = Action::FillRectangle;
+  state.color = color;
+  state.taskToNotify = xTaskGetCurrentTaskHandle();
 
   lcd.BeginDrawBuffer(x, y, w, h);
   lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(buffer), width * 2);
-  while(state.busy) {} // TODO wait on an event/queue/... instead of polling
+
+  WaitTransfertFinished();
 }
 
 void Gfx::DrawString(uint8_t x, uint8_t y, uint16_t color, const char *text, const FONT_INFO *p_font, bool wrap) {
@@ -100,10 +107,11 @@ void Gfx::DrawChar(const FONT_INFO *font, uint8_t c, uint8_t *x, uint8_t y, uint
   state.font = const_cast<FONT_INFO *>(font);
   state.character = c;
   state.color = color;
+  state.taskToNotify = xTaskGetCurrentTaskHandle();
 
   lcd.BeginDrawBuffer(*x, y, bytes_in_line*8, font->height);
   lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(&buffer), bytes_in_line*8*2);
-  while(state.busy) {} // TODO wait on an event/queue/... instead of polling
+  WaitTransfertFinished();
 
   *x += font->charInfo[char_idx].widthBits + font->spacePixels;
 }
@@ -131,6 +139,7 @@ bool Gfx::GetNextBuffer(uint8_t **data, size_t &size) {
   state.remainingIterations--;
   if (state.remainingIterations == 0) {
     state.busy = false;
+    NotifyEndOfTransfert(state.taskToNotify);
     return false;
   }
 
@@ -160,6 +169,18 @@ bool Gfx::GetNextBuffer(uint8_t **data, size_t &size) {
   state.currentIteration++;
 
   return true;
+}
+
+void Gfx::NotifyEndOfTransfert(TaskHandle_t task) {
+  if(task != nullptr) {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    vTaskNotifyGiveFromISR(task, &xHigherPriorityTaskWoken);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+  }
+}
+
+void Gfx::WaitTransfertFinished() const {
+  ulTaskNotifyTake(pdTRUE, 500);
 }
 
 
