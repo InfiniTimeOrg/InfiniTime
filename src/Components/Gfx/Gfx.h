@@ -1,6 +1,9 @@
 #pragma once
 #include <cstdint>
 #include <nrf_font.h>
+#include <drivers/BufferProvider.h>
+#include <FreeRTOS.h>
+#include <task.h>
 
 
 namespace Pinetime {
@@ -8,7 +11,7 @@ namespace Pinetime {
     class St7789;
   }
   namespace Components {
-    class Gfx {
+    class Gfx : public Pinetime::Drivers::BufferProvider {
       public:
         explicit Gfx(Drivers::St7789& lcd);
         void Init();
@@ -19,12 +22,34 @@ namespace Pinetime {
 
         void Sleep();
         void Wakeup();
+        bool GetNextBuffer(uint8_t **buffer, size_t &size) override;
 
       private:
+        static constexpr uint8_t width = 240;
+        static constexpr uint8_t height = 240;
+
+        enum class Action { None, FillRectangle, DrawChar};
+        struct State {
+          State() : busy{false}, action{Action::None}, remainingIterations{0}, currentIteration{0} {}
+          volatile bool busy;
+          volatile Action action;
+          volatile uint16_t remainingIterations;
+          volatile uint16_t currentIteration;
+          volatile FONT_INFO *font;
+          volatile uint16_t color;
+          volatile uint8_t character;
+          volatile TaskHandle_t taskToNotify = nullptr;
+        };
+
+        volatile State state;
+
+        uint16_t buffer[width]; // 1 line buffer
         Drivers::St7789& lcd;
-        const uint8_t width = 240;
-        const uint8_t height = 240;
+
         void pixel_draw(uint8_t x, uint8_t y, uint16_t color);
+        void SetBackgroundColor(uint16_t color);
+        void WaitTransfertFinished() const;
+        void NotifyEndOfTransfert(TaskHandle_t task);
     };
   }
 }

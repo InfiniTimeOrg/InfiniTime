@@ -10,19 +10,15 @@ namespace Pinetime {
         void Init();
         void Uninit();
         void DrawPixel(uint16_t x, uint16_t y, uint32_t color);
-        void FillRectangle(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color);
 
         void BeginDrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height);
         void NextDrawBuffer(const uint8_t* data, size_t size);
-        void EndDrawBuffer();
 
         void DisplayOn();
         void DisplayOff();
 
         void Sleep();
         void Wakeup();
-
-
       private:
         SpiMaster& spi;
         uint8_t pinDataCommand;
@@ -36,10 +32,7 @@ namespace Pinetime {
         void DisplayInversionOn();
         void NormalModeOn();
         void WriteToRam();
-
-
         void SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
-
         void WriteCommand(uint8_t cmd);
         void WriteSpi(const uint8_t* data, size_t size);
 
@@ -63,7 +56,6 @@ namespace Pinetime {
         static constexpr uint16_t Width = 240;
         static constexpr uint16_t Height = 240;
         void RowAddressSet();
-
     };
   }
 }

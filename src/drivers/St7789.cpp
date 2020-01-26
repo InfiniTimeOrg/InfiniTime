@@ -38,7 +38,7 @@ void St7789::WriteData(uint8_t data) {
 
 
 void St7789::WriteSpi(const uint8_t* data, size_t size) {
-  spi.Write(data, size);
+    spi.Write(data, size);
 }
 
 void St7789::SoftwareReset() {
@@ -95,20 +95,6 @@ void St7789::DisplayOn() {
   WriteCommand(static_cast<uint8_t>(Commands::DisplayOn));
 }
 
-void St7789::FillRectangle(uint16_t x, uint16_t y, uint16_t width, uint16_t height, uint16_t color) {
-  BeginDrawBuffer(x, y, width, height);
-
-  uint32_t c = color + (color << 16);
-  uint8_t w = width/2;
-
-  for(y=height+ST7789_ROW_OFFSET; y>ST7789_ROW_OFFSET; y--) {
-    for(x=w; x>0; x--) {
-      NextDrawBuffer(reinterpret_cast<const uint8_t *>(&c), 4);
-    }
-  }
-  EndDrawBuffer();
-}
-
 void St7789::SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
   WriteCommand(static_cast<uint8_t>(Commands::ColumnAddressSet));
   WriteData(x0 >> 8);
@@ -156,11 +142,8 @@ void St7789::BeginDrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t he
   nrf_gpio_pin_set(pinDataCommand);
 }
 
-void St7789::EndDrawBuffer() {
-}
-
 void St7789::NextDrawBuffer(const uint8_t *data, size_t size) {
-  spi.Write(data, size);
+  WriteSpi(data, size);
 }
 
 void St7789::HardwareReset() {
@@ -191,5 +174,3 @@ void St7789::Wakeup() {
   NormalModeOn();
   DisplayOn();
 }
-
-

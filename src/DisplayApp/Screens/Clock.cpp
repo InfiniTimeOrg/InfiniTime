@@ -9,10 +9,10 @@ using namespace Pinetime::Applications::Screens;
 void Clock::Refresh(bool fullRefresh) {
   if(fullRefresh) {
     gfx.FillRectangle(0,0,240,240,0x0000);
-    currentChar[0] = 0;
-    currentChar[1] = 0;
-    currentChar[2] = 0;
-    currentChar[3] = 0;
+    currentChar[0] = 1;
+    currentChar[1] = 2;
+    currentChar[2] = 3;
+    currentChar[3] = 4;
     auto dummy = currentDateTime.Get();
   }
 

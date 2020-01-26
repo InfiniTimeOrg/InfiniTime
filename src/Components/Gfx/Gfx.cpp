@@ -1,4 +1,6 @@
 #include <libraries/svc/nrf_svci.h>
+#include <FreeRTOS.h>
+#include <task.h>
 #include "Gfx.h"
 #include "../../drivers/St7789.h"
 using namespace Pinetime::Components;
@@ -7,15 +9,38 @@ Gfx::Gfx(Pinetime::Drivers::St7789 &lcd) : lcd{lcd} {
 }
 
 void Gfx::Init() {
-  lcd.Init();
+
 }
 
 void Gfx::ClearScreen() {
-  lcd.FillRectangle(0, 0, width, height, 0x0000);
+  SetBackgroundColor(0x0000);
+
+  state.remainingIterations = 240 + 1;
+  state.currentIteration = 0;
+  state.busy = true;
+  state.action = Action::FillRectangle;
+  state.taskToNotify = xTaskGetCurrentTaskHandle();
+
+  lcd.BeginDrawBuffer(0, 0, width, height);
+  lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(buffer), width * 2);
+  WaitTransfertFinished();
+
 }
 
-void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color) {
-  lcd.FillRectangle(x, y, width, height, color);
+void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color) {
+  SetBackgroundColor(color);
+
+  state.remainingIterations = 240 + 1;
+  state.currentIteration = 0;
+  state.busy = true;
+  state.action = Action::FillRectangle;
+  state.color = color;
+  state.taskToNotify = xTaskGetCurrentTaskHandle();
+
+  lcd.BeginDrawBuffer(x, y, w, h);
+  lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(buffer), width * 2);
+
+  WaitTransfertFinished();
 }
 
 void Gfx::DrawString(uint8_t x, uint8_t y, uint16_t color, const char *text, const FONT_INFO *p_font, bool wrap) {
@@ -56,31 +81,38 @@ void Gfx::DrawString(uint8_t x, uint8_t y, uint16_t color, const char *text, con
 void Gfx::DrawChar(const FONT_INFO *font, uint8_t c, uint8_t *x, uint8_t y, uint16_t color) {
   uint8_t char_idx = c - font->startChar;
   uint16_t bytes_in_line = CEIL_DIV(font->charInfo[char_idx].widthBits, 8);
+  uint16_t bg = 0x0000;
 
   if (c == ' ') {
     *x += font->height / 2;
     return;
   }
 
-  // TODO For now, LCD and SPI driver start a new transfer (cs pin + set address windows + write byte) FOR EACH PIXEL!
-  // This could be improved by setting CS pin, DC pin and address window ONLY ONCE for the whole character
-
-  lcd.BeginDrawBuffer(*x, y, bytes_in_line*8, font->height);
-  uint16_t bg = 0x0000;
-  for (uint16_t i = 0; i < font->height; i++) {
-    for (uint16_t j = 0; j < bytes_in_line; j++) {
-      for (uint8_t k = 0; k < 8; k++) {
-        if ((1 << (7 - k)) &
-            font->data[font->charInfo[char_idx].offset + i * bytes_in_line + j]) {
-          lcd.NextDrawBuffer(reinterpret_cast<uint8_t *>(&color), 2);
-        }
-        else {
-          lcd.NextDrawBuffer(reinterpret_cast<uint8_t *>(&bg), 2);
-        }
+  // Build first line
+  for (uint16_t j = 0; j < bytes_in_line; j++) {
+    for (uint8_t k = 0; k < 8; k++) {
+      if ((1 << (7 - k)) & font->data[font->charInfo[char_idx].offset + j]) {
+        buffer[(j*8)+k] = color;
+      }
+      else {
+        buffer[(j*8)+k] = bg;
       }
     }
   }
-  lcd.EndDrawBuffer();
+
+  state.remainingIterations = font->height + 0;
+  state.currentIteration = 0;
+  state.busy = true;
+  state.action = Action::DrawChar;
+  state.font = const_cast<FONT_INFO *>(font);
+  state.character = c;
+  state.color = color;
+  state.taskToNotify = xTaskGetCurrentTaskHandle();
+
+  lcd.BeginDrawBuffer(*x, y, bytes_in_line*8, font->height);
+  lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(&buffer), bytes_in_line*8*2);
+  WaitTransfertFinished();
+
   *x += font->charInfo[char_idx].widthBits + font->spacePixels;
 }
 
@@ -94,6 +126,61 @@ void Gfx::Sleep() {
 
 void Gfx::Wakeup() {
   lcd.Wakeup();
+}
+
+void Gfx::SetBackgroundColor(uint16_t color) {
+  for(int i = 0; i < width; i++) {
+    buffer[i] = color;
+  }
+}
+
+bool Gfx::GetNextBuffer(uint8_t **data, size_t &size) {
+  if(!state.busy) return false;
+  state.remainingIterations--;
+  if (state.remainingIterations == 0) {
+    state.busy = false;
+    NotifyEndOfTransfert(state.taskToNotify);
+    return false;
+  }
+
+  if(state.action == Action::FillRectangle) {
+    *data = reinterpret_cast<uint8_t *>(buffer);
+    size = width * 2;
+  } else if(state.action == Action::DrawChar) {
+    uint16_t bg = 0x0000;
+    uint8_t char_idx = state.character - state.font->startChar;
+    uint16_t bytes_in_line = CEIL_DIV(state.font->charInfo[char_idx].widthBits, 8);
+
+    for (uint16_t j = 0; j < bytes_in_line; j++) {
+      for (uint8_t k = 0; k < 8; k++) {
+        if ((1 << (7 - k)) & state.font->data[state.font->charInfo[char_idx].offset + ((state.currentIteration+1) * bytes_in_line) + j]) {
+          buffer[(j*8)+k] = state.color;
+        }
+        else {
+          buffer[(j*8)+k] = bg;
+        }
+      }
+    }
+
+    *data = reinterpret_cast<uint8_t *>(buffer);
+    size = bytes_in_line*8*2;
+  }
+
+  state.currentIteration++;
+
+  return true;
+}
+
+void Gfx::NotifyEndOfTransfert(TaskHandle_t task) {
+  if(task != nullptr) {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    vTaskNotifyGiveFromISR(task, &xHigherPriorityTaskWoken);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+  }
+}
+
+void Gfx::WaitTransfertFinished() const {
+  ulTaskNotifyTake(pdTRUE, 500);
 }
 
 
