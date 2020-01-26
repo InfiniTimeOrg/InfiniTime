@@ -401,6 +401,12 @@ macro(nRF5x_addExecutable EXECUTABLE_NAME SOURCE_FILES)
               COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill'  ${EXECUTABLE_NAME}-full.hex
               COMMENT "flashing ${EXECUTABLE_NAME}-full.hex"
               )
+        elseif(USE_OPENOCD_CLIENT)
+            add_custom_target("FLASH_MERGED_${EXECUTABLE_NAME}"
+                DEPENDS ${EXECUTABLE_NAME}
+                COMMAND /usr/bin/openocd -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f /home/luben/code/Pinetime/pinetime.cfg -c "program \"${EXECUTABLE_NAME}-full.hex\""  -c reset -c shutdown
+                COMMENT "flashing ${EXECUTABLE_NAME}-full.hex"
+            )
         endif()
     endif()
 
