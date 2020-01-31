@@ -29,6 +29,7 @@ void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfW
 }
 
 void DateTime::UpdateTime(uint32_t systickCounter) {
+  // Handle systick counter overflow
   uint32_t systickDelta = 0;
   if(systickCounter < previousSystickCounter) {
     systickDelta = 0xffffff - previousSystickCounter;
@@ -37,8 +38,18 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
     systickDelta = systickCounter - previousSystickCounter;
   }
 
-  previousSystickCounter = systickCounter;
-  currentDateTime += std::chrono::milliseconds(systickDelta);
+  /*
+ * 1000 ms = 1024 ticks
+ */
+  auto correctedDelta = systickDelta / 1024;
+  auto rest = (systickDelta - (correctedDelta*1024));
+  if(systickCounter >= rest) {
+    previousSystickCounter = systickCounter - rest;
+  } else {
+    previousSystickCounter = 0xffffff - (rest - systickCounter);
+  }
+
+  currentDateTime += std::chrono::seconds (correctedDelta);
 
   auto dp = date::floor<date::days>(currentDateTime);
   auto time = date::make_time(currentDateTime-dp);
