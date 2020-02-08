@@ -20,6 +20,8 @@
 #include <drivers/SpiMaster.h>
 #include <Components/Gfx/Gfx.h>
 
+#include <lvgl/lvgl.h>
+
 #if NRF_LOG_ENABLED
 #include "Logging/NrfLogger.h"
 Pinetime::Logging::NrfLogger logger;
@@ -30,6 +32,7 @@ Pinetime::Logging::DummyLogger logger;
 
 std::unique_ptr<Pinetime::Drivers::SpiMaster> spi;
 std::unique_ptr<Pinetime::Drivers::St7789> lcd;
+Pinetime::Drivers::St7789* ptrLcd;
 std::unique_ptr<Pinetime::Components::Gfx> gfx;
 std::unique_ptr<Pinetime::Drivers::Cst816S> touchPanel;
 
@@ -68,6 +71,13 @@ void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action
   portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
+
+extern "C" {
+  void vApplicationIdleHook(void) {
+    lv_tick_inc(1);
+  }
+}
+
 void DebounceTimerCallback(TimerHandle_t xTimer) {
   xTimerStop(xTimer, 0);
   if(isSleeping) {
@@ -100,7 +110,7 @@ void SystemTask_PushMessage(SystemTaskMessages message) {
 void SystemTask(void *) {
   APP_GPIOTE_INIT(2);
   bool erase_bonds=false;
-  nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
+//  nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
 
   spi.reset(new Pinetime::Drivers::SpiMaster {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,  {
           Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
@@ -115,6 +125,7 @@ void SystemTask(void *) {
   lcd.reset(new Pinetime::Drivers::St7789(*spi, pinLcdDataCommand));
   gfx.reset(new Pinetime::Components::Gfx(*lcd));
   touchPanel.reset(new Pinetime::Drivers::Cst816S());
+  ptrLcd = lcd.get();
 
   spi->Init();
   lcd->Init();
@@ -197,12 +208,12 @@ void OnNewTime(current_time_char_t* currentTime) {
 void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
   if(((NRF_SPIM0->INTENSET & (1<<6)) != 0) && NRF_SPIM0->EVENTS_END == 1) {
     NRF_SPIM0->EVENTS_END = 0;
-    spi->OnEndEvent(*gfx);
+    spi->OnEndEvent();
   }
 
   if(((NRF_SPIM0->INTENSET & (1<<19)) != 0) && NRF_SPIM0->EVENTS_STARTED == 1) {
     NRF_SPIM0->EVENTS_STARTED = 0;
-    spi->OnStartedEvent(*gfx);
+    spi->OnStartedEvent();
   }
 
   if(((NRF_SPIM0->INTENSET & (1<<1)) != 0) && NRF_SPIM0->EVENTS_STOPPED == 1) {
@@ -215,12 +226,12 @@ int main(void) {
 
   if (pdPASS != xTaskCreate(SystemTask, "MAIN", 256, nullptr, 0, &systemThread))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
-
+/*
   ble_manager_init();
   ble_manager_set_new_time_callback(OnNewTime);
   ble_manager_set_ble_connection_callback(OnBleConnection);
   ble_manager_set_ble_disconnection_callback(OnBleDisconnection);
-
+*/
   vTaskStartScheduler();
 
   for (;;) {

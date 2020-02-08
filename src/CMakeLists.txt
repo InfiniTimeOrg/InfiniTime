@@ -26,6 +26,115 @@ add_definitions(-DDEBUG)
 
 
 include_directories(.)
+include_directories(libs/)
+
+set(LVGL_SRC
+  libs/lv_conf.h
+  libs/lvgl/lvgl.h
+  libs/lvgl/src/lv_core/lv_obj.c
+  libs/lvgl/src/lv_core/lv_obj.h
+  libs/lvgl/src/lv_core/lv_group.c
+  libs/lvgl/src/lv_core/lv_group.h
+  libs/lvgl/src/lv_core/lv_disp.c
+  libs/lvgl/src/lv_core/lv_disp.h
+  libs/lvgl/src/lv_core/lv_debug.h
+  libs/lvgl/src/lv_core/lv_debug.c
+  libs/lvgl/src/lv_core/lv_indev.c
+  libs/lvgl/src/lv_core/lv_indev.h
+  libs/lvgl/src/lv_core/lv_refr.c
+  libs/lvgl/src/lv_core/lv_refr.h
+  libs/lvgl/src/lv_core/lv_style.c
+  libs/lvgl/src/lv_core/lv_style.h
+
+  libs/lvgl/src/lv_misc/lv_anim.c
+  libs/lvgl/src/lv_misc/lv_anim.h
+  libs/lvgl/src/lv_misc/lv_fs.c
+  libs/lvgl/src/lv_misc/lv_fs.h
+  libs/lvgl/src/lv_misc/lv_task.c
+  libs/lvgl/src/lv_misc/lv_task.h
+  libs/lvgl/src/lv_misc/lv_area.c
+  libs/lvgl/src/lv_misc/lv_area.h
+  libs/lvgl/src/lv_misc/lv_bidi.c
+  libs/lvgl/src/lv_misc/lv_bidi.h
+  libs/lvgl/src/lv_misc/lv_circ.c
+  libs/lvgl/src/lv_misc/lv_circ.h
+  libs/lvgl/src/lv_misc/lv_color.c
+  libs/lvgl/src/lv_misc/lv_color.h
+  libs/lvgl/src/lv_misc/lv_fs.c
+  libs/lvgl/src/lv_misc/lv_fs.h
+  libs/lvgl/src/lv_misc/lv_gc.c
+  libs/lvgl/src/lv_misc/lv_gc.h
+  libs/lvgl/src/lv_misc/lv_ll.c
+  libs/lvgl/src/lv_misc/lv_ll.h
+  libs/lvgl/src/lv_misc/lv_log.c
+  libs/lvgl/src/lv_misc/lv_log.h
+  libs/lvgl/src/lv_misc/lv_math.c
+  libs/lvgl/src/lv_misc/lv_math.h
+  libs/lvgl/src/lv_misc/lv_mem.c
+  libs/lvgl/src/lv_misc/lv_mem.h
+  libs/lvgl/src/lv_misc/lv_printf.c
+  libs/lvgl/src/lv_misc/lv_printf.h
+  libs/lvgl/src/lv_misc/lv_task.c
+  libs/lvgl/src/lv_misc/lv_task.h
+  libs/lvgl/src/lv_misc/lv_templ.c
+  libs/lvgl/src/lv_misc/lv_templ.h
+  libs/lvgl/src/lv_misc/lv_txt.c
+  libs/lvgl/src/lv_misc/lv_txt.h
+  libs/lvgl/src/lv_misc/lv_types.h
+  libs/lvgl/src/lv_misc/lv_utils.c
+  libs/lvgl/src/lv_misc/lv_utils.h
+
+  libs/lvgl/src/lv_draw/lv_draw.c
+  libs/lvgl/src/lv_draw/lv_draw.h
+  libs/lvgl/src/lv_draw/lv_draw_arc.c
+  libs/lvgl/src/lv_draw/lv_draw_arc.h
+  libs/lvgl/src/lv_draw/lv_draw_basic.c
+  libs/lvgl/src/lv_draw/lv_draw_basic.h
+  libs/lvgl/src/lv_draw/lv_draw_img.c
+  libs/lvgl/src/lv_draw/lv_draw_img.h
+  libs/lvgl/src/lv_draw/lv_draw_label.c
+  libs/lvgl/src/lv_draw/lv_draw_label.h
+  libs/lvgl/src/lv_draw/lv_draw_line.c
+  libs/lvgl/src/lv_draw/lv_draw_line.h
+  libs/lvgl/src/lv_draw/lv_draw_rect.c
+  libs/lvgl/src/lv_draw/lv_draw_rect.h
+  libs/lvgl/src/lv_draw/lv_draw_triangle.c
+  libs/lvgl/src/lv_draw/lv_draw_triangle.h
+  libs/lvgl/src/lv_draw/lv_img_cache.c
+  libs/lvgl/src/lv_draw/lv_img_cache.h
+  libs/lvgl/src/lv_draw/lv_img_decoder.c
+  libs/lvgl/src/lv_draw/lv_img_decoder.h
+
+  libs/lvgl/src/lv_hal/lv_hal.h
+  libs/lvgl/src/lv_hal/lv_hal_disp.c
+  libs/lvgl/src/lv_hal/lv_hal_disp.h
+  libs/lvgl/src/lv_hal/lv_hal_indev.c
+  libs/lvgl/src/lv_hal/lv_hal_indev.h
+  libs/lvgl/src/lv_hal/lv_hal_tick.c
+  libs/lvgl/src/lv_hal/lv_hal_tick.h
+
+  libs/lvgl/src/lv_font/lv_font.c
+  libs/lvgl/src/lv_font/lv_font.h
+  libs/lvgl/src/lv_font/lv_font_fmt_txt.c
+  libs/lvgl/src/lv_font/lv_font_fmt_txt.h
+  libs/lvgl/src/lv_font/lv_font_roboto_16.c
+  libs/lvgl/src/lv_font/lv_font_roboto_28_compressed.c
+  libs/lvgl/src/lv_font/lv_symbol_def.h
+
+  libs/lvgl/src/lv_themes/lv_theme.c
+  libs/lvgl/src/lv_themes/lv_theme.h
+
+  libs/lvgl/src/lv_objx/lv_btn.h
+  libs/lvgl/src/lv_objx/lv_btn.c
+
+  libs/lvgl/src/lv_objx/lv_cont.h
+  libs/lvgl/src/lv_objx/lv_cont.c
+
+  libs/lvgl/src/lv_objx/lv_label.h
+  libs/lvgl/src/lv_objx/lv_label.c
+
+
+  )
 
 list(APPEND SOURCE_FILES
   Logging/NrfLogger.cpp
@@ -48,6 +157,9 @@ list(APPEND SOURCE_FILES
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
   FreeRTOS/port_cmsis.c
+  ${LVGL_SRC}
+
+  DisplayApp/lv_port_disp.cpp
 )
 
 set(INCLUDE_FILES
@@ -78,6 +190,8 @@ set(INCLUDE_FILES
   libs/date/includes/date/julian.h
   libs/date/includes/date/ptz.h
   libs/date/includes/date/tz_private.h
+
+  DisplayApp/lv_port_disp.h
 )
 
 include_directories(

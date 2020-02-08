@@ -58,6 +58,7 @@ namespace Pinetime {
         void OnTouchEvent();
 
         Screens::Clock clockScreen;
+        Screens::Message messageScreen;
         Screens::Screen* currentScreen = nullptr;
         static constexpr uint8_t pinLcdBacklight1 = 14;
         static constexpr uint8_t pinLcdBacklight2 = 22;

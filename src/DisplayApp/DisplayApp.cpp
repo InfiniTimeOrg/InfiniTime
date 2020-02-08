@@ -11,6 +11,8 @@
 #include <drivers/Cst816s.h>
 #include <chrono>
 #include <string>
+#include <lvgl/lvgl.h>
+#include "lv_port_disp.h"
 
 using namespace Pinetime::Applications;
 
@@ -26,13 +28,14 @@ DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
         batteryController{batteryController},
         bleController{bleController},
         dateTimeController{dateTimeController},
-        clockScreen{gfx} {
+        clockScreen{gfx},
+        messageScreen{gfx}{
   msgQueue = xQueueCreate(queueSize, itemSize);
-  currentScreen = &clockScreen;
+  currentScreen = &messageScreen;
 }
 
 void DisplayApp::Start() {
-  if (pdPASS != xTaskCreate(DisplayApp::Process, "DisplayApp", 256, this, 0, &taskHandle))
+  if (pdPASS != xTaskCreate(DisplayApp::Process, "DisplayApp", 1024, this, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }
 
@@ -40,7 +43,11 @@ void DisplayApp::Process(void *instance) {
   auto *app = static_cast<DisplayApp *>(instance);
   NRF_LOG_INFO("DisplayApp task started!");
   app->InitHw();
+  lv_init();
+  lv_port_disp_init();
+
   while (1) {
+    lv_task_handler();
     app->Refresh();
   }
 }
@@ -53,7 +60,7 @@ void DisplayApp::InitHw() {
   nrf_gpio_pin_clear(pinLcdBacklight2);
   nrf_gpio_pin_clear(pinLcdBacklight3);
 
-  currentScreen->Refresh(true);
+
 }
 
 uint32_t acc = 0;
@@ -112,11 +119,14 @@ void DisplayApp::Refresh() {
   }
 }
 
+bool first = true;
+
 void DisplayApp::RunningState() {
   clockScreen.SetCurrentDateTime(dateTimeController.CurrentDateTime());
 
   if(currentScreen != nullptr) {
-    currentScreen->Refresh(false);
+    currentScreen->Refresh(first);
+    first = false;
   }
 }
 
