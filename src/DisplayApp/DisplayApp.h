@@ -11,6 +11,7 @@
 #include <Components/DateTime/DateTimeController.h>
 #include "Fonts/lcdfont14.h"
 #include "../drivers/Cst816s.h"
+#include "LittleVgl.h"
 #include <date/date.h>
 #include <DisplayApp/Screens/Clock.h>
 #include <DisplayApp/Screens/Message.h>
@@ -25,6 +26,7 @@ namespace Pinetime {
         enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent} ;
         DisplayApp(Pinetime::Drivers::St7789& lcd,
                    Pinetime::Components::Gfx& gfx,
+                   Pinetime::Components::LittleVgl& lvgl,
                    Pinetime::Drivers::Cst816S&,
                    Controllers::Battery &batteryController,
                    Controllers::Ble &bleController,
@@ -38,6 +40,7 @@ namespace Pinetime {
         void InitHw();
         Pinetime::Drivers::St7789& lcd;
         Pinetime::Components::Gfx& gfx;
+        Pinetime::Components::LittleVgl lvgl;
         const FONT_INFO largeFont {lCD_70ptFontInfo.height, lCD_70ptFontInfo.startChar, lCD_70ptFontInfo.endChar, lCD_70ptFontInfo.spacePixels, lCD_70ptFontInfo.charInfo, lCD_70ptFontInfo.data};
         const FONT_INFO smallFont {lCD_14ptFontInfo.height, lCD_14ptFontInfo.startChar, lCD_14ptFontInfo.endChar, lCD_14ptFontInfo.spacePixels, lCD_14ptFontInfo.charInfo, lCD_14ptFontInfo.data};
         void Refresh();

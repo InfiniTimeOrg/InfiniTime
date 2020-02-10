@@ -2,17 +2,46 @@
 #include <libs/date/includes/date/date.h>
 #include <Components/DateTime/DateTimeController.h>
 #include <Version.h>
+#include <libs/lvgl/lvgl.h>
 #include "Clock.h"
 
 using namespace Pinetime::Applications::Screens;
+extern lv_font_t jetbrains_mono_extrabold_compressedextrabold_compressed;
+extern lv_font_t jetbrains_mono_bold_20;
+
+Clock::Clock(Pinetime::Components::Gfx &gfx) : Screen(gfx), currentDateTime{{}}, version {{}} {
+  label_battery = lv_label_create(lv_scr_act(), NULL);
+  lv_obj_align(label_battery, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -80, 0);
+
+  labelStyle = const_cast<lv_style_t *>(lv_label_get_style(label_battery, LV_LABEL_STYLE_MAIN));
+  labelStyle->text.font = &jetbrains_mono_bold_20;
+
+  lv_style_copy(&labelBigStyle, labelStyle);
+  labelBigStyle.text.font = &jetbrains_mono_extrabold_compressedextrabold_compressed;
+
+  lv_label_set_style(label_battery, LV_LABEL_STYLE_MAIN, labelStyle);
+
+  label_ble = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_style(label_ble, LV_LABEL_STYLE_MAIN, labelStyle);
+  lv_obj_align(label_ble, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, 0);
+
+  label_time = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_style(label_time, LV_LABEL_STYLE_MAIN, &labelBigStyle);
+  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
+
+
+  label_date = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_style(label_date, LV_LABEL_STYLE_MAIN, labelStyle);
+  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 80);
+
+  label_version = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_style(label_version, LV_LABEL_STYLE_MAIN, labelStyle);
+  lv_obj_align(label_version, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 100);
+
+}
 
 void Clock::Refresh(bool fullRefresh) {
   if(fullRefresh) {
-    gfx.FillRectangle(0,0,240,240,0x0000);
-    currentChar[0] = 1;
-    currentChar[1] = 2;
-    currentChar[2] = 3;
-    currentChar[3] = 4;
     auto dummy = currentDateTime.Get();
   }
 
@@ -23,12 +52,14 @@ void Clock::Refresh(bool fullRefresh) {
     newBatteryValue = (newBatteryValue < 0) ? 0 : newBatteryValue;
 
     sprintf(batteryChar, "BAT: %d%%", newBatteryValue);
-    gfx.DrawString((240 - 108), 0, 0xffff, batteryChar, &smallFont, false);
+    lv_label_set_text(label_battery, batteryChar);
   }
 
   if (fullRefresh || bleState.IsUpdated()) {
     uint16_t color = (bleState.Get() == BleConnectionStates::Connected) ? 0xffff : 0x0000;
     gfx.DrawString(10, 0, color, "BLE", &smallFont, false);
+    lv_label_set_text(label_ble, "BLE");
+    // TODO color
   }
 
   if(fullRefresh || currentDateTime.IsUpdated()) {
@@ -53,35 +84,16 @@ void Clock::Refresh(bool fullRefresh) {
     char hoursChar[3];
     sprintf(hoursChar, "%02d", hour);
 
-    uint8_t x = 7;
-    if (hoursChar[0] != currentChar[0]) {
-      gfx.DrawChar(&largeFont, hoursChar[0], &x, 78, 0xffff);
-      currentChar[0] = hoursChar[0];
-    }
-
-    x = 61;
-    if (hoursChar[1] != currentChar[1]) {
-      gfx.DrawChar(&largeFont, hoursChar[1], &x, 78, 0xffff);
-      currentChar[1] = hoursChar[1];
-    }
-
-    x = 127;
-    if (minutesChar[0] != currentChar[2]) {
-      gfx.DrawChar(&largeFont, minutesChar[0], &x, 78, 0xffff);
-      currentChar[2] = minutesChar[0];
-    }
-
-    x = 181;
-    if (minutesChar[1] != currentChar[3]) {
-      gfx.DrawChar(&largeFont, minutesChar[1], &x, 78, 0xffff);
-      currentChar[3] = minutesChar[1];
-    }
+    char timeStr[6];
+    sprintf(timeStr, "%c%c:%c%c", hoursChar[0],hoursChar[1],minutesChar[0], minutesChar[1]);
+    lv_label_set_text(label_time, timeStr);
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
       gfx.FillRectangle(0,180, 240, 15, 0x0000);
       char dateStr[22];
       sprintf(dateStr, "%s %d %s %d", DayOfWeekToString(dayOfWeek), day, MonthToString(month), year);
-      gfx.DrawString(10, 180, 0xffff, dateStr, &smallFont, false);
+      lv_label_set_text(label_date, dateStr);
+
 
       currentYear = year;
       currentMonth = month;
@@ -93,8 +105,9 @@ void Clock::Refresh(bool fullRefresh) {
   if(fullRefresh || version.IsUpdated()) {
     char version[20];
     sprintf(version, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
-    gfx.DrawString(20, 220, 0xffff, version, &smallFont, false);
+    lv_label_set_text(label_version, version);
   }
+
 }
 
 const char *Clock::MonthToString(Pinetime::Controllers::DateTime::Months month) {
@@ -131,3 +144,5 @@ char const *Clock::MonthsString[] = {
         "NOV",
         "DEC"
 };
+
+

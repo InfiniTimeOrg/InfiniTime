@@ -118,7 +118,6 @@ set(LVGL_SRC
   libs/lvgl/src/lv_font/lv_font_fmt_txt.c
   libs/lvgl/src/lv_font/lv_font_fmt_txt.h
   libs/lvgl/src/lv_font/lv_font_roboto_16.c
-  libs/lvgl/src/lv_font/lv_font_roboto_28_compressed.c
   libs/lvgl/src/lv_font/lv_symbol_def.h
 
   libs/lvgl/src/lv_themes/lv_theme.c
@@ -133,6 +132,10 @@ set(LVGL_SRC
   libs/lvgl/src/lv_objx/lv_label.h
   libs/lvgl/src/lv_objx/lv_label.c
 
+  libs/lvgl/src/lv_themes/lv_theme.c
+  libs/lvgl/src/lv_themes/lv_theme.h
+  libs/lvgl/src/lv_themes/lv_theme_night.h
+  libs/lvgl/src/lv_themes/lv_theme_night.c
 
   )
 
@@ -159,7 +162,9 @@ list(APPEND SOURCE_FILES
   FreeRTOS/port_cmsis.c
   ${LVGL_SRC}
 
-  DisplayApp/lv_port_disp.cpp
+  DisplayApp/LittleVgl.cpp
+  DisplayApp/Fonts/jetbrains_mono_extrabold_compressed.c
+  DisplayApp/Fonts/jetbrains_mono_bold_20.c
 )
 
 set(INCLUDE_FILES
@@ -191,7 +196,7 @@ set(INCLUDE_FILES
   libs/date/includes/date/ptz.h
   libs/date/includes/date/tz_private.h
 
-  DisplayApp/lv_port_disp.h
+  DisplayApp/LittleVgl.h
 )
 
 include_directories(

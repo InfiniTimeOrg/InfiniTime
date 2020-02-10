@@ -21,6 +21,7 @@
 #include <Components/Gfx/Gfx.h>
 
 #include <lvgl/lvgl.h>
+#include <DisplayApp/LittleVgl.h>
 
 #if NRF_LOG_ENABLED
 #include "Logging/NrfLogger.h"
@@ -34,6 +35,7 @@ std::unique_ptr<Pinetime::Drivers::SpiMaster> spi;
 std::unique_ptr<Pinetime::Drivers::St7789> lcd;
 Pinetime::Drivers::St7789* ptrLcd;
 std::unique_ptr<Pinetime::Components::Gfx> gfx;
+std::unique_ptr<Pinetime::Components::LittleVgl> lvgl;
 std::unique_ptr<Pinetime::Drivers::Cst816S> touchPanel;
 
 static constexpr uint8_t pinSpiSck = 2;
@@ -124,6 +126,7 @@ void SystemTask(void *) {
 
   lcd.reset(new Pinetime::Drivers::St7789(*spi, pinLcdDataCommand));
   gfx.reset(new Pinetime::Components::Gfx(*lcd));
+  lvgl.reset(new Pinetime::Components::LittleVgl(*lcd));
   touchPanel.reset(new Pinetime::Drivers::Cst816S());
   ptrLcd = lcd.get();
 
@@ -132,7 +135,7 @@ void SystemTask(void *) {
   touchPanel->Init();
   batteryController.Init();
 
-  displayApp.reset(new Pinetime::Applications::DisplayApp(*lcd, *gfx, *touchPanel, batteryController, bleController, dateTimeController));
+  displayApp.reset(new Pinetime::Applications::DisplayApp(*lcd, *gfx, *lvgl, *touchPanel, batteryController, bleController, dateTimeController));
   displayApp->Start();
 
   batteryController.Update();
@@ -168,8 +171,7 @@ void SystemTask(void *) {
 
   while(true) {
     uint8_t msg;
-
-    if (xQueueReceive(systemTaksMsgQueue, &msg, systemTaskSleeping?3600000 : 1000)) {
+    if (xQueueReceive(systemTaksMsgQueue, &msg, systemTaskSleeping?3600000 : 10)) {
       SystemTaskMessages message = static_cast<SystemTaskMessages >(msg);
       switch(message) {
         case SystemTaskMessages::GoToRunning: systemTaskSleeping = false; break;

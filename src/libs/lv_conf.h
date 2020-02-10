@@ -123,7 +123,7 @@ typedef int16_t lv_coord_t;
  *==================*/
 
 /*1: Enable the Animations */
-#define LV_USE_ANIMATION        1
+#define LV_USE_ANIMATION        0
 #if LV_USE_ANIMATION
 
 /*Declare the type of the user data of animations (can be e.g. `void *`, `int`, `struct`)*/
@@ -132,7 +132,7 @@ typedef void * lv_anim_user_data_t;
 #endif
 
 /* 1: Enable shadow drawing*/
-#define LV_USE_SHADOW           1
+#define LV_USE_SHADOW           0
 
 /* 1: Enable object groups (for keyboard/encoder navigation) */
 #define LV_USE_GROUP            0
@@ -278,9 +278,9 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
 #define LV_THEME_LIVE_UPDATE    0   /*1: Allow theme switching at run time. Uses 8..10 kB of RAM*/
 
 #define LV_USE_THEME_TEMPL      0   /*Just for test*/
-#define LV_USE_THEME_DEFAULT    0   /*Built mainly from the built-in styles. Consumes very few RAM*/
+#define LV_USE_THEME_DEFAULT    1   /*Built mainly from the built-in styles. Consumes very few RAM*/
 #define LV_USE_THEME_ALIEN      0   /*Dark futuristic theme*/
-#define LV_USE_THEME_NIGHT      0   /*Dark elegant theme*/
+#define LV_USE_THEME_NIGHT      1   /*Dark elegant theme*/
 #define LV_USE_THEME_MONO       0   /*Mono color theme for monochrome displays*/
 #define LV_USE_THEME_MATERIAL   0   /*Flat theme with bold colors and light shadows*/
 #define LV_USE_THEME_ZEN        0   /*Peaceful, mainly light theme */
@@ -314,7 +314,7 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
 /* Optionally declare your custom fonts here.
  * You can use these fonts as default font too
  * and they will be available globally. E.g.
- * #define LV_FONT_CUSTOM_DECLARE LV_FONT_DECLARE(my_font_1) \
+ * #define LV_FONT_CUSTOM_DECLARE LV_FONT_DECLARE(my_font_1) \LV_SUBPX_BGR
  *                                LV_FONT_DECLARE(my_font_2)
  */
 #define LV_FONT_CUSTOM_DECLARE
@@ -513,7 +513,7 @@ typedef void * lv_obj_user_data_t;
 #endif
 
 /*Preload (dependencies: lv_arc, lv_anim)*/
-#define LV_USE_PRELOAD      1
+#define LV_USE_PRELOAD      0
 #if LV_USE_PRELOAD != 0
 #  define LV_PRELOAD_DEF_ARC_LENGTH   60      /*[deg]*/
 #  define LV_PRELOAD_DEF_SPIN_TIME    1000    /*[ms]*/

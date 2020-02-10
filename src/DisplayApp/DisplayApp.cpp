@@ -12,18 +12,19 @@
 #include <chrono>
 #include <string>
 #include <lvgl/lvgl.h>
-#include "lv_port_disp.h"
 
 using namespace Pinetime::Applications;
 
 DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
                        Pinetime::Components::Gfx& gfx,
+                       Pinetime::Components::LittleVgl& lvgl,
                        Pinetime::Drivers::Cst816S& touchPanel,
                        Controllers::Battery &batteryController,
                        Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController) :
         lcd{lcd},
         gfx{gfx},
+        lvgl{lvgl},
         touchPanel{touchPanel},
         batteryController{batteryController},
         bleController{bleController},
@@ -31,7 +32,7 @@ DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
         clockScreen{gfx},
         messageScreen{gfx}{
   msgQueue = xQueueCreate(queueSize, itemSize);
-  currentScreen = &messageScreen;
+  currentScreen = &clockScreen;
 }
 
 void DisplayApp::Start() {
@@ -43,12 +44,15 @@ void DisplayApp::Process(void *instance) {
   auto *app = static_cast<DisplayApp *>(instance);
   NRF_LOG_INFO("DisplayApp task started!");
   app->InitHw();
-  lv_init();
-  lv_port_disp_init();
 
   while (1) {
-    lv_task_handler();
+
     app->Refresh();
+
+    auto before = nrf_rtc_counter_get(portNRF_RTC_REG);
+    lv_task_handler();
+    auto after = nrf_rtc_counter_get(portNRF_RTC_REG);
+    NRF_LOG_INFO("duration : %d", (after-before));
   }
 }
 
@@ -59,8 +63,6 @@ void DisplayApp::InitHw() {
   nrf_gpio_pin_clear(pinLcdBacklight1);
   nrf_gpio_pin_clear(pinLcdBacklight2);
   nrf_gpio_pin_clear(pinLcdBacklight3);
-
-
 }
 
 uint32_t acc = 0;
@@ -75,10 +77,10 @@ void DisplayApp::Refresh() {
       break;
     case States::Running:
       RunningState();
-      queueTimeout = 1000;
+      queueTimeout = 1;
       break;
   }
-
+/*
   Messages msg;
   if (xQueueReceive(msgQueue, &msg, queueTimeout)) {
     switch (msg) {
@@ -117,6 +119,7 @@ void DisplayApp::Refresh() {
         break;
     }
   }
+  */
 }
 
 bool first = true;
