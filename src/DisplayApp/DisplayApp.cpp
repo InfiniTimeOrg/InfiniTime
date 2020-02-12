@@ -48,11 +48,7 @@ void DisplayApp::Process(void *instance) {
   while (1) {
 
     app->Refresh();
-
-    auto before = nrf_rtc_counter_get(portNRF_RTC_REG);
     lv_task_handler();
-    auto after = nrf_rtc_counter_get(portNRF_RTC_REG);
-    NRF_LOG_INFO("duration : %d", (after-before));
   }
 }
 
@@ -77,10 +73,10 @@ void DisplayApp::Refresh() {
       break;
     case States::Running:
       RunningState();
-      queueTimeout = 1;
+      queueTimeout = 1000;
       break;
   }
-/*
+
   Messages msg;
   if (xQueueReceive(msgQueue, &msg, queueTimeout)) {
     switch (msg) {
@@ -119,7 +115,6 @@ void DisplayApp::Refresh() {
         break;
     }
   }
-  */
 }
 
 bool first = true;

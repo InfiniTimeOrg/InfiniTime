@@ -171,7 +171,7 @@ void SystemTask(void *) {
 
   while(true) {
     uint8_t msg;
-    if (xQueueReceive(systemTaksMsgQueue, &msg, systemTaskSleeping?3600000 : 10)) {
+    if (xQueueReceive(systemTaksMsgQueue, &msg, systemTaskSleeping?3600000 : 1000)) {
       SystemTaskMessages message = static_cast<SystemTaskMessages >(msg);
       switch(message) {
         case SystemTaskMessages::GoToRunning: systemTaskSleeping = false; break;
