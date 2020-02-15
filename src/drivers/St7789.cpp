@@ -120,6 +120,23 @@ void St7789::DisplayOff() {
   nrf_delay_ms(500);
 }
 
+void St7789::VerticalScrollDefinition(uint16_t topFixedLines, uint16_t scrollLines, uint16_t bottomFixedLines) {
+  WriteCommand(static_cast<uint8_t>(Commands::VerticalScrollDefinition));
+  WriteData(topFixedLines >> 8u);
+  WriteData(topFixedLines & 0x00ffu);
+  WriteData(scrollLines >> 8u);
+  WriteData(scrollLines & 0x00ffu);
+  WriteData(bottomFixedLines >> 8u);
+  WriteData(bottomFixedLines & 0x00ffu);
+}
+
+void St7789::VerticalScrollStartAddress(uint16_t line) {
+  WriteCommand(static_cast<uint8_t>(Commands::VerticalScrollStartAddress));
+  WriteData(line >> 8u);
+  WriteData(line & 0x00ffu);
+}
+
+
 void St7789::Uninit() {
 
 }

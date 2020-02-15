@@ -30,7 +30,7 @@ void Gfx::ClearScreen() {
 void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t color) {
   SetBackgroundColor(color);
 
-  state.remainingIterations = 240 + 1;
+  state.remainingIterations = h;
   state.currentIteration = 0;
   state.busy = true;
   state.action = Action::FillRectangle;
@@ -183,4 +183,11 @@ void Gfx::WaitTransfertFinished() const {
   ulTaskNotifyTake(pdTRUE, 500);
 }
 
+void Gfx::SetScrollArea(uint16_t topFixedLines, uint16_t scrollLines, uint16_t bottomFixedLines) {
+  lcd.VerticalScrollDefinition(topFixedLines, scrollLines, bottomFixedLines);
+}
+
+void Gfx::SetScrollStartLine(uint16_t line) {
+  lcd.VerticalScrollStartAddress(line);
+}
 
