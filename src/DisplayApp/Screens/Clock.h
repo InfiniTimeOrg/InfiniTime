@@ -19,7 +19,7 @@ namespace Pinetime {
           explicit DirtyValue(T v) { value = v; }
           explicit DirtyValue(T& v) { value = v; }
           bool IsUpdated() const { return isUpdated; }
-          T& Get() { return value; this->isUpdated = false;}
+          T& Get() { this->isUpdated = false; return value;}
 
           DirtyValue& operator=(const T& other) {
             this->value = other;

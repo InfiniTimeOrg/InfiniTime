@@ -91,9 +91,10 @@ void Clock::Refresh(bool fullRefresh) {
   }
 
   if(fullRefresh || version.IsUpdated()) {
-    char version[20];
-    sprintf(version, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
-    gfx.DrawString(20, 220, 0xffff, version, &smallFont, false);
+    auto dummy = version.Get();
+    char versionStr[20];
+    sprintf(versionStr, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
+    gfx.DrawString(20, 220, 0xffff, versionStr, &smallFont, false);
   }
 }
 
