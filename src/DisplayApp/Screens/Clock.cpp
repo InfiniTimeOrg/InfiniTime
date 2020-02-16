@@ -4,12 +4,24 @@
 #include <Version.h>
 #include <libs/lvgl/lvgl.h>
 #include "Clock.h"
+#include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressedextrabold_compressed;
 extern lv_font_t jetbrains_mono_bold_20;
 
-Clock::Clock(Pinetime::Components::Gfx &gfx) : Screen(gfx), currentDateTime{{}}, version {{}} {
+static void event_handler(lv_obj_t * obj, lv_event_t event) {
+  Clock* screen = static_cast<Clock *>(obj->user_data);
+  screen->OnObjectEvent(obj, event);
+}
+
+Clock::Clock(DisplayApp* app, Pinetime::Components::Gfx &gfx, Controllers::DateTime& dateTimeController) : Screen(app, gfx), currentDateTime{{}}, version {{}}, dateTimeController{dateTimeController} {
+  displayedChar[0] = 0;
+  displayedChar[1] = 0;
+  displayedChar[2] = 0;
+  displayedChar[3] = 0;
+  displayedChar[4] = 0;
+
   label_battery = lv_label_create(lv_scr_act(), NULL);
   lv_obj_align(label_battery, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -80, 0);
 
@@ -38,11 +50,24 @@ Clock::Clock(Pinetime::Components::Gfx &gfx) : Screen(gfx), currentDateTime{{}},
   lv_label_set_style(label_version, LV_LABEL_STYLE_MAIN, labelStyle);
   lv_obj_align(label_version, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 100);
 
+  backgroundLabel = lv_label_create(lv_scr_act(), NULL);
+  backgroundLabel->user_data = this;
+  lv_label_set_style(backgroundLabel, LV_LABEL_STYLE_MAIN, labelStyle);
+  lv_obj_set_click(backgroundLabel, true);
+  lv_obj_set_event_cb(backgroundLabel, event_handler);
+  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
+  lv_obj_set_size(backgroundLabel, 240, 240);
+  lv_obj_set_pos(backgroundLabel, 0, 0);
+  lv_label_set_text(backgroundLabel, "");
+}
+
+Clock::~Clock() {
+  lv_obj_clean(lv_scr_act());
 }
 
 void Clock::Refresh(bool fullRefresh) {
   if(fullRefresh) {
-    auto dummy = currentDateTime.Get();
+    auto currentDateTime = dateTimeController.CurrentDateTime();
   }
 
   if (fullRefresh || batteryPercentRemaining.IsUpdated()) {
@@ -61,6 +86,8 @@ void Clock::Refresh(bool fullRefresh) {
     lv_label_set_text(label_ble, "BLE");
     // TODO color
   }
+
+  currentDateTime = dateTimeController.CurrentDateTime();
 
   if(fullRefresh || currentDateTime.IsUpdated()) {
     auto newDateTime = currentDateTime.Get();
@@ -86,10 +113,17 @@ void Clock::Refresh(bool fullRefresh) {
 
     char timeStr[6];
     sprintf(timeStr, "%c%c:%c%c", hoursChar[0],hoursChar[1],minutesChar[0], minutesChar[1]);
-    lv_label_set_text(label_time, timeStr);
+
+    if(hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] || minutesChar[1] != displayedChar[3]) {
+      displayedChar[0] = hoursChar[0];
+      displayedChar[1] = hoursChar[1];
+      displayedChar[2] = minutesChar[0];
+      displayedChar[3] = minutesChar[1];
+
+      lv_label_set_text(label_time, timeStr);
+    }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      gfx.FillRectangle(0,180, 240, 15, 0x0000);
       char dateStr[22];
       sprintf(dateStr, "%s %d %s %d", DayOfWeekToString(dayOfWeek), day, MonthToString(month), year);
       lv_label_set_text(label_date, dateStr);
@@ -103,9 +137,10 @@ void Clock::Refresh(bool fullRefresh) {
   }
 
   if(fullRefresh || version.IsUpdated()) {
-    char version[20];
-    sprintf(version, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
-    lv_label_set_text(label_version, version);
+    auto dummy = version.Get();
+    char versionStr[20];
+    sprintf(versionStr, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
+    lv_label_set_text(label_version, versionStr);
   }
 
 }
@@ -144,5 +179,13 @@ char const *Clock::MonthsString[] = {
         "NOV",
         "DEC"
 };
+
+void Clock::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
+  if(obj == backgroundLabel) {
+    if (event == LV_EVENT_CLICKED) {
+      nextScreen = NextScreen::Menu;
+    }
+  }
+}
 
 

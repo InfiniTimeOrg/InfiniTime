@@ -23,7 +23,7 @@ namespace Pinetime {
     class DisplayApp {
       public:
         enum class States {Idle, Running};
-        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent} ;
+        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, SwitchScreen,ButtonPushed} ;
         DisplayApp(Pinetime::Drivers::St7789& lcd,
                    Pinetime::Components::Gfx& gfx,
                    Pinetime::Components::LittleVgl& lvgl,
@@ -60,12 +60,12 @@ namespace Pinetime {
         Pinetime::Drivers::Cst816S& touchPanel;
         void OnTouchEvent();
 
-        Screens::Clock clockScreen;
-        Screens::Message messageScreen;
-        Screens::Screen* currentScreen = nullptr;
+        std::unique_ptr<Screens::Screen> currentScreen;
         static constexpr uint8_t pinLcdBacklight1 = 14;
         static constexpr uint8_t pinLcdBacklight2 = 22;
         static constexpr uint8_t pinLcdBacklight3 = 23;
+
+        bool isClock = true;
     };
   }
 }

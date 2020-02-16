@@ -137,6 +137,19 @@ set(LVGL_SRC
   libs/lvgl/src/lv_themes/lv_theme_night.h
   libs/lvgl/src/lv_themes/lv_theme_night.c
 
+  libs/lvgl/src/lv_objx/lv_list.c
+  libs/lvgl/src/lv_objx/lv_list.h
+  libs/lvgl/src/lv_objx/lv_tileview.c
+  libs/lvgl/src/lv_objx/lv_tileview.h
+  libs/lvgl/src/lv_objx/lv_tabview.c
+  libs/lvgl/src/lv_objx/lv_tabview.h
+  libs/lvgl/src/lv_objx/lv_btnm.c
+  libs/lvgl/src/lv_objx/lv_btnm.h
+  libs/lvgl/src/lv_objx/lv_page.c
+  libs/lvgl/src/lv_objx/lv_page.h
+  libs/lvgl/src/lv_objx/lv_img.c
+  libs/lvgl/src/lv_objx/lv_img.h
+
   )
 
 list(APPEND SOURCE_FILES
@@ -148,6 +161,8 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/Screen.cpp
   DisplayApp/Screens/Clock.cpp
   DisplayApp/Screens/Message.cpp
+  DisplayApp/Screens/Tile.cpp
+  DisplayApp/Screens/Tab.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiMaster.cpp
@@ -177,6 +192,8 @@ set(INCLUDE_FILES
   DisplayApp/Screens/Screen.h
   DisplayApp/Screens/Clock.h
   DisplayApp/Screens/Message.h
+  DisplayApp/Screens/Tile.h
+  DisplayApp/Screens/Tab.h
   drivers/St7789.h
   drivers/SpiMaster.h
   Components/Gfx/Gfx.h

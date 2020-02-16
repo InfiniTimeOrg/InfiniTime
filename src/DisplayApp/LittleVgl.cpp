@@ -17,8 +17,18 @@ static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_colo
   lvgl->FlushDisplay(area, color_p);
 }
 
-LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd) : lcd{lcd} {
+bool touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data) {
+  auto* lvgl = static_cast<LittleVgl*>(indev_drv->user_data);
+  return lvgl->GetTouchPadInfo(data);
+}
+
+LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel) : lcd{lcd}, touchPanel{touchPanel} {
   lv_init();
+  InitDisplay();
+  InitTouchpad();
+}
+
+void LittleVgl::InitDisplay() {
   lv_theme_t* theme = lv_theme_night_init(10, NULL);
   lv_theme_set_current(theme);
 
@@ -39,8 +49,16 @@ LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd) : lcd{lcd} {
 
   /*Finally register the driver*/
   lv_disp_drv_register(&disp_drv);
+}
 
+void LittleVgl::InitTouchpad() {
+  lv_indev_drv_t indev_drv;
 
+  lv_indev_drv_init(&indev_drv);
+  indev_drv.type = LV_INDEV_TYPE_POINTER;
+  indev_drv.read_cb = touchpad_read;
+  indev_drv.user_data = this;
+  lv_indev_drv_register(&indev_drv);
 }
 
 void LittleVgl::FlushDisplay(const lv_area_t *area, lv_color_t *color_p) {
@@ -56,4 +74,22 @@ void LittleVgl::FlushDisplay(const lv_area_t *area, lv_color_t *color_p) {
   /* IMPORTANT!!!
    * Inform the graphics library that you are ready with the flushing*/
   lv_disp_flush_ready(&disp_drv);
+}
+
+bool LittleVgl::GetTouchPadInfo(lv_indev_data_t *ptr) {
+  auto info = touchPanel.GetTouchInfo();
+
+  if((previousClick.x != info.x || previousClick.y != info.y) &&
+          (info.gesture == Drivers::Cst816S::Gestures::SingleTap)) {
+    ptr->state = LV_INDEV_STATE_PR;
+    previousClick.x = ptr->point.x;
+    previousClick.y = ptr->point.y;
+  }
+  else {
+    ptr->state = LV_INDEV_STATE_REL;
+  }
+
+  ptr->point.x = info.x;
+  ptr->point.y = info.y;
+  return false;
 }

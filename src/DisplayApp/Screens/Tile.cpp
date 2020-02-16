@@ -1,0 +1,118 @@
+#include <cstdio>
+#include <libs/date/includes/date/date.h>
+#include <Components/DateTime/DateTimeController.h>
+#include <Version.h>
+#include <libs/lvgl/src/lv_core/lv_obj.h>
+#include <libs/lvgl/src/lv_font/lv_font.h>
+#include <libs/lvgl/lvgl.h>
+#include <libraries/log/nrf_log.h>
+#include "Tile.h"
+#include <DisplayApp/DisplayApp.h>
+#include <libs/lvgl/src/lv_core/lv_style.h>
+
+
+using namespace Pinetime::Applications::Screens;
+
+extern lv_font_t jetbrains_mono_bold_20;
+
+static void event_handler(lv_obj_t * obj, lv_event_t event) {
+  Tile* screen = static_cast<Tile *>(obj->user_data);
+  screen->OnObjectEvent(obj, event);
+}
+
+//static const char * btnm_map1[] = {"App1", "App2", "App3", "\n", "App4", "App5", "App11", ""};
+//static const char * btnm_map2[] = {"App6", "App7", "App8", "\n", "App9", "App10", "App22",""};
+static const char * btnm_map1[] = {"App1", ""};
+
+Tile::Tile(DisplayApp* app, Pinetime::Components::Gfx &gfx) : Screen(app, gfx) {
+
+  static lv_point_t valid_pos[] = {{0,0}, {LV_COORD_MIN, LV_COORD_MIN}};
+  tileview = lv_tileview_create(lv_scr_act(), NULL);
+  lv_tileview_set_valid_positions(tileview, valid_pos, 1);
+  lv_tileview_set_edge_flash(tileview, false);
+
+  tile1 = lv_obj_create(tileview, NULL);
+  lv_obj_set_pos(tile1, 0, 0);
+  lv_obj_set_size(tile1, LV_HOR_RES, LV_VER_RES);
+  lv_tileview_add_element(tileview, tile1);
+
+  btnm1 = lv_btnm_create(tile1, NULL);
+  lv_btnm_set_map(btnm1, btnm_map1);
+  lv_obj_set_size(btnm1, LV_HOR_RES, LV_VER_RES);
+
+  labelStyle = const_cast<lv_style_t *>(lv_label_get_style(btnm1, LV_BTNM_STYLE_BTN_REL));
+  labelStyle->text.font = &jetbrains_mono_bold_20;
+  labelStyle->body.grad_color = labelStyle->body.main_color;
+  lv_btnm_set_style(btnm1, LV_BTNM_STYLE_BTN_REL, labelStyle);
+  lv_btnm_set_style(btnm1, LV_BTNM_STYLE_BTN_PR, labelStyle);
+
+  lv_obj_align(btnm1, tile1, LV_ALIGN_CENTER, 0, 0);
+  btnm1->user_data = this;
+  lv_obj_set_event_cb(btnm1, event_handler);
+/*
+  tile2 = lv_obj_create(tileview, NULL);
+  lv_obj_set_pos(tile2, 0, LV_VER_RES);
+  lv_obj_set_size(tile2, LV_HOR_RES, LV_VER_RES);
+  lv_tileview_add_element(tileview, tile2);
+
+  btnm2 = lv_btnm_create(tileview, NULL);
+  lv_btnm_set_map(btnm2, btnm_map2);
+  lv_obj_align(btnm2, tile2, LV_ALIGN_CENTER, 0, 0);
+*/
+/*
+  tile1 = lv_obj_create(tileview, NULL);
+  lv_obj_set_pos(tile1, 0, 0);
+  lv_obj_set_size(tile1, LV_HOR_RES, LV_VER_RES);
+  lv_tileview_add_element(tileview, tile1);
+
+  btn1 = lv_btn_create(tile1, NULL);
+  lv_obj_align(btn1, tile1, LV_ALIGN_CENTER, 0, 0);
+
+  label1 = lv_label_create(btn1, NULL);
+  lv_label_set_text(label1, "Button1");
+*/
+/*
+  tile2 = lv_obj_create(tileview, NULL);
+  lv_obj_set_pos(tile2, 0, LV_VER_RES);
+  lv_obj_set_size(tile2, LV_HOR_RES, LV_VER_RES);
+  lv_tileview_add_element(tileview, tile2);
+
+  btn2 = lv_btn_create(tile2, NULL);
+  lv_obj_align(btn2, tile2, LV_ALIGN_CENTER, 0, 0);
+
+
+  label2 = lv_label_create(btn2, NULL);
+  lv_label_set_text(label2, "Button2");
+
+  tile3 = lv_obj_create(tileview, NULL);
+  lv_obj_set_pos(tile3, 0, LV_VER_RES*2);
+  lv_obj_set_size(tile3, LV_HOR_RES, LV_VER_RES);
+  lv_tileview_add_element(tileview, tile3);
+
+  btn3 = lv_btn_create(tile3, NULL);
+  lv_obj_align(btn3, tile3, LV_ALIGN_CENTER, 0, 0);
+
+
+  label3 = lv_label_create(btn3, NULL);
+  lv_label_set_text(label3, "Button3");
+*/
+}
+
+Tile::~Tile() {
+  lv_obj_clean(lv_scr_act());
+}
+
+void Tile::Refresh(bool fullRefresh) {
+
+}
+
+void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
+  if(event == LV_EVENT_CLICKED) {
+    NRF_LOG_INFO("Clicked");
+    nextScreen = Screen::NextScreen::App;
+    clickCount++;
+  }
+  else if(event == LV_EVENT_VALUE_CHANGED) {
+    NRF_LOG_INFO("Toggled");
+  }
+}

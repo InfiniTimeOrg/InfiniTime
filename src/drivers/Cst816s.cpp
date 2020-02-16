@@ -78,26 +78,26 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
     info.action = action;
     info.gesture = static_cast<Gestures>(touchData[gestureIndex]);
 
-    NRF_LOG_INFO("---------------")
-    NRF_LOG_INFO("ID : %d", pointId);
-    NRF_LOG_INFO("NB : %d", nbTouchPoints);
-    NRF_LOG_INFO("X/Y :%d / %d", info.x, info.y);
-    NRF_LOG_INFO("Action : %d", action);
-    NRF_LOG_INFO("Finger : %d", finger);
-    NRF_LOG_INFO("Pressure : %d", pressure);
-    NRF_LOG_INFO("area : %d", area);
-    NRF_LOG_INFO("Touch : %s", info.isTouch?"Yes" : "No");
-    switch(info.gesture) {// gesture
-      case Gestures::None: NRF_LOG_INFO("Gesture : None"); break;
-      case Gestures::SlideDown: NRF_LOG_INFO("Gesture : Slide Down"); break;
-      case Gestures::SlideUp: NRF_LOG_INFO("Gesture : Slide Up"); break;
-      case Gestures::SlideLeft: NRF_LOG_INFO("Gesture : Slide Left"); break;
-      case Gestures::SlideRight: NRF_LOG_INFO("Gesture : Slide Right"); break;
-      case Gestures::SingleTap: NRF_LOG_INFO("Gesture : Single click"); break;
-      case Gestures::DoubleTap: NRF_LOG_INFO("Gesture : Double click"); break;
-      case Gestures::LongPress: NRF_LOG_INFO("Gesture : Long press"); break;
-      default : NRF_LOG_INFO("Unknown"); break;
-    }
+//    NRF_LOG_INFO("---------------")
+//    NRF_LOG_INFO("ID : %d", pointId);
+//    NRF_LOG_INFO("NB : %d", nbTouchPoints);
+//    NRF_LOG_INFO("X/Y :%d / %d", info.x, info.y);
+//    NRF_LOG_INFO("Action : %d", action);
+//    NRF_LOG_INFO("Finger : %d", finger);
+//    NRF_LOG_INFO("Pressure : %d", pressure);
+//    NRF_LOG_INFO("area : %d", area);
+//    NRF_LOG_INFO("Touch : %s", info.isTouch?"Yes" : "No");
+//    switch(info.gesture) {// gesture
+//      case Gestures::None: NRF_LOG_INFO("Gesture : None"); break;
+//      case Gestures::SlideDown: NRF_LOG_INFO("Gesture : Slide Down"); break;
+//      case Gestures::SlideUp: NRF_LOG_INFO("Gesture : Slide Up"); break;
+//      case Gestures::SlideLeft: NRF_LOG_INFO("Gesture : Slide Left"); break;
+//      case Gestures::SlideRight: NRF_LOG_INFO("Gesture : Slide Right"); break;
+//      case Gestures::SingleTap: NRF_LOG_INFO("Gesture : Single click"); break;
+//      case Gestures::DoubleTap: NRF_LOG_INFO("Gesture : Double click"); break;
+//      case Gestures::LongPress: NRF_LOG_INFO("Gesture : Long press"); break;
+//      default : NRF_LOG_INFO("Unknown"); break;
+//    }
 
   }
 

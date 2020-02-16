@@ -82,7 +82,7 @@ extern "C" {
 
 void DebounceTimerCallback(TimerHandle_t xTimer) {
   xTimerStop(xTimer, 0);
-  if(isSleeping) {
+  /*if(isSleeping) {
     SystemTask_PushMessage(SystemTaskMessages::GoToRunning);
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToRunning);
     isSleeping = false;
@@ -93,7 +93,8 @@ void DebounceTimerCallback(TimerHandle_t xTimer) {
     SystemTask_PushMessage(SystemTaskMessages::GoToSleep);
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
     isSleeping = true;
-  }
+  }*/
+  displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::ButtonPushed);
 }
 
 void SystemTask_PushMessage(SystemTaskMessages message) {
@@ -126,8 +127,9 @@ void SystemTask(void *) {
 
   lcd.reset(new Pinetime::Drivers::St7789(*spi, pinLcdDataCommand));
   gfx.reset(new Pinetime::Components::Gfx(*lcd));
-  lvgl.reset(new Pinetime::Components::LittleVgl(*lcd));
   touchPanel.reset(new Pinetime::Drivers::Cst816S());
+
+  lvgl.reset(new Pinetime::Components::LittleVgl(*lcd, *touchPanel));
   ptrLcd = lcd.get();
 
   spi->Init();

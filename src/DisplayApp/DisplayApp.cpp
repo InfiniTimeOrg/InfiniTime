@@ -12,6 +12,8 @@
 #include <chrono>
 #include <string>
 #include <lvgl/lvgl.h>
+#include <DisplayApp/Screens/Tile.h>
+#include <DisplayApp/Screens/Tab.h>
 
 using namespace Pinetime::Applications;
 
@@ -29,14 +31,12 @@ DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
         batteryController{batteryController},
         bleController{bleController},
         dateTimeController{dateTimeController},
-        clockScreen{gfx},
-        messageScreen{gfx}{
+        currentScreen{new Screens::Tile(this, gfx) } {
   msgQueue = xQueueCreate(queueSize, itemSize);
-  currentScreen = &clockScreen;
 }
 
 void DisplayApp::Start() {
-  if (pdPASS != xTaskCreate(DisplayApp::Process, "DisplayApp", 1024, this, 0, &taskHandle))
+  if (pdPASS != xTaskCreate(DisplayApp::Process, "DisplayApp", 512, this, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }
 
@@ -73,7 +73,7 @@ void DisplayApp::Refresh() {
       break;
     case States::Running:
       RunningState();
-      queueTimeout = 1000;
+      queueTimeout = 20;
       break;
   }
 
@@ -104,15 +104,17 @@ void DisplayApp::Refresh() {
       case Messages::UpdateDateTime:
         break;
       case Messages::UpdateBleConnection:
-        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected : Screens::Clock::BleConnectionStates::NotConnected);
+//        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected : Screens::Clock::BleConnectionStates::NotConnected);
         break;
       case Messages::UpdateBatteryLevel:
-        clockScreen.SetBatteryPercentRemaining(batteryController.PercentRemaining());
+//        clockScreen.SetBatteryPercentRemaining(batteryController.PercentRemaining());
         break;
       case Messages::TouchEvent:
         if(state != States::Running) break;
         OnTouchEvent();
         break;
+      case Messages::ButtonPushed:
+        currentScreen->OnButtonPushed();
     }
   }
 }
@@ -120,10 +122,26 @@ void DisplayApp::Refresh() {
 bool first = true;
 
 void DisplayApp::RunningState() {
-  clockScreen.SetCurrentDateTime(dateTimeController.CurrentDateTime());
+//  clockScreen.SetCurrentDateTime(dateTimeController.CurrentDateTime());
 
   if(currentScreen != nullptr) {
     currentScreen->Refresh(first);
+    if(currentScreen->GetNextScreen() != Screens::Screen::NextScreen::None) {
+      switch(currentScreen->GetNextScreen()) {
+        case Screens::Screen::NextScreen::Clock:
+          currentScreen.reset(nullptr);
+          currentScreen.reset(new Screens::Clock(this, gfx, dateTimeController));
+          break;
+        case Screens::Screen::NextScreen::Menu:
+          currentScreen.reset(nullptr);
+          currentScreen.reset(new Screens::Tile(this, gfx));
+          break;
+        case Screens::Screen::NextScreen::App:
+          currentScreen.reset(nullptr);
+          currentScreen.reset(new Screens::Message(this, gfx));
+          break;
+      }
+    }
     first = false;
   }
 }
@@ -144,10 +162,10 @@ void DisplayApp::PushMessage(DisplayApp::Messages msg) {
 
 static uint16_t pointColor = 0x07e0;
 void DisplayApp::OnTouchEvent() {
-  auto info = touchPanel.GetTouchInfo();
-
-  if(info.isTouch) {
-    gfx.FillRectangle(info.x-10, info.y-10, 20,20, pointColor);
-    pointColor+=10;
-  }
+//  auto info = touchPanel.GetTouchInfo();
+//
+//  if(info.isTouch) {
+//    gfx.FillRectangle(info.x-10, info.y-10, 20,20, pointColor);
+//    pointColor+=10;
+//  }
 }
