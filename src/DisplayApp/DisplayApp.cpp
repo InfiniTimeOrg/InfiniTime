@@ -31,7 +31,7 @@ DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
         batteryController{batteryController},
         bleController{bleController},
         dateTimeController{dateTimeController},
-        currentScreen{new Screens::Tile(this, gfx) } {
+        currentScreen{new Screens::Clock(this, gfx, dateTimeController) } {
   msgQueue = xQueueCreate(queueSize, itemSize);
 }
 

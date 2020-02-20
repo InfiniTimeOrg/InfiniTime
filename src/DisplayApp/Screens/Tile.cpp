@@ -20,9 +20,7 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event);
 }
 
-//static const char * btnm_map1[] = {"App1", "App2", "App3", "\n", "App4", "App5", "App11", ""};
-//static const char * btnm_map2[] = {"App6", "App7", "App8", "\n", "App9", "App10", "App22",""};
-static const char * btnm_map1[] = {"App1", ""};
+static const char * btnm_map1[] = {"App1", "App2", "App3", "\n", "App4", "App5", "App11", ""};
 
 Tile::Tile(DisplayApp* app, Pinetime::Components::Gfx &gfx) : Screen(app, gfx) {
 

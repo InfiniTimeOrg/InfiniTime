@@ -81,10 +81,12 @@ void Clock::Refresh(bool fullRefresh) {
   }
 
   if (fullRefresh || bleState.IsUpdated()) {
-    uint16_t color = (bleState.Get() == BleConnectionStates::Connected) ? 0xffff : 0x0000;
-    gfx.DrawString(10, 0, color, "BLE", &smallFont, false);
-    lv_label_set_text(label_ble, "BLE");
-    // TODO color
+    if(bleState.Get() == BleConnectionStates::Connected) {
+      lv_obj_set_hidden(label_ble, false);
+      lv_label_set_text(label_ble, "BLE");
+    } else {
+      lv_obj_set_hidden(label_ble, true);
+    }
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();
