@@ -15,7 +15,7 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event);
 }
 
-Clock::Clock(DisplayApp* app, Pinetime::Components::Gfx &gfx, Controllers::DateTime& dateTimeController) : Screen(app, gfx), currentDateTime{{}}, version {{}}, dateTimeController{dateTimeController} {
+Clock::Clock(DisplayApp* app, Controllers::DateTime& dateTimeController) : Screen(app), currentDateTime{{}}, version {{}}, dateTimeController{dateTimeController} {
   displayedChar[0] = 0;
   displayedChar[1] = 0;
   displayedChar[2] = 0;
@@ -65,7 +65,7 @@ Clock::~Clock() {
   lv_obj_clean(lv_scr_act());
 }
 
-void Clock::Refresh(bool fullRefresh) {
+bool Clock::Refresh(bool fullRefresh) {
   if(fullRefresh) {
     auto currentDateTime = dateTimeController.CurrentDateTime();
   }
@@ -145,6 +145,7 @@ void Clock::Refresh(bool fullRefresh) {
     lv_label_set_text(label_version, versionStr);
   }
 
+  return running;
 }
 
 const char *Clock::MonthToString(Pinetime::Controllers::DateTime::Months month) {
@@ -185,9 +186,14 @@ char const *Clock::MonthsString[] = {
 void Clock::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
   if(obj == backgroundLabel) {
     if (event == LV_EVENT_CLICKED) {
-      nextScreen = NextScreen::Menu;
+
+      running = false;
     }
   }
+}
+
+bool Clock::OnButtonPushed() {
+  return Screen::OnButtonPushed();
 }
 
 

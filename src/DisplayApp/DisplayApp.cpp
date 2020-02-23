@@ -13,25 +13,26 @@
 #include <string>
 #include <lvgl/lvgl.h>
 #include <DisplayApp/Screens/Tile.h>
-#include <DisplayApp/Screens/Tab.h>
+#include "../SystemTask/SystemTask.h"
+//#include <DisplayApp/Screens/Tab.h>
 
 using namespace Pinetime::Applications;
 
 DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
-                       Pinetime::Components::Gfx& gfx,
                        Pinetime::Components::LittleVgl& lvgl,
                        Pinetime::Drivers::Cst816S& touchPanel,
                        Controllers::Battery &batteryController,
                        Controllers::Ble &bleController,
-                       Controllers::DateTime &dateTimeController) :
+                       Controllers::DateTime &dateTimeController,
+                       Pinetime::System::SystemTask& systemTask) :
         lcd{lcd},
-        gfx{gfx},
         lvgl{lvgl},
         touchPanel{touchPanel},
         batteryController{batteryController},
         bleController{bleController},
         dateTimeController{dateTimeController},
-        currentScreen{new Screens::Clock(this, gfx, dateTimeController) } {
+        currentScreen{new Screens::Clock(this, dateTimeController) },
+        systemTask{systemTask} {
   msgQueue = xQueueCreate(queueSize, itemSize);
 }
 
@@ -48,7 +49,7 @@ void DisplayApp::Process(void *instance) {
   while (1) {
 
     app->Refresh();
-    lv_task_handler();
+
   }
 }
 
@@ -114,36 +115,28 @@ void DisplayApp::Refresh() {
         OnTouchEvent();
         break;
       case Messages::ButtonPushed:
-        currentScreen->OnButtonPushed();
+        if(!currentScreen->OnButtonPushed()) {
+          systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
+        }
+        break;
     }
   }
 }
 
-bool first = true;
-
 void DisplayApp::RunningState() {
 //  clockScreen.SetCurrentDateTime(dateTimeController.CurrentDateTime());
 
-  if(currentScreen != nullptr) {
-    currentScreen->Refresh(first);
-    if(currentScreen->GetNextScreen() != Screens::Screen::NextScreen::None) {
-      switch(currentScreen->GetNextScreen()) {
-        case Screens::Screen::NextScreen::Clock:
-          currentScreen.reset(nullptr);
-          currentScreen.reset(new Screens::Clock(this, gfx, dateTimeController));
-          break;
-        case Screens::Screen::NextScreen::Menu:
-          currentScreen.reset(nullptr);
-          currentScreen.reset(new Screens::Tile(this, gfx));
-          break;
-        case Screens::Screen::NextScreen::App:
-          currentScreen.reset(nullptr);
-          currentScreen.reset(new Screens::Message(this, gfx));
-          break;
-      }
+  if(!currentScreen->Refresh(true)) {
+    currentScreen.reset(nullptr);
+    switch(nextApp) {
+      case Apps::None:
+      case Apps::Launcher: currentScreen.reset(new Screens::Tile(this)); break;
+      case Apps::Clock: currentScreen.reset(new Screens::Clock(this, dateTimeController)); break;
+//      case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
     }
-    first = false;
+    nextApp = Apps::None;
   }
+  lv_task_handler();
 }
 
 void DisplayApp::IdleState() {
@@ -168,4 +161,8 @@ void DisplayApp::OnTouchEvent() {
 //    gfx.FillRectangle(info.x-10, info.y-10, 20,20, pointColor);
 //    pointColor+=10;
 //  }
+}
+
+void DisplayApp::StartApp(DisplayApp::Apps app) {
+  nextApp = app;
 }

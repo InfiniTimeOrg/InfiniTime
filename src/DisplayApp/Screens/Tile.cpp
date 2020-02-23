@@ -22,8 +22,7 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
 
 static const char * btnm_map1[] = {"App1", "App2", "App3", "\n", "App4", "App5", "App11", ""};
 
-Tile::Tile(DisplayApp* app, Pinetime::Components::Gfx &gfx) : Screen(app, gfx) {
-
+Tile::Tile(DisplayApp* app) : Screen(app) {
   static lv_point_t valid_pos[] = {{0,0}, {LV_COORD_MIN, LV_COORD_MIN}};
   tileview = lv_tileview_create(lv_scr_act(), NULL);
   lv_tileview_set_valid_positions(tileview, valid_pos, 1);
@@ -38,11 +37,16 @@ Tile::Tile(DisplayApp* app, Pinetime::Components::Gfx &gfx) : Screen(app, gfx) {
   lv_btnm_set_map(btnm1, btnm_map1);
   lv_obj_set_size(btnm1, LV_HOR_RES, LV_VER_RES);
 
-  labelStyle = const_cast<lv_style_t *>(lv_label_get_style(btnm1, LV_BTNM_STYLE_BTN_REL));
-  labelStyle->text.font = &jetbrains_mono_bold_20;
-  labelStyle->body.grad_color = labelStyle->body.main_color;
-  lv_btnm_set_style(btnm1, LV_BTNM_STYLE_BTN_REL, labelStyle);
-  lv_btnm_set_style(btnm1, LV_BTNM_STYLE_BTN_PR, labelStyle);
+  labelRelStyle = const_cast<lv_style_t *>(lv_label_get_style(btnm1, LV_BTNM_STYLE_BTN_REL));
+  labelRelStyle->text.font = &jetbrains_mono_bold_20;
+  labelRelStyle->body.grad_color = labelRelStyle->body.main_color;
+  lv_btnm_set_style(btnm1, LV_BTNM_STYLE_BTN_REL, labelRelStyle);
+
+  labelPrStyle = const_cast<lv_style_t *>(lv_label_get_style(btnm1, LV_BTNM_STYLE_BTN_PR));
+  labelPrStyle->text.font = &jetbrains_mono_bold_20;
+  labelPrStyle->body.grad_color = labelPrStyle->body.shadow.color;
+//  lv_btnm_set_style(btnm1, LV_BTNM_STYLE_BTN_PR, labelPrStyle);
+//TODO better style handling
 
   lv_obj_align(btnm1, tile1, LV_ALIGN_CENTER, 0, 0);
   btnm1->user_data = this;
@@ -100,17 +104,28 @@ Tile::~Tile() {
   lv_obj_clean(lv_scr_act());
 }
 
-void Tile::Refresh(bool fullRefresh) {
-
+bool Tile::Refresh(bool fullRefresh) {
+  return running;
 }
 
 void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
+  auto* tile = static_cast<Tile*>(obj->user_data);
   if(event == LV_EVENT_CLICKED) {
-    NRF_LOG_INFO("Clicked");
-    nextScreen = Screen::NextScreen::App;
+
+    tile->StartApp();
     clickCount++;
   }
   else if(event == LV_EVENT_VALUE_CHANGED) {
-    NRF_LOG_INFO("Toggled");
   }
+}
+
+bool Tile::OnButtonPushed() {
+  app->StartApp(DisplayApp::Apps::Clock);
+  running = false;
+  return true;
+}
+
+void Tile::StartApp() {
+  app->StartApp(DisplayApp::Apps::Clock);
+  running = false;
 }

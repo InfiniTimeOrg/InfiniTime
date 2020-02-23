@@ -1,0 +1,7 @@
+#pragma once
+
+#include <FreeRTOS.h>
+#include <timers.h>
+
+void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action);
+void DebounceTimerCallback(TimerHandle_t xTimer);

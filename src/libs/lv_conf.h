@@ -123,7 +123,7 @@ typedef int16_t lv_coord_t;
  *==================*/
 
 /*1: Enable the Animations */
-#define LV_USE_ANIMATION        0
+#define LV_USE_ANIMATION        1
 #if LV_USE_ANIMATION
 
 /*Declare the type of the user data of animations (can be e.g. `void *`, `int`, `struct`)*/
@@ -563,7 +563,7 @@ typedef void * lv_obj_user_data_t;
 #define LV_USE_TILEVIEW     1
 #if LV_USE_TILEVIEW
 /*Time of slide animation [ms] (0: no animation)*/
-#  define LV_TILEVIEW_DEF_ANIM_TIME   0
+#  define LV_TILEVIEW_DEF_ANIM_TIME   300
 #endif
 
 /*Window (dependencies: lv_cont, lv_btn, lv_label, lv_img, lv_page)*/

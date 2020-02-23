@@ -156,17 +156,15 @@ list(APPEND SOURCE_FILES
   Logging/NrfLogger.cpp
   BlinkApp/BlinkApp.cpp
   DisplayApp/DisplayApp.cpp
-  DisplayApp/Fonts/lcdfont70.c
-  DisplayApp/Fonts/lcdfont14.c
   DisplayApp/Screens/Screen.cpp
   DisplayApp/Screens/Clock.cpp
-  DisplayApp/Screens/Message.cpp
+#  DisplayApp/Screens/Message.cpp
   DisplayApp/Screens/Tile.cpp
-  DisplayApp/Screens/Tab.cpp
+#  DisplayApp/Screens/Tab.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiMaster.cpp
-  Components/Gfx/Gfx.cpp
+#  Components/Gfx/Gfx.cpp
   BLE/BleManager.c
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
@@ -180,6 +178,8 @@ list(APPEND SOURCE_FILES
   DisplayApp/LittleVgl.cpp
   DisplayApp/Fonts/jetbrains_mono_extrabold_compressed.c
   DisplayApp/Fonts/jetbrains_mono_bold_20.c
+
+  SystemTask/SystemTask.cpp
 )
 
 set(INCLUDE_FILES
@@ -187,16 +187,13 @@ set(INCLUDE_FILES
   Logging/NrfLogger.h
   BlinkApp/BlinkApp.h
   DisplayApp/DisplayApp.h
-  DisplayApp/Fonts/lcdfont70.h
-  DisplayApp/Fonts/lcdfont14.h
   DisplayApp/Screens/Screen.h
   DisplayApp/Screens/Clock.h
-  DisplayApp/Screens/Message.h
+#  DisplayApp/Screens/Message.h
   DisplayApp/Screens/Tile.h
-  DisplayApp/Screens/Tab.h
+#  DisplayApp/Screens/Tab.h
   drivers/St7789.h
   drivers/SpiMaster.h
-  Components/Gfx/Gfx.h
   BLE/BleManager.h
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
@@ -214,6 +211,8 @@ set(INCLUDE_FILES
   libs/date/includes/date/tz_private.h
 
   DisplayApp/LittleVgl.h
+
+  SystemTask/SystemTask.h
 )
 
 include_directories(

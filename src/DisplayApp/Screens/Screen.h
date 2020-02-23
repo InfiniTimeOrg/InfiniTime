@@ -9,16 +9,18 @@ namespace Pinetime {
       class Screen {
         public:
           enum class NextScreen {None, Clock, Menu, App};
-          Screen(DisplayApp* app, Components::Gfx& gfx) : app{app}, gfx{gfx} {}
+
+          Screen(DisplayApp* app) : app{app} {}
           virtual ~Screen() = default;
-          virtual void Refresh(bool fullRefresh) = 0;
-          NextScreen GetNextScreen() {return nextScreen;}
-          virtual void OnButtonPushed() {};
+
+          // Return false if the app can be closed, true if it must continue to run
+          virtual bool Refresh(bool fullRefresh) = 0;
+
+          // Return false if the button hasn't been handled by the app, true if it has been handled
+          virtual bool OnButtonPushed() { return false; }
 
         protected:
           DisplayApp* app;
-          Components::Gfx& gfx;
-          NextScreen nextScreen = NextScreen::None;
       };
     }
   }

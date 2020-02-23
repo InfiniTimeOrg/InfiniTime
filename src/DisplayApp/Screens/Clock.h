@@ -35,9 +35,11 @@ namespace Pinetime {
       class Clock : public Screen{
         public:
           enum class BleConnectionStates{ NotConnected, Connected};
-          Clock(DisplayApp* app, Components::Gfx& gfx, Controllers::DateTime& dateTimeController);
+          Clock(DisplayApp* app, Controllers::DateTime& dateTimeController);
           ~Clock() override;
-          void Refresh(bool fullRefresh) override;
+
+          bool Refresh(bool fullRefresh) override;
+          bool OnButtonPushed() override;
 
           void SetBatteryPercentRemaining(uint8_t percent) { batteryPercentRemaining = percent; }
           void SetBleConnectionState(BleConnectionStates state) { bleState = state; }
@@ -51,9 +53,6 @@ namespace Pinetime {
           static char const *MonthsString[];
 
           char displayedChar[5];
-
-          const FONT_INFO largeFont {lCD_70ptFontInfo.height, lCD_70ptFontInfo.startChar, lCD_70ptFontInfo.endChar, lCD_70ptFontInfo.spacePixels, lCD_70ptFontInfo.charInfo, lCD_70ptFontInfo.data};
-          const FONT_INFO smallFont {lCD_14ptFontInfo.height, lCD_14ptFontInfo.startChar, lCD_14ptFontInfo.endChar, lCD_14ptFontInfo.spacePixels, lCD_14ptFontInfo.charInfo, lCD_14ptFontInfo.data};
 
           uint16_t currentYear = 1970;
           Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
@@ -76,6 +75,8 @@ namespace Pinetime {
           lv_obj_t* backgroundLabel;
 
           Controllers::DateTime& dateTimeController;
+
+          bool running = true;
 
       };
     }

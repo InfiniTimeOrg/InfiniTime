@@ -18,10 +18,10 @@
 #include "../drivers/Cst816s.h"
 #include <drivers/St7789.h>
 #include <drivers/SpiMaster.h>
-#include <Components/Gfx/Gfx.h>
 
 #include <lvgl/lvgl.h>
 #include <DisplayApp/LittleVgl.h>
+#include <SystemTask/SystemTask.h>
 
 #if NRF_LOG_ENABLED
 #include "Logging/NrfLogger.h"
@@ -33,8 +33,6 @@ Pinetime::Logging::DummyLogger logger;
 
 std::unique_ptr<Pinetime::Drivers::SpiMaster> spi;
 std::unique_ptr<Pinetime::Drivers::St7789> lcd;
-Pinetime::Drivers::St7789* ptrLcd;
-std::unique_ptr<Pinetime::Components::Gfx> gfx;
 std::unique_ptr<Pinetime::Components::LittleVgl> lvgl;
 std::unique_ptr<Pinetime::Drivers::Cst816S> touchPanel;
 
@@ -45,34 +43,25 @@ static constexpr uint8_t pinSpiCsn = 25;
 static constexpr uint8_t pinLcdDataCommand = 18;
 
 
-std::unique_ptr<Pinetime::Applications::DisplayApp> displayApp;
-TaskHandle_t systemThread;
-bool isSleeping = false;
 TimerHandle_t debounceTimer;
 Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
 Pinetime::Controllers::DateTime dateTimeController;
-
-
 void ble_manager_set_ble_connection_callback(void (*connection)());
 void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
-static constexpr uint8_t pinButton = 13;
 static constexpr uint8_t pinTouchIrq = 28;
-QueueHandle_t systemTaksMsgQueue;
-enum class SystemTaskMessages {GoToSleep, GoToRunning};
-void SystemTask_PushMessage(SystemTaskMessages message);
+std::unique_ptr<Pinetime::System::SystemTask> systemTask;
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if(pin == pinTouchIrq) {
-    displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::TouchEvent);
-    if(!isSleeping) return;
+    systemTask->OnTouchEvent();
+    return ;
   }
 
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   xTimerStartFromISR(debounceTimer, &xHigherPriorityTaskWoken);
   portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
-
 
 extern "C" {
   void vApplicationIdleHook(void) {
@@ -82,118 +71,17 @@ extern "C" {
 
 void DebounceTimerCallback(TimerHandle_t xTimer) {
   xTimerStop(xTimer, 0);
-  /*if(isSleeping) {
-    SystemTask_PushMessage(SystemTaskMessages::GoToRunning);
-    displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToRunning);
-    isSleeping = false;
-    batteryController.Update();
-    displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBatteryLevel);
-  }
-  else {
-    SystemTask_PushMessage(SystemTaskMessages::GoToSleep);
-    displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
-    isSleeping = true;
-  }*/
-  displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::ButtonPushed);
-}
-
-void SystemTask_PushMessage(SystemTaskMessages message) {
-  BaseType_t xHigherPriorityTaskWoken;
-  xHigherPriorityTaskWoken = pdFALSE;
-  xQueueSendFromISR(systemTaksMsgQueue, &message, &xHigherPriorityTaskWoken);
-  if (xHigherPriorityTaskWoken) {
-    /* Actual macro used here is port specific. */
-    // TODO : should I do something here?
-  }
-}
-
-// TODO The whole SystemTask should go in its own class
-// BUT... it has to work with pure C callback (nrfx_gpiote_evt_handler) and i've still not found
-// a good design for that (the callback does not allow to pass a pointer to an instance...)
-void SystemTask(void *) {
-  APP_GPIOTE_INIT(2);
-  bool erase_bonds=false;
-//  nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
-
-  spi.reset(new Pinetime::Drivers::SpiMaster {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,  {
-          Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
-          Pinetime::Drivers::SpiMaster::Modes::Mode3,
-          Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
-          pinSpiSck,
-          pinSpiMosi,
-          pinSpiMiso,
-          pinSpiCsn
-  }});
-
-  lcd.reset(new Pinetime::Drivers::St7789(*spi, pinLcdDataCommand));
-  gfx.reset(new Pinetime::Components::Gfx(*lcd));
-  touchPanel.reset(new Pinetime::Drivers::Cst816S());
-
-  lvgl.reset(new Pinetime::Components::LittleVgl(*lcd, *touchPanel));
-  ptrLcd = lcd.get();
-
-  spi->Init();
-  lcd->Init();
-  touchPanel->Init();
-  batteryController.Init();
-
-  displayApp.reset(new Pinetime::Applications::DisplayApp(*lcd, *gfx, *lvgl, *touchPanel, batteryController, bleController, dateTimeController));
-  displayApp->Start();
-
-  batteryController.Update();
-  displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBatteryLevel);
-
-  debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
-
-  nrf_gpio_cfg_sense_input(pinButton, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pulldown, (nrf_gpio_pin_sense_t)GPIO_PIN_CNF_SENSE_High);
-  nrf_gpio_cfg_output(15);
-  nrf_gpio_pin_set(15);
-
-  nrfx_gpiote_in_config_t pinConfig;
-  pinConfig.skip_gpio_setup = true;
-  pinConfig.hi_accuracy = false;
-  pinConfig.is_watcher = false;
-  pinConfig.sense = (nrf_gpiote_polarity_t)NRF_GPIOTE_POLARITY_HITOLO;
-  pinConfig.pull = (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pulldown;
-
-  nrfx_gpiote_in_init(pinButton, &pinConfig, nrfx_gpiote_evt_handler);
-
-  nrf_gpio_cfg_sense_input(pinTouchIrq, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup, (nrf_gpio_pin_sense_t)GPIO_PIN_CNF_SENSE_Low);
-
-  pinConfig.skip_gpio_setup = true;
-  pinConfig.hi_accuracy = false;
-  pinConfig.is_watcher = false;
-  pinConfig.sense = (nrf_gpiote_polarity_t)NRF_GPIOTE_POLARITY_HITOLO;
-  pinConfig.pull = (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pullup;
-
-  nrfx_gpiote_in_init(pinTouchIrq, &pinConfig, nrfx_gpiote_evt_handler);
-
-  systemTaksMsgQueue = xQueueCreate(10, 1);
-  bool systemTaskSleeping = false;
-
-  while(true) {
-    uint8_t msg;
-    if (xQueueReceive(systemTaksMsgQueue, &msg, systemTaskSleeping?3600000 : 1000)) {
-      SystemTaskMessages message = static_cast<SystemTaskMessages >(msg);
-      switch(message) {
-        case SystemTaskMessages::GoToRunning: systemTaskSleeping = false; break;
-        case SystemTaskMessages::GoToSleep: systemTaskSleeping = true; break;
-        default: break;
-      }
-    }
-    uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
-    dateTimeController.UpdateTime(systick_counter);
-  }
+  systemTask->OnButtonPushed();
 }
 
 void OnBleConnection() {
   bleController.Connect();
-  displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBleConnection);
+  // TODO Notify system/Display app
 }
 
 void OnBleDisconnection() {
   bleController.Disconnect();
-  displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBleConnection);
+  // TODO Notify system/Display app
 }
 
 void OnNewTime(current_time_char_t* currentTime) {
@@ -224,12 +112,28 @@ void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
     NRF_SPIM0->EVENTS_STOPPED = 0;
   }
 }
+
 int main(void) {
   logger.Init();
   nrf_drv_clock_init();
 
-  if (pdPASS != xTaskCreate(SystemTask, "MAIN", 256, nullptr, 0, &systemThread))
-    APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+  spi.reset(new Pinetime::Drivers::SpiMaster {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,  {
+          Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
+          Pinetime::Drivers::SpiMaster::Modes::Mode3,
+          Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
+          pinSpiSck,
+          pinSpiMosi,
+          pinSpiMiso,
+          pinSpiCsn
+  }});
+  lcd.reset(new Pinetime::Drivers::St7789(*spi, pinLcdDataCommand));
+  touchPanel.reset(new Pinetime::Drivers::Cst816S());
+  lvgl.reset(new Pinetime::Components::LittleVgl(*lcd, *touchPanel));
+  debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
+
+  systemTask.reset(new Pinetime::System::SystemTask(*spi, *lcd, *touchPanel, *lvgl, batteryController, bleController, dateTimeController));
+  systemTask->Start();
+
 /*
   ble_manager_init();
   ble_manager_set_new_time_callback(OnNewTime);
