@@ -160,11 +160,10 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/Clock.cpp
   DisplayApp/Screens/Message.cpp
   DisplayApp/Screens/Tile.cpp
-#  DisplayApp/Screens/Tab.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiMaster.cpp
-#  Components/Gfx/Gfx.cpp
+  drivers/Watchdog.cpp
   BLE/BleManager.c
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
@@ -194,6 +193,7 @@ set(INCLUDE_FILES
 #  DisplayApp/Screens/Tab.h
   drivers/St7789.h
   drivers/SpiMaster.h
+  drivers/Watchdog.h
   BLE/BleManager.h
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h

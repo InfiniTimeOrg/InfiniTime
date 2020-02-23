@@ -7,6 +7,7 @@
 #include <drivers/St7789.h>
 #include <Components/Battery/BatteryController.h>
 #include <DisplayApp/DisplayApp.h>
+#include <drivers/Watchdog.h>
 
 namespace Pinetime {
   namespace System {
@@ -41,6 +42,7 @@ namespace Pinetime {
         Pinetime::Controllers::DateTime& dateTimeController;
         QueueHandle_t systemTaksMsgQueue;
         bool isSleeping = false;
+        Pinetime::Drivers::Watchdog watchdog;
 
 
         static constexpr uint8_t pinSpiSck = 2;

@@ -29,6 +29,9 @@ void SystemTask::Process(void *instance) {
 }
 
 void SystemTask::Work() {
+  watchdog.Setup(7);
+  watchdog.Start();
+  NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
   bool erase_bonds=false;
   nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
@@ -70,7 +73,7 @@ void SystemTask::Work() {
 
   while(true) {
     uint8_t msg;
-    if (xQueueReceive(systemTaksMsgQueue, &msg, isSleeping?3600000 : 1000)) {
+    if (xQueueReceive(systemTaksMsgQueue, &msg, isSleeping?2500 : 1000)) {
       Messages message = static_cast<Messages >(msg);
       switch(message) {
         case Messages::GoToRunning: isSleeping = false; break;
@@ -83,6 +86,9 @@ void SystemTask::Work() {
     }
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);
+
+    if(!nrf_gpio_pin_read(pinButton))
+      watchdog.Kick();
   }
 }
 
