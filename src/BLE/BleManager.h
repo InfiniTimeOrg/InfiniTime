@@ -1,4 +1,5 @@
 #pragma once
+#include <ble/ble_services/ble_cts_c/ble_cts_c.h>
 
 #ifdef __cplusplus
 extern "C" {

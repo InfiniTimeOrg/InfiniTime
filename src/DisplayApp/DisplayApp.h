@@ -14,7 +14,6 @@
 #include "LittleVgl.h"
 #include <date/date.h>
 #include <DisplayApp/Screens/Clock.h>
-//#include <DisplayApp/Screens/Message.h>
 
 
 namespace Pinetime {

@@ -1,14 +1,8 @@
-#include <cstdio>
-#include <libs/date/includes/date/date.h>
-#include <Components/DateTime/DateTimeController.h>
-#include <Version.h>
 #include <libs/lvgl/src/lv_core/lv_obj.h>
 #include <libs/lvgl/src/lv_font/lv_font.h>
 #include <libs/lvgl/lvgl.h>
-#include <libraries/log/nrf_log.h>
 #include "Tile.h"
 #include <DisplayApp/DisplayApp.h>
-#include <libs/lvgl/src/lv_core/lv_style.h>
 
 
 using namespace Pinetime::Applications::Screens;
@@ -17,7 +11,9 @@ extern lv_font_t jetbrains_mono_bold_20;
 
 static void event_handler(lv_obj_t * obj, lv_event_t event) {
   Tile* screen = static_cast<Tile *>(obj->user_data);
-  screen->OnObjectEvent(obj, event);
+  uint32_t* eventDataPtr = (uint32_t*) lv_event_get_data();
+  uint32_t eventData = *eventDataPtr;
+  screen->OnObjectEvent(obj, event, eventData);
 }
 
 static const char * btnm_map1[] = {"App1", "App2", "App3", "\n", "App4", "App5", "App11", ""};
@@ -104,18 +100,27 @@ Tile::~Tile() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool Tile::Refresh(bool fullRefresh) {
+bool Tile::Refresh() {
   return running;
 }
 
-void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
+void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event, uint32_t buttonId) {
   auto* tile = static_cast<Tile*>(obj->user_data);
-  if(event == LV_EVENT_CLICKED) {
+  if(event == LV_EVENT_VALUE_CHANGED) {
+    switch(buttonId) {
+      case 0:
+      case 1:
+      case 2:
+        tile->StartClockApp();
+        break;
+      case 3:
+      case 4:
+      case 5:
+        tile->StartTestApp();
 
-    tile->StartApp();
+        break;
+    }
     clickCount++;
-  }
-  else if(event == LV_EVENT_VALUE_CHANGED) {
   }
 }
 
@@ -125,7 +130,12 @@ bool Tile::OnButtonPushed() {
   return true;
 }
 
-void Tile::StartApp() {
+void Tile::StartClockApp() {
   app->StartApp(DisplayApp::Apps::Clock);
+  running = false;
+}
+
+void Tile::StartTestApp() {
+  app->StartApp(DisplayApp::Apps::Test);
   running = false;
 }

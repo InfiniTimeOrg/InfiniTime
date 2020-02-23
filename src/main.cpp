@@ -1,25 +1,19 @@
 #include <FreeRTOS.h>
 #include <task.h>
-#include <libraries/bsp/bsp.h>
 #include <legacy/nrf_drv_clock.h>
 #include <libraries/timer/app_timer.h>
 #include <libraries/gpiote/app_gpiote.h>
 #include <DisplayApp/DisplayApp.h>
 #include <softdevice/common/nrf_sdh.h>
-#include <softdevice/common/nrf_sdh_freertos.h>
 #include <hal/nrf_rtc.h>
 #include <timers.h>
-#include <libraries/log/nrf_log.h>
 #include <ble/ble_services/ble_cts_c/ble_cts_c.h>
 #include <Components/DateTime/DateTimeController.h>
 #include "BLE/BleManager.h"
 #include "Components/Battery/BatteryController.h"
 #include "Components/Ble/BleController.h"
-#include "../drivers/Cst816s.h"
 #include <drivers/St7789.h>
 #include <drivers/SpiMaster.h>
-
-#include <lvgl/lvgl.h>
 #include <DisplayApp/LittleVgl.h>
 #include <SystemTask/SystemTask.h>
 
@@ -134,12 +128,11 @@ int main(void) {
   systemTask.reset(new Pinetime::System::SystemTask(*spi, *lcd, *touchPanel, *lvgl, batteryController, bleController, dateTimeController));
   systemTask->Start();
 
-/*
   ble_manager_init();
   ble_manager_set_new_time_callback(OnNewTime);
   ble_manager_set_ble_connection_callback(OnBleConnection);
   ble_manager_set_ble_disconnection_callback(OnBleDisconnection);
-*/
+
   vTaskStartScheduler();
 
   for (;;) {

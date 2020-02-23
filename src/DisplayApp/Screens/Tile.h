@@ -18,10 +18,10 @@ namespace Pinetime {
           explicit Tile(DisplayApp* app);
           ~Tile() override;
 
-          bool Refresh(bool fullRefresh) override;
+          bool Refresh() override;
           bool OnButtonPushed() override;
 
-          void OnObjectEvent(lv_obj_t* obj, lv_event_t event);
+          void OnObjectEvent(lv_obj_t* obj, lv_event_t event, uint32_t buttonId);
 
         private:
 
@@ -50,7 +50,8 @@ namespace Pinetime {
 
           uint32_t clickCount = 0 ;
           uint32_t previousClickCount = 0;
-          void StartApp();
+          void StartClockApp();
+          void StartTestApp();
           bool running = true;
       };
     }

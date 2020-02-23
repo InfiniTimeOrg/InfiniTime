@@ -15,7 +15,11 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event);
 }
 
-Clock::Clock(DisplayApp* app, Controllers::DateTime& dateTimeController) : Screen(app), currentDateTime{{}}, version {{}}, dateTimeController{dateTimeController} {
+Clock::Clock(DisplayApp* app,
+        Controllers::DateTime& dateTimeController,
+        Controllers::Battery& batteryController,
+        Controllers::Ble& bleController) : Screen(app), currentDateTime{{}}, version {{}},
+                                           dateTimeController{dateTimeController}, batteryController{batteryController}, bleController{bleController} {
   displayedChar[0] = 0;
   displayedChar[1] = 0;
   displayedChar[2] = 0;
@@ -65,12 +69,9 @@ Clock::~Clock() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool Clock::Refresh(bool fullRefresh) {
-  if(fullRefresh) {
-    auto currentDateTime = dateTimeController.CurrentDateTime();
-  }
-
-  if (fullRefresh || batteryPercentRemaining.IsUpdated()) {
+bool Clock::Refresh() {
+  batteryPercentRemaining = batteryController.PercentRemaining();
+  if (batteryPercentRemaining.IsUpdated()) {
     char batteryChar[11];
     auto newBatteryValue = batteryPercentRemaining.Get();
     newBatteryValue = (newBatteryValue > 100) ? 100 : newBatteryValue;
@@ -80,8 +81,9 @@ bool Clock::Refresh(bool fullRefresh) {
     lv_label_set_text(label_battery, batteryChar);
   }
 
-  if (fullRefresh || bleState.IsUpdated()) {
-    if(bleState.Get() == BleConnectionStates::Connected) {
+  bleState = bleController.IsConnected();
+  if (bleState.IsUpdated()) {
+    if(bleState.Get() == true) {
       lv_obj_set_hidden(label_ble, false);
       lv_label_set_text(label_ble, "BLE");
     } else {
@@ -91,7 +93,7 @@ bool Clock::Refresh(bool fullRefresh) {
 
   currentDateTime = dateTimeController.CurrentDateTime();
 
-  if(fullRefresh || currentDateTime.IsUpdated()) {
+  if(currentDateTime.IsUpdated()) {
     auto newDateTime = currentDateTime.Get();
 
     auto dp = date::floor<date::days>(newDateTime);
@@ -138,7 +140,7 @@ bool Clock::Refresh(bool fullRefresh) {
     }
   }
 
-  if(fullRefresh || version.IsUpdated()) {
+  if(version.IsUpdated()) {
     auto dummy = version.Get();
     char versionStr[20];
     sprintf(versionStr, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());

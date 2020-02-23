@@ -15,15 +15,13 @@ namespace Pinetime {
     namespace Screens {
       class Message : public Screen{
         public:
-          explicit Message(DisplayApp* app, Components::Gfx& gfx);
+          explicit Message(DisplayApp* app);
           ~Message() override;
-          void Refresh(bool fullRefresh) override;
+          bool Refresh() override;
+          bool OnButtonPushed();
           void OnObjectEvent(lv_obj_t* obj, lv_event_t event);
-          void OnButtonPushed() override { nextScreen = Screen::NextScreen::Menu; }
 
         private:
-          const FONT_INFO largeFont {lCD_70ptFontInfo.height, lCD_70ptFontInfo.startChar, lCD_70ptFontInfo.endChar, lCD_70ptFontInfo.spacePixels, lCD_70ptFontInfo.charInfo, lCD_70ptFontInfo.data};
-          const FONT_INFO smallFont {lCD_14ptFontInfo.height, lCD_14ptFontInfo.startChar, lCD_14ptFontInfo.endChar, lCD_14ptFontInfo.spacePixels, lCD_14ptFontInfo.charInfo, lCD_14ptFontInfo.data};
 
           lv_style_t* labelStyle;
           lv_obj_t * label;
@@ -33,6 +31,7 @@ namespace Pinetime {
 
           uint32_t clickCount = 0 ;
           uint32_t previousClickCount = 0;
+          bool running = true;
       };
     }
   }

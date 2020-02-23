@@ -19,7 +19,7 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event);
 }
 
-Message::Message(DisplayApp* app, Pinetime::Components::Gfx &gfx) : Screen(app, gfx) {
+Message::Message(DisplayApp* app) : Screen(app) {
 
   backgroundLabel = lv_label_create(lv_scr_act(), NULL);
   backgroundLabel->user_data = this;
@@ -55,11 +55,13 @@ Message::~Message() {
   lv_obj_clean(lv_scr_act());
 }
 
-void Message::Refresh(bool fullRefresh) {
+bool Message::Refresh() {
   if(previousClickCount != clickCount) {
     lv_label_set_text_fmt(labelClick, "%d", clickCount);
     previousClickCount = clickCount;
   }
+
+  return running;
 }
 
 void Message::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
@@ -78,4 +80,9 @@ void Message::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
   else if(event == LV_EVENT_VALUE_CHANGED) {
     NRF_LOG_INFO("Toggled");
   }
+}
+
+bool Message::OnButtonPushed() {
+  running = false;
+  return true;
 }

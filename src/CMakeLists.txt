@@ -158,7 +158,7 @@ list(APPEND SOURCE_FILES
   DisplayApp/DisplayApp.cpp
   DisplayApp/Screens/Screen.cpp
   DisplayApp/Screens/Clock.cpp
-#  DisplayApp/Screens/Message.cpp
+  DisplayApp/Screens/Message.cpp
   DisplayApp/Screens/Tile.cpp
 #  DisplayApp/Screens/Tab.cpp
   main.cpp
@@ -189,7 +189,7 @@ set(INCLUDE_FILES
   DisplayApp/DisplayApp.h
   DisplayApp/Screens/Screen.h
   DisplayApp/Screens/Clock.h
-#  DisplayApp/Screens/Message.h
+  DisplayApp/Screens/Message.h
   DisplayApp/Screens/Tile.h
 #  DisplayApp/Screens/Tab.h
   drivers/St7789.h

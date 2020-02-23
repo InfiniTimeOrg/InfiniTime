@@ -4,17 +4,14 @@
 #include <libraries/log/nrf_log.h>
 #include <boards.h>
 #include <nrf_font.h>
-#include <hal/nrf_rtc.h>
-#include "Components/Gfx/Gfx.h"
 #include <queue.h>
 #include <Components/DateTime/DateTimeController.h>
 #include <drivers/Cst816s.h>
-#include <chrono>
 #include <string>
 #include <lvgl/lvgl.h>
 #include <DisplayApp/Screens/Tile.h>
+#include <DisplayApp/Screens/Message.h>
 #include "../SystemTask/SystemTask.h"
-//#include <DisplayApp/Screens/Tab.h>
 
 using namespace Pinetime::Applications;
 
@@ -31,7 +28,7 @@ DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
         batteryController{batteryController},
         bleController{bleController},
         dateTimeController{dateTimeController},
-        currentScreen{new Screens::Clock(this, dateTimeController) },
+        currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController) },
         systemTask{systemTask} {
   msgQueue = xQueueCreate(queueSize, itemSize);
 }
@@ -126,13 +123,13 @@ void DisplayApp::Refresh() {
 void DisplayApp::RunningState() {
 //  clockScreen.SetCurrentDateTime(dateTimeController.CurrentDateTime());
 
-  if(!currentScreen->Refresh(true)) {
+  if(!currentScreen->Refresh()) {
     currentScreen.reset(nullptr);
     switch(nextApp) {
       case Apps::None:
       case Apps::Launcher: currentScreen.reset(new Screens::Tile(this)); break;
-      case Apps::Clock: currentScreen.reset(new Screens::Clock(this, dateTimeController)); break;
-//      case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
+      case Apps::Clock: currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController)); break;
+      case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
     }
     nextApp = Apps::None;
   }
@@ -158,7 +155,7 @@ void DisplayApp::OnTouchEvent() {
 //  auto info = touchPanel.GetTouchInfo();
 //
 //  if(info.isTouch) {
-//    gfx.FillRectangle(info.x-10, info.y-10, 20,20, pointColor);
+//    lcd.DrawPixel(info.x, info.y, pointColor);
 //    pointColor+=10;
 //  }
 }

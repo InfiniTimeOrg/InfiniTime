@@ -7,6 +7,8 @@
 #include <bits/unique_ptr.h>
 #include <libs/lvgl/src/lv_core/lv_style.h>
 #include <libs/lvgl/src/lv_core/lv_obj.h>
+#include <Components/Battery/BatteryController.h>
+#include <Components/Ble/BleController.h>
 #include "../Fonts/lcdfont14.h"
 #include "../Fonts/lcdfont70.h"
 #include "../../Version.h"
@@ -24,8 +26,10 @@ namespace Pinetime {
           T& Get() { this->isUpdated = false; return value; }
 
           DirtyValue& operator=(const T& other) {
-            this->value = other;
-            this->isUpdated = true;
+            if (this->value != other) {
+              this->value = other;
+              this->isUpdated = true;
+            }
             return *this;
           }
         private:
@@ -34,16 +38,14 @@ namespace Pinetime {
       };
       class Clock : public Screen{
         public:
-          enum class BleConnectionStates{ NotConnected, Connected};
-          Clock(DisplayApp* app, Controllers::DateTime& dateTimeController);
+          Clock(DisplayApp* app,
+                  Controllers::DateTime& dateTimeController,
+                  Controllers::Battery& batteryController,
+                  Controllers::Ble& bleController);
           ~Clock() override;
 
-          bool Refresh(bool fullRefresh) override;
+          bool Refresh() override;
           bool OnButtonPushed() override;
-
-          void SetBatteryPercentRemaining(uint8_t percent) { batteryPercentRemaining = percent; }
-          void SetBleConnectionState(BleConnectionStates state) { bleState = state; }
-          void SetCurrentDateTime(const std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>& tp) { currentDateTime = tp;}
 
           void OnObjectEvent(lv_obj_t *pObj, lv_event_t i);
         private:
@@ -60,7 +62,7 @@ namespace Pinetime {
           uint8_t currentDay = 0;
 
           DirtyValue<uint8_t> batteryPercentRemaining  {0};
-          DirtyValue<BleConnectionStates> bleState {BleConnectionStates::NotConnected};
+          DirtyValue<bool> bleState {false};
           DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>> currentDateTime;
           DirtyValue<Pinetime::Version> version;
 
@@ -75,6 +77,8 @@ namespace Pinetime {
           lv_obj_t* backgroundLabel;
 
           Controllers::DateTime& dateTimeController;
+          Controllers::Battery& batteryController;
+          Controllers::Ble& bleController;
 
           bool running = true;
 

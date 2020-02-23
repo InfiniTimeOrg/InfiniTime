@@ -3,6 +3,8 @@
 #include <drivers/Cst816s.h>
 #include <DisplayApp/LittleVgl.h>
 #include <hal/nrf_rtc.h>
+#include <BLE/BleManager.h>
+#include <softdevice/common/nrf_sdh_freertos.h>
 #include "SystemTask.h"
 #include "../main.h"
 using namespace Pinetime::System;
@@ -16,7 +18,7 @@ SystemTask::SystemTask(Pinetime::Drivers::SpiMaster &spi, Pinetime::Drivers::St7
 }
 
 void SystemTask::Start() {
-  if (pdPASS != xTaskCreate(SystemTask::Process, "MAIN", 256, this, 0, &taskHandle))
+  if (pdPASS != xTaskCreate(SystemTask::Process, "MAIN", 350, this, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }
 
@@ -29,7 +31,7 @@ void SystemTask::Process(void *instance) {
 void SystemTask::Work() {
   APP_GPIOTE_INIT(2);
   bool erase_bonds=false;
-//  nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
+  nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
 
   spi.Init();
   lcd.Init();
