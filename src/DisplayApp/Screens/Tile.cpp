@@ -16,9 +16,11 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event, eventData);
 }
 
-static const char * btnm_map1[] = {"App1", "App2", "App3", "\n", "App4", "App5", "App11", ""};
+static const char * btnm_map1[] = {"Meter", "Gauge", "Clock", "\n", "App4", "App5", "App11", ""};
 
 Tile::Tile(DisplayApp* app) : Screen(app) {
+  modal.reset(new Modal(app));
+
   static lv_point_t valid_pos[] = {{0,0}, {LV_COORD_MIN, LV_COORD_MIN}};
   tileview = lv_tileview_create(lv_scr_act(), NULL);
   lv_tileview_set_valid_positions(tileview, valid_pos, 1);
@@ -109,11 +111,17 @@ void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event, uint32_t buttonId) {
   if(event == LV_EVENT_VALUE_CHANGED) {
     switch(buttonId) {
       case 0:
+        tile->StartMeterApp();
+        break;
       case 1:
+        tile->StartGaugeApp();
+        break;
       case 2:
         tile->StartClockApp();
         break;
       case 3:
+        modal->Show();
+        break;
       case 4:
       case 5:
         tile->StartTestApp();
@@ -139,3 +147,14 @@ void Tile::StartTestApp() {
   app->StartApp(DisplayApp::Apps::Test);
   running = false;
 }
+
+void Tile::StartMeterApp() {
+  app->StartApp(DisplayApp::Apps::Meter);
+  running = false;
+}
+
+void Tile::StartGaugeApp() {
+  app->StartApp(DisplayApp::Apps::Gauge);
+  running = false;
+}
+

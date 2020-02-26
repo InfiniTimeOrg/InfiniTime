@@ -48,6 +48,8 @@ set(LVGL_SRC
 
   libs/lvgl/src/lv_misc/lv_anim.c
   libs/lvgl/src/lv_misc/lv_anim.h
+  libs/lvgl/src/lv_misc/lv_async.h
+  libs/lvgl/src/lv_misc/lv_async.c
   libs/lvgl/src/lv_misc/lv_fs.c
   libs/lvgl/src/lv_misc/lv_fs.h
   libs/lvgl/src/lv_misc/lv_task.c
@@ -149,6 +151,15 @@ set(LVGL_SRC
   libs/lvgl/src/lv_objx/lv_page.h
   libs/lvgl/src/lv_objx/lv_img.c
   libs/lvgl/src/lv_objx/lv_img.h
+  libs/lvgl/src/lv_objx/lv_lmeter.c
+  libs/lvgl/src/lv_objx/lv_lmeter.h
+  libs/lvgl/src/lv_objx/lv_arc.c
+  libs/lvgl/src/lv_objx/lv_arc.h
+  libs/lvgl/src/lv_objx/lv_gauge.c
+  libs/lvgl/src/lv_objx/lv_gauge.h
+
+  libs/lvgl/src/lv_objx/lv_mbox.c
+  libs/lvgl/src/lv_objx/lv_mbox.h
 
   )
 
@@ -160,6 +171,9 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/Clock.cpp
   DisplayApp/Screens/Message.cpp
   DisplayApp/Screens/Tile.cpp
+  DisplayApp/Screens/Meter.cpp
+  DisplayApp/Screens/Gauge.cpp
+  DisplayApp/Screens/Modal.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiMaster.cpp
@@ -190,6 +204,9 @@ set(INCLUDE_FILES
   DisplayApp/Screens/Clock.h
   DisplayApp/Screens/Message.h
   DisplayApp/Screens/Tile.h
+  DisplayApp/Screens/Meter.h
+  DisplayApp/Screens/Gauge.h
+  DisplayApp/Screens/Modal.h
 #  DisplayApp/Screens/Tab.h
   drivers/St7789.h
   drivers/SpiMaster.h

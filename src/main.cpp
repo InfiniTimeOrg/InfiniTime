@@ -128,10 +128,10 @@ int main(void) {
   systemTask.reset(new Pinetime::System::SystemTask(*spi, *lcd, *touchPanel, *lvgl, batteryController, bleController, dateTimeController));
   systemTask->Start();
 
-  ble_manager_init();
-  ble_manager_set_new_time_callback(OnNewTime);
-  ble_manager_set_ble_connection_callback(OnBleConnection);
-  ble_manager_set_ble_disconnection_callback(OnBleDisconnection);
+//  ble_manager_init();
+//  ble_manager_set_new_time_callback(OnNewTime);
+//  ble_manager_set_ble_connection_callback(OnBleConnection);
+//  ble_manager_set_ble_disconnection_callback(OnBleDisconnection);
 
   vTaskStartScheduler();
 

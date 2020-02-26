@@ -11,6 +11,8 @@
 #include <lvgl/lvgl.h>
 #include <DisplayApp/Screens/Tile.h>
 #include <DisplayApp/Screens/Message.h>
+#include <DisplayApp/Screens/Meter.h>
+#include <DisplayApp/Screens/Gauge.h>
 #include "../SystemTask/SystemTask.h"
 
 using namespace Pinetime::Applications;
@@ -130,6 +132,8 @@ void DisplayApp::RunningState() {
       case Apps::Launcher: currentScreen.reset(new Screens::Tile(this)); break;
       case Apps::Clock: currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController)); break;
       case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
+      case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
+      case Apps::Gauge: currentScreen.reset(new Screens::Gauge(this)); break;
     }
     nextApp = Apps::None;
   }

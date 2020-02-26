@@ -8,6 +8,7 @@
 #include "../Fonts/lcdfont14.h"
 #include "../Fonts/lcdfont70.h"
 #include "../../Version.h"
+#include "Modal.h"
 #include <lvgl/src/lv_core/lv_style.h>
 
 namespace Pinetime {
@@ -52,7 +53,11 @@ namespace Pinetime {
           uint32_t previousClickCount = 0;
           void StartClockApp();
           void StartTestApp();
+          void StartMeterApp();
+          void StartGaugeApp();
           bool running = true;
+
+          std::unique_ptr<Modal> modal;
       };
     }
   }

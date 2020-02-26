@@ -35,7 +35,7 @@ namespace Pinetime {
         void Start();
         void PushMessage(Messages msg);
 
-        enum class Apps {None, Launcher, Clock, Test};
+        enum class Apps {None, Launcher, Clock, Test, Meter, Gauge};
         void StartApp(Apps app);
 
       private:
