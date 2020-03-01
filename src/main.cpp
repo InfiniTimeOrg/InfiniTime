@@ -25,16 +25,25 @@ Pinetime::Logging::NrfLogger logger;
 Pinetime::Logging::DummyLogger logger;
 #endif
 
-std::unique_ptr<Pinetime::Drivers::SpiMaster> spi;
-std::unique_ptr<Pinetime::Drivers::St7789> lcd;
-std::unique_ptr<Pinetime::Components::LittleVgl> lvgl;
-std::unique_ptr<Pinetime::Drivers::Cst816S> touchPanel;
-
 static constexpr uint8_t pinSpiSck = 2;
 static constexpr uint8_t pinSpiMosi = 3;
 static constexpr uint8_t pinSpiMiso = 4;
 static constexpr uint8_t pinSpiCsn = 25;
 static constexpr uint8_t pinLcdDataCommand = 18;
+
+Pinetime::Drivers::SpiMaster spi{Pinetime::Drivers::SpiMaster::SpiModule::SPI0, {
+        Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
+        Pinetime::Drivers::SpiMaster::Modes::Mode3,
+        Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
+        pinSpiSck,
+        pinSpiMosi,
+        pinSpiMiso,
+        pinSpiCsn
+  }
+};
+Pinetime::Drivers::St7789 lcd {spi, pinLcdDataCommand};
+Pinetime::Drivers::Cst816S touchPanel {};
+Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 
 
 TimerHandle_t debounceTimer;
@@ -94,12 +103,12 @@ void OnNewTime(current_time_char_t* currentTime) {
 void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
   if(((NRF_SPIM0->INTENSET & (1<<6)) != 0) && NRF_SPIM0->EVENTS_END == 1) {
     NRF_SPIM0->EVENTS_END = 0;
-    spi->OnEndEvent();
+    spi.OnEndEvent();
   }
 
   if(((NRF_SPIM0->INTENSET & (1<<19)) != 0) && NRF_SPIM0->EVENTS_STARTED == 1) {
     NRF_SPIM0->EVENTS_STARTED = 0;
-    spi->OnStartedEvent();
+    spi.OnStartedEvent();
   }
 
   if(((NRF_SPIM0->INTENSET & (1<<1)) != 0) && NRF_SPIM0->EVENTS_STOPPED == 1) {
@@ -109,23 +118,28 @@ void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
 
 int main(void) {
   logger.Init();
+
+  nrf_gpio_cfg_output(27);
+  nrf_gpio_pin_clear(27);
+  nrf_gpio_cfg_output(29);
+  nrf_gpio_pin_clear(29);
+
+  nrf_gpio_cfg_output(20);
+  nrf_gpio_pin_clear(20);
+
+  nrf_gpio_cfg_output(17);
+  nrf_gpio_pin_clear(17);
+
+  nrf_gpio_cfg_output(11);
+  nrf_gpio_pin_clear(11);
+
+
+
   nrf_drv_clock_init();
 
-  spi.reset(new Pinetime::Drivers::SpiMaster {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,  {
-          Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
-          Pinetime::Drivers::SpiMaster::Modes::Mode3,
-          Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
-          pinSpiSck,
-          pinSpiMosi,
-          pinSpiMiso,
-          pinSpiCsn
-  }});
-  lcd.reset(new Pinetime::Drivers::St7789(*spi, pinLcdDataCommand));
-  touchPanel.reset(new Pinetime::Drivers::Cst816S());
-  lvgl.reset(new Pinetime::Components::LittleVgl(*lcd, *touchPanel));
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
-  systemTask.reset(new Pinetime::System::SystemTask(*spi, *lcd, *touchPanel, *lvgl, batteryController, bleController, dateTimeController));
+  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, touchPanel, lvgl, batteryController, bleController, dateTimeController));
   systemTask->Start();
 
 //  ble_manager_init();
