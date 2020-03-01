@@ -119,7 +119,7 @@ set(LVGL_SRC
   libs/lvgl/src/lv_font/lv_font.h
   libs/lvgl/src/lv_font/lv_font_fmt_txt.c
   libs/lvgl/src/lv_font/lv_font_fmt_txt.h
-  libs/lvgl/src/lv_font/lv_font_roboto_16.c
+#  libs/lvgl/src/lv_font/lv_font_roboto_16.c
   libs/lvgl/src/lv_font/lv_symbol_def.h
 
   libs/lvgl/src/lv_themes/lv_theme.c

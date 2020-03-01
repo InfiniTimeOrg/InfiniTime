@@ -299,7 +299,7 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
 /* Robot fonts with bpp = 4
  * https://fonts.google.com/specimen/Roboto  */
 #define LV_FONT_ROBOTO_12    0
-#define LV_FONT_ROBOTO_16    1
+#define LV_FONT_ROBOTO_16    0
 #define LV_FONT_ROBOTO_22    0
 #define LV_FONT_ROBOTO_28    0
 
@@ -320,7 +320,7 @@ typedef void * lv_indev_drv_user_data_t;            /*Type of user data in the i
 #define LV_FONT_CUSTOM_DECLARE
 
 /*Always set a default font from the built-in fonts*/
-#define LV_FONT_DEFAULT        &lv_font_roboto_16
+#define LV_FONT_DEFAULT        NULL; // The default font is specified in the custom theme.
 
 /* Enable it if you have fonts with a lot of characters.
  * The limit depends on the font size, font face and bpp
