@@ -178,6 +178,7 @@ list(APPEND SOURCE_FILES
   drivers/St7789.cpp
   drivers/SpiMaster.cpp
   drivers/Watchdog.cpp
+  drivers/DebugPins.cpp
   BLE/BleManager.c
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
@@ -211,6 +212,7 @@ set(INCLUDE_FILES
   drivers/St7789.h
   drivers/SpiMaster.h
   drivers/Watchdog.h
+  drivers/DebugPins.h
   BLE/BleManager.h
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
