@@ -16,7 +16,7 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event, eventData);
 }
 
-static const char * btnm_map1[] = {"Meter", "Gauge", "Clock", "\n", "App1", "App2", "App3", ""};
+static const char * btnm_map1[] = {"Meter", "Gauge", "Clock", "\n", "MsgBox", "App2", "App3", ""};
 
 Tile::Tile(DisplayApp* app) : Screen(app) {
   modal.reset(new Modal(app));
@@ -123,8 +123,8 @@ void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event, uint32_t buttonId) {
         tile->StartClockApp();
         break;
       case 3:
-//        modal->Show();
-//        break;
+        modal->Show();
+        break;
       case 4:
       case 5:
         tile->StartTestApp();

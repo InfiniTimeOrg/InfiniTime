@@ -45,13 +45,15 @@ void Modal::Show() {
   lv_obj_align(mbox, NULL, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_event_cb(mbox, Modal::mbox_event_cb);
 
+  mbox->user_data = this;
+
   /* Fade the message box in with an animation */
-//  lv_anim_t a;
-//  lv_anim_init(&a);
-//  lv_anim_set_time(&a, 500, 0);
-//  lv_anim_set_values(&a, LV_OPA_TRANSP, LV_OPA_COVER);
-//  lv_anim_set_exec_cb(&a, obj, (lv_anim_exec_xcb_t)lv_obj_set_opa_scale);
-//  lv_anim_create(&a);
+  lv_anim_t a;
+  lv_anim_init(&a);
+  lv_anim_set_time(&a, 500, 0);
+  lv_anim_set_values(&a, LV_OPA_TRANSP, LV_OPA_COVER);
+  lv_anim_set_exec_cb(&a, obj, (lv_anim_exec_xcb_t)lv_obj_set_opa_scale);
+  lv_anim_create(&a);
 }
 
 void Modal::Hide() {
@@ -67,11 +69,10 @@ void Modal::mbox_event_cb(lv_obj_t *obj, lv_event_t evt) {
 
 void Modal::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
   if(evt == LV_EVENT_DELETE && event_obj == mbox) {
-    /* Delete the parent modal background */
-    lv_obj_del_async(lv_obj_get_parent(mbox));
-    mbox = NULL; /* happens before object is actually deleted! */
+    Hide();
   } else if(evt == LV_EVENT_VALUE_CHANGED) {
     /* A button was clicked */
-    lv_mbox_start_auto_close(mbox, 100);
+    lv_mbox_start_auto_close(mbox, 0);
+//    Hide();
   }
 }
