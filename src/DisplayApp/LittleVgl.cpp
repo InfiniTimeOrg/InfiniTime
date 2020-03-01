@@ -12,6 +12,11 @@
 
 using namespace Pinetime::Components;
 
+extern "C" {
+LV_FONT_DECLARE(jetbrains_mono_extrabold_compressed)
+LV_FONT_DECLARE(jetbrains_mono_bold_20)
+}
+
 static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p) {
   auto* lvgl = static_cast<LittleVgl*>(disp_drv->user_data);
   lvgl->FlushDisplay(area, color_p);
@@ -135,8 +140,7 @@ void LittleVgl::InitTheme() {
 }
 
 void LittleVgl::InitBaseTheme() {
-  if(font == nullptr) font = LV_FONT_DEFAULT;
-
+  if(font == nullptr) font = &jetbrains_mono_bold_20;
   lv_style_copy(&def, &lv_style_plain); /*Initialize the default style*/
   def.text.font = font;
 

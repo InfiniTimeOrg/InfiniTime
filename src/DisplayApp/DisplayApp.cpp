@@ -120,6 +120,17 @@ void DisplayApp::Refresh() {
         if(!currentScreen->OnButtonPushed()) {
           systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
         }
+//        currentScreen.reset(nullptr);
+//        if(toggle) {
+//          modal.Show();
+////          currentScreen.reset(new Screens::Tile(this));
+//          toggle = false;
+//        } else {
+//          modal.Hide();
+////          currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
+//          toggle = true;
+//        }
+
         break;
     }
   }

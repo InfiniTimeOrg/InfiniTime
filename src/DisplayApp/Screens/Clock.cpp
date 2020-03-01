@@ -7,7 +7,7 @@
 #include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
-extern lv_font_t jetbrains_mono_extrabold_compressedextrabold_compressed;
+extern lv_font_t jetbrains_mono_extrabold_compressed;
 extern lv_font_t jetbrains_mono_bold_20;
 
 static void event_handler(lv_obj_t * obj, lv_event_t event) {
@@ -33,7 +33,7 @@ Clock::Clock(DisplayApp* app,
   labelStyle->text.font = &jetbrains_mono_bold_20;
 
   lv_style_copy(&labelBigStyle, labelStyle);
-  labelBigStyle.text.font = &jetbrains_mono_extrabold_compressedextrabold_compressed;
+  labelBigStyle.text.font = &jetbrains_mono_extrabold_compressed;
 
   lv_label_set_style(label_battery, LV_LABEL_STYLE_MAIN, labelStyle);
 

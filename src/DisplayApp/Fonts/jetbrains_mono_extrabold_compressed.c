@@ -6,11 +6,11 @@
  * Opts: 
  ******************************************************************************/
 
-#ifndef JETBRAINS_MONO_EXTRABOLD_COMPRESSEDEXTRABOLD_COMPRESSED
-#define JETBRAINS_MONO_EXTRABOLD_COMPRESSEDEXTRABOLD_COMPRESSED 1
+#ifndef JETBRAINS_MONO_EXTRABOLD_COMPRESSED
+#define JETBRAINS_MONO_EXTRABOLD_COMPRESSED 1
 #endif
 
-#if JETBRAINS_MONO_EXTRABOLD_COMPRESSEDEXTRABOLD_COMPRESSED
+#if JETBRAINS_MONO_EXTRABOLD_COMPRESSED
 
 /*-----------------
  *    BITMAPS
@@ -492,7 +492,7 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
  *----------------*/
 
 /*Initialize a public general font descriptor*/
-lv_font_t jetbrains_mono_extrabold_compressedextrabold_compressed = {
+lv_font_t jetbrains_mono_extrabold_compressed = {
     .get_glyph_dsc = lv_font_get_glyph_dsc_fmt_txt,    /*Function pointer to get glyph's data*/
     .get_glyph_bitmap = lv_font_get_bitmap_fmt_txt,    /*Function pointer to get glyph's bitmap*/
     .line_height = 60,          /*The maximum line height required by the font*/
@@ -503,5 +503,5 @@ lv_font_t jetbrains_mono_extrabold_compressedextrabold_compressed = {
     .dsc = &font_dsc           /*The custom font data. Will be accessed by `get_glyph_bitmap/dsc` */
 };
 
-#endif /*#if JETBRAINS_MONO_EXTRABOLD_COMPRESSEDEXTRABOLD_COMPRESSED*/
+#endif /*#if JETBRAINS_MONO_EXTRABOLD_COMPRESSED*/
 
