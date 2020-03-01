@@ -62,6 +62,8 @@ void LittleVgl::InitTouchpad() {
 }
 
 void LittleVgl::FlushDisplay(const lv_area_t *area, lv_color_t *color_p) {
+  ulTaskNotifyTake(pdTRUE, 500);
+
   auto x = area->x1;
   auto y = area->y1;
   auto width = (area->x2-area->x1)+1;
