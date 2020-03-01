@@ -16,11 +16,11 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event, eventData);
 }
 
-static const char * btnm_map1[] = {"Meter", "Gauge", "Clock", "\n", "App4", "App5", "App11", ""};
+static const char * btnm_map1[] = {"Meter", "Gauge", "Clock", "\n", "App1", "App2", "App3", ""};
 
 Tile::Tile(DisplayApp* app) : Screen(app) {
   modal.reset(new Modal(app));
-
+/*
   static lv_point_t valid_pos[] = {{0,0}, {LV_COORD_MIN, LV_COORD_MIN}};
   tileview = lv_tileview_create(lv_scr_act(), NULL);
   lv_tileview_set_valid_positions(tileview, valid_pos, 1);
@@ -30,25 +30,28 @@ Tile::Tile(DisplayApp* app) : Screen(app) {
   lv_obj_set_pos(tile1, 0, 0);
   lv_obj_set_size(tile1, LV_HOR_RES, LV_VER_RES);
   lv_tileview_add_element(tileview, tile1);
-
-  btnm1 = lv_btnm_create(tile1, NULL);
+*/
+  btnm1 = lv_btnm_create(lv_scr_act(), NULL);
   lv_btnm_set_map(btnm1, btnm_map1);
   lv_obj_set_size(btnm1, LV_HOR_RES, LV_VER_RES);
 
-  labelRelStyle = const_cast<lv_style_t *>(lv_label_get_style(btnm1, LV_BTNM_STYLE_BTN_REL));
-  labelRelStyle->text.font = &jetbrains_mono_bold_20;
-  labelRelStyle->body.grad_color = labelRelStyle->body.main_color;
-  lv_btnm_set_style(btnm1, LV_BTNM_STYLE_BTN_REL, labelRelStyle);
+//  labelRelStyle = const_cast<lv_style_t *>(lv_label_get_style(btnm1, LV_BTNM_STYLE_BTN_REL));
+//  labelRelStyle->text.font = &jetbrains_mono_bold_20;
+//  labelRelStyle->body.grad_color = labelRelStyle->body.main_color;
+//  lv_btnm_set_style(btnm1, LV_BTNM_STYLE_BTN_REL, labelRelStyle);
+//
+//  labelPrStyle = const_cast<lv_style_t *>(lv_label_get_style(btnm1, LV_BTNM_STYLE_BTN_PR));
+//  labelPrStyle->text.font = &jetbrains_mono_bold_20;
+//  labelPrStyle->body.grad_color = labelPrStyle->body.shadow.color;
 
-  labelPrStyle = const_cast<lv_style_t *>(lv_label_get_style(btnm1, LV_BTNM_STYLE_BTN_PR));
-  labelPrStyle->text.font = &jetbrains_mono_bold_20;
-  labelPrStyle->body.grad_color = labelPrStyle->body.shadow.color;
+
+
 //  lv_btnm_set_style(btnm1, LV_BTNM_STYLE_BTN_PR, labelPrStyle);
 //TODO better style handling
-
-  lv_obj_align(btnm1, tile1, LV_ALIGN_CENTER, 0, 0);
+//  lv_obj_align(btnm1, tile1, LV_ALIGN_CENTER, 0, 0);
   btnm1->user_data = this;
   lv_obj_set_event_cb(btnm1, event_handler);
+
 /*
   tile2 = lv_obj_create(tileview, NULL);
   lv_obj_set_pos(tile2, 0, LV_VER_RES);
@@ -120,8 +123,8 @@ void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event, uint32_t buttonId) {
         tile->StartClockApp();
         break;
       case 3:
-        modal->Show();
-        break;
+//        modal->Show();
+//        break;
       case 4:
       case 5:
         tile->StartTestApp();

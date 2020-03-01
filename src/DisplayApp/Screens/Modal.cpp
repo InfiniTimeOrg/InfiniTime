@@ -46,12 +46,12 @@ void Modal::Show() {
   lv_obj_set_event_cb(mbox, Modal::mbox_event_cb);
 
   /* Fade the message box in with an animation */
-  lv_anim_t a;
-  lv_anim_init(&a);
-  lv_anim_set_time(&a, 500, 0);
-  lv_anim_set_values(&a, LV_OPA_TRANSP, LV_OPA_COVER);
-  lv_anim_set_exec_cb(&a, obj, (lv_anim_exec_xcb_t)lv_obj_set_opa_scale);
-  lv_anim_create(&a);
+//  lv_anim_t a;
+//  lv_anim_init(&a);
+//  lv_anim_set_time(&a, 500, 0);
+//  lv_anim_set_values(&a, LV_OPA_TRANSP, LV_OPA_COVER);
+//  lv_anim_set_exec_cb(&a, obj, (lv_anim_exec_xcb_t)lv_obj_set_opa_scale);
+//  lv_anim_create(&a);
 }
 
 void Modal::Hide() {
