@@ -27,7 +27,7 @@ bool touchpad_read(lv_indev_drv_t * indev_drv, lv_indev_data_t * data) {
   return lvgl->GetTouchPadInfo(data);
 }
 
-LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel) : lcd{lcd}, touchPanel{touchPanel} {
+LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel) : lcd{lcd}, touchPanel{touchPanel}, previousClick{0,0} {
   lv_init();
   InitTheme();
   InitDisplay();
@@ -84,9 +84,13 @@ bool LittleVgl::GetTouchPadInfo(lv_indev_data_t *ptr) {
 
   if((previousClick.x != info.x || previousClick.y != info.y) &&
           (info.gesture == Drivers::Cst816S::Gestures::SingleTap)) {
-    ptr->state = LV_INDEV_STATE_PR;
-    previousClick.x = ptr->point.x;
-    previousClick.y = ptr->point.y;
+    // TODO For an unknown reason, the first touch is taken twice into account.
+    // 'firstTouch' is a quite'n'dirty workaound until I find a better solution
+    if(firstTouch) ptr->state = LV_INDEV_STATE_REL;
+    else ptr->state = LV_INDEV_STATE_PR;
+    firstTouch = false;
+    previousClick.x = info.x;
+    previousClick.y = info.y;
   }
   else {
     ptr->state = LV_INDEV_STATE_REL;

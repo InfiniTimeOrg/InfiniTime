@@ -92,6 +92,8 @@ namespace Pinetime {
         lv_style_t win_bg;
         lv_style_t win_header;
         lv_style_t win_btn_pr;
+
+        bool firstTouch = true;
     };
   }
 }
