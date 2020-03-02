@@ -79,12 +79,10 @@ void DebounceTimerCallback(TimerHandle_t xTimer) {
 
 void OnBleConnection() {
   bleController.Connect();
-  // TODO Notify system/Display app
 }
 
 void OnBleDisconnection() {
   bleController.Disconnect();
-  // TODO Notify system/Display app
 }
 
 void OnNewTime(current_time_char_t* currentTime) {
