@@ -16,7 +16,7 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event, eventData);
 }
 
-static const char * btnm_map1[] = {"Meter", "Gauge", "Clock", "\n", "MsgBox", "App2", "App3", ""};
+static const char * btnm_map1[] = {"Meter", "Gauge", "Clock", "\n", "Soft\nversion", "App2", "App3", ""};
 
 Tile::Tile(DisplayApp* app) : Screen(app) {
   modal.reset(new Modal(app));

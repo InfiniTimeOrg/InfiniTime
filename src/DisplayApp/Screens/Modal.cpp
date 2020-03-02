@@ -36,12 +36,15 @@ void Modal::Show() {
   lv_obj_set_size(obj, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_opa_scale_enable(obj, true); /* Enable opacity scaling for the animation */
 
-  static const char * btns2[] = {"Ok", "Cancel", ""};
+  static const char * btns2[] = {"Ok", ""};
 
   /* Create the message box as a child of the modal background */
   mbox = lv_mbox_create(obj, NULL);
   lv_mbox_add_btns(mbox, btns2);
-  lv_mbox_set_text(mbox, "Hello world!");
+  char versionStr[20];
+  sprintf(versionStr, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
+  lv_mbox_set_text(mbox, versionStr);
+//  lv_mbox_set_text(mbox, "Hello world!");
   lv_obj_align(mbox, NULL, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_event_cb(mbox, Modal::mbox_event_cb);
 

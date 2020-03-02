@@ -48,11 +48,7 @@ Clock::Clock(DisplayApp* app,
 
   label_date = lv_label_create(lv_scr_act(), NULL);
   lv_label_set_style(label_date, LV_LABEL_STYLE_MAIN, labelStyle);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 80);
-
-  label_version = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_style(label_version, LV_LABEL_STYLE_MAIN, labelStyle);
-  lv_obj_align(label_version, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 100);
+  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
 
   backgroundLabel = lv_label_create(lv_scr_act(), NULL);
   backgroundLabel->user_data = this;
@@ -138,13 +134,6 @@ bool Clock::Refresh() {
       currentDayOfWeek = dayOfWeek;
       currentDay = day;
     }
-  }
-
-  if(version.IsUpdated()) {
-    auto dummy = version.Get();
-    char versionStr[20];
-    sprintf(versionStr, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
-    lv_label_set_text(label_version, versionStr);
   }
 
   return running;
