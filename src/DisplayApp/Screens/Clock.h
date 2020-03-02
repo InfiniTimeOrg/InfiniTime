@@ -63,7 +63,7 @@ namespace Pinetime {
 
           DirtyValue<uint8_t> batteryPercentRemaining  {0};
           DirtyValue<bool> bleState {false};
-          DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>> currentDateTime;
+          DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
           DirtyValue<Pinetime::Version> version;
 
           lv_style_t* labelStyle;
