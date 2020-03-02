@@ -8460,7 +8460,7 @@
 #endif
 
 #ifndef NRF_LOG_BACKEND_SERIAL_USES_RTT
-#define NRF_LOG_BACKEND_SERIAL_USES_RTT 0s
+#define NRF_LOG_BACKEND_SERIAL_USES_RTT 0
 #endif
 // <h> Log message pool - Configuration of log message pool
 
