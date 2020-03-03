@@ -11,35 +11,39 @@
 #include <Components/DateTime/DateTimeController.h>
 #include "Fonts/lcdfont14.h"
 #include "../drivers/Cst816s.h"
+#include "LittleVgl.h"
 #include <date/date.h>
 #include <DisplayApp/Screens/Clock.h>
-#include <DisplayApp/Screens/Message.h>
 
-extern const FONT_INFO lCD_70ptFontInfo;
 
 namespace Pinetime {
+  namespace System {
+    class SystemTask;
+  };
   namespace Applications {
     class DisplayApp {
       public:
         enum class States {Idle, Running};
-        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent} ;
+        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, SwitchScreen,ButtonPushed} ;
         DisplayApp(Pinetime::Drivers::St7789& lcd,
-                   Pinetime::Components::Gfx& gfx,
+                   Pinetime::Components::LittleVgl& lvgl,
                    Pinetime::Drivers::Cst816S&,
                    Controllers::Battery &batteryController,
                    Controllers::Ble &bleController,
-                   Controllers::DateTime& dateTimeController);
+                   Controllers::DateTime& dateTimeController,
+                   Pinetime::System::SystemTask& systemTask);
         void Start();
         void PushMessage(Messages msg);
+
+        enum class Apps {None, Launcher, Clock, Test, Meter, Gauge};
+        void StartApp(Apps app);
 
       private:
         TaskHandle_t taskHandle;
         static void Process(void* instance);
         void InitHw();
         Pinetime::Drivers::St7789& lcd;
-        Pinetime::Components::Gfx& gfx;
-        const FONT_INFO largeFont {lCD_70ptFontInfo.height, lCD_70ptFontInfo.startChar, lCD_70ptFontInfo.endChar, lCD_70ptFontInfo.spacePixels, lCD_70ptFontInfo.charInfo, lCD_70ptFontInfo.data};
-        const FONT_INFO smallFont {lCD_14ptFontInfo.height, lCD_14ptFontInfo.startChar, lCD_14ptFontInfo.endChar, lCD_14ptFontInfo.spacePixels, lCD_14ptFontInfo.charInfo, lCD_14ptFontInfo.data};
+        Pinetime::Components::LittleVgl lvgl;
         void Refresh();
 
         States state = States::Running;
@@ -57,11 +61,15 @@ namespace Pinetime {
         Pinetime::Drivers::Cst816S& touchPanel;
         void OnTouchEvent();
 
-        Screens::Clock clockScreen;
-        Screens::Screen* currentScreen = nullptr;
+        std::unique_ptr<Screens::Screen> currentScreen;
         static constexpr uint8_t pinLcdBacklight1 = 14;
         static constexpr uint8_t pinLcdBacklight2 = 22;
         static constexpr uint8_t pinLcdBacklight3 = 23;
+
+        bool isClock = true;
+
+        Pinetime::System::SystemTask& systemTask;
+        Apps nextApp = Apps::None;
     };
   }
 }

@@ -1,7 +1,10 @@
+#include <FreeRTOS.h>
 #include <hal/nrf_gpio.h>
 #include <hal/nrf_spim.h>
 #include "SpiMaster.h"
 #include <algorithm>
+#include <task.h>
+
 using namespace Pinetime::Drivers;
 
 SpiMaster::SpiMaster(const SpiMaster::SpiModule spi, const SpiMaster::Parameters &params) :
@@ -96,7 +99,7 @@ void SpiMaster::DisableWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_ch
   spim->INTENSET = (1<<19);
 }
 
-void SpiMaster::OnEndEvent(BufferProvider& provider) {
+void SpiMaster::OnEndEvent() {
   if(!busy) return;
 
   auto s = currentBufferSize;
@@ -110,24 +113,20 @@ void SpiMaster::OnEndEvent(BufferProvider& provider) {
   } else {
     uint8_t* buffer = nullptr;
     size_t size = 0;
-    if(provider.GetNextBuffer(&buffer, size)) {
-      currentBufferAddr = (uint32_t) buffer;
-      currentBufferSize = size;
-      auto s = currentBufferSize;
-      auto currentSize = std::min((size_t)255, s);
-      PrepareTx(currentBufferAddr, currentSize);
-      currentBufferAddr += currentSize;
-      currentBufferSize -= currentSize;
+    busy = false;
 
-      spiBaseAddress->TASKS_START = 1;
-    } else {
-      busy = false;
-      nrf_gpio_pin_set(pinCsn);
+
+    if(taskToNotify != nullptr) {
+      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+      vTaskNotifyGiveFromISR(taskToNotify, &xHigherPriorityTaskWoken);
+      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
+
+    nrf_gpio_pin_set(pinCsn);
   }
 }
 
-void SpiMaster::OnStartedEvent(BufferProvider& provider) {
+void SpiMaster::OnStartedEvent() {
   if(!busy) return;
 }
 
@@ -143,7 +142,7 @@ void SpiMaster::PrepareTx(const volatile uint32_t bufferAddress, const volatile 
 
 bool SpiMaster::Write(const uint8_t *data, size_t size) {
   if(data == nullptr) return false;
-
+  taskToNotify = xTaskGetCurrentTaskHandle();
   while(busy) {
     asm("nop");
   }

@@ -1,8 +1,10 @@
 #pragma once
+#include <FreeRTOS.h>
 #include <cstdint>
 #include <cstddef>
 #include <array>
 #include <atomic>
+#include <task.h>
 
 #include "BufferProvider.h"
 namespace Pinetime {
@@ -27,8 +29,8 @@ namespace Pinetime {
         bool Init();
         bool Write(const uint8_t* data, size_t size);
 
-        void OnStartedEvent(BufferProvider& provider);
-        void OnEndEvent(BufferProvider& provider);
+        void OnStartedEvent();
+        void OnEndEvent();
 
         void Sleep();
         void Wakeup();
@@ -47,6 +49,7 @@ namespace Pinetime {
         volatile bool busy = false;
         volatile uint32_t currentBufferAddr = 0;
         volatile size_t currentBufferSize = 0;
+        volatile TaskHandle_t taskToNotify;
     };
   }
 }

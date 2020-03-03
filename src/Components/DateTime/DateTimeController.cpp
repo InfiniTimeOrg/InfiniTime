@@ -7,25 +7,23 @@ using namespace Pinetime::Controllers;
 
 void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfWeek, uint8_t hour, uint8_t minute,
                        uint8_t second, uint32_t systickCounter) {
+  std::tm tm = { /* .tm_sec  = */ second,
+          /* .tm_min  = */ minute,
+          /* .tm_hour = */ hour,
+          /* .tm_mday = */ day,
+          /* .tm_mon  = */ month - 1,
+          /* .tm_year = */ year - 1900,
+  };
+  tm.tm_isdst = -1; // Use DST value from local time zone
+  currentDateTime =  std::chrono::system_clock::from_time_t(std::mktime(&tm));
 
-  currentDateTime = {};
-  currentDateTime += date::years( year-1970);
-  currentDateTime += date::days( day - 1);
-  currentDateTime += date::months( month - 1);
-
-  currentDateTime += std::chrono::hours(hour);
-  currentDateTime += std::chrono::minutes (minute);
-  currentDateTime += std::chrono::seconds (second);
-
-  currentDateTime -= std::chrono::hours(3); // TODO WHYYYY?
   NRF_LOG_INFO("%d %d %d ", day, month, year);
   NRF_LOG_INFO("%d %d %d ", hour, minute, second);
   previousSystickCounter = systickCounter;
+
   UpdateTime(systickCounter);
   NRF_LOG_INFO("* %d %d %d ", this->hour, this->minute, this->second);
   NRF_LOG_INFO("* %d %d %d ", this->day, this->month, this->year);
-
-
 }
 
 void DateTime::UpdateTime(uint32_t systickCounter) {

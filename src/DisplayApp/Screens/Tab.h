@@ -13,25 +13,15 @@
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
-      class Message : public Screen{
+      class Tab : public Screen {
         public:
-          explicit Message(DisplayApp* app);
-          ~Message() override;
-          bool Refresh() override;
-          bool OnButtonPushed();
+          explicit Tab(DisplayApp* app, Components::Gfx& gfx);
+          ~Tab() override;
+          void Refresh(bool fullRefresh) override;
           void OnObjectEvent(lv_obj_t* obj, lv_event_t event);
 
         private:
 
-          lv_style_t* labelStyle;
-          lv_obj_t * label;
-          lv_obj_t* backgroundLabel;
-          lv_obj_t * button;
-          lv_obj_t * labelClick;
-
-          uint32_t clickCount = 0 ;
-          uint32_t previousClickCount = 0;
-          bool running = true;
       };
     }
   }

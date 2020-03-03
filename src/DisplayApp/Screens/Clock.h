@@ -5,6 +5,10 @@
 #include <Components/Gfx/Gfx.h>
 #include "Screen.h"
 #include <bits/unique_ptr.h>
+#include <libs/lvgl/src/lv_core/lv_style.h>
+#include <libs/lvgl/src/lv_core/lv_obj.h>
+#include <Components/Battery/BatteryController.h>
+#include <Components/Ble/BleController.h>
 #include "../Fonts/lcdfont14.h"
 #include "../Fonts/lcdfont70.h"
 #include "../../Version.h"
@@ -19,11 +23,13 @@ namespace Pinetime {
           explicit DirtyValue(T v) { value = v; }
           explicit DirtyValue(T& v) { value = v; }
           bool IsUpdated() const { return isUpdated; }
-          T& Get() { this->isUpdated = false; return value;}
+          T& Get() { this->isUpdated = false; return value; }
 
           DirtyValue& operator=(const T& other) {
-            this->value = other;
-            this->isUpdated = true;
+            if (this->value != other) {
+              this->value = other;
+              this->isUpdated = true;
+            }
             return *this;
           }
         private:
@@ -32,33 +38,50 @@ namespace Pinetime {
       };
       class Clock : public Screen{
         public:
-          enum class BleConnectionStates{ NotConnected, Connected};
-          Clock(Components::Gfx& gfx) : Screen(gfx), currentDateTime{{}}, version {{}} {}
-          void Refresh(bool fullRefresh) override;
+          Clock(DisplayApp* app,
+                  Controllers::DateTime& dateTimeController,
+                  Controllers::Battery& batteryController,
+                  Controllers::Ble& bleController);
+          ~Clock() override;
 
-          void SetBatteryPercentRemaining(uint8_t percent) { batteryPercentRemaining = percent; }
-          void SetBleConnectionState(BleConnectionStates state) { bleState = state; }
-          void SetCurrentDateTime(const std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>& tp) { currentDateTime = tp;}
+          bool Refresh() override;
+          bool OnButtonPushed() override;
 
+          void OnObjectEvent(lv_obj_t *pObj, lv_event_t i);
         private:
           static const char* MonthToString(Pinetime::Controllers::DateTime::Months month);
           static const char* DayOfWeekToString(Pinetime::Controllers::DateTime::Days dayOfWeek);
           static char const *DaysString[];
           static char const *MonthsString[];
 
-          const FONT_INFO largeFont {lCD_70ptFontInfo.height, lCD_70ptFontInfo.startChar, lCD_70ptFontInfo.endChar, lCD_70ptFontInfo.spacePixels, lCD_70ptFontInfo.charInfo, lCD_70ptFontInfo.data};
-          const FONT_INFO smallFont {lCD_14ptFontInfo.height, lCD_14ptFontInfo.startChar, lCD_14ptFontInfo.endChar, lCD_14ptFontInfo.spacePixels, lCD_14ptFontInfo.charInfo, lCD_14ptFontInfo.data};
+          char displayedChar[5];
 
-          char currentChar[4];
           uint16_t currentYear = 1970;
           Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
           Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
           uint8_t currentDay = 0;
 
           DirtyValue<uint8_t> batteryPercentRemaining  {0};
-          DirtyValue<BleConnectionStates> bleState {BleConnectionStates::NotConnected};
-          DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>> currentDateTime;
+          DirtyValue<bool> bleState {false};
+          DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
           DirtyValue<Pinetime::Version> version;
+
+          lv_style_t* labelStyle;
+          lv_style_t labelBigStyle;
+          lv_obj_t * label_battery;
+
+          lv_obj_t * label_ble;
+          lv_obj_t* label_time;
+          lv_obj_t* label_date;
+          lv_obj_t* label_version;
+          lv_obj_t* backgroundLabel;
+
+          Controllers::DateTime& dateTimeController;
+          Controllers::Battery& batteryController;
+          Controllers::Ble& bleController;
+
+          bool running = true;
+
       };
     }
   }

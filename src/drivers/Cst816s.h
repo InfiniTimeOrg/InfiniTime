@@ -6,6 +6,16 @@ namespace Pinetime {
   namespace Drivers {
     class Cst816S {
       public :
+        enum class Gestures : uint8_t {
+          None = 0x00,
+          SlideDown = 0x01,
+          SlideUp = 0x02,
+          SlideLeft = 0x03,
+          SlideRight = 0x04,
+          SingleTap = 0x05,
+          DoubleTap = 0x0B,
+          LongPress = 0x0C
+        };
         struct TouchInfos {
           uint16_t x;
           uint16_t y;
@@ -13,6 +23,7 @@ namespace Pinetime {
           uint8_t finger;
           uint8_t pressure;
           uint8_t area;
+          Gestures gesture;
           bool isTouch = false;
         };
 
@@ -36,6 +47,7 @@ namespace Pinetime {
         static constexpr uint8_t touchYLowIndex = 6;
         static constexpr uint8_t touchIdIndex = 5;
         static constexpr uint8_t touchStep = 6;
+        static constexpr uint8_t gestureIndex = 1;
 
         uint8_t touchData[63];
 

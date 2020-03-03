@@ -22,16 +22,17 @@ I've tested this project on the actual PineTime hardware.
 
 ## Current state
 
-![Pinetime](./images/pinetime.jpg "Pinetime")
+![Pinetime](./images/v0.3.0.png "Pinetime")
 
  * Project builds and runs on the Pinetime;
  * Logs available via JLink RTT;
- * Basic (but faster) LCD driver.
- * One big font to display the time (hours : minutes)
- * BLE advertising, connection and bonding
- * BLE CTS client (retrieves the time from the connected device if it implements a CTS server)
- * Push button to go to disable screen (and go to low power mode) / enable screen (and wake-up). **NOTE** : I'm not completely sure the power consumption is optimal, especially in sleep mode. Any help to measure and debug this is welcome.
- * Touch panel : wake up when sleeping and draw square on screen when running 
+ * SPI (DMA & IRQ based) LCD driver;
+ * BLE advertising, connection and bonding;
+ * BLE CTS client (retrieves the time from the connected device if it implements a CTS server);
+ * Push button to go to disable screen (and go to low power mode) / enable screen (and wake-up); 
+ * Touch panel support;
+ * Basic user interface via display, touchpanel and push button.
+ * Digital watch face and 4 demo applications (spinning meter, analog gauche, push button and message box); 
 
 ## Stub using NRF52-DK
 ![Pinetime stub](./images/pinetimestub1.jpg "PinetimeStub")
