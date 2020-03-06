@@ -93,7 +93,6 @@ void ble_manager_init() {
   ble_manager_init_gatt();
   ble_manager_init_db_discovery();
   ble_manager_init_advertising();
-  ble_manager_init_peer_manager();
   ble_manager_init_services();
   ble_manager_init_connection_params();
 }
