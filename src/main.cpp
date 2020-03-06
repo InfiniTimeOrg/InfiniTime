@@ -117,22 +117,6 @@ void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
 int main(void) {
   logger.Init();
 
-  nrf_gpio_cfg_output(27);
-  nrf_gpio_pin_clear(27);
-  nrf_gpio_cfg_output(29);
-  nrf_gpio_pin_clear(29);
-
-  nrf_gpio_cfg_output(20);
-  nrf_gpio_pin_clear(20);
-
-  nrf_gpio_cfg_output(17);
-  nrf_gpio_pin_clear(17);
-
-  nrf_gpio_cfg_output(11);
-  nrf_gpio_pin_clear(11);
-
-
-
   nrf_drv_clock_init();
 
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
