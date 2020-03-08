@@ -26,6 +26,11 @@ namespace Pinetime {
         };
 
         SpiMaster(const SpiModule spi, const Parameters& params);
+        SpiMaster(const SpiMaster&) = delete;
+        SpiMaster& operator=(const SpiMaster&) = delete;
+        SpiMaster(SpiMaster&&) = delete;
+        SpiMaster& operator=(SpiMaster&&) = delete;
+
         bool Init();
         bool Write(const uint8_t* data, size_t size);
 

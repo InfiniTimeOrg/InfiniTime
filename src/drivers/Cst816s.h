@@ -27,6 +27,12 @@ namespace Pinetime {
           bool isTouch = false;
         };
 
+        Cst816S() = default;
+        Cst816S(const Cst816S&) = delete;
+        Cst816S& operator=(const Cst816S&) = delete;
+        Cst816S(Cst816S&&) = delete;
+        Cst816S& operator=(Cst816S&&) = delete;
+
         void Init();
         void Probe();
         TouchInfos GetTouchInfo();

@@ -7,6 +7,11 @@ namespace Pinetime {
     class St7789 {
       public:
         explicit St7789(SpiMaster& spiMaster, uint8_t pinDataCommand);
+        St7789(const St7789&) = delete;
+        St7789& operator=(const St7789&) = delete;
+        St7789(St7789&&) = delete;
+        St7789& operator=(St7789&&) = delete;
+
         void Init();
         void Uninit();
         void DrawPixel(uint16_t x, uint16_t y, uint32_t color);

@@ -43,7 +43,7 @@ namespace Pinetime {
         static void Process(void* instance);
         void InitHw();
         Pinetime::Drivers::St7789& lcd;
-        Pinetime::Components::LittleVgl lvgl;
+        Pinetime::Components::LittleVgl& lvgl;
         void Refresh();
 
         States state = States::Running;
