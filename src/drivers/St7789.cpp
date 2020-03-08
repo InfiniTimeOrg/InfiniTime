@@ -69,16 +69,16 @@ void St7789::ColumnAddressSet() {
   WriteCommand(static_cast<uint8_t>(Commands::ColumnAddressSet));
   WriteData(0x00);
   WriteData(0x00);
-  WriteData(Height >> 8);
-  WriteData(Height & 0xff);
+  WriteData(Width >> 8u);
+  WriteData(Width & 0xffu);
 }
 
 void St7789::RowAddressSet() {
   WriteCommand(static_cast<uint8_t>(Commands::RowAddressSet));
   WriteData(0x00);
   WriteData(0x00);
-  WriteData(Width >> 8);
-  WriteData(Width & 0xff);
+  WriteData(320u >> 8u);
+  WriteData(320u & 0xffu);
 }
 
 void St7789::DisplayInversionOn() {

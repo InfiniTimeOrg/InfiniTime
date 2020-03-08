@@ -65,7 +65,7 @@ namespace Pinetime {
         void ColumnAddressSet();
 
         static constexpr uint16_t Width = 240;
-        static constexpr uint16_t Height = 240;
+        static constexpr uint16_t Height = 320;
         void RowAddressSet();
     };
   }

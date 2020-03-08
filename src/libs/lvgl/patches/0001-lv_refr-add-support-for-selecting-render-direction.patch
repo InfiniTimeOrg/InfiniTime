@@ -1,0 +1,122 @@
+From 1f57703589c6d202d9f6259f1d0fefe7bfd39061 Mon Sep 17 00:00:00 2001
+From: Koen Zandberg <koen@bergzand.net>
+Date: Thu, 27 Feb 2020 16:33:06 +0100
+Subject: [PATCH] lv_refr: add support for selecting render direction
+
+---
+ src/lv_core/lv_refr.c    | 71 ++++++++++++++++++++++++++++------------
+ src/lv_hal/lv_hal_disp.h |  6 ++++
+ 2 files changed, 56 insertions(+), 21 deletions(-)
+
+diff --git a/src/lv_core/lv_refr.c b/src/lv_core/lv_refr.c
+index 5ee3fbb2..e71e1629 100644
+--- a/src/lv_core/lv_refr.c
++++ b/src/lv_core/lv_refr.c
+@@ -339,30 +339,59 @@ static void lv_refr_area(const lv_area_t * area_p)
+             }
+         }
+ 
+-        /*Always use the full row*/
+-        lv_coord_t row;
+-        lv_coord_t row_last = 0;
+-        for(row = area_p->y1; row + max_row - 1 <= y2; row += max_row) {
+-            /*Calc. the next y coordinates of VDB*/
+-            vdb->area.x1 = area_p->x1;
+-            vdb->area.x2 = area_p->x2;
+-            vdb->area.y1 = row;
+-            vdb->area.y2 = row + max_row - 1;
+-            if(vdb->area.y2 > y2) vdb->area.y2 = y2;
+-            row_last = vdb->area.y2;
+-            lv_refr_area_part(area_p);
++        if (disp_refr->render_direction) {
++            /*Always use the full row*/
++            lv_coord_t row;
++            lv_coord_t row_last = y2;
++            for(row = area_p->y2; row > max_row - 1 + area_p->y1; row -= max_row) {
++                /*Calc. the next y coordinates of VDB*/
++                vdb->area.x1 = area_p->x1;
++                vdb->area.x2 = area_p->x2;
++                vdb->area.y1 = row - max_row + 1;
++                vdb->area.y2 = row;
++                if(vdb->area.y2 > y2) vdb->area.y2 = y2;
++                row_last = vdb->area.y1;
++                lv_refr_area_part(area_p);
++            }
++
++            /*If the last (first) y coordinates are not handled yet ...*/
++            if(area_p->y1 != row_last) {
++                /*Calc. the next y coordinates of VDB*/
++                vdb->area.x1 = area_p->x1;
++                vdb->area.x2 = area_p->x2;
++                vdb->area.y1 = area_p->y1;
++                vdb->area.y2 = row;
++
++                /*Refresh this part too*/
++                lv_refr_area_part(area_p);
++            }
+         }
++        else {
++            /*Always use the full row*/
++            lv_coord_t row;
++            lv_coord_t row_last = 0;
++            for(row = area_p->y1; row + max_row - 1 <= y2; row += max_row) {
++                /*Calc. the next y coordinates of VDB*/
++                vdb->area.x1 = area_p->x1;
++                vdb->area.x2 = area_p->x2;
++                vdb->area.y1 = row;
++                vdb->area.y2 = row + max_row - 1;
++                if(vdb->area.y2 > y2) vdb->area.y2 = y2;
++                row_last = vdb->area.y2;
++                lv_refr_area_part(area_p);
++            }
+ 
+-        /*If the last y coordinates are not handled yet ...*/
+-        if(y2 != row_last) {
+-            /*Calc. the next y coordinates of VDB*/
+-            vdb->area.x1 = area_p->x1;
+-            vdb->area.x2 = area_p->x2;
+-            vdb->area.y1 = row;
+-            vdb->area.y2 = y2;
++            /*If the last y coordinates are not handled yet ...*/
++            if(y2 != row_last) {
++                /*Calc. the next y coordinates of VDB*/
++                vdb->area.x1 = area_p->x1;
++                vdb->area.x2 = area_p->x2;
++                vdb->area.y1 = row;
++                vdb->area.y2 = y2;
+ 
+-            /*Refresh this part too*/
+-            lv_refr_area_part(area_p);
++                /*Refresh this part too*/
++                lv_refr_area_part(area_p);
++            }
+         }
+     }
+ }
+diff --git a/src/lv_hal/lv_hal_disp.h b/src/lv_hal/lv_hal_disp.h
+index 8db692a0..eef22d98 100644
+--- a/src/lv_hal/lv_hal_disp.h
++++ b/src/lv_hal/lv_hal_disp.h
+@@ -143,6 +143,7 @@ typedef struct _disp_t
+     uint8_t inv_area_joined[LV_INV_BUF_SIZE];
+     uint32_t inv_p : 10;
+ 
++    int render_direction; /**< 0 when rendering down, 1 when rendering up */
+     /*Miscellaneous data*/
+     uint32_t last_activity_time; /**< Last time there was activity on this display */
+ } lv_disp_t;
+@@ -230,6 +231,11 @@ lv_coord_t lv_disp_get_ver_res(lv_disp_t * disp);
+  */
+ bool lv_disp_get_antialiasing(lv_disp_t * disp);
+ 
++static inline void lv_disp_set_direction(lv_disp_t * disp, int direction)
++{
++    disp->render_direction = direction;
++}
++
+ //! @cond Doxygen_Suppress
+ 
+ /**
+-- 
+2.24.1
+

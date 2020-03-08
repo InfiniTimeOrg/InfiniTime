@@ -15,10 +15,15 @@ namespace Pinetime {
     class LittleVgl {
       public:
         LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel);
+
+        LittleVgl(const LittleVgl&) = delete;
+        LittleVgl& operator=(const LittleVgl&) = delete;
+        LittleVgl(LittleVgl&&) = delete;
+        LittleVgl& operator=(LittleVgl&&) = delete;
+
         void FlushDisplay(const lv_area_t * area, lv_color_t * color_p);
-
-
         bool GetTouchPadInfo(lv_indev_data_t *ptr);
+        void SetFullRefresh();
       private:
         void InitDisplay();
         void InitTouchpad();
@@ -94,6 +99,15 @@ namespace Pinetime {
         lv_style_t win_btn_pr;
 
         bool firstTouch = true;
+        bool fullRefresh = false;
+        static constexpr uint8_t nbWriteLines = 4;
+        static constexpr uint16_t totalNbLines = 320;
+        static constexpr uint16_t visibleNbLines = 240;
+        static constexpr uint8_t MaxScrollOffset() { return LV_VER_RES_MAX - nbWriteLines; }
+        enum class ScrollDirections {Unknown, Up, Down};
+        ScrollDirections scrollDirection = ScrollDirections::Up;
+        uint16_t writeOffset = 0;
+        uint16_t scrollOffset = 0;
     };
   }
 }

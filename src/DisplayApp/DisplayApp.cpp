@@ -117,19 +117,19 @@ void DisplayApp::Refresh() {
         OnTouchEvent();
         break;
       case Messages::ButtonPushed:
-        if(!currentScreen->OnButtonPushed()) {
-          systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
-        }
-//        currentScreen.reset(nullptr);
-//        if(toggle) {
-//          modal.Show();
-////          currentScreen.reset(new Screens::Tile(this));
-//          toggle = false;
-//        } else {
-//          modal.Hide();
-////          currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
-//          toggle = true;
+//        if(!currentScreen->OnButtonPushed()) {
+//          systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
 //        }
+        lvgl.SetFullRefresh();
+        lv_disp_set_direction(lv_disp_get_default(), 0);
+        currentScreen.reset(nullptr);
+        if(toggle) {
+          currentScreen.reset(new Screens::Tile(this));
+          toggle = false;
+        } else {
+          currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
+          toggle = true;
+        }
 
         break;
     }
@@ -140,6 +140,7 @@ void DisplayApp::RunningState() {
 //  clockScreen.SetCurrentDateTime(dateTimeController.CurrentDateTime());
 
   if(!currentScreen->Refresh()) {
+    lvgl.SetFullRefresh();
     currentScreen.reset(nullptr);
     switch(nextApp) {
       case Apps::None:

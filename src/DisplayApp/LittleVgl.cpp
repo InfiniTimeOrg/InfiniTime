@@ -64,21 +64,95 @@ void LittleVgl::InitTouchpad() {
   lv_indev_drv_register(&indev_drv);
 }
 
+void LittleVgl::SetFullRefresh() {
+  fullRefresh = true;
+}
+
 void LittleVgl::FlushDisplay(const lv_area_t *area, lv_color_t *color_p) {
   ulTaskNotifyTake(pdTRUE, 500);
 
-  auto x = area->x1;
-  auto y = area->y1;
-  auto width = (area->x2-area->x1)+1;
-  auto height = (area->y2-area->y1)+1;
-  lcd.BeginDrawBuffer(x, y, width, height);
-  lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(color_p), width * height*2) ;
+  // TODO refactore and remove duplicated code
+
+  uint16_t x, y, y1, y2, width, height = 0;
+  if(fullRefresh) {
+    if(scrollDirection == LittleVgl::ScrollDirections::Down) {
+      if(area->y2 == visibleNbLines-1) {
+        writeOffset = ((writeOffset + totalNbLines) - visibleNbLines) % totalNbLines;
+      }
+      x = area->x1;
+      width = (area->x2 - area->x1) + 1;
+
+      y1 = (area->y1 + writeOffset) % totalNbLines;
+      y2 = (area->y2 + writeOffset) % totalNbLines;
+      y = y1;
+      height = (y2 - y1) + 1;
+
+      if(area->y2 < visibleNbLines - 1) {
+        uint16_t toScroll = 0;
+        if(area->y1 == 0) {
+          toScroll = height*2;
+          fullRefresh = false;
+          lv_disp_set_direction(lv_disp_get_default(), 0);
+        } else {
+          toScroll = height;
+        }
+
+        if(scrollOffset >= toScroll)
+          scrollOffset -= toScroll;
+        else {
+          toScroll -= scrollOffset;
+          scrollOffset = (totalNbLines) - toScroll;
+        }
+
+        lcd.VerticalScrollDefinition(0, 320, 0);
+        lcd.VerticalScrollStartAddress(scrollOffset);
+      }
+
+      lcd.BeginDrawBuffer(x, y, width, height);
+      lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(color_p), width * height*2) ;
+
+    } else {
+      if(area->y1 == 0) {
+        writeOffset = (writeOffset + visibleNbLines) % totalNbLines;
+      }
+
+      x = area->x1;
+      width = (area->x2 - area->x1) + 1;
+
+      y1 = (area->y1 + writeOffset) % totalNbLines;
+      y2 = (area->y2 + writeOffset) % totalNbLines;
+      y = y1;
+      height = (y2 - y1) + 1;
+
+      if(area->y1 > 0) {
+        if(area->y2 == visibleNbLines -1) {
+          scrollOffset += (height * 2);
+          fullRefresh = false;
+          lv_disp_set_direction(lv_disp_get_default(), 0);
+        } else {
+          scrollOffset += height;
+        }
+        scrollOffset = scrollOffset % totalNbLines;
+        lcd.VerticalScrollDefinition(0, 320, 0);
+        lcd.VerticalScrollStartAddress(scrollOffset);
+      }
+
+      lcd.BeginDrawBuffer(x, y, width, height);
+      lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(color_p), width * height*2);
+    }
+  } else {
+    x = area->x1;
+    y = area->y1;
+    width = (area->x2 - area->x1) + 1;
+    height = (area->y2 - area->y1) + 1;
+    lcd.BeginDrawBuffer(x, y, width, height);
+    lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(color_p), width * height*2) ;
+  }
 
   /* IMPORTANT!!!
    * Inform the graphics library that you are ready with the flushing*/
   lv_disp_flush_ready(&disp_drv);
 }
-
 bool LittleVgl::GetTouchPadInfo(lv_indev_data_t *ptr) {
   auto info = touchPanel.GetTouchInfo();
 
@@ -715,3 +789,4 @@ void LittleVgl::InitThemeWindow() {
 //  theme.style.win.btn.rel = &lv_style_transp;
 //  theme.style.win.btn.pr  = &win_btn_pr;
 }
+
