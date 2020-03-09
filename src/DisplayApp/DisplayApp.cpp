@@ -33,6 +33,7 @@ DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
         currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController) },
         systemTask{systemTask} {
   msgQueue = xQueueCreate(queueSize, itemSize);
+  onClockApp = true;
 }
 
 void DisplayApp::Start() {
@@ -112,24 +113,44 @@ void DisplayApp::Refresh() {
       case Messages::UpdateBatteryLevel:
 //        clockScreen.SetBatteryPercentRemaining(batteryController.PercentRemaining());
         break;
-      case Messages::TouchEvent:
-        if(state != States::Running) break;
-        OnTouchEvent();
+      case Messages::TouchEvent: {
+        if (state != States::Running) break;
+        auto gesture = OnTouchEvent();
+        switch (gesture) {
+          case DisplayApp::TouchEvents::SwipeUp:
+            currentScreen->OnButtonPushed();
+            lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
+            break;
+          case DisplayApp::TouchEvents::SwipeDown:
+            currentScreen->OnButtonPushed();
+            lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
+            break;
+          default:
+            break;
+        }
+      }
         break;
       case Messages::ButtonPushed:
-//        if(!currentScreen->OnButtonPushed()) {
-//          systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
-//        }
-        lvgl.SetFullRefresh();
-        lv_disp_set_direction(lv_disp_get_default(), 0);
-        currentScreen.reset(nullptr);
-        if(toggle) {
-          currentScreen.reset(new Screens::Tile(this));
-          toggle = false;
-        } else {
-          currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
-          toggle = true;
+        if(onClockApp)
+          systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
+        else {
+          auto buttonUsedByApp = currentScreen->OnButtonPushed();
+          if (!buttonUsedByApp) {
+            systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
+          } else {
+            lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
+          }
         }
+
+//        lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
+//        currentScreen.reset(nullptr);
+//        if(toggle) {
+//          currentScreen.reset(new Screens::Tile(this));
+//          toggle = false;
+//        } else {
+//          currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
+//          toggle = true;
+//        }
 
         break;
     }
@@ -140,12 +161,15 @@ void DisplayApp::RunningState() {
 //  clockScreen.SetCurrentDateTime(dateTimeController.CurrentDateTime());
 
   if(!currentScreen->Refresh()) {
-    lvgl.SetFullRefresh();
     currentScreen.reset(nullptr);
+    onClockApp = false;
     switch(nextApp) {
       case Apps::None:
       case Apps::Launcher: currentScreen.reset(new Screens::Tile(this)); break;
-      case Apps::Clock: currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController)); break;
+      case Apps::Clock:
+        currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
+        onClockApp = true;
+        break;
       case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
       case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
       case Apps::Gauge: currentScreen.reset(new Screens::Gauge(this)); break;
@@ -169,14 +193,32 @@ void DisplayApp::PushMessage(DisplayApp::Messages msg) {
   }
 }
 
-static uint16_t pointColor = 0x07e0;
-void DisplayApp::OnTouchEvent() {
-//  auto info = touchPanel.GetTouchInfo();
-//
-//  if(info.isTouch) {
-//    lcd.DrawPixel(info.x, info.y, pointColor);
-//    pointColor+=10;
-//  }
+DisplayApp::TouchEvents DisplayApp::OnTouchEvent() {
+  auto info = touchPanel.GetTouchInfo();
+  if(info.isTouch) {
+    switch(info.gesture) {
+      case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
+        // TODO set x,y to LittleVgl
+        lvgl.SetNewTapEvent(info.x, info.y);
+        return DisplayApp::TouchEvents::Tap;
+      case Pinetime::Drivers::Cst816S::Gestures::LongPress:
+        return DisplayApp::TouchEvents::LongTap;
+      case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
+        return DisplayApp::TouchEvents::DoubleTap;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
+        return DisplayApp::TouchEvents::SwipeRight;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
+        return DisplayApp::TouchEvents::SwipeLeft;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
+        return DisplayApp::TouchEvents::SwipeDown;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
+        return DisplayApp::TouchEvents::SwipeUp;
+      case Pinetime::Drivers::Cst816S::Gestures::None:
+      default:
+        return DisplayApp::TouchEvents::None;
+    }
+  }
+  return DisplayApp::TouchEvents::None;
 }
 
 void DisplayApp::StartApp(DisplayApp::Apps app) {

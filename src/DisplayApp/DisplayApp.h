@@ -25,6 +25,8 @@ namespace Pinetime {
       public:
         enum class States {Idle, Running};
         enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, SwitchScreen,ButtonPushed} ;
+        enum class TouchEvents { None, Tap, SwipeLeft, SwipeRight, SwipeUp, SwipeDown, LongTap, DoubleTap
+        };
         DisplayApp(Pinetime::Drivers::St7789& lcd,
                    Pinetime::Components::LittleVgl& lvgl,
                    Pinetime::Drivers::Cst816S&,
@@ -59,7 +61,7 @@ namespace Pinetime {
         Pinetime::Controllers::DateTime& dateTimeController;
 
         Pinetime::Drivers::Cst816S& touchPanel;
-        void OnTouchEvent();
+        TouchEvents OnTouchEvent();
 
         std::unique_ptr<Screens::Screen> currentScreen;
         static constexpr uint8_t pinLcdBacklight1 = 14;
@@ -70,6 +72,7 @@ namespace Pinetime {
 
         Pinetime::System::SystemTask& systemTask;
         Apps nextApp = Apps::None;
+        bool onClockApp = false; // TODO find a better way to know that we should handle gestures and button differently for the Clock app.
     };
   }
 }

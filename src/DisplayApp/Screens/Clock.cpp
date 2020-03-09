@@ -184,7 +184,8 @@ void Clock::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
 }
 
 bool Clock::OnButtonPushed() {
-  return Screen::OnButtonPushed();
+  running = false;
+  return false;
 }
 
 
