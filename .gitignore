@@ -1,5 +1,5 @@
 .idea
-.cmake-build-*
+cmake-build-*
 core
 sdk
 src/Version.h
