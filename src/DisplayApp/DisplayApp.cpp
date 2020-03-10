@@ -162,6 +162,7 @@ void DisplayApp::RunningState() {
 
   if(!currentScreen->Refresh()) {
     currentScreen.reset(nullptr);
+    lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
     onClockApp = false;
     switch(nextApp) {
       case Apps::None:

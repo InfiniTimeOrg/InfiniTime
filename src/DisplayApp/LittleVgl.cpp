@@ -65,9 +65,11 @@ void LittleVgl::InitTouchpad() {
 }
 
 void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
-  scrollDirection = direction;
-  if(scrollDirection == FullRefreshDirections::Down)
-    lv_disp_set_direction(lv_disp_get_default(), 1);
+  if(scrollDirection == FullRefreshDirections::None) {
+    scrollDirection = direction;
+    if (scrollDirection == FullRefreshDirections::Down)
+      lv_disp_set_direction(lv_disp_get_default(), 1);
+  }
 }
 
 void LittleVgl::FlushDisplay(const lv_area_t *area, lv_color_t *color_p) {
