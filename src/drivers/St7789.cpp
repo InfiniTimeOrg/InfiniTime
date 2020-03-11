@@ -131,6 +131,7 @@ void St7789::VerticalScrollDefinition(uint16_t topFixedLines, uint16_t scrollLin
 }
 
 void St7789::VerticalScrollStartAddress(uint16_t line) {
+  verticalScrollingStartAddress = line;
   WriteCommand(static_cast<uint8_t>(Commands::VerticalScrollStartAddress));
   WriteData(line >> 8u);
   WriteData(line & 0x00ffu);
@@ -189,5 +190,6 @@ void St7789::Wakeup() {
   RowAddressSet();
   DisplayInversionOn();
   NormalModeOn();
+  VerticalScrollStartAddress(verticalScrollingStartAddress);
   DisplayOn();
 }

@@ -132,13 +132,13 @@ void DisplayApp::Refresh() {
         break;
       case Messages::ButtonPushed:
         if(onClockApp)
-          systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
-        else {
-          auto buttonUsedByApp = currentScreen->OnButtonPushed();
-          if (!buttonUsedByApp) {
             systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
-          } else {
-            lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
+          else {
+            auto buttonUsedByApp = currentScreen->OnButtonPushed();
+            if (!buttonUsedByApp) {
+              systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
+            } else {
+              lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
           }
         }
 
