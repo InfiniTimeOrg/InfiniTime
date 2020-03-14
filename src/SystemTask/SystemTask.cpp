@@ -34,8 +34,8 @@ void SystemTask::Work() {
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
   bool erase_bonds=false;
-//  ble_manager_init_peer_manager();
-//  nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
+  ble_manager_init_peer_manager();
+  nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
 
   spi.Init();
   lcd.Init();
@@ -87,6 +87,7 @@ void SystemTask::Work() {
     }
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);
+    batteryController.Update();
 
     if(!nrf_gpio_pin_read(pinButton))
       watchdog.Kick();
@@ -103,7 +104,6 @@ void SystemTask::OnButtonPushed() {
     NRF_LOG_INFO("[SystemTask] Button pushed, waking up");
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToRunning);
     isSleeping = false;
-    batteryController.Update();
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBatteryLevel);
   }
 }

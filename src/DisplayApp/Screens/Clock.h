@@ -76,6 +76,9 @@ namespace Pinetime {
           lv_obj_t* label_version;
           lv_obj_t* backgroundLabel;
 
+          lv_obj_t * batteryIcon;
+          lv_obj_t * bleIcon;
+
           Controllers::DateTime& dateTimeController;
           Controllers::Battery& batteryController;
           Controllers::Ble& bleController;
