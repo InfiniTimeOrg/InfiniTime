@@ -163,6 +163,37 @@ set(LVGL_SRC
 
   )
 
+list(APPEND IMAGE_FILES
+  DisplayApp/Icons/battery/os_battery_error.c
+
+  DisplayApp/Icons/battery/os_battery_100.c
+  DisplayApp/Icons/battery/os_battery_090.c
+  DisplayApp/Icons/battery/os_battery_080.c
+  DisplayApp/Icons/battery/os_battery_070.c
+  DisplayApp/Icons/battery/os_battery_060.c
+  DisplayApp/Icons/battery/os_battery_050.c
+  DisplayApp/Icons/battery/os_battery_040.c
+  DisplayApp/Icons/battery/os_battery_030.c
+  DisplayApp/Icons/battery/os_battery_020.c
+  DisplayApp/Icons/battery/os_battery_010.c
+  DisplayApp/Icons/battery/os_battery_005.c
+
+  DisplayApp/Icons/battery/os_batterycharging_100.c
+  DisplayApp/Icons/battery/os_batterycharging_090.c
+  DisplayApp/Icons/battery/os_batterycharging_080.c
+  DisplayApp/Icons/battery/os_batterycharging_070.c
+  DisplayApp/Icons/battery/os_batterycharging_060.c
+  DisplayApp/Icons/battery/os_batterycharging_050.c
+  DisplayApp/Icons/battery/os_batterycharging_040.c
+  DisplayApp/Icons/battery/os_batterycharging_030.c
+  DisplayApp/Icons/battery/os_batterycharging_020.c
+  DisplayApp/Icons/battery/os_batterycharging_010.c
+  DisplayApp/Icons/battery/os_batterycharging_005.c
+
+  DisplayApp/Icons/bluetooth/os_bt_connected.c
+  DisplayApp/Icons/bluetooth/os_bt_disconnected.c
+  )
+
 list(APPEND SOURCE_FILES
   Logging/NrfLogger.cpp
   BlinkApp/BlinkApp.cpp
@@ -174,6 +205,9 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/Meter.cpp
   DisplayApp/Screens/Gauge.cpp
   DisplayApp/Screens/Modal.cpp
+  DisplayApp/Screens/BatteryIcon.cpp
+  DisplayApp/Screens/BleIcon.cpp
+
   main.cpp
   drivers/St7789.cpp
   drivers/SpiMaster.cpp
@@ -188,6 +222,7 @@ list(APPEND SOURCE_FILES
   FreeRTOS/port_cmsis_systick.c
   FreeRTOS/port_cmsis.c
   ${LVGL_SRC}
+  ${IMAGE_FILES}
 
   DisplayApp/LittleVgl.cpp
   DisplayApp/Fonts/jetbrains_mono_extrabold_compressed.c
@@ -208,6 +243,8 @@ set(INCLUDE_FILES
   DisplayApp/Screens/Meter.h
   DisplayApp/Screens/Gauge.h
   DisplayApp/Screens/Modal.h
+  DisplayApp/Screens/BatteryIcon.h
+  DisplayApp/Screens/BleIcon.cpp
 #  DisplayApp/Screens/Tab.h
   drivers/St7789.h
   drivers/SpiMaster.h
