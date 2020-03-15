@@ -7,6 +7,7 @@
 #include <bits/unique_ptr.h>
 #include <queue.h>
 #include <Components/Battery/BatteryController.h>
+#include <Components/Brightness/BrightnessController.h>
 #include <Components/Ble/BleController.h>
 #include <Components/DateTime/DateTimeController.h>
 #include "Fonts/lcdfont14.h"
@@ -37,7 +38,7 @@ namespace Pinetime {
         void Start();
         void PushMessage(Messages msg);
 
-        enum class Apps {None, Launcher, Clock, Test, Meter, Gauge};
+        enum class Apps {None, Launcher, Clock, Test, Meter, Gauge, Brightness};
         void StartApp(Apps app);
 
       private:
@@ -64,15 +65,13 @@ namespace Pinetime {
         TouchEvents OnTouchEvent();
 
         std::unique_ptr<Screens::Screen> currentScreen;
-        static constexpr uint8_t pinLcdBacklight1 = 14;
-        static constexpr uint8_t pinLcdBacklight2 = 22;
-        static constexpr uint8_t pinLcdBacklight3 = 23;
 
         bool isClock = true;
 
         Pinetime::System::SystemTask& systemTask;
         Apps nextApp = Apps::None;
         bool onClockApp = false; // TODO find a better way to know that we should handle gestures and button differently for the Clock app.
+        Controllers::BrightnessController brightnessController;
     };
   }
 }
