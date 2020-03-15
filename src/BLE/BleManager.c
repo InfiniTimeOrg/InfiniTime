@@ -13,6 +13,7 @@
 #include <ble/ble_services/ble_bas/ble_bas.h>
 #include <ble/ble_services/ble_dis/ble_dis.h>
 #include <ble/common/ble_conn_params.h>
+#include <libraries/fds/fds.h>
 #include "nrf_sdh_soc.h"
 
 #include "BleManager.h"
@@ -270,11 +271,42 @@ void ble_manager_advertising_event_handler(ble_adv_evt_t ble_adv_evt) {
   }
 }
 
+bool record_delete_next(void)
+{
+  fds_find_token_t  tok   = {0};
+  fds_record_desc_t desc  = {0};
+
+  if (fds_record_iterate(&desc, &tok) == FDS_SUCCESS)
+  {
+    ret_code_t rc = fds_record_delete(&desc);
+    if (rc != FDS_SUCCESS)
+    {
+      return false;
+    }
+
+    return true;
+  }
+  else
+  {
+    /* No records left to delete. */
+    return false;
+  }
+}
+
 void ble_manager_init_peer_manager() {
   ble_gap_sec_params_t sec_param;
   ret_code_t err_code;
 
   err_code = pm_init();
+  if(err_code != NRF_SUCCESS) {
+    // Many errors can occur here, but the most probable is the "Storage full" error from sdk/components/libraries/fds/fds.c : FDS_ERR_NO_PAGES.
+    // TODO : it erases the whole memory, it's not nice to do that...
+    NRF_LOG_WARNING("Error while initializing BLE peer management, Erasing all record from memory");
+    do {
+
+    } while(record_delete_next());
+    err_code = pm_init();
+  }
   APP_ERROR_CHECK(err_code);
 
   memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
@@ -319,6 +351,19 @@ void ble_manager_peer_manager_event_handler(pm_evt_t const *p_evt) {
     case PM_EVT_PEERS_DELETE_SUCCEEDED:
       ble_manager_start_advertising(&delete_bonds);
       break;
+
+    case PM_EVT_STORAGE_FULL:  {
+      // Run garbage collection on the flash.
+      err_code = fds_gc();
+      if (err_code == FDS_ERR_BUSY || err_code == FDS_ERR_NO_SPACE_IN_QUEUES)
+      {
+        // Retry.
+      }
+      else
+      {
+        APP_ERROR_CHECK(err_code);
+      }
+    }break;
 
     default:
       break;
