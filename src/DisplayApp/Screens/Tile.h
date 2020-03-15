@@ -58,6 +58,7 @@ namespace Pinetime {
           bool running = true;
 
           std::unique_ptr<Modal> modal;
+          void StartBrightnessApp();
       };
     }
   }

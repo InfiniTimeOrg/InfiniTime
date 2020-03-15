@@ -13,6 +13,7 @@
 #include <DisplayApp/Screens/Message.h>
 #include <DisplayApp/Screens/Meter.h>
 #include <DisplayApp/Screens/Gauge.h>
+#include <DisplayApp/Screens/Brightness.h>
 #include "../SystemTask/SystemTask.h"
 
 using namespace Pinetime::Applications;
@@ -57,12 +58,7 @@ void DisplayApp::Process(void *instance) {
 }
 
 void DisplayApp::InitHw() {
-  nrf_gpio_cfg_output(pinLcdBacklight1);
-  nrf_gpio_cfg_output(pinLcdBacklight2);
-  nrf_gpio_cfg_output(pinLcdBacklight3);
-  nrf_gpio_pin_clear(pinLcdBacklight1);
-  nrf_gpio_pin_clear(pinLcdBacklight2);
-  nrf_gpio_pin_clear(pinLcdBacklight3);
+  brightnessController.Init();
 }
 
 uint32_t acc = 0;
@@ -85,11 +81,11 @@ void DisplayApp::Refresh() {
   if (xQueueReceive(msgQueue, &msg, queueTimeout)) {
     switch (msg) {
       case Messages::GoToSleep:
-        nrf_gpio_pin_set(pinLcdBacklight3);
-        vTaskDelay(100);
-        nrf_gpio_pin_set(pinLcdBacklight2);
-        vTaskDelay(100);
-        nrf_gpio_pin_set(pinLcdBacklight1);
+        brightnessController.Backup();
+        while(brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
+          brightnessController.Lower();
+          vTaskDelay(100);
+        }
         lcd.DisplayOff();
         lcd.Sleep();
         touchPanel.Sleep();
@@ -100,9 +96,7 @@ void DisplayApp::Refresh() {
         touchPanel.Wakeup();
 
         lcd.DisplayOn();
-        nrf_gpio_pin_clear(pinLcdBacklight3);
-        nrf_gpio_pin_clear(pinLcdBacklight2);
-        nrf_gpio_pin_clear(pinLcdBacklight1);
+        brightnessController.Restore();
         state = States::Running;
         break;
       case Messages::UpdateDateTime:
@@ -174,6 +168,7 @@ void DisplayApp::RunningState() {
       case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
       case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
       case Apps::Gauge: currentScreen.reset(new Screens::Gauge(this)); break;
+      case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
     }
     nextApp = Apps::None;
   }

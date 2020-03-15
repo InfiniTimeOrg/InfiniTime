@@ -161,6 +161,11 @@ set(LVGL_SRC
   libs/lvgl/src/lv_objx/lv_mbox.c
   libs/lvgl/src/lv_objx/lv_mbox.h
 
+  libs/lvgl/src/lv_objx/lv_bar.c
+  libs/lvgl/src/lv_objx/lv_bar.h
+  libs/lvgl/src/lv_objx/lv_slider.h
+  libs/lvgl/src/lv_objx/lv_slider.c
+
   )
 
 list(APPEND IMAGE_FILES
@@ -207,7 +212,7 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/Modal.cpp
   DisplayApp/Screens/BatteryIcon.cpp
   DisplayApp/Screens/BleIcon.cpp
-
+  DisplayApp/Screens/Brightness.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiMaster.cpp
@@ -217,6 +222,7 @@ list(APPEND SOURCE_FILES
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
   Components/DateTime/DateTimeController.cpp
+  Components/Brightness/BrightnessController.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
@@ -245,6 +251,7 @@ set(INCLUDE_FILES
   DisplayApp/Screens/Modal.h
   DisplayApp/Screens/BatteryIcon.h
   DisplayApp/Screens/BleIcon.cpp
+  DisplayApp/Screens/Brightness.h
 #  DisplayApp/Screens/Tab.h
   drivers/St7789.h
   drivers/SpiMaster.h
@@ -254,6 +261,7 @@ set(INCLUDE_FILES
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
   Components/DateTime/DateTimeController.h
+  Components/Brightness/BrightnessController.h
   drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h
