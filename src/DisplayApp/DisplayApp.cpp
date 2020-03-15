@@ -110,17 +110,19 @@ void DisplayApp::Refresh() {
       case Messages::TouchEvent: {
         if (state != States::Running) break;
         auto gesture = OnTouchEvent();
-        switch (gesture) {
-          case DisplayApp::TouchEvents::SwipeUp:
-            currentScreen->OnButtonPushed();
-            lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
-            break;
-          case DisplayApp::TouchEvents::SwipeDown:
-            currentScreen->OnButtonPushed();
-            lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
-            break;
-          default:
-            break;
+        if(!currentScreen->OnTouchEvent(gesture)) {
+          switch (gesture) {
+            case TouchEvents::SwipeUp:
+              currentScreen->OnButtonPushed();
+              lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
+              break;
+            case TouchEvents::SwipeDown:
+              currentScreen->OnButtonPushed();
+              lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
+              break;
+            default:
+              break;
+          }
         }
       }
         break;
@@ -189,32 +191,31 @@ void DisplayApp::PushMessage(DisplayApp::Messages msg) {
   }
 }
 
-DisplayApp::TouchEvents DisplayApp::OnTouchEvent() {
+TouchEvents DisplayApp::OnTouchEvent() {
   auto info = touchPanel.GetTouchInfo();
   if(info.isTouch) {
     switch(info.gesture) {
       case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        // TODO set x,y to LittleVgl
         lvgl.SetNewTapEvent(info.x, info.y);
-        return DisplayApp::TouchEvents::Tap;
+        return TouchEvents::Tap;
       case Pinetime::Drivers::Cst816S::Gestures::LongPress:
-        return DisplayApp::TouchEvents::LongTap;
+        return TouchEvents::LongTap;
       case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
-        return DisplayApp::TouchEvents::DoubleTap;
+        return TouchEvents::DoubleTap;
       case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
-        return DisplayApp::TouchEvents::SwipeRight;
+        return TouchEvents::SwipeRight;
       case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
-        return DisplayApp::TouchEvents::SwipeLeft;
+        return TouchEvents::SwipeLeft;
       case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
-        return DisplayApp::TouchEvents::SwipeDown;
+        return TouchEvents::SwipeDown;
       case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
-        return DisplayApp::TouchEvents::SwipeUp;
+        return TouchEvents::SwipeUp;
       case Pinetime::Drivers::Cst816S::Gestures::None:
       default:
-        return DisplayApp::TouchEvents::None;
+        return TouchEvents::None;
     }
   }
-  return DisplayApp::TouchEvents::None;
+  return TouchEvents::None;
 }
 
 void DisplayApp::StartApp(DisplayApp::Apps app) {

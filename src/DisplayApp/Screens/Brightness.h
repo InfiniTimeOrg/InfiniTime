@@ -13,6 +13,7 @@ namespace Pinetime {
           ~Brightness() override;
           bool Refresh() override;
           bool OnButtonPushed() override;
+          bool OnTouchEvent(TouchEvents event) override;
 
           void OnValueChanged();
         private:
@@ -25,6 +26,7 @@ namespace Pinetime {
           const char* LevelToString(Controllers::BrightnessController::Levels level);
           uint8_t LevelToInt(Controllers::BrightnessController::Levels level);
           void SetValue(uint8_t value);
+          void SetValue();
       };
     }
   }

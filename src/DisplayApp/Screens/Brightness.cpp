@@ -70,3 +70,23 @@ uint8_t Brightness::LevelToInt(Pinetime::Controllers::BrightnessController::Leve
     default : return 0;
   }
 }
+
+bool Brightness::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  switch(event) {
+    case TouchEvents::SwipeLeft:
+      brightness.Lower();
+      SetValue();
+      return true;
+    case TouchEvents::SwipeRight:
+      brightness.Higher();
+      SetValue();
+      return true;
+    default:
+      return false;
+  }
+}
+
+void Brightness::SetValue() {
+  lv_slider_set_value(slider, LevelToInt(brightness.Level()), LV_ANIM_OFF);
+  lv_label_set_text(slider_label, LevelToString(brightness.Level()));
+}

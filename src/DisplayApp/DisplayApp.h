@@ -15,6 +15,7 @@
 #include "LittleVgl.h"
 #include <date/date.h>
 #include <DisplayApp/Screens/Clock.h>
+#include "TouchEvents.h"
 
 
 namespace Pinetime {
@@ -26,8 +27,7 @@ namespace Pinetime {
       public:
         enum class States {Idle, Running};
         enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, SwitchScreen,ButtonPushed} ;
-        enum class TouchEvents { None, Tap, SwipeLeft, SwipeRight, SwipeUp, SwipeDown, LongTap, DoubleTap
-        };
+
         DisplayApp(Pinetime::Drivers::St7789& lcd,
                    Pinetime::Components::LittleVgl& lvgl,
                    Pinetime::Drivers::Cst816S&,

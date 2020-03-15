@@ -242,6 +242,7 @@ set(INCLUDE_FILES
   Logging/NrfLogger.h
   BlinkApp/BlinkApp.h
   DisplayApp/DisplayApp.h
+  DisplayApp/TouchEvents.h
   DisplayApp/Screens/Screen.h
   DisplayApp/Screens/Clock.h
   DisplayApp/Screens/Message.h
@@ -288,4 +289,4 @@ link_directories(
   ../
 )
 
-nRF5x_addExecutable(pinetime-app "${SOURCE_FILES}")
+nRF5x_addExecutable(pinetime-app "${SOURCE_FILES}" ${INCLUDE_FILES})
