@@ -13,7 +13,9 @@ SystemTask::SystemTask(Pinetime::Drivers::SpiMaster &spi, Pinetime::Drivers::St7
                        Pinetime::Drivers::Cst816S &touchPanel, Pinetime::Components::LittleVgl &lvgl,
                        Pinetime::Controllers::Battery &batteryController, Pinetime::Controllers::Ble &bleController,
                        Pinetime::Controllers::DateTime& dateTimeController) :
-                       spi{spi}, lcd{lcd}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController}, bleController{bleController}, dateTimeController{dateTimeController} {
+                       spi{spi}, lcd{lcd}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
+                       bleController{bleController}, dateTimeController{dateTimeController},
+                       watchdog{}, watchdogView{watchdog}{
   systemTaksMsgQueue = xQueueCreate(10, 1);
 }
 
@@ -42,7 +44,7 @@ void SystemTask::Work() {
   touchPanel.Init();
   batteryController.Init();
 
-  displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController, dateTimeController, *this));
+  displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController, dateTimeController, watchdogView, *this));
   displayApp->Start();
 
   batteryController.Update();

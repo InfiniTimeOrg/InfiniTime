@@ -15,6 +15,7 @@
 #include "LittleVgl.h"
 #include <date/date.h>
 #include <DisplayApp/Screens/Clock.h>
+#include <drivers/Watchdog.h>
 #include "TouchEvents.h"
 
 
@@ -26,7 +27,9 @@ namespace Pinetime {
     class DisplayApp {
       public:
         enum class States {Idle, Running};
-        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, SwitchScreen,ButtonPushed} ;
+        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, SwitchScreen,ButtonPushed};
+        enum class FullRefreshDirections { None, Up, Down };
+
 
         DisplayApp(Pinetime::Drivers::St7789& lcd,
                    Pinetime::Components::LittleVgl& lvgl,
@@ -34,13 +37,15 @@ namespace Pinetime {
                    Controllers::Battery &batteryController,
                    Controllers::Ble &bleController,
                    Controllers::DateTime& dateTimeController,
+                   Pinetime::Drivers::WatchdogView& watchdog,
                    Pinetime::System::SystemTask& systemTask);
         void Start();
         void PushMessage(Messages msg);
 
-        enum class Apps {None, Launcher, Clock, Test, Meter, Gauge, Brightness};
+        enum class Apps {None, Launcher, Clock, SysInfo, Meter, Gauge, Brightness};
         void StartApp(Apps app);
 
+        void SetFullRefresh(FullRefreshDirections direction);
       private:
         TaskHandle_t taskHandle;
         static void Process(void* instance);
@@ -60,6 +65,7 @@ namespace Pinetime {
         Pinetime::Controllers::Battery &batteryController;
         Pinetime::Controllers::Ble &bleController;
         Pinetime::Controllers::DateTime& dateTimeController;
+        Pinetime::Drivers::WatchdogView& watchdog;
 
         Pinetime::Drivers::Cst816S& touchPanel;
         TouchEvents OnTouchEvent();

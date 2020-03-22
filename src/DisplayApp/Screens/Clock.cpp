@@ -37,23 +37,6 @@ Clock::Clock(DisplayApp* app,
   lv_img_set_src(bleIcon, BleIcon::GetIcon(false));
   lv_obj_align(bleIcon, batteryIcon, LV_ALIGN_OUT_LEFT_MID, 0, 0);
 
-//  label_battery = lv_label_create(lv_scr_act(), NULL);
-//  lv_obj_align(label_battery, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -80, 0);
-
-//  labelStyle = const_cast<lv_style_t *>(lv_label_get_style(label_battery, LV_LABEL_STYLE_MAIN));
-//  labelStyle->text.font = &jetbrains_mono_bold_20;
-//
-//  lv_style_copy(&labelBigStyle, labelStyle);
-//  labelBigStyle.text.font = &jetbrains_mono_extrabold_compressed;
-//
-//  lv_label_set_style(label_battery, LV_LABEL_STYLE_MAIN, labelStyle);
-
-//  label_ble = lv_label_create(lv_scr_act(), NULL);
-
-
-//  lv_label_set_style(label_ble, LV_LABEL_STYLE_MAIN, labelStyle);
-//  lv_obj_align(label_ble, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, 0);
-
   label_date = lv_label_create(lv_scr_act(), NULL);
 
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);

@@ -126,7 +126,7 @@ void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event, uint32_t buttonId) {
         modal->Show();
         break;
       case 4:
-        tile->StartTestApp();
+        tile->StartSysInfoApp();
         break;
       case 5:
         tile->StartBrightnessApp();
@@ -148,8 +148,8 @@ void Tile::StartClockApp() {
   running = false;
 }
 
-void Tile::StartTestApp() {
-  app->StartApp(DisplayApp::Apps::Test);
+void Tile::StartSysInfoApp() {
+  app->StartApp(DisplayApp::Apps::SysInfo);
   running = false;
 }
 

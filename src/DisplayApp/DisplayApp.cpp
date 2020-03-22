@@ -14,6 +14,7 @@
 #include <DisplayApp/Screens/Meter.h>
 #include <DisplayApp/Screens/Gauge.h>
 #include <DisplayApp/Screens/Brightness.h>
+#include <DisplayApp/Screens/ScreenList.h>
 #include "../SystemTask/SystemTask.h"
 
 using namespace Pinetime::Applications;
@@ -24,13 +25,15 @@ DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
                        Controllers::Battery &batteryController,
                        Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController,
+                       Pinetime::Drivers::WatchdogView& watchdog,
                        Pinetime::System::SystemTask& systemTask) :
         lcd{lcd},
         lvgl{lvgl},
-        touchPanel{touchPanel},
         batteryController{batteryController},
         bleController{bleController},
         dateTimeController{dateTimeController},
+        watchdog{watchdog},
+        touchPanel{touchPanel},
         currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController) },
         systemTask{systemTask} {
   msgQueue = xQueueCreate(queueSize, itemSize);
@@ -167,7 +170,8 @@ void DisplayApp::RunningState() {
         currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
         onClockApp = true;
         break;
-      case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
+//      case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
+      case Apps::SysInfo: currentScreen.reset(new Screens::ScreenList(this, dateTimeController, batteryController, brightnessController, watchdog)); break;
       case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
       case Apps::Gauge: currentScreen.reset(new Screens::Gauge(this)); break;
       case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
@@ -220,4 +224,17 @@ TouchEvents DisplayApp::OnTouchEvent() {
 
 void DisplayApp::StartApp(DisplayApp::Apps app) {
   nextApp = app;
+}
+
+void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
+  switch(direction){
+    case DisplayApp::FullRefreshDirections::Down:
+      lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
+      break;
+    case DisplayApp::FullRefreshDirections::Up:
+      lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
+      break;
+    default: break;
+  }
+
 }

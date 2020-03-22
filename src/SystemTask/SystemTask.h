@@ -43,6 +43,7 @@ namespace Pinetime {
         QueueHandle_t systemTaksMsgQueue;
         bool isSleeping = false;
         Pinetime::Drivers::Watchdog watchdog;
+        Pinetime::Drivers::WatchdogView watchdogView;
 
 
         static constexpr uint8_t pinSpiSck = 2;
