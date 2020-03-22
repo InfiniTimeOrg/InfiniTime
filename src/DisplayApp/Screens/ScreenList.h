@@ -28,6 +28,10 @@ namespace Pinetime {
           Pinetime::Controllers::Battery& batteryController;
           Pinetime::Controllers::BrightnessController& brightnessController;
           Pinetime::Drivers::WatchdogView& watchdog;
+
+          char t1[200];
+          char t2[30];
+          char t3[42];
       };
     }
   }

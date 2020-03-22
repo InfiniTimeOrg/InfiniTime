@@ -16,7 +16,7 @@ ScreenList::ScreenList(Pinetime::Applications::DisplayApp *app, Pinetime::Contro
 
   // TODO all of this is far too heavy (string processing). This should be improved.
   // TODO the info (battery, time,...) should be updated in the Refresh method.
-  char t1[200];
+
 
   auto batteryPercent = static_cast<int16_t>(batteryController.PercentRemaining());
   if(batteryPercent > 100) batteryPercent = 100;
@@ -57,23 +57,13 @@ ScreenList::ScreenList(Pinetime::Applications::DisplayApp *app, Pinetime::Contro
               dateTimeController.Hours(), dateTimeController.Minutes(), dateTimeController.Seconds(),
               dateTimeController.Day(), dateTimeController.Month(), dateTimeController.Year(),
               batteryPercent, brightness, resetReason);
-/*
-  auto t1 = "Pinetime\n"
-            "Version:\n"
-            "Build: 23/03/2020\n"
-            "Time: 17:23:12\n"
-            "date: 23/03/2020\n"
-            "Uptime: 2d 13h52:21\n"
-            "Battery: 3.56v/82%\n"
-            "Backlight: 2/3\n"
-            "Last reset: wtdg\n"
-            "BLE MAC: \n  AA:BB:CC:DD:EE:FF";*/
+
   screens.emplace_back(t1);
 
-  auto t2 = "Hello from\nthe developper!";
+  strncpy(t2, "Hello from\nthe developper!", 27);
   screens.emplace_back(t2);
 
-  auto t3 = "Place holder\nin case we need\nmore room!";
+  strncpy(t3, "Place holder\nin case we need\nmore room!", 40);
   screens.emplace_back(t3);
 
   auto &screen = screens[screenIndex];
