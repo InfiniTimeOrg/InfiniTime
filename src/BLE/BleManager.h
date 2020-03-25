@@ -31,6 +31,8 @@ extern "C" {
 #define NEXT_CONN_PARAMS_UPDATE_DELAY 30000 /* Time between each call to sd_ble_gap_conn_param_update after the first call (30 seconds). */
 #define MAX_CONN_PARAMS_UPDATE_COUNT 3 /* Number of attempts before giving up the connection parameter negotiation. */
 
+#define MESSAGE_BUFFER_SIZE             18 /**< Size of buffer holding optional messages in notifications. */
+#define BLE_ANS_NB_OF_CATEGORY_ID       10 /**< Number of categories. */
 
 void ble_manager_init();
 void ble_manager_start_advertising(void *p_erase_bonds);
@@ -40,6 +42,8 @@ void ble_manager_init_peer_manager();
 void ble_manager_set_new_time_callback(void (*OnNewTime)(current_time_char_t* currentTime));
 void ble_manager_set_ble_disconnection_callback(void (*OnBleDisconnection)());
 void ble_manager_set_ble_connection_callback(void (*OnBleConnection)());
+
+void ble_manager_set_new_notification_callback(void (*OnNewNotification)(const char* message, uint8_t size));
 
 
 #ifdef __cplusplus

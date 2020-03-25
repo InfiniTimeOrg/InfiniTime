@@ -38,6 +38,7 @@ DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
         systemTask{systemTask} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   onClockApp = true;
+  modal.reset(new Screens::Modal(this));
 }
 
 void DisplayApp::Start() {
@@ -103,12 +104,22 @@ void DisplayApp::Refresh() {
         state = States::Running;
         break;
       case Messages::UpdateDateTime:
+//        modal->Show();
         break;
       case Messages::UpdateBleConnection:
 //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected : Screens::Clock::BleConnectionStates::NotConnected);
         break;
       case Messages::UpdateBatteryLevel:
 //        clockScreen.SetBatteryPercentRemaining(batteryController.PercentRemaining());
+        break;
+      case Messages::NewNotification: {
+        Pinetime::Controllers::Ble::NotificationMessage notificationMessage;
+        if (bleController.PopNotification(notificationMessage)) {
+          std::string m {notificationMessage.message, notificationMessage.size};
+          modal->Show(m);
+          // TODO delete message
+        }
+      }
         break;
       case Messages::TouchEvent: {
         if (state != States::Running) break;

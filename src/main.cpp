@@ -85,6 +85,11 @@ void OnBleDisconnection() {
   bleController.Disconnect();
 }
 
+void OnNewNotification(const char* message, uint8_t size) {
+  bleController.PushNotification(message, size);
+  systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
+}
+
 void OnNewTime(current_time_char_t* currentTime) {
   auto dayOfWeek = currentTime->exact_time_256.day_date_time.day_of_week;
   auto year = currentTime->exact_time_256.day_date_time.date_time.year;
@@ -96,6 +101,8 @@ void OnNewTime(current_time_char_t* currentTime) {
 
   dateTimeController.SetTime(year, month, day,
                              dayOfWeek, hour, minute, second, nrf_rtc_counter_get(portNRF_RTC_REG));
+
+  systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnNewTime);
 }
 
 void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
@@ -128,6 +135,7 @@ int main(void) {
   ble_manager_set_new_time_callback(OnNewTime);
   ble_manager_set_ble_connection_callback(OnBleConnection);
   ble_manager_set_ble_disconnection_callback(OnBleDisconnection);
+  ble_manager_set_new_notification_callback(OnNewNotification);
 
   vTaskStartScheduler();
 

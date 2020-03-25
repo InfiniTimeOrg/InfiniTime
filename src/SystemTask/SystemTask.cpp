@@ -35,7 +35,7 @@ void SystemTask::Work() {
   watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
-  bool erase_bonds=false;
+  bool erase_bonds=true;
   ble_manager_init_peer_manager();
   nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
 
@@ -84,6 +84,12 @@ void SystemTask::Work() {
           NRF_LOG_INFO("[SystemTask] Going to sleep");
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
           isSleeping = true; break;
+        case Messages::OnNewTime:
+          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateDateTime);
+          break;
+        case Messages::OnNewNotification:
+          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewNotification);
+          break;
         default: break;
       }
     }

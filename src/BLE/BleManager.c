@@ -12,6 +12,7 @@
 #include <ble/ble_services/ble_hrs/ble_hrs.h>
 #include <ble/ble_services/ble_bas/ble_bas.h>
 #include <ble/ble_services/ble_dis/ble_dis.h>
+#include <ble/ble_services/ble_ans_c/ble_ans_c.h>
 #include <ble/common/ble_conn_params.h>
 #include <libraries/fds/fds.h>
 #include "nrf_sdh_soc.h"
@@ -42,14 +43,31 @@ void ble_manager_cts_print_time(ble_cts_c_evt_t *p_evt);
 void ble_manager_conn_params_event_handler(ble_conn_params_evt_t *p_evt);
 void ble_manager_conn_params_error_handler(uint32_t nrf_error);
 
+typedef enum
+{
+  ALERT_NOTIFICATION_DISABLED, /**< Alert Notifications has been disabled. */
+  ALERT_NOTIFICATION_ENABLED,  /**< Alert Notifications has been enabled. */
+  ALERT_NOTIFICATION_ON,       /**< Alert State is on. */
+} ble_ans_c_alert_state_t;
+
+void on_ans_c_evt(ble_ans_c_evt_t * p_evt);
+void alert_notification_error_handler(uint32_t nrf_error);
+void handle_alert_notification(ble_ans_c_evt_t * p_evt);
+void supported_alert_notification_read(void);
+void alert_notification_setup(void);
+void control_point_setup(ble_ans_c_evt_t * p_evt);
+
 uint16_t ble_manager_connection_handle = BLE_CONN_HANDLE_INVALID; // Handle of the current connection.
 NRF_BLE_QWR_DEF(ble_manager_queue_write); // Context for the Queued Write module.
 BLE_CTS_C_DEF(ble_manager_cts_client); // Current Time service instance.
 NRF_BLE_GATT_DEF(ble_manager_gatt); // GATT module instance.
 BLE_ADVERTISING_DEF(ble_manager_advertising); // Advertising module instance.
 BLE_DB_DISCOVERY_DEF(ble_manager_db_discovery);
+BLE_ANS_C_DEF(m_ans_c);
 
-
+static uint8_t m_alert_message_buffer[MESSAGE_BUFFER_SIZE]; /**< Message buffer for optional notify messages. */
+static ble_ans_c_alert_state_t m_new_alert_state    = ALERT_NOTIFICATION_DISABLED;  /**< State that holds the current state of New Alert Notifications, i.e. Enabled, Alert On, Disabled. */
+static ble_ans_c_alert_state_t m_unread_alert_state = ALERT_NOTIFICATION_DISABLED;  /**< State that holds the current state of Unread Alert Notifications, i.e. Enabled, Alert On, Disabled. */
 
 static ble_uuid_t ble_manager_advertising_uuids[] = /* Universally unique service identifiers.*/
         {
@@ -87,6 +105,21 @@ static char const *month_of_year[] =
                 "November",
                 "December"
         };
+
+static char const * lit_catid[BLE_ANS_NB_OF_CATEGORY_ID] =
+        {
+                "Simple alert",
+                "Email",
+                "News",
+                "Incoming call",
+                "Missed call",
+                "SMS/MMS",
+                "Voice mail",
+                "Schedule",
+                "High prioritized alert",
+                "Instant message"
+        };
+
 
 void ble_manager_init() {
   ble_manager_init_stack();
@@ -131,6 +164,11 @@ void ble_manager_set_ble_connection_callback(void (*OnBleConnection)()) {
 void (*OnBleDisconnectionCallback)();
 void ble_manager_set_ble_disconnection_callback(void (*OnBleDisconnection)()) {
   OnBleDisconnectionCallback = OnBleDisconnection;
+}
+
+void (*OnNewNotificationCallback)(const char* message, uint8_t size);
+void ble_manager_set_new_notification_callback(void (*OnNewNotification)(const char*, uint8_t size)) {
+  OnNewNotificationCallback = OnNewNotification;
 }
 
 
@@ -227,6 +265,8 @@ void ble_manager_init_db_discovery() {
 
 void ble_manager_discover_handler(ble_db_discovery_evt_t *p_evt) {
   ble_cts_c_on_db_disc_evt(&ble_manager_cts_client, p_evt);
+  NRF_LOG_INFO("ble_ans_c_on_db_disc_evt");
+  ble_ans_c_on_db_disc_evt(&m_ans_c, p_evt);
 }
 
 void ble_manager_init_advertising() {
@@ -382,12 +422,165 @@ void ble_manager_start_advertising(void *p_erase_bonds) {
   }
 }
 
+void handle_alert_notification(ble_ans_c_evt_t * p_evt)
+{
+  ret_code_t err_code;
+
+  if (p_evt->uuid.uuid == BLE_UUID_UNREAD_ALERT_CHAR)
+  {
+    if (m_unread_alert_state == ALERT_NOTIFICATION_ENABLED)
+    {
+//      err_code = bsp_indication_set(BSP_INDICATE_ALERT_1);
+      APP_ERROR_CHECK(err_code);
+      m_unread_alert_state = ALERT_NOTIFICATION_ON;
+      NRF_LOG_INFO("Unread Alert state: On.");
+      NRF_LOG_INFO("  Category:                 %s",
+                   (uint32_t)lit_catid[p_evt->data.alert.alert_category]);
+      NRF_LOG_INFO("  Number of unread alerts:  %d",
+                   p_evt->data.alert.alert_category_count);
+    }
+  }
+  else if (p_evt->uuid.uuid == BLE_UUID_NEW_ALERT_CHAR)
+  {
+//    if (m_new_alert_state == ALERT_NOTIFICATION_ENABLED)
+    if(true)
+    {
+//      err_code = bsp_indication_set(BSP_INDICATE_ALERT_0);
+//      APP_ERROR_CHECK(err_code);
+      m_new_alert_state = ALERT_NOTIFICATION_ON;
+      NRF_LOG_INFO("New Alert state: On.");
+      NRF_LOG_INFO("  Category:                 %s",
+                   (uint32_t)lit_catid[p_evt->data.alert.alert_category]);
+      NRF_LOG_INFO("  Number of new alerts:     %d",
+                   p_evt->data.alert.alert_category_count);
+      NRF_LOG_INFO("  Text String Information:  (%d) %s",
+                   p_evt->data.alert.alert_msg_length, (uint32_t)p_evt->data.alert.p_alert_msg_buf);
+
+      OnNewNotificationCallback(p_evt->data.alert.p_alert_msg_buf, p_evt->data.alert.alert_msg_length);
+    }
+  }
+  else
+  {
+    // Only Unread and New Alerts exists, thus do nothing.
+  }
+}
+
+void supported_alert_notification_read(void)
+{
+  NRF_LOG_INFO("Read supported Alert Notification characteristics on the connected peer.");
+
+  ret_code_t err_code;
+
+  err_code = ble_ans_c_new_alert_read(&m_ans_c);
+  APP_ERROR_CHECK(err_code);
+
+  err_code = ble_ans_c_unread_alert_read(&m_ans_c);
+  APP_ERROR_CHECK(err_code);
+
+}
+
+void alert_notification_setup(void)
+{
+  ret_code_t err_code;
+
+  err_code = ble_ans_c_enable_notif_new_alert(&m_ans_c);
+  APP_ERROR_CHECK(err_code);
+
+  m_new_alert_state = ALERT_NOTIFICATION_ENABLED;
+  NRF_LOG_INFO("New Alert State: Enabled.");
+
+  err_code = ble_ans_c_enable_notif_unread_alert(&m_ans_c);
+  APP_ERROR_CHECK(err_code);
+
+  m_unread_alert_state = ALERT_NOTIFICATION_ENABLED;
+  NRF_LOG_INFO("Unread Alert State: Enabled.");
+
+  NRF_LOG_INFO("Notifications enabled.");
+}
+
+void control_point_setup(ble_ans_c_evt_t * p_evt)
+{
+  uint32_t                err_code;
+  ble_ans_control_point_t setting;
+
+  if (p_evt->uuid.uuid == BLE_UUID_SUPPORTED_UNREAD_ALERT_CATEGORY_CHAR)
+  {
+    setting.command  = ANS_ENABLE_UNREAD_CATEGORY_STATUS_NOTIFICATION;
+    setting.category = (ble_ans_category_id_t)p_evt->data.alert.alert_category;
+    NRF_LOG_INFO("Unread status notification enabled for received categories.");
+  }
+  else if (p_evt->uuid.uuid == BLE_UUID_SUPPORTED_NEW_ALERT_CATEGORY_CHAR)
+  {
+    setting.command  = ANS_ENABLE_NEW_INCOMING_ALERT_NOTIFICATION;
+    setting.category = (ble_ans_category_id_t)p_evt->data.alert.alert_category;
+    NRF_LOG_INFO("New incoming notification enabled for received categories.");
+  }
+  else
+  {
+    return;
+  }
+
+  err_code = ble_ans_c_control_point_write(&m_ans_c, &setting);
+  APP_ERROR_CHECK(err_code);
+}
+
+void on_ans_c_evt(ble_ans_c_evt_t * p_evt)
+{
+  ret_code_t err_code;
+  NRF_LOG_INFO("ANS %d", p_evt->evt_type);
+
+
+  switch (p_evt->evt_type)
+  {
+    case BLE_ANS_C_EVT_DISCOVERY_FAILED:
+      NRF_LOG_INFO("ANS discovery failed");
+      break;
+    case BLE_ANS_C_EVT_NOTIFICATION:
+      handle_alert_notification(p_evt);
+      NRF_LOG_INFO("Alert Notification received from server, UUID: %X.", p_evt->uuid.uuid);
+      break; // BLE_ANS_C_EVT_NOTIFICATION
+
+    case BLE_ANS_C_EVT_DISCOVERY_COMPLETE:
+      NRF_LOG_INFO("Alert Notification Service discovered on the server.");
+      err_code = ble_ans_c_handles_assign(&m_ans_c,
+                                          p_evt->conn_handle,
+                                          &p_evt->data.service);
+      APP_ERROR_CHECK(err_code);
+      supported_alert_notification_read();
+      alert_notification_setup();
+      break; // BLE_ANS_C_EVT_DISCOVERY_COMPLETE
+
+    case BLE_ANS_C_EVT_READ_RESP:
+      NRF_LOG_INFO("Alert Setup received from server, UUID: %X.", p_evt->uuid.uuid);
+      control_point_setup(p_evt);
+      break; // BLE_ANS_C_EVT_READ_RESP
+
+    case BLE_ANS_C_EVT_DISCONN_COMPLETE:
+      m_new_alert_state    = ALERT_NOTIFICATION_DISABLED;
+      m_unread_alert_state = ALERT_NOTIFICATION_DISABLED;
+
+//      err_code = bsp_indication_set(BSP_INDICATE_ALERT_OFF);
+      APP_ERROR_CHECK(err_code);
+      break; // BLE_ANS_C_EVT_DISCONN_COMPLETE
+
+    default:
+      // No implementation needed.
+      break;
+  }
+}
+
+void alert_notification_error_handler(uint32_t nrf_error)
+{
+  APP_ERROR_HANDLER(nrf_error);
+}
+
 void ble_manager_init_services() {
   ret_code_t err_code;
   ble_hrs_init_t hrs_init;
   ble_bas_init_t bas_init;
   ble_dis_init_t dis_init;
   ble_cts_c_init_t cts_init;
+  ble_ans_c_init_t ans_init_obj;
   nrf_ble_qwr_init_t qwr_init = {0};
   uint8_t body_sensor_location;
 
@@ -441,6 +634,21 @@ void ble_manager_init_services() {
   cts_init.error_handler = ble_manager_cts_error_handler;
   err_code = ble_cts_c_init(&ble_manager_cts_client, &cts_init);
   APP_ERROR_CHECK(err_code);
+
+  // Alert Notification service
+  memset(&ans_init_obj, 0, sizeof(ans_init_obj));
+  memset(m_alert_message_buffer, 0, MESSAGE_BUFFER_SIZE);
+
+  ans_init_obj.evt_handler         = on_ans_c_evt;
+  ans_init_obj.message_buffer_size = MESSAGE_BUFFER_SIZE;
+  ans_init_obj.p_message_buffer    = m_alert_message_buffer;
+  ans_init_obj.error_handler       = alert_notification_error_handler;
+
+  NRF_LOG_INFO("ble_ans_c_init");
+  err_code = ble_ans_c_init(&m_ans_c, &ans_init_obj);
+  NRF_SDH_BLE_OBSERVER(ans_observer, BLE_ANS_C_BLE_OBSERVER_PRIO,*ble_ans_c_on_ble_evt, &m_ans_c);
+
+  APP_ERROR_CHECK(err_code);
 }
 
 void ble_manager_queue_write_error_handler(uint32_t nrf_error) {
@@ -467,11 +675,11 @@ void ble_manager_cts_event_handler(ble_cts_c_t *p_cts, ble_cts_c_evt_t *p_evt) {
       NRF_LOG_INFO("Current Time Service not found on server. ");
       // CTS not found in this case we just disconnect. There is no reason to stay
       // in the connection for this simple app since it all wants is to interact with CT
-      if (p_evt->conn_handle != BLE_CONN_HANDLE_INVALID) {
-        err_code = sd_ble_gap_disconnect(p_evt->conn_handle,
-                                         BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-        APP_ERROR_CHECK(err_code);
-      }
+//      if (p_evt->conn_handle != BLE_CONN_HANDLE_INVALID) {
+//        err_code = sd_ble_gap_disconnect(p_evt->conn_handle,
+//                                         BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+//        APP_ERROR_CHECK(err_code);
+//      }
       break;
 
     case BLE_CTS_C_EVT_DISCONN_COMPLETE:

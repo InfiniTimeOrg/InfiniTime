@@ -16,6 +16,7 @@
 #include <date/date.h>
 #include <DisplayApp/Screens/Clock.h>
 #include <drivers/Watchdog.h>
+#include <DisplayApp/Screens/Modal.h>
 #include "TouchEvents.h"
 
 
@@ -27,7 +28,9 @@ namespace Pinetime {
     class DisplayApp {
       public:
         enum class States {Idle, Running};
-        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, SwitchScreen,ButtonPushed};
+        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, SwitchScreen,ButtonPushed,
+            NewNotification
+        };
         enum class FullRefreshDirections { None, Up, Down };
 
 
@@ -78,6 +81,8 @@ namespace Pinetime {
         Apps nextApp = Apps::None;
         bool onClockApp = false; // TODO find a better way to know that we should handle gestures and button differently for the Clock app.
         Controllers::BrightnessController brightnessController;
+        std::unique_ptr<Screens::Modal> modal;
+
     };
   }
 }

@@ -13,7 +13,8 @@ namespace Pinetime {
   namespace System {
     class SystemTask {
       public:
-        enum class Messages {GoToSleep, GoToRunning};
+        enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification
+        };
 
         SystemTask(Pinetime::Drivers::SpiMaster& spi,
                 Pinetime::Drivers::St7789& lcd,
