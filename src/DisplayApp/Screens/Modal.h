@@ -22,8 +22,7 @@ namespace Pinetime {
           Modal(DisplayApp* app);
           ~Modal() override;
 
-          void Show();
-          void Show(const std::string& message);
+          void Show(const char* msg);
           void Hide();
 
           bool Refresh() override;
@@ -39,7 +38,6 @@ namespace Pinetime {
           lv_obj_t *info;
           bool running = true;
           bool isVisible = false;
-          std::string message;
 
       };
     }

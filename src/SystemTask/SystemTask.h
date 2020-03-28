@@ -16,13 +16,11 @@ namespace Pinetime {
         enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification
         };
 
-        SystemTask(Pinetime::Drivers::SpiMaster& spi,
-                Pinetime::Drivers::St7789& lcd,
-                Pinetime::Drivers::Cst816S& touchPanel,
-                Pinetime::Components::LittleVgl& lvgl,
-                Pinetime::Controllers::Battery& batteryController,
-                Pinetime::Controllers::Ble& bleController,
-                Pinetime::Controllers::DateTime& dateTimeController);
+        SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd, Drivers::Cst816S &touchPanel,
+                   Components::LittleVgl &lvgl,
+                   Controllers::Battery &batteryController, Controllers::Ble &bleController,
+                   Controllers::DateTime &dateTimeController,
+                   Pinetime::Controllers::NotificationManager& manager);
 
 
         void Start();
@@ -45,6 +43,7 @@ namespace Pinetime {
         bool isSleeping = false;
         Pinetime::Drivers::Watchdog watchdog;
         Pinetime::Drivers::WatchdogView watchdogView;
+        Pinetime::Controllers::NotificationManager& notificationManager;
 
 
         static constexpr uint8_t pinSpiSck = 2;

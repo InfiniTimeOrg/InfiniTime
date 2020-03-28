@@ -17,6 +17,7 @@
 #include <DisplayApp/Screens/Clock.h>
 #include <drivers/Watchdog.h>
 #include <DisplayApp/Screens/Modal.h>
+#include <Components/Ble/NotificationManager.h>
 #include "TouchEvents.h"
 
 
@@ -34,14 +35,11 @@ namespace Pinetime {
         enum class FullRefreshDirections { None, Up, Down };
 
 
-        DisplayApp(Pinetime::Drivers::St7789& lcd,
-                   Pinetime::Components::LittleVgl& lvgl,
-                   Pinetime::Drivers::Cst816S&,
-                   Controllers::Battery &batteryController,
-                   Controllers::Ble &bleController,
-                   Controllers::DateTime& dateTimeController,
-                   Pinetime::Drivers::WatchdogView& watchdog,
-                   Pinetime::System::SystemTask& systemTask);
+        DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &,
+                   Controllers::Battery &batteryController, Controllers::Ble &bleController,
+                   Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
+                   System::SystemTask &systemTask,
+                   Pinetime::Controllers::NotificationManager& notificationManager);
         void Start();
         void PushMessage(Messages msg);
 
@@ -82,7 +80,7 @@ namespace Pinetime {
         bool onClockApp = false; // TODO find a better way to know that we should handle gestures and button differently for the Clock app.
         Controllers::BrightnessController brightnessController;
         std::unique_ptr<Screens::Modal> modal;
-
+        Pinetime::Controllers::NotificationManager& notificationManager;
     };
   }
 }

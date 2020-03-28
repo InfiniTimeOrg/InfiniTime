@@ -15,18 +15,16 @@
 #include <DisplayApp/Screens/Gauge.h>
 #include <DisplayApp/Screens/Brightness.h>
 #include <DisplayApp/Screens/ScreenList.h>
+#include <Components/Ble/NotificationManager.h>
 #include "../SystemTask/SystemTask.h"
 
 using namespace Pinetime::Applications;
 
-DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
-                       Pinetime::Components::LittleVgl& lvgl,
-                       Pinetime::Drivers::Cst816S& touchPanel,
-                       Controllers::Battery &batteryController,
-                       Controllers::Ble &bleController,
-                       Controllers::DateTime &dateTimeController,
-                       Pinetime::Drivers::WatchdogView& watchdog,
-                       Pinetime::System::SystemTask& systemTask) :
+DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &touchPanel,
+                       Controllers::Battery &batteryController, Controllers::Ble &bleController,
+                       Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
+                       System::SystemTask &systemTask,
+                       Pinetime::Controllers::NotificationManager& notificationManager) :
         lcd{lcd},
         lvgl{lvgl},
         batteryController{batteryController},
@@ -35,7 +33,8 @@ DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
         watchdog{watchdog},
         touchPanel{touchPanel},
         currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController) },
-        systemTask{systemTask} {
+        systemTask{systemTask},
+        notificationManager{notificationManager} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   onClockApp = true;
   modal.reset(new Screens::Modal(this));
@@ -113,12 +112,8 @@ void DisplayApp::Refresh() {
 //        clockScreen.SetBatteryPercentRemaining(batteryController.PercentRemaining());
         break;
       case Messages::NewNotification: {
-        Pinetime::Controllers::Ble::NotificationMessage notificationMessage;
-        if (bleController.PopNotification(notificationMessage)) {
-          std::string m {notificationMessage.message, notificationMessage.size};
-          modal->Show(m);
-          // TODO delete message
-        }
+        auto notification = notificationManager.Pop();
+        modal->Show(notification.message.data());
       }
         break;
       case Messages::TouchEvent: {

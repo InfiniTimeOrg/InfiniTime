@@ -123,7 +123,9 @@ void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event, uint32_t buttonId) {
         tile->StartClockApp();
         break;
       case 3:
-        modal->Show();
+        char versionStr[20];
+        sprintf(versionStr, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
+        modal->Show(versionStr);
         break;
       case 4:
         tile->StartSysInfoApp();
