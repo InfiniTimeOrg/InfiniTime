@@ -177,7 +177,7 @@ void ble_manager_event_handler(ble_evt_t const *p_ble_evt, void *p_context) {
 
   switch (p_ble_evt->header.evt_id) {
     case BLE_GAP_EVT_CONNECTED:
-      NRF_LOG_INFO("Connected");
+      NRF_LOG_INFO("[BLE] Connected to peer");
       ble_manager_connection_handle = p_ble_evt->evt.gap_evt.conn_handle;
       err_code = nrf_ble_qwr_conn_handle_assign(&ble_manager_queue_write, ble_manager_connection_handle);
       OnBleConnectionCallback();
@@ -185,7 +185,7 @@ void ble_manager_event_handler(ble_evt_t const *p_ble_evt, void *p_context) {
       break;
 
     case BLE_GAP_EVT_DISCONNECTED:
-      NRF_LOG_INFO("Disconnected");
+      NRF_LOG_INFO("[Ble] Disconnected from peer]");
       ble_manager_connection_handle = BLE_CONN_HANDLE_INVALID;
       if (p_ble_evt->evt.gap_evt.conn_handle == ble_manager_cts_client.conn_handle) {
         ble_manager_cts_client.conn_handle = BLE_CONN_HANDLE_INVALID;
@@ -194,7 +194,7 @@ void ble_manager_event_handler(ble_evt_t const *p_ble_evt, void *p_context) {
       break;
 
     case BLE_GAP_EVT_PHY_UPDATE_REQUEST: {
-      NRF_LOG_DEBUG("PHY update request.");
+      NRF_LOG_INFO("[BLE] PHY update request.");
       ble_gap_phys_t const phys =
               {
 
@@ -208,7 +208,7 @@ void ble_manager_event_handler(ble_evt_t const *p_ble_evt, void *p_context) {
 
     case BLE_GATTC_EVT_TIMEOUT:
       // Disconnect on GATT Client timeout event.
-      NRF_LOG_DEBUG("GATT Client Timeout.");
+      NRF_LOG_INFO("[BLE] GATT Client Timeout.");
       err_code = sd_ble_gap_disconnect(p_ble_evt->evt.gattc_evt.conn_handle,
                                        BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
       APP_ERROR_CHECK(err_code);
@@ -216,7 +216,7 @@ void ble_manager_event_handler(ble_evt_t const *p_ble_evt, void *p_context) {
 
     case BLE_GATTS_EVT_TIMEOUT:
       // Disconnect on GATT Server timeout event.
-      NRF_LOG_DEBUG("GATT Server Timeout.");
+      NRF_LOG_INFO("[BLE] GATT Server Timeout.");
       err_code = sd_ble_gap_disconnect(p_ble_evt->evt.gatts_evt.conn_handle,
                                        BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
       APP_ERROR_CHECK(err_code);
@@ -265,7 +265,6 @@ void ble_manager_init_db_discovery() {
 
 void ble_manager_discover_handler(ble_db_discovery_evt_t *p_evt) {
   ble_cts_c_on_db_disc_evt(&ble_manager_cts_client, p_evt);
-  NRF_LOG_INFO("ble_ans_c_on_db_disc_evt");
   ble_ans_c_on_db_disc_evt(&m_ans_c, p_evt);
 }
 
@@ -300,10 +299,11 @@ void ble_manager_advertising_event_handler(ble_adv_evt_t ble_adv_evt) {
 
   switch (ble_adv_evt) {
     case BLE_ADV_EVT_FAST:
-      NRF_LOG_INFO("Fast advertising.");
+      NRF_LOG_INFO("[Advertising] Fast advertising started.");
       break;
 
     case BLE_ADV_EVT_IDLE:
+      NRF_LOG_INFO("[Advertising] Idling...");
       break;
 
     default:
@@ -380,28 +380,30 @@ void ble_manager_peer_manager_event_handler(pm_evt_t const *p_evt) {
 
   switch (p_evt->evt_id) {
     case PM_EVT_CONN_SEC_SUCCEEDED: {
-//      m_peer_id = p_evt->peer_id;
-
-      // Discover peer's services.
+      NRF_LOG_INFO("[Peer management] A link has been secured, starting service discovery.");
       err_code = ble_db_discovery_start(&ble_manager_db_discovery, p_evt->conn_handle);
       APP_ERROR_CHECK(err_code);
     }
       break;
 
     case PM_EVT_PEERS_DELETE_SUCCEEDED:
+      NRF_LOG_INFO("[Peer management] All peers data has been successfuly deleted.");
       ble_manager_start_advertising(&delete_bonds);
       break;
 
     case PM_EVT_STORAGE_FULL:  {
+      NRF_LOG_INFO("[Peer management] Storage full, trying to run garbage collection on flash storage.");
       // Run garbage collection on the flash.
       err_code = fds_gc();
       if (err_code == FDS_ERR_BUSY || err_code == FDS_ERR_NO_SPACE_IN_QUEUES)
       {
+        NRF_LOG_INFO("[Peer management] Garbage collection issue.");
         // Retry.
       }
       else
       {
         APP_ERROR_CHECK(err_code);
+        NRF_LOG_INFO("[Peer management] Garbage collection done.");
       }
     }break;
 
@@ -442,22 +444,16 @@ void handle_alert_notification(ble_ans_c_evt_t * p_evt)
   }
   else if (p_evt->uuid.uuid == BLE_UUID_NEW_ALERT_CHAR)
   {
-//    if (m_new_alert_state == ALERT_NOTIFICATION_ENABLED)
-    if(true)
-    {
-//      err_code = bsp_indication_set(BSP_INDICATE_ALERT_0);
-//      APP_ERROR_CHECK(err_code);
-      m_new_alert_state = ALERT_NOTIFICATION_ON;
-      NRF_LOG_INFO("New Alert state: On.");
-      NRF_LOG_INFO("  Category:                 %s",
-                   (uint32_t)lit_catid[p_evt->data.alert.alert_category]);
-      NRF_LOG_INFO("  Number of new alerts:     %d",
-                   p_evt->data.alert.alert_category_count);
-      NRF_LOG_INFO("  Text String Information:  (%d) %s",
-                   p_evt->data.alert.alert_msg_length, (uint32_t)p_evt->data.alert.p_alert_msg_buf);
+    m_new_alert_state = ALERT_NOTIFICATION_ON;
+    NRF_LOG_INFO("New Alert state: On.");
+    NRF_LOG_INFO("  Category:                 %s",
+                 (uint32_t)lit_catid[p_evt->data.alert.alert_category]);
+    NRF_LOG_INFO("  Number of new alerts:     %d",
+                 p_evt->data.alert.alert_category_count);
+    NRF_LOG_INFO("  Text String Information:  (%d) %s",
+                 p_evt->data.alert.alert_msg_length, (uint32_t)p_evt->data.alert.p_alert_msg_buf);
 
-      OnNewNotificationCallback(p_evt->data.alert.p_alert_msg_buf, p_evt->data.alert.alert_msg_length);
-    }
+    OnNewNotificationCallback(p_evt->data.alert.p_alert_msg_buf, p_evt->data.alert.alert_msg_length);
   }
   else
   {
@@ -468,7 +464,6 @@ void handle_alert_notification(ble_ans_c_evt_t * p_evt)
 void supported_alert_notification_read(void)
 {
   NRF_LOG_INFO("Read supported Alert Notification characteristics on the connected peer.");
-
   ret_code_t err_code;
 
   err_code = ble_ans_c_new_alert_read(&m_ans_c);
@@ -476,7 +471,6 @@ void supported_alert_notification_read(void)
 
   err_code = ble_ans_c_unread_alert_read(&m_ans_c);
   APP_ERROR_CHECK(err_code);
-
 }
 
 void alert_notification_setup(void)
@@ -527,21 +521,20 @@ void control_point_setup(ble_ans_c_evt_t * p_evt)
 void on_ans_c_evt(ble_ans_c_evt_t * p_evt)
 {
   ret_code_t err_code;
-  NRF_LOG_INFO("ANS %d", p_evt->evt_type);
 
-
-  switch (p_evt->evt_type)
-  {
+  switch (p_evt->evt_type) {
     case BLE_ANS_C_EVT_DISCOVERY_FAILED:
-      NRF_LOG_INFO("ANS discovery failed");
+      // TODO When another service is found, this event is sent to all the other service handled.
+      // In this case, this is not an error, it just tells that the service that have just been found is not this one...
+      NRF_LOG_INFO("[ANS] Discovery failed");
       break;
     case BLE_ANS_C_EVT_NOTIFICATION:
       handle_alert_notification(p_evt);
-      NRF_LOG_INFO("Alert Notification received from server, UUID: %X.", p_evt->uuid.uuid);
+      NRF_LOG_INFO("[ANS] Alert Notification received from server, UUID: %X.", p_evt->uuid.uuid);
       break; // BLE_ANS_C_EVT_NOTIFICATION
 
     case BLE_ANS_C_EVT_DISCOVERY_COMPLETE:
-      NRF_LOG_INFO("Alert Notification Service discovered on the server.");
+      NRF_LOG_INFO("[ANS] Alert Notification Service discovered on the server.");
       err_code = ble_ans_c_handles_assign(&m_ans_c,
                                           p_evt->conn_handle,
                                           &p_evt->data.service);
@@ -551,15 +544,14 @@ void on_ans_c_evt(ble_ans_c_evt_t * p_evt)
       break; // BLE_ANS_C_EVT_DISCOVERY_COMPLETE
 
     case BLE_ANS_C_EVT_READ_RESP:
-      NRF_LOG_INFO("Alert Setup received from server, UUID: %X.", p_evt->uuid.uuid);
+      NRF_LOG_INFO("[ANS] Alert Setup received from server, UUID: %X.", p_evt->uuid.uuid);
       control_point_setup(p_evt);
       break; // BLE_ANS_C_EVT_READ_RESP
 
     case BLE_ANS_C_EVT_DISCONN_COMPLETE:
+      NRF_LOG_INFO("[ANS] ANS : disconnecting from server");
       m_new_alert_state    = ALERT_NOTIFICATION_DISABLED;
       m_unread_alert_state = ALERT_NOTIFICATION_DISABLED;
-
-//      err_code = bsp_indication_set(BSP_INDICATE_ALERT_OFF);
       APP_ERROR_CHECK(err_code);
       break; // BLE_ANS_C_EVT_DISCONN_COMPLETE
 
@@ -644,9 +636,7 @@ void ble_manager_init_services() {
   ans_init_obj.p_message_buffer    = m_alert_message_buffer;
   ans_init_obj.error_handler       = alert_notification_error_handler;
 
-  NRF_LOG_INFO("ble_ans_c_init");
   err_code = ble_ans_c_init(&m_ans_c, &ans_init_obj);
-  NRF_SDH_BLE_OBSERVER(ans_observer, BLE_ANS_C_BLE_OBSERVER_PRIO,*ble_ans_c_on_ble_evt, &m_ans_c);
 
   APP_ERROR_CHECK(err_code);
 }
@@ -658,11 +648,9 @@ void ble_manager_queue_write_error_handler(uint32_t nrf_error) {
 void ble_manager_cts_event_handler(ble_cts_c_t *p_cts, ble_cts_c_evt_t *p_evt) {
   ret_code_t err_code;
 
-  NRF_LOG_INFO("CTS %d", p_evt->evt_type);
-
   switch (p_evt->evt_type) {
     case BLE_CTS_C_EVT_DISCOVERY_COMPLETE:
-      NRF_LOG_INFO("Current Time Service discovered on server.");
+      NRF_LOG_INFO("[CTS] Current Time Service discovered on server, requesting current time...");
       err_code = ble_cts_c_handles_assign(&ble_manager_cts_client,
                                           p_evt->conn_handle,
                                           &p_evt->params.char_handles);
@@ -672,27 +660,22 @@ void ble_manager_cts_event_handler(ble_cts_c_t *p_cts, ble_cts_c_evt_t *p_evt) {
       break;
 
     case BLE_CTS_C_EVT_DISCOVERY_FAILED:
-      NRF_LOG_INFO("Current Time Service not found on server. ");
-      // CTS not found in this case we just disconnect. There is no reason to stay
-      // in the connection for this simple app since it all wants is to interact with CT
-//      if (p_evt->conn_handle != BLE_CONN_HANDLE_INVALID) {
-//        err_code = sd_ble_gap_disconnect(p_evt->conn_handle,
-//                                         BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-//        APP_ERROR_CHECK(err_code);
-//      }
+      // TODO When another service is found, this event is sent to all the other service handled.
+      // In this case, this is not an error, it just tells that the service that have just been found is not this one...
+      NRF_LOG_INFO("[CTS] Current Time Service not found on server.");
       break;
 
     case BLE_CTS_C_EVT_DISCONN_COMPLETE:
-      NRF_LOG_INFO("Disconnect Complete.");
+      NRF_LOG_INFO("[CTS] Disconnect Complete.");
       break;
 
     case BLE_CTS_C_EVT_CURRENT_TIME:
-      NRF_LOG_INFO("Current Time received.");
+      NRF_LOG_INFO("[CTS] Current Time received.");
       ble_manager_cts_print_time(p_evt);
       break;
 
     case BLE_CTS_C_EVT_INVALID_TIME:
-      NRF_LOG_INFO("Invalid Time received.");
+      NRF_LOG_INFO("[CTS] Invalid Time received.");
       break;
 
     default:
@@ -775,7 +758,10 @@ void ble_manager_init_connection_params() {
 void ble_manager_conn_params_event_handler(ble_conn_params_evt_t *p_evt) {
   ret_code_t err_code;
 
-  if (p_evt->evt_type == BLE_CONN_PARAMS_EVT_FAILED) {
+  if(p_evt->evt_type == BLE_CONN_PARAMS_EVT_SUCCEEDED) {
+    NRF_LOG_INFO("BLE connection parameters negotiation successful!");
+  } else if(p_evt->evt_type == BLE_CONN_PARAMS_EVT_FAILED) {
+    NRF_LOG_ERROR("BLE connection parameters negotiation error, disconnecting.");
     err_code = sd_ble_gap_disconnect(ble_manager_connection_handle, BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
     APP_ERROR_CHECK(err_code);
   }

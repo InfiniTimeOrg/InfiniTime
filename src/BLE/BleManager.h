@@ -10,7 +10,7 @@ extern "C" {
 #define BLE_MANAGER_DEVICE_NAME "PineTime" /* Name of device. Will be included in the advertising data.*/
 #define BLE_MANAGER_MANUFACTURER_NAME "Codingfield"
 
-#define BLE_MANAGER_MIN_CONN_INTERVAL MSEC_TO_UNITS(400, UNIT_1_25_MS) /* Minimum acceptable connection interval (0.4 seconds).*/
+#define BLE_MANAGER_MIN_CONN_INTERVAL MSEC_TO_UNITS(100, UNIT_1_25_MS) /* Minimum acceptable connection interval (0.4 seconds).*/
 #define BLE_MANAGER_MAX_CONN_INTERVAL MSEC_TO_UNITS(650, UNIT_1_25_MS) /*Maximum acceptable connection interval (0.65 second).*/
 #define BLE_MANAGER_SLAVE_LATENCY 0 /* Slave latency.*/
 #define BLE_MANAGER_CONN_SUP_TIMEOUT MSEC_TO_UNITS(4000, UNIT_10_MS) /* Connection supervisory time-out (4 seconds).*/
