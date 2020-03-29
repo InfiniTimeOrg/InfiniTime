@@ -29,10 +29,12 @@ I've tested this project on the actual PineTime hardware.
  * SPI (DMA & IRQ based) LCD driver;
  * BLE advertising, connection and bonding;
  * BLE CTS client (retrieves the time from the connected device if it implements a CTS server);
- * Push button to go to disable screen (and go to low power mode) / enable screen (and wake-up); 
+ * Push button to go to disable screen (and go to low power mode) / enable screen (and wake-up) and UI navigation
  * Touch panel support;
- * Basic user interface via display, touchpanel and push button.
- * Digital watch face and 4 demo applications (spinning meter, analog gauche, push button and message box); 
+ * Rich user interface (using [LittleVGL](https://littlevgl.com/)) via display, touchpanel and push button.
+ * Digital watch face and 4 demo applications (spinning meter, analog gauche, push button and message box);
+ * Watchdog (automatic reset in case of firmware crash) and reset support (push and hold the button for 7 - 10s);
+ * BLE Notification support (still Work-In-Progress, companion app needed). 
 
 ## Stub using NRF52-DK
 ![Pinetime stub](./images/pinetimestub1.jpg "PinetimeStub")
@@ -206,6 +208,7 @@ $ JLinkRTTClient
 At runtime, BLE advertising is started. You can then use a smartphone or computer to connect and bond to your Pinetime. 
 As soon as a device is bonded, Pinetime will look for a **CTS** server (**C**urrent **T**ime **S**ervice) on the connected device.
 
+### Using Android and NRFConnect
 Here is how to do it with an Android smartphone running NRFConnect:
 
 * Build and program the firmware on the Pinetime
@@ -217,4 +220,33 @@ Here is how to do it with an Android smartphone running NRFConnect:
 * Go back to the main screen and scan for BLE devices. A device called "PineTime" should appear
 * Tap the button "Connect" next to the PineTime device. It should connect to the PineTime and switch to a new tab.
 * On this tab, on the top right, there is a 3 dots button. Tap on it and select Bond. The bonding process begins, and if it is sucessful, the PineTime should update its time and display it on the screen.
-      
+
+### Using Linux and bluetoothctl
+* Ensure that your bluetooth controller is enabled and working fine. I've tested this on a x86 Debian computer and on a RaspberryPi 3.
+* Run bluetoothctl as root : `sudo bluetoothctl`
+* Enter the following commands:
+  * `scan on` and wait for you Pinetime to be detected. Note the BLE MAC address
+  * `scan off'
+  * `trust <MAC ADDRESS>`
+  * `pair <MAC ADDRESS>`
+ * Wait for some time, and the connection should be established.
+ 
+**NOTE : ** The commands above establish a BLE connection between your PC, but the time synchronization and notifications won't work because there is not CTS or ANS server running. I'm currently working on an application that'll provide both of these servers.
+
+### Troubleshooting
+If the connection cannot be established, or the time synchronization does not work, try the following steps.
+
+On Android:
+* Disable and re-enable your bluetooth device
+* In NRFConnect,  in the device tab corresponding to your pinetime, tap on the menu on the top left of the screen and select "Delete bond information".
+* Then re-try to bond/connect.
+
+On Linux:
+* Reset the bluetooth device : `sudo hciconfig hci0 reset`
+* Restart the Bluetooth service : `sudo systemctl restart bluetooth.service`
+* In bluetootctl:
+  * `remove <MAC ADDRESS>`
+  * `trust <MAC ADDRESS>`
+  * `pair <MAC ADDRESS>`
+  
+Note that the current firmware only advertise for the first 3 minutes. If you cannot connect after more than 3 minutes, try resetting the device (push the button and hold it for 7-10 seconds).
