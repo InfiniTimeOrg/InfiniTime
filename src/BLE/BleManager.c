@@ -552,7 +552,6 @@ void on_ans_c_evt(ble_ans_c_evt_t * p_evt)
       NRF_LOG_INFO("[ANS] ANS : disconnecting from server");
       m_new_alert_state    = ALERT_NOTIFICATION_DISABLED;
       m_unread_alert_state = ALERT_NOTIFICATION_DISABLED;
-      APP_ERROR_CHECK(err_code);
       break; // BLE_ANS_C_EVT_DISCONN_COMPLETE
 
     default:
