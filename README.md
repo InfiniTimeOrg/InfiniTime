@@ -34,7 +34,11 @@ I've tested this project on the actual PineTime hardware.
  * Rich user interface (using [LittleVGL](https://littlevgl.com/)) via display, touchpanel and push button.
  * Digital watch face and 4 demo applications (spinning meter, analog gauche, push button and message box);
  * Watchdog (automatic reset in case of firmware crash) and reset support (push and hold the button for 7 - 10s);
- * BLE Notification support (still Work-In-Progress, companion app needed). 
+ * BLE Notification support (still Work-In-Progress, [companion app](https://github.com/JF002/gobbledegook) needed). 
+
+## Documentation
+
+ * [BLE implementation and API](./doc/ble.md)
 
 ## Stub using NRF52-DK
 ![Pinetime stub](./images/pinetimestub1.jpg "PinetimeStub")
