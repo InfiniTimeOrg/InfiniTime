@@ -161,6 +161,42 @@ set(LVGL_SRC
   libs/lvgl/src/lv_objx/lv_mbox.c
   libs/lvgl/src/lv_objx/lv_mbox.h
 
+  libs/lvgl/src/lv_objx/lv_bar.c
+  libs/lvgl/src/lv_objx/lv_bar.h
+  libs/lvgl/src/lv_objx/lv_slider.h
+  libs/lvgl/src/lv_objx/lv_slider.c
+
+  )
+
+list(APPEND IMAGE_FILES
+  DisplayApp/Icons/battery/os_battery_error.c
+
+  DisplayApp/Icons/battery/os_battery_100.c
+  DisplayApp/Icons/battery/os_battery_090.c
+  DisplayApp/Icons/battery/os_battery_080.c
+  DisplayApp/Icons/battery/os_battery_070.c
+  DisplayApp/Icons/battery/os_battery_060.c
+  DisplayApp/Icons/battery/os_battery_050.c
+  DisplayApp/Icons/battery/os_battery_040.c
+  DisplayApp/Icons/battery/os_battery_030.c
+  DisplayApp/Icons/battery/os_battery_020.c
+  DisplayApp/Icons/battery/os_battery_010.c
+  DisplayApp/Icons/battery/os_battery_005.c
+
+  DisplayApp/Icons/battery/os_batterycharging_100.c
+  DisplayApp/Icons/battery/os_batterycharging_090.c
+  DisplayApp/Icons/battery/os_batterycharging_080.c
+  DisplayApp/Icons/battery/os_batterycharging_070.c
+  DisplayApp/Icons/battery/os_batterycharging_060.c
+  DisplayApp/Icons/battery/os_batterycharging_050.c
+  DisplayApp/Icons/battery/os_batterycharging_040.c
+  DisplayApp/Icons/battery/os_batterycharging_030.c
+  DisplayApp/Icons/battery/os_batterycharging_020.c
+  DisplayApp/Icons/battery/os_batterycharging_010.c
+  DisplayApp/Icons/battery/os_batterycharging_005.c
+
+  DisplayApp/Icons/bluetooth/os_bt_connected.c
+  DisplayApp/Icons/bluetooth/os_bt_disconnected.c
   )
 
 list(APPEND SOURCE_FILES
@@ -174,6 +210,11 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/Meter.cpp
   DisplayApp/Screens/Gauge.cpp
   DisplayApp/Screens/Modal.cpp
+  DisplayApp/Screens/BatteryIcon.cpp
+  DisplayApp/Screens/BleIcon.cpp
+  DisplayApp/Screens/Brightness.cpp
+  DisplayApp/Screens/ScreenList.cpp
+  DisplayApp/Screens/Label.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiMaster.cpp
@@ -182,12 +223,15 @@ list(APPEND SOURCE_FILES
   BLE/BleManager.c
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
+  Components/Ble/NotificationManager.cpp
   Components/DateTime/DateTimeController.cpp
+  Components/Brightness/BrightnessController.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
   FreeRTOS/port_cmsis.c
   ${LVGL_SRC}
+  ${IMAGE_FILES}
 
   DisplayApp/LittleVgl.cpp
   DisplayApp/Fonts/jetbrains_mono_extrabold_compressed.c
@@ -201,6 +245,7 @@ set(INCLUDE_FILES
   Logging/NrfLogger.h
   BlinkApp/BlinkApp.h
   DisplayApp/DisplayApp.h
+  DisplayApp/TouchEvents.h
   DisplayApp/Screens/Screen.h
   DisplayApp/Screens/Clock.h
   DisplayApp/Screens/Message.h
@@ -208,7 +253,11 @@ set(INCLUDE_FILES
   DisplayApp/Screens/Meter.h
   DisplayApp/Screens/Gauge.h
   DisplayApp/Screens/Modal.h
-#  DisplayApp/Screens/Tab.h
+  DisplayApp/Screens/BatteryIcon.h
+  DisplayApp/Screens/BleIcon.cpp
+  DisplayApp/Screens/Brightness.h
+  DisplayApp/Screens/ScreenList.h
+  DisplayApp/Screens/Label.h
   drivers/St7789.h
   drivers/SpiMaster.h
   drivers/Watchdog.h
@@ -216,7 +265,9 @@ set(INCLUDE_FILES
   BLE/BleManager.h
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
+  Components/Ble/NotificationManager.h
   Components/DateTime/DateTimeController.h
+  Components/Brightness/BrightnessController.h
   drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h
@@ -243,4 +294,4 @@ link_directories(
   ../
 )
 
-nRF5x_addExecutable(pinetime-app "${SOURCE_FILES}")
+nRF5x_addExecutable(pinetime-app "${SOURCE_FILES}" ${INCLUDE_FILES})

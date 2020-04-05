@@ -19,6 +19,8 @@ void Watchdog::Setup(uint8_t timeoutSeconds) {
 
   /* Enable reload requests */
   NRF_WDT->RREN = (WDT_RREN_RR0_Enabled << WDT_RREN_RR0_Pos);
+
+  resetReason = ActualResetReason();
 }
 
 void Watchdog::Start() {
@@ -29,18 +31,18 @@ void Watchdog::Kick() {
   NRF_WDT->RR[0] = WDT_RR_RR_Reload;
 }
 
-Watchdog::ResetReasons Watchdog::ResetReason() {
+Watchdog::ResetReasons Watchdog::ActualResetReason() const {
   uint32_t resetReason;
   sd_power_reset_reason_get(&resetReason);
   sd_power_reset_reason_clr(0xFFFFFFFF);
-  if(resetReason & 0x01) return ResetReasons::ResetPin;
-  if((resetReason >> 1) & 0x01) return ResetReasons::Watchdog;
-  if((resetReason >> 2) & 0x01) return ResetReasons::SoftReset;
-  if((resetReason >> 3) & 0x01) return ResetReasons::CpuLockup;
-  if((resetReason >> 16) & 0x01) return ResetReasons::SystemOff;
-  if((resetReason >> 17) & 0x01) return ResetReasons::LpComp;
-  if((resetReason >> 18) & 0x01) return ResetReasons::DebugInterface;
-  if((resetReason >> 19) & 0x01) return ResetReasons::NFC;
+  if(resetReason & 0x01u) return ResetReasons::ResetPin;
+  if((resetReason >> 1u) & 0x01u) return ResetReasons::Watchdog;
+  if((resetReason >> 2u) & 0x01u) return ResetReasons::SoftReset;
+  if((resetReason >> 3u) & 0x01u) return ResetReasons::CpuLockup;
+  if((resetReason >> 16u) & 0x01u) return ResetReasons::SystemOff;
+  if((resetReason >> 17u) & 0x01u) return ResetReasons::LpComp;
+  if((resetReason >> 18u) & 0x01u) return ResetReasons::DebugInterface;
+  if((resetReason >> 19u) & 0x01u) return ResetReasons::NFC;
   return ResetReasons::HardReset;
 }
 

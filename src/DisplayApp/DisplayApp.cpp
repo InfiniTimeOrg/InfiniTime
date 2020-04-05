@@ -13,27 +13,31 @@
 #include <DisplayApp/Screens/Message.h>
 #include <DisplayApp/Screens/Meter.h>
 #include <DisplayApp/Screens/Gauge.h>
+#include <DisplayApp/Screens/Brightness.h>
+#include <DisplayApp/Screens/ScreenList.h>
+#include <Components/Ble/NotificationManager.h>
 #include "../SystemTask/SystemTask.h"
 
 using namespace Pinetime::Applications;
 
-DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
-                       Pinetime::Components::LittleVgl& lvgl,
-                       Pinetime::Drivers::Cst816S& touchPanel,
-                       Controllers::Battery &batteryController,
-                       Controllers::Ble &bleController,
-                       Controllers::DateTime &dateTimeController,
-                       Pinetime::System::SystemTask& systemTask) :
+DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &touchPanel,
+                       Controllers::Battery &batteryController, Controllers::Ble &bleController,
+                       Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
+                       System::SystemTask &systemTask,
+                       Pinetime::Controllers::NotificationManager& notificationManager) :
         lcd{lcd},
         lvgl{lvgl},
-        touchPanel{touchPanel},
         batteryController{batteryController},
         bleController{bleController},
         dateTimeController{dateTimeController},
+        watchdog{watchdog},
+        touchPanel{touchPanel},
         currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController) },
-        systemTask{systemTask} {
+        systemTask{systemTask},
+        notificationManager{notificationManager} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   onClockApp = true;
+  modal.reset(new Screens::Modal(this));
 }
 
 void DisplayApp::Start() {
@@ -57,12 +61,7 @@ void DisplayApp::Process(void *instance) {
 }
 
 void DisplayApp::InitHw() {
-  nrf_gpio_cfg_output(pinLcdBacklight1);
-  nrf_gpio_cfg_output(pinLcdBacklight2);
-  nrf_gpio_cfg_output(pinLcdBacklight3);
-  nrf_gpio_pin_clear(pinLcdBacklight1);
-  nrf_gpio_pin_clear(pinLcdBacklight2);
-  nrf_gpio_pin_clear(pinLcdBacklight3);
+  brightnessController.Init();
 }
 
 uint32_t acc = 0;
@@ -85,11 +84,11 @@ void DisplayApp::Refresh() {
   if (xQueueReceive(msgQueue, &msg, queueTimeout)) {
     switch (msg) {
       case Messages::GoToSleep:
-        nrf_gpio_pin_set(pinLcdBacklight3);
-        vTaskDelay(100);
-        nrf_gpio_pin_set(pinLcdBacklight2);
-        vTaskDelay(100);
-        nrf_gpio_pin_set(pinLcdBacklight1);
+        brightnessController.Backup();
+        while(brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
+          brightnessController.Lower();
+          vTaskDelay(100);
+        }
         lcd.DisplayOff();
         lcd.Sleep();
         touchPanel.Sleep();
@@ -100,12 +99,11 @@ void DisplayApp::Refresh() {
         touchPanel.Wakeup();
 
         lcd.DisplayOn();
-        nrf_gpio_pin_clear(pinLcdBacklight3);
-        nrf_gpio_pin_clear(pinLcdBacklight2);
-        nrf_gpio_pin_clear(pinLcdBacklight1);
+        brightnessController.Restore();
         state = States::Running;
         break;
       case Messages::UpdateDateTime:
+//        modal->Show();
         break;
       case Messages::UpdateBleConnection:
 //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected : Screens::Clock::BleConnectionStates::NotConnected);
@@ -113,20 +111,27 @@ void DisplayApp::Refresh() {
       case Messages::UpdateBatteryLevel:
 //        clockScreen.SetBatteryPercentRemaining(batteryController.PercentRemaining());
         break;
+      case Messages::NewNotification: {
+        auto notification = notificationManager.Pop();
+        modal->Show(notification.message.data());
+      }
+        break;
       case Messages::TouchEvent: {
         if (state != States::Running) break;
         auto gesture = OnTouchEvent();
-        switch (gesture) {
-          case DisplayApp::TouchEvents::SwipeUp:
-            currentScreen->OnButtonPushed();
-            lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
-            break;
-          case DisplayApp::TouchEvents::SwipeDown:
-            currentScreen->OnButtonPushed();
-            lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
-            break;
-          default:
-            break;
+        if(!currentScreen->OnTouchEvent(gesture)) {
+          switch (gesture) {
+            case TouchEvents::SwipeUp:
+              currentScreen->OnButtonPushed();
+              lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
+              break;
+            case TouchEvents::SwipeDown:
+              currentScreen->OnButtonPushed();
+              lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
+              break;
+            default:
+              break;
+          }
         }
       }
         break;
@@ -171,9 +176,11 @@ void DisplayApp::RunningState() {
         currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
         onClockApp = true;
         break;
-      case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
+//      case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
+      case Apps::SysInfo: currentScreen.reset(new Screens::ScreenList(this, dateTimeController, batteryController, brightnessController, watchdog)); break;
       case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
       case Apps::Gauge: currentScreen.reset(new Screens::Gauge(this)); break;
+      case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
     }
     nextApp = Apps::None;
   }
@@ -194,34 +201,46 @@ void DisplayApp::PushMessage(DisplayApp::Messages msg) {
   }
 }
 
-DisplayApp::TouchEvents DisplayApp::OnTouchEvent() {
+TouchEvents DisplayApp::OnTouchEvent() {
   auto info = touchPanel.GetTouchInfo();
   if(info.isTouch) {
     switch(info.gesture) {
       case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        // TODO set x,y to LittleVgl
         lvgl.SetNewTapEvent(info.x, info.y);
-        return DisplayApp::TouchEvents::Tap;
+        return TouchEvents::Tap;
       case Pinetime::Drivers::Cst816S::Gestures::LongPress:
-        return DisplayApp::TouchEvents::LongTap;
+        return TouchEvents::LongTap;
       case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
-        return DisplayApp::TouchEvents::DoubleTap;
+        return TouchEvents::DoubleTap;
       case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
-        return DisplayApp::TouchEvents::SwipeRight;
+        return TouchEvents::SwipeRight;
       case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
-        return DisplayApp::TouchEvents::SwipeLeft;
+        return TouchEvents::SwipeLeft;
       case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
-        return DisplayApp::TouchEvents::SwipeDown;
+        return TouchEvents::SwipeDown;
       case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
-        return DisplayApp::TouchEvents::SwipeUp;
+        return TouchEvents::SwipeUp;
       case Pinetime::Drivers::Cst816S::Gestures::None:
       default:
-        return DisplayApp::TouchEvents::None;
+        return TouchEvents::None;
     }
   }
-  return DisplayApp::TouchEvents::None;
+  return TouchEvents::None;
 }
 
 void DisplayApp::StartApp(DisplayApp::Apps app) {
   nextApp = app;
+}
+
+void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
+  switch(direction){
+    case DisplayApp::FullRefreshDirections::Down:
+      lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
+      break;
+    case DisplayApp::FullRefreshDirections::Up:
+      lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
+      break;
+    default: break;
+  }
+
 }

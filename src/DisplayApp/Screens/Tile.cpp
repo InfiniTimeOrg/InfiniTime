@@ -16,7 +16,7 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event, eventData);
 }
 
-static const char * btnm_map1[] = {"Meter", "Gauge", "Clock", "\n", "Soft\nversion", "App2", "App3", ""};
+static const char * btnm_map1[] = {"Meter", "Gauge", "Clock", "\n", "Soft\nversion", "App2", "Brightness", ""};
 
 Tile::Tile(DisplayApp* app) : Screen(app) {
   modal.reset(new Modal(app));
@@ -123,11 +123,15 @@ void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event, uint32_t buttonId) {
         tile->StartClockApp();
         break;
       case 3:
-        modal->Show();
+        char versionStr[20];
+        sprintf(versionStr, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
+        modal->Show(versionStr);
         break;
       case 4:
+        tile->StartSysInfoApp();
+        break;
       case 5:
-        tile->StartTestApp();
+        tile->StartBrightnessApp();
 
         break;
     }
@@ -146,8 +150,13 @@ void Tile::StartClockApp() {
   running = false;
 }
 
-void Tile::StartTestApp() {
-  app->StartApp(DisplayApp::Apps::Test);
+void Tile::StartSysInfoApp() {
+  app->StartApp(DisplayApp::Apps::SysInfo);
+  running = false;
+}
+
+void Tile::StartBrightnessApp() {
+  app->StartApp(DisplayApp::Apps::Brightness);
   running = false;
 }
 

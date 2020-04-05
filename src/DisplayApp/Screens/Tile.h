@@ -52,12 +52,13 @@ namespace Pinetime {
           uint32_t clickCount = 0 ;
           uint32_t previousClickCount = 0;
           void StartClockApp();
-          void StartTestApp();
+          void StartSysInfoApp();
           void StartMeterApp();
           void StartGaugeApp();
           bool running = true;
 
           std::unique_ptr<Modal> modal;
+          void StartBrightnessApp();
       };
     }
   }

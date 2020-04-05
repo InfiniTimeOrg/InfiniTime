@@ -1322,7 +1322,15 @@
 
 
 #ifndef BLE_ANS_C_ENABLED
-#define BLE_ANS_C_ENABLED 0
+#define BLE_ANS_C_ENABLED 1
+#endif
+
+#ifndef BLE_ANS_C_LOG_ENABLED
+#define BLE_ANS_C_LOG_ENABLED 1
+#endif
+
+#ifndef BLE_ANS_C_LOG_LEVEL
+#define BLE_ANS_C_LOG_LEVEL 3
 #endif
 
 // <q> BLE_BAS_C_ENABLED  - ble_bas_c - Battery Service Client

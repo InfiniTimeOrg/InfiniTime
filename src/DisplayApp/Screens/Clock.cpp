@@ -5,10 +5,13 @@
 #include <libs/lvgl/lvgl.h>
 #include "Clock.h"
 #include "../DisplayApp.h"
+#include "BatteryIcon.h"
+#include "BleIcon.h"
 
 using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
 extern lv_font_t jetbrains_mono_bold_20;
+
 
 static void event_handler(lv_obj_t * obj, lv_event_t event) {
   Clock* screen = static_cast<Clock *>(obj->user_data);
@@ -26,29 +29,29 @@ Clock::Clock(DisplayApp* app,
   displayedChar[3] = 0;
   displayedChar[4] = 0;
 
-  label_battery = lv_label_create(lv_scr_act(), NULL);
-  lv_obj_align(label_battery, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -80, 0);
+  batteryIcon = lv_img_create(lv_scr_act(), NULL);
+  lv_img_set_src(batteryIcon, BatteryIcon::GetUnknownIcon());
+  lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
-  labelStyle = const_cast<lv_style_t *>(lv_label_get_style(label_battery, LV_LABEL_STYLE_MAIN));
+  bleIcon = lv_img_create(lv_scr_act(), NULL);
+  lv_img_set_src(bleIcon, BleIcon::GetIcon(false));
+  lv_obj_align(bleIcon, batteryIcon, LV_ALIGN_OUT_LEFT_MID, 0, 0);
+
+  label_date = lv_label_create(lv_scr_act(), NULL);
+
+  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
+
+  labelStyle = const_cast<lv_style_t *>(lv_label_get_style(label_date, LV_LABEL_STYLE_MAIN));
   labelStyle->text.font = &jetbrains_mono_bold_20;
 
   lv_style_copy(&labelBigStyle, labelStyle);
   labelBigStyle.text.font = &jetbrains_mono_extrabold_compressed;
 
-  lv_label_set_style(label_battery, LV_LABEL_STYLE_MAIN, labelStyle);
-
-  label_ble = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_style(label_ble, LV_LABEL_STYLE_MAIN, labelStyle);
-  lv_obj_align(label_ble, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, 0);
+  lv_label_set_style(label_date, LV_LABEL_STYLE_MAIN, labelStyle);
 
   label_time = lv_label_create(lv_scr_act(), NULL);
   lv_label_set_style(label_time, LV_LABEL_STYLE_MAIN, &labelBigStyle);
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
-
-
-  label_date = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_style(label_date, LV_LABEL_STYLE_MAIN, labelStyle);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
 
   backgroundLabel = lv_label_create(lv_scr_act(), NULL);
   backgroundLabel->user_data = this;
@@ -68,22 +71,16 @@ Clock::~Clock() {
 bool Clock::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
-    char batteryChar[11];
-    auto newBatteryValue = batteryPercentRemaining.Get();
-    newBatteryValue = (newBatteryValue > 100) ? 100 : newBatteryValue;
-    newBatteryValue = (newBatteryValue < 0) ? 0 : newBatteryValue;
-
-    sprintf(batteryChar, "BAT: %d%%", newBatteryValue);
-    lv_label_set_text(label_battery, batteryChar);
+    auto batteryPercent = batteryPercentRemaining.Get();
+    lv_img_set_src(batteryIcon, BatteryIcon::GetIcon(batteryController.IsCharging() || batteryController.IsPowerPresent(), batteryPercent));
   }
 
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
     if(bleState.Get() == true) {
-      lv_obj_set_hidden(label_ble, false);
-      lv_label_set_text(label_ble, "BLE");
+      lv_img_set_src(bleIcon, BleIcon::GetIcon(true));
     } else {
-      lv_obj_set_hidden(label_ble, true);
+      lv_img_set_src(bleIcon, BleIcon::GetIcon(false));
     }
   }
 

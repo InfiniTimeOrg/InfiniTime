@@ -36,8 +36,8 @@ void Battery::Update() {
   voltage = (value * 2.0f) / (1024/3.0f);
   percentRemaining = ((voltage - 3.55)*100)*3.9;
 
-  NRF_LOG_INFO("BATTERY " NRF_LOG_FLOAT_MARKER " %% - " NRF_LOG_FLOAT_MARKER " v", NRF_LOG_FLOAT(percentRemaining), NRF_LOG_FLOAT(voltage));
-  NRF_LOG_INFO("POWER Charging : %d - Power : %d", isCharging, isPowerPresent);
+//  NRF_LOG_INFO("BATTERY " NRF_LOG_FLOAT_MARKER " %% - " NRF_LOG_FLOAT_MARKER " v", NRF_LOG_FLOAT(percentRemaining), NRF_LOG_FLOAT(voltage));
+//  NRF_LOG_INFO("POWER Charging : %d - Power : %d", isCharging, isPowerPresent);
 }
 
 void Battery::SaadcEventHandler(nrfx_saadc_evt_t const * event) {
