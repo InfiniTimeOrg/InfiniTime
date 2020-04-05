@@ -19,9 +19,10 @@ If **CTS** is detected, it'll request the current time to the companion applicat
 [List of standard BLE services](https://www.bluetooth.com/specifications/gatt/services/)
 
 ### CTS
-[Current Time Service](https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Services/org.bluetooth.service.alert_notification.xml)
+[Current Time Service](https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Services/org.bluetooth.service.current_time.xml)
 
 ### ANS
-[Alert Notification Service](https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Services/org.bluetooth.service.current_time.xml)
+[Alert Notification Service](https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Services/org.bluetooth.service.alert_notification.xml)
 
 ![ANS sequence diagram](./ble/ans_sequence.png "ANS sequence diagram")
+
