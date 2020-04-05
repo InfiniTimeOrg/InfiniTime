@@ -37,7 +37,7 @@
 #define LV_COLOR_SCREEN_TRANSP    0
 
 /*Images pixels with this color will not be drawn (with chroma keying)*/
-#define LV_COLOR_TRANSP    LV_COLOR_LIME         /*LV_COLOR_LIME: pure green*/
+#define LV_COLOR_TRANSP    LV_COLOR_MAKE(0x6c, 0xFc, 0x6a)/*LV_COLOR_LIME*/         /*LV_COLOR_LIME: pure green*/
 
 /* Enable chroma keying for indexed images. */
 #define LV_INDEXED_CHROMA    1

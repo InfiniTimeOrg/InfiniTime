@@ -16,6 +16,7 @@
 #include <drivers/SpiMaster.h>
 #include <DisplayApp/LittleVgl.h>
 #include <SystemTask/SystemTask.h>
+#include <Components/Ble/NotificationManager.h>
 
 #if NRF_LOG_ENABLED
 #include "Logging/NrfLogger.h"
@@ -55,6 +56,8 @@ void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
 std::unique_ptr<Pinetime::System::SystemTask> systemTask;
 
+Pinetime::Controllers::NotificationManager notificationManager;
+
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if(pin == pinTouchIrq) {
     systemTask->OnTouchEvent();
@@ -85,6 +88,11 @@ void OnBleDisconnection() {
   bleController.Disconnect();
 }
 
+void OnNewNotification(const char* message, uint8_t size) {
+  notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, message, size);
+  systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
+}
+
 void OnNewTime(current_time_char_t* currentTime) {
   auto dayOfWeek = currentTime->exact_time_256.day_date_time.day_of_week;
   auto year = currentTime->exact_time_256.day_date_time.date_time.year;
@@ -96,6 +104,8 @@ void OnNewTime(current_time_char_t* currentTime) {
 
   dateTimeController.SetTime(year, month, day,
                              dayOfWeek, hour, minute, second, nrf_rtc_counter_get(portNRF_RTC_REG));
+
+  systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnNewTime);
 }
 
 void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
@@ -121,13 +131,15 @@ int main(void) {
 
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
-  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, touchPanel, lvgl, batteryController, bleController, dateTimeController));
+  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, touchPanel, lvgl, batteryController, bleController,
+                                                    dateTimeController, notificationManager));
   systemTask->Start();
 
   ble_manager_init();
   ble_manager_set_new_time_callback(OnNewTime);
   ble_manager_set_ble_connection_callback(OnBleConnection);
   ble_manager_set_ble_disconnection_callback(OnBleDisconnection);
+  ble_manager_set_new_notification_callback(OnNewNotification);
 
   vTaskStartScheduler();
 

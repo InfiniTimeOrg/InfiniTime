@@ -5,17 +5,19 @@
 #include <hal/nrf_rtc.h>
 #include <BLE/BleManager.h>
 #include <softdevice/common/nrf_sdh_freertos.h>
+#include <Components/Ble/NotificationManager.h>
 #include "SystemTask.h"
 #include "../main.h"
 using namespace Pinetime::System;
 
-SystemTask::SystemTask(Pinetime::Drivers::SpiMaster &spi, Pinetime::Drivers::St7789 &lcd,
-                       Pinetime::Drivers::Cst816S &touchPanel, Pinetime::Components::LittleVgl &lvgl,
-                       Pinetime::Controllers::Battery &batteryController, Pinetime::Controllers::Ble &bleController,
-                       Pinetime::Controllers::DateTime& dateTimeController) :
+SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd, Drivers::Cst816S &touchPanel,
+                       Components::LittleVgl &lvgl,
+                       Controllers::Battery &batteryController, Controllers::Ble &bleController,
+                       Controllers::DateTime &dateTimeController,
+                       Pinetime::Controllers::NotificationManager& notificationManager) :
                        spi{spi}, lcd{lcd}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
-                       watchdog{}, watchdogView{watchdog}{
+                       watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager} {
   systemTaksMsgQueue = xQueueCreate(10, 1);
 }
 
@@ -35,7 +37,7 @@ void SystemTask::Work() {
   watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
-  bool erase_bonds=false;
+  bool erase_bonds=true;
   ble_manager_init_peer_manager();
   nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
 
@@ -44,7 +46,8 @@ void SystemTask::Work() {
   touchPanel.Init();
   batteryController.Init();
 
-  displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController, dateTimeController, watchdogView, *this));
+  displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController,
+                                                          dateTimeController, watchdogView, *this, notificationManager));
   displayApp->Start();
 
   batteryController.Update();
@@ -84,6 +87,12 @@ void SystemTask::Work() {
           NRF_LOG_INFO("[SystemTask] Going to sleep");
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
           isSleeping = true; break;
+        case Messages::OnNewTime:
+          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateDateTime);
+          break;
+        case Messages::OnNewNotification:
+          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewNotification);
+          break;
         default: break;
       }
     }

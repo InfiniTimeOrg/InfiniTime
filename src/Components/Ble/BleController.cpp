@@ -1,3 +1,5 @@
+#include <cstring>
+#include <cstdlib>
 #include "BleController.h"
 
 using namespace Pinetime::Controllers;
@@ -9,3 +11,5 @@ void Ble::Connect() {
 void Ble::Disconnect() {
   isConnected = false;
 }
+
+

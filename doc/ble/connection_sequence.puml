@@ -1,0 +1,14 @@
+@startuml
+Pinetime --> CompanionApp: Start advertising
+
+group BLE Connection
+CompanionApp -> Pinetime: Connection request
+CompanionApp <-> Pinetime: Connection parameters negociation, security procedure,...
+end
+
+group Service Discovery
+CompanionApp <-> Pinetime: Discover service 0x1805 (CTS)
+CompanionApp <-> Pinetime: Discover service 0x1811 (ANS)
+end
+
+@enduml

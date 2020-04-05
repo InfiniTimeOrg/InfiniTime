@@ -15,18 +15,16 @@
 #include <DisplayApp/Screens/Gauge.h>
 #include <DisplayApp/Screens/Brightness.h>
 #include <DisplayApp/Screens/ScreenList.h>
+#include <Components/Ble/NotificationManager.h>
 #include "../SystemTask/SystemTask.h"
 
 using namespace Pinetime::Applications;
 
-DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
-                       Pinetime::Components::LittleVgl& lvgl,
-                       Pinetime::Drivers::Cst816S& touchPanel,
-                       Controllers::Battery &batteryController,
-                       Controllers::Ble &bleController,
-                       Controllers::DateTime &dateTimeController,
-                       Pinetime::Drivers::WatchdogView& watchdog,
-                       Pinetime::System::SystemTask& systemTask) :
+DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &touchPanel,
+                       Controllers::Battery &batteryController, Controllers::Ble &bleController,
+                       Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
+                       System::SystemTask &systemTask,
+                       Pinetime::Controllers::NotificationManager& notificationManager) :
         lcd{lcd},
         lvgl{lvgl},
         batteryController{batteryController},
@@ -35,9 +33,11 @@ DisplayApp::DisplayApp(Pinetime::Drivers::St7789& lcd,
         watchdog{watchdog},
         touchPanel{touchPanel},
         currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController) },
-        systemTask{systemTask} {
+        systemTask{systemTask},
+        notificationManager{notificationManager} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   onClockApp = true;
+  modal.reset(new Screens::Modal(this));
 }
 
 void DisplayApp::Start() {
@@ -103,12 +103,18 @@ void DisplayApp::Refresh() {
         state = States::Running;
         break;
       case Messages::UpdateDateTime:
+//        modal->Show();
         break;
       case Messages::UpdateBleConnection:
 //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected : Screens::Clock::BleConnectionStates::NotConnected);
         break;
       case Messages::UpdateBatteryLevel:
 //        clockScreen.SetBatteryPercentRemaining(batteryController.PercentRemaining());
+        break;
+      case Messages::NewNotification: {
+        auto notification = notificationManager.Pop();
+        modal->Show(notification.message.data());
+      }
         break;
       case Messages::TouchEvent: {
         if (state != States::Running) break;

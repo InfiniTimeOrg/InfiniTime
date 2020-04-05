@@ -223,6 +223,7 @@ list(APPEND SOURCE_FILES
   BLE/BleManager.c
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
+  Components/Ble/NotificationManager.cpp
   Components/DateTime/DateTimeController.cpp
   Components/Brightness/BrightnessController.cpp
   drivers/Cst816s.cpp
@@ -264,6 +265,7 @@ set(INCLUDE_FILES
   BLE/BleManager.h
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
+  Components/Ble/NotificationManager.h
   Components/DateTime/DateTimeController.h
   Components/Brightness/BrightnessController.h
   drivers/Cst816s.h

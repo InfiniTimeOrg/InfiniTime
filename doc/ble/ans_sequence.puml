@@ -1,0 +1,29 @@
+@startuml
+group Get configuration from server
+Pinetime -> CompanionApp : Read request (Supported 'new' notification categories - 0x2A47)
+CompanionApp --> Pinetime: Response (0xff = all categories)
+
+Pinetime -> CompanionApp : Read request (Supported 'unread' notification categories - 0x2A48)
+CompanionApp --> Pinetime: Response (0xff = all categories)
+end
+
+group Configure the server
+Pinetime -> CompanionApp : Configure 'new' notifications categories : Accept all (Write [0, 0xFF] to Control Point - 0x2A44)
+activate CompanionApp
+deactivate CompanionApp
+Pinetime -> CompanionApp : Configure 'unread' notifications categories : Accept all (Write [1, 0xFF] to Control Point - 0x2A44)
+activate CompanionApp
+deactivate CompanionApp
+end
+
+group Server sends a notification
+CompanionApp -> Pinetime : Notify new_alert (0x2A46)
+activate Pinetime
+note over Pinetime
+    Pinetime FW handles the
+    notification (display on UI)
+end note
+deactivate Pinetime
+end
+
+@enduml
