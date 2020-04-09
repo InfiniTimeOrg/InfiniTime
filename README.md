@@ -47,65 +47,73 @@ See [this page](./doc/PinetimeStubWithNrf52DK.md)
 
 ## How to build
 
-  * Download and unzip arm-none-eabi and NRF52 SDK
-  * Clone this repo
-  * **[JLINK]** Call CMake with the following command line argument
+  1. Download and unzip arm-none-eabi
+  2. Clone this repo
+
+     * This repo comes with the NRF52 SDK as git submodule so you can pull in all dependencies at one using:
+      `git clone --recurse-submodules git@github.com:JF002/Pinetime.git`
+     * If you already have the NRF52 SDK installed you can ignore cloning the submodules
   
-         - -DARM_NONE_EABI_TOOLCHAIN_PATH=[Path to the toolchain directory] 
-         - -DNRF5_SDK_PATH=[Path to the SDK directory]
-         - -DUSE_JLINK=1
-         - -DNRFJPROG=[Path to NRFJProg executable]
+  3. Create build directory and navigate to it:
+
+      ```
+      $ mkdir build
+      $ cd build
+      ```
+
+  4. Call CMake with following command line arguments:
+
+     * **[JLINK]**
+  
+       - -DARM_NONE_EABI_TOOLCHAIN_PATH=[Path to the toolchain directory]
+       - -DNRF5_SDK_PATH=../NrfSDK
+       - -DUSE_JLINK=1
+       - -DNRFJPROG=[Path to NRFJProg executable]
+
+        ```
+        $ cmake -DCMAKE_BUILD_TYPE=Debug -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=../NrfSDK -DUSE_JLINK=1 -DNRFJPROG=... ../
+        ```
       
-  * OR
-  * **[GDB CLIENT (if you use a BlackMagicProbe, for example)]** Call CMake with the following command line argument
+     * **[GDB CLIENT (if you use a BlackMagicProbe, for example)]**
                                                                         
-        - -DARM_NONE_EABI_TOOLCHAIN_PATH=[Path to the toolchain directory] 
-        - -DNRF5_SDK_PATH=[Path to the SDK directory]
+        - -DARM_NONE_EABI_TOOLCHAIN_PATH=[Path to the toolchain directory]
+        - -DNRF5_SDK_PATH=../NrfSDK
         - -DUSE_GDB_CLIENT=1
         - -DGDB_CLIENT_BIN_PATH=[Path to arm-none-eabi-gdb executable]
         - -DGDB_CLIENT_TARGET_REMOTE=[Target remote connetion string. Ex : /dev/ttyACM0]
         
-  * OR
-  * **[OPENOCD (if you use a STlink v2 clone, for example)]** Call CMake with the following command line argument
+        ```
+        $ cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=../NrfSDK -DUSE_GDB_CLIENT=1 -DGDB_CLIENT_BIN_PATH=... -DGDB_CLIENT_TARGET_REMOTE=... -DMERGEHEX=... ../
+        ```
+
+     * **[OPENOCD (if you use a STlink v2 clone, for example)]**
                                                                       
-        - -DARM_NONE_EABI_TOOLCHAIN_PATH=[Path to the toolchain directory] 
-        - -DNRF5_SDK_PATH=[Path to the SDK directory]
+        - -DARM_NONE_EABI_TOOLCHAIN_PATH=[Path to the toolchain directory]
+        - -DNRF5_SDK_PATH=../NrfSDK
         - -DUSE_OPENOCD=1
         
-      * Optionally, if you want to use a another version then whats on your path
+        * Optionally, if you want to use a another version then whats on your path
    
             - -DOPENOCD_BIN_PATH=[path to openocd]
 
+        ```
+        $ cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=../NrfSDK -DUSE_OPENOCD=1 -DGDB_CLIENT_BIN_PATH=[optional] -DMERGEHEX=... ../
+        ```
 
-  * Optionally, you can define MERGEHEX with the path to the ```mergehex``` tool from [NRF5X Command Line Tools](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrf5x_cltools%2FUG%2Fcltools%2Fnrf5x_command_line_tools_lpage.html&cp=6_1) to be able to merge the application and softdevice into one HEX file. In this case the merged file is generated in src/pinetime-app-full.hex
+     * Optionally, you can define MERGEHEX with the path to the ```mergehex``` tool from [NRF5X Command Line Tools](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrf5x_cltools%2FUG%2Fcltools%2Fnrf5x_command_line_tools_lpage.html&cp=6_1) to be able to merge the application and softdevice into one HEX file. In this case the merged file is generated in src/pinetime-app-full.hex
     
         - -DMERGEHEX=[Path to the mergehex executable]
 
-JLINK
-```
-$ mkdir build
-$ cd build
-$ cmake -DCMAKE_BUILD_TYPE=Debug -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_JLINK=1 -DNRFJPROG=... ../
-```
+     * Optionally if you have the NRF SDK installed in some place else you can configure it in the follow way:
 
-GDB (Back Magic Probe)
-```
-$ mkdir build
-$ cd build
-$ cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_GDB_CLIENT=1 -DGDB_CLIENT_BIN_PATH=... -DGDB_CLIENT_TARGET_REMOTE=... -DMERGEHEX=... ../
-```
+        - -DNRF5_SDK_PATH=[Path to the SDK directory]
 
-OpenOCD (STlink v2 clones)
-```
-$ mkdir build
-$ cd build
-$ cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_OPENOCD=1 -DGDB_CLIENT_BIN_PATH=[optional] -DMERGEHEX=... ../
-```
+  5. Make
 
-  * Make
-```
-$ make -j pinetime-app
-```  
+      ```
+      $ make -j pinetime-app
+      ```
+
 
 ## How to program
 ### Using make

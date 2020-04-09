@@ -1,5 +1,4 @@
 .idea
 cmake-build-*
 core
-sdk
 src/Version.h
