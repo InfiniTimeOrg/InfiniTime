@@ -1,5 +1,5 @@
 #pragma once
-#include <ble/ble_services/ble_cts_c/ble_cts_c.h>
+//#include <ble/ble_services/ble_cts_c/ble_cts_c.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,7 +39,7 @@ void ble_manager_start_advertising(void *p_erase_bonds);
 void ble_manager_init_peer_manager();
 
 // TODO use signals from RTOS to notify new time
-void ble_manager_set_new_time_callback(void (*OnNewTime)(current_time_char_t* currentTime));
+//void ble_manager_set_new_time_callback(void (*OnNewTime)(current_time_char_t* currentTime));
 void ble_manager_set_ble_disconnection_callback(void (*OnBleDisconnection)());
 void ble_manager_set_ble_connection_callback(void (*OnBleConnection)());
 

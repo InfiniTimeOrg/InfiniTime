@@ -1,3 +1,5 @@
+#if 0
+
 #include <libraries/util/sdk_errors.h>
 #include <softdevice/common/nrf_sdh.h>
 #include <libraries/util/app_error.h>
@@ -778,3 +780,4 @@ void ble_manager_delete_bonds() {
   err_code = pm_peers_delete();
   APP_ERROR_CHECK(err_code);
 }
+#endif

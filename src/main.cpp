@@ -7,7 +7,7 @@
 #include <softdevice/common/nrf_sdh.h>
 #include <hal/nrf_rtc.h>
 #include <timers.h>
-#include <ble/ble_services/ble_cts_c/ble_cts_c.h>
+//#include <ble/ble_services/ble_cts_c/ble_cts_c.h>
 #include <Components/DateTime/DateTimeController.h>
 #include "BLE/BleManager.h"
 #include "Components/Battery/BatteryController.h"
@@ -17,6 +17,18 @@
 #include <DisplayApp/LittleVgl.h>
 #include <SystemTask/SystemTask.h>
 #include <Components/Ble/NotificationManager.h>
+#include <nimble/nimble_port_freertos.h>
+#include <nimble/npl_freertos.h>
+#include <nimble/nimble_port.h>
+#include <host/ble_hs.h>
+#include <controller/ble_ll.h>
+#include <os/os_cputime.h>
+#include <transport/ram/ble_hci_ram.h>
+#include <hal/nrf_wdt.h>
+#include <host/util/util.h>
+#include <services/gap/ble_svc_gap.h>
+#include <services/gatt/ble_svc_gatt.h>
+
 
 #if NRF_LOG_ENABLED
 #include "Logging/NrfLogger.h"
@@ -93,20 +105,20 @@ void OnNewNotification(const char* message, uint8_t size) {
   systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
 }
 
-void OnNewTime(current_time_char_t* currentTime) {
-  auto dayOfWeek = currentTime->exact_time_256.day_date_time.day_of_week;
-  auto year = currentTime->exact_time_256.day_date_time.date_time.year;
-  auto month = currentTime->exact_time_256.day_date_time.date_time.month;
-  auto day = currentTime->exact_time_256.day_date_time.date_time.day;
-  auto hour = currentTime->exact_time_256.day_date_time.date_time.hours;
-  auto minute = currentTime->exact_time_256.day_date_time.date_time.minutes;
-  auto second = currentTime->exact_time_256.day_date_time.date_time.seconds;
-
-  dateTimeController.SetTime(year, month, day,
-                             dayOfWeek, hour, minute, second, nrf_rtc_counter_get(portNRF_RTC_REG));
-
-  systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnNewTime);
-}
+//void OnNewTime(current_time_char_t* currentTime) {
+//  auto dayOfWeek = currentTime->exact_time_256.day_date_time.day_of_week;
+//  auto year = currentTime->exact_time_256.day_date_time.date_time.year;
+//  auto month = currentTime->exact_time_256.day_date_time.date_time.month;
+//  auto day = currentTime->exact_time_256.day_date_time.date_time.day;
+//  auto hour = currentTime->exact_time_256.day_date_time.date_time.hours;
+//  auto minute = currentTime->exact_time_256.day_date_time.date_time.minutes;
+//  auto second = currentTime->exact_time_256.day_date_time.date_time.seconds;
+//
+//  dateTimeController.SetTime(year, month, day,
+//                             dayOfWeek, hour, minute, second, nrf_rtc_counter_get(portNRF_RTC_REG));
+//
+//  systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnNewTime);
+//}
 
 void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
   if(((NRF_SPIM0->INTENSET & (1<<6)) != 0) && NRF_SPIM0->EVENTS_END == 1) {
@@ -124,6 +136,100 @@ void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
   }
 }
 
+static void (*radio_isr_addr)(void) ;
+static void (*rng_isr_addr)(void) ;
+static void (*rtc0_isr_addr)(void) ;
+
+
+/* Some interrupt handlers required for NimBLE radio driver */
+extern "C" {
+void RADIO_IRQHandler(void) {
+  ((void (*)(void)) radio_isr_addr)();
+}
+
+void RNG_IRQHandler(void) {
+  ((void (*)(void)) rng_isr_addr)();
+}
+
+void RTC0_IRQHandler(void) {
+  ((void (*)(void)) rtc0_isr_addr)();
+}
+
+void WDT_IRQHandler(void) {
+  nrf_wdt_event_clear(NRF_WDT_EVENT_TIMEOUT);
+}
+
+void npl_freertos_hw_set_isr(int irqn, void (*addr)(void)) {
+  switch (irqn) {
+    case RADIO_IRQn:
+      radio_isr_addr = addr;
+      break;
+    case RNG_IRQn:
+      rng_isr_addr = addr;
+      break;
+    case RTC0_IRQn:
+      rtc0_isr_addr = addr;
+      break;
+  }
+}
+
+uint32_t
+npl_freertos_hw_enter_critical(void) {
+  uint32_t ctx = __get_PRIMASK();
+  __disable_irq();
+  return (ctx & 0x01);
+}
+
+void npl_freertos_hw_exit_critical(uint32_t ctx) {
+  if (!ctx) {
+    __enable_irq();
+  }
+}
+
+
+static struct ble_npl_eventq g_eventq_dflt;
+
+struct ble_npl_eventq *
+nimble_port_get_dflt_eventq(void) {
+  return &g_eventq_dflt;
+}
+
+void nimble_port_run(void) {
+  struct ble_npl_event *ev;
+
+  while (1) {
+    ev = ble_npl_eventq_get(&g_eventq_dflt, BLE_NPL_TIME_FOREVER);
+    ble_npl_event_run(ev);
+  }
+}
+
+void BleHost(void *) {
+  nimble_port_run();
+}
+
+void nimble_port_init(void) {
+  void os_msys_init(void);
+  void ble_store_ram_init(void);
+  ble_npl_eventq_init(&g_eventq_dflt);
+  os_msys_init();
+  ble_hs_init();
+  ble_store_ram_init();
+
+  hal_timer_init(5, NULL);
+  os_cputime_init(32768);
+  ble_ll_init();
+  ble_hci_ram_init();
+  nimble_port_freertos_init(BleHost);
+
+
+}
+
+void nimble_port_ll_task_func(void *args) {
+//  extern void ble_ll_task(void *arg);
+  ble_ll_task(args);
+}
+}
+
 int main(void) {
   logger.Init();
 
@@ -135,11 +241,15 @@ int main(void) {
                                                     dateTimeController, notificationManager));
   systemTask->Start();
 
-  ble_manager_init();
-  ble_manager_set_new_time_callback(OnNewTime);
-  ble_manager_set_ble_connection_callback(OnBleConnection);
-  ble_manager_set_ble_disconnection_callback(OnBleDisconnection);
-  ble_manager_set_new_notification_callback(OnNewNotification);
+  nimble_port_init();
+  ble_svc_gap_init();
+  ble_svc_gatt_init();
+
+//  ble_manager_init();
+//  ble_manager_set_new_time_callback(OnNewTime);
+//  ble_manager_set_ble_connection_callback(OnBleConnection);
+//  ble_manager_set_ble_disconnection_callback(OnBleDisconnection);
+//  ble_manager_set_new_notification_callback(OnNewNotification);
 
   vTaskStartScheduler();
 

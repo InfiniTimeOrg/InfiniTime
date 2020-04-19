@@ -23,10 +23,99 @@ nRF5x_addAppGpiote()
 
 add_definitions(-DCONFIG_GPIO_AS_PINRESET)
 add_definitions(-DDEBUG)
-
+add_definitions(-DNIMBLE_CFG_CONTROLLER)
+add_definitions(-DOS_CPUTIME_FREQ)
 
 include_directories(.)
 include_directories(libs/)
+
+set(TINYCRYPT_SRC
+  libs/mynewt-nimble/ext/tinycrypt/src/aes_encrypt.c
+  libs/mynewt-nimble/ext/tinycrypt/src/utils.c
+  )
+
+set(NIMBLE_SRC
+  libs/mynewt-nimble/porting/npl/freertos/src/nimble_port_freertos.c
+  libs/mynewt-nimble/porting/npl/freertos/src/npl_os_freertos.c
+
+
+
+  libs/mynewt-nimble/nimble/host/src/ble_hs.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_hci_evt.c
+  libs/mynewt-nimble/nimble/host/src/ble_l2cap_sig_cmd.c
+  libs/mynewt-nimble/nimble/host/src/ble_l2cap_sig.c
+  libs/mynewt-nimble/nimble/host/src/ble_l2cap.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_mbuf.c
+  libs/mynewt-nimble/nimble/host/src/ble_sm.c
+  libs/mynewt-nimble/nimble/host/src/ble_gap.c
+  libs/mynewt-nimble/nimble/host/src/ble_gatts.c
+  libs/mynewt-nimble/nimble/host/src/ble_gattc.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_conn.c
+  libs/mynewt-nimble/nimble/host/src/ble_att_svr.c
+  libs/mynewt-nimble/nimble/host/src/ble_store.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_pvcy.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_hci.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_log.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_hci_util.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_hci_cmd.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_cfg.c
+  libs/mynewt-nimble/nimble/host/src/ble_uuid.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_id.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_misc.c
+  libs/mynewt-nimble/nimble/host/src/ble_att.c
+  libs/mynewt-nimble/nimble/host/src/ble_att_clt.c
+  libs/mynewt-nimble/nimble/host/src/ble_att_svr.c
+  libs/mynewt-nimble/nimble/host/src/ble_att_cmd.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_atomic.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_adv.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_flow.c
+  libs/mynewt-nimble/nimble/host/src/ble_sm.c
+  libs/mynewt-nimble/nimble/host/src/ble_sm_cmd.c
+  libs/mynewt-nimble/nimble/host/src/ble_sm_lgcy.c
+  libs/mynewt-nimble/nimble/host/src/ble_sm_alg.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_mqueue.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_stop.c
+  libs/mynewt-nimble/nimble/host/src/ble_hs_startup.c
+  libs/mynewt-nimble/nimble/host/store/ram/src/ble_store_ram.c
+
+  libs/mynewt-nimble/nimble/transport/ram/src/ble_hci_ram.c
+
+
+
+  libs/mynewt-nimble/nimble/controller/src/ble_ll.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_rand.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_conn.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_ctrl.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_hci.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_conn_hci.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_utils.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_scan.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_whitelist.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_adv.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_sched.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_supp_cmd.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_hci_ev.c
+  libs/mynewt-nimble/nimble/controller/src/ble_ll_rfmgmt.c
+
+
+
+  libs/mynewt-nimble/porting/nimble/src/os_cputime.c
+  libs/mynewt-nimble/porting/nimble/src/os_cputime_pwr2.c
+  libs/mynewt-nimble/porting/nimble/src/os_mbuf.c
+  libs/mynewt-nimble/porting/nimble/src/os_mempool.c
+  libs/mynewt-nimble/porting/nimble/src/hal_timer.c
+  libs/mynewt-nimble/porting/nimble/src/mem.c
+  libs/mynewt-nimble/porting/nimble/src/endian.c
+  libs/mynewt-nimble/porting/nimble/src/os_msys_init.c
+
+  libs/mynewt-nimble/nimble/drivers/nrf52/src/ble_hw.c
+  libs/mynewt-nimble/nimble/drivers/nrf52/src/ble_phy.c
+
+  libs/mynewt-nimble/nimble/host/services/gap/src/ble_svc_gap.c
+  libs/mynewt-nimble/nimble/host/services/gatt/src/ble_svc_gatt.c
+
+  libs/mynewt-nimble/nimble/host/util/src/addr.c
+  )
 
 set(LVGL_SRC
   libs/lv_conf.h
@@ -230,6 +319,8 @@ list(APPEND SOURCE_FILES
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
   FreeRTOS/port_cmsis.c
+  ${TINYCRYPT_SRC}
+  ${NIMBLE_SRC}
   ${LVGL_SRC}
   ${IMAGE_FILES}
 
@@ -288,6 +379,18 @@ set(INCLUDE_FILES
 include_directories(
   FreeRTOS/
   libs/date/includes
+  libs/mynewt-nimble/porting/npl/freertos/include
+  libs/mynewt-nimble/nimble/include
+  libs/mynewt-nimble/porting/nimble/include
+  libs/mynewt-nimble/nimble/host/include
+  libs/mynewt-nimble/nimble/controller/include
+  libs/mynewt-nimble/nimble/transport/ram/include
+  libs/mynewt-nimble/nimble/drivers/nrf52/include
+  libs/mynewt-nimble/ext/tinycrypt/include
+  libs/mynewt-nimble/nimble/host/services/gap/include
+  libs/mynewt-nimble/nimble/host/services/gatt/include
+  libs/mynewt-nimble/nimble/host/util/include
+  libs/mynewt-nimble/nimble/host/store/ram/include
 )
 
 link_directories(
