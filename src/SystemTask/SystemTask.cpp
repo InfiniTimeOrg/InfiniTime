@@ -5,7 +5,6 @@
 #include <hal/nrf_rtc.h>
 #include <BLE/BleManager.h>
 #include <Components/Ble/NotificationManager.h>
-#include <services/gap/ble_svc_gap.h>
 #include <host/ble_gatt.h>
 #include <host/ble_hs_adv.h>
 #include "SystemTask.h"
@@ -13,6 +12,7 @@
 #include <host/ble_gap.h>
 #include <host/util/util.h>
 #include "../main.h"
+
 using namespace Pinetime::System;
 
 SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd, Drivers::Cst816S &touchPanel,
@@ -37,86 +37,15 @@ void SystemTask::Process(void *instance) {
   app->Work();
 }
 
-static int _gap_event_cb(struct ble_gap_event *event, void *arg)
-{
-  return 0;
-}
-
-static int
-adv_event(struct ble_gap_event *event, void *arg)
-{
-  switch (event->type) {
-    case BLE_GAP_EVENT_ADV_COMPLETE:
-      return 0;
-    case BLE_GAP_EVENT_CONNECT:
-      return 0;
-    case BLE_GAP_EVENT_DISCONNECT:
-      return 0;
-    default:
-      return 0;
-  }
-}
-
 void SystemTask::Work() {
 //  watchdog.Setup(7);
 //  watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
-//  bool erase_bonds=true;
-//  ble_manager_init_peer_manager();
-//  nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
+
 /* BLE */
-  while (!ble_hs_synced()) {}
-
-  int res;
-  res = ble_hs_util_ensure_addr(0);
-  assert(res == 0);
-  uint8_t addrType;
-  res = ble_hs_id_infer_auto(0, &addrType);
-  assert(res == 0);
-
-  res = ble_svc_gap_device_name_set("Pinetime-JF");
-  assert(res == 0);
-
-
-  /* set adv parameters */
-  struct ble_gap_adv_params adv_params;
-  struct ble_hs_adv_fields fields;
-  /* advertising payload is split into advertising data and advertising
-     response, because all data cannot fit into single packet; name of device
-     is sent as response to scan request */
-  struct ble_hs_adv_fields rsp_fields;
-
-  /* fill all fields and parameters with zeros */
-  memset(&adv_params, 0, sizeof(adv_params));
-  memset(&fields, 0, sizeof(fields));
-  memset(&rsp_fields, 0, sizeof(rsp_fields));
-
-  adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
-  adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
-
-  fields.flags = BLE_HS_ADV_F_DISC_GEN |
-                 BLE_HS_ADV_F_BREDR_UNSUP;
-//  fields.uuids128 = BLE_UUID128(BLE_UUID128_DECLARE(
-//          0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-//          0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff));
-  fields.num_uuids128 = 0;
-  fields.uuids128_is_complete = 0;;
-  fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
-
-  rsp_fields.name = (uint8_t *)"Pinetime-JF";
-  rsp_fields.name_len = strlen("Pinetime-JF");
-  rsp_fields.name_is_complete = 1;
-
-  res = ble_gap_adv_set_fields(&fields);
-  assert(res == 0);
-
-  res = ble_gap_adv_rsp_set_fields(&rsp_fields);
-
-  res = ble_gap_adv_start(addrType, NULL, 36000,
-                         &adv_params, adv_event, NULL);
-  assert(res == 0);
-
+  nimbleController.Init();
+  nimbleController.StartAdvertising();
 /* /BLE*/
 
   spi.Init();

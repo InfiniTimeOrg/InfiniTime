@@ -27,7 +27,6 @@
 #include <hal/nrf_wdt.h>
 #include <host/util/util.h>
 #include <services/gap/ble_svc_gap.h>
-#include <services/gatt/ble_svc_gatt.h>
 
 
 #if NRF_LOG_ENABLED
@@ -242,8 +241,7 @@ int main(void) {
   systemTask->Start();
 
   nimble_port_init();
-  ble_svc_gap_init();
-  ble_svc_gatt_init();
+
 
 //  ble_manager_init();
 //  ble_manager_set_new_time_callback(OnNewTime);

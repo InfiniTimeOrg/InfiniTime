@@ -53,6 +53,7 @@ set(NIMBLE_SRC
   libs/mynewt-nimble/nimble/host/src/ble_hs_conn.c
   libs/mynewt-nimble/nimble/host/src/ble_att_svr.c
   libs/mynewt-nimble/nimble/host/src/ble_store.c
+  libs/mynewt-nimble/nimble/host/src/ble_store_util.c
   libs/mynewt-nimble/nimble/host/src/ble_hs_pvcy.c
   libs/mynewt-nimble/nimble/host/src/ble_hs_hci.c
   libs/mynewt-nimble/nimble/host/src/ble_hs_log.c
@@ -315,6 +316,7 @@ list(APPEND SOURCE_FILES
   Components/Ble/NotificationManager.cpp
   Components/DateTime/DateTimeController.cpp
   Components/Brightness/BrightnessController.cpp
+  Components/Ble/NimbleController.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
@@ -359,6 +361,7 @@ set(INCLUDE_FILES
   Components/Ble/NotificationManager.h
   Components/DateTime/DateTimeController.h
   Components/Brightness/BrightnessController.h
+  Components/Ble/NimbleController.h
   drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h
