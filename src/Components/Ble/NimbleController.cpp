@@ -14,36 +14,14 @@ using namespace Pinetime::Controllers;
 // TODO c++ify the following code
 // - cts should be in it own class
 
-NimbleController::NimbleController(DateTime& datetimeController) : dateTimeController{datetimeController} {
-  ctsUuid.u.type = BLE_UUID_TYPE_16;
-  ctsUuid.value = BleGatServiceCts;
-
-  ctsCurrentTimeUuid.u.type = BLE_UUID_TYPE_16;
-  ctsCurrentTimeUuid.value = bleGattCharacteristicCurrentTime;
+NimbleController::NimbleController(DateTime &datetimeController) : dateTimeController{datetimeController},
+                                                                   currentTimeClient{datetimeController} {
 
 }
 
 int GAPEventCallback(struct ble_gap_event *event, void *arg) {
   auto nimbleController = static_cast<NimbleController*>(arg);
   return nimbleController->OnGAPEvent(event);
-}
-
-int DiscoveryEventCallback(uint16_t conn_handle, const struct ble_gatt_error *error,
-                     const struct ble_gatt_svc *service, void *arg) {
-  auto nimbleController = static_cast<NimbleController*>(arg);
-  return nimbleController->OnDiscoveryEvent(conn_handle, error, service);
-}
-
-int CharacteristicDiscoveredCallback(uint16_t conn_handle, const struct ble_gatt_error *error,
-                                     const struct ble_gatt_chr *chr, void *arg) {
-  auto nimbleController = static_cast<NimbleController*>(arg);
-  return nimbleController->OnCharacteristicDiscoveryEvent(conn_handle, error, chr);
-}
-
-static int CurrentTimeReadCallback(uint16_t conn_handle, const struct ble_gatt_error *error,
-                        struct ble_gatt_attr *attr, void *arg) {
-  auto nimbleController = static_cast<NimbleController*>(arg);
-  return nimbleController->OnCurrentTimeReadResult(conn_handle, error, attr);
 }
 
 void NimbleController::Init() {
@@ -53,6 +31,7 @@ void NimbleController::Init() {
   ble_svc_gatt_init();
 
   deviceInformationService.Init();
+  currentTimeClient.Init();
   int res;
   res = ble_hs_util_ensure_addr(0);
   res = ble_hs_id_infer_auto(0, &addrType);
@@ -123,8 +102,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
         StartAdvertising();
       } else {
         connectionHandle = event->connect.conn_handle;
-
-        ble_gattc_disc_svc_by_uuid(connectionHandle, ((ble_uuid_t*)&ctsUuid), DiscoveryEventCallback, this);
+        currentTimeClient.StartDiscovery(connectionHandle);
       }
     }
       break;
@@ -183,48 +161,6 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
   }
   return 0;
 }
-
-int NimbleController::OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error *error, const ble_gatt_svc *service) {
-  if(service == nullptr && error->status == BLE_HS_EDONE)
-    NRF_LOG_INFO("Discovery complete");
-
-  if(service != nullptr && ble_uuid_cmp(((ble_uuid_t*)&ctsUuid), &service->uuid.u) == 0) {
-    NRF_LOG_INFO("CTS discovered : 0x%x", service->start_handle);
-    ble_gattc_disc_chrs_by_uuid(connectionHandle, service->start_handle, service->end_handle, ((ble_uuid_t*)&ctsCurrentTimeUuid), CharacteristicDiscoveredCallback, this);
-  }
-
-  return 0;
-}
-
-int NimbleController::OnCharacteristicDiscoveryEvent(uint16_t conn_handle, const ble_gatt_error *error,
-                                                     const ble_gatt_chr *characteristic) {
-  if(characteristic == nullptr && error->status == BLE_HS_EDONE)
-    NRF_LOG_INFO("Characteristic discovery complete");
-
-  if(characteristic != nullptr && ble_uuid_cmp(((ble_uuid_t*)&ctsCurrentTimeUuid), &characteristic->uuid.u) == 0) {
-    NRF_LOG_INFO("CTS Characteristic discovered : 0x%x", characteristic->val_handle);
-
-    ble_gattc_read(conn_handle, characteristic->val_handle, CurrentTimeReadCallback, this);
-  }
-  return 0;
-}
-
-int NimbleController::OnCurrentTimeReadResult(uint16_t conn_handle, const ble_gatt_error *error, const ble_gatt_attr *attribute) {
-  if(error->status == 0) {
-    // TODO check that attribute->handle equals the handle discovered in OnCharacteristicDiscoveryEvent
-    CtsData result;
-    os_mbuf_copydata(attribute->om, 0, sizeof(CtsData), &result);
-    NRF_LOG_INFO("Received data: %d-%d-%d %d:%d:%d", result.year,
-                 result.month, result.dayofmonth,
-                 result.hour, result.minute, result.second);
-    dateTimeController.SetTime(result.year, result.month, result.dayofmonth,
-                             0, result.hour, result.minute, result.second, nrf_rtc_counter_get(portNRF_RTC_REG));
-  } else {
-    NRF_LOG_INFO("Error retrieving current time: %d", error->status);
-  }
-  return 0;
-}
-
 
 
 
