@@ -9,126 +9,10 @@
 #include <host/ble_gap.h>
 #include <hal/nrf_rtc.h>
 
-
 using namespace Pinetime::Controllers;
 
 // TODO c++ify the following code
-// - device info should be in its own class
 // - cts should be in it own class
-
-#define BLE_GATT_SVC_DEVINFO                (0x180a)    /**< device info */
-#define BLE_GATT_CHAR_MANUFACTURER_NAME     (0x2a29)    /**< manufacturer name */
-#define BLE_GATT_CHAR_MODEL_NUMBER_STR      (0x2a24)    /**< model number */
-#define BLE_GATT_CHAR_SERIAL_NUMBER_STR     (0x2a25)    /**< serial number */
-#define BLE_GATT_CHAR_FW_REV_STR            (0x2a26)    /**< firmware revision */
-#define BLE_GATT_CHAR_HW_REV_STR            (0x2a27)    /**< hardware revision */
-
-static int _devinfo_handler(uint16_t conn_handle, uint16_t attr_handle,
-                            struct ble_gatt_access_ctxt *ctxt, void *arg) {
-  const char *str;
-
-  switch (ble_uuid_u16(ctxt->chr->uuid)) {
-    case BLE_GATT_CHAR_MANUFACTURER_NAME:
-      str = "Codingfield";
-      break;
-    case BLE_GATT_CHAR_MODEL_NUMBER_STR:
-      str = "1";
-      break;
-    case BLE_GATT_CHAR_SERIAL_NUMBER_STR:
-      str = "1.2.3.4.5.6";
-      break;
-    case BLE_GATT_CHAR_FW_REV_STR:
-      str = "0.5.0";
-      break;
-    case BLE_GATT_CHAR_HW_REV_STR:
-      str = "1.0";
-      break;
-    default:
-      return BLE_ATT_ERR_UNLIKELY;
-  }
-
-  int res = os_mbuf_append(ctxt->om, str, strlen(str));
-  return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
-}
-
-ble_uuid16_t deviceInfoUuid {
-        .u { .type = BLE_UUID_TYPE_16 },
-        .value = BLE_GATT_SVC_DEVINFO
-};
-
-ble_uuid16_t manufacturerNameUuid {
-        .u { .type = BLE_UUID_TYPE_16 },
-        .value = BLE_GATT_CHAR_MANUFACTURER_NAME
-};
-
-ble_uuid16_t modelNumberUuid {
-        .u { .type = BLE_UUID_TYPE_16 },
-        .value = BLE_GATT_CHAR_MODEL_NUMBER_STR
-};
-
-ble_uuid16_t serialNumberUuid {
-        .u { .type = BLE_UUID_TYPE_16 },
-        .value = BLE_GATT_CHAR_SERIAL_NUMBER_STR
-};
-
-ble_uuid16_t fwRevisionUuid {
-        .u { .type = BLE_UUID_TYPE_16 },
-        .value = BLE_GATT_CHAR_FW_REV_STR
-};
-
-ble_uuid16_t hwRevisionUuid {
-        .u { .type = BLE_UUID_TYPE_16 },
-        .value = BLE_GATT_CHAR_HW_REV_STR
-};
-
-
-static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
-        {
-                /* Device Information Service */
-                .type = BLE_GATT_SVC_TYPE_PRIMARY,
-                .uuid = (ble_uuid_t*)&deviceInfoUuid,
-                .characteristics = (struct ble_gatt_chr_def[]) {
-                  {
-                          .uuid = (ble_uuid_t*)&manufacturerNameUuid,
-                          .access_cb = _devinfo_handler,
-                          .arg = nullptr,
-                          .flags = BLE_GATT_CHR_F_READ,
-
-                  },
-                  {
-                          .uuid = (ble_uuid_t*)&modelNumberUuid,
-                          .access_cb = _devinfo_handler,
-                          .arg = nullptr,
-                          .flags = BLE_GATT_CHR_F_READ,
-                  },
-                  {
-                          .uuid = (ble_uuid_t*)&serialNumberUuid,
-                          .access_cb = _devinfo_handler,
-                          .arg = nullptr,
-                          .flags = BLE_GATT_CHR_F_READ,
-                  },
-                  {
-                          .uuid = (ble_uuid_t*)&fwRevisionUuid,
-                          .access_cb = _devinfo_handler,
-                          .arg = nullptr,
-                          .flags = BLE_GATT_CHR_F_READ,
-                  },
-                  {
-                          .uuid = (ble_uuid_t*)&hwRevisionUuid,
-                          .access_cb = _devinfo_handler,
-                          .arg = nullptr,
-                          .flags = BLE_GATT_CHR_F_READ,
-                  },
-                  {
-                          0, /* no more characteristics in this service */
-                  },
-                }
-        },
-        {
-                0, /* no more services */
-        },
-};
-
 
 NimbleController::NimbleController(DateTime& datetimeController) : dateTimeController{datetimeController} {
   ctsUuid.u.type = BLE_UUID_TYPE_16;
@@ -168,8 +52,7 @@ void NimbleController::Init() {
   ble_svc_gap_init();
   ble_svc_gatt_init();
 
-  ble_gatts_count_cfg(gatt_svr_svcs);
-  ble_gatts_add_svcs(gatt_svr_svcs);
+  deviceInformationService.Init();
   int res;
   res = ble_hs_util_ensure_addr(0);
   res = ble_hs_id_infer_auto(0, &addrType);

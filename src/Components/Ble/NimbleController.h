@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstdint>
+
+#include "DeviceInformationService.h"
 #include <host/ble_gap.h>
 
 namespace Pinetime {
@@ -33,6 +35,7 @@ namespace Pinetime {
         } CtsData;
 
         DateTime& dateTimeController;
+        DeviceInformationService deviceInformationService;
 
         ble_uuid16_t ctsUuid;
 

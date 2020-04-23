@@ -317,6 +317,7 @@ list(APPEND SOURCE_FILES
   Components/DateTime/DateTimeController.cpp
   Components/Brightness/BrightnessController.cpp
   Components/Ble/NimbleController.cpp
+  Components/Ble/DeviceInformationService.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
@@ -362,6 +363,7 @@ set(INCLUDE_FILES
   Components/DateTime/DateTimeController.h
   Components/Brightness/BrightnessController.h
   Components/Ble/NimbleController.h
+  Components/Ble/DeviceInformationService.h
   drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h
