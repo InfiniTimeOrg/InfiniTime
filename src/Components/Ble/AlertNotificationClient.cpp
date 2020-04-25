@@ -13,19 +13,6 @@ constexpr ble_uuid16_t AlertNotificationClient::newAlertUuid;
 constexpr ble_uuid16_t AlertNotificationClient::unreadAlertStatusUuid;
 constexpr ble_uuid16_t AlertNotificationClient::controlPointUuid;
 
-int Pinetime::Controllers::AlertNotificationDiscoveryEventCallback(uint16_t conn_handle, const struct ble_gatt_error *error,
-                                                             const struct ble_gatt_svc *service, void *arg) {
-  auto client = static_cast<AlertNotificationClient*>(arg);
-  return client->OnDiscoveryEvent(conn_handle, error, service);
-}
-
-int Pinetime::Controllers::AlertNotificationCharacteristicsDiscoveryEventCallback(uint16_t conn_handle,
-                    const struct ble_gatt_error *error,
-                    const struct ble_gatt_chr *chr, void *arg) {
-  auto client = static_cast<AlertNotificationClient*>(arg);
-  return client->OnCharacteristicsDiscoveryEvent(conn_handle, error, chr);
-}
-
 int Pinetime::Controllers::NewAlertSubcribeCallback(uint16_t conn_handle,
                      const struct ble_gatt_error *error,
                      struct ble_gatt_attr *attr,
@@ -34,37 +21,23 @@ int Pinetime::Controllers::NewAlertSubcribeCallback(uint16_t conn_handle,
   return client->OnNewAlertSubcribe(conn_handle, error, attr);
 }
 
-int Pinetime::Controllers::AlertNotificationDescriptorDiscoveryEventCallback(uint16_t conn_handle,
-                                                                             const struct ble_gatt_error *error,
-                                                                             uint16_t chr_val_handle,
-                                                                             const struct ble_gatt_dsc *dsc,
-                                                                             void *arg) {
-  NRF_LOG_INFO("ANS VCS");
-  auto client = static_cast<AlertNotificationClient*>(arg);
-  return client->OnDescriptorDiscoveryEventCallback(conn_handle, error, chr_val_handle, dsc);
-}
-
 AlertNotificationClient::AlertNotificationClient(Pinetime::System::SystemTask& systemTask,
         Pinetime::Controllers::NotificationManager& notificationManager) :
         systemTask{systemTask}, notificationManager{notificationManager}{
 
 }
 
-void AlertNotificationClient::StartDiscovery(uint16_t connectionHandle) {
-  ble_gattc_disc_svc_by_uuid(connectionHandle, ((ble_uuid_t*)&ansServiceUuid), AlertNotificationDiscoveryEventCallback, this);
-}
-
 bool AlertNotificationClient::OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error *error, const ble_gatt_svc *service) {
   if(service == nullptr && error->status == BLE_HS_EDONE) {
     NRF_LOG_INFO("ANS Discovery complete");
-    ble_gattc_disc_all_dscs(connectionHandle, newAlertHandle, ansEndHandle, AlertNotificationDescriptorDiscoveryEventCallback, this);
     return true;
   }
 
   if(service != nullptr && ble_uuid_cmp(((ble_uuid_t*)&ansServiceUuid), &service->uuid.u) == 0) {
     NRF_LOG_INFO("ANS discovered : 0x%x", service->start_handle);
-    ble_gattc_disc_all_chrs(connectionHandle, service->start_handle, service->end_handle, AlertNotificationCharacteristicsDiscoveryEventCallback, this);
-    ansEndHandle = service->end_handle;
+      ansStartHandle = service->start_handle;
+      ansEndHandle = service->end_handle;
+      isDiscovered = true;
   }
   return false;
 }
@@ -146,4 +119,20 @@ void AlertNotificationClient::OnNotification(ble_gap_event *event) {
     notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, s, notifSize + 1);
     systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
   }
+}
+
+bool AlertNotificationClient::IsDiscovered() const {
+  return isDiscovered;
+}
+
+uint16_t AlertNotificationClient::StartHandle() const {
+  return ansStartHandle;
+}
+
+uint16_t AlertNotificationClient::EndHandle() const {
+  return ansEndHandle;
+}
+
+uint16_t AlertNotificationClient::NewAlerthandle() const {
+  return newAlertHandle;
 }

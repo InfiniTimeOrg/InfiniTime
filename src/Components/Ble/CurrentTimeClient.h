@@ -6,12 +6,6 @@
 
 namespace Pinetime {
   namespace Controllers {
-    int CurrentTimeDiscoveryEventCallback(uint16_t conn_handle, const struct ble_gatt_error *error,
-                               const struct ble_gatt_svc *service, void *arg);
-    int CurrentTimeCharacteristicDiscoveredCallback(uint16_t conn_handle, const struct ble_gatt_error *error,
-                                         const struct ble_gatt_chr *chr, void *arg);
-    int CurrentTimeReadCallback(uint16_t conn_handle, const struct ble_gatt_error *error,
-                                       struct ble_gatt_attr *attr, void *arg);
 
     class CurrentTimeClient {
       public:
@@ -21,9 +15,12 @@ namespace Pinetime {
         int OnCharacteristicDiscoveryEvent(uint16_t conn_handle, const ble_gatt_error *error,
                                                              const ble_gatt_chr *characteristic);
         int OnCurrentTimeReadResult(uint16_t conn_handle, const ble_gatt_error *error, const ble_gatt_attr *attribute);
-
-
-        void StartDiscovery(uint16_t connectionHandle);
+        bool IsDiscovered() const;
+        uint16_t StartHandle() const;
+        uint16_t EndHandle() const;
+        uint16_t CurrentTimeHandle() const;
+        static constexpr const ble_uuid16_t* Uuid() { return &CurrentTimeClient::ctsServiceUuid; }
+        static constexpr const ble_uuid16_t* CurrentTimeCharacteristicUuid() { return &CurrentTimeClient::currentTimeCharacteristicUuid; }
       private:
         typedef struct __attribute__((packed)) {
           uint16_t year;
@@ -48,7 +45,11 @@ namespace Pinetime {
                 .value = currentTimeCharacteristicId
         };
 
+        uint16_t currentTimeHandle;
         DateTime& dateTimeController;
+        bool isDiscovered = false;
+        uint16_t ctsStartHandle;
+        uint16_t ctsEndHandle;
     };
   }
 }
