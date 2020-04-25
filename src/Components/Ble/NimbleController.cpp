@@ -1,4 +1,9 @@
+
 #include <Components/DateTime/DateTimeController.h>
+
+#include <SystemTask/SystemTask.h>
+#include <Components/Ble/NotificationManager.h>
+#include <hal/nrf_rtc.h>
 
 #include "NimbleController.h"
 #include <services/gatt/ble_svc_gatt.h>
@@ -7,15 +12,22 @@
 #include <host/ble_hs_id.h>
 #include <host/ble_hs.h>
 #include <host/ble_gap.h>
-#include <hal/nrf_rtc.h>
+
+
 
 using namespace Pinetime::Controllers;
 
 // TODO c++ify the following code
 // - cts should be in it own class
 
-NimbleController::NimbleController(DateTime &datetimeController) : dateTimeController{datetimeController},
-                                                                   currentTimeClient{datetimeController} {
+NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
+        DateTime& dateTimeController,
+        Pinetime::Controllers::NotificationManager& notificationManager) :
+        systemTask{systemTask},
+        dateTimeController{dateTimeController},
+        notificationManager{notificationManager},
+        currentTimeClient{dateTimeController},
+        alertNotificationClient{systemTask, notificationManager} {
 
 }
 
@@ -83,6 +95,15 @@ void NimbleController::StartAdvertising() {
 
 }
 
+int OnAllSvrDisco(uint16_t conn_handle,
+                                 const struct ble_gatt_error *error,
+                                 const struct ble_gatt_svc *service,
+                                 void *arg) {
+  auto nimbleController = static_cast<NimbleController*>(arg);
+  return nimbleController->OnDiscoveryEvent(conn_handle, error, service);
+  return 0;
+}
+
 int NimbleController::OnGAPEvent(ble_gap_event *event) {
   switch (event->type) {
     case BLE_GAP_EVENT_ADV_COMPLETE:
@@ -102,7 +123,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
         StartAdvertising();
       } else {
         connectionHandle = event->connect.conn_handle;
-        currentTimeClient.StartDiscovery(connectionHandle);
+        ble_gattc_disc_all_svcs(connectionHandle, OnAllSvrDisco, this);
       }
     }
       break;
@@ -155,10 +176,35 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
        */
     }
       return BLE_GAP_REPEAT_PAIRING_RETRY;
+
+    case BLE_GAP_EVENT_NOTIFY_RX: {
+      /* Peer sent us a notification or indication. */
+      size_t notifSize = OS_MBUF_PKTLEN(event->notify_rx.om);
+
+      NRF_LOG_INFO("received %s; conn_handle=%d attr_handle=%d "
+                   "attr_len=%d",
+                   event->notify_rx.indication ?
+                   "indication" :
+                   "notification",
+                   event->notify_rx.conn_handle,
+                   event->notify_rx.attr_handle,
+                   notifSize);
+
+      alertNotificationClient.OnNotification(event);
+      return 0;
+    }
+      /* Attribute data is contained in event->notify_rx.attr_data. */
+
     default:
       NRF_LOG_INFO("Advertising event : %d", event->type);
       break;
   }
+  return 0;
+}
+
+int NimbleController::OnDiscoveryEvent(uint16_t i, const ble_gatt_error *error, const ble_gatt_svc *service) {
+  alertNotificationClient.OnDiscoveryEvent(i, error, service);
+//  currentTimeClient.OnDiscoveryEvent(i, error, service);
   return 0;
 }
 

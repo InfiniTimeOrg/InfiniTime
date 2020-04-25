@@ -17,7 +17,7 @@ namespace Pinetime {
       public:
         explicit CurrentTimeClient(DateTime& dateTimeController);
         void Init();
-        int OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error *error, const ble_gatt_svc *service);
+        bool OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error *error, const ble_gatt_svc *service);
         int OnCharacteristicDiscoveryEvent(uint16_t conn_handle, const ble_gatt_error *error,
                                                              const ble_gatt_chr *characteristic);
         int OnCurrentTimeReadResult(uint16_t conn_handle, const ble_gatt_error *error, const ble_gatt_attr *attribute);

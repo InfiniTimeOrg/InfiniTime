@@ -319,6 +319,7 @@ list(APPEND SOURCE_FILES
   Components/Ble/NimbleController.cpp
   Components/Ble/DeviceInformationService.cpp
   Components/Ble/CurrentTimeClient.cpp
+  Components/Ble/AlertNotificationClient.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
@@ -366,6 +367,7 @@ set(INCLUDE_FILES
   Components/Ble/NimbleController.h
   Components/Ble/DeviceInformationService.h
   Components/Ble/CurrentTimeClient.h
+  Components/Ble/AlertNotificationClient.h
   drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h

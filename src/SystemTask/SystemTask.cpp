@@ -22,7 +22,7 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd, Drivers::C
                        Pinetime::Controllers::NotificationManager& notificationManager) :
                        spi{spi}, lcd{lcd}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
-                       watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager}, nimbleController({dateTimeController}) {
+                       watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager}, nimbleController(*this, dateTimeController, notificationManager) {
   systemTaksMsgQueue = xQueueCreate(10, 1);
 }
 

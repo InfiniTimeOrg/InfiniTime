@@ -37,21 +37,23 @@ void CurrentTimeClient::StartDiscovery(uint16_t connectionHandle) {
   ble_gattc_disc_svc_by_uuid(connectionHandle, ((ble_uuid_t*)&ctsServiceUuid), CurrentTimeDiscoveryEventCallback, this);
 }
 
-int CurrentTimeClient::OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error *error, const ble_gatt_svc *service) {
-  if(service == nullptr && error->status == BLE_HS_EDONE)
-    NRF_LOG_INFO("Discovery complete");
+bool CurrentTimeClient::OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error *error, const ble_gatt_svc *service) {
+  if(service == nullptr && error->status == BLE_HS_EDONE) {
+    NRF_LOG_INFO("CTS Discovery complete");
+    return true;
+  }
 
   if(service != nullptr && ble_uuid_cmp(((ble_uuid_t*)&ctsServiceUuid), &service->uuid.u) == 0) {
-    NRF_LOG_INFO("CTS discovered : 0x%x", service->start_handle);
+    NRF_LOG_INFO("CTS discovered : 0x%x",  service->start_handle);
     ble_gattc_disc_chrs_by_uuid(connectionHandle, service->start_handle, service->end_handle, ((ble_uuid_t*)&currentTimeCharacteristicUuid), CurrentTimeCharacteristicDiscoveredCallback, this);
   }
-  return 0;
+  return false;
 }
 
 int CurrentTimeClient::OnCharacteristicDiscoveryEvent(uint16_t conn_handle, const ble_gatt_error *error,
                                    const ble_gatt_chr *characteristic) {
   if(characteristic == nullptr && error->status == BLE_HS_EDONE)
-    NRF_LOG_INFO("Characteristic discovery complete");
+    NRF_LOG_INFO("CTS Characteristic discovery complete");
 
   if(characteristic != nullptr && ble_uuid_cmp(((ble_uuid_t*)&currentTimeCharacteristicUuid), &characteristic->uuid.u) == 0) {
     NRF_LOG_INFO("CTS Characteristic discovered : 0x%x", characteristic->val_handle);
