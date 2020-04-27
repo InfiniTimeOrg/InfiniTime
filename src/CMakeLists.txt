@@ -319,6 +319,7 @@ list(APPEND SOURCE_FILES
   Components/Ble/DeviceInformationService.cpp
   Components/Ble/CurrentTimeClient.cpp
   Components/Ble/AlertNotificationClient.cpp
+  Components/Ble/DfuService.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
@@ -366,6 +367,7 @@ set(INCLUDE_FILES
   Components/Ble/DeviceInformationService.h
   Components/Ble/CurrentTimeClient.h
   Components/Ble/AlertNotificationClient.h
+  Components/Ble/DfuService.h
   drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h

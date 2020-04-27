@@ -73,7 +73,8 @@ void NimbleController::Init() {
   ble_svc_gatt_init();
 
   deviceInformationService.Init();
-  currentTimeClient.Init();
+//  currentTimeClient.Init();
+  dfuService.Init();
   int res;
   res = ble_hs_util_ensure_addr(0);
   res = ble_hs_id_infer_auto(0, &addrType);
@@ -105,8 +106,9 @@ void NimbleController::StartAdvertising() {
 //  fields.uuids128 = BLE_UUID128(BLE_UUID128_DECLARE(
 //          0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
 //          0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff));
-  fields.num_uuids128 = 0;
-  fields.uuids128_is_complete = 0;;
+  fields.uuids128 = &dfuServiceUuid;
+  fields.num_uuids128 = 1;
+  fields.uuids128_is_complete = 1;
   fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
 
   rsp_fields.name = (uint8_t *)"Pinetime-JF";
@@ -155,7 +157,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
       } else {
         bleController.Connect();
         connectionHandle = event->connect.conn_handle;
-        ble_gattc_disc_all_svcs(connectionHandle, OnAllSvrDisco, this);
+//        ble_gattc_disc_all_svcs(connectionHandle, OnAllSvrDisco, this);
       }
     }
       break;

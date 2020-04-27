@@ -4,6 +4,7 @@
 #include "AlertNotificationClient.h"
 #include "DeviceInformationService.h"
 #include "CurrentTimeClient.h"
+#include "DfuService.h"
 #include <host/ble_gap.h>
 
 namespace Pinetime {
@@ -31,12 +32,19 @@ namespace Pinetime {
         Pinetime::Controllers::Ble& bleController;
         DateTime& dateTimeController;
         Pinetime::Controllers::NotificationManager& notificationManager;
+        DfuService dfuService;
 
         DeviceInformationService deviceInformationService;
         CurrentTimeClient currentTimeClient;
         AlertNotificationClient alertNotificationClient;
         uint8_t addrType;
         uint16_t connectionHandle;
+
+        ble_uuid128_t dfuServiceUuid {
+                .u { .type = BLE_UUID_TYPE_128},
+                .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
+                          0xDE, 0xEF, 0x12, 0x12, 0x30, 0x15, 0x00, 0x00}
+        };
     };
   }
 }

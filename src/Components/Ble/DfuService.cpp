@@ -1,101 +1,122 @@
-#include "DeviceInformationService.h"
+#include "DfuService.h"
 
 using namespace Pinetime::Controllers;
 
-constexpr ble_uuid16_t DeviceInformationService::manufacturerNameUuid;
-constexpr ble_uuid16_t DeviceInformationService::modelNumberUuid;
-constexpr ble_uuid16_t DeviceInformationService::serialNumberUuid;
-constexpr ble_uuid16_t DeviceInformationService::fwRevisionUuid;
-constexpr ble_uuid16_t DeviceInformationService::deviceInfoUuid;
-constexpr ble_uuid16_t DeviceInformationService::hwRevisionUuid;
+constexpr ble_uuid128_t DfuService::serviceUuid;
+constexpr ble_uuid128_t DfuService::controlPointCharacteristicUuid;
+constexpr ble_uuid128_t DfuService::revisionCharacteristicUuid;
+constexpr ble_uuid128_t DfuService::packetCharacteristicUuid;
 
-int DeviceInformationCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
-  auto deviceInformationService = static_cast<DeviceInformationService*>(arg);
-  return deviceInformationService->OnDeviceInfoRequested(conn_handle, attr_handle, ctxt);
+int DfuServiceCallback(uint16_t conn_handle, uint16_t attr_handle,
+                       struct ble_gatt_access_ctxt *ctxt, void *arg) {
+  auto dfuService = static_cast<DfuService*>(arg);
+  return dfuService->OnServiceData(conn_handle, attr_handle, ctxt);
 }
 
-void DeviceInformationService::Init() {
-  ble_gatts_count_cfg(serviceDefinition);
-  ble_gatts_add_svcs(serviceDefinition);
-}
-
-
-int DeviceInformationService::OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle,
-                                                    struct ble_gatt_access_ctxt *ctxt) {
-  const char *str;
-
-  switch (ble_uuid_u16(ctxt->chr->uuid)) {
-    case manufacturerNameId:
-      str = manufacturerName;
-      break;
-    case modelNumberId:
-      str = modelNumber;
-      break;
-    case serialNumberId:
-      str = serialNumber;
-      break;
-    case fwRevisionId:
-      str = fwRevision;
-      break;
-    case hwRevisionId:
-      str = hwRevision;
-      break;
-    default:
-      return BLE_ATT_ERR_UNLIKELY;
-  }
-
-  int res = os_mbuf_append(ctxt->om, str, strlen(str));
-  return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
-}
-
-DeviceInformationService::DeviceInformationService() :
+DfuService::DfuService() :
         characteristicDefinition{
                 {
-                        .uuid = (ble_uuid_t *) &manufacturerNameUuid,
-                        .access_cb = DeviceInformationCallback,
+                        .uuid = (ble_uuid_t *) &packetCharacteristicUuid,
+                        .access_cb = DfuServiceCallback,
                         .arg = this,
-                        .flags = BLE_GATT_CHR_F_READ,
+                        .flags = BLE_GATT_CHR_F_WRITE_NO_RSP,
+                        .val_handle = nullptr,
                 },
                 {
-                        .uuid = (ble_uuid_t *) &modelNumberUuid,
-                        .access_cb = DeviceInformationCallback,
+                        .uuid = (ble_uuid_t *) &controlPointCharacteristicUuid,
+                        .access_cb = DfuServiceCallback,
                         .arg = this,
-                        .flags = BLE_GATT_CHR_F_READ,
+                        .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_NOTIFY,
+                        .val_handle = nullptr,
                 },
                 {
-                        .uuid = (ble_uuid_t *) &serialNumberUuid,
-                        .access_cb = DeviceInformationCallback,
+                        .uuid = (ble_uuid_t *) &revisionCharacteristicUuid,
+                        .access_cb = DfuServiceCallback,
                         .arg = this,
                         .flags = BLE_GATT_CHR_F_READ,
-                },
-                {
-                        .uuid = (ble_uuid_t *) &fwRevisionUuid,
-                        .access_cb = DeviceInformationCallback,
-                        .arg = this,
-                        .flags = BLE_GATT_CHR_F_READ,
-                },
-                {
-                        .uuid = (ble_uuid_t *) &hwRevisionUuid,
-                        .access_cb = DeviceInformationCallback,
-                        .arg = this,
-                        .flags = BLE_GATT_CHR_F_READ,
+                        .val_handle = &revision,
+
                 },
                 {
                   0
                 }
+
         },
-        serviceDefinition{
+        serviceDefinition {
                 {
                         /* Device Information Service */
                         .type = BLE_GATT_SVC_TYPE_PRIMARY,
-                        .uuid = (ble_uuid_t *) &deviceInfoUuid,
+                        .uuid = (ble_uuid_t *) &serviceUuid,
                         .characteristics = characteristicDefinition
                 },
                 {
                         0
                 },
         }
-         {
+
+        {
 
 }
 
+void DfuService::Init() {
+  ble_gatts_count_cfg(serviceDefinition);
+  ble_gatts_add_svcs(serviceDefinition);
+
+
+}
+
+int DfuService::OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context) {
+
+  ble_gatts_find_chr((ble_uuid_t*)&serviceUuid, (ble_uuid_t*)&packetCharacteristicUuid, nullptr, &packetCharacteristicHandle);
+  ble_gatts_find_chr((ble_uuid_t*)&serviceUuid, (ble_uuid_t*)&controlPointCharacteristicUuid, nullptr, &controlPointCharacteristicHandle);
+  ble_gatts_find_chr((ble_uuid_t*)&serviceUuid, (ble_uuid_t*)&revisionCharacteristicUuid, nullptr, &revisionCharacteristicHandle);
+
+  /*     *     o  BLE_GATT_ACCESS_OP_READ_CHR
+     *     o  BLE_GATT_ACCESS_OP_WRITE_CHR
+     *     o  BLE_GATT_ACCESS_OP_READ_DSC
+     *     o  BLE_GATT_ACCESS_OP_WRITE_DSC
+     *     */
+
+  char* op;
+  switch(context->op) {
+    case BLE_GATT_ACCESS_OP_READ_CHR: op = "Read Characteristic"; break;
+    case BLE_GATT_ACCESS_OP_WRITE_CHR: op = "Write Characteristic"; break;
+    case BLE_GATT_ACCESS_OP_READ_DSC: op = "Read Descriptor"; break;
+    case BLE_GATT_ACCESS_OP_WRITE_DSC: op = "Write Descriptor"; break;
+  }
+
+  if(attributeHandle == packetCharacteristicHandle) {
+    NRF_LOG_INFO("[DFU] Packet Characteristic : %d - %s", attributeHandle, op);
+    if(context->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
+      NRF_LOG_INFO("[DFU] -> Write  %dB", context->om->om_len);
+      uint8_t data[3] {16, 1, 1};
+      auto* om = ble_hs_mbuf_from_flat(data, 3);
+      ble_gattc_notify_custom(connectionHandle, controlPointCharacteristicHandle, om);
+    }
+  } else if (attributeHandle == controlPointCharacteristicHandle) {
+    NRF_LOG_INFO("[DFU] ControlPoint Characteristic : %d - %s", attributeHandle, op);
+    if(context->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
+      NRF_LOG_INFO("[DFU] -> Write  %dB", context->om->om_len);
+      switch(context->om->om_data[0]) {
+        case 0x01: {// START DFU
+          NRF_LOG_INFO("[DFU] -> Start DFU, mode = %d", context->om->om_data[1]);
+
+        }
+
+          break;
+      }
+
+    }
+
+  } else if(attributeHandle == revisionCharacteristicHandle) {
+    NRF_LOG_INFO("[DFU] Revision Characteristic : %d - %s", attributeHandle, op);
+    if(context->op == BLE_GATT_ACCESS_OP_READ_CHR) {
+      int res = os_mbuf_append(context->om, &revision, 2);
+      return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+    }
+  } else {
+      NRF_LOG_INFO("[DFU] Unknown Characteristic : %d - %s", attributeHandle, op);
+  }
+
+  return 0;
+}
