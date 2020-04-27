@@ -7,7 +7,6 @@
 #include <softdevice/common/nrf_sdh.h>
 #include <hal/nrf_rtc.h>
 #include <timers.h>
-//#include <ble/ble_services/ble_cts_c/ble_cts_c.h>
 #include <Components/DateTime/DateTimeController.h>
 #include "Components/Battery/BatteryController.h"
 #include "Components/Ble/BleController.h"
@@ -89,34 +88,6 @@ void DebounceTimerCallback(TimerHandle_t xTimer) {
   xTimerStop(xTimer, 0);
   systemTask->OnButtonPushed();
 }
-
-void OnBleConnection() {
-  bleController.Connect();
-}
-
-void OnBleDisconnection() {
-  bleController.Disconnect();
-}
-
-void OnNewNotification(const char* message, uint8_t size) {
-  notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, message, size);
-  systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
-}
-
-//void OnNewTime(current_time_char_t* currentTime) {
-//  auto dayOfWeek = currentTime->exact_time_256.day_date_time.day_of_week;
-//  auto year = currentTime->exact_time_256.day_date_time.date_time.year;
-//  auto month = currentTime->exact_time_256.day_date_time.date_time.month;
-//  auto day = currentTime->exact_time_256.day_date_time.date_time.day;
-//  auto hour = currentTime->exact_time_256.day_date_time.date_time.hours;
-//  auto minute = currentTime->exact_time_256.day_date_time.date_time.minutes;
-//  auto second = currentTime->exact_time_256.day_date_time.date_time.seconds;
-//
-//  dateTimeController.SetTime(year, month, day,
-//                             dayOfWeek, hour, minute, second, nrf_rtc_counter_get(portNRF_RTC_REG));
-//
-//  systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnNewTime);
-//}
 
 void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
   if(((NRF_SPIM0->INTENSET & (1<<6)) != 0) && NRF_SPIM0->EVENTS_END == 1) {
@@ -218,8 +189,6 @@ void nimble_port_init(void) {
   ble_ll_init();
   ble_hci_ram_init();
   nimble_port_freertos_init(BleHost);
-
-
 }
 
 void nimble_port_ll_task_func(void *args) {
@@ -238,15 +207,7 @@ int main(void) {
   systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, touchPanel, lvgl, batteryController, bleController,
                                                     dateTimeController, notificationManager));
   systemTask->Start();
-
   nimble_port_init();
-
-
-//  ble_manager_init();
-//  ble_manager_set_new_time_callback(OnNewTime);
-//  ble_manager_set_ble_connection_callback(OnBleConnection);
-//  ble_manager_set_ble_disconnection_callback(OnBleDisconnection);
-//  ble_manager_set_new_notification_callback(OnNewNotification);
 
   vTaskStartScheduler();
 

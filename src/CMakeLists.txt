@@ -357,7 +357,6 @@ set(INCLUDE_FILES
   drivers/SpiMaster.h
   drivers/Watchdog.h
   drivers/DebugPins.h
-  BLE/BleManager.h
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
   Components/Ble/NotificationManager.h

@@ -22,9 +22,11 @@ using namespace Pinetime::Controllers;
 // Let's try to improve this code (and keep it working!)
 
 NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
+                                   Pinetime::Controllers::Ble& bleController,
         DateTime& dateTimeController,
         Pinetime::Controllers::NotificationManager& notificationManager) :
         systemTask{systemTask},
+        bleController{bleController},
         dateTimeController{dateTimeController},
         notificationManager{notificationManager},
         currentTimeClient{dateTimeController},
@@ -149,7 +151,9 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
       if (event->connect.status != 0) {
         /* Connection failed; resume advertising. */
         StartAdvertising();
+        bleController.Disconnect();
       } else {
+        bleController.Connect();
         connectionHandle = event->connect.conn_handle;
         ble_gattc_disc_all_svcs(connectionHandle, OnAllSvrDisco, this);
       }
@@ -160,6 +164,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
       NRF_LOG_INFO("disconnect; reason=%d ", event->disconnect.reason);
 
       /* Connection terminated; resume advertising. */
+      bleController.Disconnect();
       StartAdvertising();
       break;
     case BLE_GAP_EVENT_CONN_UPDATE:

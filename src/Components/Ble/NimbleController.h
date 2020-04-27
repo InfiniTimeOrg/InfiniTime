@@ -12,7 +12,7 @@ namespace Pinetime {
     class NimbleController {
 
       public:
-        NimbleController(Pinetime::System::SystemTask& systemTask, DateTime& dateTimeController, Pinetime::Controllers::NotificationManager& notificationManager);
+        NimbleController(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController, DateTime& dateTimeController, Pinetime::Controllers::NotificationManager& notificationManager);
         void Init();
         void StartAdvertising();
         int OnGAPEvent(ble_gap_event *event);
@@ -28,6 +28,7 @@ namespace Pinetime {
       private:
         static constexpr char* deviceName = "Pinetime-JF";
         Pinetime::System::SystemTask& systemTask;
+        Pinetime::Controllers::Ble& bleController;
         DateTime& dateTimeController;
         Pinetime::Controllers::NotificationManager& notificationManager;
 
