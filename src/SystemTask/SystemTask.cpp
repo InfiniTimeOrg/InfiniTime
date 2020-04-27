@@ -38,8 +38,8 @@ void SystemTask::Process(void *instance) {
 }
 
 void SystemTask::Work() {
-//  watchdog.Setup(7);
-//  watchdog.Start();
+  watchdog.Setup(7);
+  watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
 
