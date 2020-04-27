@@ -9,7 +9,6 @@
 #include <timers.h>
 //#include <ble/ble_services/ble_cts_c/ble_cts_c.h>
 #include <Components/DateTime/DateTimeController.h>
-#include "BLE/BleManager.h"
 #include "Components/Battery/BatteryController.h"
 #include "Components/Ble/BleController.h"
 #include <drivers/St7789.h>
