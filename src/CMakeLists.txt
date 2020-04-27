@@ -310,7 +310,6 @@ list(APPEND SOURCE_FILES
   drivers/SpiMaster.cpp
   drivers/Watchdog.cpp
   drivers/DebugPins.cpp
-  BLE/BleManager.c
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
   Components/Ble/NotificationManager.cpp

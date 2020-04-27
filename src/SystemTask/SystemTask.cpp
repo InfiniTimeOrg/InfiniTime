@@ -3,7 +3,6 @@
 #include <drivers/Cst816s.h>
 #include <DisplayApp/LittleVgl.h>
 #include <hal/nrf_rtc.h>
-#include <BLE/BleManager.h>
 #include <Components/Ble/NotificationManager.h>
 #include <host/ble_gatt.h>
 #include <host/ble_hs_adv.h>
