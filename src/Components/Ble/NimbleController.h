@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include "AlertNotificationService.h"
 #include "AlertNotificationClient.h"
 #include "DeviceInformationService.h"
 #include "CurrentTimeClient.h"
@@ -35,8 +36,10 @@ namespace Pinetime {
 
         DeviceInformationService deviceInformationService;
         CurrentTimeClient currentTimeClient;
+        AlertNotificationService anService;
         AlertNotificationClient alertNotificationClient;
         PinetimeService pinetimeService;
+
         uint8_t addrType;
         uint16_t connectionHandle;
     };

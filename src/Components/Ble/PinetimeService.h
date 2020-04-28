@@ -8,7 +8,7 @@ namespace Pinetime {
   namespace Controllers {
     class PinetimeService {
       public:
-        PinetimeService();
+        PinetimeService(DateTime &dateTimeController);
         void Init();
 
         int OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handle,
@@ -44,7 +44,7 @@ namespace Pinetime {
           uint8_t reason;
         } CtsData;
 
-        DateTime *m_dateTimeController = nullptr;
+        DateTime &m_dateTimeController;
     };
   }
 }
