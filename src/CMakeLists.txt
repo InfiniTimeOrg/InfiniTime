@@ -319,6 +319,7 @@ list(APPEND SOURCE_FILES
   Components/Ble/DeviceInformationService.cpp
   Components/Ble/CurrentTimeClient.cpp
   Components/Ble/AlertNotificationClient.cpp
+  Components/Ble/PinetimeService.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
