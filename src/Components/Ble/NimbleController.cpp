@@ -74,6 +74,9 @@ void NimbleController::Init() {
 
   deviceInformationService.Init();
   currentTimeClient.Init();
+  pinetimeService.Init();
+  pinetimeService.setDateTimeController(&dateTimeController);
+
   int res;
   res = ble_hs_util_ensure_addr(0);
   res = ble_hs_id_infer_auto(0, &addrType);
