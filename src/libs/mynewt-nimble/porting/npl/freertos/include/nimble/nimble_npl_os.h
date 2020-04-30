@@ -282,8 +282,8 @@ static inline uint32_t
 ble_npl_hw_enter_critical(void)
 {
     //vPortEnterCritical();
-  npl_freertos_hw_enter_critical();
-    return 0;
+
+  return npl_freertos_hw_enter_critical();
 }
 
 static inline void
