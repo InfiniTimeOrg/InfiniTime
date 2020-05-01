@@ -42,10 +42,6 @@ bool AlertNotificationClient::OnDiscoveryEvent(uint16_t connectionHandle, const 
   return false;
 }
 
-void AlertNotificationClient::Init() {
-
-}
-
 int AlertNotificationClient::OnCharacteristicsDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error *error,
                                                                                     const ble_gatt_chr *characteristic) {
   if(error->status != 0 && error->status != BLE_HS_EDONE) {

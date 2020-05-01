@@ -100,9 +100,25 @@ void SystemTask::Work() {
         case Messages::OnNewNotification:
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewNotification);
           break;
+        case Messages::BleConnected:
+          isBleDiscoveryTimerRunning = true;
+          bleDiscoveryTimer = 5;
+          break;
         default: break;
       }
     }
+
+    if(isBleDiscoveryTimerRunning) {
+      if(bleDiscoveryTimer == 0) {
+        isBleDiscoveryTimerRunning = false;
+        // Services discovery is deffered from 3 seconds to avoid the conflicts between the host communicating with the
+        // tharget and vice-versa. I'm not sure if this is the right way to handle this...
+        nimbleController.StartDiscovery();
+      } else {
+        bleDiscoveryTimer--;
+      }
+    }
+
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);
     batteryController.Update();

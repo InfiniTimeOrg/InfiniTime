@@ -73,7 +73,6 @@ void NimbleController::Init() {
   ble_svc_gatt_init();
 
   deviceInformationService.Init();
-//  currentTimeClient.Init();
   dfuService.Init();
   int res;
   res = ble_hs_util_ensure_addr(0);
@@ -156,8 +155,9 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
         bleController.Disconnect();
       } else {
         bleController.Connect();
+        systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleConnected);
         connectionHandle = event->connect.conn_handle;
-//        ble_gattc_disc_all_svcs(connectionHandle, OnAllSvrDisco, this);
+        // Service discovery is deffered via systemtask
       }
     }
       break;
@@ -166,6 +166,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
       NRF_LOG_INFO("disconnect; reason=%d ", event->disconnect.reason);
 
       /* Connection terminated; resume advertising. */
+      connectionHandle = BLE_HS_CONN_HANDLE_NONE;
       bleController.Disconnect();
       StartAdvertising();
       break;
@@ -248,7 +249,6 @@ int NimbleController::OnDiscoveryEvent(uint16_t i, const ble_gatt_error *error, 
       ble_gattc_disc_all_chrs(connectionHandle, alertNotificationClient.StartHandle(), alertNotificationClient.EndHandle(),
                               AlertNotificationCharacteristicDiscoveredCallback, this);
     }
-    return 0;
   }
 
   alertNotificationClient.OnDiscoveryEvent(i, error, service);
@@ -293,6 +293,10 @@ int NimbleController::OnANSDescriptorDiscoveryEventCallback(uint16_t connectionH
                                                             uint16_t characteristicValueHandle,
                                                             const ble_gatt_dsc *descriptor) {
   return alertNotificationClient.OnDescriptorDiscoveryEventCallback(connectionHandle, error, characteristicValueHandle, descriptor);
+}
+
+void NimbleController::StartDiscovery() {
+  ble_gattc_disc_all_svcs(connectionHandle, OnAllSvrDisco, this);
 }
 
 

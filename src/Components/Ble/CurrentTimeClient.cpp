@@ -10,10 +10,6 @@ CurrentTimeClient::CurrentTimeClient(DateTime& dateTimeController) : dateTimeCon
 
 }
 
-void CurrentTimeClient::Init() {
-
-}
-
 bool CurrentTimeClient::OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error *error, const ble_gatt_svc *service) {
   if(service == nullptr && error->status == BLE_HS_EDONE) {
     NRF_LOG_INFO("CTS Discovery complete");

@@ -26,6 +26,8 @@ namespace Pinetime {
         int OnCurrentTimeReadResult(uint16_t connectionHandle, const ble_gatt_error *error, ble_gatt_attr *attribute);
         int OnANSDescriptorDiscoveryEventCallback(uint16_t connectionHandle, const ble_gatt_error *error,
                                                   uint16_t characteristicValueHandle, const ble_gatt_dsc *descriptor);
+
+        void StartDiscovery();
       private:
         static constexpr char* deviceName = "Pinetime-JF";
         Pinetime::System::SystemTask& systemTask;

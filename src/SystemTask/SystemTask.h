@@ -14,7 +14,7 @@ namespace Pinetime {
   namespace System {
     class SystemTask {
       public:
-        enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification
+        enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification, BleConnected
         };
 
         SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd, Drivers::Cst816S &touchPanel,
@@ -58,7 +58,8 @@ namespace Pinetime {
 
         static void Process(void* instance);
         void Work();
-
+        bool isBleDiscoveryTimerRunning = false;
+        uint8_t bleDiscoveryTimer = 0;
 
     };
   }
