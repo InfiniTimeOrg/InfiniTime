@@ -61,8 +61,6 @@ DfuService::DfuService() :
 void DfuService::Init() {
   ble_gatts_count_cfg(serviceDefinition);
   ble_gatts_add_svcs(serviceDefinition);
-
-
 }
 
 int DfuService::OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context) {
@@ -71,112 +69,137 @@ int DfuService::OnServiceData(uint16_t connectionHandle, uint16_t attributeHandl
   ble_gatts_find_chr((ble_uuid_t*)&serviceUuid, (ble_uuid_t*)&controlPointCharacteristicUuid, nullptr, &controlPointCharacteristicHandle);
   ble_gatts_find_chr((ble_uuid_t*)&serviceUuid, (ble_uuid_t*)&revisionCharacteristicUuid, nullptr, &revisionCharacteristicHandle);
 
-  /*     *     o  BLE_GATT_ACCESS_OP_READ_CHR
-     *     o  BLE_GATT_ACCESS_OP_WRITE_CHR
-     *     o  BLE_GATT_ACCESS_OP_READ_DSC
-     *     o  BLE_GATT_ACCESS_OP_WRITE_DSC
-     *     */
-
-  char* op;
-  switch(context->op) {
-    case BLE_GATT_ACCESS_OP_READ_CHR: op = "Read Characteristic"; break;
-    case BLE_GATT_ACCESS_OP_WRITE_CHR: op = "Write Characteristic"; break;
-    case BLE_GATT_ACCESS_OP_READ_DSC: op = "Read Descriptor"; break;
-    case BLE_GATT_ACCESS_OP_WRITE_DSC: op = "Write Descriptor"; break;
-  }
-
   if(attributeHandle == packetCharacteristicHandle) {
-    NRF_LOG_INFO("[DFU] %s Packet", op);
-    if(context->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
-//      NRF_LOG_INFO("[DFU] -> Write  %dB", context->om->om_len);
-      if(opcode == 1) {
-        uint8_t data[3]{16, opcode, param};
-        NRF_LOG_INFO("[DFU] -> Send notification: {%d, %d, %d}", data[0], data[1], data[2]);
-
-        auto *om = ble_hs_mbuf_from_flat(data, 3);
-        ble_gattc_notify_custom(connectionHandle, controlPointCharacteristicHandle, om);
-      }
-      if(dataMode){
-        nbPacketReceived++;
-        bytesReceived += context->om->om_len;
-        NRF_LOG_INFO("[DFU] -> Bytes received : %d in %d packets", bytesReceived, nbPacketReceived);
-
-        if((nbPacketReceived % nbPacketsToNotify) == 0) {
-          uint8_t data[5]{17, (uint8_t)(bytesReceived>>24),(uint8_t)(bytesReceived>>16), (uint8_t)(bytesReceived>>8), (uint8_t)(bytesReceived&0x000000FF) };
-          NRF_LOG_INFO("[DFU] -> Send packet notification: %d bytes received",bytesReceived);
-
-          auto *om = ble_hs_mbuf_from_flat(data, 5);
-          ble_gattc_notify_custom(connectionHandle, controlPointCharacteristicHandle, om);
-        }
-        if(bytesReceived == 175280) {
-          uint8_t data[3]{16, 3, 1};
-          NRF_LOG_INFO("[DFU] -> Send packet notification : all bytes received!");
-
-          auto *om = ble_hs_mbuf_from_flat(data, 3);
-          ble_gattc_notify_custom(connectionHandle, controlPointCharacteristicHandle, om);
-        }
-      }
-
-    }
-  } else if (attributeHandle == controlPointCharacteristicHandle) {
-    NRF_LOG_INFO("[DFU] %s ControlPoint", op);
-    if(context->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
-//      NRF_LOG_INFO("[DFU] -> Write  %dB {%d, %d}", context->om->om_len, context->om->om_data[0], context->om->om_data[1]);
-      switch(context->om->om_data[0]) {
-        case 0x01: {// START DFU
-          NRF_LOG_INFO("[DFU] -> Start DFU, mode = %d", context->om->om_data[1]);
-          opcode = 0x01;
-          param = 1;
-        }
-          break;
-        case 0x02:
-          NRF_LOG_INFO("[DFU] -> Receive init, state (0=RX, 1=Complete) = %d", context->om->om_data[1]);
-          opcode = 0x02;
-          param = context->om->om_data[1];
-          if(param == 1) {
-            uint8_t data[3] {16, opcode, param};
-            NRF_LOG_INFO("[DFU] -> Send notification: {%d, %d, %d}", data[0], data[1], data[2]);
-
-            auto *om = ble_hs_mbuf_from_flat(data, 3);
-
-            ble_gattc_notify_custom(connectionHandle, controlPointCharacteristicHandle, om);
-          }
-          break;
-        case 0x08:
-          nbPacketsToNotify = context->om->om_data[1];
-          NRF_LOG_INFO("[DFU] -> Receive Packet Notification Request, nb packet = %d", nbPacketsToNotify);
-          break;
-        case 0x03:
-          NRF_LOG_INFO("[DFU] -> Starting receive firmware");
-          dataMode = true;
-          break;
-        case 0x04: {
-          NRF_LOG_INFO("[DFU] -> Validate firmware");
-          uint8_t data[3]{16, 4, 1};
-          NRF_LOG_INFO("[DFU] -> Send notification: {%d, %d, %d}", data[0], data[1], data[2]);
-
-          auto *om = ble_hs_mbuf_from_flat(data, 3);
-
-          ble_gattc_notify_custom(connectionHandle, controlPointCharacteristicHandle, om);
-        }
-          break;
-        case 0x05:
-          NRF_LOG_INFO("[DFU] -> Activate image and reset!");
-          break;
-      }
-
-
-    }
-
+    if(context->op == BLE_GATT_ACCESS_OP_WRITE_CHR)
+      return WritePacketHandler(connectionHandle, context->om);
+    else return 0;
+  } else if(attributeHandle == controlPointCharacteristicHandle) {
+    if(context->op == BLE_GATT_ACCESS_OP_WRITE_CHR)
+        return ControlPointHandler(connectionHandle, context->om);
+    else return 0;
   } else if(attributeHandle == revisionCharacteristicHandle) {
-    NRF_LOG_INFO("[DFU] %s Revision", op);
-    if(context->op == BLE_GATT_ACCESS_OP_READ_CHR) {
-      int res = os_mbuf_append(context->om, &revision, 2);
-      return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
-    }
+    if(context->op == BLE_GATT_ACCESS_OP_READ_CHR)
+      return SendDfuRevision(context->om);
+    else return 0;
   } else {
-      NRF_LOG_INFO("[DFU] Unknown Characteristic : %d - %s", attributeHandle, op);
+    NRF_LOG_INFO("[DFU] Unknown Characteristic : %d", attributeHandle);
+    return 0;
   }
+}
 
+int DfuService::SendDfuRevision(os_mbuf *om) const {
+  int res = os_mbuf_append(om, &revision, sizeof(revision));
+  return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+}
+
+int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
+  switch(state) {
+    case States::Start: {
+      uint8_t data[] {16, 1, 1};
+      SendNotification(connectionHandle, data, 3);
+    }
+      return 0;
+    case States::Data: {
+      nbPacketReceived++;
+      bytesReceived += om->om_len;
+      NRF_LOG_INFO("[DFU] -> Bytes received : %d in %d packets", bytesReceived, nbPacketReceived);
+
+      if((nbPacketReceived % nbPacketsToNotify) == 0) {
+        uint8_t data[5]{static_cast<uint8_t>(Opcodes::PacketReceiptNotification),
+                        (uint8_t)(bytesReceived>>24u),(uint8_t)(bytesReceived>>16u), (uint8_t)(bytesReceived>>8u), (uint8_t)(bytesReceived&0x000000FFu) };
+        NRF_LOG_INFO("[DFU] -> Send packet notification: %d bytes received",bytesReceived);
+        SendNotification(connectionHandle, data, 5);
+      }
+      if(bytesReceived == 175280) {
+        uint8_t data[3]{static_cast<uint8_t>(Opcodes::Response),
+                        static_cast<uint8_t>(Opcodes::ReceiveFirmwareImage),
+                        static_cast<uint8_t>(ErrorCodes::NoError)};
+        NRF_LOG_INFO("[DFU] -> Send packet notification : all bytes received!");
+        SendNotification(connectionHandle, data, 3);
+        state = States::Validate;
+      }
+    }
+      return 0;
+    default:
+      // Invalid state
+      return 0;
+  }
   return 0;
+}
+
+int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
+  auto opcode = static_cast<Opcodes>(om->om_data[0]);
+  switch(opcode) {
+    case Opcodes::StartDFU: {
+      if(state != States::Idle) {
+        NRF_LOG_INFO("[DFU] -> Start DFU requested, but we are not in Idle state");
+        return 0;
+      }
+      auto imageType = static_cast<ImageTypes>(om->om_data[1]);
+      if(imageType == ImageTypes::Application) {
+        NRF_LOG_INFO("[DFU] -> Start DFU, mode = Application");
+        state = States::Start;
+        return 0;
+      } else {
+        NRF_LOG_INFO("[DFU] -> Start DFU, mode %d not supported!", imageType);
+        return 0;
+      }
+    }
+      break;
+    case Opcodes::InitDFUParameters: {
+      if (state != States::Start) {
+        NRF_LOG_INFO("[DFU] -> Init DFU requested, but we are not in Start state");
+        return 0;
+      }
+      bool isInitComplete = (om->om_data[1] != 0);
+      NRF_LOG_INFO("[DFU] -> Init DFU parameters %s", isInitComplete ? " complete" : " not complete");
+
+      if (isInitComplete) {
+        uint8_t data[3]{static_cast<uint8_t>(Opcodes::Response),
+                        static_cast<uint8_t>(Opcodes::InitDFUParameters),
+                        (isInitComplete ? uint8_t{1} : uint8_t{0})};
+        SendNotification(connectionHandle, data, 3);
+        return 0;
+      }
+    }
+      return 0;
+    case Opcodes::PacketReceiptNotificationRequest:
+      nbPacketsToNotify = om->om_data[1];
+      NRF_LOG_INFO("[DFU] -> Receive Packet Notification Request, nb packet = %d", nbPacketsToNotify);
+      return 0;
+    case Opcodes::ReceiveFirmwareImage:
+      if(state != States::Start) {
+        NRF_LOG_INFO("[DFU] -> Receive firmware image requested, but we are not in Start state");
+        return 0;
+      }
+      NRF_LOG_INFO("[DFU] -> Starting receive firmware");
+      state = States::Data;
+      return 0;
+    case Opcodes::ValidateFirmware: {
+      if(state != States::Validate) {
+        NRF_LOG_INFO("[DFU] -> Validate firmware image requested, but we are not in Data state");
+        return 0;
+      }
+      NRF_LOG_INFO("[DFU] -> Validate firmware");
+      state = States::Validated;
+      uint8_t data[3]{static_cast<uint8_t>(Opcodes::Response),
+                      static_cast<uint8_t>(Opcodes::ValidateFirmware),
+                      static_cast<uint8_t>(ErrorCodes::NoError)};
+      SendNotification(connectionHandle, data, 3);
+      return 0;
+    }
+    case Opcodes::ActivateImageAndReset:
+      if(state != States::Validated) {
+        NRF_LOG_INFO("[DFU] -> Activate image and reset requested, but we are not in Validated state");
+        return 0;
+      }
+      NRF_LOG_INFO("[DFU] -> Activate image and reset!");
+      return 0;
+    default: return 0;
+  }
+}
+
+void DfuService::SendNotification(uint16_t connectionHandle, const uint8_t *data, const size_t size) {
+  auto *om = ble_hs_mbuf_from_flat(data, size);
+  ble_gattc_notify_custom(connectionHandle, controlPointCharacteristicHandle, om);
 }
