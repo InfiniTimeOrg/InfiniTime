@@ -231,7 +231,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
       /* Attribute data is contained in event->notify_rx.attr_data. */
 
     default:
-      NRF_LOG_INFO("Advertising event : %d", event->type);
+//      NRF_LOG_INFO("Advertising event : %d", event->type);
       break;
   }
   return 0;

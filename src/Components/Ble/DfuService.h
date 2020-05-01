@@ -51,6 +51,12 @@ namespace Pinetime {
         uint16_t packetCharacteristicHandle;
         uint16_t controlPointCharacteristicHandle;
         uint16_t revisionCharacteristicHandle;
+        uint8_t opcode = 0;
+        uint8_t param = 0;
+        uint8_t nbPacketsToNotify = 0;
+        uint32_t nbPacketReceived = 0;
+        bool dataMode = false;
+        uint32_t bytesReceived = 0;
     };
   }
 }
