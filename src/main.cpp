@@ -184,8 +184,11 @@ void nimble_port_init(void) {
   ble_hs_init();
   ble_store_ram_init();
 
-  hal_timer_init(5, NULL);
-  os_cputime_init(32768);
+  int res;
+  res = hal_timer_init(5, NULL);
+  ASSERT(res == 0);
+  res = os_cputime_init(32768);
+  ASSERT(res == 0);
   ble_ll_init();
   ble_hci_ram_init();
   nimble_port_freertos_init(BleHost);

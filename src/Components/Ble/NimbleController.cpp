@@ -77,9 +77,14 @@ void NimbleController::Init() {
   dfuService.Init();
   int res;
   res = ble_hs_util_ensure_addr(0);
+  ASSERT(res == 0);
   res = ble_hs_id_infer_auto(0, &addrType);
+  ASSERT(res == 0);
   res = ble_svc_gap_device_name_set(deviceName);
-  ble_gatts_start();
+
+  ASSERT(res == 0);
+  res = ble_gatts_start();
+  ASSERT(res == 0);
 }
 
 void NimbleController::StartAdvertising() {
@@ -117,14 +122,14 @@ void NimbleController::StartAdvertising() {
 
   int res;
   res = ble_gap_adv_set_fields(&fields);
-  assert(res == 0);
+  ASSERT(res == 0);
 
-  ble_gap_adv_rsp_set_fields(&rsp_fields);
+  res = ble_gap_adv_rsp_set_fields(&rsp_fields);
+  ASSERT(res == 0);
 
-  ble_gap_adv_start(addrType, NULL, 10000,
+  res = ble_gap_adv_start(addrType, NULL, 10000,
                           &adv_params, GAPEventCallback, this);
-
-
+  ASSERT(res == 0);
 }
 
 int OnAllSvrDisco(uint16_t conn_handle,
@@ -140,7 +145,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
   switch (event->type) {
     case BLE_GAP_EVENT_ADV_COMPLETE:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_ADV_COMPLETE");
-      NRF_LOG_INFO("advertise complete; reason=%d", event->adv_complete.reason);
+      NRF_LOG_INFO("advertise complete; reason=%dn status=%d", event->adv_complete.reason, event->connect.status);
       StartAdvertising();
       break;
     case BLE_GAP_EVENT_CONNECT: {
@@ -164,7 +169,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
       break;
     case BLE_GAP_EVENT_DISCONNECT:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_DISCONNECT");
-      NRF_LOG_INFO("disconnect; reason=%d ", event->disconnect.reason);
+      NRF_LOG_INFO("disconnect; reason=%d", event->disconnect.reason);
 
       /* Connection terminated; resume advertising. */
       connectionHandle = BLE_HS_CONN_HANDLE_NONE;
