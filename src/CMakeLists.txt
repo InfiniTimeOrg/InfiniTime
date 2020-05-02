@@ -305,6 +305,7 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/Brightness.cpp
   DisplayApp/Screens/ScreenList.cpp
   DisplayApp/Screens/Label.cpp
+  DisplayApp/Screens/FirmwareUpdate.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiMaster.cpp
@@ -354,6 +355,7 @@ set(INCLUDE_FILES
   DisplayApp/Screens/Brightness.h
   DisplayApp/Screens/ScreenList.h
   DisplayApp/Screens/Label.h
+  DisplayApp/Screens/FirmwareUpdate.h
   drivers/St7789.h
   drivers/SpiMaster.h
   drivers/Watchdog.h

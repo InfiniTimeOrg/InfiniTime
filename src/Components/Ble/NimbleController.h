@@ -34,7 +34,7 @@ namespace Pinetime {
         Pinetime::Controllers::Ble& bleController;
         DateTime& dateTimeController;
         Pinetime::Controllers::NotificationManager& notificationManager;
-        DfuService dfuService;
+        Pinetime::Controllers::DfuService dfuService;
 
         DeviceInformationService deviceInformationService;
         CurrentTimeClient currentTimeClient;

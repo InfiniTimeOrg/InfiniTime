@@ -1,3 +1,5 @@
+#include <Components/Ble/BleController.h>
+#include <SystemTask/SystemTask.h>
 #include "DfuService.h"
 
 using namespace Pinetime::Controllers;
@@ -13,7 +15,9 @@ int DfuServiceCallback(uint16_t conn_handle, uint16_t attr_handle,
   return dfuService->OnServiceData(conn_handle, attr_handle, ctxt);
 }
 
-DfuService::DfuService() :
+DfuService::DfuService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController) :
+        systemTask{systemTask},
+        bleController{bleController},
         characteristicDefinition{
                 {
                         .uuid = (ble_uuid_t *) &packetCharacteristicUuid,
@@ -102,6 +106,7 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
     case States::Data: {
       nbPacketReceived++;
       bytesReceived += om->om_len;
+      bleController.FirmwareUpdateCurrentBytes(bytesReceived);
       NRF_LOG_INFO("[DFU] -> Bytes received : %d in %d packets", bytesReceived, nbPacketReceived);
 
       if((nbPacketReceived % nbPacketsToNotify) == 0) {
@@ -139,6 +144,10 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
       if(imageType == ImageTypes::Application) {
         NRF_LOG_INFO("[DFU] -> Start DFU, mode = Application");
         state = States::Start;
+        bleController.StartFirmwareUpdate();
+        bleController.FirmwareUpdateTotalBytes(175280);
+        bleController.FirmwareUpdateCurrentBytes(0);
+        systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleFirmwareUpdateStarted);
         return 0;
       } else {
         NRF_LOG_INFO("[DFU] -> Start DFU, mode %d not supported!", imageType);
@@ -194,6 +203,8 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
         return 0;
       }
       NRF_LOG_INFO("[DFU] -> Activate image and reset!");
+      bleController.StopFirmwareUpdate();
+      systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleFirmwareUpdateFinished);
       return 0;
     default: return 0;
   }

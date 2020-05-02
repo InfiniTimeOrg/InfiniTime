@@ -29,6 +29,7 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         bleController{bleController},
         dateTimeController{dateTimeController},
         notificationManager{notificationManager},
+        dfuService{systemTask, bleController},
         currentTimeClient{dateTimeController},
         alertNotificationClient{systemTask, notificationManager} {
 

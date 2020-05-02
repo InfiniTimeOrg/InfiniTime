@@ -104,6 +104,12 @@ void SystemTask::Work() {
           isBleDiscoveryTimerRunning = true;
           bleDiscoveryTimer = 5;
           break;
+        case Messages::BleFirmwareUpdateStarted:
+          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::BleFirmwareUpdateStarted);
+          break;
+        case Messages::BleFirmwareUpdateFinished:
+          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::BleFirmwareUpdateFinished);
+          break;
         default: break;
       }
     }

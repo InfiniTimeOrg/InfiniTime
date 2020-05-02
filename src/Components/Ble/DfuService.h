@@ -5,14 +5,21 @@
 #include <host/ble_gap.h>
 
 namespace Pinetime {
+  namespace System {
+    class SystemTask;
+  }
   namespace Controllers {
+    class Ble;
     class DfuService {
       public:
-        DfuService();
+        DfuService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController);
         void Init();
 
         int OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context);
       private:
+        Pinetime::System::SystemTask& systemTask;
+        Pinetime::Controllers::Ble& bleController;
+
         static constexpr uint16_t dfuServiceId {0x1530};
         static constexpr uint16_t packetCharacteristicId {0x1532};
         static constexpr uint16_t controlPointCharacteristicId {0x1531};
