@@ -460,7 +460,7 @@
 
 /* Overridden by @apache-mynewt-nimble/targets/riot (defined by @apache-mynewt-core/kernel/os) */
 #ifndef MYNEWT_VAL_MSYS_1_BLOCK_COUNT
-#define MYNEWT_VAL_MSYS_1_BLOCK_COUNT (5)
+#define MYNEWT_VAL_MSYS_1_BLOCK_COUNT (12)
 #endif
 
 /* Overridden by @apache-mynewt-nimble/targets/riot (defined by @apache-mynewt-core/kernel/os) */
