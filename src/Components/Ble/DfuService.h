@@ -85,6 +85,10 @@ namespace Pinetime {
         uint32_t nbPacketReceived = 0;
         uint32_t bytesReceived = 0;
 
+        uint32_t softdeviceSize = 0;
+        uint32_t bootloaderSize = 0;
+        uint32_t applicationSize = 0;
+
         int SendDfuRevision(os_mbuf *om) const;
         void SendNotification(uint16_t connectionHandle, const uint8_t *data, const size_t size);
         int WritePacketHandler(uint16_t connectionHandle, os_mbuf *om);
