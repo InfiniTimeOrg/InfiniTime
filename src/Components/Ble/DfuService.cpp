@@ -99,8 +99,11 @@ int DfuService::SendDfuRevision(os_mbuf *om) const {
 int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
   switch(state) {
     case States::Start: {
+      NRF_LOG_INFO("[DFU] -> Start data received");
+
       uint8_t data[] {16, 1, 1};
       SendNotification(connectionHandle, data, 3);
+      state = States::Init;
     }
       return 0;
     case States::Data: {
@@ -134,10 +137,16 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
 
 int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
   auto opcode = static_cast<Opcodes>(om->om_data[0]);
+  NRF_LOG_INFO("[DFU] -> ControlPointHandler");
+
   switch(opcode) {
     case Opcodes::StartDFU: {
-      if(state != States::Idle) {
+      if(state != States::Idle && state != States::Start) {
         NRF_LOG_INFO("[DFU] -> Start DFU requested, but we are not in Idle state");
+        return 0;
+      }
+      if(state == States::Start) {
+        NRF_LOG_INFO("[DFU] -> Start DFU requested, but we are already in Start state");
         return 0;
       }
       auto imageType = static_cast<ImageTypes>(om->om_data[1]);
@@ -156,8 +165,8 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
     }
       break;
     case Opcodes::InitDFUParameters: {
-      if (state != States::Start) {
-        NRF_LOG_INFO("[DFU] -> Init DFU requested, but we are not in Start state");
+      if (state != States::Init) {
+        NRF_LOG_INFO("[DFU] -> Init DFU requested, but we are not in Init state");
         return 0;
       }
       bool isInitComplete = (om->om_data[1] != 0);
@@ -167,6 +176,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
         uint8_t data[3]{static_cast<uint8_t>(Opcodes::Response),
                         static_cast<uint8_t>(Opcodes::InitDFUParameters),
                         (isInitComplete ? uint8_t{1} : uint8_t{0})};
+        NRF_LOG_INFO("SEND NOTIF : %d %d %d", data[0], data[1], data[2]);
         SendNotification(connectionHandle, data, 3);
         return 0;
       }
@@ -177,8 +187,8 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
       NRF_LOG_INFO("[DFU] -> Receive Packet Notification Request, nb packet = %d", nbPacketsToNotify);
       return 0;
     case Opcodes::ReceiveFirmwareImage:
-      if(state != States::Start) {
-        NRF_LOG_INFO("[DFU] -> Receive firmware image requested, but we are not in Start state");
+      if(state != States::Init) {
+        NRF_LOG_INFO("[DFU] -> Receive firmware image requested, but we are not in Start Init");
         return 0;
       }
       NRF_LOG_INFO("[DFU] -> Starting receive firmware");
@@ -212,5 +222,6 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
 
 void DfuService::SendNotification(uint16_t connectionHandle, const uint8_t *data, const size_t size) {
   auto *om = ble_hs_mbuf_from_flat(data, size);
-  ble_gattc_notify_custom(connectionHandle, controlPointCharacteristicHandle, om);
+  auto ret = ble_gattc_notify_custom(connectionHandle, controlPointCharacteristicHandle, om);
+  ASSERT(ret == 0);
 }
