@@ -32,7 +32,7 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         currentTimeClient{dateTimeController},
         alertNotificationClient{systemTask, notificationManager},
         anService{systemTask, notificationManager},
-        pinetimeService{dateTimeController} {
+        currentTimeService{dateTimeController} {
 
 }
 
@@ -76,7 +76,7 @@ void NimbleController::Init() {
 
   deviceInformationService.Init();
   currentTimeClient.Init();
-  pinetimeService.Init();
+  currentTimeService.Init();
 
   anService.Init();
 

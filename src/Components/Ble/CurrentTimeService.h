@@ -6,28 +6,26 @@
 
 namespace Pinetime {
   namespace Controllers {
-    class PinetimeService {
+    class CurrentTimeService {
       public:
-        PinetimeService(DateTime &dateTimeController);
+        CurrentTimeService(DateTime &dateTimeController);
         void Init();
 
         int OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handle,
                                     struct ble_gatt_access_ctxt *ctxt);
 
-        void setDateTimeController(DateTime *dateTimeController);
-
       private:
-        static constexpr uint16_t pinetimeId {0x6666};
-        static constexpr uint16_t timeCharId {0x6667};
+        static constexpr uint16_t ctsId {0x1805};
+        static constexpr uint16_t ctsCharId {0x2a2b};
 
-        static constexpr ble_uuid16_t pinetimeUuid {
+        static constexpr ble_uuid16_t ctsUuid {
                 .u { .type = BLE_UUID_TYPE_16 },
-                .value = pinetimeId
+                .value = ctsId
         };
 
-        static constexpr ble_uuid16_t timeUuid {
+        static constexpr ble_uuid16_t ctChrUuid {
                 .u { .type = BLE_UUID_TYPE_16 },
-                .value = timeCharId
+                .value = ctsCharId
         };
 
         struct ble_gatt_chr_def characteristicDefinition[2];
