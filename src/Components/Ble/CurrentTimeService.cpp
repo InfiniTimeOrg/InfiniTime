@@ -1,24 +1,24 @@
-#include "PinetimeService.h"
+#include "CurrentTimeService.h"
 #include <hal/nrf_rtc.h>
 
 using namespace Pinetime::Controllers;
 
-constexpr ble_uuid16_t PinetimeService::pinetimeUuid;
-constexpr ble_uuid16_t PinetimeService::timeUuid;
+constexpr ble_uuid16_t CurrentTimeService::ctsUuid;
+constexpr ble_uuid16_t CurrentTimeService::ctChrUuid;
 
 
-int PinetimeTimeCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
-  auto pinetimeService = static_cast<PinetimeService*>(arg);
-  return pinetimeService->OnTimeAccessed(conn_handle, attr_handle, ctxt);
+int CTSCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
+  auto cts = static_cast<CurrentTimeService*>(arg);
+  return cts->OnTimeAccessed(conn_handle, attr_handle, ctxt);
 }
 
-void PinetimeService::Init() {
+void CurrentTimeService::Init() {
   ble_gatts_count_cfg(serviceDefinition);
   ble_gatts_add_svcs(serviceDefinition);
 }
 
 
-int PinetimeService::OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handle,
+int CurrentTimeService::OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handle,
                                                     struct ble_gatt_access_ctxt *ctxt) {
 
     NRF_LOG_INFO("Setting time...");
@@ -35,17 +35,18 @@ int PinetimeService::OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handle,
                         0, result.hour, result.minute, result.second, nrf_rtc_counter_get(portNRF_RTC_REG));
 
   }
+  //!TODO need to support reading the time.
   return 0;
 }
 
-PinetimeService::PinetimeService(DateTime &dateTimeController) : m_dateTimeController{dateTimeController},
+CurrentTimeService::CurrentTimeService(DateTime &dateTimeController) : m_dateTimeController{dateTimeController},
         characteristicDefinition{
                 {
-                        .uuid = (ble_uuid_t *) &timeUuid,
-                        .access_cb = PinetimeTimeCallback,
+                        .uuid = (ble_uuid_t *) &ctChrUuid,
+                        .access_cb = CTSCallback,
 
                         .arg = this,
-                        .flags = BLE_GATT_CHR_F_WRITE
+                        .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
                 },
                 {
                   0
@@ -55,7 +56,7 @@ PinetimeService::PinetimeService(DateTime &dateTimeController) : m_dateTimeContr
                 {
                         /* Device Information Service */
                         .type = BLE_GATT_SVC_TYPE_PRIMARY,
-                        .uuid = (ble_uuid_t *) &pinetimeUuid,
+                        .uuid = (ble_uuid_t *) &ctsUuid,
                         .characteristics = characteristicDefinition
                 },
                 {
