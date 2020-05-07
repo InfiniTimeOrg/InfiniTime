@@ -14,12 +14,13 @@
 
 using namespace Pinetime::System;
 
-SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd, Drivers::Cst816S &touchPanel,
+SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
+                       Pinetime::Drivers::SpiNorFlash& spiNorFlash, Drivers::Cst816S &touchPanel,
                        Components::LittleVgl &lvgl,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController,
                        Pinetime::Controllers::NotificationManager& notificationManager) :
-                       spi{spi}, lcd{lcd}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
+                       spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
                        nimbleController(*this, bleController,dateTimeController, notificationManager) {
@@ -50,6 +51,7 @@ void SystemTask::Work() {
 
   spi.Init();
   lcd.Init();
+  spiNorFlash.Init();
   touchPanel.Init();
   batteryController.Init();
 

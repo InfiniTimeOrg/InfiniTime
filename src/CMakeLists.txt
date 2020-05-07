@@ -308,7 +308,9 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/FirmwareUpdate.cpp
   main.cpp
   drivers/St7789.cpp
+  drivers/SpiNorFlash.cpp
   drivers/SpiMaster.cpp
+  drivers/Spi.cpp
   drivers/Watchdog.cpp
   drivers/DebugPins.cpp
   Components/Battery/BatteryController.cpp
@@ -357,7 +359,9 @@ set(INCLUDE_FILES
   DisplayApp/Screens/Label.h
   DisplayApp/Screens/FirmwareUpdate.h
   drivers/St7789.h
+  drivers/SpiNorFlash.h
   drivers/SpiMaster.h
+  drivers/Spi.h
   drivers/Watchdog.h
   drivers/DebugPins.h
   Components/Battery/BatteryController.h

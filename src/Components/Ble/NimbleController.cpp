@@ -122,14 +122,14 @@ void NimbleController::StartAdvertising() {
 
   int res;
   res = ble_gap_adv_set_fields(&fields);
-  ASSERT(res == 0);
+//  ASSERT(res == 0); // TODO this one sometimes fails with error 22 (notsync)
 
   res = ble_gap_adv_rsp_set_fields(&rsp_fields);
-  ASSERT(res == 0);
+//  ASSERT(res == 0);
 
   res = ble_gap_adv_start(addrType, NULL, 10000,
                           &adv_params, GAPEventCallback, this);
-  ASSERT(res == 0);
+//  ASSERT(res == 0);
 }
 
 int OnAllSvrDisco(uint16_t conn_handle,

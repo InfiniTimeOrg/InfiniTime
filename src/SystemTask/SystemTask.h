@@ -9,6 +9,7 @@
 #include <DisplayApp/DisplayApp.h>
 #include <drivers/Watchdog.h>
 #include <Components/Ble/NimbleController.h>
+#include <drivers/SpiNorFlash.h>
 
 namespace Pinetime {
   namespace System {
@@ -18,7 +19,8 @@ namespace Pinetime {
             BleFirmwareUpdateStarted, BleFirmwareUpdateFinished
         };
 
-        SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd, Drivers::Cst816S &touchPanel,
+        SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
+                   Pinetime::Drivers::SpiNorFlash& spiNorFlash, Drivers::Cst816S &touchPanel,
                    Components::LittleVgl &lvgl,
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
                    Controllers::DateTime &dateTimeController,
@@ -35,6 +37,7 @@ namespace Pinetime {
 
         Pinetime::Drivers::SpiMaster& spi;
         Pinetime::Drivers::St7789& lcd;
+        Pinetime::Drivers::SpiNorFlash& spiNorFlash;
         Pinetime::Drivers::Cst816S& touchPanel;
         Pinetime::Components::LittleVgl& lvgl;
         Pinetime::Controllers::Battery& batteryController;
