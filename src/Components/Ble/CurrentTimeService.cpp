@@ -50,7 +50,6 @@ int CurrentTimeService::OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handl
 
   }
 
-  //!TODO need to support reading the time.
   return 0;
 }
 
