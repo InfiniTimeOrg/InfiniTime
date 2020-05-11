@@ -30,7 +30,9 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         dateTimeController{dateTimeController},
         notificationManager{notificationManager},
         currentTimeClient{dateTimeController},
-        alertNotificationClient{systemTask, notificationManager} {
+        alertNotificationClient{systemTask, notificationManager},
+        anService{systemTask, notificationManager},
+        currentTimeService{dateTimeController} {
 
 }
 
@@ -74,6 +76,10 @@ void NimbleController::Init() {
 
   deviceInformationService.Init();
   currentTimeClient.Init();
+  currentTimeService.Init();
+
+  anService.Init();
+
   int res;
   res = ble_hs_util_ensure_addr(0);
   res = ble_hs_id_infer_auto(0, &addrType);
