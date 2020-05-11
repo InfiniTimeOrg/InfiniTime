@@ -8,17 +8,22 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+  namespace Drivers {
+    class SpiNorFlash;
+  }
   namespace Controllers {
     class Ble;
     class DfuService {
       public:
-        DfuService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController);
+        DfuService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController,
+                   Pinetime::Drivers::SpiNorFlash& spiNorFlash);
         void Init();
 
         int OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context);
       private:
         Pinetime::System::SystemTask& systemTask;
         Pinetime::Controllers::Ble& bleController;
+        Pinetime::Drivers::SpiNorFlash& spiNorFlash;
 
         static constexpr uint16_t dfuServiceId {0x1530};
         static constexpr uint16_t packetCharacteristicId {0x1532};

@@ -74,6 +74,9 @@ void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
 
 void LittleVgl::FlushDisplay(const lv_area_t *area, lv_color_t *color_p) {
   ulTaskNotifyTake(pdTRUE, 500);
+  // NOtification is still needed (even if there is a mutex on SPI) because of the DataCommand pin
+  // which cannot be set/clear during a transfert.
+
 
   // TODO refactore and remove duplicated code
 

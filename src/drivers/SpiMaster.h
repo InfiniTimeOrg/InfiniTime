@@ -5,6 +5,7 @@
 #include <array>
 #include <atomic>
 #include <task.h>
+#include <semphr.h>
 
 #include "BufferProvider.h"
 namespace Pinetime {
@@ -32,7 +33,9 @@ namespace Pinetime {
 
         bool Init();
         bool Write(uint8_t pinCsn, const uint8_t* data, size_t size);
-        bool Read(uint8_t pinCsn, uint8_t* data, size_t size);
+        bool Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t *data, size_t dataSize);
+
+        bool WriteCmdAndBuffer(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t *data, size_t dataSize);
 
         void OnStartedEvent();
         void OnEndEvent();
@@ -44,7 +47,7 @@ namespace Pinetime {
         void SetupWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel);
         void DisableWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel);
         void PrepareTx(const volatile uint32_t bufferAddress, const volatile size_t size);
-        void PrepareRx(const volatile uint32_t bufferAddress, const volatile size_t size);
+        void PrepareRx(const volatile uint32_t cmdAddress, const volatile size_t cmdSize, const volatile uint32_t bufferAddress, const volatile size_t size);
 
         NRF_SPIM_Type *  spiBaseAddress;
         uint8_t pinCsn;
@@ -52,10 +55,12 @@ namespace Pinetime {
         SpiMaster::SpiModule spi;
         SpiMaster::Parameters params;
 
-        volatile bool busy = false;
+//        volatile bool busy = false;
         volatile uint32_t currentBufferAddr = 0;
         volatile size_t currentBufferSize = 0;
         volatile TaskHandle_t taskToNotify;
+
+        SemaphoreHandle_t mutex;
     };
   }
 }

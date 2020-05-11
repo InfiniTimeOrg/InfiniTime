@@ -15,9 +15,10 @@ int DfuServiceCallback(uint16_t conn_handle, uint16_t attr_handle,
   return dfuService->OnServiceData(conn_handle, attr_handle, ctxt);
 }
 
-DfuService::DfuService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController) :
+DfuService::DfuService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController, Pinetime::Drivers::SpiNorFlash& spiNorFlash) :
         systemTask{systemTask},
         bleController{bleController},
+        spiNorFlash{spiNorFlash},
         characteristicDefinition{
                 {
                         .uuid = (ble_uuid_t *) &packetCharacteristicUuid,
@@ -104,6 +105,15 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
       applicationSize = om->om_data[8] + (om->om_data[9] << 8) + (om->om_data[10] << 16) + (om->om_data[11] << 24);
       NRF_LOG_INFO("[DFU] -> Start data received : SD size : %d, BT size : %d, app size : %d", softdeviceSize, bootloaderSize, applicationSize);
 
+      for(int erased = 0; erased < applicationSize; erased += 0x1000) {
+        spiNorFlash.SectorErase(erased);
+
+        auto p =  spiNorFlash.ProgramFailed();
+        auto e = spiNorFlash.EraseFailed();
+        NRF_LOG_INFO("[DFU] Erasing sector %d - %d-%d", erased, p, e);
+
+      }
+
       uint8_t data[] {16, 1, 1};
       SendNotification(connectionHandle, data, 3);
       state = States::Init;
@@ -128,9 +138,14 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
 
     case States::Data: {
       nbPacketReceived++;
+
+      spiNorFlash.Write(bytesReceived, om->om_data, om->om_len);
+
       bytesReceived += om->om_len;
       bleController.FirmwareUpdateCurrentBytes(bytesReceived);
       NRF_LOG_INFO("[DFU] -> Bytes received : %d in %d packets", bytesReceived, nbPacketReceived);
+
+
 
       if((nbPacketReceived % nbPacketsToNotify) == 0) {
         uint8_t data[5]{static_cast<uint8_t>(Opcodes::PacketReceiptNotification),

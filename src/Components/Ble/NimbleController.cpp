@@ -24,12 +24,14 @@ using namespace Pinetime::Controllers;
 NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
                                    Pinetime::Controllers::Ble& bleController,
         DateTime& dateTimeController,
-        Pinetime::Controllers::NotificationManager& notificationManager) :
+        Pinetime::Controllers::NotificationManager& notificationManager,
+        Pinetime::Drivers::SpiNorFlash& spiNorFlash) :
         systemTask{systemTask},
         bleController{bleController},
         dateTimeController{dateTimeController},
         notificationManager{notificationManager},
-        dfuService{systemTask, bleController},
+        spiNorFlash{spiNorFlash},
+        dfuService{systemTask, bleController, spiNorFlash},
         currentTimeClient{dateTimeController},
         alertNotificationClient{systemTask, notificationManager} {
 

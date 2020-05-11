@@ -23,7 +23,7 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
-                       nimbleController(*this, bleController,dateTimeController, notificationManager) {
+                       nimbleController(*this, bleController,dateTimeController, notificationManager, spiNorFlash) {
   systemTaksMsgQueue = xQueueCreate(10, 1);
 }
 
@@ -39,19 +39,17 @@ void SystemTask::Process(void *instance) {
 }
 
 void SystemTask::Work() {
-  watchdog.Setup(7);
-  watchdog.Start();
+//  watchdog.Setup(7);
+//  watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
 
-/* BLE */
+  spi.Init();
+  spiNorFlash.Init();
   nimbleController.Init();
   nimbleController.StartAdvertising();
-/* /BLE*/
-
-  spi.Init();
   lcd.Init();
-  spiNorFlash.Init();
+
   touchPanel.Init();
   batteryController.Init();
 

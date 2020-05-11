@@ -8,12 +8,17 @@
 #include <host/ble_gap.h>
 
 namespace Pinetime {
+  namespace Drivers {
+    class SpiNorFlash;
+  }
   namespace Controllers {
     class DateTime;
     class NimbleController {
 
       public:
-        NimbleController(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController, DateTime& dateTimeController, Pinetime::Controllers::NotificationManager& notificationManager);
+        NimbleController(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController,
+                DateTime& dateTimeController, Pinetime::Controllers::NotificationManager& notificationManager,
+                Pinetime::Drivers::SpiNorFlash& spiNorFlash);
         void Init();
         void StartAdvertising();
         int OnGAPEvent(ble_gap_event *event);
@@ -34,6 +39,7 @@ namespace Pinetime {
         Pinetime::Controllers::Ble& bleController;
         DateTime& dateTimeController;
         Pinetime::Controllers::NotificationManager& notificationManager;
+        Pinetime::Drivers::SpiNorFlash& spiNorFlash;
         Pinetime::Controllers::DfuService dfuService;
 
         DeviceInformationService deviceInformationService;
