@@ -3,11 +3,15 @@
 #include <drivers/Cst816s.h>
 #include <DisplayApp/LittleVgl.h>
 #include <hal/nrf_rtc.h>
-#include <BLE/BleManager.h>
-#include <softdevice/common/nrf_sdh_freertos.h>
 #include <Components/Ble/NotificationManager.h>
+#include <host/ble_gatt.h>
+#include <host/ble_hs_adv.h>
 #include "SystemTask.h"
+#include <nimble/hci_common.h>
+#include <host/ble_gap.h>
+#include <host/util/util.h>
 #include "../main.h"
+
 using namespace Pinetime::System;
 
 SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd, Drivers::Cst816S &touchPanel,
@@ -17,7 +21,8 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd, Drivers::C
                        Pinetime::Controllers::NotificationManager& notificationManager) :
                        spi{spi}, lcd{lcd}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
-                       watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager} {
+                       watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
+                       nimbleController(*this, bleController,dateTimeController, notificationManager) {
   systemTaksMsgQueue = xQueueCreate(10, 1);
 }
 
@@ -37,9 +42,11 @@ void SystemTask::Work() {
   watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
-  bool erase_bonds=true;
-  ble_manager_init_peer_manager();
-  nrf_sdh_freertos_init(ble_manager_start_advertising, &erase_bonds);
+
+/* BLE */
+  nimbleController.Init();
+  nimbleController.StartAdvertising();
+/* /BLE*/
 
   spi.Init();
   lcd.Init();

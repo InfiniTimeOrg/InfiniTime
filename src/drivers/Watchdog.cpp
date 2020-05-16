@@ -33,16 +33,16 @@ void Watchdog::Kick() {
 
 Watchdog::ResetReasons Watchdog::ActualResetReason() const {
   uint32_t resetReason;
-  sd_power_reset_reason_get(&resetReason);
-  sd_power_reset_reason_clr(0xFFFFFFFF);
-  if(resetReason & 0x01u) return ResetReasons::ResetPin;
-  if((resetReason >> 1u) & 0x01u) return ResetReasons::Watchdog;
-  if((resetReason >> 2u) & 0x01u) return ResetReasons::SoftReset;
-  if((resetReason >> 3u) & 0x01u) return ResetReasons::CpuLockup;
-  if((resetReason >> 16u) & 0x01u) return ResetReasons::SystemOff;
-  if((resetReason >> 17u) & 0x01u) return ResetReasons::LpComp;
-  if((resetReason >> 18u) & 0x01u) return ResetReasons::DebugInterface;
-  if((resetReason >> 19u) & 0x01u) return ResetReasons::NFC;
+//  sd_power_reset_reason_get(&resetReason);
+//  sd_power_reset_reason_clr(0xFFFFFFFF);
+//  if(resetReason & 0x01u) return ResetReasons::ResetPin;
+//  if((resetReason >> 1u) & 0x01u) return ResetReasons::Watchdog;
+//  if((resetReason >> 2u) & 0x01u) return ResetReasons::SoftReset;
+//  if((resetReason >> 3u) & 0x01u) return ResetReasons::CpuLockup;
+//  if((resetReason >> 16u) & 0x01u) return ResetReasons::SystemOff;
+//  if((resetReason >> 17u) & 0x01u) return ResetReasons::LpComp;
+//  if((resetReason >> 18u) & 0x01u) return ResetReasons::DebugInterface;
+//  if((resetReason >> 19u) & 0x01u) return ResetReasons::NFC;
   return ResetReasons::HardReset;
 }
 

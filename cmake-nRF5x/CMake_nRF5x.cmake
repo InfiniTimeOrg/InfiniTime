@@ -5,10 +5,6 @@ if (NOT NRF5_SDK_PATH)
     message(FATAL_ERROR "The path to the nRF5 SDK (NRF5_SDK_PATH) must be set.")
 endif ()
 
-#if (NOT NRFJPROG)
-#    message(FATAL_ERROR "The path to the nrfjprog utility (NRFJPROG) must be set.")
-#endif ()
-
 # convert toolchain path to bin path
 if(DEFINED ARM_NONE_EABI_TOOLCHAIN_PATH)
     set(ARM_NONE_EABI_TOOLCHAIN_BIN_PATH ${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin)
@@ -70,22 +66,15 @@ macro(nRF5x_setup)
         endif()
         set(CPU_FLAGS "-mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16")
         add_definitions(-DNRF52 -DNRF52832 -DNRF52832_XXAA -DNRF52_PAN_74 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040)
-        add_definitions(-DSOFTDEVICE_PRESENT -DS132 -DSWI_DISABLE0 -DBLE_STACK_SUPPORT_REQD -DNRF_SD_BLE_API_VERSION=6)
         add_definitions(-DFREERTOS)
         add_definitions(-DDEBUG_NRF_USER)
-        add_definitions(-D__STARTUP_CLEAR_BSS)
-        add_definitions(-D__HEAP_SIZE=8192)
-        add_definitions(-D__STACK_SIZE=2048)
-
         include_directories(
-                "${NRF5_SDK_PATH}/components/softdevice/s132/headers"
-                "${NRF5_SDK_PATH}/components/softdevice/s132/headers/nrf52"
+          "${NRF5_SDK_PATH}/components/drivers_nrf/nrf_soc_nosd"
         )
         list(APPEND SDK_SOURCE_FILES
                 "${NRF5_SDK_PATH}/modules/nrfx/mdk/system_nrf52.c"
                 "${NRF5_SDK_PATH}/modules/nrfx/mdk/gcc_startup_nrf52.S"
                 )
-        set(SOFTDEVICE_PATH "${NRF5_SDK_PATH}/components/softdevice/s132/hex/s132_nrf52_6.1.1_softdevice.hex")
     endif ()
 
     set(COMMON_FLAGS "-MP -MD -mthumb -mabi=aapcs -Wall -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums ${CPU_FLAGS} -Wreturn-type -Werror=return-type")
@@ -242,7 +231,6 @@ macro(nRF5x_setup)
     # Other external
     include_directories(
             "${NRF5_SDK_PATH}/external/fprintf/"
-#            "${NRF5_SDK_PATH}/external/utf_converter/"
     )
 
     list(APPEND SDK_SOURCE_FILES
@@ -254,103 +242,25 @@ macro(nRF5x_setup)
     # LCD/GFX
     include_directories(
       "${NRF5_SDK_PATH}/external/thedotfactory_fonts"
-      "${NRF5_SDK_PATH}/components/ble/ble_db_discovery"
     )
-
-    list(APPEND SDK_SOURCE_FILES
-      "${NRF5_SDK_PATH}/components/ble/ble_db_discovery/ble_db_discovery.c"
-      "${NRF5_SDK_PATH}/components/ble/ble_services/ble_cts_c/ble_cts_c.c"
-      "${NRF5_SDK_PATH}/components/ble/ble_services/ble_ans_c/ble_ans_c.c"
-#      "${NRF5_SDK_PATH}/external/thedotfactory_fonts/orkney24pts.c"
-      )
-
-    #BLE S132
-    include_directories(
-      "${NRF5_SDK_PATH}/components/ble/common"
-      "${NRF5_SDK_PATH}/components/ble/ble_advertising"
-      "${NRF5_SDK_PATH}/components/ble/ble_services/ble_bas"
-      "${NRF5_SDK_PATH}/components/ble/ble_services/ble_hrs"
-      "${NRF5_SDK_PATH}/components/ble/ble_services/ble_dis"
-      "${NRF5_SDK_PATH}/components/ble/nrf_ble_gatt"
-      "${NRF5_SDK_PATH}/components/libraries/sensorsim"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager"
-      "${NRF5_SDK_PATH}/components/ble/nrf_ble_qwr"
-    )
-
-    LIST(APPEND SDK_SOURCE_FILES
-      "${NRF5_SDK_PATH}//components/ble/common/ble_srv_common.c"
-      "${NRF5_SDK_PATH}/components/ble/ble_advertising/ble_advertising.c"
-      "${NRF5_SDK_PATH}/components/ble/common/ble_advdata.c"
-      "${NRF5_SDK_PATH}/components/ble/ble_services/ble_bas/ble_bas.c"
-      "${NRF5_SDK_PATH}/components/ble/ble_services/ble_hrs/ble_hrs.c"
-      "${NRF5_SDK_PATH}/components/ble/ble_services/ble_dis/ble_dis.c"
-      "${NRF5_SDK_PATH}/components/ble/nrf_ble_gatt/nrf_ble_gatt.c"
-      "${NRF5_SDK_PATH}/components/libraries/sensorsim/sensorsim.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/peer_manager.c"
-      "${NRF5_SDK_PATH}/components/ble/nrf_ble_qwr/nrf_ble_qwr.c"
-      "${NRF5_SDK_PATH}/components/ble/common/ble_conn_state.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/auth_status_tracker.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/gatt_cache_manager.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/gatts_cache_manager.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/id_manager.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/peer_data_storage.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/peer_database.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/peer_id.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/peer_manager.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/peer_manager_handler.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/pm_buffer.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/security_dispatcher.c"
-      "${NRF5_SDK_PATH}/components/ble/peer_manager/security_manager.c"
-      "${NRF5_SDK_PATH}/components/ble/common/ble_conn_state.c"
-      "${NRF5_SDK_PATH}/components/ble/common/ble_conn_params.c"
-      "${NRF5_SDK_PATH}/components/ble/common/ble_conn_state.c"
-      "${NRF5_SDK_PATH}/components/libraries/atomic_flags/nrf_atflags.c"
-      "${NRF5_SDK_PATH}/components/libraries/fds/fds.c"
-      "${NRF5_SDK_PATH}/components/libraries/fstorage/nrf_fstorage.c"
-      "${NRF5_SDK_PATH}/components/libraries/fstorage/nrf_fstorage_sd.c"
-      "${NRF5_SDK_PATH}/components/libraries/atomic_fifo/nrf_atfifo.c"
-      "${NRF5_SDK_PATH}/components/softdevice/common/nrf_sdh.c"
-      "${NRF5_SDK_PATH}/components/softdevice/common/nrf_sdh_ble.c"
-      "${NRF5_SDK_PATH}/components/softdevice/common/nrf_sdh_freertos.c"
-      "${NRF5_SDK_PATH}/components/softdevice/common/nrf_sdh_soc.c"
-      "${NRF5_SDK_PATH}/components/libraries/experimental_section_vars/nrf_section_iter.c"
-      "${NRF5_SDK_PATH}/components/libraries/bsp/bsp_btn_ble.c"
-      "${NRF5_SDK_PATH}/components/libraries/hardfault/hardfault_implementation.c"
-      "${NRF5_SDK_PATH}/components/libraries/hardfault/nrf52/handler/hardfault_handler_gcc.c"
-      )
 
     LIST(APPEND SDK_SOURCE_FILES
       "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_twi.c"
       )
 
-    # adds target for erasing and flashing the board with a softdevice
+    # adds target for erasing
     if(USE_JLINK)
-        add_custom_target(FLASH_SOFTDEVICE
-                COMMAND ${NRFJPROG} --program ${SOFTDEVICE_PATH} -f ${NRF_TARGET} --sectorerase
-                COMMAND sleep 0.5s
-                COMMAND ${NRFJPROG} --reset -f ${NRF_TARGET}
-                COMMENT "flashing SoftDevice"
-                )
-
         add_custom_target(FLASH_ERASE
                 COMMAND ${NRFJPROG} --eraseall -f ${NRF_TARGET}
                 COMMENT "erasing flashing"
                 )
     elseif(USE_GDB_CLIENT)
-        add_custom_target(FLASH_SOFTDEVICE
-          COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill'  ${SOFTDEVICE_PATH}
-          COMMENT "flashing SoftDevice"
-          )
         add_custom_target(FLASH_ERASE
           COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'mon erase_mass'
           COMMENT "erasing flashing"
           )
     elseif(USE_OPENOCD)
-    add_custom_target(FLASH_SOFTDEVICE
-            COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${SOFTDEVICE_PATH}\""  -c reset -c shutdown
-            COMMENT "flashing SoftDevice"
-            )
-    add_custom_target(FLASH_ERASE
+        add_custom_target(FLASH_ERASE
             COMMAND ${OPENOCD_BIN_PATH}  -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c init -c halt -c 'nrf5 mass_erase' -c reset -c shutdown
             COMMENT "erasing flashing"
             )
@@ -390,35 +300,6 @@ macro(nRF5x_addExecutable EXECUTABLE_NAME SOURCE_FILES)
             COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_NAME}.out "${EXECUTABLE_NAME}.bin"
             COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_NAME}.out "${EXECUTABLE_NAME}.hex"
             COMMENT "post build steps for ${EXECUTABLE_NAME}")
-
-    if(MERGEHEX)
-        add_custom_command(TARGET ${EXECUTABLE_NAME}
-          POST_BUILD
-          COMMAND ${MERGEHEX} --merge ${EXECUTABLE_NAME}.hex ${NRF5_SDK_PATH}/components/softdevice/s132/hex/s132_nrf52_6.1.1_softdevice.hex --output ${EXECUTABLE_NAME}-full.hex
-          COMMENT "merging HEX files")
-
-        if(USE_JLINK)
-            add_custom_target("FLASH_MERGED_${EXECUTABLE_NAME}"
-              DEPENDS ${EXECUTABLE_NAME}
-              COMMAND ${NRFJPROG} --program ${EXECUTABLE_NAME}-full.hex -f ${NRF_TARGET} --sectorerase
-              COMMAND sleep 0.5s
-              COMMAND ${NRFJPROG} --reset -f ${NRF_TARGET}
-              COMMENT "flashing ${EXECUTABLE_NAME}-full.hex"
-              )
-        elseif(USE_GDB_CLIENT)
-            add_custom_target("FLASH_MERGED_${EXECUTABLE_NAME}"
-              DEPENDS ${EXECUTABLE_NAME}
-              COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill'  ${EXECUTABLE_NAME}-full.hex
-              COMMENT "flashing ${EXECUTABLE_NAME}-full.hex"
-              )
-        elseif(USE_OPENOCD)
-            add_custom_target("FLASH_MERGED_${EXECUTABLE_NAME}"
-                DEPENDS ${EXECUTABLE_NAME}
-                COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${EXECUTABLE_NAME}-full.hex\""  -c reset -c shutdown
-                COMMENT "flashing ${EXECUTABLE_NAME}-full.hex"
-            )
-        endif()
-    endif()
 
     # custom target for flashing the board
     if(USE_JLINK)

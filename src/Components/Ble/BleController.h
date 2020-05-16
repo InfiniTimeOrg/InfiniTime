@@ -1,6 +1,6 @@
 #pragma once
 
-#include <FreeRTOS.h>>
+#include <FreeRTOS.h>
 #include <queue.h>
 
 namespace Pinetime {
