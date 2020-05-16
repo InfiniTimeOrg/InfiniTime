@@ -126,14 +126,21 @@ void NimbleController::StartAdvertising() {
 
   int res;
   res = ble_gap_adv_set_fields(&fields);
-  ASSERT(res == 0);
+  //ASSERT(res == 0);
 
   res = ble_gap_adv_rsp_set_fields(&rsp_fields);
-  ASSERT(res == 0);
+  //ASSERT(res == 0);
 
   res = ble_gap_adv_start(addrType, NULL, 10000,
                           &adv_params, GAPEventCallback, this);
-  ASSERT(res == 0);
+  //ASSERT(res == 0);
+
+  // TODO I've disabled these ASSERT as they sometime asserts and reset the mcu.
+  // For now, the advertising is restarted as soon as it ends. There may be a race condition
+  // that prevent the advertising from restarting reliably.
+  // I remove the assert to prevent this uncesseray crash, but in the long term, the management of
+  // the advertising should be improve (better error handling, and advertise for 3 minutes after
+  // the application has been woken up, for example.
 }
 
 int OnAllSvrDisco(uint16_t conn_handle,
