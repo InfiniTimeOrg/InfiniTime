@@ -9,7 +9,8 @@ using namespace Pinetime::Drivers;
 
 SpiMaster::SpiMaster(const SpiMaster::SpiModule spi, const SpiMaster::Parameters &params) :
         spi{spi}, params{params} {
-
+    mutex = xSemaphoreCreateBinary();
+    ASSERT(mutex != NULL);
 }
 
 bool SpiMaster::Init() {
@@ -68,6 +69,8 @@ bool SpiMaster::Init() {
 
   NRFX_IRQ_PRIORITY_SET(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn,2);
   NRFX_IRQ_ENABLE(SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQn);
+
+  xSemaphoreGive(mutex);
   return true;
 }
 
@@ -82,6 +85,7 @@ void SpiMaster::SetupWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_chan
   NRF_PPI->CH[ppi_channel].EEP = (uint32_t) &NRF_GPIOTE->EVENTS_IN[gpiote_channel];
   NRF_PPI->CH[ppi_channel].TEP = (uint32_t) &spim->TASKS_STOP;
   NRF_PPI->CHENSET = 1U << ppi_channel;
+  spiBaseAddress->EVENTS_END = 0;
 
   // Disable IRQ
   spim->INTENCLR = (1<<6);
@@ -94,13 +98,16 @@ void SpiMaster::DisableWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_ch
   NRF_PPI->CH[ppi_channel].EEP = 0;
   NRF_PPI->CH[ppi_channel].TEP = 0;
   NRF_PPI->CHENSET = ppi_channel;
+  spiBaseAddress->EVENTS_END = 0;
   spim->INTENSET = (1<<6);
   spim->INTENSET = (1<<1);
   spim->INTENSET = (1<<19);
 }
 
 void SpiMaster::OnEndEvent() {
-  if(!busy) return;
+  if(currentBufferAddr == 0) {
+    return;
+  }
 
   auto s = currentBufferSize;
   if(s > 0) {
@@ -113,21 +120,21 @@ void SpiMaster::OnEndEvent() {
   } else {
     uint8_t* buffer = nullptr;
     size_t size = 0;
-    busy = false;
+      if(taskToNotify != nullptr) {
+          BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+          vTaskNotifyGiveFromISR(taskToNotify, &xHigherPriorityTaskWoken);
+          portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+      }
 
-
-    if(taskToNotify != nullptr) {
+      nrf_gpio_pin_set(this->pinCsn);
+      currentBufferAddr = 0;
       BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-      vTaskNotifyGiveFromISR(taskToNotify, &xHigherPriorityTaskWoken);
+      xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken);
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
-
-    nrf_gpio_pin_set(pinCsn);
   }
 }
 
 void SpiMaster::OnStartedEvent() {
-  if(!busy) return;
 }
 
 void SpiMaster::PrepareTx(const volatile uint32_t bufferAddress, const volatile size_t size) {
@@ -142,10 +149,9 @@ void SpiMaster::PrepareTx(const volatile uint32_t bufferAddress, const volatile 
 
 bool SpiMaster::Write(const uint8_t *data, size_t size) {
   if(data == nullptr) return false;
+  auto ok = xSemaphoreTake(mutex, portMAX_DELAY);
+  ASSERT(ok == true);
   taskToNotify = xTaskGetCurrentTaskHandle();
-  while(busy) {
-    asm("nop");
-  }
 
   if(size == 1) {
     SetupWorkaroundForFtpan58(spiBaseAddress, 0,0);
@@ -157,7 +163,6 @@ bool SpiMaster::Write(const uint8_t *data, size_t size) {
 
   currentBufferAddr = (uint32_t)data;
   currentBufferSize = size;
-  busy = true;
 
   auto currentSize = std::min((size_t)255, (size_t)currentBufferSize);
   PrepareTx(currentBufferAddr, currentSize);
@@ -167,7 +172,7 @@ bool SpiMaster::Write(const uint8_t *data, size_t size) {
 
   if(size == 1) {
     while (spiBaseAddress->EVENTS_END == 0);
-    busy = false;
+    xSemaphoreGive(mutex);
   }
 
   return true;
