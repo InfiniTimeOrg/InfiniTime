@@ -815,7 +815,8 @@ static lv_res_t lv_btnm_signal(lv_obj_t * btnm, lv_signal_t sign, void * param)
     } else if(sign == LV_SIGNAL_RELEASED) {
         if(ext->btn_id_pr != LV_BTNM_BTN_NONE) {
             /*Toggle the button if enabled*/
-            if(button_is_tgl_enabled(ext->ctrl_bits[ext->btn_id_pr])) {
+            if(button_is_tgl_enabled(ext->ctrl_bits[ext->btn_id_pr]) &&
+               !button_is_inactive(ext->ctrl_bits[ext->btn_id_pr])) {
                 if(button_get_tgl_state(ext->ctrl_bits[ext->btn_id_pr])) {
                     ext->ctrl_bits[ext->btn_id_pr] &= (~LV_BTNM_CTRL_TGL_STATE);
                 } else {
@@ -863,9 +864,10 @@ static lv_res_t lv_btnm_signal(lv_obj_t * btnm, lv_signal_t sign, void * param)
         lv_indev_type_t indev_type = lv_indev_get_type(indev);
 
         /*If not focused by an input device assume the last input device*/
-       if(indev_type == LV_INDEV_TYPE_NONE) {
-           indev_type = lv_indev_get_type(lv_indev_get_next(NULL));
-       }
+        if(indev == NULL) {
+            indev = lv_indev_get_next(NULL);
+            indev_type = lv_indev_get_type(indev);
+        }
 
         if(indev_type == LV_INDEV_TYPE_POINTER) {
             /*Select the clicked button*/
@@ -1082,7 +1084,7 @@ static void invalidate_button_area(const lv_obj_t * btnm, uint16_t btn_idx)
     btn_area.x2 += btnm_area.x1;
     btn_area.y2 += btnm_area.y1;
 
-    lv_inv_area(lv_obj_get_disp(btnm), &btn_area);
+    lv_obj_invalidate_area(btnm, &btn_area);
 }
 
 /**

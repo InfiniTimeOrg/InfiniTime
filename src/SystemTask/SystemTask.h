@@ -8,6 +8,7 @@
 #include <Components/Battery/BatteryController.h>
 #include <DisplayApp/DisplayApp.h>
 #include <drivers/Watchdog.h>
+#include <Components/Ble/NimbleController.h>
 
 namespace Pinetime {
   namespace System {
@@ -44,6 +45,7 @@ namespace Pinetime {
         Pinetime::Drivers::Watchdog watchdog;
         Pinetime::Drivers::WatchdogView watchdogView;
         Pinetime::Controllers::NotificationManager& notificationManager;
+        Pinetime::Controllers::NimbleController nimbleController;
 
 
         static constexpr uint8_t pinSpiSck = 2;

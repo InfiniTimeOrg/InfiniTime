@@ -7,6 +7,8 @@
 #include <task.h>
 
 #include "BufferProvider.h"
+#include <semphr.h>
+
 namespace Pinetime {
   namespace Drivers {
     class SpiMaster {
@@ -51,10 +53,10 @@ namespace Pinetime {
         SpiMaster::SpiModule spi;
         SpiMaster::Parameters params;
 
-        volatile bool busy = false;
         volatile uint32_t currentBufferAddr = 0;
         volatile size_t currentBufferSize = 0;
         volatile TaskHandle_t taskToNotify;
+        SemaphoreHandle_t mutex;
     };
   }
 }

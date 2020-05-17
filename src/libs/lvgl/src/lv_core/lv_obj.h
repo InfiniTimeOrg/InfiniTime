@@ -269,6 +269,15 @@ typedef struct
  */
 void lv_init(void);
 
+
+/**
+ * Deinit the 'lv' library
+ * Currently only implemented when not using custorm allocators, or GC is enabled.
+ */
+#if LV_ENABLE_GC || !LV_MEM_CUSTOM
+void lv_deinit(void);
+#endif
+
 /*--------------------
  * Create and delete
  *-------------------*/
@@ -302,6 +311,15 @@ void lv_obj_del_async(struct _lv_obj_t *obj);
  * @param obj pointer to an object
  */
 void lv_obj_clean(lv_obj_t * obj);
+
+
+/**
+ * Mark an area of an object as invalid.
+ * This area will be redrawn by 'lv_refr_task'
+ * @param obj pointer to an object
+ * @param area the area to redraw
+ */
+void lv_obj_invalidate_area(const lv_obj_t * obj, const lv_area_t * area);
 
 /**
  * Mark the object as invalid therefore its current position will be redrawn by 'lv_refr_task'
