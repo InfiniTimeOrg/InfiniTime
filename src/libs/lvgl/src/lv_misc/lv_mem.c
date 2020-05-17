@@ -23,7 +23,7 @@
 #define LV_MEM_ADD_JUNK 0
 #endif
 
-#ifdef LV_MEM_ENV64
+#ifdef LV_ARCH_64
 #define MEM_UNIT uint64_t
 #else
 #define MEM_UNIT uint32_t
@@ -103,6 +103,21 @@ void lv_mem_init(void)
 }
 
 /**
+ * Clean up the memory buffer which frees all the allocated memories.
+ * @note It work only if `LV_MEM_CUSTOM == 0`
+ */
+void lv_mem_deinit(void)
+{
+#if LV_MEM_CUSTOM == 0
+    memset(work_mem, 0x00, (LV_MEM_SIZE / sizeof(MEM_UNIT)) * sizeof(MEM_UNIT));
+    lv_mem_ent_t * full = (lv_mem_ent_t *)work_mem;
+    full->header.s.used = 0;
+    /*The total mem size id reduced by the first header and the close patterns */
+    full->header.s.d_size = LV_MEM_SIZE - sizeof(lv_mem_header_t);
+#endif
+}
+
+/**
  * Allocate a memory dynamically
  * @param size size of the memory to allocate in bytes
  * @return pointer to the allocated memory
@@ -113,7 +128,7 @@ void * lv_mem_alloc(size_t size)
         return &zero_mem;
     }
 
-#ifdef LV_MEM_ENV64
+#ifdef LV_ARCH_64
     /*Round the size up to 8*/
     if(size & 0x7) {
         size = size & (~0x7);
@@ -262,7 +277,7 @@ void * lv_mem_realloc(void * data_p, size_t new_size)
 
 #else /* LV_ENABLE_GC */
 
-void * lv_mem_realloc(void * data_p, uint32_t new_size)
+void * lv_mem_realloc(void * data_p, size_t new_size)
 {
     void * new_p = LV_MEM_CUSTOM_REALLOC(data_p, new_size);
     if(new_p == NULL) LV_LOG_WARN("Couldn't allocate memory");
@@ -432,7 +447,7 @@ static void * ent_alloc(lv_mem_ent_t * e, size_t size)
  */
 static void ent_trunc(lv_mem_ent_t * e, size_t size)
 {
-#ifdef LV_MEM_ENV64
+#ifdef LV_ARCH_64
     /*Round the size up to 8*/
     if(size & 0x7) {
         size = size & (~0x7);
@@ -456,11 +471,11 @@ static void ent_trunc(lv_mem_ent_t * e, size_t size)
         uint8_t * e_data             = &e->first_data;
         lv_mem_ent_t * after_new_e   = (lv_mem_ent_t *)&e_data[size];
         after_new_e->header.s.used   = 0;
-        after_new_e->header.s.d_size = e->header.s.d_size - size - sizeof(lv_mem_header_t);
+        after_new_e->header.s.d_size = (uint32_t)e->header.s.d_size - size - sizeof(lv_mem_header_t);
     }
 
     /* Set the new size for the original entry */
-    e->header.s.d_size = size;
+    e->header.s.d_size = (uint32_t)size;
 }
 
 #endif
