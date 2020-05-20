@@ -89,15 +89,23 @@ namespace Pinetime {
         uint8_t nbPacketsToNotify = 0;
         uint32_t nbPacketReceived = 0;
         uint32_t bytesReceived = 0;
+        uint32_t writeOffset = 0; //0x40000;
 
         uint32_t softdeviceSize = 0;
         uint32_t bootloaderSize = 0;
-        uint32_t applicationSize = 0;
+        uint32_t applicationSize = 115200;
 
         int SendDfuRevision(os_mbuf *om) const;
         void SendNotification(uint16_t connectionHandle, const uint8_t *data, const size_t size);
         int WritePacketHandler(uint16_t connectionHandle, os_mbuf *om);
         int ControlPointHandler(uint16_t connectionHandle, os_mbuf *om);
+
+        uint8_t tempBuffer[200];
+        uint16_t ComputeCrc(uint8_t const * p_data, uint32_t size, uint16_t const * p_crc);
+
+        void Validate();
+        bool firstCrc = true;
+        uint16_t tempCrc = 0;
     };
   }
 }

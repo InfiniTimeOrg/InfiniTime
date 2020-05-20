@@ -1,5 +1,6 @@
 #include <Components/Ble/BleController.h>
 #include <SystemTask/SystemTask.h>
+#include <cstring>
 #include "DfuService.h"
 
 using namespace Pinetime::Controllers;
@@ -103,15 +104,17 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
       softdeviceSize = om->om_data[0] + (om->om_data[1] << 8) + (om->om_data[2] << 16) + (om->om_data[3] << 24);
       bootloaderSize = om->om_data[4] + (om->om_data[5] << 8) + (om->om_data[6] << 16) + (om->om_data[7] << 24);
       applicationSize = om->om_data[8] + (om->om_data[9] << 8) + (om->om_data[10] << 16) + (om->om_data[11] << 24);
+      bleController.FirmwareUpdateTotalBytes(applicationSize);
       NRF_LOG_INFO("[DFU] -> Start data received : SD size : %d, BT size : %d, app size : %d", softdeviceSize, bootloaderSize, applicationSize);
 
       for(int erased = 0; erased < applicationSize; erased += 0x1000) {
-        spiNorFlash.SectorErase(erased);
+#if 1
+        spiNorFlash.SectorErase(writeOffset + erased);
 
         auto p =  spiNorFlash.ProgramFailed();
         auto e = spiNorFlash.EraseFailed();
         NRF_LOG_INFO("[DFU] Erasing sector %d - %d-%d", erased, p, e);
-
+#endif
       }
 
       uint8_t data[] {16, 1, 1};
@@ -130,7 +133,7 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
       }
       uint16_t crc = om->om_data[10 + (softdeviceArrayLength*2)] + (om->om_data[10 + (softdeviceArrayLength*2)] << 8);
 
-      NRF_LOG_INFO("[DFU] -> Init data received : deviceType = %d, deviceRevision = %d, applicationVersion = %d, nb SD = %d, First SD = %d, CRC = %d",
+      NRF_LOG_INFO("[DFU] -> Init data received : deviceType = %d, deviceRevision = %d, applicationVersion = %d, nb SD = %d, First SD = %d, CRC = %u",
                    deviceType, deviceRevision, applicationVersion, softdeviceArrayLength, sd[0], crc);
 
       return 0;
@@ -138,8 +141,21 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
 
     case States::Data: {
       nbPacketReceived++;
+      auto offset = ((nbPacketReceived-1) % nbPacketsToNotify)*20;
+      std::memcpy(tempBuffer + offset, om->om_data, om->om_len);
+        if(firstCrc) {
+            tempCrc = ComputeCrc(om->om_data, om->om_len, NULL);
+            firstCrc = false;
+        }
+        else
+            tempCrc = ComputeCrc(om->om_data, om->om_len, &tempCrc);
 
-      spiNorFlash.Write(bytesReceived, om->om_data, om->om_len);
+      if(nbPacketReceived > 0 && (nbPacketReceived % nbPacketsToNotify) == 0) {
+#if 1
+        spiNorFlash.Write(writeOffset + ((nbPacketReceived-nbPacketsToNotify)*20), tempBuffer, 200);
+#endif
+      }
+
 
       bytesReceived += om->om_len;
       bleController.FirmwareUpdateCurrentBytes(bytesReceived);
@@ -157,9 +173,11 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
         uint8_t data[3]{static_cast<uint8_t>(Opcodes::Response),
                         static_cast<uint8_t>(Opcodes::ReceiveFirmwareImage),
                         static_cast<uint8_t>(ErrorCodes::NoError)};
-        NRF_LOG_INFO("[DFU] -> Send packet notification : all bytes received!");
+        NRF_LOG_INFO("[DFU] -> Send packet notification : all bytes received! CRC = %u", tempCrc);
         SendNotification(connectionHandle, data, 3);
         state = States::Validate;
+
+        Validate();
       }
     }
       return 0;
@@ -189,7 +207,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
         NRF_LOG_INFO("[DFU] -> Start DFU, mode = Application");
         state = States::Start;
         bleController.StartFirmwareUpdate();
-        bleController.FirmwareUpdateTotalBytes(175280);
+        bleController.FirmwareUpdateTotalBytes(0xffffffffu);
         bleController.FirmwareUpdateCurrentBytes(0);
         systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleFirmwareUpdateStarted);
         return 0;
@@ -259,4 +277,41 @@ void DfuService::SendNotification(uint16_t connectionHandle, const uint8_t *data
   auto *om = ble_hs_mbuf_from_flat(data, size);
   auto ret = ble_gattc_notify_custom(connectionHandle, controlPointCharacteristicHandle, om);
   ASSERT(ret == 0);
+}
+
+uint16_t DfuService::ComputeCrc(uint8_t const * p_data, uint32_t size, uint16_t const * p_crc)
+{
+    uint16_t crc = (p_crc == NULL) ? 0xFFFF : *p_crc;
+
+    for (uint32_t i = 0; i < size; i++)
+    {
+        crc  = (uint8_t)(crc >> 8) | (crc << 8);
+        crc ^= p_data[i];
+        crc ^= (uint8_t)(crc & 0xFF) >> 4;
+        crc ^= (crc << 8) << 4;
+        crc ^= ((crc & 0xFF) << 4) << 1;
+    }
+
+    return crc;
+}
+
+void DfuService::Validate() {
+    uint32_t chunkSize = 200;
+    int currentOffset = 0;
+    uint16_t crc = 0;
+
+    bool first = true;
+    while(currentOffset < applicationSize) {
+        uint32_t readSize = (applicationSize - currentOffset) > chunkSize ? chunkSize : (applicationSize - currentOffset);
+
+        spiNorFlash.Read(writeOffset + currentOffset, tempBuffer, chunkSize);
+        if(first) {
+            crc = ComputeCrc(tempBuffer, chunkSize, NULL);
+            first = false;
+        }
+        else
+            crc = ComputeCrc(tempBuffer, chunkSize, &crc);
+        currentOffset += readSize;
+    }
+    NRF_LOG_INFO("CRC : %u", crc);
 }
