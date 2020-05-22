@@ -3,3 +3,5 @@ cmake-build-*
 core
 sdk
 src/Version.h
+CMakeFiles/*
+CMakeCache.txt
