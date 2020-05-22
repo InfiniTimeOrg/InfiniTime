@@ -6,6 +6,9 @@ addons:
     packages:
       - cmake
 
+env:
+  - TOOL="arm-none-eabi"
+
 before_install:
   # Save path to the git respository
   - PROJECT_PATH=$(pwd)
