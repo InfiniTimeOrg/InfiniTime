@@ -1,8 +1,6 @@
 language: c
 os:
   - linux
-compiler:
-  - gcc
 addons:
   apt:
     packages:
