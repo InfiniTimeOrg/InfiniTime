@@ -97,8 +97,17 @@ lv_obj_t * lv_tileview_create(lv_obj_t * par, const lv_obj_t * copy)
         /* Set a size which fits into the parent.
          * Don't use `par` directly because if the tileview is created on a page it is moved to the
          * scrollable so the parent has changed */
-        lv_obj_set_size(new_tileview, lv_obj_get_width_fit(lv_obj_get_parent(new_tileview)),
-                        lv_obj_get_height_fit(lv_obj_get_parent(new_tileview)));
+        lv_coord_t w;
+        lv_coord_t h;
+        if(par) {
+            w = lv_obj_get_width_fit(lv_obj_get_parent(new_tileview));
+            h = lv_obj_get_height_fit(lv_obj_get_parent(new_tileview));
+        } else {
+            w = lv_disp_get_hor_res(NULL);
+            h = lv_disp_get_ver_res(NULL);
+        }
+
+        lv_obj_set_size(new_tileview, w, h);
 
         lv_obj_set_drag_throw(lv_page_get_scrl(new_tileview), false);
         lv_page_set_scrl_fit(new_tileview, LV_FIT_TIGHT);
@@ -216,6 +225,7 @@ void lv_tileview_set_tile_act(lv_obj_t * tileview, lv_coord_t x, lv_coord_t y, l
     for(tile_id = 0; tile_id < ext->valid_pos_cnt; tile_id++) {
         if(ext->valid_pos[tile_id].x == x && ext->valid_pos[tile_id].y == y) {
             valid = true;
+            break;
         }
     }
 
@@ -486,9 +496,9 @@ static void tileview_scrl_event_cb(lv_obj_t * scrl, lv_event_t event)
         lv_tileview_ext_t * ext = lv_obj_get_ext_attr(tileview);
         if(lv_indev_is_dragging(indev) && (ext->drag_hor || ext->drag_ver)) {
             indev->proc.types.pointer.drag_in_prog = 0;
+            drag_end_handler(tileview);
         }
 
-        drag_end_handler(tileview);
     }
 }
 

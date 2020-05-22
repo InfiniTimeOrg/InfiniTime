@@ -775,6 +775,7 @@ static lv_res_t lv_ddlist_scrl_signal(lv_obj_t * scrl, lv_signal_t sign, void * 
     /* Include the ancient signal function */
     res = ancestor_scrl_signal(scrl, sign, param);
     if(res != LV_RES_OK) return res;
+    if(sign == LV_SIGNAL_GET_TYPE) return lv_obj_handle_get_type_signal(param, "");
 
     lv_obj_t * ddlist = lv_obj_get_parent(scrl);
 
@@ -806,6 +807,10 @@ static lv_res_t release_handler(lv_obj_t * ddlist)
 {
     lv_ddlist_ext_t * ext = lv_obj_get_ext_attr(ddlist);
 
+    /*Only deal with clickable drop down lists*/
+    if(!lv_obj_get_click(ddlist))
+        return LV_RES_OK;
+    
     if(ext->opened == 0) { /*Open the list*/
         ext->opened = 1;
         lv_obj_set_drag(lv_page_get_scrl(ddlist), true);

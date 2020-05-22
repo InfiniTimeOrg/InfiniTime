@@ -30,14 +30,16 @@ I've tested this project on the actual PineTime hardware.
  * Project builds and runs on the Pinetime;
  * Logs available via JLink RTT;
  * SPI (DMA & IRQ based) LCD driver;
- * BLE advertising, connection and bonding;
+ * Open source BLE stack :  [NimBLE](https://github.com/apache/mynewt-nimble);
+ * BLE advertising and connection connection;
  * BLE CTS client (retrieves the time from the connected device if it implements a CTS server);
  * Push button to go to disable screen (and go to low power mode) / enable screen (and wake-up) and UI navigation
  * Touch panel support;
  * Rich user interface (using [LittleVGL](https://littlevgl.com/)) via display, touchpanel and push button.
  * Digital watch face and 4 demo applications (spinning meter, analog gauche, push button and message box);
  * Watchdog (automatic reset in case of firmware crash) and reset support (push and hold the button for 7 - 10s);
- * BLE Notification support (still Work-In-Progress, [companion app](https://github.com/JF002/gobbledegook) needed). 
+ * BLE Notification support (still Work-In-Progress, [companion app](https://github.com/JF002/gobbledegook) needed);
+ * Supported by companion app [Amazfish](https://openrepos.net/content/piggz/amazfish) (time synchronization and notifications are integrated).
 
 ## Documentation
 
@@ -80,10 +82,6 @@ See [this page](./doc/PinetimeStubWithNrf52DK.md)
             - -DOPENOCD_BIN_PATH=[path to openocd]
 
 
-  * Optionally, you can define MERGEHEX with the path to the ```mergehex``` tool from [NRF5X Command Line Tools](https://infocenter.nordicsemi.com/index.jsp?topic=%2Fug_nrf5x_cltools%2FUG%2Fcltools%2Fnrf5x_command_line_tools_lpage.html&cp=6_1) to be able to merge the application and softdevice into one HEX file. In this case the merged file is generated in src/pinetime-app-full.hex
-    
-        - -DMERGEHEX=[Path to the mergehex executable]
-
 JLINK
 ```
 $ mkdir build
@@ -119,18 +117,6 @@ $ make -j pinetime-app
 $ make FLASH_ERASE
 ```   
 
-* Flash softdevice & application
-
-```
-$ make FLASH_SOFTDEVICE
-$ make FLASH_pinetime-app
-```
-
-Or, with ```mergehex```
-
-```
-$ make FLASH_MERGED_pinetime-app
-```
 
 * For your information : list make targets :
 
@@ -211,7 +197,7 @@ $ JLinkRTTClient
 
  - https://github.com/eliotstock/memory : display the memory usage (FLASH/RAM) using the .map file from GCC.
  
-## BLE connection, bonding and time synchronization
+## BLE connection and time synchronization
 At runtime, BLE advertising is started. You can then use a smartphone or computer to connect and bond to your Pinetime. 
 As soon as a device is bonded, Pinetime will look for a **CTS** server (**C**urrent **T**ime **S**ervice) on the connected device.
 
@@ -226,7 +212,7 @@ Here is how to do it with an Android smartphone running NRFConnect:
     - Select server configuration "Current Time Service" and tap OK
 * Go back to the main screen and scan for BLE devices. A device called "PineTime" should appear
 * Tap the button "Connect" next to the PineTime device. It should connect to the PineTime and switch to a new tab.
-* On this tab, on the top right, there is a 3 dots button. Tap on it and select Bond. The bonding process begins, and if it is sucessful, the PineTime should update its time and display it on the screen.
+* If a CTS server is found, the Pinetime should update its time with the time provided by the server.
 
 ### Using Linux and bluetoothctl
 * Ensure that your bluetooth controller is enabled and working fine. I've tested this on a x86 Debian computer and on a RaspberryPi 3.

@@ -484,7 +484,9 @@ void lv_ta_set_text(lv_obj_t * ta, const char * txt)
     if(lv_ta_get_accepted_chars(ta) || lv_ta_get_max_length(ta)) {
         lv_label_set_text(ext->label, "");
         lv_ta_set_cursor_pos(ta, LV_TA_CURSOR_LAST);
-
+        if(ext->pwd_mode != 0) {
+            ext->pwd_tmp[0] = '\0'; /*Clear the password too*/
+        }
         uint32_t i = 0;
         while(txt[i] != '\0') {
             uint32_t c = lv_txt_encoded_next(txt, &i);
@@ -731,6 +733,7 @@ void lv_ta_set_one_line(lv_obj_t * ta, bool en)
 
     lv_ta_ext_t * ext = lv_obj_get_ext_attr(ta);
     if(ext->one_line == en) return;
+    lv_label_align_t old_align = lv_label_get_align(ext->label);
 
     if(en) {
         const lv_style_t * style_ta    = lv_obj_get_style(ta);
@@ -758,7 +761,8 @@ void lv_ta_set_one_line(lv_obj_t * ta, bool en)
     }
 
     placeholder_update(ta);
-    refr_cursor_area(ta);
+    /* `refr_cursor_area` is called at the end of lv_ta_set_text_align */
+    lv_ta_set_text_align(ta, old_align);
 }
 
 /**
@@ -943,6 +947,7 @@ void lv_ta_set_cursor_blink_time(lv_obj_t * ta, uint16_t time)
         a.path_cb        = lv_anim_path_step;
         lv_anim_create(&a);
     } else {
+        lv_anim_del(ta, (lv_anim_exec_xcb_t)cursor_blink_anim);
         ext->cursor.state = 1;
     }
 #else
@@ -1589,14 +1594,13 @@ static void cursor_blink_anim(lv_obj_t * ta, lv_anim_value_t show)
     if(show != ext->cursor.state) {
         ext->cursor.state = show == 0 ? 0 : 1;
         if(ext->cursor.type != LV_CURSOR_NONE && (ext->cursor.type & LV_CURSOR_HIDDEN) == 0) {
-            lv_disp_t * disp = lv_obj_get_disp(ta);
             lv_area_t area_tmp;
             lv_area_copy(&area_tmp, &ext->cursor.area);
             area_tmp.x1 += ext->label->coords.x1;
             area_tmp.y1 += ext->label->coords.y1;
             area_tmp.x2 += ext->label->coords.x1;
             area_tmp.y2 += ext->label->coords.y1;
-            lv_inv_area(disp, &area_tmp);
+            lv_obj_invalidate_area(ta, &area_tmp);
         }
     }
 }
@@ -1791,14 +1795,13 @@ static void refr_cursor_area(lv_obj_t * ta)
     }
 
     /*Save the new area*/
-    lv_disp_t * disp = lv_obj_get_disp(ta);
     lv_area_t area_tmp;
     lv_area_copy(&area_tmp, &ext->cursor.area);
     area_tmp.x1 += ext->label->coords.x1;
     area_tmp.y1 += ext->label->coords.y1;
     area_tmp.x2 += ext->label->coords.x1;
     area_tmp.y2 += ext->label->coords.y1;
-    lv_inv_area(disp, &area_tmp);
+    lv_obj_invalidate_area(ta, &area_tmp);
 
     lv_area_copy(&ext->cursor.area, &cur_area);
 
@@ -1807,7 +1810,7 @@ static void refr_cursor_area(lv_obj_t * ta)
     area_tmp.y1 += ext->label->coords.y1;
     area_tmp.x2 += ext->label->coords.x1;
     area_tmp.y2 += ext->label->coords.y1;
-    lv_inv_area(disp, &area_tmp);
+    lv_obj_invalidate_area(ta, &area_tmp);
 }
 
 static void placeholder_update(lv_obj_t * ta)

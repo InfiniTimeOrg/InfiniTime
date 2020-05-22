@@ -816,7 +816,7 @@ static void lv_chart_draw_div(lv_obj_t * chart, const lv_area_t * mask)
         }
 
         p1.x = 0 + x_ofs;
-        p2.x = w + x_ofs;
+        p2.x = w - 1 + x_ofs;
         for(div_i = div_i_start; div_i <= div_i_end; div_i++) {
             p1.y = (int32_t)((int32_t)(h - style->line.width) * div_i) / (ext->hdiv_cnt + 1);
             p1.y += y_ofs;
@@ -836,7 +836,7 @@ static void lv_chart_draw_div(lv_obj_t * chart, const lv_area_t * mask)
         }
 
         p1.y = 0 + y_ofs;
-        p2.y = h + y_ofs;
+        p2.y = h + y_ofs - 1;
         for(div_i = div_i_start; div_i <= div_i_end; div_i++) {
             p1.x = (int32_t)((int32_t)(w - style->line.width) * div_i) / (ext->vdiv_cnt + 1);
             p1.x += x_ofs;
@@ -951,7 +951,7 @@ static void lv_chart_draw_points(lv_obj_t * chart, const lv_area_t * mask)
             y_tmp = (int32_t)((int32_t)ser->points[p_act] - ext->ymin) * h;
             y_tmp = y_tmp / (ext->ymax - ext->ymin);
 
-            cir_a.y1 = h - y_tmp + y_ofs;
+            cir_a.y1 = h - y_tmp + y_ofs - 1;
             cir_a.y2 = cir_a.y1 + style_point.body.radius;
             cir_a.y1 -= style_point.body.radius;
 
@@ -1496,13 +1496,13 @@ static void lv_chart_inv_lines(lv_obj_t * chart, uint16_t i)
         if(i < ext->point_cnt - 1) {
             coords.x1 = ((w * i) / (ext->point_cnt - 1)) + x_ofs - ext->series.width;
             coords.x2 = ((w * (i + 1)) / (ext->point_cnt - 1)) + x_ofs + ext->series.width;
-            lv_inv_area(lv_obj_get_disp(chart), &coords);
+            lv_obj_invalidate_area(chart, &coords);
         }
 
         if(i > 0) {
             coords.x1 = ((w * (i - 1)) / (ext->point_cnt - 1)) + x_ofs - ext->series.width;
             coords.x2 = ((w * i) / (ext->point_cnt - 1)) + x_ofs + ext->series.width;
-            lv_inv_area(lv_obj_get_disp(chart), &coords);
+            lv_obj_invalidate_area(chart, &coords);
         }
     }
 }

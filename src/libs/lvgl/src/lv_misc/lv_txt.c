@@ -8,6 +8,7 @@
  *********************/
 #include "lv_txt.h"
 #include "lv_math.h"
+#include "lv_log.h"
 
 /*********************
  *      DEFINES
@@ -108,8 +109,14 @@ void lv_txt_get_size(lv_point_t * size_res, const char * text, const lv_font_t *
     /*Calc. the height and longest line*/
     while(text[line_start] != '\0') {
         new_line_start += lv_txt_get_next_line(&text[line_start], font, letter_space, max_width, flag);
-        size_res->y += letter_height;
-        size_res->y += line_space;
+
+        if ((unsigned long)size_res->y + (unsigned long)letter_height + (unsigned long)line_space > LV_MAX_OF(lv_coord_t)) {
+            LV_LOG_WARN("lv_txt_get_size: integer overflow while calculating text height");
+            return;
+        } else {
+            size_res->y += letter_height;
+            size_res->y += line_space;
+        }
 
         /*Calculate the the longest line*/
         act_line_length = lv_txt_get_width(&text[line_start], new_line_start - line_start, font, letter_space, flag);
@@ -118,7 +125,7 @@ void lv_txt_get_size(lv_point_t * size_res, const char * text, const lv_font_t *
         line_start  = new_line_start;
     }
 
-    /*Ma ke the text one line taller if the last character is '\n' or '\r'*/
+    /*Make the text one line taller if the last character is '\n' or '\r'*/
     if((line_start != 0) && (text[line_start - 1] == '\n' || text[line_start - 1] == '\r')) {
         size_res->y += letter_height + line_space;
     }
@@ -200,8 +207,12 @@ static uint16_t lv_txt_get_next_word(const char * txt, const lv_font_t * font,
         letter_w = lv_font_get_glyph_width(font, letter, letter_next);
         cur_w += letter_w;
 
+        if(letter_w > 0) {
+            cur_w += letter_space;
+        }
+
         /* Test if this character fits within max_width */
-        if(break_index == NO_BREAK_FOUND && cur_w > max_width) {
+        if(break_index == NO_BREAK_FOUND && (cur_w - letter_space) > max_width) {
             break_index = i; 
             break_letter_count = word_len - 1;
             /* break_index is now pointing at the character that doesn't fit */
@@ -219,9 +230,6 @@ static uint16_t lv_txt_get_next_word(const char * txt, const lv_font_t * font,
         /* Update the output width */
         if( word_w_ptr != NULL && break_index == NO_BREAK_FOUND ) *word_w_ptr = cur_w;
 
-        if(letter_w > 0) {
-            cur_w += letter_space;
-        }
 
         i = i_next;
         i_next = i_next_next;
