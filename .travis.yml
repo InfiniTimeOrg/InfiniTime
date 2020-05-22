@@ -1,13 +1,6 @@
 language: c
 os: linux
 name: "ARM GCC"
-env:
-  - "C_COMPILER=arm-none-eabi-gcc"
-  - "CXX_COMPILER=arm-none-eabi-gcc"
-  - "SIZE=arm-none-eabi-size"
-  - "OBJCOPY=arm-none-eabi-objcopy"
-  - "LINKER=arm-none-eabi-ld"
-  - "LLD=arm-none-eabi-ld.bfd"
 
 before_install:
   # Save path to the git respository
@@ -18,7 +11,7 @@ install:
   - cd /opt
   - wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2019q4/gcc-arm-none-eabi-9-2019-q4-major-x86_64-linux.tar.bz2
   - tar -xvf gcc-arm-none-eabi-9-2019-q4-major-x86_64-linux.tar.bz2
-  #- export PATH=/opt/gcc-arm-none-eabi-9-2019-q4-major/arm-none-eabi/bin/:$PATH
+  - export PATH=/opt/gcc-arm-none-eabi-9-2019-q4-major/arm-none-eabi/bin/:$PATH
   # install SDK in opt folder
   - mkdir sdk
   - cd sdk
