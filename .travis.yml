@@ -1,12 +1,13 @@
 language: c
 os: linux
 env:
-   - C_COMPILER=arm-none-eabi-gcc
-   - CXX_COMPILER=arm-none-eabi-gcc
-   - SIZE=arm-none-eabi-size
-   - OBJCOPY=arm-none-eabi-objcopy
-   - LINKER=arm-none-eabi-ld
-   - LLD=arm-none-eabi-ld.bfd
+  global:
+    - C_COMPILER=arm-none-eabi-gcc
+    - CXX_COMPILER=arm-none-eabi-gcc
+    - SIZE=arm-none-eabi-size
+    - OBJCOPY=arm-none-eabi-objcopy
+    - LINKER=arm-none-eabi-ld
+    - LLD=arm-none-eabi-ld.bfd
 
 before_install:
   # Save path to the git respository
@@ -19,17 +20,16 @@ install:
   - tar -xvf gcc-arm-none-eabi-9-2019-q4-major-x86_64-linux.tar.bz2
   - export PATH=/opt/gcc-arm-none-eabi-9-2019-q4-major/arm-none-eabi/bin/:$PATH
 
-  #temporary disable sdk download/install to increase build time for testing.
   # install SDK in opt folder
-  #- mkdir sdk
-  #- cd sdk
-  #- wget https://www.nordicsemi.com/-/media/Software-and-other-downloads/SDKs/nRF5/Binaries/nRF5SDK160098a08e2.zip
-  #- unzip nRF5SDK160098a08e2.zip
+  - mkdir sdk
+  - cd sdk
+  - wget https://www.nordicsemi.com/-/media/Software-and-other-downloads/SDKs/nRF5/Binaries/nRF5SDK160098a08e2.zip
+  - unzip nRF5SDK160098a08e2.zip
 
 script:
   - arm-none-eabi-gcc --version
   - cd $PROJECT_PATH
   #cmake configure
-  - cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=/opt/gcc-arm-none-eabi-9-2019-q4-major -DUSE_OPENOCD=1 "-DTOOLCHAIN_PREFIX=opt/gcc-arm-none-eabi-9-2019-q4-major" #-DNRF5_SDK_PATH=/opt/sdk/
+  - cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=/opt/gcc-arm-none-eabi-9-2019-q4-major -DNRF5_SDK_PATH=/opt/sdk/ -DUSE_OPENOCD=1 "-DTOOLCHAIN_PREFIX=opt/gcc-arm-none-eabi-9-2019-q4-major"
   #build
   - make -j pinetime-app
