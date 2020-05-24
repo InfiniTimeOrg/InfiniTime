@@ -84,6 +84,7 @@ void SpiMaster::SetupWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_chan
   NRF_PPI->CH[ppi_channel].EEP = (uint32_t) &NRF_GPIOTE->EVENTS_IN[gpiote_channel];
   NRF_PPI->CH[ppi_channel].TEP = (uint32_t) &spim->TASKS_STOP;
   NRF_PPI->CHENSET = 1U << ppi_channel;
+  spiBaseAddress->EVENTS_END = 0;
 
   // Disable IRQ
   spim->INTENCLR = (1<<6);
@@ -104,7 +105,6 @@ void SpiMaster::DisableWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_ch
 
 void SpiMaster::OnEndEvent() {
   if(currentBufferAddr == 0) {
-    asm("nop");
     return;
   }
 
@@ -119,20 +119,17 @@ void SpiMaster::OnEndEvent() {
   } else {
     uint8_t* buffer = nullptr;
     size_t size = 0;
+      if(taskToNotify != nullptr) {
+          BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+          vTaskNotifyGiveFromISR(taskToNotify, &xHigherPriorityTaskWoken);
+          portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+      }
 
-
-
-    if(taskToNotify != nullptr) {
+      nrf_gpio_pin_set(this->pinCsn);
+      currentBufferAddr = 0;
       BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-      vTaskNotifyGiveFromISR(taskToNotify, &xHigherPriorityTaskWoken);
+      xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken);
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
-
-    nrf_gpio_pin_set(this->pinCsn);
-    currentBufferAddr = 0;
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken);
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
 }
 
@@ -188,8 +185,6 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t *data, size_t size) {
 
   if(size == 1) {
     while (spiBaseAddress->EVENTS_END == 0);
-    nrf_gpio_pin_set(this->pinCsn);
-    currentBufferAddr = 0;
     xSemaphoreGive(mutex);
   }
 
@@ -197,35 +192,35 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t *data, size_t size) {
 }
 
 bool SpiMaster::Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t *data, size_t dataSize) {
-  xSemaphoreTake(mutex, portMAX_DELAY);
+    xSemaphoreTake(mutex, portMAX_DELAY);
 
-  taskToNotify = nullptr;
+    taskToNotify = nullptr;
 
-  this->pinCsn = pinCsn;
-  DisableWorkaroundForFtpan58(spiBaseAddress, 0,0);
-  spiBaseAddress->INTENCLR = (1<<6);
-  spiBaseAddress->INTENCLR = (1<<1);
-  spiBaseAddress->INTENCLR = (1<<19);
+    this->pinCsn = pinCsn;
+    DisableWorkaroundForFtpan58(spiBaseAddress, 0,0);
+    spiBaseAddress->INTENCLR = (1<<6);
+    spiBaseAddress->INTENCLR = (1<<1);
+    spiBaseAddress->INTENCLR = (1<<19);
 
-  nrf_gpio_pin_clear(this->pinCsn);
+    nrf_gpio_pin_clear(this->pinCsn);
 
 
-  currentBufferAddr = 0;
-  currentBufferSize = 0;
+    currentBufferAddr = 0;
+    currentBufferSize = 0;
 
-  PrepareTx((uint32_t)cmd, cmdSize);
-  spiBaseAddress->TASKS_START = 1;
-  while (spiBaseAddress->EVENTS_END == 0);
+    PrepareTx((uint32_t)cmd, cmdSize);
+    spiBaseAddress->TASKS_START = 1;
+    while (spiBaseAddress->EVENTS_END == 0);
 
-  PrepareRx((uint32_t)cmd, cmdSize, (uint32_t)data, dataSize);
-  spiBaseAddress->TASKS_START = 1;
+    PrepareRx((uint32_t)cmd, cmdSize, (uint32_t)data, dataSize);
+    spiBaseAddress->TASKS_START = 1;
 
-  while (spiBaseAddress->EVENTS_END == 0);
-  nrf_gpio_pin_set(this->pinCsn);
+    while (spiBaseAddress->EVENTS_END == 0);
+    nrf_gpio_pin_set(this->pinCsn);
 
-  xSemaphoreGive(mutex);
+    xSemaphoreGive(mutex);
 
-  return true;
+    return true;
 }
 
 

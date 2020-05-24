@@ -1,10 +1,12 @@
 #pragma once
 
 #include <cstdint>
+#include "AlertNotificationService.h"
 #include "AlertNotificationClient.h"
 #include "DeviceInformationService.h"
 #include "CurrentTimeClient.h"
 #include "DfuService.h"
+#include "CurrentTimeService.h"
 #include <host/ble_gap.h>
 
 namespace Pinetime {
@@ -44,7 +46,10 @@ namespace Pinetime {
 
         DeviceInformationService deviceInformationService;
         CurrentTimeClient currentTimeClient;
+        AlertNotificationService anService;
         AlertNotificationClient alertNotificationClient;
+        CurrentTimeService currentTimeService;
+
         uint8_t addrType;
         uint16_t connectionHandle;
 
