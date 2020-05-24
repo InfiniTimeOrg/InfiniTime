@@ -10,6 +10,7 @@
 #include <nimble/hci_common.h>
 #include <host/ble_gap.h>
 #include <host/util/util.h>
+#include <drivers/InternalFlash.h>
 #include "../main.h"
 
 using namespace Pinetime::System;
@@ -38,27 +39,6 @@ void SystemTask::Process(void *instance) {
   app->Work();
 }
 
-static inline void nrf52_wait_for_flash_ready(void)
-{
-    while (NRF_NVMC->READY == NVMC_READY_READY_Busy) {;}
-}
-
-void nrf52_nvmc_write_word(uint32_t address, uint32_t value) {
-    // Enable write.
-    NRF_NVMC->CONFIG = NVMC_CONFIG_WEN_Wen;
-    __ISB();
-    __DSB();
-
-    // Write word
-    *(uint32_t*)address = value;
-    nrf52_wait_for_flash_ready();
-
-    // Disable write
-    NRF_NVMC->CONFIG = NVMC_CONFIG_WEN_Ren;
-    __ISB();
-    __DSB();
-}
-
 void SystemTask::Work() {
   watchdog.Setup(7);
   watchdog.Start();
@@ -68,12 +48,12 @@ void SystemTask::Work() {
   spi.Init();
   spiNorFlash.Init();
 
-  uint32_t* magicptr = reinterpret_cast<uint32_t *>(0x7BFE8);
-  uint32_t magic = *magicptr;
-  if(magic != 1)
-    nrf52_nvmc_write_word(0x7BFE8, 1);
-
-  NRF_LOG_INFO("MAGIC : %d", magic);
+  // Write the 'image OK' flag if it's not already done
+  // TODO implement a better verification mecanism for the image (ask for user confirmation via UI/BLE ?)
+  uint32_t* imageOkPtr = reinterpret_cast<uint32_t *>(0x7BFE8);
+  uint32_t imageOk = *imageOkPtr;
+  if(imageOk != 1)
+    Pinetime::Drivers::InternalFlash::WriteWord(0x7BFE8, 1);
 
   nimbleController.Init();
   nimbleController.StartAdvertising();

@@ -342,6 +342,7 @@ list(APPEND SOURCE_FILES
   drivers/Spi.cpp
   drivers/Watchdog.cpp
   drivers/DebugPins.cpp
+  drivers/InternalFlash.cpp
   Components/Battery/BatteryController.cpp
   Components/Ble/BleController.cpp
   Components/Ble/NotificationManager.cpp
@@ -396,6 +397,7 @@ set(INCLUDE_FILES
   drivers/Spi.h
   drivers/Watchdog.h
   drivers/DebugPins.h
+  drivers/InternalFlash.h
   Components/Battery/BatteryController.h
   Components/Ble/BleController.h
   Components/Ble/NotificationManager.h
