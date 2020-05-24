@@ -60,19 +60,19 @@ void nrf52_nvmc_write_word(uint32_t address, uint32_t value) {
 }
 
 void SystemTask::Work() {
-//  watchdog.Setup(7);
-//  watchdog.Start();
+  watchdog.Setup(7);
+  watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
 
   spi.Init();
   spiNorFlash.Init();
 
-  // TODO write magic only if it's not already 1
-  nrf52_nvmc_write_word(0x7BFE8, 1);
-
   uint32_t* magicptr = reinterpret_cast<uint32_t *>(0x7BFE8);
   uint32_t magic = *magicptr;
+  if(magic != 1)
+    nrf52_nvmc_write_word(0x7BFE8, 1);
+
   NRF_LOG_INFO("MAGIC : %d", magic);
 
   nimbleController.Init();

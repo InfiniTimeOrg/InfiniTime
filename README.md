@@ -34,11 +34,13 @@ I've tested this project on the actual PineTime hardware.
  * Rich user interface (using [LittleVGL](https://littlevgl.com/)) via display, touchpanel and push button.
  * Digital watch face and 4 demo applications (spinning meter, analog gauche, push button and message box);
  * Watchdog (automatic reset in case of firmware crash) and reset support (push and hold the button for 7 - 10s);
- * BLE Notification support (still Work-In-Progress, [companion app](https://github.com/JF002/gobbledegook) needed). 
+ * BLE Notification support (still Work-In-Progress, [companion app](https://github.com/JF002/gobbledegook) needed);
+ * **[EXPERIMENTAL]** Firmware update (OTA) via BLE.
 
 ## Documentation
 
  * [BLE implementation and API](./doc/ble.md)
+ * [Bootloader and DFU](./bootloader/README.md)
 
 ## Stub using NRF52-DK
 ![Pinetime stub](./images/pinetimestub1.jpg "PinetimeStub")
@@ -116,17 +118,10 @@ $ make -j pinetime-app
 $ make FLASH_ERASE
 ```   
 
-* Flash softdevice & application
+* Flash application
 
 ```
-$ make FLASH_SOFTDEVICE
 $ make FLASH_pinetime-app
-```
-
-Or, with ```mergehex```
-
-```
-$ make FLASH_MERGED_pinetime-app
 ```
 
 * For your information : list make targets :
