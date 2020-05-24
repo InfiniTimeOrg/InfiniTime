@@ -185,6 +185,8 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t *data, size_t size) {
 
   if(size == 1) {
     while (spiBaseAddress->EVENTS_END == 0);
+    nrf_gpio_pin_set(this->pinCsn);
+    currentBufferAddr = 0;
     xSemaphoreGive(mutex);
   }
 
