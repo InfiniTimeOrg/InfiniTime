@@ -38,6 +38,27 @@ void SystemTask::Process(void *instance) {
   app->Work();
 }
 
+static inline void nrf52_wait_for_flash_ready(void)
+{
+    while (NRF_NVMC->READY == NVMC_READY_READY_Busy) {;}
+}
+
+void nrf52_nvmc_write_word(uint32_t address, uint32_t value) {
+    // Enable write.
+    NRF_NVMC->CONFIG = NVMC_CONFIG_WEN_Wen;
+    __ISB();
+    __DSB();
+
+    // Write word
+    *(uint32_t*)address = value;
+    nrf52_wait_for_flash_ready();
+
+    // Disable write
+    NRF_NVMC->CONFIG = NVMC_CONFIG_WEN_Ren;
+    __ISB();
+    __DSB();
+}
+
 void SystemTask::Work() {
 //  watchdog.Setup(7);
 //  watchdog.Start();
@@ -46,6 +67,14 @@ void SystemTask::Work() {
 
   spi.Init();
   spiNorFlash.Init();
+
+  // TODO write magic only if it's not already 1
+  nrf52_nvmc_write_word(0x7BFE8, 1);
+
+  uint32_t* magicptr = reinterpret_cast<uint32_t *>(0x7BFE8);
+  uint32_t magic = *magicptr;
+  NRF_LOG_INFO("MAGIC : %d", magic);
+
   nimbleController.Init();
   nimbleController.StartAdvertising();
   lcd.Init();

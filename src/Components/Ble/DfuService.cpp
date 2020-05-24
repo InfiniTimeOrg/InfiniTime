@@ -107,7 +107,7 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
       bleController.FirmwareUpdateTotalBytes(applicationSize);
       NRF_LOG_INFO("[DFU] -> Start data received : SD size : %d, BT size : %d, app size : %d", softdeviceSize, bootloaderSize, applicationSize);
 
-      for(int erased = 0; erased < applicationSize; erased += 0x1000) {
+      for(int erased = 0; erased < maxImageSize; erased += 0x1000) {
 #if 1
         spiNorFlash.SectorErase(writeOffset + erased);
 
@@ -159,7 +159,7 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
 
       bytesReceived += om->om_len;
       bleController.FirmwareUpdateCurrentBytes(bytesReceived);
-      NRF_LOG_INFO("[DFU] -> Bytes received : %d in %d packets", bytesReceived, nbPacketReceived);
+      //NRF_LOG_INFO("[DFU] -> Bytes received : %d in %d packets", bytesReceived, nbPacketReceived);
 
 
 
@@ -170,6 +170,16 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
         SendNotification(connectionHandle, data, 5);
       }
       if(bytesReceived == applicationSize) {
+          if((nbPacketReceived % nbPacketsToNotify) != 0) {
+              auto remaningPacket = nbPacketReceived % nbPacketsToNotify;
+              uint32_t spiOffset = writeOffset + ((nbPacketReceived-remaningPacket)*20);
+
+              spiNorFlash.Write(writeOffset + ((nbPacketReceived-remaningPacket)*20), tempBuffer, remaningPacket * 20);
+          }
+          if(applicationSize < maxImageSize) {
+              WriteMagicNumber();
+          }
+
         uint8_t data[3]{static_cast<uint8_t>(Opcodes::Response),
                         static_cast<uint8_t>(Opcodes::ReceiveFirmwareImage),
                         static_cast<uint8_t>(ErrorCodes::NoError)};
@@ -304,14 +314,27 @@ void DfuService::Validate() {
     while(currentOffset < applicationSize) {
         uint32_t readSize = (applicationSize - currentOffset) > chunkSize ? chunkSize : (applicationSize - currentOffset);
 
-        spiNorFlash.Read(writeOffset + currentOffset, tempBuffer, chunkSize);
+        spiNorFlash.Read(writeOffset + currentOffset, tempBuffer, readSize);
         if(first) {
-            crc = ComputeCrc(tempBuffer, chunkSize, NULL);
+            crc = ComputeCrc(tempBuffer, readSize, NULL);
             first = false;
         }
         else
-            crc = ComputeCrc(tempBuffer, chunkSize, &crc);
+            crc = ComputeCrc(tempBuffer, readSize, &crc);
         currentOffset += readSize;
     }
+
     NRF_LOG_INFO("CRC : %u", crc);
+}
+
+void DfuService::WriteMagicNumber() {
+    uint32_t magic[4] = {
+            0xf395c277,
+            0x7fefd260,
+            0x0f505235,
+            0x8079b62c,
+    };
+
+    uint32_t offset = writeOffset + (maxImageSize - (4 * sizeof(uint32_t)));
+    spiNorFlash.Write(offset, reinterpret_cast<uint8_t *>(magic), 4 * sizeof(uint32_t));
 }

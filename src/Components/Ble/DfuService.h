@@ -18,6 +18,7 @@ namespace Pinetime {
         DfuService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController,
                    Pinetime::Drivers::SpiNorFlash& spiNorFlash);
         void Init();
+        void Validate();
 
         int OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context);
       private:
@@ -89,11 +90,12 @@ namespace Pinetime {
         uint8_t nbPacketsToNotify = 0;
         uint32_t nbPacketReceived = 0;
         uint32_t bytesReceived = 0;
-        uint32_t writeOffset = 0; //0x40000;
+        uint32_t writeOffset = 0x40000;
 
         uint32_t softdeviceSize = 0;
         uint32_t bootloaderSize = 0;
-        uint32_t applicationSize = 115200;
+        uint32_t applicationSize = 0;
+        static constexpr uint32_t maxImageSize = 475136;
 
         int SendDfuRevision(os_mbuf *om) const;
         void SendNotification(uint16_t connectionHandle, const uint8_t *data, const size_t size);
@@ -103,9 +105,10 @@ namespace Pinetime {
         uint8_t tempBuffer[200];
         uint16_t ComputeCrc(uint8_t const * p_data, uint32_t size, uint16_t const * p_crc);
 
-        void Validate();
         bool firstCrc = true;
         uint16_t tempCrc = 0;
+
+        void WriteMagicNumber();
     };
   }
 }
