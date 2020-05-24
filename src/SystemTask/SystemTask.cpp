@@ -14,15 +14,16 @@
 
 using namespace Pinetime::System;
 
-SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd, Drivers::Cst816S &touchPanel,
+SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
+                       Pinetime::Drivers::SpiNorFlash& spiNorFlash, Drivers::Cst816S &touchPanel,
                        Components::LittleVgl &lvgl,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController,
                        Pinetime::Controllers::NotificationManager& notificationManager) :
-                       spi{spi}, lcd{lcd}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
+                       spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
-                       nimbleController(*this, bleController,dateTimeController, notificationManager) {
+                       nimbleController(*this, bleController,dateTimeController, notificationManager, spiNorFlash) {
   systemTaksMsgQueue = xQueueCreate(10, 1);
 }
 
@@ -37,19 +38,47 @@ void SystemTask::Process(void *instance) {
   app->Work();
 }
 
+static inline void nrf52_wait_for_flash_ready(void)
+{
+    while (NRF_NVMC->READY == NVMC_READY_READY_Busy) {;}
+}
+
+void nrf52_nvmc_write_word(uint32_t address, uint32_t value) {
+    // Enable write.
+    NRF_NVMC->CONFIG = NVMC_CONFIG_WEN_Wen;
+    __ISB();
+    __DSB();
+
+    // Write word
+    *(uint32_t*)address = value;
+    nrf52_wait_for_flash_ready();
+
+    // Disable write
+    NRF_NVMC->CONFIG = NVMC_CONFIG_WEN_Ren;
+    __ISB();
+    __DSB();
+}
+
 void SystemTask::Work() {
   watchdog.Setup(7);
   watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
 
-/* BLE */
+  spi.Init();
+  spiNorFlash.Init();
+
+  uint32_t* magicptr = reinterpret_cast<uint32_t *>(0x7BFE8);
+  uint32_t magic = *magicptr;
+  if(magic != 1)
+    nrf52_nvmc_write_word(0x7BFE8, 1);
+
+  NRF_LOG_INFO("MAGIC : %d", magic);
+
   nimbleController.Init();
   nimbleController.StartAdvertising();
-/* /BLE*/
-
-  spi.Init();
   lcd.Init();
+
   touchPanel.Init();
   batteryController.Init();
 
@@ -100,9 +129,31 @@ void SystemTask::Work() {
         case Messages::OnNewNotification:
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewNotification);
           break;
+        case Messages::BleConnected:
+          isBleDiscoveryTimerRunning = true;
+          bleDiscoveryTimer = 5;
+          break;
+        case Messages::BleFirmwareUpdateStarted:
+          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::BleFirmwareUpdateStarted);
+          break;
+        case Messages::BleFirmwareUpdateFinished:
+          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::BleFirmwareUpdateFinished);
+          break;
         default: break;
       }
     }
+
+    if(isBleDiscoveryTimerRunning) {
+      if(bleDiscoveryTimer == 0) {
+        isBleDiscoveryTimerRunning = false;
+        // Services discovery is deffered from 3 seconds to avoid the conflicts between the host communicating with the
+        // tharget and vice-versa. I'm not sure if this is the right way to handle this...
+        nimbleController.StartDiscovery();
+      } else {
+        bleDiscoveryTimer--;
+      }
+    }
+
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);
     batteryController.Update();

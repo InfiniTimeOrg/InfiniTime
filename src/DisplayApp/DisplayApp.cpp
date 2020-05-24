@@ -16,6 +16,7 @@
 #include <DisplayApp/Screens/Brightness.h>
 #include <DisplayApp/Screens/ScreenList.h>
 #include <Components/Ble/NotificationManager.h>
+#include <DisplayApp/Screens/FirmwareUpdate.h>
 #include "../SystemTask/SystemTask.h"
 
 using namespace Pinetime::Applications;
@@ -157,6 +158,17 @@ void DisplayApp::Refresh() {
 //          toggle = true;
 //        }
 
+        break;
+      case Messages::BleFirmwareUpdateStarted:
+        lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
+        currentScreen.reset(nullptr);
+        currentScreen.reset(new Screens::FirmwareUpdate(this, bleController));
+
+        break;
+      case Messages::BleFirmwareUpdateFinished:
+        lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
+        currentScreen.reset(nullptr);
+        currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
         break;
     }
   }

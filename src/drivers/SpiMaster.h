@@ -5,6 +5,7 @@
 #include <array>
 #include <atomic>
 #include <task.h>
+#include <semphr.h>
 
 #include "BufferProvider.h"
 #include <semphr.h>
@@ -24,7 +25,6 @@ namespace Pinetime {
           uint8_t pinSCK;
           uint8_t pinMOSI;
           uint8_t pinMISO;
-          uint8_t pinCSN;
         };
 
         SpiMaster(const SpiModule spi, const Parameters& params);
@@ -34,7 +34,10 @@ namespace Pinetime {
         SpiMaster& operator=(SpiMaster&&) = delete;
 
         bool Init();
-        bool Write(const uint8_t* data, size_t size);
+        bool Write(uint8_t pinCsn, const uint8_t* data, size_t size);
+        bool Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t *data, size_t dataSize);
+
+        bool WriteCmdAndBuffer(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t *data, size_t dataSize);
 
         void OnStartedEvent();
         void OnEndEvent();
@@ -46,6 +49,7 @@ namespace Pinetime {
         void SetupWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel);
         void DisableWorkaroundForFtpan58(NRF_SPIM_Type *spim, uint32_t ppi_channel, uint32_t gpiote_channel);
         void PrepareTx(const volatile uint32_t bufferAddress, const volatile size_t size);
+        void PrepareRx(const volatile uint32_t cmdAddress, const volatile size_t cmdSize, const volatile uint32_t bufferAddress, const volatile size_t size);
 
         NRF_SPIM_Type *  spiBaseAddress;
         uint8_t pinCsn;

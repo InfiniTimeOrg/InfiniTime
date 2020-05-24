@@ -5,63 +5,110 @@
 #include <host/ble_gap.h>
 
 namespace Pinetime {
+  namespace System {
+    class SystemTask;
+  }
+  namespace Drivers {
+    class SpiNorFlash;
+  }
   namespace Controllers {
-    class DeviceInformationService {
+    class Ble;
+    class DfuService {
       public:
-        DeviceInformationService();
+        DfuService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController,
+                   Pinetime::Drivers::SpiNorFlash& spiNorFlash);
         void Init();
+        void Validate();
 
-        int OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle,
-                                    struct ble_gatt_access_ctxt *ctxt);
-
+        int OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context);
       private:
-        static constexpr uint16_t deviceInfoId {0x180a};
-        static constexpr uint16_t manufacturerNameId {0x2a29};
-        static constexpr uint16_t modelNumberId {0x2a24};
-        static constexpr uint16_t serialNumberId {0x2a25};
-        static constexpr uint16_t fwRevisionId {0x2a26};
-        static constexpr uint16_t hwRevisionId {0x2a27};
+        Pinetime::System::SystemTask& systemTask;
+        Pinetime::Controllers::Ble& bleController;
+        Pinetime::Drivers::SpiNorFlash& spiNorFlash;
 
-        static constexpr char* manufacturerName = "Codingfield";
-        static constexpr char* modelNumber = "1";
-        static constexpr char* serialNumber = "9.8.7.6.5.4";
-        static constexpr char* fwRevision = "0.5.0";
-        static constexpr char* hwRevision = "1.0.0";
+        static constexpr uint16_t dfuServiceId {0x1530};
+        static constexpr uint16_t packetCharacteristicId {0x1532};
+        static constexpr uint16_t controlPointCharacteristicId {0x1531};
+        static constexpr uint16_t revisionCharacteristicId {0x1534};
 
-        static constexpr ble_uuid16_t deviceInfoUuid {
-                .u { .type = BLE_UUID_TYPE_16 },
-                .value = deviceInfoId
+        uint16_t revision {0x0008};
+
+        static constexpr ble_uuid128_t serviceUuid {
+                .u { .type = BLE_UUID_TYPE_128},
+                .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
+                          0xDE, 0xEF, 0x12, 0x12, 0x30, 0x15, 0x00, 0x00}
         };
 
-        static constexpr ble_uuid16_t manufacturerNameUuid {
-                .u { .type = BLE_UUID_TYPE_16 },
-                .value = manufacturerNameId
+        static constexpr ble_uuid128_t packetCharacteristicUuid {
+                .u { .type = BLE_UUID_TYPE_128},
+                .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
+                          0xDE, 0xEF, 0x12, 0x12, 0x32, 0x15, 0x00, 0x00}
         };
 
-        static constexpr ble_uuid16_t modelNumberUuid {
-                .u { .type = BLE_UUID_TYPE_16 },
-                .value = modelNumberId
+        static constexpr ble_uuid128_t controlPointCharacteristicUuid {
+                .u { .type = BLE_UUID_TYPE_128},
+                .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
+                          0xDE, 0xEF, 0x12, 0x12, 0x31, 0x15, 0x00, 0x00}
         };
 
-        static constexpr ble_uuid16_t serialNumberUuid {
-                .u { .type = BLE_UUID_TYPE_16 },
-                .value = serialNumberId
+        static constexpr ble_uuid128_t revisionCharacteristicUuid {
+                .u { .type = BLE_UUID_TYPE_128},
+                .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
+                          0xDE, 0xEF, 0x12, 0x12, 0x34, 0x15, 0x00, 0x00}
         };
 
-        static constexpr ble_uuid16_t fwRevisionUuid {
-                .u { .type = BLE_UUID_TYPE_16 },
-                .value = fwRevisionId
-        };
-
-        static constexpr ble_uuid16_t hwRevisionUuid {
-                .u {.type = BLE_UUID_TYPE_16},
-                .value = hwRevisionId
-        };
-
-        struct ble_gatt_chr_def characteristicDefinition[6];
+        struct ble_gatt_chr_def characteristicDefinition[4];
         struct ble_gatt_svc_def serviceDefinition[2];
+        uint16_t packetCharacteristicHandle;
+        uint16_t controlPointCharacteristicHandle;
+        uint16_t revisionCharacteristicHandle;
 
+        enum class States : uint8_t {Idle, Init, Start, Data, Validate, Validated};
+        States state = States::Idle;
 
+        enum class ImageTypes : uint8_t {
+            NoImage = 0x00,
+            SoftDevice = 0x01,
+            Bootloader = 0x02,
+            SoftDeviceAndBootloader = 0x03,
+            Application = 0x04
+        };
+
+        enum class Opcodes : uint8_t {
+            StartDFU = 0x01,
+            InitDFUParameters = 0x02,
+            ReceiveFirmwareImage = 0x03,
+            ValidateFirmware = 0x04,
+            ActivateImageAndReset = 0x05,
+            PacketReceiptNotificationRequest = 0x08,
+            Response = 0x10,
+            PacketReceiptNotification = 0x11
+        };
+
+        enum class ErrorCodes { NoError = 0x01};
+
+        uint8_t nbPacketsToNotify = 0;
+        uint32_t nbPacketReceived = 0;
+        uint32_t bytesReceived = 0;
+        uint32_t writeOffset = 0x40000;
+
+        uint32_t softdeviceSize = 0;
+        uint32_t bootloaderSize = 0;
+        uint32_t applicationSize = 0;
+        static constexpr uint32_t maxImageSize = 475136;
+
+        int SendDfuRevision(os_mbuf *om) const;
+        void SendNotification(uint16_t connectionHandle, const uint8_t *data, const size_t size);
+        int WritePacketHandler(uint16_t connectionHandle, os_mbuf *om);
+        int ControlPointHandler(uint16_t connectionHandle, os_mbuf *om);
+
+        uint8_t tempBuffer[200];
+        uint16_t ComputeCrc(uint8_t const * p_data, uint32_t size, uint16_t const * p_crc);
+
+        bool firstCrc = true;
+        uint16_t tempCrc = 0;
+
+        void WriteMagicNumber();
     };
   }
 }

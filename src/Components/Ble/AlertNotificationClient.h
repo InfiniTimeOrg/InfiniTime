@@ -16,7 +16,6 @@ namespace Pinetime {
       public:
         explicit AlertNotificationClient(Pinetime::System::SystemTask &systemTask,
                                          Pinetime::Controllers::NotificationManager &notificationManager);
-        void Init();
 
         bool OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error *error, const ble_gatt_svc *service);
         int OnCharacteristicsDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error *error,

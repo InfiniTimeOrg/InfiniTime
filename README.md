@@ -37,10 +37,12 @@ I've tested this project on the actual PineTime hardware.
  * Watchdog (automatic reset in case of firmware crash) and reset support (push and hold the button for 7 - 10s);
  * BLE Notification support (still Work-In-Progress, [companion app](https://github.com/JF002/gobbledegook) needed);
  * Supported by companion app [Amazfish](https://openrepos.net/content/piggz/amazfish) (time synchronization and notifications are integrated).
+ * **[EXPERIMENTAL]** Firmware update (OTA) via BLE.
 
 ## Documentation
 
  * [BLE implementation and API](./doc/ble.md)
+ * [Bootloader and DFU](./bootloader/README.md)
 
 ## Stub using NRF52-DK
 ![Pinetime stub](./images/pinetimestub1.jpg "PinetimeStub")
@@ -114,6 +116,11 @@ $ make -j pinetime-app
 $ make FLASH_ERASE
 ```   
 
+* Flash application
+
+```
+$ make FLASH_pinetime-app
+```
 
 * For your information : list make targets :
 
