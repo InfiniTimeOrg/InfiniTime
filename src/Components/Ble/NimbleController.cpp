@@ -33,8 +33,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         spiNorFlash{spiNorFlash},
         dfuService{systemTask, bleController, spiNorFlash},
         currentTimeClient{dateTimeController},
-        alertNotificationClient{systemTask, notificationManager},
         anService{systemTask, notificationManager},
+        alertNotificationClient{systemTask, notificationManager},
         currentTimeService{dateTimeController} {
 
 }
@@ -97,6 +97,8 @@ void NimbleController::Init() {
 }
 
 void NimbleController::StartAdvertising() {
+  if(ble_gap_adv_active()) return;
+
   ble_svc_gap_device_name_set("Pinetime-JF");
 
   /* set adv parameters */
@@ -136,7 +138,7 @@ void NimbleController::StartAdvertising() {
   res = ble_gap_adv_rsp_set_fields(&rsp_fields);
 //  ASSERT(res == 0);
 
-  res = ble_gap_adv_start(addrType, NULL, 10000,
+  res = ble_gap_adv_start(addrType, NULL, 180000,
                           &adv_params, GAPEventCallback, this);
 //  ASSERT(res == 0);// TODO I've disabled these ASSERT as they sometime asserts and reset the mcu.
   // For now, the advertising is restarted as soon as it ends. There may be a race condition
@@ -160,7 +162,6 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
     case BLE_GAP_EVENT_ADV_COMPLETE:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_ADV_COMPLETE");
       NRF_LOG_INFO("advertise complete; reason=%dn status=%d", event->adv_complete.reason, event->connect.status);
-      StartAdvertising();
       break;
     case BLE_GAP_EVENT_CONNECT: {
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_CONNECT");

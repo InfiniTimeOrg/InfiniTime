@@ -15,6 +15,12 @@
 
 using namespace Pinetime::System;
 
+void IdleTimerCallback(TimerHandle_t xTimer) {
+  auto sysTask = static_cast<SystemTask *>(pvTimerGetTimerID(xTimer));
+  sysTask->OnIdle();
+}
+
+
 SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash, Drivers::Cst816S &touchPanel,
                        Components::LittleVgl &lvgl,
@@ -92,34 +98,54 @@ void SystemTask::Work() {
 
   nrfx_gpiote_in_init(pinTouchIrq, &pinConfig, nrfx_gpiote_evt_handler);
 
+  idleTimer = xTimerCreate ("idleTimer", idleTime, pdFALSE, this, IdleTimerCallback);
+  xTimerStart(idleTimer, 0);
 
   while(true) {
     uint8_t msg;
     if (xQueueReceive(systemTaksMsgQueue, &msg, isSleeping?2500 : 1000)) {
       Messages message = static_cast<Messages >(msg);
       switch(message) {
-        case Messages::GoToRunning: isSleeping = false; break;
+        case Messages::GoToRunning:
+          isSleeping = false;
+          xTimerStart(idleTimer, 0);
+          nimbleController.StartAdvertising();
+          break;
         case Messages::GoToSleep:
           NRF_LOG_INFO("[SystemTask] Going to sleep");
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
-          isSleeping = true; break;
+          isSleeping = true;
+          break;
         case Messages::OnNewTime:
+          xTimerReset(idleTimer, 0);
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateDateTime);
           break;
         case Messages::OnNewNotification:
+          xTimerReset(idleTimer, 0);
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewNotification);
           break;
         case Messages::BleConnected:
+          xTimerReset(idleTimer, 0);
           isBleDiscoveryTimerRunning = true;
           bleDiscoveryTimer = 5;
           break;
         case Messages::BleFirmwareUpdateStarted:
+          doNotGoToSleep = true;
+          if(isSleeping) GoToRunning();
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::BleFirmwareUpdateStarted);
           break;
         case Messages::BleFirmwareUpdateFinished:
+          doNotGoToSleep = false;
+          xTimerStart(idleTimer, 0);
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::BleFirmwareUpdateFinished);
           if(bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated)
             NVIC_SystemReset();
+          break;
+        case Messages::OnTouchEvent:
+          xTimerReset(idleTimer, 0);
+          break;
+        case Messages::OnButtonEvent:
+          xTimerReset(idleTimer, 0);
           break;
         default: break;
       }
@@ -146,22 +172,29 @@ void SystemTask::Work() {
 }
 
 void SystemTask::OnButtonPushed() {
-
   if(!isSleeping) {
     NRF_LOG_INFO("[SystemTask] Button pushed");
+    PushMessage(Messages::OnButtonEvent);
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::ButtonPushed);
   }
   else {
     NRF_LOG_INFO("[SystemTask] Button pushed, waking up");
-    displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToRunning);
-    isSleeping = false;
-    displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBatteryLevel);
+    GoToRunning();
   }
+}
+
+void SystemTask::GoToRunning() {
+  PushMessage(Messages::GoToRunning);
+  displayApp->PushMessage(Applications::DisplayApp::Messages::GoToRunning);
+  displayApp->PushMessage(Applications::DisplayApp::Messages::UpdateBatteryLevel);
 }
 
 void SystemTask::OnTouchEvent() {
   NRF_LOG_INFO("[SystemTask] Touch event");
-  displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::TouchEvent);
+  if(!isSleeping) {
+    PushMessage(Messages::OnTouchEvent);
+    displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::TouchEvent);
+  }
 }
 
 void SystemTask::PushMessage(SystemTask::Messages msg) {
@@ -172,4 +205,10 @@ void SystemTask::PushMessage(SystemTask::Messages msg) {
     /* Actual macro used here is port specific. */
     // TODO : should I do something here?
   }
+}
+
+void SystemTask::OnIdle() {
+  if(doNotGoToSleep) return;
+  NRF_LOG_INFO("Idle timeout -> Going to sleep")
+  PushMessage(Messages::GoToSleep);
 }

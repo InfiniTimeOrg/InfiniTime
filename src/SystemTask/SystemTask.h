@@ -16,7 +16,7 @@ namespace Pinetime {
     class SystemTask {
       public:
         enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification, BleConnected,
-            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished
+            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent
         };
 
         SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
@@ -32,6 +32,9 @@ namespace Pinetime {
 
         void OnButtonPushed();
         void OnTouchEvent();
+
+        void OnIdle();
+
       private:
         TaskHandle_t taskHandle;
 
@@ -64,7 +67,11 @@ namespace Pinetime {
         void Work();
         bool isBleDiscoveryTimerRunning = false;
         uint8_t bleDiscoveryTimer = 0;
+        static constexpr uint32_t idleTime = 5000;
+        TimerHandle_t idleTimer;
+        bool doNotGoToSleep = false;
 
+        void GoToRunning();
     };
   }
 }
