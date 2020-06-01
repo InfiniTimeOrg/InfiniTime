@@ -16,9 +16,14 @@ int DfuServiceCallback(uint16_t conn_handle, uint16_t attr_handle,
   return dfuService->OnServiceData(conn_handle, attr_handle, ctxt);
 }
 
-void NotificationTimerCallback( TimerHandle_t xTimer ) {
-  auto dfuService = static_cast<DfuService *>(pvTimerGetTimerID( xTimer ));
+void NotificationTimerCallback(TimerHandle_t xTimer) {
+  auto dfuService = static_cast<DfuService *>(pvTimerGetTimerID(xTimer));
   dfuService->OnNotificationTimer();
+}
+
+void TimeoutTimerCallback(TimerHandle_t xTimer) {
+  auto dfuService = static_cast<DfuService *>(pvTimerGetTimerID(xTimer));
+  dfuService->OnTimeout();
 }
 
 DfuService::DfuService(Pinetime::System::SystemTask &systemTask, Pinetime::Controllers::Ble &bleController,
@@ -66,6 +71,7 @@ DfuService::DfuService(Pinetime::System::SystemTask &systemTask, Pinetime::Contr
                 },
         } {
   notificationTimer = xTimerCreate ("notificationTimer", 1000, pdFALSE, this, NotificationTimerCallback);
+  timeoutTimer = xTimerCreate ("notificationTimer", 10000, pdFALSE, this, TimeoutTimerCallback);
 }
 
 void DfuService::Init() {
@@ -74,6 +80,10 @@ void DfuService::Init() {
 }
 
 int DfuService::OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context) {
+  if(bleController.IsFirmwareUpdating()){
+    xTimerStart(timeoutTimer, 0);
+  }
+
 
   ble_gatts_find_chr((ble_uuid_t *) &serviceUuid, (ble_uuid_t *) &packetCharacteristicUuid, nullptr,
                      &packetCharacteristicHandle);
@@ -150,11 +160,6 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
       nbPacketReceived++;
       auto offset = ((nbPacketReceived - 1) % nbPacketsToNotify) * 20;
       std::memcpy(tempBuffer + offset, om->om_data, om->om_len);
-      if (firstCrc) {
-        tempCrc = ComputeCrc(om->om_data, om->om_len, NULL);
-        firstCrc = false;
-      } else
-        tempCrc = ComputeCrc(om->om_data, om->om_len, &tempCrc);
 
       if (nbPacketReceived > 0 && (nbPacketReceived % nbPacketsToNotify) == 0) {
 #if 1
@@ -190,7 +195,7 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
         uint8_t data[3]{static_cast<uint8_t>(Opcodes::Response),
                         static_cast<uint8_t>(Opcodes::ReceiveFirmwareImage),
                         static_cast<uint8_t>(ErrorCodes::NoError)};
-        NRF_LOG_INFO("[DFU] -> Send packet notification : all bytes received! CRC = %u -- %d", tempCrc, connectionHandle);
+        NRF_LOG_INFO("[DFU] -> Send packet notification : all bytes received!");
         SendNotification(connectionHandle, data, 3);
         state = States::Validate;
       }
@@ -266,7 +271,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
       return 0;
     case Opcodes::ValidateFirmware: {
       if (state != States::Validate) {
-        NRF_LOG_INFO("[DFU] -> Validate firmware image requested, but we are not in Data state");
+        NRF_LOG_INFO("[DFU] -> Validate firmware image requested, but we are not in Data state %d", state);
         return 0;
       }
 
@@ -301,6 +306,8 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
       NRF_LOG_INFO("[DFU] -> Activate image and reset!");
       bleController.StopFirmwareUpdate();
       systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleFirmwareUpdateFinished);
+      Reset();
+      bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated);
       return 0;
     default:
       return 0;
@@ -374,4 +381,25 @@ void DfuService::OnNotificationTimer() {
     SendNotification(notificatonConnectionHandle, notificationBuffer, notificationSize);
     notificationSize = 0;
   }
+}
+
+void DfuService::OnTimeout() {
+  Reset();
+}
+
+void DfuService::Reset() {
+  state = States::Idle;
+  nbPacketsToNotify = 0;
+  nbPacketReceived = 0;
+  bytesReceived = 0;
+  softdeviceSize = 0;
+  bootloaderSize = 0;
+  applicationSize = 0;
+  expectedCrc = 0;
+  notificatonConnectionHandle = 0;
+  notificationSize = 0;
+  xTimerStop(notificationTimer, 0);
+  bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Error);
+  bleController.StopFirmwareUpdate();
+  systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleFirmwareUpdateFinished);
 }

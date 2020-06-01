@@ -31,8 +31,6 @@ namespace Pinetime {
           lv_obj_t* bar1;
           lv_obj_t* percentLabel;
           lv_obj_t* titleLabel;
-          lv_obj_t* labelBtn;
-          lv_obj_t* button;
           mutable char percentStr[10];
           bool running = true;
           States state;

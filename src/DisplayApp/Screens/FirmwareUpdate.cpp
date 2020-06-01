@@ -26,15 +26,6 @@ FirmwareUpdate::FirmwareUpdate(Pinetime::Applications::DisplayApp *app, Pinetime
   lv_label_set_text(percentLabel, "");
   lv_obj_set_auto_realign(percentLabel, true);
   lv_obj_align(percentLabel, bar1, LV_ALIGN_OUT_TOP_MID, 0, 60);
-
-  button = lv_btn_create(lv_scr_act(), NULL);
-  //lv_obj_set_event_cb(button, event_handler);
-  lv_obj_align(button, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_obj_set_hidden(button, true);
-
-  labelBtn = lv_label_create(button, NULL);
-  lv_label_set_text(labelBtn, "Back");
-  lv_obj_set_hidden(labelBtn, true);
 }
 
 FirmwareUpdate::~FirmwareUpdate() {
@@ -88,7 +79,4 @@ void FirmwareUpdate::UpdateValidated() {
 void FirmwareUpdate::UpdateError() {
   lv_label_set_recolor(percentLabel, true);
   lv_label_set_text(percentLabel, "#ff0000 Error!#");
-
-  lv_obj_set_hidden(labelBtn, false);
-  lv_obj_set_hidden(button, false);
 }

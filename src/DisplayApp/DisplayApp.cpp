@@ -163,12 +163,8 @@ void DisplayApp::Refresh() {
         lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
         currentScreen.reset(nullptr);
         currentScreen.reset(new Screens::FirmwareUpdate(this, bleController));
+        onClockApp = false;
 
-        break;
-      case Messages::BleFirmwareUpdateFinished:
-        lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
-        currentScreen.reset(nullptr);
-        currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
         break;
     }
   }

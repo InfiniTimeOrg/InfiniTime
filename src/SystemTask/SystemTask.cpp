@@ -118,7 +118,8 @@ void SystemTask::Work() {
           break;
         case Messages::BleFirmwareUpdateFinished:
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::BleFirmwareUpdateFinished);
-          NVIC_SystemReset();
+          if(bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated)
+            NVIC_SystemReset();
           break;
         default: break;
       }

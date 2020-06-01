@@ -26,6 +26,9 @@ namespace Pinetime {
 
         int OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context);
         void OnNotificationTimer();
+        void OnTimeout();
+
+        void Reset();
 
       private:
         Pinetime::System::SystemTask &systemTask;
@@ -125,11 +128,9 @@ namespace Pinetime {
 
         uint16_t ComputeCrc(uint8_t const *p_data, uint32_t size, uint16_t const *p_crc);
 
-        bool firstCrc = true;
-        uint16_t tempCrc = 0;
-
         void WriteMagicNumber();
         TimerHandle_t notificationTimer;
+        TimerHandle_t timeoutTimer;
 
         uint16_t notificatonConnectionHandle = 0;
         size_t notificationSize = 0;
