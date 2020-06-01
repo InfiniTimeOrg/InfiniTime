@@ -17,8 +17,8 @@ int DfuServiceCallback(uint16_t conn_handle, uint16_t attr_handle,
 }
 
 void NotificationTimerCallback(TimerHandle_t xTimer) {
-  auto dfuService = static_cast<DfuService *>(pvTimerGetTimerID(xTimer));
-  dfuService->OnNotificationTimer();
+  auto notificationManager = static_cast<DfuService::NotificationManager *>(pvTimerGetTimerID(xTimer));
+  notificationManager->OnNotificationTimer();
 }
 
 void TimeoutTimerCallback(TimerHandle_t xTimer) {
@@ -70,7 +70,6 @@ DfuService::DfuService(Pinetime::System::SystemTask &systemTask, Pinetime::Contr
                         0
                 },
         } {
-  notificationTimer = xTimerCreate ("notificationTimer", 1000, pdFALSE, this, NotificationTimerCallback);
   timeoutTimer = xTimerCreate ("notificationTimer", 10000, pdFALSE, this, TimeoutTimerCallback);
 }
 
@@ -132,7 +131,7 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
       }
 
       uint8_t data[]{16, 1, 1};
-      SendNotification(connectionHandle, data, 3);
+      notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 3);
       state = States::Init;
     }
       return 0;
@@ -162,30 +161,22 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
       std::memcpy(tempBuffer + offset, om->om_data, om->om_len);
 
       if (nbPacketReceived > 0 && (nbPacketReceived % nbPacketsToNotify) == 0) {
-#if 1
         spiNorFlash.Write(writeOffset + ((nbPacketReceived - nbPacketsToNotify) * 20), tempBuffer, 200);
-#endif
       }
-
 
       bytesReceived += om->om_len;
       bleController.FirmwareUpdateCurrentBytes(bytesReceived);
-      //NRF_LOG_INFO("[DFU] -> Bytes received : %d in %d packets", bytesReceived, nbPacketReceived);
-
-
 
       if ((nbPacketReceived % nbPacketsToNotify) == 0 && bytesReceived != applicationSize) {
         uint8_t data[5]{static_cast<uint8_t>(Opcodes::PacketReceiptNotification),
                         (uint8_t) (bytesReceived & 0x000000FFu), (uint8_t) (bytesReceived >> 8u),
                         (uint8_t) (bytesReceived >> 16u), (uint8_t) (bytesReceived >> 24u)};
         NRF_LOG_INFO("[DFU] -> Send packet notification: %d bytes received", bytesReceived);
-        SendNotification(connectionHandle, data, 5);
+        notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 5);
       }
       if (bytesReceived == applicationSize) {
         if ((nbPacketReceived % nbPacketsToNotify) != 0) {
           auto remaningPacket = nbPacketReceived % nbPacketsToNotify;
-          uint32_t spiOffset = writeOffset + ((nbPacketReceived - remaningPacket) * 20);
-
           spiNorFlash.Write(writeOffset + ((nbPacketReceived - remaningPacket) * 20), tempBuffer, remaningPacket * 20);
         }
 
@@ -196,7 +187,7 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
                         static_cast<uint8_t>(Opcodes::ReceiveFirmwareImage),
                         static_cast<uint8_t>(ErrorCodes::NoError)};
         NRF_LOG_INFO("[DFU] -> Send packet notification : all bytes received!");
-        SendNotification(connectionHandle, data, 3);
+        notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 3);
         state = States::Validate;
       }
     }
@@ -247,12 +238,12 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
       NRF_LOG_INFO("[DFU] -> Init DFU parameters %s", isInitComplete ? " complete" : " not complete");
 
       if (isInitComplete) {
-        notificationBuffer[0] = static_cast<uint8_t>(Opcodes::Response);
-        notificationBuffer[1] = static_cast<uint8_t>(Opcodes::InitDFUParameters);
-        notificationBuffer[2] =  (isInitComplete ? uint8_t{1} : uint8_t{0});
-        notificationSize = 3;
-        notificatonConnectionHandle = connectionHandle;
-        xTimerStart(notificationTimer, 0);
+        uint8_t data[3] {
+                static_cast<uint8_t>(Opcodes::Response),
+                static_cast<uint8_t>(Opcodes::InitDFUParameters),
+                (isInitComplete ? uint8_t{1} : uint8_t{0})
+        };
+        notificationManager.AsyncSend(connectionHandle, controlPointCharacteristicHandle, data, 3);
         return 0;
       }
     }
@@ -279,21 +270,19 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
 
       if(Validate()){
         state = States::Validated;
-
-        notificationBuffer[0] = static_cast<uint8_t>(Opcodes::Response);
-        notificationBuffer[1] = static_cast<uint8_t>(Opcodes::ValidateFirmware);
-        notificationBuffer[2] =  static_cast<uint8_t>(ErrorCodes::NoError);
-        notificationSize = 3;
-        notificatonConnectionHandle = connectionHandle;
-        xTimerStart(notificationTimer, 0);
-
+        uint8_t data[3] {
+                static_cast<uint8_t>(Opcodes::Response),
+                static_cast<uint8_t>(Opcodes::ValidateFirmware),
+                static_cast<uint8_t>(ErrorCodes::NoError)
+        };
+        notificationManager.AsyncSend(connectionHandle, controlPointCharacteristicHandle, data, 3);
       } else {
-        notificationBuffer[0] = static_cast<uint8_t>(Opcodes::Response);
-        notificationBuffer[1] = static_cast<uint8_t>(Opcodes::ValidateFirmware);
-        notificationBuffer[2] =  static_cast<uint8_t>(ErrorCodes::CrcError);
-        notificationSize = 3;
-        notificatonConnectionHandle = connectionHandle;
-        xTimerStart(notificationTimer, 0);
+        uint8_t data[3] {
+                static_cast<uint8_t>(Opcodes::Response),
+                static_cast<uint8_t>(Opcodes::ValidateFirmware),
+                static_cast<uint8_t>(ErrorCodes::CrcError)
+        };
+        notificationManager.AsyncSend(connectionHandle, controlPointCharacteristicHandle, data, 3);
       }
 
       return 0;
@@ -314,11 +303,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
   }
 }
 
-void DfuService::SendNotification(uint16_t connectionHandle, const uint8_t *data, const size_t size) {
-  auto *om = ble_hs_mbuf_from_flat(data, size);
-  auto ret = ble_gattc_notify_custom(connectionHandle, controlPointCharacteristicHandle, om);
-  ASSERT(ret == 0);
-}
+
 
 uint16_t DfuService::ComputeCrc(uint8_t const *p_data, uint32_t size, uint16_t const *p_crc) {
   uint16_t crc = (p_crc == NULL) ? 0xFFFF : *p_crc;
@@ -376,13 +361,6 @@ void DfuService::WriteMagicNumber() {
   spiNorFlash.Write(offset, reinterpret_cast<uint8_t *>(magic), 4 * sizeof(uint32_t));
 }
 
-void DfuService::OnNotificationTimer() {
-  if(notificationSize > 0) {
-    SendNotification(notificatonConnectionHandle, notificationBuffer, notificationSize);
-    notificationSize = 0;
-  }
-}
-
 void DfuService::OnTimeout() {
   Reset();
 }
@@ -396,10 +374,44 @@ void DfuService::Reset() {
   bootloaderSize = 0;
   applicationSize = 0;
   expectedCrc = 0;
-  notificatonConnectionHandle = 0;
-  notificationSize = 0;
-  xTimerStop(notificationTimer, 0);
+  notificationManager.Reset();
   bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Error);
   bleController.StopFirmwareUpdate();
   systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleFirmwareUpdateFinished);
+}
+
+DfuService::NotificationManager::NotificationManager() {
+  timer = xTimerCreate ("notificationTimer", 1000, pdFALSE, this, NotificationTimerCallback);
+}
+
+bool DfuService::NotificationManager::AsyncSend(uint16_t connection, uint16_t charactHandle, uint8_t *data, size_t s) {
+  if(size != 0 || s > 10)
+    return false;
+
+  connectionHandle = connection;
+  characteristicHandle = charactHandle;
+  size = s;
+  std::memcpy(buffer, data, size);
+  xTimerStart(timer, 0);
+  return true;
+}
+
+void DfuService::NotificationManager::OnNotificationTimer() {
+  if(size > 0) {
+    Send(connectionHandle, characteristicHandle, buffer, size);
+    size = 0;
+  }
+}
+
+void DfuService::NotificationManager::Send(uint16_t connection, uint16_t charactHandle, const uint8_t *data, const size_t s) {
+  auto *om = ble_hs_mbuf_from_flat(data, s);
+  auto ret = ble_gattc_notify_custom(connection, charactHandle, om);
+  ASSERT(ret == 0);
+}
+
+void DfuService::NotificationManager::Reset() {
+  connectionHandle = 0;
+  characteristicHandle = 0;
+  size = 0;
+  xTimerStop(timer, 0);
 }

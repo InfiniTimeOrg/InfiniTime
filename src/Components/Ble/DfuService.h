@@ -19,16 +19,27 @@ namespace Pinetime {
       public:
         DfuService(Pinetime::System::SystemTask &systemTask, Pinetime::Controllers::Ble &bleController,
                    Pinetime::Drivers::SpiNorFlash &spiNorFlash);
-
         void Init();
-
         bool Validate();
-
         int OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context);
-        void OnNotificationTimer();
         void OnTimeout();
-
         void Reset();
+
+        class NotificationManager {
+          public:
+            NotificationManager();
+            bool AsyncSend(uint16_t connection, uint16_t charactHandle, uint8_t *data, size_t size);
+            void Send(uint16_t connection, uint16_t characteristicHandle, const uint8_t *data, const size_t s);
+          private:
+            TimerHandle_t timer;
+            uint16_t connectionHandle = 0;
+            uint16_t characteristicHandle = 0;
+            size_t size = 0;
+            uint8_t buffer[10];
+          public:
+            void OnNotificationTimer();
+            void Reset();
+        };
 
       private:
         Pinetime::System::SystemTask &systemTask;
@@ -117,24 +128,13 @@ namespace Pinetime {
         uint16_t expectedCrc = 0;
 
         int SendDfuRevision(os_mbuf *om) const;
-
-        void SendNotification(uint16_t connectionHandle, const uint8_t *data, const size_t size);
-
         int WritePacketHandler(uint16_t connectionHandle, os_mbuf *om);
-
         int ControlPointHandler(uint16_t connectionHandle, os_mbuf *om);
-
         uint8_t tempBuffer[200];
-
         uint16_t ComputeCrc(uint8_t const *p_data, uint32_t size, uint16_t const *p_crc);
-
         void WriteMagicNumber();
-        TimerHandle_t notificationTimer;
         TimerHandle_t timeoutTimer;
-
-        uint16_t notificatonConnectionHandle = 0;
-        size_t notificationSize = 0;
-        uint8_t notificationBuffer[10];
+        NotificationManager notificationManager;
     };
   }
 }
