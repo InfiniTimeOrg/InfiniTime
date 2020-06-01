@@ -41,10 +41,10 @@ Pack the image into a .zip file for the NRF DFU protocol:
 adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application image.bin dfu.zip
 `
 
-Use NRFConnect or dfu.py to upload the zip file to the device:
+Use NRFConnect or dfu.py (in <project root>/bootloader/ota-dfu-python) to upload the zip file to the device:
 
 `
 sudo dfu.py -z /home/jf/nrf52/bootloader/dfu.zip -a <pinetime MAC address> --legacy
 `
 
-**TODO** : dfu.py
+**Note** : dfu.py is a slightly modified version of [this repo](https://github.com/daniel-thompson/ota-dfu-python).
