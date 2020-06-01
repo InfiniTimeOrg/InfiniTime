@@ -30,7 +30,7 @@ DfuService::DfuService(Pinetime::System::SystemTask &systemTask, Pinetime::Contr
                        Pinetime::Drivers::SpiNorFlash &spiNorFlash) :
         systemTask{systemTask},
         bleController{bleController},
-        spiNorFlash{spiNorFlash},
+        dfuImage{spiNorFlash},
         characteristicDefinition{
                 {
                         .uuid = (ble_uuid_t *) &packetCharacteristicUuid,
@@ -124,11 +124,7 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
       NRF_LOG_INFO("[DFU] -> Start data received : SD size : %d, BT size : %d, app size : %d", softdeviceSize,
                    bootloaderSize, applicationSize);
 
-      for (int erased = 0; erased < maxImageSize; erased += 0x1000) {
-#if 1
-        spiNorFlash.SectorErase(writeOffset + erased);
-#endif
-      }
+      dfuImage.Erase();
 
       uint8_t data[]{16, 1, 1};
       notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 3);
@@ -157,13 +153,7 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
 
     case States::Data: {
       nbPacketReceived++;
-      auto offset = ((nbPacketReceived - 1) % nbPacketsToNotify) * 20;
-      std::memcpy(tempBuffer + offset, om->om_data, om->om_len);
-
-      if (nbPacketReceived > 0 && (nbPacketReceived % nbPacketsToNotify) == 0) {
-        spiNorFlash.Write(writeOffset + ((nbPacketReceived - nbPacketsToNotify) * 20), tempBuffer, 200);
-      }
-
+      dfuImage.Append(om->om_data, om->om_len);
       bytesReceived += om->om_len;
       bleController.FirmwareUpdateCurrentBytes(bytesReceived);
 
@@ -174,15 +164,7 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
         NRF_LOG_INFO("[DFU] -> Send packet notification: %d bytes received", bytesReceived);
         notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 5);
       }
-      if (bytesReceived == applicationSize) {
-        if ((nbPacketReceived % nbPacketsToNotify) != 0) {
-          auto remaningPacket = nbPacketReceived % nbPacketsToNotify;
-          spiNorFlash.Write(writeOffset + ((nbPacketReceived - remaningPacket) * 20), tempBuffer, remaningPacket * 20);
-        }
-
-        if (applicationSize < maxImageSize)
-          WriteMagicNumber();
-
+      if (dfuImage.IsComplete()) {
         uint8_t data[3]{static_cast<uint8_t>(Opcodes::Response),
                         static_cast<uint8_t>(Opcodes::ReceiveFirmwareImage),
                         static_cast<uint8_t>(ErrorCodes::NoError)};
@@ -257,6 +239,8 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
         NRF_LOG_INFO("[DFU] -> Receive firmware image requested, but we are not in Start Init");
         return 0;
       }
+      // TODO the chunk size is dependant of the implementation of the host application...
+      dfuImage.Init(20, applicationSize, expectedCrc);
       NRF_LOG_INFO("[DFU] -> Starting receive firmware");
       state = States::Data;
       return 0;
@@ -268,8 +252,11 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
 
       NRF_LOG_INFO("[DFU] -> Validate firmware image requested -- %d", connectionHandle);
 
-      if(Validate()){
+      if(dfuImage.Validate()){
         state = States::Validated;
+        bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated);
+        NRF_LOG_INFO("Image OK");
+
         uint8_t data[3] {
                 static_cast<uint8_t>(Opcodes::Response),
                 static_cast<uint8_t>(Opcodes::ValidateFirmware),
@@ -277,6 +264,9 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
         };
         notificationManager.AsyncSend(connectionHandle, controlPointCharacteristicHandle, data, 3);
       } else {
+        bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Error);
+        NRF_LOG_INFO("Image Error : bad CRC");
+
         uint8_t data[3] {
                 static_cast<uint8_t>(Opcodes::Response),
                 static_cast<uint8_t>(Opcodes::ValidateFirmware),
@@ -301,64 +291,6 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
     default:
       return 0;
   }
-}
-
-
-
-uint16_t DfuService::ComputeCrc(uint8_t const *p_data, uint32_t size, uint16_t const *p_crc) {
-  uint16_t crc = (p_crc == NULL) ? 0xFFFF : *p_crc;
-
-  for (uint32_t i = 0; i < size; i++) {
-    crc = (uint8_t) (crc >> 8) | (crc << 8);
-    crc ^= p_data[i];
-    crc ^= (uint8_t) (crc & 0xFF) >> 4;
-    crc ^= (crc << 8) << 4;
-    crc ^= ((crc & 0xFF) << 4) << 1;
-  }
-
-  return crc;
-}
-
-bool DfuService::Validate() {
-  uint32_t chunkSize = 200;
-  int currentOffset = 0;
-  uint16_t crc = 0;
-
-  bool first = true;
-  while (currentOffset < applicationSize) {
-    uint32_t readSize = (applicationSize - currentOffset) > chunkSize ? chunkSize : (applicationSize - currentOffset);
-
-    spiNorFlash.Read(writeOffset + currentOffset, tempBuffer, readSize);
-    if (first) {
-      crc = ComputeCrc(tempBuffer, readSize, NULL);
-      first = false;
-    } else
-      crc = ComputeCrc(tempBuffer, readSize, &crc);
-    currentOffset += readSize;
-  }
-
-  NRF_LOG_INFO("Expected CRC : %u - Processed CRC : %u", expectedCrc, crc);
-  bool crcOk = (crc == expectedCrc);
-  if (crcOk) {
-    bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated);
-    NRF_LOG_INFO("Image OK");
-  } else {
-    bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Error);
-    NRF_LOG_INFO("Image Error : bad CRC");
-  }
-  return crcOk;
-}
-
-void DfuService::WriteMagicNumber() {
-  uint32_t magic[4] = {
-          0xf395c277,
-          0x7fefd260,
-          0x0f505235,
-          0x8079b62c,
-  };
-
-  uint32_t offset = writeOffset + (maxImageSize - (4 * sizeof(uint32_t)));
-  spiNorFlash.Write(offset, reinterpret_cast<uint8_t *>(magic), 4 * sizeof(uint32_t));
 }
 
 void DfuService::OnTimeout() {
@@ -414,4 +346,91 @@ void DfuService::NotificationManager::Reset() {
   characteristicHandle = 0;
   size = 0;
   xTimerStop(timer, 0);
+}
+
+void DfuService::DfuImage::Init(size_t chunkSize, size_t totalSize, uint16_t expectedCrc) {
+  if(chunkSize != 20) return;
+  this->chunkSize = chunkSize;
+  this->totalSize = totalSize;
+  this->expectedCrc = expectedCrc;
+  this->ready = true;
+}
+
+void DfuService::DfuImage::Append(uint8_t *data, size_t size) {
+  if(!ready) return;
+  ASSERT(size <= 20);
+
+  std::memcpy(tempBuffer + bufferWriteIndex, data, size);
+  bufferWriteIndex += size;
+
+  if(bufferWriteIndex == bufferSize) {
+    spiNorFlash.Write(writeOffset + totalWriteIndex, tempBuffer, bufferWriteIndex);
+    totalWriteIndex += bufferWriteIndex;
+    bufferWriteIndex = 0;
+  }
+
+  if(bufferWriteIndex > 0 && totalWriteIndex + bufferWriteIndex == totalSize) {
+    spiNorFlash.Write(writeOffset + totalWriteIndex, tempBuffer, bufferWriteIndex);
+    totalWriteIndex += bufferWriteIndex;
+    if (totalSize < maxSize);
+      WriteMagicNumber();
+  }
+}
+
+void DfuService::DfuImage::WriteMagicNumber() {
+  static constexpr uint32_t magic[4] = {
+          0xf395c277,
+          0x7fefd260,
+          0x0f505235,
+          0x8079b62c,
+  };
+
+  uint32_t offset = writeOffset + (maxSize - (4 * sizeof(uint32_t)));
+  spiNorFlash.Write(offset, reinterpret_cast<const uint8_t *>(magic), 4 * sizeof(uint32_t));
+}
+
+void DfuService::DfuImage::Erase() {
+  for (int erased = 0; erased < maxSize; erased += 0x1000) {
+    spiNorFlash.SectorErase(writeOffset + erased);
+  }
+}
+
+bool DfuService::DfuImage::Validate() {
+  uint32_t chunkSize = 200;
+  int currentOffset = 0;
+  uint16_t crc = 0;
+
+  bool first = true;
+  while (currentOffset < totalSize) {
+    uint32_t readSize = (totalSize - currentOffset) > chunkSize ? chunkSize : (totalSize - currentOffset);
+
+    spiNorFlash.Read(writeOffset + currentOffset, tempBuffer, readSize);
+    if (first) {
+      crc = ComputeCrc(tempBuffer, readSize, NULL);
+      first = false;
+    } else
+      crc = ComputeCrc(tempBuffer, readSize, &crc);
+    currentOffset += readSize;
+  }
+
+  return (crc == expectedCrc);
+}
+
+uint16_t DfuService::DfuImage::ComputeCrc(uint8_t const *p_data, uint32_t size, uint16_t const *p_crc) {
+  uint16_t crc = (p_crc == NULL) ? 0xFFFF : *p_crc;
+
+  for (uint32_t i = 0; i < size; i++) {
+    crc = (uint8_t) (crc >> 8) | (crc << 8);
+    crc ^= p_data[i];
+    crc ^= (uint8_t) (crc & 0xFF) >> 4;
+    crc ^= (crc << 8) << 4;
+    crc ^= ((crc & 0xFF) << 4) << 1;
+  }
+
+  return crc;
+}
+
+bool DfuService::DfuImage::IsComplete() {
+  if(!ready) return false;
+  return totalWriteIndex == totalSize;
 }

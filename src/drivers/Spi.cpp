@@ -27,7 +27,7 @@ bool Spi::Init() {
   return true;
 }
 
-bool Spi::WriteCmdAndBuffer(uint8_t *cmd, size_t cmdSize, uint8_t *data, size_t dataSize) {
+bool Spi::WriteCmdAndBuffer(const uint8_t *cmd, size_t cmdSize, const uint8_t *data, size_t dataSize) {
   return spiMaster.WriteCmdAndBuffer(pinCsn, cmd, cmdSize, data, dataSize);
 }
 

@@ -20,7 +20,6 @@ namespace Pinetime {
         DfuService(Pinetime::System::SystemTask &systemTask, Pinetime::Controllers::Ble &bleController,
                    Pinetime::Drivers::SpiNorFlash &spiNorFlash);
         void Init();
-        bool Validate();
         int OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context);
         void OnTimeout();
         void Reset();
@@ -40,11 +39,38 @@ namespace Pinetime {
             void OnNotificationTimer();
             void Reset();
         };
+        class DfuImage {
+          public:
+            DfuImage(Pinetime::Drivers::SpiNorFlash& spiNorFlash) : spiNorFlash{spiNorFlash} {}
+            void Init(size_t chunkSize, size_t totalSize, uint16_t expectedCrc);
+            void Erase();
+            void Append(uint8_t* data, size_t size);
+            bool Validate();
+            bool IsComplete();
+
+          private:
+            Pinetime::Drivers::SpiNorFlash& spiNorFlash;
+            static constexpr size_t bufferSize = 200;
+            bool ready = false;
+            size_t chunkSize = 0;
+            size_t totalSize = 0;
+            size_t maxSize = 475136;
+            size_t bufferWriteIndex = 0;
+            size_t totalWriteIndex = 0;
+            static constexpr size_t writeOffset = 0x40000;
+            uint8_t tempBuffer[bufferSize];
+            uint16_t expectedCrc = 0;
+
+            void WriteMagicNumber();
+            uint16_t ComputeCrc(uint8_t const *p_data, uint32_t size, uint16_t const *p_crc);
+
+        };
 
       private:
         Pinetime::System::SystemTask &systemTask;
         Pinetime::Controllers::Ble &bleController;
-        Pinetime::Drivers::SpiNorFlash &spiNorFlash;
+        DfuImage dfuImage;
+        NotificationManager notificationManager;
 
         static constexpr uint16_t dfuServiceId{0x1530};
         static constexpr uint16_t packetCharacteristicId{0x1532};
@@ -119,22 +145,17 @@ namespace Pinetime {
         uint8_t nbPacketsToNotify = 0;
         uint32_t nbPacketReceived = 0;
         uint32_t bytesReceived = 0;
-        uint32_t writeOffset = 0x40000;
 
         uint32_t softdeviceSize = 0;
         uint32_t bootloaderSize = 0;
         uint32_t applicationSize = 0;
-        static constexpr uint32_t maxImageSize = 475136;
         uint16_t expectedCrc = 0;
 
         int SendDfuRevision(os_mbuf *om) const;
         int WritePacketHandler(uint16_t connectionHandle, os_mbuf *om);
         int ControlPointHandler(uint16_t connectionHandle, os_mbuf *om);
-        uint8_t tempBuffer[200];
-        uint16_t ComputeCrc(uint8_t const *p_data, uint32_t size, uint16_t const *p_crc);
-        void WriteMagicNumber();
+
         TimerHandle_t timeoutTimer;
-        NotificationManager notificationManager;
     };
   }
 }

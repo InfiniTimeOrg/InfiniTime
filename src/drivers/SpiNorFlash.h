@@ -24,7 +24,7 @@ namespace Pinetime {
         bool WriteEnabled();
         uint8_t ReadConfigurationRegister();
         void Read(uint32_t address, uint8_t* buffer, size_t size);
-        void Write(uint32_t address, uint8_t *buffer, size_t size);
+        void Write(uint32_t address, const uint8_t *buffer, size_t size);
         void WriteEnable();
         void SectorErase(uint32_t sectorAddress);
         uint8_t ReadSecurityRegister();

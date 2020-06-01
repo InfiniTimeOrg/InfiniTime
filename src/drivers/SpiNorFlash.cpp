@@ -96,12 +96,12 @@ bool SpiNorFlash::EraseFailed() {
   return (ReadSecurityRegister() & 0x40u) == 0x40u;
 }
 
-void SpiNorFlash::Write(uint32_t address, uint8_t *buffer, size_t size) {
+void SpiNorFlash::Write(uint32_t address, const uint8_t *buffer, size_t size) {
   static constexpr uint8_t cmdSize = 4;
 
   size_t len = size;
   uint32_t addr = address;
-  uint8_t* b = buffer;
+  const uint8_t* b = buffer;
   while(len > 0) {
     uint32_t pageLimit = (addr & ~(pageSize - 1u)) + pageSize;
     uint32_t toWrite = pageLimit - addr > len ? len :  pageLimit - addr;

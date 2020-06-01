@@ -239,7 +239,7 @@ void SpiMaster::Wakeup() {
   Init();
 }
 
-bool SpiMaster::WriteCmdAndBuffer(uint8_t pinCsn, uint8_t *cmd, size_t cmdSize, uint8_t *data, size_t dataSize) {
+bool SpiMaster::WriteCmdAndBuffer(uint8_t pinCsn, const uint8_t *cmd, size_t cmdSize, const uint8_t *data, size_t dataSize) {
   xSemaphoreTake(mutex, portMAX_DELAY);
 
   taskToNotify = nullptr;
