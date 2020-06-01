@@ -118,6 +118,7 @@ void SystemTask::Work() {
           break;
         case Messages::BleFirmwareUpdateFinished:
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::BleFirmwareUpdateFinished);
+          NVIC_SystemReset();
           break;
         default: break;
       }

@@ -26,6 +26,15 @@ FirmwareUpdate::FirmwareUpdate(Pinetime::Applications::DisplayApp *app, Pinetime
   lv_label_set_text(percentLabel, "");
   lv_obj_set_auto_realign(percentLabel, true);
   lv_obj_align(percentLabel, bar1, LV_ALIGN_OUT_TOP_MID, 0, 60);
+
+  button = lv_btn_create(lv_scr_act(), NULL);
+  //lv_obj_set_event_cb(button, event_handler);
+  lv_obj_align(button, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_obj_set_hidden(button, true);
+
+  labelBtn = lv_label_create(button, NULL);
+  lv_label_set_text(labelBtn, "Back");
+  lv_obj_set_hidden(labelBtn, true);
 }
 
 FirmwareUpdate::~FirmwareUpdate() {
@@ -33,6 +42,29 @@ FirmwareUpdate::~FirmwareUpdate() {
 }
 
 bool FirmwareUpdate::Refresh() {
+  switch(bleController.State()) {
+    default:
+    case Pinetime::Controllers::Ble::FirmwareUpdateStates::Idle:
+    case Pinetime::Controllers::Ble::FirmwareUpdateStates::Running:
+      if(state != States::Running)
+        state = States::Running;
+      return DisplayProgression();
+    case Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated:
+      if(state != States::Validated) {
+        UpdateValidated();
+        state = States::Validated;
+      }
+      return running;
+    case Pinetime::Controllers::Ble::FirmwareUpdateStates::Error:
+      if(state != States::Error) {
+        UpdateError();
+        state = States::Error;
+      }
+      return running;
+  }
+}
+
+bool FirmwareUpdate::DisplayProgression() const {
   float current = bleController.FirmwareUpdateCurrentBytes() / 1024.0f;
   float total = bleController.FirmwareUpdateTotalBytes() / 1024.0f;
   int16_t pc = (current / total) * 100.0f;
@@ -46,4 +78,17 @@ bool FirmwareUpdate::Refresh() {
 bool FirmwareUpdate::OnButtonPushed() {
   running = false;
   return true;
+}
+
+void FirmwareUpdate::UpdateValidated() {
+  lv_label_set_recolor(percentLabel, true);
+  lv_label_set_text(percentLabel, "#00ff00 Image Ok!#");
+}
+
+void FirmwareUpdate::UpdateError() {
+  lv_label_set_recolor(percentLabel, true);
+  lv_label_set_text(percentLabel, "#ff0000 Error!#");
+
+  lv_obj_set_hidden(labelBtn, false);
+  lv_obj_set_hidden(button, false);
 }

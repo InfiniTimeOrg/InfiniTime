@@ -26,13 +26,22 @@ namespace Pinetime {
           bool OnButtonPushed() override;
 
         private:
+          enum class States { Idle, Running, Validated, Error };
           Pinetime::Controllers::Ble& bleController;
-          lv_obj_t * bar1;
-          lv_obj_t * percentLabel;
-          lv_obj_t * titleLabel;
-          char percentStr[10];
+          lv_obj_t* bar1;
+          lv_obj_t* percentLabel;
+          lv_obj_t* titleLabel;
+          lv_obj_t* labelBtn;
+          lv_obj_t* button;
+          mutable char percentStr[10];
           bool running = true;
+          States state;
 
+          bool DisplayProgression() const;
+
+          void UpdateValidated();
+
+          void UpdateError();
       };
     }
   }

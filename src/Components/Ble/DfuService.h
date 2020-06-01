@@ -1,4 +1,5 @@
 #pragma once
+
 #include <cstdint>
 #include <array>
 
@@ -13,46 +14,51 @@ namespace Pinetime {
   }
   namespace Controllers {
     class Ble;
+
     class DfuService {
       public:
-        DfuService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController,
-                   Pinetime::Drivers::SpiNorFlash& spiNorFlash);
+        DfuService(Pinetime::System::SystemTask &systemTask, Pinetime::Controllers::Ble &bleController,
+                   Pinetime::Drivers::SpiNorFlash &spiNorFlash);
+
         void Init();
-        void Validate();
+
+        bool Validate();
 
         int OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context);
+        void OnNotificationTimer();
+
       private:
-        Pinetime::System::SystemTask& systemTask;
-        Pinetime::Controllers::Ble& bleController;
-        Pinetime::Drivers::SpiNorFlash& spiNorFlash;
+        Pinetime::System::SystemTask &systemTask;
+        Pinetime::Controllers::Ble &bleController;
+        Pinetime::Drivers::SpiNorFlash &spiNorFlash;
 
-        static constexpr uint16_t dfuServiceId {0x1530};
-        static constexpr uint16_t packetCharacteristicId {0x1532};
-        static constexpr uint16_t controlPointCharacteristicId {0x1531};
-        static constexpr uint16_t revisionCharacteristicId {0x1534};
+        static constexpr uint16_t dfuServiceId{0x1530};
+        static constexpr uint16_t packetCharacteristicId{0x1532};
+        static constexpr uint16_t controlPointCharacteristicId{0x1531};
+        static constexpr uint16_t revisionCharacteristicId{0x1534};
 
-        uint16_t revision {0x0008};
+        uint16_t revision{0x0008};
 
-        static constexpr ble_uuid128_t serviceUuid {
-                .u { .type = BLE_UUID_TYPE_128},
+        static constexpr ble_uuid128_t serviceUuid{
+                .u {.type = BLE_UUID_TYPE_128},
                 .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
                           0xDE, 0xEF, 0x12, 0x12, 0x30, 0x15, 0x00, 0x00}
         };
 
-        static constexpr ble_uuid128_t packetCharacteristicUuid {
-                .u { .type = BLE_UUID_TYPE_128},
+        static constexpr ble_uuid128_t packetCharacteristicUuid{
+                .u {.type = BLE_UUID_TYPE_128},
                 .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
                           0xDE, 0xEF, 0x12, 0x12, 0x32, 0x15, 0x00, 0x00}
         };
 
-        static constexpr ble_uuid128_t controlPointCharacteristicUuid {
-                .u { .type = BLE_UUID_TYPE_128},
+        static constexpr ble_uuid128_t controlPointCharacteristicUuid{
+                .u {.type = BLE_UUID_TYPE_128},
                 .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
                           0xDE, 0xEF, 0x12, 0x12, 0x31, 0x15, 0x00, 0x00}
         };
 
-        static constexpr ble_uuid128_t revisionCharacteristicUuid {
-                .u { .type = BLE_UUID_TYPE_128},
+        static constexpr ble_uuid128_t revisionCharacteristicUuid{
+                .u {.type = BLE_UUID_TYPE_128},
                 .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
                           0xDE, 0xEF, 0x12, 0x12, 0x34, 0x15, 0x00, 0x00}
         };
@@ -63,7 +69,9 @@ namespace Pinetime {
         uint16_t controlPointCharacteristicHandle;
         uint16_t revisionCharacteristicHandle;
 
-        enum class States : uint8_t {Idle, Init, Start, Data, Validate, Validated};
+        enum class States : uint8_t {
+            Idle, Init, Start, Data, Validate, Validated
+        };
         States state = States::Idle;
 
         enum class ImageTypes : uint8_t {
@@ -85,7 +93,14 @@ namespace Pinetime {
             PacketReceiptNotification = 0x11
         };
 
-        enum class ErrorCodes { NoError = 0x01};
+        enum class ErrorCodes {
+            NoError = 0x01,
+            InvalidState = 0x02,
+            NotSupported = 0x03,
+            DataSizeExceedsLimits = 0x04,
+            CrcError = 0x05,
+            OperationFailed = 0x06
+        };
 
         uint8_t nbPacketsToNotify = 0;
         uint32_t nbPacketReceived = 0;
@@ -96,19 +111,29 @@ namespace Pinetime {
         uint32_t bootloaderSize = 0;
         uint32_t applicationSize = 0;
         static constexpr uint32_t maxImageSize = 475136;
+        uint16_t expectedCrc = 0;
 
         int SendDfuRevision(os_mbuf *om) const;
+
         void SendNotification(uint16_t connectionHandle, const uint8_t *data, const size_t size);
+
         int WritePacketHandler(uint16_t connectionHandle, os_mbuf *om);
+
         int ControlPointHandler(uint16_t connectionHandle, os_mbuf *om);
 
         uint8_t tempBuffer[200];
-        uint16_t ComputeCrc(uint8_t const * p_data, uint32_t size, uint16_t const * p_crc);
+
+        uint16_t ComputeCrc(uint8_t const *p_data, uint32_t size, uint16_t const *p_crc);
 
         bool firstCrc = true;
         uint16_t tempCrc = 0;
 
         void WriteMagicNumber();
+        TimerHandle_t notificationTimer;
+
+        uint16_t notificatonConnectionHandle = 0;
+        size_t notificationSize = 0;
+        uint8_t notificationBuffer[10];
     };
   }
 }
