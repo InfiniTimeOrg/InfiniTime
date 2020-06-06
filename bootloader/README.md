@@ -1,5 +1,22 @@
 # Bootloader
 
+## Bootloader graphic
+The bootloader loads a graphic (Pinetime logo) from the SPI Flash memory. If this graphic is not loaded in the memory, the LCD will display garbage (the content of the SPI flash memory).
+
+The SPI Flash memory is not accessible via the SWD debugger. Use the firmware 'pinetime-graphics' to load the graphic into memory. All you have to do is build it and program it at address 0x00 :
+
+ - Build:
+```
+$ make pinetime-graphics
+```
+
+ - Program (using OpenOCD for example) : 
+```
+program pinetime-graphics.bin 0
+```
+
+ - Let it run for ~10s (it does nothing for 5 seconds, then write the logo into the SPI memory, then (slowly) displays it on the LCD).
+
 ## Bootloader binary
 The binary comes from https://github.com/lupyuen/pinetime-rust-mynewt/releases/tag/v4.1.7
 
