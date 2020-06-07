@@ -43,19 +43,32 @@ ScreenList::ScreenList(Pinetime::Applications::DisplayApp *app, Pinetime::Contro
     }
   }();
 
+  // uptime
+  static constexpr uint32_t secondsInADay = 60*60*24;
+  static constexpr uint32_t secondsInAnHour = 60*60;
+  static constexpr uint32_t secondsInAMinute = 60;
+  uint32_t uptimeSeconds = dateTimeController.Uptime().count();
+  uint32_t uptimeDays = (uptimeSeconds / secondsInADay);
+  uptimeSeconds = uptimeSeconds % secondsInADay;
+  uint32_t uptimeHours = uptimeSeconds / secondsInAnHour;
+  uptimeSeconds = uptimeSeconds % secondsInAnHour;
+  uint32_t uptimeMinutes = uptimeSeconds / secondsInAMinute;
+  uptimeSeconds = uptimeSeconds % secondsInAMinute;
+  // TODO handle more than 100 days of uptime
 
   sprintf(t1, "Pinetime\n"
               "Version:%d.%d.%d\n"
               "Build: xx/xx/xxxx\n"
               "Time: %02d:%02d:%02d\n"
               "date: %02d/%02d/%04d\n"
-              "Uptime: xd xxhxx:xx\n"
+              "Uptime: %02lud %02lu:%02lu:%02lu\n"
               "Battery: %d%%\n"
               "Backlight: %d/3\n"
               "Last reset: %s\n"
               "BLE MAC: \n  AA:BB:CC:DD:EE:FF", Version::Major(), Version::Minor(), Version::Patch(),
               dateTimeController.Hours(), dateTimeController.Minutes(), dateTimeController.Seconds(),
               dateTimeController.Day(), dateTimeController.Month(), dateTimeController.Year(),
+              uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds,
               batteryPercent, brightness, resetReason);
 
   screens.emplace_back(t1);

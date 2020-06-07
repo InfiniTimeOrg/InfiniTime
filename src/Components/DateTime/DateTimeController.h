@@ -21,6 +21,7 @@ namespace Pinetime {
         uint8_t Seconds() const { return second; }
 
         std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const { return currentDateTime; }
+        std::chrono::seconds Uptime() const { return uptime; }
       private:
         uint16_t year = 0;
         Months month = Months::Unknown;
@@ -32,7 +33,7 @@ namespace Pinetime {
 
         uint32_t previousSystickCounter = 0;
         std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> currentDateTime;
-
+        std::chrono::seconds uptime {0};
     };
   }
 }
