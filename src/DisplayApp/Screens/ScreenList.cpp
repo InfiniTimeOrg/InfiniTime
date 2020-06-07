@@ -58,16 +58,18 @@ ScreenList::ScreenList(Pinetime::Applications::DisplayApp *app, Pinetime::Contro
 
   sprintf(t1, "Pinetime\n"
               "Version:%d.%d.%d\n"
-              "Build: xx/xx/xxxx\n"
+              "Build: %s\n"
+              "       %s\n"
+              "Date: %02d/%02d/%04d\n"
               "Time: %02d:%02d:%02d\n"
-              "date: %02d/%02d/%04d\n"
               "Uptime: %02lud %02lu:%02lu:%02lu\n"
               "Battery: %d%%\n"
               "Backlight: %d/3\n"
-              "Last reset: %s\n"
-              "BLE MAC: \n  AA:BB:CC:DD:EE:FF", Version::Major(), Version::Minor(), Version::Patch(),
-              dateTimeController.Hours(), dateTimeController.Minutes(), dateTimeController.Seconds(),
+              "Last reset: %s\n",
+              Version::Major(), Version::Minor(), Version::Patch(),
+              __DATE__, __TIME__,
               dateTimeController.Day(), dateTimeController.Month(), dateTimeController.Year(),
+              dateTimeController.Hours(), dateTimeController.Minutes(), dateTimeController.Seconds(),
               uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds,
               batteryPercent, brightness, resetReason);
 
