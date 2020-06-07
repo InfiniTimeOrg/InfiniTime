@@ -372,13 +372,13 @@ void DfuService::DfuImage::Append(uint8_t *data, size_t size) {
   if(bufferWriteIndex > 0 && totalWriteIndex + bufferWriteIndex == totalSize) {
     spiNorFlash.Write(writeOffset + totalWriteIndex, tempBuffer, bufferWriteIndex);
     totalWriteIndex += bufferWriteIndex;
-    if (totalSize < maxSize);
+    if (totalSize < maxSize)
       WriteMagicNumber();
   }
 }
 
 void DfuService::DfuImage::WriteMagicNumber() {
-  static constexpr uint32_t magic[4] = {
+  uint32_t magic[4] = { // TODO When this variable is a static constexpr, the values written to the memory are not correct. Why?
           0xf395c277,
           0x7fefd260,
           0x0f505235,
