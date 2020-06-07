@@ -43,6 +43,20 @@ void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t col
   WaitTransfertFinished();
 }
 
+void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t* b) {
+  state.remainingIterations = h;
+  state.currentIteration = 0;
+  state.busy = true;
+  state.action = Action::FillRectangle;
+  state.color = 0x00;
+  state.taskToNotify = xTaskGetCurrentTaskHandle();
+
+  lcd.BeginDrawBuffer(x, y, w, h);
+  lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(b), width * 2);
+
+  WaitTransfertFinished();
+}
+
 void Gfx::DrawString(uint8_t x, uint8_t y, uint16_t color, const char *text, const FONT_INFO *p_font, bool wrap) {
   if (y > (height - p_font->height)) {
     // Not enough space to write even single char.

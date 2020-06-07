@@ -96,7 +96,7 @@
 #define configUSE_TIMERS 1
 #define configTIMER_TASK_PRIORITY                                                 ( 0 )
 #define configTIMER_QUEUE_LENGTH                                                  32
-#define configTIMER_TASK_STACK_DEPTH                                              ( 120 )
+#define configTIMER_TASK_STACK_DEPTH                                              ( 240 )
 
 /* Tickless Idle configuration. */
 #define configEXPECTED_IDLE_TIME_BEFORE_SLEEP                                     2

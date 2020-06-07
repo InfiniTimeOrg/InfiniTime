@@ -12,6 +12,7 @@
 #include "Components/Ble/BleController.h"
 #include <drivers/St7789.h>
 #include <drivers/SpiMaster.h>
+#include <drivers/Spi.h>
 #include <DisplayApp/LittleVgl.h>
 #include <SystemTask/SystemTask.h>
 #include <Components/Ble/NotificationManager.h>
@@ -38,7 +39,8 @@ Pinetime::Logging::DummyLogger logger;
 static constexpr uint8_t pinSpiSck = 2;
 static constexpr uint8_t pinSpiMosi = 3;
 static constexpr uint8_t pinSpiMiso = 4;
-static constexpr uint8_t pinSpiCsn = 25;
+static constexpr uint8_t pinSpiFlashCsn = 5;
+static constexpr uint8_t pinLcdCsn = 25;
 static constexpr uint8_t pinLcdDataCommand = 18;
 
 Pinetime::Drivers::SpiMaster spi{Pinetime::Drivers::SpiMaster::SpiModule::SPI0, {
@@ -47,11 +49,15 @@ Pinetime::Drivers::SpiMaster spi{Pinetime::Drivers::SpiMaster::SpiModule::SPI0, 
         Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
         pinSpiSck,
         pinSpiMosi,
-        pinSpiMiso,
-        pinSpiCsn
+        pinSpiMiso
   }
 };
-Pinetime::Drivers::St7789 lcd {spi, pinLcdDataCommand};
+
+Pinetime::Drivers::Spi lcdSpi {spi, pinLcdCsn};
+Pinetime::Drivers::St7789 lcd {lcdSpi, pinLcdDataCommand};
+
+Pinetime::Drivers::Spi flashSpi {spi, pinSpiFlashCsn};
+Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
 Pinetime::Drivers::Cst816S touchPanel {};
 Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 
@@ -206,7 +212,7 @@ int main(void) {
 
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
-  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, touchPanel, lvgl, batteryController, bleController,
+  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, touchPanel, lvgl, batteryController, bleController,
                                                     dateTimeController, notificationManager));
   systemTask->Start();
   nimble_port_init();

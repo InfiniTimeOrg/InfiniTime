@@ -9,15 +9,18 @@
 #include <DisplayApp/DisplayApp.h>
 #include <drivers/Watchdog.h>
 #include <Components/Ble/NimbleController.h>
+#include <drivers/SpiNorFlash.h>
 
 namespace Pinetime {
   namespace System {
     class SystemTask {
       public:
-        enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification
+        enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification, BleConnected,
+            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent
         };
 
-        SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd, Drivers::Cst816S &touchPanel,
+        SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
+                   Pinetime::Drivers::SpiNorFlash& spiNorFlash, Drivers::Cst816S &touchPanel,
                    Components::LittleVgl &lvgl,
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
                    Controllers::DateTime &dateTimeController,
@@ -29,11 +32,15 @@ namespace Pinetime {
 
         void OnButtonPushed();
         void OnTouchEvent();
+
+        void OnIdle();
+
       private:
         TaskHandle_t taskHandle;
 
         Pinetime::Drivers::SpiMaster& spi;
         Pinetime::Drivers::St7789& lcd;
+        Pinetime::Drivers::SpiNorFlash& spiNorFlash;
         Pinetime::Drivers::Cst816S& touchPanel;
         Pinetime::Components::LittleVgl& lvgl;
         Pinetime::Controllers::Battery& batteryController;
@@ -58,8 +65,13 @@ namespace Pinetime {
 
         static void Process(void* instance);
         void Work();
+        bool isBleDiscoveryTimerRunning = false;
+        uint8_t bleDiscoveryTimer = 0;
+        static constexpr uint32_t idleTime = 5000;
+        TimerHandle_t idleTimer;
+        bool doNotGoToSleep = false;
 
-
+        void GoToRunning();
     };
   }
 }

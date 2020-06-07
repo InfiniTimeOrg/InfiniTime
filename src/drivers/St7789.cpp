@@ -1,16 +1,17 @@
 #include <hal/nrf_gpio.h>
 #include <libraries/delay/nrf_delay.h>
 #include "St7789.h"
-#include "SpiMaster.h"
+#include "Spi.h"
 
 using namespace Pinetime::Drivers;
 
-St7789::St7789(SpiMaster &spiMaster, uint8_t pinDataCommand) : spi{spiMaster}, pinDataCommand{pinDataCommand} {
+St7789::St7789(Spi &spi, uint8_t pinDataCommand) : spi{spi}, pinDataCommand{pinDataCommand} {
 
 }
 
 
 void St7789::Init() {
+  spi.Init();
   nrf_gpio_cfg_output(pinDataCommand);
   nrf_gpio_cfg_output(26);
   nrf_gpio_pin_set(26);
@@ -173,11 +174,11 @@ void St7789::HardwareReset() {
 void St7789::Sleep() {
   SleepIn();
   nrf_gpio_cfg_default(pinDataCommand);
-  spi.Sleep();
+//  spi.Sleep(); // TODO sleep SPI
 }
 
 void St7789::Wakeup() {
-  spi.Wakeup();
+//  spi.Wakeup(); // TODO wake up SPI
 
   nrf_gpio_cfg_output(pinDataCommand);
   // TODO why do we need to reset the controller?

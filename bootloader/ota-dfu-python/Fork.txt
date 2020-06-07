@@ -1,0 +1,1 @@
+This directory contains source forked from https://github.com/daniel-thompson/ota-dfu-python.
