@@ -37,7 +37,7 @@ make pinetime-mcuboot-app
 
 The binary is located in *<build directory>/src/pinetime-mcuboot-app.bin*.  
 
-It must me converted into a MCUBoot image using *imgtool.py* from [MCUBoot](https://github.com/JuulLabs-OSS/mcuboot/tree/master/scripts).
+It must me converted into a MCUBoot image using *imgtool.py* from [MCUBoot](https://github.com/JuulLabs-OSS/mcuboot/tree/master/scripts). Simply checkout the project and run the script <mcuboot root>/scripts/imgtool.py with the following command line:
 
 `
 imgtool.py  create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header <build directory>/src/pinetime-mcuboot-app.bin image.bin
