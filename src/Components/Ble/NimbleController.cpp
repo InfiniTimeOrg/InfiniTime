@@ -90,8 +90,13 @@ void NimbleController::Init() {
   res = ble_hs_id_infer_auto(0, &addrType);
   ASSERT(res == 0);
   res = ble_svc_gap_device_name_set(deviceName);
-
   ASSERT(res == 0);
+  Pinetime::Controllers::Ble::BleAddress address;
+  res = ble_hs_id_copy_addr(addrType, address.data(), nullptr);
+  ASSERT(res == 0);
+  bleController.AddressType((addrType == 0) ? Ble::AddressTypes::Public : Ble::AddressTypes::Random);
+  bleController.Address(std::move(address));
+
   res = ble_gatts_start();
   ASSERT(res == 0);
 }

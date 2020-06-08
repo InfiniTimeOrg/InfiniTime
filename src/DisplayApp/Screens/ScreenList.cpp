@@ -8,10 +8,15 @@ using namespace Pinetime::Applications::Screens;
 // move operation.
 // It should accept many type of "sub screen" (it only supports Label for now).
 // The number of sub screen it supports must be dynamic.
-ScreenList::ScreenList(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::DateTime &dateTimeController,
-        Pinetime::Controllers::Battery& batteryController, Pinetime::Controllers::BrightnessController& brightnessController, Pinetime::Drivers::WatchdogView& watchdog) :
+ScreenList::ScreenList(Pinetime::Applications::DisplayApp *app,
+        Pinetime::Controllers::DateTime &dateTimeController,
+        Pinetime::Controllers::Battery& batteryController,
+        Pinetime::Controllers::BrightnessController& brightnessController,
+                       Pinetime::Controllers::Ble& bleController,
+        Pinetime::Drivers::WatchdogView& watchdog) :
         Screen(app),
-        dateTimeController{dateTimeController}, batteryController{batteryController}, brightnessController{brightnessController}, watchdog{watchdog} {
+        dateTimeController{dateTimeController}, batteryController{batteryController},
+        brightnessController{brightnessController}, bleController{bleController}, watchdog{watchdog} {
   screens.reserve(3);
 
   // TODO all of this is far too heavy (string processing). This should be improved.
@@ -75,10 +80,13 @@ ScreenList::ScreenList(Pinetime::Applications::DisplayApp *app, Pinetime::Contro
 
   screens.emplace_back(t1);
 
-  strncpy(t2, "Hello from\nthe developper!", 27);
+  auto& bleAddr = bleController.Address();
+  sprintf(t2, "BLE MAC: \n  %2x:%2x:%2x:%2x:%2x:%2x",
+          bleAddr[5], bleAddr[4], bleAddr[3], bleAddr[2], bleAddr[1], bleAddr[0]);
   screens.emplace_back(t2);
 
-  strncpy(t3, "Place holder\nin case we need\nmore room!", 40);
+  strncpy(t3, "Hello from\nthe developper!", 27);
+
   screens.emplace_back(t3);
 
   auto &screen = screens[screenIndex];

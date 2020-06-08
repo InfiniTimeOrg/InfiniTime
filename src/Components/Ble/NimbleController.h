@@ -50,7 +50,7 @@ namespace Pinetime {
         AlertNotificationClient alertNotificationClient;
         CurrentTimeService currentTimeService;
 
-        uint8_t addrType;
+        uint8_t addrType; // 1 = Random, 0 = PUBLIC
         uint16_t connectionHandle;
 
         ble_uuid128_t dfuServiceUuid {
