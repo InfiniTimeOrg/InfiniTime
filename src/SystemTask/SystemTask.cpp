@@ -16,6 +16,8 @@
 using namespace Pinetime::System;
 
 void IdleTimerCallback(TimerHandle_t xTimer) {
+
+  NRF_LOG_INFO("IdleTimerCallback");
   auto sysTask = static_cast<SystemTask *>(pvTimerGetTimerID(xTimer));
   sysTask->OnIdle();
 }
@@ -113,6 +115,7 @@ void SystemTask::Work() {
           break;
         case Messages::GoToSleep:
           NRF_LOG_INFO("[SystemTask] Going to sleep");
+          xTimerStop(idleTimer, 0);
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
           isSleeping = true;
           break;
