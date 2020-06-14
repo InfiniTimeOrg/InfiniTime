@@ -25,5 +25,5 @@ jobs:
           - build/src/*.map
         on:
           tags: false
-          branch: travis
+          branch: master
       
