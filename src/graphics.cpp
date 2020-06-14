@@ -3,13 +3,13 @@
 #include <drivers/SpiMaster.h>
 #include <drivers/Spi.h>
 #include <drivers/SpiNorFlash.h>
-#include <sdk/components/libraries/log/nrf_log.h>
+#include <libraries/log/nrf_log.h>
 #include "bootloader/boot_graphics.h"
 #include <FreeRTOS.h>
 #include <task.h>
-#include <sdk/integration/nrfx/legacy/nrf_drv_gpiote.h>
+#include <legacy/nrf_drv_gpiote.h>
 #include <libraries/gpiote/app_gpiote.h>
-#include <sdk/modules/nrfx/hal/nrf_wdt.h>
+#include <hal/nrf_wdt.h>
 #include <cstring>
 #include <Components/Gfx/Gfx.h>
 #include <drivers/St7789.h>
