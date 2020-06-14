@@ -1,0 +1,28 @@
+language: c
+
+services:
+  - docker
+
+before_install:
+  - docker build -t pinetime docker
+
+jobs:
+  include:
+    - stage: GitHub Release
+      script:
+        - mkdir build
+        - chmod 777 build
+        - docker run --rm -t -u pinetime -v $(readlink -f .):/source -v $(readlink -f .)/build:/build pinetime
+      
+      deploy:
+        provider: releases
+        api_key: $GITHUB_OAUTH_TOKEN
+        skip_cleanup: true
+        file_glob: true
+        file:
+          - build/src/*.hex
+          - build/src/*.bin
+          - build/src/*.map
+        on:
+          tags: false
+      
