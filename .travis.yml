@@ -12,7 +12,7 @@ jobs:
       script:
         - mkdir build
         - chmod 777 build
-        - docker run --rm -t -u pinetime -v $(readlink -f .):/source -v $(readlink -f .)/build:/build pinetime
+        - docker run --rm -t -v $(readlink -f .):/source -v $(readlink -f .)/build:/build pinetime
       
       deploy:
         provider: releases
