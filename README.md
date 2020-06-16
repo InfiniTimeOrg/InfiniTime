@@ -102,6 +102,14 @@ $ cd build
 $ cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_OPENOCD=1 -DGDB_CLIENT_BIN_PATH=[optional] ../
 ```
 
+
+**Note** : By default, the build configuration *Release* is applied. It means that the code is built with optimisations enabled (-O3). If you wanto to compile in *Debug* mode to ease debugging and step-by-step debugging, specify the CMake variable `CMAKE_BUILD_TYPE` in the CMake command line:
+
+```
+-DCMAKE_BUILD_TYPE=Debug
+```
+ 
+
   * Make
 ```
 $ make -j pinetime-app
