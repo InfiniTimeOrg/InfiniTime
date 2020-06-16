@@ -15,8 +15,12 @@ int DeviceInformationCallback(uint16_t conn_handle, uint16_t attr_handle, struct
 }
 
 void DeviceInformationService::Init() {
-  ble_gatts_count_cfg(serviceDefinition);
-  ble_gatts_add_svcs(serviceDefinition);
+  int res = 0;
+  res = ble_gatts_count_cfg(serviceDefinition);
+  ASSERT(res == 0);
+
+  res = ble_gatts_add_svcs(serviceDefinition);
+  ASSERT(res == 0);
 }
 
 

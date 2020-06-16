@@ -17,8 +17,12 @@ int AlertNotificationCallback(uint16_t conn_handle, uint16_t attr_handle, struct
 }
 
 void AlertNotificationService::Init() {
-  ble_gatts_count_cfg(serviceDefinition);
-  ble_gatts_add_svcs(serviceDefinition);
+  int res;
+  res = ble_gatts_count_cfg(serviceDefinition);
+  ASSERT(res == 0);
+
+  res = ble_gatts_add_svcs(serviceDefinition);
+  ASSERT(res == 0);
 }
 
 AlertNotificationService::AlertNotificationService ( Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::NotificationManager& notificationManager ) : m_systemTask{systemTask}, m_notificationManager{notificationManager},

@@ -73,7 +73,7 @@ ble_l2cap_coc_create_server(uint16_t psm, uint16_t mtu,
 
     srv = ble_l2cap_coc_srv_alloc();
     if (!srv) {
-        return BLE_HS_ENOMEM;
+            return BLE_HS_ENOMEM;
     }
 
     srv->psm = psm;
@@ -440,7 +440,6 @@ ble_l2cap_coc_continue_tx(struct ble_l2cap_chan *chan)
             BLE_HS_LOG(DEBUG, "Sending SDU len=%d\n", OS_MBUF_PKTLEN(tx->sdu));
             rc = os_mbuf_append(txom, &l, sizeof(uint16_t));
             if (rc) {
-                rc = BLE_HS_ENOMEM;
                 BLE_HS_LOG(DEBUG, "Could not append data rc=%d", rc);
                 goto failed;
             }
@@ -453,9 +452,8 @@ ble_l2cap_coc_continue_tx(struct ble_l2cap_chan *chan)
         rc = os_mbuf_appendfrom(txom, tx->sdu, tx->data_offset,
                                 len - sdu_size_offset);
         if (rc) {
-            rc = BLE_HS_ENOMEM;
             BLE_HS_LOG(DEBUG, "Could not append data rc=%d", rc);
-            goto failed;
+           goto failed;
         }
 
         ble_hs_lock();
