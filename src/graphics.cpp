@@ -3,7 +3,7 @@
 #include <drivers/SpiMaster.h>
 #include <drivers/Spi.h>
 #include <drivers/SpiNorFlash.h>
-#include <sdk/components/libraries/log/nrf_log.h>
+#include <libraries/log/nrf_log.h>
 #include "bootloader/boot_graphics.h"
 #include <FreeRTOS.h>
 #include <task.h>
