@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <Components/Ble/NimbleController.h>
 #include "Screen.h"
 #include "Label.h"
 
@@ -13,6 +14,7 @@ namespace Pinetime {
                               Pinetime::Controllers::DateTime& dateTimeController,
                               Pinetime::Controllers::Battery& batteryController,
                               Pinetime::Controllers::BrightnessController& brightnessController,
+                              Pinetime::Controllers::Ble& bleController,
                               Pinetime::Drivers::WatchdogView& watchdog);
           ~ScreenList() override;
           bool Refresh() override;
@@ -27,11 +29,13 @@ namespace Pinetime {
           Pinetime::Controllers::DateTime& dateTimeController;
           Pinetime::Controllers::Battery& batteryController;
           Pinetime::Controllers::BrightnessController& brightnessController;
+          Pinetime::Controllers::Ble& bleController;
           Pinetime::Drivers::WatchdogView& watchdog;
 
+
           char t1[200];
-          char t2[30];
-          char t3[42];
+          char t2[200];
+          char t3[30];
       };
     }
   }

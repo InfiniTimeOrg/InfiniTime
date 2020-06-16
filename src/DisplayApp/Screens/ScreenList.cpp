@@ -8,10 +8,15 @@ using namespace Pinetime::Applications::Screens;
 // move operation.
 // It should accept many type of "sub screen" (it only supports Label for now).
 // The number of sub screen it supports must be dynamic.
-ScreenList::ScreenList(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::DateTime &dateTimeController,
-        Pinetime::Controllers::Battery& batteryController, Pinetime::Controllers::BrightnessController& brightnessController, Pinetime::Drivers::WatchdogView& watchdog) :
+ScreenList::ScreenList(Pinetime::Applications::DisplayApp *app,
+        Pinetime::Controllers::DateTime &dateTimeController,
+        Pinetime::Controllers::Battery& batteryController,
+        Pinetime::Controllers::BrightnessController& brightnessController,
+                       Pinetime::Controllers::Ble& bleController,
+        Pinetime::Drivers::WatchdogView& watchdog) :
         Screen(app),
-        dateTimeController{dateTimeController}, batteryController{batteryController}, brightnessController{brightnessController}, watchdog{watchdog} {
+        dateTimeController{dateTimeController}, batteryController{batteryController},
+        brightnessController{brightnessController}, bleController{bleController}, watchdog{watchdog} {
   screens.reserve(3);
 
   // TODO all of this is far too heavy (string processing). This should be improved.
@@ -43,27 +48,45 @@ ScreenList::ScreenList(Pinetime::Applications::DisplayApp *app, Pinetime::Contro
     }
   }();
 
+  // uptime
+  static constexpr uint32_t secondsInADay = 60*60*24;
+  static constexpr uint32_t secondsInAnHour = 60*60;
+  static constexpr uint32_t secondsInAMinute = 60;
+  uint32_t uptimeSeconds = dateTimeController.Uptime().count();
+  uint32_t uptimeDays = (uptimeSeconds / secondsInADay);
+  uptimeSeconds = uptimeSeconds % secondsInADay;
+  uint32_t uptimeHours = uptimeSeconds / secondsInAnHour;
+  uptimeSeconds = uptimeSeconds % secondsInAnHour;
+  uint32_t uptimeMinutes = uptimeSeconds / secondsInAMinute;
+  uptimeSeconds = uptimeSeconds % secondsInAMinute;
+  // TODO handle more than 100 days of uptime
 
   sprintf(t1, "Pinetime\n"
               "Version:%d.%d.%d\n"
-              "Build: xx/xx/xxxx\n"
+              "Build: %s\n"
+              "       %s\n"
+              "Date: %02d/%02d/%04d\n"
               "Time: %02d:%02d:%02d\n"
-              "date: %02d/%02d/%04d\n"
-              "Uptime: xd xxhxx:xx\n"
+              "Uptime: %02lud %02lu:%02lu:%02lu\n"
               "Battery: %d%%\n"
               "Backlight: %d/3\n"
-              "Last reset: %s\n"
-              "BLE MAC: \n  AA:BB:CC:DD:EE:FF", Version::Major(), Version::Minor(), Version::Patch(),
-              dateTimeController.Hours(), dateTimeController.Minutes(), dateTimeController.Seconds(),
+              "Last reset: %s\n",
+              Version::Major(), Version::Minor(), Version::Patch(),
+              __DATE__, __TIME__,
               dateTimeController.Day(), dateTimeController.Month(), dateTimeController.Year(),
+              dateTimeController.Hours(), dateTimeController.Minutes(), dateTimeController.Seconds(),
+              uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds,
               batteryPercent, brightness, resetReason);
 
   screens.emplace_back(t1);
 
-  strncpy(t2, "Hello from\nthe developper!", 27);
+  auto& bleAddr = bleController.Address();
+  sprintf(t2, "BLE MAC: \n  %2x:%2x:%2x:%2x:%2x:%2x",
+          bleAddr[5], bleAddr[4], bleAddr[3], bleAddr[2], bleAddr[1], bleAddr[0]);
   screens.emplace_back(t2);
 
-  strncpy(t3, "Place holder\nin case we need\nmore room!", 40);
+  strncpy(t3, "Hello from\nthe developper!", 27);
+
   screens.emplace_back(t3);
 
   auto &screen = screens[screenIndex];

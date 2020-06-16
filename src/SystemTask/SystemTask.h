@@ -67,7 +67,7 @@ namespace Pinetime {
         void Work();
         bool isBleDiscoveryTimerRunning = false;
         uint8_t bleDiscoveryTimer = 0;
-        static constexpr uint32_t idleTime = 5000;
+        static constexpr uint32_t idleTime = 15000;
         TimerHandle_t idleTimer;
         bool doNotGoToSleep = false;
 

@@ -47,7 +47,8 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
     previousSystickCounter = 0xffffff - (rest - systickCounter);
   }
 
-  currentDateTime += std::chrono::seconds (correctedDelta);
+  currentDateTime += std::chrono::seconds(correctedDelta);
+  uptime += std::chrono::seconds(correctedDelta);
 
   auto dp = date::floor<date::days>(currentDateTime);
   auto time = date::make_time(currentDateTime-dp);
