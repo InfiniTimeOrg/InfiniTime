@@ -180,8 +180,8 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
         StartAdvertising();
         bleController.Disconnect();
       } else {
-        //bleController.Connect();
-        //systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleConnected);
+        bleController.Connect();
+        systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleConnected);
         connectionHandle = event->connect.conn_handle;
         // Service discovery is deffered via systemtask
       }
