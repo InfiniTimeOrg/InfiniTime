@@ -74,8 +74,12 @@ DfuService::DfuService(Pinetime::System::SystemTask &systemTask, Pinetime::Contr
 }
 
 void DfuService::Init() {
-  ble_gatts_count_cfg(serviceDefinition);
-  ble_gatts_add_svcs(serviceDefinition);
+  int res;
+  res = ble_gatts_count_cfg(serviceDefinition);
+  ASSERT(res == 0);
+
+  res = ble_gatts_add_svcs(serviceDefinition);
+  ASSERT(res == 0);
 }
 
 int DfuService::OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context) {

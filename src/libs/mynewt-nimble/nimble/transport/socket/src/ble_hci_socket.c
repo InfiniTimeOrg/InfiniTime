@@ -540,7 +540,7 @@ ble_hci_sock_config(void)
 
     rc = bind(s, (struct sockaddr *)&shci, sizeof(shci));
     if (rc) {
-        dprintf(1, "bind() failed %d hci%d\n", errno, shci.hci_dev);
+        dprintf(1, "bind() failed %d\n", errno);
         goto err;
     }
 

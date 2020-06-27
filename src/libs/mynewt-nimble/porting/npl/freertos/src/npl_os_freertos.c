@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <stddef.h>
 #include <string.h>
+#include <sdk/components/libraries/log/nrf_log.h>
 #include "nimble/nimble_npl.h"
 
 static inline bool
