@@ -131,7 +131,6 @@ struct ble_ll_adv_sm
     uint8_t aux_index : 1;
     uint8_t aux_first_pdu : 1;
     uint8_t aux_not_scanned : 1;
-    uint8_t aux_dropped : 1;
     struct ble_mbuf_hdr *rx_ble_hdr;
     struct os_mbuf **aux_data;
     struct ble_ll_adv_aux aux[2];
@@ -1270,7 +1269,7 @@ ble_ll_adv_secondary_tx_start_cb(struct ble_ll_sched_item *sch)
     rc = ble_phy_tx_set_start_time(txstart, sch->remainder);
     if (rc) {
         STATS_INC(ble_ll_stats, adv_late_starts);
-        goto adv_aux_dropped;
+        goto adv_tx_done;
     }
 
 #if MYNEWT_VAL(BLE_LL_CFG_FEAT_LE_ENCRYPTION)
@@ -1305,7 +1304,7 @@ ble_ll_adv_secondary_tx_start_cb(struct ble_ll_sched_item *sch)
     /* Transmit advertisement */
     rc = ble_phy_tx(pducb, advsm, end_trans);
     if (rc) {
-        goto adv_aux_dropped;
+        goto adv_tx_done;
     }
 
     /* Enable/disable whitelisting based on filter policy */
@@ -1323,8 +1322,7 @@ ble_ll_adv_secondary_tx_start_cb(struct ble_ll_sched_item *sch)
 
     return BLE_LL_SCHED_STATE_RUNNING;
 
-adv_aux_dropped:
-    advsm->aux_dropped = 1;
+adv_tx_done:
     ble_ll_adv_tx_done(advsm);
     return BLE_LL_SCHED_STATE_DONE;
 }
@@ -1556,7 +1554,6 @@ ble_ll_adv_aux_schedule_first(struct ble_ll_adv_sm *advsm)
     advsm->aux_index = 0;
     advsm->aux_first_pdu = 1;
     advsm->aux_not_scanned = 0;
-    advsm->aux_dropped = 0;
 
     aux = AUX_CURRENT(advsm);
     ble_ll_adv_aux_calculate(advsm, aux, 0);
@@ -4838,11 +4835,6 @@ ble_ll_adv_sec_done(struct ble_ll_adv_sm *advsm)
 
     /* We don't need RF anymore */
     ble_ll_rfmgmt_release();
-
-    if (advsm->aux_dropped) {
-        ble_ll_adv_drop_event(advsm);
-        return;
-    }
 
     if (advsm->aux_not_scanned) {
         ble_ll_sched_rmv_elem(&aux_next->sch);

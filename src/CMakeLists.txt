@@ -132,6 +132,7 @@ set(NIMBLE_SRC
   libs/mynewt-nimble/nimble/host/src/ble_hs_stop.c
   libs/mynewt-nimble/nimble/host/src/ble_hs_startup.c
   libs/mynewt-nimble/nimble/host/store/ram/src/ble_store_ram.c
+  libs/mynewt-nimble/nimble/host/src/ble_monitor.c
   libs/mynewt-nimble/nimble/transport/ram/src/ble_hci_ram.c
   libs/mynewt-nimble/nimble/controller/src/ble_ll.c
   libs/mynewt-nimble/nimble/controller/src/ble_ll_rand.c
@@ -534,6 +535,7 @@ include_directories(
 )
 
 link_directories(
+	../
 )
 
 
