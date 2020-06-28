@@ -105,14 +105,25 @@ int AlertNotificationClient::OnDescriptorDiscoveryEventCallback(uint16_t connect
 
 void AlertNotificationClient::OnNotification(ble_gap_event *event) {
   if(event->notify_rx.attr_handle == newAlertHandle) {
-    size_t notifSize = OS_MBUF_PKTLEN(event->notify_rx.om);
-    uint8_t data[notifSize + 1];
-    data[notifSize] = '\0';
-    os_mbuf_copydata(event->notify_rx.om, 0, notifSize, data);
-    char *s = (char *) &data[2];
-    NRF_LOG_INFO("DATA : %s", s);
+    // TODO implement this with more memory safety (and constexpr)
+    static const size_t maxBufferSize{21};
+    static const size_t maxMessageSize{18};
+    size_t bufferSize = min(OS_MBUF_PKTLEN(event->notify_rx.om), maxBufferSize);
 
-    notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, s, notifSize + 1);
+    uint8_t data[bufferSize];
+    os_mbuf_copydata(event->notify_rx.om, 0, bufferSize, data);
+
+    char *s = (char *) &data[3];
+    auto messageSize = min(maxMessageSize, (bufferSize-3));
+
+    for (int i = 0; i < messageSize-1; i++) {
+      if (s[i] == 0x00) {
+        s[i] = 0x0A;
+      }
+    }
+    s[messageSize-1] = '\0';
+
+    notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, s, messageSize);
     systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
   }
 }

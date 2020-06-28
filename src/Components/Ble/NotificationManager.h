@@ -7,10 +7,10 @@ namespace Pinetime {
     class NotificationManager {
       public:
         enum class Categories {Unknown, SimpleAlert, Email, News, IncomingCall, MissedCall, Sms, VoiceMail, Schedule, HighProriotyAlert, InstantMessage };
-        static constexpr uint8_t MessageSize = 18;
+        static constexpr uint8_t MessageSize{18};
 
         struct Notification {
-          std::array<char, MessageSize> message;
+          std::array<char, MessageSize+1> message;
           Categories category = Categories::Unknown;
         };
 
