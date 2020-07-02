@@ -442,6 +442,7 @@ set(INCLUDE_FILES
   libs/date/includes/date/tz_private.h
   DisplayApp/LittleVgl.h
   SystemTask/SystemTask.h
+  SystemTask/SystemMonitor.h
 )
 
 include_directories(

@@ -169,6 +169,8 @@ void SystemTask::Work() {
     dateTimeController.UpdateTime(systick_counter);
     batteryController.Update();
 
+    monitor.Process();
+
     if(!nrf_gpio_pin_read(pinButton))
       watchdog.Kick();
   }
