@@ -22,8 +22,6 @@ namespace Pinetime {
           void OnObjectEvent(lv_obj_t* obj, lv_event_t event);
 
         private:
-
-          lv_style_t* labelStyle;
           lv_obj_t * label;
           lv_obj_t* backgroundLabel;
           lv_obj_t * button;

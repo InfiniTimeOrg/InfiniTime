@@ -66,16 +66,9 @@ namespace Pinetime {
           DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
           DirtyValue<Pinetime::Version> version;
 
-          lv_style_t* labelStyle;
-          lv_style_t labelBigStyle;
-          lv_obj_t * label_battery;
-
-          lv_obj_t * label_ble;
           lv_obj_t* label_time;
           lv_obj_t* label_date;
-          lv_obj_t* label_version;
           lv_obj_t* backgroundLabel;
-
           lv_obj_t * batteryIcon;
           lv_obj_t * bleIcon;
 
