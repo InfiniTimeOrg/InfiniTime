@@ -363,7 +363,7 @@ list(APPEND SOURCE_FILES
   ${TINYCRYPT_SRC}
   ${NIMBLE_SRC}
   ${LVGL_SRC}
-  ${IMAGE_FILES}
+  #${IMAGE_FILES}
   ${SDK_SOURCE_FILES}
 
   DisplayApp/LittleVgl.cpp
@@ -443,6 +443,7 @@ set(INCLUDE_FILES
   DisplayApp/LittleVgl.h
   SystemTask/SystemTask.h
   SystemTask/SystemMonitor.h
+  DisplayApp/Screens/Symbols.h
 )
 
 include_directories(

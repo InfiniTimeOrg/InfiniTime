@@ -2,16 +2,12 @@
 
 #include <cstdint>
 #include <chrono>
-#include <Components/Gfx/Gfx.h>
 #include "Screen.h"
 #include <bits/unique_ptr.h>
 #include <libs/lvgl/src/lv_core/lv_style.h>
 #include <libs/lvgl/src/lv_core/lv_obj.h>
 #include <Components/Battery/BatteryController.h>
 #include <Components/Ble/BleController.h>
-#include "../Fonts/lcdfont14.h"
-#include "../Fonts/lcdfont70.h"
-#include "../../Version.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -64,13 +60,21 @@ namespace Pinetime {
           DirtyValue<uint8_t> batteryPercentRemaining  {0};
           DirtyValue<bool> bleState {false};
           DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
-          DirtyValue<Pinetime::Version> version;
+          DirtyValue<uint32_t> stepCount  {0};
+          DirtyValue<uint8_t> heartbeat  {0};
+
 
           lv_obj_t* label_time;
           lv_obj_t* label_date;
           lv_obj_t* backgroundLabel;
           lv_obj_t * batteryIcon;
           lv_obj_t * bleIcon;
+          lv_obj_t* batteryPlug;
+          lv_obj_t* heartbeatIcon;
+          lv_obj_t* heartbeatValue;
+          lv_obj_t* heartbeatBpm;
+          lv_obj_t* stepIcon;
+          lv_obj_t* stepValue;
 
           Controllers::DateTime& dateTimeController;
           Controllers::Battery& batteryController;
