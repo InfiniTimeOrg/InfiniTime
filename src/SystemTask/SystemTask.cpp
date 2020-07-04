@@ -120,15 +120,15 @@ void SystemTask::Work() {
           isSleeping = true;
           break;
         case Messages::OnNewTime:
-          xTimerReset(idleTimer, 0);
+          ReloadIdleTimer();
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateDateTime);
           break;
         case Messages::OnNewNotification:
-          xTimerReset(idleTimer, 0);
+          if(isSleeping) GoToRunning();
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewNotification);
           break;
         case Messages::BleConnected:
-          xTimerReset(idleTimer, 0);
+          ReloadIdleTimer();
           isBleDiscoveryTimerRunning = true;
           bleDiscoveryTimer = 5;
           break;
@@ -145,10 +145,10 @@ void SystemTask::Work() {
             NVIC_SystemReset();
           break;
         case Messages::OnTouchEvent:
-          xTimerReset(idleTimer, 0);
+          ReloadIdleTimer();
           break;
         case Messages::OnButtonEvent:
-          xTimerReset(idleTimer, 0);
+          ReloadIdleTimer();
           break;
         default: break;
       }
@@ -216,4 +216,9 @@ void SystemTask::OnIdle() {
   if(doNotGoToSleep) return;
   NRF_LOG_INFO("Idle timeout -> Going to sleep")
   PushMessage(Messages::GoToSleep);
+}
+
+void SystemTask::ReloadIdleTimer() const {
+  if(isSleeping) return;
+  xTimerReset(idleTimer, 0);
 }

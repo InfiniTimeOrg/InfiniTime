@@ -66,6 +66,7 @@ namespace Pinetime {
 
         static void Process(void* instance);
         void Work();
+        void ReloadIdleTimer() const;
         bool isBleDiscoveryTimerRunning = false;
         uint8_t bleDiscoveryTimer = 0;
         static constexpr uint32_t idleTime = 15000;
