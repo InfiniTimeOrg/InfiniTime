@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include <sdk/components/libraries/log/nrf_log.h>
 #include "sysinit/sysinit.h"
 #include "syscfg/syscfg.h"
 #include "os/os.h"
