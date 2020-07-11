@@ -25,7 +25,7 @@ namespace Pinetime {
         static constexpr char* manufacturerName = "Codingfield";
         static constexpr char* modelNumber = "1";
         static constexpr char* serialNumber = "9.8.7.6.5.4";
-        static constexpr char* fwRevision = "0.5.0";
+        static constexpr char* fwRevision = "0.7.0";
         static constexpr char* hwRevision = "1.0.0";
 
         static constexpr ble_uuid16_t deviceInfoUuid {

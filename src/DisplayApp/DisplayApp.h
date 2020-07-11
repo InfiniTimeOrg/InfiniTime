@@ -10,7 +10,6 @@
 #include <Components/Brightness/BrightnessController.h>
 #include <Components/Ble/BleController.h>
 #include <Components/DateTime/DateTimeController.h>
-#include "Fonts/lcdfont14.h"
 #include "../drivers/Cst816s.h"
 #include "LittleVgl.h"
 #include <date/date.h>

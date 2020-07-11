@@ -20,7 +20,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <assert.h>
-#include <sdk/components/libraries/log/nrf_log.h>
 #include "syscfg/syscfg.h"
 #include "os/os.h"
 #include "ble/xcvr.h"

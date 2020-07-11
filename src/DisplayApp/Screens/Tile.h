@@ -1,13 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include <chrono>
-#include <Components/Gfx/Gfx.h>
 #include "Screen.h"
 #include <bits/unique_ptr.h>
-#include "../Fonts/lcdfont14.h"
-#include "../Fonts/lcdfont70.h"
-#include "../../Version.h"
 #include "Modal.h"
 #include <lvgl/src/lv_core/lv_style.h>
 

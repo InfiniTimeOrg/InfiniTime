@@ -4,11 +4,12 @@
 using namespace Pinetime::Controllers;
 
 void NotificationManager::Push(Pinetime::Controllers::NotificationManager::Categories category,
-                                                      const char *message, uint8_t messageSize) {
+                                                      const char *message, uint8_t currentMessageSize) {
   // TODO handle edge cases on read/write index
+  auto checkedSize = std::min(currentMessageSize, uint8_t{18});
   auto& notif = notifications[writeIndex];
-  std::memcpy(notif.message.data(), message, messageSize);
-  notif.message[messageSize] = '\0';
+  std::memcpy(notif.message.data(), message, checkedSize);
+  notif.message[checkedSize] = '\0';
   notif.category = category;
 
   writeIndex = (writeIndex + 1 < TotalNbNotifications) ? writeIndex + 1 : 0;

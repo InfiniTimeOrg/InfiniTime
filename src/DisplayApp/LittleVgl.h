@@ -79,6 +79,7 @@ namespace Pinetime {
         uint16_t hue = 10;
         lv_theme_t theme;
         lv_style_t btn_rel, btn_pr, btn_tgl_rel, btn_tgl_pr, btn_ina;
+        lv_style_t labelBigStyle;
         lv_style_t prim, sec, hint;
         lv_style_t led;
         lv_style_t bar_bg, bar_indic;
