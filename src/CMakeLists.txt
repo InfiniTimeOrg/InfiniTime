@@ -336,6 +336,7 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/ScreenList.cpp
   DisplayApp/Screens/Label.cpp
   DisplayApp/Screens/FirmwareUpdate.cpp
+  DisplayApp/Screens/Music.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiNorFlash.cpp
@@ -356,6 +357,7 @@ list(APPEND SOURCE_FILES
   Components/Ble/DfuService.cpp
   Components/Ble/CurrentTimeService.cpp
   Components/Ble/AlertNotificationService.cpp
+  Components/Ble/MusicService.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c

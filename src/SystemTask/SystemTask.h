@@ -35,6 +35,8 @@ namespace Pinetime {
 
         void OnIdle();
 
+        Pinetime::Controllers::NimbleController& nimble() {return nimbleController;};
+
       private:
         TaskHandle_t taskHandle;
 
