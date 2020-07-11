@@ -10,6 +10,7 @@
 #include <drivers/Watchdog.h>
 #include <Components/Ble/NimbleController.h>
 #include <drivers/SpiNorFlash.h>
+#include "SystemMonitor.h"
 
 namespace Pinetime {
   namespace System {
@@ -67,6 +68,7 @@ namespace Pinetime {
 
         static void Process(void* instance);
         void Work();
+        void ReloadIdleTimer() const;
         bool isBleDiscoveryTimerRunning = false;
         uint8_t bleDiscoveryTimer = 0;
         static constexpr uint32_t idleTime = 15000;
@@ -74,6 +76,12 @@ namespace Pinetime {
         bool doNotGoToSleep = false;
 
         void GoToRunning();
+
+#if configUSE_TRACE_FACILITY == 1
+        SystemMonitor<FreeRtosMonitor> monitor;
+#else
+        SystemMonitor<DummyMonitor> monitor;
+#endif
     };
   }
 }

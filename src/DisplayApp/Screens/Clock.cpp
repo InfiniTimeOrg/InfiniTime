@@ -1,17 +1,16 @@
 #include <cstdio>
 #include <libs/date/includes/date/date.h>
 #include <Components/DateTime/DateTimeController.h>
-#include <Version.h>
 #include <libs/lvgl/lvgl.h>
 #include "Clock.h"
 #include "../DisplayApp.h"
 #include "BatteryIcon.h"
 #include "BleIcon.h"
-
+#include "Symbols.h"
 using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
 extern lv_font_t jetbrains_mono_bold_20;
-
+extern lv_style_t* LabelBigStyle;
 
 static void event_handler(lv_obj_t * obj, lv_event_t event) {
   Clock* screen = static_cast<Clock *>(obj->user_data);
@@ -21,7 +20,7 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
 Clock::Clock(DisplayApp* app,
         Controllers::DateTime& dateTimeController,
         Controllers::Battery& batteryController,
-        Controllers::Ble& bleController) : Screen(app), currentDateTime{{}}, version {{}},
+        Controllers::Ble& bleController) : Screen(app), currentDateTime{{}},
                                            dateTimeController{dateTimeController}, batteryController{batteryController}, bleController{bleController} {
   displayedChar[0] = 0;
   displayedChar[1] = 0;
@@ -29,39 +28,56 @@ Clock::Clock(DisplayApp* app,
   displayedChar[3] = 0;
   displayedChar[4] = 0;
 
-  batteryIcon = lv_img_create(lv_scr_act(), NULL);
-  lv_img_set_src(batteryIcon, BatteryIcon::GetUnknownIcon());
-  lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  batteryIcon = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_text(batteryIcon, Symbols::batteryFull);
+  lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 2);
 
-  bleIcon = lv_img_create(lv_scr_act(), NULL);
-  lv_img_set_src(bleIcon, BleIcon::GetIcon(false));
-  lv_obj_align(bleIcon, batteryIcon, LV_ALIGN_OUT_LEFT_MID, 0, 0);
+  batteryPlug = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_text(batteryPlug, Symbols::plug);
+  lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  bleIcon = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_text(bleIcon, Symbols::bluetooth);
+  lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
 
   label_date = lv_label_create(lv_scr_act(), NULL);
 
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
 
-  labelStyle = const_cast<lv_style_t *>(lv_label_get_style(label_date, LV_LABEL_STYLE_MAIN));
-  labelStyle->text.font = &jetbrains_mono_bold_20;
-
-  lv_style_copy(&labelBigStyle, labelStyle);
-  labelBigStyle.text.font = &jetbrains_mono_extrabold_compressed;
-
-  lv_label_set_style(label_date, LV_LABEL_STYLE_MAIN, labelStyle);
-
   label_time = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_style(label_time, LV_LABEL_STYLE_MAIN, &labelBigStyle);
+  lv_label_set_style(label_time, LV_LABEL_STYLE_MAIN, LabelBigStyle);
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
 
   backgroundLabel = lv_label_create(lv_scr_act(), NULL);
   backgroundLabel->user_data = this;
-  lv_label_set_style(backgroundLabel, LV_LABEL_STYLE_MAIN, labelStyle);
   lv_obj_set_click(backgroundLabel, true);
   lv_obj_set_event_cb(backgroundLabel, event_handler);
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text(backgroundLabel, "");
+
+
+  heartbeatIcon = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_text(heartbeatIcon, Symbols::heartBeat);
+  lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
+
+  heartbeatValue = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_text(heartbeatValue, "0");
+  lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
+
+  heartbeatBpm = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_text(heartbeatBpm, "BPM");
+  lv_obj_align(heartbeatBpm, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
+
+  stepValue = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_text(stepValue, "0");
+  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
+
+  stepIcon = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_text(stepIcon, Symbols::shoe);
+  lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 }
 
 Clock::~Clock() {
@@ -72,17 +88,22 @@ bool Clock::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
-    lv_img_set_src(batteryIcon, BatteryIcon::GetIcon(batteryController.IsCharging() || batteryController.IsPowerPresent(), batteryPercent));
+    lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+    auto isCharging = batteryController.IsCharging() || batteryController.IsPowerPresent();
+    lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
   }
 
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
     if(bleState.Get() == true) {
-      lv_img_set_src(bleIcon, BleIcon::GetIcon(true));
+      lv_label_set_text(bleIcon, BleIcon::GetIcon(true));
     } else {
-      lv_img_set_src(bleIcon, BleIcon::GetIcon(false));
+      lv_label_set_text(bleIcon, BleIcon::GetIcon(false));
     }
   }
+  lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 5);
+  lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   currentDateTime = dateTimeController.CurrentDateTime();
 
@@ -131,6 +152,25 @@ bool Clock::Refresh() {
       currentDayOfWeek = dayOfWeek;
       currentDay = day;
     }
+  }
+
+  // TODO heartbeat = heartBeatController.GetValue();
+  if(heartbeat.IsUpdated()) {
+    char heartbeatBuffer[4];
+    sprintf(heartbeatBuffer, "%d", heartbeat.Get());
+    lv_label_set_text(heartbeatValue, heartbeatBuffer);
+    lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
+    lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
+    lv_obj_align(heartbeatBpm, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
+  }
+
+  // TODO stepCount = stepController.GetValue();
+  if(stepCount.IsUpdated()) {
+    char stepBuffer[5];
+    sprintf(stepBuffer, "%lu", stepCount.Get());
+    lv_label_set_text(stepValue, stepBuffer);
+    lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
+    lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
 
   return running;

@@ -4,6 +4,7 @@
 #include <SystemTask/SystemTask.h>
 
 #include "AlertNotificationService.h"
+#include <cstring>
 
 using namespace Pinetime::Controllers;
 
@@ -55,23 +56,26 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
                                                     struct ble_gatt_access_ctxt *ctxt) {
 
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
-        size_t notifSize = OS_MBUF_PKTLEN(ctxt->om);
-        uint8_t data[notifSize + 1];
-        data[notifSize] = '\0';
-        os_mbuf_copydata(ctxt->om, 0, notifSize, data);
-        char *s = (char *) &data[3];
-        NRF_LOG_INFO("DATA : %s", s);
+    // TODO implement this with more memory safety (and constexpr)
+    static const size_t maxBufferSize{21};
+    static const size_t maxMessageSize{18};
+    size_t bufferSize = min(OS_MBUF_PKTLEN(ctxt->om), maxBufferSize);
 
-        for(int i = 0; i <= notifSize; i++)
-        {
-            if(s[i] == 0x00)
-            {
-                s[i] = 0x0A;
-            }
-        }
+    uint8_t data[bufferSize];
+    os_mbuf_copydata(ctxt->om, 0, bufferSize, data);
 
-        m_notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, s, notifSize + 1);
-        m_systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
+    char *s = (char *) &data[3];
+    auto messageSize = min(maxMessageSize, (bufferSize-3));
+
+    for (int i = 0; i < messageSize-1; i++) {
+      if (s[i] == 0x00) {
+        s[i] = 0x0A;
+      }
+    }
+    s[messageSize-1] = '\0';
+
+    m_notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, s, messageSize);
+    m_systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
   }
   return 0;
 }

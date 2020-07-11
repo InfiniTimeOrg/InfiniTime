@@ -17,6 +17,8 @@ LV_FONT_DECLARE(jetbrains_mono_extrabold_compressed)
 LV_FONT_DECLARE(jetbrains_mono_bold_20)
 }
 
+lv_style_t* LabelBigStyle = nullptr;
+
 static void disp_flush(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p) {
   auto* lvgl = static_cast<LittleVgl*>(disp_drv->user_data);
   lvgl->FlushDisplay(area, color_p);
@@ -360,6 +362,10 @@ void LittleVgl::InitThemeButton() {
 void LittleVgl::InitThemeLabel() {
   lv_style_copy(&prim, &bg);
   prim.text.color = lv_color_hsv_to_rgb(hue, 5, 95);
+
+  lv_style_copy(&labelBigStyle, &prim);
+  labelBigStyle.text.font = &jetbrains_mono_extrabold_compressed;
+  LabelBigStyle = &(this->labelBigStyle);
 
   lv_style_copy(&sec, &bg);
   sec.text.color = lv_color_hsv_to_rgb(hue, 15, 65);

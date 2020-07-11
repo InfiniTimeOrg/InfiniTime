@@ -7,8 +7,9 @@ namespace Pinetime {
     namespace Screens {
       class BatteryIcon {
       public:
-        static lv_img_dsc_t* GetUnknownIcon();
-        static lv_img_dsc_t* GetIcon(bool isCharging, float batteryPercent);
+        static const char* GetUnknownIcon();
+          static const char* GetBatteryIcon(float batteryPercent);
+          static const char* GetPlugIcon(bool isCharging);
       };
     }
   }
