@@ -44,7 +44,7 @@ set(SDK_SOURCE_FILES
         # FreeRTOS
         ${NRF5_SDK_PATH}/external/freertos/source/croutine.c
         ${NRF5_SDK_PATH}/external/freertos/source/event_groups.c
-        ${NRF5_SDK_PATH}/external/freertos/source/portable/MemMang/heap_1.c
+        ${NRF5_SDK_PATH}/external/freertos/source/portable/MemMang/heap_4.c
         ${NRF5_SDK_PATH}/external/freertos/source/list.c
         ${NRF5_SDK_PATH}/external/freertos/source/queue.c
         ${NRF5_SDK_PATH}/external/freertos/source/stream_buffer.c
