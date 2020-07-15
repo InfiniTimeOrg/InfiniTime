@@ -39,9 +39,6 @@ namespace Pinetime {
         static constexpr uint8_t msTrackCharId[2] = {0x00, 0x05};
         static constexpr uint8_t msAlbumCharId[2] = {0x00, 0x06};
 
-        uint16_t connectionHandle = 0;
-        uint16_t eventCharacteristicHandle = 0;
-
         ble_uuid128_t msUuid {
                 .u = { .type = BLE_UUID_TYPE_128 },
                 .value = MUSIC_SERVICE_UUID_BASE
@@ -70,6 +67,8 @@ namespace Pinetime {
 
         struct ble_gatt_chr_def characteristicDefinition[6];
         struct ble_gatt_svc_def serviceDefinition[2];
+        
+        uint16_t m_eventHandle;
 
         std::string m_artist;
         std::string m_album;

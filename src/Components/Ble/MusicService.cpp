@@ -20,27 +20,28 @@ Pinetime::Controllers::MusicService::MusicService()
     msAlbumCharUuid.value[11] = msAlbumCharId[0];
     msAlbumCharUuid.value[12] = msAlbumCharId[1];
 
-    characteristicDefinition[0] = {(ble_uuid_t*)(&msEventCharUuid),
+    characteristicDefinition[0] = { .uuid = (ble_uuid_t*)(&msEventCharUuid),
                                     .access_cb = MSCallback,
                                     .arg = this,
-                                    .flags = BLE_GATT_CHR_F_NOTIFY | BLE_GATT_CHR_F_READ
+                                    .flags =  BLE_GATT_CHR_F_NOTIFY,
+                                    .val_handle = &m_eventHandle
     };
-    characteristicDefinition[1] = {(ble_uuid_t*)(&msStatusCharUuid),
-                                    .access_cb = MSCallback,
-                                    .arg = this,
-                                    .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-    };
-    characteristicDefinition[2] = {(ble_uuid_t*)(&msTrackCharUuid),
+    characteristicDefinition[1] = { .uuid = (ble_uuid_t*)(&msStatusCharUuid),
                                     .access_cb = MSCallback,
                                     .arg = this,
                                     .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
     };
-    characteristicDefinition[3] = {(ble_uuid_t*)(&msArtistCharUuid),
+    characteristicDefinition[2] = { .uuid = (ble_uuid_t*)(&msTrackCharUuid),
                                     .access_cb = MSCallback,
                                     .arg = this,
                                     .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
     };
-    characteristicDefinition[4] = {(ble_uuid_t*)(&msAlbumCharUuid),
+    characteristicDefinition[3] = { .uuid = (ble_uuid_t*)(&msArtistCharUuid),
+                                    .access_cb = MSCallback,
+                                    .arg = this,
+                                    .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
+    };
+    characteristicDefinition[4] = { .uuid = (ble_uuid_t*)(&msAlbumCharUuid),
                                     .access_cb = MSCallback,
                                     .arg = this,
                                     .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
@@ -71,8 +72,6 @@ void Pinetime::Controllers::MusicService::Init()
 
 int Pinetime::Controllers::MusicService::OnCommand(uint16_t conn_handle, uint16_t attr_handle,
                                                     struct ble_gatt_access_ctxt *ctxt) {
-
-    connectionHandle = conn_handle;
 
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
         size_t notifSize = OS_MBUF_PKTLEN(ctxt->om);
@@ -112,12 +111,16 @@ void Pinetime::Controllers::MusicService::event(char event)
     struct os_mbuf *om;
     int ret;
 
+    uint16_t connectionHandle = 0;
+
     om = ble_hs_mbuf_from_flat(&event, 1);
 
-    ble_gatts_find_chr((ble_uuid_t *) &msUuid, (ble_uuid_t *) &msEventCharUuid, nullptr,
-                     &eventCharacteristicHandle);
+    ret = ble_gatts_find_svc((ble_uuid_t *) &msUuid, &connectionHandle);
 
-    ret = ble_gattc_notify_custom(connectionHandle, eventCharacteristicHandle, om);
+    if (connectionHandle == 0) {
+        return;
+    }
 
+    ret = ble_gattc_notify_custom(connectionHandle, m_eventHandle, om);
 }
 
