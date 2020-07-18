@@ -73,3 +73,6 @@ add_definitions(-D__STACK_SIZE=8192)
 
 #NimBLE buffers
 *TODO*
+
+#Tools
+ - https://github.com/eliotstock/memory : display the memory usage (FLASH/RAM) using the .map file from GCC.
