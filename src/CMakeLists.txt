@@ -338,6 +338,8 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/FirmwareUpdate.cpp
   main.cpp
   drivers/St7789.cpp
+  drivers/I2CMaster.cpp
+  drivers/I2C.cpp
   drivers/SpiNorFlash.cpp
   drivers/SpiMaster.cpp
   drivers/Spi.cpp
@@ -430,6 +432,8 @@ set(INCLUDE_FILES
   Components/Ble/AlertNotificationClient.h
   Components/Ble/DfuService.h
     drivers/Cst816s.h
+    drivers/I2CMaster.h
+    drivers/I2C.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h
   libs/date/includes/date/tz.h

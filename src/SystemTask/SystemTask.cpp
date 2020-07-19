@@ -24,12 +24,12 @@ void IdleTimerCallback(TimerHandle_t xTimer) {
 
 
 SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
-                       Pinetime::Drivers::SpiNorFlash& spiNorFlash, Drivers::Cst816S &touchPanel,
+                       Pinetime::Drivers::SpiNorFlash& spiNorFlash, Drivers::I2CMaster &i2c, Drivers::Cst816S &touchPanel,
                        Components::LittleVgl &lvgl,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController,
                        Pinetime::Controllers::NotificationManager& notificationManager) :
-                       spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
+                       spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash}, i2c{i2c}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
                        nimbleController(*this, bleController,dateTimeController, notificationManager, spiNorFlash) {
@@ -67,6 +67,7 @@ void SystemTask::Work() {
   nimbleController.StartAdvertising();
   lcd.Init();
 
+  i2c.Init();
   touchPanel.Init();
   batteryController.Init();
 

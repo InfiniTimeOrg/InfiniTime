@@ -26,6 +26,7 @@
 #include <hal/nrf_wdt.h>
 #include <host/util/util.h>
 #include <services/gap/ble_svc_gap.h>
+#include <drivers/I2CMaster.h>
 
 
 #if NRF_LOG_ENABLED
@@ -52,13 +53,17 @@ Pinetime::Drivers::SpiMaster spi{Pinetime::Drivers::SpiMaster::SpiModule::SPI0, 
         pinSpiMiso
   }
 };
+Pinetime::Drivers::I2CMaster i2c{};
 
 Pinetime::Drivers::Spi lcdSpi {spi, pinLcdCsn};
 Pinetime::Drivers::St7789 lcd {lcdSpi, pinLcdDataCommand};
 
 Pinetime::Drivers::Spi flashSpi {spi, pinSpiFlashCsn};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
-Pinetime::Drivers::Cst816S touchPanel {};
+
+Pinetime::Drivers::I2C touchPanelI2C {i2c, 0x15};
+Pinetime::Drivers::Cst816S touchPanel {touchPanelI2C};
+
 Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 
 
@@ -213,7 +218,7 @@ int main(void) {
 
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
-  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, touchPanel, lvgl, batteryController, bleController,
+  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, i2c, touchPanel, lvgl, batteryController, bleController,
                                                     dateTimeController, notificationManager));
   systemTask->Start();
   nimble_port_init();

@@ -13,41 +13,33 @@ using namespace Pinetime::Drivers;
  * TODO : we need a complete datasheet and protocol reference!
  * */
 
+Cst816S::Cst816S(I2C &i2c): i2c{i2c} {
+
+}
+
 void Pinetime::Drivers::Cst816S::Init() {
   nrf_gpio_cfg_output(pinReset);
   nrf_gpio_pin_clear(pinReset);
   vTaskDelay(20);
   nrf_gpio_pin_set(pinReset);
   vTaskDelay(200);
-
-  nrfx_twi_config_t config;
-  config.frequency = NRF_TWI_FREQ_400K;
-  config.scl = 7;
-  config.sda = 6;
-  config.interrupt_priority = NRFX_TWI_DEFAULT_CONFIG_IRQ_PRIORITY;
-  config.hold_bus_uninit = NRFX_TWI_DEFAULT_CONFIG_HOLD_BUS_UNINIT;
-
-  // Configure TWI in blocking mode (event_handler = nullptr)
-  auto ret = nrfx_twi_init(&twi, &config, nullptr, this);
-  nrfx_twi_enable(&twi);
 }
 
 
 void Cst816S::Probe() {
-  nrfx_err_t ret;
-  for(int i = 0; i < 127; i++) {
-    uint8_t data;
-    ret = nrfx_twi_rx(&twi, i, &data, 1);
-    if(ret == NRFX_SUCCESS) {
-      NRF_LOG_INFO("I2C device detected at address %d", i);
-    }
-  }
+//  nrfx_err_t ret;
+//  for(int i = 0; i < 127; i++) {
+//    uint8_t data;
+//    ret = nrfx_twi_rx(&twi, i, &data, 1);
+//    if(ret == NRFX_SUCCESS) {
+//      NRF_LOG_INFO("I2C device detected at address %d", i);
+//    }
+//  }
 }
 
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
-
-  nrfx_twi_rx(&twi, address, touchData, 63);
+  i2c.ReadMemory(touchData, 63);
   auto nbTouchPoints = touchData[2] & 0x0f;
 
 //  uint8_t i = 0;
@@ -106,9 +98,7 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
 }
 
 void Cst816S::Sleep() {
-  nrfx_twi_disable(&twi);
-  nrf_gpio_cfg_default(6);
-  nrf_gpio_cfg_default(7);
+
 }
 
 void Cst816S::Wakeup() {
