@@ -50,7 +50,7 @@ As of now, here is the list of achievements of this project:
  - [BLE implementation and API](./doc/ble.md)
  
 ### Architecture and technical topics
- - [Memory analysis](./doc/MemoryAnalysis)
+ - [Memory analysis](./doc/MemoryAnalysis.md)
  
 ### Using the firmware
  - Integration with Gadgetbridge
