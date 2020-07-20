@@ -13,51 +13,42 @@ using namespace Pinetime::Drivers;
  * TODO : we need a complete datasheet and protocol reference!
  * */
 
-void Pinetime::Drivers::Cst816S::Init() {
+Cst816S::Cst816S(TwiMaster &twiMaster, uint8_t twiAddress) : twiMaster{twiMaster}, twiAddress{twiAddress} {
+
+}
+
+void Cst816S::Init() {
   nrf_gpio_cfg_output(pinReset);
-  nrf_gpio_pin_clear(pinReset);
-  vTaskDelay(20);
   nrf_gpio_pin_set(pinReset);
-  vTaskDelay(200);
+  vTaskDelay(50);
+  nrf_gpio_pin_clear(pinReset);
+  vTaskDelay(5);
+  nrf_gpio_pin_set(pinReset);
+  vTaskDelay(50);
 
-  nrfx_twi_config_t config;
-  config.frequency = NRF_TWI_FREQ_400K;
-  config.scl = 7;
-  config.sda = 6;
-  config.interrupt_priority = NRFX_TWI_DEFAULT_CONFIG_IRQ_PRIORITY;
-  config.hold_bus_uninit = NRFX_TWI_DEFAULT_CONFIG_HOLD_BUS_UNINIT;
+  // Wake the touchpanel up
+  uint8_t dummy;
+  twiMaster.Read(twiAddress, 0x15, &dummy, 1);
+  vTaskDelay(5);
+  twiMaster.Read(twiAddress, 0xa7, &dummy, 1);
 
-  // Configure TWI in blocking mode (event_handler = nullptr)
-  auto ret = nrfx_twi_init(&twi, &config, nullptr, this);
-  nrfx_twi_enable(&twi);
 }
 
-
-void Cst816S::Probe() {
-  nrfx_err_t ret;
-  for(int i = 0; i < 127; i++) {
-    uint8_t data;
-    ret = nrfx_twi_rx(&twi, i, &data, 1);
-    if(ret == NRFX_SUCCESS) {
-      NRF_LOG_INFO("I2C device detected at address %d", i);
-    }
-  }
-}
 
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
 
-  nrfx_twi_rx(&twi, address, touchData, 63);
+  twiMaster.Read(twiAddress, 0, touchData, 63);
   auto nbTouchPoints = touchData[2] & 0x0f;
 
 //  uint8_t i = 0;
 //  NRF_LOG_INFO("#########################")
   for(int i = 0; i < 1; i++) {
-  uint8_t pointId = (touchData[touchIdIndex + (touchStep * i)]) >> 4;
-  if(nbTouchPoints == 0 && pointId == lastTouchId) return info;
+    uint8_t pointId = (touchData[touchIdIndex + (touchStep * i)]) >> 4;
+    if(nbTouchPoints == 0 && pointId == lastTouchId) return info;
 
-  // We fetch only the first touch point (the controller seems to handle only one anyway...)
-  info.isTouch = true;
+    // We fetch only the first touch point (the controller seems to handle only one anyway...)
+    info.isTouch = true;
 
 
     auto xHigh = touchData[touchXHighIndex + (touchStep * i)] & 0x0f;
@@ -106,7 +97,8 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
 }
 
 void Cst816S::Sleep() {
-  nrfx_twi_disable(&twi);
+  // TODO re enable sleep mode
+  //twiMaster.Sleep();
   nrf_gpio_cfg_default(6);
   nrf_gpio_cfg_default(7);
 }
