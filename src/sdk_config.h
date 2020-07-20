@@ -5244,7 +5244,7 @@
 // <e> NRFX_TWI_ENABLED - nrfx_twi - TWI peripheral driver
 //==========================================================
 #ifndef NRFX_TWI_ENABLED
-#define NRFX_TWI_ENABLED 1
+#define NRFX_TWI_ENABLED 0
 #endif
 // <q> NRFX_TWI0_ENABLED  - Enable TWI0 instance
 
@@ -5257,7 +5257,7 @@
 
 
 #ifndef NRFX_TWI1_ENABLED
-#define NRFX_TWI1_ENABLED 1
+#define NRFX_TWI1_ENABLED 0
 #endif
 
 // <o> NRFX_TWI_DEFAULT_CONFIG_FREQUENCY  - Frequency

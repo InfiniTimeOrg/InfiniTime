@@ -371,6 +371,7 @@ list(APPEND SOURCE_FILES
   DisplayApp/Fonts/jetbrains_mono_bold_20.c
 
   SystemTask/SystemTask.cpp
+    drivers/TwiMaster.cpp
 )
 
 list(APPEND GRAPHICS_SOURCE_FILES
@@ -444,6 +445,7 @@ set(INCLUDE_FILES
   SystemTask/SystemTask.h
   SystemTask/SystemMonitor.h
   DisplayApp/Screens/Symbols.h
+    drivers/TwiMaster.h
 )
 
 include_directories(
