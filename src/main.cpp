@@ -42,6 +42,9 @@ static constexpr uint8_t pinSpiMiso = 4;
 static constexpr uint8_t pinSpiFlashCsn = 5;
 static constexpr uint8_t pinLcdCsn = 25;
 static constexpr uint8_t pinLcdDataCommand = 18;
+static constexpr uint8_t pinTwiScl = 7;
+static constexpr uint8_t pinTwiSda = 6;
+static constexpr uint8_t touchPanelTwiAddress = 0x15;
 
 Pinetime::Drivers::SpiMaster spi{Pinetime::Drivers::SpiMaster::SpiModule::SPI0, {
         Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
@@ -58,7 +61,15 @@ Pinetime::Drivers::St7789 lcd {lcdSpi, pinLcdDataCommand};
 
 Pinetime::Drivers::Spi flashSpi {spi, pinSpiFlashCsn};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
-Pinetime::Drivers::Cst816S touchPanel {};
+
+// The TWI device should work @ up to 400Khz but there is a HW bug which prevent it from
+// respecting correct timings. According to erratas heet, this magic value makes it run
+// at ~390Khz with correct timings.
+static constexpr uint32_t MaxTwiFrequencyWithoutHardwareBug{0x06200000};
+Pinetime::Drivers::TwiMaster twiMaster{Pinetime::Drivers::TwiMaster::Modules::TWIM1,
+                                       Pinetime::Drivers::TwiMaster::Parameters {
+                                               MaxTwiFrequencyWithoutHardwareBug, pinTwiSda, pinTwiScl}};
+Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
 Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 
 
@@ -213,7 +224,7 @@ int main(void) {
 
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
-  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, touchPanel, lvgl, batteryController, bleController,
+  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, twiMaster, touchPanel, lvgl, batteryController, bleController,
                                                     dateTimeController, notificationManager));
   systemTask->Start();
   nimble_port_init();
