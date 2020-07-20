@@ -35,12 +35,14 @@ namespace Pinetime {
           lv_obj_t * btnVolUp;
           lv_obj_t * txtArtist;
           lv_obj_t * txtTrack;
+          lv_obj_t * txtPlayPause;
 
           bool running = true;
           Pinetime::Controllers::MusicService &musicService;
           std::string m_artist;
           std::string m_album;
           std::string m_track;
+          unsigned char m_status;
       };
     }
   }

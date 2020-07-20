@@ -41,8 +41,8 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
     lv_obj_set_event_cb(btnPlayPause, event_handler);
     lv_obj_set_size(btnPlayPause, LV_HOR_RES / 4, LV_VER_RES / 4);
     lv_obj_align(btnPlayPause, NULL, LV_ALIGN_IN_BOTTOM_MID, 0,-10);
-    label = lv_label_create(btnPlayPause, NULL);
-    lv_label_set_text(label, ">");
+    txtPlayPause = lv_label_create(btnPlayPause, NULL);
+    lv_label_set_text(txtPlayPause, ">");
 
     btnNext = lv_btn_create(lv_scr_act(), NULL);
     btnNext->user_data = this;
@@ -65,6 +65,8 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
     lv_label_set_text(txtTrack, "This is a very long track name");
     lv_label_set_align(txtTrack, LV_LABEL_ALIGN_CENTER);
     lv_obj_set_width(txtTrack, LV_HOR_RES);
+
+    musicService.event(Controllers::MusicService::EVENT_MUSIC_OPEN);
 }
 
 Music::~Music() {
@@ -89,6 +91,14 @@ bool Music::Refresh() {
     if (m_album != musicService.album()) {
         m_album = musicService.album();
     }
+    if (m_status != musicService.status()) {
+        m_status = musicService.status();
+    }
+    if (m_status == Pinetime::Controllers::MusicService::STATUS_MUSIC_PLAYING) {
+        lv_label_set_text(txtPlayPause, "||");
+    } else {
+        lv_label_set_text(txtPlayPause, ">");
+    }
 
   return running;
 }
@@ -97,13 +107,17 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event)
 {
     if (event == LV_EVENT_CLICKED) {
         if (obj == btnVolDown) {
-            musicService.event(Controllers::MusicService::EVENT_MUSIC_VOLUP);
-        } else if (obj == btnVolUp) {
             musicService.event(Controllers::MusicService::EVENT_MUSIC_VOLDOWN);
+        } else if (obj == btnVolUp) {
+            musicService.event(Controllers::MusicService::EVENT_MUSIC_VOLUP);
         } else if (obj == btnPrev) {
             musicService.event(Controllers::MusicService::EVENT_MUSIC_PREV);
         } else if (obj == btnPlayPause) {
-            musicService.event(Controllers::MusicService::EVENT_MUSIC_PLAY);
+            if (m_status == Pinetime::Controllers::MusicService::STATUS_MUSIC_PLAYING) {
+                musicService.event(Controllers::MusicService::EVENT_MUSIC_PAUSE);
+            } else {
+                musicService.event(Controllers::MusicService::EVENT_MUSIC_PLAY);
+            }
         } else if (obj == btnNext) {
             musicService.event(Controllers::MusicService::EVENT_MUSIC_NEXT);
         }

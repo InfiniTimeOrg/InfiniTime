@@ -16,6 +16,7 @@ namespace Pinetime {
   }
   namespace Controllers {
     class DateTime;
+
     class NimbleController {
 
       public:
@@ -39,6 +40,8 @@ namespace Pinetime {
 
         Pinetime::Controllers::MusicService& music() {return musicService;};
 
+        uint16_t connHandle();
+
       private:
         static constexpr char* deviceName = "Pinetime-JF";
         Pinetime::System::SystemTask& systemTask;
@@ -56,7 +59,7 @@ namespace Pinetime {
         MusicService musicService;
 
         uint8_t addrType; // 1 = Random, 0 = PUBLIC
-        uint16_t connectionHandle;
+        uint16_t connectionHandle = 0;
 
         ble_uuid128_t dfuServiceUuid {
                 .u { .type = BLE_UUID_TYPE_128},

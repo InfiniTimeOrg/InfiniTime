@@ -6,6 +6,7 @@
 #include <hal/nrf_rtc.h>
 
 #include "NimbleController.h"
+#include "MusicService.h"
 #include <services/gatt/ble_svc_gatt.h>
 #include <services/gap/ble_svc_gap.h>
 #include <host/util/util.h>
@@ -35,7 +36,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         currentTimeClient{dateTimeController},
         anService{systemTask, notificationManager},
         alertNotificationClient{systemTask, notificationManager},
-        currentTimeService{dateTimeController} {
+        currentTimeService{dateTimeController},
+        musicService{systemTask} {
 
 }
 
@@ -327,5 +329,7 @@ void NimbleController::StartDiscovery() {
 }
 
 
-
+uint16_t NimbleController::connHandle() {
+    return connectionHandle;
+}
 

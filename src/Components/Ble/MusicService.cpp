@@ -1,3 +1,4 @@
+#include <SystemTask/SystemTask.h>
 #include "MusicService.h"
 
 int MSCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
@@ -5,7 +6,7 @@ int MSCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_acces
   return musicService->OnCommand(conn_handle, attr_handle, ctxt);
 }
 
-Pinetime::Controllers::MusicService::MusicService()
+Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask &system) : m_system(system)
 {
     msUuid.value[11] = msId[0];
     msUuid.value[12] = msId[1];
@@ -86,6 +87,8 @@ int Pinetime::Controllers::MusicService::OnCommand(uint16_t conn_handle, uint16_
             m_track = s;
         } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *)&msAlbumCharUuid) == 0) {
             m_album = s;
+        } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *)&msStatusCharUuid) == 0) {
+            m_status = s[0];
         }
   }
   return 0;
@@ -106,18 +109,19 @@ std::string Pinetime::Controllers::MusicService::track()
     return m_track;
 }
 
+unsigned char Pinetime::Controllers::MusicService::status()
+{
+    return m_status;
+}
+
 void Pinetime::Controllers::MusicService::event(char event)
 {
-    struct os_mbuf *om;
+    auto *om = ble_hs_mbuf_from_flat(&event, 1);
     int ret;
 
-    uint16_t connectionHandle = 0;
+    uint16_t connectionHandle = m_system.nimble().connHandle();
 
-    om = ble_hs_mbuf_from_flat(&event, 1);
-
-    ret = ble_gatts_find_svc((ble_uuid_t *) &msUuid, &connectionHandle);
-
-    if (connectionHandle == 0) {
+    if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
         return;
     }
 
