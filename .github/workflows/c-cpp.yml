@@ -21,7 +21,7 @@ jobs:
         # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
         release: 8-2019-q3
         # Directory to unpack GCC to. Defaults to a temporary directory.
-        directory: ${{ env.HOME }}/arm-none-eabi
+        directory: ${{ runner.temp }}/arm-none-eabi
     - uses: actions/checkout@v2
     - name: Show Files
       run:  set ; pwd ; ls -l $HOME
