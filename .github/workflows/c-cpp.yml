@@ -21,12 +21,12 @@ jobs:
         # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
         release: 8-2019-q3
         # Directory to unpack GCC to. Defaults to a temporary directory.
-        directory: $HOME/arm-none-eabi
+        directory: ${{ env.HOME }}/arm-none-eabi
     - uses: actions/checkout@v2
     - name: Show Files
       run:  set ; pwd ; ls -l $HOME
     - name: cmake
-      run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=$HOME/arm-none-eabi -DNRF5_SDK_PATH=$HOME/nrf5_sdk -DUSE_OPENOCD=1 ../
+      run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ env.HOME }}/arm-none-eabi -DNRF5_SDK_PATH=${{ env.HOME }}/nrf5_sdk -DUSE_OPENOCD=1 ../
     - name: make
       run:  cd build && make -j pinetime-app
       
