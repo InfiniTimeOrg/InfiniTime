@@ -1,4 +1,6 @@
+# GitHub Action to build FreeRTOS Firmware for PineTime Smart Watch
 # Based on https://github.com/lupyuen/pinetime-lab/blob/master/doc/buildAndProgram.md
+
 name: C/C++ CI
 
 on:
