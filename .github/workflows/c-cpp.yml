@@ -13,20 +13,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: get-cmake
+    - name: Install cmake
       uses: lukka/get-cmake@v3.18.0
-    - name: arm-none-eabi-gcc
+
+    - name: Cache Embedded Arm Toolchain
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-toolchain
+      with:
+        path: ~/arm-none-eabi
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+          
+    - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
       uses: fiam/arm-none-eabi-gcc@v1.0.2
       with:
         # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
         release: 8-2019-q3
         # Directory to unpack GCC to. Defaults to a temporary directory.
-        directory: ${{ runner.temp }}/arm-none-eabi
+        directory: ~/arm-none-eabi
+
+    - name: Checkout source files
     - uses: actions/checkout@v2
+
     - name: Show Files
-      run:  set ; pwd ; ls -l $HOME
+      run:  set ; pwd ; ls -l $HOME ; wget
+      
     - name: cmake
-      run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
+      run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=~/arm-none-eabi -DNRF5_SDK_PATH=~/nrf5_sdk -DUSE_OPENOCD=1 ../
+      
     - name: make
       run:  cd build && make -j pinetime-app
       
