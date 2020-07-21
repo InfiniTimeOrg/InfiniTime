@@ -36,11 +36,26 @@ jobs:
         # Directory to unpack GCC to. Defaults to a temporary directory.
         directory: ~/arm-none-eabi
 
+    - name: Cache nRF5 SDK
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-nrf5sdk
+      with:
+        path: ~/nrf5_sdk
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+          
+    - name: Install nRF5 SDK
+      run:  cd ~ && curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip -o nrf5_sdk.zip && unzip nrf5_sdk.zip && mv nRF5_SDK_15.3.0_59ac345 nrf5_sdk
+
     - name: Checkout source files
       uses: actions/checkout@v2
 
     - name: Show Files
-      run:  set ; pwd ; ls -l $HOME ; wget
+      run:  set ; pwd ; ls -l ~
       
     - name: cmake
       run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=~/arm-none-eabi -DNRF5_SDK_PATH=~/nrf5_sdk -DUSE_OPENOCD=1 ../
