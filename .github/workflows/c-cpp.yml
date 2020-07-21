@@ -21,12 +21,9 @@ jobs:
       env:
         cache-name: cache-toolchain
       with:
-        path: ~/arm-none-eabi
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+        path: ${{ runner.temp }}/arm-none-eabi
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
           
     - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
       uses: fiam/arm-none-eabi-gcc@v1.0.2
@@ -34,22 +31,19 @@ jobs:
         # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
         release: 8-2019-q3
         # Directory to unpack GCC to. Defaults to a temporary directory.
-        directory: ~/arm-none-eabi
+        directory: ${{ runner.temp }}/arm-none-eabi
 
     - name: Cache nRF5 SDK
       uses: actions/cache@v2
       env:
         cache-name: cache-nrf5sdk
       with:
-        path: ~/nrf5_sdk
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
+        path: ${{ runner.temp }}/nrf5_sdk
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
           
     - name: Install nRF5 SDK
-      run:  cd ~ && curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip -o nrf5_sdk.zip && unzip nrf5_sdk.zip && mv nRF5_SDK_15.3.0_59ac345 nrf5_sdk
+      run:  cd ${{ runner.temp }} && curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip -o nrf5_sdk.zip && unzip nrf5_sdk.zip && mv nRF5_SDK_15.3.0_59ac345 nrf5_sdk
 
     - name: Checkout source files
       uses: actions/checkout@v2
@@ -58,7 +52,7 @@ jobs:
       run:  set ; pwd ; ls -l ~
       
     - name: cmake
-      run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=~/arm-none-eabi -DNRF5_SDK_PATH=~/nrf5_sdk -DUSE_OPENOCD=1 ../
+      run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
       
     - name: make
       run:  cd build && make -j pinetime-app
