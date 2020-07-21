@@ -37,7 +37,7 @@ jobs:
         directory: ~/arm-none-eabi
 
     - name: Checkout source files
-    - uses: actions/checkout@v2
+      uses: actions/checkout@v2
 
     - name: Show Files
       run:  set ; pwd ; ls -l $HOME ; wget
