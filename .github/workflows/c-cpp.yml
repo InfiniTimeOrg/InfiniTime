@@ -26,7 +26,7 @@ jobs:
     - name: Show Files
       run:  set ; pwd ; ls -l $HOME
     - name: cmake
-      run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ env.HOME }}/arm-none-eabi -DNRF5_SDK_PATH=${{ env.HOME }}/nrf5_sdk -DUSE_OPENOCD=1 ../
+      run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
     - name: make
       run:  cd build && make -j pinetime-app
       
