@@ -63,9 +63,9 @@ jobs:
     - name: CMake
       run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
       
-      # For debugging builds, remove the "-j" option for clearer output
     - name: Make
-      run:  cd build && make --trace pinetime-app
+      # For debugging builds, remove option "-j" for clearer output. Add "--trace" to see details.
+      run:  cd build && make pinetime-app
 
     - name: Upload built firmware
       uses: actions/upload-artifact@v2
