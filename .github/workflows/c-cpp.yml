@@ -65,7 +65,7 @@ jobs:
       
     - name: Make
       # For debugging builds, remove option "-j" for clearer output. Add "--trace" to see details.
-      run:  cd build && make pinetime-app
+      run:  cd build && make -j pinetime-app
 
     - name: Upload built firmware
       uses: actions/upload-artifact@v2
