@@ -73,10 +73,10 @@ jobs:
     - name: Upload built firmware
       uses: actions/upload-artifact@v2
       with:
-        # Artifact name
-        # name: pinetime-app.out # optional
+        # Artifact name (optional)
+        name: pinetime-app.out
         # A file, directory or wildcard pattern that describes what to upload
-        path: build/src/pinetime-app.*
+        path: build/src/pinetime-app.out
       
 # Embedded Arm Toolchain and nRF5 SDK will only be cached if the build succeeds.
 # So make sure that the first build always succeeds, e.g. comment out the "Make" step.
