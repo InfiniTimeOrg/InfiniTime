@@ -59,13 +59,13 @@ jobs:
 
     - name: Show Files
       run:  set ; pwd ; ls -l
-      
+
     - name: CMake
       run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
       
     - name: Make -j
-      run:  cd build && make pinetime-app
-      
+      run:  cd build && make --trace pinetime-app
+
     - name: Upload the Built Firmware
       uses: actions/upload-artifact@v2
       with:
