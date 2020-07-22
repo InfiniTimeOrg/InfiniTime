@@ -58,13 +58,21 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Show Files
-      run:  set ; pwd ; ls -l ~
+      run:  set ; pwd ; ls -l
       
     - name: CMake
       run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
       
     - name: Make -j
       run:  cd build && make pinetime-app
+      
+    - name: Upload the Built Firmware
+      uses: actions/upload-artifact@v2
+      with:
+        # Artifact name
+        name: firmware # optional
+        # A file, directory or wildcard pattern that describes what to upload
+        path: /home/runner/work/pinetime-lab/pinetime-lab/README.md  # TODO
       
 # Embedded Arm Toolchain and nRF5 SDK will only be cached if the build succeeds.
 # So make sure that the first build always succeeds, e.g. comment out the "Make" step.
