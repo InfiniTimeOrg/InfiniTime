@@ -3,15 +3,18 @@
 
 name: C/C++ CI
 
+# Run this workflow on every push and pull request on "master" branch
 on:
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
 
+# Steps to be run for the workflow
 jobs:
   build:
 
+    # Run these steps on Ubuntu
     runs-on: ubuntu-latest
 
     steps:
