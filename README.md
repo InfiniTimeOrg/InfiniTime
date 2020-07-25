@@ -27,12 +27,12 @@ As of now, here is the list of achievements of this project:
  - Time synchronisation via BLE
  - Notification via BLE
  - Multiple 'apps' : 
-    * Clock (displays the date, time, battery level, ble connection status, heart rate and step count)
+    * Clock (displays the date, time, battery level, BLE connection status, heart rate and step count)
     * Heart rate
     * Motion
-    * System info (displays various info : BLE MAC, build date/time, uptime, version,...)
+    * System info (displays various info : BLE MAC adress, build date/time, uptime, version,...)
     * Brightess (allows the user to configure the brightness of the display)
- - Supported by 2 companion apps (developpments ongoing):
+ - Supported by 2 companion apps (development is ongoing):
     * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/src/branch/pinetime-jf) (on Android)
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS)
  - **[Experimental]** OTA (Over-the-air) update via BLE
@@ -83,7 +83,7 @@ I’m not working alone on this project. First, many people create PR for this p
 Here are some people I would like to highlight:
 
  - [Atc1441](https://github.com/atc1441/) : He works on an Arduino based firmware for the Pinetime and many other smartwatches based on similar hardware. He was of great help when I was implementing support for the BMA421 motion sensor and I²C driver.
- - [Koen](https://github.com/bosmoment) : He’s working on a firmware based on RiotOS. He integrated similar libs than me : NimBLE, LittleVGL,… His help was invaluable too!
+ - [Koen](https://github.com/bosmoment) : He’s working on a firmware based on RiotOS. He integrated similar libs as me : NimBLE, LittleVGL,… His help was invaluable too!
  - [Lup Yuen Lee](https://github.com/lupyuen) : He is everywhere : he works on a Rust firmware, buils a MCUBoot based bootloader for the Pinetime, design a Flutter based companion app for smartphones and write a lot of articles about the Pinetime!
 
 *If you feel like you should appear on this list, just get in touch with me or submit a PR :)*
