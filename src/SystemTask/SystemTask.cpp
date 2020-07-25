@@ -12,6 +12,7 @@
 #include <host/util/util.h>
 #include <drivers/InternalFlash.h>
 #include "../main.h"
+#include "Components/Ble/NimbleController.h"
 
 using namespace Pinetime::System;
 

@@ -42,7 +42,7 @@ namespace Pinetime {
         void Start();
         void PushMessage(Messages msg);
 
-        enum class Apps {None, Launcher, Clock, SysInfo, Meter, Gauge, Brightness};
+        enum class Apps {None, Launcher, Clock, SysInfo, Meter, Gauge, Brightness, Music};
         void StartApp(Apps app);
 
         void SetFullRefresh(FullRefreshDirections direction);

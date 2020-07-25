@@ -7,6 +7,7 @@
 #include "CurrentTimeClient.h"
 #include "DfuService.h"
 #include "CurrentTimeService.h"
+#include "MusicService.h"
 #include <host/ble_gap.h>
 
 namespace Pinetime {
@@ -15,6 +16,7 @@ namespace Pinetime {
   }
   namespace Controllers {
     class DateTime;
+
     class NimbleController {
 
       public:
@@ -35,6 +37,11 @@ namespace Pinetime {
                                                   uint16_t characteristicValueHandle, const ble_gatt_dsc *descriptor);
 
         void StartDiscovery();
+
+        Pinetime::Controllers::MusicService& music() {return musicService;};
+
+        uint16_t connHandle();
+
       private:
         static constexpr char* deviceName = "Pinetime-JF";
         Pinetime::System::SystemTask& systemTask;
@@ -49,9 +56,10 @@ namespace Pinetime {
         AlertNotificationService anService;
         AlertNotificationClient alertNotificationClient;
         CurrentTimeService currentTimeService;
+        MusicService musicService;
 
         uint8_t addrType; // 1 = Random, 0 = PUBLIC
-        uint16_t connectionHandle;
+        uint16_t connectionHandle = 0;
 
         ble_uuid128_t dfuServiceUuid {
                 .u { .type = BLE_UUID_TYPE_128},
