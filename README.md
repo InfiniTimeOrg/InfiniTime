@@ -72,7 +72,7 @@ Here a quick list out of my head of things to do for this project:
  - Measure power consumption and improve battery life
  - Improve documentation, take better pictures and video than mine
  - Improve the UI
- - Create companion app for multiple OSes (Linux, Android, IoS) and platforms (desktop, ARM, mobile). Do not forget the other devices from Pine64 like [the Pinephone](https://www.pine64.org/pinephone/) and the [Pinebook Pro](https://www.pine64.org/pinebook-pro/). 
+ - Create companion app for multiple OSes (Linux, Android, iOS) and platforms (desktop, ARM, mobile). Do not forget the other devices from Pine64 like [the Pinephone](https://www.pine64.org/pinephone/) and the [Pinebook Pro](https://www.pine64.org/pinebook-pro/). 
  - Design a simple CI (preferably selfhosted and easy to reproduce).
  
 Do not hesitate to clone/fork the code, hack it and create pull-requests. I'll do my best to review and merge them :)
