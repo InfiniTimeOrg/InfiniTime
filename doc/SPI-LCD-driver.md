@@ -24,17 +24,17 @@ As I said in the introduction, the datasheet will be your bedside book during yo
 
 The schematic of your board (the Pinetime schematics in this case) will also be very important, as you'll need to know how the LCD controller is physically connected to the MCU.
 
-How to read the datasheet? I recommand to read it from the beginning to the end (no joke) at least once. You certainly do not need to read everything in details, but it's good to know what information is available and where in the document. It'll be very useful during the developpment phase.
+How to read the datasheet? I recommend to read it from the beginning to the end (no joke) at least once. You certainly do not need to read everything in details, but it's good to know what information is available and where in the document. It'll be very useful during the development phase.
 You'll want to read some part with more attention :
 - Data color coding in 4-Line Serial Interface : how to send the pixel to be display to the controller
-- Display Data Ram : how is the memory organised
+- Display Data Ram : how is the memory organized
 - Power On/Off sequence
 - System function commands : all the commands you can send to the controller.
 
 ## One Pixel at a time
 
 
-## Bulk transfert
+## Bulk transfers
 
 ## DMA
 

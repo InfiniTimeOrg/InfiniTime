@@ -8,9 +8,10 @@
 #include <Components/Battery/BatteryController.h>
 #include <DisplayApp/DisplayApp.h>
 #include <drivers/Watchdog.h>
-#include <Components/Ble/NimbleController.h>
 #include <drivers/SpiNorFlash.h>
 #include "SystemMonitor.h"
+#include "Components/Ble/NimbleController.h"
+#include "timers.h"
 
 namespace Pinetime {
   namespace System {
@@ -36,6 +37,8 @@ namespace Pinetime {
         void OnTouchEvent();
 
         void OnIdle();
+
+        Pinetime::Controllers::NimbleController& nimble() {return nimbleController;};
 
       private:
         TaskHandle_t taskHandle;

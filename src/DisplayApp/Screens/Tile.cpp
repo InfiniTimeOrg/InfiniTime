@@ -95,7 +95,7 @@ void Tile::StartMeterApp() {
 }
 
 void Tile::StartGaugeApp() {
-  app->StartApp(DisplayApp::Apps::Gauge);
+  app->StartApp(DisplayApp::Apps::Music);
   running = false;
 }
 

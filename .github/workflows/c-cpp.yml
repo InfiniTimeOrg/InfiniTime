@@ -1,0 +1,202 @@
+# GitHub Action to build FreeRTOS Firmware for PineTime Smart Watch
+# Based on https://github.com/lupyuen/pinetime-lab/blob/master/doc/buildAndProgram.md
+
+name: C/C++ CI
+
+# Run this workflow on every push and pull request on "master" branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+# Steps to be run for the workflow
+jobs:
+  build:
+
+    # Run these steps on Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install cmake
+      uses: lukka/get-cmake@v3.18.0
+
+    - name: Check cache for Embedded Arm Toolchain arm-none-eabi-gcc
+      id:   cache-toolchain
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-toolchain
+      with:
+        path: ${{ runner.temp }}/arm-none-eabi
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+
+    - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
+      if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
+      uses: fiam/arm-none-eabi-gcc@v1.0.2
+      with:
+        # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
+        release: 8-2019-q3
+        # Directory to unpack GCC to. Defaults to a temporary directory.
+        directory: ${{ runner.temp }}/arm-none-eabi
+
+    - name: Check cache for nRF5 SDK
+      id:   cache-nrf5sdk
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-nrf5sdk
+      with:
+        path: ${{ runner.temp }}/nrf5_sdk
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+          
+    - name: Install nRF5 SDK
+      if:   steps.cache-nrf5sdk.outputs.cache-hit != 'true'  # Install SDK if not found in cache
+      run:  cd ${{ runner.temp }} && curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip -o nrf5_sdk.zip && unzip nrf5_sdk.zip && mv nRF5_SDK_15.3.0_59ac345 nrf5_sdk
+
+    - name: Checkout source files
+      uses: actions/checkout@v2
+
+    - name: Show files
+      run:  set ; pwd ; ls -l
+
+    - name: CMake
+      run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
+      
+    - name: Make
+      # For debugging builds, remove option "-j" for clearer output. Add "--trace" to see details.
+      run:  cd build && make -j pinetime-app
+      
+    - name: Find output
+      run:  find . -name pinetime-app.out
+
+    - name: Upload built firmware
+      uses: actions/upload-artifact@v2
+      with:
+        # Artifact name (optional)
+        name: pinetime-app.out
+        # A file, directory or wildcard pattern that describes what to upload
+        path: build/src/pinetime-app.out
+      
+# Embedded Arm Toolchain and nRF5 SDK will only be cached if the build succeeds.
+# So make sure that the first build always succeeds, e.g. comment out the "Make" step.
+
+# Sample compile command:
+# [100%] Building CXX object src/CMakeFiles/pinetime-app.dir/drivers/TwiMaster.cpp.o
+# cd /home/runner/work/pinetime-lab/pinetime-lab/build/src && /home/runner/work/_temp/arm-none-eabi/bin/arm-none-eabi-c++ --sysroot=/home/runner/work/_temp/arm-none-eabi/bin \
+# -DBOARD_PCA10040 \
+# -DCONFIG_GPIO_AS_PINRESET \
+# -DDEBUG \
+# -DDEBUG_NRF_USER \
+# -DFREERTOS \
+# -DNIMBLE_CFG_CONTROLLER \
+# -DNRF52 \
+# -DNRF52832 \
+# -DNRF52832_XXAA \
+# -DNRF52_PAN_12 \
+# -DNRF52_PAN_15 \
+# -DNRF52_PAN_20 \
+# -DNRF52_PAN_31 \
+# -DNRF52_PAN_36 \
+# -DNRF52_PAN_51 \
+# -DNRF52_PAN_54 \
+# -DNRF52_PAN_55 \
+# -DNRF52_PAN_58 \
+# -DNRF52_PAN_64 \
+# -DNRF52_PAN_74 \
+# -DOS_CPUTIME_FREQ \
+# -D__HEAP_SIZE=8192 \
+# -D__STACK_SIZE=8192 \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/. \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/.. \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/FreeRTOS \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/date/includes \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/mynewt-nimble/porting/npl/freertos/include \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/mynewt-nimble/nimble/include \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/mynewt-nimble/porting/nimble/include \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/mynewt-nimble/nimble/host/include \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/mynewt-nimble/nimble/controller/include \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/mynewt-nimble/nimble/transport/ram/include \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/mynewt-nimble/nimble/drivers/nrf52/include \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/mynewt-nimble/ext/tinycrypt/include \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/mynewt-nimble/nimble/host/services/gap/include \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/mynewt-nimble/nimble/host/services/gatt/include \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/mynewt-nimble/nimble/host/util/include \
+# -I/home/runner/work/pinetime-lab/pinetime-lab/src/libs/mynewt-nimble/nimble/host/store/ram/include \
+# -I/home/runner/work/_temp/nrf5_sdk/components/drivers_nrf/nrf_soc_nosd \
+# -I/home/runner/work/_temp/nrf5_sdk/components \
+# -I/home/runner/work/_temp/nrf5_sdk/components/boards \
+# -I/home/runner/work/_temp/nrf5_sdk/components/softdevice/common \
+# -I/home/runner/work/_temp/nrf5_sdk/integration/nrfx \
+# -I/home/runner/work/_temp/nrf5_sdk/integration/nrfx/legacy \
+# -I/home/runner/work/_temp/nrf5_sdk/modules/nrfx \
+# -I/home/runner/work/_temp/nrf5_sdk/modules/nrfx/drivers/include \
+# -I/home/runner/work/_temp/nrf5_sdk/modules/nrfx/hal \
+# -I/home/runner/work/_temp/nrf5_sdk/modules/nrfx/mdk \
+# -I/home/runner/work/_temp/nrf5_sdk/external/freertos/source/include \
+# -I/home/runner/work/_temp/nrf5_sdk/components/toolchain/cmsis/include \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/atomic \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/atomic_fifo \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/atomic_flags \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/balloc \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/bootloader/ble_dfu \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/cli \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/crc16 \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/crc32 \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/crypto \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/csense \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/csense_drv \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/delay \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/ecc \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/experimental_section_vars \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/experimental_task_manager \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/fds \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/fstorage \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/gfx \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/gpiote \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/hardfault \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/hci \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/led_softblink \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/log \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/log/src \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/low_power_pwm \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/mem_manager \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/memobj \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/mpu \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/mutex \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/pwm \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/pwr_mgmt \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/queue \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/ringbuf \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/scheduler \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/sdcard \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/slip \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/sortlist \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/spi_mngr \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/stack_guard \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/strerror \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/svc \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/timer \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/usbd \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/usbd/class/audio \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/usbd/class/cdc \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/usbd/class/cdc/acm \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/usbd/class/hid \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/usbd/class/hid/generic \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/usbd/class/hid/kbd \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/usbd/class/hid/mouse \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/usbd/class/msc \
+# -I/home/runner/work/_temp/nrf5_sdk/components/libraries/util \
+# -I/home/runner/work/_temp/nrf5_sdk/external/segger_rtt \
+# -I/home/runner/work/_temp/nrf5_sdk/external/fprintf \
+# -I/home/runner/work/_temp/nrf5_sdk/external/thedotfactory_fonts -O3 \
+# -DNDEBUG -MP -MD -mthumb -mabi=aapcs -Wall -g3 \
+# -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin \
+# --short-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 \
+# -Wreturn-type -Werror=return-type -O3 -std=gnu++11 \
+# -o CMakeFiles/pinetime-app.dir/drivers/TwiMaster.cpp.o \
+# -c /home/runner/work/pinetime-lab/pinetime-lab/src/drivers/TwiMaster.cpp
+
+# /home/runner/work/pinetime-lab/pinetime-lab/src/drivers/TwiMaster.cpp:1:10: fatal error: sdk/integration/nrfx/nrfx_log.h: No such file or directory
+# #include <sdk/integration/nrfx/nrfx_log.h>

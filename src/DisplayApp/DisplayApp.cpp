@@ -15,6 +15,7 @@
 #include <DisplayApp/Screens/Gauge.h>
 #include <DisplayApp/Screens/Brightness.h>
 #include <DisplayApp/Screens/ScreenList.h>
+#include <DisplayApp/Screens/Music.h>
 #include <Components/Ble/NotificationManager.h>
 #include <DisplayApp/Screens/FirmwareUpdate.h>
 #include "../SystemTask/SystemTask.h"
@@ -189,6 +190,7 @@ void DisplayApp::RunningState() {
       case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
       case Apps::Gauge: currentScreen.reset(new Screens::Gauge(this)); break;
       case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
+      case Apps::Music : currentScreen.reset(new Screens::Music(this, systemTask.nimble().music())); break;
     }
     nextApp = Apps::None;
   }
