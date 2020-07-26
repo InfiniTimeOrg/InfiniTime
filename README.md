@@ -40,12 +40,17 @@ As of now, here is the list of achievements of this project:
  
 ## Documentation
 ### Build, flash and debug
+ - [Project branches](doc/branches.md)
+ - [Versioning](doc/versioning.md)
  - [Build the project](doc/buildAndProgram.md)
  - [Bootloader, OTA and DFU](./bootloader/README.md)
  - [Stub using NRF52-DK](./doc/PinetimeStubWithNrf52DK.md)
  - Logging with JLink RTT.
  - Using files from the releases
- 
+
+## Contribute
+ - [How to contribute ?](doc/contribute.md)
+
 ### API
  - [BLE implementation and API](./doc/ble.md)
  
