@@ -69,8 +69,9 @@ jobs:
       run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
       
     - name: Make
-      # For debugging builds, remove option "-j" for clearer output. Add "--trace" to see details.
-      run:  cd build && make -j pinetime-app
+      # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
+      # For Faster Builds: Add "make" option "-j"
+      run:  cd build && make pinetime-app
       
     - name: Find output
       run:  find . -name pinetime-app.out
