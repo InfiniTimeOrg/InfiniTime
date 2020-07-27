@@ -26,13 +26,13 @@ As of now, here is the list of achievements of this project:
  - Rich user interface via display, touch panel and push button
  - Time synchronization via BLE
  - Notification via BLE
- - Multiple 'apps': 
-    * Clock (displays the date, time, battery level, ble connection status, heart rate and step count)
+ - Multiple 'apps' : 
+    * Clock (displays the date, time, battery level, BLE connection status, heart rate and step count)
     * Heart rate
     * Motion
-    * System info (displays various info: BLE MAC, build date/time, uptime, version, ...)
+    * System info (displays various info : BLE MAC adress, build date/time, uptime, version, ...)
     * Brightness (allows the user to configure the brightness of the display)
- - Supported by 2 companion apps (developments ongoing):
+ - Supported by 2 companion apps (development is ongoing):
     * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/src/branch/pinetime-jf) (on Android)
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS)
  - **[Experimental]** OTA (Over-the-air) update via BLE
@@ -41,13 +41,18 @@ As of now, here is the list of achievements of this project:
 ## Documentation
 
 ### Build, flash and debug
+ - [Project branches](doc/branches.md)
+ - [Versioning](doc/versioning.md)
  - [Files included in the release notes](doc/filesInReleaseNotes.md)
  - [Build the project](doc/buildAndProgram.md)
  - [Bootloader, OTA and DFU](./bootloader/README.md)
  - [Stub using NRF52-DK](./doc/PinetimeStubWithNrf52DK.md)
  - Logging with JLink RTT.
  - Using files from the releases
- 
+
+## Contribute
+ - [How to contribute ?](doc/contribute.md)
+
 ### API
  - [BLE implementation and API](./doc/ble.md)
  
@@ -74,7 +79,7 @@ Here a quick list out of my head of things to do for this project:
  - Measure power consumption and improve battery life
  - Improve documentation, take better pictures and video than mine
  - Improve the UI
- - Create companion app for multiple OSes (Linux, Android, IoS) and platforms (desktop, ARM, mobile). Do not forget the other devices from Pine64 like [the Pinephone](https://www.pine64.org/pinephone/) and the [Pinebook Pro](https://www.pine64.org/pinebook-pro/). 
+ - Create companion app for multiple OSes (Linux, Android, iOS) and platforms (desktop, ARM, mobile). Do not forget the other devices from Pine64 like [the Pinephone](https://www.pine64.org/pinephone/) and the [Pinebook Pro](https://www.pine64.org/pinebook-pro/). 
  - Design a simple CI (preferably self-hosted and easy to reproduce).
  
 Do not hesitate to clone/fork the code, hack it and create pull-requests. I'll do my best to review and merge them :)
@@ -85,7 +90,7 @@ I’m not working alone on this project. First, many people create PR for this p
 Here are some people I would like to highlight:
 
  - [Atc1441](https://github.com/atc1441/) : He works on an Arduino based firmware for the Pinetime and many other smartwatches based on similar hardware. He was of great help when I was implementing support for the BMA421 motion sensor and I²C driver.
- - [Koen](https://github.com/bosmoment) : He’s working on a firmware based on RiotOS. He integrated similar libs than me : NimBLE, LittleVGL,… His help was invaluable too!
+ - [Koen](https://github.com/bosmoment) : He’s working on a firmware based on RiotOS. He integrated similar libs as me : NimBLE, LittleVGL,… His help was invaluable too!
  - [Lup Yuen Lee](https://github.com/lupyuen) : He is everywhere: he works on a Rust firmware, builds a MCUBoot based bootloader for the Pinetime, designs a Flutter based companion app for smartphones and writes a lot of articles about the Pinetime!
 
 *If you feel like you should appear on this list, just get in touch with me or submit a PR :)*
