@@ -1,4 +1,5 @@
 # GitHub Actions Workflow to build FreeRTOS Firmware for PineTime Smart Watch
+# See https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud
 # Based on https://github.com/JF002/Pinetime/blob/master/doc/buildAndProgram.md
 
 # Name of this Workflow
@@ -74,8 +75,8 @@ jobs:
       run:  cd build && make pinetime-app
       
     - name: Find output
-      run:  find . -name pinetime-app.out
-
+      run:  find . -name pinetime-app.out -ls
+      
     - name: Upload built firmware
       uses: actions/upload-artifact@v2
       with:
