@@ -15,7 +15,7 @@ The goal of this project is to design an open-source firmware for the Pinetime s
  - Using **[LittleVGL/LVGL 6.1.2](https://lvgl.io/)** as UI library...
  - ... and **[NimBLE 1.3.0](https://github.com/apache/mynewt-nimble)** as BLE stack.
 
-##Overview
+## Overview
 
 ![Pinetime screens](images/0.7.0/montage.jpg "PinetimeScreens")
 
