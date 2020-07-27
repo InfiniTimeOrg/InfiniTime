@@ -39,7 +39,9 @@ As of now, here is the list of achievements of this project:
  - **[Experimental]** Bootloader based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/)
  
 ## Documentation
+
 ### Build, flash and debug
+ - [Files included in the release notes](doc/filesInReleaseNotes.md)
  - [Build the project](doc/buildAndProgram.md)
  - [Bootloader, OTA and DFU](./bootloader/README.md)
  - [Stub using NRF52-DK](./doc/PinetimeStubWithNrf52DK.md)
