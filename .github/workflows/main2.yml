@@ -69,26 +69,10 @@ jobs:
     - name: CMake
       run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
       
-    - name: Make pinetime-app
-      # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
-      # For Faster Builds: Add "make" option "-j"
-      run:  cd build && make pinetime-app
-
     - name: Make pinetime-mcuboot-app
       run:  cd build && make pinetime-mcuboot-app
 
-    - name: Find output
-      run:  find . -name "pinetime-app.*" -ls ; find . -name "pinetime-mcuboot-app.*" -ls
-      
-    - name: Upload built firmware pinetime-app
-      uses: actions/upload-artifact@v2
-      with:
-        # Artifact name (optional)
-        name: pinetime-app.out
-        # A file, directory or wildcard pattern that describes what to upload
-        path: build/src/pinetime-app.out
-
-    - name: Upload built firmware pinetime-mcuboot-app
+    - name: Upload pinetime-mcuboot-app
       uses: actions/upload-artifact@v2
       with:
         # Artifact name (optional)
@@ -96,5 +80,21 @@ jobs:
         # A file, directory or wildcard pattern that describes what to upload
         path: build/src/pinetime-mcuboot-app.bin
 
+    - name: Make pinetime-app
+      # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
+      # For Faster Builds: Add "make" option "-j"
+      run:  cd build && make pinetime-app
+
+    - name: Upload pinetime-app
+      uses: actions/upload-artifact@v2
+      with:
+        # Artifact name (optional)
+        name: pinetime-app.out
+        # A file, directory or wildcard pattern that describes what to upload
+        path: build/src/pinetime-app.out
+
+    - name: Find output
+      run:  find . -name "pinetime-app.*" -ls ; find . -name "pinetime-mcuboot-app.*" -ls
+      
 # Embedded Arm Toolchain and nRF5 SDK will only be cached if the build succeeds.
 # So make sure that the first build always succeeds, e.g. comment out the "Make" step.
