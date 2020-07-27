@@ -1,4 +1,17 @@
-# Bootloader
+# About this bootloader
+This bootloader is mostly developed by [Lup Yuen](https://github.com/lupyuen). It is based on MCUBoot and Mynewt.
+
+The goal of this project is to provide a common bootloader for multiple (all?) Pinetime projects. It allows to upgrade the current bootloader and even replace the current application by another one that supports the same bootloader.
+
+As we wanted this bootloader to be as universal as possible, we decided that it should **not** integrate a BLE stack and provide OTA capabilities. 
+
+Integrating a BLE stack for the OTA functionality would have used to much memory space and/or forced all the firmware developers to use the same BLE stack as the bootloader.
+
+When it is run, this bootloader looks in the SPI flash memory if a new firmware is available. It there is one, it *swaps* the current firmware with the new one (the new one is copied in the main flash memory, and the current one is copied in the SPI flash memory) and run the new one. If the new one fails to run properly, the bootloader is able to revert to the old one and mark the new one as not working.
+
+As this bootloader does not provide any OTA capability, it is not able to actually download a new version of the application. Providing OTA functionality is thus the responsability of the application firmware.
+
+# Using the bootlader
 
 ## Bootloader graphic
 The bootloader loads a graphic (Pinetime logo) from the SPI Flash memory. If this graphic is not loaded in the memory, the LCD will display garbage (the content of the SPI flash memory).
