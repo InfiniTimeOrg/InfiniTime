@@ -94,6 +94,14 @@ jobs:
         name: pinetime-mcuboot-app.bin
         # A file, directory or wildcard pattern that describes what to upload
         path: build/src/pinetime-mcuboot-app.bin
+        
+    # TODO
+    # It must me converted into a MCUBoot image using imgtool.py from MCUBoot. Simply checkout the project and run the script /scripts/imgtool.py with the following command line:
+    # imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header <build directory>/src/pinetime-mcuboot-app.bin image.bin
+    # The image must be then flashed at address 0x8000 in the internal flash memory.
+    # Using OpenOCD:
+    # program image.bin 0x8000
+    # Download imgtool.py from https://github.com/JuulLabs-OSS/mcuboot/tree/master/scripts
 
     #########################################################################################
     # Make and upload pinetime-app
