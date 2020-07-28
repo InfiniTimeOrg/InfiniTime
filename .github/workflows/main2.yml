@@ -114,12 +114,15 @@ jobs:
     - name: Verify firmware image
       run:  ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app.img
 
+    - name: Create DFU package
+      run:  adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application build/src/pinetime-mcuboot-app.img build/src/pinetime-mcuboot-app-dfu.zip
+
     - name: Upload pinetime-mcuboot-app
       uses: actions/upload-artifact@v2
       with:
         name: pinetime-mcuboot-app.img
-        path: build/src/pinetime-mcuboot-app.img
-        
+        path: build/src/pinetime-mcuboot-app-dfu.zip
+
     #########################################################################################
     # Make and upload pinetime-app
       
