@@ -106,7 +106,7 @@ jobs:
       run:  cd build && make pinetime-mcuboot-app
 
     - name: Install adafruit-nrfutil and imgtool dependencies
-      run:  pip3 install --user setuptools adafruit-nrfutil && pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
+      run:  pip3 install --user setuptools && pip3 install --user adafruit-nrfutil && pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
 
     - name: Create firmware image
       run:  ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app.bin build/src/pinetime-mcuboot-app.img
