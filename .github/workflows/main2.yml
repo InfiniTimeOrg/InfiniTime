@@ -34,7 +34,7 @@ jobs:
         pip3 show adafruit-nrfutil
         pip3 -V
         ls -l ~/.local/bin
-        adafruit-nrfutil --help
+        ~/.local/bin/adafruit-nrfutil --help
       
     #########################################################################################
     # Download and Cache Dependencies
