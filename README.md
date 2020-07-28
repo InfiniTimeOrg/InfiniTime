@@ -1,4 +1,7 @@
 # PineTime
+
+![CI](https://github.com/JF002/Pinetime/workflows/CI/badge.svg)
+
 > The PineTime is a free and open source smartwatch capable of running custom-built open operating systems. Some of the notable features include a heart rate monitor, a week-long battery as well as a capacitive touch IPS display that is legible in direct sunlight. It is a fully community driven side-project, which means that it will ultimately be up to the developers and end-users to determine when they deem the PineTime ready to ship.
 
 > We envision the PineTime as a companion for not only your PinePhone but also for your favorite devices — any phone, tablet, or even PC.
