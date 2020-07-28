@@ -1,6 +1,10 @@
 # Moved to https://github.com/lupyuen/pinetime-lab/blob/master/.github/workflows/main.yml
 
 on:
-  push:
-    branches:
-      - never
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '*/88 */88 */88 */88 *'
+    
+jobs:
+  build:
+     runs-on: ubuntu-latest
