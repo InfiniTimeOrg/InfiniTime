@@ -26,8 +26,33 @@ jobs:
 
     steps:
 
+    - name: Install adafruit-nrfutil
+      uses: BSFishy/pip-action@v1
+      with:
+        # The packages to install from Pip
+        packages: adafruit-nrfutil
+        # A requirements file to install from
+        # requirements: # optional, default is 
+        # A constraints file to use
+        # constraints: # optional, default is 
+        # Don't install package dependencies
+        # no-deps: # optional, default is false
+        # Include prerelease and development versions
+        # pre: # optional, default is false
+        # Install a project in editable mode
+        # editable: # optional, default is 
+        # Only use wheels compatible with a specific platform
+        # platform: # optional, default is 
+        # Upgrade all specified packages to the newest available version
+        # upgrade: # optional, default is false
+        # Extra inputs to pass to pip
+        # extra: # optional, default is 
+
     - name: Install adafruit-nrfutil and imgtool dependencies
-      run:  pip3 install --user wheel && pip3 install --user setuptools && pip3 install --user adafruit-nrfutil && adafruit-nrfutil --help
+      run:  adafruit-nrfutil --help
+
+    #- name: Install adafruit-nrfutil and imgtool dependencies
+    #  run:  pip3 install --user wheel && pip3 install --user setuptools && pip3 install --user adafruit-nrfutil && adafruit-nrfutil --help
       
     #########################################################################################
     # Download and Cache Dependencies
