@@ -1,1 +1,6 @@
 # Moved to https://github.com/lupyuen/pinetime-lab/blob/master/.github/workflows/main.yml
+
+on:
+  push:
+    branches:
+      - never
