@@ -95,7 +95,7 @@ jobs:
       run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
       
     #########################################################################################
-    # Make and upload pinetime-mcuboot-app
+    # Make and Upload DFU Package
     # pinetime-mcuboot-app.img must be flashed at address 0x8000 in the internal flash memory with OpenOCD:
     # program image.bin 0x8000
       
@@ -124,7 +124,7 @@ jobs:
         path: build/src/pinetime-mcuboot-app-dfu.zip
 
     #########################################################################################
-    # Make and upload pinetime-app
+    # Make and Upload pinetime-app
       
     - name: Make pinetime-app
       run:  cd build && make pinetime-app
