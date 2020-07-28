@@ -27,7 +27,12 @@ jobs:
     steps:
   
     - name: Install adafruit-nrfutil
-      run:  pip install --user wheel && pip install --user setuptools && pip install --user adafruit-nrfutil && pip show adafruit-nrfutil && adafruit-nrfutil --help
+      run:  |
+        pip3 install --user wheel
+        pip3 install --user setuptools
+        pip3 install --user adafruit-nrfutil
+        pip3 show adafruit-nrfutil
+        adafruit-nrfutil --help
       
     #########################################################################################
     # Download and Cache Dependencies
