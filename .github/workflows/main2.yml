@@ -28,11 +28,12 @@ jobs:
   
     - name: Install adafruit-nrfutil
       run:  |
-        pip3 install wheel
-        pip3 install setuptools
-        pip3 install adafruit-nrfutil
+        pip3 install --user wheel
+        pip3 install --user setuptools
+        pip3 install --user adafruit-nrfutil
         pip3 show adafruit-nrfutil
         pip3 -V
+        ls -l ~/.local/bin
         adafruit-nrfutil --help
       
     #########################################################################################
