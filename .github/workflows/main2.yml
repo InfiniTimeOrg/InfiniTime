@@ -77,8 +77,8 @@ jobs:
 
     - name: Install MCUBoot
       if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
-      run:  cd ${{ runner.temp }} && git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot && pip3 install --user -r mcuboot/scripts/requirements.txt
-
+      run:  cd ${{ runner.temp }} && git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
+      
     #########################################################################################
     # Checkout
       
@@ -104,6 +104,9 @@ jobs:
       
     - name: Make pinetime-mcuboot-app
       run:  cd build && make pinetime-mcuboot-app
+
+    - name: Install imgtool dependencies
+      run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
 
     - name: Create firmware image
       run:  ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app.bin build/src/pinetime-mcuboot-app.img
