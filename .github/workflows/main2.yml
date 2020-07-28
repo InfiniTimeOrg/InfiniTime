@@ -77,7 +77,7 @@ jobs:
 
     - name: Install MCUBoot
       if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
-      run:  cd ${{ runner.temp }} && git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
+      run:  cd ${{ runner.temp }} && git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot && pip3 install --user -r mcuboot/scripts/requirements.txt
 
     #########################################################################################
     # Checkout
