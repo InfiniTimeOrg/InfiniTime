@@ -26,6 +26,9 @@ jobs:
 
     steps:
 
+    - name: Install adafruit-nrfutil and imgtool dependencies
+      run:  pip3 install --user wheel && pip3 install --user setuptools && pip3 install --user adafruit-nrfutil && adafruit-nrfutil --help
+      
     #########################################################################################
     # Download and Cache Dependencies
 
