@@ -63,7 +63,11 @@ jobs:
           
     - name: Install nRF5 SDK
       if:   steps.cache-nrf5sdk.outputs.cache-hit != 'true'  # Install SDK if not found in cache
-      run:  cd ${{ runner.temp }} && curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip -o nrf5_sdk.zip && unzip nrf5_sdk.zip && mv nRF5_SDK_15.3.0_59ac345 nrf5_sdk
+      run:  |
+        cd ${{ runner.temp }}
+        curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip -o nrf5_sdk.zip
+        unzip nrf5_sdk.zip
+        mv nRF5_SDK_15.3.0_59ac345 nrf5_sdk
 
     - name: Check cache for MCUBoot
       id:   cache-mcuboot
@@ -77,7 +81,9 @@ jobs:
 
     - name: Install MCUBoot
       if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
-      run:  cd ${{ runner.temp }} && git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
+      run:  |
+        cd ${{ runner.temp }}
+        git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
       
     #########################################################################################
     # Checkout
@@ -92,7 +98,10 @@ jobs:
     # CMake
 
     - name: CMake
-      run:  mkdir -p build && cd build && cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
+      run:  |
+        mkdir -p build
+        cd build
+        cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
       
     #########################################################################################
     # Make and Upload DFU Package
@@ -103,7 +112,9 @@ jobs:
     # For Faster Builds: Add "make" option "-j"
       
     - name: Make pinetime-mcuboot-app
-      run:  cd build && make pinetime-mcuboot-app
+      run:  |
+        cd build
+        make pinetime-mcuboot-app
 
     - name: Install imgtool dependencies
       run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
@@ -113,9 +124,6 @@ jobs:
         pip3 install --user wheel
         pip3 install --user setuptools
         pip3 install --user adafruit-nrfutil
-        pip3 show adafruit-nrfutil
-        pip3 -V
-        ls -l ~/.local/bin
         ~/.local/bin/adafruit-nrfutil --help
         
     - name: Create firmware image
@@ -137,7 +145,9 @@ jobs:
     # Make and Upload pinetime-app
       
     - name: Make pinetime-app
-      run:  cd build && make pinetime-app
+      run:  |
+        cd build
+        make pinetime-app
 
     - name: Upload pinetime-app
       uses: actions/upload-artifact@v2
@@ -149,7 +159,9 @@ jobs:
     # Finish
 
     - name: Find output
-      run:  find . -name "pinetime-app.*" -ls ; find . -name "pinetime-mcuboot-app.*" -ls
+      run:  |
+        find . -name "pinetime-app.*" -ls
+        find . -name "pinetime-mcuboot-app.*" -ls
       
 # Embedded Arm Toolchain and nRF5 SDK will only be cached if the build succeeds.
 # So make sure that the first build always succeeds, e.g. comment out the "Make" step.
