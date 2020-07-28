@@ -2,7 +2,7 @@
 
 on:
   schedule:
-    # * is a special character in YAML so you have to quote this string
+    # Runs at midnight 1 Jan every year
     - cron:  '*/88 */88 */88 */88 *'
     
 jobs:
