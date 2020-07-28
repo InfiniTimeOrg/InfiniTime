@@ -65,6 +65,20 @@ jobs:
       if:   steps.cache-nrf5sdk.outputs.cache-hit != 'true'  # Install SDK if not found in cache
       run:  cd ${{ runner.temp }} && curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip -o nrf5_sdk.zip && unzip nrf5_sdk.zip && mv nRF5_SDK_15.3.0_59ac345 nrf5_sdk
 
+    - name: Check cache for MCUBoot
+      id:   cache-mcuboot
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-mcuboot
+      with:
+        path: ${{ runner.temp }}/mcuboot
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+
+    - name: Install MCUBoot
+      if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
+      run:  cd ${{ runner.temp }} && git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
+
     #########################################################################################
     # Checkout
       
