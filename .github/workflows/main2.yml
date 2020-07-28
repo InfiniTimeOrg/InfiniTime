@@ -32,7 +32,7 @@ jobs:
         pip3 install --user setuptools
         pip3 install --user adafruit-nrfutil
         pip3 show adafruit-nrfutil
-        ls -l /home/runner/.local/lib/python3.6/site-packages
+        ls -l /home/runner/.local/lib/python3.6/site-packages/adafruit_nrfutil-0.5.3.post12.dist-info
         adafruit-nrfutil --help
       
     #########################################################################################
