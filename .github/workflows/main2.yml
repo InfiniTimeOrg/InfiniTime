@@ -106,10 +106,10 @@ jobs:
       run:  cd build && make pinetime-mcuboot-app
 
     - name: Create firmware image
-      run:  mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app.bin build/src/pinetime-mcuboot-app.img
+      run:  ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app.bin build/src/pinetime-mcuboot-app.img
 
     - name: Verify firmware image
-      run:  mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app.img
+      run:  ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app.img
 
     - name: Upload pinetime-mcuboot-app
       uses: actions/upload-artifact@v2
