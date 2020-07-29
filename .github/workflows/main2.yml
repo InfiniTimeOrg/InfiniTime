@@ -133,9 +133,9 @@ jobs:
     - name: Create DFU package
       run:  |
         ~/.local/bin/adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application build/src/pinetime-mcuboot-app-img.bin build/src/pinetime-mcuboot-app-dfu.zip
-        cd build/src
-        unzip -v pinetime-mcuboot-app-dfu.zip
-        unzip pinetime-mcuboot-app-dfu.zip
+        unzip -v build/src/pinetime-mcuboot-app-dfu.zip
+        # Unzip the package because Upload Artifact will zip up the files
+        unzip pinetime-mcuboot-app-dfu.zip -d build/src/pinetime-mcuboot-app-dfu
 
     - name: Upload DFU package
       uses: actions/upload-artifact@v2
