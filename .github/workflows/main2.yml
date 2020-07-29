@@ -126,19 +126,22 @@ jobs:
         make pinetime-mcuboot-app
 
     - name: Create firmware image
-      run:  ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app.bin build/src/pinetime-mcuboot-app-img.bin
-
-    - name: Verify firmware image
-      run:  ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
+      run:  |
+        ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app.bin build/src/pinetime-mcuboot-app-img.bin
+        ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
 
     - name: Create DFU package
-      run:  ~/.local/bin/adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application build/src/pinetime-mcuboot-app-img.bin build/src/pinetime-mcuboot-app-dfu.zip
+      run:  |
+        ~/.local/bin/adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application build/src/pinetime-mcuboot-app-img.bin build/src/pinetime-mcuboot-app-dfu.zip
+        cd build/src
+        unzip -v pinetime-mcuboot-app-dfu.zip
+        unzip pinetime-mcuboot-app-dfu.zip
 
     - name: Upload DFU package
       uses: actions/upload-artifact@v2
       with:
         name: pinetime-mcuboot-app-dfu.zip
-        path: build/src/pinetime-mcuboot-app-dfu.zip
+        path: build/src/pinetime-mcuboot-app-dfu/*
 
     #########################################################################################
     # Make and Upload Standalone Firmware
