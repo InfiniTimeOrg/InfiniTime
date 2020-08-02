@@ -77,6 +77,15 @@ Here a quick list out of my head of things to do for this project:
  
 Do not hesitate to clone/fork the code, hack it and create pull-requests. I'll do my best to review and merge them :)
 
+## Licenses
+This project is released under the GNU General Public License version 3 or, at your option, any later version.
+
+It integrates the following projects:
+ - RTOS : **[FreeRTOS](https://freertos.org)** under the MIT license
+ - UI : **[LittleVGL/LVGL](https://lvgl.io/)** under the MIT license
+ - BLE stack : **[NimBLE](https://github.com/apache/mynewt-nimble)** under the Apache 2.0 license
+ - Font : **[Jetbrains Mono](https://www.jetbrains.com/fr-fr/lp/mono/)** under the Apache 2.0 license
+  
 ## Credits 
 I’m not working alone on this project. First, many people create PR for this projects. Then, there is the whole #pinetime community : a lot of people all around the world who are hacking, searching, experimenting and programming the Pinetime. We exchange our ideas, experiments and code in the chat rooms and forums.
 
