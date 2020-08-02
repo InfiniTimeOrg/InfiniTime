@@ -1,3 +1,4 @@
+
 # PineTime
 > The PineTime is a free and open source smartwatch capable of running custom-built open operating systems. Some of the notable features include a heart rate monitor, a week-long battery as well as a capacitive touch IPS display that is legible in direct sunlight. It is a fully community driven side-project, which means that it will ultimately be up to the developers and end-users to determine when they deem the PineTime ready to ship.
 
@@ -6,6 +7,9 @@
 *https://www.pine64.org/pinetime/*
 
 The **Pinetime** smartwatch is built around the NRF52832 MCU (512KB Flash, 64KB RAM), a 240*240 LCD display driven by the ST7789 controller, an accelerometer, a heart rate sensor, and a vibration motor.
+
+# InfiniTime
+![InfiniTime logo](images/infinitime-logo.jpg "InfiniTime Logo")
 
 The goal of this project is to design an open-source firmware for the Pinetime smartwatch : 
 
