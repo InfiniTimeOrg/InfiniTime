@@ -1,4 +1,4 @@
-#Amazfish
+# Amazfish
 [Amazfish](https://openrepos.net/content/piggz/amazfish) is a companion app that supports many smartwatches and activity trackers running on [SailfishOS](https://sailfishos.org/).
 
 ## Features
