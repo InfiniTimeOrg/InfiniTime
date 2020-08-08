@@ -44,6 +44,9 @@ As of now, here is the list of achievements of this project:
  
 ## Documentation
 
+### Develop
+ - [Generate the fonts and symbols](src/DisplayApp/Fonts/Readme.md)
+
 ### Build, flash and debug
  - [Project branches](doc/branches.md)
  - [Versioning](doc/versioning.md)
@@ -64,10 +67,9 @@ As of now, here is the list of achievements of this project:
  - [Memory analysis](./doc/MemoryAnalysis.md)
  
 ### Using the firmware
- - Integration with Gadgetbridge
- - Integration with AmazFish
- - Integration with NRFConnect
- - Firmware update, OTA
+ - [Integration with Gadgetbridge](doc/CompanionApps/Gadgetbridge.md)
+ - [Integration with AmazFish](doc/CompanionApps/Amazfish.md)
+ - [Firmware update, OTA](doc/CompanionApps/NrfconnectOTA.md)
  
     
 ## TODO - contribute
