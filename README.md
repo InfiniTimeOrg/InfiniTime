@@ -57,7 +57,7 @@ As of now, here is the list of achievements of this project:
  - Logging with JLink RTT.
  - Using files from the releases
 
-## Contribute
+### Contribute
  - [How to contribute ?](doc/contribute.md)
 
 ### API
