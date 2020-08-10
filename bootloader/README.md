@@ -1,5 +1,5 @@
 # About this bootloader
-This bootloader is mostly developed by [Lup Yuen](https://github.com/lupyuen). It is based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/) and Mynewt.
+The [bootloader](https://github.com/lupyuen/pinetime-rust-mynewt/tree/master/libs/pinetime_boot/src) is mostly developed by [Lup Yuen](https://github.com/lupyuen). It is based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/) and [Mynewt](https://mynewt.apache.org/).
 
 The goal of this project is to provide a common bootloader for multiple (all?) Pinetime projects. It allows to upgrade the current bootloader and even replace the current application by another one that supports the same bootloader.
 
