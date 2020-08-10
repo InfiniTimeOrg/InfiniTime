@@ -1,4 +1,5 @@
 #include <cstring>
+#include <stdint.h>
 #include "NotificationManager.h"
 
 using namespace Pinetime::Controllers;
