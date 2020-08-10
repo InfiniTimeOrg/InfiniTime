@@ -1,0 +1,21 @@
+@startuml
+
+MCU -> Bootloader: reset
+activate Bootloader
+Bootloader -> Bootloader: Recover? (no)
+Bootloader -> Bootloader: New version? (yes)
+Bootloader -> Bootloader: Swap firmwares
+note left: Copy current firmware from primary to secondary\nand copy the new firmware from secondary to primary
+Bootloader -> Application: Jump to primary slot
+deactivate Bootloader
+
+
+activate Application
+note right: This is the new version of the firmware
+Application -> Application: Write the valid bit in flash memory
+note right: The application should provide a way to\ncheck that it is running correctly\n(selftest, user confirmation,...)\nbefore setting the valid bit.
+Application -> Application: Normal operations...
+Application -> MCU: Reset
+deactivate Application
+
+@enduml
