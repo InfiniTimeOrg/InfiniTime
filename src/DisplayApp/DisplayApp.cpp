@@ -18,6 +18,7 @@
 #include <DisplayApp/Screens/Music.h>
 #include <Components/Ble/NotificationManager.h>
 #include <DisplayApp/Screens/FirmwareUpdate.h>
+#include <DisplayApp/Screens/FirmwareValidation.h>
 #include "../SystemTask/SystemTask.h"
 
 using namespace Pinetime::Applications;

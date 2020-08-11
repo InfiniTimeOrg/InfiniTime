@@ -58,14 +58,6 @@ void SystemTask::Work() {
 
   spi.Init();
   spiNorFlash.Init();
-
-  // Write the 'image OK' flag if it's not already done
-  // TODO implement a better verification mecanism for the image (ask for user confirmation via UI/BLE ?)
-  uint32_t* imageOkPtr = reinterpret_cast<uint32_t *>(0x7BFE8);
-  uint32_t imageOk = *imageOkPtr;
-  if(imageOk != 1)
-    Pinetime::Drivers::InternalFlash::WriteWord(0x7BFE8, 1);
-
   nimbleController.Init();
   nimbleController.StartAdvertising();
   lcd.Init();
