@@ -98,17 +98,17 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
           uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds,
           batteryPercent, brightness, resetReason);
 
-  return std::unique_ptr<Screen>(new Screens::Label2(app, t1));
+  return std::unique_ptr<Screen>(new Screens::Label(app, t1));
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   auto& bleAddr = bleController.Address();
   sprintf(t2, "BLE MAC: \n  %2x:%2x:%2x:%2x:%2x:%2x",
           bleAddr[5], bleAddr[4], bleAddr[3], bleAddr[2], bleAddr[1], bleAddr[0]);
-  return std::unique_ptr<Screen>(new Screens::Label2(app, t2));
+  return std::unique_ptr<Screen>(new Screens::Label(app, t2));
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
   strncpy(t3, "Hello from\nthe developper!", 27);
-  return std::unique_ptr<Screen>(new Screens::Label2(app, t3));
+  return std::unique_ptr<Screen>(new Screens::Label(app, t3));
 }
