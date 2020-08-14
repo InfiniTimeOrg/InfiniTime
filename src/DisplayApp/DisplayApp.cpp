@@ -2,22 +2,20 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <libraries/log/nrf_log.h>
-#include <boards.h>
 #include <nrf_font.h>
 #include <queue.h>
 #include <Components/DateTime/DateTimeController.h>
 #include <drivers/Cst816s.h>
 #include <string>
-#include <lvgl/lvgl.h>
 #include <DisplayApp/Screens/Tile.h>
-#include <DisplayApp/Screens/Message.h>
 #include <DisplayApp/Screens/Meter.h>
 #include <DisplayApp/Screens/Gauge.h>
 #include <DisplayApp/Screens/Brightness.h>
-#include <DisplayApp/Screens/ScreenList.h>
+#include <DisplayApp/Screens/SystemInfo.h>
 #include <DisplayApp/Screens/Music.h>
 #include <Components/Ble/NotificationManager.h>
 #include <DisplayApp/Screens/FirmwareUpdate.h>
+#include <DisplayApp/Screens/ApplicationList.h>
 #include "../SystemTask/SystemTask.h"
 
 using namespace Pinetime::Applications;
@@ -180,13 +178,13 @@ void DisplayApp::RunningState() {
     onClockApp = false;
     switch(nextApp) {
       case Apps::None:
-      case Apps::Launcher: currentScreen.reset(new Screens::Tile(this)); break;
+      case Apps::Launcher: currentScreen.reset(new Screens::ApplicationList(this)); break;
       case Apps::Clock:
         currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
         onClockApp = true;
         break;
 //      case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
-      case Apps::SysInfo: currentScreen.reset(new Screens::ScreenList(this, dateTimeController, batteryController, brightnessController, bleController, watchdog)); break;
+      case Apps::SysInfo: currentScreen.reset(new Screens::SystemInfo(this, dateTimeController, batteryController, brightnessController, bleController, watchdog)); break;
       case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
       case Apps::Gauge: currentScreen.reset(new Screens::Gauge(this)); break;
       case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
@@ -238,7 +236,7 @@ TouchEvents DisplayApp::OnTouchEvent() {
   return TouchEvents::None;
 }
 
-void DisplayApp::StartApp(DisplayApp::Apps app) {
+void DisplayApp::StartApp(Apps app) {
   nextApp = app;
 }
 

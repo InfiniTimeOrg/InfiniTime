@@ -18,6 +18,10 @@ namespace Pinetime {
         static constexpr char* info = "\xEF\x84\xA9";
         static constexpr char* list = "\xEF\x80\xBA";
         static constexpr char* sun = "\xEF\x86\x85";
+        static constexpr char* check = "\xEF\x95\xA0";
+        static constexpr char* music = "\xEF\x80\x81";
+        static constexpr char* tachometer = "\xEF\x8F\xBD";
+        static constexpr char* asterisk = "\xEF\x81\xA9";
       }
     }
   }
