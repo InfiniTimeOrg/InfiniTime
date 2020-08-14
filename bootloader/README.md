@@ -122,7 +122,7 @@ Once the OTA is done, InfiniTime will reset the watch to apply the update. When 
 
 One last step is needed to finalize the upgrade : the new firmware must be manually validated. If the watch resets while the image is not validated, the bootloader will automatically revert to the previous version of the firmware.
 
-If the new firmware is working correctly, open the application menu and tap on the 'check' app. This apps displays the version of the firmware that is currently running, and allows you to validate the firmware, of reset the device to rollback to the previous version.
+If the new firmware is working correctly, open the application menu and tap on the 'check' app. This apps displays the version of the firmware that is currently running, and allows you to validate the firmware, or reset the device to rollback to the previous version.
 
 Firmware validation application in the menu:
 
