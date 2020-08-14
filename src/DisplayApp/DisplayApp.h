@@ -19,6 +19,7 @@
 #include <Components/Ble/NotificationManager.h>
 #include <Components/FirmwareValidator/FirmwareValidator.h>
 #include "TouchEvents.h"
+#include "Apps.h"
 
 
 namespace Pinetime {
@@ -43,7 +44,6 @@ namespace Pinetime {
         void Start();
         void PushMessage(Messages msg);
 
-        enum class Apps {None, Launcher, Clock, SysInfo, Meter, Gauge, Brightness, Music};
         void StartApp(Apps app);
 
         void SetFullRefresh(FullRefreshDirections direction);
