@@ -5,13 +5,19 @@
 #include <bits/unique_ptr.h>
 #include "Modal.h"
 #include <lvgl/src/lv_core/lv_style.h>
+#include <DisplayApp/Apps.h>
 
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class Tile : public Screen {
         public:
-          explicit Tile(DisplayApp* app);
+          struct Applications {
+            const char* icon;
+            Pinetime::Applications::Apps application;
+          };
+
+          explicit Tile(DisplayApp* app, std::array<Applications, 6>& applications);
           ~Tile() override;
 
           bool Refresh() override;
@@ -20,40 +26,13 @@ namespace Pinetime {
           void OnObjectEvent(lv_obj_t* obj, lv_event_t event, uint32_t buttonId);
 
         private:
-
-          lv_style_t* labelRelStyle;
-          lv_style_t* labelPrStyle;
-          lv_obj_t * label1;
-          lv_obj_t * label2;
-          lv_obj_t * label3;
-
-          lv_obj_t* backgroundLabel;
-          lv_obj_t * button;
-          lv_obj_t * labelClick;
-
-          lv_obj_t *tileview;
-          lv_obj_t * tile1;
-          lv_obj_t * tile2;
-          lv_obj_t * list;
-          lv_obj_t * list_btn;
-          lv_obj_t * tile3;
-          lv_obj_t * btn1;
-          lv_obj_t * btn2;
-          lv_obj_t * btn3;
-
           lv_obj_t * btnm1;
-          lv_obj_t * btnm2;
-
-          uint32_t clickCount = 0 ;
-          uint32_t previousClickCount = 0;
-          void StartClockApp();
-          void StartSysInfoApp();
-          void StartMeterApp();
-          void StartGaugeApp();
           bool running = true;
 
           std::unique_ptr<Modal> modal;
-          void StartBrightnessApp();
+
+          const char* btnm_map1[8];
+          Pinetime::Applications::Apps apps[6];
       };
     }
   }

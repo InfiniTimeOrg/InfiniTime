@@ -333,10 +333,11 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/BatteryIcon.cpp
   DisplayApp/Screens/BleIcon.cpp
   DisplayApp/Screens/Brightness.cpp
-  DisplayApp/Screens/ScreenList.cpp
+  DisplayApp/Screens/SystemInfo.cpp
   DisplayApp/Screens/Label.cpp
   DisplayApp/Screens/FirmwareUpdate.cpp
   DisplayApp/Screens/Music.cpp
+  DisplayApp/Screens/ApplicationList.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiNorFlash.cpp
@@ -412,9 +413,12 @@ set(INCLUDE_FILES
   DisplayApp/Screens/BatteryIcon.h
   DisplayApp/Screens/BleIcon.cpp
   DisplayApp/Screens/Brightness.h
+  DisplayApp/Screens/SystemInfo.h
   DisplayApp/Screens/ScreenList.h
   DisplayApp/Screens/Label.h
   DisplayApp/Screens/FirmwareUpdate.h
+  DisplayApp/Screens/ApplicationList.h
+  DisplayApp/Apps.h
   drivers/St7789.h
   drivers/SpiNorFlash.h
   drivers/SpiMaster.h

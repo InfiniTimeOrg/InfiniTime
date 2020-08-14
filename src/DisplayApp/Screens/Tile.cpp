@@ -17,9 +17,16 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event, eventData);
 }
 
-static const char * btnm_map1[] = {Symbols::heartBeat, Symbols::shoe, Symbols::clock, "\n", Symbols::info, Symbols::list, Symbols::sun, ""};
-
-Tile::Tile(DisplayApp* app) : Screen(app) {
+Tile::Tile(DisplayApp* app, std::array<Applications, 6>& applications) : Screen(app) {
+  for(int i = 0, appIndex = 0; i < 8; i++) {
+    if(i == 3) btnm_map1[i] = "\n";
+    else if(i == 7) btnm_map1[i] = "";
+    else {
+      btnm_map1[i] = applications[appIndex].icon;
+      apps[appIndex] = applications[appIndex].application;
+      appIndex++;
+    }
+  }
   modal.reset(new Modal(app));
 
   btnm1 = lv_btnm_create(lv_scr_act(), NULL);
@@ -41,61 +48,15 @@ bool Tile::Refresh() {
 void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event, uint32_t buttonId) {
   auto* tile = static_cast<Tile*>(obj->user_data);
   if(event == LV_EVENT_VALUE_CHANGED) {
-    switch(buttonId) {
-      case 0:
-        tile->StartMeterApp();
-        break;
-      case 1:
-        tile->StartGaugeApp();
-        break;
-      case 2:
-        tile->StartClockApp();
-        break;
-      case 3:
-        char versionStr[20];
-        sprintf(versionStr, "VERSION: %d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
-        modal->Show(versionStr);
-        break;
-      case 4:
-        tile->StartSysInfoApp();
-        break;
-      case 5:
-        tile->StartBrightnessApp();
-
-        break;
-    }
-    clickCount++;
+    app->StartApp(apps[buttonId]);
+    running = false;
   }
 }
 
 bool Tile::OnButtonPushed() {
-  app->StartApp(DisplayApp::Apps::Clock);
+  app->StartApp(Apps::Clock);
   running = false;
   return true;
 }
 
-void Tile::StartClockApp() {
-  app->StartApp(DisplayApp::Apps::Clock);
-  running = false;
-}
-
-void Tile::StartSysInfoApp() {
-  app->StartApp(DisplayApp::Apps::SysInfo);
-  running = false;
-}
-
-void Tile::StartBrightnessApp() {
-  app->StartApp(DisplayApp::Apps::Brightness);
-  running = false;
-}
-
-void Tile::StartMeterApp() {
-  app->StartApp(DisplayApp::Apps::Meter);
-  running = false;
-}
-
-void Tile::StartGaugeApp() {
-  app->StartApp(DisplayApp::Apps::Music);
-  running = false;
-}
 
