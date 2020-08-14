@@ -4,6 +4,7 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       namespace Symbols {
+        static constexpr char* none = "";
         static constexpr char* batteryFull = "\xEF\x89\x80";
         static constexpr char* batteryEmpty = "\xEF\x89\x84";
         static constexpr char* batteryThreeQuarter = "\xEF\x89\x81";

@@ -11,7 +11,7 @@ ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp *app) :
         Screen(app),
         screens{app, {
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen1(); },
-                //[this]() -> std::unique_ptr<Screen> { return CreateScreen2(); },
+                [this]() -> std::unique_ptr<Screen> { return CreateScreen2(); },
                 //[this]() -> std::unique_ptr<Screen> { return CreateScreen3(); }
           }
         } {}
@@ -39,13 +39,15 @@ bool ApplicationList::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
   std::array<Screens::Tile::Applications, 6> applications {
-          {{Symbols::asterisk, Apps::Meter},
-           {Symbols::tachometer, Apps::Gauge},
-           {Symbols::clock, Apps::Clock},
-           {Symbols::music, Apps::Music},
-           {Symbols::list, Apps::SysInfo},
-           {Symbols::sun, Apps::Brightness}
+          {{Symbols::clock, Apps::Clock},
+          {Symbols::music, Apps::Music},
+          {Symbols::sun, Apps::Brightness},
+          {Symbols::list, Apps::SysInfo},
+          {Symbols::check, Apps::FirmwareValidation},
+          {Symbols::none, Apps::None}
           }
+
+
   };
 
   return std::unique_ptr<Screen>(new Screens::Tile(app, applications));
@@ -53,12 +55,12 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
   std::array<Screens::Tile::Applications, 6> applications {
-          {{"0", Apps::Meter},
-           {"1", Apps::Gauge},
-           {"2", Apps::Clock},
-           {"3", Apps::Music},
-           {"4", Apps::SysInfo},
-           {"5", Apps::Brightness}
+          {{Symbols::tachometer, Apps::Gauge},
+           {Symbols::asterisk, Apps::Meter},
+           {Symbols::none, Apps::None},
+           {Symbols::none, Apps::None},
+           {Symbols::none, Apps::None},
+           {Symbols::none, Apps::None}
           }
   };
 
