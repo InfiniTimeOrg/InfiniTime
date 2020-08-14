@@ -114,3 +114,24 @@ sudo dfu.py -z /home/jf/nrf52/bootloader/dfu.zip -a <pinetime MAC address> --leg
 `
 
 **Note** : dfu.py is a slightly modified version of [this repo](https://github.com/daniel-thompson/ota-dfu-python).
+
+See [this page](../doc/CompanionApps/NrfconnectOTA.md) for more info about OTA with NRFConect
+
+### Firmware validation
+Once the OTA is done, InfiniTime will reset the watch to apply the update. When the watch reboots, the new firmware is running.
+
+One last step is needed to finalize the upgrade : the new firmware must be manually validated. If the watch resets while the image is not validated, the bootloader will automatically revert to the previous version of the firmware.
+
+If the new firmware is working correctly, open the application menu and tap on the 'check' app. This apps displays the version of the firmware that is currently running, and allows you to validate the firmware, of reset the device to rollback to the previous version.
+
+Firmware validation application in the menu:
+
+![Firmware Validation App](../doc/CompanionApps/firmwareValidationApp.jpg "Firmware Validation App")
+
+The firmware is not validated yet. Tap 'Validate' to validate it, or 'Reset' to rollback to the previous version.
+
+![Firmware Not Validated](../doc/CompanionApps/firmwareNoValidated.jpg "Firmware Not Validated")
+
+The firmware is validated!
+
+![Firmware Validated](../doc/CompanionApps/firmwareValidated.jpg "Firmware Validated")
