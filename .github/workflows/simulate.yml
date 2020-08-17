@@ -103,9 +103,9 @@ jobs:
         cd /tmp
         git clone https://github.com/AppKaki/lvgl-wasm
         
-    - name: Copy Clock.cpp
+    - name: Copy Watch Face Clock.cpp to LVGL for WebAssembly
       run:  |
-        echo TODO
+        cp src/DisplayApp/Screens/Clock.cpp /tmp/lvgl-wasm/clock
 
     - name: Build LVGL for WebAssembly
       run:  |
@@ -117,16 +117,19 @@ jobs:
         cd /tmp/lvgl-wasm
         wasm/lvgl.sh
 
-    - name: Copy to GitHub Pages
+    - name: Show files
+      run:  set ; pwd ; ls -l /tmp/lvgl-wasm
+
+    - name: Copy WebAssembly to GitHub Pages
       run:  |
-        echo TODO
+        if [ ! -d docs ]; then
+          mkdir docs
+        fi
+        cp /tmp/lvgl-wasm/wasm/*.html /tmp/lvgl-wasm/wasm/*.js /tmp/lvgl-wasm/wasm/*.wasm /tmp/lvgl-wasm/wasm/*.txt docs
 
     - name: Commit GitHub Pages
       run:  |
         echo TODO
-
-    - name: Show files
-      run:  set ; pwd ; ls -l
 
     - name: Upload Outputs
       uses: actions/upload-artifact@v2
