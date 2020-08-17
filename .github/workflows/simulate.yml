@@ -1,4 +1,4 @@
-# GitHub Actions Workflow to build FreeRTOS Firmware for PineTime Smart Watch
+# GitHub Actions Workflow to build PineTime Watch Face Simulator with LVGL and WebAssembly
 # See https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud
 # Based on https://github.com/JF002/Pinetime/blob/master/doc/buildAndProgram.md
 # and https://github.com/JF002/Pinetime/blob/master/bootloader/README.md
