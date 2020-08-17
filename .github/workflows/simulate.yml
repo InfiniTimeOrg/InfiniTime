@@ -98,14 +98,32 @@ jobs:
         cmake ..
         cmake --build .
 
-    - name: Build LVGL
+    - name: Checkout LVGL for WebAssembly
+      run:  |
+        cd /tmp
+        git clone https://github.com/AppKaki/lvgl-wasm
+        
+    - name: Copy Clock.cpp
+      run:  |
+        echo TODO
+
+    - name: Build LVGL for WebAssembly
       run:  |
         # Add emscripten and wabt to the PATH
         source /tmp/emsdk/emsdk_env.sh
         export PATH=$PATH:/tmp/wabt/build
 
         # Build LVGL app: wasm/lvgl.html, lvgl.js, lvgl.wasm
+        cd /tmp/lvgl-wasm
         wasm/lvgl.sh
+
+    - name: Copy to GitHub Pages
+      run:  |
+        echo TODO
+
+    - name: Commit GitHub Pages
+      run:  |
+        echo TODO
 
     - name: Show files
       run:  set ; pwd ; ls -l
