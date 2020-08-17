@@ -125,7 +125,17 @@ jobs:
         if [ ! -d docs ]; then
           mkdir docs
         fi
-        cp /tmp/lvgl-wasm/wasm/*.html /tmp/lvgl-wasm/wasm/*.js /tmp/lvgl-wasm/wasm/*.wasm /tmp/lvgl-wasm/wasm/*.txt docs
+        export src=/tmp/lvgl-wasm
+        export docs=$src/docs
+        export wasm=$src/wasm
+        cp \
+          $docs/index.md \
+          $docs/lvgl.html \
+          $wasm/*.html \
+          $wasm/*.js \
+          $wasm/*.wasm \
+          $wasm/*.txt \
+          docs
 
     - name: Commit GitHub Pages
       uses: EndBug/add-and-commit@v4.4.0
