@@ -136,7 +136,7 @@ jobs:
       with:
         name: wasm
         path: |
-          wasm/*.html
-          wasm/*.js
-          wasm/*.wasm
-          wasm/*.txt
+          /tmp/lvgl-wasm/wasm/*.html
+          /tmp/lvgl-wasm/wasm/*.js
+          /tmp/lvgl-wasm/wasm/*.wasm
+          /tmp/lvgl-wasm/wasm/*.txt
