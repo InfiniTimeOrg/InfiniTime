@@ -17,6 +17,7 @@
 #include <drivers/Watchdog.h>
 #include <DisplayApp/Screens/Modal.h>
 #include <Components/Ble/NotificationManager.h>
+#include <Components/FirmwareValidator/FirmwareValidator.h>
 #include "TouchEvents.h"
 #include "Apps.h"
 
@@ -80,6 +81,7 @@ namespace Pinetime {
         Controllers::BrightnessController brightnessController;
         std::unique_ptr<Screens::Modal> modal;
         Pinetime::Controllers::NotificationManager& notificationManager;
+        Pinetime::Controllers::FirmwareValidator validator;
     };
   }
 }

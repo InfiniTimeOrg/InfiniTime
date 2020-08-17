@@ -337,6 +337,7 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/Label.cpp
   DisplayApp/Screens/FirmwareUpdate.cpp
   DisplayApp/Screens/Music.cpp
+  DisplayApp/Screens/FirmwareValidation.cpp
   DisplayApp/Screens/ApplicationList.cpp
   main.cpp
   drivers/St7789.cpp
@@ -359,6 +360,7 @@ list(APPEND SOURCE_FILES
   Components/Ble/CurrentTimeService.cpp
   Components/Ble/AlertNotificationService.cpp
   Components/Ble/MusicService.cpp
+  Components/FirmwareValidator/FirmwareValidator.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
@@ -417,6 +419,7 @@ set(INCLUDE_FILES
   DisplayApp/Screens/ScreenList.h
   DisplayApp/Screens/Label.h
   DisplayApp/Screens/FirmwareUpdate.h
+  DisplayApp/Screens/FirmwareValidation.h
   DisplayApp/Screens/ApplicationList.h
   DisplayApp/Apps.h
   drivers/St7789.h
@@ -436,7 +439,8 @@ set(INCLUDE_FILES
   Components/Ble/CurrentTimeClient.h
   Components/Ble/AlertNotificationClient.h
   Components/Ble/DfuService.h
-    drivers/Cst816s.h
+  Components/FirmwareValidator/FirmwareValidator.h
+  drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h
   libs/date/includes/date/tz.h
