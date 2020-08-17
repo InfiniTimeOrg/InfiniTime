@@ -27,20 +27,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Fetch cache for Rust Toolchain
-      id:   cache-rust
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target
-        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-
-    - name: Install Rust Toolchain for emscripten
-      run:  |
-        rustup default nightly
-        rustup target add wasm32-unknown-emscripten
+    # Uncomment the next 2 steps to support Rust WebAssembly
+    # - name: Fetch cache for Rust Toolchain
+    #   id:   cache-rust
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: |
+    #       ~/.cargo/registry
+    #       ~/.cargo/git
+    #       target
+    #     key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    # - name: Install Rust Toolchain for emscripten
+    #   run:  |
+    #     rustup default nightly
+    #     rustup target add wasm32-unknown-emscripten
 
     - name: Check cache for emscripten
       id:   cache-emsdk
