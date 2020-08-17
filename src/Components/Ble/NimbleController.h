@@ -43,7 +43,7 @@ namespace Pinetime {
         uint16_t connHandle();
 
       private:
-        static constexpr char* deviceName = "Pinetime-JF";
+        static constexpr const char* deviceName = "Pinetime-JF";
         Pinetime::System::SystemTask& systemTask;
         Pinetime::Controllers::Ble& bleController;
         DateTime& dateTimeController;

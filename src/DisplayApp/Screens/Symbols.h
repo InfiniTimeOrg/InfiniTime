@@ -4,25 +4,25 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       namespace Symbols {
-        static constexpr char* none = "";
-        static constexpr char* batteryFull = "\xEF\x89\x80";
-        static constexpr char* batteryEmpty = "\xEF\x89\x84";
-        static constexpr char* batteryThreeQuarter = "\xEF\x89\x81";
-        static constexpr char* batteryHalf = "\xEF\x89\x82";
-        static constexpr char* batteryOneQuarter = "\xEF\x89\x83";
-        static constexpr char* heartBeat = "\xEF\x88\x9E";
-        static constexpr char* bluetoothFull = "\xEF\x8A\x93";
-        static constexpr char* bluetooth = "\xEF\x8A\x94";
-        static constexpr char* plug = "\xEF\x87\xA6";
-        static constexpr char* shoe = "\xEF\x95\x8B";
-        static constexpr char* clock = "\xEF\x80\x97";
-        static constexpr char* info = "\xEF\x84\xA9";
-        static constexpr char* list = "\xEF\x80\xBA";
-        static constexpr char* sun = "\xEF\x86\x85";
-        static constexpr char* check = "\xEF\x95\xA0";
-        static constexpr char* music = "\xEF\x80\x81";
-        static constexpr char* tachometer = "\xEF\x8F\xBD";
-        static constexpr char* asterisk = "\xEF\x81\xA9";
+        static constexpr const char* none = "";
+        static constexpr const char* batteryFull = "\xEF\x89\x80";
+        static constexpr const char* batteryEmpty = "\xEF\x89\x84";
+        static constexpr const char* batteryThreeQuarter = "\xEF\x89\x81";
+        static constexpr const char* batteryHalf = "\xEF\x89\x82";
+        static constexpr const char* batteryOneQuarter = "\xEF\x89\x83";
+        static constexpr const char* heartBeat = "\xEF\x88\x9E";
+        static constexpr const char* bluetoothFull = "\xEF\x8A\x93";
+        static constexpr const char* bluetooth = "\xEF\x8A\x94";
+        static constexpr const char* plug = "\xEF\x87\xA6";
+        static constexpr const char* shoe = "\xEF\x95\x8B";
+        static constexpr const char* clock = "\xEF\x80\x97";
+        static constexpr const char* info = "\xEF\x84\xA9";
+        static constexpr const char* list = "\xEF\x80\xBA";
+        static constexpr const char* sun = "\xEF\x86\x85";
+        static constexpr const char* check = "\xEF\x95\xA0";
+        static constexpr const char* music = "\xEF\x80\x81";
+        static constexpr const char* tachometer = "\xEF\x8F\xBD";
+        static constexpr const char* asterisk = "\xEF\x81\xA9";
       }
     }
   }

@@ -29,7 +29,7 @@ FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp *app,
   labelVersionValue = lv_label_create(lv_scr_act(), NULL);
   lv_obj_align(labelVersionValue, labelVersionInfo, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
   lv_label_set_recolor(labelVersionValue, true);
-  sprintf(version, "%d.%d.%d", Version::Major(), Version::Minor(), Version::Patch());
+  sprintf(version, "%ld.%ld.%ld", Version::Major(), Version::Minor(), Version::Patch());
   lv_label_set_text(labelVersionValue, version);
 
   labelIsValidated = lv_label_create(lv_scr_act(), NULL);

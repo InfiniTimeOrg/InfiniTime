@@ -60,9 +60,9 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
     uint16_t y = (yHigh << 8) | yLow;
 
     auto action = touchData[touchEventIndex + (touchStep * i)] >> 6; /* 0 = Down, 1 = Up, 2 = contact*/
-    auto finger = touchData[touchIdIndex + (touchStep * i)] >> 4;
-    auto pressure = touchData[touchXYIndex + (touchStep * i)];
-    auto area = touchData[touchMiscIndex + (touchStep * i)] >> 4;
+    //auto finger = touchData[touchIdIndex + (touchStep * i)] >> 4;
+    //auto pressure = touchData[touchXYIndex + (touchStep * i)];
+    //auto area = touchData[touchMiscIndex + (touchStep * i)] >> 4;
 
     info.x = x;
     info.y = y;
@@ -89,7 +89,6 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
 //      case Gestures::LongPress: NRF_LOG_INFO("Gesture : Long press"); break;
 //      default : NRF_LOG_INFO("Unknown"); break;
 //    }
-
   }
 
 

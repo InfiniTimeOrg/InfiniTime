@@ -121,13 +121,12 @@ bool Clock::Refresh() {
 
     auto hour = time.hours().count();
     auto minute = time.minutes().count();
-    auto second = time.seconds().count();
 
     char minutesChar[3];
-    sprintf(minutesChar, "%02d", minute);
+    sprintf(minutesChar, "%02d", static_cast<int>(minute));
 
     char hoursChar[3];
-    sprintf(hoursChar, "%02d", hour);
+    sprintf(hoursChar, "%02d", static_cast<int>(hour));
 
     char timeStr[6];
     sprintf(timeStr, "%c%c:%c%c", hoursChar[0],hoursChar[1],minutesChar[0], minutesChar[1]);

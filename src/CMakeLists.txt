@@ -321,11 +321,9 @@ list(APPEND IMAGE_FILES
 
 list(APPEND SOURCE_FILES
   Logging/NrfLogger.cpp
-  BlinkApp/BlinkApp.cpp
   DisplayApp/DisplayApp.cpp
   DisplayApp/Screens/Screen.cpp
   DisplayApp/Screens/Clock.cpp
-  DisplayApp/Screens/Message.cpp
   DisplayApp/Screens/Tile.cpp
   DisplayApp/Screens/Meter.cpp
   DisplayApp/Screens/Gauge.cpp
@@ -402,12 +400,10 @@ list(APPEND GRAPHICS_SOURCE_FILES
 set(INCLUDE_FILES
   Logging/Logger.h
   Logging/NrfLogger.h
-  BlinkApp/BlinkApp.h
   DisplayApp/DisplayApp.h
   DisplayApp/TouchEvents.h
   DisplayApp/Screens/Screen.h
   DisplayApp/Screens/Clock.h
-  DisplayApp/Screens/Message.h
   DisplayApp/Screens/Tile.h
   DisplayApp/Screens/Meter.h
   DisplayApp/Screens/Gauge.h

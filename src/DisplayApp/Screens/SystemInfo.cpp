@@ -49,6 +49,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
 
   uint8_t brightness = 0;
   switch(brightnessController.Level()) {
+    case Controllers::BrightnessController::Levels::Off: brightness = 0; break;
     case Controllers::BrightnessController::Levels::Low: brightness = 1; break;
     case Controllers::BrightnessController::Levels::Medium: brightness = 2; break;
     case Controllers::BrightnessController::Levels::High: brightness = 3; break;
@@ -82,10 +83,10 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
   // TODO handle more than 100 days of uptime
 
   sprintf(t1, "Pinetime\n"
-              "Version:%d.%d.%d\n"
+              "Version:%ld.%ld.%ld\n"
               "Build: %s\n"
               "       %s\n"
-              "Date: %02d/%02d/%04d\n"
+              "Date: %02d/%02hhu/%04d\n"
               "Time: %02d:%02d:%02d\n"
               "Uptime: %02lud %02lu:%02lu:%02lu\n"
               "Battery: %d%%\n"
@@ -93,7 +94,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
               "Last reset: %s\n",
           Version::Major(), Version::Minor(), Version::Patch(),
           __DATE__, __TIME__,
-          dateTimeController.Day(), dateTimeController.Month(), dateTimeController.Year(),
+          dateTimeController.Day(), static_cast<uint8_t>(dateTimeController.Month()), dateTimeController.Year(),
           dateTimeController.Hours(), dateTimeController.Minutes(), dateTimeController.Seconds(),
           uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds,
           batteryPercent, brightness, resetReason);

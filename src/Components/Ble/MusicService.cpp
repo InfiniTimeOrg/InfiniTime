@@ -117,7 +117,6 @@ unsigned char Pinetime::Controllers::MusicService::status()
 void Pinetime::Controllers::MusicService::event(char event)
 {
     auto *om = ble_hs_mbuf_from_flat(&event, 1);
-    int ret;
 
     uint16_t connectionHandle = m_system.nimble().connHandle();
 
@@ -125,6 +124,6 @@ void Pinetime::Controllers::MusicService::event(char event)
         return;
     }
 
-    ret = ble_gattc_notify_custom(connectionHandle, m_eventHandle, om);
+    ble_gattc_notify_custom(connectionHandle, m_eventHandle, om);
 }
 

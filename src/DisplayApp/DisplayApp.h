@@ -30,11 +30,10 @@ namespace Pinetime {
     class DisplayApp {
       public:
         enum class States {Idle, Running};
-        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, SwitchScreen,ButtonPushed,
-            NewNotification, BleFirmwareUpdateStarted, BleFirmwareUpdateFinished
-        };
-        enum class FullRefreshDirections { None, Up, Down };
+        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, ButtonPushed,
+            NewNotification, BleFirmwareUpdateStarted };
 
+        enum class FullRefreshDirections { None, Up, Down };
 
         DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &,
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
