@@ -1,7 +1,6 @@
 # GitHub Actions Workflow to build PineTime Watch Face Simulator with LVGL and WebAssembly
-# See https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud
-# Based on https://github.com/JF002/Pinetime/blob/master/doc/buildAndProgram.md
-# and https://github.com/JF002/Pinetime/blob/master/bootloader/README.md
+# See https://github.com/AppKaki/lvgl-wasm/blob/master/README.md 
+# and https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud
 
 # Name of this Workflow
 name: Simulate PineTime Firmware
