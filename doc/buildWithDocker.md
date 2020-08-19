@@ -6,12 +6,12 @@ The image is not (yet) available on DockerHub, you need to build it yourself, wh
 
 If you are running on a x86_64 computer : 
 ```
-docker image build -t infinitime-build docker/x86_64/
+docker image build -t infinitime-build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) docker/x86_64/
 ```
 
 And if your are running on an ARM64 device (tested on RaspberryPi4 and Pine64 PineBookPro):
 ```
-docker image build -t infinitime-build docker/arm64/
+docker image build -t infinitime-build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) docker/arm64/
 ```
 
 This operation will take some time. It builds a Docker image based on Ubuntu, install some packages, download the ARM toolchain, the NRF SDK, MCUBoot and adafruit-nrfutil.
