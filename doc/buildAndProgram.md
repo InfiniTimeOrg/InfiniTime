@@ -50,7 +50,7 @@ During the project generation, CMake created the following targets:
 - pinetime-mcuboot-app : build the firmware with the support of the bootloader (based on MCUBoot).
 - pinetime-graphics : small firmware that writes the boot graphics into the SPI flash.
 
-If you just want to build the project and run it on the Pinetime, using *pinetime-app* is recommanded. See ???? for more info about bootloader support.
+If you just want to build the project and run it on the Pinetime, using *pinetime-app* is recommanded. See [this page](../bootloader/README.md) for more info about bootloader support.
 
 Build:
 ```
