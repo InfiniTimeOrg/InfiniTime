@@ -22,11 +22,11 @@ namespace Pinetime {
         static constexpr uint16_t fwRevisionId {0x2a26};
         static constexpr uint16_t hwRevisionId {0x2a27};
 
-        static constexpr char* manufacturerName = "Codingfield";
-        static constexpr char* modelNumber = "1";
-        static constexpr char* serialNumber = "9.8.7.6.5.4";
-        static constexpr char* fwRevision = "0.7.0";
-        static constexpr char* hwRevision = "1.0.0";
+        static constexpr const char* manufacturerName = "Codingfield";
+        static constexpr const char* modelNumber = "1";
+        static constexpr const char* serialNumber = "9.8.7.6.5.4";
+        static constexpr const char* fwRevision = "0.7.0";
+        static constexpr const char* hwRevision = "1.0.0";
 
         static constexpr ble_uuid16_t deviceInfoUuid {
                 .u { .type = BLE_UUID_TYPE_16 },

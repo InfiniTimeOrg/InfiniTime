@@ -26,8 +26,8 @@ void AlertNotificationService::Init() {
   ASSERT(res == 0);
 }
 
-AlertNotificationService::AlertNotificationService ( Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::NotificationManager& notificationManager ) : m_systemTask{systemTask}, m_notificationManager{notificationManager},
-    characteristicDefinition{
+AlertNotificationService::AlertNotificationService ( System::SystemTask& systemTask, NotificationManager& notificationManager )
+  : characteristicDefinition{
                 {
                         .uuid = (ble_uuid_t *) &ansCharUuid,
                         .access_cb = AlertNotificationCallback,
@@ -48,8 +48,7 @@ AlertNotificationService::AlertNotificationService ( Pinetime::System::SystemTas
                 {
                         0
                 },
-        }
-{
+        }, m_systemTask{systemTask}, m_notificationManager{notificationManager} {
 }
 
 int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle,
@@ -67,7 +66,7 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
     char *s = (char *) &data[3];
     auto messageSize = min(maxMessageSize, (bufferSize-3));
 
-    for (int i = 0; i < messageSize-1; i++) {
+    for (uint i = 0; i < messageSize-1; i++) {
       if (s[i] == 0x00) {
         s[i] = 0x0A;
       }

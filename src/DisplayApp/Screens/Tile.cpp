@@ -46,7 +46,6 @@ bool Tile::Refresh() {
 }
 
 void Tile::OnObjectEvent(lv_obj_t *obj, lv_event_t event, uint32_t buttonId) {
-  auto* tile = static_cast<Tile*>(obj->user_data);
   if(event == LV_EVENT_VALUE_CHANGED) {
     app->StartApp(apps[buttonId]);
     running = false;

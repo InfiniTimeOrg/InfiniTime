@@ -394,14 +394,14 @@ void DfuService::DfuImage::WriteMagicNumber() {
 }
 
 void DfuService::DfuImage::Erase() {
-  for (int erased = 0; erased < maxSize; erased += 0x1000) {
+  for (size_t erased = 0; erased < maxSize; erased += 0x1000) {
     spiNorFlash.SectorErase(writeOffset + erased);
   }
 }
 
 bool DfuService::DfuImage::Validate() {
   uint32_t chunkSize = 200;
-  int currentOffset = 0;
+  size_t currentOffset = 0;
   uint16_t crc = 0;
 
   bool first = true;

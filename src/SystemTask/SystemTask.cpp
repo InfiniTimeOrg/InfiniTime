@@ -136,7 +136,6 @@ void SystemTask::Work() {
         case Messages::BleFirmwareUpdateFinished:
           doNotGoToSleep = false;
           xTimerStart(idleTimer, 0);
-          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::BleFirmwareUpdateFinished);
           if(bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated)
             NVIC_SystemReset();
           break;

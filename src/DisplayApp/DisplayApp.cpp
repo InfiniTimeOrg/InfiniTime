@@ -79,6 +79,9 @@ void DisplayApp::Refresh() {
       RunningState();
       queueTimeout = 20;
       break;
+    default:
+      queueTimeout = portMAX_DELAY;
+      break;
   }
 
   Messages msg;

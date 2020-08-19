@@ -103,10 +103,10 @@ void Process(void* instance) {
   static constexpr uint32_t screenWidth = 240;
   static constexpr uint32_t screenWidthInBytes = screenWidth*2; // LCD display 16bits color (1 pixel = 2 bytes)
   uint16_t displayLineBuffer[screenWidth];
-  for(int line = 0; line < screenWidth; line++) {
+  for(uint32_t line = 0; line < screenWidth; line++) {
     spiNorFlash.Read(line*screenWidthInBytes, reinterpret_cast<uint8_t *>(displayLineBuffer), screenWidth);
     spiNorFlash.Read((line*screenWidthInBytes)+screenWidth, reinterpret_cast<uint8_t *>(displayLineBuffer) + screenWidth, screenWidth);
-    for(int col = 0; col < screenWidth; col++) {
+    for(uint32_t col = 0; col < screenWidth; col++) {
       gfx.pixel_draw(col, line, displayLineBuffer[col]);
     }
   }

@@ -321,11 +321,9 @@ list(APPEND IMAGE_FILES
 
 list(APPEND SOURCE_FILES
   Logging/NrfLogger.cpp
-  BlinkApp/BlinkApp.cpp
   DisplayApp/DisplayApp.cpp
   DisplayApp/Screens/Screen.cpp
   DisplayApp/Screens/Clock.cpp
-  DisplayApp/Screens/Message.cpp
   DisplayApp/Screens/Tile.cpp
   DisplayApp/Screens/Meter.cpp
   DisplayApp/Screens/Gauge.cpp
@@ -365,11 +363,6 @@ list(APPEND SOURCE_FILES
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
   FreeRTOS/port_cmsis.c
-  ${TINYCRYPT_SRC}
-  ${NIMBLE_SRC}
-  ${LVGL_SRC}
-  #${IMAGE_FILES}
-  ${SDK_SOURCE_FILES}
 
   DisplayApp/LittleVgl.cpp
   DisplayApp/Fonts/jetbrains_mono_extrabold_compressed.c
@@ -380,8 +373,6 @@ list(APPEND SOURCE_FILES
 )
 
 list(APPEND GRAPHICS_SOURCE_FILES
-    ${SDK_SOURCE_FILES}
-
     # FreeRTOS
     FreeRTOS/port.c
     FreeRTOS/port_cmsis_systick.c
@@ -402,12 +393,10 @@ list(APPEND GRAPHICS_SOURCE_FILES
 set(INCLUDE_FILES
   Logging/Logger.h
   Logging/NrfLogger.h
-  BlinkApp/BlinkApp.h
   DisplayApp/DisplayApp.h
   DisplayApp/TouchEvents.h
   DisplayApp/Screens/Screen.h
   DisplayApp/Screens/Clock.h
-  DisplayApp/Screens/Message.h
   DisplayApp/Screens/Tile.h
   DisplayApp/Screens/Meter.h
   DisplayApp/Screens/Gauge.h
@@ -568,10 +557,47 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
 endif()
 
+# NRF SDK
+add_library(nrf-sdk STATIC ${SDK_SOURCE_FILES})
+target_include_directories(nrf-sdk SYSTEM PUBLIC . ../)
+target_include_directories(nrf-sdk SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_compile_options(nrf-sdk PRIVATE
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+    $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+    )
+
+# NimBLE
+add_library(nimble STATIC ${NIMBLE_SRC} ${TINYCRYPT_SRC})
+target_include_directories(nimble SYSTEM PUBLIC . ../)
+target_include_directories(nimble SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_compile_options(nimble PRIVATE
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+    $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+    )
+
+# lvgl
+add_library(lvgl STATIC ${LVGL_SRC})
+target_include_directories(lvgl SYSTEM PUBLIC . ../)
+target_include_directories(lvgl SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_compile_options(lvgl PRIVATE
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+    $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+    )
+
 # Build autonomous binary (without support for bootloader)
 set(EXECUTABLE_NAME "pinetime-app")
 set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
+target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl)
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
@@ -600,6 +626,7 @@ set(EXECUTABLE_MCUBOOT_NAME "pinetime-mcuboot-app")
 set(EXECUTABLE_MCUBOOT_WITH_BOOTLOADER_NAME "pinetime-mcuboot-app-wth-bootloader")
 set(NRF5_LINKER_SCRIPT_MCUBOOT "${CMAKE_SOURCE_DIR}/gcc_nrf52-mcuboot.ld")
 add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES})
+target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl)
 target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
@@ -626,6 +653,7 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
 # Build binary that writes the graphic assets for the bootloader
 set(EXECUTABLE_GRAPHICS_NAME "pinetime-graphics")
 add_executable(${EXECUTABLE_GRAPHICS_NAME} ${GRAPHICS_SOURCE_FILES})
+target_link_libraries(${EXECUTABLE_GRAPHICS_NAME} nrf-sdk)
 target_compile_options(${EXECUTABLE_GRAPHICS_NAME} PUBLIC
     $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
     $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>

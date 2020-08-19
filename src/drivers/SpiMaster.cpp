@@ -117,8 +117,6 @@ void SpiMaster::OnEndEvent() {
 
     spiBaseAddress->TASKS_START = 1;
   } else {
-    uint8_t* buffer = nullptr;
-    size_t size = 0;
       if(taskToNotify != nullptr) {
           BaseType_t xHigherPriorityTaskWoken = pdFALSE;
           vTaskNotifyGiveFromISR(taskToNotify, &xHigherPriorityTaskWoken);

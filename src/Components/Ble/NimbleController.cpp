@@ -139,14 +139,13 @@ void NimbleController::StartAdvertising() {
   rsp_fields.name_len = strlen("Pinetime-JF");
   rsp_fields.name_is_complete = 1;
 
-  int res;
-  res = ble_gap_adv_set_fields(&fields);
+  ble_gap_adv_set_fields(&fields);
 //  ASSERT(res == 0); // TODO this one sometimes fails with error 22 (notsync)
 
-  res = ble_gap_adv_rsp_set_fields(&rsp_fields);
+  ble_gap_adv_rsp_set_fields(&rsp_fields);
 //  ASSERT(res == 0);
 
-  res = ble_gap_adv_start(addrType, NULL, 180000,
+  ble_gap_adv_start(addrType, NULL, 180000,
                           &adv_params, GAPEventCallback, this);
 //  ASSERT(res == 0);// TODO I've disabled these ASSERT as they sometime asserts and reset the mcu.
   // For now, the advertising is restarted as soon as it ends. There may be a race condition
