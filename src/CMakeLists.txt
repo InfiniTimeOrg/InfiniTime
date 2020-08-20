@@ -721,4 +721,4 @@ elseif(USE_OPENOCD)
 
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../docker/build.sh.in ${CMAKE_CURRENT_SOURCE_DIR}/../docker/build.sh)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../docker/post_build.sh.in ${CMAKE_CURRENT_SOURCE_DIR}/../docker/post_build.sh)
