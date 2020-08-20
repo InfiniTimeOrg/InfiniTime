@@ -1299,88 +1299,119 @@
     </script>
     <!--  Custom Script  -->
     <script type="text/javascript">
-      ///  In JavaScript: Render the C WebAssembly Display Buffer to the HTML Canvas
-      function render_canvas() {
-          Module.print(`In JavaScript: render_canvas()`);
-          const DISPLAY_BYTES_PER_PIXEL = 4;  //  4 bytes per pixel: RGBA
-          const DISPLAY_SCALE = 2;  //  Scale the canvas width and height
+      /// Rendering Parameters
+      const DISPLAY_SCALE = 2;  //  Scale the canvas width and height
+      const DISPLAY_BYTES_PER_PIXEL = 4;  //  4 bytes per pixel: RGBA
+      const DEMO_MODE = false;  //  Set to true to see demo widget, false to see PineTime Watch Face
 
-          //  Init LVGL Display
-          Module._init_display();
+      /// In JavaScript: Create the Watch Face in WebAssembly
+      function renderCanvas() {
+        Module.print(`In JavaScript: Rendering canvas...`);
 
-          //  Set to true to see demo widget, false to see PineTime Watch Face
-          const demo_mode = false;
-          if (demo_mode) {
-            //  Construct the demo LVGL Widgets
-            Module._render_widgets();
-          } else {
-            //  Create the LVGL Watch Face Widgets
-            Module._create_clock();
+        //  Init LVGL Display in WebAssembly
+        Module._init_display();
 
-            //  Refresh the LVGL Watch Face Widgets
-            Module._refresh_clock();
+        if (DEMO_MODE) {
+          //  Create the Demo Widgets in WebAssembly
+          Module._render_widgets();
+        } else {
+          //  Create the Watch Face in WebAssembly
+          Module._create_clock();
+        }
+        //  Draw the Watch Face
+        updateCanvas();
+      }
 
-            //  Update the LVGL Watch Face Widgets
-            //  Module._update_clock();
-          }
+      /// In JavaScript: Update the Watch Face time in WebAssembly and render the WebAssembly Display Buffer to the HTML Canvas
+      function updateCanvas() {
+        Module.print(`In JavaScript: Updating canvas...`);
+        if (!DEMO_MODE) {
+          //  Update the WebAssembly Date and Time: year, month, day, hour, minute, second
+          const localTime = new Date();
+          const timezoneOffset = localTime.getTimezoneOffset();  //  In mins
+          //  Compensate for the time zone
+          const now = new Date(
+            localTime.valueOf()             //  Convert time to millisec
+            - (timezoneOffset * 60 * 1000)  //  Convert mins to millisec
+          );
+          Module._update_clock(
+            now.getFullYear(),
+            now.getMonth() - 1,  //  getMonth() returns 1 to 12
+            now.getDay(), 
+            now.getHours(),
+            now.getMinutes(),
+            now.getSeconds()
+          );
 
-          //  Render LVGL Widgets to the WebAssembly Display Buffer
-          Module._render_display();
-          
-          //  Fetch the PineTime dimensions from WebAssembly Display Buffer
-          var width = Module._get_display_width();
-          var height = Module._get_display_height();
+          //  Update the Watch Face time in WebAssembly
+          Module._refresh_clock();
+        }
 
-          //  Resize the canvas to PineTime dimensions (240 x 240)
-          if (
-            Module.canvas.width != width * DISPLAY_SCALE ||
-            Module.canvas.height != height * DISPLAY_SCALE
-          ) {
-            Module.canvas.width = width * DISPLAY_SCALE;
-            Module.canvas.height = height * DISPLAY_SCALE;
-          }
-  
-          //  Fetch the canvas pixels
-          var ctx = Module.canvas.getContext('2d');
-          var imageData = ctx.getImageData(0, 0, width * DISPLAY_SCALE, height * DISPLAY_SCALE);
-          var data = imageData.data;
-  
-          //  Copy the pixels from the WebAssembly Display Buffer to the canvas
-          var addr = Module._get_display_buffer();
-          Module.print(`In JavaScript: get_display_buffer() returned ${toHex(addr)}`);          
-          for (var y = 0; y < height; y++) {
-            //  Scale the pixels vertically to fill the canvas
-            for (var ys = 0; ys < DISPLAY_SCALE; ys++) {
-              for (var x = 0; x < width; x++) {
-                //  Copy from src to dest with scaling
-                const src = ((y * width) + x) * DISPLAY_BYTES_PER_PIXEL;
-                const dest = ((((y * DISPLAY_SCALE + ys) * width) + x) * DISPLAY_BYTES_PER_PIXEL) 
-                  * DISPLAY_SCALE;
-                //  Scale the pixels horizontally to fill the canvas
-                for (var xs = 0; xs < DISPLAY_SCALE; xs++) {
-                  const dest2 = dest + xs * DISPLAY_BYTES_PER_PIXEL;
-                  //  Copy 4 bytes: RGBA
-                  for (var b = 0; b < DISPLAY_BYTES_PER_PIXEL; b++) {
-                    data[dest2 + b] = Module.HEAPU8[addr + src + b];
-                  }
+        //  Render Watch Face to the WebAssembly Display Buffer
+        Module._render_display();
+        
+        //  Fetch the PineTime dimensions from WebAssembly Display Buffer
+        var width = Module._get_display_width();
+        var height = Module._get_display_height();
+
+        //  Resize the canvas to PineTime dimensions (240 x 240)
+        if (
+          Module.canvas.width != width * DISPLAY_SCALE ||
+          Module.canvas.height != height * DISPLAY_SCALE
+        ) {
+          Module.canvas.width = width * DISPLAY_SCALE;
+          Module.canvas.height = height * DISPLAY_SCALE;
+        }
+
+        //  Fetch the canvas pixels
+        var ctx = Module.canvas.getContext('2d');
+        var imageData = ctx.getImageData(0, 0, width * DISPLAY_SCALE, height * DISPLAY_SCALE);
+        var data = imageData.data;
+
+        //  Copy the pixels from the WebAssembly Display Buffer to the canvas
+        var addr = Module._get_display_buffer();
+        Module.print(`In JavaScript: get_display_buffer() returned ${toHex(addr)}`);          
+        for (var y = 0; y < height; y++) {
+          //  Scale the pixels vertically to fill the canvas
+          for (var ys = 0; ys < DISPLAY_SCALE; ys++) {
+            for (var x = 0; x < width; x++) {
+              //  Copy from src to dest with scaling
+              const src = ((y * width) + x) * DISPLAY_BYTES_PER_PIXEL;
+              const dest = ((((y * DISPLAY_SCALE + ys) * width) + x) * DISPLAY_BYTES_PER_PIXEL) 
+                * DISPLAY_SCALE;
+              //  Scale the pixels horizontally to fill the canvas
+              for (var xs = 0; xs < DISPLAY_SCALE; xs++) {
+                const dest2 = dest + xs * DISPLAY_BYTES_PER_PIXEL;
+                //  Copy 4 bytes: RGBA
+                for (var b = 0; b < DISPLAY_BYTES_PER_PIXEL; b++) {
+                  data[dest2 + b] = Module.HEAPU8[addr + src + b];
                 }
               }
             }
           }
-         
-          //  Paint the canvas
-          ctx.putImageData(imageData, 0, 0);
         }
-  
-        //  In JavaScript: Wait for emscripten to be initialised
-        Module.onRuntimeInitialized = function() {
-          //  Render LVGL to HTML Canvas
-          render_canvas();
-        };
-  
-        /// Convert i to hexadecimal
-        function toHex(i) { return "0x" + Number(i).toString(16); }
-  
+        
+        //  Paint the canvas
+        ctx.putImageData(imageData, 0, 0);        
+        
+        //  Update the Watch Face at the next minute
+        const sleepSeconds = 60 - new Date().getSeconds();
+        Module.print(`In JavaScript: Sleeping ${sleepSeconds} seconds...`);
+        window.setTimeout(
+          updateCanvas,
+          sleepSeconds * 1000
+        );
+      }
+
+      /// Wait for emscripten to be initialised
+      Module.onRuntimeInitialized = function() {
+        //  Render LVGL to HTML Canvas
+        renderCanvas();
+      };
+
+      /// Convert i to hexadecimal
+      function toHex(i) { return "0x" + Number(i).toString(16); }
+
     </script>    
     <!--  End of Custom Script  -->
     <script async type="text/javascript" src="lvgl.js"></script>
