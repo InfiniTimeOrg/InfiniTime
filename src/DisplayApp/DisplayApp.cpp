@@ -171,6 +171,12 @@ void DisplayApp::Refresh() {
         break;
     }
   }
+
+  if(touchMode == TouchModes::Polling) {
+    auto info = touchPanel.GetTouchInfo();
+    if(info.action == 2) // 2 = contact
+      lvgl.SetNewTapEvent(info.x, info.y);
+  }
 }
 
 void DisplayApp::RunningState() {
@@ -219,7 +225,8 @@ TouchEvents DisplayApp::OnTouchEvent() {
   if(info.isTouch) {
     switch(info.gesture) {
       case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        lvgl.SetNewTapEvent(info.x, info.y);
+        if(touchMode == TouchModes::Gestures)
+          lvgl.SetNewTapEvent(info.x, info.y);
         return TouchEvents::Tap;
       case Pinetime::Drivers::Cst816S::Gestures::LongPress:
         return TouchEvents::LongTap;
@@ -256,4 +263,8 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
     default: break;
   }
 
+}
+
+void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {
+  touchMode = mode;
 }

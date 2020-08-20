@@ -34,6 +34,7 @@ namespace Pinetime {
             NewNotification, BleFirmwareUpdateStarted };
 
         enum class FullRefreshDirections { None, Up, Down };
+        enum class TouchModes { Gestures, Polling };
 
         DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &,
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
@@ -46,6 +47,8 @@ namespace Pinetime {
         void StartApp(Apps app);
 
         void SetFullRefresh(FullRefreshDirections direction);
+        void SetTouchMode(TouchModes mode);
+
       private:
         TaskHandle_t taskHandle;
         static void Process(void* instance);
@@ -81,6 +84,7 @@ namespace Pinetime {
         std::unique_ptr<Screens::Modal> modal;
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::FirmwareValidator validator;
+        TouchModes touchMode = TouchModes::Gestures;
     };
   }
 }

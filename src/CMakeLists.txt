@@ -287,6 +287,8 @@ set(LVGL_SRC
   libs/lvgl/src/lv_objx/lv_bar.h
   libs/lvgl/src/lv_objx/lv_slider.h
   libs/lvgl/src/lv_objx/lv_slider.c
+    libs/lvgl/src/lv_objx/lv_ddlist.c
+    libs/lvgl/src/lv_objx/lv_ddlist.h
   )
 
 list(APPEND IMAGE_FILES
@@ -327,6 +329,7 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/Tile.cpp
   DisplayApp/Screens/Meter.cpp
   DisplayApp/Screens/Gauge.cpp
+  DisplayApp/Screens/DropDownDemo.cpp
   DisplayApp/Screens/Modal.cpp
   DisplayApp/Screens/BatteryIcon.cpp
   DisplayApp/Screens/BleIcon.cpp
@@ -400,6 +403,7 @@ set(INCLUDE_FILES
   DisplayApp/Screens/Tile.h
   DisplayApp/Screens/Meter.h
   DisplayApp/Screens/Gauge.h
+  DisplayApp/Screens/DropDownDemo.h
   DisplayApp/Screens/Modal.h
   DisplayApp/Screens/BatteryIcon.h
   DisplayApp/Screens/BleIcon.cpp
