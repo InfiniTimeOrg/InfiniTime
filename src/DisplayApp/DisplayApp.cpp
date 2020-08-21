@@ -174,8 +174,11 @@ void DisplayApp::Refresh() {
 
   if(touchMode == TouchModes::Polling) {
     auto info = touchPanel.GetTouchInfo();
-    if(info.action == 2) // 2 = contact
-      lvgl.SetNewTapEvent(info.x, info.y);
+    if(info.action == 2) {// 2 = contact
+      if(!currentScreen->OnTouchEvent(info.x, info.y)) {
+        lvgl.SetNewTapEvent(info.x, info.y);
+      }
+    }
   }
 }
 
