@@ -43,9 +43,10 @@ bool SystemInfo::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
-  auto batteryPercent = static_cast<int16_t>(batteryController.PercentRemaining());
-  if(batteryPercent > 100) batteryPercent = 100;
-  else if(batteryPercent < 0) batteryPercent = 0;
+  auto batteryPercentF = batteryController.PercentRemaining();
+  uint16_t batteryPercent = 0;
+  if(batteryPercentF > 100.0f) batteryPercent = 100;
+  else if(batteryPercentF < 0.0f) batteryPercent = 0;
 
   uint8_t brightness = 0;
   switch(brightnessController.Level()) {
@@ -86,7 +87,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
               "Version:%ld.%ld.%ld\n"
               "Build: %s\n"
               "       %s\n"
-              "Date: %02d/%02hhu/%04d\n"
+              "Date: %02d/%02d/%04d\n"
               "Time: %02d:%02d:%02d\n"
               "Uptime: %02lud %02lu:%02lu:%02lu\n"
               "Battery: %d%%\n"
