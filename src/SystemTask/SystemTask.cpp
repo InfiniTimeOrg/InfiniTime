@@ -145,6 +145,14 @@ void SystemTask::Work() {
         case Messages::OnButtonEvent:
           ReloadIdleTimer();
           break;
+        case Messages::OnDisplayTaskSleeping:
+          spiNorFlash.Sleep();
+          lcd.Sleep();
+          touchPanel.Sleep();
+
+          spi.Sleep();
+          twiMaster.Sleep();
+          break;
         default: break;
       }
     }
@@ -185,6 +193,13 @@ void SystemTask::OnButtonPushed() {
 
 void SystemTask::GoToRunning() {
   PushMessage(Messages::GoToRunning);
+  spi.Wakeup();
+  twiMaster.Wakeup();
+
+  spiNorFlash.Wakeup();
+  lcd.Wakeup();
+  touchPanel.Wakeup();
+
   displayApp->PushMessage(Applications::DisplayApp::Messages::GoToRunning);
   displayApp->PushMessage(Applications::DisplayApp::Messages::UpdateBatteryLevel);
 }

@@ -2,7 +2,6 @@
 #include <task.h>
 #include <nrfx_log.h>
 #include <legacy/nrf_drv_gpiote.h>
-
 #include "Cst816s.h"
 using namespace Pinetime::Drivers;
 
@@ -96,12 +95,16 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
 }
 
 void Cst816S::Sleep() {
-  // TODO re enable sleep mode
-  //twiMaster.Sleep();
-  nrf_gpio_cfg_default(6);
-  nrf_gpio_cfg_default(7);
+  nrf_gpio_pin_clear(pinReset);
+  vTaskDelay(5);
+  nrf_gpio_pin_set(pinReset);
+  vTaskDelay(50);
+  static constexpr uint8_t sleepValue = 0x03;
+  twiMaster.Write(twiAddress, 0xA5, &sleepValue, 1);
+  NRF_LOG_INFO("[TOUCHPANEL] Sleep");
 }
 
 void Cst816S::Wakeup() {
   Init();
+  NRF_LOG_INFO("[TOUCHPANEL] Wakeup");
 }

@@ -95,14 +95,10 @@ void DisplayApp::Refresh() {
           vTaskDelay(100);
         }
         lcd.DisplayOff();
-        lcd.Sleep();
-        touchPanel.Sleep();
+        systemTask.PushMessage(System::SystemTask::Messages::OnDisplayTaskSleeping);
         state = States::Idle;
         break;
       case Messages::GoToRunning:
-        lcd.Wakeup();
-        touchPanel.Wakeup();
-
         lcd.DisplayOn();
         brightnessController.Restore();
         state = States::Running;
@@ -173,7 +169,7 @@ void DisplayApp::Refresh() {
     }
   }
 
-  if(touchMode == TouchModes::Polling) {
+  if(state != States::Idle && touchMode == TouchModes::Polling) {
     auto info = touchPanel.GetTouchInfo();
     if(info.action == 2) {// 2 = contact
       if(!currentScreen->OnTouchEvent(info.x, info.y)) {
