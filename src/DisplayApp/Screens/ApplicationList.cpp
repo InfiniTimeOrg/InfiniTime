@@ -57,7 +57,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
   std::array<Screens::Tile::Applications, 6> applications {
           {{Symbols::tachometer, Apps::Gauge},
            {Symbols::asterisk, Apps::Meter},
-           {Symbols::none, Apps::None},
+           {Symbols::paintbrush, Apps::Paint},
            {Symbols::none, Apps::None},
            {Symbols::none, Apps::None},
            {Symbols::none, Apps::None}
