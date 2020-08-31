@@ -8,6 +8,7 @@ constexpr ble_uuid16_t DeviceInformationService::serialNumberUuid;
 constexpr ble_uuid16_t DeviceInformationService::fwRevisionUuid;
 constexpr ble_uuid16_t DeviceInformationService::deviceInfoUuid;
 constexpr ble_uuid16_t DeviceInformationService::hwRevisionUuid;
+constexpr ble_uuid16_t DeviceInformationService::pnpIdUuid;;
 
 int DeviceInformationCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
   auto deviceInformationService = static_cast<DeviceInformationService*>(arg);
@@ -27,7 +28,7 @@ void DeviceInformationService::Init() {
 int DeviceInformationService::OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle,
                                                     struct ble_gatt_access_ctxt *ctxt) {
   const char *str;
-
+  size_t size = 0;
   switch (ble_uuid_u16(ctxt->chr->uuid)) {
     case manufacturerNameId:
       str = manufacturerName;
@@ -44,11 +45,15 @@ int DeviceInformationService::OnDeviceInfoRequested(uint16_t conn_handle, uint16
     case hwRevisionId:
       str = hwRevision;
       break;
+    case pnpIdId:
+      str = reinterpret_cast<const char *>(pnpIdBuf);
+      size = 7;
+      break;
     default:
       return BLE_ATT_ERR_UNLIKELY;
   }
 
-  int res = os_mbuf_append(ctxt->om, str, strlen(str));
+  int res = os_mbuf_append(ctxt->om, str, (size!=0) ? size :  strlen(str));
   return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
 }
 
@@ -80,6 +85,12 @@ DeviceInformationService::DeviceInformationService() :
                 },
                 {
                         .uuid = (ble_uuid_t *) &hwRevisionUuid,
+                        .access_cb = DeviceInformationCallback,
+                        .arg = this,
+                        .flags = BLE_GATT_CHR_F_READ,
+                },
+                {
+                        .uuid = (ble_uuid_t *) &pnpIdUuid,
                         .access_cb = DeviceInformationCallback,
                         .arg = this,
                         .flags = BLE_GATT_CHR_F_READ,

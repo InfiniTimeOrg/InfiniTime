@@ -88,8 +88,11 @@ set(SDK_SOURCE_FILES
 
 set(TINYCRYPT_SRC
   libs/mynewt-nimble/ext/tinycrypt/src/aes_encrypt.c
-  libs/mynewt-nimble/ext/tinycrypt/src/utils.c
-  )
+    libs/mynewt-nimble/ext/tinycrypt/src/utils.c
+    libs/mynewt-nimble/ext/tinycrypt/src/ecc.c
+    libs/mynewt-nimble/ext/tinycrypt/src/cmac_mode.c
+    libs/mynewt-nimble/ext/tinycrypt/src/ecc_dh.c
+    )
 
 set(NIMBLE_SRC
   libs/mynewt-nimble/porting/npl/freertos/src/nimble_port_freertos.c
@@ -161,6 +164,10 @@ set(NIMBLE_SRC
   libs/mynewt-nimble/nimble/host/services/gap/src/ble_svc_gap.c
   libs/mynewt-nimble/nimble/host/services/gatt/src/ble_svc_gatt.c
   libs/mynewt-nimble/nimble/host/util/src/addr.c
+    libs/mynewt-nimble/nimble/host/src/ble_sm.c
+    libs/mynewt-nimble/nimble/host/src/ble_sm_sc.c
+    libs/mynewt-nimble/nimble/host/src/ble_sm_alg.c
+
   )
 
 set(LVGL_SRC
@@ -339,6 +346,8 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/Label.cpp
   DisplayApp/Screens/FirmwareUpdate.cpp
   DisplayApp/Screens/Music.cpp
+    Components/Ble/HidService.cpp
+    Components/Ble/BatteryInformationService.cpp
   DisplayApp/Screens/FirmwareValidation.cpp
   DisplayApp/Screens/ApplicationList.cpp
   main.cpp
@@ -603,7 +612,7 @@ target_compile_options(lvgl PRIVATE
 set(EXECUTABLE_NAME "pinetime-app")
 set(EXECUTABLE_FILE_NAME ${EXECUTABLE_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
-add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
+add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES} )
 set_target_properties(${EXECUTABLE_NAME}  PROPERTIES OUTPUT_NAME ${EXECUTABLE_FILE_NAME})
 target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl)
 target_compile_options(${EXECUTABLE_NAME} PUBLIC

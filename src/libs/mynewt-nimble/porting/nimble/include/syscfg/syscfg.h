@@ -695,7 +695,7 @@
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_BONDING
-#define MYNEWT_VAL_BLE_SM_BONDING (0)
+#define MYNEWT_VAL_BLE_SM_BONDING (1)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_IO_CAP
@@ -723,27 +723,27 @@
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_OUR_KEY_DIST
-#define MYNEWT_VAL_BLE_SM_OUR_KEY_DIST (0)
+#define MYNEWT_VAL_BLE_SM_OUR_KEY_DIST (1)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_SC
-#define MYNEWT_VAL_BLE_SM_SC (0)
+#define MYNEWT_VAL_BLE_SM_SC (1)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_SC_DEBUG_KEYS
-#define MYNEWT_VAL_BLE_SM_SC_DEBUG_KEYS (0)
+#define MYNEWT_VAL_BLE_SM_SC_DEBUG_KEYS (1)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_THEIR_KEY_DIST
-#define MYNEWT_VAL_BLE_SM_THEIR_KEY_DIST (0)
+#define MYNEWT_VAL_BLE_SM_THEIR_KEY_DIST (1)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_STORE_MAX_BONDS
-#define MYNEWT_VAL_BLE_STORE_MAX_BONDS (3)
+#define MYNEWT_VAL_BLE_STORE_MAX_BONDS (6)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_STORE_MAX_CCCDS
-#define MYNEWT_VAL_BLE_STORE_MAX_CCCDS (8)
+#define MYNEWT_VAL_BLE_STORE_MAX_CCCDS (20)
 #endif
 
 /*** @apache-mynewt-nimble/nimble/host/services/ans */

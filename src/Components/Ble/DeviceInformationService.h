@@ -21,12 +21,14 @@ namespace Pinetime {
         static constexpr uint16_t serialNumberId {0x2a25};
         static constexpr uint16_t fwRevisionId {0x2a26};
         static constexpr uint16_t hwRevisionId {0x2a27};
+        static constexpr uint16_t pnpIdId {0x2a50};
 
         static constexpr const char* manufacturerName = "Codingfield";
         static constexpr const char* modelNumber = "1";
         static constexpr const char* serialNumber = "9.8.7.6.5.4";
         static constexpr const char* fwRevision = "0.7.0";
         static constexpr const char* hwRevision = "1.0.0";
+        uint8_t pnpIdBuf[7] {0x02, 0xc4, 0x10, 0x01, 0x00, 0x01, 0x00};
 
         static constexpr ble_uuid16_t deviceInfoUuid {
                 .u { .type = BLE_UUID_TYPE_16 },
@@ -58,7 +60,12 @@ namespace Pinetime {
                 .value = hwRevisionId
         };
 
-        struct ble_gatt_chr_def characteristicDefinition[6];
+        static constexpr ble_uuid16_t pnpIdUuid {
+                .u {.type = BLE_UUID_TYPE_16},
+                .value = pnpIdId
+        };
+
+        struct ble_gatt_chr_def characteristicDefinition[7];
         struct ble_gatt_svc_def serviceDefinition[2];
 
 

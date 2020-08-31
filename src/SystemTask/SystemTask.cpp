@@ -101,7 +101,7 @@ void SystemTask::Work() {
 
   while(true) {
     uint8_t msg;
-    if (xQueueReceive(systemTaksMsgQueue, &msg, isSleeping?2500 : 1000)) {
+    if (xQueueReceive(systemTaksMsgQueue, &msg, isSleeping?100 : 100)) {
       Messages message = static_cast<Messages >(msg);
       switch(message) {
         case Messages::GoToRunning:
@@ -126,7 +126,7 @@ void SystemTask::Work() {
         case Messages::BleConnected:
           ReloadIdleTimer();
           isBleDiscoveryTimerRunning = true;
-          bleDiscoveryTimer = 5;
+          bleDiscoveryTimer = 50;
           break;
         case Messages::BleFirmwareUpdateStarted:
           doNotGoToSleep = true;
@@ -159,10 +159,12 @@ void SystemTask::Work() {
 
     if(isBleDiscoveryTimerRunning) {
       if(bleDiscoveryTimer == 0) {
-        isBleDiscoveryTimerRunning = false;
+        //isBleDiscoveryTimerRunning = false;
         // Services discovery is deffered from 3 seconds to avoid the conflicts between the host communicating with the
         // tharget and vice-versa. I'm not sure if this is the right way to handle this...
-        nimbleController.StartDiscovery();
+        //nimbleController.StartDiscovery();
+        nimbleController.Test();
+        bleDiscoveryTimer = 0;
       } else {
         bleDiscoveryTimer--;
       }

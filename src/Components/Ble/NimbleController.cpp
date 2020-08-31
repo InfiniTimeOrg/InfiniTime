@@ -37,7 +37,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         anService{systemTask, notificationManager},
         alertNotificationClient{systemTask, notificationManager},
         currentTimeService{dateTimeController},
-        musicService{systemTask} {
+        musicService{systemTask},
+        hidService{}{
 
 }
 
@@ -83,6 +84,8 @@ void NimbleController::Init() {
   currentTimeClient.Init();
   currentTimeService.Init();
   musicService.Init();
+  hidService.Init();
+  batteryInformationService.Init();
 
   anService.Init();
 
@@ -133,7 +136,12 @@ void NimbleController::StartAdvertising() {
   fields.uuids128 = &dfuServiceUuid;
   fields.num_uuids128 = 1;
   fields.uuids128_is_complete = 1;
+  fields.uuids16 = &hidServiceUuid;
+  fields.num_uuids16 = 1;
+  fields.uuids16_is_complete = 1;
   fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
+  fields.appearance = 962;
+  fields.appearance_is_present = 1;
 
   rsp_fields.name = (uint8_t *)"Pinetime-JF";
   rsp_fields.name_len = strlen("Pinetime-JF");
@@ -185,6 +193,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
         bleController.Connect();
         systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleConnected);
         connectionHandle = event->connect.conn_handle;
+        ble_gap_security_initiate(connectionHandle);
         // Service discovery is deffered via systemtask
       }
     }
@@ -330,5 +339,9 @@ void NimbleController::StartDiscovery() {
 
 uint16_t NimbleController::connHandle() {
     return connectionHandle;
+}
+
+void NimbleController::Test() {
+  hidService.Test();
 }
 

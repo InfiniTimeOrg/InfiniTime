@@ -8,6 +8,8 @@
 #include "DfuService.h"
 #include "CurrentTimeService.h"
 #include "MusicService.h"
+#include "HidService.h"
+#include "BatteryInformationService.h"
 #include <host/ble_gap.h>
 
 namespace Pinetime {
@@ -42,6 +44,8 @@ namespace Pinetime {
 
         uint16_t connHandle();
 
+        void Test();
+
       private:
         static constexpr const char* deviceName = "Pinetime-JF";
         Pinetime::System::SystemTask& systemTask;
@@ -57,6 +61,8 @@ namespace Pinetime {
         AlertNotificationClient alertNotificationClient;
         CurrentTimeService currentTimeService;
         MusicService musicService;
+        HidService hidService;
+        BatteryInformationService batteryInformationService;
 
         uint8_t addrType; // 1 = Random, 0 = PUBLIC
         uint16_t connectionHandle = 0;
@@ -65,6 +71,11 @@ namespace Pinetime {
                 .u { .type = BLE_UUID_TYPE_128},
                 .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
                           0xDE, 0xEF, 0x12, 0x12, 0x30, 0x15, 0x00, 0x00}
+        };
+
+        ble_uuid16_t hidServiceUuid {
+                .u {.type = BLE_UUID_TYPE_16},
+                .value = 0x1812
         };
     };
   }
