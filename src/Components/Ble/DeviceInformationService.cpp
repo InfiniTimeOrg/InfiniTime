@@ -8,6 +8,8 @@ constexpr ble_uuid16_t DeviceInformationService::serialNumberUuid;
 constexpr ble_uuid16_t DeviceInformationService::fwRevisionUuid;
 constexpr ble_uuid16_t DeviceInformationService::deviceInfoUuid;
 constexpr ble_uuid16_t DeviceInformationService::hwRevisionUuid;
+constexpr ble_uuid16_t DeviceInformationService::swRevisionUuid;
+
 
 int DeviceInformationCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
   auto deviceInformationService = static_cast<DeviceInformationService*>(arg);
@@ -43,6 +45,9 @@ int DeviceInformationService::OnDeviceInfoRequested(uint16_t conn_handle, uint16
       break;
     case hwRevisionId:
       str = hwRevision;
+      break;
+    case swRevisionId:
+      str = swRevision;
       break;
     default:
       return BLE_ATT_ERR_UNLIKELY;
@@ -80,6 +85,12 @@ DeviceInformationService::DeviceInformationService() :
                 },
                 {
                         .uuid = (ble_uuid_t *) &hwRevisionUuid,
+                        .access_cb = DeviceInformationCallback,
+                        .arg = this,
+                        .flags = BLE_GATT_CHR_F_READ,
+                },
+                {
+                        .uuid = (ble_uuid_t *) &swRevisionUuid,
                         .access_cb = DeviceInformationCallback,
                         .arg = this,
                         .flags = BLE_GATT_CHR_F_READ,
