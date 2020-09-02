@@ -27,16 +27,16 @@ As of now, here is the list of achievements of this project:
 
  - Fast and optimized LCD driver
  - BLE communication
- - Rich user interface via display, touch panel and push button
+ - Rich user interface via display, touchscreen and pushbutton
  - Time synchronization via BLE
  - Notification via BLE
  - Multiple 'apps' : 
     * Clock (displays the date, time, battery level, BLE connection status, heart rate and step count)
     * Heart rate
     * Motion
-    * System info (displays various info : BLE MAC adress, build date/time, uptime, version, ...)
+    * System info (displays various info : BLE MAC, build date/time, uptime, version, ...)
     * Brightness (allows the user to configure the brightness of the display)
- - Supported by 2 companion apps (development is ongoing):
+ - Supported by 2 companion apps (development is in progress):
     * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/src/branch/pinetime-jf) (on Android)
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS)
  - **[Experimental]** OTA (Over-the-air) update via BLE
