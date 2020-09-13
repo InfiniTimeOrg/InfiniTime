@@ -54,7 +54,9 @@ namespace Pinetime {
         Pinetime::Controllers::Ble& bleController;
         Pinetime::Controllers::DateTime& dateTimeController;
         QueueHandle_t systemTaksMsgQueue;
-        bool isSleeping = false;
+        std::atomic<bool> isSleeping{false};
+        std::atomic<bool> isGoingToSleep{false};
+        std::atomic<bool> isWakingUp{false};
         Pinetime::Drivers::Watchdog watchdog;
         Pinetime::Drivers::WatchdogView watchdogView;
         Pinetime::Controllers::NotificationManager& notificationManager;

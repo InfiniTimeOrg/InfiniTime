@@ -140,9 +140,11 @@ void TwiMaster::Write(uint8_t deviceAddress, const uint8_t *data, size_t size, b
 }
 
 void TwiMaster::Sleep() {
+  while(twiBaseAddress->ENABLE != 0) {
+    twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Disabled << TWIM_ENABLE_ENABLE_Pos);
+  }
   nrf_gpio_cfg_default(6);
   nrf_gpio_cfg_default(7);
-  twiBaseAddress->ENABLE = 0;
   NRF_LOG_INFO("[TWIMASTER] Sleep");
 }
 
