@@ -13,13 +13,15 @@ namespace Pinetime {
 
         int OnHidServiceRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context);
 
-        int
-        OnReportDescriptorRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context);
+        int OnReportDescriptorRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context);
+        int OnReportDescriptorMouseRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context);
 
         int OnReportMapDescriptorRequested(uint16_t connectionHandle, uint16_t attributeHandle,
                                            ble_gatt_access_ctxt *context);
 
         void Test();
+
+        void SendMoveReport(uint8_t x, uint8_t y);
 
       private:
         static constexpr uint16_t hidServiceId {0x1812};
@@ -94,13 +96,15 @@ namespace Pinetime {
 
         struct ble_gatt_dsc_def reportInDescriptorDefinition[2];
         struct ble_gatt_dsc_def reportOutDescriptorDefinition[2];
-        struct ble_gatt_dsc_def reportDescriptorDefinition[2];
+        struct ble_gatt_dsc_def reportKeyboardDescriptorDefinition[2];
+        struct ble_gatt_dsc_def reportMouseDescriptorDefinition[2];
         struct ble_gatt_dsc_def reportMapDescriptorDefinitions[2];
         struct ble_gatt_chr_def characteristicDefinition[9];
         struct ble_gatt_svc_def serviceDefinition[2];
 
         uint16_t protocolModeHandle;
-        uint16_t reportHandle;
+        uint16_t reportKeyboardHandle;
+        uint16_t reportMouseHandle;
         uint16_t reportMapHandle;
         uint16_t informationHandle;
         uint16_t controlPointHandle;

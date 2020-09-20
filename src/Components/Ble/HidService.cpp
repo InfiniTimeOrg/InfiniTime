@@ -37,6 +37,11 @@ namespace {
     return hidService->OnReportDescriptorRequested(conn_handle, attr_handle, ctxt);
   }
 
+  int HidServiceReportMouseDescriptorCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
+    auto* hidService = static_cast<HidService*>(arg);
+    return hidService->OnReportDescriptorMouseRequested(conn_handle, attr_handle, ctxt);
+  }
+
 
   int HidServiceReportMapDescriptorCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
     auto* hidService = static_cast<HidService*>(arg);
@@ -90,6 +95,35 @@ namespace {
            0x81, 0x00,  //   Input: (Data, Array)
                   //
            0xC0,        // End Collection
+
+
+
+           0x05, 0x01,                         // USAGE_PAGE (Generic Desktop)     0
+           0x09, 0x02,                         // USAGE (Mouse)                    2
+           0xa1, 0x01,                         // COLLECTION (Application)         4
+           0x85, 0x02,                         //   REPORT_ID (Mouse)              6
+           0x09, 0x01,                         //   USAGE (Pointer)                8
+           0xa1, 0x00,                         //   COLLECTION (Physical)          10
+           0x05, 0x09,                         //     USAGE_PAGE (Button)          12
+           0x19, 0x01,                         //     USAGE_MINIMUM (Button 1)     14
+           0x29, 0x02,                         //     USAGE_MAXIMUM (Button 2)     16
+           0x15, 0x00,                         //     LOGICAL_MINIMUM (0)          18
+           0x25, 0x01,                         //     LOGICAL_MAXIMUM (1)          20
+           0x75, 0x01,                         //     REPORT_SIZE (1)              22
+           0x95, 0x02,                         //     REPORT_COUNT (2)             24
+           0x81, 0x02,                         //     INPUT (Data,Var,Abs)         26
+           0x95, 0x06,                         //     REPORT_COUNT (6)             28
+           0x81, 0x03,                         //     INPUT (Cnst,Var,Abs)         30
+           0x05, 0x01,                         //     USAGE_PAGE (Generic Desktop) 32
+           0x09, 0x30,                         //     USAGE (X)                    34
+           0x09, 0x31,                         //     USAGE (Y)                    36
+           0x15, 0x81,                         //     LOGICAL_MINIMUM (-127)       38
+           0x25, 0x7f,                         //     LOGICAL_MAXIMUM (127)        40
+           0x75, 0x08,                         //     REPORT_SIZE (8)              42
+           0x95, 0x02,                         //     REPORT_COUNT (2)             44
+           0x81, 0x06,                         //     INPUT (Data,Var,Rel)         46
+           0xc0,                               //   END_COLLECTION                 48
+           0xc0                                // END_COLLECTION                   49/50
           };
 }
 
@@ -110,11 +144,17 @@ HidService::HidService() :
                 },
                 {0}
         },
-        reportDescriptorDefinition{{
-                        .uuid = (const ble_uuid_t *) &descriptorUuid,
-                        .att_flags = 5,
-                        .access_cb = HidServiceReportDescriptorCallback,
-                },{0}
+        reportKeyboardDescriptorDefinition{{
+                                                   .uuid = (const ble_uuid_t *) &descriptorUuid,
+                                                   .att_flags = 5,
+                                                   .access_cb = HidServiceReportDescriptorCallback,
+                                           },                         {0}
+        },
+        reportMouseDescriptorDefinition{{
+                                                   .uuid = (const ble_uuid_t *) &descriptorUuid,
+                                                   .att_flags = 5,
+                                                   .access_cb = HidServiceReportMouseDescriptorCallback,
+                                           },                         {0}
         },
         reportMapDescriptorDefinitions{
                 {
@@ -136,9 +176,17 @@ HidService::HidService() :
                         .uuid = (ble_uuid_t *) &reportUuid,
                         .access_cb = HidServiceCallback,
                         .arg = this,
-                        .descriptors = reportDescriptorDefinition,
+                        .descriptors = reportKeyboardDescriptorDefinition,
                         .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY | BLE_GATT_CHR_F_WRITE,
-                        .val_handle = &reportHandle
+                        .val_handle = &reportKeyboardHandle
+                },
+                {
+                        .uuid = (ble_uuid_t *) &reportUuid,
+                        .access_cb = HidServiceCallback,
+                        .arg = this,
+                        .descriptors = reportMouseDescriptorDefinition,
+                        .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY | BLE_GATT_CHR_F_WRITE,
+                        .val_handle = &reportMouseHandle
                 },
                 {
                         .uuid = (ble_uuid_t *) &reportMapUuid,
@@ -220,7 +268,7 @@ HidService::OnHidServiceRequested(uint16_t connectionHandle, uint16_t attributeH
     attribute = "protocolModeHandle";
     static uint8_t protcoleModeValue = 1;
     res = os_mbuf_append(context->om, &protcoleModeValue, 1);
-  } else if(attributeHandle == reportHandle) {
+  } else if(attributeHandle == reportKeyboardHandle) {
     attribute = "reportHandle";
   } else if(attributeHandle == reportMapHandle) {
     attribute = "reportMapHandle";
@@ -253,6 +301,16 @@ int HidService::OnReportDescriptorRequested(uint16_t connectionHandle, uint16_t 
   return res;
 }
 
+int HidService::OnReportDescriptorMouseRequested(uint16_t connectionHandle, uint16_t attributeHandle,
+                                            ble_gatt_access_ctxt *context) {
+  NRF_LOG_INFO("HID : Attribute = %d = Callback report descriptor Mouse, operation = %s",attributeHandle, ::OperationToString(context->op));
+  int res = 0;
+  static uint16_t reportValue = 0x0102;
+
+  res = os_mbuf_append(context->om, &reportValue, 2);
+  return res;
+}
+
 int HidService::OnReportMapDescriptorRequested(uint16_t connectionHandle, uint16_t attributeHandle,
                                                ble_gatt_access_ctxt *context) {
   NRF_LOG_INFO("HID : Attribute = %d = Callback report map descriptor, operation = %s",attributeHandle, ::OperationToString(context->op));
@@ -280,7 +338,7 @@ uint8_t helloWorld[] {
 uint8_t testIndex = 0;
 bool push = true;
 void HidService::Test() {
-# if 1
+# if 0
   uint8_t modif = (testIndex == 0) ? (1<<1) : 0;
   if(push && testIndex < 12) {
     uint8_t buf[9]{modif, 0x0, 0x00, helloWorld[testIndex], 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -291,7 +349,7 @@ void HidService::Test() {
     if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
       return;
     }
-    ble_gattc_notify_custom(1, reportHandle, om);
+    ble_gattc_notify_custom(1, reportKeyboardHandle, om);
     testIndex++;
     push = false;
     NRF_LOG_INFO("PUSH %d %d", helloWorld[testIndex], modif);
@@ -304,12 +362,55 @@ void HidService::Test() {
     if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
       return;
     }
-    ble_gattc_notify_custom(1, reportHandle, om);
+    ble_gattc_notify_custom(1, reportKeyboardHandle, om);
     NRF_LOG_INFO("Release");
     push = true;
   }
 
 #endif
+
+#if 0
+  if(testIndex%2 == 0) {
+    uint8_t buf[3]{0, 2, 0};
+    auto *om = ble_hs_mbuf_from_flat(&buf, 3);
+
+    uint16_t connectionHandle = 1;
+
+    if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+      return;
+    }
+    ble_gattc_notify_custom(1, reportMouseHandle, om);
+    testIndex++;
+    push = false;
+    NRF_LOG_INFO("UNPUSH");
+  } else {
+    uint8_t buf[3]{0, 0, 2};
+    auto *om = ble_hs_mbuf_from_flat(&buf, 3);
+
+    uint16_t connectionHandle = 1;
+
+    if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+      return;
+    }
+    ble_gattc_notify_custom(1, reportMouseHandle, om);
+    testIndex++;
+    push = false;
+    NRF_LOG_INFO("PUSH");
+  }
+#endif
+}
+
+void HidService::SendMoveReport(uint8_t x, uint8_t y) {
+  uint8_t buf[3]{0, x, y};
+  auto *om = ble_hs_mbuf_from_flat(&buf, 3);
+
+  uint16_t connectionHandle = 1;
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+  ble_gattc_notify_custom(1, reportMouseHandle, om);
+  NRF_LOG_INFO("move");
 }
 
 

@@ -35,7 +35,8 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        twiMaster{twiMaster}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
-                       nimbleController(*this, bleController,dateTimeController, notificationManager, spiNorFlash) {
+                       nimbleController(*this, bleController,dateTimeController, notificationManager, spiNorFlash),
+                       bleMouse{nimbleController.GetHidService()}{
   systemTaksMsgQueue = xQueueCreate(10, 1);
 }
 
@@ -67,7 +68,7 @@ void SystemTask::Work() {
   batteryController.Init();
 
   displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController,
-                                                          dateTimeController, watchdogView, *this, notificationManager));
+                                                          dateTimeController, watchdogView, *this, notificationManager, bleMouse));
   displayApp->Start();
 
   batteryController.Update();

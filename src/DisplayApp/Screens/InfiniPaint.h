@@ -7,6 +7,7 @@
 #include <libs/lvgl/src/lv_core/lv_obj.h>
 #include <drivers/St7789.h>
 #include <DisplayApp/LittleVgl.h>
+#include <Components/Ble/BleMouse.h>
 
 namespace Pinetime {
   namespace Applications {
@@ -14,7 +15,7 @@ namespace Pinetime {
 
       class InfiniPaint : public Screen{
         public:
-          InfiniPaint(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl);
+          InfiniPaint(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl, Controllers::BleMouse& bleMouse);
           ~InfiniPaint() override;
 
           bool Refresh() override;
@@ -29,6 +30,12 @@ namespace Pinetime {
           static constexpr uint16_t bufferSize = width*height;
           lv_color_t b[bufferSize];
           bool running = true;
+          Controllers::BleMouse& bleMouse;
+
+          bool moving = false;
+          uint8_t lastX;
+          uint8_t lastY;
+          uint8_t timeout = 10;
       };
     }
   }

@@ -9,6 +9,7 @@
 #include <DisplayApp/DisplayApp.h>
 #include <drivers/Watchdog.h>
 #include <drivers/SpiNorFlash.h>
+#include <Components/Ble/BleMouse.h>
 #include "SystemMonitor.h"
 #include "Components/Ble/NimbleController.h"
 #include "timers.h"
@@ -59,6 +60,7 @@ namespace Pinetime {
         Pinetime::Drivers::WatchdogView watchdogView;
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::NimbleController nimbleController;
+        Pinetime::Controllers::BleMouse bleMouse;
 
 
         static constexpr uint8_t pinSpiSck = 2;

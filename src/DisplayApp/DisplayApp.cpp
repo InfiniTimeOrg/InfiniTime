@@ -26,7 +26,8 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                        System::SystemTask &systemTask,
-                       Pinetime::Controllers::NotificationManager& notificationManager) :
+                       Pinetime::Controllers::NotificationManager& notificationManager,
+                       Controllers::BleMouse& bleMouse) :
         lcd{lcd},
         lvgl{lvgl},
         batteryController{batteryController},
@@ -34,6 +35,7 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
         dateTimeController{dateTimeController},
         watchdog{watchdog},
         touchPanel{touchPanel},
+        bleMouse{bleMouse},
         currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController) },
         systemTask{systemTask},
         notificationManager{notificationManager} {
@@ -197,7 +199,7 @@ void DisplayApp::RunningState() {
       case Apps::SysInfo: currentScreen.reset(new Screens::SystemInfo(this, dateTimeController, batteryController, brightnessController, bleController, watchdog)); break;
       case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
       case Apps::Gauge: currentScreen.reset(new Screens::Gauge(this)); break;
-      case Apps::Paint: currentScreen.reset(new Screens::InfiniPaint(this, lvgl)); break;
+      case Apps::Paint: currentScreen.reset(new Screens::InfiniPaint(this, lvgl, bleMouse)); break;
       case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
       case Apps::Music : currentScreen.reset(new Screens::Music(this, systemTask.nimble().music())); break;
       case Apps::FirmwareValidation: currentScreen.reset(new Screens::FirmwareValidation(this, validator)); break;

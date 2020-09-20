@@ -46,6 +46,8 @@ namespace Pinetime {
 
         void Test();
 
+        HidService& GetHidService() { return hidService;}
+
       private:
         static constexpr const char* deviceName = "Pinetime-JF";
         Pinetime::System::SystemTask& systemTask;

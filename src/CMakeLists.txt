@@ -348,6 +348,7 @@ list(APPEND SOURCE_FILES
   DisplayApp/Screens/Music.cpp
     Components/Ble/HidService.cpp
     Components/Ble/BatteryInformationService.cpp
+    Components/Ble/BleMouse.cpp
   DisplayApp/Screens/FirmwareValidation.cpp
   DisplayApp/Screens/ApplicationList.cpp
   main.cpp
@@ -443,7 +444,9 @@ set(INCLUDE_FILES
   Components/Ble/CurrentTimeClient.h
   Components/Ble/AlertNotificationClient.h
   Components/Ble/DfuService.h
-  Components/FirmwareValidator/FirmwareValidator.h
+    Components/Ble/BleMouse.h
+
+    Components/FirmwareValidator/FirmwareValidator.h
   drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h

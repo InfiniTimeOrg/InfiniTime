@@ -18,6 +18,7 @@
 #include <DisplayApp/Screens/Modal.h>
 #include <Components/Ble/NotificationManager.h>
 #include <Components/FirmwareValidator/FirmwareValidator.h>
+#include <Components/Ble/BleMouse.h>
 #include "TouchEvents.h"
 #include "Apps.h"
 
@@ -40,7 +41,8 @@ namespace Pinetime {
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
                    Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                    System::SystemTask &systemTask,
-                   Pinetime::Controllers::NotificationManager& notificationManager);
+                   Pinetime::Controllers::NotificationManager& notificationManager,
+                   Controllers::BleMouse& bleMouse);
         void Start();
         void PushMessage(Messages msg);
 
@@ -72,6 +74,7 @@ namespace Pinetime {
 
         Pinetime::Drivers::Cst816S& touchPanel;
         TouchEvents OnTouchEvent();
+        Controllers::BleMouse& bleMouse;
 
         std::unique_ptr<Screens::Screen> currentScreen;
 
