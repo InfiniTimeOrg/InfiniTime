@@ -1,7 +1,7 @@
 # Integration with Gadgetbridge
 [Gadgetbridge](https://gadgetbridge.org/) is an Android application that supports many smartwatches and fitness trackers.
 
-The integration of InfiniTime (previously Pinetime-JF) is ongoing in a [feature branch](https://codeberg.org/Freeyourgadget/Gadgetbridge/src/branch/pinetime-jf).
+The integration of InfiniTime (previously Pinetime-JF) is now merged into the master branch (https://codeberg.org/Freeyourgadget/Gadgetbridge/).
 
 ## Features
 The following features are implemented:

@@ -37,7 +37,7 @@ As of now, here is the list of achievements of this project:
     * System info (displays various info : BLE MAC, build date/time, uptime, version, ...)
     * Brightness (allows the user to configure the brightness of the display)
  - Supported by 2 companion apps (development is in progress):
-    * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/src/branch/pinetime-jf) (on Android)
+    * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android)
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS)
  - **[Experimental]** OTA (Over-the-air) update via BLE
  - **[Experimental]** Bootloader based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/)
