@@ -79,6 +79,7 @@ void Process(void* instance) {
   NRF_LOG_INFO("Init...");
   spi.Init();
   spiNorFlash.Init();
+  spiNorFlash.Wakeup();
   brightnessController.Init();
   lcd.Init();
   gfx.Init();

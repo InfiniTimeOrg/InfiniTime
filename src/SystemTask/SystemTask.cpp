@@ -58,6 +58,7 @@ void SystemTask::Work() {
 
   spi.Init();
   spiNorFlash.Init();
+  spiNorFlash.Wakeup();
   nimbleController.Init();
   nimbleController.StartAdvertising();
   lcd.Init();
