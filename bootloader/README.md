@@ -67,14 +67,14 @@ program pinetime-graphics.bin 0
  - Let it run for ~10s (it does nothing for 5 seconds, then write the logo into the SPI memory, then (slowly) displays it on the LCD).
 
 ## Bootloader binary
-The binary comes from https://github.com/lupyuen/pinetime-rust-mynewt/releases/tag/v4.1.7
+The binary comes from https://github.com/lupyuen/pinetime-rust-mynewt/releases/tag/v5.0.4
 
 It must be flash at address **0x00** in the internal flash memory.
 
 Using OpenOCD:
 
 `
-program mynewt_nosemi.elf_4.1.7.bin 0
+program bootloader-5.0.4.bin 0
 `
 
 ## Application firmware image

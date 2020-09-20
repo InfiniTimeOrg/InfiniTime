@@ -11,6 +11,6 @@ cp /sources/build/src/*.bin /sources/build/output/
 cp /sources/build/src/*.hex /sources/build/output/
 cp /sources/build/src/*.out /sources/build/output/
 cp /sources/build/src/*.map /sources/build/output/
-cp /sources/bootloader/mynewt_nosemi_4.1.7.elf.bin /sources/build/output/bootloader.bin
+cp /sources/bootloader/bootloader-5.0.4.bin /sources/build/output/bootloader.bin
 
 
