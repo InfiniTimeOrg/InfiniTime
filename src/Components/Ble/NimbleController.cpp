@@ -107,7 +107,7 @@ void NimbleController::Init() {
 void NimbleController::StartAdvertising() {
   if(ble_gap_adv_active()) return;
 
-  ble_svc_gap_device_name_set("Pinetime-JF");
+  ble_svc_gap_device_name_set(deviceName);
 
   /* set adv parameters */
   struct ble_gap_adv_params adv_params;
@@ -135,8 +135,8 @@ void NimbleController::StartAdvertising() {
   fields.uuids128_is_complete = 1;
   fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
 
-  rsp_fields.name = (uint8_t *)"Pinetime-JF";
-  rsp_fields.name_len = strlen("Pinetime-JF");
+  rsp_fields.name = (uint8_t *)deviceName;
+  rsp_fields.name_len = strlen(deviceName);
   rsp_fields.name_is_complete = 1;
 
   ble_gap_adv_set_fields(&fields);
