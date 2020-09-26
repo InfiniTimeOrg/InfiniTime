@@ -19,7 +19,7 @@ echo ""
 
 # Flashing Bootloader
 echo "Flashing bootloader..."
-program ./mynewt_nosemi_4.1.7.elf  verify 0x00000000
+program ./bootloader-5.0.4.elf  verify 0x00000000
 
 # Flashing Application
 echo "Flashing application..."

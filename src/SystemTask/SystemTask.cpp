@@ -12,6 +12,7 @@
 #include <host/util/util.h>
 #include <drivers/InternalFlash.h>
 #include "../main.h"
+#include "Components/Ble/NimbleController.h"
 
 using namespace Pinetime::System;
 
@@ -57,14 +58,7 @@ void SystemTask::Work() {
 
   spi.Init();
   spiNorFlash.Init();
-
-  // Write the 'image OK' flag if it's not already done
-  // TODO implement a better verification mecanism for the image (ask for user confirmation via UI/BLE ?)
-  uint32_t* imageOkPtr = reinterpret_cast<uint32_t *>(0x7BFE8);
-  uint32_t imageOk = *imageOkPtr;
-  if(imageOk != 1)
-    Pinetime::Drivers::InternalFlash::WriteWord(0x7BFE8, 1);
-
+  spiNorFlash.Wakeup();
   nimbleController.Init();
   nimbleController.StartAdvertising();
   lcd.Init();
@@ -112,22 +106,33 @@ void SystemTask::Work() {
       Messages message = static_cast<Messages >(msg);
       switch(message) {
         case Messages::GoToRunning:
-          isSleeping = false;
+          spi.Wakeup();
+          twiMaster.Wakeup();
+
+          spiNorFlash.Wakeup();
+          lcd.Wakeup();
+          touchPanel.Wakeup();
+
+          displayApp->PushMessage(Applications::DisplayApp::Messages::GoToRunning);
+          displayApp->PushMessage(Applications::DisplayApp::Messages::UpdateBatteryLevel);
+
           xTimerStart(idleTimer, 0);
           nimbleController.StartAdvertising();
+          isSleeping = false;
+          isWakingUp = false;
           break;
         case Messages::GoToSleep:
+          isGoingToSleep = true;
           NRF_LOG_INFO("[SystemTask] Going to sleep");
           xTimerStop(idleTimer, 0);
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
-          isSleeping = true;
           break;
         case Messages::OnNewTime:
           ReloadIdleTimer();
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateDateTime);
           break;
         case Messages::OnNewNotification:
-          if(isSleeping) GoToRunning();
+          if(isSleeping && !isWakingUp) GoToRunning();
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewNotification);
           break;
         case Messages::BleConnected:
@@ -137,13 +142,12 @@ void SystemTask::Work() {
           break;
         case Messages::BleFirmwareUpdateStarted:
           doNotGoToSleep = true;
-          if(isSleeping) GoToRunning();
+          if(isSleeping && !isWakingUp) GoToRunning();
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::BleFirmwareUpdateStarted);
           break;
         case Messages::BleFirmwareUpdateFinished:
           doNotGoToSleep = false;
           xTimerStart(idleTimer, 0);
-          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::BleFirmwareUpdateFinished);
           if(bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated)
             NVIC_SystemReset();
           break;
@@ -152,6 +156,16 @@ void SystemTask::Work() {
           break;
         case Messages::OnButtonEvent:
           ReloadIdleTimer();
+          break;
+        case Messages::OnDisplayTaskSleeping:
+          spiNorFlash.Sleep();
+          lcd.Sleep();
+          touchPanel.Sleep();
+
+          spi.Sleep();
+          twiMaster.Sleep();
+          isSleeping = true;
+          isGoingToSleep = false;
           break;
         default: break;
       }
@@ -180,24 +194,27 @@ void SystemTask::Work() {
 }
 
 void SystemTask::OnButtonPushed() {
+  if(isGoingToSleep) return;
   if(!isSleeping) {
     NRF_LOG_INFO("[SystemTask] Button pushed");
     PushMessage(Messages::OnButtonEvent);
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::ButtonPushed);
   }
   else {
-    NRF_LOG_INFO("[SystemTask] Button pushed, waking up");
-    GoToRunning();
+    if(!isWakingUp) {
+      NRF_LOG_INFO("[SystemTask] Button pushed, waking up");
+      GoToRunning();
+    }
   }
 }
 
 void SystemTask::GoToRunning() {
+  isWakingUp = true;
   PushMessage(Messages::GoToRunning);
-  displayApp->PushMessage(Applications::DisplayApp::Messages::GoToRunning);
-  displayApp->PushMessage(Applications::DisplayApp::Messages::UpdateBatteryLevel);
 }
 
 void SystemTask::OnTouchEvent() {
+  if(isGoingToSleep) return ;
   NRF_LOG_INFO("[SystemTask] Touch event");
   if(!isSleeping) {
     PushMessage(Messages::OnTouchEvent);
@@ -206,6 +223,9 @@ void SystemTask::OnTouchEvent() {
 }
 
 void SystemTask::PushMessage(SystemTask::Messages msg) {
+  if(msg == Messages::GoToSleep) {
+    isGoingToSleep = true;
+  }
   BaseType_t xHigherPriorityTaskWoken;
   xHigherPriorityTaskWoken = pdFALSE;
   xQueueSendFromISR(systemTaksMsgQueue, &msg, &xHigherPriorityTaskWoken);
@@ -222,6 +242,6 @@ void SystemTask::OnIdle() {
 }
 
 void SystemTask::ReloadIdleTimer() const {
-  if(isSleeping) return;
+  if(isSleeping || isGoingToSleep) return;
   xTimerReset(idleTimer, 0);
 }

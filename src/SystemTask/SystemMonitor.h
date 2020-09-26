@@ -28,7 +28,7 @@ namespace Pinetime {
           if(xTaskGetTickCount() - lastTick > 10000) {
             NRF_LOG_INFO("---------------------------------------\nFree heap : %d", xPortGetFreeHeapSize());
             auto nb = uxTaskGetSystemState(tasksStatus, 10, NULL);
-            for (int i = 0; i < nb; i++) {
+            for (uint32_t i = 0; i < nb; i++) {
               NRF_LOG_INFO("Task [%s] - %d", tasksStatus[i].pcTaskName, tasksStatus[i].usStackHighWaterMark);
               if (tasksStatus[i].usStackHighWaterMark < 20)
                 NRF_LOG_INFO("WARNING!!! Task %s task is nearly full, only %dB available", tasksStatus[i].pcTaskName,

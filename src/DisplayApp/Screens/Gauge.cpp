@@ -19,6 +19,7 @@ Gauge::Gauge(Pinetime::Applications::DisplayApp *app) : Screen(app) {
   style.text.color = LV_COLOR_WHITE;
   style.line.color = LV_COLOR_RED;                  /*Line color after the critical value*/
 
+
   /*Describe the color for the needles*/
 
   needle_colors[0] = LV_COLOR_ORANGE;

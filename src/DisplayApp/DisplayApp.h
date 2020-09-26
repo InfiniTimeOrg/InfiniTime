@@ -17,7 +17,9 @@
 #include <drivers/Watchdog.h>
 #include <DisplayApp/Screens/Modal.h>
 #include <Components/Ble/NotificationManager.h>
+#include <Components/FirmwareValidator/FirmwareValidator.h>
 #include "TouchEvents.h"
+#include "Apps.h"
 
 
 namespace Pinetime {
@@ -28,11 +30,11 @@ namespace Pinetime {
     class DisplayApp {
       public:
         enum class States {Idle, Running};
-        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, SwitchScreen,ButtonPushed,
-            NewNotification, BleFirmwareUpdateStarted, BleFirmwareUpdateFinished
-        };
-        enum class FullRefreshDirections { None, Up, Down };
+        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, ButtonPushed,
+            NewNotification, BleFirmwareUpdateStarted };
 
+        enum class FullRefreshDirections { None, Up, Down };
+        enum class TouchModes { Gestures, Polling };
 
         DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &,
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
@@ -42,10 +44,11 @@ namespace Pinetime {
         void Start();
         void PushMessage(Messages msg);
 
-        enum class Apps {None, Launcher, Clock, SysInfo, Meter, Gauge, Brightness};
         void StartApp(Apps app);
 
         void SetFullRefresh(FullRefreshDirections direction);
+        void SetTouchMode(TouchModes mode);
+
       private:
         TaskHandle_t taskHandle;
         static void Process(void* instance);
@@ -80,6 +83,8 @@ namespace Pinetime {
         Controllers::BrightnessController brightnessController;
         std::unique_ptr<Screens::Modal> modal;
         Pinetime::Controllers::NotificationManager& notificationManager;
+        Pinetime::Controllers::FirmwareValidator validator;
+        TouchModes touchMode = TouchModes::Gestures;
     };
   }
 }

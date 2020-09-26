@@ -57,7 +57,7 @@ int CurrentTimeService::OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handl
   return 0;
 }
 
-CurrentTimeService::CurrentTimeService(DateTime &dateTimeController) : m_dateTimeController{dateTimeController},
+CurrentTimeService::CurrentTimeService(DateTime &dateTimeController) :
         characteristicDefinition{
                 {
                         .uuid = (ble_uuid_t *) &ctChrUuid,
@@ -80,8 +80,7 @@ CurrentTimeService::CurrentTimeService(DateTime &dateTimeController) : m_dateTim
                 {
                         0
                 },
-        }
-         {
+        }, m_dateTimeController{dateTimeController} {
 
 }
 

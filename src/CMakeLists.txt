@@ -287,6 +287,8 @@ set(LVGL_SRC
   libs/lvgl/src/lv_objx/lv_bar.h
   libs/lvgl/src/lv_objx/lv_slider.h
   libs/lvgl/src/lv_objx/lv_slider.c
+    libs/lvgl/src/lv_objx/lv_ddlist.c
+    libs/lvgl/src/lv_objx/lv_ddlist.h
   )
 
 list(APPEND IMAGE_FILES
@@ -321,21 +323,24 @@ list(APPEND IMAGE_FILES
 
 list(APPEND SOURCE_FILES
   Logging/NrfLogger.cpp
-  BlinkApp/BlinkApp.cpp
   DisplayApp/DisplayApp.cpp
   DisplayApp/Screens/Screen.cpp
   DisplayApp/Screens/Clock.cpp
-  DisplayApp/Screens/Message.cpp
   DisplayApp/Screens/Tile.cpp
   DisplayApp/Screens/Meter.cpp
   DisplayApp/Screens/Gauge.cpp
+  DisplayApp/Screens/InfiniPaint.cpp
+  DisplayApp/Screens/DropDownDemo.cpp
   DisplayApp/Screens/Modal.cpp
   DisplayApp/Screens/BatteryIcon.cpp
   DisplayApp/Screens/BleIcon.cpp
   DisplayApp/Screens/Brightness.cpp
-  DisplayApp/Screens/ScreenList.cpp
+  DisplayApp/Screens/SystemInfo.cpp
   DisplayApp/Screens/Label.cpp
   DisplayApp/Screens/FirmwareUpdate.cpp
+  DisplayApp/Screens/Music.cpp
+  DisplayApp/Screens/FirmwareValidation.cpp
+  DisplayApp/Screens/ApplicationList.cpp
   main.cpp
   drivers/St7789.cpp
   drivers/SpiNorFlash.cpp
@@ -356,15 +361,12 @@ list(APPEND SOURCE_FILES
   Components/Ble/DfuService.cpp
   Components/Ble/CurrentTimeService.cpp
   Components/Ble/AlertNotificationService.cpp
+  Components/Ble/MusicService.cpp
+  Components/FirmwareValidator/FirmwareValidator.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
   FreeRTOS/port_cmsis_systick.c
   FreeRTOS/port_cmsis.c
-  ${TINYCRYPT_SRC}
-  ${NIMBLE_SRC}
-  ${LVGL_SRC}
-  #${IMAGE_FILES}
-  ${SDK_SOURCE_FILES}
 
   DisplayApp/LittleVgl.cpp
   DisplayApp/Fonts/jetbrains_mono_extrabold_compressed.c
@@ -375,8 +377,6 @@ list(APPEND SOURCE_FILES
 )
 
 list(APPEND GRAPHICS_SOURCE_FILES
-    ${SDK_SOURCE_FILES}
-
     # FreeRTOS
     FreeRTOS/port.c
     FreeRTOS/port_cmsis_systick.c
@@ -397,22 +397,26 @@ list(APPEND GRAPHICS_SOURCE_FILES
 set(INCLUDE_FILES
   Logging/Logger.h
   Logging/NrfLogger.h
-  BlinkApp/BlinkApp.h
   DisplayApp/DisplayApp.h
   DisplayApp/TouchEvents.h
   DisplayApp/Screens/Screen.h
   DisplayApp/Screens/Clock.h
-  DisplayApp/Screens/Message.h
   DisplayApp/Screens/Tile.h
   DisplayApp/Screens/Meter.h
   DisplayApp/Screens/Gauge.h
+  DisplayApp/Screens/InfiniPaint.h
+  DisplayApp/Screens/DropDownDemo.h
   DisplayApp/Screens/Modal.h
   DisplayApp/Screens/BatteryIcon.h
   DisplayApp/Screens/BleIcon.cpp
   DisplayApp/Screens/Brightness.h
+  DisplayApp/Screens/SystemInfo.h
   DisplayApp/Screens/ScreenList.h
   DisplayApp/Screens/Label.h
   DisplayApp/Screens/FirmwareUpdate.h
+  DisplayApp/Screens/FirmwareValidation.h
+  DisplayApp/Screens/ApplicationList.h
+  DisplayApp/Apps.h
   drivers/St7789.h
   drivers/SpiNorFlash.h
   drivers/SpiMaster.h
@@ -430,7 +434,8 @@ set(INCLUDE_FILES
   Components/Ble/CurrentTimeClient.h
   Components/Ble/AlertNotificationClient.h
   Components/Ble/DfuService.h
-    drivers/Cst816s.h
+  Components/FirmwareValidator/FirmwareValidator.h
+  drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h
   libs/date/includes/date/tz.h
@@ -558,10 +563,49 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release")
 endif()
 
+# NRF SDK
+add_library(nrf-sdk STATIC ${SDK_SOURCE_FILES})
+target_include_directories(nrf-sdk SYSTEM PUBLIC . ../)
+target_include_directories(nrf-sdk SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_compile_options(nrf-sdk PRIVATE
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+    $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+    )
+
+# NimBLE
+add_library(nimble STATIC ${NIMBLE_SRC} ${TINYCRYPT_SRC})
+target_include_directories(nimble SYSTEM PUBLIC . ../)
+target_include_directories(nimble SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_compile_options(nimble PRIVATE
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+    $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+    )
+
+# lvgl
+add_library(lvgl STATIC ${LVGL_SRC})
+target_include_directories(lvgl SYSTEM PUBLIC . ../)
+target_include_directories(lvgl SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_compile_options(lvgl PRIVATE
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+    $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+    $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+    $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+    )
+
 # Build autonomous binary (without support for bootloader)
 set(EXECUTABLE_NAME "pinetime-app")
+set(EXECUTABLE_FILE_NAME ${EXECUTABLE_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
+set_target_properties(${EXECUTABLE_NAME}  PROPERTIES OUTPUT_NAME ${EXECUTABLE_FILE_NAME})
+target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl)
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
@@ -572,24 +616,28 @@ target_compile_options(${EXECUTABLE_NAME} PUBLIC
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
         SUFFIX ".out"
-        LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_NAME}.map"
+        LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_FILE_NAME}.map"
         CXX_STANDARD 11
         C_STANDARD 99
         )
 
 add_custom_command(TARGET ${EXECUTABLE_NAME}
         POST_BUILD
-        COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_NAME}.out
-        COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_NAME}.out "${EXECUTABLE_NAME}.bin"
-        COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_NAME}.out "${EXECUTABLE_NAME}.hex"
-        COMMENT "post build steps for ${EXECUTABLE_NAME}")
+        COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_FILE_NAME}.out
+        COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_FILE_NAME}.out "${EXECUTABLE_FILE_NAME}.bin"
+        COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_FILE_NAME}.out "${EXECUTABLE_FILE_NAME}.hex"
+        COMMENT "post build steps for ${EXECUTABLE_FILE_NAME}")
 
 
 # Build binary intended to be used by bootloader
 set(EXECUTABLE_MCUBOOT_NAME "pinetime-mcuboot-app")
-set(EXECUTABLE_MCUBOOT_WITH_BOOTLOADER_NAME "pinetime-mcuboot-app-wth-bootloader")
+set(EXECUTABLE_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
+set(IMAGE_MCUBOOT_FILE_NAME image-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.bin)
+set(DFU_FILE_NAME dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 set(NRF5_LINKER_SCRIPT_MCUBOOT "${CMAKE_SOURCE_DIR}/gcc_nrf52-mcuboot.ld")
 add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES})
+target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl)
+set_target_properties(${EXECUTABLE_MCUBOOT_NAME}  PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
@@ -600,22 +648,25 @@ target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
 
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES
         SUFFIX ".out"
-        LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_MCUBOOT_NAME}.map"
+        LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_MCUBOOT_FILE_NAME}.map"
         CXX_STANDARD 11
         C_STANDARD 99
         )
 
 add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
         POST_BUILD
-        COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_MCUBOOT_NAME}.out
-        COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_MCUBOOT_NAME}.out "${EXECUTABLE_MCUBOOT_NAME}.bin"
-        COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_MCUBOOT_NAME}.out "${EXECUTABLE_MCUBOOT_NAME}.hex"
-        COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_NAME}"
+        COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_MCUBOOT_FILE_NAME}.out
+        COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_FILE_NAME}.bin"
+        COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_FILE_NAME}.hex"
+        COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_FILE_NAME}"
 )
 
 # Build binary that writes the graphic assets for the bootloader
 set(EXECUTABLE_GRAPHICS_NAME "pinetime-graphics")
+set(EXECUTABLE_GRAPHICS_FILE_NAME ${EXECUTABLE_GRAPHICS_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 add_executable(${EXECUTABLE_GRAPHICS_NAME} ${GRAPHICS_SOURCE_FILES})
+target_link_libraries(${EXECUTABLE_GRAPHICS_NAME} nrf-sdk)
+set_target_properties(${EXECUTABLE_GRAPHICS_NAME}  PROPERTIES OUTPUT_NAME ${EXECUTABLE_GRAPHICS_FILE_NAME})
 target_compile_options(${EXECUTABLE_GRAPHICS_NAME} PUBLIC
     $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
     $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
@@ -626,17 +677,17 @@ target_compile_options(${EXECUTABLE_GRAPHICS_NAME} PUBLIC
 
 set_target_properties(${EXECUTABLE_GRAPHICS_NAME} PROPERTIES
     SUFFIX ".out"
-    LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_GRAPHICS_NAME}.map"
+    LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_GRAPHICS_FILE_NAME}.map"
     CXX_STANDARD 11
     C_STANDARD 99
     )
 
 add_custom_command(TARGET ${EXECUTABLE_GRAPHICS_NAME}
     POST_BUILD
-    COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_GRAPHICS_NAME}.out
-    COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_GRAPHICS_NAME}.out "${EXECUTABLE_GRAPHICS_NAME}.bin"
-    COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_GRAPHICS_NAME}.out "${EXECUTABLE_GRAPHICS_NAME}.hex"
-    COMMENT "post build steps for ${EXECUTABLE_GRAPHICS_NAME}"
+    COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_GRAPHICS_FILE_NAME}.out
+    COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_GRAPHICS_FILE_NAME}.out "${EXECUTABLE_GRAPHICS_FILE_NAME}.bin"
+    COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_GRAPHICS_FILE_NAME}.out "${EXECUTABLE_GRAPHICS_FILE_NAME}.hex"
+    COMMENT "post build steps for ${EXECUTABLE_GRAPHICS_FILE_NAME}"
     )
 
 # FLASH
@@ -675,3 +726,4 @@ elseif(USE_OPENOCD)
             )
 
 endif()
+

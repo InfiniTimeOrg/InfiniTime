@@ -116,7 +116,7 @@ void AlertNotificationClient::OnNotification(ble_gap_event *event) {
     char *s = (char *) &data[3];
     auto messageSize = min(maxMessageSize, (bufferSize-3));
 
-    for (int i = 0; i < messageSize-1; i++) {
+    for (uint i = 0; i < messageSize-1; i++) {
       if (s[i] == 0x00) {
         s[i] = 0x0A;
       }

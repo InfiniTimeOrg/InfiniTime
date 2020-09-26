@@ -6,6 +6,7 @@
 #include <hal/nrf_rtc.h>
 
 #include "NimbleController.h"
+#include "MusicService.h"
 #include <services/gatt/ble_svc_gatt.h>
 #include <services/gap/ble_svc_gap.h>
 #include <host/util/util.h>
@@ -35,7 +36,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         currentTimeClient{dateTimeController},
         anService{systemTask, notificationManager},
         alertNotificationClient{systemTask, notificationManager},
-        currentTimeService{dateTimeController} {
+        currentTimeService{dateTimeController},
+        musicService{systemTask} {
 
 }
 
@@ -80,6 +82,7 @@ void NimbleController::Init() {
   deviceInformationService.Init();
   currentTimeClient.Init();
   currentTimeService.Init();
+  musicService.Init();
 
   anService.Init();
 
@@ -104,7 +107,7 @@ void NimbleController::Init() {
 void NimbleController::StartAdvertising() {
   if(ble_gap_adv_active()) return;
 
-  ble_svc_gap_device_name_set("Pinetime-JF");
+  ble_svc_gap_device_name_set(deviceName);
 
   /* set adv parameters */
   struct ble_gap_adv_params adv_params;
@@ -132,18 +135,17 @@ void NimbleController::StartAdvertising() {
   fields.uuids128_is_complete = 1;
   fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
 
-  rsp_fields.name = (uint8_t *)"Pinetime-JF";
-  rsp_fields.name_len = strlen("Pinetime-JF");
+  rsp_fields.name = (uint8_t *)deviceName;
+  rsp_fields.name_len = strlen(deviceName);
   rsp_fields.name_is_complete = 1;
 
-  int res;
-  res = ble_gap_adv_set_fields(&fields);
+  ble_gap_adv_set_fields(&fields);
 //  ASSERT(res == 0); // TODO this one sometimes fails with error 22 (notsync)
 
-  res = ble_gap_adv_rsp_set_fields(&rsp_fields);
+  ble_gap_adv_rsp_set_fields(&rsp_fields);
 //  ASSERT(res == 0);
 
-  res = ble_gap_adv_start(addrType, NULL, 180000,
+  ble_gap_adv_start(addrType, NULL, 180000,
                           &adv_params, GAPEventCallback, this);
 //  ASSERT(res == 0);// TODO I've disabled these ASSERT as they sometime asserts and reset the mcu.
   // For now, the advertising is restarted as soon as it ends. There may be a race condition
@@ -326,5 +328,7 @@ void NimbleController::StartDiscovery() {
 }
 
 
-
+uint16_t NimbleController::connHandle() {
+    return connectionHandle;
+}
 

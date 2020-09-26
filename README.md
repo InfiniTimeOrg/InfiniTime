@@ -6,7 +6,7 @@
 
 *https://www.pine64.org/pinetime/*
 
-The **Pinetime** smartwatch is built around the NRF52832 MCU (512KB Flash, 64KB RAM), a 240*240 LCD display driven by the ST7789 controller, an accelerometer, a heartrate sensor and a vibrator.
+The **Pinetime** smartwatch is built around the NRF52832 MCU (512KB Flash, 64KB RAM), a 240*240 LCD display driven by the ST7789 controller, an accelerometer, a heart rate sensor, and a vibration motor.
 
 # InfiniTime
 ![InfiniTime logo](images/infinitime-logo.jpg "InfiniTime Logo")
@@ -19,7 +19,7 @@ The goal of this project is to design an open-source firmware for the Pinetime s
  - Using **[LittleVGL/LVGL 6.1.2](https://lvgl.io/)** as UI library...
  - ... and **[NimBLE 1.3.0](https://github.com/apache/mynewt-nimble)** as BLE stack.
 
-##Overview
+## Overview
 
 ![Pinetime screens](images/0.7.0/montage.jpg "PinetimeScreens")
 
@@ -27,29 +27,40 @@ As of now, here is the list of achievements of this project:
 
  - Fast and optimized LCD driver
  - BLE communication
- - Rich user interface via display, touchpanel and push button
- - Time synchronisation via BLE
+ - Rich user interface via display, touchscreen and pushbutton
+ - Time synchronization via BLE
  - Notification via BLE
  - Multiple 'apps' : 
-    * Clock (displays the date, time, battery level, ble connection status, heart rate and step count)
+    * Clock (displays the date, time, battery level, BLE connection status, heart rate and step count)
     * Heart rate
     * Motion
-    * System info (displays various info : BLE MAC, build date/time, uptime, version,...)
-    * Brightess (allows the user to configure the brightness of the display)
- - Supported by 2 companion apps (developpments ongoing):
-    * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/src/branch/pinetime-jf) (on Android)
+    * System info (displays various info : BLE MAC, build date/time, uptime, version, ...)
+    * Brightness (allows the user to configure the brightness of the display)
+ - Supported by 2 companion apps (development is in progress):
+    * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android)
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS)
  - **[Experimental]** OTA (Over-the-air) update via BLE
  - **[Experimental]** Bootloader based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/)
  
 ## Documentation
+
+### Develop
+ - [Generate the fonts and symbols](src/DisplayApp/Fonts/Readme.md)
+
 ### Build, flash and debug
+ - [Project branches](doc/branches.md)
+ - [Versioning](doc/versioning.md)
+ - [Files included in the release notes](doc/filesInReleaseNotes.md)
  - [Build the project](doc/buildAndProgram.md)
+ - [Build the project with Docker](doc/buildWithDocker.md)
  - [Bootloader, OTA and DFU](./bootloader/README.md)
  - [Stub using NRF52-DK](./doc/PinetimeStubWithNrf52DK.md)
  - Logging with JLink RTT.
  - Using files from the releases
- 
+
+### Contribute
+ - [How to contribute ?](doc/contribute.md)
+
 ### API
  - [BLE implementation and API](./doc/ble.md)
  
@@ -57,27 +68,26 @@ As of now, here is the list of achievements of this project:
  - [Memory analysis](./doc/MemoryAnalysis.md)
  
 ### Using the firmware
- - Integration with Gadgetbridge
- - Integration with AmazFish
- - Integration with NRFConnect
- - Firmware update, OTA
+ - [Integration with Gadgetbridge](doc/CompanionApps/Gadgetbridge.md)
+ - [Integration with AmazFish](doc/CompanionApps/Amazfish.md)
+ - [Firmware update, OTA](doc/CompanionApps/NrfconnectOTA.md)
  
     
 ## TODO - contribute
 
-This project is far from beeing finished, and there are still a lot of things to do for this project to become a firmware usable by the general public.
+This project is far from being finished, and there are still a lot of things to do for this project to become a firmware usable by the general public.
 
 Here a quick list out of my head of things to do for this project:
 
  - Improve BLE communication stability and reliability
  - Improve OTA and MCUBoot bootloader
- - Add more functionalities : Alarm, chrono, configuration, activities, heart rate logging, games,...
+ - Add more functionalities : Alarm, chronometer, configuration, activities, heart rate logging, games,...
  - Add more BLE functionalities : call notifications, agenda, configuration, data logging,...
  - Measure power consumption and improve battery life
  - Improve documentation, take better pictures and video than mine
  - Improve the UI
- - Create companion app for multiple OSes (Linux, Android, IoS) and platforms (desktop, ARM, mobile). Do not forget the other devices from Pine64 like [the Pinephone](https://www.pine64.org/pinephone/) and the [Pinebook Pro](https://www.pine64.org/pinebook-pro/). 
- - Design a simple CI (preferably selfhosted and easy to reproduce).
+ - Create companion app for multiple OSes (Linux, Android, iOS) and platforms (desktop, ARM, mobile). Do not forget the other devices from Pine64 like [the Pinephone](https://www.pine64.org/pinephone/) and the [Pinebook Pro](https://www.pine64.org/pinebook-pro/). 
+ - Design a simple CI (preferably self-hosted and easy to reproduce).
  
 Do not hesitate to clone/fork the code, hack it and create pull-requests. I'll do my best to review and merge them :)
 
@@ -96,7 +106,7 @@ I’m not working alone on this project. First, many people create PR for this p
 Here are some people I would like to highlight:
 
  - [Atc1441](https://github.com/atc1441/) : He works on an Arduino based firmware for the Pinetime and many other smartwatches based on similar hardware. He was of great help when I was implementing support for the BMA421 motion sensor and I²C driver.
- - [Koen](https://github.com/bosmoment) : He’s working on a firmware based on RiotOS. He integrated similar libs than me : NimBLE, LittleVGL,… His help was invaluable too!
- - [Lup Yuen Lee](https://github.com/lupyuen) : He is everywhere : he works on a Rust firmware, buils a MCUBoot based bootloader for the Pinetime, design a Flutter based companion app for smartphones and write a lot of articles about the Pinetime!
+ - [Koen](https://github.com/bosmoment) : He’s working on a firmware based on RiotOS. He integrated similar libs as me : NimBLE, LittleVGL,… His help was invaluable too!
+ - [Lup Yuen Lee](https://github.com/lupyuen) : He is everywhere: he works on a Rust firmware, builds a MCUBoot based bootloader for the Pinetime, designs a Flutter based companion app for smartphones and writes a lot of articles about the Pinetime!
 
 *If you feel like you should appear on this list, just get in touch with me or submit a PR :)*

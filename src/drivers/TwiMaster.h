@@ -22,6 +22,9 @@ namespace Pinetime {
         void Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t* buffer, size_t size);
         void Write(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t* data, size_t size);
 
+        void Sleep();
+        void Wakeup();
+
       private:
         void Read(uint8_t deviceAddress, uint8_t* buffer, size_t size, bool stop);
         void Write(uint8_t deviceAddress, const uint8_t* data, size_t size, bool stop);

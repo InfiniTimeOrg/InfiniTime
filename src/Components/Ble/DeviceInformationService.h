@@ -3,6 +3,7 @@
 #include <array>
 
 #include <host/ble_gap.h>
+#include <Version.h>
 
 namespace Pinetime {
   namespace Controllers {
@@ -21,12 +22,15 @@ namespace Pinetime {
         static constexpr uint16_t serialNumberId {0x2a25};
         static constexpr uint16_t fwRevisionId {0x2a26};
         static constexpr uint16_t hwRevisionId {0x2a27};
+        static constexpr uint16_t swRevisionId {0x2a28};
 
-        static constexpr char* manufacturerName = "Codingfield";
-        static constexpr char* modelNumber = "1";
-        static constexpr char* serialNumber = "9.8.7.6.5.4";
-        static constexpr char* fwRevision = "0.7.0";
-        static constexpr char* hwRevision = "1.0.0";
+        static constexpr const char* manufacturerName = "PINE64";
+        static constexpr const char* modelNumber = "PineTime";
+        static constexpr const char* hwRevision = "1.0.0";
+        static constexpr const char* serialNumber = "0";
+        static constexpr const char* fwRevision =  Version::VersionString();
+        static constexpr const char* swRevision = "InfiniTime";
+
 
         static constexpr ble_uuid16_t deviceInfoUuid {
                 .u { .type = BLE_UUID_TYPE_16 },
@@ -58,7 +62,12 @@ namespace Pinetime {
                 .value = hwRevisionId
         };
 
-        struct ble_gatt_chr_def characteristicDefinition[6];
+        static constexpr ble_uuid16_t swRevisionUuid {
+                .u {.type = BLE_UUID_TYPE_16},
+                .value = swRevisionId
+        };
+
+        struct ble_gatt_chr_def characteristicDefinition[7];
         struct ble_gatt_svc_def serviceDefinition[2];
 
 

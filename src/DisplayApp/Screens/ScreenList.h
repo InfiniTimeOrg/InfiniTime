@@ -2,40 +2,64 @@
 
 #include <vector>
 #include <Components/Ble/NimbleController.h>
+#include <functional>
 #include "Screen.h"
 #include "Label.h"
 
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
+      template <size_t N>
       class ScreenList : public Screen {
         public:
-          explicit ScreenList(DisplayApp* app,
-                              Pinetime::Controllers::DateTime& dateTimeController,
-                              Pinetime::Controllers::Battery& batteryController,
-                              Pinetime::Controllers::BrightnessController& brightnessController,
-                              Pinetime::Controllers::Ble& bleController,
-                              Pinetime::Drivers::WatchdogView& watchdog);
-          ~ScreenList() override;
-          bool Refresh() override;
-          bool OnButtonPushed() override;
-          bool OnTouchEvent(TouchEvents event) override;
+          ScreenList(DisplayApp* app, std::array<std::function<std::unique_ptr<Screen>()>, N>&& screens)
+          : Screen(app), screens{std::move(screens)}, current{this->screens[0]()} {
+
+          }
+
+          ~ScreenList() override {
+
+          }
+
+          bool Refresh() override {
+            running = current->Refresh();
+            return running;
+          }
+
+          bool OnButtonPushed() override {
+            running = false;
+            return true;
+          }
+
+          bool OnTouchEvent(TouchEvents event) override {
+            switch (event) {
+              case TouchEvents::SwipeDown:
+                if (screenIndex > 0) {
+                  current.reset(nullptr);
+                  app->SetFullRefresh(DisplayApp::FullRefreshDirections::Down);
+                  screenIndex--;
+                  current = screens[screenIndex]();
+                }
+                return true;
+              case TouchEvents::SwipeUp:
+                if (screenIndex < screens.size() - 1) {
+                  current.reset(nullptr);
+                  app->SetFullRefresh(DisplayApp::FullRefreshDirections::Up);
+                  screenIndex++;
+                  current = screens[screenIndex]();
+                }
+                return true;
+              default:
+                return false;
+            }
+            return false;
+          }
+
         private:
           bool running = true;
           uint8_t screenIndex = 0;
-
-          // TODO choose another container without dynamic alloc
-          std::vector<Screens::Label> screens;
-          Pinetime::Controllers::DateTime& dateTimeController;
-          Pinetime::Controllers::Battery& batteryController;
-          Pinetime::Controllers::BrightnessController& brightnessController;
-          Pinetime::Controllers::Ble& bleController;
-          Pinetime::Drivers::WatchdogView& watchdog;
-
-
-          char t1[200];
-          char t2[200];
-          char t3[30];
+          std::array<std::function<std::unique_ptr<Screen>()>, N> screens;
+          std::unique_ptr<Screen> current;
       };
     }
   }

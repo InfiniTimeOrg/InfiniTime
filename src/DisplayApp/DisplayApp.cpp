@@ -2,21 +2,22 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <libraries/log/nrf_log.h>
-#include <boards.h>
 #include <nrf_font.h>
 #include <queue.h>
 #include <Components/DateTime/DateTimeController.h>
 #include <drivers/Cst816s.h>
 #include <string>
-#include <lvgl/lvgl.h>
 #include <DisplayApp/Screens/Tile.h>
-#include <DisplayApp/Screens/Message.h>
 #include <DisplayApp/Screens/Meter.h>
 #include <DisplayApp/Screens/Gauge.h>
 #include <DisplayApp/Screens/Brightness.h>
-#include <DisplayApp/Screens/ScreenList.h>
+#include <DisplayApp/Screens/SystemInfo.h>
+#include <DisplayApp/Screens/Music.h>
 #include <Components/Ble/NotificationManager.h>
 #include <DisplayApp/Screens/FirmwareUpdate.h>
+#include <DisplayApp/Screens/ApplicationList.h>
+#include <DisplayApp/Screens/FirmwareValidation.h>
+#include <DisplayApp/Screens/InfiniPaint.h>
 #include "../SystemTask/SystemTask.h"
 
 using namespace Pinetime::Applications;
@@ -79,6 +80,9 @@ void DisplayApp::Refresh() {
       RunningState();
       queueTimeout = 20;
       break;
+    default:
+      queueTimeout = portMAX_DELAY;
+      break;
   }
 
   Messages msg;
@@ -91,14 +95,10 @@ void DisplayApp::Refresh() {
           vTaskDelay(100);
         }
         lcd.DisplayOff();
-        lcd.Sleep();
-        touchPanel.Sleep();
+        systemTask.PushMessage(System::SystemTask::Messages::OnDisplayTaskSleeping);
         state = States::Idle;
         break;
       case Messages::GoToRunning:
-        lcd.Wakeup();
-        touchPanel.Wakeup();
-
         lcd.DisplayOn();
         brightnessController.Restore();
         state = States::Running;
@@ -168,6 +168,15 @@ void DisplayApp::Refresh() {
         break;
     }
   }
+
+  if(state != States::Idle && touchMode == TouchModes::Polling) {
+    auto info = touchPanel.GetTouchInfo();
+    if(info.action == 2) {// 2 = contact
+      if(!currentScreen->OnTouchEvent(info.x, info.y)) {
+        lvgl.SetNewTapEvent(info.x, info.y);
+      }
+    }
+  }
 }
 
 void DisplayApp::RunningState() {
@@ -179,16 +188,19 @@ void DisplayApp::RunningState() {
     onClockApp = false;
     switch(nextApp) {
       case Apps::None:
-      case Apps::Launcher: currentScreen.reset(new Screens::Tile(this)); break;
+      case Apps::Launcher: currentScreen.reset(new Screens::ApplicationList(this)); break;
       case Apps::Clock:
         currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
         onClockApp = true;
         break;
 //      case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
-      case Apps::SysInfo: currentScreen.reset(new Screens::ScreenList(this, dateTimeController, batteryController, brightnessController, bleController, watchdog)); break;
+      case Apps::SysInfo: currentScreen.reset(new Screens::SystemInfo(this, dateTimeController, batteryController, brightnessController, bleController, watchdog)); break;
       case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
       case Apps::Gauge: currentScreen.reset(new Screens::Gauge(this)); break;
+      case Apps::Paint: currentScreen.reset(new Screens::InfiniPaint(this, lvgl)); break;
       case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
+      case Apps::Music : currentScreen.reset(new Screens::Music(this, systemTask.nimble().music())); break;
+      case Apps::FirmwareValidation: currentScreen.reset(new Screens::FirmwareValidation(this, validator)); break;
     }
     nextApp = Apps::None;
   }
@@ -214,7 +226,8 @@ TouchEvents DisplayApp::OnTouchEvent() {
   if(info.isTouch) {
     switch(info.gesture) {
       case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        lvgl.SetNewTapEvent(info.x, info.y);
+        if(touchMode == TouchModes::Gestures)
+          lvgl.SetNewTapEvent(info.x, info.y);
         return TouchEvents::Tap;
       case Pinetime::Drivers::Cst816S::Gestures::LongPress:
         return TouchEvents::LongTap;
@@ -236,7 +249,7 @@ TouchEvents DisplayApp::OnTouchEvent() {
   return TouchEvents::None;
 }
 
-void DisplayApp::StartApp(DisplayApp::Apps app) {
+void DisplayApp::StartApp(Apps app) {
   nextApp = app;
 }
 
@@ -251,4 +264,8 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
     default: break;
   }
 
+}
+
+void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {
+  touchMode = mode;
 }

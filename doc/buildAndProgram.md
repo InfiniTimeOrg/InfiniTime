@@ -1,19 +1,19 @@
 # Build
-##Dependencies
+## Dependencies
 To build this project, you'll need:
  - A cross-compiler : [gcc-arm-none-eabi-8-2019-q3-update](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads/8-2019q3-update)
  - The NRF52 SDK 15.3.0 : [nRF5_SDK_15.3.0_59ac345](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip)
  - A reasonably recent version of CMake (I use 3.16.5)
 
-##Build steps 
-###Clone the repo
+## Build steps 
+### Clone the repo
 ```
 git clone https://github.com/JF002/Pinetime.git
 cd Pinetime
 mkdir build
 cd build
 ```
-###Project generation using CMake
+### Project generation using CMake
 CMake configures the project according to variables you specify the command line. The variables are:
 
  Variable | Description | Example|
@@ -27,22 +27,22 @@ CMake configures the project according to variables you specify the command line
 **GDB_CLIENT_TARGET_REMOTE**|Target remote connection string. Used only if `USE_GDB_CLIENT` is 1.|`-DGDB_CLIENT_TARGET_REMOTE=/dev/ttyACM0`
 
 
-####CMake command line for JLink
+#### CMake command line for JLink
 ```
 cmake -DCMAKE_BUILD_TYPE=Debug -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_JLINK=1 -DNRFJPROG=... ../
 ```
 
-####CMake command line for GDB Client (Black Magic Probe)
+#### CMake command line for GDB Client (Black Magic Probe)
 ```
 cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_GDB_CLIENT=1 -DGDB_CLIENT_BIN_PATH=... -DGDB_CLIENT_TARGET_REMOTE=... ../
 ```
 
-####CMake command line for OpenOCD
+#### CMake command line for OpenOCD
 ```
 cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_OPENOCD=1 -DGDB_CLIENT_BIN_PATH=[optional] ../
 ```
 
-###Build the project
+### Build the project
 During the project generation, CMake created the following targets:
 - FLASH_ERASE : mass erase the flash memory of the NRF52.
 - FLASH_pinetime-app : flash the firmware into the NRF52.
@@ -50,7 +50,7 @@ During the project generation, CMake created the following targets:
 - pinetime-mcuboot-app : build the firmware with the support of the bootloader (based on MCUBoot).
 - pinetime-graphics : small firmware that writes the boot graphics into the SPI flash.
 
-If you just want to build the project and run it on the Pinetime, using *pinetime-app* is recommanded. See ???? for more info about bootloader support.
+If you just want to build the project and run it on the Pinetime, using *pinetime-app* is recommanded. See [this page](../bootloader/README.md) for more info about bootloader support.
 
 Build:
 ```
@@ -66,8 +66,8 @@ Binary files are generated into the folder `src`:
  - **pinetime-graphics.bin, .hex and .out** : firmware for the boot graphic in bin, hex and out formats.
  - **pinetime-graphics.map** : map file
  
-###Program and run
-####Using CMake targets
+### Program and run
+#### Using CMake targets
 These target have been configured during the project generation by CMake according to the parameters you provided to the command line.
 
 Mass erase:
@@ -80,7 +80,7 @@ Flash the application:
 make FLASH_pinetime-app
 ```
 
-###Using JLink
+### Using JLink
 Start JLinkExe:
 ```
 $ /opt/SEGGER/JLink/JLinkExe -device nrf52 -if swd -speed 4000 -autoconnect 1     
@@ -146,7 +146,7 @@ Reset: Reset device via AIRCR.SYSRESETREQ.
 J-Link>g
 ```
 
-####JLink RTT
+#### JLink RTT
 RTT is a feature from Segger's JLink devices that allows bidirectionnal communication between the debugger and the target. This feature can be used to get the logs from the embedded software on the development computer.
 
  - Program the MCU with the code (see above)
@@ -161,7 +161,7 @@ Start JLinkRTTClient
 $ JLinkRTTClient
 ```
 
-###Using GDB and Black Magic Probe (BMP)
+### Using GDB and Black Magic Probe (BMP)
 Enter the following command into GDB:
 
 ```

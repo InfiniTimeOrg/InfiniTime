@@ -1,5 +1,19 @@
-.idea
-cmake-build-*
+.idea/
+cmake-build-*/
+**/CMakeCache.txt
+CMakeFiles/
+
 core
 sdk
 src/Version.h
+docker/post_build.sh
+
+# Linux
+**/.directory
+**/*.swp
+
+# OSX/MacOS
+**/.DS_Store
+
+# Windows
+**/thumbs.db

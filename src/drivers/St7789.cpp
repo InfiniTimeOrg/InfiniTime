@@ -1,5 +1,6 @@
 #include <hal/nrf_gpio.h>
 #include <libraries/delay/nrf_delay.h>
+#include <nrfx_log.h>
 #include "St7789.h"
 #include "Spi.h"
 
@@ -174,12 +175,10 @@ void St7789::HardwareReset() {
 void St7789::Sleep() {
   SleepIn();
   nrf_gpio_cfg_default(pinDataCommand);
-//  spi.Sleep(); // TODO sleep SPI
+  NRF_LOG_INFO("[LCD] Sleep");
 }
 
 void St7789::Wakeup() {
-//  spi.Wakeup(); // TODO wake up SPI
-
   nrf_gpio_cfg_output(pinDataCommand);
   // TODO why do we need to reset the controller?
   HardwareReset();
@@ -193,4 +192,5 @@ void St7789::Wakeup() {
   NormalModeOn();
   VerticalScrollStartAddress(verticalScrollingStartAddress);
   DisplayOn();
+  NRF_LOG_INFO("[LCD] Wakeup")
 }

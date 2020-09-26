@@ -4,6 +4,7 @@
 #include "SpiMaster.h"
 #include <algorithm>
 #include <task.h>
+#include <nrfx_log.h>
 
 using namespace Pinetime::Drivers;
 
@@ -117,8 +118,6 @@ void SpiMaster::OnEndEvent() {
 
     spiBaseAddress->TASKS_START = 1;
   } else {
-    uint8_t* buffer = nullptr;
-    size_t size = 0;
       if(taskToNotify != nullptr) {
           BaseType_t xHigherPriorityTaskWoken = pdFALSE;
           vTaskNotifyGiveFromISR(taskToNotify, &xHigherPriorityTaskWoken);
@@ -233,10 +232,13 @@ void SpiMaster::Sleep() {
   nrf_gpio_cfg_default(params.pinSCK);
   nrf_gpio_cfg_default(params.pinMOSI);
   nrf_gpio_cfg_default(params.pinMISO);
+
+  NRF_LOG_INFO("[SPIMASTER] sleep")
 }
 
 void SpiMaster::Wakeup() {
   Init();
+  NRF_LOG_INFO("[SPIMASTER] Wakeup");
 }
 
 bool SpiMaster::WriteCmdAndBuffer(uint8_t pinCsn, const uint8_t *cmd, size_t cmdSize, const uint8_t *data, size_t dataSize) {

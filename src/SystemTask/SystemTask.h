@@ -8,16 +8,17 @@
 #include <Components/Battery/BatteryController.h>
 #include <DisplayApp/DisplayApp.h>
 #include <drivers/Watchdog.h>
-#include <Components/Ble/NimbleController.h>
 #include <drivers/SpiNorFlash.h>
 #include "SystemMonitor.h"
+#include "Components/Ble/NimbleController.h"
+#include "timers.h"
 
 namespace Pinetime {
   namespace System {
     class SystemTask {
       public:
         enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification, BleConnected,
-            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent
+            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent, OnDisplayTaskSleeping
         };
 
         SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
@@ -37,6 +38,8 @@ namespace Pinetime {
 
         void OnIdle();
 
+        Pinetime::Controllers::NimbleController& nimble() {return nimbleController;};
+
       private:
         TaskHandle_t taskHandle;
 
@@ -51,7 +54,9 @@ namespace Pinetime {
         Pinetime::Controllers::Ble& bleController;
         Pinetime::Controllers::DateTime& dateTimeController;
         QueueHandle_t systemTaksMsgQueue;
-        bool isSleeping = false;
+        std::atomic<bool> isSleeping{false};
+        std::atomic<bool> isGoingToSleep{false};
+        std::atomic<bool> isWakingUp{false};
         Pinetime::Drivers::Watchdog watchdog;
         Pinetime::Drivers::WatchdogView watchdogView;
         Pinetime::Controllers::NotificationManager& notificationManager;

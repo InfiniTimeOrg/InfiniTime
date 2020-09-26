@@ -310,12 +310,14 @@ ble_gap_log_conn(uint8_t own_addr_type, const ble_addr_t *peer_addr,
         BLE_HS_LOG_ADDR(INFO, peer_addr->val);
     }
 
+    /* // NRF LOG support max 6 params in log
     BLE_HS_LOG(INFO, " scan_itvl=%d scan_window=%d itvl_min=%d itvl_max=%d "
                      "latency=%d supervision_timeout=%d min_ce_len=%d "
                      "max_ce_len=%d own_addr_type=%d",
                params->scan_itvl, params->scan_window, params->itvl_min,
                params->itvl_max, params->latency, params->supervision_timeout,
                params->min_ce_len, params->max_ce_len, own_addr_type);
+     */
 }
 #endif
 

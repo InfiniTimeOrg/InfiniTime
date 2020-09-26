@@ -48,11 +48,13 @@ namespace Pinetime {
             SectorErase = 0x20,
             ReadSecurityRegister = 0x2B,
             ReadIdentification = 0x9F,
+            ReleaseFromDeepPowerDown = 0xAB,
+            DeepPowerDown = 0xB9
         };
         static constexpr uint16_t pageSize = 256;
 
         Spi& spi;
-
+        Identification device_id;
     };
   }
 }

@@ -1,4 +1,6 @@
 #pragma once
+
+#include <cstdint>
 #include "../TouchEvents.h"
 
 namespace Pinetime {
@@ -18,6 +20,7 @@ namespace Pinetime {
 
           // Return false if the event hasn't been handled by the app, true if it has been handled
           virtual bool OnTouchEvent(TouchEvents event) { return false; }
+          virtual bool OnTouchEvent(uint16_t x, uint16_t y) { return false; }
 
         protected:
           DisplayApp* app;

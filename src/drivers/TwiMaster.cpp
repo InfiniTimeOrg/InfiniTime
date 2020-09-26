@@ -1,5 +1,5 @@
-#include <sdk/integration/nrfx/nrfx_log.h>
-#include <sdk/modules/nrfx/hal/nrf_gpio.h>
+#include <nrfx_log.h>
+#include <hal/nrf_gpio.h>
 #include <cstring>
 #include "TwiMaster.h"
 
@@ -137,4 +137,18 @@ void TwiMaster::Write(uint8_t deviceAddress, const uint8_t *data, size_t size, b
     uint32_t error = twiBaseAddress->ERRORSRC;
     twiBaseAddress->ERRORSRC = error;
   }
+}
+
+void TwiMaster::Sleep() {
+  while(twiBaseAddress->ENABLE != 0) {
+    twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Disabled << TWIM_ENABLE_ENABLE_Pos);
+  }
+  nrf_gpio_cfg_default(6);
+  nrf_gpio_cfg_default(7);
+  NRF_LOG_INFO("[TWIMASTER] Sleep");
+}
+
+void TwiMaster::Wakeup() {
+  Init();
+  NRF_LOG_INFO("[TWIMASTER] Wakeup");
 }

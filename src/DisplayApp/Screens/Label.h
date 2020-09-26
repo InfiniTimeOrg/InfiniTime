@@ -2,19 +2,18 @@
 
 #include <vector>
 #include "Screen.h"
+#include <lvgl/lvgl.h>
 
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
-      class Label {
-        public:
-          Label() = default;
-          explicit Label(const char* text);
-          ~Label();
-          void Refresh();
 
-          void Hide();
-          void Show();
+      class Label : public Screen {
+        public:
+          Label(DisplayApp* app, const char* text);
+          ~Label() override;
+          bool Refresh() override {return false;}
+
         private:
           lv_obj_t * label = nullptr;
           const char* text = nullptr;
