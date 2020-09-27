@@ -1,0 +1,169 @@
+# GitHub Actions Workflow to build FreeRTOS Firmware for PineTime Smart Watch
+# See https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud
+# Based on https://github.com/JF002/Pinetime/blob/master/doc/buildAndProgram.md
+# and https://github.com/JF002/Pinetime/blob/master/bootloader/README.md
+
+# Name of this Workflow
+name: Build PineTime Firmware
+
+# When to run this Workflow...
+on:
+
+  # Run this Workflow when files are updated (Pushed) in the "master" Branch
+  push:
+    branches: [ master ]
+    
+  # Also run this Workflow when a Pull Request is created or updated in the "master" Branch
+  pull_request:
+    branches: [ master ]
+
+# Steps to run for the Workflow
+jobs:
+  build:
+
+    # Run these steps on Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+        
+    #########################################################################################
+    # Download and Cache Dependencies
+
+    - name: Install cmake
+      uses: lukka/get-cmake@v3.18.0
+
+    - name: Check cache for Embedded Arm Toolchain arm-none-eabi-gcc
+      id:   cache-toolchain
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-toolchain
+      with:
+        path: ${{ runner.temp }}/arm-none-eabi
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+
+    - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
+      if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
+      uses: fiam/arm-none-eabi-gcc@v1.0.2
+      with:
+        # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
+        release: 8-2019-q3
+        # Directory to unpack GCC to. Defaults to a temporary directory.
+        directory: ${{ runner.temp }}/arm-none-eabi
+
+    - name: Check cache for nRF5 SDK
+      id:   cache-nrf5sdk
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-nrf5sdk
+      with:
+        path: ${{ runner.temp }}/nrf5_sdk
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+          
+    - name: Install nRF5 SDK
+      if:   steps.cache-nrf5sdk.outputs.cache-hit != 'true'  # Install SDK if not found in cache
+      run:  |
+        cd ${{ runner.temp }}
+        curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip -o nrf5_sdk.zip
+        unzip nrf5_sdk.zip
+        mv nRF5_SDK_15.3.0_59ac345 nrf5_sdk
+
+    - name: Check cache for MCUBoot
+      id:   cache-mcuboot
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-mcuboot
+      with:
+        path: ${{ runner.temp }}/mcuboot
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+
+    - name: Install MCUBoot
+      if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
+      run:  |
+        cd ${{ runner.temp }}
+        git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
+
+    - name: Install imgtool dependencies
+      run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
+
+    - name: Install adafruit-nrfutil
+      run:  |
+        pip3 install --user wheel
+        pip3 install --user setuptools
+        pip3 install --user adafruit-nrfutil
+        
+    #########################################################################################
+    # Checkout
+      
+    - name: Checkout source files
+      uses: actions/checkout@v2
+
+    - name: Show files
+      run:  set ; pwd ; ls -l
+
+    #########################################################################################
+    # CMake
+
+    - name: CMake
+      run:  |
+        mkdir -p build
+        cd build
+        cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
+      
+    #########################################################################################
+    # Make and Upload DFU Package
+    # pinetime-mcuboot-app.img must be flashed at address 0x8000 in the internal flash memory with OpenOCD:
+    # program image.bin 0x8000
+      
+    # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
+    # For Faster Builds: Add "make" option "-j"
+      
+    - name: Make pinetime-mcuboot-app
+      run:  |
+        cd build
+        make pinetime-mcuboot-app
+
+    - name: Create firmware image
+      run:  |
+        ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app.bin build/src/pinetime-mcuboot-app-img.bin
+        ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
+
+    - name: Create DFU package
+      run:  |
+        ~/.local/bin/adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application build/src/pinetime-mcuboot-app-img.bin build/src/pinetime-mcuboot-app-dfu.zip
+        unzip -v build/src/pinetime-mcuboot-app-dfu.zip
+        # Unzip the package because Upload Artifact will zip up the files
+        unzip build/src/pinetime-mcuboot-app-dfu.zip -d build/src/pinetime-mcuboot-app-dfu
+
+    - name: Upload DFU package
+      uses: actions/upload-artifact@v2
+      with:
+        name: pinetime-mcuboot-app-dfu.zip
+        path: build/src/pinetime-mcuboot-app-dfu/*
+
+    #########################################################################################
+    # Make and Upload Standalone Firmware
+      
+    - name: Make pinetime-app
+      run:  |
+        cd build
+        make pinetime-app
+
+    - name: Upload standalone firmware
+      uses: actions/upload-artifact@v2
+      with:
+        name: pinetime-app.out
+        path: build/src/pinetime-app.out
+
+    #########################################################################################
+    # Finish
+
+    - name: Find output
+      run:  |
+        find . -name "pinetime-app.*" -ls
+        find . -name "pinetime-mcuboot-app.*" -ls
+      
+# Embedded Arm Toolchain and nRF5 SDK will only be cached if the build succeeds.
+# So make sure that the first build always succeeds, e.g. comment out the "Make" step.
