@@ -36,7 +36,7 @@ jobs:
       id:   cache-toolchain
       uses: actions/cache@v2
       env:
-        cache-name: cache-toolchain
+        cache-name: cache-toolchain-9-2020-q2
       with:
         path: ${{ runner.temp }}/arm-none-eabi
         key:  ${{ runner.os }}-build-${{ env.cache-name }}
@@ -47,7 +47,7 @@ jobs:
       uses: fiam/arm-none-eabi-gcc@v1.0.2
       with:
         # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
-        release: 8-2019-q3
+        release: 9-2020-q2
         # Directory to unpack GCC to. Defaults to a temporary directory.
         directory: ${{ runner.temp }}/arm-none-eabi
 
@@ -127,7 +127,9 @@ jobs:
 
     - name: Create firmware image
       run:  |
-        ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app.bin build/src/pinetime-mcuboot-app-img.bin
+        # The generated firmware binary looks like "pinetime-mcuboot-app-0.8.2.bin"
+        ls -l build/src/pinetime-mcuboot-app*.bin
+        ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app*.bin build/src/pinetime-mcuboot-app-img.bin
         ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
 
     - name: Create DFU package
@@ -155,7 +157,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: pinetime-app.out
-        path: build/src/pinetime-app.out
+        path: build/src/pinetime-app*.out
 
     #########################################################################################
     # Finish
