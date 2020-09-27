@@ -9,6 +9,7 @@
 #include "CurrentTimeService.h"
 #include "MusicService.h"
 #include "BatteryInformationService.h"
+#include "ImmediateAlertService.h"
 #include <host/ble_gap.h>
 
 namespace Pinetime {
@@ -59,6 +60,7 @@ namespace Pinetime {
         CurrentTimeService currentTimeService;
         MusicService musicService;
         BatteryInformationService batteryInformationService;
+        ImmediateAlertService immediateAlertService;
 
         uint8_t addrType; // 1 = Random, 0 = PUBLIC
         uint16_t connectionHandle = 0;

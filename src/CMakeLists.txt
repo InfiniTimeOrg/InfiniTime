@@ -363,6 +363,7 @@ list(APPEND SOURCE_FILES
   Components/Ble/AlertNotificationService.cpp
   Components/Ble/MusicService.cpp
   Components/Ble/BatteryInformationService.cpp
+  Components/Ble/ImmediateAlertService.cpp
   Components/FirmwareValidator/FirmwareValidator.cpp
   drivers/Cst816s.cpp
   FreeRTOS/port.c
@@ -437,6 +438,7 @@ set(INCLUDE_FILES
   Components/Ble/DfuService.h
   Components/FirmwareValidator/FirmwareValidator.h
   Components/Ble/BatteryInformationService.h
+  Components/Ble/ImmediateAlertService.h
   drivers/Cst816s.h
   FreeRTOS/portmacro.h
   FreeRTOS/portmacro_cmsis.h

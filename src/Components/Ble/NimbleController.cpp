@@ -39,7 +39,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         alertNotificationClient{systemTask, notificationManager},
         currentTimeService{dateTimeController},
         musicService{systemTask},
-        batteryInformationService{batteryController} {
+        batteryInformationService{batteryController},
+        immediateAlertService{systemTask, notificationManager} {
 
 }
 
@@ -88,6 +89,7 @@ void NimbleController::Init() {
   anService.Init();
   dfuService.Init();
   batteryInformationService.Init();
+  immediateAlertService.Init();
   int res;
   res = ble_hs_util_ensure_addr(0);
   ASSERT(res == 0);
