@@ -1,12 +1,27 @@
 .idea/
+# CMake
 cmake-build-*/
-**/CMakeCache.txt
 CMakeFiles/
+**/CMakeCache.txt
+cmake_install.cmake
+Makefile
 
+# Resulting binary files
+*.a
+*.so
+*.s
+*.hex
+*.bin
+*.map
+*.out
+pinetime*.cbp
+
+# InfiniTime's files
 core
 sdk
 src/Version.h
 docker/post_build.sh
+Testing/Temporary/
 
 # Linux
 **/.directory
