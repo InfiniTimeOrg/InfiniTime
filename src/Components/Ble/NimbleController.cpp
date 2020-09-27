@@ -26,6 +26,7 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
                                    Pinetime::Controllers::Ble& bleController,
         DateTime& dateTimeController,
         Pinetime::Controllers::NotificationManager& notificationManager,
+        Controllers::Battery& batteryController,
         Pinetime::Drivers::SpiNorFlash& spiNorFlash) :
         systemTask{systemTask},
         bleController{bleController},
@@ -37,7 +38,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         anService{systemTask, notificationManager},
         alertNotificationClient{systemTask, notificationManager},
         currentTimeService{dateTimeController},
-        musicService{systemTask} {
+        musicService{systemTask},
+        batteryInformationService{batteryController} {
 
 }
 
@@ -83,10 +85,9 @@ void NimbleController::Init() {
   currentTimeClient.Init();
   currentTimeService.Init();
   musicService.Init();
-
   anService.Init();
-
   dfuService.Init();
+  batteryInformationService.Init();
   int res;
   res = ble_hs_util_ensure_addr(0);
   ASSERT(res == 0);

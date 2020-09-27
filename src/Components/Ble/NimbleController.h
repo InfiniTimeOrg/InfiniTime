@@ -8,6 +8,7 @@
 #include "DfuService.h"
 #include "CurrentTimeService.h"
 #include "MusicService.h"
+#include "BatteryInformationService.h"
 #include <host/ble_gap.h>
 
 namespace Pinetime {
@@ -22,7 +23,7 @@ namespace Pinetime {
       public:
         NimbleController(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController,
                 DateTime& dateTimeController, Pinetime::Controllers::NotificationManager& notificationManager,
-                Pinetime::Drivers::SpiNorFlash& spiNorFlash);
+                Controllers::Battery& batteryController, Pinetime::Drivers::SpiNorFlash& spiNorFlash);
         void Init();
         void StartAdvertising();
         int OnGAPEvent(ble_gap_event *event);
@@ -57,6 +58,7 @@ namespace Pinetime {
         AlertNotificationClient alertNotificationClient;
         CurrentTimeService currentTimeService;
         MusicService musicService;
+        BatteryInformationService batteryInformationService;
 
         uint8_t addrType; // 1 = Random, 0 = PUBLIC
         uint16_t connectionHandle = 0;
