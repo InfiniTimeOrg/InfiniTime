@@ -52,6 +52,7 @@ As of now, here is the list of achievements of this project:
  - [Versioning](doc/versioning.md)
  - [Files included in the release notes](doc/filesInReleaseNotes.md)
  - [Build the project](doc/buildAndProgram.md)
+ - [Flash the firmware using OpenOCD and STLinkV2](doc/openOCD.md)
  - [Build the project with Docker](doc/buildWithDocker.md)
  - [Bootloader, OTA and DFU](./bootloader/README.md)
  - [Stub using NRF52-DK](./doc/PinetimeStubWithNrf52DK.md)
