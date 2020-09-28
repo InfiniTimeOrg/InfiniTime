@@ -12,6 +12,7 @@ Makefile
 *.s
 *.hex
 *.bin
+!bootloader/bootloader-5.0.4.bin
 *.map
 *.out
 pinetime*.cbp
