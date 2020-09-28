@@ -11,7 +11,7 @@ We will build OpenOCD from sources, as packages from Linux distributions are mos
  - Fetch the sources from GIT, and build and install it:
 
 ```
-git clone https://^Ct.code.sf.net/p/openocd/code openocd-code
+git clone https://git.code.sf.net/p/openocd/code openocd-code
 
 cd openocd-code
 
