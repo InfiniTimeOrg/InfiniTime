@@ -349,22 +349,22 @@ list(APPEND SOURCE_FILES
         drivers/Watchdog.cpp
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
-        Components/Battery/BatteryController.cpp
-        Components/Ble/BleController.cpp
-        Components/Ble/NotificationManager.cpp
-        Components/DateTime/DateTimeController.cpp
-        Components/Brightness/BrightnessController.cpp
-        Components/Ble/NimbleController.cpp
-        Components/Ble/DeviceInformationService.cpp
-        Components/Ble/CurrentTimeClient.cpp
-        Components/Ble/AlertNotificationClient.cpp
-        Components/Ble/DfuService.cpp
-        Components/Ble/CurrentTimeService.cpp
-        Components/Ble/AlertNotificationService.cpp
-        Components/Ble/MusicService.cpp
-        Components/Ble/BatteryInformationService.cpp
-        Components/Ble/ImmediateAlertService.cpp
-        Components/FirmwareValidator/FirmwareValidator.cpp
+        components/Battery/BatteryController.cpp
+        components/Ble/BleController.cpp
+        components/Ble/NotificationManager.cpp
+        components/DateTime/DateTimeController.cpp
+        components/Brightness/BrightnessController.cpp
+        components/Ble/NimbleController.cpp
+        components/Ble/DeviceInformationService.cpp
+        components/Ble/CurrentTimeClient.cpp
+        components/Ble/AlertNotificationClient.cpp
+        components/Ble/DfuService.cpp
+        components/Ble/CurrentTimeService.cpp
+        components/Ble/AlertNotificationService.cpp
+        components/Ble/MusicService.cpp
+        components/Ble/BatteryInformationService.cpp
+        components/Ble/ImmediateAlertService.cpp
+        components/FirmwareValidator/FirmwareValidator.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -389,9 +389,9 @@ list(APPEND GRAPHICS_SOURCE_FILES
         drivers/Spi.cpp
         Logging/NrfLogger.cpp
 
-        Components/Gfx/Gfx.cpp
+        components/Gfx/Gfx.cpp
         drivers/St7789.cpp
-        Components/Brightness/BrightnessController.cpp
+        components/Brightness/BrightnessController.cpp
 
         graphics.cpp
         )
@@ -426,19 +426,19 @@ set(INCLUDE_FILES
         drivers/Watchdog.h
         drivers/DebugPins.h
         drivers/InternalFlash.h
-        Components/Battery/BatteryController.h
-        Components/Ble/BleController.h
-        Components/Ble/NotificationManager.h
-        Components/DateTime/DateTimeController.h
-        Components/Brightness/BrightnessController.h
-        Components/Ble/NimbleController.h
-        Components/Ble/DeviceInformationService.h
-        Components/Ble/CurrentTimeClient.h
-        Components/Ble/AlertNotificationClient.h
-        Components/Ble/DfuService.h
-        Components/FirmwareValidator/FirmwareValidator.h
-        Components/Ble/BatteryInformationService.h
-        Components/Ble/ImmediateAlertService.h
+        components/Battery/BatteryController.h
+        components/Ble/BleController.h
+        components/Ble/NotificationManager.h
+        components/DateTime/DateTimeController.h
+        components/Brightness/BrightnessController.h
+        components/Ble/NimbleController.h
+        components/Ble/DeviceInformationService.h
+        components/Ble/CurrentTimeClient.h
+        components/Ble/AlertNotificationClient.h
+        components/Ble/DfuService.h
+        components/FirmwareValidator/FirmwareValidator.h
+        components/Ble/BatteryInformationService.h
+        components/Ble/ImmediateAlertService.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
