@@ -324,23 +324,23 @@ list(APPEND IMAGE_FILES
 list(APPEND SOURCE_FILES
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
-        displayapp/Screens/Screen.cpp
-        displayapp/Screens/Clock.cpp
-        displayapp/Screens/Tile.cpp
-        displayapp/Screens/Meter.cpp
-        displayapp/Screens/Gauge.cpp
-        displayapp/Screens/InfiniPaint.cpp
-        displayapp/Screens/DropDownDemo.cpp
-        displayapp/Screens/Modal.cpp
-        displayapp/Screens/BatteryIcon.cpp
-        displayapp/Screens/BleIcon.cpp
-        displayapp/Screens/Brightness.cpp
-        displayapp/Screens/SystemInfo.cpp
-        displayapp/Screens/Label.cpp
-        displayapp/Screens/FirmwareUpdate.cpp
-        displayapp/Screens/Music.cpp
-        displayapp/Screens/FirmwareValidation.cpp
-        displayapp/Screens/ApplicationList.cpp
+        displayapp/screens/Screen.cpp
+        displayapp/screens/Clock.cpp
+        displayapp/screens/Tile.cpp
+        displayapp/screens/Meter.cpp
+        displayapp/screens/Gauge.cpp
+        displayapp/screens/InfiniPaint.cpp
+        displayapp/screens/DropDownDemo.cpp
+        displayapp/screens/Modal.cpp
+        displayapp/screens/BatteryIcon.cpp
+        displayapp/screens/BleIcon.cpp
+        displayapp/screens/Brightness.cpp
+        displayapp/screens/SystemInfo.cpp
+        displayapp/screens/Label.cpp
+        displayapp/screens/FirmwareUpdate.cpp
+        displayapp/screens/Music.cpp
+        displayapp/screens/FirmwareValidation.cpp
+        displayapp/screens/ApplicationList.cpp
         main.cpp
         drivers/St7789.cpp
         drivers/SpiNorFlash.cpp
@@ -401,23 +401,23 @@ set(INCLUDE_FILES
         logging/NrfLogger.h
         displayapp/DisplayApp.h
         displayapp/TouchEvents.h
-        displayapp/Screens/Screen.h
-        displayapp/Screens/Clock.h
-        displayapp/Screens/Tile.h
-        displayapp/Screens/Meter.h
-        displayapp/Screens/Gauge.h
-        displayapp/Screens/InfiniPaint.h
-        displayapp/Screens/DropDownDemo.h
-        displayapp/Screens/Modal.h
-        displayapp/Screens/BatteryIcon.h
-        displayapp/Screens/BleIcon.cpp
-        displayapp/Screens/Brightness.h
-        displayapp/Screens/SystemInfo.h
-        displayapp/Screens/ScreenList.h
-        displayapp/Screens/Label.h
-        displayapp/Screens/FirmwareUpdate.h
-        displayapp/Screens/FirmwareValidation.h
-        displayapp/Screens/ApplicationList.h
+        displayapp/screens/Screen.h
+        displayapp/screens/Clock.h
+        displayapp/screens/Tile.h
+        displayapp/screens/Meter.h
+        displayapp/screens/Gauge.h
+        displayapp/screens/InfiniPaint.h
+        displayapp/screens/DropDownDemo.h
+        displayapp/screens/Modal.h
+        displayapp/screens/BatteryIcon.h
+        displayapp/screens/BleIcon.cpp
+        displayapp/screens/Brightness.h
+        displayapp/screens/SystemInfo.h
+        displayapp/screens/ScreenList.h
+        displayapp/screens/Label.h
+        displayapp/screens/FirmwareUpdate.h
+        displayapp/screens/FirmwareValidation.h
+        displayapp/screens/ApplicationList.h
         displayapp/Apps.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
@@ -453,7 +453,7 @@ set(INCLUDE_FILES
         displayapp/LittleVgl.h
         systemtask/SystemTask.h
         systemtask/SystemMonitor.h
-        displayapp/Screens/Symbols.h
+        displayapp/screens/Symbols.h
         drivers/TwiMaster.h
         )
 
