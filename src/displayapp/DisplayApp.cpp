@@ -1,24 +1,25 @@
+#include <string>
+
 #include "DisplayApp.h"
 #include <FreeRTOS.h>
 #include <task.h>
 #include <libraries/log/nrf_log.h>
 #include <nrf_font.h>
 #include <queue.h>
-#include <Components/DateTime/DateTimeController.h>
+#include "components/datetime/DateTimeController.h"
 #include <drivers/Cst816s.h>
-#include <string>
-#include <DisplayApp/Screens/Tile.h>
-#include <DisplayApp/Screens/Meter.h>
-#include <DisplayApp/Screens/Gauge.h>
-#include <DisplayApp/Screens/Brightness.h>
-#include <DisplayApp/Screens/SystemInfo.h>
-#include <DisplayApp/Screens/Music.h>
-#include <Components/Ble/NotificationManager.h>
-#include <DisplayApp/Screens/FirmwareUpdate.h>
-#include <DisplayApp/Screens/ApplicationList.h>
-#include <DisplayApp/Screens/FirmwareValidation.h>
-#include <DisplayApp/Screens/InfiniPaint.h>
-#include "../SystemTask/SystemTask.h"
+#include "displayapp/screens/Tile.h"
+#include "displayapp/screens/Meter.h"
+#include "displayapp/screens/Gauge.h"
+#include "displayapp/screens/Brightness.h"
+#include "displayapp/screens/SystemInfo.h"
+#include "displayapp/screens/Music.h"
+#include "components/ble/NotificationManager.h"
+#include "displayapp/screens/FirmwareUpdate.h"
+#include "displayapp/screens/ApplicationList.h"
+#include "displayapp/screens/FirmwareValidation.h"
+#include "displayapp/screens/InfiniPaint.h"
+#include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Applications;
 
@@ -148,7 +149,7 @@ void DisplayApp::Refresh() {
           }
         }
 
-//        lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
+//        lvgl.SetFullRefresh(components::LittleVgl::FullRefreshDirections::Down);
 //        currentScreen.reset(nullptr);
 //        if(toggle) {
 //          currentScreen.reset(new Screens::Tile(this));

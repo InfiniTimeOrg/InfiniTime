@@ -1,4 +1,4 @@
-#include <SystemTask/SystemTask.h>
+#include <systemtask/SystemTask.h>
 #include "NotificationManager.h"
 
 #include "AlertNotificationClient.h"

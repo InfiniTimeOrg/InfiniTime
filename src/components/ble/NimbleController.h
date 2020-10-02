@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+
 #include "AlertNotificationService.h"
 #include "AlertNotificationClient.h"
 #include "DeviceInformationService.h"

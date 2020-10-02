@@ -2,7 +2,7 @@
 #include "FirmwareValidation.h"
 #include "../DisplayApp.h"
 #include "../../Version.h"
-#include "../../Components/FirmwareValidator/FirmwareValidator.h"
+#include "components/firmwarevalidator/FirmwareValidator.h"
 
 using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;

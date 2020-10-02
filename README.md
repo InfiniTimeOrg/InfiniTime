@@ -45,7 +45,7 @@ As of now, here is the list of achievements of this project:
 ## Documentation
 
 ### Develop
- - [Generate the fonts and symbols](src/DisplayApp/Fonts/Readme.md)
+ - [Generate the fonts and symbols](src/displayapp/fonts/Readme.md)
 
 ### Build, flash and debug
  - [Project branches](doc/branches.md)

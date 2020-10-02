@@ -1,4 +1,4 @@
-#include <SystemTask/SystemTask.h>
+#include <systemtask/SystemTask.h>
 #include "MusicService.h"
 
 int MSCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {

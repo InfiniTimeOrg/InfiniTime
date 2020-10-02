@@ -1,16 +1,17 @@
 #pragma once
 
+#include <memory>
+
 #include <FreeRTOS.h>
 #include <task.h>
-#include <memory>
 #include <drivers/SpiMaster.h>
 #include <drivers/St7789.h>
-#include <Components/Battery/BatteryController.h>
-#include <DisplayApp/DisplayApp.h>
+#include "components/battery/BatteryController.h"
+#include "displayapp/DisplayApp.h"
 #include <drivers/Watchdog.h>
 #include <drivers/SpiNorFlash.h>
 #include "SystemMonitor.h"
-#include "Components/Ble/NimbleController.h"
+#include "components/ble/NimbleController.h"
 #include "timers.h"
 
 namespace Pinetime {

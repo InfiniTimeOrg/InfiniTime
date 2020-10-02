@@ -2,16 +2,17 @@
 
 #include <cstdint>
 #include <chrono>
-#include <Components/Gfx/Gfx.h>
+#include <string>
+
+#include "components/gfx/Gfx.h"
+#include "components/battery/BatteryController.h"
+#include "components/ble/BleController.h"
+#include "components/ble/MusicService.h"
 #include "Screen.h"
 #include <bits/unique_ptr.h>
 #include <libs/lvgl/src/lv_core/lv_style.h>
 #include <libs/lvgl/src/lv_core/lv_obj.h>
-#include <Components/Battery/BatteryController.h>
-#include <Components/Ble/BleController.h>
 #include "../../Version.h"
-#include <Components/Ble/MusicService.h>
-#include <string>
 
 namespace Pinetime {
   namespace Applications {

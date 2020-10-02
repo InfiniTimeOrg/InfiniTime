@@ -292,33 +292,33 @@ set(LVGL_SRC
         )
 
 list(APPEND IMAGE_FILES
-        displayapp/Icons/battery/os_battery_error.c
-        displayapp/Icons/battery/os_battery_100.c
-        displayapp/Icons/battery/os_battery_090.c
-        displayapp/Icons/battery/os_battery_080.c
-        displayapp/Icons/battery/os_battery_070.c
-        displayapp/Icons/battery/os_battery_060.c
-        displayapp/Icons/battery/os_battery_050.c
-        displayapp/Icons/battery/os_battery_040.c
-        displayapp/Icons/battery/os_battery_030.c
-        displayapp/Icons/battery/os_battery_020.c
-        displayapp/Icons/battery/os_battery_010.c
-        displayapp/Icons/battery/os_battery_005.c
+        displayapp/icons/battery/os_battery_error.c
+        displayapp/icons/battery/os_battery_100.c
+        displayapp/icons/battery/os_battery_090.c
+        displayapp/icons/battery/os_battery_080.c
+        displayapp/icons/battery/os_battery_070.c
+        displayapp/icons/battery/os_battery_060.c
+        displayapp/icons/battery/os_battery_050.c
+        displayapp/icons/battery/os_battery_040.c
+        displayapp/icons/battery/os_battery_030.c
+        displayapp/icons/battery/os_battery_020.c
+        displayapp/icons/battery/os_battery_010.c
+        displayapp/icons/battery/os_battery_005.c
 
-        displayapp/Icons/battery/os_batterycharging_100.c
-        displayapp/Icons/battery/os_batterycharging_090.c
-        displayapp/Icons/battery/os_batterycharging_080.c
-        displayapp/Icons/battery/os_batterycharging_070.c
-        displayapp/Icons/battery/os_batterycharging_060.c
-        displayapp/Icons/battery/os_batterycharging_050.c
-        displayapp/Icons/battery/os_batterycharging_040.c
-        displayapp/Icons/battery/os_batterycharging_030.c
-        displayapp/Icons/battery/os_batterycharging_020.c
-        displayapp/Icons/battery/os_batterycharging_010.c
-        displayapp/Icons/battery/os_batterycharging_005.c
+        displayapp/icons/battery/os_batterycharging_100.c
+        displayapp/icons/battery/os_batterycharging_090.c
+        displayapp/icons/battery/os_batterycharging_080.c
+        displayapp/icons/battery/os_batterycharging_070.c
+        displayapp/icons/battery/os_batterycharging_060.c
+        displayapp/icons/battery/os_batterycharging_050.c
+        displayapp/icons/battery/os_batterycharging_040.c
+        displayapp/icons/battery/os_batterycharging_030.c
+        displayapp/icons/battery/os_batterycharging_020.c
+        displayapp/icons/battery/os_batterycharging_010.c
+        displayapp/icons/battery/os_batterycharging_005.c
 
-        displayapp/Icons/bluetooth/os_bt_connected.c
-        displayapp/Icons/bluetooth/os_bt_disconnected.c
+        displayapp/icons/bluetooth/os_bt_connected.c
+        displayapp/icons/bluetooth/os_bt_disconnected.c
         )
 
 list(APPEND SOURCE_FILES
@@ -349,30 +349,30 @@ list(APPEND SOURCE_FILES
         drivers/Watchdog.cpp
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
-        components/Battery/BatteryController.cpp
-        components/Ble/BleController.cpp
-        components/Ble/NotificationManager.cpp
-        components/DateTime/DateTimeController.cpp
-        components/Brightness/BrightnessController.cpp
-        components/Ble/NimbleController.cpp
-        components/Ble/DeviceInformationService.cpp
-        components/Ble/CurrentTimeClient.cpp
-        components/Ble/AlertNotificationClient.cpp
-        components/Ble/DfuService.cpp
-        components/Ble/CurrentTimeService.cpp
-        components/Ble/AlertNotificationService.cpp
-        components/Ble/MusicService.cpp
-        components/Ble/BatteryInformationService.cpp
-        components/Ble/ImmediateAlertService.cpp
-        components/FirmwareValidator/FirmwareValidator.cpp
+        components/battery/BatteryController.cpp
+        components/ble/BleController.cpp
+        components/ble/NotificationManager.cpp
+        components/datetime/DateTimeController.cpp
+        components/brightness/BrightnessController.cpp
+        components/ble/NimbleController.cpp
+        components/ble/DeviceInformationService.cpp
+        components/ble/CurrentTimeClient.cpp
+        components/ble/AlertNotificationClient.cpp
+        components/ble/DfuService.cpp
+        components/ble/CurrentTimeService.cpp
+        components/ble/AlertNotificationService.cpp
+        components/ble/MusicService.cpp
+        components/ble/BatteryInformationService.cpp
+        components/ble/ImmediateAlertService.cpp
+        components/firmwarevalidator/FirmwareValidator.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
         FreeRTOS/port_cmsis.c
 
         displayapp/LittleVgl.cpp
-        displayapp/Fonts/jetbrains_mono_extrabold_compressed.c
-        displayapp/Fonts/jetbrains_mono_bold_20.c
+        displayapp/fonts/jetbrains_mono_extrabold_compressed.c
+        displayapp/fonts/jetbrains_mono_bold_20.c
 
         systemtask/SystemTask.cpp
         drivers/TwiMaster.cpp
@@ -389,9 +389,9 @@ list(APPEND GRAPHICS_SOURCE_FILES
         drivers/Spi.cpp
         logging/NrfLogger.cpp
 
-        components/Gfx/Gfx.cpp
+        components/gfx/Gfx.cpp
         drivers/St7789.cpp
-        components/Brightness/BrightnessController.cpp
+        components/brightness/BrightnessController.cpp
 
         graphics.cpp
         )
@@ -426,19 +426,19 @@ set(INCLUDE_FILES
         drivers/Watchdog.h
         drivers/DebugPins.h
         drivers/InternalFlash.h
-        components/Battery/BatteryController.h
-        components/Ble/BleController.h
-        components/Ble/NotificationManager.h
-        components/DateTime/DateTimeController.h
-        components/Brightness/BrightnessController.h
-        components/Ble/NimbleController.h
-        components/Ble/DeviceInformationService.h
-        components/Ble/CurrentTimeClient.h
-        components/Ble/AlertNotificationClient.h
-        components/Ble/DfuService.h
-        components/FirmwareValidator/FirmwareValidator.h
-        components/Ble/BatteryInformationService.h
-        components/Ble/ImmediateAlertService.h
+        components/battery/BatteryController.h
+        components/ble/BleController.h
+        components/ble/NotificationManager.h
+        components/datetime/DateTimeController.h
+        components/brightness/BrightnessController.h
+        components/ble/NimbleController.h
+        components/ble/DeviceInformationService.h
+        components/ble/CurrentTimeClient.h
+        components/ble/AlertNotificationClient.h
+        components/ble/DfuService.h
+        components/firmwarevalidator/FirmwareValidator.h
+        components/ble/BatteryInformationService.h
+        components/ble/ImmediateAlertService.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h

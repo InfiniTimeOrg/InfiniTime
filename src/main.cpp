@@ -1,29 +1,29 @@
 #include <FreeRTOS.h>
 #include <task.h>
+#include <timers.h>
 #include <legacy/nrf_drv_clock.h>
+#include <hal/nrf_rtc.h>
+#include <hal/nrf_wdt.h>
+#include <os/os_cputime.h>
 #include <libraries/timer/app_timer.h>
 #include <libraries/gpiote/app_gpiote.h>
-#include <DisplayApp/DisplayApp.h>
+#include "displayapp/DisplayApp.h"
 #include <softdevice/common/nrf_sdh.h>
-#include <hal/nrf_rtc.h>
-#include <timers.h>
-#include <Components/DateTime/DateTimeController.h>
-#include "Components/Battery/BatteryController.h"
-#include "Components/Ble/BleController.h"
+#include "components/datetime/DateTimeController.h"
+#include "components/battery/BatteryController.h"
+#include "components/ble/BleController.h"
+#include "components/ble/NotificationManager.h"
 #include <drivers/St7789.h>
 #include <drivers/SpiMaster.h>
 #include <drivers/Spi.h>
-#include <DisplayApp/LittleVgl.h>
-#include <SystemTask/SystemTask.h>
-#include <Components/Ble/NotificationManager.h>
+#include "displayapp/LittleVgl.h"
+#include <systemtask/SystemTask.h>
 #include <nimble/nimble_port_freertos.h>
 #include <nimble/npl_freertos.h>
 #include <nimble/nimble_port.h>
 #include <host/ble_hs.h>
 #include <controller/ble_ll.h>
-#include <os/os_cputime.h>
 #include <transport/ram/ble_hci_ram.h>
-#include <hal/nrf_wdt.h>
 #include <host/util/util.h>
 #include <services/gap/ble_svc_gap.h>
 
@@ -32,7 +32,7 @@
 #include "Logging/NrfLogger.h"
 Pinetime::Logging::NrfLogger logger;
 #else
-#include "Logging/DummyLogger.h"
+#include "logging/DummyLogger.h"
 Pinetime::Logging::DummyLogger logger;
 #endif
 

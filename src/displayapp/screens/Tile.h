@@ -5,7 +5,7 @@
 #include <bits/unique_ptr.h>
 #include "Modal.h"
 #include <lvgl/src/lv_core/lv_style.h>
-#include <DisplayApp/Apps.h>
+#include <displayapp/Apps.h>
 
 namespace Pinetime {
   namespace Applications {

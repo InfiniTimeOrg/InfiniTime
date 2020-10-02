@@ -1,6 +1,7 @@
-#include <Components/Ble/BleController.h>
-#include <SystemTask/SystemTask.h>
 #include <cstring>
+
+#include "components/ble/BleController.h"
+#include "systemtask/SystemTask.h"
 #include "DfuService.h"
 
 using namespace Pinetime::Controllers;

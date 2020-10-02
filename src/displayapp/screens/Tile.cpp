@@ -1,8 +1,9 @@
 #include <libs/lvgl/src/lv_core/lv_obj.h>
 #include <libs/lvgl/src/lv_font/lv_font.h>
 #include <libs/lvgl/lvgl.h>
+
 #include "Tile.h"
-#include <DisplayApp/DisplayApp.h>
+#include "displayapp/DisplayApp.h"
 #include "Symbols.h"
 #include "../../Version.h"
 

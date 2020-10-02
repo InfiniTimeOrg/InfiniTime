@@ -1,7 +1,7 @@
 
 #include <hal/nrf_rtc.h>
 #include "NotificationManager.h"
-#include <SystemTask/SystemTask.h>
+#include <systemtask/SystemTask.h>
 
 #include "AlertNotificationService.h"
 #include <cstring>

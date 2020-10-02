@@ -1,8 +1,8 @@
 
-#include <Components/DateTime/DateTimeController.h>
+#include "components/datetime/DateTimeController.h"
 
-#include <SystemTask/SystemTask.h>
-#include <Components/Ble/NotificationManager.h>
+#include <systemtask/SystemTask.h>
+#include "components/ble/NotificationManager.h"
 #include <hal/nrf_rtc.h>
 
 #include "NimbleController.h"

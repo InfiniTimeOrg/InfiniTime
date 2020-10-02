@@ -6,7 +6,7 @@
 #include <libs/lvgl/src/lv_core/lv_style.h>
 #include <libs/lvgl/src/lv_core/lv_obj.h>
 #include <drivers/St7789.h>
-#include <DisplayApp/LittleVgl.h>
+#include "displayapp/LittleVgl.h"
 
 namespace Pinetime {
   namespace Applications {

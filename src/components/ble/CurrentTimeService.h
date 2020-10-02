@@ -1,7 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <array>
-#include <Components/DateTime/DateTimeController.h>
+
+#include "components/datetime/DateTimeController.h"
 #include <host/ble_gap.h>
 
 namespace Pinetime {

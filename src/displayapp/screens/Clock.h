@@ -2,12 +2,13 @@
 
 #include <cstdint>
 #include <chrono>
+
 #include "Screen.h"
 #include <bits/unique_ptr.h>
 #include <libs/lvgl/src/lv_core/lv_style.h>
 #include <libs/lvgl/src/lv_core/lv_obj.h>
-#include <Components/Battery/BatteryController.h>
-#include <Components/Ble/BleController.h>
+#include "components/battery/BatteryController.h"
+#include "components/ble/BleController.h"
 
 namespace Pinetime {
   namespace Applications {

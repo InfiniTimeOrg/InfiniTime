@@ -1,5 +1,5 @@
 #include <libs/lvgl/lvgl.h>
-#include <DisplayApp/DisplayApp.h>
+#include <displayapp/DisplayApp.h>
 #include <functional>
 #include "ApplicationList.h"
 #include "Tile.h"

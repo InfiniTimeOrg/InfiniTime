@@ -1,5 +1,5 @@
 #include "BatteryInformationService.h"
-#include "../Battery/BatteryController.h"
+#include "components/battery/BatteryController.h"
 
 using namespace Pinetime::Controllers;
 

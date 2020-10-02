@@ -1,13 +1,14 @@
 #pragma once
 
+#include <functional>
 #include <vector>
-#include <Components/Ble/NimbleController.h>
+
+#include "components/ble/NimbleController.h"
 #include "Screen.h"
 #include "Label.h"
 #include "ScreenList.h"
 #include "Gauge.h"
 #include "Meter.h"
-#include <functional>
 
 namespace Pinetime {
   namespace Applications {
