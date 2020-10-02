@@ -46,7 +46,7 @@ void SystemTask::Start() {
 
 void SystemTask::Process(void *instance) {
   auto *app = static_cast<SystemTask *>(instance);
-  NRF_LOG_INFO("SystemTask task started!");
+  NRF_LOG_INFO("systemtask task started!");
   app->Work();
 }
 
@@ -123,7 +123,7 @@ void SystemTask::Work() {
           break;
         case Messages::GoToSleep:
           isGoingToSleep = true;
-          NRF_LOG_INFO("[SystemTask] Going to sleep");
+          NRF_LOG_INFO("[systemtask] Going to sleep");
           xTimerStop(idleTimer, 0);
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
           break;
@@ -196,13 +196,13 @@ void SystemTask::Work() {
 void SystemTask::OnButtonPushed() {
   if(isGoingToSleep) return;
   if(!isSleeping) {
-    NRF_LOG_INFO("[SystemTask] Button pushed");
+    NRF_LOG_INFO("[systemtask] Button pushed");
     PushMessage(Messages::OnButtonEvent);
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::ButtonPushed);
   }
   else {
     if(!isWakingUp) {
-      NRF_LOG_INFO("[SystemTask] Button pushed, waking up");
+      NRF_LOG_INFO("[systemtask] Button pushed, waking up");
       GoToRunning();
     }
   }
@@ -215,7 +215,7 @@ void SystemTask::GoToRunning() {
 
 void SystemTask::OnTouchEvent() {
   if(isGoingToSleep) return ;
-  NRF_LOG_INFO("[SystemTask] Touch event");
+  NRF_LOG_INFO("[systemtask] Touch event");
   if(!isSleeping) {
     PushMessage(Messages::OnTouchEvent);
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::TouchEvent);

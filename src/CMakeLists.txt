@@ -374,7 +374,7 @@ list(APPEND SOURCE_FILES
         DisplayApp/Fonts/jetbrains_mono_extrabold_compressed.c
         DisplayApp/Fonts/jetbrains_mono_bold_20.c
 
-        SystemTask/SystemTask.cpp
+        systemtask/SystemTask.cpp
         drivers/TwiMaster.cpp
         )
 
@@ -451,8 +451,8 @@ set(INCLUDE_FILES
         libs/date/includes/date/ptz.h
         libs/date/includes/date/tz_private.h
         DisplayApp/LittleVgl.h
-        SystemTask/SystemTask.h
-        SystemTask/SystemMonitor.h
+        systemtask/SystemTask.h
+        systemtask/SystemMonitor.h
         DisplayApp/Screens/Symbols.h
         drivers/TwiMaster.h
         )
