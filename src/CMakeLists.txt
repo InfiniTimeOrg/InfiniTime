@@ -292,55 +292,55 @@ set(LVGL_SRC
         )
 
 list(APPEND IMAGE_FILES
-        DisplayApp/Icons/battery/os_battery_error.c
-        DisplayApp/Icons/battery/os_battery_100.c
-        DisplayApp/Icons/battery/os_battery_090.c
-        DisplayApp/Icons/battery/os_battery_080.c
-        DisplayApp/Icons/battery/os_battery_070.c
-        DisplayApp/Icons/battery/os_battery_060.c
-        DisplayApp/Icons/battery/os_battery_050.c
-        DisplayApp/Icons/battery/os_battery_040.c
-        DisplayApp/Icons/battery/os_battery_030.c
-        DisplayApp/Icons/battery/os_battery_020.c
-        DisplayApp/Icons/battery/os_battery_010.c
-        DisplayApp/Icons/battery/os_battery_005.c
+        displayapp/Icons/battery/os_battery_error.c
+        displayapp/Icons/battery/os_battery_100.c
+        displayapp/Icons/battery/os_battery_090.c
+        displayapp/Icons/battery/os_battery_080.c
+        displayapp/Icons/battery/os_battery_070.c
+        displayapp/Icons/battery/os_battery_060.c
+        displayapp/Icons/battery/os_battery_050.c
+        displayapp/Icons/battery/os_battery_040.c
+        displayapp/Icons/battery/os_battery_030.c
+        displayapp/Icons/battery/os_battery_020.c
+        displayapp/Icons/battery/os_battery_010.c
+        displayapp/Icons/battery/os_battery_005.c
 
-        DisplayApp/Icons/battery/os_batterycharging_100.c
-        DisplayApp/Icons/battery/os_batterycharging_090.c
-        DisplayApp/Icons/battery/os_batterycharging_080.c
-        DisplayApp/Icons/battery/os_batterycharging_070.c
-        DisplayApp/Icons/battery/os_batterycharging_060.c
-        DisplayApp/Icons/battery/os_batterycharging_050.c
-        DisplayApp/Icons/battery/os_batterycharging_040.c
-        DisplayApp/Icons/battery/os_batterycharging_030.c
-        DisplayApp/Icons/battery/os_batterycharging_020.c
-        DisplayApp/Icons/battery/os_batterycharging_010.c
-        DisplayApp/Icons/battery/os_batterycharging_005.c
+        displayapp/Icons/battery/os_batterycharging_100.c
+        displayapp/Icons/battery/os_batterycharging_090.c
+        displayapp/Icons/battery/os_batterycharging_080.c
+        displayapp/Icons/battery/os_batterycharging_070.c
+        displayapp/Icons/battery/os_batterycharging_060.c
+        displayapp/Icons/battery/os_batterycharging_050.c
+        displayapp/Icons/battery/os_batterycharging_040.c
+        displayapp/Icons/battery/os_batterycharging_030.c
+        displayapp/Icons/battery/os_batterycharging_020.c
+        displayapp/Icons/battery/os_batterycharging_010.c
+        displayapp/Icons/battery/os_batterycharging_005.c
 
-        DisplayApp/Icons/bluetooth/os_bt_connected.c
-        DisplayApp/Icons/bluetooth/os_bt_disconnected.c
+        displayapp/Icons/bluetooth/os_bt_connected.c
+        displayapp/Icons/bluetooth/os_bt_disconnected.c
         )
 
 list(APPEND SOURCE_FILES
         logging/NrfLogger.cpp
-        DisplayApp/DisplayApp.cpp
-        DisplayApp/Screens/Screen.cpp
-        DisplayApp/Screens/Clock.cpp
-        DisplayApp/Screens/Tile.cpp
-        DisplayApp/Screens/Meter.cpp
-        DisplayApp/Screens/Gauge.cpp
-        DisplayApp/Screens/InfiniPaint.cpp
-        DisplayApp/Screens/DropDownDemo.cpp
-        DisplayApp/Screens/Modal.cpp
-        DisplayApp/Screens/BatteryIcon.cpp
-        DisplayApp/Screens/BleIcon.cpp
-        DisplayApp/Screens/Brightness.cpp
-        DisplayApp/Screens/SystemInfo.cpp
-        DisplayApp/Screens/Label.cpp
-        DisplayApp/Screens/FirmwareUpdate.cpp
-        DisplayApp/Screens/Music.cpp
-        DisplayApp/Screens/FirmwareValidation.cpp
-        DisplayApp/Screens/ApplicationList.cpp
+        displayapp/DisplayApp.cpp
+        displayapp/Screens/Screen.cpp
+        displayapp/Screens/Clock.cpp
+        displayapp/Screens/Tile.cpp
+        displayapp/Screens/Meter.cpp
+        displayapp/Screens/Gauge.cpp
+        displayapp/Screens/InfiniPaint.cpp
+        displayapp/Screens/DropDownDemo.cpp
+        displayapp/Screens/Modal.cpp
+        displayapp/Screens/BatteryIcon.cpp
+        displayapp/Screens/BleIcon.cpp
+        displayapp/Screens/Brightness.cpp
+        displayapp/Screens/SystemInfo.cpp
+        displayapp/Screens/Label.cpp
+        displayapp/Screens/FirmwareUpdate.cpp
+        displayapp/Screens/Music.cpp
+        displayapp/Screens/FirmwareValidation.cpp
+        displayapp/Screens/ApplicationList.cpp
         main.cpp
         drivers/St7789.cpp
         drivers/SpiNorFlash.cpp
@@ -370,9 +370,9 @@ list(APPEND SOURCE_FILES
         FreeRTOS/port_cmsis_systick.c
         FreeRTOS/port_cmsis.c
 
-        DisplayApp/LittleVgl.cpp
-        DisplayApp/Fonts/jetbrains_mono_extrabold_compressed.c
-        DisplayApp/Fonts/jetbrains_mono_bold_20.c
+        displayapp/LittleVgl.cpp
+        displayapp/Fonts/jetbrains_mono_extrabold_compressed.c
+        displayapp/Fonts/jetbrains_mono_bold_20.c
 
         systemtask/SystemTask.cpp
         drivers/TwiMaster.cpp
@@ -399,26 +399,26 @@ list(APPEND GRAPHICS_SOURCE_FILES
 set(INCLUDE_FILES
         logging/Logger.h
         logging/NrfLogger.h
-        DisplayApp/DisplayApp.h
-        DisplayApp/TouchEvents.h
-        DisplayApp/Screens/Screen.h
-        DisplayApp/Screens/Clock.h
-        DisplayApp/Screens/Tile.h
-        DisplayApp/Screens/Meter.h
-        DisplayApp/Screens/Gauge.h
-        DisplayApp/Screens/InfiniPaint.h
-        DisplayApp/Screens/DropDownDemo.h
-        DisplayApp/Screens/Modal.h
-        DisplayApp/Screens/BatteryIcon.h
-        DisplayApp/Screens/BleIcon.cpp
-        DisplayApp/Screens/Brightness.h
-        DisplayApp/Screens/SystemInfo.h
-        DisplayApp/Screens/ScreenList.h
-        DisplayApp/Screens/Label.h
-        DisplayApp/Screens/FirmwareUpdate.h
-        DisplayApp/Screens/FirmwareValidation.h
-        DisplayApp/Screens/ApplicationList.h
-        DisplayApp/Apps.h
+        displayapp/DisplayApp.h
+        displayapp/TouchEvents.h
+        displayapp/Screens/Screen.h
+        displayapp/Screens/Clock.h
+        displayapp/Screens/Tile.h
+        displayapp/Screens/Meter.h
+        displayapp/Screens/Gauge.h
+        displayapp/Screens/InfiniPaint.h
+        displayapp/Screens/DropDownDemo.h
+        displayapp/Screens/Modal.h
+        displayapp/Screens/BatteryIcon.h
+        displayapp/Screens/BleIcon.cpp
+        displayapp/Screens/Brightness.h
+        displayapp/Screens/SystemInfo.h
+        displayapp/Screens/ScreenList.h
+        displayapp/Screens/Label.h
+        displayapp/Screens/FirmwareUpdate.h
+        displayapp/Screens/FirmwareValidation.h
+        displayapp/Screens/ApplicationList.h
+        displayapp/Apps.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h
@@ -450,10 +450,10 @@ set(INCLUDE_FILES
         libs/date/includes/date/julian.h
         libs/date/includes/date/ptz.h
         libs/date/includes/date/tz_private.h
-        DisplayApp/LittleVgl.h
+        displayapp/LittleVgl.h
         systemtask/SystemTask.h
         systemtask/SystemMonitor.h
-        DisplayApp/Screens/Symbols.h
+        displayapp/Screens/Symbols.h
         drivers/TwiMaster.h
         )
 

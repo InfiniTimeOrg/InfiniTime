@@ -43,13 +43,13 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
 }
 
 void DisplayApp::Start() {
-  if (pdPASS != xTaskCreate(DisplayApp::Process, "DisplayApp", 512, this, 0, &taskHandle))
+  if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 512, this, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }
 
 void DisplayApp::Process(void *instance) {
   auto *app = static_cast<DisplayApp *>(instance);
-  NRF_LOG_INFO("DisplayApp task started!");
+  NRF_LOG_INFO("displayapp task started!");
   app->InitHw();
 
   // Send a dummy notification to unlock the lvgl display driver for the first iteration
