@@ -322,7 +322,7 @@ list(APPEND IMAGE_FILES
         )
 
 list(APPEND SOURCE_FILES
-        Logging/NrfLogger.cpp
+        logging/NrfLogger.cpp
         DisplayApp/DisplayApp.cpp
         DisplayApp/Screens/Screen.cpp
         DisplayApp/Screens/Clock.cpp
@@ -387,7 +387,7 @@ list(APPEND GRAPHICS_SOURCE_FILES
         drivers/SpiNorFlash.cpp
         drivers/SpiMaster.cpp
         drivers/Spi.cpp
-        Logging/NrfLogger.cpp
+        logging/NrfLogger.cpp
 
         components/Gfx/Gfx.cpp
         drivers/St7789.cpp
@@ -397,8 +397,8 @@ list(APPEND GRAPHICS_SOURCE_FILES
         )
 
 set(INCLUDE_FILES
-        Logging/Logger.h
-        Logging/NrfLogger.h
+        logging/Logger.h
+        logging/NrfLogger.h
         DisplayApp/DisplayApp.h
         DisplayApp/TouchEvents.h
         DisplayApp/Screens/Screen.h
