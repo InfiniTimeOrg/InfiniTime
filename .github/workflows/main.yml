@@ -1,10 +1,9 @@
-# GitHub Actions Workflow to build FreeRTOS Firmware for PineTime Smart Watch
-# See https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud
-# Based on https://github.com/JF002/Pinetime/blob/master/doc/buildAndProgram.md
-# and https://github.com/JF002/Pinetime/blob/master/bootloader/README.md
+# GitHub Actions Workflow to build PineTime Watch Face Simulator with LVGL and WebAssembly
+# See https://github.com/AppKaki/lvgl-wasm/blob/master/README.md 
+# and https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud
 
 # Name of this Workflow
-name: Build PineTime Firmware
+name: Simulate PineTime Firmware
 
 # When to run this Workflow...
 on:
@@ -12,7 +11,7 @@ on:
   # Run this Workflow when files are updated (Pushed) in the "master" Branch
   push:
     branches: [ master ]
-
+    
   # Also run this Workflow when a Pull Request is created or updated in the "master" Branch
   pull_request:
     branches: [ master ]
@@ -25,147 +24,148 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v2
 
-      #########################################################################################
-      # Download and Cache Dependencies
+    # Uncomment the next 2 steps to support Rust WebAssembly
+    # - name: Fetch cache for Rust Toolchain
+    #   id:   cache-rust
+    #   uses: actions/cache@v2
+    #   with:
+    #     path: |
+    #       ~/.cargo/registry
+    #       ~/.cargo/git
+    #       target
+    #     key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+    # - name: Install Rust Toolchain for emscripten
+    #   run:  |
+    #     rustup default nightly
+    #     rustup target add wasm32-unknown-emscripten
 
-      - name: Install cmake
-        uses: lukka/get-cmake@v3.18.0
+    - name: Check cache for emscripten
+      id:   cache-emsdk
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-emsdk
+      with:
+        path: /tmp/emsdk
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
 
-      - name: Check cache for Embedded Arm Toolchain arm-none-eabi-gcc
-        id:   cache-toolchain
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-toolchain-9-2020-q2
-        with:
-          path: ${{ runner.temp }}/arm-none-eabi
-          key:  ${{ runner.os }}-build-${{ env.cache-name }}
-          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+    - name: Install emscripten
+      if:   steps.cache-emsdk.outputs.cache-hit != 'true'  # Install emscripten if not found in cache
+      run:  |
+        # Based on https://emscripten.org/docs/getting_started/downloads.html
+        cd /tmp
 
-      - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
-        if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
-        uses: fiam/arm-none-eabi-gcc@v1.0.2
-        with:
-          # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
-          release: 9-2020-q2
-          # Directory to unpack GCC to. Defaults to a temporary directory.
-          directory: ${{ runner.temp }}/arm-none-eabi
+        # Get the emsdk repo
+        git clone https://github.com/emscripten-core/emsdk.git
 
-      - name: Check cache for nRF5 SDK
-        id:   cache-nrf5sdk
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-nrf5sdk
-        with:
-          path: ${{ runner.temp }}/nrf5_sdk
-          key:  ${{ runner.os }}-build-${{ env.cache-name }}
-          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+        # Enter that directory
+        cd emsdk
 
-      - name: Install nRF5 SDK
-        if:   steps.cache-nrf5sdk.outputs.cache-hit != 'true'  # Install SDK if not found in cache
-        run:  |
-          cd ${{ runner.temp }}
-          curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip -o nrf5_sdk.zip
-          unzip nrf5_sdk.zip
-          mv nRF5_SDK_15.3.0_59ac345 nrf5_sdk
+        # Download and install the latest SDK tools.
+        ./emsdk install latest
 
-      - name: Check cache for MCUBoot
-        id:   cache-mcuboot
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-mcuboot
-        with:
-          path: ${{ runner.temp }}/mcuboot
-          key:  ${{ runner.os }}-build-${{ env.cache-name }}
-          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+        # Make the "latest" SDK "active" for the current user. (writes .emscripten file)
+        ./emsdk activate latest
 
-      - name: Install MCUBoot
-        if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
-        run:  |
-          cd ${{ runner.temp }}
-          git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
+        # Activate PATH and other environment variables in the current terminal
+        source ./emsdk_env.sh
 
-      - name: Install imgtool dependencies
-        run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
+        # Show version
+        emcc --version
+        emcc --version        
 
-      - name: Install adafruit-nrfutil
-        run:  |
-          pip3 install --user wheel
-          pip3 install --user setuptools
-          pip3 install --user adafruit-nrfutil
+    - name: Check cache for wabt
+      id:   cache-wabt
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-wabt
+      with:
+        path: /tmp/wabt
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
 
-        #########################################################################################
-        # Checkout
+    - name: Install wabt
+      if:   steps.cache-wabt.outputs.cache-hit != 'true'  # Install wabt if not found in cache
+      run:  |
+        cd /tmp
+        git clone --recursive https://github.com/WebAssembly/wabt
+        cd wabt
+        mkdir build
+        cd build
+        cmake ..
+        cmake --build .
 
-      - name: Checkout source files
-        uses: actions/checkout@v2
+    - name: Checkout LVGL for WebAssembly
+      run:  |
+        cd /tmp
+        git clone https://github.com/AppKaki/lvgl-wasm
+        
+    - name: Copy Watch Face Clock.cpp to LVGL for WebAssembly
+      run:  |
+        cp src/DisplayApp/Screens/Clock.cpp /tmp/lvgl-wasm/clock
 
-      - name: Show files
-        run:  set ; pwd ; ls -l
+    - name: Build LVGL for WebAssembly
+      run:  |
+        # Add emscripten and wabt to the PATH
+        source /tmp/emsdk/emsdk_env.sh
+        export PATH=$PATH:/tmp/wabt/build
 
-      #########################################################################################
-      # CMake
+        # Build LVGL app: wasm/lvgl.html, lvgl.js, lvgl.wasm
+        cd /tmp/lvgl-wasm
+        wasm/lvgl.sh
 
-      - name: CMake
-        run:  |
-          mkdir -p build
-          cd build
-          cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
+    - name: Show files
+      run:  set ; pwd ; ls -l /tmp/lvgl-wasm
 
-        #########################################################################################
-        # Make and Upload DFU Package
-        # pinetime-mcuboot-app.img must be flashed at address 0x8000 in the internal flash memory with OpenOCD:
-        # program image.bin 0x8000
+    - name: Copy WebAssembly to GitHub Pages
+      run:  |
+        if [ ! -d docs ]; then
+          mkdir docs
+        fi
+        export src=/tmp/lvgl-wasm
+        export docs=$src/docs
+        export wasm=$src/wasm
+        cp \
+          $docs/index.md \
+          $docs/lvgl.html \
+          $wasm/*.html \
+          $wasm/*.js \
+          $wasm/*.wasm \
+          $wasm/*.txt \
+          docs
 
-        # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
-        # For Faster Builds: Add "make" option "-j"
+    - name: Commit GitHub Pages
+      uses: EndBug/add-and-commit@v4.4.0
+      with:
+        # Arguments for the git add command
+        add: docs
+        # The name of the user that will be displayed as the author of the commit
+        # author_name: # optional
+        # The email of the user that will be displayed as the author of the commit
+        # author_email: # optional
+        # The directory where your repository is located. You should use actions/checkout first to set it up
+        # cwd: # optional, default is .
+        # Whether to use the force option on git add, in order to bypass eventual gitignores
+        # force: # optional, default is false
+        # Whether to use the signoff option on git commit
+        # signoff: # optional, default is false
+        # The message for the commit
+        # message: # optional, default is Commit from GitHub Actions
+        # Name of the branch to use, if different from the one that triggered the workflow
+        # ref: # optional
+        # Arguments for the git rm command
+        # remove: # optional, default is 
+        # The name of the tag to add to the new commit
+        # tag: # optional, default is 
 
-      - name: Make pinetime-mcuboot-app
-        run:  |
-          cd build
-          make pinetime-mcuboot-app
-
-      - name: Create firmware image
-        run:  |
-          # The generated firmware binary looks like "pinetime-mcuboot-app-0.8.2.bin"
-          ls -l build/src/pinetime-mcuboot-app*.bin
-          ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app*.bin build/src/pinetime-mcuboot-app-img.bin
-          ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
-
-      - name: Create DFU package
-        run:  |
-          ~/.local/bin/adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application build/src/pinetime-mcuboot-app-img.bin build/src/pinetime-mcuboot-app-dfu.zip
-          unzip -v build/src/pinetime-mcuboot-app-dfu.zip
-          # Unzip the package because Upload Artifact will zip up the files
-          unzip build/src/pinetime-mcuboot-app-dfu.zip -d build/src/pinetime-mcuboot-app-dfu
-
-      - name: Upload DFU package
-        uses: actions/upload-artifact@v2
-        with:
-          name: pinetime-mcuboot-app-dfu.zip
-          path: build/src/pinetime-mcuboot-app-dfu/*
-
-        #########################################################################################
-        # Make and Upload Standalone Firmware
-
-      - name: Make pinetime-app
-        run:  |
-          cd build
-          make pinetime-app
-
-      - name: Upload standalone firmware
-        uses: actions/upload-artifact@v2
-        with:
-          name: pinetime-app.out
-          path: build/src/pinetime-app*.out
-
-      #########################################################################################
-      # Finish
-
-      - name: Find output
-        run:  |
-          find . -name "pinetime-app.*" -ls
-          find . -name "pinetime-mcuboot-app.*" -ls
-
-# Embedded Arm Toolchain and nRF5 SDK will only be cached if the build succeeds.
-# So make sure that the first build always succeeds, e.g. comment out the "Make" step.
+    - name: Upload Outputs
+      uses: actions/upload-artifact@v2
+      with:
+        name: wasm
+        path: |
+          /tmp/lvgl-wasm/wasm/*.html
+          /tmp/lvgl-wasm/wasm/*.js
+          /tmp/lvgl-wasm/wasm/*.wasm
+          /tmp/lvgl-wasm/wasm/*.txt
