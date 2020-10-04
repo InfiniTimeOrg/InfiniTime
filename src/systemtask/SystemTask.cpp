@@ -194,6 +194,8 @@ void SystemTask::Work() {
     if(!nrf_gpio_pin_read(pinButton))
       watchdog.Kick();
   }
+  // Clear diagnostic suppression
+  #pragma clang diagnostic pop
 }
 
 void SystemTask::OnButtonPushed() {
