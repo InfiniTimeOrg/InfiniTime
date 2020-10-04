@@ -163,7 +163,7 @@ lv_obj_t * lv_obj_create(lv_obj_t * parent, const lv_obj_t * copy)
         LV_ASSERT_MEM(new_obj);
         if(new_obj == NULL) return NULL;
 
-        new_obj->par = NULL; /*Screens has no a parent*/
+        new_obj->par = NULL; /*screens has no a parent*/
         lv_ll_init(&(new_obj->child_ll), sizeof(lv_obj_t));
 
         /*Set the callbacks*/
