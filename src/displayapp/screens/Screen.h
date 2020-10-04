@@ -9,7 +9,7 @@ namespace Pinetime {
     namespace Screens {
       class Screen {
         public:
-          Screen(DisplayApp* app) : app{app} {}
+          explicit Screen(DisplayApp* app) : app{app} {}
           virtual ~Screen() = default;
 
           // Return false if the app can be closed, true if it must continue to run
