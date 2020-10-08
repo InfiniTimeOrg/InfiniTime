@@ -11,7 +11,7 @@
 #include <host/ble_gap.h>
 #include <host/util/util.h>
 #include <drivers/InternalFlash.h>
-#include "../main.h"
+#include "main.h"
 #include "components/ble/NimbleController.h"
 
 using namespace Pinetime::System;
@@ -36,7 +36,7 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
                        nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash) {
-  systemTaksMsgQueue = xQueueCreate(10, 1);
+  systemTasksMsgQueue = xQueueCreate(10, 1);
 }
 
 void SystemTask::Start() {
@@ -102,7 +102,7 @@ void SystemTask::Work() {
 
   while(true) {
     uint8_t msg;
-    if (xQueueReceive(systemTaksMsgQueue, &msg, isSleeping?2500 : 1000)) {
+    if (xQueueReceive(systemTasksMsgQueue, &msg, isSleeping ? 2500 : 1000)) {
       Messages message = static_cast<Messages >(msg);
       switch(message) {
         case Messages::GoToRunning:
@@ -228,7 +228,7 @@ void SystemTask::PushMessage(SystemTask::Messages msg) {
   }
   BaseType_t xHigherPriorityTaskWoken;
   xHigherPriorityTaskWoken = pdFALSE;
-  xQueueSendFromISR(systemTaksMsgQueue, &msg, &xHigherPriorityTaskWoken);
+  xQueueSendFromISR(systemTasksMsgQueue, &msg, &xHigherPriorityTaskWoken);
   if (xHigherPriorityTaskWoken) {
     /* Actual macro used here is port specific. */
     // TODO : should I do something here?
