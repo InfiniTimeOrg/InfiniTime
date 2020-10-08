@@ -9,7 +9,7 @@ extern lv_font_t jetbrains_mono_bold_20;
 
 DropDownDemo::DropDownDemo(Pinetime::Applications::DisplayApp *app) : Screen(app) {
   // Create the dropdown object, with many item, and fix its height
-  ddlist = lv_ddlist_create(lv_scr_act(), NULL);
+  ddlist = lv_ddlist_create(lv_scr_act(), nullptr);
   lv_ddlist_set_options(ddlist, "Apple\n"
                                 "Banana\n"
                                 "Orange\n"
@@ -24,7 +24,7 @@ DropDownDemo::DropDownDemo(Pinetime::Applications::DisplayApp *app) : Screen(app
   lv_ddlist_set_fix_width(ddlist, 150);
   lv_ddlist_set_draw_arrow(ddlist, true);
   lv_ddlist_set_fix_height(ddlist, 150);
-  lv_obj_align(ddlist, NULL, LV_ALIGN_IN_TOP_MID, 0, 20);
+  lv_obj_align(ddlist, nullptr, LV_ALIGN_IN_TOP_MID, 0, 20);
 }
 
 DropDownDemo::~DropDownDemo() {

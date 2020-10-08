@@ -25,11 +25,11 @@ Gauge::Gauge(Pinetime::Applications::DisplayApp *app) : Screen(app) {
   needle_colors[0] = LV_COLOR_ORANGE;
 
   /*Create a gauge*/
-  gauge1 = lv_gauge_create(lv_scr_act(), NULL);
+  gauge1 = lv_gauge_create(lv_scr_act(), nullptr);
   lv_gauge_set_style(gauge1, LV_GAUGE_STYLE_MAIN, &style);
   lv_gauge_set_needle_count(gauge1, 1, needle_colors);
   lv_obj_set_size(gauge1, 180, 180);
-  lv_obj_align(gauge1, NULL, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_align(gauge1, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_gauge_set_scale(gauge1, 360, 60, 0);
   lv_gauge_set_range(gauge1, 0, 59);
 
