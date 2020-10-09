@@ -1,5 +1,4 @@
 #include <cstdio>
-
 #include <libs/date/includes/date/date.h>
 #include "components/datetime/DateTimeController.h"
 #include <libs/lvgl/lvgl.h>
@@ -18,6 +17,14 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event);
 }
 
+//* Define Global Variables *//
+
+// ~Define Global Variables *//
+
+// Define Widgets *//
+
+// ~Define Widgets *//
+
 Clock::Clock(DisplayApp* app,
         Controllers::DateTime& dateTimeController,
         Controllers::Battery& batteryController,
@@ -29,6 +36,10 @@ Clock::Clock(DisplayApp* app,
   displayedChar[3] = 0;
   displayedChar[4] = 0;
 
+  //* Create Widgets *// (created in Bottom layer)
+
+  //* ~Create Widgets *//                                           
+                                             
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 2);
@@ -41,9 +52,7 @@ Clock::Clock(DisplayApp* app,
   lv_label_set_text(bleIcon, Symbols::bluetooth);
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
-
   label_date = lv_label_create(lv_scr_act(), nullptr);
-
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
@@ -58,7 +67,6 @@ Clock::Clock(DisplayApp* app,
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text(backgroundLabel, "");
-
 
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(heartbeatIcon, Symbols::heartBeat);
@@ -79,6 +87,10 @@ Clock::Clock(DisplayApp* app,
   stepIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+                                             
+  //* Create Widgets *// (created in Top layer, NOTE: to stay in the top most layer, refresh the position)
+                                             
+  //* ~Create Widgets *//                                           
 }
 
 Clock::~Clock() {
@@ -86,6 +98,11 @@ Clock::~Clock() {
 }
 
 bool Clock::Refresh() {
+  
+  //* Refresh Widgets *// (Bottom layer, refreshed according to system, every ~20ms)
+                                             
+  //* ~Refresh Widgets *//
+  
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
@@ -109,6 +126,11 @@ bool Clock::Refresh() {
   currentDateTime = dateTimeController.CurrentDateTime();
 
   if(currentDateTime.IsUpdated()) {
+    
+    //* Refresh Widgets *// (bottom layer, refreshed according to the time, every 1s)
+                                             
+    //* ~Refresh Widgets *//
+    
     auto newDateTime = currentDateTime.Get();
 
     auto dp = date::floor<date::days>(newDateTime);
@@ -146,12 +168,16 @@ bool Clock::Refresh() {
       sprintf(dateStr, "%s %d %s %d", DayOfWeekToString(dayOfWeek), day, MonthToString(month), year);
       lv_label_set_text(label_date, dateStr);
 
-
       currentYear = year;
       currentMonth = month;
       currentDayOfWeek = dayOfWeek;
       currentDay = day;
     }
+    
+    //* Refresh Widgets *// (Top layer, refreshed according to the time, every 1s)
+                                             
+    //* ~Refresh Widgets *//
+    
   }
 
   // TODO heartbeat = heartBeatController.GetValue();
@@ -173,6 +199,10 @@ bool Clock::Refresh() {
     lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
 
+  //* Refresh Widgets *// (Top layer, refreshed according to system, every ~20ms)
+                                             
+  //* ~Refresh Widgets *//
+  
   return running;
 }
 
