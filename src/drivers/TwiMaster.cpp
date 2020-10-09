@@ -5,6 +5,9 @@
 
 using namespace Pinetime::Drivers;
 
+
+static NRF_TWIM_Type* twimaddress;
+
 // TODO use shortcut to automatically send STOP when receive LastTX, for example
 // TODO use DMA/IRQ
 
@@ -58,6 +61,33 @@ void TwiMaster::Init() {
 
   xSemaphoreGive(mutex);
 
+  twimaddress = twiBaseAddress;
+
+
+}
+
+// fix i2c when it gets stuck
+void i2c_fix() {
+  // disable i2c
+  uint32_t twi_state = twimaddress->ENABLE;
+  twimaddress->ENABLE = TWIM_ENABLE_ENABLE_Disabled << TWI_ENABLE_ENABLE_Pos;
+
+  // I could do something with a global variable here to make pin 6 or 7 not hardcoded and use params.pinScl
+  // from the init function. But I wouldn't be surprised if there was a different way of doing that with C++
+  NRF_GPIO->PIN_CNF[7] = ((uint32_t)GPIO_PIN_CNF_DIR_Input      << GPIO_PIN_CNF_DIR_Pos)
+                                     | ((uint32_t)GPIO_PIN_CNF_INPUT_Connect    << GPIO_PIN_CNF_INPUT_Pos)
+                                     | ((uint32_t)GPIO_PIN_CNF_PULL_Pullup      << GPIO_PIN_CNF_PULL_Pos)
+                                     | ((uint32_t)GPIO_PIN_CNF_DRIVE_S0D1       << GPIO_PIN_CNF_DRIVE_Pos)
+                                     | ((uint32_t)GPIO_PIN_CNF_SENSE_Disabled   << GPIO_PIN_CNF_SENSE_Pos);
+
+  NRF_GPIO->PIN_CNF[6] = ((uint32_t)GPIO_PIN_CNF_DIR_Input        << GPIO_PIN_CNF_DIR_Pos)
+                                     | ((uint32_t)GPIO_PIN_CNF_INPUT_Connect    << GPIO_PIN_CNF_INPUT_Pos)
+                                     | ((uint32_t)GPIO_PIN_CNF_PULL_Pullup      << GPIO_PIN_CNF_PULL_Pos)
+                                     | ((uint32_t)GPIO_PIN_CNF_DRIVE_S0D1       << GPIO_PIN_CNF_DRIVE_Pos)
+                                     | ((uint32_t)GPIO_PIN_CNF_SENSE_Disabled   << GPIO_PIN_CNF_SENSE_Pos);
+
+  // enable i2c
+  twimaddress->ENABLE = twi_state;
 }
 
 void TwiMaster::Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t *data, size_t size) {
@@ -78,6 +108,7 @@ void TwiMaster::Write(uint8_t deviceAddress, uint8_t registerAddress, const uint
 
 
 void TwiMaster::Read(uint8_t deviceAddress, uint8_t *buffer, size_t size, bool stop) {
+  int counter = 0;
   twiBaseAddress->ADDRESS = deviceAddress;
   twiBaseAddress->TASKS_RESUME = 0x1UL;
   twiBaseAddress->RXD.PTR = (uint32_t)buffer;
@@ -85,20 +116,49 @@ void TwiMaster::Read(uint8_t deviceAddress, uint8_t *buffer, size_t size, bool s
 
   twiBaseAddress->TASKS_STARTRX = 1;
 
-  while(!twiBaseAddress->EVENTS_RXSTARTED && !twiBaseAddress->EVENTS_ERROR);
+  counter = 0;
+  while(!twiBaseAddress->EVENTS_RXSTARTED && !twiBaseAddress->EVENTS_ERROR) {
+    counter++;
+    if (counter > 5000) {
+      i2c_fix();
+      return;
+    }
+  }
   twiBaseAddress->EVENTS_RXSTARTED = 0x0UL;
 
-  while(!twiBaseAddress->EVENTS_LASTRX && !twiBaseAddress->EVENTS_ERROR);
+  counter = 0;
+  while(!twiBaseAddress->EVENTS_LASTRX && !twiBaseAddress->EVENTS_ERROR) {
+    counter++;
+    if (counter > 5000) {
+      i2c_fix();
+      return;
+    }
+  }
   twiBaseAddress->EVENTS_LASTRX = 0x0UL;
 
   if (stop || twiBaseAddress->EVENTS_ERROR) {
     twiBaseAddress->TASKS_STOP = 0x1UL;
-    while(!twiBaseAddress->EVENTS_STOPPED);
+    counter = 0;
+    while(!twiBaseAddress->EVENTS_STOPPED) {
+      counter++;
+      if (counter > 5000) {
+        i2c_fix();
+        return;
+      }
+    }
     twiBaseAddress->EVENTS_STOPPED = 0x0UL;
   }
   else {
     twiBaseAddress->TASKS_SUSPEND = 0x1UL;
-    while(!twiBaseAddress->EVENTS_SUSPENDED);
+    counter = 0;
+    while(!twiBaseAddress->EVENTS_SUSPENDED) {
+      counter++;
+      if (counter > 5000) {
+        i2c_fix();
+        return;
+      }
+    }
+
     twiBaseAddress->EVENTS_SUSPENDED = 0x0UL;
   }
 
@@ -108,6 +168,7 @@ void TwiMaster::Read(uint8_t deviceAddress, uint8_t *buffer, size_t size, bool s
 }
 
 void TwiMaster::Write(uint8_t deviceAddress, const uint8_t *data, size_t size, bool stop) {
+  int counter = 0;
   twiBaseAddress->ADDRESS = deviceAddress;
   twiBaseAddress->TASKS_RESUME = 0x1UL;
   twiBaseAddress->TXD.PTR = (uint32_t)data;
@@ -115,20 +176,48 @@ void TwiMaster::Write(uint8_t deviceAddress, const uint8_t *data, size_t size, b
 
   twiBaseAddress->TASKS_STARTTX = 1;
 
-  while(!twiBaseAddress->EVENTS_TXSTARTED && !twiBaseAddress->EVENTS_ERROR);
+  counter = 0;
+  while(!twiBaseAddress->EVENTS_TXSTARTED && !twiBaseAddress->EVENTS_ERROR) {
+    counter++;
+    if (counter > 5000) {
+      i2c_fix();
+      return;
+    }
+  }
   twiBaseAddress->EVENTS_TXSTARTED = 0x0UL;
 
-  while(!twiBaseAddress->EVENTS_LASTTX && !twiBaseAddress->EVENTS_ERROR);
+  counter = 0;
+  while(!twiBaseAddress->EVENTS_LASTTX && !twiBaseAddress->EVENTS_ERROR) {
+    counter++;
+    if (counter > 5000) {
+      i2c_fix();
+      return;
+    }
+  }
   twiBaseAddress->EVENTS_LASTTX = 0x0UL;
 
   if (stop || twiBaseAddress->EVENTS_ERROR) {
     twiBaseAddress->TASKS_STOP = 0x1UL;
-    while(!twiBaseAddress->EVENTS_STOPPED);
+    counter = 0;
+    while(!twiBaseAddress->EVENTS_STOPPED) {
+      counter++;
+      if (counter > 5000) {
+        i2c_fix();
+        return;
+      }
+    }
     twiBaseAddress->EVENTS_STOPPED = 0x0UL;
   }
   else {
     twiBaseAddress->TASKS_SUSPEND = 0x1UL;
-    while(!twiBaseAddress->EVENTS_SUSPENDED);
+    counter = 0;
+    while(!twiBaseAddress->EVENTS_SUSPENDED) {
+      counter++;
+      if (counter > 5000) {
+        i2c_fix();
+        return;
+      }
+    }
     twiBaseAddress->EVENTS_SUSPENDED = 0x0UL;
   }
 
