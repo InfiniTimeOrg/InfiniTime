@@ -29,28 +29,28 @@ Clock::Clock(DisplayApp* app,
   displayedChar[3] = 0;
   displayedChar[4] = 0;
 
-  batteryIcon = lv_label_create(lv_scr_act(), NULL);
+  batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 2);
 
-  batteryPlug = lv_label_create(lv_scr_act(), NULL);
+  batteryPlug = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryPlug, Symbols::plug);
   lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
-  bleIcon = lv_label_create(lv_scr_act(), NULL);
+  bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(bleIcon, Symbols::bluetooth);
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
 
-  label_date = lv_label_create(lv_scr_act(), NULL);
+  label_date = lv_label_create(lv_scr_act(), nullptr);
 
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
 
-  label_time = lv_label_create(lv_scr_act(), NULL);
+  label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_style(label_time, LV_LABEL_STYLE_MAIN, LabelBigStyle);
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
 
-  backgroundLabel = lv_label_create(lv_scr_act(), NULL);
+  backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   backgroundLabel->user_data = this;
   lv_obj_set_click(backgroundLabel, true);
   lv_obj_set_event_cb(backgroundLabel, event_handler);
@@ -60,23 +60,23 @@ Clock::Clock(DisplayApp* app,
   lv_label_set_text(backgroundLabel, "");
 
 
-  heartbeatIcon = lv_label_create(lv_scr_act(), NULL);
+  heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(heartbeatIcon, Symbols::heartBeat);
   lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
 
-  heartbeatValue = lv_label_create(lv_scr_act(), NULL);
+  heartbeatValue = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(heartbeatValue, "0");
   lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
-  heartbeatBpm = lv_label_create(lv_scr_act(), NULL);
+  heartbeatBpm = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(heartbeatBpm, "BPM");
   lv_obj_align(heartbeatBpm, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
-  stepValue = lv_label_create(lv_scr_act(), NULL);
+  stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(stepValue, "0");
   lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
 
-  stepIcon = lv_label_create(lv_scr_act(), NULL);
+  stepIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 }

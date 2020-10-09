@@ -54,7 +54,7 @@ namespace Pinetime {
         std::unique_ptr<Pinetime::Applications::DisplayApp> displayApp;
         Pinetime::Controllers::Ble& bleController;
         Pinetime::Controllers::DateTime& dateTimeController;
-        QueueHandle_t systemTaksMsgQueue;
+        QueueHandle_t systemTasksMsgQueue;
         std::atomic<bool> isSleeping{false};
         std::atomic<bool> isGoingToSleep{false};
         std::atomic<bool> isWakingUp{false};

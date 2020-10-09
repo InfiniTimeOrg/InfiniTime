@@ -747,7 +747,6 @@ elseif (USE_OPENOCD)
                 COMMENT "flashing ${EXECUTABLE_NAME}.hex"
                 )
     else ()
-        message()
         add_custom_target(FLASH_ERASE
                 COMMAND ${OPENOCD_BIN_PATH} -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c init -c halt -c 'nrf5 mass_erase' -c reset -c shutdown
                 COMMENT "erasing flashing"

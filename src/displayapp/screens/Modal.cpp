@@ -54,7 +54,7 @@ void Modal::Show(const char* msg) {
   modal_style.body.main_color = modal_style.body.grad_color = LV_COLOR_BLACK;
   modal_style.body.opa = LV_OPA_50;
 
-  obj = lv_obj_create(lv_scr_act(), NULL);
+  obj = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style(obj, &modal_style);
   lv_obj_set_pos(obj, 0, 0);
   lv_obj_set_size(obj, LV_HOR_RES, LV_VER_RES);
@@ -63,10 +63,10 @@ void Modal::Show(const char* msg) {
   static const char * btns2[] = {"Ok", ""};
 
   /* Create the message box as a child of the modal background */
-  mbox = lv_mbox_create(obj, NULL);
+  mbox = lv_mbox_create(obj, nullptr);
   lv_mbox_add_btns(mbox, btns2);
   lv_mbox_set_text(mbox, msg);
-  lv_obj_align(mbox, NULL, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_align(mbox, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_event_cb(mbox, Modal::mbox_event_cb);
 
   mbox->user_data = this;
