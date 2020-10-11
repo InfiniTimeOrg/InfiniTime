@@ -100,6 +100,9 @@ void SystemTask::Work() {
   idleTimer = xTimerCreate ("idleTimer", idleTime, pdFALSE, this, IdleTimerCallback);
   xTimerStart(idleTimer, 0);
 
+  // Suppress endless loop diagnostic
+  #pragma clang diagnostic push
+  #pragma ide diagnostic ignored "EndlessLoop"
   while(true) {
     uint8_t msg;
     if (xQueueReceive(systemTasksMsgQueue, &msg, isSleeping ? 2500 : 1000)) {
@@ -191,6 +194,8 @@ void SystemTask::Work() {
     if(!nrf_gpio_pin_read(pinButton))
       watchdog.Kick();
   }
+  // Clear diagnostic suppression
+  #pragma clang diagnostic pop
 }
 
 void SystemTask::OnButtonPushed() {
@@ -231,7 +236,7 @@ void SystemTask::PushMessage(SystemTask::Messages msg) {
   xQueueSendFromISR(systemTasksMsgQueue, &msg, &xHigherPriorityTaskWoken);
   if (xHigherPriorityTaskWoken) {
     /* Actual macro used here is port specific. */
-    // TODO : should I do something here?
+    // TODO: should I do something here?
   }
 }
 
