@@ -105,7 +105,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   auto& bleAddr = bleController.Address();
-  sprintf(t2, "BLE MAC: \n  %2x:%2x:%2x:%2x:%2x:%2x",
+  sprintf(t2, "BLE MAC: \n  %02x:%02x:%02x:%02x:%02x:%02x",
           bleAddr[5], bleAddr[4], bleAddr[3], bleAddr[2], bleAddr[1], bleAddr[0]);
   return std::unique_ptr<Screen>(new Screens::Label(app, t2));
 }
