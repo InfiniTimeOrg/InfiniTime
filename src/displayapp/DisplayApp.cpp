@@ -21,6 +21,9 @@
 #include "displayapp/screens/InfiniPaint.h"
 #include "systemtask/SystemTask.h"
 
+// most people are right-handed and wear the watch on left land
+#define DEFAULT_LEFT_HAND_ORIENTATION true
+
 using namespace Pinetime::Applications;
 
 DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &touchPanel,
@@ -64,6 +67,7 @@ void DisplayApp::Process(void *instance) {
 }
 
 void DisplayApp::InitHw() {
+  SetHandOrientation(DEFAULT_LEFT_HAND_ORIENTATION);
   brightnessController.Init();
 }
 
@@ -174,7 +178,7 @@ void DisplayApp::Refresh() {
     auto info = touchPanel.GetTouchInfo();
     if(info.action == 2) {// 2 = contact
       if(!currentScreen->OnTouchEvent(info.x, info.y)) {
-        lvgl.SetNewTapEvent(info.x, info.y);
+        SetTapCoordinates(info.x, info.y);
       }
     }
   }
@@ -227,21 +231,20 @@ TouchEvents DisplayApp::OnTouchEvent() {
   if(info.isTouch) {
     switch(info.gesture) {
       case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        if(touchMode == TouchModes::Gestures)
-          lvgl.SetNewTapEvent(info.x, info.y);
+        if(touchMode == TouchModes::Gestures) SetTapCoordinates(info.x, info.y);
         return TouchEvents::Tap;
       case Pinetime::Drivers::Cst816S::Gestures::LongPress:
         return TouchEvents::LongTap;
       case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
         return TouchEvents::DoubleTap;
       case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
-        return TouchEvents::SwipeRight;
+        return (isLeftHandWorn ? TouchEvents::SwipeLeft : TouchEvents::SwipeRight);
       case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
-        return TouchEvents::SwipeLeft;
+        return (isLeftHandWorn ? TouchEvents::SwipeRight : TouchEvents::SwipeLeft);
       case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
-        return TouchEvents::SwipeDown;
+        return (isLeftHandWorn ? TouchEvents::SwipeUp : TouchEvents::SwipeDown);
       case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
-        return TouchEvents::SwipeUp;
+        return (isLeftHandWorn ? TouchEvents::SwipeDown : TouchEvents::SwipeUp);
       case Pinetime::Drivers::Cst816S::Gestures::None:
       default:
         return TouchEvents::None;
@@ -269,4 +272,25 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
 
 void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {
   touchMode = mode;
+}
+
+
+void DisplayApp::SetHandOrientation(bool left_hand)
+{
+  isLeftHandWorn = left_hand;
+
+  // LCD: mirror x/y memory positions
+  lcd.SetOrientation(left_hand ? lcd.Orientation_180 : lcd.Orientation_0);
+}
+
+
+void DisplayApp::SetTapCoordinates(uint16_t x, uint16_t y)
+{
+  // mirror x/y tap coordinates
+  if (isLeftHandWorn) {
+    x = 240 - x;
+    y = 240 - y;
+  }
+
+  lvgl.SetNewTapEvent(x, y);
 }
