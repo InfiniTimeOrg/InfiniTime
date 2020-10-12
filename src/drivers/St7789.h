@@ -26,12 +26,22 @@ namespace Pinetime {
         void DisplayOn();
         void DisplayOff();
 
+        enum Orientation : uint8_t {
+          Orientation_0   = 0x00, // MADCTL[MY=0,MX=0,MV=0]
+          Orientation_90  = 0x60, // MADCTL[MY=0,MX=1,MV=1]
+          Orientation_180 = 0xc0, // MADCTL[MY=1,MX=1,MV=0]
+          Orientation_270 = 0xa0, // MADCTL[MY=1,MX=0,MV=1]
+          };
+        void SetOrientation(Orientation orientation);
+        Orientation GetOrientation() { return (Orientation) madctlReg; }
+
         void Sleep();
         void Wakeup();
       private:
         Spi& spi;
         uint8_t pinDataCommand;
         uint8_t verticalScrollingStartAddress = 0;
+        uint8_t madctlReg = 0x00;
 
         void HardwareReset();
         void SoftwareReset();
@@ -57,8 +67,8 @@ namespace Pinetime {
           ColumnAddressSet = 0x2a,
           RowAddressSet = 0x2b,
           WriteToRam = 0x2c,
-          MemoryDataAccessControl = 036,
           VerticalScrollDefinition = 0x33,
+          MemoryDataAccessControl = 0x36,
           VerticalScrollStartAddress = 0x37,
           ColMod = 0x3a,
         };

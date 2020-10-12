@@ -64,7 +64,7 @@ void St7789::ColMod() {
 
 void St7789::MemoryDataAccessControl() {
   WriteCommand(static_cast<uint8_t>(Commands::MemoryDataAccessControl));
-  WriteData(0x00);
+  WriteData(madctlReg);
 }
 
 void St7789::ColumnAddressSet() {
@@ -147,6 +147,9 @@ void St7789::Uninit() {
 void St7789::DrawPixel(uint16_t x, uint16_t y, uint32_t color) {
   if((x < 0) ||(x >= Width) || (y < 0) || (y >= Height)) return;
 
+  // row offset
+  if (madctlReg == Orientation_180) y += (320 - 240);
+
   SetAddrWindow(x, y, x+1, y+1);
 
   nrf_gpio_pin_set(pinDataCommand);
@@ -155,10 +158,14 @@ void St7789::DrawPixel(uint16_t x, uint16_t y, uint32_t color) {
 
 void St7789::BeginDrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
   if((x >= Width) || (y >= Height)) return;
+
   if((x + width - 1) >= Width)  width = Width  - x;
   if((y + height - 1) >= Height) height = Height - y;
 
-  SetAddrWindow(0+x, ST7789_ROW_OFFSET+y, x+width-1, y+height-1);
+  // row offset
+  if (madctlReg == Orientation_180) y += (320 - 240);
+
+  SetAddrWindow(0+x, y, x+width-1, y+height-1);
   nrf_gpio_pin_set(pinDataCommand);
 }
 
@@ -193,4 +200,12 @@ void St7789::Wakeup() {
   VerticalScrollStartAddress(verticalScrollingStartAddress);
   DisplayOn();
   NRF_LOG_INFO("[LCD] Wakeup")
+}
+
+void St7789::SetOrientation(Orientation orientation)
+{
+  // clear and set (MY,MX,MV,ML bits on MADCTL register)
+  madctlReg &= ~0xf0;
+  madctlReg |= (uint8_t) orientation;
+  MemoryDataAccessControl();
 }
