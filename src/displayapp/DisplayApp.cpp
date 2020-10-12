@@ -74,6 +74,7 @@ void DisplayApp::InitHw() {
 uint32_t acc = 0;
 uint32_t count = 0;
 bool toggle = true;
+
 void DisplayApp::Refresh() {
   TickType_t queueTimeout;
   switch (state) {
@@ -177,8 +178,9 @@ void DisplayApp::Refresh() {
   if(state != States::Idle && touchMode == TouchModes::Polling) {
     auto info = touchPanel.GetTouchInfo();
     if(info.action == 2) {// 2 = contact
+      SetScreenCoordinates(info);
       if(!currentScreen->OnTouchEvent(info.x, info.y)) {
-        SetTapCoordinates(info.x, info.y);
+        lvgl.SetNewTapEvent(info.x, info.y);
       }
     }
   }
@@ -231,7 +233,10 @@ TouchEvents DisplayApp::OnTouchEvent() {
   if(info.isTouch) {
     switch(info.gesture) {
       case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        if(touchMode == TouchModes::Gestures) SetTapCoordinates(info.x, info.y);
+        if(touchMode == TouchModes::Gestures) {
+          SetScreenCoordinates(info);
+          lvgl.SetNewTapEvent(info.x, info.y);
+        }
         return TouchEvents::Tap;
       case Pinetime::Drivers::Cst816S::Gestures::LongPress:
         return TouchEvents::LongTap;
@@ -274,23 +279,27 @@ void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {
   touchMode = mode;
 }
 
-
-void DisplayApp::SetHandOrientation(bool left_hand)
-{
+/**
+ * @brief Set the user's hand wearing orientation.
+ *
+ * @param left_hand True means watch is worn in left hand, false means right hand.
+ */
+void DisplayApp::SetHandOrientation(bool left_hand) {
   isLeftHandWorn = left_hand;
 
   // LCD: mirror x/y memory positions
   lcd.SetOrientation(left_hand ? lcd.Orientation_180 : lcd.Orientation_0);
 }
 
-
-void DisplayApp::SetTapCoordinates(uint16_t x, uint16_t y)
-{
+/**
+ * @brief Translate touch coordinates to screen ones depending on display orientation.
+ *
+ * @param touch_info
+ */
+void DisplayApp::SetScreenCoordinates(Drivers::Cst816S::TouchInfos& touch_info) {
   // mirror x/y tap coordinates
   if (isLeftHandWorn) {
-    x = 240 - x;
-    y = 240 - y;
+    touch_info.x = 240 - touch_info.x;
+    touch_info.y = 240 - touch_info.y;
   }
-
-  lvgl.SetNewTapEvent(x, y);
 }

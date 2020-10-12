@@ -88,7 +88,7 @@ namespace Pinetime {
 
         bool isLeftHandWorn;
         void SetHandOrientation(bool left_hand);
-        void SetTapCoordinates(uint16_t x, uint16_t y);
+        void SetScreenCoordinates(Drivers::Cst816S::TouchInfos& touch_info);
     };
   }
 }
