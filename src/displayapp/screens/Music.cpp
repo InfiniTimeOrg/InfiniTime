@@ -279,3 +279,14 @@ bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
     }
   }
 }
+
+/**
+ * Set the pixel array to display by the image
+ * This just calls lv_img_set_src but adds type safety
+ *
+ * @param img pointer to an image object
+ * @param data the image array
+ */
+inline void lv_img_set_src_arr(lv_obj_t *img, const lv_img_dsc_t *src_img) {
+  lv_img_set_src(img, src_img);
+}
