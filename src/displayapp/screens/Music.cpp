@@ -97,9 +97,9 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   lv_label_set_align(txtTrackDuration, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
   
-  #define FONT_HEIGHT (12)
-  #define MIDDLE_OFFSET (-25)
-  #define LINE_PAD (15)
+  constexpr uint8_t FONT_HEIGHT(12);
+  constexpr uint8_t MIDDLE_OFFSET(-25);
+  constexpr uint8_t LINE_PAD(15);
   txtArtist = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtArtist, LV_LABEL_LONG_SROLL);
   lv_obj_align(txtArtist, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 1 * FONT_HEIGHT);
