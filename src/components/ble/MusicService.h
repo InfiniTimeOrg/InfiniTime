@@ -66,8 +66,8 @@ namespace Pinetime {
       static const char EVENT_MUSIC_VOLDOWN = 0x06;
       
       enum MusicStatus {
-        NOT_PLAYING = 0x00,
-        PLAYING = 0x01
+        NotPlaying = 0x00,
+        Playing = 0x01
       };
     private:
       static constexpr uint8_t msId[2] = {0x00, 0x01};

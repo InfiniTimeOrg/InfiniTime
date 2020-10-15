@@ -174,10 +174,10 @@ bool Music::Refresh() {
     UpdateLength();
   }
   
-  if (playing == Pinetime::Controllers::MusicService::MusicStatus::PLAYING) {
+  if (playing == Pinetime::Controllers::MusicService::MusicStatus::Playing) {
     lv_label_set_text(txtPlayPause, "||");
     if (xTaskGetTickCount() - 1024 >= lastIncrement) {
-      
+    
       if (frameB) {
         lv_img_set_src(imgDiscAnim, &disc_f_1);
       } else {
@@ -238,17 +238,17 @@ void Music::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
     } else if (obj == btnPrev) {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_PREV);
     } else if (obj == btnPlayPause) {
-      if (playing == Pinetime::Controllers::MusicService::MusicStatus::PLAYING) {
+      if (playing == Pinetime::Controllers::MusicService::MusicStatus::Playing) {
         musicService.event(Controllers::MusicService::EVENT_MUSIC_PAUSE);
-        
+    
         // Let's assume it stops playing instantly
-        playing = Controllers::MusicService::NOT_PLAYING;
+        playing = Controllers::MusicService::NotPlaying;
       } else {
         musicService.event(Controllers::MusicService::EVENT_MUSIC_PLAY);
-        
+    
         // Let's assume it starts playing instantly
         // TODO: In the future should check for BT connection for better UX
-        playing = Controllers::MusicService::PLAYING;
+        playing = Controllers::MusicService::Playing;
       }
     } else if (obj == btnNext) {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_NEXT);
