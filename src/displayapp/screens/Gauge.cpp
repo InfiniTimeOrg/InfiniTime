@@ -11,17 +11,17 @@ Gauge::Gauge(Pinetime::Applications::DisplayApp *app) : Screen(app) {
   /*Create a style*/
   lv_style_copy(&style, &lv_style_pretty_color);
   style.body.main_color = LV_COLOR_CYAN;     /*Line color at the beginning*/
-  style.body.grad_color =  LV_COLOR_RED;    /*Line color at the end*/
-  style.body.padding.left = 10;                      /*Scale line length*/
-  style.body.padding.inner = 8 ;                    /*Scale label padding*/
+  style.body.grad_color = LV_COLOR_RED;    /*Line color at the end*/
+  lv_style_set_pad_left(&style, LV_STATE_DEFAULT, 10);                      /*Scale line length*/
+  style.body.padding.inner = 8;                    /*Scale label padding*/
   style.body.border.color = lv_color_hex3(0x333);   /*Needle middle circle color*/
   style.line.width = 3;
   style.text.color = LV_COLOR_WHITE;
   style.line.color = LV_COLOR_RED;                  /*Line color after the critical value*/
-
-
+  
+  
   /*Describe the color for the needles*/
-
+  
   needle_colors[0] = LV_COLOR_ORANGE;
 
   /*Create a gauge*/
