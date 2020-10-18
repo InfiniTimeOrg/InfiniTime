@@ -216,7 +216,7 @@ bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
 
 void LittleVgl::InitTheme() {
   uint16_t i;
-  lv_style_t** style_p = (lv_style_t**) &theme.style;
+  auto** style_p = (lv_style_t**) &theme.style;
   for (i = 0; i < LV_THEME_STYLE_COUNT; i++) {
     *style_p = &def;
     style_p++;
@@ -259,7 +259,7 @@ void LittleVgl::InitTheme() {
 void LittleVgl::InitBaseTheme() {
   if (font == nullptr) { font = &jetbrains_mono_bold_20; }
   lv_style_copy(&def, &lv_style_plain); /*Initialize the default style*/
-  def.text.font = font;
+  lv_style_set_text_font(&def, LV_STATE_DEFAULT, font);
   
   lv_style_copy(&bg, &lv_style_plain);
   bg.body.main_color = LV_COLOR_BLACK;
@@ -304,6 +304,7 @@ void LittleVgl::InitBaseTheme() {
   
   panel.line.color = lv_color_hsv_to_rgb(hue, 20, 40);
   panel.line.width = 1;
+  
   
   theme.style.scr = &scr;
   theme.style.bg = &bg;

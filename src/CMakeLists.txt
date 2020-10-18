@@ -556,6 +556,10 @@ target_compile_options(nimble PRIVATE
 
 # lvgl
 add_library(lvgl STATIC ${LVGL_SRC})
+target_precompile_headers(lvgl
+        PRIVATE
+        libs/lv_conf.h
+        )
 target_include_directories(lvgl SYSTEM PUBLIC . ../src)
 target_include_directories(lvgl SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(lvgl PRIVATE

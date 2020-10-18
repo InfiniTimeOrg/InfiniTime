@@ -21,7 +21,7 @@ DropDownDemo::DropDownDemo(Pinetime::Applications::DisplayApp *app) : Screen(app
                                   "C\n"
                                   "D\n"
                                   "E");
-  lv_ddlist_set_fix_width(ddlist, 150);
+  lv_roller_set_fix_width(ddlist, 150);
   lv_dropdown_set_draw_arrow(ddlist, true);
   lv_ddlist_set_fix_height(ddlist, 150);
   lv_obj_align(ddlist, nullptr, LV_ALIGN_IN_TOP_MID, 0, 20);
