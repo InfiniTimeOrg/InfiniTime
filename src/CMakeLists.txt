@@ -341,6 +341,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Music.cpp
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp
+        displayapp/screens/Notifications.cpp
         main.cpp
         drivers/St7789.cpp
         drivers/SpiNorFlash.cpp
@@ -419,6 +420,7 @@ set(INCLUDE_FILES
         displayapp/screens/FirmwareValidation.h
         displayapp/screens/ApplicationList.h
         displayapp/Apps.h
+        displayapp/screens/Notifications.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h
