@@ -1,14 +1,18 @@
 #include <cstdio>
 
-#include <libs/date/includes/date/date.h>
-#include "components/datetime/DateTimeController.h"
+#include <libs/date/include/date/date.h>
 #include <libs/lvgl/lvgl.h>
+
+#include "components/datetime/DateTimeController.h"
+
 #include "Clock.h"
 #include "../DisplayApp.h"
 #include "BatteryIcon.h"
 #include "BleIcon.h"
 #include "Symbols.h"
+
 using namespace Pinetime::Applications::Screens;
+
 extern lv_font_t jetbrains_mono_extrabold_compressed;
 extern lv_font_t jetbrains_mono_bold_20;
 extern lv_style_t* LabelBigStyle;

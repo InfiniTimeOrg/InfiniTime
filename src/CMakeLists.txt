@@ -172,8 +172,6 @@ set(LVGL_SRC
         libs/lvgl/src/lv_core/lv_group.h
         libs/lvgl/src/lv_core/lv_disp.c
         libs/lvgl/src/lv_core/lv_disp.h
-        libs/lvgl/src/lv_core/lv_debug.h
-        libs/lvgl/src/lv_core/lv_debug.c
         libs/lvgl/src/lv_core/lv_indev.c
         libs/lvgl/src/lv_core/lv_indev.h
         libs/lvgl/src/lv_core/lv_refr.c
@@ -192,8 +190,6 @@ set(LVGL_SRC
         libs/lvgl/src/lv_misc/lv_area.h
         libs/lvgl/src/lv_misc/lv_bidi.c
         libs/lvgl/src/lv_misc/lv_bidi.h
-        libs/lvgl/src/lv_misc/lv_circ.c
-        libs/lvgl/src/lv_misc/lv_circ.h
         libs/lvgl/src/lv_misc/lv_color.c
         libs/lvgl/src/lv_misc/lv_color.h
         libs/lvgl/src/lv_misc/lv_fs.c
@@ -219,12 +215,9 @@ set(LVGL_SRC
         libs/lvgl/src/lv_misc/lv_types.h
         libs/lvgl/src/lv_misc/lv_utils.c
         libs/lvgl/src/lv_misc/lv_utils.h
-        libs/lvgl/src/lv_draw/lv_draw.c
         libs/lvgl/src/lv_draw/lv_draw.h
         libs/lvgl/src/lv_draw/lv_draw_arc.c
         libs/lvgl/src/lv_draw/lv_draw_arc.h
-        libs/lvgl/src/lv_draw/lv_draw_basic.c
-        libs/lvgl/src/lv_draw/lv_draw_basic.h
         libs/lvgl/src/lv_draw/lv_draw_img.c
         libs/lvgl/src/lv_draw/lv_draw_img.h
         libs/lvgl/src/lv_draw/lv_draw_label.c
@@ -253,42 +246,6 @@ set(LVGL_SRC
         libs/lvgl/src/lv_font/lv_symbol_def.h
         libs/lvgl/src/lv_themes/lv_theme.c
         libs/lvgl/src/lv_themes/lv_theme.h
-        libs/lvgl/src/lv_objx/lv_btn.h
-        libs/lvgl/src/lv_objx/lv_btn.c
-        libs/lvgl/src/lv_objx/lv_cont.h
-        libs/lvgl/src/lv_objx/lv_cont.c
-        libs/lvgl/src/lv_objx/lv_label.h
-        libs/lvgl/src/lv_objx/lv_label.c
-        libs/lvgl/src/lv_themes/lv_theme.c
-        libs/lvgl/src/lv_themes/lv_theme.h
-        libs/lvgl/src/lv_themes/lv_theme_night.h
-        libs/lvgl/src/lv_themes/lv_theme_night.c
-        libs/lvgl/src/lv_objx/lv_list.c
-        libs/lvgl/src/lv_objx/lv_list.h
-        libs/lvgl/src/lv_objx/lv_tileview.c
-        libs/lvgl/src/lv_objx/lv_tileview.h
-        libs/lvgl/src/lv_objx/lv_tabview.c
-        libs/lvgl/src/lv_objx/lv_tabview.h
-        libs/lvgl/src/lv_objx/lv_btnm.c
-        libs/lvgl/src/lv_objx/lv_btnm.h
-        libs/lvgl/src/lv_objx/lv_page.c
-        libs/lvgl/src/lv_objx/lv_page.h
-        libs/lvgl/src/lv_objx/lv_img.c
-        libs/lvgl/src/lv_objx/lv_img.h
-        libs/lvgl/src/lv_objx/lv_lmeter.c
-        libs/lvgl/src/lv_objx/lv_lmeter.h
-        libs/lvgl/src/lv_objx/lv_arc.c
-        libs/lvgl/src/lv_objx/lv_arc.h
-        libs/lvgl/src/lv_objx/lv_gauge.c
-        libs/lvgl/src/lv_objx/lv_gauge.h
-        libs/lvgl/src/lv_objx/lv_mbox.c
-        libs/lvgl/src/lv_objx/lv_mbox.h
-        libs/lvgl/src/lv_objx/lv_bar.c
-        libs/lvgl/src/lv_objx/lv_bar.h
-        libs/lvgl/src/lv_objx/lv_slider.h
-        libs/lvgl/src/lv_objx/lv_slider.c
-        libs/lvgl/src/lv_objx/lv_ddlist.c
-        libs/lvgl/src/lv_objx/lv_ddlist.h
         )
 
 list(APPEND IMAGE_FILES
@@ -593,7 +550,7 @@ target_compile_options(nimble PRIVATE
 
 # lvgl
 add_library(lvgl STATIC ${LVGL_SRC})
-target_include_directories(lvgl SYSTEM PUBLIC . ../)
+target_include_directories(lvgl SYSTEM PUBLIC . ../src)
 target_include_directories(lvgl SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(lvgl PRIVATE
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>

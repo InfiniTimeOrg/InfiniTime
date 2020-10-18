@@ -1,10 +1,18 @@
 #pragma once
+
 #include <FreeRTOS.h>
 #include <task.h>
+#include <queue.h>
+
 #include <drivers/St7789.h>
 #include <drivers/SpiMaster.h>
+#include <drivers/Cst816s.h>
+#include <drivers/Watchdog.h>
+
 #include <bits/unique_ptr.h>
-#include <queue.h>
+#include <libs/date/include/date/date.h>
+
+
 #include "components/gfx/Gfx.h"
 #include "components/battery/BatteryController.h"
 #include "components/brightness/BrightnessController.h"
@@ -12,12 +20,12 @@
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/firmwarevalidator/FirmwareValidator.h"
-#include "drivers/Cst816s.h"
-#include "LittleVgl.h"
-#include <date/date.h>
+
 #include "displayapp/screens/Clock.h"
 #include "displayapp/screens/Modal.h"
-#include <drivers/Watchdog.h>
+
+#include "LittleVgl.h"
+
 #include "TouchEvents.h"
 #include "Apps.h"
 

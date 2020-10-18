@@ -1,6 +1,7 @@
-#include "DateTimeController.h"
-#include <date/date.h>
+#include <libs/date/include/date/date.h>
 #include <libraries/log/nrf_log.h>
+
+#include "DateTimeController.h"
 
 using namespace Pinetime::Controllers;
 
@@ -8,11 +9,11 @@ using namespace Pinetime::Controllers;
 void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfWeek, uint8_t hour, uint8_t minute,
                        uint8_t second, uint32_t systickCounter) {
   std::tm tm = { /* .tm_sec  = */ second,
-          /* .tm_min  = */ minute,
-          /* .tm_hour = */ hour,
-          /* .tm_mday = */ day,
-          /* .tm_mon  = */ month - 1,
-          /* .tm_year = */ year - 1900,
+      /* .tm_min  = */ minute,
+      /* .tm_hour = */ hour,
+      /* .tm_mday = */ day,
+      /* .tm_mon  = */ month - 1,
+      /* .tm_year = */ year - 1900,
   };
   tm.tm_isdst = -1; // Use DST value from local time zone
   currentDateTime =  std::chrono::system_clock::from_time_t(std::mktime(&tm));
