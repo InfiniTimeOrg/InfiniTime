@@ -92,6 +92,7 @@ set(TINYCRYPT_SRC
         )
 
 set(NIMBLE_SRC
+        libs/syscfg.h
         libs/mynewt-nimble/porting/npl/freertos/src/nimble_port_freertos.c
         libs/mynewt-nimble/porting/npl/freertos/src/npl_os_freertos.c
         libs/mynewt-nimble/nimble/host/src/ble_hs.c
@@ -538,6 +539,11 @@ target_compile_options(nrf-sdk PRIVATE
 
 # NimBLE
 add_library(nimble STATIC ${NIMBLE_SRC} ${TINYCRYPT_SRC})
+# This stops NimBLE from including it's own wrong config
+target_precompile_headers(nimble
+        PRIVATE
+        libs/syscfg.h
+        )
 target_include_directories(nimble SYSTEM PUBLIC . ../)
 target_include_directories(nimble SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(nimble PRIVATE
