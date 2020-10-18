@@ -111,6 +111,6 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
-  strncpy(t3, "Hello from\nthe developper!", 27);
+  strncpy(t3, "Hello from\nthe developer!", 27);
   return std::unique_ptr<Screen>(new Screens::Label(app, t3));
 }
