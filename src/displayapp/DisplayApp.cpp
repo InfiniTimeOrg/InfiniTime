@@ -9,6 +9,7 @@
 #include "components/datetime/DateTimeController.h"
 #include <drivers/Cst816s.h>
 #include "displayapp/screens/Notifications.h"
+#include "displayapp/screens/Notifications_swscroll.h"
 #include "displayapp/screens/Tile.h"
 #include "displayapp/screens/Meter.h"
 #include "displayapp/screens/Gauge.h"
@@ -204,6 +205,7 @@ void DisplayApp::RunningState() {
       case Apps::Music : currentScreen.reset(new Screens::Music(this, systemTask.nimble().music())); break;
       case Apps::FirmwareValidation: currentScreen.reset(new Screens::FirmwareValidation(this, validator)); break;
       case Apps::Notifications: currentScreen.reset(new Screens::Notifications(this)); break;
+      case Apps::Notifications2: currentScreen.reset(new Screens::Notifications2(this)); break;
     }
     nextApp = Apps::None;
   }

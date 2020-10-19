@@ -342,6 +342,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
+        displayapp/screens/Notifications_swscroll.cpp
         main.cpp
         drivers/St7789.cpp
         drivers/SpiNorFlash.cpp
@@ -420,7 +421,8 @@ set(INCLUDE_FILES
         displayapp/screens/FirmwareValidation.h
         displayapp/screens/ApplicationList.h
         displayapp/Apps.h
-        displayapp/screens/Notifications.h
+    displayapp/screens/Notifications.h
+    displayapp/screens/Notifications_swscroll.h.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h
@@ -749,7 +751,6 @@ elseif (USE_OPENOCD)
                 COMMENT "flashing ${EXECUTABLE_NAME}.hex"
                 )
     else ()
-        message()
         add_custom_target(FLASH_ERASE
                 COMMAND ${OPENOCD_BIN_PATH} -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c init -c halt -c 'nrf5 mass_erase' -c reset -c shutdown
                 COMMENT "erasing flashing"

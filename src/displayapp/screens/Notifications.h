@@ -1,11 +1,11 @@
 #pragma once
 
-#include <cstdint>
+#include <functional>
+#include <vector>
+
 #include "Screen.h"
-#include <bits/unique_ptr.h>
-#include "Modal.h"
-#include <lvgl/src/lv_core/lv_style.h>
-#include <displayapp/Apps.h>
+#include "ScreenList.h"
+
 
 namespace Pinetime {
   namespace Applications {
@@ -17,19 +17,27 @@ namespace Pinetime {
 
           bool Refresh() override;
           bool OnButtonPushed() override;
-          void OnObjectEvent(lv_obj_t* obj, lv_event_t event, uint32_t buttonId);
           bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
         private:
-          class ListWidget {
-            public:
-              ListWidget();
-            private:
-              lv_obj_t* page = nullptr;
-          };
-
+          ScreenList<3> screens;
           bool running = true;
-          ListWidget list;
+          std::unique_ptr<Screen> CreateScreen1();
+          std::unique_ptr<Screen> CreateScreen2();
+          std::unique_ptr<Screen> CreateScreen3();
+
+          class NotificationItem : public Screen {
+            public:
+              NotificationItem(DisplayApp* app, const char* title, const char* msg, uint8_t notifNr, uint8_t notifNb);
+              NotificationItem(DisplayApp* app, const char* title1, const char* msg1, const char* title2, const char* msg2, uint8_t notifNr, uint8_t notifNb);
+              ~NotificationItem() override;
+              bool Refresh() override {return false;}
+
+            private:
+              uint8_t notifNr = 0;
+              uint8_t notifNb = 0;
+              char pageText[4];
+          };
       };
     }
   }
