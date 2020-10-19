@@ -792,7 +792,7 @@ void LittleVgl::InitThemeRoller() {
   lv_style_set_value_color(&roller_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
   lv_style_set_bg_grad_color(&roller_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 40));
   lv_style_set_text_color(&roller_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 5, 70));
-  roller_bg.text.opa = LV_OPA_60;
+  lv_style_set_text_opa(&roller_bg, LV_STATE_DEFAULT, LV_OPA_60);
   
   theme.style.roller.bg = &roller_bg;
   theme.style.roller.sel = theme.style.ddlist.sel;
@@ -828,31 +828,33 @@ void LittleVgl::InitThemeTable() {
 }
 
 void LittleVgl::InitThemeWindow() {
-//  lv_style_copy(&win_bg, &bg);
-//  lv_style_set_border_color(&win_bg, LV_STATE_DEFAULT, lv_color_hex3(0x333));
-//  lv_style_set_border_width(&win_bg, LV_STATE_DEFAULT, 1);
-//
-//  lv_style_copy(&win_header, &win_bg);
-//  win_header.body.main_color     = lv_color_hsv_to_rgb(hue, 10, 20);
-//  win_header.body.grad_color     = lv_color_hsv_to_rgb(hue, 10, 20);
-//  win_header.body.radius         = 0;
-//  win_header.body.padding.left   = 0;
-//  win_header.body.padding.right  = 0;
-//  win_header.body.padding.top    = 0;
-//  lv_style_set_pad_bottom(&win_header, LV_STATE_DEFAULT, 0);
-//
-//  lv_style_copy(&win_btn_pr, &def);
-//  lv_style_set_value_color(&win_btn_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 10));
-//  lv_style_set_bg_grad_color(&win_btn_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 10));
-//  win_btn_pr.text.color      = lv_color_hex3(0xaaa);
-//  win_btn_pr.image.color     = lv_color_hex3(0xaaa);
-//
-//  theme.style.win.bg      = &win_bg;
-//  theme.style.win.sb      = &sb;
-//  theme.style.win.header  = &win_header;
-//  theme.style.win.content = &lv_style_transp;
-//  theme.style.win.btn.rel = &lv_style_transp;
-//  theme.style.win.btn.pr  = &win_btn_pr;
+  /*
+  lv_style_copy(&win_bg, &bg);
+  lv_style_set_border_color(&win_bg, LV_STATE_DEFAULT, lv_color_hex3(0x333));
+  lv_style_set_border_width(&win_bg, LV_STATE_DEFAULT, 1);
+  
+  lv_style_copy(&win_header, &win_bg);
+  lv_style_set_value_color(&win_header, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
+  lv_style_set_bg_grad_color(&win_header, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
+  lv_style_set_radius(&win_header, LV_STATE_DEFAULT, 0);
+  lv_style_set_margin_left(&win_header, LV_STATE_DEFAULT, 0);
+  lv_style_set_margin_right(&win_header, LV_STATE_DEFAULT, 0);
+  lv_style_set_margin_top(&win_header, LV_STATE_DEFAULT, 0);
+  lv_style_set_pad_bottom(&win_header, LV_STATE_DEFAULT, 0);
+  
+  lv_style_copy(&win_btn_pr, &def);
+  lv_style_set_value_color(&win_btn_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 10));
+  lv_style_set_bg_grad_color(&win_btn_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 10));
+  lv_style_set_text_color(&win_btn_pr, LV_STATE_DEFAULT, lv_color_hex3(0xaaa));
+  lv_style_set_image_recolor(&win_btn_pr, LV_STATE_DEFAULT, lv_color_hex3(0xaaa));
+  
+  theme.style.win.bg = &win_bg;
+  theme.style.win.sb = &sb;
+  theme.style.win.header = &win_header;
+  theme.style.win.content = &lv_style_transp;
+  theme.style.win.btn.rel = &lv_style_transp;
+  theme.style.win.btn.pr = &win_btn_pr;
+  */
 }
 
 
