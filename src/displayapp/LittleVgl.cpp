@@ -277,7 +277,7 @@ void LittleVgl::InitBaseTheme() {
   lv_style_copy(&sb, &def);
   lv_style_set_value_color(&sb, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 30, 60));
   lv_style_set_bg_grad_color(&sb, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 30, 60));
-  sb.body.border.width = 0;
+  lv_style_set_border_width(&sb, LV_STATE_DEFAULT, 0);
   sb.body.padding.inner = LV_DPI / 20;
   lv_style_set_pad_left(&sb, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_right(&sb, LV_STATE_DEFAULT, 0);
@@ -321,8 +321,8 @@ void LittleVgl::InitThemeButton() {
   lv_style_copy(&btn_rel, &def);
   btn_lv_style_set_value_color(&rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 40);
   lv_style_set_bg_grad_color(&btn_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
-  btn_rel.body.border.color = lv_color_hex3(0x111);
-  btn_rel.body.border.width = 1;
+  lv_style_set_border_color(&btn_rel, LV_STATE_DEFAULT, lv_color_hex3(0x111));
+  lv_style_set_border_width(&btn_rel, LV_STATE_DEFAULT, 1);
   btn_rel.body.border.opa = LV_OPA_70;
   lv_style_set_pad_left(&btn_rel, LV_STATE_DEFAULT, LV_DPI / 4);
   lv_style_set_pad_right(&btn_rel, LV_STATE_DEFAULT, LV_DPI / 4);
@@ -392,12 +392,12 @@ void LittleVgl::InitThemeLine() {
 void LittleVgl::InitThemeLed() {
   lv_style_copy(&led, &def);
   led.body.shadow.width = LV_DPI / 10;
-  led.body.radius = LV_RADIUS_CIRCLE;
-  led.body.border.width = LV_DPI / 30;
+  lv_style_set_radius(&led, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+  lv_style_set_border_width(&led, LV_STATE_DEFAULT, LV_DPI / 30);
   led.body.border.opa = LV_OPA_30;
   lv_style_set_value_color(&led, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 100, 100));
   lv_style_set_bg_grad_color(&led, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 100, 40));
-  led.body.border.color = lv_color_hsv_to_rgb(hue, 60, 60);
+  lv_style_set_border_color(&led, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 60, 60));
   led.body.shadow.color = lv_color_hsv_to_rgb(hue, 100, 100);
   
   theme.style.led = &led;
@@ -414,15 +414,15 @@ void LittleVgl::InitThemeBar() {
   lv_style_set_pad_right(&bar_bg, LV_STATE_DEFAULT, LV_DPI / 16);
   lv_style_set_pad_top(&bar_bg, LV_STATE_DEFAULT, LV_DPI / 16);
   lv_style_set_pad_bottom(&bar_bg, LV_STATE_DEFAULT, LV_DPI / 16);
-  bar_bg.body.radius = LV_RADIUS_CIRCLE;
+  lv_style_set_radius(&bar_bg, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   
   lv_style_copy(&bar_indic, &def);
   lv_style_set_value_color(&bar_indic, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
   lv_style_set_bg_grad_color(&bar_indic, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
-  bar_indic.body.border.color = lv_color_hsv_to_rgb(hue, 20, 15);
-  bar_indic.body.border.width = 1;
+  lv_style_set_border_color(&bar_indic, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 20, 15));
+  lv_style_set_border_width(&bar_indic, LV_STATE_DEFAULT, 1);
   bar_indic.body.border.opa = LV_OPA_COVER;
-  bar_indic.body.radius = LV_RADIUS_CIRCLE;
+  lv_style_set_radius(&bar_indic, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_style_set_pad_left(&bar_indic, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_right(&bar_indic, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_top(&bar_indic, LV_STATE_DEFAULT, 0);
@@ -455,7 +455,7 @@ void LittleVgl::InitThemeMeter() {
   lv_style_set_bg_grad_color(&lmeter_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 95, 90));
   lv_style_set_pad_left(&lmeter_bg, LV_STATE_DEFAULT, LV_DPI / 10); /*Scale line length*/
   lmeter_bg.body.padding.inner = LV_DPI / 10; /*Text padding*/
-  lmeter_bg.body.border.color = lv_color_hex3(0x333);
+  lv_style_set_border_color(&lmeter_bg, LV_STATE_DEFAULT, lv_color_hex3(0x333));
   lmeter_bg.line.color = lv_color_hex3(0x555);
   lmeter_bg.line.width = 1;
   lmeter_bg.text.color = lv_color_hex3(0xddd);
@@ -482,8 +482,8 @@ void LittleVgl::InitThemeArc() {
   arc.line.rounded = 1;
   
   /*For preloader*/
-  arc.body.border.width = 7;
-  arc.body.border.color = lv_color_hsv_to_rgb(hue, 11, 48);
+  lv_style_set_border_width(&arc, LV_STATE_DEFAULT, 7);
+  lv_style_set_border_color(&arc, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 11, 48));
   lv_style_set_pad_left(&arc, LV_STATE_DEFAULT, 1);
   lv_style_set_pad_right(&arc, LV_STATE_DEFAULT, 1);
   lv_style_set_pad_top(&arc, LV_STATE_DEFAULT, 1);
@@ -505,9 +505,9 @@ void LittleVgl::InitThemeCalendar() {
   lv_style_copy(&cal_bg, &bg);
   lv_style_set_value_color(&cal_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 40));
   lv_style_set_bg_grad_color(&cal_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 40));
-  cal_bg.body.border.color = lv_color_hex3(0x333);
-  cal_bg.body.border.width = 1;
-  cal_bg.body.radius = LV_DPI / 20;
+  lv_style_set_border_color(&cal_bg, LV_STATE_DEFAULT, lv_color_hex3(0x333));
+  lv_style_set_border_width(&cal_bg, LV_STATE_DEFAULT, 1);
+  lv_style_set_radius(&cal_bg, LV_STATE_DEFAULT, LV_DPI / 20);
   lv_style_set_pad_left(&cal_bg, LV_STATE_DEFAULT, LV_DPI / 10);
   lv_style_set_pad_right(&cal_bg, LV_STATE_DEFAULT, LV_DPI / 10);
   lv_style_set_pad_top(&cal_bg, LV_STATE_DEFAULT, LV_DPI / 10);
@@ -517,9 +517,9 @@ void LittleVgl::InitThemeCalendar() {
   lv_style_copy(&cal_header, &bg);
   lv_style_set_value_color(&cal_header, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
   lv_style_set_bg_grad_color(&cal_header, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
-  cal_header.body.radius = 0;
-  cal_header.body.border.width = 1;
-  cal_header.body.border.color = lv_color_hex3(0x333);
+  lv_style_set_radius(&cal_header, LV_STATE_DEFAULT, 0);
+  lv_style_set_border_width(&cal_header, LV_STATE_DEFAULT, 1);
+  lv_style_set_border_color(&cal_header, LV_STATE_DEFAULT, lv_color_hex3(0x333));
   lv_style_set_pad_left(&cal_header, LV_STATE_DEFAULT, LV_DPI / 10);
   lv_style_set_pad_right(&cal_header, LV_STATE_DEFAULT, LV_DPI / 10);
   lv_style_set_pad_top(&cal_header, LV_STATE_DEFAULT, LV_DPI / 10);
@@ -529,8 +529,8 @@ void LittleVgl::InitThemeCalendar() {
   lv_style_copy(&week_box, &panel);
   lv_style_set_value_color(&week_box, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 30, 45));
   lv_style_set_bg_grad_color(&week_box, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 30, 45));
-  week_box.body.radius = LV_DPI / 20;
-  week_box.body.border.width = 1;
+  lv_style_set_radius(&week_box, LV_STATE_DEFAULT, LV_DPI / 20);
+  lv_style_set_border_width(&week_box, LV_STATE_DEFAULT, 1);
   lv_style_set_pad_left(&week_box, LV_STATE_DEFAULT, LV_DPI / 20);
   lv_style_set_pad_right(&week_box, LV_STATE_DEFAULT, LV_DPI / 20);
   lv_style_set_pad_top(&week_box, LV_STATE_DEFAULT, LV_DPI / 25);
@@ -539,7 +539,7 @@ void LittleVgl::InitThemeCalendar() {
   lv_style_copy(&today_box, &week_box);
   lv_style_set_value_color(&today_box, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
   lv_style_set_bg_grad_color(&today_box, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
-  today_box.body.radius = LV_DPI / 20;
+  lv_style_set_radius(&today_box, LV_STATE_DEFAULT, LV_DPI / 20);
   lv_style_set_pad_left(&today_box, LV_STATE_DEFAULT, LV_DPI / 14);
   lv_style_set_pad_right(&today_box, LV_STATE_DEFAULT, LV_DPI / 14);
   lv_style_set_pad_top(&today_box, LV_STATE_DEFAULT, LV_DPI / 14);
@@ -563,33 +563,33 @@ void LittleVgl::InitThemeCalendar() {
 void LittleVgl::InitThemeCheckBox() {
   
   lv_style_copy(&rel, &def);
-  rel.body.radius = LV_DPI / 20;
+  lv_style_set_radius(&rel, LV_STATE_DEFAULT, LV_DPI / 20);
   lv_style_set_value_color(&rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 95));
   lv_style_set_bg_grad_color(&rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 95));
-  rel.body.border.color = lv_color_hsv_to_rgb(hue, 10, 50);
-  rel.body.border.width = 2;;
+  lv_style_set_border_color(&rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 50));
+  lv_style_set_border_width(&rel, LV_STATE_DEFAULT, 2);
   
   lv_style_copy(&pr, &rel);
   lv_style_set_value_color(&pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 80));
   lv_style_set_bg_grad_color(&pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 80));
-  pr.body.border.color = lv_color_hsv_to_rgb(hue, 10, 20);
-  pr.body.border.width = 1;;
+  lv_style_set_border_color(&pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
+  lv_style_set_border_width(&pr, LV_STATE_DEFAULT, 1);
   
   lv_style_copy(&tgl_rel, &rel);
   lv_style_set_value_color(&tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 90));
   lv_style_set_bg_grad_color(&tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 90));
-  tgl_rel.body.border.color = lv_color_hsv_to_rgb(hue, 80, 50);
+  lv_style_set_border_color(&tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 50));
   
   lv_style_copy(&tgl_pr, &tgl_rel);
   lv_style_set_value_color(&tgl_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
   lv_style_set_bg_grad_color(&tgl_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
-  tgl_pr.body.border.color = lv_color_hsv_to_rgb(hue, 80, 30);
-  tgl_pr.body.border.width = 1;;
+  lv_style_set_border_color(&tgl_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 30));
+  lv_style_set_border_width(&tgl_pr, LV_STATE_DEFAULT, 1);
   
   lv_style_copy(&ina, &rel);
   lv_style_set_value_color(&ina, LV_STATE_DEFAULT, lv_color_hex3(0x777));
   lv_style_set_bg_grad_color(&ina, LV_STATE_DEFAULT, lv_color_hex3(0x777));
-  ina.body.border.width = 0;
+  lv_style_set_border_width(&ina, LV_STATE_DEFAULT, 0);
   
   theme.style.cb.bg = &lv_style_transp;
   theme.style.cb.box.rel = &rel;
@@ -607,32 +607,32 @@ void LittleVgl::InitThemeButtonMatrix() {
   lv_style_set_pad_top(&btnm_bg, LV_STATE_DEFAULT, 2);
   lv_style_set_pad_bottom(&btnm_bg, LV_STATE_DEFAULT, 2);
   btnm_bg.body.padding.inner = 0;
-  btnm_bg.body.border.width = 1;
+  lv_style_set_border_width(&btnm_bg, LV_STATE_DEFAULT, 1);
   
   lv_style_copy(&btnm_rel, theme.style.btn.rel);
   btnm_rel.body.border.part = LV_BORDER_FULL | LV_BORDER_INTERNAL;
-  btnm_rel.body.border.width = 1;
-  btnm_rel.body.radius = 2;
+  lv_style_set_border_width(&btnm_rel, LV_STATE_DEFAULT, 1);
+  lv_style_set_radius(&btnm_rel, LV_STATE_DEFAULT, 2);
   
   lv_style_copy(&btnm_pr, theme.style.btn.pr);
   btnm_pr.body.border.part = btnm_rel.body.border.part;
-  btnm_pr.body.border.width = btnm_rel.body.border.width;
-  btnm_pr.body.radius = btnm_rel.body.radius;
+  lv_style_set_border_width(&btnm_pr, LV_STATE_DEFAULT, btnm_rel.body.border.width);
+  lv_style_set_radius(&btnm_pr, LV_STATE_DEFAULT, btnm_rel.body.radius);
   
   lv_style_copy(&btnm_tgl_rel, theme.style.btn.tgl_rel);
   btnm_tgl_rel.body.border.part = btnm_rel.body.border.part;
-  btnm_tgl_rel.body.border.width = btnm_rel.body.border.width;
-  btnm_tgl_rel.body.radius = btnm_rel.body.radius;
+  lv_style_set_border_width(&btnm_tgl_rel, LV_STATE_DEFAULT, btnm_rel.body.border.width);
+  lv_style_set_radius(&btnm_tgl_rel, LV_STATE_DEFAULT, btnm_rel.body.radius);
   
   lv_style_copy(&btnm_tgl_pr, theme.style.btn.pr);
   btnm_tgl_pr.body.border.part = btnm_rel.body.border.part;
-  btnm_tgl_pr.body.border.width = btnm_rel.body.border.width;
-  btnm_tgl_pr.body.radius = btnm_rel.body.radius;
+  lv_style_set_border_width(&btnm_tgl_pr, LV_STATE_DEFAULT, btnm_rel.body.border.width);
+  lv_style_set_radius(&btnm_tgl_pr, LV_STATE_DEFAULT, btnm_rel.body.radius);
   
   lv_style_copy(&btnm_ina, theme.style.btn.ina);
   btnm_ina.body.border.part = btnm_rel.body.border.part;
-  btnm_ina.body.border.width = btnm_rel.body.border.width;
-  btnm_ina.body.radius = btnm_rel.body.radius;
+  lv_style_set_border_width(&btnm_ina, LV_STATE_DEFAULT, btnm_rel.body.border.width);
+  lv_style_set_radius(&btnm_ina, LV_STATE_DEFAULT, btnm_rel.body.radius);
   
   theme.style.btnm.bg = &btnm_bg;
   theme.style.btnm.btn.rel = &btnm_rel;
@@ -655,11 +655,11 @@ void LittleVgl::InitThemeMessageBox() {
   lv_style_copy(&mbox_bg, &bg);
   lv_style_set_value_color(&mbox_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 30, 30));
   lv_style_set_bg_grad_color(&mbox_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 30, 30));
-  mbox_bg.body.border.color = lv_color_hsv_to_rgb(hue, 11, 20);
-  mbox_bg.body.border.width = 1;
+  lv_style_set_border_color(&mbox_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 11, 20));
+  lv_style_set_border_width(&mbox_bg, LV_STATE_DEFAULT, 1);
   mbox_bg.body.shadow.width = LV_DPI / 10;
   mbox_bg.body.shadow.color = lv_color_hex3(0x222);
-  mbox_bg.body.radius = LV_DPI / 20;
+  lv_style_set_radius(&mbox_bg, LV_STATE_DEFAULT, LV_DPI / 20);
   theme.style.mbox.bg = &mbox_bg;
   theme.style.mbox.btn.bg = &lv_style_transp;
   theme.style.mbox.btn.rel = theme.style.btn.rel;
@@ -670,9 +670,9 @@ void LittleVgl::InitThemePage() {
   lv_style_copy(&page_scrl, &bg);
   lv_style_set_value_color(&page_scrl, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 40));
   lv_style_set_bg_grad_color(&page_scrl, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 40));
-  page_scrl.body.border.color = lv_color_hex3(0x333);
-  page_scrl.body.border.width = 1;
-  page_scrl.body.radius = LV_DPI / 20;
+  lv_style_set_border_color(&page_scrl, LV_STATE_DEFAULT, lv_color_hex3(0x333));
+  lv_style_set_border_width(&page_scrl, LV_STATE_DEFAULT, 1);
+  lv_style_set_radius(&page_scrl, LV_STATE_DEFAULT, LV_DPI / 20);
   
   theme.style.page.bg = &panel;
   theme.style.page.scrl = &page_scrl;
@@ -704,9 +704,9 @@ void LittleVgl::InitThemeList() {
   lv_style_copy(&list_btn_rel, &bg);
   list_btn_rel.body.opa = LV_OPA_TRANSP;
   list_btn_rel.body.border.part = LV_BORDER_BOTTOM;
-  list_btn_rel.body.border.color = lv_color_hsv_to_rgb(hue, 10, 5);
-  list_btn_rel.body.border.width = 1;
-  list_btn_rel.body.radius = LV_DPI / 10;
+  lv_style_set_border_color(&list_btn_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 5));
+  lv_style_set_border_width(&list_btn_rel, LV_STATE_DEFAULT, 1);
+  lv_style_set_radius(&list_btn_rel, LV_STATE_DEFAULT, LV_DPI / 10);
   list_btn_rel.text.color = lv_color_hsv_to_rgb(hue, 5, 80);
   list_btn_rel.image.color = lv_color_hsv_to_rgb(hue, 5, 80);
   lv_style_set_pad_top(&list_btn_rel, LV_STATE_DEFAULT, LV_DPI / 6);
@@ -717,8 +717,8 @@ void LittleVgl::InitThemeList() {
   lv_style_copy(&list_btn_pr, theme.style.btn.pr);
   lv_style_set_value_color(&list_btn_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 5));
   lv_style_set_bg_grad_color(&list_btn_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 5));
-  list_btn_pr.body.border.color = lv_color_hsv_to_rgb(hue, 10, 5);
-  list_btn_pr.body.border.width = 0;
+  lv_style_set_border_color(&list_btn_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 5));
+  lv_style_set_border_width(&list_btn_pr, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_top(&list_btn_pr, LV_STATE_DEFAULT, LV_DPI / 6);
   lv_style_set_pad_bottom(&list_btn_pr, LV_STATE_DEFAULT, LV_DPI / 6);
   lv_style_set_pad_left(&list_btn_pr, LV_STATE_DEFAULT, LV_DPI / 8);
@@ -730,8 +730,8 @@ void LittleVgl::InitThemeList() {
   list_btn_tgl_rel.body.opa = LV_OPA_COVER;
   lv_style_set_value_color(&list_btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
   lv_style_set_bg_grad_color(&list_btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
-  list_btn_tgl_rel.body.border.color = lv_color_hsv_to_rgb(hue, 60, 40);
-  list_btn_tgl_rel.body.radius = list_bg.body.radius;
+  lv_style_set_border_color(&list_btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 60, 40));
+  lv_style_set_radius(&list_btn_tgl_rel, LV_STATE_DEFAULT, list_bg.body.radius);
   
   lv_style_copy(&list_btn_tgl_pr, &list_btn_tgl_rel);
   lv_style_set_value_color(&list_btn_tgl_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 60));
@@ -754,12 +754,12 @@ void LittleVgl::InitThemeDropDownList() {
   lv_style_set_pad_bottom(&ddlist_bg, LV_STATE_DEFAULT, LV_DPI / 8);
   lv_style_set_pad_left(&ddlist_bg, LV_STATE_DEFAULT, LV_DPI / 8);
   lv_style_set_pad_right(&ddlist_bg, LV_STATE_DEFAULT, LV_DPI / 8);
-  ddlist_bg.body.radius = LV_DPI / 30;
+  lv_style_set_radius(&ddlist_bg, LV_STATE_DEFAULT, LV_DPI / 30);
   
   lv_style_copy(&ddlist_sel, theme.style.btn.rel);
   lv_style_set_value_color(&ddlist_sel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 20, 50));
   lv_style_set_bg_grad_color(&ddlist_sel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 20, 50));
-  ddlist_sel.body.radius = 0;
+  lv_style_set_radius(&ddlist_sel, LV_STATE_DEFAULT, 0);
   
   theme.style.ddlist.bg = &ddlist_bg;
   theme.style.ddlist.sel = &ddlist_sel;
@@ -797,8 +797,8 @@ void LittleVgl::InitThemeTileView() {
 
 void LittleVgl::InitThemeTable() {
   lv_style_copy(&cell, &panel);
-  cell.body.radius = 0;
-  cell.body.border.width = 1;
+  lv_style_set_radius(&cell, LV_STATE_DEFAULT, 0);
+  lv_style_set_border_width(&cell, LV_STATE_DEFAULT, 1);
   lv_style_set_pad_left(&cell, LV_STATE_DEFAULT, LV_DPI / 12);
   lv_style_set_pad_right(&cell, LV_STATE_DEFAULT, LV_DPI / 12);
   lv_style_set_pad_top(&cell, LV_STATE_DEFAULT, LV_DPI / 12);
@@ -810,8 +810,8 @@ void LittleVgl::InitThemeTable() {
 
 void LittleVgl::InitThemeWindow() {
 //  lv_style_copy(&win_bg, &bg);
-//  win_bg.body.border.color = lv_color_hex3(0x333);
-//  win_bg.body.border.width = 1;
+//  lv_style_set_border_color(&win_bg, LV_STATE_DEFAULT, lv_color_hex3(0x333));
+//  lv_style_set_border_width(&win_bg, LV_STATE_DEFAULT, 1);
 //
 //  lv_style_copy(&win_header, &win_bg);
 //  win_header.body.main_color     = lv_color_hsv_to_rgb(hue, 10, 20);
