@@ -323,14 +323,14 @@ void LittleVgl::InitThemeButton() {
   lv_style_set_bg_grad_color(&btn_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
   lv_style_set_border_color(&btn_rel, LV_STATE_DEFAULT, lv_color_hex3(0x111));
   lv_style_set_border_width(&btn_rel, LV_STATE_DEFAULT, 1);
-  btn_rel.body.border.opa = LV_OPA_70;
+  lv_style_set_border_opa(&btn_rel, LV_STATE_DEFAULT, LV_OPA_70);
   lv_style_set_pad_left(&btn_rel, LV_STATE_DEFAULT, LV_DPI / 4);
   lv_style_set_pad_right(&btn_rel, LV_STATE_DEFAULT, LV_DPI / 4);
   lv_style_set_pad_top(&btn_rel, LV_STATE_DEFAULT, LV_DPI / 8);
   lv_style_set_pad_bottom(&btn_rel, LV_STATE_DEFAULT, LV_DPI / 8);
   btn_rel.body.shadow.type = LV_SHADOW_BOTTOM;
   btn_rel.body.shadow.color = lv_color_hex3(0x111);
-  btn_rel.body.shadow.width = LV_DPI / 30;
+  lv_style_set_shadow_width(&btn_rel, LV_STATE_DEFAULT, LV_DPI / 30);
   lv_style_set_text_color(&btn_rel, LV_STATE_DEFAULT, lv_color_hex3(0xeee));
   btn_rel.image.color = lv_color_hex3(0xeee);
   
@@ -341,21 +341,21 @@ void LittleVgl::InitThemeButton() {
   lv_style_copy(&btn_tgl_rel, &btn_rel);
   lv_style_set_value_color(&btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
   lv_style_set_bg_grad_color(&btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 40));
-  btn_tgl_rel.body.shadow.width = LV_DPI / 40;
+  lv_style_set_shadow_width(&btn_tgl_rel, LV_STATE_DEFAULT, LV_DPI / 40);
   lv_style_set_text_color(&btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hex3(0xddd));
   btn_tgl_rel.image.color = lv_color_hex3(0xddd);
   
   lv_style_copy(&btn_tgl_pr, &btn_rel);
   lv_style_set_value_color(&btn_tgl_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 10));
   lv_style_set_bg_grad_color(&btn_tgl_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 30));
-  btn_tgl_pr.body.shadow.width = LV_DPI / 30;
+  lv_style_set_shadow_width(&btn_tgl_pr, LV_STATE_DEFAULT, LV_DPI / 30);
   lv_style_set_text_color(&btn_tgl_pr, LV_STATE_DEFAULT, lv_color_hex3(0xddd));
   btn_tgl_pr.image.color = lv_color_hex3(0xddd);
   
   lv_style_copy(&btn_ina, &btn_rel);
   lv_style_set_value_color(&btn_ina, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
   lv_style_set_bg_grad_color(&btn_ina, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
-  btn_ina.body.shadow.width = 0;
+  lv_style_set_shadow_width(&btn_ina, LV_STATE_DEFAULT, 0);
   lv_style_set_text_color(&btn_ina, LV_STATE_DEFAULT, lv_color_hex3(0xaaa));
   btn_ina.image.color = lv_color_hex3(0xaaa);
   
@@ -391,10 +391,10 @@ void LittleVgl::InitThemeLine() {
 
 void LittleVgl::InitThemeLed() {
   lv_style_copy(&led, &def);
-  led.body.shadow.width = LV_DPI / 10;
+  lv_style_set_shadow_width(&led, LV_STATE_DEFAULT, LV_DPI / 10);
   lv_style_set_radius(&led, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_style_set_border_width(&led, LV_STATE_DEFAULT, LV_DPI / 30);
-  led.body.border.opa = LV_OPA_30;
+  lv_style_set_border_opa(&led, LV_STATE_DEFAULT, LV_OPA_30);
   lv_style_set_value_color(&led, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 100, 100));
   lv_style_set_bg_grad_color(&led, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 100, 40));
   lv_style_set_border_color(&led, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 60, 60));
@@ -421,7 +421,7 @@ void LittleVgl::InitThemeBar() {
   lv_style_set_bg_grad_color(&bar_indic, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
   lv_style_set_border_color(&bar_indic, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 20, 15));
   lv_style_set_border_width(&bar_indic, LV_STATE_DEFAULT, 1);
-  bar_indic.body.border.opa = LV_OPA_COVER;
+  lv_style_set_border_opa(&bar_indic, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_style_set_radius(&bar_indic, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_style_set_pad_left(&bar_indic, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_right(&bar_indic, LV_STATE_DEFAULT, 0);
@@ -657,7 +657,7 @@ void LittleVgl::InitThemeMessageBox() {
   lv_style_set_bg_grad_color(&mbox_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 30, 30));
   lv_style_set_border_color(&mbox_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 11, 20));
   lv_style_set_border_width(&mbox_bg, LV_STATE_DEFAULT, 1);
-  mbox_bg.body.shadow.width = LV_DPI / 10;
+  lv_style_set_shadow_width(&mbox_bg, LV_STATE_DEFAULT, LV_DPI / 10);
   mbox_bg.body.shadow.color = lv_color_hex3(0x222);
   lv_style_set_radius(&mbox_bg, LV_STATE_DEFAULT, LV_DPI / 20);
   theme.style.mbox.bg = &mbox_bg;
