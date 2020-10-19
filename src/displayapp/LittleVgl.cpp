@@ -302,8 +302,8 @@ void LittleVgl::InitBaseTheme() {
   lv_style_set_border_width(&panel, LV_STATE_DEFAULT, 1);
   lv_style_set_border_opa(&panel, LV_STATE_DEFAULT, LV_OPA_COVER);
   
-  panel.line.color = lv_color_hsv_to_rgb(hue, 20, 40);
-  panel.line.width = 1;
+  lv_style_set_line_color(&panel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 20, 40));
+  lv_style_set_line_width(&panel, LV_STATE_DEFAULT, 1);
   
   
   theme.style.scr = &scr;
@@ -329,7 +329,7 @@ void LittleVgl::InitThemeButton() {
   lv_style_set_pad_top(&btn_rel, LV_STATE_DEFAULT, LV_DPI / 8);
   lv_style_set_pad_bottom(&btn_rel, LV_STATE_DEFAULT, LV_DPI / 8);
   btn_rel.body.shadow.type = LV_SHADOW_BOTTOM;
-  btn_rel.body.shadow.color = lv_color_hex3(0x111);
+  lv_style_set_shadow_color(&btn_rel, LV_STATE_DEFAULT, lv_color_hex3(0x111));
   lv_style_set_shadow_width(&btn_rel, LV_STATE_DEFAULT, LV_DPI / 30);
   lv_style_set_text_color(&btn_rel, LV_STATE_DEFAULT, lv_color_hex3(0xeee));
   lv_style_set_image_recolor(&btn_rel, LV_STATE_DEFAULT, lv_color_hex3(0xeee));
@@ -398,7 +398,7 @@ void LittleVgl::InitThemeLed() {
   lv_style_set_value_color(&led, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 100, 100));
   lv_style_set_bg_grad_color(&led, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 100, 40));
   lv_style_set_border_color(&led, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 60, 60));
-  led.body.shadow.color = lv_color_hsv_to_rgb(hue, 100, 100);
+  lv_style_set_shadow_color(&led, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 100, 100));
   
   theme.style.led = &led;
 }
@@ -456,8 +456,8 @@ void LittleVgl::InitThemeMeter() {
   lv_style_set_pad_left(&lmeter_bg, LV_STATE_DEFAULT, LV_DPI / 10); /*Scale line length*/
   lv_style_set_pad_inner(&lmeter_bg, LV_STATE_DEFAULT, LV_DPI / 10); /*Text padding*/
   lv_style_set_border_color(&lmeter_bg, LV_STATE_DEFAULT, lv_color_hex3(0x333));
-  lmeter_bg.line.color = lv_color_hex3(0x555);
-  lmeter_bg.line.width = 1;
+  lv_style_set_line_color(&lmeter_bg, LV_STATE_DEFAULT, lv_color_hex3(0x555));
+  lv_style_set_line_width(&lmeter_bg, LV_STATE_DEFAULT, 1);
   lv_style_set_text_color(&lmeter_bg, LV_STATE_DEFAULT, lv_color_hex3(0xddd));
   
   theme.style.lmeter = &lmeter_bg;
@@ -468,8 +468,8 @@ void LittleVgl::InitThemeGauge() {
   lv_style_copy(&gauge_bg, &def);
   lv_style_set_value_color(&gauge_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 70));
   lv_style_set_bg_grad_color(&gauge_bg, LV_STATE_DEFAULT, gauge_bg.body.main_color);
-  gauge_bg.line.color = lv_color_hsv_to_rgb(hue, 80, 75);
-  gauge_bg.line.width = 1;
+  lv_style_set_line_color(&gauge_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 75));
+  lv_style_set_line_width(&gauge_bg, LV_STATE_DEFAULT, 1);
   lv_style_set_text_color(&gauge_bg, LV_STATE_DEFAULT, lv_color_hex3(0xddd));
   
   theme.style.gauge = &gauge_bg;
@@ -477,8 +477,8 @@ void LittleVgl::InitThemeGauge() {
 
 void LittleVgl::InitThemeArc() {
   lv_style_copy(&arc, &def);
-  arc.line.width = 8;
-  arc.line.color = lv_color_hsv_to_rgb(hue, 80, 70);
+  lv_style_set_line_width(&arc, LV_STATE_DEFAULT, 8);
+  lv_style_set_line_color(&arc, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
   arc.line.rounded = 1;
   
   /*For preloader*/
@@ -658,8 +658,9 @@ void LittleVgl::InitThemeMessageBox() {
   lv_style_set_border_color(&mbox_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 11, 20));
   lv_style_set_border_width(&mbox_bg, LV_STATE_DEFAULT, 1);
   lv_style_set_shadow_width(&mbox_bg, LV_STATE_DEFAULT, LV_DPI / 10);
-  mbox_bg.body.shadow.color = lv_color_hex3(0x222);
+  lv_style_set_shadow_color(&mbox_bg, LV_STATE_DEFAULT, lv_color_hex3(0x222));
   lv_style_set_radius(&mbox_bg, LV_STATE_DEFAULT, LV_DPI / 20);
+  
   theme.style.mbox.bg = &mbox_bg;
   theme.style.mbox.btn.bg = &lv_style_transp;
   theme.style.mbox.btn.rel = theme.style.btn.rel;
