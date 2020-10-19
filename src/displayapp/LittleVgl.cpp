@@ -496,7 +496,7 @@ void LittleVgl::InitThemeArc() {
   lv_style_copy(&arc, &def);
   lv_style_set_line_width(&arc, LV_STATE_DEFAULT, 8);
   lv_style_set_line_color(&arc, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
-  arc.line.rounded = 1;
+  lv_style_set_line_rounded(&arc, LV_STATE_DEFAULT, true);
   
   /*For preloader*/
   lv_style_set_border_width(&arc, LV_STATE_DEFAULT, 7);
