@@ -722,7 +722,7 @@ void LittleVgl::InitThemeList() {
   
   lv_style_copy(&list_btn_rel, &bg);
   lv_style_set_image_opa(&list_btn_rel, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  list_btn_rel.body.border.part = LV_BORDER_BOTTOM;
+  lv_style_set_border_side(&list_btn_rel, LV_STATE_DEFAULT, LV_BORDER_SIDE_BOTTOM);
   lv_style_set_border_color(&list_btn_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 5));
   lv_style_set_border_width(&list_btn_rel, LV_STATE_DEFAULT, 1);
   lv_style_set_radius(&list_btn_rel, LV_STATE_DEFAULT, LV_DPI / 10);
@@ -768,7 +768,7 @@ void LittleVgl::InitThemeList() {
 
 void LittleVgl::InitThemeDropDownList() {
   lv_style_copy(&ddlist_bg, theme.style.btn.rel);
-  ddlist_bg.text.line_space = LV_DPI / 8;
+  lv_style_set_text_line_space(&ddlist_bg, LV_STATE_DEFAULT, LV_DPI / 8);
   lv_style_set_pad_top(&ddlist_bg, LV_STATE_DEFAULT, LV_DPI / 8);
   lv_style_set_pad_bottom(&ddlist_bg, LV_STATE_DEFAULT, LV_DPI / 8);
   lv_style_set_pad_left(&ddlist_bg, LV_STATE_DEFAULT, LV_DPI / 8);
