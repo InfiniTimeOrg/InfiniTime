@@ -1,6 +1,6 @@
 # Memory analysis
 ## FreeRTOS heap and task stack
-FreeRTOS statically allocate its own heap buffer in a global variable named `ucHeap`. This is an aray of *uint8_t*. Its size is specified by the definition `configTOTAL_HEAP_SIZE` in *FreeRTOSConfig.h*
+FreeRTOS statically allocate its own heap buffer in a global variable named `ucHeap`. This is an array of *uint8_t*. Its size is specified by the definition `configTOTAL_HEAP_SIZE` in *FreeRTOSConfig.h*
 FreeRTOS uses this buffer to allocate memory for tasks stack and all the RTOS object created during runtime (timers, mutexes,...).
 
 The function `xPortGetFreeHeapSize()` returns the amount of memory available in this *ucHeap* buffer. If this value reaches 0, FreeRTOS runs out of memory.
