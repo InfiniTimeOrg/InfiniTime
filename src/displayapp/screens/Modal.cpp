@@ -1,3 +1,20 @@
+/*  Copyright (C) 2020 JF, Avamander
+
+    This file is part of InfiniTime.
+
+    InfiniTime is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    InfiniTime is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 #include <libs/lvgl/lvgl.h>
 #include "Modal.h"
 #include "../DisplayApp.h"
@@ -16,7 +33,7 @@ Modal::~Modal() {
 }
 
 bool Modal::Refresh() {
-
+  
   return running;
 }
 
@@ -48,11 +65,12 @@ void Modal::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
 }
 
 void Modal::Show(const char* msg) {
-  if(isVisible) return;
+  if (isVisible) { return; }
   isVisible = true;
   lv_style_copy(&modal_style, &lv_style_plain_color);
-  modal_style.body.main_color = modal_style.body.grad_color = LV_COLOR_BLACK;
-  modal_style.body.opa = LV_OPA_50;
+  lv_style_set_value_color(&modal_style, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_style_set_bg_grad_color(&modal_style, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_style_set_value_opa(&modal_style, LV_STATE_DEFAULT, LV_OPA_50);
   
   obj = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style(obj, &modal_style);
