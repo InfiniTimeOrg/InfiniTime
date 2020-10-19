@@ -266,7 +266,7 @@ void LittleVgl::InitBaseTheme() {
   lv_style_set_bg_grad_color(&bg, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_style_set_text_color(&bg, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_style_set_text_font(&bg, LV_STATE_DEFAULT, font);
-  bg.image.color = LV_COLOR_WHITE;
+  lv_style_set_image_recolor(&bg, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   
   lv_style_copy(&scr, &bg);
   lv_style_set_pad_bottom(&scr, LV_STATE_DEFAULT, 0);
@@ -278,13 +278,13 @@ void LittleVgl::InitBaseTheme() {
   lv_style_set_value_color(&sb, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 30, 60));
   lv_style_set_bg_grad_color(&sb, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 30, 60));
   lv_style_set_border_width(&sb, LV_STATE_DEFAULT, 0);
-  sb.body.padding.inner = LV_DPI / 20;
+  lv_style_set_pad_inner(&sb, LV_STATE_DEFAULT, LV_DPI / 20);
   lv_style_set_pad_left(&sb, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_right(&sb, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_top(&sb, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_bottom(&sb, LV_STATE_DEFAULT, 0);
   sb.body.radius = LV_DPI / 30;
-  sb.body.opa = LV_OPA_COVER;
+  lv_style_set_image_opa(&sb, LV_STATE_DEFAULT, LV_OPA_COVER);
   
   lv_style_copy(&panel, &bg);
   
@@ -332,7 +332,7 @@ void LittleVgl::InitThemeButton() {
   btn_rel.body.shadow.color = lv_color_hex3(0x111);
   lv_style_set_shadow_width(&btn_rel, LV_STATE_DEFAULT, LV_DPI / 30);
   lv_style_set_text_color(&btn_rel, LV_STATE_DEFAULT, lv_color_hex3(0xeee));
-  btn_rel.image.color = lv_color_hex3(0xeee);
+  lv_style_set_image_recolor(&btn_rel, LV_STATE_DEFAULT, lv_color_hex3(0xeee));
   
   lv_style_copy(&btn_pr, &btn_rel);
   lv_style_set_value_color(&btn_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 30));
@@ -343,21 +343,21 @@ void LittleVgl::InitThemeButton() {
   lv_style_set_bg_grad_color(&btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 40));
   lv_style_set_shadow_width(&btn_tgl_rel, LV_STATE_DEFAULT, LV_DPI / 40);
   lv_style_set_text_color(&btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hex3(0xddd));
-  btn_tgl_rel.image.color = lv_color_hex3(0xddd);
+  lv_style_set_image_recolor(&btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hex3(0xddd));
   
   lv_style_copy(&btn_tgl_pr, &btn_rel);
   lv_style_set_value_color(&btn_tgl_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 10));
   lv_style_set_bg_grad_color(&btn_tgl_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 30));
   lv_style_set_shadow_width(&btn_tgl_pr, LV_STATE_DEFAULT, LV_DPI / 30);
   lv_style_set_text_color(&btn_tgl_pr, LV_STATE_DEFAULT, lv_color_hex3(0xddd));
-  btn_tgl_pr.image.color = lv_color_hex3(0xddd);
+  lv_style_set_image_recolor(&btn_tgl_pr, LV_STATE_DEFAULT, lv_color_hex3(0xddd));
   
   lv_style_copy(&btn_ina, &btn_rel);
   lv_style_set_value_color(&btn_ina, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
   lv_style_set_bg_grad_color(&btn_ina, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
   lv_style_set_shadow_width(&btn_ina, LV_STATE_DEFAULT, 0);
   lv_style_set_text_color(&btn_ina, LV_STATE_DEFAULT, lv_color_hex3(0xaaa));
-  btn_ina.image.color = lv_color_hex3(0xaaa);
+  lv_style_set_image_recolor(&btn_ina, LV_STATE_DEFAULT, lv_color_hex3(0xaaa));
   
   theme.style.btn.rel = &btn_rel;
   theme.style.btn.pr = &btn_pr;
@@ -454,7 +454,7 @@ void LittleVgl::InitThemeMeter() {
   lv_style_set_value_color(&lmeter_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 70));
   lv_style_set_bg_grad_color(&lmeter_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 95, 90));
   lv_style_set_pad_left(&lmeter_bg, LV_STATE_DEFAULT, LV_DPI / 10); /*Scale line length*/
-  lmeter_bg.body.padding.inner = LV_DPI / 10; /*Text padding*/
+  lv_style_set_pad_inner(&lmeter_bg, LV_STATE_DEFAULT, LV_DPI / 10); /*Text padding*/
   lv_style_set_border_color(&lmeter_bg, LV_STATE_DEFAULT, lv_color_hex3(0x333));
   lmeter_bg.line.color = lv_color_hex3(0x555);
   lmeter_bg.line.width = 1;
@@ -606,7 +606,7 @@ void LittleVgl::InitThemeButtonMatrix() {
   lv_style_set_pad_right(&btnm_bg, LV_STATE_DEFAULT, 2);
   lv_style_set_pad_top(&btnm_bg, LV_STATE_DEFAULT, 2);
   lv_style_set_pad_bottom(&btnm_bg, LV_STATE_DEFAULT, 2);
-  btnm_bg.body.padding.inner = 0;
+  lv_style_set_pad_inner(&btnm_bg, LV_STATE_DEFAULT, 0);
   lv_style_set_border_width(&btnm_bg, LV_STATE_DEFAULT, 1);
   
   lv_style_copy(&btnm_rel, theme.style.btn.rel);
@@ -699,16 +699,16 @@ void LittleVgl::InitThemeList() {
   lv_style_set_pad_bottom(&list_bg, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_left(&list_bg, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_right(&list_bg, LV_STATE_DEFAULT, 0);
-  list_bg.body.padding.inner = 0;
+  lv_style_set_pad_inner(&list_bg, LV_STATE_DEFAULT, 0);
   
   lv_style_copy(&list_btn_rel, &bg);
-  list_btn_rel.body.opa = LV_OPA_TRANSP;
+  lv_style_set_image_opa(&list_btn_rel, LV_STATE_DEFAULT, LV_OPA_TRANSP);
   list_btn_rel.body.border.part = LV_BORDER_BOTTOM;
   lv_style_set_border_color(&list_btn_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 5));
   lv_style_set_border_width(&list_btn_rel, LV_STATE_DEFAULT, 1);
   lv_style_set_radius(&list_btn_rel, LV_STATE_DEFAULT, LV_DPI / 10);
   lv_style_set_text_color(&list_btn_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 5, 80));
-  list_btn_rel.image.color = lv_color_hsv_to_rgb(hue, 5, 80);
+  lv_style_set_image_recolor(&list_btn_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 5, 80));
   lv_style_set_pad_top(&list_btn_rel, LV_STATE_DEFAULT, LV_DPI / 6);
   lv_style_set_pad_bottom(&list_btn_rel, LV_STATE_DEFAULT, LV_DPI / 6);
   lv_style_set_pad_left(&list_btn_rel, LV_STATE_DEFAULT, LV_DPI / 8);
@@ -724,10 +724,10 @@ void LittleVgl::InitThemeList() {
   lv_style_set_pad_left(&list_btn_pr, LV_STATE_DEFAULT, LV_DPI / 8);
   lv_style_set_pad_right(&list_btn_pr, LV_STATE_DEFAULT, LV_DPI / 8);
   lv_style_set_text_color(&list_btn_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 5, 80));
-  list_btn_pr.image.color = lv_color_hsv_to_rgb(hue, 5, 80);
+  lv_style_set_image_recolor(&list_btn_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 5, 80));
   
   lv_style_copy(&list_btn_tgl_rel, &list_btn_rel);
-  list_btn_tgl_rel.body.opa = LV_OPA_COVER;
+  lv_style_set_image_opa(&list_btn_tgl_rel, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_style_set_value_color(&list_btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
   lv_style_set_bg_grad_color(&list_btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 80, 70));
   lv_style_set_border_color(&list_btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 60, 40));
