@@ -628,7 +628,7 @@ void LittleVgl::InitThemeButtonMatrix() {
   lv_style_set_border_width(&btnm_bg, LV_STATE_DEFAULT, 1);
   
   lv_style_copy(&btnm_rel, theme.style.btn.rel);
-  btnm_rel.body.border.part = LV_BORDER_FULL | LV_BORDER_INTERNAL;
+  lv_style_set_border_side(&btnm_rel, LV_STATE_DEFAULT, LV_BORDER_SIDE_FULL | LV_BORDER_SIDE_INTERNAL);
   lv_style_set_border_width(&btnm_rel, LV_STATE_DEFAULT, 1);
   lv_style_set_radius(&btnm_rel, LV_STATE_DEFAULT, 2);
   
@@ -712,7 +712,6 @@ void LittleVgl::InitThemeSpinBox() {
 }
 
 void LittleVgl::InitThemeList() {
-  
   lv_style_copy(&list_bg, &panel);
   lv_style_set_pad_top(&list_bg, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_bottom(&list_bg, LV_STATE_DEFAULT, 0);
