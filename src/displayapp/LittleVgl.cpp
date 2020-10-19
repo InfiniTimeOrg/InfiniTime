@@ -301,7 +301,7 @@ void LittleVgl::InitBaseTheme() {
   lv_style_set_pad_right(&sb, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_top(&sb, LV_STATE_DEFAULT, 0);
   lv_style_set_pad_bottom(&sb, LV_STATE_DEFAULT, 0);
-  sb.body.radius = LV_DPI / 30;
+  lv_style_set_radius(&sb, LV_STATE_DEFAULT, LV_DPI / 30);
   lv_style_set_image_opa(&sb, LV_STATE_DEFAULT, LV_OPA_COVER);
   
   lv_style_copy(&panel, &bg);
