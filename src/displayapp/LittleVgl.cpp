@@ -264,8 +264,8 @@ void LittleVgl::InitBaseTheme() {
   lv_style_copy(&bg, &lv_style_plain);
   lv_style_set_value_color(&bg, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_style_set_bg_grad_color(&bg, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  bg.text.color = LV_COLOR_WHITE;
-  bg.text.font = font;
+  lv_style_set_text_color(&bg, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_style_set_text_font(&bg, LV_STATE_DEFAULT, font);
   bg.image.color = LV_COLOR_WHITE;
   
   lv_style_copy(&scr, &bg);
@@ -331,7 +331,7 @@ void LittleVgl::InitThemeButton() {
   btn_rel.body.shadow.type = LV_SHADOW_BOTTOM;
   btn_rel.body.shadow.color = lv_color_hex3(0x111);
   btn_rel.body.shadow.width = LV_DPI / 30;
-  btn_rel.text.color = lv_color_hex3(0xeee);
+  lv_style_set_text_color(&btn_rel, LV_STATE_DEFAULT, lv_color_hex3(0xeee));
   btn_rel.image.color = lv_color_hex3(0xeee);
   
   lv_style_copy(&btn_pr, &btn_rel);
@@ -342,21 +342,21 @@ void LittleVgl::InitThemeButton() {
   lv_style_set_value_color(&btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
   lv_style_set_bg_grad_color(&btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 40));
   btn_tgl_rel.body.shadow.width = LV_DPI / 40;
-  btn_tgl_rel.text.color = lv_color_hex3(0xddd);
+  lv_style_set_text_color(&btn_tgl_rel, LV_STATE_DEFAULT, lv_color_hex3(0xddd));
   btn_tgl_rel.image.color = lv_color_hex3(0xddd);
   
   lv_style_copy(&btn_tgl_pr, &btn_rel);
   lv_style_set_value_color(&btn_tgl_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 10));
   lv_style_set_bg_grad_color(&btn_tgl_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 30));
   btn_tgl_pr.body.shadow.width = LV_DPI / 30;
-  btn_tgl_pr.text.color = lv_color_hex3(0xddd);
+  lv_style_set_text_color(&btn_tgl_pr, LV_STATE_DEFAULT, lv_color_hex3(0xddd));
   btn_tgl_pr.image.color = lv_color_hex3(0xddd);
   
   lv_style_copy(&btn_ina, &btn_rel);
   lv_style_set_value_color(&btn_ina, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
   lv_style_set_bg_grad_color(&btn_ina, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
   btn_ina.body.shadow.width = 0;
-  btn_ina.text.color = lv_color_hex3(0xaaa);
+  lv_style_set_text_color(&btn_ina, LV_STATE_DEFAULT, lv_color_hex3(0xaaa));
   btn_ina.image.color = lv_color_hex3(0xaaa);
   
   theme.style.btn.rel = &btn_rel;
@@ -368,17 +368,17 @@ void LittleVgl::InitThemeButton() {
 
 void LittleVgl::InitThemeLabel() {
   lv_style_copy(&prim, &bg);
-  prim.text.color = lv_color_hsv_to_rgb(hue, 5, 95);
+  lv_style_set_text_color(&prim, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 5, 95));
   
   lv_style_copy(&labelBigStyle, &prim);
-  labelBigStyle.text.font = &jetbrains_mono_extrabold_compressed;
+  lv_style_set_text_font(&labelBigStyle, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
   LabelBigStyle = &(this->labelBigStyle);
   
   lv_style_copy(&sec, &bg);
-  sec.text.color = lv_color_hsv_to_rgb(hue, 15, 65);
+  lv_style_set_text_color(&sec, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 15, 65));
   
   lv_style_copy(&hint, &bg);
-  hint.text.color = lv_color_hsv_to_rgb(hue, 20, 55);
+  lv_style_set_text_color(&hint, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 20, 55));
   
   theme.style.label.prim = &prim;
   theme.style.label.sec = &sec;
@@ -458,7 +458,7 @@ void LittleVgl::InitThemeMeter() {
   lv_style_set_border_color(&lmeter_bg, LV_STATE_DEFAULT, lv_color_hex3(0x333));
   lmeter_bg.line.color = lv_color_hex3(0x555);
   lmeter_bg.line.width = 1;
-  lmeter_bg.text.color = lv_color_hex3(0xddd);
+  lv_style_set_text_color(&lmeter_bg, LV_STATE_DEFAULT, lv_color_hex3(0xddd));
   
   theme.style.lmeter = &lmeter_bg;
 }
@@ -470,7 +470,7 @@ void LittleVgl::InitThemeGauge() {
   lv_style_set_bg_grad_color(&gauge_bg, LV_STATE_DEFAULT, gauge_bg.body.main_color);
   gauge_bg.line.color = lv_color_hsv_to_rgb(hue, 80, 75);
   gauge_bg.line.width = 1;
-  gauge_bg.text.color = lv_color_hex3(0xddd);
+  lv_style_set_text_color(&gauge_bg, LV_STATE_DEFAULT, lv_color_hex3(0xddd));
   
   theme.style.gauge = &gauge_bg;
 }
@@ -546,10 +546,10 @@ void LittleVgl::InitThemeCalendar() {
   lv_style_set_pad_bottom(&today_box, LV_STATE_DEFAULT, LV_DPI / 14);
   
   lv_style_copy(&highlighted_days, &bg);
-  highlighted_days.text.color = lv_color_hsv_to_rgb(hue, 40, 80);
+  lv_style_set_text_color(&highlighted_days, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 40, 80));
   
   lv_style_copy(&ina_days, &bg);
-  ina_days.text.color = lv_color_hsv_to_rgb(hue, 0, 60);
+  lv_style_set_text_color(&ina_days, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 0, 60));
   
   theme.style.calendar.bg = &cal_bg;
   theme.style.calendar.header = &cal_header;
@@ -707,7 +707,7 @@ void LittleVgl::InitThemeList() {
   lv_style_set_border_color(&list_btn_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 5));
   lv_style_set_border_width(&list_btn_rel, LV_STATE_DEFAULT, 1);
   lv_style_set_radius(&list_btn_rel, LV_STATE_DEFAULT, LV_DPI / 10);
-  list_btn_rel.text.color = lv_color_hsv_to_rgb(hue, 5, 80);
+  lv_style_set_text_color(&list_btn_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 5, 80));
   list_btn_rel.image.color = lv_color_hsv_to_rgb(hue, 5, 80);
   lv_style_set_pad_top(&list_btn_rel, LV_STATE_DEFAULT, LV_DPI / 6);
   lv_style_set_pad_bottom(&list_btn_rel, LV_STATE_DEFAULT, LV_DPI / 6);
@@ -723,7 +723,7 @@ void LittleVgl::InitThemeList() {
   lv_style_set_pad_bottom(&list_btn_pr, LV_STATE_DEFAULT, LV_DPI / 6);
   lv_style_set_pad_left(&list_btn_pr, LV_STATE_DEFAULT, LV_DPI / 8);
   lv_style_set_pad_right(&list_btn_pr, LV_STATE_DEFAULT, LV_DPI / 8);
-  list_btn_pr.text.color = lv_color_hsv_to_rgb(hue, 5, 80);
+  lv_style_set_text_color(&list_btn_pr, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 5, 80));
   list_btn_pr.image.color = lv_color_hsv_to_rgb(hue, 5, 80);
   
   lv_style_copy(&list_btn_tgl_rel, &list_btn_rel);
@@ -772,7 +772,7 @@ void LittleVgl::InitThemeRoller() {
   lv_style_copy(&roller_bg, theme.style.ddlist.bg);
   lv_style_set_value_color(&roller_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
   lv_style_set_bg_grad_color(&roller_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 40));
-  roller_bg.text.color = lv_color_hsv_to_rgb(hue, 5, 70);
+  lv_style_set_text_color(&roller_bg, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 5, 70));
   roller_bg.text.opa = LV_OPA_60;
   
   theme.style.roller.bg = &roller_bg;
