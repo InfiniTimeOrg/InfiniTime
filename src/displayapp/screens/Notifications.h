@@ -12,7 +12,8 @@ namespace Pinetime {
     namespace Screens {
       class Notifications : public Screen {
         public:
-          explicit Notifications(DisplayApp* app);
+          enum class Modes {Normal, Preview};
+          explicit Notifications(DisplayApp* app, Pinetime::Controllers::NotificationManager& notificationManager, Modes mode);
           ~Notifications() override;
 
           bool Refresh() override;
@@ -20,24 +21,39 @@ namespace Pinetime {
           bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
         private:
-          ScreenList<3> screens;
           bool running = true;
-          std::unique_ptr<Screen> CreateScreen1();
-          std::unique_ptr<Screen> CreateScreen2();
-          std::unique_ptr<Screen> CreateScreen3();
 
-          class NotificationItem : public Screen {
+          class NotificationItem {
             public:
-              NotificationItem(DisplayApp* app, const char* title, const char* msg, uint8_t notifNr, uint8_t notifNb);
-              NotificationItem(DisplayApp* app, const char* title1, const char* msg1, const char* title2, const char* msg2, uint8_t notifNr, uint8_t notifNb);
-              ~NotificationItem() override;
-              bool Refresh() override {return false;}
+              NotificationItem(const char* title, const char* msg, uint8_t notifNr, uint8_t notifNb, Modes mode);
+              ~NotificationItem();
+              bool Refresh() {return false;}
 
             private:
               uint8_t notifNr = 0;
               uint8_t notifNb = 0;
               char pageText[4];
+
+              lv_obj_t* container1;
+              lv_obj_t* t1;
+              lv_obj_t* l1;
+              Modes mode;
           };
+
+          struct NotificationData {
+            const char* title;
+            const char* text;
+          };
+          Pinetime::Controllers::NotificationManager& notificationManager;
+          Modes mode = Modes::Normal;
+          std::unique_ptr<NotificationItem> currentItem;
+          Controllers::NotificationManager::Notification::Id currentId;
+          bool validDisplay = false;
+
+          lv_point_t timeoutLinePoints[2]  { {0, 237}, {239, 237} };
+          lv_obj_t* timeoutLine;
+          uint32_t timeoutTickCountStart;
+          uint32_t timeoutTickCountEnd;
       };
     }
   }

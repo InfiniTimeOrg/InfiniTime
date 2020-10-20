@@ -9,7 +9,6 @@
 #include "components/datetime/DateTimeController.h"
 #include <drivers/Cst816s.h>
 #include "displayapp/screens/Notifications.h"
-#include "displayapp/screens/Notifications_swscroll.h"
 #include "displayapp/screens/Tile.h"
 #include "displayapp/screens/Meter.h"
 #include "displayapp/screens/Gauge.h"
@@ -37,7 +36,7 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
         dateTimeController{dateTimeController},
         watchdog{watchdog},
         touchPanel{touchPanel},
-        currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController) },
+        currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager) },
         systemTask{systemTask},
         notificationManager{notificationManager} {
   msgQueue = xQueueCreate(queueSize, itemSize);
@@ -116,8 +115,12 @@ void DisplayApp::Refresh() {
 //        clockScreen.SetBatteryPercentRemaining(batteryController.PercentRemaining());
         break;
       case Messages::NewNotification: {
-        auto notification = notificationManager.Pop();
-        modal->Show(notification.message.data());
+        if(onClockApp) {
+          currentScreen.reset(nullptr);
+          lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
+          onClockApp = false;
+          currentScreen.reset(new Screens::Notifications(this, notificationManager, Screens::Notifications::Modes::Preview));
+        }
       }
         break;
       case Messages::TouchEvent: {
@@ -193,7 +196,7 @@ void DisplayApp::RunningState() {
       case Apps::None:
       case Apps::Launcher: currentScreen.reset(new Screens::ApplicationList(this)); break;
       case Apps::Clock:
-        currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
+        currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager));
         onClockApp = true;
         break;
 //      case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
@@ -204,8 +207,7 @@ void DisplayApp::RunningState() {
       case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
       case Apps::Music : currentScreen.reset(new Screens::Music(this, systemTask.nimble().music())); break;
       case Apps::FirmwareValidation: currentScreen.reset(new Screens::FirmwareValidation(this, validator)); break;
-      case Apps::Notifications: currentScreen.reset(new Screens::Notifications(this)); break;
-      case Apps::Notifications2: currentScreen.reset(new Screens::Notifications2(this)); break;
+      case Apps::Notifications: currentScreen.reset(new Screens::Notifications(this, notificationManager, Screens::Notifications::Modes::Normal)); break;
     }
     nextApp = Apps::None;
   }

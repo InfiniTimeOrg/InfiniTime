@@ -8,6 +8,9 @@
 #include "BatteryIcon.h"
 #include "BleIcon.h"
 #include "Symbols.h"
+#include "components/ble/NotificationManager.h"
+#include "NotificationIcon.h"
+
 using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
 extern lv_font_t jetbrains_mono_bold_20;
@@ -21,8 +24,10 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
 Clock::Clock(DisplayApp* app,
         Controllers::DateTime& dateTimeController,
         Controllers::Battery& batteryController,
-        Controllers::Ble& bleController) : Screen(app), currentDateTime{{}},
-                                           dateTimeController{dateTimeController}, batteryController{batteryController}, bleController{bleController} {
+        Controllers::Ble& bleController,
+        Controllers::NotificationManager& notificatioManager) : Screen(app), currentDateTime{{}},
+                                           dateTimeController{dateTimeController}, batteryController{batteryController},
+                                           bleController{bleController}, notificatioManager{notificatioManager} {
   displayedChar[0] = 0;
   displayedChar[1] = 0;
   displayedChar[2] = 0;
@@ -41,9 +46,11 @@ Clock::Clock(DisplayApp* app,
   lv_label_set_text(bleIcon, Symbols::bluetooth);
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
+  notificationIcon = lv_label_create(lv_scr_act(), NULL);
+  lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
+  lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 10, 0);
 
   label_date = lv_label_create(lv_scr_act(), NULL);
-
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
 
   label_time = lv_label_create(lv_scr_act(), NULL);
@@ -105,6 +112,14 @@ bool Clock::Refresh() {
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 5);
   lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  notificationState = notificatioManager.AreNewNotificationsAvailable();
+  if(notificationState.IsUpdated()) {
+    if(notificationState.Get() == true)
+      lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(true));
+    else
+      lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
+  }
 
   currentDateTime = dateTimeController.CurrentDateTime();
 

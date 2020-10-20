@@ -1,4 +1,5 @@
 #include <cstring>
+#include <algorithm>
 #include "NotificationManager.h"
 
 using namespace Pinetime::Controllers;
@@ -11,20 +12,69 @@ void NotificationManager::Push(Pinetime::Controllers::NotificationManager::Categ
   std::memcpy(notif.message.data(), message, checkedSize);
   notif.message[checkedSize] = '\0';
   notif.category = category;
+  notif.id = GetNextId();
+  notif.valid = true;
 
   writeIndex = (writeIndex + 1 < TotalNbNotifications) ? writeIndex + 1 : 0;
-  if(!empty && writeIndex == readIndex)
-    readIndex = writeIndex + 1;
+  if(!empty)
+    readIndex = (readIndex + 1 < TotalNbNotifications) ? readIndex + 1 : 0;
+  else empty = false;
+
+  newNotification = true;
 }
 
-NotificationManager::Notification Pinetime::Controllers::NotificationManager::Pop() {
-// TODO handle edge cases on read/write index
+NotificationManager::Notification NotificationManager::GetLastNotification() {
   NotificationManager::Notification notification = notifications[readIndex];
-
-  if(readIndex != writeIndex) {
-    readIndex = (readIndex + 1 < TotalNbNotifications) ? readIndex + 1 : 0;
-  }
-
-  // TODO Check move optimization on return
   return notification;
 }
+
+NotificationManager::Notification::Id NotificationManager::GetNextId() {
+  return nextId++;
+}
+
+NotificationManager::Notification NotificationManager::GetNext(NotificationManager::Notification::Id id) {
+  auto currentIterator = std::find_if(notifications.begin(), notifications.end(), [id](const Notification& n){return n.valid && n.id == id;});
+  if(currentIterator == notifications.end() || currentIterator->id != id) return Notification{};
+
+  auto& lastNotification = notifications[readIndex];
+
+  NotificationManager::Notification result;
+
+  if(currentIterator == (notifications.end()-1))
+    result = *(notifications.begin());
+  else
+    result = *(currentIterator+1);
+
+  if(result.id <= id) return {};
+
+  result.index = (lastNotification.id - result.id)+1;
+  return result;
+}
+
+NotificationManager::Notification NotificationManager::GetPrevious(NotificationManager::Notification::Id id) {
+  auto currentIterator = std::find_if(notifications.begin(), notifications.end(), [id](const Notification& n){return n.valid && n.id == id;});
+  if(currentIterator == notifications.end() || currentIterator->id != id) return Notification{};
+
+  auto& lastNotification = notifications[readIndex];
+
+  NotificationManager::Notification result;
+
+  if(currentIterator == notifications.begin())
+    result = *(notifications.end()-1);
+  else
+    result = *(currentIterator-1);
+
+  if(result.id >= id) return {};
+
+  result.index = (lastNotification.id - result.id)+1;
+  return result;
+}
+
+bool NotificationManager::AreNewNotificationsAvailable() {
+  return newNotification;
+}
+
+bool NotificationManager::ClearNewNotificationFlag() {
+  return newNotification.exchange(false);
+}
+

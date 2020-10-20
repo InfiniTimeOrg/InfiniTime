@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <atomic>
 
 namespace Pinetime {
   namespace Controllers {
@@ -10,20 +11,32 @@ namespace Pinetime {
         static constexpr uint8_t MessageSize{18};
 
         struct Notification {
+          using Id = uint8_t;
+          Id id;
+          bool valid = false;
+          uint8_t index;
+          uint8_t number = TotalNbNotifications;
           std::array<char, MessageSize+1> message;
           Categories category = Categories::Unknown;
         };
+        Notification::Id nextId {0};
 
       void Push(Categories category, const char* message, uint8_t messageSize);
-      Notification Pop();
+      Notification GetLastNotification();
+      Notification GetNext(Notification::Id id);
+      Notification GetPrevious(Notification::Id id);
+      bool ClearNewNotificationFlag();
+      bool AreNewNotificationsAvailable();
 
 
       private:
+        Notification::Id GetNextId();
         static constexpr uint8_t TotalNbNotifications = 5;
         std::array<Notification, TotalNbNotifications> notifications;
         uint8_t readIndex = 0;
         uint8_t writeIndex = 0;
         bool empty = true;
+        std::atomic<bool> newNotification{false};
     };
   }
 }
