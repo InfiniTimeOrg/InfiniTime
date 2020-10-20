@@ -338,7 +338,7 @@ void LittleVgl::InitThemeButton() {
   
   
   lv_style_copy(&btn_rel, &def);
-  btn_lv_style_set_value_color(&rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 40);
+  lv_style_set_value_color(&rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 40));
   lv_style_set_bg_grad_color(&btn_rel, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 10, 20));
   lv_style_set_border_color(&btn_rel, LV_STATE_DEFAULT, lv_color_hex3(0x111));
   lv_style_set_border_width(&btn_rel, LV_STATE_DEFAULT, 1);
