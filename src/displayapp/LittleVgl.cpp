@@ -24,6 +24,7 @@
 
 #include <libs/lvgl/src/lv_themes/lv_theme.h>
 #include <lvgl/lvgl.h>
+#include <lv_extras.h>
 //#include <libs/lvgl/src/lv_themes/lv_theme_night.h>
 
 #include "LittleVgl.h"

@@ -166,6 +166,7 @@ set(NIMBLE_SRC
 
 set(LVGL_SRC
         libs/lv_conf.h
+        libs/lv_extras.h
         libs/lvgl/lvgl.h
         libs/lvgl/src/lv_core/lv_obj.c
         libs/lvgl/src/lv_core/lv_obj.h

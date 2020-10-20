@@ -30,17 +30,6 @@ static void event_handler(lv_obj_t *obj, lv_event_t event) {
 }
 
 /**
- * Set the pixel array to display by the image
- * This just calls lv_img_set_src but adds type safety
- *
- * @param img pointer to an image object
- * @param data the image array
- */
-inline void lv_img_set_src_arr(lv_obj_t *img, const lv_img_dsc_t *src_img) {
-  lv_img_set_src(img, src_img);
-}
-
-/**
  * Music control watchapp
  *
  * TODO: Investigate Apple Media Service and AVRCPv1.6 support for seamless integration
