@@ -11,10 +11,10 @@ Notifications::Notifications(DisplayApp *app, Pinetime::Controllers::Notificatio
   auto notification = notificationManager.GetLastNotification();
   if(notification.valid) {
     currentId = notification.id;
-    currentItem.reset(new NotificationItem("Notification", notification.message.data(), notification.index, notification.number, mode));
+    currentItem.reset(new NotificationItem("Notification", notification.message.data(), notification.index, notificationManager.NbNotifications(), mode));
     validDisplay = true;
   } else {
-    currentItem.reset(new NotificationItem("Notification", "No notification to display", 0, 0, mode));
+    currentItem.reset(new NotificationItem("Notification", "No notification to display", 0, notificationManager.NbNotifications(), Modes::Preview));
   }
 
   if(mode == Modes::Preview) {
@@ -71,7 +71,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       currentId = previousNotification.id;
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Up);
-      currentItem.reset(new NotificationItem("Notification", previousNotification.message.data(),  previousNotification.index, previousNotification.number, mode));
+      currentItem.reset(new NotificationItem("Notification", previousNotification.message.data(),  previousNotification.index, notificationManager.NbNotifications(), mode));
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeDown: {
@@ -87,7 +87,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       currentId = nextNotification.id;
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Down);
-      currentItem.reset(new NotificationItem("Notification", nextNotification.message.data(),  nextNotification.index, nextNotification.number, mode));
+      currentItem.reset(new NotificationItem("Notification", nextNotification.message.data(),  nextNotification.index, notificationManager.NbNotifications(), mode));
     }
       return true;
     default:

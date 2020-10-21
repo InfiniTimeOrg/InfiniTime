@@ -28,6 +28,7 @@ void NotificationManager::Push(Pinetime::Controllers::NotificationManager::Categ
 
 NotificationManager::Notification NotificationManager::GetLastNotification() {
   NotificationManager::Notification notification = notifications[readIndex];
+  notification.index = 1;
   return notification;
 }
 
@@ -79,5 +80,9 @@ bool NotificationManager::AreNewNotificationsAvailable() {
 
 bool NotificationManager::ClearNewNotificationFlag() {
   return newNotification.exchange(false);
+}
+
+size_t NotificationManager::NbNotifications() const {
+  return std::count_if(notifications.begin(), notifications.end(), [](const Notification& n){ return n.valid;});
 }
 

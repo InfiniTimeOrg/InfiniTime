@@ -15,7 +15,6 @@ namespace Pinetime {
           Id id;
           bool valid = false;
           uint8_t index;
-          uint8_t number = TotalNbNotifications;
           std::array<char, MessageSize+1> message;
           Categories category = Categories::Unknown;
         };
@@ -29,6 +28,7 @@ namespace Pinetime {
       bool AreNewNotificationsAvailable();
 
       static constexpr uint8_t MaximumMessageSize() { return MessageSize; };
+      size_t NbNotifications() const;
 
       private:
         Notification::Id GetNextId();
