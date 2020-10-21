@@ -8,7 +8,7 @@ namespace Pinetime {
     class NotificationManager {
       public:
         enum class Categories {Unknown, SimpleAlert, Email, News, IncomingCall, MissedCall, Sms, VoiceMail, Schedule, HighProriotyAlert, InstantMessage };
-        static constexpr uint8_t MessageSize{18};
+        static constexpr uint8_t MessageSize{100};
 
         struct Notification {
           using Id = uint8_t;
@@ -28,6 +28,7 @@ namespace Pinetime {
       bool ClearNewNotificationFlag();
       bool AreNewNotificationsAvailable();
 
+      static constexpr uint8_t MaximumMessageSize() { return MessageSize; };
 
       private:
         Notification::Id GetNextId();

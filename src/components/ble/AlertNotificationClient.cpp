@@ -105,25 +105,18 @@ int AlertNotificationClient::OnDescriptorDiscoveryEventCallback(uint16_t connect
 
 void AlertNotificationClient::OnNotification(ble_gap_event *event) {
   if(event->notify_rx.attr_handle == newAlertHandle) {
-    // TODO implement this with more memory safety (and constexpr)
-    static const size_t maxBufferSize{21};
-    static const size_t maxMessageSize{18};
-    size_t bufferSize = min(OS_MBUF_PKTLEN(event->notify_rx.om), maxBufferSize);
+    static constexpr size_t stringTerminatorSize{1}; // end of string '\0'
+    static constexpr size_t headerSize{3};
+    const auto maxMessageSize {NotificationManager::MaximumMessageSize()};
+    const auto maxBufferSize{maxMessageSize + headerSize};
 
-    uint8_t data[bufferSize];
-    os_mbuf_copydata(event->notify_rx.om, 0, bufferSize, data);
+    size_t bufferSize = min(OS_MBUF_PKTLEN(event->notify_rx.om) + stringTerminatorSize, maxBufferSize);
+    char *message = (char *)(&event->notify_rx.om[headerSize]);
+    auto messageSize = min(maxMessageSize, (bufferSize-headerSize));
 
-    char *s = (char *) &data[3];
-    auto messageSize = min(maxMessageSize, (bufferSize-3));
+    message[messageSize-1] = '\0';
 
-    for (uint i = 0; i < messageSize-1; i++) {
-      if (s[i] == 0x00) {
-        s[i] = 0x0A;
-      }
-    }
-    s[messageSize-1] = '\0';
-
-    notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, s, messageSize);
+    notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, message, messageSize);
     systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
   }
 }

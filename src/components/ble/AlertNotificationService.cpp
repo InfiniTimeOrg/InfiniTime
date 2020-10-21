@@ -38,7 +38,7 @@ AlertNotificationService::AlertNotificationService ( System::SystemTask& systemT
                   0
                 }
         },
-        serviceDefinition{
+    serviceDefinition{
                 {
                         /* Device Information Service */
                         .type = BLE_GATT_SVC_TYPE_PRIMARY,
@@ -48,33 +48,25 @@ AlertNotificationService::AlertNotificationService ( System::SystemTask& systemT
                 {
                         0
                 },
-        }, m_systemTask{systemTask}, m_notificationManager{notificationManager} {
+        }, systemTask{systemTask}, notificationManager{notificationManager} {
 }
 
 int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle,
                                                     struct ble_gatt_access_ctxt *ctxt) {
-
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
-    // TODO implement this with more memory safety (and constexpr)
-    static const size_t maxBufferSize{21};
-    static const size_t maxMessageSize{18};
-    size_t bufferSize = min(OS_MBUF_PKTLEN(ctxt->om), maxBufferSize);
+    static constexpr size_t stringTerminatorSize{1}; // end of string '\0'
+    static constexpr size_t headerSize{3};
+    const auto maxMessageSize {NotificationManager::MaximumMessageSize()};
+    const auto maxBufferSize{maxMessageSize + headerSize};
 
-    uint8_t data[bufferSize];
-    os_mbuf_copydata(ctxt->om, 0, bufferSize, data);
+    size_t bufferSize = min(OS_MBUF_PKTLEN(ctxt->om) + stringTerminatorSize, maxBufferSize);
+    char *message = (char *)(&ctxt->om->om_data[headerSize]);
+    auto messageSize = min(maxMessageSize, (bufferSize-headerSize));
 
-    char *s = (char *) &data[3];
-    auto messageSize = min(maxMessageSize, (bufferSize-3));
+    message[messageSize-1] = '\0';
 
-    for (uint i = 0; i < messageSize-1; i++) {
-      if (s[i] == 0x00) {
-        s[i] = 0x0A;
-      }
-    }
-    s[messageSize-1] = '\0';
-
-    m_notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, s, messageSize);
-    m_systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
+    notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, message, messageSize);
+    systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
   }
   return 0;
 }
