@@ -20,7 +20,7 @@ namespace Pinetime {
         };
         Notification::Id nextId {0};
 
-      void Push(Categories category, const char* message, uint8_t messageSize);
+      void Push(Notification&& notif);
       Notification GetLastNotification();
       Notification GetNext(Notification::Id id);
       Notification GetPrevious(Notification::Id id);

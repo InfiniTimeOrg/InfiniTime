@@ -7,17 +7,10 @@ using namespace Pinetime::Controllers;
 constexpr uint8_t NotificationManager::MessageSize;
 
 
-void NotificationManager::Push(Pinetime::Controllers::NotificationManager::Categories category,
-                                                      const char *message, uint8_t currentMessageSize) {
-  // TODO handle edge cases on read/write index
-  auto checkedSize = std::min(currentMessageSize, MessageSize);
-  auto& notif = notifications[writeIndex];
-  std::memcpy(notif.message.data(), message, checkedSize);
-  notif.message[checkedSize] = '\0';
-  notif.category = category;
+void NotificationManager::Push(NotificationManager::Notification &&notif) {
   notif.id = GetNextId();
   notif.valid = true;
-
+  notifications[writeIndex] = std::move(notif);
   writeIndex = (writeIndex + 1 < TotalNbNotifications) ? writeIndex + 1 : 0;
   if(!empty)
     readIndex = (readIndex + 1 < TotalNbNotifications) ? readIndex + 1 : 0;

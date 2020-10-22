@@ -105,18 +105,21 @@ int AlertNotificationClient::OnDescriptorDiscoveryEventCallback(uint16_t connect
 
 void AlertNotificationClient::OnNotification(ble_gap_event *event) {
   if(event->notify_rx.attr_handle == newAlertHandle) {
-    static constexpr size_t stringTerminatorSize{1}; // end of string '\0'
-    static constexpr size_t headerSize{3};
+    constexpr size_t stringTerminatorSize = 1; // end of string '\0'
+    constexpr size_t headerSize = 3;
     const auto maxMessageSize {NotificationManager::MaximumMessageSize()};
     const auto maxBufferSize{maxMessageSize + headerSize};
 
-    size_t bufferSize = min(OS_MBUF_PKTLEN(event->notify_rx.om) + stringTerminatorSize, maxBufferSize);
-    char *message = (char *)(&event->notify_rx.om[headerSize]);
+    const auto dbgPacketLen = OS_MBUF_PKTLEN(event->notify_rx.om);
+    size_t bufferSize = min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
     auto messageSize = min(maxMessageSize, (bufferSize-headerSize));
 
-    message[messageSize-1] = '\0';
+    NotificationManager::Notification notif;
+    os_mbuf_copydata(event->notify_rx.om, headerSize, messageSize-1, notif.message.data());
+    notif.message[messageSize-1] = '\0';
+    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    notificationManager.Push(std::move(notif));
 
-    notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, message, messageSize);
     systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
   }
 }

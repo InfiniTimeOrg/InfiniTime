@@ -54,18 +54,21 @@ AlertNotificationService::AlertNotificationService ( System::SystemTask& systemT
 int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle,
                                                     struct ble_gatt_access_ctxt *ctxt) {
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
-    static constexpr size_t stringTerminatorSize{1}; // end of string '\0'
-    static constexpr size_t headerSize{3};
+    constexpr size_t stringTerminatorSize = 1; // end of string '\0'
+    constexpr size_t headerSize = 3;
     const auto maxMessageSize {NotificationManager::MaximumMessageSize()};
     const auto maxBufferSize{maxMessageSize + headerSize};
 
-    size_t bufferSize = min(OS_MBUF_PKTLEN(ctxt->om) + stringTerminatorSize, maxBufferSize);
-    char *message = (char *)(&ctxt->om->om_data[headerSize]);
+    const auto dbgPacketLen = OS_MBUF_PKTLEN(ctxt->om);
+    size_t bufferSize = min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
     auto messageSize = min(maxMessageSize, (bufferSize-headerSize));
 
-    message[messageSize-1] = '\0';
+    NotificationManager::Notification notif;
+    os_mbuf_copydata(ctxt->om, headerSize, messageSize-1, notif.message.data());
+    notif.message[messageSize-1] = '\0';
+    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    notificationManager.Push(std::move(notif));
 
-    notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, message, messageSize);
     systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
   }
   return 0;
