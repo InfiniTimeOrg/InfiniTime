@@ -37,6 +37,7 @@ namespace Pinetime {
               lv_obj_t* container1;
               lv_obj_t* t1;
               lv_obj_t* l1;
+              lv_obj_t* bottomPlaceholder;
               Modes mode;
           };
 

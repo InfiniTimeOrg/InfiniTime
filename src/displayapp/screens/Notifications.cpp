@@ -11,10 +11,10 @@ Notifications::Notifications(DisplayApp *app, Pinetime::Controllers::Notificatio
   auto notification = notificationManager.GetLastNotification();
   if(notification.valid) {
     currentId = notification.id;
-    currentItem.reset(new NotificationItem("Notification", notification.message.data(), notification.index, notificationManager.NbNotifications(), mode));
+    currentItem.reset(new NotificationItem("\nNotification", notification.message.data(), notification.index, notificationManager.NbNotifications(), mode));
     validDisplay = true;
   } else {
-    currentItem.reset(new NotificationItem("Notification", "No notification to display", 0, notificationManager.NbNotifications(), Modes::Preview));
+    currentItem.reset(new NotificationItem("\nNotification", "No notification to display", 0, notificationManager.NbNotifications(), Modes::Preview));
   }
 
   if(mode == Modes::Preview) {
@@ -71,7 +71,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       currentId = previousNotification.id;
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Up);
-      currentItem.reset(new NotificationItem("Notification", previousNotification.message.data(),  previousNotification.index, notificationManager.NbNotifications(), mode));
+      currentItem.reset(new NotificationItem("\nNotification", previousNotification.message.data(),  previousNotification.index, notificationManager.NbNotifications(), mode));
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeDown: {
@@ -87,7 +87,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       currentId = nextNotification.id;
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Down);
-      currentItem.reset(new NotificationItem("Notification", nextNotification.message.data(),  nextNotification.index, notificationManager.NbNotifications(), mode));
+      currentItem.reset(new NotificationItem("\nNotification", nextNotification.message.data(),  nextNotification.index, notificationManager.NbNotifications(), mode));
     }
       return true;
     default:
@@ -104,7 +104,6 @@ bool Notifications::OnButtonPushed() {
 
 Notifications::NotificationItem::NotificationItem(const char *title, const char *msg, uint8_t notifNr, uint8_t notifNb, Modes mode)
         : notifNr{notifNr}, notifNb{notifNb}, mode{mode} {
-
   container1 = lv_cont_create(lv_scr_act(), nullptr);
   static lv_style_t contStyle;
   lv_style_copy(&contStyle, lv_cont_get_style(container1, LV_CONT_STYLE_MAIN));
@@ -140,14 +139,15 @@ Notifications::NotificationItem::NotificationItem(const char *title, const char 
   lv_label_set_body_draw(t1, true);
   lv_obj_set_width(t1, LV_HOR_RES - (titleStyle.body.padding.left + titleStyle.body.padding.right));
   lv_label_set_text(t1, title);
-  lv_obj_set_pos(t1, titleStyle.body.padding.left, titleStyle.body.padding.top);
+  static constexpr int16_t offscreenOffset = -20 ;
+  lv_obj_set_pos(t1, titleStyle.body.padding.left, offscreenOffset);
 
   auto titleHeight = lv_obj_get_height(t1);
 
   l1 = lv_label_create(container1, nullptr);
   lv_label_set_style(l1, LV_LABEL_STYLE_MAIN, &textStyle);
   lv_obj_set_pos(l1, textStyle.body.padding.left,
-                 titleHeight + titleStyle.body.padding.bottom + textStyle.body.padding.bottom +
+                 titleHeight + offscreenOffset + textStyle.body.padding.bottom +
                  textStyle.body.padding.top);
 
   lv_label_set_long_mode(l1, LV_LABEL_LONG_BREAK);
@@ -156,11 +156,15 @@ Notifications::NotificationItem::NotificationItem(const char *title, const char 
   lv_label_set_text(l1, msg);
 
   if(mode == Modes::Normal) {
-    lv_obj_t *bottomlabel = lv_label_create(container1, nullptr);
-    lv_label_set_style(bottomlabel, LV_LABEL_STYLE_MAIN, &bottomStyle);
-    lv_obj_align(bottomlabel, container1, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-    snprintf(pageText, 4, "%d/%d", notifNr, notifNb);
-    lv_label_set_text(bottomlabel, pageText);
+    if(notifNr < notifNb) {
+      bottomPlaceholder = lv_label_create(container1, nullptr);
+      lv_label_set_style(bottomPlaceholder, LV_LABEL_STYLE_MAIN, &titleStyle);
+      lv_label_set_long_mode(bottomPlaceholder, LV_LABEL_LONG_BREAK);
+      lv_label_set_body_draw(bottomPlaceholder, true);
+      lv_obj_set_width(bottomPlaceholder, LV_HOR_RES - (titleStyle.body.padding.left + titleStyle.body.padding.right));
+      lv_label_set_text(bottomPlaceholder, " ");
+      lv_obj_set_pos(bottomPlaceholder, titleStyle.body.padding.left, LV_VER_RES - 5);
+    }
   }
 }
 
