@@ -29,7 +29,7 @@
 
 
 #if NRF_LOG_ENABLED
-#include "Logging/NrfLogger.h"
+#include "logging/NrfLogger.h"
 Pinetime::Logging::NrfLogger logger;
 #else
 #include "logging/DummyLogger.h"
