@@ -60,24 +60,53 @@ void TwiMaster::Init() {
 
 }
 
-void TwiMaster::Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t *data, size_t size) {
+TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t *data, size_t size) {
   xSemaphoreTake(mutex, portMAX_DELAY);
-  Write(deviceAddress, &registerAddress, 1, false);
-  Read(deviceAddress, data, size, true);
+  auto ret = ReadWithRetry(deviceAddress, registerAddress, data, size);
   xSemaphoreGive(mutex);
+
+  return ret;
 }
 
-void TwiMaster::Write(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t *data, size_t size) {
+TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t *data, size_t size) {
   ASSERT(size <= maxDataSize);
   xSemaphoreTake(mutex, portMAX_DELAY);
+
+  auto ret = WriteWithRetry(deviceAddress, registerAddress, data, size);
+  xSemaphoreGive(mutex);
+  return ret;
+}
+
+/* Execute a read transaction (composed of a write and a read operation). If one of these opeartion fails,
+ * it's retried once. If it fails again, an error is returned */
+TwiMaster::ErrorCodes TwiMaster::ReadWithRetry(uint8_t deviceAddress, uint8_t registerAddress, uint8_t *data, size_t size) {
+  TwiMaster::ErrorCodes ret;
+  ret = Write(deviceAddress, &registerAddress, 1, false);
+  if(ret != ErrorCodes::NoError)
+    ret = Write(deviceAddress, &registerAddress, 1, false);
+
+  if(ret != ErrorCodes::NoError) return ret;
+
+  ret = Read(deviceAddress, data, size, true);
+  if(ret != ErrorCodes::NoError)
+    ret = Read(deviceAddress, data, size, true);
+
+  return ret;
+}
+
+/* Execute a write transaction. If it fails, it is retried once. If it fails again, an error is returned. */
+TwiMaster::ErrorCodes TwiMaster::WriteWithRetry(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t *data, size_t size) {
   internalBuffer[0] = registerAddress;
   std::memcpy(internalBuffer+1, data, size);
-  Write(deviceAddress, internalBuffer, size+1, true);
-  xSemaphoreGive(mutex);
+  auto ret = Write(deviceAddress, internalBuffer, size+1, true);
+  if(ret != ErrorCodes::NoError)
+    ret = Write(deviceAddress, internalBuffer, size+1, true);
+
+  return ret;
 }
 
 
-void TwiMaster::Read(uint8_t deviceAddress, uint8_t *buffer, size_t size, bool stop) {
+TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t *buffer, size_t size, bool stop) {
   twiBaseAddress->ADDRESS = deviceAddress;
   twiBaseAddress->TASKS_RESUME = 0x1UL;
   twiBaseAddress->RXD.PTR = (uint32_t)buffer;
@@ -88,7 +117,15 @@ void TwiMaster::Read(uint8_t deviceAddress, uint8_t *buffer, size_t size, bool s
   while(!twiBaseAddress->EVENTS_RXSTARTED && !twiBaseAddress->EVENTS_ERROR);
   twiBaseAddress->EVENTS_RXSTARTED = 0x0UL;
 
-  while(!twiBaseAddress->EVENTS_LASTRX && !twiBaseAddress->EVENTS_ERROR);
+  txStartedCycleCount = DWT->CYCCNT;
+  uint32_t currentCycleCount;
+  while(!twiBaseAddress->EVENTS_LASTRX && !twiBaseAddress->EVENTS_ERROR) {
+    currentCycleCount = DWT->CYCCNT;
+    if ((currentCycleCount-txStartedCycleCount) > HwFreezedDelay) {
+      FixHwFreezed();
+      return ErrorCodes::TransactionFailed;
+    }
+  }
   twiBaseAddress->EVENTS_LASTRX = 0x0UL;
 
   if (stop || twiBaseAddress->EVENTS_ERROR) {
@@ -105,9 +142,10 @@ void TwiMaster::Read(uint8_t deviceAddress, uint8_t *buffer, size_t size, bool s
   if (twiBaseAddress->EVENTS_ERROR) {
     twiBaseAddress->EVENTS_ERROR = 0x0UL;
   }
+  return ErrorCodes::NoError;
 }
 
-void TwiMaster::Write(uint8_t deviceAddress, const uint8_t *data, size_t size, bool stop) {
+TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, const uint8_t *data, size_t size, bool stop) {
   twiBaseAddress->ADDRESS = deviceAddress;
   twiBaseAddress->TASKS_RESUME = 0x1UL;
   twiBaseAddress->TXD.PTR = (uint32_t)data;
@@ -118,7 +156,15 @@ void TwiMaster::Write(uint8_t deviceAddress, const uint8_t *data, size_t size, b
   while(!twiBaseAddress->EVENTS_TXSTARTED && !twiBaseAddress->EVENTS_ERROR);
   twiBaseAddress->EVENTS_TXSTARTED = 0x0UL;
 
-  while(!twiBaseAddress->EVENTS_LASTTX && !twiBaseAddress->EVENTS_ERROR);
+  txStartedCycleCount = DWT->CYCCNT;
+  uint32_t currentCycleCount;
+  while(!twiBaseAddress->EVENTS_LASTTX && !twiBaseAddress->EVENTS_ERROR) {
+    currentCycleCount = DWT->CYCCNT;
+    if ((currentCycleCount-txStartedCycleCount) > HwFreezedDelay) {
+      FixHwFreezed();
+      return ErrorCodes::TransactionFailed;
+    }
+  }
   twiBaseAddress->EVENTS_LASTTX = 0x0UL;
 
   if (stop || twiBaseAddress->EVENTS_ERROR) {
@@ -137,6 +183,8 @@ void TwiMaster::Write(uint8_t deviceAddress, const uint8_t *data, size_t size, b
     uint32_t error = twiBaseAddress->ERRORSRC;
     twiBaseAddress->ERRORSRC = error;
   }
+
+  return ErrorCodes::NoError;
 }
 
 void TwiMaster::Sleep() {
@@ -151,4 +199,31 @@ void TwiMaster::Sleep() {
 void TwiMaster::Wakeup() {
   Init();
   NRF_LOG_INFO("[TWIMASTER] Wakeup");
+}
+
+/* Sometimes, the TWIM device just freeze and never set the event EVENTS_LASTTX.
+ * This method disable and re-enable the peripheral so that it works again.
+ * This is just a workaround, and it would be better if we could find a way to prevent
+ * this issue from happening.
+ * */
+void TwiMaster::FixHwFreezed() {
+  NRF_LOG_INFO("I2C device frozen, reinitializing it!");
+  // Disable I²C
+  uint32_t twi_state = NRF_TWI1->ENABLE;
+  twiBaseAddress->ENABLE = TWIM_ENABLE_ENABLE_Disabled << TWI_ENABLE_ENABLE_Pos;
+
+  NRF_GPIO->PIN_CNF[params.pinScl] = ((uint32_t)GPIO_PIN_CNF_DIR_Input      << GPIO_PIN_CNF_DIR_Pos)
+                         | ((uint32_t)GPIO_PIN_CNF_INPUT_Connect    << GPIO_PIN_CNF_INPUT_Pos)
+                         | ((uint32_t)GPIO_PIN_CNF_PULL_Pullup      << GPIO_PIN_CNF_PULL_Pos)
+                         | ((uint32_t)GPIO_PIN_CNF_DRIVE_S0S1       << GPIO_PIN_CNF_DRIVE_Pos)
+                         | ((uint32_t)GPIO_PIN_CNF_SENSE_Disabled   << GPIO_PIN_CNF_SENSE_Pos);
+
+  NRF_GPIO->PIN_CNF[params.pinSda] = ((uint32_t)GPIO_PIN_CNF_DIR_Input        << GPIO_PIN_CNF_DIR_Pos)
+                         | ((uint32_t)GPIO_PIN_CNF_INPUT_Connect    << GPIO_PIN_CNF_INPUT_Pos)
+                         | ((uint32_t)GPIO_PIN_CNF_PULL_Pullup      << GPIO_PIN_CNF_PULL_Pos)
+                         | ((uint32_t)GPIO_PIN_CNF_DRIVE_S0S1       << GPIO_PIN_CNF_DRIVE_Pos)
+                         | ((uint32_t)GPIO_PIN_CNF_SENSE_Disabled   << GPIO_PIN_CNF_SENSE_Pos);
+
+  // Re-enable I²C
+  twiBaseAddress->ENABLE = twi_state;
 }
