@@ -13,6 +13,7 @@
 #include <drivers/InternalFlash.h>
 #include "main.h"
 #include "components/ble/NimbleController.h"
+#include "../BootloaderVersion.h"
 
 using namespace Pinetime::System;
 
@@ -161,7 +162,11 @@ void SystemTask::Work() {
           ReloadIdleTimer();
           break;
         case Messages::OnDisplayTaskSleeping:
-          spiNorFlash.Sleep();
+          if(BootloaderVersion::IsValid()) {
+            // First versions of the bootloader do not expose their version and cannot initialize the SPI NOR FLASH
+            // if it's in sleep mode. Avoid bricked device by disabling sleep mode on these versions.
+            spiNorFlash.Sleep();
+          }
           lcd.Sleep();
           touchPanel.Sleep();
 

@@ -18,13 +18,13 @@ namespace Pinetime {
             LongPress = 0x0C
         };
         struct TouchInfos {
-          uint16_t x;
-          uint16_t y;
-          uint8_t action;
-          uint8_t finger;
-          uint8_t pressure;
-          uint8_t area;
-          Gestures gesture;
+          uint16_t x = 0;
+          uint16_t y = 0;
+          uint8_t action = 0;
+          uint8_t finger = 0;
+          uint8_t pressure = 0;
+          uint8_t area = 0;
+          Gestures gesture = Gestures::None;
           bool isTouch = false;
         };
 
