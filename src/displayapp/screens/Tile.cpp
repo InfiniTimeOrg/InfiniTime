@@ -30,7 +30,7 @@ Tile::Tile(DisplayApp* app, std::array<Applications, 6>& applications) : Screen(
   }
   modal.reset(new Modal(app));
 
-  btnm1 = lv_btnm_create(lv_scr_act(), NULL);
+  btnm1 = lv_btnm_create(lv_scr_act(), nullptr);
   lv_btnm_set_map(btnm1, btnm_map1);
   lv_obj_set_size(btnm1, LV_HOR_RES, LV_VER_RES);
 

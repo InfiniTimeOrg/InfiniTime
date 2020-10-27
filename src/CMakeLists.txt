@@ -324,6 +324,7 @@ list(APPEND IMAGE_FILES
         )
 
 list(APPEND SOURCE_FILES
+        BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
         displayapp/screens/Screen.cpp
@@ -401,6 +402,7 @@ list(APPEND GRAPHICS_SOURCE_FILES
         )
 
 set(INCLUDE_FILES
+        BootloaderVersion.h
         logging/Logger.h
         logging/NrfLogger.h
         displayapp/DisplayApp.h
@@ -558,7 +560,7 @@ link_directories(
 )
 
 
-set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -Wall -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wreturn-type -Werror=return-type)
+set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -Wall -Wno-unknown-pragmas -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wreturn-type -Werror=return-type)
 add_definitions(-DCONFIG_GPIO_AS_PINRESET)
 add_definitions(-DDEBUG)
 add_definitions(-DNIMBLE_CFG_CONTROLLER)

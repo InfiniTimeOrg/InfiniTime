@@ -11,8 +11,9 @@
 #include <host/ble_gap.h>
 #include <host/util/util.h>
 #include <drivers/InternalFlash.h>
-#include "../main.h"
+#include "main.h"
 #include "components/ble/NimbleController.h"
+#include "../BootloaderVersion.h"
 
 using namespace Pinetime::System;
 
@@ -36,7 +37,7 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
                        nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash) {
-  systemTaksMsgQueue = xQueueCreate(10, 1);
+  systemTasksMsgQueue = xQueueCreate(10, 1);
 }
 
 void SystemTask::Start() {
@@ -100,9 +101,12 @@ void SystemTask::Work() {
   idleTimer = xTimerCreate ("idleTimer", idleTime, pdFALSE, this, IdleTimerCallback);
   xTimerStart(idleTimer, 0);
 
+  // Suppress endless loop diagnostic
+  #pragma clang diagnostic push
+  #pragma ide diagnostic ignored "EndlessLoop"
   while(true) {
     uint8_t msg;
-    if (xQueueReceive(systemTaksMsgQueue, &msg, isSleeping?2500 : 1000)) {
+    if (xQueueReceive(systemTasksMsgQueue, &msg, isSleeping ? 2500 : 1000)) {
       Messages message = static_cast<Messages >(msg);
       switch(message) {
         case Messages::GoToRunning:
@@ -158,7 +162,11 @@ void SystemTask::Work() {
           ReloadIdleTimer();
           break;
         case Messages::OnDisplayTaskSleeping:
-          spiNorFlash.Sleep();
+          if(BootloaderVersion::IsValid()) {
+            // First versions of the bootloader do not expose their version and cannot initialize the SPI NOR FLASH
+            // if it's in sleep mode. Avoid bricked device by disabling sleep mode on these versions.
+            spiNorFlash.Sleep();
+          }
           lcd.Sleep();
           touchPanel.Sleep();
 
@@ -191,6 +199,8 @@ void SystemTask::Work() {
     if(!nrf_gpio_pin_read(pinButton))
       watchdog.Kick();
   }
+  // Clear diagnostic suppression
+  #pragma clang diagnostic pop
 }
 
 void SystemTask::OnButtonPushed() {
@@ -228,10 +238,10 @@ void SystemTask::PushMessage(SystemTask::Messages msg) {
   }
   BaseType_t xHigherPriorityTaskWoken;
   xHigherPriorityTaskWoken = pdFALSE;
-  xQueueSendFromISR(systemTaksMsgQueue, &msg, &xHigherPriorityTaskWoken);
+  xQueueSendFromISR(systemTasksMsgQueue, &msg, &xHigherPriorityTaskWoken);
   if (xHigherPriorityTaskWoken) {
     /* Actual macro used here is port specific. */
-    // TODO : should I do something here?
+    // TODO: should I do something here?
   }
 }
 
