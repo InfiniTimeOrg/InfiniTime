@@ -158,7 +158,10 @@ void SystemTask::Work() {
           ReloadIdleTimer();
           break;
         case Messages::OnDisplayTaskSleeping:
-          spiNorFlash.Sleep();
+          // BUG : Bootloader v4.1.7 cannot wake the chip up and enters into an infinite loop, which bricks devices.
+          //       Sleep mode is disabled until we can detect the version of the bootloader and enable sleep mode on
+          //       supported versions only
+          //spiNorFlash.Sleep();
           lcd.Sleep();
           touchPanel.Sleep();
 
