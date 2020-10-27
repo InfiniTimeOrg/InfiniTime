@@ -56,24 +56,53 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
 
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     // TODO implement this with more memory safety (and constexpr)
-    static const size_t maxBufferSize{21};
-    static const size_t maxMessageSize{18};
-    size_t bufferSize = min(OS_MBUF_PKTLEN(ctxt->om), maxBufferSize);
+    size_t notifSize = OS_MBUF_PKTLEN(ctxt->om);
+    uint8_t *data = (uint8_t*) malloc(notifSize + 1);
+    data[notifSize] = '\0';
+    os_mbuf_copydata(ctxt->om, 0, notifSize, data);
+    char alertCategory = (char) data[0];
+    char *s = (char *) &data[1];
+    NRF_LOG_INFO("DATA : %s", s);
 
-    uint8_t data[bufferSize];
-    os_mbuf_copydata(ctxt->om, 0, bufferSize, data);
-
-    char *s = (char *) &data[3];
-    auto messageSize = min(maxMessageSize, (bufferSize-3));
-
-    for (uint i = 0; i < messageSize-1; i++) {
-      if (s[i] == 0x00) {
-        s[i] = 0x0A;
-      }
+    Pinetime::Controllers::NotificationManager::Categories messageCategory;
+    switch(alertCategory) {
+      case ALERT_UNKNOWN:
+        messageCategory = Pinetime::Controllers::NotificationManager::Categories::Unknown;
+        break;
+      case ALERT_SIMPLE_ALERT:
+        messageCategory = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+        break;
+      case ALERT_EMAIL:
+        messageCategory = Pinetime::Controllers::NotificationManager::Categories::Email;
+        break;
+      case ALERT_NEWS:
+        messageCategory = Pinetime::Controllers::NotificationManager::Categories::News;
+        break;
+      case ALERT_INCOMING_CALL:
+        messageCategory = Pinetime::Controllers::NotificationManager::Categories::IncomingCall;
+        break;
+      case ALERT_MISSED_CALL:
+        messageCategory = Pinetime::Controllers::NotificationManager::Categories::MissedCall;
+        break;
+      case ALERT_SMS:
+        messageCategory = Pinetime::Controllers::NotificationManager::Categories::Sms;
+        break;
+      case ALERT_VOICE_MAIL:
+        messageCategory = Pinetime::Controllers::NotificationManager::Categories::VoiceMail;
+        break;
+      case ALERT_SCHEDULE:
+        messageCategory = Pinetime::Controllers::NotificationManager::Categories::Schedule;
+        break;
+      case ALERT_HIGH_PRIORITY_ALERT:
+        messageCategory = Pinetime::Controllers::NotificationManager::Categories::HighProriotyAlert;
+        break;
+      case ALERT_INSTANT_MESSAGE:
+        messageCategory = Pinetime::Controllers::NotificationManager::Categories::InstantMessage;
+        break;
+      default:
+        messageCategory = Pinetime::Controllers::NotificationManager::Categories::Unknown;
     }
-    s[messageSize-1] = '\0';
-
-    m_notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, s, messageSize);
+    m_notificationManager.Push(messageCategory, s, notifSize);
     m_systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
   }
   return 0;

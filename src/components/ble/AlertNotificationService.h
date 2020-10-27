@@ -16,6 +16,17 @@ namespace Pinetime {
 
 
       private:
+        static const char ALERT_UNKNOWN = '0x01';
+        static const char ALERT_SIMPLE_ALERT = '0x02';
+        static const char ALERT_EMAIL = '0x03';
+        static const char ALERT_NEWS = '0x04';
+        static const char ALERT_INCOMING_CALL = '0x05';
+        static const char ALERT_MISSED_CALL = '0x06';
+        static const char ALERT_SMS = '0x07';
+        static const char ALERT_VOICE_MAIL = '0x08';
+        static const char ALERT_SCHEDULE = '0x09';
+        static const char ALERT_HIGH_PRIORITY_ALERT = '0x0a';
+        static const char ALERT_INSTANT_MESSAGE = '0x0b';
         static constexpr uint16_t ansId {0x1811};
         static constexpr uint16_t ansCharId {0x2a46};
 
