@@ -161,6 +161,10 @@ void SystemTask::Work() {
           if(isSleeping && !isWakingUp) GoToRunning();
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewNotification);
           break;
+        case Messages::OnNewCall:
+          if(isSleeping && !isWakingUp) GoToRunning();
+          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewCall);
+          break;
         case Messages::BleConnected:
           ReloadIdleTimer();
           isBleDiscoveryTimerRunning = true;

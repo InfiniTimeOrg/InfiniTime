@@ -9,6 +9,7 @@ using namespace Pinetime::Controllers;
 
 constexpr ble_uuid16_t AlertNotificationService::ansUuid;
 constexpr ble_uuid16_t AlertNotificationService::ansCharUuid;
+constexpr ble_uuid16_t AlertNotificationService::ansEventUuid;
 
 
 int AlertNotificationCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
@@ -32,6 +33,13 @@ AlertNotificationService::AlertNotificationService ( System::SystemTask& systemT
                         .access_cb = AlertNotificationCallback,
                         .arg = this,
                         .flags = BLE_GATT_CHR_F_WRITE
+                },
+                {
+                        .uuid = (ble_uuid_t *) &ansEventUuid,
+                        .access_cb = AlertNotificationCallback,
+                        .arg = this,
+                        .flags = BLE_GATT_CHR_F_NOTIFY,
+                        .val_handle = &eventHandle
                 },
                 {
                   0
@@ -61,14 +69,36 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
     const auto dbgPacketLen = OS_MBUF_PKTLEN(ctxt->om);
     size_t bufferSize = std::min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
     auto messageSize = std::min(maxMessageSize, (bufferSize-headerSize));
+    uint8_t* category = new uint8_t[1];
 
     NotificationManager::Notification notif;
     os_mbuf_copydata(ctxt->om, headerSize, messageSize-1, notif.message.data());
+    os_mbuf_copydata(ctxt->om, 0, 1, category);
     notif.message[messageSize-1] = '\0';
     notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
-    notificationManager.Push(std::move(notif));
+    Pinetime::System::SystemTask::Messages event = Pinetime::System::SystemTask::Messages::OnNewNotification;
 
-    systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
+    switch(*category) {
+      case (uint8_t) 0x05:
+        notif.category = Pinetime::Controllers::NotificationManager::Categories::IncomingCall;
+        event = Pinetime::System::SystemTask::Messages::OnNewCall;
+        break;
+    }
+
+    notificationManager.Push(std::move(notif));
+    systemTask.PushMessage(event);
   }
   return 0;
+}
+
+void AlertNotificationService::event(char event) {
+  auto *om = ble_hs_mbuf_from_flat(&event, 1);
+
+  uint16_t connectionHandle = systemTask.nimble().connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+
+  ble_gattc_notify_custom(connectionHandle, eventHandle, om);
 }
