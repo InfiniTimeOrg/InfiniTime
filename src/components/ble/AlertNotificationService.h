@@ -27,6 +27,7 @@ namespace Pinetime {
         static const char ALERT_SCHEDULE = '0x09';
         static const char ALERT_HIGH_PRIORITY_ALERT = '0x0a';
         static const char ALERT_INSTANT_MESSAGE = '0x0b';
+
         static constexpr uint16_t ansId {0x1811};
         static constexpr uint16_t ansCharId {0x2a46};
 

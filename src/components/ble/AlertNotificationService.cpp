@@ -104,6 +104,7 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
     }
     m_notificationManager.Push(messageCategory, s, notifSize);
     m_systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
+    free(data);
   }
   return 0;
 }
