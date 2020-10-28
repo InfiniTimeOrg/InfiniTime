@@ -27,6 +27,7 @@ namespace Pinetime {
         bool IsDiscovered() const;
         uint16_t StartHandle() const;
         uint16_t EndHandle() const;
+        void Reset();
 
         static constexpr const ble_uuid16_t &Uuid() { return ansServiceUuid; }
 
@@ -64,15 +65,15 @@ namespace Pinetime {
                 .value = controlPointId
         };
 
-        uint16_t ansStartHandle;
-        uint16_t ansEndHandle;
-        uint16_t supportedNewAlertCategoryHandle;
-        uint16_t supportedUnreadAlertCategoryHandle;
-        uint16_t newAlertHandle;
+        uint16_t ansStartHandle = 0;
+        uint16_t ansEndHandle = 0;
+        uint16_t supportedNewAlertCategoryHandle = 0;
+        uint16_t supportedUnreadAlertCategoryHandle = 0;
+        uint16_t newAlertHandle = 0;
         uint16_t newAlertDescriptorHandle = 0;
-        uint16_t newAlertDefHandle;
-        uint16_t unreadAlertStatusHandle;
-        uint16_t controlPointHandle;
+        uint16_t newAlertDefHandle = 0;
+        uint16_t unreadAlertStatusHandle = 0;
+        uint16_t controlPointHandle = 0;
         bool isDiscovered = false;
         Pinetime::System::SystemTask &systemTask;
         Pinetime::Controllers::NotificationManager &notificationManager;

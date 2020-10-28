@@ -32,16 +32,17 @@ bool CurrentTimeClient::OnDiscoveryEvent(uint16_t connectionHandle, const ble_ga
 
 int CurrentTimeClient::OnCharacteristicDiscoveryEvent(uint16_t conn_handle, const ble_gatt_error *error,
                                                       const ble_gatt_chr *characteristic) {
-    if(characteristic == nullptr && error->status == BLE_HS_EDONE) {
-        NRF_LOG_INFO("CTS Characteristic discovery complete");
-        return 0;
-    }
-
-    if(characteristic != nullptr && ble_uuid_cmp(((ble_uuid_t*)&currentTimeCharacteristicUuid), &characteristic->uuid.u) == 0) {
-        NRF_LOG_INFO("CTS Characteristic discovered : 0x%x", characteristic->val_handle);
-        currentTimeHandle = characteristic->val_handle;
-    }
+  if (characteristic == nullptr && error->status == BLE_HS_EDONE) {
+    NRF_LOG_INFO("CTS Characteristic discovery complete");
     return 0;
+  }
+
+  if (characteristic != nullptr && ble_uuid_cmp(((ble_uuid_t *) &currentTimeCharacteristicUuid), &characteristic->uuid.u) == 0) {
+    NRF_LOG_INFO("CTS Characteristic discovered : 0x%x", characteristic->val_handle);
+    isCharacteristicDiscovered = true;
+    currentTimeHandle = characteristic->val_handle;
+  }
+  return 0;
 }
 
 int CurrentTimeClient::OnCurrentTimeReadResult(uint16_t conn_handle, const ble_gatt_error *error, const ble_gatt_attr *attribute) {
@@ -74,4 +75,13 @@ uint16_t CurrentTimeClient::EndHandle() const {
 
 uint16_t CurrentTimeClient::CurrentTimeHandle() const {
     return currentTimeHandle;
+}
+
+void CurrentTimeClient::Reset() {
+  isDiscovered = false;
+  isCharacteristicDiscovered = false;
+}
+
+bool CurrentTimeClient::IsCharacteristicDiscovered() const {
+  return isCharacteristicDiscovered;
 }

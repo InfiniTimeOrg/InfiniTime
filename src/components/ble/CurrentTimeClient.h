@@ -12,11 +12,13 @@ namespace Pinetime {
         public:
             explicit CurrentTimeClient(DateTime& dateTimeController);
             void Init();
+            void Reset();
             bool OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error *error, const ble_gatt_svc *service);
             int OnCharacteristicDiscoveryEvent(uint16_t conn_handle, const ble_gatt_error *error,
                                                const ble_gatt_chr *characteristic);
             int OnCurrentTimeReadResult(uint16_t conn_handle, const ble_gatt_error *error, const ble_gatt_attr *attribute);
             bool IsDiscovered() const;
+            bool IsCharacteristicDiscovered() const;
             uint16_t StartHandle() const;
             uint16_t EndHandle() const;
             uint16_t CurrentTimeHandle() const;
@@ -46,11 +48,14 @@ namespace Pinetime {
                     .value = currentTimeCharacteristicId
             };
 
-            uint16_t currentTimeHandle;
             DateTime& dateTimeController;
             bool isDiscovered = false;
             uint16_t ctsStartHandle;
             uint16_t ctsEndHandle;
+
+            bool isCharacteristicDiscovered = false;
+            uint16_t currentTimeHandle;
+
         };
     }
 }

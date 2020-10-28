@@ -108,7 +108,7 @@ void NimbleController::Init() {
 }
 
 void NimbleController::StartAdvertising() {
-  if(ble_gap_adv_active()) return;
+  if(bleController.IsConnected() || ble_gap_conn_active() || ble_gap_adv_active()) return;
 
   ble_svc_gap_device_name_set(deviceName);
 
@@ -197,6 +197,8 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
       NRF_LOG_INFO("disconnect; reason=%d", event->disconnect.reason);
 
       /* Connection terminated; resume advertising. */
+      currentTimeClient.Reset();
+      alertNotificationClient.Reset();
       connectionHandle = BLE_HS_CONN_HANDLE_NONE;
       bleController.Disconnect();
       StartAdvertising();
@@ -289,10 +291,10 @@ int NimbleController::OnDiscoveryEvent(uint16_t i, const ble_gatt_error *error, 
 
 int NimbleController::OnCTSCharacteristicDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error *error,
                                                         const ble_gatt_chr *characteristic) {
-  if(characteristic == nullptr && error->status == BLE_HS_EDONE) {
+  if(characteristic == nullptr && error->status == BLE_HS_EDONE && currentTimeClient.IsCharacteristicDiscovered()) {
     NRF_LOG_INFO("CTS characteristic Discovery complete");
-    ble_gattc_read(connectionHandle, currentTimeClient.CurrentTimeHandle(), CurrentTimeReadCallback, this);
-    return 0;
+    auto res = ble_gattc_read(connectionHandle, currentTimeClient.CurrentTimeHandle(), CurrentTimeReadCallback, this);
+    return res;
   }
   return currentTimeClient.OnCharacteristicDiscoveryEvent(connectionHandle, error, characteristic);
 }

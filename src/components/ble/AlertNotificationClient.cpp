@@ -139,3 +139,16 @@ uint16_t AlertNotificationClient::EndHandle() const {
 uint16_t AlertNotificationClient::NewAlerthandle() const {
   return newAlertHandle;
 }
+
+void AlertNotificationClient::Reset() {
+  ansStartHandle = 0;
+  ansEndHandle = 0;
+  supportedNewAlertCategoryHandle = 0;
+  supportedUnreadAlertCategoryHandle = 0;
+  newAlertHandle = 0;
+  newAlertDescriptorHandle = 0;
+  newAlertDefHandle = 0;
+  unreadAlertStatusHandle = 0;
+  controlPointHandle = 0;
+  isDiscovered = false;
+}
