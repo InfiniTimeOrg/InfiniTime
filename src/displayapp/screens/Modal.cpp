@@ -41,9 +41,16 @@ void Modal::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
   if(evt == LV_EVENT_DELETE && event_obj == mbox) {
     Hide();
   } else if(evt == LV_EVENT_VALUE_CHANGED) {
+    if(event_obj == mbox) {
+	   if(strcmp(lv_mbox_get_active_btn_text(event_obj), "Ok") == 0) {
+		lv_mbox_start_auto_close(mbox, 0);
+	    } else {
+		    lv_mbox_set_text(mbox, "potatismos");
+	    }
+    }
+
     /* A button was clicked */
-    lv_mbox_start_auto_close(mbox, 0);
-//    Hide();
+    //lv_mbox_start_auto_close(mbox, 0);
   }
 }
 
@@ -60,7 +67,7 @@ void Modal::Show(const char* msg) {
   lv_obj_set_size(obj, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_opa_scale_enable(obj, true); /* Enable opacity scaling for the animation */
 
-  static const char * btns2[] = {"Ok", ""};
+  static const char * btns2[] = {"Ok", "Cancel", ""};
 
   /* Create the message box as a child of the modal background */
   mbox = lv_mbox_create(obj, nullptr);
