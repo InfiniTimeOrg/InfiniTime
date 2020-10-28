@@ -2,7 +2,7 @@
 #include "Modal.h"
 #include "../../DisplayApp.h"
 
-using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Screens::Alert;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
 extern lv_font_t jetbrains_mono_bold_20;
 

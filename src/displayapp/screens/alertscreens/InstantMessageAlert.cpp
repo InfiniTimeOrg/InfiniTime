@@ -1,35 +1,30 @@
-#include <libs/lvgl/lvgl.h>
-#include "Modal.h"
-#include "../../DisplayApp.h"
+#include "InstantMessageAlert.h"
 
-using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications::Screens::Alert;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
 extern lv_font_t jetbrains_mono_bold_20;
 
-Modal::Modal(Pinetime::Applications::DisplayApp *app) : Screen(app) {}
+InstantMessageAlert::InstantMessageAlert(Pinetime::Applications::DisplayApp *app) : Modal(app) {}
 
-Modal::~Modal() {
+InstantMessageAlert::~InstantMessageAlert() {
   lv_obj_clean(lv_scr_act());
 }
 
-void Modal::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
+void InstantMessageAlert::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
   if(evt == LV_EVENT_DELETE && event_obj == mbox) {
     Hide();
   } else if(evt == LV_EVENT_VALUE_CHANGED) {
     if(event_obj == mbox) {
-	   if(strcmp(lv_mbox_get_active_btn_text(event_obj), "Ok") == 0) {
-		    lv_mbox_start_auto_close(mbox, 0);
-	    } else {
+	    if(strcmp(lv_mbox_get_active_btn_text(event_obj), BTN_OK) == 0) {
 		    lv_mbox_set_text(mbox, "potatismos");
+	    } else if (strcmp(lv_mbox_get_active_btn_text(event_obj), BTN_CANCEL) == 0) {
+        lv_mbox_start_auto_close(mbox, 0);
 	    }
     }
-
-    /* A button was clicked */
-    //lv_mbox_start_auto_close(mbox, 0);
   }
 }
 
-void Modal::Show(const char* msg) {
+void InstantMessageAlert::Show(Pinetime::Controllers::NotificationManager notification) {
   if(isVisible) return;
   isVisible = true;
   lv_style_copy(&modal_style, &lv_style_plain_color);
@@ -42,7 +37,11 @@ void Modal::Show(const char* msg) {
   lv_obj_set_size(obj, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_opa_scale_enable(obj, true); /* Enable opacity scaling for the animation */
 
-  static const char * btns2[] = {"Ok", "Cancel", ""};
+  static const char * btns2[] = {
+    BTN_OK,
+    BTN_CANCEL,
+    ""
+  };
 
   /* Create the message box as a child of the modal background */
   mbox = lv_mbox_create(obj, nullptr);

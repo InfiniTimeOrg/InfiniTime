@@ -1,12 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <chrono>
-#include "Screen.h"
 #include "Modal.h"
-#include <bits/unique_ptr.h>
-#include <libs/lvgl/src/lv_core/lv_style.h>
-#include <libs/lvgl/src/lv_core/lv_obj.h>
 
 namespace Pinetime {
   namespace Applications {
@@ -17,10 +11,12 @@ namespace Pinetime {
             SimpleAlert(DisplayApp* app);
             ~SimpleAlert() override;
 
-            virtual void Show(const char* msg);
+            virtual void Show(Pinetime::Controllers::NotificationManager notification);
           private:
+            const std::string BTN_OK = "Ok";
+            
             virtual void OnEvent(lv_obj_t *event_obj, lv_event_t evt);
-        };
+        }
       }
     }
   }

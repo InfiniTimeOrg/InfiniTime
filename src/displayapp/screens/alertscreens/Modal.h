@@ -2,10 +2,15 @@
 
 #include <cstdint>
 #include <chrono>
+
 #include "Screen.h"
+#include "components/ble/NotificationManager.h"
+#include "displayapp/DisplayApp.h"
+
 #include <bits/unique_ptr.h>
 #include <libs/lvgl/src/lv_core/lv_style.h>
 #include <libs/lvgl/src/lv_core/lv_obj.h>
+#include <libs/lvgl/lvgl.h>
 
 namespace Pinetime {
   namespace Applications {
@@ -16,7 +21,7 @@ namespace Pinetime {
             Modal(DisplayApp* app);
             virtual ~Modal() override;
 
-            virtual void Show(const char* msg) = 0;
+            virtual void Show(Pinetime::Controllers::NotificationManager notification) = 0;
             void Hide();
 
             bool Refresh() override;
@@ -26,6 +31,7 @@ namespace Pinetime {
           private:
             virtual void OnEvent(lv_obj_t *event_obj, lv_event_t evt) = 0;
 
+          protected:
             lv_style_t modal_style;
             lv_obj_t *obj;
             lv_obj_t *mbox;
