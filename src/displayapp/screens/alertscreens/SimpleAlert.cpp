@@ -8,7 +8,6 @@ SimpleAlert::SimpleAlert(Pinetime::Applications::DisplayApp *app) : Modal(app) {
 
 SimpleAlert::~SimpleAlert() {
   lv_obj_clean(lv_scr_act());
-  Modal
 }
 
 void SimpleAlert::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
@@ -16,14 +15,14 @@ void SimpleAlert::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
     Hide();
   } else if(evt == LV_EVENT_VALUE_CHANGED) {
     if(event_obj == mbox) {
-      if(strcmp(lv_mbox_get_active_btn_text(event_obj), BTN_OK) == 0) {
+      if(strcmp(lv_mbox_get_active_btn_text(event_obj), BTN_OK.c_str()) == 0) {
         lv_mbox_start_auto_close(mbox, 0);
       }
     }
   }
 }
 
-void SimpleAlert::Show(Pinetime::Controllers::NotificationManager notification) {
+void SimpleAlert::Show(struct Pinetime::Controllers::NotificationManager::Notification notification) {
   if(isVisible) return;
   isVisible = true;
   lv_style_copy(&modal_style, &lv_style_plain_color);
@@ -37,14 +36,14 @@ void SimpleAlert::Show(Pinetime::Controllers::NotificationManager notification) 
   lv_obj_set_opa_scale_enable(obj, true); /* Enable opacity scaling for the animation */
 
   static const char * btns2[] = {
-    BTN_OK,
+    BTN_OK.c_str(),
     ""
   };
 
   /* Create the message box as a child of the modal background */
   mbox = lv_mbox_create(obj, nullptr);
   lv_mbox_add_btns(mbox, btns2);
-  lv_mbox_set_text(mbox, msg);
+  lv_mbox_set_text(mbox, notification.message.data());
   lv_obj_align(mbox, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_event_cb(mbox, Modal::mbox_event_cb);
 

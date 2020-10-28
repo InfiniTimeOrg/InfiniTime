@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <chrono>
 
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include "components/ble/NotificationManager.h"
 #include "displayapp/DisplayApp.h"
 
@@ -21,7 +21,7 @@ namespace Pinetime {
             Modal(DisplayApp* app);
             virtual ~Modal() override;
 
-            virtual void Show(Pinetime::Controllers::NotificationManager notification) = 0;
+            virtual void Show(struct Pinetime::Controllers::NotificationManager::Notification notification) = 0;
             void Hide();
 
             bool Refresh() override;
