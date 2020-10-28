@@ -42,11 +42,11 @@ void Modal::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
     Hide();
   } else if(evt == LV_EVENT_VALUE_CHANGED) {
     if(event_obj == mbox) {
-	   if(strcmp(lv_mbox_get_active_btn_text(event_obj), "Ok") == 0) {
-		lv_mbox_start_auto_close(mbox, 0);
-	    } else {
-		    lv_mbox_set_text(mbox, "potatismos");
-	    }
+      if(strcmp(lv_mbox_get_active_btn_text(event_obj), "Ok") == 0) {
+        lv_mbox_start_auto_close(mbox, 0);
+      } else {
+        lv_mbox_set_text(mbox, "potatismos");
+      }
     }
 
     /* A button was clicked */
