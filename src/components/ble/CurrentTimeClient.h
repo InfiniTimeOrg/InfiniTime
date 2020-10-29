@@ -3,12 +3,13 @@
 #include <array>
 
 #include "components/datetime/DateTimeController.h"
+#include "BleClient.h"
 #include <host/ble_gap.h>
 
 namespace Pinetime {
     namespace Controllers {
 
-        class CurrentTimeClient {
+        class CurrentTimeClient : public BleClient {
         public:
             explicit CurrentTimeClient(DateTime& dateTimeController);
             void Init();
@@ -17,14 +18,11 @@ namespace Pinetime {
             int OnCharacteristicDiscoveryEvent(uint16_t conn_handle, const ble_gatt_error *error,
                                                const ble_gatt_chr *characteristic);
             int OnCurrentTimeReadResult(uint16_t conn_handle, const ble_gatt_error *error, const ble_gatt_attr *attribute);
-            bool IsDiscovered() const;
-            bool IsCharacteristicDiscovered() const;
-            uint16_t StartHandle() const;
-            uint16_t EndHandle() const;
-            uint16_t CurrentTimeHandle() const;
             static constexpr const ble_uuid16_t* Uuid() { return &CurrentTimeClient::ctsServiceUuid; }
             static constexpr const ble_uuid16_t* CurrentTimeCharacteristicUuid() { return &CurrentTimeClient::currentTimeCharacteristicUuid; }
-        private:
+            void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
+
+          private:
             typedef struct __attribute__((packed)) {
                 uint16_t year;
                 uint8_t month;
@@ -55,7 +53,7 @@ namespace Pinetime {
 
             bool isCharacteristicDiscovered = false;
             uint16_t currentTimeHandle;
-
+            std::function<void(uint16_t)> onServiceDiscovered;
         };
     }
 }
