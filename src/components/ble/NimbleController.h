@@ -11,6 +11,7 @@
 #include "MusicService.h"
 #include "BatteryInformationService.h"
 #include "ImmediateAlertService.h"
+#include "ServiceDiscovery.h"
 #include <host/ble_gap.h>
 
 namespace Pinetime {
@@ -71,6 +72,8 @@ namespace Pinetime {
                 .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
                           0xDE, 0xEF, 0x12, 0x12, 0x30, 0x15, 0x00, 0x00}
         };
+
+        ServiceDiscovery serviceDiscovery;
     };
   }
 }

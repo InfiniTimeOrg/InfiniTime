@@ -3,16 +3,12 @@
 #include <cstdint>
 #include <array>
 #include <host/ble_gap.h>
+#include "BleClient.h"
 
 
 namespace Pinetime {
   namespace Controllers {
-    int NewAlertSubcribeCallback(uint16_t conn_handle,
-                                 const struct ble_gatt_error *error,
-                                 struct ble_gatt_attr *attr,
-                                 void *arg);
-
-    class AlertNotificationClient {
+    class AlertNotificationClient : public BleClient {
       public:
         explicit AlertNotificationClient(Pinetime::System::SystemTask &systemTask,
                                          Pinetime::Controllers::NotificationManager &notificationManager);
@@ -24,13 +20,9 @@ namespace Pinetime {
         int OnDescriptorDiscoveryEventCallback(uint16_t connectionHandle, const ble_gatt_error *error,
                                                uint16_t characteristicValueHandle, const ble_gatt_dsc *descriptor);
         void OnNotification(ble_gap_event *event);
-        bool IsDiscovered() const;
-        uint16_t StartHandle() const;
-        uint16_t EndHandle() const;
+        void Reset();
+        void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
 
-        static constexpr const ble_uuid16_t &Uuid() { return ansServiceUuid; }
-
-        uint16_t NewAlerthandle() const;
       private:
         static constexpr uint16_t ansServiceId{0x1811};
         static constexpr uint16_t supportedNewAlertCategoryId = 0x2a47;
@@ -64,18 +56,21 @@ namespace Pinetime {
                 .value = controlPointId
         };
 
-        uint16_t ansStartHandle;
-        uint16_t ansEndHandle;
-        uint16_t supportedNewAlertCategoryHandle;
-        uint16_t supportedUnreadAlertCategoryHandle;
-        uint16_t newAlertHandle;
+        uint16_t ansStartHandle = 0;
+        uint16_t ansEndHandle = 0;
+        uint16_t supportedNewAlertCategoryHandle = 0;
+        uint16_t supportedUnreadAlertCategoryHandle = 0;
+        uint16_t newAlertHandle = 0;
         uint16_t newAlertDescriptorHandle = 0;
-        uint16_t newAlertDefHandle;
-        uint16_t unreadAlertStatusHandle;
-        uint16_t controlPointHandle;
+        uint16_t newAlertDefHandle = 0;
+        uint16_t unreadAlertStatusHandle = 0;
+        uint16_t controlPointHandle = 0;
         bool isDiscovered = false;
         Pinetime::System::SystemTask &systemTask;
         Pinetime::Controllers::NotificationManager &notificationManager;
+        std::function<void(uint16_t)> onServiceDiscovered;
+        bool isCharacteristicDiscovered = false;
+        bool isDescriptorFound = false;
     };
   }
 }
