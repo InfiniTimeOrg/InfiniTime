@@ -105,8 +105,12 @@ void SystemTask::Work() {
   #pragma clang diagnostic push
   #pragma ide diagnostic ignored "EndlessLoop"
   while(true) {
+
     uint8_t msg;
     if (xQueueReceive(systemTasksMsgQueue, &msg, isSleeping ? 2500 : 1000)) {
+      uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
+      dateTimeController.UpdateTime(systick_counter);
+      batteryController.Update();
       Messages message = static_cast<Messages >(msg);
       switch(message) {
         case Messages::GoToRunning:
@@ -189,10 +193,6 @@ void SystemTask::Work() {
         bleDiscoveryTimer--;
       }
     }
-
-    uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
-    dateTimeController.UpdateTime(systick_counter);
-    batteryController.Update();
 
     monitor.Process();
 
