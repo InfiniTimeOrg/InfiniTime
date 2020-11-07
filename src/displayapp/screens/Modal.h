@@ -29,6 +29,9 @@ namespace Pinetime {
         private:
           void OnEvent(lv_obj_t *event_obj, lv_event_t evt);
 
+          std::string positiveButton;
+          std::string negativeButton;
+
           lv_style_t modal_style;
           lv_obj_t *obj;
           lv_obj_t *mbox;

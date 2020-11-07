@@ -42,7 +42,7 @@ void Modal::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
     Hide();
   } else if(evt == LV_EVENT_VALUE_CHANGED) {
     if(event_obj == mbox) {
-      if(strcmp(lv_mbox_get_active_btn_text(event_obj), "Ok") == 0) {
+      if(strcmp(lv_mbox_get_active_btn_text(event_obj), this->positiveButton.c_str()) == 0) {
         lv_mbox_start_auto_close(mbox, 0);
       } else {
         lv_mbox_set_text(mbox, "potatismos");
@@ -56,20 +56,24 @@ void Modal::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
 
 void Modal::NewNotification(Pinetime::Controllers::NotificationManager &notificationManager) {
   auto notification = notificationManager.GetLastNotification();
+  std::string msg;
   if(notification.valid) {
     switch(notification.category) {
       case Pinetime::Controllers::NotificationManager::Categories::IncomingCall:
-        static const char *icbtns[] = {"Ok", "Hang up", ""};
-        this->Show(notification.message.data(), icbtns);
+        this->positiveButton = "Answer";
+        this->negativeButton = "Hang up"; 
+        msg += "Incoming call from:\n";
+        msg += notification.message.data();
         break;
-      case Pinetime::Controllers::NotificationManager::Categories::SimpleAlert:
-        static const char *sabtns[] = {"Ok", "Cancel", ""};
-        this->Show(notification.message.data(), sabtns);
       default:
+        this->positiveButton = "Ok";
+        this->negativeButton = "Cancel"; 
+        msg = notification.message.data();
         break;
     }
 
-    //this->Show(notification.message.data());
+    static const char *btns[] = {this->positiveButton.c_str(), this->negativeButton.c_str(), ""};
+    this->Show(msg.c_str(), btns);
   }
 }
 
