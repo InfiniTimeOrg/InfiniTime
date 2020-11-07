@@ -67,9 +67,17 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
     os_mbuf_copydata(ctxt->om, headerSize, messageSize-1, notif.message.data());
     notif.message[messageSize-1] = '\0';
     notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
-    notificationManager.Push(std::move(notif));
+    Pinetime::System::SystemTask::Messages event = Pinetime::System::SystemTask::Messages::OnNewNotification;
 
-    systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
+    switch((uint8_t)ctxt->om->om_data[0]) {
+      case 0x02:
+        notif.category = Pinetime::Controllers::NotificationManager::Categories::IncomingCall;
+        event = Pinetime::System::SystemTask::Messages::OnNewCall;
+        break;
+    }
+
+    notificationManager.Push(std::move(notif));
+    systemTask.PushMessage(event);
   }
   return 0;
 }
