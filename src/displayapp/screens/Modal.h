@@ -6,6 +6,7 @@
 #include <bits/unique_ptr.h>
 #include <libs/lvgl/src/lv_core/lv_style.h>
 #include <libs/lvgl/src/lv_core/lv_obj.h>
+#include <components/ble/NotificationManager.h>
 
 namespace Pinetime {
   namespace Applications {
@@ -16,7 +17,9 @@ namespace Pinetime {
           Modal(DisplayApp* app);
           ~Modal() override;
 
-          void Show(const char* msg);
+
+          void NewNotification(Pinetime::Controllers::NotificationManager &notificationManager);
+          void Show(const char* msg, const char *btns[]);
           void Hide();
 
           bool Refresh() override;

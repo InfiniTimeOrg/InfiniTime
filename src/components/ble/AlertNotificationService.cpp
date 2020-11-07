@@ -62,19 +62,26 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
     const auto dbgPacketLen = OS_MBUF_PKTLEN(ctxt->om);
     size_t bufferSize = min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
     auto messageSize = min(maxMessageSize, (bufferSize-headerSize));
+    uint8_t category;
 
     NotificationManager::Notification notif;
     os_mbuf_copydata(ctxt->om, headerSize, messageSize-1, notif.message.data());
+    os_mbuf_copydata(ctxt->om, 0, 1, &category);
     notif.message[messageSize-1] = '\0';
     notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
     Pinetime::System::SystemTask::Messages event = Pinetime::System::SystemTask::Messages::OnNewNotification;
 
-    switch((uint8_t)ctxt->om->om_data[0]) {
-      case 0x02:
+    switch(category) {
+      case (uint8_t) 0x02:
         notif.category = Pinetime::Controllers::NotificationManager::Categories::IncomingCall;
         event = Pinetime::System::SystemTask::Messages::OnNewCall;
         break;
     }
+
+    /*if(ctxt->om->om_data[0] == 0x02) {
+      notif.category = Pinetime::Controllers::NotificationManager::Categories::IncomingCall;
+      event = Pinetime::System::SystemTask::Messages::OnNewCall;
+    }*/
 
     notificationManager.Push(std::move(notif));
     systemTask.PushMessage(event);

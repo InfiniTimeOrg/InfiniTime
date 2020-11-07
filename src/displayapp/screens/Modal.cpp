@@ -54,7 +54,26 @@ void Modal::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
   }
 }
 
-void Modal::Show(const char* msg) {
+void Modal::NewNotification(Pinetime::Controllers::NotificationManager &notificationManager) {
+  auto notification = notificationManager.GetLastNotification();
+  if(notification.valid) {
+    switch(notification.category) {
+      case Pinetime::Controllers::NotificationManager::Categories::IncomingCall:
+        static const char *icbtns[] = {"Answer", "Hangup", ""};
+        this->Show(notification.message.data(), icbtns);
+        break;
+      case Pinetime::Controllers::NotificationManager::Categories::SimpleAlert:
+        static const char *sabtns[] = {"Ok", "Cancel", ""};
+        this->Show(notification.message.data(), sabtns);
+      default:
+        break;
+    }
+
+    //this->Show(notification.message.data());
+  }
+}
+
+void Modal::Show(const char* msg, const char *btns[]) {
   if(isVisible) return;
   isVisible = true;
   lv_style_copy(&modal_style, &lv_style_plain_color);
@@ -67,11 +86,11 @@ void Modal::Show(const char* msg) {
   lv_obj_set_size(obj, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_opa_scale_enable(obj, true); /* Enable opacity scaling for the animation */
 
-  static const char * btns2[] = {"Ok", "Cancel", ""};
+  //static const char * btns2[] = {"Answer", "Hangup", ""};
 
   /* Create the message box as a child of the modal background */
   mbox = lv_mbox_create(obj, nullptr);
-  lv_mbox_add_btns(mbox, btns2);
+  lv_mbox_add_btns(mbox, btns);
   lv_mbox_set_text(mbox, msg);
   lv_obj_align(mbox, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_event_cb(mbox, Modal::mbox_event_cb);
