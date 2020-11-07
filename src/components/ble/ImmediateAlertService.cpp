@@ -1,4 +1,5 @@
 #include <systemtask/SystemTask.h>
+#include <cstring>
 #include "ImmediateAlertService.h"
 #include "AlertNotificationService.h"
 
@@ -67,7 +68,12 @@ int ImmediateAlertService::OnAlertLevelChanged(uint16_t connectionHandle, uint16
     if(context->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
       auto alertLevel = static_cast<Levels>(context->om->om_data[0]);
       auto* alertString = ToString(alertLevel);
-      notificationManager.Push(Pinetime::Controllers::NotificationManager::Categories::SimpleAlert, alertString, strlen(alertString));
+
+      NotificationManager::Notification notif;
+      std::memcpy(notif.message.data(), alertString, strlen(alertString));
+      notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+      notificationManager.Push(std::move(notif));
+
       systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
     }
   }

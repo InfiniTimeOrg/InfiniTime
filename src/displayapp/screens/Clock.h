@@ -7,6 +7,7 @@
 #include <bits/unique_ptr.h>
 #include <libs/lvgl/src/lv_core/lv_style.h>
 #include <libs/lvgl/src/lv_core/lv_obj.h>
+#include "components/ble/NotificationManager.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 
@@ -38,7 +39,8 @@ namespace Pinetime {
           Clock(DisplayApp* app,
                   Controllers::DateTime& dateTimeController,
                   Controllers::Battery& batteryController,
-                  Controllers::Ble& bleController);
+                  Controllers::Ble& bleController,
+                  Controllers::NotificationManager& notificatioManager);
           ~Clock() override;
 
           bool Refresh() override;
@@ -63,23 +65,25 @@ namespace Pinetime {
           DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
           DirtyValue<uint32_t> stepCount  {0};
           DirtyValue<uint8_t> heartbeat  {0};
-
+          DirtyValue<bool> notificationState {false};
 
           lv_obj_t* label_time;
           lv_obj_t* label_date;
           lv_obj_t* backgroundLabel;
-          lv_obj_t * batteryIcon;
-          lv_obj_t * bleIcon;
+          lv_obj_t* batteryIcon;
+          lv_obj_t* bleIcon;
           lv_obj_t* batteryPlug;
           lv_obj_t* heartbeatIcon;
           lv_obj_t* heartbeatValue;
           lv_obj_t* heartbeatBpm;
           lv_obj_t* stepIcon;
           lv_obj_t* stepValue;
+          lv_obj_t* notificationIcon;
 
           Controllers::DateTime& dateTimeController;
           Controllers::Battery& batteryController;
           Controllers::Ble& bleController;
+          Controllers::NotificationManager& notificatioManager;
 
           bool running = true;
 

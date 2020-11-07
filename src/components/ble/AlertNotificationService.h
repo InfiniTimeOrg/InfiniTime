@@ -44,8 +44,8 @@ namespace Pinetime {
         struct ble_gatt_chr_def characteristicDefinition[2];
         struct ble_gatt_svc_def serviceDefinition[2];
 
-        Pinetime::System::SystemTask &m_systemTask;
-        NotificationManager &m_notificationManager;
+        Pinetime::System::SystemTask &systemTask;
+        NotificationManager &notificationManager;
     };
   }
 }

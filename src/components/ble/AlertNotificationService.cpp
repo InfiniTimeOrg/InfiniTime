@@ -38,7 +38,7 @@ AlertNotificationService::AlertNotificationService ( System::SystemTask& systemT
                   0
                 }
         },
-        serviceDefinition{
+    serviceDefinition{
                 {
                         /* Device Information Service */
                         .type = BLE_GATT_SVC_TYPE_PRIMARY,
@@ -48,27 +48,28 @@ AlertNotificationService::AlertNotificationService ( System::SystemTask& systemT
                 {
                         0
                 },
-        }, m_systemTask{systemTask}, m_notificationManager{notificationManager} {
+        }, systemTask{systemTask}, notificationManager{notificationManager} {
 }
 
 int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle,
                                                     struct ble_gatt_access_ctxt *ctxt) {
-
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
-    // TODO implement this with more memory safety (and constexpr)
-    size_t notifSize = OS_MBUF_PKTLEN(ctxt->om);
-    uint8_t *data = (uint8_t*) malloc(notifSize + 1);
-    data[notifSize] = '\0';
-    os_mbuf_copydata(ctxt->om, 0, notifSize, data);
-    char *s = (char *) &data[1];
-    NRF_LOG_INFO("DATA : %s", s);
+    constexpr size_t stringTerminatorSize = 1; // end of string '\0'
+    constexpr size_t headerSize = 3;
+    const auto maxMessageSize {NotificationManager::MaximumMessageSize()};
+    const auto maxBufferSize{maxMessageSize + headerSize};
 
-    uint32_t category = data[0];
-    Pinetime::Controllers::NotificationManager::Categories messageCategory = static_cast<Pinetime::Controllers::NotificationManager::Categories>(category);
+    const auto dbgPacketLen = OS_MBUF_PKTLEN(ctxt->om);
+    size_t bufferSize = min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
+    auto messageSize = min(maxMessageSize, (bufferSize-headerSize));
 
-    m_notificationManager.Push(messageCategory, s, notifSize);
-    m_systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
-    free(data);
+    NotificationManager::Notification notif;
+    os_mbuf_copydata(ctxt->om, headerSize, messageSize-1, notif.message.data());
+    notif.message[messageSize-1] = '\0';
+    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    notificationManager.Push(std::move(notif));
+
+    systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
   }
   return 0;
 }
