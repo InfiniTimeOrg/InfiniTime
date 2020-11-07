@@ -59,7 +59,7 @@ void Modal::NewNotification(Pinetime::Controllers::NotificationManager &notifica
   if(notification.valid) {
     switch(notification.category) {
       case Pinetime::Controllers::NotificationManager::Categories::IncomingCall:
-        static const char *icbtns[] = {"Answer", "Hangup", ""};
+        static const char *icbtns[] = {"Ok", "Hang up", ""};
         this->Show(notification.message.data(), icbtns);
         break;
       case Pinetime::Controllers::NotificationManager::Categories::SimpleAlert:
