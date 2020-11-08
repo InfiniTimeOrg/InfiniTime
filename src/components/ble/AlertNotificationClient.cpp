@@ -159,8 +159,8 @@ void AlertNotificationClient::OnNotification(ble_gap_event *event) {
     const auto maxBufferSize{maxMessageSize + headerSize};
 
     const auto dbgPacketLen = OS_MBUF_PKTLEN(event->notify_rx.om);
-    size_t bufferSize = min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
-    auto messageSize = min(maxMessageSize, (bufferSize - headerSize));
+    size_t bufferSize = mynewt_min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
+    auto messageSize = mynewt_min(maxMessageSize, (bufferSize - headerSize));
 
     NotificationManager::Notification notif;
     os_mbuf_copydata(event->notify_rx.om, headerSize, messageSize - 1, notif.message.data());

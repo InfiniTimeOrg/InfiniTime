@@ -6,9 +6,8 @@ using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
 extern lv_font_t jetbrains_mono_bold_20;
 
-Modal::Modal(Pinetime::Applications::DisplayApp *app) : Screen(app) {
-
-
+Modal::Modal(Pinetime::Applications::DisplayApp *app) : Screen(app), alertNotificationService(nullptr) {
+  //alertNotificationService = nullptr;
 }
 
 Modal::~Modal() {
@@ -43,18 +42,21 @@ void Modal::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
   } else if(evt == LV_EVENT_VALUE_CHANGED) {
     if(event_obj == mbox) {
       if(strcmp(lv_mbox_get_active_btn_text(event_obj), this->positiveButton.c_str()) == 0) {
-        lv_mbox_start_auto_close(mbox, 0);
+        if(alertNotificationService != nullptr)
+          alertNotificationService->event(Pinetime::Controllers::AlertNotificationService::EVENT_ANSWER_CALL);
+        
       } else {
-        lv_mbox_set_text(mbox, "potatismos");
+        if(alertNotificationService != nullptr)
+          alertNotificationService->event(Pinetime::Controllers::AlertNotificationService::EVENT_HANG_UP_CALL);
+        
       }
+      lv_mbox_start_auto_close(mbox, 0);
     }
-
-    /* A button was clicked */
-    //lv_mbox_start_auto_close(mbox, 0);
   }
 }
 
-void Modal::NewNotification(Pinetime::Controllers::NotificationManager &notificationManager) {
+void Modal::NewNotification(Pinetime::Controllers::NotificationManager &notificationManager, Pinetime::Controllers::AlertNotificationService* alertService) {
+  alertNotificationService = alertService;
   auto notification = notificationManager.GetLastNotification();
   std::string msg;
   if(notification.valid) {
@@ -89,8 +91,6 @@ void Modal::Show(const char* msg, const char *btns[]) {
   lv_obj_set_pos(obj, 0, 0);
   lv_obj_set_size(obj, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_opa_scale_enable(obj, true); /* Enable opacity scaling for the animation */
-
-  //static const char * btns2[] = {"Answer", "Hangup", ""};
 
   /* Create the message box as a child of the modal background */
   mbox = lv_mbox_create(obj, nullptr);

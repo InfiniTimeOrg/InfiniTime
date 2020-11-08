@@ -1,8 +1,10 @@
 #pragma once
+#include <host/ble_gap.h>
+#undef min
+#undef max
 
 #include <cstdint>
 #include <array>
-#include <host/ble_gap.h>
 #include "BleClient.h"
 
 

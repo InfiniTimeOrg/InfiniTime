@@ -383,9 +383,6 @@ list(APPEND SOURCE_FILES
         systemtask/SystemTask.cpp
         drivers/TwiMaster.cpp
 
-        # src/displayapp/screens/alertscreens/InstantMessageAlert.cpp
-        displayapp/screens/alertscreens/SimpleAlert.cpp
-        displayapp/screens/alertscreens/Modal.cpp
         )
 
 list(APPEND GRAPHICS_SOURCE_FILES
@@ -471,10 +468,6 @@ set(INCLUDE_FILES
         displayapp/screens/Symbols.h
         drivers/TwiMaster.h
         
-        
-        displayapp/screens/alertscreens/SimpleAlert.h
-        displayapp/screens/alertscreens/Modal.h
-        # displayapp/screens/alertscreens/InstantMessageAlert.h
         )
 
 include_directories(

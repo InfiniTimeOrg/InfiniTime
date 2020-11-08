@@ -124,7 +124,7 @@ void DisplayApp::Refresh() {
       }
         break;
       case Messages::NewCall:
-        modal->NewNotification(notificationManager);
+        modal->NewNotification(notificationManager, &systemTask.nimble().alertService());
         break;
       case Messages::TouchEvent: {
         if (state != States::Running) break;

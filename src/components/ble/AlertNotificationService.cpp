@@ -10,6 +10,7 @@ using namespace Pinetime::Controllers;
 
 constexpr ble_uuid16_t AlertNotificationService::ansUuid;
 constexpr ble_uuid16_t AlertNotificationService::ansCharUuid;
+constexpr ble_uuid16_t AlertNotificationService::ansEventUuid;
 
 
 int AlertNotificationCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
@@ -33,6 +34,13 @@ AlertNotificationService::AlertNotificationService ( System::SystemTask& systemT
                         .access_cb = AlertNotificationCallback,
                         .arg = this,
                         .flags = BLE_GATT_CHR_F_WRITE
+                },
+                {
+                        .uuid = (ble_uuid_t *) &ansEventUuid,
+                        .access_cb = AlertNotificationCallback,
+                        .arg = this,
+                        .flags = BLE_GATT_CHR_F_NOTIFY,
+                        .val_handle = &eventHandle
                 },
                 {
                   0
@@ -60,8 +68,8 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
     const auto maxBufferSize{maxMessageSize + headerSize};
 
     const auto dbgPacketLen = OS_MBUF_PKTLEN(ctxt->om);
-    size_t bufferSize = min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
-    auto messageSize = min(maxMessageSize, (bufferSize-headerSize));
+    size_t bufferSize = mynewt_min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
+    auto messageSize = mynewt_min(maxMessageSize, (bufferSize-headerSize));
     uint8_t* category = new uint8_t[1];
 
     NotificationManager::Notification notif;
@@ -78,13 +86,20 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
         break;
     }
 
-    /*if(ctxt->om->om_data[0] == 0x02) {
-      notif.category = Pinetime::Controllers::NotificationManager::Categories::IncomingCall;
-      event = Pinetime::System::SystemTask::Messages::OnNewCall;
-    }*/
-
     notificationManager.Push(std::move(notif));
     systemTask.PushMessage(event);
   }
   return 0;
+}
+
+void AlertNotificationService::event(char event) {
+  auto *om = ble_hs_mbuf_from_flat(&event, 1);
+  
+  uint16_t connectionHandle = systemTask.nimble().connHandle();
+  
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+  
+  ble_gattc_notify_custom(connectionHandle, eventHandle, om);
 }
