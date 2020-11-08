@@ -6,9 +6,7 @@ using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
 extern lv_font_t jetbrains_mono_bold_20;
 
-Modal::Modal(Pinetime::Applications::DisplayApp *app) : Screen(app), alertNotificationService(nullptr) {
-  //alertNotificationService = nullptr;
-}
+Modal::Modal(Pinetime::Applications::DisplayApp *app) : Screen(app), alertNotificationService(nullptr) {}
 
 Modal::~Modal() {
   lv_obj_clean(lv_scr_act());
