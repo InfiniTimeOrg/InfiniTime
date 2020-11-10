@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
-project(pinetime VERSION 0.8.2 LANGUAGES C CXX ASM)
+project(pinetime VERSION 0.9.0 LANGUAGES C CXX ASM)
 
 set(NRF_TARGET "nrf52")
 
 if (NOT ARM_NONE_EABI_TOOLCHAIN_PATH)
-  message(FATAL_ERROR "The path to the toolchain (arm-non-eabi) must be specified on the command line (add -DARM_NONE_EABI_TOOLCHAIN_PATH=<path>")
+  message(FATAL_ERROR "The path to the toolchain (arm-none-eabi) must be specified on the command line (add -DARM_NONE_EABI_TOOLCHAIN_PATH=<path>")
 endif ()
 
 if (NOT NRF5_SDK_PATH)

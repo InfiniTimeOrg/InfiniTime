@@ -37,7 +37,9 @@ void Cst816S::Init() {
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
 
-  twiMaster.Read(twiAddress, 0, touchData, 63);
+  auto ret = twiMaster.Read(twiAddress, 0, touchData, 63);
+  if(ret != TwiMaster::ErrorCodes::NoError) return {};
+
   auto nbTouchPoints = touchData[2] & 0x0f;
 
 //  uint8_t i = 0;

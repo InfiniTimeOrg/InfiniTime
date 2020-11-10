@@ -162,7 +162,7 @@ class NrfBleDfuController(object, metaclass=ABCMeta):
         self.ble_conn.sendline('characteristics')
 
         try:
-            self.ble_conn.expect([uuid], timeout=2)
+            self.ble_conn.expect([uuid], timeout=10)
             handles = re.findall(b'.*handle: (0x....),.*char value handle: (0x....)', self.ble_conn.before)
             (handle, value_handle) = handles[-1]
         except pexpect.TIMEOUT as e:

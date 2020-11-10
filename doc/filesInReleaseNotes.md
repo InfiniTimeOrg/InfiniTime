@@ -42,7 +42,7 @@ This firmware is intended to be used with our [MCUBoot-based bootloader](../boot
 
 The following files are not directly usable by the bootloader:
 
- - **pinetime-mcuboot-app.bin** : Output file of GCC containing debug symbols, useful is you want to debug the firmware using GDB.
+ - **pinetime-mcuboot-app.out** : Output file of GCC containing debug symbols, useful is you want to debug the firmware using GDB.
  - **pinetime-mcuboot-app.hex** : Firmware in Intel HEX file format. 
  - **pinetime-mcuboot-app.bin** : Firmware in binary format. 
  - **pinetime-mcuboot-app.map** : Map file containing all the symbols, addresses in memory,...
