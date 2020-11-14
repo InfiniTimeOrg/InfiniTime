@@ -30,7 +30,7 @@ jobs:
       # Download and Cache Dependencies
 
       - name: Install cmake
-        uses: lukka/get-cmake@v3.18.0
+        uses: lukka/get-cmake@v3.18.3
 
       - name: Check cache for Embedded Arm Toolchain arm-none-eabi-gcc
         id:   cache-toolchain
