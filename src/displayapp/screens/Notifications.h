@@ -1,11 +1,10 @@
 #pragma once
 
-#include <functional>
-#include <vector>
-
+#include <lvgl/lvgl.h>
+#include <cstdint>
+#include <memory>
 #include "Screen.h"
-#include "ScreenList.h"
-
+#include "components/ble/NotificationManager.h"
 
 namespace Pinetime {
   namespace Applications {

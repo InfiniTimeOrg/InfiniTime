@@ -1,8 +1,8 @@
-#include <libs/lvgl/lvgl.h>
 #include "FirmwareValidation.h"
-#include "../DisplayApp.h"
-#include "../../Version.h"
+#include <lvgl/lvgl.h>
+#include "Version.h"
 #include "components/firmwarevalidator/FirmwareValidator.h"
+#include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
@@ -87,5 +87,3 @@ void FirmwareValidation::OnButtonEvent(lv_obj_t *object, lv_event_t event) {
   }
 
 }
-
-

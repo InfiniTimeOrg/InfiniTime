@@ -1,14 +1,11 @@
-#include <cstdio>
-#include <libs/date/includes/date/date.h>
-#include "components/datetime/DateTimeController.h"
-#include <Version.h>
-#include <libs/lvgl/src/lv_core/lv_obj.h>
-#include <libs/lvgl/src/lv_font/lv_font.h>
-#include <libs/lvgl/lvgl.h>
-#include <libraries/log/nrf_log.h>
 #include "Tab.h"
-#include "displayapp/DisplayApp.h"
-
+#include <Version.h>
+#include <libraries/log/nrf_log.h>
+#include <date/date.h>
+#include <lvgl/lvgl.h>
+#include "../DisplayApp.h"
+#include "components/datetime/DateTimeController.h"
+#include "components/gfx/Gfx.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -19,7 +16,7 @@ extern lv_font_t jetbrains_mono_bold_20;
 //  screen->OnObjectEvent(obj, event);
 //}
 
-Tab::Tab(DisplayApp* app, Pinetime::Components::Gfx &gfx) : Screen(app, gfx) {
+Tab::Tab(DisplayApp* app, Pinetime::Components::Gfx &gfx) : Screen(app), gfx(gfx) {
 /*Create a Tab view object*/
   lv_obj_t *tabview;
   tabview = lv_tabview_create(lv_scr_act(), NULL);

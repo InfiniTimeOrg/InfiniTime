@@ -1,5 +1,5 @@
-#include <libs/lvgl/lvgl.h>
 #include "Brightness.h"
+#include <lvgl/lvgl.h>
 
 using namespace Pinetime::Applications::Screens;
 
