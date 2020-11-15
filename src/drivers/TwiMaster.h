@@ -1,8 +1,6 @@
 #pragma once
 #include <FreeRTOS.h>
 #include <semphr.h>
-#include <drivers/include/nrfx_twi.h>
-
 
 namespace Pinetime {
   namespace Drivers {

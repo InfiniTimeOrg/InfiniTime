@@ -1,10 +1,8 @@
-#include <FreeRTOS.h>
+#include "SpiMaster.h"
 #include <hal/nrf_gpio.h>
 #include <hal/nrf_spim.h>
-#include "SpiMaster.h"
-#include <algorithm>
-#include <task.h>
 #include <nrfx_log.h>
+#include <algorithm>
 
 using namespace Pinetime::Drivers;
 
