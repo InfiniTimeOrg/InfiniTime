@@ -1,10 +1,10 @@
 #pragma once
-#include <cstdint>
-#include <nrf_font.h>
-#include <drivers/BufferProvider.h>
 #include <FreeRTOS.h>
+#include <nrf_font.h>
 #include <task.h>
-
+#include <cstddef>
+#include <cstdint>
+#include "drivers/BufferProvider.h"
 
 namespace Pinetime {
   namespace Drivers {

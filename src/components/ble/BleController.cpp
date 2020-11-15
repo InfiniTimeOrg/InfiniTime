@@ -1,5 +1,3 @@
-#include <cstring>
-#include <cstdlib>
 #include "BleController.h"
 
 using namespace Pinetime::Controllers;

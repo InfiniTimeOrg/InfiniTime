@@ -1,19 +1,27 @@
-#include <libraries/log/nrf_log.h>
-#include <libraries/gpiote/app_gpiote.h>
-#include <drivers/Cst816s.h>
-#include "displayapp/LittleVgl.h"
-#include <hal/nrf_rtc.h>
-#include "components/ble/NotificationManager.h"
+#include "SystemTask.h"
+#define min // workaround: nimble's min/max macros conflict with libstdc++
+#define max
+#include <host/ble_gap.h>
 #include <host/ble_gatt.h>
 #include <host/ble_hs_adv.h>
-#include "SystemTask.h"
-#include <nimble/hci_common.h>
-#include <host/ble_gap.h>
 #include <host/util/util.h>
-#include <drivers/InternalFlash.h>
+#include <nimble/hci_common.h>
+#undef max
+#undef min
+#include <hal/nrf_rtc.h>
+#include <libraries/gpiote/app_gpiote.h>
+#include <libraries/log/nrf_log.h>
+
+#include "BootloaderVersion.h"
+#include "components/ble/BleController.h"
+#include "displayapp/LittleVgl.h"
+#include "drivers/Cst816s.h"
+#include "drivers/St7789.h"
+#include "drivers/InternalFlash.h"
+#include "drivers/SpiMaster.h"
+#include "drivers/SpiNorFlash.h"
+#include "drivers/TwiMaster.h"
 #include "main.h"
-#include "components/ble/NimbleController.h"
-#include "../BootloaderVersion.h"
 
 using namespace Pinetime::System;
 

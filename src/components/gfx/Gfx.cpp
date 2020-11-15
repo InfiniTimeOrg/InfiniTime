@@ -1,8 +1,5 @@
-#include <libraries/svc/nrf_svci.h>
-#include <FreeRTOS.h>
-#include <task.h>
 #include "Gfx.h"
-#include "../../drivers/St7789.h"
+#include "drivers/St7789.h"
 using namespace Pinetime::Components;
 
 Gfx::Gfx(Pinetime::Drivers::St7789 &lcd) : lcd{lcd} {

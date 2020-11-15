@@ -1,7 +1,7 @@
-#include <systemtask/SystemTask.h>
-#include "NotificationManager.h"
-
 #include "AlertNotificationClient.h"
+#include <algorithm>
+#include "NotificationManager.h"
+#include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
 constexpr ble_uuid16_t AlertNotificationClient::ansServiceUuid;
@@ -159,8 +159,8 @@ void AlertNotificationClient::OnNotification(ble_gap_event *event) {
     const auto maxBufferSize{maxMessageSize + headerSize};
 
     const auto dbgPacketLen = OS_MBUF_PKTLEN(event->notify_rx.om);
-    size_t bufferSize = min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
-    auto messageSize = min(maxMessageSize, (bufferSize - headerSize));
+    size_t bufferSize = std::min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
+    auto messageSize = std::min(maxMessageSize, (bufferSize - headerSize));
 
     NotificationManager::Notification notif;
     os_mbuf_copydata(event->notify_rx.om, headerSize, messageSize - 1, notif.message.data());

@@ -1,12 +1,12 @@
 #pragma once
 
 #include <array>
-#include <functional>
-#include <memory>
-#include "BleClient.h"
+#include <cstdint>
 
 namespace Pinetime {
   namespace Controllers {
+    class BleClient;
+
     class ServiceDiscovery {
       public:
         ServiceDiscovery(std::array<BleClient*, 2>&& bleClients);
