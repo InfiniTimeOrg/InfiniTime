@@ -53,8 +53,8 @@ namespace Pinetime {
         Drivers::St7789& lcd;
 
         void SetBackgroundColor(uint16_t color);
-        void WaitTransfertFinished() const;
-        void NotifyEndOfTransfert(TaskHandle_t task);
+        void WaitTransferFinished() const;
+        void NotifyEndOfTransfer(TaskHandle_t task);
     };
   }
 }
