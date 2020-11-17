@@ -69,9 +69,9 @@ As of now, here is the list of achievements of this project:
  - [Memory analysis](./doc/MemoryAnalysis.md)
  
 ### Using the firmware
- - [Integration with Gadgetbridge](doc/CompanionApps/Gadgetbridge.md)
- - [Integration with AmazFish](doc/CompanionApps/Amazfish.md)
- - [Firmware update, OTA](doc/CompanionApps/NrfconnectOTA.md)
+ - [Integration with Gadgetbridge](doc/companionapps/Gadgetbridge.md)
+ - [Integration with AmazFish](doc/companionapps/Amazfish.md)
+ - [Firmware update, OTA](doc/companionapps/NrfconnectOTA.md)
  
     
 ## TODO - contribute
