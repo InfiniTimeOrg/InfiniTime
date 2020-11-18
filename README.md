@@ -43,36 +43,14 @@ As of now, here is the list of achievements of this project:
  - **[Experimental]** Bootloader based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/)
  
 ## Documentation
+[Documentation site](https://pfeerick.github.io/InfiniTime/): For information on how to use, build, and program InfiniTime.
 
-### Develop
- - [Generate the fonts and symbols](src/displayapp/fonts/Readme.md)
-
-### Build, flash and debug
- - [Project branches](doc/branches.md)
- - [Versioning](doc/versioning.md)
- - [Files included in the release notes](doc/filesInReleaseNotes.md)
- - [Build the project](doc/buildAndProgram.md)
- - [Flash the firmware using OpenOCD and STLinkV2](doc/openOCD.md)
- - [Build the project with Docker](doc/buildWithDocker.md)
- - [Bootloader, OTA and DFU](./bootloader/README.md)
- - [Stub using NRF52-DK](./doc/PinetimeStubWithNrf52DK.md)
- - Logging with JLink RTT.
- - Using files from the releases
-
-### Contribute
- - [How to contribute ?](doc/contribute.md)
-
-### API
- - [BLE implementation and API](./doc/ble.md)
- 
-### Architecture and technical topics
- - [Memory analysis](./doc/MemoryAnalysis.md)
- 
-### Using the firmware
- - [Integration with Gadgetbridge](doc/companionapps/Gadgetbridge.md)
- - [Integration with AmazFish](doc/companionapps/Amazfish.md)
- - [Firmware update, OTA](doc/companionapps/NrfconnectOTA.md)
- 
+## Support
+There are various social media platforms and forums where you can get support for your PineTime/InfiniTime. The Discord #pinetime channel, Telegram group and Matrix group are all bridged together, so you can use the platform of your choice. 
+- [Discord chat](https://discordapp.com/invite/DgB7kzr) - Has a dedicated #pinetime channel
+- [Telegram group](https://t.me/pinetime)
+- [Matrix group](https://matrix.to/#/!MTPtVeaNjlLKdzMKWH:matrix.org?via=matrix.org&via=privacytools.io&via=feneas.org)
+- [pine64 forum](https://forum.pine64.org/forumdisplay.php?fid=135) - General support forum for the pine64 PineTime device
     
 ## TODO - contribute
 
