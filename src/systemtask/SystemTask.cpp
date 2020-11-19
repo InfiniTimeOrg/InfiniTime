@@ -193,7 +193,7 @@ void SystemTask::Work() {
 
     monitor.Process();
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
-    dateTimeController.UpdateTime(nrf_rtc_counter_get(systick_counter));
+    dateTimeController.UpdateTime(systick_counter);
     if(!nrf_gpio_pin_read(pinButton))
       watchdog.Kick();
   }
