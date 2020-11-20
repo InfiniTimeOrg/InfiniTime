@@ -44,6 +44,9 @@ As of now, here is the list of achievements of this project:
  
 ## Documentation
 
+### Getting started
+ - [Flash, upgrade (OTA), time synchronization,...](doc/gettingStarted/gettingStarted.md)
+
 ### Develop
  - [Generate the fonts and symbols](src/displayapp/fonts/Readme.md)
 
