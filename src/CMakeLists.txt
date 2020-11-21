@@ -382,7 +382,6 @@ list(APPEND SOURCE_FILES
 
         systemtask/SystemTask.cpp
         drivers/TwiMaster.cpp
-
         )
 
 list(APPEND GRAPHICS_SOURCE_FILES
@@ -467,7 +466,6 @@ set(INCLUDE_FILES
         systemtask/SystemMonitor.h
         displayapp/screens/Symbols.h
         drivers/TwiMaster.h
-        
         )
 
 include_directories(

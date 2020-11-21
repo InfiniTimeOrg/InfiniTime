@@ -24,7 +24,7 @@ namespace Pinetime {
                                     struct ble_gatt_access_ctxt *ctxt);
 
         void event(char event);
-        
+
         static const char EVENT_HANG_UP_CALL = 0x00;
         static const char EVENT_ANSWER_CALL = 0x01;
 
@@ -45,7 +45,7 @@ namespace Pinetime {
         static constexpr uint16_t ansId {0x1811};
         static constexpr uint16_t ansCharId {0x2a46};
         static constexpr uint16_t ansEventCharId = {0x2a47};
-        
+
         static constexpr ble_uuid16_t ansUuid {
                 .u { .type = BLE_UUID_TYPE_16 },
                 .value = ansId

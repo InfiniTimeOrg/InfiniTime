@@ -94,12 +94,12 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
 
 void AlertNotificationService::event(char event) {
   auto *om = ble_hs_mbuf_from_flat(&event, 1);
-  
+
   uint16_t connectionHandle = systemTask.nimble().connHandle();
-  
+
   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
     return;
   }
-  
+
   ble_gattc_notify_custom(connectionHandle, eventHandle, om);
 }
