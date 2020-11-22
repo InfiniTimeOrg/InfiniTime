@@ -20,6 +20,7 @@
 #include "displayapp/screens/ApplicationList.h"
 #include "displayapp/screens/FirmwareValidation.h"
 #include "displayapp/screens/InfiniPaint.h"
+#include "displayapp/screens/Paddle.h"
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Applications;
@@ -204,6 +205,7 @@ void DisplayApp::RunningState() {
       case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
       case Apps::Gauge: currentScreen.reset(new Screens::Gauge(this)); break;
       case Apps::Paint: currentScreen.reset(new Screens::InfiniPaint(this, lvgl)); break;
+      case Apps::Paddle: currentScreen.reset(new Screens::Paddle(this, lvgl)); break;
       case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
       case Apps::Music : currentScreen.reset(new Screens::Music(this, systemTask.nimble().music())); break;
       case Apps::FirmwareValidation: currentScreen.reset(new Screens::FirmwareValidation(this, validator)); break;
