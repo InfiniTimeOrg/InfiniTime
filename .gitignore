@@ -33,3 +33,7 @@ Testing/Temporary/
 
 # Windows
 **/thumbs.db
+
+# Doxygen
+src/html/
+src/latex/
