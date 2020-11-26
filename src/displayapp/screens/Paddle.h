@@ -12,11 +12,11 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       
-      class InfiniPaint : public Screen {
+      class Paddle : public Screen {
       public:
-        InfiniPaint(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl);
+        Paddle(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl);
         
-        ~InfiniPaint() override;
+        ~Paddle() override;
         
         bool Refresh() override;
         
