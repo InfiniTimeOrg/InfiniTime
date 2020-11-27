@@ -1,7 +1,7 @@
   
 #include <libs/lvgl/lvgl.h>
 #include <libraries/log/nrf_log.h>
-#include "InfiniPaint.h"
+#include "Paddle.h"
 #include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
