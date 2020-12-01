@@ -1,17 +1,24 @@
 #pragma once
 
-#include <functional>
-#include <vector>
-
-#include "components/ble/NimbleController.h"
+#include <memory>
 #include "Screen.h"
-#include "Label.h"
 #include "ScreenList.h"
-#include "Gauge.h"
-#include "Meter.h"
 
 namespace Pinetime {
+  namespace Controllers {
+    class DateTime;
+    class Battery;
+    class BrightnessController;
+    class Ble;
+  }
+
+  namespace Drivers {
+    class WatchdogView;
+  }
+
   namespace Applications {
+    class DisplayApp;
+
     namespace Screens {
       class SystemInfo : public Screen {
         public:

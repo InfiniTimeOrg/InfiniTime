@@ -1,7 +1,7 @@
-#include <drivers/InternalFlash.h>
-#include <hal/nrf_rtc.h>
-
 #include "FirmwareValidator.h"
+
+#include <hal/nrf_rtc.h>
+#include "drivers/InternalFlash.h"
 
 using namespace Pinetime::Controllers;
 

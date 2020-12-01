@@ -1,8 +1,7 @@
-#include <drivers/include/nrfx_saadc.h>
+#include "BatteryController.h"
 #include <hal/nrf_gpio.h>
 #include <libraries/log/nrf_log.h>
 #include <algorithm>
-#include "BatteryController.h"
 
 using namespace Pinetime::Controllers;
 

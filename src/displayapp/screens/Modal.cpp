@@ -1,5 +1,5 @@
-#include <libs/lvgl/lvgl.h>
 #include "Modal.h"
+#include <lvgl/lvgl.h>
 #include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;

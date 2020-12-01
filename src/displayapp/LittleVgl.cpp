@@ -1,14 +1,10 @@
-#include <FreeRTOS.h>
-#include <projdefs.h>
-#include <task.h>
-#include <libs/lvgl/src/lv_core/lv_obj.h>
-#include <hal/nrf_rtc.h>
-#include <libraries/log/nrf_log.h>
-
-#include <libs/lvgl/src/lv_themes/lv_theme.h>
-#include <libs/lvgl/src/lv_themes/lv_theme_night.h>
-
 #include "LittleVgl.h"
+
+#include <FreeRTOS.h>
+#include <task.h>
+//#include <projdefs.h>
+#include "drivers/Cst816s.h"
+#include "drivers/St7789.h"
 
 using namespace Pinetime::Components;
 

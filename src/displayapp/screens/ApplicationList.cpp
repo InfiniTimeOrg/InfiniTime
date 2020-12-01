@@ -1,9 +1,10 @@
-#include <libs/lvgl/lvgl.h>
-#include <displayapp/DisplayApp.h>
-#include <functional>
 #include "ApplicationList.h"
-#include "Tile.h"
+#include <lvgl/lvgl.h>
+#include <array>
 #include "Symbols.h"
+#include "Tile.h"
+#include "displayapp/Apps.h"
+#include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
 

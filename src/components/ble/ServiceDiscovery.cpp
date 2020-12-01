@@ -1,5 +1,7 @@
-#include <libraries/log/nrf_log.h>
 #include "ServiceDiscovery.h"
+#include <libraries/log/nrf_log.h>
+#include "BleClient.h"
+
 using namespace Pinetime::Controllers;
 
 ServiceDiscovery::ServiceDiscovery(std::array<BleClient*, 2>&& clients) : clients{clients} {

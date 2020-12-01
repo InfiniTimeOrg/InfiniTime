@@ -1,4 +1,3 @@
-#include <libs/lvgl/lvgl.h>
 #include "Gauge.h"
 #include "../DisplayApp.h"
 

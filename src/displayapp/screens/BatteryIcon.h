@@ -1,7 +1,5 @@
 #pragma once
 
-#include <libs/lvgl/src/lv_draw/lv_img_decoder.h>
-
 namespace Pinetime {
   namespace Applications {
     namespace Screens {

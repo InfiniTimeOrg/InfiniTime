@@ -1,5 +1,6 @@
 #include "BatteryIcon.h"
 #include "Symbols.h"
+
 using namespace Pinetime::Applications::Screens;
 
 const char* BatteryIcon::GetBatteryIcon(float batteryPercent) {

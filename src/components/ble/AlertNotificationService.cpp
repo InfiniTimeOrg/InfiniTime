@@ -1,10 +1,9 @@
-
-#include <hal/nrf_rtc.h>
-#include "NotificationManager.h"
-#include <systemtask/SystemTask.h>
-
 #include "AlertNotificationService.h"
+#include <hal/nrf_rtc.h>
 #include <cstring>
+#include <algorithm>
+#include "NotificationManager.h"
+#include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
 
@@ -60,8 +59,8 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
     const auto maxBufferSize{maxMessageSize + headerSize};
 
     const auto dbgPacketLen = OS_MBUF_PKTLEN(ctxt->om);
-    size_t bufferSize = min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
-    auto messageSize = min(maxMessageSize, (bufferSize-headerSize));
+    size_t bufferSize = std::min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
+    auto messageSize = std::min(maxMessageSize, (bufferSize-headerSize));
 
     NotificationManager::Notification notif;
     os_mbuf_copydata(ctxt->om, headerSize, messageSize-1, notif.message.data());

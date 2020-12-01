@@ -15,8 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#include <systemtask/SystemTask.h>
 #include "MusicService.h"
+#include "systemtask/SystemTask.h"
 
 int MSCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
   auto musicService = static_cast<Pinetime::Controllers::MusicService *>(arg);

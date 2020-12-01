@@ -1,12 +1,13 @@
 #pragma once
 
-#include <libs/lvgl/src/lv_core/lv_style.h>
-#include <libs/lvgl/src/lv_themes/lv_theme.h>
-#include <libs/lvgl/src/lv_hal/lv_hal.h>
-#include <drivers/St7789.h>
-#include <drivers/Cst816s.h>
+#include <lvgl/lvgl.h>
 
 namespace Pinetime {
+  namespace Drivers {
+    class Cst816S;
+    class St7789;
+  }
+
   namespace Components {
     class LittleVgl {
       public:

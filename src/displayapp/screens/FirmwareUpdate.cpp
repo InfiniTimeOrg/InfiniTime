@@ -1,5 +1,6 @@
-#include <libs/lvgl/lvgl.h>
 #include "FirmwareUpdate.h"
+#include <lvgl/lvgl.h>
+#include "components/ble/BleController.h"
 #include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;

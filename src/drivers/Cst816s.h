@@ -1,6 +1,5 @@
 #pragma once
 
-#include <nrfx_twi.h>
 #include "TwiMaster.h"
 
 namespace Pinetime {

@@ -1,10 +1,10 @@
 #pragma once
 
-#include <vector>
+#include <array>
 #include <functional>
-#include "components/ble/NimbleController.h"
+#include <memory>
 #include "Screen.h"
-#include "Label.h"
+#include "../DisplayApp.h"
 
 namespace Pinetime {
   namespace Applications {

@@ -1,9 +1,8 @@
+#include "NrfLogger.h"
+
+#include <libraries/log/nrf_log.h>
 #include <libraries/log/nrf_log_ctrl.h>
 #include <libraries/log/nrf_log_default_backends.h>
-#include <FreeRTOS.h>
-#include <task.h>
-#include <libraries/log/nrf_log.h>
-#include "NrfLogger.h"
 
 using namespace Pinetime::Logging;
 

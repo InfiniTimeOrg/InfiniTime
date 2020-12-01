@@ -1,6 +1,6 @@
+#include "Spi.h"
 #include <hal/nrf_gpio.h>
 #include <nrfx_log.h>
-#include "Spi.h"
 
 using namespace Pinetime::Drivers;
 

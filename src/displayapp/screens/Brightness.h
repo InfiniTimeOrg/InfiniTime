@@ -1,8 +1,9 @@
 #pragma once
 
-#include <libs/lvgl/src/lv_core/lv_obj.h>
-#include "components/brightness/BrightnessController.h"
+#include <lvgl/src/lv_core/lv_obj.h>
+#include <cstdint>
 #include "Screen.h"
+#include "components/brightness/BrightnessController.h"
 
 namespace Pinetime {
   namespace Applications {
