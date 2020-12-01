@@ -107,21 +107,22 @@ void SystemTask::Work() {
   while(true) {
     uint8_t msg;
     if (xQueueReceive(systemTasksMsgQueue, &msg, isSleeping ? 2500 : 1000)) {
+      batteryController.Update();
       Messages message = static_cast<Messages >(msg);
       switch(message) {
         case Messages::GoToRunning:
           spi.Wakeup();
           twiMaster.Wakeup();
 
+          nimbleController.StartAdvertising();
+          xTimerStart(idleTimer, 0);
           spiNorFlash.Wakeup();
-          lcd.Wakeup();
           touchPanel.Wakeup();
+          lcd.Wakeup();
 
           displayApp->PushMessage(Applications::DisplayApp::Messages::GoToRunning);
           displayApp->PushMessage(Applications::DisplayApp::Messages::UpdateBatteryLevel);
 
-          xTimerStart(idleTimer, 0);
-          nimbleController.StartAdvertising();
           isSleeping = false;
           isWakingUp = false;
           break;
@@ -190,12 +191,9 @@ void SystemTask::Work() {
       }
     }
 
+    monitor.Process();
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);
-    batteryController.Update();
-
-    monitor.Process();
-
     if(!nrf_gpio_pin_read(pinButton))
       watchdog.Kick();
   }
