@@ -81,3 +81,4 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen3() {
 
   return std::unique_ptr<Screen>(new Screens::Tile(app, applications));
 }
+
