@@ -277,3 +277,4 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
 void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {
   touchMode = mode;
 }
+
