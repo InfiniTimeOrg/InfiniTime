@@ -6,7 +6,7 @@ using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
 extern lv_font_t jetbrains_mono_bold_20;
 
-Paddle::Paddle(Pinetime::Applications::DisplayApp *app, Pinetime::Components::LittleVgl& lvgl) : Screen(app){
+Paddle::Paddle(Pinetime::Applications::DisplayApp* app, Pinetime::Components::LittleVgl& lvgl) : Screen(app), lvgl{lvgl} {
   app->SetTouchMode(DisplayApp::TouchModes::Polling);
 	
   points = lv_label_create(lv_scr_act(), NULL);
@@ -98,4 +98,3 @@ bool Paddle::OnTouchEvent(uint16_t x, uint16_t y) {
   
   return true;
 }
-
