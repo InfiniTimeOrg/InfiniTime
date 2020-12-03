@@ -21,3 +21,4 @@ Add new symbols:
 ```
 static constex char* newSymbol = "\xEF\x86\x85";
 ```
+
