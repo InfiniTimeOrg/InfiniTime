@@ -29,3 +29,4 @@ namespace Pinetime {
     }
   }
 }
+
