@@ -98,3 +98,4 @@ bool Paddle::OnTouchEvent(uint16_t x, uint16_t y) {
   
   return true;
 }
+
