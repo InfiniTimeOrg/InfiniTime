@@ -1134,4 +1134,3 @@ lv_font_t jetbrains_mono_bold_20 = {
 
 
 #endif /*#if JETBRAINS_MONO_BOLD_20*/
-
