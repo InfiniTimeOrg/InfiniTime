@@ -11,7 +11,7 @@
 #include "displayapp/screens/FirmwareValidation.h"
 #include "displayapp/screens/Gauge.h"
 #include "displayapp/screens/InfiniPaint.h"
-#include "displayapp/screens/paddle.h"
+#include "displayapp/screens/Paddle.h"
 #include "displayapp/screens/Meter.h"
 #include "displayapp/screens/Music.h"
 #include "displayapp/screens/Notifications.h"
