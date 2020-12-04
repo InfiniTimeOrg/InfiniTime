@@ -40,11 +40,13 @@ void Modal::OnEvent(lv_obj_t *event_obj, lv_event_t evt) {
   } else if(evt == LV_EVENT_VALUE_CHANGED) {
     if(event_obj == mbox) {
       if(strcmp(lv_mbox_get_active_btn_text(event_obj), this->positiveButton.c_str()) == 0) {
-        if(alertNotificationService != nullptr)
+        if(alertNotificationService != nullptr) {
           alertNotificationService->event(Pinetime::Controllers::AlertNotificationService::EVENT_ANSWER_CALL);
+        }
       } else {
-        if(alertNotificationService != nullptr)
+        if(alertNotificationService != nullptr) {
           alertNotificationService->event(Pinetime::Controllers::AlertNotificationService::EVENT_HANG_UP_CALL);
+        }
       }
       lv_mbox_start_auto_close(mbox, 0);
     }
