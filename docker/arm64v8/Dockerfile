@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM arm64v8/ubuntu:18.04
 
 ARG USER_ID
 ARG GROUP_ID
