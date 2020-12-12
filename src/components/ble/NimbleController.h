@@ -2,24 +2,35 @@
 
 #include <cstdint>
 
-#include "AlertNotificationService.h"
-#include "AlertNotificationClient.h"
-#include "DeviceInformationService.h"
-#include "CurrentTimeClient.h"
-#include "DfuService.h"
-#include "CurrentTimeService.h"
-#include "MusicService.h"
-#include "BatteryInformationService.h"
-#include "ImmediateAlertService.h"
-#include "ServiceDiscovery.h"
+#define min // workaround: nimble's min/max macros conflict with libstdc++
+#define max
 #include <host/ble_gap.h>
+#undef max
+#undef min
+#include "AlertNotificationClient.h"
+#include "AlertNotificationService.h"
+#include "BatteryInformationService.h"
+#include "CurrentTimeClient.h"
+#include "CurrentTimeService.h"
+#include "DeviceInformationService.h"
+#include "DfuService.h"
+#include "ImmediateAlertService.h"
+#include "MusicService.h"
+#include "ServiceDiscovery.h"
 
 namespace Pinetime {
   namespace Drivers {
     class SpiNorFlash;
   }
+
+  namespace System {
+    class SystemTask;
+  }
+
   namespace Controllers {
+    class Ble;
     class DateTime;
+    class NotificationManager;
 
     class NimbleController {
 

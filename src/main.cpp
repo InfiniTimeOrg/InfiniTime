@@ -1,32 +1,44 @@
+// nrf
+#include <hal/nrf_rtc.h>
+#include <hal/nrf_wdt.h>
+#include <legacy/nrf_drv_clock.h>
+#include <libraries/gpiote/app_gpiote.h>
+#include <libraries/timer/app_timer.h>
+#include <softdevice/common/nrf_sdh.h>
+
+// nimble
+#define min // workaround: nimble's min/max macros conflict with libstdc++
+#define max
+#include <controller/ble_ll.h>
+#include <host/ble_hs.h>
+#include <host/util/util.h>
+#include <nimble/nimble_port.h>
+#include <nimble/nimble_port_freertos.h>
+#include <nimble/npl_freertos.h>
+#include <os/os_cputime.h>
+#include <services/gap/ble_svc_gap.h>
+#include <transport/ram/ble_hci_ram.h>
+#undef max
+#undef min
+
+// FreeRTOS
 #include <FreeRTOS.h>
 #include <task.h>
 #include <timers.h>
-#include <legacy/nrf_drv_clock.h>
-#include <hal/nrf_rtc.h>
-#include <hal/nrf_wdt.h>
-#include <os/os_cputime.h>
-#include <libraries/timer/app_timer.h>
-#include <libraries/gpiote/app_gpiote.h>
-#include "displayapp/DisplayApp.h"
-#include <softdevice/common/nrf_sdh.h>
-#include "components/datetime/DateTimeController.h"
+
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
-#include <drivers/St7789.h>
-#include <drivers/SpiMaster.h>
-#include <drivers/Spi.h>
+#include "components/datetime/DateTimeController.h"
+#include "displayapp/DisplayApp.h"
 #include "displayapp/LittleVgl.h"
-#include <systemtask/SystemTask.h>
-#include <nimble/nimble_port_freertos.h>
-#include <nimble/npl_freertos.h>
-#include <nimble/nimble_port.h>
-#include <host/ble_hs.h>
-#include <controller/ble_ll.h>
-#include <transport/ram/ble_hci_ram.h>
-#include <host/util/util.h>
-#include <services/gap/ble_svc_gap.h>
-
+#include "drivers/Spi.h"
+#include "drivers/SpiMaster.h"
+#include "drivers/SpiNorFlash.h"
+#include "drivers/St7789.h"
+#include "drivers/TwiMaster.h"
+#include "drivers/Cst816s.h"
+#include "systemtask/SystemTask.h"
 
 #if NRF_LOG_ENABLED
 #include "logging/NrfLogger.h"

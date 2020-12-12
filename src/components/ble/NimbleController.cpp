@@ -1,15 +1,19 @@
-#include "components/datetime/DateTimeController.h"
-#include <systemtask/SystemTask.h>
-#include "components/ble/NotificationManager.h"
-#include <hal/nrf_rtc.h>
 #include "NimbleController.h"
-#include "MusicService.h"
-#include <services/gatt/ble_svc_gatt.h>
-#include <services/gap/ble_svc_gap.h>
-#include <host/util/util.h>
-#include <host/ble_hs_id.h>
-#include <host/ble_hs.h>
+#include <hal/nrf_rtc.h>
+#define min // workaround: nimble's min/max macros conflict with libstdc++
+#define max
 #include <host/ble_gap.h>
+#include <host/ble_hs.h>
+#include <host/ble_hs_id.h>
+#include <host/util/util.h>
+#undef max
+#undef min
+#include <services/gap/ble_svc_gap.h>
+#include <services/gatt/ble_svc_gatt.h>
+#include "components/ble/BleController.h"
+#include "components/ble/NotificationManager.h"
+#include "components/datetime/DateTimeController.h"
+#include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
 

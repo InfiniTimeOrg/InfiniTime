@@ -1,6 +1,6 @@
 #pragma once
+#include <cstdint>
 #include <drivers/include/nrfx_saadc.h>
-
 
 namespace Pinetime {
   namespace Controllers {

@@ -1,7 +1,7 @@
+#include "SpiNorFlash.h"
 #include <hal/nrf_gpio.h>
 #include <libraries/delay/nrf_delay.h>
 #include <libraries/log/nrf_log.h>
-#include "SpiNorFlash.h"
 #include "Spi.h"
 
 using namespace Pinetime::Drivers;

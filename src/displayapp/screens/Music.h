@@ -17,24 +17,16 @@
 */
 #pragma once
 
-#include <cstdint>
-#include <chrono>
+#include <FreeRTOS.h>
+#include <lvgl/src/lv_core/lv_obj.h>
 #include <string>
-
-#include "components/gfx/Gfx.h"
-#include "components/battery/BatteryController.h"
-#include "components/ble/BleController.h"
-#include "components/ble/MusicService.h"
 #include "Screen.h"
-#include <bits/unique_ptr.h>
-#include <libs/lvgl/src/lv_core/lv_style.h>
-#include <libs/lvgl/src/lv_core/lv_obj.h>
-#include "../../Version.h"
-#include "displayapp/icons/music/disc.cpp"
-#include "displayapp/icons/music/disc_f_1.cpp"
-#include "displayapp/icons/music/disc_f_2.cpp"
 
 namespace Pinetime {
+  namespace Controllers {
+    class MusicService;
+  }
+
   namespace Applications {
     namespace Screens {
       class Music : public Screen {

@@ -1,28 +1,30 @@
 #pragma once
 #include <FreeRTOS.h>
-#include <task.h>
-#include <drivers/St7789.h>
-#include <drivers/SpiMaster.h>
-#include <bits/unique_ptr.h>
-#include <queue.h>
-#include "components/gfx/Gfx.h"
-#include "components/battery/BatteryController.h"
-#include "components/brightness/BrightnessController.h"
-#include "components/ble/BleController.h"
-#include "components/datetime/DateTimeController.h"
-#include "components/ble/NotificationManager.h"
-#include "components/firmwarevalidator/FirmwareValidator.h"
-#include "drivers/Cst816s.h"
-#include "LittleVgl.h"
 #include <date/date.h>
-#include "displayapp/screens/Clock.h"
-#include "displayapp/screens/Modal.h"
-#include <drivers/Watchdog.h>
-#include "TouchEvents.h"
+#include <queue.h>
+#include <task.h>
+#include <memory>
 #include "Apps.h"
-
+#include "LittleVgl.h"
+#include "TouchEvents.h"
+#include "components/brightness/BrightnessController.h"
+#include "components/firmwarevalidator/FirmwareValidator.h"
+#include "displayapp/screens/Modal.h"
 
 namespace Pinetime {
+
+  namespace Drivers {
+    class St7789;
+    class Cst816S;
+    class WatchdogView;
+  }
+  namespace Controllers {
+    class Battery;
+    class Ble;
+    class DateTime;
+    class NotificationManager;
+  }
+
   namespace System {
     class SystemTask;
   };

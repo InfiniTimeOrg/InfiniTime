@@ -1,25 +1,24 @@
-#include <string>
-
 #include "DisplayApp.h"
-#include <FreeRTOS.h>
-#include <task.h>
 #include <libraries/log/nrf_log.h>
-#include <nrf_font.h>
-#include <queue.h>
+#include "components/battery/BatteryController.h"
+#include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
-#include <drivers/Cst816s.h>
-#include "displayapp/screens/Notifications.h"
-#include "displayapp/screens/Tile.h"
-#include "displayapp/screens/Meter.h"
-#include "displayapp/screens/Gauge.h"
-#include "displayapp/screens/Brightness.h"
-#include "displayapp/screens/SystemInfo.h"
-#include "displayapp/screens/Music.h"
 #include "components/ble/NotificationManager.h"
-#include "displayapp/screens/FirmwareUpdate.h"
 #include "displayapp/screens/ApplicationList.h"
+#include "displayapp/screens/Brightness.h"
+#include "displayapp/screens/Clock.h"
+#include "displayapp/screens/FirmwareUpdate.h"
 #include "displayapp/screens/FirmwareValidation.h"
+#include "displayapp/screens/Gauge.h"
 #include "displayapp/screens/InfiniPaint.h"
+#include "displayapp/screens/Meter.h"
+#include "displayapp/screens/Music.h"
+#include "displayapp/screens/Notifications.h"
+#include "displayapp/screens/SystemInfo.h"
+#include "displayapp/screens/Tile.h"
+#include "drivers/Cst816s.h"
+#include "drivers/St7789.h"
+#include "drivers/Watchdog.h"
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Applications;

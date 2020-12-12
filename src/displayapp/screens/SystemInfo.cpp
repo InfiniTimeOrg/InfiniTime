@@ -1,9 +1,13 @@
-#include <libs/lvgl/lvgl.h>
-#include <displayapp/DisplayApp.h>
-#include <functional>
 #include "SystemInfo.h"
-#include "../../Version.h"
-#include "Tile.h"
+#include <lvgl/lvgl.h>
+#include "../DisplayApp.h"
+#include "Label.h"
+#include "Version.h"
+#include "components/battery/BatteryController.h"
+#include "components/ble/BleController.h"
+#include "components/brightness/BrightnessController.h"
+#include "components/datetime/DateTimeController.h"
+#include "drivers/Watchdog.h"
 
 using namespace Pinetime::Applications::Screens;
 

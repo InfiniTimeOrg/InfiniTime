@@ -1,17 +1,19 @@
 #pragma once
 
-#include <cstdint>
+#include <lvgl/src/lv_core/lv_obj.h>
 #include <chrono>
-
+#include <cstdint>
+#include <memory>
 #include "Screen.h"
-#include <bits/unique_ptr.h>
-#include <libs/lvgl/src/lv_core/lv_style.h>
-#include <libs/lvgl/src/lv_core/lv_obj.h>
-#include "components/ble/NotificationManager.h"
-#include "components/battery/BatteryController.h"
-#include "components/ble/BleController.h"
+#include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
+  namespace Controllers {
+    class Battery;
+    class Ble;
+    class NotificationManager;
+  }
+
   namespace Applications {
     namespace Screens {
 
@@ -34,7 +36,7 @@ namespace Pinetime {
           T value;
           bool isUpdated = true;
       };
-      class Clock : public Screen{
+      class Clock : public Screen {
         public:
           Clock(DisplayApp* app,
                   Controllers::DateTime& dateTimeController,

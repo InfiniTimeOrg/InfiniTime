@@ -1,19 +1,20 @@
-#pragma once
-#include <host/ble_gap.h>
-#undef min
-#undef max
-
+#pragma once                                                                                                                                                                                  
 #include <cstdint>
 #include <array>
-
-#define mynewt_min(a, b) ((a)<(b)?(a):(b))
-#define mynewt_max(a, b) ((a)>(b)?(a):(b))
+#define min // workaround: nimble's min/max macros conflict with libstdc++
+#define max
+#include <host/ble_gap.h>
+#undef max
+#undef min
 
 namespace Pinetime {
+
   namespace System {
     class SystemTask;
   }
   namespace Controllers {
+    class NotificationManager;
+
     class AlertNotificationService {
       public:
         AlertNotificationService(Pinetime::System::SystemTask &systemTask,
@@ -30,17 +31,17 @@ namespace Pinetime {
 
 
       private:
-        static const char ALERT_UNKNOWN = '0x01';
-        static const char ALERT_SIMPLE_ALERT = '0x02';
-        static const char ALERT_EMAIL = '0x03';
-        static const char ALERT_NEWS = '0x04';
-        static const char ALERT_INCOMING_CALL = '0x05';
-        static const char ALERT_MISSED_CALL = '0x06';
-        static const char ALERT_SMS = '0x07';
-        static const char ALERT_VOICE_MAIL = '0x08';
-        static const char ALERT_SCHEDULE = '0x09';
-        static const char ALERT_HIGH_PRIORITY_ALERT = '0x0a';
-        static const char ALERT_INSTANT_MESSAGE = '0x0b';
+        static const char ALERT_UNKNOWN = 0x01;
+        static const char ALERT_SIMPLE_ALERT = 0x02;
+        static const char ALERT_EMAIL = 0x03;
+        static const char ALERT_NEWS = 0x04;
+        static const char ALERT_INCOMING_CALL = 0x05;
+        static const char ALERT_MISSED_CALL = 0x06;
+        static const char ALERT_SMS = 0x07;
+        static const char ALERT_VOICE_MAIL = 0x08;
+        static const char ALERT_SCHEDULE = 0x09;
+        static const char ALERT_HIGH_PRIORITY_ALERT = 0x0a;
+        static const char ALERT_INSTANT_MESSAGE = 0x0b;
 
         static constexpr uint16_t ansId {0x1811};
         static constexpr uint16_t ansCharId {0x2a46};

@@ -1,7 +1,5 @@
-#include <libs/lvgl/lvgl.h>
-#include <displayapp/DisplayApp.h>
-#include <functional>
 #include "Notifications.h"
+#include <displayapp/DisplayApp.h>
 
 using namespace Pinetime::Applications::Screens;
 

@@ -1,8 +1,9 @@
-#include <FreeRTOS.h>
-#include <task.h>
-#include <nrfx_log.h>
-#include <legacy/nrf_drv_gpiote.h>
 #include "Cst816s.h"
+#include <FreeRTOS.h>
+#include <legacy/nrf_drv_gpiote.h>
+#include <nrfx_log.h>
+#include <task.h>
+
 using namespace Pinetime::Drivers;
 
 /* References :

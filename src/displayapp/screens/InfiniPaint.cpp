@@ -1,7 +1,6 @@
-#include <libs/lvgl/lvgl.h>
-#include <libraries/log/nrf_log.h>
 #include "InfiniPaint.h"
 #include "../DisplayApp.h"
+#include "../LittleVgl.h"
 
 using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;

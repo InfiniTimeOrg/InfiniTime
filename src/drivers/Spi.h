@@ -1,12 +1,6 @@
 #pragma once
-#include <FreeRTOS.h>
 #include <cstdint>
 #include <cstddef>
-#include <array>
-#include <atomic>
-#include <task.h>
-
-#include "BufferProvider.h"
 #include "SpiMaster.h"
 
 namespace Pinetime {

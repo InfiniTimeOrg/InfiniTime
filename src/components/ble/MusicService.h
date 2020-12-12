@@ -18,10 +18,13 @@
 #pragma once
 
 #include <cstdint>
-#include <array>
+#include <string>
+#define min // workaround: nimble's min/max macros conflict with libstdc++
+#define max
 #include <host/ble_gap.h>
 #include <host/ble_uuid.h>
-#include <string>
+#undef max
+#undef min
 
 //c7e50000-78fc-48fe-8e23-43b37a1942d0
 #define MUSIC_SERVICE_UUID_BASE {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0xe5, 0xc7}

@@ -1,14 +1,9 @@
 #pragma once
 
-#include <functional>
-#include <vector>
+#include <memory>
 
-#include "components/ble/NimbleController.h"
 #include "Screen.h"
-#include "Label.h"
 #include "ScreenList.h"
-#include "Gauge.h"
-#include "Meter.h"
 
 namespace Pinetime {
   namespace Applications {
