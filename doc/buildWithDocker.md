@@ -3,7 +3,7 @@ There are [Docker images (Dockerfile)](../docker) containing the build environme
 
 ## Using the image from Docker Hub
 
-The image is avaiable via Docker Hub for both the amd64 and arm64v8 architectures at via [pfeerick/infinitime-build](https://hub.docker.com/repository/docker/pfeerick/infinitime-build). 
+The image is avaiable via Docker Hub for both the amd64 and arm64v8 architectures at [pfeerick/infinitime-build](https://hub.docker.com/repository/docker/pfeerick/infinitime-build). 
 
 It can be pulled (downloaded) using the following command:
 
@@ -34,7 +34,7 @@ docker run --rm -v <project_root>:/sources --user uid_num:gid_num infinitime-bui
 ## Build the image yourself
 Building the docker images yourself is quite easy. The following commands must be run from the root of the project.
 
-The `PUID` and `PGID` build arguments are used to set the user id and group id for use in the container, meaning you will not need to specify it later unless on a multi-user system, or they change for some reason. Specifying them is not mandatory, as this can be over-ridden at build time via the `--user` flag, but doing so will make it so the command you need to run later is just a bit shorter. In the below examples, they are being set to your current user id and group id automatically, but you can also specify them manually, but they must be specified by number, not by name.
+The `PUID` and `PGID` build arguments are used to set the user and group ids used in the container, meaning you will not need to specify it later unless they change for some reason. Specifying them is not mandatory, as this can be over-ridden at build time via the `--user` flag, but doing so will make the command you need to run later a bit shorter. In the below examples, they are set to your current user id and group id automatically. You can specify them manually, but they must be specified by number, not by name.
 
 If you are running on a AMD64 (x86_64) computer: 
 ```
@@ -46,13 +46,13 @@ If you are running on an ARM64 computer (tested on Raspberry Pi 4 and Pine64 Pin
 docker image build -t infinitime-build --build-arg PUID=$(id -u) --build-arg PGID=$(id -g) docker/arm64v8/
 ```
 
-This operation will take some time. It builds a Docker image based on Ubuntu, install some packages, download the ARM toolchain, the NRF SDK, MCUBoot and adafruit-nrfutil.
+This operation will take some time, as it builds a Docker image based on Ubuntu, installs some required packages, downloads the ARM toolchain, the NRF SDK, MCUBoot and adafruit-nrfutil.
 
 When this is done, a new image named *infinitime-build* is available.
 
 ## Run a container to build the project:
 
-The command to run the container is essentially the same, regardless of if you built it yourself from the dockerfiles, or are using the Docker hub image:
+The command to run the container is essentially the same, regardless of whether you built it yourself from the dockerfiles, or are using the Docker hub image:
 
 ```
 docker run --rm -v <project_root>:/sources infinitime-build
