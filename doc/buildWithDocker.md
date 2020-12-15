@@ -22,13 +22,13 @@ The Docker Hub images are built using 1000:1000 for the user id and group id. If
 The below example will run the container, setting the user and group ids automatically:
 
 ```
-docker run --rm -v <project_root>:/sources --user $(id -u):$(id -g) infinitime-build
+docker run --rm -v <project_root>:/sources --user $(id -u):$(id -g) pfeerick/infinitime-build
 ```
 
 Or you can specify your user id and group id (by number, not by name) directly:
 
 ```
-docker run --rm -v <project_root>:/sources --user uid_num:gid_num infinitime-build
+docker run --rm -v <project_root>:/sources --user uid_num:gid_num pfeerick/infinitime-build
 ```
 
 ## Build the image yourself
@@ -52,7 +52,7 @@ When this is done, a new image named *infinitime-build* is available.
 
 ## Run a container to build the project:
 
-The command to run the container is essentially the same, regardless of whether you built it yourself from the dockerfiles, or are using the Docker hub image:
+The command to run the container is essentially the same, regardless of whether you built it yourself from the dockerfiles, or are using the Docker Hub images (use `pfeerick/infinitime-build` instead of `infinitime-build` for the later):
 
 ```
 docker run --rm -v <project_root>:/sources infinitime-build
