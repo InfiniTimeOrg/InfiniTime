@@ -1,16 +1,24 @@
 FROM ubuntu:18.04
 
-RUN \
-    apt-get update -qq && \
-    apt-get install -y \
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt-get update -qq \
+    && apt-get install -y \
 # x86_64 / generic packages
-      bash git gosu \
-      cmake make build-essential \
-      wget unzip \
-      python3 python3-pip \ 
+      bash \
+      build-essential \
+      cmake \
+      git \
+      make \
+      python3 \
+      python3-pip \
+      tar \
+      unzip \
+      wget \ 
 # aarch64 packages
-      libffi-dev libssl-dev python3-dev \ 
-    && rm -rf /var/lib/apt/lists/*;
+      libffi-dev \
+      libssl-dev \
+      python3-dev \ 
+    && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
 RUN pip3 install adafruit-nrfutil
 
@@ -25,13 +33,10 @@ RUN bash -c "source /opt/build.sh; GetNrfSdk;"
 # McuBoot
 RUN bash -c "source /opt/build.sh; GetMcuBoot;"
 
-# Set and arg and use it in the env for power to override at build AND runtime
-ARG USER_ID=33333
-ARG GROUP_ID=33333
-ENV USER_ID $USER_ID
-ENV GROUP_ID $GROUP_ID
+ARG PUID=1000
+ARG PGID=1000
+RUN groupadd --system --gid $PGID infinitime && useradd --system --uid $PUID --gid $PGID infinitime
 
+USER infinitime:infinitime
 ENV SOURCES_DIR /sources
-COPY entrypoint.sh /opt/
-ENTRYPOINT ["/opt/entrypoint.sh"]
 CMD ["/opt/build.sh"]

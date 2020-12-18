@@ -27,7 +27,7 @@ main() {
   mkdir -p "$BUILD_DIR"
 
   CmakeGenerate
-  CmakeBuild "$target"
+  CmakeBuild $target
 
   if [[ "$DISABLE_POSTBUILD" != "true" ]]; then
     source "$BUILD_DIR/post_build.sh"
@@ -67,7 +67,7 @@ CmakeGenerate() {
 CmakeBuild() {
   local target="$1"
   [[ -n "$target" ]] && target="--target $target"
-  cmake --build "$BUILD_DIR" --config $BUILD_TYPE "$target" -- -j$(nproc)
+  cmake --build "$BUILD_DIR" --config $BUILD_TYPE $target -- -j$(nproc)
 }
 
 [[ $SOURCED == "false" ]] && main "$@" || echo "Sourced!"
