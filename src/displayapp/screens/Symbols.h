@@ -24,7 +24,9 @@ namespace Pinetime {
         static constexpr const char* tachometer = "\xEF\x8F\xBD";
         static constexpr const char* asterisk = "\xEF\x81\xA9";
         static constexpr const char* paintbrush = "\xEF\x87\xBC";
+        static constexpr const char* paddle = "\xEF\x91\x9D";
       }
     }
   }
 }
+

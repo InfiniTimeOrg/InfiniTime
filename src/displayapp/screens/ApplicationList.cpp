@@ -60,7 +60,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
            {Symbols::asterisk, Apps::Meter},
            {Symbols::paintbrush, Apps::Paint},
                   {Symbols::info, Apps::Notifications},
-                  {Symbols::none, Apps::None},
+                  {Symbols::paddle, Apps::Paddle},
                   {Symbols::none, Apps::None}
           }
   };
@@ -81,3 +81,4 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen3() {
 
   return std::unique_ptr<Screen>(new Screens::Tile(app, applications));
 }
+
