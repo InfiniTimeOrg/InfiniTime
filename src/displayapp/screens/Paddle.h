@@ -24,11 +24,11 @@ namespace Pinetime {
         private:  
           Pinetime::Components::LittleVgl& lvgl;
         
-          int PaddleBottomY = 90;            // bottom extreme of the paddle
-          int PaddleTopY = 150;		        //top extreme of the paddle
+          int paddleBottomY = 90;            // bottom extreme of the paddle
+          int paddleTopY = 150;		        //top extreme of the paddle
 
-          int BallX = 107;	            // Initial x_coordinate for the ball (12px offset from the center to counteract the ball's 24px size)
-          int BallY = 107;	            // Initial y_coordinate for the ball
+          int ballX = 107;	            // Initial x_coordinate for the ball (12px offset from the center to counteract the ball's 24px size)
+          int ballY = 107;	            // Initial y_coordinate for the ball
 
           int dx = 2;		            // Velocity of the ball in the x_coordinate
           int dy = 3;		            // Velocity of the ball in the y_coordinate
