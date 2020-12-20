@@ -186,6 +186,5 @@ bool Paddle::OnTouchEvent(uint16_t x, uint16_t y) {
   lv_obj_set_pos(paddle_image, 0, y - 30);		// sets the center paddle pos. (30px offset) with the the y_coordinate of the finger and defaults the x_coordinate to 0
   paddleTopY = y - 30;					// refreshes the upper extreme of the paddle
   paddleBottomY = y + 30;					// refreshes the lower extreme of the paddle
-  
   return true;
 }
