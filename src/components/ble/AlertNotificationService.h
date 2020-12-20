@@ -1,4 +1,4 @@
-#pragma once                                                                                                                                                                                  
+#pragma once
 #include <cstdint>
 #include <array>
 #define min // workaround: nimble's min/max macros conflict with libstdc++

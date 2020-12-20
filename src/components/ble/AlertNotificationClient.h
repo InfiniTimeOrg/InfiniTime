@@ -1,4 +1,4 @@
-#pragma once                                                                                                                                                                                  
+#pragma once
 
 #include <cstdint>
 #include <functional>
@@ -84,3 +84,4 @@ namespace Pinetime {
     };
   }
 }
+
