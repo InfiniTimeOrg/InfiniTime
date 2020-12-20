@@ -134,39 +134,37 @@ Paddle::~Paddle() {
 }
 
 bool Paddle::Refresh() {
-  
   if((counter++ % 5) == 0){
-
     counter = 0;	
     
-    BallX += dx;
-    BallY += dy;	    
+    ballX += dx;
+    ballY += dy;	    
 	  
-    lv_obj_set_pos(ball_image, BallX, BallY);
+    lv_obj_set_pos(ball_image, ballX, ballY);
   
     //checks if it has touched the sides (floor and ceiling)	  
-    if(BallY <= 0 || BallY >= 215){
+    if(ballY <= 0 || ballY >= 215){
       dy *= -1;
     }
   
     //checks if it has touched the side (left side)  
-    if(BallX >= 215){
+    if(ballX >= 215){
       dx *= -1; 
     }
   
     //checks if it is in the position of the paddle	  
-    if(BallY <= (PaddleBottomY + 16) && BallY >= (PaddleTopY - 8)){ 
-      if(BallX >= 0 && BallX < 4){    
-          lv_obj_set_pos(ball_image, 5, BallY);
+    if(ballY <= (paddleBottomY + 16) && ballY >= (paddleTopY - 8)){ 
+      if(ballX >= 0 && ballX < 4){    
+          lv_obj_set_pos(ball_image, 5, ballY);
           dx *= -1;   
           score++;
         } 
     }	
 	  
     //checks if it has gone behind the paddle
-    else if(BallX <= -40){
-      BallX = 107;
-      BallY = 107; 
+    else if(ballX <= -40){
+      ballX = 107;
+      ballY = 107; 
       score = 0;	    
     } 
     sprintf(scoreStr, "%d", score);	
@@ -185,10 +183,9 @@ bool Paddle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 bool Paddle::OnTouchEvent(uint16_t x, uint16_t y) {
- 
   lv_obj_set_pos(paddle_image, 0, y - 30);		// sets the center paddle pos. (30px offset) with the the y_coordinate of the finger and defaults the x_coordinate to 0
-  PaddleTopY = y - 30;					// refreshes the upper extreme of the paddle
-  PaddleBottomY = y + 30;					// refreshes the lower extreme of the paddle
+  paddleTopY = y - 30;					// refreshes the upper extreme of the paddle
+  paddleBottomY = y + 30;					// refreshes the lower extreme of the paddle
   
   return true;
 }
