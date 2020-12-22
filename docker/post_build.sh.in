@@ -1,12 +1,13 @@
 #!/bin/sh
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
-set -x
 set -e
+set +x
 
 export PROJECT_VERSION="@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
 
 mkdir -p "$OUTPUT_DIR"
+
 cp "$SOURCES_DIR"/bootloader/bootloader-5.0.4.bin $OUTPUT_DIR/bootloader.bin
 
 "$TOOLS_DIR"/mcuboot/scripts/imgtool.py create --version 1.0.0 \
@@ -18,9 +19,11 @@ adafruit-nrfutil dfu genpkg --dev-type 0x0052 \
     --application "$OUTPUT_DIR/image-$PROJECT_VERSION.bin" \
     "$OUTPUT_DIR/dfu-$PROJECT_VERSION.zip"
 
-pushd "$BUILD_DIR"
-    cp src/*.bin $OUTPUT_DIR
-    cp src/*.hex $OUTPUT_DIR
-    cp src/*.out $OUTPUT_DIR
-    cp src/*.map $OUTPUT_DIR
-popd
+mkdir -p "$OUTPUT_DIR/src"
+cd "$BUILD_DIR"
+cp src/*.bin "$OUTPUT_DIR/src"
+cp src/*.hex "$OUTPUT_DIR/src"
+cp src/*.out "$OUTPUT_DIR/src"
+cp src/*.map "$OUTPUT_DIR/src"
+
+ls -RUv1 "$OUTPUT_DIR" | sed 's;^\([^/]\); \1;g'
