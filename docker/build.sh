@@ -20,6 +20,9 @@ MACHINE="$(uname -m)"
 
 main() {
   local target="$1"
+
+  mkdir -p "$TOOLS_DIR"
+  
   [[ ! -d "$TOOLS_DIR/$GCC_ARM_VER" ]] && GetGcc
   [[ ! -d "$TOOLS_DIR/$NRF_SDK_VER" ]] && GetNrfSdk
   [[ ! -d "$TOOLS_DIR/mcuboot" ]] && GetMcuBoot

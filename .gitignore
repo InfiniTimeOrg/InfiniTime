@@ -1,11 +1,13 @@
 .idea/
 # CMake
-cmake-build-*/
-CMakeFiles/
+cmake-build-*
+cmake-*
+CMakeFiles
 **/CMakeCache.txt
 cmake_install.cmake
 Makefile
-build/
+build
+tools
 
 # Resulting binary files
 *.a
