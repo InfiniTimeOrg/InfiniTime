@@ -7,6 +7,7 @@ set -e
 export PROJECT_VERSION="@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@"
 
 mkdir -p "$OUTPUT_DIR"
+cp "$SOURCES_DIR"/bootloader/bootloader-5.0.4.bin $OUTPUT_DIR/bootloader.bin
 
 "$TOOLS_DIR"/mcuboot/scripts/imgtool.py create --version 1.0.0 \
     --align 4 --header-size 32 --slot-size 475136 --pad-header \
@@ -17,9 +18,9 @@ adafruit-nrfutil dfu genpkg --dev-type 0x0052 \
     --application "$OUTPUT_DIR/image-$PROJECT_VERSION.bin" \
     "$OUTPUT_DIR/dfu-$PROJECT_VERSION.zip"
 
-cp  "$BUILD_DIR"/src/*.bin \
-    "$BUILD_DIR"/src/*.hex \
-    "$BUILD_DIR"/src/*.out \
-    "$BUILD_DIR"/src/*.map \
-    $OUTPUT_DIR
-cp "$SOURCES_DIR"/bootloader/bootloader-5.0.4.bin $OUTPUT_DIR/bootloader.bin
+pushd "$BUILD_DIR"
+    cp src/*.bin $OUTPUT_DIR
+    cp src/*.hex $OUTPUT_DIR
+    cp src/*.out $OUTPUT_DIR
+    cp src/*.map $OUTPUT_DIR
+popd
