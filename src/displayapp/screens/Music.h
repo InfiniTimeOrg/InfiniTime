@@ -68,6 +68,10 @@ namespace Pinetime {
         std::string artist;
         std::string album;
         std::string track;
+
+        unsigned int counter = 0;	            // init Frame refresh limit counter
+        unsigned int artistIndex = 0;
+        unsigned int trackIndex = 0;
         
         /** Total length in seconds */
         int totalLength;

@@ -142,16 +142,38 @@ bool Music::OnButtonPushed() {
 }
 
 bool Music::Refresh() {
+  counter++;
+
   if (artist != musicService.getArtist()) {
     artist = musicService.getArtist();
     currentLength = 0;
-    lv_label_set_text(txtArtist, artist.data());
+    if (artist.length() < 20) {
+      lv_label_set_text(txtArtist, artist.data());
+    }
+    else {
+      artistIndex = 0;
+    }
+  }
+  if (artist.length() > 20 && ((counter % 5) == 0)) {
+    lv_label_set_text(txtArtist, (artist.substr(artistIndex, 19)).data());
+    artistIndex++;
+    if (artistIndex == artist.length()) artistIndex = 0;
   }
   
   if (track != musicService.getTrack()) {
     track = musicService.getTrack();
     currentLength = 0;
-    lv_label_set_text(txtTrack, track.data());
+    if (track.length() < 20) {
+      lv_label_set_text(txtTrack, track.data());
+    }
+    else {
+      trackIndex = 0;
+    }
+  }
+  if (track.length() > 20 && ((counter % 5) == 0)) {
+    lv_label_set_text(txtTrack, (track.substr(trackIndex, 19)).data());
+    trackIndex++;
+    if (trackIndex == track.length()) trackIndex = 0;
   }
   
   if (album != musicService.getAlbum()) {
