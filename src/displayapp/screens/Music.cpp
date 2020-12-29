@@ -141,6 +141,14 @@ bool Music::OnButtonPushed() {
   return true;
 }
 
+inline void scrollText(std::string text, unsigned int &textIndex, lv_obj_t *obj, unsigned int counter) {
+  if (text.length() > 20 && ((counter % 5) == 0)) {
+    lv_label_set_text(obj, (text.substr(textIndex, 19)).data());
+    textIndex++;
+    if (textIndex == text.length()) textIndex = 0;
+  }
+}
+
 bool Music::Refresh() {
   counter++;
 
@@ -154,11 +162,7 @@ bool Music::Refresh() {
       artistIndex = 0;
     }
   }
-  if (artist.length() > 20 && ((counter % 5) == 0)) {
-    lv_label_set_text(txtArtist, (artist.substr(artistIndex, 19)).data());
-    artistIndex++;
-    if (artistIndex == artist.length()) artistIndex = 0;
-  }
+  scrollText(artist, artistIndex, txtArtist, counter);
   
   if (track != musicService.getTrack()) {
     track = musicService.getTrack();
@@ -170,11 +174,7 @@ bool Music::Refresh() {
       trackIndex = 0;
     }
   }
-  if (track.length() > 20 && ((counter % 5) == 0)) {
-    lv_label_set_text(txtTrack, (track.substr(trackIndex, 19)).data());
-    trackIndex++;
-    if (trackIndex == track.length()) trackIndex = 0;
-  }
+  scrollText(track, trackIndex, txtTrack, counter);
   
   if (album != musicService.getAlbum()) {
     album = musicService.getAlbum();
