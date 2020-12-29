@@ -145,7 +145,7 @@ bool Music::OnButtonPushed() {
  * If text is too long to display on screen, loop it repeatedly
  */
 inline void scrollText(std::string text, unsigned int &textIndex, lv_obj_t *obj, unsigned int counter) {
-  if (text.length() > 20 && ((counter % 10) == 0)) {
+  if (text.length() >= 20 && ((counter % 10) == 0)) {
     lv_label_set_text(obj, ((text + " | " + text).substr(textIndex, 19)).data());
     textIndex++;
     if (textIndex == (text + " | ").length()) textIndex = 0;
