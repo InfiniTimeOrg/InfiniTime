@@ -142,10 +142,10 @@ bool Music::OnButtonPushed() {
 }
 
 inline void scrollText(std::string text, unsigned int &textIndex, lv_obj_t *obj, unsigned int counter) {
-  if (text.length() > 20 && ((counter % 5) == 0)) {
-    lv_label_set_text(obj, (text.substr(textIndex, 19)).data());
+  if (text.length() > 20 && ((counter % 8) == 0)) {
+    lv_label_set_text(obj, ((text + " | " + text).substr(textIndex, 19)).data());
     textIndex++;
-    if (textIndex == text.length()) textIndex = 0;
+    if (textIndex == (text + " | ").length()) textIndex = 0;
   }
 }
 
