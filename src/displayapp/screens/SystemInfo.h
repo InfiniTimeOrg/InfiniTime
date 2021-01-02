@@ -43,7 +43,7 @@ namespace Pinetime {
 
           char t1[200];
           char t2[200];
-          char t3[30];
+          char t3[200];
 
           ScreenList<3> screens;
           std::unique_ptr<Screen> CreateScreen1();
