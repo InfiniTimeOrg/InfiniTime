@@ -84,7 +84,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
   uptimeSeconds = uptimeSeconds % secondsInAMinute;
   // TODO handle more than 100 days of uptime
 
-  sprintf(t1, "Pinetime\n"
+  sprintf(t1, "InfiniTime\n"
               "Version:%ld.%ld.%ld\n"
               "Build: %s\n"
               "       %s\n"
