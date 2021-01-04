@@ -2,6 +2,8 @@
 
 #include <array>
 #include <atomic>
+#include <cstddef>
+#include <cstdint>
 
 namespace Pinetime {
   namespace Controllers {
@@ -27,7 +29,7 @@ namespace Pinetime {
       bool ClearNewNotificationFlag();
       bool AreNewNotificationsAvailable();
 
-      static constexpr uint8_t MaximumMessageSize() { return MessageSize; };
+      static constexpr size_t MaximumMessageSize() { return MessageSize; };
       size_t NbNotifications() const;
 
       private:

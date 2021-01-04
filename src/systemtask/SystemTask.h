@@ -4,17 +4,23 @@
 
 #include <FreeRTOS.h>
 #include <task.h>
-#include <drivers/SpiMaster.h>
-#include <drivers/St7789.h>
-#include "components/battery/BatteryController.h"
-#include "displayapp/DisplayApp.h"
-#include <drivers/Watchdog.h>
-#include <drivers/SpiNorFlash.h>
+#include <timers.h>
+
 #include "SystemMonitor.h"
+#include "components/battery/BatteryController.h"
 #include "components/ble/NimbleController.h"
-#include "timers.h"
+#include "components/ble/NotificationManager.h"
+#include "displayapp/DisplayApp.h"
+#include "drivers/Watchdog.h"
 
 namespace Pinetime {
+  namespace Drivers {
+    class Cst816S;
+    class SpiMaster;
+    class SpiNorFlash;
+    class St7789;
+    class TwiMaster;
+  }
   namespace System {
     class SystemTask {
       public:

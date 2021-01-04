@@ -1,10 +1,10 @@
 #pragma once
-#include <cstdint>
-#include <nrf_font.h>
-#include <drivers/BufferProvider.h>
 #include <FreeRTOS.h>
+#include <nrf_font.h>
 #include <task.h>
-
+#include <cstddef>
+#include <cstdint>
+#include "drivers/BufferProvider.h"
 
 namespace Pinetime {
   namespace Drivers {
@@ -53,8 +53,8 @@ namespace Pinetime {
         Drivers::St7789& lcd;
 
         void SetBackgroundColor(uint16_t color);
-        void WaitTransfertFinished() const;
-        void NotifyEndOfTransfert(TaskHandle_t task);
+        void WaitTransferFinished() const;
+        void NotifyEndOfTransfer(TaskHandle_t task);
     };
   }
 }

@@ -1,4 +1,3 @@
-#include <libs/lvgl/lvgl.h>
 #include "Label.h"
 
 using namespace Pinetime::Applications::Screens;

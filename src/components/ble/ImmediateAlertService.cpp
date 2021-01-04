@@ -1,7 +1,7 @@
-#include <systemtask/SystemTask.h>
-#include <cstring>
 #include "ImmediateAlertService.h"
-#include "AlertNotificationService.h"
+#include <cstring>
+#include "NotificationManager.h"
+#include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
 

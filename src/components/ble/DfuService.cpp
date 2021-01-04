@@ -1,8 +1,8 @@
-#include <cstring>
-
-#include "components/ble/BleController.h"
-#include "systemtask/SystemTask.h"
 #include "DfuService.h"
+#include <cstring>
+#include "components/ble/BleController.h"
+#include "drivers/SpiNorFlash.h"
+#include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
 

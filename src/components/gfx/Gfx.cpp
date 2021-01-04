@@ -1,8 +1,5 @@
-#include <libraries/svc/nrf_svci.h>
-#include <FreeRTOS.h>
-#include <task.h>
 #include "Gfx.h"
-#include "../../drivers/St7789.h"
+#include "drivers/St7789.h"
 using namespace Pinetime::Components;
 
 Gfx::Gfx(Pinetime::Drivers::St7789 &lcd) : lcd{lcd} {
@@ -23,7 +20,7 @@ void Gfx::ClearScreen() {
 
   lcd.BeginDrawBuffer(0, 0, width, height);
   lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(buffer), width * 2);
-  WaitTransfertFinished();
+  WaitTransferFinished();
 
 }
 
@@ -40,7 +37,7 @@ void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t col
   lcd.BeginDrawBuffer(x, y, w, h);
   lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(buffer), width * 2);
 
-  WaitTransfertFinished();
+  WaitTransferFinished();
 }
 
 void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t* b) {
@@ -54,7 +51,7 @@ void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t* b) 
   lcd.BeginDrawBuffer(x, y, w, h);
   lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(b), width * 2);
 
-  WaitTransfertFinished();
+  WaitTransferFinished();
 }
 
 void Gfx::DrawString(uint8_t x, uint8_t y, uint16_t color, const char *text, const FONT_INFO *p_font, bool wrap) {
@@ -125,7 +122,7 @@ void Gfx::DrawChar(const FONT_INFO *font, uint8_t c, uint8_t *x, uint8_t y, uint
 
   lcd.BeginDrawBuffer(*x, y, bytes_in_line*8, font->height);
   lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(&buffer), bytes_in_line*8*2);
-  WaitTransfertFinished();
+  WaitTransferFinished();
 
   *x += font->charInfo[char_idx].widthBits + font->spacePixels;
 }
@@ -153,7 +150,7 @@ bool Gfx::GetNextBuffer(uint8_t **data, size_t &size) {
   state.remainingIterations--;
   if (state.remainingIterations == 0) {
     state.busy = false;
-    NotifyEndOfTransfert(state.taskToNotify);
+    NotifyEndOfTransfer(state.taskToNotify);
     return false;
   }
 
@@ -185,7 +182,7 @@ bool Gfx::GetNextBuffer(uint8_t **data, size_t &size) {
   return true;
 }
 
-void Gfx::NotifyEndOfTransfert(TaskHandle_t task) {
+void Gfx::NotifyEndOfTransfer(TaskHandle_t task) {
   if(task != nullptr) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     vTaskNotifyGiveFromISR(task, &xHigherPriorityTaskWoken);
@@ -193,7 +190,7 @@ void Gfx::NotifyEndOfTransfert(TaskHandle_t task) {
   }
 }
 
-void Gfx::WaitTransfertFinished() const {
+void Gfx::WaitTransferFinished() const {
   ulTaskNotifyTake(pdTRUE, 500);
 }
 
@@ -204,4 +201,3 @@ void Gfx::SetScrollArea(uint16_t topFixedLines, uint16_t scrollLines, uint16_t b
 void Gfx::SetScrollStartLine(uint16_t line) {
   lcd.VerticalScrollStartAddress(line);
 }
-

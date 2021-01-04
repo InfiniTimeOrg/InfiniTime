@@ -1,17 +1,24 @@
 #pragma once
 
-#include <functional>
-#include <vector>
-
-#include "components/ble/NimbleController.h"
+#include <memory>
 #include "Screen.h"
-#include "Label.h"
 #include "ScreenList.h"
-#include "Gauge.h"
-#include "Meter.h"
 
 namespace Pinetime {
+  namespace Controllers {
+    class DateTime;
+    class Battery;
+    class BrightnessController;
+    class Ble;
+  }
+
+  namespace Drivers {
+    class WatchdogView;
+  }
+
   namespace Applications {
+    class DisplayApp;
+
     namespace Screens {
       class SystemInfo : public Screen {
         public:
@@ -36,7 +43,7 @@ namespace Pinetime {
 
           char t1[200];
           char t2[200];
-          char t3[30];
+          char t3[200];
 
           ScreenList<3> screens;
           std::unique_ptr<Screen> CreateScreen1();

@@ -1,7 +1,5 @@
-#include <mdk/nrf52.h>
-#include <mdk/nrf52_bitfields.h>
-#include <nrf_soc.h>
 #include "Watchdog.h"
+#include <mdk/nrf.h>
 using namespace Pinetime::Drivers;
 
 

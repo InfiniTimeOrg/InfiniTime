@@ -3,7 +3,7 @@ The [bootloader](https://github.com/lupyuen/pinetime-rust-mynewt/tree/master/lib
 
 The goal of this project is to provide a common bootloader for multiple (all?) Pinetime projects. It allows to upgrade the current bootloader and even replace the current application by another one that supports the same bootloader.
 
-As we wanted this bootloader to be as universal as possible, we decided that it should **not** integrate a BLE stack and provide OTA capabilities. 
+As we wanted this bootloader to be as universal as possible, we decided that it should **not** integrate a BLE stack and provide OTA capabilities.
 
 Integrating a BLE stack for the OTA functionality would have used to much memory space and/or forced all the firmware developers to use the same BLE stack as the bootloader.
 
@@ -18,7 +18,7 @@ MCUBoot is run at boot time. In normal operation, it just jumps to the reset han
 
 But MCUBoot does much more than that : it can upgrade the firmware that is currently running by a new one, and it is also able to revert to the previous version of the firmware in case the new one does not run propertly.
 
-To do this, it uses 2 memory 'slots' : 
+To do this, it uses 2 memory 'slots' :
  - **The primary slot** : it contains the current firmware, the one that will be executed by MCUBoot
  - **The secondary slot** : it is used to store the upgraded version of the firmware, when available.
 
@@ -37,13 +37,13 @@ Note than MCUBoot **does not** provide any means to download and store the new v
 # Degraded cases
 This chapter describes degraded cases that are handled by our bootloader and those that are not supported.
 
-Case | Current bootloader | Solution 
+Case | Current bootloader | Solution
 -----|--------------------|----------------------------------------------
-Data got corrupted during file transfert | [OK] Application firmware does a CRC check before applying the update, and does not proceed if it fails. | N/A
-New firmware does not run at all (bad file) (1) | [NOK] MCU executes unknown instructions and will most likely end up in an infinite loop or freeze in an error handler. The bootloader does not run, it can do nothing, the MCU is stucked until next reset | [OK] The bootloader starts the watchdog just before running the new firmware. This way, the watchdog will reset the MCU after ~7s because the firmware does not refresh it. Bootloader reverts to the previous version of the firmware during the reset.     
+Data got corrupted during file transfer | [OK] Application firmware does a CRC check before applying the update, and does not proceed if it fails. | N/A
+New firmware does not run at all (bad file) (1) | [NOK] MCU executes unknown instructions and will most likely end up in an infinite loop or freeze in an error handler. The bootloader does not run, it can do nothing, the MCU is stucked until next reset | [OK] The bootloader starts the watchdog just before running the new firmware. This way, the watchdog will reset the MCU after ~7s because the firmware does not refresh it. Bootloader reverts to the previous version of the firmware during the reset.
 New firmware runs, does not set the valid bit and does not refresh the watchdog | [NOK] The new firmware runs until the next reset. The bootloader will be able to revert to the previous firmware only during the next reset. If the new firmware does not run properly and does not reset, the bootloader can do nothing until the next reset | [OK] The bootloader starts the watchdog just before running the new firmware. This way, the watchdog will reset the MCU after ~7s because the firmware does not refresh it. Bootloader reverts to the previous version of the firmware during the reset.
 New firmware does not run properly, does not set the valid bit but refreshes the watchdog | [NOK] The bootloader will be able to revert to the previous firmware only during the next reset. If the new firmware does not run properly and does not reset, the bootloader can do nothing until the next reset | [~] Wait for the battery to drain. The CPU will reset the next time the device is charged and will be able to rollback to the previous version.
-New firmware does not run properly but sets the valid bit and refreshes the watchdog | [NOK] The bootloader won't revert to the previous version because the valid flag is set | [~] Wait for the battery to drain. The CPU will reset the next time the device is charged. Then, the bootloader must provide a way for the user to force the rollback to the previous version 
+New firmware does not run properly but sets the valid bit and refreshes the watchdog | [NOK] The bootloader won't revert to the previous version because the valid flag is set | [~] Wait for the battery to drain. The CPU will reset the next time the device is charged. Then, the bootloader must provide a way for the user to force the rollback to the previous version
 
 *(1) I've observed this when I tried to run a firmware built to run from offset 0 while it was flashed at offset 0x8000 in memory (bad vector table).*
 
@@ -59,7 +59,7 @@ The SPI Flash memory is not accessible via the SWD debugger. Use the firmware 'p
 $ make pinetime-graphics
 ```
 
- - Program (using OpenOCD for example) : 
+ - Program (using OpenOCD for example) :
 ```
 program pinetime-graphics.bin 0
 ```
@@ -84,7 +84,7 @@ Build the binary compatible with the booloader:
 make pinetime-mcuboot-app
 `
 
-The binary is located in *<build directory>/src/pinetime-mcuboot-app.bin*.  
+The binary is located in *<build directory>/src/pinetime-mcuboot-app.bin*.
 
 It must me converted into a MCUBoot image using *imgtool.py* from [MCUBoot](https://github.com/JuulLabs-OSS/mcuboot/tree/master/scripts). Simply checkout the project and run the script <mcuboot root>/scripts/imgtool.py with the following command line:
 

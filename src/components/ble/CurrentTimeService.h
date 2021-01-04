@@ -3,7 +3,11 @@
 #include <array>
 
 #include "components/datetime/DateTimeController.h"
+#define min // workaround: nimble's min/max macros conflict with libstdc++
+#define max
 #include <host/ble_gap.h>
+#undef max
+#undef min
 
 namespace Pinetime {
   namespace Controllers {

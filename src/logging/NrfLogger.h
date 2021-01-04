@@ -1,6 +1,9 @@
 #pragma once
 #include "Logger.h"
 
+#include <FreeRTOS.h>
+#include <task.h>
+
 namespace Pinetime {
   namespace Logging{
     class NrfLogger : public Logger {

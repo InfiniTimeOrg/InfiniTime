@@ -1,8 +1,8 @@
 #pragma once
 #include <FreeRTOS.h>
 #include <semphr.h>
-#include <drivers/include/nrfx_twi.h>
-
+#include <drivers/include/nrfx_twi.h> // NRF_TWIM_Type
+#include <cstdint>
 
 namespace Pinetime {
   namespace Drivers {

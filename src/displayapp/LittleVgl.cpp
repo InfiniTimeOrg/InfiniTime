@@ -1,14 +1,10 @@
-#include <FreeRTOS.h>
-#include <projdefs.h>
-#include <task.h>
-#include <libs/lvgl/src/lv_core/lv_obj.h>
-#include <hal/nrf_rtc.h>
-#include <libraries/log/nrf_log.h>
-
-#include <libs/lvgl/src/lv_themes/lv_theme.h>
-#include <libs/lvgl/src/lv_themes/lv_theme_night.h>
-
 #include "LittleVgl.h"
+
+#include <FreeRTOS.h>
+#include <task.h>
+//#include <projdefs.h>
+#include "drivers/Cst816s.h"
+#include "drivers/St7789.h"
 
 using namespace Pinetime::Components;
 
@@ -76,8 +72,8 @@ void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
 
 void LittleVgl::FlushDisplay(const lv_area_t *area, lv_color_t *color_p) {
   ulTaskNotifyTake(pdTRUE, 500);
-  // NOtification is still needed (even if there is a mutex on SPI) because of the DataCommand pin
-  // which cannot be set/clear during a transfert.
+  // Notification is still needed (even if there is a mutex on SPI) because of the DataCommand pin
+  // which cannot be set/clear during a transfer.
 
 
   // TODO refactore and remove duplicated code
@@ -831,6 +827,3 @@ void LittleVgl::InitThemeWindow() {
 //  theme.style.win.btn.rel = &lv_style_transp;
 //  theme.style.win.btn.pr  = &win_btn_pr;
 }
-
-
-

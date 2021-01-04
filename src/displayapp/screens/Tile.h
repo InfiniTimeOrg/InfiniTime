@@ -1,11 +1,11 @@
 #pragma once
 
+#include <lvgl/lvgl.h>
 #include <cstdint>
-#include "Screen.h"
-#include <bits/unique_ptr.h>
+#include <memory>
 #include "Modal.h"
-#include <lvgl/src/lv_core/lv_style.h>
-#include <displayapp/Apps.h>
+#include "Screen.h"
+#include "../Apps.h"
 
 namespace Pinetime {
   namespace Applications {

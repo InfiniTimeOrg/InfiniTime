@@ -1,5 +1,5 @@
-#include <hal/nrf_gpio.h>
 #include "DebugPins.h"
+#include <hal/nrf_gpio.h>
 
 #ifdef USE_DEBUG_PINS
 void debugpins_init() {

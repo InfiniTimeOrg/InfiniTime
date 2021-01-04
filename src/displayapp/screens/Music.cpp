@@ -15,9 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#include <libs/lvgl/lvgl.h>
-
 #include "Music.h"
+#include <cstdint>
+#include "../DisplayApp.h"
+#include "components/ble/MusicService.h"
+#include "displayapp/icons/music/disc.cpp"
+#include "displayapp/icons/music/disc_f_1.cpp"
+#include "displayapp/icons/music/disc_f_2.cpp"
 
 using namespace Pinetime::Applications::Screens;
 

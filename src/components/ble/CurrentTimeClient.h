@@ -1,13 +1,15 @@
 #pragma once
-#include <cstdint>
-#include <array>
-
-#include "components/datetime/DateTimeController.h"
-#include "BleClient.h"
+#define min // workaround: nimble's min/max macros conflict with libstdc++
+#define max
 #include <host/ble_gap.h>
+#undef max
+#undef min
+#include <cstdint>
+#include "BleClient.h"
 
 namespace Pinetime {
     namespace Controllers {
+        class DateTime;
 
         class CurrentTimeClient : public BleClient {
         public:

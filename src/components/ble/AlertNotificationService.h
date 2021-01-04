@@ -1,10 +1,20 @@
 #pragma once
 #include <cstdint>
 #include <array>
+#define min // workaround: nimble's min/max macros conflict with libstdc++
+#define max
 #include <host/ble_gap.h>
+#undef max
+#undef min
 
 namespace Pinetime {
+
+  namespace System {
+    class SystemTask;
+  }
   namespace Controllers {
+    class NotificationManager;
+
     class AlertNotificationService {
       public:
         AlertNotificationService(Pinetime::System::SystemTask &systemTask,

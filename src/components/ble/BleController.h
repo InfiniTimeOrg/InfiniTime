@@ -1,8 +1,7 @@
 #pragma once
 
-#include <FreeRTOS.h>
-#include <queue.h>
 #include <array>
+#include <cstdint>
 
 namespace Pinetime {
   namespace Controllers {

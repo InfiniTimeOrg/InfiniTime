@@ -1,9 +1,13 @@
-#include <libs/lvgl/lvgl.h>
-#include <displayapp/DisplayApp.h>
-#include <functional>
 #include "SystemInfo.h"
-#include "../../Version.h"
-#include "Tile.h"
+#include <lvgl/lvgl.h>
+#include "../DisplayApp.h"
+#include "Label.h"
+#include "Version.h"
+#include "components/battery/BatteryController.h"
+#include "components/ble/BleController.h"
+#include "components/brightness/BrightnessController.h"
+#include "components/datetime/DateTimeController.h"
+#include "drivers/Watchdog.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -43,10 +47,7 @@ bool SystemInfo::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
-  auto batteryPercentF = batteryController.PercentRemaining();
-  uint16_t batteryPercent = 0;
-  if(batteryPercentF > 100.0f) batteryPercent = 100;
-  else if(batteryPercentF < 0.0f) batteryPercent = 0;
+  auto batteryPercent = static_cast<uint8_t>(batteryController.PercentRemaining());
 
   uint8_t brightness = 0;
   switch(brightnessController.Level()) {
@@ -83,7 +84,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
   uptimeSeconds = uptimeSeconds % secondsInAMinute;
   // TODO handle more than 100 days of uptime
 
-  sprintf(t1, "Pinetime\n"
+  sprintf(t1, "InfiniTime\n"
               "Version:%ld.%ld.%ld\n"
               "Build: %s\n"
               "       %s\n"
@@ -111,6 +112,13 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
-  strncpy(t3, "Hello from\nthe developer!", 27);
+  sprintf(t3, "Hello from\nthe developer!\n"
+              "Software Licensed\n"
+              "under the terms of\n"
+              "the GNU General\n"
+              "Public License v3\n"
+              "Source code:\n"
+              "https://github.com/\n"
+              "    JF002/Pinetime");
   return std::unique_ptr<Screen>(new Screens::Label(app, t3));
 }

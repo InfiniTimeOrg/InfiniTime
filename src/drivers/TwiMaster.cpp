@@ -1,7 +1,7 @@
-#include <nrfx_log.h>
-#include <hal/nrf_gpio.h>
-#include <cstring>
 #include "TwiMaster.h"
+#include <cstring>
+#include <hal/nrf_gpio.h>
+#include <nrfx_log.h>
 
 using namespace Pinetime::Drivers;
 

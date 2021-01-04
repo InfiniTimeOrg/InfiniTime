@@ -1,9 +1,10 @@
-#include <libs/lvgl/lvgl.h>
-#include <displayapp/DisplayApp.h>
-#include <functional>
 #include "ApplicationList.h"
-#include "Tile.h"
+#include <lvgl/lvgl.h>
+#include <array>
 #include "Symbols.h"
+#include "Tile.h"
+#include "displayapp/Apps.h"
+#include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -59,8 +60,8 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
            {Symbols::asterisk, Apps::Meter},
            {Symbols::paintbrush, Apps::Paint},
                   {Symbols::info, Apps::Notifications},
-                  {Symbols::none, Apps::None},
-                  {Symbols::none, Apps::None}
+                  {Symbols::paddle, Apps::Paddle},
+                  {"2", Apps::Twos}
           }
   };
 
@@ -80,3 +81,4 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen3() {
 
   return std::unique_ptr<Screen>(new Screens::Tile(app, applications));
 }
+

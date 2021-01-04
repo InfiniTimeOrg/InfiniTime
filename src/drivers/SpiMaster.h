@@ -1,14 +1,10 @@
 #pragma once
-#include <FreeRTOS.h>
-#include <cstdint>
 #include <cstddef>
-#include <array>
-#include <atomic>
-#include <task.h>
-#include <semphr.h>
+#include <cstdint>
 
-#include "BufferProvider.h"
+#include <FreeRTOS.h>
 #include <semphr.h>
+#include <task.h>
 
 namespace Pinetime {
   namespace Drivers {

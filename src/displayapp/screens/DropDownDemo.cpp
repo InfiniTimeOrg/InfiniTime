@@ -1,6 +1,6 @@
-#include <libs/lvgl/lvgl.h>
-#include <libraries/log/nrf_log.h>
 #include "DropDownDemo.h"
+#include <lvgl/lvgl.h>
+#include <libraries/log/nrf_log.h>
 #include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
