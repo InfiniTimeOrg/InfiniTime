@@ -1,5 +1,6 @@
 FROM gitpod/workspace-full
 
+USER root
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq \
     && apt-get install -y \
@@ -23,8 +24,6 @@ RUN apt-get update -qq \
 # Needs to be installed as root
 RUN pip3 install adafruit-nrfutil
 
-RUN sudo chown -R gitpod /opt
-
 COPY docker/build.sh /opt/
 # Lets get each in a separate docker layer for better downloads
 # GCC
@@ -35,4 +34,6 @@ RUN bash -c "source /opt/build.sh; GetNrfSdk;"
 RUN bash -c "source /opt/build.sh; GetMcuBoot;"
 
 # Link the default checkout workspace in to the default $SOURCES_DIR
-RUN sudo ln -s /workspace/Pinetime /sources
+RUN ln -s /workspace/Pinetime /sources
+
+USER gitpod
