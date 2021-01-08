@@ -9,7 +9,7 @@ using namespace Pinetime::Controllers;
 
 constexpr ble_uuid16_t AlertNotificationService::ansUuid;
 constexpr ble_uuid16_t AlertNotificationService::ansCharUuid;
-constexpr ble_uuid16_t AlertNotificationService::ansEventUuid;
+constexpr ble_uuid128_t AlertNotificationService::notificationEventUuid;
 
 
 int AlertNotificationCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
@@ -35,7 +35,7 @@ AlertNotificationService::AlertNotificationService ( System::SystemTask& systemT
                         .flags = BLE_GATT_CHR_F_WRITE
                 },
                 {
-                        .uuid = (ble_uuid_t *) &ansEventUuid,
+                        .uuid = (ble_uuid_t *) &notificationEventUuid,
                         .access_cb = AlertNotificationCallback,
                         .arg = this,
                         .flags = BLE_GATT_CHR_F_NOTIFY,
