@@ -50,7 +50,7 @@ Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask &
   msRepeatCharUuid.value[12] = msRepeatCharId[1];
   msShuffleCharUuid.value[11] = msShuffleCharId[0];
   msShuffleCharUuid.value[12] = msShuffleCharId[1];
-  
+
   characteristicDefinition[0] = {.uuid = (ble_uuid_t *) (&msEventCharUuid),
       .access_cb = MSCallback,
       .arg = this,
@@ -118,14 +118,14 @@ Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask &
       .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
   };
   characteristicDefinition[13] = {0};
-  
+
   serviceDefinition[0] = {
       .type = BLE_GATT_SVC_TYPE_PRIMARY,
       .uuid = (ble_uuid_t *) &msUuid,
       .characteristics = characteristicDefinition
   };
   serviceDefinition[1] = {0};
-  
+
   artistName = "Waiting for";
   albumName = "";
   trackName = "track information...";
@@ -141,14 +141,14 @@ void Pinetime::Controllers::MusicService::Init() {
   int res = 0;
   res = ble_gatts_count_cfg(serviceDefinition);
   ASSERT(res == 0);
-  
+
   res = ble_gatts_add_svcs(serviceDefinition);
   ASSERT(res == 0);
 }
 
 int Pinetime::Controllers::MusicService::OnCommand(uint16_t conn_handle, uint16_t attr_handle,
                                                    struct ble_gatt_access_ctxt *ctxt) {
-  
+
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     size_t notifSize = OS_MBUF_PKTLEN(ctxt->om);
     uint8_t data[notifSize + 1];
@@ -205,13 +205,13 @@ float Pinetime::Controllers::MusicService::getPlaybackSpeed() {
 
 void Pinetime::Controllers::MusicService::event(char event) {
   auto *om = ble_hs_mbuf_from_flat(&event, 1);
-  
+
   uint16_t connectionHandle = m_system.nimble().connHandle();
-  
+
   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
     return;
   }
-  
+
   ble_gattc_notify_custom(connectionHandle, eventHandle, om);
 }
 

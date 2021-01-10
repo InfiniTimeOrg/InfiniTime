@@ -16,6 +16,7 @@
 #include "DfuService.h"
 #include "ImmediateAlertService.h"
 #include "MusicService.h"
+#include "NavigationService.h"
 #include "ServiceDiscovery.h"
 
 namespace Pinetime {
@@ -54,6 +55,7 @@ namespace Pinetime {
         void StartDiscovery();
 
         Pinetime::Controllers::MusicService& music() {return musicService;};
+        Pinetime::Controllers::NavigationService& navigation() {return navService;};
 
         uint16_t connHandle();
 
@@ -72,6 +74,7 @@ namespace Pinetime {
         AlertNotificationClient alertNotificationClient;
         CurrentTimeService currentTimeService;
         MusicService musicService;
+        NavigationService navService;
         BatteryInformationService batteryInformationService;
         ImmediateAlertService immediateAlertService;
 
