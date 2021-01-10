@@ -21,6 +21,7 @@
 #include "drivers/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
 #include "drivers/TwiMaster.h"
+#include "drivers/Hrs3300.h"
 #include "main.h"
 
 using namespace Pinetime::System;
@@ -39,12 +40,14 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Components::LittleVgl &lvgl,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController,
-                       Pinetime::Controllers::NotificationManager& notificationManager) :
+                       Pinetime::Controllers::NotificationManager& notificationManager,
+                       Pinetime::Drivers::Hrs3300& heartRateSensor) :
                        spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash},
                        twiMaster{twiMaster}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
-                       nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash) {
+                       nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash),
+                       heartRateSensor{heartRateSensor}{
   systemTasksMsgQueue = xQueueCreate(10, 1);
 }
 
@@ -77,11 +80,18 @@ void SystemTask::Work() {
   batteryController.Init();
 
   displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController,
-                                                          dateTimeController, watchdogView, *this, notificationManager));
+                                                          dateTimeController, watchdogView, *this, notificationManager, heartRateController));
   displayApp->Start();
 
   batteryController.Update();
   displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBatteryLevel);
+
+
+  heartRateSensor.Init();
+  heartRateSensor.Disable();
+  heartRateApp.reset(new Pinetime::Applications::HeartRateTask(heartRateSensor, heartRateController));
+  heartRateApp->Start();
+
 
   nrf_gpio_cfg_sense_input(pinButton, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pulldown, (nrf_gpio_pin_sense_t)GPIO_PIN_CNF_SENSE_High);
   nrf_gpio_cfg_output(15);
