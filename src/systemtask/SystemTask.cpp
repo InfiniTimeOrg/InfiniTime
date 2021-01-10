@@ -44,6 +44,7 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Pinetime::Drivers::Hrs3300& heartRateSensor) :
                        spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash},
                        twiMaster{twiMaster}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
+                       heartRateController{*this},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
                        nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash),
@@ -193,6 +194,12 @@ void SystemTask::Work() {
           twiMaster.Sleep();
           isSleeping = true;
           isGoingToSleep = false;
+          break;
+        case Messages::HeartRateRunning:
+          doNotGoToSleep = true;
+          break;
+        case Messages::HeartRateStopped:
+          doNotGoToSleep = false;
           break;
         default: break;
       }

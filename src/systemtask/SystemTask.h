@@ -28,7 +28,8 @@ namespace Pinetime {
     class SystemTask {
       public:
         enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification, BleConnected,
-            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent, OnDisplayTaskSleeping
+            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent, OnDisplayTaskSleeping,
+          HeartRateRunning, HeartRateStopped
         };
 
         SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
