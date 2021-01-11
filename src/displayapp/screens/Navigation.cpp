@@ -41,9 +41,15 @@ inline void lv_img_set_src_arr(lv_obj_t *img, const lv_img_dsc_t *src_img) {
  *
  */
 Navigation::Navigation(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::NavigationService &nav) : Screen(app), navService(nav) {
+
   constexpr uint8_t FONT_HEIGHT = 12;
   constexpr uint8_t LINE_PAD = 15;
   constexpr int8_t MIDDLE_OFFSET = -25;
+
+  imgFlag = lv_img_create(lv_scr_act(), nullptr);
+  lv_img_set_src_arr(imgFlag, &flag);
+  lv_obj_align(imgFlag, nullptr, LV_ALIGN_IN_TOP_MID, 0, 15);
+
   txtNarrative = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtNarrative, LV_LABEL_LONG_SROLL);
   lv_obj_align(txtNarrative, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 1 * FONT_HEIGHT);
@@ -72,6 +78,15 @@ Navigation::~Navigation() {
 }
 
 bool Navigation::Refresh() {
+
+  if (m_flag != navService.getFlag()) {
+    m_flag = navService.getFlag();
+    if (m_iconMap.find(m_flag) != m_iconMap.end()) {
+        m_flag = "invalid";
+    }
+    lv_img_set_src_arr(imgFlag, m_iconMap[m_flag]);
+  }
+
   if (m_narrative != navService.getNarrative()) {
     m_narrative = navService.getNarrative();
     lv_label_set_text(txtNarrative, m_narrative.data());
