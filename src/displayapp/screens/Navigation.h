@@ -21,7 +21,7 @@
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <string>
 #include "Screen.h"
-#include <map>
+#include <array>
 #include <lvgl/src/lv_draw/lv_img_decoder.h>
 
 #include "displayapp/icons/navigation/arrive-left.c"
@@ -236,7 +236,9 @@ namespace Pinetime {
         /** Watchapp */
         bool running = true;
 
-        std::map<std::string, const lv_img_dsc_t*> m_iconMap = {
+        const lv_img_dsc_t* iconForName(std::string icon);
+
+        std::array<std::pair<std::string, const lv_img_dsc_t*>, 89 > m_iconMap = { {
             {"arrive-left", &arrive_left},
             {"arrive-right", &arrive_right},
             {"arrive-straight", &arrive_straight},
@@ -322,7 +324,7 @@ namespace Pinetime {
             {"turn-slight-right", &turn_slight_right},
             {"turn-straight", &turn_straight},
             {"updown", &updown},
-            {"uturn", &uturn}, };
+            {"uturn", &uturn} } };
       };
     }
   }

@@ -81,10 +81,8 @@ bool Navigation::Refresh() {
 
   if (m_flag != navService.getFlag()) {
     m_flag = navService.getFlag();
-    if (m_iconMap.find(m_flag) != m_iconMap.end()) {
-        m_flag = "invalid";
-    }
-    lv_img_set_src_arr(imgFlag, m_iconMap[m_flag]);
+
+    lv_img_set_src_arr(imgFlag, iconForName(m_flag));
   }
 
   if (m_narrative != navService.getNarrative()) {
@@ -108,4 +106,14 @@ bool Navigation::Refresh() {
 bool Navigation::OnButtonPushed() {
   running = false;
   return true;
+}
+
+const lv_img_dsc_t* Navigation::iconForName(std::string icon)
+{
+    for (auto iter : m_iconMap) {
+        if (iter.first == icon) {
+            return iter.second;
+        }
+    }
+    return &invalid;
 }
