@@ -6,7 +6,6 @@ RUN apt-get update -qq \
 # x86_64 / generic packages
       bash \
       build-essential \
-      cmake \
       git \
       make \
       python3 \
@@ -21,6 +20,16 @@ RUN apt-get update -qq \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
 RUN pip3 install adafruit-nrfutil
+
+# install latest CMake (and utils)
+RUN  apt install -y \
+       make
+ARG  CMAKE_VERSION=3.17.2
+ADD  https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh  /tmp/cmake-install.sh
+RUN  apt install -y \
+       tar gzip
+RUN  yes | sh /tmp/cmake-install.sh --skip-license --prefix=/
+RUN  rm /tmp/cmake-install.sh
 
 # build.sh knows how to compile
 COPY build.sh /opt/
