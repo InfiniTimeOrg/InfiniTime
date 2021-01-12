@@ -46,7 +46,7 @@ namespace Pinetime {
                 class LittleFsFile {
                     public:
                         explicit LittleFsFile(lfs_t& lfs, const char* const path, const int flags)
-                            : mLfs(lfs) { lfs_file_open(&mLfs, &mLfs_file, path, flags); }
+                            : mLfs{lfs} { lfs_file_open(&mLfs, &mLfs_file, path, flags); }
                         LittleFsFile(const LittleFsFile&) = delete;
                         LittleFsFile& operator=(const LittleFsFile&) = delete;
                         LittleFsFile(LittleFsFile&&) = delete;
@@ -69,7 +69,7 @@ namespace Pinetime {
                 class LittleFsDir {
                     public:
                         explicit LittleFsDir(lfs_t& lfs, const char* path)
-                            : mLfs(lfs) { lfs_dir_open(&mLfs, &mLfs_dir, path); }
+                            : mLfs{lfs} { lfs_dir_open(&mLfs, &mLfs_dir, path); }
                         LittleFsDir(const LittleFsDir&) = delete;
                         LittleFsDir& operator=(const LittleFsDir&) = delete;
                         LittleFsDir(LittleFsDir&&) = delete;

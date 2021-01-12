@@ -55,8 +55,8 @@ LittleFs::LittleFs(Pinetime::Drivers::SpiNorFlash& driver,
          const size_t startAddress,
          const size_t size_bytes,
          const bool allowFormat)
-:mDriver(driver), mStartAddress(startAddress), mSize_bytes(size_bytes),
- mLfsConfig(createLfsConfig(*this, size_bytes))
+:mDriver{driver}, mStartAddress{startAddress}, mSize_bytes{size_bytes},
+ mLfsConfig{createLfsConfig(*this, size_bytes)}
 {
     // try mount
     if(0u != lfs_mount(&mLfs, &mLfsConfig)) {
