@@ -12,8 +12,8 @@ static int erase(const struct lfs_config *c, lfs_block_t block);
 
 static int sync(const struct lfs_config *c);
 
-constexpr size_t BLOCK_SIZE_BYTES = 4096u;
-constexpr size_t PAGE_SIZE_BYTES = 256u;
+constexpr size_t BLOCK_SIZE_BYTES = 256u;
+constexpr size_t PAGE_SIZE_BYTES = BLOCK_SIZE_BYTES;
 constexpr size_t CACHE_PAGE_COUNT = 1u;
 constexpr size_t CACHE_SIZE_BYTES = (CACHE_PAGE_COUNT * PAGE_SIZE_BYTES);
 constexpr size_t LOOKAHEAD_SIZE_BYTES = (CACHE_PAGE_COUNT * 8u);
