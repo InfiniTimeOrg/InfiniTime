@@ -98,3 +98,19 @@ static int sync(const struct lfs_config *c) {
     return 0u;
 }
 
+const LittleFs::LittleFsDir::LittleFsEntry LittleFs::LittleFsDir::next() {
+    lfs_info entryInfo;
+    const int rtn = lfs_dir_read(&mLfs, &mLfs_dir, &entryInfo);
+    if(rtn == 0) {
+        LittleFsEntry entry{
+            .type = (entryInfo.type == LFS_TYPE_DIR) ?
+                        LittleFs::LittleFsDir::LittleFsEntry::Type::DIR :
+                        LittleFs::LittleFsDir::LittleFsEntry::Type::FILE,
+            .size = entryInfo.size
+        };
+        strncpy(entry.name, entryInfo.name, sizeof(entry.name));
+        return entry;
+    }
+    else
+        return LittleFsEntry{ .type = LittleFs::LittleFsDir::LittleFsEntry::Type::NULLENTRY };
+}

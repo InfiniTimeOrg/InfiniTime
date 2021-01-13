@@ -476,6 +476,9 @@ include_directories(
         .
         ../
         libs/
+	# FIXME workaround hack
+        ${CMAKE_BINARY_DIR}/_deps/project_littlefs-src/
+        components/littlefs/
         FreeRTOS/
         libs/date/includes
         libs/mynewt-nimble/porting/npl/freertos/include
