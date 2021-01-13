@@ -1,1 +1,1 @@
-docker run --rm -v /home/redengin/projects/Pinetime:/sources infinitime-build
+docker run --rm -v $PWD:/sources infinitime-build
