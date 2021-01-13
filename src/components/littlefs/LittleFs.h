@@ -41,9 +41,9 @@ namespace Pinetime {
                                   ) { return new LittleFsFile(mLfs, path, flags); }
                 LittleFsDir* opendir_danger(const char* const path) { return new LittleFsDir(mLfs, path); }
 
+                Pinetime::Drivers::SpiNorFlash& mDriver;
                 const size_t mStartAddress;
                 const size_t mSize_bytes;
-                Pinetime::Drivers::SpiNorFlash& mDriver;
 
             private:
                 lfs_t mLfs;
@@ -53,7 +53,7 @@ namespace Pinetime {
                 class LittleFsFile {
                     public:
                         explicit LittleFsFile(lfs_t& lfs, const char* const path, const int flags)
-                            : mLfs{lfs} { lfs_file_open(&mLfs, &mLfs_file, path, flags); }
+                            : mLfs{lfs} { mLfs_file.type = ~LFS_TYPE_REG; lfs_file_open(&mLfs, &mLfs_file, path, flags); }
                         LittleFsFile(const LittleFsFile&) = delete;
                         LittleFsFile& operator=(const LittleFsFile&) = delete;
                         LittleFsFile(LittleFsFile&&) = delete;
@@ -61,7 +61,7 @@ namespace Pinetime {
                         ~LittleFsFile() {
                             lfs_file_close(&mLfs, &mLfs_file);
                         }
-                        bool isNULL() { return mLfs_file.flags != LFS_F_ERRED; }
+                        bool isNULL() { return mLfs_file.type != LFS_TYPE_REG; }
                         ssize_t read(void* buffer, size_t size) { return lfs_file_read(&mLfs, &mLfs_file, buffer, size); }
                         ssize_t write(const void* buffer, size_t size) { return lfs_file_write(&mLfs, &mLfs_file, buffer, size); }
                         ssize_t seek(size_t offset, size_t whence) { return 0u == lfs_file_seek(&mLfs, &mLfs_file, offset, whence); }
@@ -77,7 +77,7 @@ namespace Pinetime {
                 class LittleFsDir {
                     public:
                         explicit LittleFsDir(lfs_t& lfs, const char* path)
-                            : mLfs{lfs} { mLfs_dir.type = -1; lfs_dir_open(&mLfs, &mLfs_dir, path); }
+                            : mLfs{lfs} { mLfs_dir.type = ~LFS_TYPE_DIR; lfs_dir_open(&mLfs, &mLfs_dir, path); }
                         LittleFsDir(const LittleFsDir&) = delete;
                         LittleFsDir& operator=(const LittleFsDir&) = delete;
                         LittleFsDir(LittleFsDir&&) = delete;
@@ -86,7 +86,12 @@ namespace Pinetime {
                             lfs_dir_close(&mLfs, &mLfs_dir);
                         }
                         bool isNULL() { return mLfs_dir.type != LFS_TYPE_DIR; }
-                        // TODO determine API for directories
+                        struct LittleFsEntry {
+                            enum class Type : uint8_t { NULLENTRY, FILE, DIR } type;
+                            char name[LFS_NAME_MAX+1];
+                            size_t size = 0;
+                        };
+                        const LittleFsEntry next();
                     private:
                         lfs_t& mLfs;
                         lfs_dir_t mLfs_dir;

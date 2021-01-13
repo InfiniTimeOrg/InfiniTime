@@ -92,14 +92,15 @@ namespace Pinetime {
             FAILURE = 0xFF,
         };
 
-        enum class ErrorCodes {
-            NoError = 0x01,
-            InvalidState = 0x02,
-            NotSupported = 0x03,
-            DataSizeExceedsLimits = 0x04,
-            CrcError = 0x05,
-            OperationFailed = 0x06
+        enum class ListingState : uint8_t {
+            DONE,
+            HDR_1,  ///< xml version string
+            HDR_2,  ///< doctype
+            HDR_3,  ///< <folder-listing> <parent-folder/>
+            ENTRIES,
+            FTR,    ///< </folder-listing>
         };
+        ListingState mListingState = ListingState::DONE;
     };
   }
 }

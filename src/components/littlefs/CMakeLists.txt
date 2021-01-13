@@ -23,6 +23,14 @@ target_include_directories(littlefs
         ${project_littlefs_SOURCE_DIR}/
 )
 target_link_libraries(littlefs littlefs-target)
+target_compile_options(littlefs
+    PUBLIC
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+)
 
 add_library(littlefs-target
     LittleFs.cpp
@@ -34,3 +42,11 @@ target_include_directories(littlefs-target
         ../../
 )
 target_link_libraries(littlefs-target littlefs)
+target_compile_options(littlefs-target
+    PUBLIC
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+)
