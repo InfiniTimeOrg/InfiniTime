@@ -367,6 +367,7 @@ list(APPEND SOURCE_FILES
         components/ble/CurrentTimeClient.cpp
         components/ble/AlertNotificationClient.cpp
         components/ble/DfuService.cpp
+        components/ble/FtpService.cpp
         components/ble/CurrentTimeService.cpp
         components/ble/AlertNotificationService.cpp
         components/ble/MusicService.cpp
@@ -449,6 +450,7 @@ set(INCLUDE_FILES
         components/ble/CurrentTimeClient.h
         components/ble/AlertNotificationClient.h
         components/ble/DfuService.h
+        components/ble/FtpService.h
         components/firmwarevalidator/FirmwareValidator.h
         components/ble/BatteryInformationService.h
         components/ble/ImmediateAlertService.h
@@ -475,6 +477,9 @@ set(INCLUDE_FILES
 include_directories(
         .
         ../
+        # FIXME workaround hack
+        ${CMAKE_BINARY_DIR}/_deps/project_littlefs-src/
+        components/littlefs/
         libs/
         FreeRTOS/
         libs/date/includes

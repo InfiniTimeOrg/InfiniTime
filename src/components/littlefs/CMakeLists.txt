@@ -29,7 +29,8 @@ add_library(littlefs-target
 )
 target_include_directories(littlefs-target
     PUBLIC
+        ./
         #FIXME refactor source into actual components
-        ../../drivers/
+        ../../
 )
 target_link_libraries(littlefs-target littlefs)
