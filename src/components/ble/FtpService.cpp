@@ -7,8 +7,10 @@ using namespace Pinetime::Controllers;
 
 // provide linktime space for constants
 constexpr ble_uuid128_t FtpService::serviceUuid;
-constexpr ble_uuid128_t FtpService::controlPointCharacteristicUuid;
+constexpr uint16_t FtpService::revision;
 constexpr ble_uuid128_t FtpService::revisionCharacteristicUuid;
+constexpr ble_uuid128_t FtpService::pathCharacteristicUuid;
+constexpr ble_uuid128_t FtpService::controlPointCharacteristicUuid;
 constexpr ble_uuid128_t FtpService::packetCharacteristicUuid;
 
 /// C level hook to call class methods

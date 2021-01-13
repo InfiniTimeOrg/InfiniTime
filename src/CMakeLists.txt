@@ -661,7 +661,8 @@ set(IMAGE_MCUBOOT_FILE_NAME image-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_M
 set(DFU_FILE_NAME dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 set(NRF5_LINKER_SCRIPT_MCUBOOT "${CMAKE_SOURCE_DIR}/gcc_nrf52-mcuboot.ld")
 add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl)
+# target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl)
+target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs)
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
