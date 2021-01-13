@@ -30,6 +30,7 @@ namespace Pinetime {
 
         SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                    Pinetime::Drivers::SpiNorFlash& spiNorFlash,
+                   Pinetime::System::LittleFs& littleFs,
                    Drivers::TwiMaster& twiMaster, Drivers::Cst816S &touchPanel,
                    Components::LittleVgl &lvgl,
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,

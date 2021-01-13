@@ -35,6 +35,7 @@ void IdleTimerCallback(TimerHandle_t xTimer) {
 
 SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
+                       Pinetime::System::LittleFs& littleFs,
                        Drivers::TwiMaster& twiMaster, Drivers::Cst816S &touchPanel,
                        Components::LittleVgl &lvgl,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
@@ -44,7 +45,7 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        twiMaster{twiMaster}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
-                       nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash) {
+                       nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash, littleFs) {
   systemTasksMsgQueue = xQueueCreate(10, 1);
 }
 

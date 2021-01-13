@@ -14,6 +14,7 @@
 #include "CurrentTimeService.h"
 #include "DeviceInformationService.h"
 #include "DfuService.h"
+#include "FtpService.h"
 #include "ImmediateAlertService.h"
 #include "MusicService.h"
 #include "ServiceDiscovery.h"
@@ -37,7 +38,8 @@ namespace Pinetime {
       public:
         NimbleController(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::Ble& bleController,
                 DateTime& dateTimeController, Pinetime::Controllers::NotificationManager& notificationManager,
-                Controllers::Battery& batteryController, Pinetime::Drivers::SpiNorFlash& spiNorFlash);
+                Controllers::Battery& batteryController, Pinetime::Drivers::SpiNorFlash& spiNorFlash,
+                Pinetime::System::LittleFs& littleFs);
         void Init();
         void StartAdvertising();
         int OnGAPEvent(ble_gap_event *event);
@@ -65,6 +67,7 @@ namespace Pinetime {
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Drivers::SpiNorFlash& spiNorFlash;
         Pinetime::Controllers::DfuService dfuService;
+        Pinetime::Controllers::FtpService ftpService;
 
         DeviceInformationService deviceInformationService;
         CurrentTimeClient currentTimeClient;

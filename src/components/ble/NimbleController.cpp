@@ -22,13 +22,15 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         DateTime& dateTimeController,
         Pinetime::Controllers::NotificationManager& notificationManager,
         Controllers::Battery& batteryController,
-        Pinetime::Drivers::SpiNorFlash& spiNorFlash) :
+        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
+        Pinetime::System::LittleFs& littleFs) :
         systemTask{systemTask},
         bleController{bleController},
         dateTimeController{dateTimeController},
         notificationManager{notificationManager},
         spiNorFlash{spiNorFlash},
         dfuService{systemTask, bleController, spiNorFlash},
+        ftpService{systemTask, bleController, littleFs},
         currentTimeClient{dateTimeController},
         anService{systemTask, notificationManager},
         alertNotificationClient{systemTask, notificationManager},
@@ -56,6 +58,7 @@ void NimbleController::Init() {
   musicService.Init();
   anService.Init();
   dfuService.Init();
+  ftpService.Init();
   batteryInformationService.Init();
   immediateAlertService.Init();
   int res;

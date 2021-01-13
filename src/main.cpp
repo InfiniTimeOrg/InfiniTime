@@ -73,6 +73,15 @@ Pinetime::Drivers::St7789 lcd {lcdSpi, pinLcdDataCommand};
 
 Pinetime::Drivers::Spi flashSpi {spi, pinSpiFlashCsn};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
+constexpr size_t MB = 1 << 10;
+constexpr size_t GB = 1 << 20;
+constexpr size_t RESERVED_SZ = 512 * MB;
+constexpr size_t FS_START_ADDRESS = RESERVED_SZ;
+constexpr size_t BLOCK_SIZE_BYTES = 256;
+static_assert( (FS_START_ADDRESS % BLOCK_SIZE_BYTES) == 0, "filesystem doesn't start on a block address");
+constexpr size_t TOTAL_SIZE = 4 * GB;
+constexpr size_t FS_SIZE = TOTAL_SIZE - RESERVED_SZ;
+Pinetime::System::LittleFs littleFs{spiNorFlash, FS_START_ADDRESS, FS_SIZE};
 
 // The TWI device should work @ up to 400Khz but there is a HW bug which prevent it from
 // respecting correct timings. According to erratas heet, this magic value makes it run
@@ -236,7 +245,7 @@ int main(void) {
 
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
-  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, twiMaster, touchPanel, lvgl, batteryController, bleController,
+  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, littleFs, twiMaster, touchPanel, lvgl, batteryController, bleController,
                                                     dateTimeController, notificationManager));
   systemTask->Start();
   nimble_port_init();
