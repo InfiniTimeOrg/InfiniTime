@@ -21,7 +21,7 @@ namespace Pinetime {
     }
 
     float GetAverage() const {
-      float sum = std::accumulate(arr.begin(), arr.end(), 0);
+      float sum = std::accumulate(arr.begin(), arr.end(), 0.0f);
       return (sum / sz);
     }
 
@@ -31,6 +31,7 @@ namespace Pinetime {
     uint8_t cap;
     uint8_t loc;
   };
+
     class Battery {
       public:
         void Init();
