@@ -7,7 +7,7 @@
 namespace Pinetime {
   namespace Controllers {
   // A simple circular buffer that can be used to average 
-  // out sensor values
+  // out the sensor values
   template <int N> 
   class CircBuffer {
   public:
