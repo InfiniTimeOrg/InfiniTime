@@ -36,10 +36,12 @@ set(SDK_SOURCE_FILES
         # Base SDK
         "${NRF5_SDK_PATH}/components/boards/boards.c"
         "${NRF5_SDK_PATH}/integration/nrfx/legacy/nrf_drv_clock.c"
+        "${NRF5_SDK_PATH}/integration/nrfx/legacy/nrf_drv_clock.h"
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_clock.c"
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_gpiote.c"
         "${NRF5_SDK_PATH}/modules/nrfx/soc/nrfx_atomic.c"
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_saadc.c"
+        "${NRF5_SDK_PATH}/components/libraries/timer/app_timer.h"
 
         # FreeRTOS
         ${NRF5_SDK_PATH}/external/freertos/source/croutine.c
