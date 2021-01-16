@@ -27,7 +27,7 @@
 #undef min
 
 //c7e60000-78fc-48fe-8e23-433b3a1942d0
-#define NAVIGATION_SERVICE_UUID_BASE {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0xe6, 0xc7}
+#define NAVIGATION_SERVICE_UUID_BASE {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0x00, 0x00}
 
 namespace Pinetime {
   namespace System {
@@ -53,11 +53,11 @@ namespace Pinetime {
       int getProgress();
 
     private:
-      static constexpr uint8_t navId[2] = {0x00, 0x01};
-      static constexpr uint8_t navFlagCharId[2] = {0x00, 0x02};
-      static constexpr uint8_t navNarrativeCharId[2] = {0x00, 0x03};
-      static constexpr uint8_t navManDistCharId[2] = {0x00, 0x04};
-      static constexpr uint8_t navProgressCharId[2] = {0x00, 0x05};
+      static constexpr uint8_t navId[2] = {0x01, 0x00};
+      static constexpr uint8_t navFlagCharId[2] = {0x01, 0x00};
+      static constexpr uint8_t navNarrativeCharId[2] = {0x02, 0x00};
+      static constexpr uint8_t navManDistCharId[2] = {0x03, 0x00};
+      static constexpr uint8_t navProgressCharId[2] = {0x04, 0x00};
 
       ble_uuid128_t navUuid{
           .u = {.type = BLE_UUID_TYPE_128},
