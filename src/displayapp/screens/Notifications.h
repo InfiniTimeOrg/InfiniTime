@@ -5,6 +5,7 @@
 #include <memory>
 #include "Screen.h"
 #include "components/ble/NotificationManager.h"
+#include "components/motor/MotorController.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -45,6 +46,7 @@ namespace Pinetime {
             const char* text;
           };
           Pinetime::Controllers::NotificationManager& notificationManager;
+          Pinetime::Controllers::MotorController motorController;
           Modes mode = Modes::Normal;
           std::unique_ptr<NotificationItem> currentItem;
           Controllers::NotificationManager::Notification::Id currentId;
