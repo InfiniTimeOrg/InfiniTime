@@ -20,8 +20,8 @@ namespace Pinetime {
       }
     }
 
-    float GetAverage() const {
-      float sum = std::accumulate(arr.begin(), arr.end(), 0.0f);
+    int GetAverage() const {
+      int sum = std::accumulate(arr.begin(), arr.end(), 0.0f);
       return (sum / sz);
     }
 
@@ -36,7 +36,7 @@ namespace Pinetime {
       public:
         void Init();
         void Update();
-        float PercentRemaining() const { return percentRemainingBuffer.GetAverage(); }
+        int PercentRemaining() const { return percentRemainingBuffer.GetAverage(); }
         float Voltage() const { return voltage; }
         bool IsCharging() const { return isCharging; }
         bool IsPowerPresent() const { return isPowerPresent; }
