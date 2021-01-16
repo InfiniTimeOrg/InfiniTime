@@ -55,6 +55,7 @@ Navigation::Navigation(Pinetime::Applications::DisplayApp *app, Pinetime::Contro
   lv_obj_align(txtNarrative, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 1 * FONT_HEIGHT);
   lv_label_set_text(txtNarrative, "Narrative");
   lv_label_set_align(txtNarrative, LV_LABEL_ALIGN_CENTER);
+  lv_label_set_anim_speed(txtNarrative, 15);
   lv_obj_set_width(txtNarrative, LV_HOR_RES);
 
   txtManDist = lv_label_create(lv_scr_act(), nullptr);
