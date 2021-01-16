@@ -21,7 +21,7 @@ namespace Pinetime {
     }
 
     int GetAverage() const {
-      int sum = std::accumulate(arr.begin(), arr.end(), 0.0f);
+      int sum = std::accumulate(arr.begin(), arr.end(), 0);
       return (sum / sz);
     }
 
