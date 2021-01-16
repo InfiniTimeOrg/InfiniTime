@@ -12,7 +12,7 @@ namespace Pinetime {
   class CircBuffer {
   public:
     CircBuffer() : arr{}, sz{}, cap{N}, loc{} {}
-    void insert(const float num) {
+    void insert(const int num) {
       loc %= cap;
       arr[loc++] = num;
       if (sz != cap) {
@@ -26,7 +26,7 @@ namespace Pinetime {
     }
 
   private:
-    std::array<float, N> arr;
+    std::array<int, N> arr;
     uint8_t sz;
     uint8_t cap;
     uint8_t loc;
