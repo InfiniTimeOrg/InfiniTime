@@ -6,15 +6,21 @@
 
 namespace Pinetime {
   namespace Controllers {
-  // A simple circular buffer that can be used to average 
-  // out the sensor values
+  /** A simple circular buffer that can be used to average 
+   out the sensor values. The total capacity of the CircBuffer  
+   is given as the template parameter N.
+   */ 
   template <int N> 
   class CircBuffer {
   public:
-    CircBuffer() : arr{}, sz{}, cap{N}, loc{} {}
+    CircBuffer() : arr{}, sz{}, cap{N}, head{} {}
+    /**
+   insert member function overwrites the next data to the current 
+   HEAD and moves the HEAD to the newly inserted value.
+   */ 
     void insert(const int num) {
-      loc %= cap;
-      arr[loc++] = num;
+      head %= cap;
+      arr[head++] = num;
       if (sz != cap) {
         sz++;
       }
@@ -26,10 +32,10 @@ namespace Pinetime {
     }
 
   private:
-    std::array<int, N> arr;
-    uint8_t sz;
-    uint8_t cap;
-    uint8_t loc;
+    std::array<int, N> arr; /**< internal array used to store the values*/
+    uint8_t sz; /**< The current size of the array.*/
+    uint8_t cap; /**< Total capacity of the CircBuffer.*/
+    uint8_t head; /**< The current head of the CircBuffer*/
   };
 
     class Battery {
