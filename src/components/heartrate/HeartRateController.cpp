@@ -16,15 +16,15 @@ void HeartRateController::Update(HeartRateController::States newState, uint8_t h
 
 void HeartRateController::Start() {
   if(task != nullptr) {
+    state = States::NotEnoughData;
     task->PushMessage(Pinetime::Applications::HeartRateTask::Messages::StartMeasurement);
-    systemTask.PushMessage(System::SystemTask::Messages::HeartRateRunning);
   }
 }
 
 void HeartRateController::Stop() {
   if(task != nullptr) {
+    state = States::Stopped;
     task->PushMessage(Pinetime::Applications::HeartRateTask::Messages::StopMeasurement);
-    systemTask.PushMessage(System::SystemTask::Messages::HeartRateStopped);
   }
 }
 

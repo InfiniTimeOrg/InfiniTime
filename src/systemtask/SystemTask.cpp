@@ -141,6 +141,7 @@ void SystemTask::Work() {
 
           displayApp->PushMessage(Applications::DisplayApp::Messages::GoToRunning);
           displayApp->PushMessage(Applications::DisplayApp::Messages::UpdateBatteryLevel);
+          heartRateApp->PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
 
           isSleeping = false;
           isWakingUp = false;
@@ -150,6 +151,7 @@ void SystemTask::Work() {
           NRF_LOG_INFO("[systemtask] Going to sleep");
           xTimerStop(idleTimer, 0);
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
+          heartRateApp->PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
           break;
         case Messages::OnNewTime:
           ReloadIdleTimer();
@@ -194,12 +196,6 @@ void SystemTask::Work() {
           twiMaster.Sleep();
           isSleeping = true;
           isGoingToSleep = false;
-          break;
-        case Messages::HeartRateRunning:
-          doNotGoToSleep = true;
-          break;
-        case Messages::HeartRateStopped:
-          doNotGoToSleep = false;
           break;
         default: break;
       }

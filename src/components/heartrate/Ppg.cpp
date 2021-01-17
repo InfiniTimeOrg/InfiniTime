@@ -94,3 +94,7 @@ void Ppg::SetOffset(uint16_t offset) {
   this->offset = offset;
   dataIndex = 0;
 }
+
+void Ppg::Reset() {
+  dataIndex = 0;
+}

@@ -14,6 +14,7 @@ namespace Pinetime {
       float HeartRate();
 
       void SetOffset(uint16_t i);
+      void Reset();
 
     private:
       std::array<int, 200> data;

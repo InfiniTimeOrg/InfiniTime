@@ -21,14 +21,18 @@ namespace Pinetime {
 
         bool Refresh() override;
         bool OnButtonPushed() override;
+        void OnStartStopEvent(lv_event_t event);
 
       private:
         Controllers::HeartRateController& heartRateController;
+        void UpdateStartStopButton(bool isRunning);
         lv_obj_t* label_hr;
         lv_obj_t* label_bpm;
         lv_obj_t* label_status;
         lv_style_t labelBigStyle;
         lv_style_t* labelStyle;
+        lv_obj_t* btn_startStop;
+        lv_obj_t* label_startStop;
 
         bool running = true;
 

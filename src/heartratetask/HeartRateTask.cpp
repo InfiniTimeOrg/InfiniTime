@@ -42,14 +42,21 @@ void HeartRateTask::Work() {
           break;
         case Messages::WakeUp:
           state = States::Running;
+          if(measurementStarted) {
+            lastBpm = 0;
+            StartMeasurement();
+          }
           break;
         case Messages::StartMeasurement:
+          if(measurementStarted) break;
           lastBpm = 0;
           StartMeasurement();
-          ppg.SetOffset(heartRateSensor.ReadHrs());
+          measurementStarted = true;
           break;
         case Messages::StopMeasurement:
+          if(!measurementStarted) break;
           StopMeasurement();
+          measurementStarted = false;
           break;
       }
     }
@@ -59,7 +66,7 @@ void HeartRateTask::Work() {
       ppg.Preprocess(hrs);
       auto bpm = ppg.HeartRate();
 
-      if (lastBpm == 0 && bpm == 0) controller.Update(Controllers::HeartRateController::States::NoTouch, 0);
+      if (lastBpm == 0 && bpm == 0) controller.Update(Controllers::HeartRateController::States::NotEnoughData, 0);
       if(bpm != 0) {
         lastBpm = bpm;
         controller.Update(Controllers::HeartRateController::States::Running, lastBpm);
@@ -80,10 +87,11 @@ void HeartRateTask::PushMessage(HeartRateTask::Messages msg) {
 
 void HeartRateTask::StartMeasurement() {
   heartRateSensor.Enable();
-  measurementStarted = true;
+  vTaskDelay(100);
+  ppg.SetOffset(static_cast<float>(heartRateSensor.ReadHrs()));
 }
 
 void HeartRateTask::StopMeasurement() {
   heartRateSensor.Disable();
-  measurementStarted = false;
+  vTaskDelay(100);
 }

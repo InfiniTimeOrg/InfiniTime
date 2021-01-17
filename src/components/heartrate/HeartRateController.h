@@ -12,7 +12,7 @@ namespace Pinetime {
   namespace Controllers {
     class HeartRateController {
     public:
-      enum class States { NotEnoughData, NoTouch, Running};
+      enum class States { Stopped, NotEnoughData, NoTouch, Running};
 
       explicit HeartRateController(System::SystemTask& systemTask);
 
@@ -27,7 +27,7 @@ namespace Pinetime {
     private:
       System::SystemTask& systemTask;
       Applications::HeartRateTask* task = nullptr;
-      States state = States::NotEnoughData;
+      States state = States::Stopped;
       uint8_t heartRate = 0;
     };
   }
