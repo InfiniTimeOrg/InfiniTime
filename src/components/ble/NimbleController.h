@@ -16,6 +16,7 @@
 #include "DfuService.h"
 #include "ImmediateAlertService.h"
 #include "MusicService.h"
+#include "QrService.h"
 #include "NavigationService.h"
 #include "ServiceDiscovery.h"
 #include "HeartRateService.h"
@@ -70,6 +71,10 @@ namespace Pinetime {
       Pinetime::Controllers::AlertNotificationService& alertService() {
         return anService;
       };
+      Pinetime::Controllers::QrService& qr() {
+        return qrService;
+      };
+      
 
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);
@@ -96,6 +101,7 @@ namespace Pinetime {
       NavigationService navService;
       BatteryInformationService batteryInformationService;
       ImmediateAlertService immediateAlertService;
+      QrService qrService;
       HeartRateService heartRateService;
       MotionService motionService;
 

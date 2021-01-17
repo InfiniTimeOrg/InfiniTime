@@ -25,6 +25,7 @@ namespace Pinetime {
       Metronome,
       Motion,
       Steps,
+      Qr,
       QuickSettings,
       Settings,
       SettingWatchFace,
