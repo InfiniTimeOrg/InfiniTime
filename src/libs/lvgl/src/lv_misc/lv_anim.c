@@ -158,12 +158,12 @@ uint16_t lv_anim_count_running(void)
  * @param end end value of the animation
  * @return the required time [ms] for the animation with the given parameters
  */
-uint16_t lv_anim_speed_to_time(uint16_t speed, lv_anim_value_t start, lv_anim_value_t end)
+uint32_t lv_anim_speed_to_time(uint16_t speed, lv_anim_value_t start, lv_anim_value_t end)
 {
     int32_t d     = LV_MATH_ABS((int32_t)start - end);
     uint32_t time = (int32_t)((int32_t)(d * 1000) / speed);
 
-    if(time > UINT16_MAX) time = UINT16_MAX;
+    if(time > UINT32_MAX) time = UINT32_MAX;
 
     if(time == 0) {
         time++;
