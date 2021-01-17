@@ -74,8 +74,8 @@ namespace Pinetime {
         Pinetime::Drivers::Watchdog watchdog;
         Pinetime::Drivers::WatchdogView watchdogView;
         Pinetime::Controllers::NotificationManager& notificationManager;
-        Pinetime::Controllers::NimbleController nimbleController;
         Pinetime::Drivers::Hrs3300& heartRateSensor;
+        Pinetime::Controllers::NimbleController nimbleController;
 
         static constexpr uint8_t pinSpiSck = 2;
         static constexpr uint8_t pinSpiMosi = 3;

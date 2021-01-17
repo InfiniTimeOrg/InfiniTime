@@ -11,7 +11,10 @@ HeartRateController::HeartRateController(Pinetime::System::SystemTask &systemTas
 
 void HeartRateController::Update(HeartRateController::States newState, uint8_t heartRate) {
   this->state = newState;
-  this->heartRate = heartRate;
+  if(this->heartRate != heartRate) {
+    this->heartRate = heartRate;
+    service->OnNewHeartRateValue(heartRate);
+  }
 }
 
 void HeartRateController::Start() {
@@ -30,5 +33,9 @@ void HeartRateController::Stop() {
 
 void HeartRateController::SetHeartRateTask(Pinetime::Applications::HeartRateTask *task) {
   this->task = task;
+}
+
+void HeartRateController::SetService(Pinetime::Controllers::HeartRateService *service) {
+  this->service = service;
 }
 

@@ -47,8 +47,8 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        heartRateController{*this},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog}, notificationManager{notificationManager},
-                       nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash),
-                       heartRateSensor{heartRateSensor}{
+                       heartRateSensor{heartRateSensor},
+                       nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
   systemTasksMsgQueue = xQueueCreate(10, 1);
 }
 

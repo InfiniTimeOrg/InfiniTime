@@ -375,6 +375,7 @@ list(APPEND SOURCE_FILES
         components/ble/BatteryInformationService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/ServiceDiscovery.cpp
+        components/ble/HeartRateService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
@@ -464,6 +465,7 @@ set(INCLUDE_FILES
         components/ble/ImmediateAlertService.h
         components/ble/ServiceDiscovery.h
         components/ble/BleClient.h
+        components/ble/HeartRateService.h.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
