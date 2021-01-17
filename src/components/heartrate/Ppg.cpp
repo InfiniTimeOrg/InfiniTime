@@ -1,10 +1,16 @@
+/*
+  SPDX-License-Identifier: LGPL-3.0-or-later
+  Original work Copyright (C) 2020 Daniel Thompson
+  C++ port Copyright (C) 2021 Jean-François Milants
+*/
+
 #include <vector>
 #include <nrf_log.h>
 #include "Ppg.h"
 using namespace Pinetime::Controllers;
 
+/** Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/ppg.py */
 namespace {
-  // TODO no vector!
   int Compare(int* d1, int* d2, size_t count) {
     int e = 0;
     for(int i = 0; i < count; i++) {

@@ -1,8 +1,15 @@
+/*
+  SPDX-License-Identifier: LGPL-3.0-or-later
+  Original work Copyright (C) 2020 Daniel Thompson
+  C++ port Copyright (C) 2021 Jean-François Milants
+*/
+
 #include <cmath>
 #include "Ptagc.h"
 
 using namespace Pinetime::Controllers;
 
+/** Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/ppg.py */
 Ptagc::Ptagc(float start, float decay, float threshold) : peak{start}, decay{decay}, boost{1.0f/decay}, threshold{threshold} {
 
 }

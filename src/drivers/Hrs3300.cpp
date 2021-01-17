@@ -1,3 +1,9 @@
+/*
+  SPDX-License-Identifier: LGPL-3.0-or-later
+  Original work Copyright (C) 2020 Daniel Thompson
+  C++ port Copyright (C) 2021 Jean-François Milants
+*/
+
 #include <algorithm>
 #include <nrf_gpio.h>
 #include "Hrs3300.h"
@@ -7,7 +13,9 @@
 #include <nrf_log.h>
 
 using namespace Pinetime::Drivers;
-
+/** Driver for the HRS3300 heart rate sensor.
+ * Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/drivers/hrs3300.py
+ */
 Hrs3300::Hrs3300(TwiMaster &twiMaster, uint8_t twiAddress) : twiMaster{twiMaster}, twiAddress{twiAddress} {
 
 }
