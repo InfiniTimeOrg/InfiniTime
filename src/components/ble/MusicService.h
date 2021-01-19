@@ -73,7 +73,7 @@ namespace Pinetime {
         Playing = 0x01
       };
     private:
-      static constexpr uint8_t msId[2] = {0x01, 0x00};
+      static constexpr uint8_t msId[2] = {0x00, 0x00};
       static constexpr uint8_t msEventCharId[2] = {0x01, 0x00};
       static constexpr uint8_t msStatusCharId[2] = {0x02, 0x00};
       static constexpr uint8_t msArtistCharId[2] = {0x03, 0x00};
