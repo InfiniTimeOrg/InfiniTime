@@ -322,6 +322,96 @@ list(APPEND IMAGE_FILES
 
         displayapp/icons/bluetooth/os_bt_connected.c
         displayapp/icons/bluetooth/os_bt_disconnected.c
+
+        displayapp/icons/navigation/arrive-left.c
+        displayapp/icons/navigation/arrive-right.c
+        displayapp/icons/navigation/arrive-straight.c
+        displayapp/icons/navigation/arrive.c
+        displayapp/icons/navigation/close.c
+        displayapp/icons/navigation/continue-left.c
+        displayapp/icons/navigation/continue-right.c
+        displayapp/icons/navigation/continue-slight-left.c
+        displayapp/icons/navigation/continue-slight-right.c
+        displayapp/icons/navigation/continue-straight.c
+        displayapp/icons/navigation/continue-uturn.c
+        displayapp/icons/navigation/continue.c
+        displayapp/icons/navigation/depart-left.c
+        displayapp/icons/navigation/depart-right.c
+        displayapp/icons/navigation/depart-straight.c
+        displayapp/icons/navigation/end-of-road-left.c
+        displayapp/icons/navigation/end-of-road-right.c
+        displayapp/icons/navigation/ferry.c
+        displayapp/icons/navigation/flag.c
+        displayapp/icons/navigation/fork-left.c
+        displayapp/icons/navigation/fork-right.c
+        displayapp/icons/navigation/fork-slight-left.c
+        displayapp/icons/navigation/fork-slight-right.c
+        displayapp/icons/navigation/fork-straight.c
+        displayapp/icons/navigation/invalid.c
+        displayapp/icons/navigation/invalid-left.c
+        displayapp/icons/navigation/invalid-right.c
+        displayapp/icons/navigation/invalid-slight-left.c
+        displayapp/icons/navigation/invalid-slight-right.c
+        displayapp/icons/navigation/invalid-straight.c
+        displayapp/icons/navigation/invalid-uturn.c
+        displayapp/icons/navigation/merge-left.c
+        displayapp/icons/navigation/merge-right.c
+        displayapp/icons/navigation/merge-slight-left.c
+        displayapp/icons/navigation/merge-slight-right.c
+        displayapp/icons/navigation/merge-straight.c
+        displayapp/icons/navigation/new-name-left.c
+        displayapp/icons/navigation/new-name-right.c
+        displayapp/icons/navigation/new-name-sharp-left.c
+        displayapp/icons/navigation/new-name-sharp-right.c
+        displayapp/icons/navigation/new-name-slight-left.c
+        displayapp/icons/navigation/new-name-slight-right.c
+        displayapp/icons/navigation/new-name-straight.c
+        displayapp/icons/navigation/notification-left.c
+        displayapp/icons/navigation/notification-right.c
+        displayapp/icons/navigation/notification-sharp-left.c
+        displayapp/icons/navigation/notification-sharp-right.c
+        displayapp/icons/navigation/notification-slight-left.c
+        displayapp/icons/navigation/notification-slight-right.c
+        displayapp/icons/navigation/notification-straight.c
+        displayapp/icons/navigation/off-ramp-left.c
+        displayapp/icons/navigation/off-ramp-right.c
+        displayapp/icons/navigation/off-ramp-sharp-left.c
+        displayapp/icons/navigation/off-ramp-sharp-right.c
+        displayapp/icons/navigation/off-ramp-slight-left.c
+        displayapp/icons/navigation/off-ramp-slight-right.c
+        displayapp/icons/navigation/off-ramp-straight.c
+        displayapp/icons/navigation/on-ramp-left.c
+        displayapp/icons/navigation/on-ramp-right.c
+        displayapp/icons/navigation/on-ramp-sharp-left.c
+        displayapp/icons/navigation/on-ramp-sharp-right.c
+        displayapp/icons/navigation/on-ramp-slight-left.c
+        displayapp/icons/navigation/on-ramp-slight-right.c
+        displayapp/icons/navigation/on-ramp-straight.c
+        displayapp/icons/navigation/rotary.c
+        displayapp/icons/navigation/rotary-left.c
+        displayapp/icons/navigation/rotary-right.c
+        displayapp/icons/navigation/rotary-sharp-left.c
+        displayapp/icons/navigation/rotary-sharp-right.c
+        displayapp/icons/navigation/rotary-slight-left.c
+        displayapp/icons/navigation/rotary-slight-right.c
+        displayapp/icons/navigation/rotary-straight.c
+        displayapp/icons/navigation/roundabout.c
+        displayapp/icons/navigation/roundabout-left.c
+        displayapp/icons/navigation/roundabout-right.c
+        displayapp/icons/navigation/roundabout-sharp-left.c
+        displayapp/icons/navigation/roundabout-sharp-right.c
+        displayapp/icons/navigation/roundabout-slight-left.c
+        displayapp/icons/navigation/roundabout-slight-right.c
+        displayapp/icons/navigation/roundabout-straight.c
+        displayapp/icons/navigation/turn-left.c
+        displayapp/icons/navigation/turn-right.c
+        displayapp/icons/navigation/turn-sharp-left.c
+        displayapp/icons/navigation/turn-sharp-right.c
+        displayapp/icons/navigation/turn-slight-left.c
+        displayapp/icons/navigation/turn-slight-right.c
+        displayapp/icons/navigation/turn-stright.c
+        displayapp/icons/navigation/updown.c
+        displayapp/icons/navigation/uturn.c
         )
 
 list(APPEND SOURCE_FILES
@@ -345,6 +435,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Label.cpp
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
+        displayapp/screens/Navigation.cpp
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
@@ -372,6 +463,7 @@ list(APPEND SOURCE_FILES
         components/ble/CurrentTimeService.cpp
         components/ble/AlertNotificationService.cpp
         components/ble/MusicService.cpp
+        components/ble/NavigationService.cpp
         components/ble/BatteryInformationService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/ServiceDiscovery.cpp
