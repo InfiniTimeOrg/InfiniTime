@@ -24,32 +24,68 @@ int MSCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_acces
 }
 
 Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask &system) : m_system(system) {
-  msUuid.value[11] = msId[0];
-  msUuid.value[12] = msId[1];
-  msEventCharUuid.value[11] = msEventCharId[0];
-  msEventCharUuid.value[12] = msEventCharId[1];
-  msStatusCharUuid.value[11] = msStatusCharId[0];
-  msStatusCharUuid.value[12] = msStatusCharId[1];
-  msTrackCharUuid.value[11] = msTrackCharId[0];
-  msTrackCharUuid.value[12] = msTrackCharId[1];
-  msArtistCharUuid.value[11] = msArtistCharId[0];
-  msArtistCharUuid.value[12] = msArtistCharId[1];
-  msAlbumCharUuid.value[11] = msAlbumCharId[0];
-  msAlbumCharUuid.value[12] = msAlbumCharId[1];
-  msPositionCharUuid.value[11] = msPositionCharId[0];
-  msPositionCharUuid.value[12] = msPositionCharId[1];
-  msTotalLengthCharUuid.value[11] = msTotalLengthCharId[0];
-  msTotalLengthCharUuid.value[12] = msTotalLengthCharId[1];
-  msTrackNumberCharUuid.value[11] = msTrackNumberCharId[0];
-  msTrackNumberCharUuid.value[12] = msTrackNumberCharId[1];
-  msTrackTotalCharUuid.value[11] = msTrackTotalCharId[0];
-  msTrackTotalCharUuid.value[12] = msTrackTotalCharId[1];
-  msPlaybackSpeedCharUuid.value[11] = msPlaybackSpeedCharId[0];
-  msPlaybackSpeedCharUuid.value[12] = msPlaybackSpeedCharId[1];
-  msRepeatCharUuid.value[11] = msRepeatCharId[0];
-  msRepeatCharUuid.value[12] = msRepeatCharId[1];
-  msShuffleCharUuid.value[11] = msShuffleCharId[0];
-  msShuffleCharUuid.value[12] = msShuffleCharId[1];
+  msUuid.value[14] = msId[0];
+  msUuid.value[15] = msId[1];
+
+  msEventCharUuid.value[12] = msEventCharId[0];
+  msEventCharUuid.value[13] = msEventCharId[1];
+  msEventCharUuid.value[14] = msId[0];
+  msEventCharUuid.value[15] = msId[1];
+
+  msStatusCharUuid.value[12] = msStatusCharId[0];
+  msStatusCharUuid.value[13] = msStatusCharId[1];
+  msStatusCharUuid.value[14] = msId[0];
+  msStatusCharUuid.value[15] = msId[1];
+
+  msTrackCharUuid.value[12] = msTrackCharId[0];
+  msTrackCharUuid.value[13] = msTrackCharId[1];
+  msTrackCharUuid.value[14] = msId[0];
+  msTrackCharUuid.value[15] = msId[1];
+
+  msArtistCharUuid.value[12] = msArtistCharId[0];
+  msArtistCharUuid.value[13] = msArtistCharId[1];
+  msArtistCharUuid.value[14] = msId[0];
+  msArtistCharUuid.value[15] = msId[1];
+
+  msAlbumCharUuid.value[12] = msAlbumCharId[0];
+  msAlbumCharUuid.value[13] = msAlbumCharId[1];
+  msAlbumCharUuid.value[14] = msId[0];
+  msAlbumCharUuid.value[15] = msId[1];
+
+  msPositionCharUuid.value[12] = msPositionCharId[0];
+  msPositionCharUuid.value[13] = msPositionCharId[1];
+  msPositionCharUuid.value[14] = msId[0];
+  msPositionCharUuid.value[15] = msId[1];
+
+  msTotalLengthCharUuid.value[12] = msTotalLengthCharId[0];
+  msTotalLengthCharUuid.value[13] = msTotalLengthCharId[1];
+  msTotalLengthCharUuid.value[14] = msId[0];
+  msTotalLengthCharUuid.value[15] = msId[1];
+
+  msTrackNumberCharUuid.value[12] = msTrackNumberCharId[0];
+  msTrackNumberCharUuid.value[13] = msTrackNumberCharId[1];
+  msTrackNumberCharUuid.value[14] = msId[0];
+  msTrackNumberCharUuid.value[15] = msId[1];
+
+  msTrackTotalCharUuid.value[12] = msTrackTotalCharId[0];
+  msTrackTotalCharUuid.value[13] = msTrackTotalCharId[1];
+  msTrackTotalCharUuid.value[14] = msId[0];
+  msTrackTotalCharUuid.value[15] = msId[1];
+
+  msPlaybackSpeedCharUuid.value[12] = msPlaybackSpeedCharId[0];
+  msPlaybackSpeedCharUuid.value[13] = msPlaybackSpeedCharId[1];
+  msPlaybackSpeedCharUuid.value[14] = msId[0];
+  msPlaybackSpeedCharUuid.value[15] = msId[1];
+
+  msRepeatCharUuid.value[12] = msRepeatCharId[0];
+  msRepeatCharUuid.value[13] = msRepeatCharId[1];
+  msRepeatCharUuid.value[14] = msId[0];
+  msRepeatCharUuid.value[15] = msId[1];
+
+  msShuffleCharUuid.value[12] = msShuffleCharId[0];
+  msShuffleCharUuid.value[13] = msShuffleCharId[1];
+  msShuffleCharUuid.value[14] = msId[0];
+  msShuffleCharUuid.value[15] = msId[1];
   
   characteristicDefinition[0] = {.uuid = (ble_uuid_t *) (&msEventCharUuid),
       .access_cb = MSCallback,

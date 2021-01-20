@@ -26,8 +26,8 @@
 #undef max
 #undef min
 
-//c7e50000-78fc-48fe-8e23-433b3a1942d0
-#define MUSIC_SERVICE_UUID_BASE {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0xe5, 0xc7}
+//00000000-78fc-48fe-8e23-433b3a1942d0
+#define MUSIC_SERVICE_UUID_BASE {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0x00, 0x00}
 
 namespace Pinetime {
   namespace System {
@@ -73,19 +73,19 @@ namespace Pinetime {
         Playing = 0x01
       };
     private:
-      static constexpr uint8_t msId[2] = {0x00, 0x01};
-      static constexpr uint8_t msEventCharId[2] = {0x00, 0x02};
-      static constexpr uint8_t msStatusCharId[2] = {0x00, 0x03};
-      static constexpr uint8_t msArtistCharId[2] = {0x00, 0x04};
-      static constexpr uint8_t msTrackCharId[2] = {0x00, 0x05};
-      static constexpr uint8_t msAlbumCharId[2] = {0x00, 0x06};
-      static constexpr uint8_t msPositionCharId[2] = {0x00, 0x07};
-      static constexpr uint8_t msTotalLengthCharId[2] = {0x00, 0x08};
-      static constexpr uint8_t msTrackNumberCharId[2] = {0x00, 0x09};
-      static constexpr uint8_t msTrackTotalCharId[2] = {0x00, 0x0a};
-      static constexpr uint8_t msPlaybackSpeedCharId[2] = {0x00, 0x0b};
-      static constexpr uint8_t msRepeatCharId[2] = {0x00, 0x0c};
-      static constexpr uint8_t msShuffleCharId[2] = {0x00, 0x0d};
+      static constexpr uint8_t msId[2] = {0x00, 0x00};
+      static constexpr uint8_t msEventCharId[2] = {0x01, 0x00};
+      static constexpr uint8_t msStatusCharId[2] = {0x02, 0x00};
+      static constexpr uint8_t msArtistCharId[2] = {0x03, 0x00};
+      static constexpr uint8_t msTrackCharId[2] = {0x04, 0x00};
+      static constexpr uint8_t msAlbumCharId[2] = {0x05, 0x00};
+      static constexpr uint8_t msPositionCharId[2] = {0x06, 0x00};
+      static constexpr uint8_t msTotalLengthCharId[2] = {0x07, 0x00};
+      static constexpr uint8_t msTrackNumberCharId[2] = {0x08, 0x00};
+      static constexpr uint8_t msTrackTotalCharId[2] = {0x09, 0x00};
+      static constexpr uint8_t msPlaybackSpeedCharId[2] = {0x0a, 0x00};
+      static constexpr uint8_t msRepeatCharId[2] = {0x0b, 0x00};
+      static constexpr uint8_t msShuffleCharId[2] = {0x0c, 0x00};
       
       ble_uuid128_t msUuid{
           .u = {.type = BLE_UUID_TYPE_128},
