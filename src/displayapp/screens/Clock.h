@@ -64,7 +64,7 @@ namespace Pinetime {
           Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
           uint8_t currentDay = 0;
 
-          DirtyValue<float> batteryPercentRemaining  {0};
+          DirtyValue<int> batteryPercentRemaining  {0};
           DirtyValue<bool> bleState {false};
           DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
           DirtyValue<uint32_t> stepCount  {0};
