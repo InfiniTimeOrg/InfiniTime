@@ -73,8 +73,8 @@ typedef struct _lv_anim_t
     lv_anim_ready_cb_t ready_cb; /**< Call it when the animation is ready*/
     int32_t start;               /**< Start value*/
     int32_t end;                 /**< End value*/
-    uint16_t time;               /**< Animation time in ms*/
-    int16_t act_time;            /**< Current time in animation. Set to negative to make delay.*/
+    uint32_t time;               /**< Animation time in ms*/
+    int32_t act_time;            /**< Current time in animation. Set to negative to make delay.*/
     uint16_t playback_pause;     /**< Wait before play back*/
     uint16_t repeat_pause;       /**< Wait before repeat*/
 #if LV_USE_USER_DATA
@@ -266,7 +266,7 @@ uint16_t lv_anim_count_running(void);
  * @param end end value of the animation
  * @return the required time [ms] for the animation with the given parameters
  */
-uint16_t lv_anim_speed_to_time(uint16_t speed, lv_anim_value_t start, lv_anim_value_t end);
+uint32_t lv_anim_speed_to_time(uint16_t speed, lv_anim_value_t start, lv_anim_value_t end);
 
 /**
  * Calculate the current value of an animation applying linear characteristic
