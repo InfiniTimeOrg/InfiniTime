@@ -349,6 +349,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
         displayapp/screens/Twos.cpp
+        displayapp/screens/HeartRate.cpp
         main.cpp
         drivers/St7789.cpp
         drivers/SpiNorFlash.cpp
@@ -357,6 +358,7 @@ list(APPEND SOURCE_FILES
         drivers/Watchdog.cpp
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
+        drivers/Hrs3300.cpp
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
         components/ble/NotificationManager.cpp
@@ -373,6 +375,7 @@ list(APPEND SOURCE_FILES
         components/ble/BatteryInformationService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/ServiceDiscovery.cpp
+        components/ble/HeartRateService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
@@ -385,6 +388,12 @@ list(APPEND SOURCE_FILES
 
         systemtask/SystemTask.cpp
         drivers/TwiMaster.cpp
+
+        heartratetask/HeartRateTask.cpp
+        components/heartrate/Ppg.cpp
+        components/heartrate/Biquad.cpp
+        components/heartrate/Ptagc.cpp
+        components/heartrate/HeartRateController.cpp
         )
 
 list(APPEND GRAPHICS_SOURCE_FILES
@@ -432,6 +441,7 @@ set(INCLUDE_FILES
         displayapp/screens/ApplicationList.h
         displayapp/Apps.h
         displayapp/screens/Notifications.h
+        displayapp/screens/HeartRate.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h
@@ -439,6 +449,7 @@ set(INCLUDE_FILES
         drivers/Watchdog.h
         drivers/DebugPins.h
         drivers/InternalFlash.h
+        drivers/Hrs3300.h
         components/battery/BatteryController.h
         components/ble/BleController.h
         components/ble/NotificationManager.h
@@ -454,6 +465,7 @@ set(INCLUDE_FILES
         components/ble/ImmediateAlertService.h
         components/ble/ServiceDiscovery.h
         components/ble/BleClient.h
+        components/ble/HeartRateService.h.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
@@ -470,6 +482,11 @@ set(INCLUDE_FILES
         systemtask/SystemMonitor.h
         displayapp/screens/Symbols.h
         drivers/TwiMaster.h
+        heartratetask/HeartRateTask.h
+        components/heartrate/Ppg.h
+        components/heartrate/Biquad.h
+        components/heartrate/Ptagc.h
+        components/heartrate/HeartRateController.h
         )
 
 include_directories(
