@@ -79,7 +79,7 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
     Pinetime::System::SystemTask::Messages event = Pinetime::System::SystemTask::Messages::OnNewNotification;
 
     switch(*category) {
-      case (uint8_t) 0x05:
+      case (uint8_t) ANS_TYPE_NOTIFICATION_CALL:
         notif.category = Pinetime::Controllers::NotificationManager::Categories::IncomingCall;
         event = Pinetime::System::SystemTask::Messages::OnNewCall;
         break;

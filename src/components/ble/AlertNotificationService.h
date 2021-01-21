@@ -7,8 +7,8 @@
 #undef max
 #undef min
 
-//c7e50000-78fc-48fe-8e23-433b3a1942d1
-#define NOTIFICATION_EVENT_SERVICE_UUID_BASE {0xd1, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0xe5, 0xc7}
+//00020000-78fc-48fe-8e23-433b3a1942d0
+#define NOTIFICATION_EVENT_SERVICE_UUID_BASE {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0x02, 0x00}
 
 namespace Pinetime {
 
@@ -34,17 +34,17 @@ namespace Pinetime {
 
 
       private:
-        static const char ALERT_UNKNOWN = 0x01;
-        static const char ALERT_SIMPLE_ALERT = 0x02;
-        static const char ALERT_EMAIL = 0x03;
-        static const char ALERT_NEWS = 0x04;
-        static const char ALERT_INCOMING_CALL = 0x05;
-        static const char ALERT_MISSED_CALL = 0x06;
-        static const char ALERT_SMS = 0x07;
-        static const char ALERT_VOICE_MAIL = 0x08;
-        static const char ALERT_SCHEDULE = 0x09;
-        static const char ALERT_HIGH_PRIORITY_ALERT = 0x0a;
-        static const char ALERT_INSTANT_MESSAGE = 0x0b;
+        static const char ANS_TYPE_SIMPLE_ALERT = 0x00;
+        static const char ANS_TYPE_EMAIL = 0x01;
+        static const char ANS_TYPE_NEWS = 0x02;
+        static const char ANS_TYPE_NOTIFICATION_CALL = 0x03;
+        static const char ANS_TYPE_MISSED_CALL = 0x04;
+        static const char ANS_TYPE_SMS_MMS = 0x05;
+        static const char ANS_TYPE_VOICE_MAIL = 0x06;
+        static const char ANS_TYPE_SCHEDULE = 0x07;
+        static const char ANS_TYPE_HIGH_PRIORITIZED_ALERT = 0x08;
+        static const char ANS_TYPE_INSTANT_MESSAGE = 0x09;
+        static const char ANS_TYPE_ALL_ALERTS = 0xff;
 
         static constexpr uint16_t ansId {0x1811};
         static constexpr uint16_t ansCharId {0x2a46};
