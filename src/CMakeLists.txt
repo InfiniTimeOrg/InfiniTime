@@ -473,6 +473,11 @@ set(INCLUDE_FILES
         systemtask/SystemMonitor.h
         displayapp/screens/Symbols.h
         drivers/TwiMaster.h
+        heartratetask/HeartRateTask.h
+        components/heartrate/Ppg.h
+        components/heartrate/Biquad.h
+        components/heartrate/Ptagc.h
+        components/heartrate/HeartRateController.h
         components/motor/MotorController.h
         )
 
