@@ -12,6 +12,7 @@ namespace Pinetime {
     class Battery;
     class Ble;
     class NotificationManager;
+    class HeartRateController;
   }
 
   namespace Applications {
@@ -42,7 +43,8 @@ namespace Pinetime {
                   Controllers::DateTime& dateTimeController,
                   Controllers::Battery& batteryController,
                   Controllers::Ble& bleController,
-                  Controllers::NotificationManager& notificatioManager);
+                  Controllers::NotificationManager& notificatioManager,
+                  Controllers::HeartRateController& heartRateController);
           ~Clock() override;
 
           bool Refresh() override;
@@ -62,11 +64,12 @@ namespace Pinetime {
           Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
           uint8_t currentDay = 0;
 
-          DirtyValue<float> batteryPercentRemaining  {0};
+          DirtyValue<int> batteryPercentRemaining  {0};
           DirtyValue<bool> bleState {false};
           DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
           DirtyValue<uint32_t> stepCount  {0};
           DirtyValue<uint8_t> heartbeat  {0};
+          DirtyValue<bool> heartbeatRunning  {false};
           DirtyValue<bool> notificationState {false};
 
           lv_obj_t* label_time;
@@ -86,6 +89,7 @@ namespace Pinetime {
           Controllers::Battery& batteryController;
           Controllers::Ble& bleController;
           Controllers::NotificationManager& notificatioManager;
+          Controllers::HeartRateController& heartRateController;
 
           bool running = true;
 

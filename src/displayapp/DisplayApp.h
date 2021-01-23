@@ -23,6 +23,7 @@ namespace Pinetime {
     class Ble;
     class DateTime;
     class NotificationManager;
+    class HeartRateController;
   }
 
   namespace System {
@@ -42,7 +43,8 @@ namespace Pinetime {
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
                    Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                    System::SystemTask &systemTask,
-                   Pinetime::Controllers::NotificationManager& notificationManager);
+                   Pinetime::Controllers::NotificationManager& notificationManager,
+                   Pinetime::Controllers::HeartRateController& heartRateController);
         void Start();
         void PushMessage(Messages msg);
 
@@ -87,6 +89,7 @@ namespace Pinetime {
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::FirmwareValidator validator;
         TouchModes touchMode = TouchModes::Gestures;
+        Pinetime::Controllers::HeartRateController& heartRateController;
     };
   }
 }

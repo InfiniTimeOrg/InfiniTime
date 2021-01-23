@@ -22,7 +22,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         DateTime& dateTimeController,
         Pinetime::Controllers::NotificationManager& notificationManager,
         Controllers::Battery& batteryController,
-        Pinetime::Drivers::SpiNorFlash& spiNorFlash) :
+        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
+        Controllers::HeartRateController& heartRateController) :
         systemTask{systemTask},
         bleController{bleController},
         dateTimeController{dateTimeController},
@@ -34,9 +35,11 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         alertNotificationClient{systemTask, notificationManager},
         currentTimeService{dateTimeController},
         musicService{systemTask},
+        navService{systemTask},
         batteryInformationService{batteryController},
         immediateAlertService{systemTask, notificationManager},
-        serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
+        serviceDiscovery({&currentTimeClient, &alertNotificationClient}),
+        heartRateService{systemTask, heartRateController} {
 }
 
 int GAPEventCallback(struct ble_gap_event *event, void *arg) {
@@ -54,10 +57,12 @@ void NimbleController::Init() {
   currentTimeClient.Init();
   currentTimeService.Init();
   musicService.Init();
+  navService.Init();
   anService.Init();
   dfuService.Init();
   batteryInformationService.Init();
   immediateAlertService.Init();
+  heartRateService.Init();
   int res;
   res = ble_hs_util_ensure_addr(0);
   ASSERT(res == 0);

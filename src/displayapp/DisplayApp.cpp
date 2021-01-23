@@ -1,5 +1,6 @@
 #include "DisplayApp.h"
 #include <libraries/log/nrf_log.h>
+#include <displayapp/screens/HeartRate.h>
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
@@ -14,6 +15,7 @@
 #include "displayapp/screens/Paddle.h"
 #include "displayapp/screens/Meter.h"
 #include "displayapp/screens/Music.h"
+#include "displayapp/screens/Navigation.h"
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/screens/SystemInfo.h"
 #include "displayapp/screens/Tile.h"
@@ -29,7 +31,8 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                        System::SystemTask &systemTask,
-                       Pinetime::Controllers::NotificationManager& notificationManager) :
+                       Pinetime::Controllers::NotificationManager& notificationManager,
+                       Pinetime::Controllers::HeartRateController& heartRateController) :
         lcd{lcd},
         lvgl{lvgl},
         batteryController{batteryController},
@@ -37,9 +40,10 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
         dateTimeController{dateTimeController},
         watchdog{watchdog},
         touchPanel{touchPanel},
-        currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager) },
+        currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, heartRateController) },
         systemTask{systemTask},
-        notificationManager{notificationManager} {
+        notificationManager{notificationManager},
+        heartRateController{heartRateController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   onClockApp = true;
   modal.reset(new Screens::Modal(this));
@@ -197,7 +201,7 @@ void DisplayApp::RunningState() {
       case Apps::None:
       case Apps::Launcher: currentScreen.reset(new Screens::ApplicationList(this)); break;
       case Apps::Clock:
-        currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager));
+        currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, heartRateController));
         onClockApp = true;
         break;
 //      case Apps::Test: currentScreen.reset(new Screens::Message(this)); break;
@@ -209,8 +213,10 @@ void DisplayApp::RunningState() {
       case Apps::Paddle: currentScreen.reset(new Screens::Paddle(this, lvgl)); break;
       case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
       case Apps::Music : currentScreen.reset(new Screens::Music(this, systemTask.nimble().music())); break;
+      case Apps::Navigation : currentScreen.reset(new Screens::Navigation(this, systemTask.nimble().navigation())); break;
       case Apps::FirmwareValidation: currentScreen.reset(new Screens::FirmwareValidation(this, validator)); break;
       case Apps::Notifications: currentScreen.reset(new Screens::Notifications(this, notificationManager, Screens::Notifications::Modes::Normal)); break;
+      case Apps::HeartRate: currentScreen.reset(new Screens::HeartRate(this, heartRateController)); break;
     }
     nextApp = Apps::None;
   }
