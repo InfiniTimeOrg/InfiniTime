@@ -4,7 +4,6 @@
 #include "app_timer.h"
 #include "nrf_drv_clock.h"
 
-APP_TIMER_DEF(vibTimer);
 
 using namespace Pinetime::Controllers;
 
