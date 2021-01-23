@@ -457,7 +457,6 @@ set(INCLUDE_FILES
         components/ble/ImmediateAlertService.h
         components/ble/ServiceDiscovery.h
         components/ble/BleClient.h
-        components/motor/MotorController.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
@@ -474,6 +473,7 @@ set(INCLUDE_FILES
         systemtask/SystemMonitor.h
         displayapp/screens/Symbols.h
         drivers/TwiMaster.h
+        components/motor/MotorController.h
         )
 
 include_directories(
