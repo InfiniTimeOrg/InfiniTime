@@ -7,12 +7,16 @@
 #include "components/ble/NotificationManager.h"
 
 namespace Pinetime {
+  namespace Controllers {
+    class AlertNotificationService;
+  }
   namespace Applications {
     namespace Screens {
+
       class Notifications : public Screen {
         public:
           enum class Modes {Normal, Preview};
-          explicit Notifications(DisplayApp* app, Pinetime::Controllers::NotificationManager& notificationManager, Modes mode);
+          explicit Notifications(DisplayApp* app, Pinetime::Controllers::NotificationManager& notificationManager, Pinetime::Controllers::AlertNotificationService& alertNotificationService, Modes mode);
           ~Notifications() override;
 
           bool Refresh() override;
@@ -55,6 +59,7 @@ namespace Pinetime {
             const char* text;
           };
           Pinetime::Controllers::NotificationManager& notificationManager;
+          Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           Modes mode = Modes::Normal;
           std::unique_ptr<NotificationItem> currentItem;
           Controllers::NotificationManager::Notification::Id currentId;

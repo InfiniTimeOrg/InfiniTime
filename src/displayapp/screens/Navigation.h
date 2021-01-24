@@ -145,7 +145,7 @@ namespace Pinetime {
 
         const lv_img_dsc_t* iconForName(std::string icon);
 
-        std::array<std::pair<std::string, const lv_img_dsc_t*>, 89 > m_iconMap;/* = { {
+        std::array<std::pair<std::string, const lv_img_dsc_t*>, 89 > m_iconMap = { {
             {"arrive-left", &arrive_left},
             {"arrive-right", &arrive_right},
             {"arrive-straight", &arrive_straight},
@@ -231,7 +231,7 @@ namespace Pinetime {
             {"turn-slight-right", &turn_slight_right},
             {"turn-straight", &turn_straight},
             {"updown", &updown},
-            {"uturn", &uturn} } };*/
+            {"uturn", &uturn} } };
       };
     }
   }
