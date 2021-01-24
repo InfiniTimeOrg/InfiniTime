@@ -37,7 +37,6 @@ namespace Pinetime {
                    Components::LittleVgl &lvgl,
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
                    Controllers::DateTime &dateTimeController,
-                   Pinetime::Controllers::NotificationManager& manager,
                    Pinetime::Drivers::Hrs3300& heartRateSensor);
 
 
@@ -73,7 +72,7 @@ namespace Pinetime {
         std::atomic<bool> isWakingUp{false};
         Pinetime::Drivers::Watchdog watchdog;
         Pinetime::Drivers::WatchdogView watchdogView;
-        Pinetime::Controllers::NotificationManager& notificationManager;
+        Pinetime::Controllers::NotificationManager notificationManager;
         Pinetime::Drivers::Hrs3300& heartRateSensor;
         Pinetime::Controllers::NimbleController nimbleController;
 

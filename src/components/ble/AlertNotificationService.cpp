@@ -69,30 +69,46 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
     const auto dbgPacketLen = OS_MBUF_PKTLEN(ctxt->om);
     size_t bufferSize = std::min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
     auto messageSize = std::min(maxMessageSize, (bufferSize-headerSize));
-    uint8_t* category = new uint8_t[1];
+    Categories category;
 
     NotificationManager::Notification notif;
     os_mbuf_copydata(ctxt->om, headerSize, messageSize-1, notif.message.data());
-    os_mbuf_copydata(ctxt->om, 0, 1, category);
+    os_mbuf_copydata(ctxt->om, 0, 1, &category);
     notif.message[messageSize-1] = '\0';
-    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
-    Pinetime::System::SystemTask::Messages event = Pinetime::System::SystemTask::Messages::OnNewNotification;
 
-    switch(*category) {
-      case (uint8_t) ANS_TYPE_NOTIFICATION_CALL:
+    // TODO convert all ANS categories to NotificationController categories
+    switch(category) {
+      case Categories::Call:
         notif.category = Pinetime::Controllers::NotificationManager::Categories::IncomingCall;
-        event = Pinetime::System::SystemTask::Messages::OnNewCall;
+        break;
+      default:
+        notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
         break;
     }
 
+    auto event = Pinetime::System::SystemTask::Messages::OnNewNotification;
     notificationManager.Push(std::move(notif));
     systemTask.PushMessage(event);
   }
   return 0;
 }
 
-void AlertNotificationService::event(char event) {
-  auto *om = ble_hs_mbuf_from_flat(&event, 1);
+void AlertNotificationService::AcceptIncomingCall() {
+  auto response = IncomingCallResponses::Answer;
+  auto *om = ble_hs_mbuf_from_flat(&response, 1);
+
+  uint16_t connectionHandle = systemTask.nimble().connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+
+  ble_gattc_notify_custom(connectionHandle, eventHandle, om);
+}
+
+void AlertNotificationService::RejectIncomingCall() {
+  auto response = IncomingCallResponses::Reject;
+  auto *om = ble_hs_mbuf_from_flat(&response, 1);
 
   uint16_t connectionHandle = systemTask.nimble().connHandle();
 

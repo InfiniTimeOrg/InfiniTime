@@ -98,8 +98,6 @@ void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
 std::unique_ptr<Pinetime::System::SystemTask> systemTask;
 
-Pinetime::Controllers::NotificationManager notificationManager;
-
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if(pin == pinTouchIrq) {
     systemTask->OnTouchEvent();
@@ -241,7 +239,7 @@ int main(void) {
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
   systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, twiMaster, touchPanel, lvgl, batteryController, bleController,
-                                                    dateTimeController, notificationManager, heartRateSensor));
+                                                    dateTimeController, heartRateSensor));
   systemTask->Start();
   nimble_port_init();
 

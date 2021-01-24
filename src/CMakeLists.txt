@@ -426,7 +426,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/InfiniPaint.cpp
         displayapp/screens/Paddle.cpp
         displayapp/screens/DropDownDemo.cpp
-        displayapp/screens/Modal.cpp
         displayapp/screens/BatteryIcon.cpp
         displayapp/screens/BleIcon.cpp
         displayapp/screens/NotificationIcon.cpp
@@ -520,7 +519,6 @@ set(INCLUDE_FILES
         displayapp/screens/InfiniPaint.h
         displayapp/screens/Paddle.h
         displayapp/screens/DropDownDemo.h
-        displayapp/screens/Modal.h
         displayapp/screens/BatteryIcon.h
         displayapp/screens/BleIcon.h
         displayapp/screens/NotificationIcon.h

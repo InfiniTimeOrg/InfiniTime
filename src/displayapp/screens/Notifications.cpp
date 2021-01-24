@@ -1,18 +1,34 @@
 #include "Notifications.h"
 #include <displayapp/DisplayApp.h>
+#include "components/ble/MusicService.h"
 
 using namespace Pinetime::Applications::Screens;
 
-Notifications::Notifications(DisplayApp *app, Pinetime::Controllers::NotificationManager &notificationManager, Modes mode) :
-        Screen(app), notificationManager{notificationManager}, mode{mode} {
+Notifications::Notifications(DisplayApp *app,
+                             Pinetime::Controllers::NotificationManager &notificationManager,
+                             Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                             Modes mode) :
+        Screen(app), notificationManager{notificationManager}, alertNotificationService{alertNotificationService}, mode{mode} {
   notificationManager.ClearNewNotificationFlag();
   auto notification = notificationManager.GetLastNotification();
   if(notification.valid) {
     currentId = notification.id;
-    currentItem.reset(new NotificationItem("\nNotification", notification.message.data(), notification.index, notificationManager.NbNotifications(), mode));
+    currentItem.reset(new NotificationItem("\nNotification",
+                                           notification.message.data(),
+                                           notification.index,
+                                           notification.category,
+                                           notificationManager.NbNotifications(),
+                                           mode,
+                                           alertNotificationService));
     validDisplay = true;
   } else {
-    currentItem.reset(new NotificationItem("\nNotification", "No notification to display", 0, notificationManager.NbNotifications(), Modes::Preview));
+    currentItem.reset(new NotificationItem("\nNotification",
+                                           "No notification to display",
+                                           0,
+                                           notification.category,
+                                           notificationManager.NbNotifications(),
+                                           Modes::Preview,
+                                           alertNotificationService));
   }
 
   if(mode == Modes::Preview) {
@@ -69,7 +85,13 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       currentId = previousNotification.id;
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Up);
-      currentItem.reset(new NotificationItem("\nNotification", previousNotification.message.data(),  previousNotification.index, notificationManager.NbNotifications(), mode));
+      currentItem.reset(new NotificationItem("\nNotification",
+                                             previousNotification.message.data(),
+                                             previousNotification.index,
+                                             previousNotification.category,
+                                             notificationManager.NbNotifications(),
+                                             mode,
+                                             alertNotificationService));
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeDown: {
@@ -85,7 +107,13 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       currentId = nextNotification.id;
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Down);
-      currentItem.reset(new NotificationItem("\nNotification", nextNotification.message.data(),  nextNotification.index, notificationManager.NbNotifications(), mode));
+      currentItem.reset(new NotificationItem("\nNotification",
+                                             nextNotification.message.data(),
+                                             nextNotification.index,
+                                             nextNotification.category,
+                                             notificationManager.NbNotifications(),
+                                             mode,
+                                             alertNotificationService));
     }
       return true;
     default:
@@ -99,9 +127,26 @@ bool Notifications::OnButtonPushed() {
   return true;
 }
 
+namespace {
+  static void AcceptIncomingCallEventHandler(lv_obj_t *obj, lv_event_t event) {
+    auto* item = static_cast<Notifications::NotificationItem *>(obj->user_data);
+    item->OnAcceptIncomingCall(event);
+  }
 
-Notifications::NotificationItem::NotificationItem(const char *title, const char *msg, uint8_t notifNr, uint8_t notifNb, Modes mode)
-        : notifNr{notifNr}, notifNb{notifNb}, mode{mode} {
+  static void RejectIncomingCallEventHandler(lv_obj_t *obj, lv_event_t event) {
+    auto* item = static_cast<Notifications::NotificationItem *>(obj->user_data);
+    item->OnRejectIncomingCall(event);
+  }
+}
+
+Notifications::NotificationItem::NotificationItem(const char *title,
+                                                  const char *msg,
+                                                  uint8_t notifNr,
+                                                  Controllers::NotificationManager::Categories category,
+                                                  uint8_t notifNb,
+                                                  Modes mode,
+                                                  Pinetime::Controllers::AlertNotificationService& alertNotificationService)
+        : notifNr{notifNr}, notifNb{notifNb}, mode{mode}, alertNotificationService{alertNotificationService} {
   container1 = lv_cont_create(lv_scr_act(), nullptr);
   static lv_style_t contStyle;
   lv_style_copy(&contStyle, lv_cont_get_style(container1, LV_CONT_STYLE_MAIN));
@@ -142,16 +187,59 @@ Notifications::NotificationItem::NotificationItem(const char *title, const char 
 
   auto titleHeight = lv_obj_get_height(t1);
 
-  l1 = lv_label_create(container1, nullptr);
-  lv_label_set_style(l1, LV_LABEL_STYLE_MAIN, &textStyle);
-  lv_obj_set_pos(l1, textStyle.body.padding.left,
-                 titleHeight + offscreenOffset + textStyle.body.padding.bottom +
-                 textStyle.body.padding.top);
+  switch(category) {
+    default: {
+      l1 = lv_label_create(container1, nullptr);
+      lv_label_set_style(l1, LV_LABEL_STYLE_MAIN, &textStyle);
+      lv_obj_set_pos(l1, textStyle.body.padding.left,
+                     titleHeight + offscreenOffset + textStyle.body.padding.bottom +
+                     textStyle.body.padding.top);
 
-  lv_label_set_long_mode(l1, LV_LABEL_LONG_BREAK);
-  lv_label_set_body_draw(l1, true);
-  lv_obj_set_width(l1, LV_HOR_RES - (textStyle.body.padding.left + textStyle.body.padding.right));
-  lv_label_set_text(l1, msg);
+      lv_label_set_long_mode(l1, LV_LABEL_LONG_BREAK);
+      lv_label_set_body_draw(l1, true);
+      lv_obj_set_width(l1, LV_HOR_RES - (textStyle.body.padding.left + textStyle.body.padding.right));
+      lv_label_set_text(l1, msg);
+    }
+    break;
+    case Controllers::NotificationManager::Categories::IncomingCall: {
+      l1 = lv_label_create(container1, nullptr);
+      lv_label_set_style(l1, LV_LABEL_STYLE_MAIN, &textStyle);
+      lv_obj_set_pos(l1, textStyle.body.padding.left,
+                     titleHeight + offscreenOffset + textStyle.body.padding.bottom +
+                     textStyle.body.padding.top);
+
+      lv_label_set_long_mode(l1, LV_LABEL_LONG_BREAK);
+      lv_label_set_body_draw(l1, true);
+      lv_obj_set_width(l1, LV_HOR_RES - (textStyle.body.padding.left + textStyle.body.padding.right));
+      lv_label_set_text(l1, "Incoming call from ");
+      auto l1Height = lv_obj_get_height(l1);
+
+      l2 = lv_label_create(container1, nullptr);
+      lv_label_set_style(l2, LV_LABEL_STYLE_MAIN, &textStyle);
+      lv_obj_set_pos(l2, textStyle.body.padding.left,
+                     titleHeight + l1Height + offscreenOffset + (textStyle.body.padding.bottom*2) +
+                         (textStyle.body.padding.top*2));
+      lv_label_set_long_mode(l2, LV_LABEL_LONG_BREAK);
+      lv_label_set_body_draw(l2, true);
+      lv_obj_set_width(l2, LV_HOR_RES - (textStyle.body.padding.left + textStyle.body.padding.right));
+      lv_label_set_text(l2, msg);
+
+      bt_accept = lv_btn_create(container1, nullptr);
+      lv_obj_align(bt_accept, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, -20);
+      bt_accept->user_data = this;
+      lv_obj_set_event_cb(bt_accept, AcceptIncomingCallEventHandler);
+
+      label_accept = lv_label_create(bt_accept, nullptr);
+      lv_label_set_text(label_accept, "Accept");
+
+      bt_reject = lv_btn_create(container1, nullptr);
+      lv_obj_align(bt_reject, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, -20);
+      bt_reject->user_data = this;
+      lv_obj_set_event_cb(bt_reject, RejectIncomingCallEventHandler);
+      label_reject = lv_label_create(bt_reject, nullptr);
+      lv_label_set_text(label_reject, "Reject");
+    }
+  }
 
   if(mode == Modes::Normal) {
     if(notifNr < notifNb) {
@@ -166,6 +254,17 @@ Notifications::NotificationItem::NotificationItem(const char *title, const char 
   }
 }
 
+void Notifications::NotificationItem::OnAcceptIncomingCall(lv_event_t event) {
+  if (event != LV_EVENT_CLICKED) return;
+
+  alertNotificationService.AcceptIncomingCall();
+}
+
+void Notifications::NotificationItem::OnRejectIncomingCall(lv_event_t event) {
+  if (event != LV_EVENT_CLICKED) return;
+
+  alertNotificationService.RejectIncomingCall();
+}
 
 Notifications::NotificationItem::~NotificationItem() {
   lv_obj_clean(lv_scr_act());

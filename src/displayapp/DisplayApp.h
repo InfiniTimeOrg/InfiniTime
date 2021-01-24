@@ -34,7 +34,7 @@ namespace Pinetime {
       public:
         enum class States {Idle, Running};
         enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, ButtonPushed,
-            NewNotification, NewCall, BleFirmwareUpdateStarted };
+            NewNotification, BleFirmwareUpdateStarted };
 
         enum class FullRefreshDirections { None, Up, Down };
         enum class TouchModes { Gestures, Polling };
@@ -85,7 +85,6 @@ namespace Pinetime {
         Apps nextApp = Apps::None;
         bool onClockApp = false; // TODO find a better way to know that we should handle gestures and button differently for the Clock app.
         Controllers::BrightnessController brightnessController;
-        std::unique_ptr<Screens::Modal> modal;
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::FirmwareValidator validator;
         TouchModes touchMode = TouchModes::Gestures;
