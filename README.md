@@ -34,14 +34,18 @@ As of now, here is the list of achievements of this project:
  - Time synchronization via BLE
  - Notification via BLE
  - Multiple 'apps' : 
-    * Clock (displays the date, time, battery level, BLE connection status, heart rate and step count)
-    * Heart rate
-    * Motion
-    * System info (displays various info : BLE MAC, build date/time, uptime, version, ...)
-    * Brightness (allows the user to configure the brightness of the display)
+    * Clock (displays the date, time, battery level, ble connection status, heart rate)
+    * System info (displays various info : BLE MAC, build date/time, uptime, version,...)
+    * Brightess (allows the user to configure the brightness of the display)
+    * Music (control the playback of the music on your phone)
+    * Heart rate (controls the heart rate sensor and display current heartbeat)
+    * Navigation (displays navigation instructions coming from the companion app)
+    * Notification (displays the last notification received)
+    * Paddle (single player pong-like game)
+    * Two (2048 clone game)
  - Supported by 2 companion apps (development is in progress):
     * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android)
-    * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS)
+    * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)
  - **[Experimental]** OTA (Over-the-air) update via BLE
  - **[Experimental]** Bootloader based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/)
  

@@ -34,9 +34,11 @@ void Battery::Update() {
 
   // see https://forum.pine64.org/showthread.php?tid=8147
   voltage = (value * 2.0f) / (1024/3.0f);
-  percentRemaining = ((voltage - 3.55f)*100.0f)*3.9f;
-  percentRemaining = std::max(percentRemaining, 0.0f);
-  percentRemaining = std::min(percentRemaining, 100.0f);
+  int percentRemaining = ((voltage - 3.55f)*100.0f)*3.9f;
+  percentRemaining = std::max(percentRemaining, 0);
+  percentRemaining = std::min(percentRemaining, 100);
+
+  percentRemainingBuffer.insert(percentRemaining);
 
 //  NRF_LOG_INFO("BATTERY " NRF_LOG_FLOAT_MARKER " %% - " NRF_LOG_FLOAT_MARKER " v", NRF_LOG_FLOAT(percentRemaining), NRF_LOG_FLOAT(voltage));
 //  NRF_LOG_INFO("POWER Charging : %d - Power : %d", isCharging, isPowerPresent);

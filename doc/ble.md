@@ -15,6 +15,29 @@ If **CTS** is detected, it'll request the current time to the companion applicat
 
 ![BLE connection sequence diagram](ble/connection_sequence.png "BLE connection sequence diagram")
 
+## BLE UUIDs
+When possible, InfiniTime tries to implement BLE services defined by the BLE specification. 
+
+When the service does not exist in the BLE specification, InfiniTime implement custom services. As all BLE services, custom services are identified by a UUID. Here is how to define the UUID of custom services in InfiniTime:
+
+```
+ - Base UUID :           xxxxxxxx-78fc-48fe-8e23-433b3a1942d0
+ - Service UUID :        SSSS0000-78fc-48fe-8e23-433b3a1942d0 where SSSS is the service ID
+ - Characteristic UUID : SSSSCCCC-78fc-48fe-8e23-433b3a1942d0 where CCCC is the characteristic ID for the service SSSS and is different than 0
+```
+
+The following custom services are implemented in InfiniTime:
+
+ - Since InfiniTime 0.8:
+   ```
+    * Music Service :             00000000-78fc-48fe-8e23-433b3a1942d0
+   ```
+   
+ - Since InfiniTime 0.11:
+   ```
+     * Navigation Service :        00010000-78fc-48fe-8e23-433b3a1942d0
+   ```
+
 ## BLE services
 [List of standard BLE services](https://www.bluetooth.com/specifications/gatt/services/)
 

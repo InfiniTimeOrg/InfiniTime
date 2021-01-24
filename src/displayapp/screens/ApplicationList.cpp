@@ -45,7 +45,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
           {Symbols::sun, Apps::Brightness},
           {Symbols::list, Apps::SysInfo},
           {Symbols::check, Apps::FirmwareValidation},
-          {Symbols::none, Apps::None}
+          {Symbols::heartBeat, Apps::HeartRate}
           }
 
 
@@ -56,7 +56,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
   std::array<Screens::Tile::Applications, 6> applications {
-          {{Symbols::tachometer, Apps::Gauge},
+          {{Symbols::map, Apps::Navigation},
            {Symbols::asterisk, Apps::Meter},
            {Symbols::paintbrush, Apps::Paint},
                   {Symbols::info, Apps::Notifications},

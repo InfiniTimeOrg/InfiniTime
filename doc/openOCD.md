@@ -89,12 +89,12 @@ reset
 ## Examples
 ### Flash bootloader and application
 ```
-openocd -f ./openocd-stlink.cfg -f ./flash_bootloader_app.ocd
+openocd -f ./openocd-stlink.ocd -f ./flash_bootloader_app.ocd
 ```
 
 ### Flash graphics flasher
 ```
-openocd -f ./openocd-stlink.cfg -f ./flash_graphics.ocd
+openocd -f ./openocd-stlink.ocd -f ./flash_graphics.ocd
 ```
 
 ## Connect the STLinkV2 to the PineTime

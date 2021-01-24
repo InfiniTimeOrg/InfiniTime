@@ -1,0 +1,106 @@
+/*
+  SPDX-License-Identifier: LGPL-3.0-or-later
+  Original work Copyright (C) 2020 Daniel Thompson
+  C++ port Copyright (C) 2021 Jean-François Milants
+*/
+
+#include <vector>
+#include <nrf_log.h>
+#include "Ppg.h"
+using namespace Pinetime::Controllers;
+
+/** Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/ppg.py */
+namespace {
+  int Compare(int* d1, int* d2, size_t count) {
+    int e = 0;
+    for(int i = 0; i < count; i++) {
+      auto d = d1[i] - d2[i];
+      e += d * d;
+    }
+    return e;
+  }
+
+  int CompareShift(int* d, int shift, size_t count) {
+    return Compare(d +shift, d, count - shift);
+  }
+
+  int Trough(int* d, size_t size, float mn, float mx) {
+    auto z2 = CompareShift(d, mn-2, size);
+    auto z1 = CompareShift(d, mn-1, size);
+    for(int i = mn; i < mx + 1; i++) {
+      auto z = CompareShift(d, i, size);
+      if(z2 > z1 && z1 < z)
+        return i;
+      z2 = z1;
+      z1 = z;
+    }
+    return -1;
+  }
+}
+
+Ppg::Ppg(float spl) : offset{spl},
+                      hpf{0.87033078, -1.74066156, 0.87033078,-1.72377617, 0.75754694},
+                      agc{20, 0.971, 2},
+                      lpf{0.11595249, 0.23190498, 0.11595249,-0.72168143, 0.18549138} {
+
+}
+
+int Ppg::Preprocess(float spl) {
+  spl -= offset;
+  spl = hpf.Step(spl);
+  spl = agc.Step(spl);
+  spl = lpf.Step(spl);
+
+  auto spl_int = static_cast<int>(spl);
+
+  if(dataIndex < 200)
+    data[dataIndex++] = spl_int;
+  return spl_int;
+}
+
+float Ppg::HeartRate() {
+  if(dataIndex < 200)
+    return 0;
+
+  NRF_LOG_INFO("PREPROCESS, offset = %d", offset);
+  auto hr = ProcessHeartRate();
+  dataIndex = 0;
+  return hr;
+}
+
+int cccount = 0;
+float Ppg::ProcessHeartRate() {
+
+  if(cccount > 2)
+    asm("nop");
+  cccount ++;
+  auto t0 = Trough(data.data(), dataIndex, 7, 48);
+  if(t0 < 0)
+    return 0;
+
+  float t1 = t0 * 2;
+  t1 = Trough(data.data(), dataIndex, t1-5, t1+5);
+  if(t1 < 0)
+    return 0;
+
+  float t2 = static_cast<int>(t1 * 3) / 2;
+  t2 = Trough(data.data(), dataIndex, t2 - 5, t2 + 5);
+  if(t2 < 0)
+    return 0;
+
+  float t3 = static_cast<int>(t2 * 4) / 3;
+  t3 = Trough(data.data(), dataIndex, t3 - 4, t3 + 4);
+  if(t3 < 0)
+    return static_cast<int>(60 * 24 * 3) / static_cast<int>(t2);
+
+  return static_cast<int>(60 * 24 * 4) / static_cast<int>(t3);
+}
+
+void Ppg::SetOffset(uint16_t offset) {
+  this->offset = offset;
+  dataIndex = 0;
+}
+
+void Ppg::Reset() {
+  dataIndex = 0;
+}
