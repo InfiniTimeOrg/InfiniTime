@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include "app_timer.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -11,10 +12,8 @@ namespace Pinetime {
         void Init();
         void SetDuration(uint8_t motorDuration);
 
-        APP_TIMER_DEF(vibTimer);
-
       private:
-
+        app_timer_id_t vibTimer;
     };
   }
 }
