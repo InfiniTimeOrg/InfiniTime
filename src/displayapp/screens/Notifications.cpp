@@ -3,12 +3,16 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Notifications::Notifications(DisplayApp *app, Pinetime::Controllers::NotificationManager &notificationManager, Modes mode) :
-        Screen(app), notificationManager{notificationManager}, mode{mode} {
+Notifications::Notifications(DisplayApp *app, 
+  Pinetime::Controllers::NotificationManager &notificationManager, 
+  Pinetime::Controllers::MotorController& motorController, 
+  Modes mode) :
+    Screen(app), notificationManager{notificationManager}, 
+    motorController{motorController}, mode{mode} {
+
   notificationManager.ClearNewNotificationFlag();
   auto notification = notificationManager.GetLastNotification();
   
-  motorController.Init(); //start the vibration timer setups
 
   if(notification.valid) {
     currentId = notification.id;

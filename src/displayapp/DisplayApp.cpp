@@ -5,6 +5,7 @@
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/NotificationManager.h"
+#include "components/motor/MotorController.h"
 #include "displayapp/screens/ApplicationList.h"
 #include "displayapp/screens/Brightness.h"
 #include "displayapp/screens/Clock.h"
@@ -32,6 +33,7 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
                        Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                        System::SystemTask &systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
+                       Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Controllers::HeartRateController& heartRateController) :
         lcd{lcd},
         lvgl{lvgl},
@@ -43,6 +45,7 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
         currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, heartRateController) },
         systemTask{systemTask},
         notificationManager{notificationManager},
+        motorController{motorController},
         heartRateController{heartRateController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   onClockApp = true;
@@ -124,7 +127,7 @@ void DisplayApp::Refresh() {
           currentScreen.reset(nullptr);
           lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
           onClockApp = false;
-          currentScreen.reset(new Screens::Notifications(this, notificationManager, Screens::Notifications::Modes::Preview));
+          currentScreen.reset(new Screens::Notifications(this, notificationManager, motorController, Screens::Notifications::Modes::Preview));
         }
       }
         break;
@@ -215,7 +218,7 @@ void DisplayApp::RunningState() {
       case Apps::Music : currentScreen.reset(new Screens::Music(this, systemTask.nimble().music())); break;
       case Apps::Navigation : currentScreen.reset(new Screens::Navigation(this, systemTask.nimble().navigation())); break;
       case Apps::FirmwareValidation: currentScreen.reset(new Screens::FirmwareValidation(this, validator)); break;
-      case Apps::Notifications: currentScreen.reset(new Screens::Notifications(this, notificationManager, Screens::Notifications::Modes::Normal)); break;
+      case Apps::Notifications: currentScreen.reset(new Screens::Notifications(this, notificationManager, motorController, Screens::Notifications::Modes::Normal)); break;
       case Apps::HeartRate: currentScreen.reset(new Screens::HeartRate(this, heartRateController)); break;
     }
     nextApp = Apps::None;
