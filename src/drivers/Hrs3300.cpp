@@ -73,10 +73,10 @@ void Hrs3300::SetGain(uint8_t gain) {
   static constexpr uint8_t maxGain = 64;
   gain = std::min(gain, maxGain);
   uint8_t hgain = 0;
-  while((1 << hgain) < gain)
+  while((1 << hgain) < gain) {
     hgain++;
-
     WriteRegister(static_cast<uint8_t>(Registers::Hgain), hgain << 2);
+  }
 }
 
 void Hrs3300::SetDrive(uint8_t drive) {

@@ -38,8 +38,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
         navService{systemTask},
         batteryInformationService{batteryController},
         immediateAlertService{systemTask, notificationManager},
-        serviceDiscovery({&currentTimeClient, &alertNotificationClient}),
-        heartRateService{systemTask, heartRateController} {
+        heartRateService{systemTask, heartRateController},
+        serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
 }
 
 int GAPEventCallback(struct ble_gap_event *event, void *arg) {
