@@ -13,7 +13,6 @@ namespace Pinetime {
         void SetDuration(uint8_t motorDuration);
 
       private:
-        app_timer_id_t vibTimer;
     };
   }
 }
