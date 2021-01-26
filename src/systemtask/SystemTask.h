@@ -12,7 +12,15 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/NimbleController.h"
 #include "components/ble/NotificationManager.h"
+
+#ifdef PINETIME_IS_RECOVERY
+#include "displayapp/DisplayAppRecovery.h"
+#include "displayapp/DummyLittleVgl.h"
+#else
 #include "displayapp/DisplayApp.h"
+#include "displayapp/LittleVgl.h"
+#endif
+
 #include "drivers/Watchdog.h"
 
 namespace Pinetime {
@@ -76,6 +84,7 @@ namespace Pinetime {
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Drivers::Hrs3300& heartRateSensor;
         Pinetime::Controllers::NimbleController nimbleController;
+        Controllers::BrightnessController brightnessController;
 
         static constexpr uint8_t pinSpiSck = 2;
         static constexpr uint8_t pinSpiMosi = 3;

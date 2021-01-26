@@ -26,6 +26,7 @@
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Applications;
+using namespace Pinetime::Applications::Display;
 
 DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &touchPanel,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
@@ -227,7 +228,7 @@ void DisplayApp::IdleState() {
 
 }
 
-void DisplayApp::PushMessage(DisplayApp::Messages msg) {
+void DisplayApp::PushMessage(Messages msg) {
   BaseType_t xHigherPriorityTaskWoken;
   xHigherPriorityTaskWoken = pdFALSE;
   xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
