@@ -29,6 +29,7 @@ namespace Pinetime {
           ~NotificationItem();
           bool Refresh() {return false;}
           void OnAcceptIncomingCall(lv_event_t event);
+          void OnMuteIncomingCall(lv_event_t event);
           void OnRejectIncomingCall(lv_event_t event);
 
         private:
@@ -41,8 +42,10 @@ namespace Pinetime {
           lv_obj_t* l1;
           lv_obj_t* l2;
           lv_obj_t* bt_accept;
+          lv_obj_t* bt_mute;
           lv_obj_t* bt_reject;
           lv_obj_t* label_accept;
+          lv_obj_t* label_mute;
           lv_obj_t* label_reject;
           lv_obj_t* bottomPlaceholder;
           Modes mode;

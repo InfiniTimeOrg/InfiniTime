@@ -29,10 +29,12 @@ namespace Pinetime {
 
         void AcceptIncomingCall();
         void RejectIncomingCall();
+        void MuteIncomingCall();
 
         enum class IncomingCallResponses : uint8_t {
           Reject = 0x00,
-          Answer = 0x01
+          Answer = 0x01,
+          Mute = 0x02
         };
 
       private:

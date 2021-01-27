@@ -1,8 +1,11 @@
 #include "Notifications.h"
 #include <displayapp/DisplayApp.h>
 #include "components/ble/MusicService.h"
+#include "Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
+extern lv_font_t jetbrains_mono_extrabold_compressed;
+extern lv_font_t jetbrains_mono_bold_20;
 
 Notifications::Notifications(DisplayApp *app,
                              Pinetime::Controllers::NotificationManager &notificationManager,
@@ -132,6 +135,11 @@ namespace {
     auto* item = static_cast<Notifications::NotificationItem *>(obj->user_data);
     item->OnAcceptIncomingCall(event);
   }
+  
+  static void MuteIncomingCallEventHandler(lv_obj_t *obj, lv_event_t event) {
+    auto* item = static_cast<Notifications::NotificationItem *>(obj->user_data);
+    item->OnMuteIncomingCall(event);
+  }
 
   static void RejectIncomingCallEventHandler(lv_obj_t *obj, lv_event_t event) {
     auto* item = static_cast<Notifications::NotificationItem *>(obj->user_data);
@@ -225,19 +233,28 @@ Notifications::NotificationItem::NotificationItem(const char *title,
       lv_label_set_text(l2, msg);
 
       bt_accept = lv_btn_create(container1, nullptr);
-      lv_obj_align(bt_accept, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, -20);
       bt_accept->user_data = this;
       lv_obj_set_event_cb(bt_accept, AcceptIncomingCallEventHandler);
-
+      lv_obj_set_size(bt_accept, LV_HOR_RES / 3, 80);
+      lv_obj_align(bt_accept, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, -20);
       label_accept = lv_label_create(bt_accept, nullptr);
-      lv_label_set_text(label_accept, "Accept");
+      lv_label_set_text(label_accept, Symbols::phone);
 
       bt_reject = lv_btn_create(container1, nullptr);
-      lv_obj_align(bt_reject, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, -20);
       bt_reject->user_data = this;
       lv_obj_set_event_cb(bt_reject, RejectIncomingCallEventHandler);
+      lv_obj_set_size(bt_reject, LV_HOR_RES / 3, 80);
+      lv_obj_align(bt_reject, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, -20);
       label_reject = lv_label_create(bt_reject, nullptr);
-      lv_label_set_text(label_reject, "Reject");
+      lv_label_set_text(label_reject, Symbols::phoneSlash);
+      
+      bt_mute = lv_btn_create(container1, nullptr);
+      bt_mute->user_data = this;
+      lv_obj_set_event_cb(bt_mute, MuteIncomingCallEventHandler);
+      lv_obj_set_size(bt_mute, LV_HOR_RES / 3, 80);
+      lv_obj_align(bt_mute, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -20);
+      label_mute = lv_label_create(bt_mute, nullptr);
+      lv_label_set_text(label_mute, Symbols::volumMute);
     }
   }
 
@@ -258,6 +275,12 @@ void Notifications::NotificationItem::OnAcceptIncomingCall(lv_event_t event) {
   if (event != LV_EVENT_CLICKED) return;
 
   alertNotificationService.AcceptIncomingCall();
+}
+
+void Notifications::NotificationItem::OnMuteIncomingCall(lv_event_t event) {
+  if (event != LV_EVENT_CLICKED) return;
+
+  alertNotificationService.MuteIncomingCall();
 }
 
 void Notifications::NotificationItem::OnRejectIncomingCall(lv_event_t event) {

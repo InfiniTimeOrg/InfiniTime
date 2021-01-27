@@ -118,3 +118,16 @@ void AlertNotificationService::RejectIncomingCall() {
 
   ble_gattc_notify_custom(connectionHandle, eventHandle, om);
 }
+
+void AlertNotificationService::MuteIncomingCall() {
+  auto response = IncomingCallResponses::Mute;
+  auto *om = ble_hs_mbuf_from_flat(&response, 1);
+
+  uint16_t connectionHandle = systemTask.nimble().connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+
+  ble_gattc_notify_custom(connectionHandle, eventHandle, om);
+}
