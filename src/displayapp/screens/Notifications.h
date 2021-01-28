@@ -50,7 +50,7 @@ namespace Pinetime {
           Controllers::NotificationManager::Notification::Id currentId;
           bool validDisplay = false;
 
-          lv_point_t timeoutLinePoints[2]  { {0, 237}, {239, 237} };
+          lv_point_t timeoutLinePoints[2]  { {0, 1}, {239, 1} };
           lv_obj_t* timeoutLine;
           uint32_t timeoutTickCountStart;
           uint32_t timeoutTickCountEnd;

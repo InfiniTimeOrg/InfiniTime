@@ -16,15 +16,13 @@ Notifications::Notifications(DisplayApp *app, Pinetime::Controllers::Notificatio
   }
 
   if(mode == Modes::Preview) {
-    static lv_style_t style_line;
-    lv_style_copy(&style_line, &lv_style_plain);
-    style_line.line.color = LV_COLOR_WHITE;
-    style_line.line.width = 3;
-    style_line.line.rounded = 0;
-
-
+    
     timeoutLine = lv_line_create(lv_scr_act(), nullptr);
-    lv_line_set_style(timeoutLine, LV_LINE_STYLE_MAIN, &style_line);
+
+    lv_obj_set_style_local_line_width(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
+    lv_obj_set_style_local_line_color(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_obj_set_style_local_line_rounded(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
+
     lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
     timeoutTickCountStart = xTaskGetTickCount();
     timeoutTickCountEnd = timeoutTickCountStart + (5*1024);
@@ -102,68 +100,42 @@ bool Notifications::OnButtonPushed() {
 
 Notifications::NotificationItem::NotificationItem(const char *title, const char *msg, uint8_t notifNr, uint8_t notifNb, Modes mode)
         : notifNr{notifNr}, notifNb{notifNb}, mode{mode} {
-  container1 = lv_cont_create(lv_scr_act(), nullptr);
-  static lv_style_t contStyle;
-  lv_style_copy(&contStyle, lv_cont_get_style(container1, LV_CONT_STYLE_MAIN));
-  contStyle.body.padding.inner = 20;
-  lv_cont_set_style(container1, LV_CONT_STYLE_MAIN, &contStyle);
-  lv_obj_set_width(container1, LV_HOR_RES);
-  lv_obj_set_height(container1, LV_VER_RES);
-  lv_obj_set_pos(container1, 0, 0);
-  lv_cont_set_layout(container1, LV_LAYOUT_OFF);
-  lv_cont_set_fit2(container1, LV_FIT_FLOOD, LV_FIT_FLOOD);
 
-  t1 = lv_label_create(container1, nullptr);
-  static lv_style_t titleStyle;
-  static lv_style_t textStyle;
-  static lv_style_t bottomStyle;
-  lv_style_copy(&titleStyle, lv_label_get_style(t1, LV_LABEL_STYLE_MAIN));
-  lv_style_copy(&textStyle, lv_label_get_style(t1, LV_LABEL_STYLE_MAIN));
-  lv_style_copy(&bottomStyle, lv_label_get_style(t1, LV_LABEL_STYLE_MAIN));
-  titleStyle.body.padding.inner = 5;
-  titleStyle.body.grad_color = LV_COLOR_GRAY;
-  titleStyle.body.main_color = LV_COLOR_GRAY;
-  titleStyle.body.radius = 20;
-  textStyle.body.border.part = LV_BORDER_NONE;
-  textStyle.body.padding.inner = 5;
+  lv_obj_t* container1 = lv_cont_create(lv_scr_act(), NULL);
 
-  bottomStyle.body.main_color = LV_COLOR_GREEN;
-  bottomStyle.body.grad_color = LV_COLOR_GREEN;
-  bottomStyle.body.border.part = LV_BORDER_TOP;
-  bottomStyle.body.border.color = LV_COLOR_RED;
+  lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x222222));
+  lv_obj_set_style_local_pad_all(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
+  lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
+  lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
-  lv_label_set_style(t1, LV_LABEL_STYLE_MAIN, &titleStyle);
-  lv_label_set_long_mode(t1, LV_LABEL_LONG_BREAK);
-  lv_label_set_body_draw(t1, true);
-  lv_obj_set_width(t1, LV_HOR_RES - (titleStyle.body.padding.left + titleStyle.body.padding.right));
-  lv_label_set_text(t1, title);
-  static constexpr int16_t offscreenOffset = -20 ;
-  lv_obj_set_pos(t1, titleStyle.body.padding.left, offscreenOffset);
+  lv_obj_set_pos(container1, 0, 50);
+  lv_obj_set_width(container1, 240);
+  lv_obj_set_height(container1, 190);
+  
+  lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
-  auto titleHeight = lv_obj_get_height(t1);
+  lv_obj_t* alert_count = lv_label_create(lv_scr_act(), nullptr);    
+  lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
+  lv_obj_align(alert_count, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
 
-  l1 = lv_label_create(container1, nullptr);
-  lv_label_set_style(l1, LV_LABEL_STYLE_MAIN, &textStyle);
-  lv_obj_set_pos(l1, textStyle.body.padding.left,
-                 titleHeight + offscreenOffset + textStyle.body.padding.bottom +
-                 textStyle.body.padding.top);
+  lv_obj_t* alert_type = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x888888));   
+  lv_label_set_text(alert_type, title);
+  lv_obj_align(alert_type, NULL, LV_ALIGN_IN_TOP_LEFT, 0, -4); 
 
-  lv_label_set_long_mode(l1, LV_LABEL_LONG_BREAK);
-  lv_label_set_body_draw(l1, true);
-  lv_obj_set_width(l1, LV_HOR_RES - (textStyle.body.padding.left + textStyle.body.padding.right));
-  lv_label_set_text(l1, msg);
+  lv_obj_t* alert_subject = lv_label_create(container1, nullptr);
+  lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+  lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
+  lv_obj_set_width(alert_subject, LV_HOR_RES - 20);    
+  lv_label_set_text(alert_subject, msg);
+  //lv_obj_align(alert_subject, NULL, LV_ALIGN_IN_TOP_LEFT, 10, 50);
 
-  if(mode == Modes::Normal) {
-    if(notifNr < notifNb) {
-      bottomPlaceholder = lv_label_create(container1, nullptr);
-      lv_label_set_style(bottomPlaceholder, LV_LABEL_STYLE_MAIN, &titleStyle);
-      lv_label_set_long_mode(bottomPlaceholder, LV_LABEL_LONG_BREAK);
-      lv_label_set_body_draw(bottomPlaceholder, true);
-      lv_obj_set_width(bottomPlaceholder, LV_HOR_RES - (titleStyle.body.padding.left + titleStyle.body.padding.right));
-      lv_label_set_text(bottomPlaceholder, " ");
-      lv_obj_set_pos(bottomPlaceholder, titleStyle.body.padding.left, LV_VER_RES - 5);
-    }
-  }
+  lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
+  lv_obj_set_size(backgroundLabel, 240, 240);
+  lv_obj_set_pos(backgroundLabel, 0, 0);
+  lv_label_set_text(backgroundLabel, "");
+  
 }
 
 

@@ -3,8 +3,6 @@
 #include "../LittleVgl.h"
 
 using namespace Pinetime::Applications::Screens;
-extern lv_font_t jetbrains_mono_extrabold_compressed;
-extern lv_font_t jetbrains_mono_bold_20;
 
 namespace{
 const uint8_t paddle_map[] = {
