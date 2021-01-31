@@ -610,7 +610,7 @@ include_directories(
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/include"
         "${NRF5_SDK_PATH}/modules/nrfx/hal"
         "${NRF5_SDK_PATH}/modules/nrfx/mdk"
-        ${NRF5_SDK_PATH}/external/freertos/source/include
+        "${NRF5_SDK_PATH}/external/freertos/source/include"
         "${NRF5_SDK_PATH}/components/toolchain/cmsis/include"
         "${NRF5_SDK_PATH}/components/libraries/atomic"
         "${NRF5_SDK_PATH}/components/libraries/atomic_fifo"
