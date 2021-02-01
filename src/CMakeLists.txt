@@ -319,7 +319,6 @@ set(LVGL_SRC
         libs/lvgl/src/lv_widgets/lv_cont.c
         libs/lvgl/src/lv_widgets/lv_cpicker.c
         libs/lvgl/src/lv_widgets/lv_dropdown.c
-        libs/lvgl/src/lv_widgets/lv_gauge.c
         libs/lvgl/src/lv_widgets/lv_img.c
         libs/lvgl/src/lv_widgets/lv_imgbtn.c
         libs/lvgl/src/lv_widgets/lv_keyboard.c
@@ -472,11 +471,8 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Clock.cpp
         displayapp/screens/Tile.cpp
         displayapp/screens/Meter.cpp
-        #displayapp/screens/Gauge.cpp
         displayapp/screens/InfiniPaint.cpp
         displayapp/screens/Paddle.cpp
-        #displayapp/screens/DropDownDemo.cpp
-        displayapp/screens/Modal.cpp
         displayapp/screens/BatteryIcon.cpp
         displayapp/screens/BleIcon.cpp
         displayapp/screens/NotificationIcon.cpp
@@ -567,11 +563,9 @@ set(INCLUDE_FILES
         displayapp/screens/Clock.h
         displayapp/screens/Tile.h
         displayapp/screens/Meter.h
-        displayapp/screens/Gauge.h
         displayapp/screens/InfiniPaint.h
         displayapp/screens/Paddle.h
         displayapp/screens/DropDownDemo.h
-        displayapp/screens/Modal.h
         displayapp/screens/BatteryIcon.h
         displayapp/screens/BleIcon.h
         displayapp/screens/NotificationIcon.h

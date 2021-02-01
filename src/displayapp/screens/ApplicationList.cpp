@@ -8,11 +8,14 @@
 
 using namespace Pinetime::Applications::Screens;
 
-ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp *app) : Screen(app),
-                                                                            screens{app, {
-                                                                                             [this]() -> std::unique_ptr<Screen> { return CreateScreen1(); }, [this]() -> std::unique_ptr<Screen> { return CreateScreen2(); },
-                                                                                             //[this]() -> std::unique_ptr<Screen> { return CreateScreen3(); }
-                                                                                         }}
+ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp *app) : 
+    Screen(app),
+    screens{app, {
+      [this]() -> std::unique_ptr<Screen> { return CreateScreen1(); }, 
+      [this]() -> std::unique_ptr<Screen> { return CreateScreen2(); },
+      //[this]() -> std::unique_ptr<Screen> { return CreateScreen3(); }
+      }
+    }
 {
 }
 
@@ -72,7 +75,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen3()
 {
   std::array<Screens::Tile::Applications, 6> applications{
       {{"A", Apps::Meter},
-       {"B", Apps::Gauge},
+       {"B", Apps::None},
        {"C", Apps::Clock},
        {"D", Apps::Music},
        {"E", Apps::SysInfo},

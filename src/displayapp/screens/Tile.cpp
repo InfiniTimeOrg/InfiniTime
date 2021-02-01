@@ -20,9 +20,6 @@ Tile::Tile(DisplayApp* app, std::array<Applications, 6>& applications) : Screen(
       appIndex++;
     }
   }
-  
-  // ????
-  //modal.reset(new Modal(app));
 
   btnm1 = lv_btnmatrix_create(lv_scr_act(), nullptr);
   lv_btnmatrix_set_map(btnm1, btnm_map1);
