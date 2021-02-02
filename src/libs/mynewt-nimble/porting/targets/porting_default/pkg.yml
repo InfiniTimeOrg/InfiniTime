@@ -16,7 +16,7 @@
 # under the License.
 #
 
-pkg.name: "targets/porting_default"
+pkg.name: "porting/targets/porting_default"
 pkg.type: "target"
 pkg.description: This target is used to generate syscfg.h file and other artifacts for default Nimble port includes.
 pkg.author:

@@ -837,14 +837,6 @@ rx_stress_10_l2cap_event(struct ble_l2cap_event *event, void *arg)
     MODLOG_DFLT(INFO, "Data buf %s\n", data_buf ? "OK" : "NOK");
     assert(data_buf != NULL);
 
-    /* The first 2 bytes of data is the size of appended pattern data. */
-    rc = os_mbuf_append(data_buf, (uint8_t[]) {data_len >> 8, data_len},
-                        2);
-    if (rc) {
-        os_mbuf_free_chain(data_buf);
-        assert(0);
-    }
-
     /* Fill mbuf with the pattern */
     stress_fill_mbuf_with_pattern(data_buf, data_len);
 
@@ -852,8 +844,13 @@ rx_stress_10_l2cap_event(struct ble_l2cap_event *event, void *arg)
     rc = ble_l2cap_send(rx_stress_ctx->chan, data_buf);
     MODLOG_DFLT(INFO, "Return code=%d\n", rc);
     if (rc) {
-        MODLOG_DFLT(INFO, "L2CAP stalled - waiting\n");
-        stalled = true;
+        if (rc == BLE_HS_ESTALLED) {
+            MODLOG_DFLT(INFO, "L2CAP stalled - waiting\n");
+            stalled = true;
+        } else {
+            MODLOG_DFLT(INFO, "Sending data via L2CAP failed with error "
+                        "code %d\n", rc);
+        }
     }
 
     MODLOG_DFLT(INFO, " %d, %d\n", ++send_cnt, data_len);
@@ -1365,7 +1362,7 @@ rx_stress_start(int test_num)
         break;
     case 10:
         console_printf("Stress L2CAP send\033[0m\n");
-        rc = ble_l2cap_create_server(1, STRESS_COC_MTU,
+        rc = ble_l2cap_create_server(TEST_PSM, STRESS_COC_MTU,
                                      rx_stress_10_l2cap_event, NULL);
         assert(rc == 0);
         rx_stress_simple_adv(&rx_stress_adv_sets[10]);

@@ -46,109 +46,109 @@
 #define CANNOT_SET_RANGE_MAX		0x02
 
 struct generic_onoff_state {
-	u8_t onoff;
-	u8_t target_onoff;
+	uint8_t onoff;
+	uint8_t target_onoff;
 
-	u8_t last_tid;
-	u16_t last_src_addr;
-	u16_t last_dst_addr;
-	s64_t last_msg_timestamp;
+	uint8_t last_tid;
+	uint16_t last_src_addr;
+	uint16_t last_dst_addr;
+	int64_t last_msg_timestamp;
 
-	s32_t tt_delta;
+	int32_t tt_delta;
 
 	struct transition *transition;
 };
 
 struct generic_level_state {
-	s16_t level;
-	s16_t target_level;
+	int16_t level;
+	int16_t target_level;
 
-	s16_t last_level;
-	s32_t last_delta;
+	int16_t last_level;
+	int32_t last_delta;
 
-	u8_t last_tid;
-	u16_t last_src_addr;
-	u16_t last_dst_addr;
-	s64_t last_msg_timestamp;
+	uint8_t last_tid;
+	uint16_t last_src_addr;
+	uint16_t last_dst_addr;
+	int64_t last_msg_timestamp;
 
-	s32_t tt_delta;
+	int32_t tt_delta;
 
 	struct transition *transition;
 };
 
 struct generic_onpowerup_state {
-	u8_t onpowerup;
+	uint8_t onpowerup;
 };
 
 struct gen_def_trans_time_state {
-	u8_t tt;
+	uint8_t tt;
 };
 
 struct vendor_state {
 	int current;
-	u32_t response;
-	u8_t last_tid;
-	u16_t last_src_addr;
-	u16_t last_dst_addr;
-	s64_t last_msg_timestamp;
+	uint32_t response;
+	uint8_t last_tid;
+	uint16_t last_src_addr;
+	uint16_t last_dst_addr;
+	int64_t last_msg_timestamp;
 };
 
 struct light_lightness_state {
-	u16_t linear;
-	u16_t target_linear;
+	uint16_t linear;
+	uint16_t target_linear;
 
-	u16_t actual;
-	u16_t target_actual;
+	uint16_t actual;
+	uint16_t target_actual;
 
-	u16_t last;
-	u16_t def;
+	uint16_t last;
+	uint16_t def;
 
-	u8_t status_code;
-	u16_t light_range_min;
-	u16_t light_range_max;
-	u32_t lightness_range;
+	uint8_t status_code;
+	uint16_t light_range_min;
+	uint16_t light_range_max;
+	uint32_t lightness_range;
 
-	u8_t last_tid;
-	u16_t last_src_addr;
-	u16_t last_dst_addr;
-	s64_t last_msg_timestamp;
+	uint8_t last_tid;
+	uint16_t last_src_addr;
+	uint16_t last_dst_addr;
+	int64_t last_msg_timestamp;
 
-	s32_t tt_delta_actual;
-	s32_t tt_delta_linear;
+	int32_t tt_delta_actual;
+	int32_t tt_delta_linear;
 
 	struct transition *transition;
 };
 
 struct light_ctl_state {
-	u16_t lightness;
-	u16_t target_lightness;
+	uint16_t lightness;
+	uint16_t target_lightness;
 
-	u16_t temp;
-	u16_t target_temp;
+	uint16_t temp;
+	uint16_t target_temp;
 
-	s16_t delta_uv;
-	s16_t target_delta_uv;
+	int16_t delta_uv;
+	int16_t target_delta_uv;
 
-	u8_t status_code;
-	u16_t temp_range_min;
-	u16_t temp_range_max;
-	u32_t temperature_range;
+	uint8_t status_code;
+	uint16_t temp_range_min;
+	uint16_t temp_range_max;
+	uint32_t temperature_range;
 
-	u16_t lightness_def;
-	u16_t temp_def;
-	u32_t lightness_temp_def;
-	s16_t delta_uv_def;
+	uint16_t lightness_def;
+	uint16_t temp_def;
+	uint32_t lightness_temp_def;
+	int16_t delta_uv_def;
 
-	u32_t lightness_temp_last;
+	uint32_t lightness_temp_last;
 
-	u8_t last_tid;
-	u16_t last_src_addr;
-	u16_t last_dst_addr;
-	s64_t last_msg_timestamp;
+	uint8_t last_tid;
+	uint16_t last_src_addr;
+	uint16_t last_dst_addr;
+	int64_t last_msg_timestamp;
 
-	s32_t tt_delta_lightness;
-	s32_t tt_delta_temp;
-	s32_t tt_delta_duv;
+	int32_t tt_delta_lightness;
+	int32_t tt_delta_temp;
+	int32_t tt_delta_duv;
 
 	struct transition *transition;
 };

@@ -361,7 +361,6 @@ ble_hs_sync(void)
 static int
 ble_hs_reset(void)
 {
-    uint16_t conn_handle;
     int rc;
 
     STATS_INC(ble_hs_stats, reset);
@@ -376,14 +375,8 @@ ble_hs_reset(void)
 
     ble_hs_clear_rx_queue();
 
-    while (1) {
-        conn_handle = ble_hs_atomic_first_conn_handle();
-        if (conn_handle == BLE_HS_CONN_HANDLE_NONE) {
-            break;
-        }
-
-        ble_gap_conn_broken(conn_handle, ble_hs_reset_reason);
-    }
+    /* Clear adverising and scanning states. */
+    ble_gap_reset_state(ble_hs_reset_reason);
 
     /* Clear configured addresses. */
     ble_hs_id_reset();
@@ -680,7 +673,7 @@ ble_hs_rx_data(struct os_mbuf *om, void *arg)
     /* If flow control is enabled, mark this packet with its corresponding
      * connection handle.
      */
-    ble_hs_flow_fill_acl_usrhdr(om);
+    ble_hs_flow_track_data_mbuf(om);
 
     rc = ble_mqueue_put(&ble_hs_rx_q, ble_hs_evq, om);
     if (rc != 0) {

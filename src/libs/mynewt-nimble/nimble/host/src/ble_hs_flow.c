@@ -40,6 +40,23 @@ static ble_npl_event_fn ble_hs_flow_event_cb;
 
 static struct ble_npl_event ble_hs_flow_ev;
 
+/* Connection handle associated with each mbuf in ACL pool */
+static uint16_t ble_hs_flow_mbuf_conn_handle[ MYNEWT_VAL(BLE_ACL_BUF_COUNT) ];
+
+static inline int
+ble_hs_flow_mbuf_index(const struct os_mbuf *om)
+{
+    const struct os_mempool *mp = om->om_omp->omp_pool;
+    uintptr_t addr = (uintptr_t)om;
+    int idx;
+
+    idx = (addr - mp->mp_membuf_addr) / mp->mp_block_size;
+
+    BLE_HS_DBG_ASSERT(mp->mp_membuf_addr + idx * mp->mp_block_size == addr);
+
+    return idx;
+}
+
 static int
 ble_hs_flow_tx_num_comp_pkts(void)
 {
@@ -143,18 +160,13 @@ ble_hs_flow_acl_free(struct os_mempool_ext *mpe, void *data, void *arg)
     struct ble_hs_conn *conn;
     const struct os_mbuf *om;
     uint16_t conn_handle;
+    int idx;
     int rc;
 
     om = data;
 
-    /* An ACL data packet must be a single mbuf, and it must contain the
-     * corresponding connection handle in its user header.
-     */
-    assert(OS_MBUF_IS_PKTHDR(om));
-    assert(OS_MBUF_USRHDR_LEN(om) >= sizeof conn_handle);
-
-    /* Copy the connection handle out of the mbuf. */
-    memcpy(&conn_handle, OS_MBUF_USRHDR(om), sizeof conn_handle);
+    idx = ble_hs_flow_mbuf_index(om);
+    conn_handle = ble_hs_flow_mbuf_conn_handle[idx];
 
     /* Free the mbuf back to its pool. */
     rc = os_memblock_put_from_cb(&mpe->mpe_mp, data);
@@ -190,23 +202,19 @@ ble_hs_flow_connection_broken(uint16_t conn_handle)
 }
 
 /**
- * Fills the user header of an incoming data packet.  On function return, the
- * header contains the connection handle associated with the sender.
+ * Associates incoming data packet with a connection handle of the sender.
  *
  * If flow control is disabled, this function is a no-op.
  */
 void
-ble_hs_flow_fill_acl_usrhdr(struct os_mbuf *om)
+ble_hs_flow_track_data_mbuf(struct os_mbuf *om)
 {
 #if MYNEWT_VAL(BLE_HS_FLOW_CTRL)
     const struct hci_data_hdr *hdr;
-    uint16_t *conn_handle;
-
-    BLE_HS_DBG_ASSERT(OS_MBUF_USRHDR_LEN(om) >= sizeof *conn_handle);
-    conn_handle = OS_MBUF_USRHDR(om);
+    int idx = ble_hs_flow_mbuf_index(om);
 
     hdr = (void *)om->om_data;
-    *conn_handle = BLE_HCI_DATA_HANDLE(hdr->hdh_handle_pb_bc);
+    ble_hs_flow_mbuf_conn_handle[idx] = BLE_HCI_DATA_HANDLE(hdr->hdh_handle_pb_bc);
 #endif
 }
 

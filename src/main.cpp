@@ -232,7 +232,7 @@ void nimble_port_ll_task_func(void *args) {
   ble_ll_task(args);
 }
 }
-
+int countT2 = 0;
 int main(void) {
   logger.Init();
 

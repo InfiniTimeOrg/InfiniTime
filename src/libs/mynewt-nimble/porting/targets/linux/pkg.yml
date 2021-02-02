@@ -16,7 +16,7 @@
 # under the License.
 #
 
-pkg.name: "targets/linux"
+pkg.name: "porting/targets/linux"
 pkg.type: "target"
 pkg.description: This target is used to generate syscfg.h file and other artifacts for linux example app.
 pkg.author:

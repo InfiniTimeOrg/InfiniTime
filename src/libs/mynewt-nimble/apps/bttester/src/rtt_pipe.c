@@ -31,7 +31,7 @@ static struct hal_timer rtt_timer;
 
 static bttester_pipe_recv_cb app_cb;
 
-static u8_t *recv_buf;
+static uint8_t *recv_buf;
 static size_t recv_buf_len;
 static size_t recv_off;
 
@@ -74,7 +74,7 @@ rtt_pipe_poll_func(void *arg)
         itvl_ms = min(itvl_ms, RTT_INPUT_POLL_INTERVAL_MAX);
     } else {
         while (key >= 0 && avail > 0) {
-            recv_buf[recv_off] = (u8_t) key;
+            recv_buf[recv_off] = (uint8_t) key;
             recv_off++;
             avail = recv_buf_len - recv_off;
             key = rtt_pipe_get_char((unsigned int) rtt_index_down);
@@ -93,14 +93,14 @@ rtt_pipe_poll_func(void *arg)
 }
 
 int
-bttester_pipe_send(const u8_t *data, int len)
+bttester_pipe_send(const uint8_t *data, int len)
 {
     SEGGER_RTT_Write((unsigned int) rtt_index_up, data, (unsigned int) len);
     return 0;
 }
 
 void
-bttester_pipe_register(u8_t *buf, size_t len, bttester_pipe_recv_cb cb)
+bttester_pipe_register(uint8_t *buf, size_t len, bttester_pipe_recv_cb cb)
 {
     recv_buf = buf;
     recv_buf_len = len;

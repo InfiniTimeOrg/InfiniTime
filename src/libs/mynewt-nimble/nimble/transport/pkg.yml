@@ -43,3 +43,12 @@ pkg.deps.'BLE_HCI_TRANSPORT == "uart"':
 
 pkg.deps.'BLE_HCI_TRANSPORT == "da1469x"':
     - nimble/transport/da1469x
+
+pkg.deps.'BLE_HCI_TRANSPORT == "dialog_cmac"':
+    - nimble/transport/dialog_cmac
+
+pkg.deps.'BLE_HCI_TRANSPORT == "usb"':
+    - nimble/transport/usb
+
+pkg.deps.'BLE_HCI_TRANSPORT == "nrf5340"':
+    - nimble/transport/nrf5340

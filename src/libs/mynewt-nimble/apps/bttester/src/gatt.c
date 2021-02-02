@@ -76,8 +76,8 @@
 static uint8_t gatt_svr_pts_static_long_val[300];
 static uint8_t gatt_svr_pts_static_val[30];
 static uint8_t gatt_svr_pts_static_short_val;
-static u8_t notify_state;
-static u8_t indicate_state;
+static uint8_t notify_state;
+static uint8_t indicate_state;
 static uint16_t myconn_handle;
 static struct os_callout notify_tx_timer;
 uint16_t notify_handle;
@@ -253,7 +253,7 @@ static const struct ble_gatt_svc_def gatt_svr_svcs[] = {
 	},
 };
 
-static void attr_value_changed_ev(u16_t handle, struct os_mbuf *data)
+static void attr_value_changed_ev(uint16_t handle, struct os_mbuf *data)
 {
 	struct gatt_attr_value_changed_ev *ev;
 	struct os_mbuf *buf = os_msys_get(0, 0);
@@ -569,7 +569,7 @@ gatt_svr_rel_write_test(uint16_t conn_handle, uint16_t attr_handle,
 	}
 }
 
-static void start_server(u8_t *data, u16_t len)
+static void start_server(uint8_t *data, uint16_t len)
 {
 	struct gatt_start_server_rp rp;
 
@@ -583,14 +583,14 @@ static void start_server(u8_t *data, u16_t len)
 	rp.db_attr_cnt = 0;
 
 	tester_send(BTP_SERVICE_ID_GATT, GATT_START_SERVER, CONTROLLER_INDEX,
-		    (u8_t *) &rp, sizeof(rp));
+		    (uint8_t *) &rp, sizeof(rp));
 }
 
 /* Convert UUID from BTP command to bt_uuid */
-static u8_t btp2bt_uuid(const u8_t *uuid, u8_t len,
+static uint8_t btp2bt_uuid(const uint8_t *uuid, uint8_t len,
 			ble_uuid_any_t *bt_uuid)
 {
-	u16_t le16;
+	uint16_t le16;
 
 	switch (len) {
 	case 0x02: /* UUID 16 */
@@ -614,8 +614,8 @@ static u8_t btp2bt_uuid(const u8_t *uuid, u8_t len,
  * It is not intended to be used by client and server at the same time.
  */
 static struct {
-	u16_t len;
-	u8_t buf[MAX_BUFFER_SIZE];
+	uint16_t len;
+	uint8_t buf[MAX_BUFFER_SIZE];
 } gatt_buf;
 
 static void *gatt_buf_add(const void *data, size_t len)
@@ -665,7 +665,7 @@ static int read_cb(uint16_t conn_handle,
 		   void *arg)
 {
 	struct gatt_read_rp *rp = (void *) gatt_buf.buf;
-	u8_t btp_opcode = (uint8_t) (int) arg;
+	uint8_t btp_opcode = (uint8_t) (int) arg;
 
 	SYS_LOG_DBG("status=%d", error->status);
 
@@ -692,7 +692,7 @@ static int read_cb(uint16_t conn_handle,
 	return 0;
 }
 
-static void read(u8_t *data, u16_t len)
+static void read(uint8_t *data, uint16_t len)
 {
 	const struct gatt_read_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
@@ -731,7 +731,7 @@ static int read_long_cb(uint16_t conn_handle,
 			void *arg)
 {
 	struct gatt_read_rp *rp = (void *) gatt_buf.buf;
-	u8_t btp_opcode = (uint8_t) (int) arg;
+	uint8_t btp_opcode = (uint8_t) (int) arg;
 
 	SYS_LOG_DBG("status=%d", error->status);
 
@@ -762,7 +762,7 @@ static int read_long_cb(uint16_t conn_handle,
 	return 0;
 }
 
-static void read_long(u8_t *data, u16_t len)
+static void read_long(uint8_t *data, uint16_t len)
 {
 	const struct gatt_read_long_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
@@ -797,10 +797,10 @@ fail:
 		   BTP_STATUS_FAILED);
 }
 
-static void read_multiple(u8_t *data, u16_t len)
+static void read_multiple(uint8_t *data, uint16_t len)
 {
 	const struct gatt_read_multiple_cmd *cmd = (void *) data;
-	u16_t handles[cmd->handles_count];
+	uint16_t handles[cmd->handles_count];
 	struct ble_gap_conn_desc conn;
 	int rc, i;
 
@@ -836,11 +836,11 @@ fail:
 		   BTP_STATUS_FAILED);
 }
 
-static void write_without_rsp(u8_t *data, u16_t len, u8_t op, bool sign)
+static void write_without_rsp(uint8_t *data, uint16_t len, uint8_t op, bool sign)
 {
 	const struct gatt_write_without_rsp_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
-	u8_t status = BTP_STATUS_SUCCESS;
+	uint8_t status = BTP_STATUS_SUCCESS;
 	int rc;
 
 	SYS_LOG_DBG("");
@@ -866,7 +866,7 @@ static int write_rsp(uint16_t conn_handle, const struct ble_gatt_error *error,
 		     void *arg)
 {
 	uint8_t err = (uint8_t) error->status;
-	u8_t btp_opcode = (uint8_t) (int) arg;
+	uint8_t btp_opcode = (uint8_t) (int) arg;
 
 	SYS_LOG_DBG("");
 
@@ -875,7 +875,7 @@ static int write_rsp(uint16_t conn_handle, const struct ble_gatt_error *error,
 	return 0;
 }
 
-static void write(u8_t *data, u16_t len)
+static void write(uint8_t *data, uint16_t len)
 {
 	const struct gatt_write_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
@@ -901,7 +901,7 @@ fail:
 		   BTP_STATUS_FAILED);
 }
 
-static void write_long(u8_t *data, u16_t len)
+static void write_long(uint8_t *data, uint16_t len)
 {
 	const struct gatt_write_long_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
@@ -952,7 +952,7 @@ static int reliable_write_rsp(uint16_t conn_handle,
 	return 0;
 }
 
-static void reliable_write(u8_t *data, u16_t len)
+static void reliable_write(uint8_t *data, uint16_t len)
 {
 	const struct gatt_reliable_write_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
@@ -994,12 +994,12 @@ fail:
 }
 
 static struct bt_gatt_subscribe_params {
-	u16_t ccc_handle;
-	u16_t value;
-	u16_t value_handle;
+	uint16_t ccc_handle;
+	uint16_t value;
+	uint16_t value_handle;
 } subscribe_params;
 
-static void read_uuid(u8_t *data, u16_t len)
+static void read_uuid(uint8_t *data, uint16_t len)
 {
 	const struct gatt_read_uuid_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
@@ -1046,8 +1046,8 @@ static int disc_prim_uuid_cb(uint16_t conn_handle,
 	struct gatt_disc_prim_uuid_rp *rp = (void *) gatt_buf.buf;
 	struct gatt_service *service;
 	const ble_uuid_any_t *uuid;
-	u8_t uuid_length;
-	u8_t opcode = (u8_t) (int) arg;
+	uint8_t uuid_length;
+	uint8_t opcode = (uint8_t) (int) arg;
 
 	SYS_LOG_DBG("");
 
@@ -1081,7 +1081,7 @@ static int disc_prim_uuid_cb(uint16_t conn_handle,
 	service->uuid_length = uuid_length;
 
 	if (uuid->u.type == BLE_UUID_TYPE_16) {
-		u16_t u16 = sys_cpu_to_le16(BLE_UUID16(uuid)->value);
+		uint16_t u16 = sys_cpu_to_le16(BLE_UUID16(uuid)->value);
 		memcpy(service->uuid, &u16, uuid_length);
 	} else {
 		memcpy(service->uuid, BLE_UUID128(uuid)->value,
@@ -1102,7 +1102,7 @@ static int disc_all_desc_cb(uint16_t conn_handle,
 	struct gatt_disc_all_desc_rp *rp = (void *) gatt_buf.buf;
 	struct gatt_descriptor *dsc;
 	const ble_uuid_any_t *uuid;
-	u8_t uuid_length;
+	uint8_t uuid_length;
 
 	SYS_LOG_DBG("");
 
@@ -1135,7 +1135,7 @@ static int disc_all_desc_cb(uint16_t conn_handle,
 	dsc->uuid_length = uuid_length;
 
 	if (uuid->u.type == BLE_UUID_TYPE_16) {
-		u16_t u16 = sys_cpu_to_le16(BLE_UUID16(uuid)->value);
+		uint16_t u16 = sys_cpu_to_le16(BLE_UUID16(uuid)->value);
 		memcpy(dsc->uuid, &u16, uuid_length);
 	} else {
 		memcpy(dsc->uuid, BLE_UUID128(uuid)->value, uuid_length);
@@ -1146,7 +1146,7 @@ static int disc_all_desc_cb(uint16_t conn_handle,
 	return 0;
 }
 
-static void disc_all_prim_svcs(u8_t *data, u16_t len)
+static void disc_all_prim_svcs(uint8_t *data, uint16_t len)
 {
 	struct ble_gap_conn_desc conn;
 	int rc;
@@ -1175,7 +1175,7 @@ fail:
 		   CONTROLLER_INDEX, BTP_STATUS_FAILED);
 }
 
-static void disc_all_desc(u8_t *data, u16_t len)
+static void disc_all_desc(uint8_t *data, uint16_t len)
 {
 	const struct gatt_disc_all_desc_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
@@ -1221,7 +1221,7 @@ static int find_included_cb(uint16_t conn_handle,
 	struct gatt_included *included;
 	const ble_uuid_any_t *uuid;
 	int service_handle = (int) arg;
-	u8_t uuid_length;
+	uint8_t uuid_length;
 
 	SYS_LOG_DBG("");
 
@@ -1259,7 +1259,7 @@ static int find_included_cb(uint16_t conn_handle,
 	included->service.uuid_length = uuid_length;
 
 	if (uuid->u.type == BLE_UUID_TYPE_16) {
-		u16_t u16 = sys_cpu_to_le16(BLE_UUID16(uuid)->value);
+		uint16_t u16 = sys_cpu_to_le16(BLE_UUID16(uuid)->value);
 		memcpy(included->service.uuid, &u16, uuid_length);
 	} else {
 		memcpy(included->service.uuid, BLE_UUID128(uuid)->value,
@@ -1278,8 +1278,8 @@ static int disc_chrc_cb(uint16_t conn_handle,
 	struct gatt_disc_chrc_rp *rp = (void *) gatt_buf.buf;
 	struct gatt_characteristic *chrc;
 	const ble_uuid_any_t *uuid;
-	u8_t btp_opcode = (uint8_t) (int) arg;
-	u8_t uuid_length;
+	uint8_t btp_opcode = (uint8_t) (int) arg;
+	uint8_t uuid_length;
 
 	SYS_LOG_DBG("");
 
@@ -1314,7 +1314,7 @@ static int disc_chrc_cb(uint16_t conn_handle,
 	chrc->uuid_length = uuid_length;
 
 	if (uuid->u.type == BLE_UUID_TYPE_16) {
-		u16_t u16 = sys_cpu_to_le16(BLE_UUID16(uuid)->value);
+		uint16_t u16 = sys_cpu_to_le16(BLE_UUID16(uuid)->value);
 		memcpy(chrc->uuid, &u16, uuid_length);
 	} else {
 		memcpy(chrc->uuid, BLE_UUID128(uuid)->value,
@@ -1326,7 +1326,7 @@ static int disc_chrc_cb(uint16_t conn_handle,
 	return 0;
 }
 
-static void disc_chrc_uuid(u8_t *data, u16_t len)
+static void disc_chrc_uuid(uint8_t *data, uint16_t len)
 {
 	const struct gatt_disc_chrc_uuid_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
@@ -1366,7 +1366,7 @@ fail:
 		   BTP_STATUS_FAILED);
 }
 
-static void disc_prim_uuid(u8_t *data, u16_t len)
+static void disc_prim_uuid(uint8_t *data, uint16_t len)
 {
 	const struct gatt_disc_prim_uuid_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
@@ -1402,7 +1402,7 @@ fail:
 		   BTP_STATUS_FAILED);
 }
 
-static void disc_all_chrc(u8_t *data, u16_t len)
+static void disc_all_chrc(uint8_t *data, uint16_t len)
 {
 	const struct gatt_disc_all_chrc_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
@@ -1439,7 +1439,7 @@ fail:
 		   BTP_STATUS_FAILED);
 }
 
-static void find_included(u8_t *data, u16_t len)
+static void find_included(uint8_t *data, uint16_t len)
 {
 	const struct gatt_find_included_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
@@ -1495,7 +1495,7 @@ static int exchange_func(uint16_t conn_handle,
 	return 0;
 }
 
-static void exchange_mtu(u8_t *data, u16_t len)
+static void exchange_mtu(uint8_t *data, uint16_t len)
 {
 	struct ble_gap_conn_desc conn;
 	int rc;
@@ -1517,10 +1517,10 @@ fail:
 		   CONTROLLER_INDEX, BTP_STATUS_FAILED);
 }
 
-static int enable_subscription(u16_t conn_handle, u16_t ccc_handle,
-			       u16_t value)
+static int enable_subscription(uint16_t conn_handle, uint16_t ccc_handle,
+			       uint16_t value)
 {
-	u8_t op;
+	uint8_t op;
 
 	SYS_LOG_DBG("");
 
@@ -1538,9 +1538,9 @@ static int enable_subscription(u16_t conn_handle, u16_t ccc_handle,
 	return 0;
 }
 
-static int disable_subscription(u16_t conn_handle, u16_t ccc_handle)
+static int disable_subscription(uint16_t conn_handle, uint16_t ccc_handle)
 {
-	u16_t value = 0x00;
+	uint16_t value = 0x00;
 
 	SYS_LOG_DBG("");
 
@@ -1559,12 +1559,12 @@ static int disable_subscription(u16_t conn_handle, u16_t ccc_handle)
 	return 0;
 }
 
-static void config_subscription(u8_t *data, u16_t len, u8_t op)
+static void config_subscription(uint8_t *data, uint16_t len, uint8_t op)
 {
 	const struct gatt_cfg_notify_cmd *cmd = (void *) data;
 	struct ble_gap_conn_desc conn;
-	u16_t ccc_handle = sys_le16_to_cpu(cmd->ccc_handle);
-	u8_t status;
+	uint16_t ccc_handle = sys_le16_to_cpu(cmd->ccc_handle);
+	uint8_t status;
 	int rc;
 
 	SYS_LOG_DBG("");
@@ -1577,7 +1577,7 @@ static void config_subscription(u8_t *data, u16_t len, u8_t op)
 	}
 
 	if (cmd->enable) {
-		u16_t value;
+		uint16_t value;
 
 		if (op == GATT_CFG_NOTIFY) {
 			value = 0x0001;
@@ -1625,10 +1625,10 @@ static int flags_hs2btp_map[] = {
 	BTP_PERM_F_WRITE_AUTHOR,
 };
 
-static u8_t flags_hs2btp(u8_t flags)
+static uint8_t flags_hs2btp(uint8_t flags)
 {
 	int i;
-	u8_t ret = 0;
+	uint8_t ret = 0;
 
 	for (i = 0; i < 8; ++i) {
 		if (flags & BIT(i)) {
@@ -1639,17 +1639,17 @@ static u8_t flags_hs2btp(u8_t flags)
 	return ret;
 }
 
-static void get_attrs(u8_t *data, u16_t len)
+static void get_attrs(uint8_t *data, uint16_t len)
 {
 	const struct gatt_get_attributes_cmd *cmd = (void *) data;
 	struct gatt_get_attributes_rp *rp;
 	struct gatt_attr *gatt_attr;
 	struct os_mbuf *buf = os_msys_get(0, 0);
-	u16_t start_handle, end_handle;
+	uint16_t start_handle, end_handle;
 	struct ble_att_svr_entry *entry = NULL;
 	ble_uuid_any_t uuid;
 	ble_uuid_t *uuid_ptr = NULL;
-	u8_t count = 0;
+	uint8_t count = 0;
 	char str[BLE_UUID_STR_LEN];
 
 	SYS_LOG_DBG("");
@@ -1718,13 +1718,13 @@ free:
 	os_mbuf_free_chain(buf);
 }
 
-static void get_attr_val(u8_t *data, u16_t len)
+static void get_attr_val(uint8_t *data, uint16_t len)
 {
 	const struct gatt_get_attribute_value_cmd *cmd = (void *) data;
 	struct gatt_get_attribute_value_rp *rp;
 	struct ble_gap_conn_desc conn;
 	struct os_mbuf *buf = os_msys_get(0, 0);
-	u16_t handle = sys_cpu_to_le16(cmd->handle);
+	uint16_t handle = sys_cpu_to_le16(cmd->handle);
 	uint8_t out_att_err;
 	int conn_status;
 
@@ -1766,7 +1766,7 @@ free:
 	os_mbuf_free_chain(buf);
 }
 
-static void change_database(u8_t *data, u16_t len)
+static void change_database(uint8_t *data, uint16_t len)
 {
 	const struct gatt_change_database *cmd = (void *) data;
 
@@ -1782,9 +1782,9 @@ static void change_database(u8_t *data, u16_t len)
 	return;
 }
 
-static void supported_commands(u8_t *data, u16_t len)
+static void supported_commands(uint8_t *data, uint16_t len)
 {
-	u8_t cmds[4];
+	uint8_t cmds[4];
 	struct gatt_read_supported_commands_rp *rp = (void *) cmds;
 
 	SYS_LOG_DBG("");
@@ -1816,7 +1816,7 @@ static void supported_commands(u8_t *data, u16_t len)
 	tester_set_bit(cmds, GATT_CHANGE_DATABASE);
 
 	tester_send(BTP_SERVICE_ID_GATT, GATT_READ_SUPPORTED_COMMANDS,
-	CONTROLLER_INDEX, (u8_t *) rp, sizeof(cmds));
+	CONTROLLER_INDEX, (uint8_t *) rp, sizeof(cmds));
 }
 
 enum attr_type {
@@ -1825,8 +1825,8 @@ enum attr_type {
 	BLE_GATT_ATTR_DSC,
 };
 
-void tester_handle_gatt(u8_t opcode, u8_t index, u8_t *data,
-                                                u16_t len)
+void tester_handle_gatt(uint8_t opcode, uint8_t index, uint8_t *data,
+                                                uint16_t len)
 {
 	switch (opcode) {
 	case GATT_READ_SUPPORTED_COMMANDS:
@@ -1905,8 +1905,8 @@ void tester_handle_gatt(u8_t opcode, u8_t index, u8_t *data,
 	}
 }
 
-int tester_gatt_notify_rx_ev(u16_t conn_handle, u16_t attr_handle,
-			     u8_t indication, struct os_mbuf *om)
+int tester_gatt_notify_rx_ev(uint16_t conn_handle, uint16_t attr_handle,
+			     uint8_t indication, struct os_mbuf *om)
 {
 	struct gatt_notification_ev *ev;
 	struct ble_gap_conn_desc conn;
@@ -1930,7 +1930,7 @@ int tester_gatt_notify_rx_ev(u16_t conn_handle, u16_t attr_handle,
 
 	ev->address_type = addr->type;
 	memcpy(ev->address, addr->val, sizeof(ev->address));
-	ev->type = (u8_t) (indication ? 0x02 : 0x01);
+	ev->type = (uint8_t) (indication ? 0x02 : 0x01);
 	ev->handle = sys_cpu_to_le16(attr_handle);
 	ev->data_length = sys_cpu_to_le16(os_mbuf_len(om));
 	os_mbuf_appendfrom(buf, om, 0, os_mbuf_len(om));
@@ -1988,9 +1988,9 @@ void notify_test(struct os_event *ev)
 	}
 }
 
-int tester_gatt_subscribe_ev(u16_t conn_handle, u16_t attr_handle, u8_t reason,
-			     u8_t prev_notify, u8_t cur_notify,
-			     u8_t prev_indicate, u8_t cur_indicate)
+int tester_gatt_subscribe_ev(uint16_t conn_handle, uint16_t attr_handle, uint8_t reason,
+			     uint8_t prev_notify, uint8_t cur_notify,
+			     uint8_t prev_indicate, uint8_t cur_indicate)
 {
 	SYS_LOG_DBG("");
 	myconn_handle = conn_handle;
@@ -2084,7 +2084,7 @@ int gatt_svr_init(void)
 	return 0;
 }
 
-u8_t tester_init_gatt(void)
+uint8_t tester_init_gatt(void)
 {
 	os_callout_init(&notify_tx_timer, os_eventq_dflt_get(),
 			notify_test, NULL);
@@ -2092,7 +2092,7 @@ u8_t tester_init_gatt(void)
 	return BTP_STATUS_SUCCESS;
 }
 
-u8_t tester_unregister_gatt(void)
+uint8_t tester_unregister_gatt(void)
 {
 	return BTP_STATUS_SUCCESS;
 }

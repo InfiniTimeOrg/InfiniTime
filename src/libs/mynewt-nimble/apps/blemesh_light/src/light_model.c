@@ -48,10 +48,10 @@ static uint16_t top_val;
 static uint32_t neopixel[WS2812_NUM_LED];
 #endif
 
-static u8_t gen_onoff_state;
-static s16_t gen_level_state;
+static uint8_t gen_onoff_state;
+static int16_t gen_level_state;
 
-static void light_set_lightness(u8_t percentage)
+static void light_set_lightness(uint8_t percentage)
 {
 #if (!MYNEWT_VAL(USE_NEOPIXEL))
 	int rc;
@@ -76,10 +76,10 @@ static void light_set_lightness(u8_t percentage)
 #endif
 #else
 	int i;
-	u32_t lightness;
-	u8_t max_lightness = 0x1f;
+	uint32_t lightness;
+	uint8_t max_lightness = 0x1f;
 
-	lightness = (u8_t) (percentage * max_lightness / 100);
+	lightness = (uint8_t) (percentage * max_lightness / 100);
 
 	for (i = 0; i < WS2812_NUM_LED; i++) {
 		neopixel[i] = (lightness | lightness << 8 | lightness << 16);
@@ -90,7 +90,7 @@ static void light_set_lightness(u8_t percentage)
 
 static void update_light_state(void)
 {
-	u16_t level = (u16_t)gen_level_state;
+	uint16_t level = (uint16_t)gen_level_state;
 	int percent = 100 * level / 0xffff;
 
 	if (gen_onoff_state == 0) {
@@ -99,44 +99,44 @@ static void update_light_state(void)
 	light_set_lightness((uint8_t) percent);
 }
 
-int light_model_gen_onoff_get(struct bt_mesh_model *model, u8_t *state)
+int light_model_gen_onoff_get(struct bt_mesh_model *model, uint8_t *state)
 {
 	*state = gen_onoff_state;
 	return 0;
 }
 
-int light_model_gen_onoff_set(struct bt_mesh_model *model, u8_t state)
+int light_model_gen_onoff_set(struct bt_mesh_model *model, uint8_t state)
 {
 	gen_onoff_state = state;
 	update_light_state();
 	return 0;
 }
 
-int light_model_gen_level_get(struct bt_mesh_model *model, s16_t *level)
+int light_model_gen_level_get(struct bt_mesh_model *model, int16_t *level)
 {
 	*level = gen_level_state;
 	return 0;
 }
 
-int light_model_gen_level_set(struct bt_mesh_model *model, s16_t level)
+int light_model_gen_level_set(struct bt_mesh_model *model, int16_t level)
 {
 	gen_level_state = level;
-	if ((u16_t)gen_level_state > 0x0000) {
+	if ((uint16_t)gen_level_state > 0x0000) {
 		gen_onoff_state = 1;
 	}
-	if ((u16_t)gen_level_state == 0x0000) {
+	if ((uint16_t)gen_level_state == 0x0000) {
 		gen_onoff_state = 0;
 	}
 	update_light_state();
 	return 0;
 }
 
-int light_model_light_lightness_get(struct bt_mesh_model *model, s16_t *lightness)
+int light_model_light_lightness_get(struct bt_mesh_model *model, int16_t *lightness)
 {
 	return light_model_gen_level_get(model, lightness);
 }
 
-int light_model_light_lightness_set(struct bt_mesh_model *model, s16_t lightness)
+int light_model_light_lightness_set(struct bt_mesh_model *model, int16_t lightness)
 {
 	return light_model_gen_level_set(model, lightness);
 }

@@ -17,6 +17,11 @@
  * under the License.
  */
 
+/* This package has been deprecated and you should
+ * use the store/config package. For a RAM-only BLE store,
+ * use store/config and set BLE_STORE_CONFIG_PERSIST to 0.
+ */
+
 #ifndef H_BLE_STORE_RAM_
 #define H_BLE_STORE_RAM_
 

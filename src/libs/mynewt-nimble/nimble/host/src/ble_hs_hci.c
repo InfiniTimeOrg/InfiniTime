@@ -447,8 +447,8 @@ ble_hs_hci_acl_hdr_prepend(struct os_mbuf *om, uint16_t handle,
     struct hci_data_hdr hci_hdr;
     struct os_mbuf *om2;
 
-    hci_hdr.hdh_handle_pb_bc =
-        ble_hs_hci_util_handle_pb_bc_join(handle, pb_flag, 0);
+    put_le16(&hci_hdr.hdh_handle_pb_bc,
+             ble_hs_hci_util_handle_pb_bc_join(handle, pb_flag, 0));
     put_le16(&hci_hdr.hdh_len, OS_MBUF_PKTHDR(om)->omp_len);
 
     om2 = os_mbuf_prepend(om, sizeof hci_hdr);

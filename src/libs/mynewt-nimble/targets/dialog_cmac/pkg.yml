@@ -1,0 +1,5 @@
+pkg.name: targets/dialog_cmac
+pkg.type: target
+pkg.description: Sample target for BLE controller on Dialog CMAC
+pkg.author: "Apache Mynewt <dev@mynewt.apache.org>"
+pkg.homepage: "http://mynewt.apache.org/"

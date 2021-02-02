@@ -1,0 +1,104 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+syscfg.defs:
+    CMAC_MBOX_SIZE_S2C:
+        description: >
+            Size of mailbox for SYS to CMAC data. The size
+            value should be power of 2 to allow for better
+            code optimization.
+        value: 128
+    CMAC_MBOX_SIZE_C2S:
+        description: >
+            Size of mailbox for CMAC to SYS data. The size
+            value should be power of 2 to allow for better
+            code optimization.
+        value: 128
+
+    CMAC_TRIM_SIZE_RFCU:
+        description: >
+            Size of trim values for RFCU. This is maximum
+            number of trim values that can be read from
+            OTP and applied, all excessive values will be
+            discarded.
+        value: 10
+    CMAC_TRIM_SIZE_SYNTH:
+        description: >
+            Size of trim values for RFCU. This is maximum
+            number of trim values that can be read from
+            OTP and applied, all excessive values will be
+            discarded.
+        value: 10
+
+    CMAC_DEBUG_SWD_ENABLE:
+        description: >
+            Enable CMAC SWD interface.
+        value: 0
+    CMAC_DEBUG_DIAG_ENABLE:
+        description: >
+            Enable CMAC diagnostic lines.
+        value: 0
+    CMAC_DEBUG_DATA_ENABLE:
+        description: >
+            Enable extra debugging data in shared segment.
+        value: 0
+    CMAC_DEBUG_COREDUMP_ENABLE:
+        description: >
+            Enable dumping CMAC registers to shared segment
+            on fault.
+        value: 1
+    CMAC_DEBUG_HOST_PRINT_ENABLE:
+        description: >
+            Enable some debug printouts to console from host side.
+            This will dump some settings during startup, useful to
+            check what is loaded to CMAC via shared data.
+        value: 0
+
+    CMAC_IMAGE_SINGLE:
+        description: >
+            When enable, CMAC binary is linked with application image
+            creating a single image build. See CMAC_IMAGE_TARGET_NAME.
+            When disabled, CMAC binary is built and flashed separately
+            to flash partition. See CMAC_IMAGE_PARTITION.
+        value: 1
+    CMAC_IMAGE_TARGET_NAME:
+        description: >
+            Target name to build for CMAC binary for single image build.
+        value: "@apache-mynewt-nimble/targets/dialog_cmac"
+    CMAC_IMAGE_PARTITION:
+        description: >
+            Flash partition to load CMAC binary from if single image build
+            is disabled.
+        value: FLASH_AREA_IMAGE_1
+    CMAC_IMAGE_RAM_SIZE:
+        description: >
+            Size of RAM area in bytes reserved for CMAC if single image
+            build is disabled. Unit suffix (K, M) is allowed.
+            Note: for single image build this setting is not applicable
+            since proper RAM area size is automatically calculated from
+            CMAC binary.
+        value: 128K
+
+    CMAC_CMAC2SYS_IRQ_PRIORITY:
+        description: >
+            The priority of the CMAC2SYS IRQ. Default is 0, or highest
+            priority.
+        value: 0
+
+syscfg.restrictions.BLE_HOST:
+    - TRNG
