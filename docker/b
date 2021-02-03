@@ -1,0 +1,5 @@
+#!/bin/bash
+
+docker image build -t infinitime-build --build-arg PUID=$(id -u) --build-arg PGID=$(id -g) ./docker
+docker run --rm -it -v $(pwd):/sources infinitime-build /opt/build.sh "$@"
+
