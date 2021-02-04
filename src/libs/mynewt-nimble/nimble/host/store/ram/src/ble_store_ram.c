@@ -23,6 +23,11 @@
  * contents are lost when the application terminates.
  */
 
+/* This package has been deprecated and you should
+ * use the store/config package. For a RAM-only BLE store,
+ * use store/config and set BLE_STORE_CONFIG_PERSIST to 0.
+ */
+
 #include <inttypes.h>
 #include <string.h>
 

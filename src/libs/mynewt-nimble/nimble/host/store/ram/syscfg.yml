@@ -20,4 +20,13 @@ syscfg.defs:
         description: >
             Sysinit stage for the RAM BLE store.
         value: 500
+    BLE_STORE_RAM_DEPRECATED_FLAG:
+        description: >
+            Package store/ram is deprecated and store/config shall be used with BLE_STORE_CONFIG_PERSIST set to 0
+        value: 0
+        deprecated: 1
+
+
+syscfg.vals:
+    BLE_STORE_RAM_DEPRECATED_FLAG: 1
 

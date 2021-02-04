@@ -22,11 +22,11 @@
 
 #include "os/endian.h"
 
-#define u8_t    uint8_t
-#define s8_t    int8_t
-#define u16_t   uint16_t
-#define u32_t   uint32_t
-#define s32_t   int32_t
+#define uint8_t    uint8_t
+#define int8_t    int8_t
+#define uint16_t   uint16_t
+#define uint32_t   uint32_t
+#define int32_t   int32_t
 
 #ifndef BIT
 #define BIT(n)  (1UL << (n))
@@ -37,16 +37,16 @@
 #define sys_le16_to_cpu le16toh
 
 struct bt_data {
-    u8_t type;
-    u8_t data_len;
-    const u8_t *data;
+    uint8_t type;
+    uint8_t data_len;
+    const uint8_t *data;
 };
 
 #define BT_DATA(_type, _data, _data_len) \
     { \
         .type = (_type), \
         .data_len = (_data_len), \
-        .data = (const u8_t *)(_data), \
+        .data = (const uint8_t *)(_data), \
     }
 
 struct os_mbuf * NET_BUF_SIMPLE(uint16_t size);

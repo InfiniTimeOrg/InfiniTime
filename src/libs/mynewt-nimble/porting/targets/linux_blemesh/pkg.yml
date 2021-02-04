@@ -16,7 +16,7 @@
 # under the License.
 #
 
-pkg.name: "targets/linux_blemesh"
+pkg.name: "porting/targets/linux_blemesh"
 pkg.type: "target"
 pkg.description: This target is used to generate syscfg.h file and other artifacts for linux_blemesh example app.
 pkg.author:

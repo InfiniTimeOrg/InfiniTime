@@ -38,35 +38,10 @@ syscfg.defs:
         type: 'task_priority'
         value: 0
 
-    # Sleep clock accuracy (sca). This is the amount of drift in the system
-    # during when the device is sleeping (in parts per million).
-    #
-    # NOTE: 'the' master sca is an enumerated value based on the sca. Rather
-    # than have a piece of code calculate this value, the developer must set
-    # this value based on the value of the SCA using the following table:
-    #
-    #  SCA between 251 and 500 ppm (inclusive); master sca = 0
-    #  SCA between 151 and 250 ppm (inclusive); master sca = 1
-    #  SCA between 101 and 150 ppm (inclusive); master sca = 2
-    #  SCA between 76 and 100 ppm (inclusive); master sca = 3
-    #  SCA between 51 and 75 ppm (inclusive); master sca = 4
-    #  SCA between 31 and 50 ppm (inclusive); master sca = 5
-    #  SCA between 21 and 30 ppm (inclusive); master sca = 6
-    #  SCA between 0 and 20 ppm (inclusive); master sca = 7
-    #
-    #  For example:
-    #      if your clock drift is 101 ppm, your master should be set to 2.
-    #      if your clock drift is 20, your master sca should be set to 7.
-    #
-    #  The values provided below are merely meant to be an example and should
-    #  be replaced by values appropriate for your platform.
-    BLE_LL_OUR_SCA:
-        description: 'The system clock accuracy of the device.'
-        value: '60'    # in ppm
-
-    BLE_LL_MASTER_SCA:
-        description: 'Enumerated value based on our sca'
-        value: '4'
+    BLE_LL_SCA:
+        description: Sleep clock accuracy of our device (in ppm)
+        value: MYNEWT_VAL(BLE_LL_OUR_SCA)
+        range: 0..500
 
     BLE_LL_TX_PWR_DBM:
         description: 'Transmit power level.'
@@ -285,6 +260,35 @@ syscfg.defs:
             Advertising Sync Transfer Feature.
         value: MYNEWT_VAL(BLE_PERIODIC_ADV_SYNC_TRANSFER)
 
+    BLE_LL_CFG_FEAT_CTRL_TO_HOST_FLOW_CONTROL:
+        description: >
+            Enable controller-to-host flow control support. This allows host to
+            limit number of ACL packets sent at once from controller to avoid
+            congestion on HCI transport if feature is also supported by host.
+        value: 0
+
+    BLE_LL_CFG_FEAT_LL_SCA_UPDATE:
+        description: >
+            This option is used to enable/disable support for SCA update procedure
+        value: 0
+        restrictions:
+            - '(BLE_VERSION >= 52) if 1'
+
+    BLE_LL_CFG_FEAT_LL_ISO:
+        description: >
+            This option is used to enable/disable support for LE Isochronous Channels
+            as per Bluetooth v5.2 channels
+        value: MYNEWT_VAL(BLE_ISO)
+        restrictions:
+            - '(BLE_VERSION >= 52) if 1'
+
+    BLE_LL_CFG_FEAT_LL_ISO_TEST:
+        description: >
+            This option is used to enable/disbale test commands for ISO support
+        value: MYNEWT_VAL(BLE_ISO_TEST)
+        restrictions:
+            - 'BLE_LL_CFG_FEAT_LL_ISO if 1'
+
     BLE_LL_EXT_ADV_AUX_PTR_CNT:
          description: >
             This option configure a max number of scheduled outstanding auxiliary
@@ -404,6 +408,10 @@ syscfg.defs:
         description: use BLE_LL_RFMGMT_ENABLE_TIME instead
         value: 0
         deprecated: 1
+    BLE_LL_OUR_SCA:
+        description: use BLE_LL_SCA instead
+        value: 60
+        deprecated: 1
 
 # defunct settings (to be removed eventually)
     BLE_DEVICE:
@@ -417,6 +425,10 @@ syscfg.defs:
     BLE_NUM_COMP_PKT_RATE:
         description: Superseded by BLE_LL_NUM_COMP_PKT_ITVL_MS
         value: '(2 * OS_TICKS_PER_SEC)'
+        defunct: 1
+    BLE_LL_MASTER_SCA:
+        description: use BLE_LL_SCA instead
+        value: 4
         defunct: 1
 
 

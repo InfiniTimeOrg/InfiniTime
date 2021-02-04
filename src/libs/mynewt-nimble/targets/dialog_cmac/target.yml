@@ -1,0 +1,3 @@
+target.app: "@apache-mynewt-nimble/apps/blehci"
+target.bsp: "@apache-mynewt-core/hw/bsp/dialog_cmac"
+target.build_profile: speed

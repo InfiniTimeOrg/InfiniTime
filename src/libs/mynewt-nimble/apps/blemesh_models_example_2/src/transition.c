@@ -40,8 +40,8 @@ struct os_callout light_ctl_temp_work;
 
 struct os_callout dummy_timer;
 
-u8_t transition_type, default_tt;
-u32_t *ptr_counter;
+uint8_t transition_type, default_tt;
+uint32_t *ptr_counter;
 struct os_callout *ptr_timer = &dummy_timer;
 
 struct transition lightness_transition, temp_transition;
@@ -50,9 +50,9 @@ struct transition lightness_transition, temp_transition;
 
 void calculate_rt(struct transition *transition)
 {
-	u8_t steps, resolution;
-	s32_t duration_remainder;
-	s64_t now;
+	uint8_t steps, resolution;
+	int32_t duration_remainder;
+	int64_t now;
 
 	if (transition->just_started) {
 		transition->rt = transition->tt;
@@ -88,7 +88,7 @@ void calculate_rt(struct transition *transition)
 
 /* Function to calculate Remaining Time (End) */
 
-static void bound_states_transition_type_reassignment(u8_t type)
+static void bound_states_transition_type_reassignment(uint8_t type)
 {
 	switch (type) {
 	case ONOFF:
@@ -113,7 +113,7 @@ static void bound_states_transition_type_reassignment(u8_t type)
 
 static void tt_values_calculator(struct transition *transition)
 {
-	u8_t steps_multiplier, resolution;
+	uint8_t steps_multiplier, resolution;
 
 	resolution = (transition->tt >> 6);
 	steps_multiplier = (transition->tt & 0x3F);
@@ -142,7 +142,7 @@ static void tt_values_calculator(struct transition *transition)
 	ptr_counter = &transition->counter;
 }
 
-void onoff_tt_values(struct generic_onoff_state *state, u8_t tt, u8_t delay)
+void onoff_tt_values(struct generic_onoff_state *state, uint8_t tt, uint8_t delay)
 {
 	bound_states_transition_type_reassignment(ONOFF);
 	calculate_lightness_target_values(ONOFF);
@@ -162,7 +162,7 @@ void onoff_tt_values(struct generic_onoff_state *state, u8_t tt, u8_t delay)
 			   state->transition->counter);
 }
 
-void level_tt_values(struct generic_level_state *state, u8_t tt, u8_t delay)
+void level_tt_values(struct generic_level_state *state, uint8_t tt, uint8_t delay)
 {
 	if (state == &gen_level_srv_root_user_data) {
 		bound_states_transition_type_reassignment(LEVEL);
@@ -188,7 +188,7 @@ void level_tt_values(struct generic_level_state *state, u8_t tt, u8_t delay)
 }
 
 void light_lightness_actual_tt_values(struct light_lightness_state *state,
-				      u8_t tt, u8_t delay)
+				      uint8_t tt, uint8_t delay)
 {
 	bound_states_transition_type_reassignment(ACTUAL);
 	calculate_lightness_target_values(ACTUAL);
@@ -210,7 +210,7 @@ void light_lightness_actual_tt_values(struct light_lightness_state *state,
 }
 
 void light_lightness_linear_tt_values(struct light_lightness_state *state,
-				      u8_t tt, u8_t delay)
+				      uint8_t tt, uint8_t delay)
 {
 	bound_states_transition_type_reassignment(LINEAR);
 	calculate_lightness_target_values(LINEAR);
@@ -231,7 +231,7 @@ void light_lightness_linear_tt_values(struct light_lightness_state *state,
 		 state->transition->counter);
 }
 
-void light_ctl_tt_values(struct light_ctl_state *state, u8_t tt, u8_t delay)
+void light_ctl_tt_values(struct light_ctl_state *state, uint8_t tt, uint8_t delay)
 {
 	bound_states_transition_type_reassignment(CTL);
 	calculate_lightness_target_values(CTL);
@@ -261,7 +261,7 @@ void light_ctl_tt_values(struct light_ctl_state *state, u8_t tt, u8_t delay)
 }
 
 void light_ctl_temp_tt_values(struct light_ctl_state *state,
-			      u8_t tt, u8_t delay)
+			      uint8_t tt, uint8_t delay)
 {
 	bound_states_transition_type_reassignment(CTL_TEMP);
 	calculate_temp_target_values(CTL_TEMP);
@@ -331,7 +331,7 @@ static void onoff_work_handler(struct os_event *work)
 
 static void level_lightness_work_handler(struct os_event *work)
 {
-	u8_t level;
+	uint8_t level;
 	struct generic_level_state *state = &gen_level_srv_root_user_data;
 
 	switch (transition_type) {

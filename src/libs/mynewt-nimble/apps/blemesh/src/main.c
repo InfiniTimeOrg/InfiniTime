@@ -42,26 +42,6 @@ static int recent_test_id = STANDARD_TEST_ID;
 
 static bool has_reg_fault = true;
 
-static struct bt_mesh_cfg_srv cfg_srv = {
-    .relay = BT_MESH_RELAY_DISABLED,
-    .beacon = BT_MESH_BEACON_ENABLED,
-#if MYNEWT_VAL(BLE_MESH_FRIEND)
-    .frnd = BT_MESH_FRIEND_ENABLED,
-#else
-    .gatt_proxy = BT_MESH_GATT_PROXY_NOT_SUPPORTED,
-#endif
-#if MYNEWT_VAL(BLE_MESH_GATT_PROXY)
-    .gatt_proxy = BT_MESH_GATT_PROXY_ENABLED,
-#else
-    .gatt_proxy = BT_MESH_GATT_PROXY_NOT_SUPPORTED,
-#endif
-    .default_ttl = 7,
-
-    /* 3 transmissions with 20ms interval */
-    .net_transmit = BT_MESH_TRANSMIT(2, 20),
-    .relay_retransmit = BT_MESH_TRANSMIT(2, 20),
-};
-
 static int
 fault_get_cur(struct bt_mesh_model *model,
               uint8_t *test_id,
@@ -327,7 +307,7 @@ static const struct bt_mesh_model_op gen_level_op[] = {
 };
 
 static struct bt_mesh_model root_models[] = {
-    BT_MESH_MODEL_CFG_SRV(&cfg_srv),
+    BT_MESH_MODEL_CFG_SRV,
     BT_MESH_MODEL_HEALTH_SRV(&health_srv, &health_pub),
     BT_MESH_MODEL(BT_MESH_MODEL_ID_GEN_ONOFF_SRV, gen_onoff_op,
               &gen_onoff_pub, NULL),
@@ -385,7 +365,7 @@ static int output_number(bt_mesh_output_action_t action, uint32_t number)
     return 0;
 }
 
-static void prov_complete(u16_t net_idx, u16_t addr)
+static void prov_complete(uint16_t net_idx, uint16_t addr)
 {
     console_printf("Local node provisioned, primary address 0x%04x\n", addr);
 }

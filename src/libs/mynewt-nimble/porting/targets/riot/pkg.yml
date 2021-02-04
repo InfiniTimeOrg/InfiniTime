@@ -16,7 +16,7 @@
 # under the License.
 #
 
-pkg.name: "targets/riot"
+pkg.name: "porting/targets/riot"
 pkg.type: "target"
 pkg.description: This target is used to generate syscfg.h file and other artifacts for RIOT Nimble port.
 pkg.author:

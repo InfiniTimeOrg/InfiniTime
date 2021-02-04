@@ -2050,70 +2050,6 @@ ble_gap_test_util_update_l2cap(struct ble_gap_upd_params *params,
 }
 
 static void
-ble_gap_test_util_update_no_l2cap_tmo(struct ble_gap_upd_params *params,
-                                      int master)
-{
-    struct ble_hs_conn *conn;
-    int rc;
-
-    uint8_t peer_addr[6] = { 1, 2, 3, 4, 5, 6 };
-
-    ble_gap_test_util_init();
-
-    ble_hs_test_util_create_conn(2, peer_addr, ble_gap_test_util_connect_cb,
-                                 NULL);
-
-    if (!master) {
-        ble_hs_lock();
-        conn = ble_hs_conn_find(2);
-        TEST_ASSERT_FATAL(conn != NULL);
-        conn->bhc_flags &= ~BLE_HS_CONN_F_MASTER;
-        ble_hs_unlock();
-    }
-
-    /* Erase callback info reported during connection establishment; we only
-     * care about updates.
-     */
-    ble_gap_test_util_reset_cb_info();
-
-    TEST_ASSERT(!ble_gap_master_in_progress());
-
-    rc = ble_hs_test_util_conn_update(2, params, 0);
-    TEST_ASSERT(rc == 0);
-    TEST_ASSERT(!ble_gap_master_in_progress());
-
-    /* Verify tx of connection update command. */
-    ble_gap_test_util_verify_tx_update_conn(params);
-
-    /* Ensure no update event reported. */
-    TEST_ASSERT(ble_gap_test_event.type == 0xff);
-
-    /* Advance 39 seconds; ensure no timeout reported. */
-    os_time_advance(39 * OS_TICKS_PER_SEC);
-    ble_gap_timer();
-    TEST_ASSERT(ble_gap_test_event.type == 0xff);
-
-    /* Advance 40th second; ensure timeout reported. */
-    os_time_advance(1 * OS_TICKS_PER_SEC);
-
-    /* Timeout will result in a terminate HCI command being sent; schedule ack
-     * from controller.
-     */
-    ble_hs_test_util_hci_ack_set_disconnect(0);
-
-    ble_gap_timer();
-
-    /* Verify terminate was sent. */
-    ble_gap_test_util_verify_tx_disconnect();
-
-    TEST_ASSERT(ble_gap_test_event.type == BLE_GAP_EVENT_CONN_UPDATE);
-    TEST_ASSERT(ble_gap_test_conn_status == BLE_HS_ETIMEOUT);
-    TEST_ASSERT(ble_gap_test_conn_desc.conn_handle == 2);
-    TEST_ASSERT(memcmp(ble_gap_test_conn_desc.peer_id_addr.val,
-                       peer_addr, 6) == 0);
-}
-
-static void
 ble_gap_test_util_update_l2cap_tmo(struct ble_gap_upd_params *params,
                                    uint8_t hci_status, uint8_t event_status,
                                    int rx_l2cap)
@@ -2981,9 +2917,6 @@ TEST_CASE_SELF(ble_gap_test_case_update_timeout)
         .min_ce_len = 123,
         .max_ce_len = 456,
     };
-
-    /* No L2CAP. */
-    ble_gap_test_util_update_no_l2cap_tmo(&params, 1);
 
     /* L2CAP - Local unsupported; L2CAP timeout. */
     ble_gap_test_util_update_l2cap_tmo(&params, BLE_ERR_UNKNOWN_HCI_CMD, 0, 0);

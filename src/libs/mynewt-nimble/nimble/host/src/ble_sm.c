@@ -938,7 +938,7 @@ ble_sm_process_result(uint16_t conn_handle, struct ble_sm_result *res)
 
         if (res->enc_cb) {
             BLE_HS_DBG_ASSERT(proc == NULL || rm);
-            ble_gap_enc_event(conn_handle, res->app_status, res->restore);
+            ble_gap_enc_event(conn_handle, res->app_status, res->restore, res->bonded);
         }
 
         if (res->app_status == 0 &&
@@ -1190,6 +1190,7 @@ ble_sm_enc_event_rx(uint16_t conn_handle, uint8_t evt_status, int encrypted)
 
     ble_hs_unlock();
 
+    res.bonded = bonded;
     ble_sm_process_result(conn_handle, &res);
 }
 
@@ -2425,7 +2426,7 @@ ble_sm_timer(void)
      * procedures without reconnect.
      */
     while ((proc = STAILQ_FIRST(&exp_list)) != NULL) {
-        ble_gap_enc_event(proc->conn_handle, BLE_HS_ETIMEOUT, 0);
+        ble_gap_enc_event(proc->conn_handle, BLE_HS_ETIMEOUT, 0, 0);
 
         STAILQ_REMOVE_HEAD(&exp_list, next);
         ble_sm_proc_free(proc);

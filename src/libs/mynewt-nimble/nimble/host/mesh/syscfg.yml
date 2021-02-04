@@ -29,17 +29,57 @@ syscfg.defs:
            the advertising bearer.
         value: 1
 
+    BLE_MESH_UNPROV_BEACON_INT:
+        description: >
+           This option specifies the interval (in seconds) at which the
+           device sends unprovisioned beacon.
+        value: 5
+
+    BLE_MESH_PB_ADV_RETRANS_TIMEOUT:
+        description: >
+           Timeout value of retransmit provisioning PDUs.
+        value: 500
+
+    BLE_MESH_PROV_DEVICE:
+        description: >
+           Enable this option to allow the device to be provisioned into a mesh network.
+        value: 1
+        restrictions: BLE_MESH_PROV
+
     BLE_MESH_PROVISIONER:
         description: >
             Enable this option to have support for provisioning remote devices.
-        value: 0
+        value: 1
         restrictions:
-            - (BLE_MESH_PROV)
+            - BLE_MESH_PROV
+            - BLE_MESH_PB_ADV
 
-    BLE_MESH_NODE_COUNT:
+    BLE_MESH_CDB:
+        description: >
+            Mesh Configuration Database [EXPERIMENTAL]
+        value: 0
+
+    BLE_MESH_CDB_NODE_COUNT:
         description: >
             This option specifies how many nodes each network can at most
-            save in the provisioning database. Range 1-4096
+            save in the configuration database.
+        value: 1
+
+    BLE_MESH_CDB_SUBNET_COUNT:
+        description: >
+            This option specifies how many subnets that can at most be
+            saved in the configuration database.
+        value: 1
+
+    BLE_MESH_CDB_APP_KEY_COUNT:
+        description: >
+            This option specifies how many application keys that can at most
+            be saved in the configuration database.
+        value: 1
+
+    BLE_MESH_DEBUG_CDB:
+        description:
+            Use this option to enable configuration database debug logs.
         value: 1
 
     BLE_MESH_PROXY:
@@ -60,6 +100,19 @@ syscfg.defs:
             i.e. the ability to act as a proxy between a Mesh GATT Client
             and a Mesh network.
         value: 1
+
+    BLE_MESH_GATT_PROXY_ENABLED:
+        description: >
+            Controls whether the GATT Proxy feature is enabled by default.
+            Can be changed through runtime configuration.
+        value: 1
+        restrictions: BLE_MESH_GATT_PROXY
+
+    BLE_MESH_DEFAULT_TTL:
+        description: >
+            Controls the default TTL value for outgoing messages. Can be changed
+            through runtime configuration.
+        value: 7
 
     BLE_MESH_NODE_ID_TIMEOUT:
         description: >
@@ -136,6 +189,13 @@ syscfg.defs:
             supported outgoing segment count (BT_MESH_TX_SEG_MAX).
         value: 6
 
+    BLE_MESH_ADV_STACK_SIZE:
+        description: >
+            Mesh advertiser thread stack size.
+            NOTE: This is an advanced setting and should not be changed unless
+            absolutely necessary
+        value: 768
+
     BLE_MESH_IVU_DIVIDER:
         description: >
             When the IV Update state enters Normal operation or IV Update
@@ -164,7 +224,7 @@ syscfg.defs:
         description: >
             Maximum number of simultaneous outgoing multi-segment and/or
             reliable messages.
-        value: 4
+        value: 1
 
     BLE_MESH_RX_SEG_MSG_COUNT:
         description: >
@@ -172,15 +232,39 @@ syscfg.defs:
             reliable messages.
         value: 2
 
-    BLE_MESH_RX_SDU_MAX:
+    BLE_MESH_SEG_BUFS:
         description: >
-            Maximum incoming Upper Transport Access PDU length. This
-            determines also how many segments incoming segmented messages
-            can have. Each segment can contain 12 bytes, so this value should
-            be set to a multiple of 12 to avoid wasted memory. The minimum
-            requirement is 2 segments (24 bytes) whereas the maximum supported
-            by the Mesh specification is 32 segments (384 bytes).
-        value: 72
+            The incoming and outgoing segmented messages allocate their
+            segments from the same pool. Each segment is a 12 byte block,
+            and may only be used by one message at the time.
+
+            Outgoing messages will allocate their segments at the start of the
+            transmission, and release them one by one as soon as they have been
+            acknowledged by the receiver. Incoming messages allocate all their
+            segments at the start of the transaction, and won't release them until
+            the message is fully received.
+        value:
+            64
+
+    BLE_MESH_RX_SEG_MAX:
+        description: >
+            Maximum number of segments supported for incoming messages.
+            This value should typically be fine-tuned based on what
+            models the local node supports, i.e. what's the largest
+            message payload that the node needs to be able to receive.
+            This value affects memory and call stack consumption, which
+            is why the default is lower than the maximum that the
+            specification would allow (32 segments).
+
+            The maximum incoming SDU size is 12 times this number (out of
+            which 4 or 8 bytes is used for the Transport Layer MIC). For
+            example, 5 segments means the maximum SDU size is 60 bytes,
+            which leaves 56 bytes for application layer data using a
+            4-byte MIC and 52 bytes using an 8-byte MIC.
+        value:
+            3
+
+
 
     BLE_MESH_TX_SEG_MAX:
         description: >
@@ -188,21 +272,38 @@ syscfg.defs:
             This value should typically be fine-tuned based on what
             models the local node supports, i.e. what's the largest
             message payload that the node needs to be able to send.
-            This value affects memory and call stack consumption, which
-            is why the default is lower than the maximum that the
-            specification would allow (32 segments).
+            This value affects memory consumption, which is why the
+            default is lower than the maximum that the specification
+            would allow (32 segments).
 
             The maximum outgoing SDU size is 12 times this number (out of
             which 4 or 8 bytes is used for the Transport Layer MIC). For
             example, 5 segments means the maximum SDU size is 60 bytes,
             which leaves 56 bytes for application layer data using a
             4-byte MIC and 52 bytes using an 8-byte MIC.
-
-            Be sure to specify a sufficient number of advertising buffers
-            when setting this option to a higher value. There must be at
-            least three more advertising buffers (BT_MESH_ADV_BUF_COUNT)
-            as there are outgoing segments.
         value: 3
+
+    BLE_MESH_LOOPBACK_BUFS:
+        description: >
+            The number of buffers allocated for the network loopback mechanism.
+            Loopback is used when the device sends messages to itself.
+        value: 3
+
+    BLE_MESH_TX_SEG_RETRANS_COUNT:
+        description: >
+            Maximum number of transport message segment retransmit attempts
+            for outgoing segment message.
+        value: 4
+
+    BLE_MESH_TX_SEG_RETRANS_TIMEOUT_UNICAST:
+        description: >
+             Maximum time of retransmit segment message to unicast address.
+        value: 400
+
+    BLE_MESH_TX_SEG_RETRANS_TIMEOUT_GROUP:
+        description: >
+              Maximum time of retransmit segment message to group address.
+        value: 50
 
     BLE_MESH_SEG_RETRANSMIT_ATTEMPTS:
         description: >
@@ -212,8 +313,56 @@ syscfg.defs:
 
     BLE_MESH_RELAY:
         description: >
+            Controls the initial number of retransmissions of original messages,
+            in addition to the first transmission. Can be changed through runtime
+            configuration.
+        value: 2
+
+    BLE_MESH_NETWORK_TRANSMIT_COUNT:
+        description: >
+            Controls the initial number of retransmissions of original messages,
+            in addition to the first transmission. Can be changed through runtime
+            configuration.
+        value: 2
+
+    BLE_MESH_NETWORK_TRANSMIT_INTERVAL:
+        description: >
+            Controls the initial interval between retransmissions of original
+            messages, in milliseconds. Can be changed through runtime
+            configuration.
+        value: 20
+
+    BT_MESH_RELAY:
+        description: >
             Support for acting as a Mesh Relay Node.
-        value: 0
+        value: 1
+
+    BLE_MESH_RELAY_ENABLED:
+        description: >
+            Controls whether the Mesh Relay feature is enabled by default. Can be
+            changed through runtime configuration.
+        value: 1
+
+    BLE_MESH_RELAY_RETRANSMIT_COUNT:
+        description: >
+            Controls the initial number of retransmissions of relayed messages, in
+            addition to the first transmission. Can be changed through runtime
+            configuration.
+
+        value: 2
+
+    BLE_MESH_RELAY_RETRANSMIT_INTERVAL:
+        description: >
+            Controls the initial interval between retransmissions of relayed
+            messages, in milliseconds. Can be changed through runtime
+            configuration.
+        value: 20
+
+    BLE_MESH_BEACON_ENABLED:
+        description: >
+            Controls whether the Secure network beacon feature is enabled by
+            default. Can be changed through runtime configuration.
+        value: 1
 
     BLE_MESH_LOW_POWER:
         description: >
@@ -287,6 +436,16 @@ syscfg.defs:
             a value of 300 means 30 seconds.
         value: 300
 
+    BLE_MESH_LPN_POLL_TIMEOUT:
+        description: >
+            PollTimeout timer is used to measure time between two
+            consecutive requests sent by the Low Power node. If no
+            requests are received by the Friend node before the
+            PollTimeout timer expires, then the friendship is considered
+            terminated. The value is in units of 100 milliseconds, so e.g.
+            a value of 300 means 30 seconds.
+        value: 300
+
     BLE_MESH_LPN_INIT_POLL_TIMEOUT:
         description: >
             The initial value of the PollTimeout timer when Friendship
@@ -308,10 +467,22 @@ syscfg.defs:
             Maximum number of groups that the LPN can subscribe to.
         value: 10
 
+    BLE_MESH_LPN_SUB_ALL_NODES_ADDR:
+        description: >
+            Automatically subscribe all nodes address when friendship
+            established.
+        value: 1
+
     BLE_MESH_FRIEND:
         description: >
             Enable this option to be able to act as a Friend Node.
         value: 0
+
+    BLE_MESH_FRIEND_ENABLED:
+        description: >
+            Controls whether the Friend feature is enabled by default. Can be
+            changed through runtime configuration.
+        value: 1
 
     BLE_MESH_FRIEND_RECV_WIN:
         description: >
@@ -336,6 +507,7 @@ syscfg.defs:
             with simultaneously.
         value: 2
 
+
     BLE_MESH_FRIEND_SEG_RX:
         description: >
             Number of incomplete segment lists that we track for each LPN
@@ -343,6 +515,7 @@ syscfg.defs:
             many elements we can simultaneously be receiving segmented
             messages from when the messages are going into the Friend queue.
         value: 1
+
 
     BLE_MESH_CFG_CLI:
         description: >
@@ -592,6 +765,51 @@ syscfg.defs:
             Minimum level for the BLE Mesh Transport Layer log.
         value: 1
 
+    BLE_MESH_RPL_LOG_MOD:
+        description: >
+            Numeric module ID to use for BLE Mesh Replay protection list messages.
+        value: 22
+    BLE_MESH_RPL_LOG_LVL:
+        description: >
+            Minimum level for the BLE Mesh Replay protection list log.
+        value: 1
+
+    BLE_MESH_NET_KEYS_LOG_MOD:
+        description: >
+            Numeric module ID to use for BLE Mesh Replay protection list messages.
+        value: 23
+    BLE_MESH_NET_KEYS_LOG_LVL:
+        description: >
+            Minimum level for the BLE Mesh Replay protection list log.
+        value: 1
+
+    BLE_MESH_PROV_DEVICE_LOG_MOD:
+        description: >
+            Numeric module ID to use for BLE Mesh Replay protection list messages.
+        value: 24
+    BLE_MESH_PROV_DEVICE_LOG_LVL:
+        description: >
+            Minimum level for the BLE Mesh Replay protection list log.
+        value: 1
+
+    BLE_MESH_PROVISIONER_LOG_MOD:
+        description: >
+            Numeric module ID to use for BLE Mesh Replay protection list messages.
+        value: 25
+    BLE_MESH_PROVISIONER_LOG_LVL:
+        description: >
+            Minimum level for the BLE Mesh Replay protection list log.
+        value: 1
+
+    BLE_MESH_HEARTBEAT_LOG_MOD:
+        description: >
+            Numeric module ID to use for BLE Mesh Replay protection list messages.
+        value: 26
+    BLE_MESH_HEARTBEAT_LOG_LVL:
+        description: >
+            Minimum level for the BLE Mesh Replay protection list log.
+        value: 1
+
 syscfg.logs:
     BLE_MESH_LOG:
         module: MYNEWT_VAL(BLE_MESH_LOG_MOD)
@@ -641,9 +859,29 @@ syscfg.logs:
         module: MYNEWT_VAL(BLE_MESH_SETTINGS_LOG_MOD)
         level: MYNEWT_VAL(BLE_MESH_SETTINGS_LOG_LVL)
 
+    BLE_MESH_RPL_LOG:
+        module: MYNEWT_VAL(BLE_MESH_RPL_LOG_MOD)
+        level: MYNEWT_VAL(BLE_MESH_RPL_LOG_LVL)
+
     BLE_MESH_TRANS_LOG:
         module: MYNEWT_VAL(BLE_MESH_TRANS_LOG_MOD)
         level: MYNEWT_VAL(BLE_MESH_TRANS_LOG_LVL)
+
+    BLE_MESH_NET_KEYS_LOG:
+        module: MYNEWT_VAL(BLE_MESH_NET_KEYS_LOG_MOD)
+        level: MYNEWT_VAL(BLE_MESH_NET_KEYS_LOG_LVL)
+
+    BLE_MESH_PROV_DEVICE_LOG:
+        module: MYNEWT_VAL(BLE_MESH_PROV_DEVICE_LOG_MOD)
+        level: MYNEWT_VAL(BLE_MESH_PROV_DEVICE_LOG_LVL)
+
+    BLE_MESH_PROVISIONER_LOG:
+        module: MYNEWT_VAL(BLE_MESH_PROVISIONER_LOG_MOD)
+        level: MYNEWT_VAL(BLE_MESH_PROVISIONER_LOG_LVL)
+
+    BLE_MESH_HEARTBEAT_LOG:
+        module: MYNEWT_VAL(BLE_MESH_HEARTBEAT_LOG_MOD)
+        level: MYNEWT_VAL(BLE_MESH_HEARTBEAT_LOG_LVL)
 
 syscfg.vals.BLE_MESH_SHELL:
     BLE_MESH_CFG_CLI: 1
