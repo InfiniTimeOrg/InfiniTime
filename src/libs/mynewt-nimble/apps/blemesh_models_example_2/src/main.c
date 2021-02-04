@@ -59,14 +59,14 @@ static void light_default_var_init(void)
 	light_ctl_srv_user_data.temp_def = TEMP_MIN;
 
 	light_ctl_srv_user_data.lightness_temp_last =
-		(u32_t) ((LIGHTNESS_MAX << 16) | TEMP_MIN);
+		(uint32_t) ((LIGHTNESS_MAX << 16) | TEMP_MIN);
 }
 
 static void light_default_status_init(void)
 {
-	u16_t lightness;
+	uint16_t lightness;
 
-	lightness = (u16_t) (light_ctl_srv_user_data.lightness_temp_last >> 16);
+	lightness = (uint16_t) (light_ctl_srv_user_data.lightness_temp_last >> 16);
 
 	if (lightness) {
 		gen_onoff_srv_root_user_data.onoff = STATE_ON;
@@ -77,10 +77,10 @@ static void light_default_status_init(void)
 	/* Retrieve Default Lightness & Temperature Values */
 
 	if (light_ctl_srv_user_data.lightness_temp_def) {
-		light_ctl_srv_user_data.lightness_def = (u16_t)
+		light_ctl_srv_user_data.lightness_def = (uint16_t)
 			(light_ctl_srv_user_data.lightness_temp_def >> 16);
 
-		light_ctl_srv_user_data.temp_def = (u16_t)
+		light_ctl_srv_user_data.temp_def = (uint16_t)
 			(light_ctl_srv_user_data.lightness_temp_def);
 	}
 
@@ -92,18 +92,18 @@ static void light_default_status_init(void)
 	/* Retrieve Range of Lightness & Temperature */
 
 	if (light_lightness_srv_user_data.lightness_range) {
-		light_lightness_srv_user_data.light_range_max = (u16_t)
+		light_lightness_srv_user_data.light_range_max = (uint16_t)
 			(light_lightness_srv_user_data.lightness_range >> 16);
 
-		light_lightness_srv_user_data.light_range_min = (u16_t)
+		light_lightness_srv_user_data.light_range_min = (uint16_t)
 			(light_lightness_srv_user_data.lightness_range);
 	}
 
 	if (light_ctl_srv_user_data.temperature_range) {
-		light_ctl_srv_user_data.temp_range_max = (u16_t)
+		light_ctl_srv_user_data.temp_range_max = (uint16_t)
 			(light_ctl_srv_user_data.temperature_range >> 16);
 
-		light_ctl_srv_user_data.temp_range_min = (u16_t)
+		light_ctl_srv_user_data.temp_range_min = (uint16_t)
 			(light_ctl_srv_user_data.temperature_range);
 	}
 
@@ -117,11 +117,11 @@ static void light_default_status_init(void)
 			state_binding(ONOFF, ONOFF_TEMP);
 			break;
 		case STATE_RESTORE:
-			light_lightness_srv_user_data.last = (u16_t)
+			light_lightness_srv_user_data.last = (uint16_t)
 				(light_ctl_srv_user_data.lightness_temp_last >> 16);
 
 			light_ctl_srv_user_data.temp =
-				(u16_t) (light_ctl_srv_user_data.lightness_temp_last);
+				(uint16_t) (light_ctl_srv_user_data.lightness_temp_last);
 
 			state_binding(ONPOWERUP, ONOFF_TEMP);
 			break;
@@ -132,7 +132,7 @@ static void light_default_status_init(void)
 
 void update_light_state(void)
 {
-	u8_t power, color;
+	uint8_t power, color;
 
 	power = 100 * ((float) lightness / 65535);
 	color = 100 * ((float) (temperature + 32768) / 65535);

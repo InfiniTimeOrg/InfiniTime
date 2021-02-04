@@ -195,8 +195,6 @@ ble_hci_trans_acl_buf_alloc(void)
 
 #if MYNEWT_VAL(BLE_CONTROLLER)
     usrhdr_len = sizeof(struct ble_mbuf_hdr);
-#elif MYNEWT_VAL(BLE_HS_FLOW_CTRL)
-    usrhdr_len = BLE_MBUF_HS_HDR_LEN;
 #else
     usrhdr_len = 0;
 #endif

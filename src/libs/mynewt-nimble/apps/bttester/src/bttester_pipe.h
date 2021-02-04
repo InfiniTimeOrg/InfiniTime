@@ -27,9 +27,9 @@
 extern "C" {
 #endif
 
-typedef u8_t *(*bttester_pipe_recv_cb)(u8_t *buf, size_t *off);
-void bttester_pipe_register(u8_t *buf, size_t len, bttester_pipe_recv_cb cb);
-int bttester_pipe_send(const u8_t *data, int len);
+typedef uint8_t *(*bttester_pipe_recv_cb)(uint8_t *buf, size_t *off);
+void bttester_pipe_register(uint8_t *buf, size_t len, bttester_pipe_recv_cb cb);
+int bttester_pipe_send(const uint8_t *data, int len);
 int bttester_pipe_send_buf(struct os_mbuf *buf);
 int bttester_pipe_init(void);
 

@@ -1,5 +1,6 @@
 #include "CurrentTimeService.h"
 #include <hal/nrf_rtc.h>
+#include <nrf_log.h>
 
 using namespace Pinetime::Controllers;
 

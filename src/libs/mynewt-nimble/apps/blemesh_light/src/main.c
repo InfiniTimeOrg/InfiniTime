@@ -31,8 +31,8 @@
 #include "light_model.h"
 
 
-static void model_bound_cb(u16_t addr, struct bt_mesh_model *model,
-                           u16_t key_idx)
+static void model_bound_cb(uint16_t addr, struct bt_mesh_model *model,
+                           uint16_t key_idx)
 {
     int rc;
 

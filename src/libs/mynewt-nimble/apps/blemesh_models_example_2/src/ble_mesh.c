@@ -34,7 +34,7 @@
 
 #ifdef OOB_AUTH_ENABLE
 
-static int output_number(bt_mesh_output_action_t action, u32_t number)
+static int output_number(bt_mesh_output_action_t action, uint32_t number)
 {
 	printk("OOB Number: %lu\n", number);
 	return 0;
@@ -48,7 +48,7 @@ static int output_string(const char *str)
 
 #endif
 
-static void prov_complete(u16_t net_idx, u16_t addr)
+static void prov_complete(uint16_t net_idx, uint16_t addr)
 {
 	printk("Local node provisioned, primary address 0x%04x\n", addr);
 }
@@ -58,7 +58,7 @@ static void prov_reset(void)
 	bt_mesh_prov_enable(BT_MESH_PROV_ADV | BT_MESH_PROV_GATT);
 }
 
-static u8_t dev_uuid[16] = MYNEWT_VAL(BLE_MESH_DEV_UUID);
+static uint8_t dev_uuid[16] = MYNEWT_VAL(BLE_MESH_DEV_UUID);
 
 static const struct bt_mesh_prov prov = {
 	.uuid = dev_uuid,

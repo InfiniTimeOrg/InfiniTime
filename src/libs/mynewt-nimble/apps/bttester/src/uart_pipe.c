@@ -26,7 +26,7 @@
 
 #include "bttester_pipe.h"
 
-static u8_t *recv_buf;
+static uint8_t *recv_buf;
 static size_t recv_buf_len;
 static bttester_pipe_recv_cb app_cb;
 static size_t recv_off;
@@ -144,7 +144,7 @@ uart_console_rx_char(void *arg, uint8_t byte)
 static int
 uart_pipe_handle_char(int key)
 {
-    recv_buf[recv_off] = (u8_t) key;
+    recv_buf[recv_off] = (uint8_t) key;
     recv_off++;
 
     return 0;
@@ -194,7 +194,7 @@ uart_console_rx_char_event(struct os_event *ev)
 }
 
 int
-bttester_pipe_send(const u8_t *data, int len)
+bttester_pipe_send(const uint8_t *data, int len)
 {
     int i;
 
@@ -272,7 +272,7 @@ bttester_pipe_init(void)
 }
 
 void
-bttester_pipe_register(u8_t *buf, size_t len, bttester_pipe_recv_cb cb)
+bttester_pipe_register(uint8_t *buf, size_t len, bttester_pipe_recv_cb cb)
 {
 	recv_buf = buf;
 	recv_buf_len = len;
