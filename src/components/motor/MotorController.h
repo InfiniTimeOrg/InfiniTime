@@ -13,6 +13,7 @@ namespace Pinetime {
         void SetDuration(uint8_t motorDuration);
 
       private:
+        static void vibrate(void * p_context);
     };
   }
 }
