@@ -80,16 +80,16 @@ void SystemTask::Work() {
   twiMaster.Init();
   touchPanel.Init();
   batteryController.Init();
+  motorController.Init();
+  
 
   displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController,
                                                           dateTimeController, watchdogView, *this, notificationManager, 
-                                                          motorController, heartRateController));
+                                                          heartRateController));
   displayApp->Start();
 
   batteryController.Update();
   displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBatteryLevel);
-
-  motorController.Init();
 
   heartRateSensor.Init();
   heartRateSensor.Disable();
@@ -162,6 +162,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewNotification:
           if(isSleeping && !isWakingUp) GoToRunning();
+          motorController.SetDuration(35);
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewNotification);
           break;
         case Messages::BleConnected:
