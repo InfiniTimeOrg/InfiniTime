@@ -92,6 +92,10 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       currentItem.reset(new NotificationItem("\nNotification", nextNotification.message.data(),  nextNotification.index, notificationManager.NbNotifications(), mode));
     }
       return true;
+    case Pinetime::Applications::TouchEvents::LongTap: {
+      notificationManager.toggleVibrations();
+      return true;
+    }
     default:
       return false;
   }

@@ -71,6 +71,14 @@ bool NotificationManager::AreNewNotificationsAvailable() {
   return newNotification;
 }
 
+bool NotificationManager::isVibrationEnabled() {
+  return vibrationEnabled;
+}
+
+void NotificationManager::toggleVibrations() {
+  vibrationEnabled = !vibrationEnabled;  
+}
+
 bool NotificationManager::ClearNewNotificationFlag() {
   return newNotification.exchange(false);
 }

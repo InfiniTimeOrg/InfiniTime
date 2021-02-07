@@ -162,7 +162,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewNotification:
           if(isSleeping && !isWakingUp) GoToRunning();
-          motorController.SetDuration(35);
+          if(notificationManager.isVibrationEnabled()) motorController.SetDuration(35);
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewNotification);
           break;
         case Messages::BleConnected:
