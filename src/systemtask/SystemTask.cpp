@@ -40,13 +40,14 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Components::LittleVgl &lvgl,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController,
+                       Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Drivers::Hrs3300& heartRateSensor) :
                        spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash},
                        twiMaster{twiMaster}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        heartRateController{*this},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog},
-                       heartRateSensor{heartRateSensor},
+                       motorController{motorController}, heartRateSensor{heartRateSensor},
                        nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
   systemTasksMsgQueue = xQueueCreate(10, 1);
 }
@@ -78,14 +79,16 @@ void SystemTask::Work() {
   twiMaster.Init();
   touchPanel.Init();
   batteryController.Init();
+  motorController.Init();
+
 
   displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController,
-                                                          dateTimeController, watchdogView, *this, notificationManager, heartRateController));
+                                                          dateTimeController, watchdogView, *this, notificationManager,
+                                                          heartRateController));
   displayApp->Start();
 
   batteryController.Update();
   displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBatteryLevel);
-
 
   heartRateSensor.Init();
   heartRateSensor.Disable();
@@ -158,6 +161,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewNotification:
           if(isSleeping && !isWakingUp) GoToRunning();
+          if(notificationManager.IsVibrationEnabled()) motorController.SetDuration(35);
           displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewNotification);
           break;
         case Messages::BleConnected:

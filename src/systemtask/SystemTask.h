@@ -12,6 +12,7 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/NimbleController.h"
 #include "components/ble/NotificationManager.h"
+#include "components/motor/MotorController.h"
 #include "displayapp/DisplayApp.h"
 #include "drivers/Watchdog.h"
 
@@ -37,6 +38,7 @@ namespace Pinetime {
                    Components::LittleVgl &lvgl,
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
                    Controllers::DateTime &dateTimeController,
+                   Pinetime::Controllers::MotorController& motorController,
                    Pinetime::Drivers::Hrs3300& heartRateSensor);
 
 
@@ -73,6 +75,7 @@ namespace Pinetime {
         Pinetime::Drivers::Watchdog watchdog;
         Pinetime::Drivers::WatchdogView watchdogView;
         Pinetime::Controllers::NotificationManager notificationManager;
+        Pinetime::Controllers::MotorController& motorController;
         Pinetime::Drivers::Hrs3300& heartRateSensor;
         Pinetime::Controllers::NimbleController nimbleController;
 
