@@ -26,6 +26,16 @@ namespace Pinetime {
         static constexpr const char* paintbrush = "\xEF\x87\xBC";
         static constexpr const char* paddle = "\xEF\x91\x9D";
         static constexpr const char* map = "\xEF\x96\xa0";
+        static constexpr const char* qrcode = "\xEF\x80\xa9"; 
+        static constexpr const char* phone = "\xEF\x82\x95";
+        static constexpr const char* phoneSlash = "\xEF\x8F\x9D";
+        static constexpr const char* volumMute = "\xEF\x9A\xA9";
+        static constexpr const char* volumUp = "\xEF\x80\xA8";
+        static constexpr const char* volumDown = "\xEF\x80\xA7";
+        static constexpr const char* stepForward = "\xEF\x81\x91";
+        static constexpr const char* stepBackward = "\xEF\x81\x88";
+        static constexpr const char* play = "\xEF\x81\x8B";
+        static constexpr const char* pause = "\xEF\x81\x8C";
       }
     }
   }
