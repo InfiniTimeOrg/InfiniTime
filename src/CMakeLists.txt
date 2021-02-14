@@ -36,10 +36,12 @@ set(SDK_SOURCE_FILES
         # Base SDK
         "${NRF5_SDK_PATH}/components/boards/boards.c"
         "${NRF5_SDK_PATH}/integration/nrfx/legacy/nrf_drv_clock.c"
+        "${NRF5_SDK_PATH}/integration/nrfx/legacy/nrf_drv_clock.h"
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_clock.c"
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_gpiote.c"
         "${NRF5_SDK_PATH}/modules/nrfx/soc/nrfx_atomic.c"
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_saadc.c"
+        "${NRF5_SDK_PATH}/components/libraries/timer/app_timer.h"
 
         # FreeRTOS
         ${NRF5_SDK_PATH}/external/freertos/source/croutine.c
@@ -426,7 +428,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/InfiniPaint.cpp
         displayapp/screens/Paddle.cpp
         displayapp/screens/DropDownDemo.cpp
-        displayapp/screens/Modal.cpp
         displayapp/screens/BatteryIcon.cpp
         displayapp/screens/BleIcon.cpp
         displayapp/screens/NotificationIcon.cpp
@@ -469,6 +470,7 @@ list(APPEND SOURCE_FILES
         components/ble/ServiceDiscovery.cpp
         components/ble/HeartRateService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
+        components/motor/MotorController.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -520,7 +522,6 @@ set(INCLUDE_FILES
         displayapp/screens/InfiniPaint.h
         displayapp/screens/Paddle.h
         displayapp/screens/DropDownDemo.h
-        displayapp/screens/Modal.h
         displayapp/screens/BatteryIcon.h
         displayapp/screens/BleIcon.h
         displayapp/screens/NotificationIcon.h
@@ -579,6 +580,7 @@ set(INCLUDE_FILES
         components/heartrate/Biquad.h
         components/heartrate/Ptagc.h
         components/heartrate/HeartRateController.h
+        components/motor/MotorController.h
         )
 
 include_directories(

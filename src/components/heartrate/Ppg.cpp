@@ -13,7 +13,7 @@ using namespace Pinetime::Controllers;
 namespace {
   int Compare(int* d1, int* d2, size_t count) {
     int e = 0;
-    for(int i = 0; i < count; i++) {
+    for(size_t i = 0; i < count; i++) {
       auto d = d1[i] - d2[i];
       e += d * d;
     }
