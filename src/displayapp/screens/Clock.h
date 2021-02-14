@@ -21,11 +21,10 @@ namespace Pinetime {
       template <class T>
       class DirtyValue {
         public:
-          explicit DirtyValue(T v) { value = v; }
-          explicit DirtyValue(T& v) { value = v; }
+          DirtyValue() = default;                      // Use NSDMI
+          explicit DirtyValue(T const& v):value{v}{}   // Use MIL and const-lvalue-ref
           bool IsUpdated() const { return isUpdated; }
-          T& Get() { this->isUpdated = false; return value; }
-
+          T const& Get() { this->isUpdated = false; return value; }  // never expose a non-const lvalue-ref
           DirtyValue& operator=(const T& other) {
             if (this->value != other) {
               this->value = other;
@@ -34,9 +33,10 @@ namespace Pinetime {
             return *this;
           }
         private:
-          T value;
-          bool isUpdated = true;
+          T value{};            // NSDMI - default initialise type
+          bool isUpdated{true}; // NSDMI - use brace initilisation
       };
+
       class Clock : public Screen {
         public:
           Clock(DisplayApp* app,
@@ -64,13 +64,13 @@ namespace Pinetime {
           Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
           uint8_t currentDay = 0;
 
-          DirtyValue<int> batteryPercentRemaining  {0};
-          DirtyValue<bool> bleState {false};
-          DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
-          DirtyValue<uint32_t> stepCount  {0};
-          DirtyValue<uint8_t> heartbeat  {0};
-          DirtyValue<bool> heartbeatRunning  {false};
-          DirtyValue<bool> notificationState {false};
+          DirtyValue<int> batteryPercentRemaining  {};
+          DirtyValue<bool> bleState {};
+          DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime{};
+          DirtyValue<uint32_t> stepCount  {};
+          DirtyValue<uint8_t> heartbeat  {};
+          DirtyValue<bool> heartbeatRunning  {};
+          DirtyValue<bool> notificationState {};
 
           lv_obj_t* label_time;
           lv_obj_t* label_date;
