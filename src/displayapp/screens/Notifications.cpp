@@ -41,7 +41,6 @@ Notifications::Notifications(DisplayApp *app,
     style_line.line.width = 3;
     style_line.line.rounded = 0;
 
-
     timeoutLine = lv_line_create(lv_scr_act(), nullptr);
     lv_line_set_style(timeoutLine, LV_LINE_STYLE_MAIN, &style_line);
     lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
@@ -119,6 +118,10 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                              alertNotificationService));
     }
       return true;
+    case Pinetime::Applications::TouchEvents::LongTap: {
+      notificationManager.ToggleVibrations();
+      return true;
+    }
     default:
       return false;
   }
@@ -135,7 +138,7 @@ namespace {
     auto* item = static_cast<Notifications::NotificationItem *>(obj->user_data);
     item->OnAcceptIncomingCall(event);
   }
-  
+
   static void MuteIncomingCallEventHandler(lv_obj_t *obj, lv_event_t event) {
     auto* item = static_cast<Notifications::NotificationItem *>(obj->user_data);
     item->OnMuteIncomingCall(event);
@@ -247,7 +250,7 @@ Notifications::NotificationItem::NotificationItem(const char *title,
       lv_obj_align(bt_reject, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, -20);
       label_reject = lv_label_create(bt_reject, nullptr);
       lv_label_set_text(label_reject, Symbols::phoneSlash);
-      
+
       bt_mute = lv_btn_create(container1, nullptr);
       bt_mute->user_data = this;
       lv_obj_set_event_cb(bt_mute, MuteIncomingCallEventHandler);
