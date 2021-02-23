@@ -5,11 +5,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#ifdef LV_CONF_INCLUDE_SIMPLE
-#include "lv_conf.h"
-#else
-#include "../../../lv_conf.h"
-#endif
+
+#include "../lv_conf_internal.h"
+
+/*-------------------------------
+ * Symbols from FontAwesome font
+ *-----------------------------*/
 
 /* In the font converter use this list as range:
       61441, 61448, 61451, 61452, 61453, 61457, 61459, 61461, 61465, 61468,
@@ -81,9 +82,14 @@ extern "C" {
 /** Invalid symbol at (U+F8FF). If written before a string then `lv_img` will show it as a label*/
 #define LV_SYMBOL_DUMMY           "\xEF\xA3\xBF"
 
+/*-------------------------------
+ * Symbols from "normal" font
+ *-----------------------------*/
+#define LV_SYMBOL_BULLET          "\xE2\x80\xA2" /*20042, 0x2022*/
+
 /*
  * The following list is generated using
- * cat src/lv_misc/lv_symbol_def.h | sed -E -n 's/^#define\s+(LV_SYMBOL_\w+).*"$/    _LV_STR_\1,/p'
+ * cat src/lv_font/lv_symbol_def.h | sed -E -n 's/^#define\s+LV_(SYMBOL_\w+).*".*$/    _LV_STR_\1,/p'
  */
 enum {
     _LV_STR_SYMBOL_AUDIO,
@@ -144,16 +150,11 @@ enum {
     _LV_STR_SYMBOL_SD_CARD,
     _LV_STR_SYMBOL_NEW_LINE,
     _LV_STR_SYMBOL_DUMMY,
+    _LV_STR_SYMBOL_BULLET,
 };
 
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
 
-
 #endif /*LV_SYMBOL_DEF_H*/
-
-
-
-
-
