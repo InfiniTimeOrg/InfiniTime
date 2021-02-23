@@ -3,7 +3,6 @@
 #include <lvgl/lvgl.h>
 #include <cstdint>
 #include <memory>
-#include "Modal.h"
 #include "Screen.h"
 #include "../Apps.h"
 
