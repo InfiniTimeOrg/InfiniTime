@@ -12,7 +12,6 @@ namespace Pinetime {
       NotificationsPreview,
       Notifications,
       Timer,
-      Alarm,
       FlashLight,
       BatteryInfo,
       Music,
@@ -35,6 +34,7 @@ namespace Pinetime {
       SettingPineTimeStyle,
       SettingSetDate,
       SettingSetTime,
+      Calculator,
       Error,
     };
   }

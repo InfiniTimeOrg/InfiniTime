@@ -26,8 +26,10 @@
 #include "displayapp/screens/SystemInfo.h"
 #include "displayapp/screens/Tile.h"
 #include "displayapp/screens/Twos.h"
+#include "displayapp/screens/Calculator.h"
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
+#include "displayapp/screens/Calculator.h"
 #include "displayapp/screens/Steps.h"
 #include "displayapp/screens/Error.h"
 
@@ -453,6 +455,9 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
+      break;
+    case Apps::Calculator:
+      currentScreen = std::make_unique<Screens::Calculator>(this);
       break;
   }
   currentApp = app;
