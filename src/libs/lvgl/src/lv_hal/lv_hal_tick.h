@@ -13,11 +13,8 @@ extern "C" {
 /*********************
  *      INCLUDES
  *********************/
-#ifdef LV_CONF_INCLUDE_SIMPLE
-#include "lv_conf.h"
-#else
-#include "../../../lv_conf.h"
-#endif
+#include "../lv_conf_internal.h"
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -54,7 +51,7 @@ uint32_t lv_tick_get(void);
 
 /**
  * Get the elapsed milliseconds since a previous time stamp
- * @param prev_tick a previous time stamp (return value of systick_get() )
+ * @param prev_tick a previous time stamp (return value of lv_tick_get() )
  * @return the elapsed milliseconds since 'prev_tick'
  */
 uint32_t lv_tick_elaps(uint32_t prev_tick);

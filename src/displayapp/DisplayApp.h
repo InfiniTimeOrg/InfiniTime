@@ -9,7 +9,7 @@
 #include "TouchEvents.h"
 #include "components/brightness/BrightnessController.h"
 #include "components/firmwarevalidator/FirmwareValidator.h"
-#include "displayapp/screens/Modal.h"
+#include "displayapp/screens/Screen.h"
 
 namespace Pinetime {
 
