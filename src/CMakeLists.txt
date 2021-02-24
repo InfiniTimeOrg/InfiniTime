@@ -878,7 +878,7 @@ if (USE_JLINK)
             COMMAND ${NRFJPROG} --program ${EXECUTABLE_FILE_NAME}.hex -f ${NRF_TARGET} --sectorerase
             COMMAND sleep 0.5s
             COMMAND ${NRFJPROG} --reset -f ${NRF_TARGET}
-            COMMENT "flashing ${EXECUTABLE_NAME}.hex"
+            COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
             )
 
 elseif (USE_GDB_CLIENT)
@@ -888,8 +888,8 @@ elseif (USE_GDB_CLIENT)
             )
     add_custom_target("FLASH_${EXECUTABLE_NAME}"
             DEPENDS ${EXECUTABLE_NAME}
-            COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill' ${EXECUTABLE_NAME}.hex
-            COMMENT "flashing ${EXECUTABLE_NAME}.hex"
+            COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill' ${EXECUTABLE_FILE_NAME}.hex
+            COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
             )
 elseif (USE_OPENOCD)
     if (USE_CMSIS_DAP)
@@ -914,10 +914,10 @@ elseif (USE_OPENOCD)
                 -c 'transport select swd'
                 -c 'source [find target/nrf52.cfg]'
                 -c 'halt'
-                -c "program \"${EXECUTABLE_NAME}.hex\""
+                -c "program \"${EXECUTABLE_FILE_NAME}.hex\""
                 -c 'reset'
                 -c 'shutdown'
-                COMMENT "flashing ${EXECUTABLE_NAME}.hex"
+                COMMENT "flashing ${EXECUTABLE_BIN_NAME}.hex"
                 )
     else ()
         add_custom_target(FLASH_ERASE
@@ -926,8 +926,8 @@ elseif (USE_OPENOCD)
                 )
         add_custom_target("FLASH_${EXECUTABLE_NAME}"
                 DEPENDS ${EXECUTABLE_NAME}
-                COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${EXECUTABLE_NAME}.hex\"" -c reset -c shutdown
-                COMMENT "flashing ${EXECUTABLE_NAME}.hex"
+                COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${EXECUTABLE_FILE_NAME}.hex\"" -c reset -c shutdown
+                COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
                 )
     endif ()
 endif ()
