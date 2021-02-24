@@ -10,12 +10,16 @@ namespace Pinetime {
     namespace Screens {
       class ApplicationList : public Screen {
         public:
-          explicit ApplicationList(DisplayApp* app);
+          explicit ApplicationList(DisplayApp* app,
+            Pinetime::Controllers::Settings &settingsController);
           ~ApplicationList() override;
           bool Refresh() override;
           bool OnButtonPushed() override;
           bool OnTouchEvent(TouchEvents event) override;
         private:
+
+          Controllers::Settings& settingsController;
+          
           bool running = true;
 
           ScreenList<2> screens;
