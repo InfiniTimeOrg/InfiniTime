@@ -22,7 +22,7 @@ Brightness::Brightness(Pinetime::Applications::DisplayApp *app, Controllers::Bri
   slider_label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(slider_label, LevelToString(brightness.Level()));
   lv_obj_set_auto_realign(slider_label, true);
-  lv_obj_align(slider_label, slider, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+  lv_obj_align(slider_label, slider, LV_ALIGN_OUT_BOTTOM_MID, 0, 30);
 }
 
 Brightness::~Brightness() {
@@ -75,6 +75,9 @@ bool Brightness::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   switch(event) {
     case TouchEvents::SwipeLeft:
       brightness.Lower();
+      if ( brightness.Level() == Pinetime::Controllers::BrightnessController::Levels::Off) {
+        brightness.Set(Controllers::BrightnessController::Levels::Low);
+      }
       SetValue();
       return true;
     case TouchEvents::SwipeRight:

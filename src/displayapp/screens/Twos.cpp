@@ -8,43 +8,50 @@
 
 using namespace Pinetime::Applications::Screens;
 
-extern lv_font_t jetbrains_mono_bold_20;
-
 Twos::Twos(Pinetime::Applications::DisplayApp *app) : Screen(app) {
 
   // create styles to apply to different valued tiles
-  static lv_style_t style_cell1;
-  lv_style_copy(&style_cell1, &lv_style_plain);
-  style_cell1.body.border.width = 1;
-  style_cell1.text.font = &jetbrains_mono_bold_20;
-  style_cell1.body.padding.top = 16;
-  style_cell1.body.padding.bottom = 16;
-  style_cell1.body.main_color = LV_COLOR_MAKE(214, 197, 165);
-  style_cell1.body.grad_color = LV_COLOR_MAKE(214, 197, 165);
-  style_cell1.text.color = LV_COLOR_BLACK;  
+  lv_style_init(&style_cell1);
+  lv_style_init(&style_cell2);
+  lv_style_init(&style_cell3);
+  lv_style_init(&style_cell4);
+  lv_style_init(&style_cell5);
 
-  static lv_style_t style_cell2;
-  lv_style_copy(&style_cell2, &style_cell1);
-  style_cell2.body.main_color = LV_COLOR_MAKE(209, 146, 92);
-  style_cell2.body.grad_color = LV_COLOR_MAKE(209, 146, 92);
-  style_cell2.text.color = LV_COLOR_WHITE;
+  lv_style_set_border_color(&style_cell1, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
+  lv_style_set_border_width(&style_cell1, LV_STATE_DEFAULT, 3);
+  lv_style_set_bg_opa(&style_cell1, LV_STATE_DEFAULT, LV_OPA_COVER);
+  lv_style_set_bg_color(&style_cell1, LV_STATE_DEFAULT, lv_color_hex(0xcdc0b4));
 
-  static lv_style_t style_cell3;
-  lv_style_copy(&style_cell3, &style_cell2);
-  style_cell3.body.main_color = LV_COLOR_MAKE(246, 94, 59);
-  style_cell3.body.grad_color = LV_COLOR_MAKE(246, 94, 59);
+  lv_style_set_border_color(&style_cell2, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
+  lv_style_set_border_width(&style_cell2, LV_STATE_DEFAULT, 3);
+  lv_style_set_bg_opa(&style_cell2, LV_STATE_DEFAULT, LV_OPA_COVER);
+  lv_style_set_bg_color(&style_cell2, LV_STATE_DEFAULT, lv_color_hex(0xefdfc6));
 
-  static lv_style_t style_cell4;
-  lv_style_copy(&style_cell4, &style_cell3);
-  style_cell4.body.main_color = LV_COLOR_MAKE(212, 170, 28);
-  style_cell4.body.grad_color = LV_COLOR_MAKE(212, 170, 28);
+  lv_style_set_border_color(&style_cell3, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
+  lv_style_set_border_width(&style_cell3, LV_STATE_DEFAULT, 3);
+  lv_style_set_bg_opa(&style_cell3, LV_STATE_DEFAULT, LV_OPA_COVER);
+  lv_style_set_bg_color(&style_cell3, LV_STATE_DEFAULT, lv_color_hex(0xef9263));
+
+  lv_style_set_border_color(&style_cell4, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
+  lv_style_set_border_width(&style_cell4, LV_STATE_DEFAULT, 3);
+  lv_style_set_bg_opa(&style_cell4, LV_STATE_DEFAULT, LV_OPA_COVER);
+  lv_style_set_bg_color(&style_cell4, LV_STATE_DEFAULT, lv_color_hex(0xf76142));
+  //lv_style_set_text_color(&style_cell4, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+
+  lv_style_set_border_color(&style_cell5, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
+  lv_style_set_border_width(&style_cell5, LV_STATE_DEFAULT, 3);
+  lv_style_set_bg_opa(&style_cell5, LV_STATE_DEFAULT, LV_OPA_COVER);
+  lv_style_set_bg_color(&style_cell5, LV_STATE_DEFAULT, lv_color_hex(0x007dc5));
+  //lv_style_set_text_color(&style_cell5, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
   // format grid display
-  gridDisplay = lv_table_create(lv_scr_act(), nullptr);
-  lv_table_set_style(gridDisplay, LV_TABLE_STYLE_CELL1, &style_cell1);
-  lv_table_set_style(gridDisplay, LV_TABLE_STYLE_CELL2, &style_cell2);
-  lv_table_set_style(gridDisplay, LV_TABLE_STYLE_CELL3, &style_cell3);
-  lv_table_set_style(gridDisplay, LV_TABLE_STYLE_CELL4, &style_cell4);
+  
+  gridDisplay = lv_table_create(lv_scr_act(), nullptr);  
+  lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL1, &style_cell1);
+  lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL2, &style_cell2);
+  lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL3, &style_cell3);
+  lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL4, &style_cell4);
+  lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL4 + 1, &style_cell5);
   lv_table_set_col_cnt(gridDisplay, 4);
   lv_table_set_row_cnt(gridDisplay, 4);
   lv_table_set_col_width(gridDisplay, 0, LV_HOR_RES/4);
@@ -53,11 +60,13 @@ Twos::Twos(Pinetime::Applications::DisplayApp *app) : Screen(app) {
   lv_table_set_col_width(gridDisplay, 3, LV_HOR_RES/4);
   lv_obj_align(gridDisplay, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
+  lv_obj_clean_style_list(gridDisplay, LV_TABLE_PART_BG);
+
   // initialize grid
   for(int row = 0; row < 4; row++) {
     for(int col = 0; col < 4; col++) {
       grid[row][col].value = 0;
-      lv_table_set_cell_type(gridDisplay, row, col, 2);
+      lv_table_set_cell_type(gridDisplay, row, col, 1);
       lv_table_set_cell_align(gridDisplay, row, col, LV_LABEL_ALIGN_CENTER);
     }
   }
@@ -68,11 +77,23 @@ Twos::Twos(Pinetime::Applications::DisplayApp *app) : Screen(app) {
   scoreText = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_width(scoreText, LV_HOR_RES);
   lv_label_set_align(scoreText, LV_ALIGN_IN_LEFT_MID);
-  lv_obj_align(scoreText, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
-  lv_label_set_text(scoreText, ("Score: " + std::to_string(score)).c_str());
+  lv_obj_align(scoreText, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 10);
+  lv_label_set_recolor(scoreText, true);
+  lv_label_set_text_fmt(scoreText, "Score #FFFF00 %i#", score);
+
+  lv_obj_t * backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
+  lv_obj_set_size(backgroundLabel, 240, 240);
+  lv_obj_set_pos(backgroundLabel, 0, 0);
+  lv_label_set_text(backgroundLabel, "");
 }
 
 Twos::~Twos() {
+  lv_style_reset(&style_cell1);
+  lv_style_reset(&style_cell2);
+  lv_style_reset(&style_cell3);
+  lv_style_reset(&style_cell4);
+  lv_style_reset(&style_cell5);
   lv_obj_clean(lv_scr_act());
 }
 
@@ -117,7 +138,7 @@ bool Twos::tryMerge(Tile grid[][4], int &newRow, int &newCol, int oldRow, int ol
         unsigned int newVal = grid[oldRow][oldCol].value *= 2;
         grid[newRow][newCol].value = newVal;
         score += newVal;
-        lv_label_set_text(scoreText, ("Score: " + std::to_string(score)).c_str());
+        lv_label_set_text_fmt(scoreText, "Score #FFFF00 %i#", score);
         grid[oldRow][oldCol].value = 0;
         grid[newRow][newCol].merged = true;
         return true;
@@ -250,20 +271,22 @@ void Twos::updateGridDisplay(Tile grid[][4]) {
       }
       switch (grid[row][col].value) {
         case 0:
+          lv_table_set_cell_type(gridDisplay, row, col, 1);
+          break;
         case 2:
         case 4:
-          lv_table_set_cell_type(gridDisplay, row, col, 1);
+          lv_table_set_cell_type(gridDisplay, row, col, 2);
           break;
         case 8:
         case 16:
-          lv_table_set_cell_type(gridDisplay, row, col, 2);
+          lv_table_set_cell_type(gridDisplay, row, col, 3);
           break;
         case 32:
         case 64:
-          lv_table_set_cell_type(gridDisplay, row, col, 3);
+          lv_table_set_cell_type(gridDisplay, row, col, 4);
           break;
         default:
-          lv_table_set_cell_type(gridDisplay, row, col, 4);
+          lv_table_set_cell_type(gridDisplay, row, col, 5);
           break;
       }
     }

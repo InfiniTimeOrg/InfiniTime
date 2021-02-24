@@ -10,6 +10,7 @@ To build this project, you'll need:
 ```
 git clone https://github.com/JF002/Pinetime.git
 cd Pinetime
+git submodule update --init
 mkdir build
 cd build
 ```

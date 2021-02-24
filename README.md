@@ -19,7 +19,7 @@ The goal of this project is to design an open-source firmware for the Pinetime s
  - Code written in **modern C++**;
  - Build system based on **CMake**;
  - Based on **[FreeRTOS 10.0.0](https://freertos.org)** real-time OS.
- - Using **[LittleVGL/LVGL 6.1.2](https://lvgl.io/)** as UI library...
+ - Using **[LittleVGL/LVGL 7](https://lvgl.io/)** as UI library...
  - ... and **[NimBLE 1.3.0](https://github.com/apache/mynewt-nimble)** as BLE stack.
 
 ## Overview

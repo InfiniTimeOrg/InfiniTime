@@ -26,9 +26,6 @@
 
 using namespace Pinetime::Applications::Screens;
 
-extern lv_font_t jetbrains_mono_extrabold_compressed;
-extern lv_font_t jetbrains_mono_bold_20;
-
 static void event_handler(lv_obj_t *obj, lv_event_t event) {
   Music *screen = static_cast<Music *>(obj->user_data);
   screen->OnObjectEvent(obj, event);
