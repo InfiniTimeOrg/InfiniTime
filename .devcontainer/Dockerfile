@@ -27,14 +27,15 @@ RUN pip3 install adafruit-nrfutil
 RUN pip3 install setuptools_rust
 
 WORKDIR /opt/
-# build.sh knows how to compile
+# build.sh knows how to compile but it problimatic on Win10
 COPY build.sh .
+# create_build_openocd.sh uses cmake to crate to build directory
+COPY create_build_openocd.sh .
 
 # Lets get each in a separate docker layer for better downloads
 # GCC
 # RUN bash -c "source /opt/build.sh; GetGcc;"
 RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-9-2020-q2-update-x86_64-linux.tar.bz2 -O - | tar -xj -C /opt
-# RUN rm gcc-arm-none-eabi-9-2020-q2-update-x86_64-linux.tar.bz2
 # NrfSdk
 # RUN bash -c "source /opt/build.sh; GetNrfSdk;"
 RUN wget -q "https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip" -O /tmp/nRF5_SDK_15.3.0_59ac345
