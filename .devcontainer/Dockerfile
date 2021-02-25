@@ -22,8 +22,6 @@ RUN apt-get update -qq \
       rustc \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
-RUN adduser infinitime
-
 RUN pip3 install adafruit-nrfutil
 # required for McuBoot
 RUN pip3 install setuptools_rust
@@ -34,10 +32,19 @@ COPY build.sh .
 
 # Lets get each in a separate docker layer for better downloads
 # GCC
-RUN bash -c "source /opt/build.sh; GetGcc;"
+# RUN bash -c "source /opt/build.sh; GetGcc;"
+RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-9-2020-q2-update-x86_64-linux.tar.bz2 -O - | tar -xj -C /opt
+# RUN rm gcc-arm-none-eabi-9-2020-q2-update-x86_64-linux.tar.bz2
 # NrfSdk
-RUN bash -c "source /opt/build.sh; GetNrfSdk;"
+# RUN bash -c "source /opt/build.sh; GetNrfSdk;"
+RUN wget -q "https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip" -O /tmp/nRF5_SDK_15.3.0_59ac345
+RUN unzip -q /tmp/nRF5_SDK_15.3.0_59ac345 -d /opt
+RUN rm /tmp/nRF5_SDK_15.3.0_59ac345
 # McuBoot
-RUN bash -c "source /opt/build.sh; GetMcuBoot;"
+# RUN bash -c "source /opt/build.sh; GetMcuBoot;"
+RUN git clone https://github.com/JuulLabs-OSS/mcuboot.git
+RUN pip3 install -r ./mcuboot/scripts/requirements.txt
+
+RUN adduser infinitime
 
 ENV SOURCES_DIR /workspaces/Pinetime
