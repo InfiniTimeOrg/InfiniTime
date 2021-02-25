@@ -24,7 +24,8 @@ The goal of this project is to design an open-source firmware for the Pinetime s
 
 ## Overview
 
-![Pinetime screens](images/0.7.0/montage.jpg "PinetimeScreens")
+![Pinetime screens](images/0.14.0/collage1.png "PinetimeScreens")
+![Pinetime screens](images/0.14.0/collage2.png "PinetimeScreens")
 
 As of now, here is the list of achievements of this project:
 
