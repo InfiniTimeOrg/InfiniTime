@@ -15,6 +15,7 @@ RUN apt-get update -qq \
       unzip \
       wget \ 
       curl \
+      dos2unix \
 # aarch64 packages
       libffi-dev \
       libssl-dev \
