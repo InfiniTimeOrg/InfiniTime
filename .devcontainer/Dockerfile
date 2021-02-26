@@ -16,6 +16,8 @@ RUN apt-get update -qq \
       wget \ 
       curl \
       dos2unix \
+      clang-format \
+      clang-tidy \
 # aarch64 packages
       libffi-dev \
       libssl-dev \
