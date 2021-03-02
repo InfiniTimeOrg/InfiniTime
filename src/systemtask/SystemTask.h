@@ -84,7 +84,7 @@ namespace Pinetime {
         static constexpr uint8_t pinSpiMiso = 4;
         static constexpr uint8_t pinSpiCsn = 25;
         static constexpr uint8_t pinLcdDataCommand = 18;
-        static constexpr uint8_t pinButton = 13;
+        static constexpr uint8_t pinButton = 17;
         static constexpr uint8_t pinTouchIrq = 28;
 
         static void Process(void* instance);
