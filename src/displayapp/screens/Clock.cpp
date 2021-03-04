@@ -140,7 +140,7 @@ bool Clock::Refresh() {
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
     lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
-    auto isCharging = batteryController.IsCharging() || batteryController.IsPowerPresent();
+    auto isCharging = batteryController.IsCharging() or batteryController.IsPowerPresent();
     lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
   }
 
@@ -173,9 +173,9 @@ bool Clock::Refresh() {
     auto time = date::make_time(newDateTime-dp);
     auto yearMonthDay = date::year_month_day(dp);
 
-    auto year = (int)yearMonthDay.year();
+    auto year = static_cast<int>(yearMonthDay.year());
     auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned)yearMonthDay.month());
-    auto day = (unsigned)yearMonthDay.day();
+    auto day = static_cast<unsigned>(yearMonthDay.day());
     auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
     auto hour = time.hours().count();
@@ -187,23 +187,17 @@ bool Clock::Refresh() {
     char hoursChar[3];
     sprintf(hoursChar, "%02d", static_cast<int>(hour));
 
-    char timeStr[6];
-    sprintf(timeStr, "%c%c:%c%c", hoursChar[0],hoursChar[1],minutesChar[0], minutesChar[1]);
-
-    if(hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] || minutesChar[1] != displayedChar[3]) {
+    if((hoursChar[0] != displayedChar[0]) or (hoursChar[1] != displayedChar[1]) or (minutesChar[0] != displayedChar[2]) or (minutesChar[1] != displayedChar[3])) {
       displayedChar[0] = hoursChar[0];
       displayedChar[1] = hoursChar[1];
       displayedChar[2] = minutesChar[0];
       displayedChar[3] = minutesChar[1];
 
-      lv_label_set_text(label_time, timeStr);
+      lv_label_set_text_fmt(label_time,"%s:%s", hoursChar,minutesChar);
     }
 
-    if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      char dateStr[22];
-      sprintf(dateStr, "%s %d %s %d", DayOfWeekToString(dayOfWeek), day, MonthToString(month), year);
-      lv_label_set_text(label_date, dateStr);
-
+    if ((year != currentYear) or (month != currentMonth) or (dayOfWeek != currentDayOfWeek) or (day != currentDay)) {
+      lv_label_set_text_fmt(label_date,"%s %d %s %d", DayOfWeekToString(dayOfWeek), day, MonthToString(month), year);
 
       currentYear = year;
       currentMonth = month;
@@ -214,7 +208,7 @@ bool Clock::Refresh() {
 
   heartbeat = heartRateController.HeartRate();
   heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
-  if(heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
+  if(heartbeat.IsUpdated() or heartbeatRunning.IsUpdated()) {
     char heartbeatBuffer[4];
     if(heartbeatRunning.Get())
       sprintf(heartbeatBuffer, "%d", heartbeat.Get());
