@@ -33,6 +33,7 @@ Clock::Clock(DisplayApp* app,
           {
                 [this]() -> std::unique_ptr<Screen> { return WatchFaceDigitalScreen(); },
                 [this]() -> std::unique_ptr<Screen> { return WatchFaceAnalogScreen(); },
+                // Examples for more watch faces
                 //[this]() -> std::unique_ptr<Screen> { return WatchFaceMinimalScreen(); },
                 //[this]() -> std::unique_ptr<Screen> { return WatchFaceCustomScreen(); }
           },
@@ -71,7 +72,7 @@ std::unique_ptr<Screen> Clock::WatchFaceAnalogScreen() {
 }
 
 /*
-// examples
+// Examples for more watch faces
 std::unique_ptr<Screen> Clock::WatchFaceMinimalScreen() {  
   return std::unique_ptr<Screen>(new Screens::WatchFaceMinimal(app, dateTimeController, batteryController, bleController, notificatioManager, settingsController));
 }
