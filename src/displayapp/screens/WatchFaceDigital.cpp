@@ -30,13 +30,6 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
                                            heartRateController{heartRateController} {
   settingsController.SetClockFace(0);
 
-  // init 
-  /*currentDateTime = dateTimeController.CurrentDateTime();
-  batteryPercentRemaining = batteryController.PercentRemaining();
-  bleState = bleController.IsConnected();
-  notificationState = notificatioManager.AreNewNotificationsAvailable();
-  heartbeat = heartRateController.HeartRate();*/
-
   displayedChar[0] = 0;
   displayedChar[1] = 0;
   displayedChar[2] = 0;
