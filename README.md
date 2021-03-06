@@ -47,6 +47,7 @@ As of now, here is the list of achievements of this project:
  - Supported by 2 companion apps (development is in progress):
     * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android)
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)
+    * **[Experimental]** [WebBLEWatch](https://hubmartin.github.io/WebBLEWatch/) Synchronize time directly from your web browser. [video](https://youtu.be/IakiuhVDdrY)
  - **[Experimental]** OTA (Over-the-air) update via BLE
  - **[Experimental]** Bootloader based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/)
  
