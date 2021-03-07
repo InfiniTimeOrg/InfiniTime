@@ -1,0 +1,5 @@
+[core]
+    whitespace = blank-at-eol,blank-at-eof,space-before-tab
+    autocrlf = input
+[apply]
+    whitespace = fix

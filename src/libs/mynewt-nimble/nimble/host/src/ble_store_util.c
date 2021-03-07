@@ -233,13 +233,15 @@ ble_store_util_status_rr(struct ble_store_status_event *event, void *arg)
     switch (event->event_code) {
     case BLE_STORE_EVENT_OVERFLOW:
         switch (event->overflow.obj_type) {
-            case BLE_STORE_OBJ_TYPE_OUR_SEC:
-            case BLE_STORE_OBJ_TYPE_PEER_SEC:
-            case BLE_STORE_OBJ_TYPE_CCCD:
-                return ble_gap_unpair_oldest_peer();
+        case BLE_STORE_OBJ_TYPE_OUR_SEC:
+        case BLE_STORE_OBJ_TYPE_PEER_SEC:
+            return ble_gap_unpair_oldest_peer();
+        case BLE_STORE_OBJ_TYPE_CCCD:
+            /* Try unpairing oldest peer except current peer */
+            return ble_gap_unpair_oldest_except(&event->overflow.value->cccd.peer_addr);
 
-            default:
-                return BLE_HS_EUNKNOWN;
+        default:
+            return BLE_HS_EUNKNOWN;
         }
 
     case BLE_STORE_EVENT_FULL:

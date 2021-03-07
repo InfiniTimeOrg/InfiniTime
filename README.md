@@ -19,12 +19,13 @@ The goal of this project is to design an open-source firmware for the Pinetime s
  - Code written in **modern C++**;
  - Build system based on **CMake**;
  - Based on **[FreeRTOS 10.0.0](https://freertos.org)** real-time OS.
- - Using **[LittleVGL/LVGL 6.1.2](https://lvgl.io/)** as UI library...
+ - Using **[LittleVGL/LVGL 7](https://lvgl.io/)** as UI library...
  - ... and **[NimBLE 1.3.0](https://github.com/apache/mynewt-nimble)** as BLE stack.
 
 ## Overview
 
-![Pinetime screens](images/0.7.0/montage.jpg "PinetimeScreens")
+![Pinetime screens](images/0.14.0/collage1.png "PinetimeScreens")
+![Pinetime screens](images/0.14.0/collage2.png "PinetimeScreens")
 
 As of now, here is the list of achievements of this project:
 
@@ -46,6 +47,7 @@ As of now, here is the list of achievements of this project:
  - Supported by 2 companion apps (development is in progress):
     * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android)
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)
+    * **[Experimental]** [WebBLEWatch](https://hubmartin.github.io/WebBLEWatch/) Synchronize time directly from your web browser. [video](https://youtu.be/IakiuhVDdrY)
  - **[Experimental]** OTA (Over-the-air) update via BLE
  - **[Experimental]** Bootloader based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/)
  

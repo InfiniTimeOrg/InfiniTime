@@ -53,7 +53,7 @@ syscfg.defs:
 
     BTTESTER_CONN_RETRY:
         description: Retry connections when connection failed to be established
-        value: 3
+        value: 0
 
     BTTESTER_BTP_DATA_SIZE_MAX:
         description: Maximum BTP payload
@@ -71,12 +71,16 @@ syscfg.defs:
         description: Enable logging BTP traffic
         value: 0
 
+    BTTESTER_L2CAP_COC_MTU:
+        description: Maximum MTU size the application can handle
+        value: 230
+
 syscfg.vals:
     OS_MAIN_STACK_SIZE: 512
     SHELL_TASK: 0
     SHELL_NEWTMGR: 0
     LOG_LEVEL: 12
-    MSYS_1_BLOCK_COUNT: 48
+    MSYS_1_BLOCK_COUNT: 80
 
     BLE_MONITOR_RTT: 1
     CONSOLE_RTT: 0
@@ -86,6 +90,8 @@ syscfg.vals:
 
     BLE_L2CAP_COC_MAX_NUM: 2
     BLE_L2CAP_SIG_MAX_PROCS: 2
+    BLE_L2CAP_ENHANCED_COC: 1
+    BLE_VERSION: 52
     # Some testcases require MPS < MTU
     BLE_L2CAP_COC_MPS: 100
     BLE_RPA_TIMEOUT: 30
@@ -98,6 +104,9 @@ syscfg.vals:
     BLE_SVC_GAP_PPCP_MIN_CONN_INTERVAL: 9
     BLE_SVC_GAP_PPCP_MAX_CONN_INTERVAL: 30
     BLE_SVC_GAP_PPCP_SUPERVISION_TMO: 2000
+    BLE_SVC_GAP_APPEARANCE_WRITE_PERM: 0
+    BLE_SVC_GAP_DEVICE_NAME_WRITE_PERM: 0
+    BLE_STORE_CONFIG_PERSIST: 0
 
     BLE_MESH: 1
     BLE_MESH_SHELL: 0
@@ -117,6 +126,11 @@ syscfg.vals:
     BLE_MESH_FRIEND: 1
     BLE_MESH_CFG_CLI: 1
     BLE_MESH_RX_SDU_MAX: 110
+    BLE_MESH_HEALTH_CLI: 1
+    BLE_MESH_FRIEND_QUEUE_SIZE: 32
+    BLE_MESH_RX_SEG_MAX: 13
+    BLE_MESH_TX_SEG_MSG_COUNT: 2
+    BLE_MAX_CONNECTIONS: 8
 
     BLE_MESH_ADV_BUF_COUNT: 20
     BLE_MESH_TX_SEG_MAX: 6

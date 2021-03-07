@@ -9,6 +9,7 @@ using namespace Pinetime::Controllers;
 
 constexpr ble_uuid16_t AlertNotificationService::ansUuid;
 constexpr ble_uuid16_t AlertNotificationService::ansCharUuid;
+constexpr ble_uuid128_t AlertNotificationService::notificationEventUuid;
 
 
 int AlertNotificationCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
@@ -32,6 +33,13 @@ AlertNotificationService::AlertNotificationService ( System::SystemTask& systemT
                         .access_cb = AlertNotificationCallback,
                         .arg = this,
                         .flags = BLE_GATT_CHR_F_WRITE
+                },
+                {
+                        .uuid = (ble_uuid_t *) &notificationEventUuid,
+                        .access_cb = AlertNotificationCallback,
+                        .arg = this,
+                        .flags = BLE_GATT_CHR_F_NOTIFY,
+                        .val_handle = &eventHandle
                 },
                 {
                   0
@@ -61,14 +69,65 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
     const auto dbgPacketLen = OS_MBUF_PKTLEN(ctxt->om);
     size_t bufferSize = std::min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
     auto messageSize = std::min(maxMessageSize, (bufferSize-headerSize));
+    Categories category;
 
     NotificationManager::Notification notif;
     os_mbuf_copydata(ctxt->om, headerSize, messageSize-1, notif.message.data());
+    os_mbuf_copydata(ctxt->om, 0, 1, &category);
     notif.message[messageSize-1] = '\0';
-    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
-    notificationManager.Push(std::move(notif));
 
-    systemTask.PushMessage(Pinetime::System::SystemTask::Messages::OnNewNotification);
+    // TODO convert all ANS categories to NotificationController categories
+    switch(category) {
+      case Categories::Call:
+        notif.category = Pinetime::Controllers::NotificationManager::Categories::IncomingCall;
+        break;
+      default:
+        notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+        break;
+    }
+
+    auto event = Pinetime::System::SystemTask::Messages::OnNewNotification;
+    notificationManager.Push(std::move(notif));
+    systemTask.PushMessage(event);
   }
   return 0;
+}
+
+void AlertNotificationService::AcceptIncomingCall() {
+  auto response = IncomingCallResponses::Answer;
+  auto *om = ble_hs_mbuf_from_flat(&response, 1);
+
+  uint16_t connectionHandle = systemTask.nimble().connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+
+  ble_gattc_notify_custom(connectionHandle, eventHandle, om);
+}
+
+void AlertNotificationService::RejectIncomingCall() {
+  auto response = IncomingCallResponses::Reject;
+  auto *om = ble_hs_mbuf_from_flat(&response, 1);
+
+  uint16_t connectionHandle = systemTask.nimble().connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+
+  ble_gattc_notify_custom(connectionHandle, eventHandle, om);
+}
+
+void AlertNotificationService::MuteIncomingCall() {
+  auto response = IncomingCallResponses::Mute;
+  auto *om = ble_hs_mbuf_from_flat(&response, 1);
+
+  uint16_t connectionHandle = systemTask.nimble().connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+
+  ble_gattc_notify_custom(connectionHandle, eventHandle, om);
 }

@@ -15,7 +15,6 @@
 #include "drivers/Cst816s.h"
 #include <date/date.h>
 #include "displayapp/screens/Clock.h"
-#include "displayapp/screens/Modal.h"
 #include <drivers/Watchdog.h>
 #include "TouchEvents.h"
 #include "Apps.h"

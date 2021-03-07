@@ -44,21 +44,21 @@ void net_recv_ev(uint8_t ttl, uint8_t ctl, uint16_t src, uint16_t dst,
                    payload_len);
 }
 
-static void model_bound_cb(u16_t addr, struct bt_mesh_model *model,
-                           u16_t key_idx)
+static void model_bound_cb(uint16_t addr, struct bt_mesh_model *model,
+                           uint16_t key_idx)
 {
     console_printf("Model bound: remote addr 0x%04x key_idx 0x%04x model %p\n",
                    addr, key_idx, model);
 }
 
-static void model_unbound_cb(u16_t addr, struct bt_mesh_model *model,
-                             u16_t key_idx)
+static void model_unbound_cb(uint16_t addr, struct bt_mesh_model *model,
+                             uint16_t key_idx)
 {
     console_printf("Model unbound: remote addr 0x%04x key_idx 0x%04x "
                    "model %p\n", addr, key_idx, model);
 }
 
-static void invalid_bearer_cb(u8_t opcode)
+static void invalid_bearer_cb(uint8_t opcode)
 {
     console_printf("Invalid bearer: opcode 0x%02x\n", opcode);
 }

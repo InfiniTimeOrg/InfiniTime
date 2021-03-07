@@ -32,8 +32,8 @@
 #include "device_composition.h"
 #include "storage.h"
 
-static u8_t storage_id;
-u8_t reset_counter;
+static uint8_t storage_id;
+uint8_t reset_counter;
 
 static void save_reset_counter(void)
 {
@@ -76,7 +76,7 @@ static void save_lightness_temp_def_state(void)
 	char buf[12];
 
 	light_ctl_srv_user_data.lightness_temp_def =
-		(u32_t) ((light_ctl_srv_user_data.lightness_def << 16) |
+		(uint32_t) ((light_ctl_srv_user_data.lightness_def << 16) |
 			 light_ctl_srv_user_data.temp_def);
 
 	settings_str_from_bytes(&light_ctl_srv_user_data.lightness_temp_def,
@@ -91,7 +91,7 @@ static void save_lightness_temp_last_state(void)
 	char buf[12];
 
 	light_ctl_srv_user_data.lightness_temp_last =
-		(u32_t) ((light_ctl_srv_user_data.lightness << 16) |
+		(uint32_t) ((light_ctl_srv_user_data.lightness << 16) |
 			 light_ctl_srv_user_data.temp);
 
 	settings_str_from_bytes(&light_ctl_srv_user_data.lightness_temp_last,
@@ -108,7 +108,7 @@ static void save_lightness_range(void)
 	char buf[12];
 
 	light_lightness_srv_user_data.lightness_range =
-		(u32_t) ((light_lightness_srv_user_data.light_range_max << 16) |
+		(uint32_t) ((light_lightness_srv_user_data.light_range_max << 16) |
 			 light_lightness_srv_user_data.light_range_min);
 
 	settings_str_from_bytes(&light_lightness_srv_user_data.lightness_range,
@@ -123,7 +123,7 @@ static void save_temperature_range(void)
 	char buf[12];
 
 	light_ctl_srv_user_data.temperature_range =
-		(u32_t) ((light_ctl_srv_user_data.temp_range_max << 16) |
+		(uint32_t) ((light_ctl_srv_user_data.temp_range_max << 16) |
 			 light_ctl_srv_user_data.temp_range_min);
 
 	settings_str_from_bytes(&light_ctl_srv_user_data.temperature_range,
@@ -162,7 +162,7 @@ static void storage_work_handler(struct os_event *work)
 
 struct os_callout storage_work;
 
-void save_on_flash(u8_t id)
+void save_on_flash(uint8_t id)
 {
 	storage_id = id;
 	os_callout_reset(&storage_work, 0);

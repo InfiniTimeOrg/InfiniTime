@@ -3,8 +3,6 @@
 
 using namespace Pinetime::Applications::Screens;
 
-extern lv_font_t jetbrains_mono_bold_20;
-
 static void event_handler(lv_obj_t * obj, lv_event_t event) {
   Tile* screen = static_cast<Tile *>(obj->user_data);
   uint32_t* eventDataPtr = (uint32_t*) lv_event_get_data();
@@ -22,10 +20,9 @@ Tile::Tile(DisplayApp* app, std::array<Applications, 6>& applications) : Screen(
       appIndex++;
     }
   }
-  modal.reset(new Modal(app));
 
-  btnm1 = lv_btnm_create(lv_scr_act(), nullptr);
-  lv_btnm_set_map(btnm1, btnm_map1);
+  btnm1 = lv_btnmatrix_create(lv_scr_act(), nullptr);
+  lv_btnmatrix_set_map(btnm1, btnm_map1);
   lv_obj_set_size(btnm1, LV_HOR_RES, LV_VER_RES);
 
   btnm1->user_data = this;

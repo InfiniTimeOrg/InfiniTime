@@ -16,6 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 #include "Music.h"
+#include "Symbols.h"
 #include <cstdint>
 #include "../DisplayApp.h"
 #include "components/ble/MusicService.h"
@@ -24,9 +25,6 @@
 #include "displayapp/icons/music/disc_f_2.cpp"
 
 using namespace Pinetime::Applications::Screens;
-
-extern lv_font_t jetbrains_mono_extrabold_compressed;
-extern lv_font_t jetbrains_mono_bold_20;
 
 static void event_handler(lv_obj_t *obj, lv_event_t event) {
   Music *screen = static_cast<Music *>(obj->user_data);
@@ -58,7 +56,7 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   lv_obj_set_size(btnVolDown, LV_HOR_RES / 3, 80);
   lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   label = lv_label_create(btnVolDown, nullptr);
-  lv_label_set_text(label, "V-");
+  lv_label_set_text(label, Symbols::volumDown);
   lv_obj_set_hidden(btnVolDown, !displayVolumeButtons);
   
   btnVolUp = lv_btn_create(lv_scr_act(), nullptr);
@@ -67,7 +65,7 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   lv_obj_set_size(btnVolUp, LV_HOR_RES / 3, 80);
   lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   label = lv_label_create(btnVolUp, nullptr);
-  lv_label_set_text(label, "V+");
+  lv_label_set_text(label, Symbols::volumUp);
   lv_obj_set_hidden(btnVolDown, !displayVolumeButtons);
   
   btnPrev = lv_btn_create(lv_scr_act(), nullptr);
@@ -76,7 +74,7 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   lv_obj_set_size(btnPrev, LV_HOR_RES / 3, 80);
   lv_obj_align(btnPrev, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   label = lv_label_create(btnPrev, nullptr);
-  lv_label_set_text(label, "<<");
+  lv_label_set_text(label, Symbols::stepBackward);
   
   btnNext = lv_btn_create(lv_scr_act(), nullptr);
   btnNext->user_data = this;
@@ -84,7 +82,7 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   lv_obj_set_size(btnNext, LV_HOR_RES / 3, 80);
   lv_obj_align(btnNext, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   label = lv_label_create(btnNext, nullptr);
-  lv_label_set_text(label, ">>");
+  lv_label_set_text(label, Symbols::stepForward);
   
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
@@ -92,7 +90,7 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   lv_obj_set_size(btnPlayPause, LV_HOR_RES / 3, 80);
   lv_obj_align(btnPlayPause, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
-  lv_label_set_text(txtPlayPause, ">");
+  lv_label_set_text(txtPlayPause, Symbols::play);
   
   txtTrackDuration = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrackDuration, LV_LABEL_LONG_SROLL);
@@ -179,7 +177,7 @@ bool Music::Refresh() {
   }
   
   if (playing == Pinetime::Controllers::MusicService::MusicStatus::Playing) {
-    lv_label_set_text(txtPlayPause, "||");
+    lv_label_set_text(txtPlayPause, Symbols::pause);
     if (xTaskGetTickCount() - 1024 >= lastIncrement) {
     
       if (frameB) {
@@ -203,7 +201,7 @@ bool Music::Refresh() {
       UpdateLength();
     }
   } else {
-    lv_label_set_text(txtPlayPause, ">");
+    lv_label_set_text(txtPlayPause, Symbols::play);
   }
   
   return running;

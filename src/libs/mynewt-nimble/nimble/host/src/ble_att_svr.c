@@ -1360,7 +1360,7 @@ done:
         *att_err = 0;
 
         /* Fill the response base. */
-        rsp->batp_length = htole16(sizeof(*data) + prev_attr_len);
+        rsp->batp_length = sizeof(*data) + prev_attr_len;
     }
 
     *out_txom = txom;

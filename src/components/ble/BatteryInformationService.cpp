@@ -1,3 +1,4 @@
+#include <nrf_log.h>
 #include "BatteryInformationService.h"
 #include "components/battery/BatteryController.h"
 

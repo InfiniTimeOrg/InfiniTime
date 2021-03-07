@@ -42,19 +42,19 @@ enum level_transition_types {
 
 struct transition {
 	bool just_started;
-	u8_t tt;
-	u8_t rt;
-	u8_t delay;
-	u32_t quo_tt;
-	u32_t counter;
-	u32_t total_duration;
-	s64_t start_timestamp;
+	uint8_t tt;
+	uint8_t rt;
+	uint8_t delay;
+	uint32_t quo_tt;
+	uint32_t counter;
+	uint32_t total_duration;
+	int64_t start_timestamp;
 
 	struct os_callout timer;
 };
 
-extern u8_t transition_type, default_tt;
-extern u32_t *ptr_counter;
+extern uint8_t transition_type, default_tt;
+extern uint32_t *ptr_counter;
 extern struct os_callout *ptr_timer;
 
 extern struct transition lightness_transition, temp_transition;
@@ -64,15 +64,15 @@ extern struct os_callout dummy_timer;
 void calculate_rt(struct transition *transition);
 
 
-void onoff_tt_values(struct generic_onoff_state *state, u8_t tt, u8_t delay);
-void level_tt_values(struct generic_level_state *state, u8_t tt, u8_t delay);
+void onoff_tt_values(struct generic_onoff_state *state, uint8_t tt, uint8_t delay);
+void level_tt_values(struct generic_level_state *state, uint8_t tt, uint8_t delay);
 void light_lightness_actual_tt_values(struct light_lightness_state *state,
-				      u8_t tt, u8_t delay);
+				      uint8_t tt, uint8_t delay);
 void light_lightness_linear_tt_values(struct light_lightness_state *state,
-				      u8_t tt, u8_t delay);
-void light_ctl_tt_values(struct light_ctl_state *state, u8_t tt, u8_t delay);
+				      uint8_t tt, uint8_t delay);
+void light_ctl_tt_values(struct light_ctl_state *state, uint8_t tt, uint8_t delay);
 void light_ctl_temp_tt_values(struct light_ctl_state *state,
-			      u8_t tt, u8_t delay);
+			      uint8_t tt, uint8_t delay);
 
 void onoff_handler(struct generic_onoff_state *state);
 void level_lightness_handler(struct generic_level_state *state);

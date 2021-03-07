@@ -28,36 +28,7 @@ namespace Pinetime {
         void InitDisplay();
         void InitTouchpad();
         void InitTheme();
-        void InitBaseTheme();
-        void InitThemeContainer();
-        void InitThemeButton();
-        void InitThemeLabel();
-        void InitThemeLine();
-        void InitThemeLed();
-        void InitThemeImage();
-        void InitThemeBar();
-        void InitThemeSlider();
-        void InitThemeSwitch();
-        void InitThemeMeter();
-        void InitThemeGauge();
-        void InitThemeArc();
-        void InitThemePreload();
-        void InitThemeChart();
-        void InitThemeCalendar();
-        void InitThemeCheckBox();
-        void InitThemeButtonMatrix();
-        void InitThemeKnob();
-        void InitThemeMessageBox();
-        void InitThemePage();
-        void InitThemeTextArea();
-        void InitThemeSpinBox();
-        void InitThemeList();
-        void InitThemeDropDownList();
-        void InitThemeRoller();
-        void InitThemeTabView();
-        void InitThemeTileView();
-        void InitThemeTable();
-        void InitThemeWindow();
+
 
         Pinetime::Drivers::St7789& lcd;
         Pinetime::Drivers::Cst816S& touchPanel;
@@ -69,35 +40,6 @@ namespace Pinetime {
 
         lv_disp_drv_t disp_drv;
         lv_point_t previousClick;
-
-        lv_style_t def;
-        lv_style_t scr, bg, sb, panel;
-        lv_font_t * font = nullptr;
-        uint16_t hue = 10;
-        lv_theme_t theme;
-        lv_style_t btn_rel, btn_pr, btn_tgl_rel, btn_tgl_pr, btn_ina;
-        lv_style_t labelBigStyle;
-        lv_style_t prim, sec, hint;
-        lv_style_t led;
-        lv_style_t bar_bg, bar_indic;
-        lv_style_t slider_knob;
-        lv_style_t arc;
-        lv_style_t cal_bg;
-        lv_style_t cal_header;
-        lv_style_t week_box;
-        lv_style_t today_box;
-        lv_style_t highlighted_days;
-        lv_style_t ina_days;
-        lv_style_t rel, pr, tgl_rel, tgl_pr, ina;
-        lv_style_t btnm_bg, btnm_rel, btnm_pr, btnm_tgl_rel, btnm_tgl_pr, btnm_ina;
-        lv_style_t mbox_bg;
-        lv_style_t page_scrl;
-        lv_style_t list_bg, list_btn_rel, list_btn_pr, list_btn_tgl_rel, list_btn_tgl_pr;
-        lv_style_t ddlist_bg, ddlist_sel;
-        lv_style_t cell;
-        lv_style_t win_bg;
-        lv_style_t win_header;
-        lv_style_t win_btn_pr;
 
         bool firstTouch = true;
         static constexpr uint8_t nbWriteLines = 4;

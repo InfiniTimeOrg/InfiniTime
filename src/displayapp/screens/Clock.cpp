@@ -14,9 +14,45 @@
 #include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
-extern lv_font_t jetbrains_mono_extrabold_compressed;
-extern lv_font_t jetbrains_mono_bold_20;
-extern lv_style_t* LabelBigStyle;
+
+namespace {
+
+char const *DaysString[] = {
+        "",
+        "MONDAY",
+        "TUESDAY",
+        "WEDNESDAY",
+        "THURSDAY",
+        "FRIDAY",
+        "SATURDAY",
+        "SUNDAY"
+};
+
+char const *MonthsString[] = {
+        "",
+        "JAN",
+        "FEB",
+        "MAR",
+        "APR",
+        "MAY",
+        "JUN",
+        "JUL",
+        "AUG",
+        "SEP",
+        "OCT",
+        "NOV",
+        "DEC"
+};
+
+const char *MonthToString(Pinetime::Controllers::DateTime::Months month) {
+  return MonthsString[static_cast<uint8_t>(month)];
+}
+
+const char *DayOfWeekToString(Pinetime::Controllers::DateTime::Days dayOfWeek) {
+  return DaysString[static_cast<uint8_t>(dayOfWeek)];
+}
+
+}
 
 static void event_handler(lv_obj_t * obj, lv_event_t event) {
   Clock* screen = static_cast<Clock *>(obj->user_data);
@@ -59,7 +95,9 @@ Clock::Clock(DisplayApp* app,
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_style(label_time, LV_LABEL_STYLE_MAIN, LabelBigStyle);
+
+  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
+
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
 
   backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
@@ -201,40 +239,6 @@ bool Clock::Refresh() {
   return running;
 }
 
-const char *Clock::MonthToString(Pinetime::Controllers::DateTime::Months month) {
-  return Clock::MonthsString[static_cast<uint8_t>(month)];
-}
-
-const char *Clock::DayOfWeekToString(Pinetime::Controllers::DateTime::Days dayOfWeek) {
-  return Clock::DaysString[static_cast<uint8_t>(dayOfWeek)];
-}
-
-char const *Clock::DaysString[] = {
-        "",
-        "MONDAY",
-        "TUESDAY",
-        "WEDNESDAY",
-        "THURSDAY",
-        "FRIDAY",
-        "SATURDAY",
-        "SUNDAY"
-};
-
-char const *Clock::MonthsString[] = {
-        "",
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY",
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC"
-};
 
 void Clock::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
   if(obj == backgroundLabel) {
