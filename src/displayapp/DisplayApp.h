@@ -10,6 +10,7 @@
 #include "components/brightness/BrightnessController.h"
 #include "components/firmwarevalidator/FirmwareValidator.h"
 #include "displayapp/screens/Screen.h"
+#include "Messages.h"
 
 namespace Pinetime {
 
@@ -33,9 +34,6 @@ namespace Pinetime {
     class DisplayApp {
       public:
         enum class States {Idle, Running};
-        enum class Messages : uint8_t {GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, ButtonPushed,
-            NewNotification, BleFirmwareUpdateStarted };
-
         enum class FullRefreshDirections { None, Up, Down };
         enum class TouchModes { Gestures, Polling };
 
@@ -46,7 +44,7 @@ namespace Pinetime {
                    Pinetime::Controllers::NotificationManager& notificationManager,
                    Pinetime::Controllers::HeartRateController& heartRateController);
         void Start();
-        void PushMessage(Messages msg);
+        void PushMessage(Display::Messages msg);
 
         void StartApp(Apps app);
 
