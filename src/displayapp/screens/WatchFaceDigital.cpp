@@ -160,11 +160,21 @@ bool WatchFaceDigital::Refresh() {
     if ( settingsController.GetClockType() == Controllers::Settings::ClockType::H24 ) {      
       sprintf(hoursChar, "%02d", hour);
     } else {
-      if (hour > 12) {
-		    hour -= 12;
-        sprintf(ampmChar, "PM");
-      } else {
-        sprintf(ampmChar, "AM");
+      if (hour == 0 && hour != 12) {
+          hour = 12;
+          sprintf(ampmChar, "AM");
+      }
+      else if (hour == 12 && hour != 0) {
+          hour = 12;
+          sprintf(ampmChar, "PM");
+      }
+      else if (hour < 12 && hour != 0) {
+          sprintf(ampmChar, "AM");
+      }
+      else if (hour > 12 && hour != 0)
+      {
+          hour = hour - 12;
+          sprintf(ampmChar, "PM");
       }
       sprintf(hoursChar, "%02d", hour);
     }
