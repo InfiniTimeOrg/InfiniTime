@@ -18,6 +18,7 @@
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/screens/SystemInfo.h"
 #include "displayapp/screens/Tile.h"
+#include "displayapp/screens/Torch.h"
 #include "displayapp/screens/Twos.h"
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -210,6 +211,7 @@ void DisplayApp::RunningState() {
       case Apps::FirmwareValidation: currentScreen.reset(new Screens::FirmwareValidation(this, validator)); break;
       case Apps::Notifications: currentScreen.reset(new Screens::Notifications(this, notificationManager, systemTask.nimble().alertService(), Screens::Notifications::Modes::Normal)); break;
       case Apps::HeartRate: currentScreen.reset(new Screens::HeartRate(this, heartRateController)); break;
+      case Apps::Torch : currentScreen.reset(new Screens::Torch(this, brightnessController, lvgl)); break;
     }
     nextApp = Apps::None;
   }

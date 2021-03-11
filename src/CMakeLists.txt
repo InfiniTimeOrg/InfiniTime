@@ -497,6 +497,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
+        displayapp/screens/Torch.cpp
         displayapp/screens/Twos.cpp
         displayapp/screens/HeartRate.cpp
         main.cpp
@@ -583,6 +584,7 @@ set(INCLUDE_FILES
         displayapp/screens/BleIcon.h
         displayapp/screens/NotificationIcon.h
         displayapp/screens/Brightness.h
+        displayapp/screens/Torch.h
         displayapp/screens/SystemInfo.h
         displayapp/screens/ScreenList.h
         displayapp/screens/Label.h
