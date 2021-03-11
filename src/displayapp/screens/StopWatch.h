@@ -4,7 +4,8 @@
 #include "components/datetime/DateTimeController.h"
 #include "../LittleVgl.h"
 
-#include <chrono>
+#include "FreeRTOS.h"
+#include "portmacro_cmsis.h"
 
 namespace Pinetime::Applications::Screens {
 
@@ -21,13 +22,12 @@ namespace Pinetime::Applications::Screens {
     bool OnTouchEvent(uint16_t x, uint16_t y) override;
 
   private:
-    using timeUnit = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
     const Pinetime::Controllers::DateTime& dateTime;
     bool running;
     States currentState;
     Events currentEvent;
-    timeUnit startTime;
-    int64_t timeElapsed;
+    TickType_t startTime;
+    TickType_t timeElapsed;
     lv_obj_t *time, *msecTime;
   };
 }

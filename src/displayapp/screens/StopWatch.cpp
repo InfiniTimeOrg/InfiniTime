@@ -2,16 +2,33 @@
 
 #include "Screen.h"
 #include "lvgl/lvgl.h"
+#include "projdefs.h"
+#include "FreeRTOSConfig.h"
+#include "task.h"
 
 #include <tuple>
 
 // Anonymous namespace for local functions
 namespace {
-  std::tuple<int, int, int> convertMilliSecsToSegments(const int64_t& currentTime) {
-    const int milliSecs = (currentTime % 1000); // Get only the first two digits and ignore the last
-    const int secs = (currentTime / 1000) % 60;
-    const int mins = (currentTime / 1000) / 60;
+  std::tuple<int, int, int> convertTicksToTimeSegments(const TickType_t timeElapsed) {
+    const int timeElapsedMillis = (static_cast<float>(timeElapsed) / static_cast<float>(configTICK_RATE_HZ)) * 1000;
+
+    const int milliSecs = (timeElapsedMillis % 1000) / 10; // Get only the first two digits and ignore the last
+    const int secs = (timeElapsedMillis / 1000) % 60;
+    const int mins = (timeElapsedMillis / 1000) / 60;
     return std::make_tuple(mins, secs, milliSecs);
+  }
+
+  TickType_t calculateDelta(const TickType_t startTime, const TickType_t currentTime) {
+    TickType_t delta = 0;
+    // Take care of overflow
+    if (startTime > currentTime) {
+      delta = 0xffffffff - startTime;
+      delta += (currentTime + 1);
+    } else {
+      delta = currentTime - startTime;
+    }
+    return delta;
   }
 }
 using namespace Pinetime::Applications::Screens;
@@ -43,16 +60,16 @@ bool StopWatch::Refresh() {
       lv_label_set_text(time, "00:00");
       lv_label_set_text(msecTime, "00");
       if (currentEvent == Events::PLAY) {
-        startTime = dateTime.CurrentDateTime();
+        startTime = xTaskGetTickCount();
         currentState = States::RUNNING;
       }
       break;
     }
     case States::RUNNING: {
-      auto delta = std::chrono::duration_cast<std::chrono::microseconds>(dateTime.CurrentDateTime() - startTime);
-      timeElapsed = delta.count();
-      auto timeSeparated = convertMilliSecsToSegments(timeElapsed);
+      auto timeElapsed = calculateDelta(startTime, xTaskGetTickCount());
+      auto timeSeparated = convertTicksToTimeSegments(timeElapsed);
       lv_label_set_text_fmt(time, "%02d:%02d", std::get<0>(timeSeparated), std::get<1>(timeSeparated));
+      lv_label_set_text_fmt(msecTime, "%02d", std::get<2>(timeSeparated));
       break;
     }
     case States::HALTED: {
