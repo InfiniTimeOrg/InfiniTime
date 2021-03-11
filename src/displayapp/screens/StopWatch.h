@@ -20,6 +20,8 @@ namespace Pinetime::Applications::Screens {
     bool Refresh() override;
     bool OnButtonPushed() override;
     bool OnTouchEvent(uint16_t x, uint16_t y) override;
+    void playPauseBtnEventHandler(lv_event_t event);
+
 
   private:
     const Pinetime::Controllers::DateTime& dateTime;
@@ -27,7 +29,7 @@ namespace Pinetime::Applications::Screens {
     States currentState;
     Events currentEvent;
     TickType_t startTime;
-    TickType_t timeElapsed;
-    lv_obj_t *time, *msecTime;
+    TickType_t oldTimeElapsed;
+    lv_obj_t *time, *msecTime, *btnPlayPause, *btnStop, *txtPlayPause, *txtStop;
   };
 }
