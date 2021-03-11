@@ -474,6 +474,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Meter.cpp
         displayapp/screens/InfiniPaint.cpp
         displayapp/screens/Paddle.cpp
+        displayapp/screens/StopWatch.cpp
         displayapp/screens/BatteryIcon.cpp
         displayapp/screens/BleIcon.cpp
         displayapp/screens/NotificationIcon.cpp
@@ -566,6 +567,7 @@ set(INCLUDE_FILES
         displayapp/screens/Tile.h
         displayapp/screens/Meter.h
         displayapp/screens/InfiniPaint.h
+        displayapp/screens/StopWatch.h
         displayapp/screens/Paddle.h
         displayapp/screens/DropDownDemo.h
         displayapp/screens/BatteryIcon.h

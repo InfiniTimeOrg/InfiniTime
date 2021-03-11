@@ -12,6 +12,7 @@
 #include "displayapp/screens/FirmwareValidation.h"
 #include "displayapp/screens/InfiniPaint.h"
 #include "displayapp/screens/Paddle.h"
+#include "displayapp/screens/StopWatch.h"
 #include "displayapp/screens/Meter.h"
 #include "displayapp/screens/Music.h"
 #include "displayapp/screens/Navigation.h"
@@ -203,7 +204,8 @@ void DisplayApp::RunningState() {
       case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
       case Apps::Twos: currentScreen.reset(new Screens::Twos(this)); break;
       case Apps::Paint: currentScreen.reset(new Screens::InfiniPaint(this, lvgl)); break;
-      case Apps::Paddle: currentScreen.reset(new Screens::Paddle(this, lvgl)); break;
+      //TODO: Change it back
+      case Apps::StopWatch: currentScreen.reset(new Screens::StopWatch(this, dateTimeController)); break;
       case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
       case Apps::Music : currentScreen.reset(new Screens::Music(this, systemTask.nimble().music())); break;
       case Apps::Navigation : currentScreen.reset(new Screens::Navigation(this, systemTask.nimble().navigation())); break;
