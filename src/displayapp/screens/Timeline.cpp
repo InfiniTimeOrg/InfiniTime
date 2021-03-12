@@ -17,6 +17,8 @@ Timeline::Timeline(DisplayApp* app, Controllers::CalendarManager& calendarManage
   for (int i = 0; i < 100; ++i) {
     superMegaStringForTesting[i] = 0;
   }
+
+  currentEvent = calendarManager.begin();
 }
 Timeline::~Timeline() {
   lv_obj_clean(lv_scr_act());
@@ -26,21 +28,29 @@ bool Timeline::OnButtonPushed() {
   running = false;
   return true;
 }
+
 bool Timeline::OnTouchEvent(TouchEvents event) {
   switch (event) {
     case TouchEvents::SwipeUp: {
-      auto id = calendarManager.getCount();
-      Controllers::CalendarManager::CalendarEvent tmpEvent {.id = id, .title = {"title"}};
-      bool result = calendarManager.addEvent(tmpEvent);
-      sprintf(superMegaStringForTesting, "Added e%d: %d", id, result);
-      lv_label_set_text(hello_world_label, superMegaStringForTesting);
+      auto calBegin = calendarManager.begin();
+      if (currentEvent == calendarManager.end()) {
+        currentEvent = calBegin;
+      } else {
+        currentEvent--;
+      }
+
+      displayCurrent();
     } break;
 
     case TouchEvents::SwipeDown: {
-      auto tmpEvent = *calendarManager.begin();
-      bool result = calendarManager.deleteEvent(tmpEvent.id);
-      sprintf(superMegaStringForTesting, "Deleted e%d: %d", tmpEvent.id, result);
-      lv_label_set_text(hello_world_label, superMegaStringForTesting);
+      auto calBegin = calendarManager.begin();
+      if (currentEvent == calendarManager.end()) {
+        currentEvent = calBegin;
+      } else {
+        currentEvent++;
+      }
+
+      displayCurrent();
     } break;
 
     case TouchEvents::SwipeLeft: {
@@ -57,9 +67,7 @@ bool Timeline::OnTouchEvent(TouchEvents event) {
         auto tmpEvent = calendarManager.begin();
         int offset = 6;
         while (tmpEvent != calendarManager.end()) {
-          superMegaStringForTesting[offset] = 48+(*tmpEvent).id;
-          superMegaStringForTesting[offset+1] = ',';
-          offset += 2;
+          offset += sprintf(&superMegaStringForTesting[offset], "%d,", (*tmpEvent).id);
           tmpEvent++;
         }
         superMegaStringForTesting[offset] = '\0';
@@ -74,4 +82,13 @@ bool Timeline::OnTouchEvent(TouchEvents event) {
 }
 bool Timeline::OnTouchEvent(uint16_t x, uint16_t y) {
   return Screen::OnTouchEvent(x, y);
+}
+void Timeline::displayCurrent() {
+  if (currentEvent == calendarManager.end()) {
+    lv_label_set_text(hello_world_label, "No event");
+  } else {
+    auto event = *currentEvent;
+    sprintf(superMegaStringForTesting, "e%d: %s", event.id, event.title.c_str());
+    lv_label_set_text(hello_world_label, superMegaStringForTesting);
+  }
 }

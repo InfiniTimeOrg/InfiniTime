@@ -17,7 +17,10 @@ namespace Pinetime {
         bool OnTouchEvent(uint16_t x, uint16_t y) override;
 
       private:
+        void displayCurrent();
+
         Controllers::CalendarManager& calendarManager;
+        Controllers::CalendarManager::CalendarIterator currentEvent;
         bool running = true;
         lv_obj_t * hello_world_label;
       };
