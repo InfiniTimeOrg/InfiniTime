@@ -7,6 +7,8 @@
 #include "FreeRTOS.h"
 #include "portmacro_cmsis.h"
 
+#include <array>
+
 namespace Pinetime::Applications::Screens {
 
   enum class States { INIT, RUNNING, HALTED };
@@ -17,6 +19,38 @@ namespace Pinetime::Applications::Screens {
     int mins;
     int secs;
     int msecs;
+  };
+
+  template <int N> struct LapTextBuffer_t {
+    LapTextBuffer_t() : _arr {}, currentSz {}, capacity {N}, head {-1} {
+    }
+
+    void addLaps(const TimeSeparated_t& timeVal) {
+      head %= capacity;
+      _arr[head++] = timeVal;
+
+      if (currentSz < capacity) {
+        currentSz++;
+      }
+    }
+
+    // Optional return type would be much more appropriate here
+    TimeSeparated_t* operator[](std::size_t idx) {
+      // Sanity check for out-of-bounds
+      if (idx >= 0 && idx < capacity) {
+        if (idx < currentSz) {
+          const auto transformed_idx = (head + capacity - idx) % capacity;
+          return (&_arr[transformed_idx]);
+        }
+      }
+      return nullptr;
+    }
+
+  private:
+    std::array<TimeSeparated_t, N> _arr;
+    uint8_t currentSz;
+    uint8_t capacity;
+    int8_t head;
   };
 
   class StopWatch : public Screen {
@@ -36,8 +70,10 @@ namespace Pinetime::Applications::Screens {
     Events currentEvent;
     TickType_t startTime;
     TickType_t oldTimeElapsed;
-    TimeSeparated_t timeSeparated; // Holds Mins, Secs, millisecs
+    TimeSeparated_t currentTimeSeparated; // Holds Mins, Secs, millisecs
+    LapTextBuffer_t<2> lapBuffer;
     int lapNr;
+    bool lapPressed;
     lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
     lv_obj_t *lapOneText, *lapTwoText;
   };

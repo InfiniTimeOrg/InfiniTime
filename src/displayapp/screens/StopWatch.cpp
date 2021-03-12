@@ -47,7 +47,7 @@ static void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
 
 StopWatch::StopWatch(DisplayApp* app, const Pinetime::Controllers::DateTime& dateTime)
   : Screen(app), dateTime {dateTime}, running {true}, currentState {States::INIT}, currentEvent {Events::STOP}, startTime {},
-    oldTimeElapsed {}, timeSeparated {}, lapNr {} {
+    oldTimeElapsed {}, currentTimeSeparated {}, lapBuffer {}, lapNr {}, lapPressed {false} {
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
@@ -63,6 +63,16 @@ StopWatch::StopWatch(DisplayApp* app, const Pinetime::Controllers::DateTime& dat
   lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   lv_label_set_text(txtPlayPause, Symbols::play);
+
+  lapOneText = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(lapOneText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_align(lapOneText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 25);
+  lv_label_set_text(lapOneText, "");
+
+  lapTwoText = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(lapTwoText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_align(lapTwoText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 50);
+  lv_label_set_text(lapTwoText, "");
 
   // We don't want this button in the init state
   btnStopLap = nullptr;
@@ -85,6 +95,9 @@ bool StopWatch::Refresh() {
       lv_label_set_text(time, "00:00");
       lv_label_set_text(msecTime, "00");
 
+      lv_label_set_text(lapOneText, "");
+      lv_label_set_text(lapTwoText, "");
+
       if (currentEvent == Events::PLAY) {
         btnStopLap = lv_btn_create(lv_scr_act(), nullptr);
         btnStopLap->user_data = this;
@@ -105,10 +118,21 @@ bool StopWatch::Refresh() {
       lv_label_set_text(txtStopLap, Symbols::shoe);
 
       const auto timeElapsed = calculateDelta(startTime, xTaskGetTickCount());
-      timeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
+      currentTimeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
 
-      lv_label_set_text_fmt(time, "%02d:%02d", timeSeparated.mins, timeSeparated.secs);
-      lv_label_set_text_fmt(msecTime, "%02d", timeSeparated.msecs);
+      lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
+      lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.msecs);
+
+      if (lapPressed == true) {
+        if (lapBuffer[0]) {
+          lv_label_set_text_fmt(lapOneText, "#%d   %d:%d:%d", (lapNr - 1), lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->msecs);
+        }
+        if (lapBuffer[1]) {
+          lv_label_set_text_fmt(lapTwoText, "#%d   %d:%d:%d", lapNr, lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->msecs);
+        }
+        // Reset the bool to avoid setting the text in each cycle
+        lapPressed = false;
+      }
 
       if (currentEvent == Events::PAUSE) {
         // Reset the start time
@@ -130,6 +154,7 @@ bool StopWatch::Refresh() {
       }
       if (currentEvent == Events::STOP) {
         currentState = States::INIT;
+        oldTimeElapsed = 0;
       }
       break;
     }
@@ -164,7 +189,10 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     // If running, then this button is used to save laps
     if (currentState == States::RUNNING) {
-      // Add to cirbuffer our new value
+      lapBuffer.addLaps(currentTimeSeparated);
+      lapNr++;
+      lapPressed = true;
+
     } else if (currentState == States::HALTED) {
       currentEvent = Events::STOP;
     } else {
