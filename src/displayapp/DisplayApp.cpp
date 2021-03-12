@@ -25,6 +25,7 @@
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/screens/SystemInfo.h"
 #include "displayapp/screens/Tile.h"
+#include "displayapp/screens/Timeline.h"
 #include "displayapp/screens/Twos.h"
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
@@ -89,6 +90,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Drivers::Cst816S& touchPanel,
                        Controllers::Battery& batteryController,
                        Controllers::Ble& bleController,
+                       Controllers::CalendarManager& calendarManager,
                        Controllers::DateTime& dateTimeController,
                        Drivers::WatchdogView& watchdog,
                        Pinetime::Controllers::NotificationManager& notificationManager,
@@ -105,6 +107,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     touchPanel {touchPanel},
     batteryController {batteryController},
     bleController {bleController},
+    calendarManager {calendarManager},
     dateTimeController {dateTimeController},
     watchdog {watchdog},
     notificationManager {notificationManager},
@@ -481,6 +484,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
+      break;
+      
+    case Apps::Timeline:
+      currentScreen = std::make_unique<Screens::Timeline>(this, calendarManager);
       break;
   }
   currentApp = app;

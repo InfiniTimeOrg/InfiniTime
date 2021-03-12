@@ -61,6 +61,7 @@ namespace Pinetime {
                  Components::LittleVgl& lvgl,
                  Controllers::Battery& batteryController,
                  Controllers::Ble& bleController,
+                 Controllers::CalendarManager& calendarManager,
                  Controllers::DateTime& dateTimeController,
                  Controllers::TimerController& timerController,
                  Controllers::AlarmController& alarmController,
@@ -106,6 +107,7 @@ namespace Pinetime {
       Pinetime::Controllers::Battery& batteryController;
 
       Pinetime::Controllers::Ble& bleController;
+      Pinetime::Controllers::CalendarManager& calendarManager;
       Pinetime::Controllers::DateTime& dateTimeController;
       Pinetime::Controllers::TimerController& timerController;
       Pinetime::Controllers::AlarmController& alarmController;
