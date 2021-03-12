@@ -246,18 +246,18 @@ void SystemTask::GoToRunning() {
 }
 
 void SystemTask::OnTouchEvent() {
-  if(isGoingToSleep) return ;
+  if (isGoingToSleep)
+    return;
   NRF_LOG_INFO("[systemtask] Touch event");
-  if(!isSleeping) {
+  if (!isSleeping) {
     PushMessage(Messages::OnTouchEvent);
     displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::TouchEvent);
-  } 
-  else {
-      if(!isWakingUp) {
+  } else {
+    if (!isWakingUp) {
       NRF_LOG_INFO("[systemtask] Screen tapped, waking up");
       GoToRunning();
-      }
     }
+  }
 }
 
 void SystemTask::PushMessage(SystemTask::Messages msg) {
