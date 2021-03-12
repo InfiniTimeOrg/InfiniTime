@@ -13,6 +13,12 @@ namespace Pinetime::Applications::Screens {
 
   enum class Events { PLAY, PAUSE, STOP };
 
+  struct TimeSeparated_t {
+    int mins;
+    int secs;
+    int msecs;
+  };
+
   class StopWatch : public Screen {
   public:
     StopWatch(DisplayApp* app, const Pinetime::Controllers::DateTime& dateTime);
@@ -21,7 +27,7 @@ namespace Pinetime::Applications::Screens {
     bool OnButtonPushed() override;
     bool OnTouchEvent(uint16_t x, uint16_t y) override;
     void playPauseBtnEventHandler(lv_event_t event);
-
+    void stopLapBtnEventHandler(lv_event_t event);
 
   private:
     const Pinetime::Controllers::DateTime& dateTime;
@@ -30,6 +36,9 @@ namespace Pinetime::Applications::Screens {
     Events currentEvent;
     TickType_t startTime;
     TickType_t oldTimeElapsed;
-    lv_obj_t *time, *msecTime, *btnPlayPause, *btnStop, *txtPlayPause, *txtStop;
+    TimeSeparated_t timeSeparated; // Holds Mins, Secs, millisecs
+    int lapNr;
+    lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
+    lv_obj_t *lapOneText, *lapTwoText;
   };
 }

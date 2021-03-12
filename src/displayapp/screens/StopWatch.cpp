@@ -13,13 +13,13 @@ using namespace Pinetime::Applications::Screens;
 
 // Anonymous namespace for local functions
 namespace {
-  std::tuple<int, int, int> convertTicksToTimeSegments(const TickType_t timeElapsed) {
+  TimeSeparated_t convertTicksToTimeSegments(const TickType_t timeElapsed) {
     const int timeElapsedMillis = (static_cast<float>(timeElapsed) / static_cast<float>(configTICK_RATE_HZ)) * 1000;
 
     const int milliSecs = (timeElapsedMillis % 1000) / 10; // Get only the first two digits and ignore the last
     const int secs = (timeElapsedMillis / 1000) % 60;
     const int mins = (timeElapsedMillis / 1000) / 60;
-    return std::make_tuple(mins, secs, milliSecs);
+    return TimeSeparated_t {mins, secs, milliSecs};
   }
 
   TickType_t calculateDelta(const TickType_t startTime, const TickType_t currentTime) {
@@ -40,9 +40,14 @@ static void play_pause_event_handler(lv_obj_t* obj, lv_event_t event) {
   stopWatch->playPauseBtnEventHandler(event);
 }
 
+static void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
+  StopWatch* stopWatch = static_cast<StopWatch*>(obj->user_data);
+  stopWatch->stopLapBtnEventHandler(event);
+}
+
 StopWatch::StopWatch(DisplayApp* app, const Pinetime::Controllers::DateTime& dateTime)
   : Screen(app), dateTime {dateTime}, running {true}, currentState {States::INIT}, currentEvent {Events::STOP}, startTime {},
-    oldTimeElapsed {} {
+    oldTimeElapsed {}, timeSeparated {}, lapNr {} {
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
@@ -58,6 +63,9 @@ StopWatch::StopWatch(DisplayApp* app, const Pinetime::Controllers::DateTime& dat
   lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   lv_label_set_text(txtPlayPause, Symbols::play);
+
+  // We don't want this button in the init state
+  btnStopLap = nullptr;
 }
 
 StopWatch::~StopWatch() {
@@ -70,10 +78,22 @@ bool StopWatch::Refresh() {
     // Init state when an user first opens the app
     // and when a stop/reset button is pressed
     case States::INIT: {
+      if (btnStopLap) {
+        lv_obj_del(btnStopLap);
+      }
       // The initial default value
       lv_label_set_text(time, "00:00");
       lv_label_set_text(msecTime, "00");
+
       if (currentEvent == Events::PLAY) {
+        btnStopLap = lv_btn_create(lv_scr_act(), nullptr);
+        btnStopLap->user_data = this;
+        lv_obj_set_event_cb(btnStopLap, stop_lap_event_handler);
+        lv_obj_align(btnStopLap, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
+        txtStopLap = lv_label_create(btnStopLap, nullptr);
+        // TODO: Change to Lap symbol
+        lv_label_set_text(txtStopLap, Symbols::shoe);
+
         startTime = xTaskGetTickCount();
         currentState = States::RUNNING;
       }
@@ -81,12 +101,14 @@ bool StopWatch::Refresh() {
     }
     case States::RUNNING: {
       lv_label_set_text(txtPlayPause, Symbols::pause);
+      // TODO: Change to Lap symbol
+      lv_label_set_text(txtStopLap, Symbols::shoe);
 
       const auto timeElapsed = calculateDelta(startTime, xTaskGetTickCount());
-      const auto timeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
+      timeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
 
-      lv_label_set_text_fmt(time, "%02d:%02d", std::get<0>(timeSeparated), std::get<1>(timeSeparated));
-      lv_label_set_text_fmt(msecTime, "%02d", std::get<2>(timeSeparated));
+      lv_label_set_text_fmt(time, "%02d:%02d", timeSeparated.mins, timeSeparated.secs);
+      lv_label_set_text_fmt(msecTime, "%02d", timeSeparated.msecs);
 
       if (currentEvent == Events::PAUSE) {
         // Reset the start time
@@ -99,10 +121,15 @@ bool StopWatch::Refresh() {
     }
     case States::HALTED: {
       lv_label_set_text(txtPlayPause, Symbols::play);
+      // TODO: Change to stop button
+      lv_label_set_text(txtStopLap, Symbols::stepBackward);
 
       if (currentEvent == Events::PLAY) {
         startTime = xTaskGetTickCount();
         currentState = States::RUNNING;
+      }
+      if (currentEvent == Events::STOP) {
+        currentState = States::INIT;
       }
       break;
     }
@@ -129,6 +156,19 @@ void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
     } else {
       // Simple Toggle for play/pause
       currentEvent = (currentEvent == Events::PLAY ? Events::PAUSE : Events::PLAY);
+    }
+  }
+}
+
+void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
+  if (event == LV_EVENT_CLICKED) {
+    // If running, then this button is used to save laps
+    if (currentState == States::RUNNING) {
+      // Add to cirbuffer our new value
+    } else if (currentState == States::HALTED) {
+      currentEvent = Events::STOP;
+    } else {
+      // Not possible to reach here. Do nothing.
     }
   }
 }
