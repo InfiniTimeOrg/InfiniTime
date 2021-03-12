@@ -13,13 +13,13 @@ CalendarService::CalendarService(Pinetime::System::SystemTask& system, CalendarM
   calUuid.value[14] = calId[0];
   calUuid.value[15] = calId[1];
 
-  calAddEventUuid.value[12] = calAddEventId[0];
-  calAddEventUuid.value[13] = calAddEventId[1];
+  calAddEventUuid.value[12] = calAddEventCharId[0];
+  calAddEventUuid.value[13] = calAddEventCharId[1];
   calAddEventUuid.value[14] = calId[0];
   calAddEventUuid.value[15] = calId[1];
 
-  calDeleteEventUuid.value[12] = calDeleteEventId[0];
-  calDeleteEventUuid.value[13] = calDeleteEventId[1];
+  calDeleteEventUuid.value[12] = calDeleteEventCharId[0];
+  calDeleteEventUuid.value[13] = calDeleteEventCharId[1];
   calDeleteEventUuid.value[14] = calId[0];
   calDeleteEventUuid.value[15] = calId[1];
 
