@@ -1,15 +1,12 @@
 #include "Timeline.h"
 
-#include <lvgl/lvgl.h>
-#include <cstdio>
 #include <ctime>
+#include <lvgl/lvgl.h>
 
 using namespace Pinetime::Applications::Screens;
 
-char big_buffer[100];
-
 void formatDateTime(char* buffer, time_t timestamp) {
-  auto time = gmtime(&timestamp);
+  auto *time = gmtime(&timestamp);
   auto year = 1900 + time->tm_year;
   auto month = 1 + time->tm_mon;
   auto day = time->tm_mday;
@@ -30,12 +27,9 @@ Timeline::Timeline(DisplayApp* app, Controllers::CalendarManager& calendarManage
   lv_obj_set_auto_realign(time_label, true);
   lv_obj_align(time_label, nullptr, LV_ALIGN_CENTER, 0, 0);
 
-  for (int i = 0; i < 100; ++i) {
-    big_buffer[i] = 0;
-  }
-
   currentEvent = calendarManager.begin();
 }
+
 Timeline::~Timeline() {
   lv_obj_clean(lv_scr_act());
 }
@@ -72,8 +66,7 @@ bool Timeline::OnTouchEvent(TouchEvents event) {
     case TouchEvents::SwipeLeft: {
       auto nbEvents = calendarManager.getCount();
       lv_label_set_text(title_label, "TIMELINE - Stats");
-      sprintf(big_buffer, "Nb events: %d", nbEvents);
-      lv_label_set_text(time_label, big_buffer);
+      lv_label_set_text_fmt(time_label, "Nb events: %d", nbEvents);
     } break;
 
     case TouchEvents::SwipeRight: {
@@ -85,6 +78,7 @@ bool Timeline::OnTouchEvent(TouchEvents event) {
   }
   return true;
 }
+
 bool Timeline::OnTouchEvent(uint16_t x, uint16_t y) {
   return Screen::OnTouchEvent(x, y);
 }
@@ -95,14 +89,11 @@ void Timeline::displayCurrent() {
     lv_label_set_text(time_label, "No event");
   } else {
     auto event = *currentEvent;
-    sprintf(big_buffer, "%s", event.title.c_str());
-    lv_label_set_text(title_label, big_buffer);
-
+    lv_label_set_text_fmt(title_label, "%s", event.title.c_str());
 
     char begin[16], end[16];
     formatDateTime(begin, event.timestamp);
     formatDateTime(end, event.timestamp + event.duration);
-    sprintf(big_buffer, "%s\n->\n%s", begin, end);
-    lv_label_set_text(time_label, big_buffer);
+    lv_label_set_text_fmt(time_label, "%s\n->\n%s", begin, end);
   }
 }
