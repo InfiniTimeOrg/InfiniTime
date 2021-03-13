@@ -108,8 +108,7 @@ bool StopWatch::Refresh() {
         lv_obj_set_event_cb(btnStopLap, stop_lap_event_handler);
         lv_obj_align(btnStopLap, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
         txtStopLap = lv_label_create(btnStopLap, nullptr);
-        // TODO: Change to Lap symbol
-        lv_label_set_text(txtStopLap, Symbols::shoe);
+        lv_label_set_text(txtStopLap, Symbols::lapsFlag);
 
         startTime = xTaskGetTickCount();
         currentState = States::RUNNING;
@@ -118,8 +117,7 @@ bool StopWatch::Refresh() {
     }
     case States::RUNNING: {
       lv_label_set_text(txtPlayPause, Symbols::pause);
-      // TODO: Change to Lap symbol
-      lv_label_set_text(txtStopLap, Symbols::shoe);
+      lv_label_set_text(txtStopLap, Symbols::lapsFlag);
 
       const auto timeElapsed = calculateDelta(startTime, xTaskGetTickCount());
       currentTimeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
@@ -149,8 +147,7 @@ bool StopWatch::Refresh() {
     }
     case States::HALTED: {
       lv_label_set_text(txtPlayPause, Symbols::play);
-      // TODO: Change to stop button
-      lv_label_set_text(txtStopLap, Symbols::stepBackward);
+      lv_label_set_text(txtStopLap, Symbols::stop);
 
       if (currentEvent == Events::PLAY) {
         startTime = xTaskGetTickCount();
@@ -168,13 +165,6 @@ bool StopWatch::Refresh() {
 
 bool StopWatch::OnButtonPushed() {
   running = false;
-  return true;
-}
-
-bool StopWatch::OnTouchEvent(uint16_t x, uint16_t y) {
-  if (y < 60) {
-    playPauseBtnEventHandler(LV_EVENT_CLICKED);
-  }
   return true;
 }
 

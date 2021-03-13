@@ -60,8 +60,8 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
            {Symbols::asterisk, Apps::Meter},
            {Symbols::paintbrush, Apps::Paint},
                   {Symbols::info, Apps::Notifications},
-                  //TODO: Change it back
-                  {Symbols::paddle, Apps::StopWatch},
+                  //TODO: Need to find the right place based on comments from JF
+                  {Symbols::stopWatch, Apps::StopWatch},
                   {"2", Apps::Twos}
           }
   };
