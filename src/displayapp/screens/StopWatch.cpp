@@ -51,29 +51,30 @@ StopWatch::StopWatch(DisplayApp* app, const Pinetime::Controllers::DateTime& dat
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -50);
+  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -45);
   lv_label_set_text(time, "00:00");
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 113, 0);
+  lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 108, 3);
   lv_label_set_text(msecTime, "00");
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
   lv_obj_set_event_cb(btnPlayPause, play_pause_event_handler);
-  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -10);
+  lv_obj_set_height(btnPlayPause, 40);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   lv_label_set_text(txtPlayPause, Symbols::play);
 
   lapOneText = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(lapOneText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_align(lapOneText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 25);
+  lv_obj_align(lapOneText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 30);
   lv_label_set_text(lapOneText, "");
 
   lapTwoText = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(lapTwoText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_align(lapTwoText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 50);
+  lv_obj_align(lapTwoText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 55);
   lv_label_set_text(lapTwoText, "");
 
   // We don't want this button in the init state
@@ -119,6 +120,7 @@ bool StopWatch::Refresh() {
         btnStopLap->user_data = this;
         lv_obj_set_event_cb(btnStopLap, stop_lap_event_handler);
         lv_obj_align(btnStopLap, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
+        lv_obj_set_height(btnStopLap, 40);
         txtStopLap = lv_label_create(btnStopLap, nullptr);
         lv_label_set_text(txtStopLap, Symbols::lapsFlag);
 
