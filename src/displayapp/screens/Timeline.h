@@ -1,7 +1,7 @@
 #pragma once
 
 #include <lvgl/src/lv_core/lv_obj.h>
-#include <components/ble/CalendarManager.h>
+#include "components/calendar/CalendarManager.h"
 
 #include "Screen.h"
 
@@ -20,7 +20,7 @@ namespace Pinetime {
         void displayCurrent();
 
         Controllers::CalendarManager& calendarManager;
-        Controllers::CalendarManager::CalendarIterator currentEvent;
+        Controllers::CalendarManager::CalendarEventIterator  currentEvent;
         bool running = true;
         lv_obj_t * title_label;
         lv_obj_t * time_label;

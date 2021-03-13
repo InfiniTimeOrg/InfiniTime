@@ -497,7 +497,7 @@ list(APPEND SOURCE_FILES
         components/ble/HeartRateService.cpp
         components/ble/MotionService.cpp
         components/ble/CalendarService.cpp
-        components/ble/CalendarManager.cpp
+        components/calendar/CalendarManager.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
         components/motor/MotorController.cpp
         components/settings/Settings.cpp
@@ -687,8 +687,8 @@ set(INCLUDE_FILES
         components/ble/HeartRateService.h
         components/ble/MotionService.h
         components/ble/weather/WeatherService.h
-        components/ble/CalendarManager.h
         components/ble/CalendarService.h
+        components/calendar/CalendarManager.h
         components/settings/Settings.h
         components/timer/TimerController.h
         components/alarm/AlarmController.h

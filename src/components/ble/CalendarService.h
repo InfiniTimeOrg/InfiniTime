@@ -4,7 +4,7 @@
 #include <host/ble_gap.h>
 #include <host/ble_uuid.h>
 #include <array>
-#include "CalendarManager.h"
+#include "components/calendar/CalendarManager.h"
 
 #define CALENDAR_SERVICE_UUID_BASE                                                                                                         \
   { 0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0x04, 0x00 }

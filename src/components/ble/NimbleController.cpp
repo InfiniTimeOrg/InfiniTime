@@ -16,7 +16,7 @@
 #undef max
 #undef min
 #include "components/ble/BleController.h"
-#include "components/ble/CalendarManager.h"
+#include "components/calendar/CalendarManager.h"
 #include "components/ble/NotificationManager.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/fs/FS.h"
