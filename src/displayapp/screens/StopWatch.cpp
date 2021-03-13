@@ -85,7 +85,19 @@ StopWatch::~StopWatch() {
 }
 
 bool StopWatch::Refresh() {
+  // @startuml CHIP8_state
+  // State "INIT" as init
+  // State "RUNNING" as run
+  // State "HALTED" as halt
 
+  // [*] --> init
+  // init -> run : press play
+  // run -> run : press lap
+  // run --> halt : press pause
+  // halt --> run : press play
+  // halt --> init : press stop
+  // @enduml
+  // Copy paste the above plantuml text to visualize the state diagram
   switch (currentState) {
     // Init state when an user first opens the app
     // and when a stop/reset button is pressed
@@ -132,7 +144,7 @@ bool StopWatch::Refresh() {
         if (lapBuffer[0]) {
           lv_label_set_text_fmt(lapTwoText, "#%d   %d:%d:%d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->msecs);
         }
-        // Reset the bool to avoid setting the text in each cycle
+        // Reset the bool to avoid setting the text in each cycle until there is a change
         lapPressed = false;
       }
 

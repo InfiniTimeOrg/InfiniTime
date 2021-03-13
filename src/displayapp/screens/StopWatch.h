@@ -21,6 +21,7 @@ namespace Pinetime::Applications::Screens {
     int msecs;
   };
 
+  // A simple buffer to hold the latest two laps
   template <int N> struct LapTextBuffer_t {
     LapTextBuffer_t() : _arr {}, currentSz {}, capacity {N}, head {-1} {
     }
@@ -41,11 +42,11 @@ namespace Pinetime::Applications::Screens {
       head = -1;
     }
 
-    // Optional return type would be much more appropriate here
     TimeSeparated_t* operator[](std::size_t idx) {
       // Sanity check for out-of-bounds
       if (idx >= 0 && idx < capacity) {
         if (idx < currentSz) {
+          // This transformation is to ensure that head is always pointing to index 0.
           const auto transformed_idx = (head - idx) % capacity;
           return (&_arr[transformed_idx]);
         }
@@ -66,7 +67,6 @@ namespace Pinetime::Applications::Screens {
     ~StopWatch() override;
     bool Refresh() override;
     bool OnButtonPushed() override;
-    bool OnTouchEvent(uint16_t x, uint16_t y) override;
     void playPauseBtnEventHandler(lv_event_t event);
     void stopLapBtnEventHandler(lv_event_t event);
 
