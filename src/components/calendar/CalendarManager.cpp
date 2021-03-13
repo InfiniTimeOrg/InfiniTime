@@ -22,7 +22,7 @@ bool CalendarManager::isBefore(CalendarEvent& event1, CalendarEvent& event2) {
 bool CalendarManager::addEvent(CalendarEvent& event) {
   auto it = calendarEvents.begin();
 
-  while (calendarEvents.begin() != calendarEvents.end() && isBefore(*it, event)) {
+  while (it != calendarEvents.end() && isBefore(*it, event)) {
    ++it;
   }
   calendarEvents.insert(it, event);
