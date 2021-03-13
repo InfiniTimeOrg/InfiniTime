@@ -16,6 +16,8 @@ namespace Pinetime {
         using Id = uint8_t;
         Id id;
         std::string title;
+        uint32_t timestamp;
+        uint32_t duration;
       };
 
     private:

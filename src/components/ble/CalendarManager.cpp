@@ -9,8 +9,7 @@ using namespace Pinetime::Controllers;
  * @return
  */
 bool CalendarManager::isBefore(CalendarEvent& event1, CalendarEvent& event2) {
-  // TODO Use date instead of id for chronological order
-  return event1.id < event2.id;
+  return event1.timestamp < event2.timestamp;
 }
 
 CalendarManager::CalendarManager() {

@@ -8,6 +8,10 @@ int CalCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_acce
   return pCalendarEventService->OnCommand(conn_handle, attr_handle, ctxt);
 }
 
+uint32_t bytesToInt(const char* bytes) {
+  return (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+}
+
 CalendarService::CalendarService(Pinetime::System::SystemTask& system, CalendarManager& calendarManager)
   : m_system(system), m_calendarManager(calendarManager) {
   calUuid.value[14] = calId[0];
@@ -63,7 +67,9 @@ int CalendarService::OnCommand(uint16_t conn_handle, uint16_t attr_handle, struc
     if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &calAddEventUuid) == 0) {
       CalendarManager::CalendarEvent event {
         .id = s[0],
-        .title = &s[1],
+        .title = &s[9],
+        .timestamp = bytesToInt(&s[1]),
+        .duration = bytesToInt(&s[5]),
       };
       m_calendarManager.addEvent(event);
     } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &calDeleteEventUuid) == 0) {
