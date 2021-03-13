@@ -52,10 +52,12 @@ StopWatch::StopWatch(DisplayApp* app, const Pinetime::Controllers::DateTime& dat
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
   lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -50);
+  lv_label_set_text(time, "00:00");
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 113, 0);
+  lv_label_set_text(msecTime, "00");
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
@@ -97,6 +99,8 @@ bool StopWatch::Refresh() {
 
       lv_label_set_text(lapOneText, "");
       lv_label_set_text(lapTwoText, "");
+      lapBuffer.clearBuffer();
+      lapNr = 0;
 
       if (currentEvent == Events::PLAY) {
         btnStopLap = lv_btn_create(lv_scr_act(), nullptr);
@@ -124,11 +128,11 @@ bool StopWatch::Refresh() {
       lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.msecs);
 
       if (lapPressed == true) {
-        if (lapBuffer[0]) {
-          lv_label_set_text_fmt(lapOneText, "#%d   %d:%d:%d", (lapNr - 1), lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->msecs);
-        }
         if (lapBuffer[1]) {
-          lv_label_set_text_fmt(lapTwoText, "#%d   %d:%d:%d", lapNr, lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->msecs);
+          lv_label_set_text_fmt(lapOneText, "#%d   %d:%d:%d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->msecs);
+        }
+        if (lapBuffer[0]) {
+          lv_label_set_text_fmt(lapTwoText, "#%d   %d:%d:%d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->msecs);
         }
         // Reset the bool to avoid setting the text in each cycle
         lapPressed = false;

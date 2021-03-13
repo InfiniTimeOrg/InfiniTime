@@ -26,12 +26,19 @@ namespace Pinetime::Applications::Screens {
     }
 
     void addLaps(const TimeSeparated_t& timeVal) {
+      head++;
       head %= capacity;
-      _arr[head++] = timeVal;
+      _arr[head] = timeVal;
 
       if (currentSz < capacity) {
         currentSz++;
       }
+    }
+
+    void clearBuffer() {
+      _arr = {};
+      currentSz = 0;
+      head = -1;
     }
 
     // Optional return type would be much more appropriate here
@@ -39,7 +46,7 @@ namespace Pinetime::Applications::Screens {
       // Sanity check for out-of-bounds
       if (idx >= 0 && idx < capacity) {
         if (idx < currentSz) {
-          const auto transformed_idx = (head + capacity - idx) % capacity;
+          const auto transformed_idx = (head - idx) % capacity;
           return (&_arr[transformed_idx]);
         }
       }
