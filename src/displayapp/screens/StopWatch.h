@@ -63,7 +63,7 @@ namespace Pinetime::Applications::Screens {
 
   class StopWatch : public Screen {
   public:
-    StopWatch(DisplayApp* app, const Pinetime::Controllers::DateTime& dateTime);
+    StopWatch(DisplayApp* app);
     ~StopWatch() override;
     bool Refresh() override;
     bool OnButtonPushed() override;
@@ -71,7 +71,6 @@ namespace Pinetime::Applications::Screens {
     void stopLapBtnEventHandler(lv_event_t event);
 
   private:
-    const Pinetime::Controllers::DateTime& dateTime;
     bool running;
     States currentState;
     Events currentEvent;

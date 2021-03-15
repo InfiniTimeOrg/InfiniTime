@@ -205,7 +205,7 @@ void DisplayApp::RunningState() {
       case Apps::Twos: currentScreen.reset(new Screens::Twos(this)); break;
       case Apps::Paint: currentScreen.reset(new Screens::InfiniPaint(this, lvgl)); break;
       //TODO: Change it back
-      case Apps::StopWatch: currentScreen.reset(new Screens::StopWatch(this, dateTimeController)); break;
+      case Apps::StopWatch: currentScreen.reset(new Screens::StopWatch(this)); break;
       case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
       case Apps::Music : currentScreen.reset(new Screens::Music(this, systemTask.nimble().music())); break;
       case Apps::Navigation : currentScreen.reset(new Screens::Navigation(this, systemTask.nimble().navigation())); break;

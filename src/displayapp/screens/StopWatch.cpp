@@ -36,18 +36,18 @@ namespace {
 }
 
 static void play_pause_event_handler(lv_obj_t* obj, lv_event_t event) {
-  StopWatch* stopWatch = static_cast<StopWatch*>(obj->user_data);
+  auto stopWatch = static_cast<StopWatch*>(obj->user_data);
   stopWatch->playPauseBtnEventHandler(event);
 }
 
 static void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
-  StopWatch* stopWatch = static_cast<StopWatch*>(obj->user_data);
+  auto stopWatch = static_cast<StopWatch*>(obj->user_data);
   stopWatch->stopLapBtnEventHandler(event);
 }
 
-StopWatch::StopWatch(DisplayApp* app, const Pinetime::Controllers::DateTime& dateTime)
-  : Screen(app), dateTime {dateTime}, running {true}, currentState {States::INIT}, currentEvent {Events::STOP}, startTime {},
-    oldTimeElapsed {}, currentTimeSeparated {}, lapBuffer {}, lapNr {}, lapPressed {false} {
+StopWatch::StopWatch(DisplayApp* app)
+  : Screen(app), running {true}, currentState {States::INIT}, currentEvent {Events::STOP}, startTime {}, oldTimeElapsed {},
+    currentTimeSeparated {}, lapBuffer {}, lapNr {}, lapPressed {false} {
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
