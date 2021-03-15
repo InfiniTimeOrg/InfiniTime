@@ -17,62 +17,30 @@ using namespace Pinetime::Applications::Screens;
 
 namespace {
 
-char const *DaysString[] = {
-        "",
-        "MONDAY",
-        "TUESDAY",
-        "WEDNESDAY",
-        "THURSDAY",
-        "FRIDAY",
-        "SATURDAY",
-        "SUNDAY"
-};
+  char const* const DaysString[] = {"", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"};
 
-char const *MonthsString[] = {
-        "",
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY",
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC"
-};
+  char const* const MonthsString[] = {"", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 
-const char *MonthToString(Pinetime::Controllers::DateTime::Months month) {
-  return MonthsString[static_cast<uint8_t>(month)];
-}
+  const char* MonthToString(Pinetime::Controllers::DateTime::Months month) {
+    return MonthsString[static_cast<uint8_t>(month)];
+  }
 
-const char *DayOfWeekToString(Pinetime::Controllers::DateTime::Days dayOfWeek) {
-  return DaysString[static_cast<uint8_t>(dayOfWeek)];
-}
+  const char* DayOfWeekToString(Pinetime::Controllers::DateTime::Days dayOfWeek) {
+    return DaysString[static_cast<uint8_t>(dayOfWeek)];
+  }
 
 }
 
-static void event_handler(lv_obj_t * obj, lv_event_t event) {
-  Clock* screen = static_cast<Clock *>(obj->user_data);
+static void event_handler(lv_obj_t* obj, lv_event_t event) {
+  Clock* screen = static_cast<Clock*>(obj->user_data);
   screen->OnObjectEvent(obj, event);
 }
 
-Clock::Clock(DisplayApp* app,
-        Controllers::DateTime& dateTimeController,
-        Controllers::Battery& batteryController,
-        Controllers::Ble& bleController,
-        Controllers::NotificationManager& notificatioManager,
-        Controllers::HeartRateController& heartRateController): Screen(app), currentDateTime{{}},
-                                           dateTimeController{dateTimeController}, batteryController{batteryController},
-                                           bleController{bleController}, notificatioManager{notificatioManager},
-                                           heartRateController{heartRateController} {
-  displayedChar[0] = 0;
-  displayedChar[1] = 0;
-  displayedChar[2] = 0;
-  displayedChar[3] = 0;
-  displayedChar[4] = 0;
+Clock::Clock(DisplayApp* app, Controllers::DateTime& dateTimeController, Controllers::Battery& batteryController,
+             Controllers::Ble& bleController, Controllers::NotificationManager& notificatioManager,
+             Controllers::HeartRateController& heartRateController)
+  : Screen {app}, dateTimeController {dateTimeController}, batteryController {batteryController},
+    bleController {bleController}, notificatioManager {notificatioManager}, heartRateController {heartRateController} {
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
@@ -86,7 +54,7 @@ Clock::Clock(DisplayApp* app,
   lv_label_set_text(bleIcon, Symbols::bluetooth);
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
-  notificationIcon = lv_label_create(lv_scr_act(), NULL);
+  notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 10, 0);
 
@@ -108,7 +76,6 @@ Clock::Clock(DisplayApp* app,
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text(backgroundLabel, "");
-
 
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(heartbeatIcon, Symbols::heartBeat);
@@ -146,35 +113,30 @@ bool Clock::Refresh() {
 
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
-    if(bleState.Get() == true) {
-      lv_label_set_text(bleIcon, BleIcon::GetIcon(true));
-    } else {
-      lv_label_set_text(bleIcon, BleIcon::GetIcon(false));
-    }
+    lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get())); // return true/fasle
   }
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 5);
   lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
-  if(notificationState.IsUpdated()) {
-    if(notificationState.Get() == true)
+  if (notificationState.IsUpdated()) {
+    if (notificationState.Get() == true)
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(true));
     else
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();
-
-  if(currentDateTime.IsUpdated()) {
+  if (currentDateTime.IsUpdated()) {
     auto newDateTime = currentDateTime.Get();
 
     auto dp = date::floor<date::days>(newDateTime);
-    auto time = date::make_time(newDateTime-dp);
+    auto time = date::make_time(newDateTime - dp);
     auto yearMonthDay = date::year_month_day(dp);
 
     auto year = static_cast<int>(yearMonthDay.year());
-    auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned)yearMonthDay.month());
+    auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned) yearMonthDay.month());
     auto day = static_cast<unsigned>(yearMonthDay.day());
     auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
@@ -187,17 +149,18 @@ bool Clock::Refresh() {
     char hoursChar[3];
     sprintf(hoursChar, "%02d", static_cast<int>(hour));
 
-    if((hoursChar[0] != displayedChar[0]) or (hoursChar[1] != displayedChar[1]) or (minutesChar[0] != displayedChar[2]) or (minutesChar[1] != displayedChar[3])) {
+    if ((hoursChar[0] != displayedChar[0]) or (hoursChar[1] != displayedChar[1]) or (minutesChar[0] != displayedChar[2]) or
+        (minutesChar[1] != displayedChar[3])) {
       displayedChar[0] = hoursChar[0];
       displayedChar[1] = hoursChar[1];
       displayedChar[2] = minutesChar[0];
       displayedChar[3] = minutesChar[1];
 
-      lv_label_set_text_fmt(label_time,"%s:%s", hoursChar,minutesChar);
+      lv_label_set_text_fmt(label_time, "%s:%s", hoursChar, minutesChar);
     }
 
     if ((year != currentYear) or (month != currentMonth) or (dayOfWeek != currentDayOfWeek) or (day != currentDay)) {
-      lv_label_set_text_fmt(label_date,"%s %d %s %d", DayOfWeekToString(dayOfWeek), day, MonthToString(month), year);
+      lv_label_set_text_fmt(label_date, "%s %d %s %d", DayOfWeekToString(dayOfWeek), day, MonthToString(month), year);
 
       currentYear = year;
       currentMonth = month;
@@ -208,24 +171,21 @@ bool Clock::Refresh() {
 
   heartbeat = heartRateController.HeartRate();
   heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
-  if(heartbeat.IsUpdated() or heartbeatRunning.IsUpdated()) {
-    char heartbeatBuffer[4];
-    if(heartbeatRunning.Get())
-      sprintf(heartbeatBuffer, "%d", heartbeat.Get());
-    else
-      sprintf(heartbeatBuffer, "---");
+  if (heartbeat.IsUpdated() or heartbeatRunning.IsUpdated()) {
+    if (heartbeatRunning.Get()) {
+      lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());
+    } else {
+      lv_label_set_text(heartbeatValue, "---");
+    }
 
-    lv_label_set_text(heartbeatValue, heartbeatBuffer);
     lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
     lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
     lv_obj_align(heartbeatBpm, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
   }
 
   // TODO stepCount = stepController.GetValue();
-  if(stepCount.IsUpdated()) {
-    char stepBuffer[5];
-    sprintf(stepBuffer, "%lu", stepCount.Get());
-    lv_label_set_text(stepValue, stepBuffer);
+  if (stepCount.IsUpdated()) {
+    lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
     lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
     lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
@@ -233,11 +193,9 @@ bool Clock::Refresh() {
   return running;
 }
 
-
-void Clock::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
-  if(obj == backgroundLabel) {
+void Clock::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
+  if (obj == backgroundLabel) {
     if (event == LV_EVENT_CLICKED) {
-
       running = false;
     }
   }
@@ -247,5 +205,3 @@ bool Clock::OnButtonPushed() {
   running = false;
   return false;
 }
-
-
