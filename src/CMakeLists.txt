@@ -3,16 +3,6 @@ cmake_minimum_required(VERSION 3.10)
 project(pinetime-app C CXX ASM)
 
 
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_CXX_STANDARD 14)
-
-# set(CMAKE_GENERATOR "Unix Makefiles")
-set(CMAKE_C_EXTENSIONS OFF)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 # define some variables just for this example to determine file locations
 set(NRF_PROJECT_NAME pinetime-app)
 set(NRF_BOARD pca10040)
@@ -805,8 +795,6 @@ target_compile_options(${EXECUTABLE_NAME} PUBLIC
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_FILE_NAME}.map"
-        CXX_STANDARD 11
-        C_STANDARD 99
         )
 
 add_custom_command(TARGET ${EXECUTABLE_NAME}
@@ -837,8 +825,6 @@ target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_MCUBOOT_FILE_NAME}.map"
-        CXX_STANDARD 11
-        C_STANDARD 99
         )
 
 add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
@@ -866,8 +852,6 @@ target_compile_options(${EXECUTABLE_GRAPHICS_NAME} PUBLIC
 set_target_properties(${EXECUTABLE_GRAPHICS_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_GRAPHICS_FILE_NAME}.map"
-        CXX_STANDARD 11
-        C_STANDARD 99
         )
 
 add_custom_command(TARGET ${EXECUTABLE_GRAPHICS_NAME}
