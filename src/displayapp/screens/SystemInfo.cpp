@@ -20,11 +20,14 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp *app,
         Screen(app),
         dateTimeController{dateTimeController}, batteryController{batteryController},
         brightnessController{brightnessController}, bleController{bleController}, watchdog{watchdog},
-        screens{app, {
+        screens{app, 
+          0,
+          {
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen1(); },
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen2(); },
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen3(); }
-          }
+          },
+          Screens::ScreenListModes::UpDown
         } {}
 
 

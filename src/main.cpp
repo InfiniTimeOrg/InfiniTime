@@ -32,6 +32,7 @@
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
 #include "components/datetime/DateTimeController.h"
+#include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/LittleVgl.h"
 #include "drivers/Spi.h"
@@ -100,6 +101,8 @@ static constexpr uint8_t pinTouchIrq = 28;
 std::unique_ptr<Pinetime::System::SystemTask> systemTask;
 
 Pinetime::Controllers::MotorController motorController;
+
+Pinetime::Controllers::Settings settingsController;
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if(pin == pinTouchIrq) {
@@ -242,7 +245,7 @@ int main(void) {
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
   systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, twiMaster, touchPanel, lvgl, batteryController, bleController,
-                                                    dateTimeController, motorController, heartRateSensor));
+                                                    dateTimeController, motorController, heartRateSensor, settingsController));
   systemTask->Start();
   nimble_port_init();
 

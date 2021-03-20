@@ -13,6 +13,7 @@
 #include "components/ble/NimbleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
+#include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
 #include "drivers/Watchdog.h"
 
@@ -39,7 +40,8 @@ namespace Pinetime {
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
                    Controllers::DateTime &dateTimeController,
                    Pinetime::Controllers::MotorController& motorController,
-                   Pinetime::Drivers::Hrs3300& heartRateSensor);
+                   Pinetime::Drivers::Hrs3300& heartRateSensor,
+                   Controllers::Settings &settingsController);
 
 
         void Start();
@@ -77,6 +79,7 @@ namespace Pinetime {
         Pinetime::Controllers::NotificationManager notificationManager;
         Pinetime::Controllers::MotorController& motorController;
         Pinetime::Drivers::Hrs3300& heartRateSensor;
+        Pinetime::Controllers::Settings& settingsController;
         Pinetime::Controllers::NimbleController nimbleController;
 
         static constexpr uint8_t pinSpiSck = 2;

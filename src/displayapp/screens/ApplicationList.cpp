@@ -8,13 +8,18 @@
 
 using namespace Pinetime::Applications::Screens;
 
-ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp *app) :
+ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp *app,
+        Pinetime::Controllers::Settings &settingsController) :
         Screen(app),
-        screens{app, {
+        settingsController{settingsController},
+        screens{app, 
+          settingsController.GetAppMenu(),
+          {
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen1(); },
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen2(); },
                 //[this]() -> std::unique_ptr<Screen> { return CreateScreen3(); }
-          }
+          },
+          Screens::ScreenListModes::UpDown
         } {}
 
 
@@ -51,7 +56,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
 
   };
 
-  return std::unique_ptr<Screen>(new Screens::Tile(app, applications));
+  return std::unique_ptr<Screen>(new Screens::Tile(0, app, settingsController, applications));
 }
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
@@ -65,7 +70,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
           }
   };
 
-  return std::unique_ptr<Screen>(new Screens::Tile(app, applications));
+  return std::unique_ptr<Screen>(new Screens::Tile(1, app, settingsController, applications));
 }
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen3() {
@@ -79,6 +84,6 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen3() {
           }
   };
 
-  return std::unique_ptr<Screen>(new Screens::Tile(app, applications));
+  return std::unique_ptr<Screen>(new Screens::Tile(2, app, settingsController, applications));
 }
 

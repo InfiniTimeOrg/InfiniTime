@@ -41,13 +41,15 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController,
                        Pinetime::Controllers::MotorController& motorController,
-                       Pinetime::Drivers::Hrs3300& heartRateSensor) :
+                       Pinetime::Drivers::Hrs3300& heartRateSensor,
+                       Controllers::Settings &settingsController) :
                        spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash},
                        twiMaster{twiMaster}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        heartRateController{*this},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog},
                        motorController{motorController}, heartRateSensor{heartRateSensor},
+                       settingsController{settingsController},
                        nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
   systemTasksMsgQueue = xQueueCreate(10, 1);
 }
@@ -81,10 +83,12 @@ void SystemTask::Work() {
   batteryController.Init();
   motorController.Init();
 
+  settingsController.Init();
+
 
   displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController,
                                                           dateTimeController, watchdogView, *this, notificationManager,
-                                                          heartRateController));
+                                                          heartRateController, settingsController));
   displayApp->Start();
 
   batteryController.Update();
