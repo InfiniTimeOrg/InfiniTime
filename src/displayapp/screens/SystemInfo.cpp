@@ -122,6 +122,6 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
               "Public License v3\n"
               "Source code:\n"
               "https://github.com/\n"
-              "    JF002/Pinetime");
+              "  JF002/InfiniTime");
   return std::unique_ptr<Screen>(new Screens::Label(app, t3));
 }
