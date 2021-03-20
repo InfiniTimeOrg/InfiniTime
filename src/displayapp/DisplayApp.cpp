@@ -32,7 +32,8 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
                        Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                        System::SystemTask &systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
-                       Pinetime::Controllers::HeartRateController& heartRateController) :
+                       Pinetime::Controllers::HeartRateController& heartRateController,
+                       Controllers::Settings &settingsController) :
         lcd{lcd},
         lvgl{lvgl},
         batteryController{batteryController},
@@ -40,10 +41,11 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
         dateTimeController{dateTimeController},
         watchdog{watchdog},
         touchPanel{touchPanel},
-        currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, heartRateController) },
+        currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController) },
         systemTask{systemTask},
         notificationManager{notificationManager},
-        heartRateController{heartRateController} {
+        heartRateController{heartRateController},
+        settingsController{settingsController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   onClockApp = true;
 }
@@ -195,9 +197,9 @@ void DisplayApp::RunningState() {
     onClockApp = false;
     switch(nextApp) {
       case Apps::None:
-      case Apps::Launcher: currentScreen.reset(new Screens::ApplicationList(this)); break;
+      case Apps::Launcher: currentScreen.reset(new Screens::ApplicationList(this, settingsController)); break;
       case Apps::Clock:
-        currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, heartRateController));
+        currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController));
         onClockApp = true;
         break;
       case Apps::SysInfo: currentScreen.reset(new Screens::SystemInfo(this, dateTimeController, batteryController, brightnessController, bleController, watchdog)); break;

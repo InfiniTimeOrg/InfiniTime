@@ -1,5 +1,4 @@
 #include "DisplayAppRecovery.h"
-#include "DisplayAppRecovery.h"
 #include <FreeRTOS.h>
 #include <task.h>
 #include <libraries/log/nrf_log.h>
@@ -13,7 +12,8 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
                        Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                        System::SystemTask &systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
-                       Pinetime::Controllers::HeartRateController& heartRateController):
+                       Pinetime::Controllers::HeartRateController& heartRateController,
+                       Pinetime::Controllers::Settings& settingsController):
     lcd{lcd}, bleController{bleController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
 

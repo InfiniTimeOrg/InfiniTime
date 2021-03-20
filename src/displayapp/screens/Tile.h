@@ -5,6 +5,7 @@
 #include <memory>
 #include "Screen.h"
 #include "../Apps.h"
+#include "components/settings/Settings.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -16,7 +17,7 @@ namespace Pinetime {
             Pinetime::Applications::Apps application;
           };
 
-          explicit Tile(DisplayApp* app, std::array<Applications, 6>& applications);
+          explicit Tile(uint8_t screenID, DisplayApp* app, Controllers::Settings& settingsController, std::array<Applications, 6>& applications);
           ~Tile() override;
 
           bool Refresh() override;

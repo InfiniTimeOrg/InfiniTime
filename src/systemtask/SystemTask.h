@@ -7,6 +7,7 @@
 #include <timers.h>
 #include <heartratetask/HeartRateTask.h>
 #include <components/heartrate/HeartRateController.h>
+#include <components/settings/Settings.h>
 
 #include "SystemMonitor.h"
 #include "components/battery/BatteryController.h"
@@ -17,6 +18,7 @@
 #include "displayapp/DisplayAppRecovery.h"
 #include "displayapp/DummyLittleVgl.h"
 #else
+#include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/LittleVgl.h"
 #endif
@@ -46,7 +48,8 @@ namespace Pinetime {
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
                    Controllers::DateTime &dateTimeController,
                    Pinetime::Controllers::MotorController& motorController,
-                   Pinetime::Drivers::Hrs3300& heartRateSensor);
+                   Pinetime::Drivers::Hrs3300& heartRateSensor,
+                   Controllers::Settings &settingsController);
 
 
         void Start();
@@ -84,6 +87,7 @@ namespace Pinetime {
         Pinetime::Controllers::NotificationManager notificationManager;
         Pinetime::Controllers::MotorController& motorController;
         Pinetime::Drivers::Hrs3300& heartRateSensor;
+        Pinetime::Controllers::Settings& settingsController;
         Pinetime::Controllers::NimbleController nimbleController;
         Controllers::BrightnessController brightnessController;
 

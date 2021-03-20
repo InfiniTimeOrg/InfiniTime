@@ -499,6 +499,15 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Notifications.cpp
         displayapp/screens/Twos.cpp
         displayapp/screens/HeartRate.cpp
+
+        ## Watch faces
+        displayapp/icons/bg_clock.c
+        displayapp/screens/WatchFaceAnalog.cpp
+        
+        displayapp/screens/WatchFaceDigital.cpp
+
+        ##
+
         main.cpp
         drivers/St7789.cpp
         drivers/SpiNorFlash.cpp
@@ -528,6 +537,7 @@ list(APPEND SOURCE_FILES
         components/ble/HeartRateService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
         components/motor/MotorController.cpp
+        components/settings/Settings.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -581,6 +591,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/NavigationService.cpp
         components/ble/HeartRateService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
+        components/settings/Settings.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -671,7 +682,8 @@ set(INCLUDE_FILES
         components/ble/ImmediateAlertService.h
         components/ble/ServiceDiscovery.h
         components/ble/BleClient.h
-        components/ble/HeartRateService.h.h
+        components/ble/HeartRateService.h
+        components/settings/Settings.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h

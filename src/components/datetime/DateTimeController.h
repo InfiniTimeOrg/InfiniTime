@@ -20,6 +20,14 @@ namespace Pinetime {
         uint8_t Minutes() const { return minute; }
         uint8_t Seconds() const { return second; }
 
+        const char *MonthShortToString();
+        const char *MonthShortToStringLow();
+        const char *MonthsToStringLow();
+        const char *DayOfWeekToString();
+        const char *DayOfWeekShortToString();
+        const char *DayOfWeekToStringLow();
+        const char *DayOfWeekShortToStringLow();
+
         std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const { return currentDateTime; }
         std::chrono::seconds Uptime() const { return uptime; }
       private:
@@ -34,6 +42,15 @@ namespace Pinetime {
         uint32_t previousSystickCounter = 0;
         std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> currentDateTime;
         std::chrono::seconds uptime {0};
+
+        static char const *DaysString[];
+        static char const *DaysStringShort[];
+        static char const *DaysStringLow[];
+        static char const *DaysStringShortLow[];
+        static char const *MonthsString[];
+        static char const *MonthsStringLow[];
+        static char const *MonthsLow[];
+
     };
   }
 }
