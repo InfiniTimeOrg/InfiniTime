@@ -11,9 +11,9 @@
 
 namespace Pinetime::Applications::Screens {
 
-  enum class States { INIT, RUNNING, HALTED };
+  enum class States { Init, Running, Halted };
 
-  enum class Events { PLAY, PAUSE, STOP };
+  enum class Events { Play, Pause, Stop };
 
   struct TimeSeparated_t {
     int mins;
@@ -23,40 +23,40 @@ namespace Pinetime::Applications::Screens {
 
   // A simple buffer to hold the latest two laps
   template <int N> struct LapTextBuffer_t {
-    LapTextBuffer_t() : _arr {}, currentSz {}, capacity {N}, head {-1} {
+    LapTextBuffer_t() : buffer {}, currentSize {}, capacity {N}, head {-1} {
     }
 
     void addLaps(const TimeSeparated_t& timeVal) {
       head++;
       head %= capacity;
-      _arr[head] = timeVal;
+      buffer[head] = timeVal;
 
-      if (currentSz < capacity) {
-        currentSz++;
+      if (currentSize < capacity) {
+        currentSize++;
       }
     }
 
     void clearBuffer() {
-      _arr = {};
-      currentSz = 0;
+      buffer = {};
+      currentSize = 0;
       head = -1;
     }
 
     TimeSeparated_t* operator[](std::size_t idx) {
       // Sanity check for out-of-bounds
       if (idx >= 0 && idx < capacity) {
-        if (idx < currentSz) {
+        if (idx < currentSize) {
           // This transformation is to ensure that head is always pointing to index 0.
           const auto transformed_idx = (head - idx) % capacity;
-          return (&_arr[transformed_idx]);
+          return (&buffer[transformed_idx]);
         }
       }
       return nullptr;
     }
 
   private:
-    std::array<TimeSeparated_t, N> _arr;
-    uint8_t currentSz;
+    std::array<TimeSeparated_t, N> buffer;
+    uint8_t currentSize;
     uint8_t capacity;
     int8_t head;
   };

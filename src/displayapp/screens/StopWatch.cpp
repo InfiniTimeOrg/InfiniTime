@@ -46,7 +46,7 @@ static void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
 }
 
 StopWatch::StopWatch(DisplayApp* app)
-  : Screen(app), running {true}, currentState {States::INIT}, currentEvent {Events::STOP}, startTime {}, oldTimeElapsed {},
+  : Screen(app), running {true}, currentState {States::Init}, currentEvent {Events::Stop}, startTime {}, oldTimeElapsed {},
     currentTimeSeparated {}, lapBuffer {}, lapNr {}, lapPressed {false} {
 
   time = lv_label_create(lv_scr_act(), nullptr);
@@ -87,9 +87,9 @@ StopWatch::~StopWatch() {
 
 bool StopWatch::Refresh() {
   // @startuml CHIP8_state
-  // State "INIT" as init
-  // State "RUNNING" as run
-  // State "HALTED" as halt
+  // State "Init" as init
+  // State "Running" as run
+  // State "Halted" as halt
 
   // [*] --> init
   // init -> run : press play
@@ -102,7 +102,7 @@ bool StopWatch::Refresh() {
   switch (currentState) {
     // Init state when an user first opens the app
     // and when a stop/reset button is pressed
-    case States::INIT: {
+    case States::Init: {
       if (btnStopLap) {
         lv_obj_del(btnStopLap);
       }
@@ -115,7 +115,7 @@ bool StopWatch::Refresh() {
       lapBuffer.clearBuffer();
       lapNr = 0;
 
-      if (currentEvent == Events::PLAY) {
+      if (currentEvent == Events::Play) {
         btnStopLap = lv_btn_create(lv_scr_act(), nullptr);
         btnStopLap->user_data = this;
         lv_obj_set_event_cb(btnStopLap, stop_lap_event_handler);
@@ -125,11 +125,11 @@ bool StopWatch::Refresh() {
         lv_label_set_text(txtStopLap, Symbols::lapsFlag);
 
         startTime = xTaskGetTickCount();
-        currentState = States::RUNNING;
+        currentState = States::Running;
       }
       break;
     }
-    case States::RUNNING: {
+    case States::Running: {
       lv_label_set_text(txtPlayPause, Symbols::pause);
       lv_label_set_text(txtStopLap, Symbols::lapsFlag);
 
@@ -150,25 +150,25 @@ bool StopWatch::Refresh() {
         lapPressed = false;
       }
 
-      if (currentEvent == Events::PAUSE) {
+      if (currentEvent == Events::Pause) {
         // Reset the start time
         startTime = 0;
         // Store the current time elapsed in cache
         oldTimeElapsed += timeElapsed;
-        currentState = States::HALTED;
+        currentState = States::Halted;
       }
       break;
     }
-    case States::HALTED: {
+    case States::Halted: {
       lv_label_set_text(txtPlayPause, Symbols::play);
       lv_label_set_text(txtStopLap, Symbols::stop);
 
-      if (currentEvent == Events::PLAY) {
+      if (currentEvent == Events::Play) {
         startTime = xTaskGetTickCount();
-        currentState = States::RUNNING;
+        currentState = States::Running;
       }
-      if (currentEvent == Events::STOP) {
-        currentState = States::INIT;
+      if (currentEvent == Events::Stop) {
+        currentState = States::Init;
         oldTimeElapsed = 0;
       }
       break;
@@ -184,11 +184,11 @@ bool StopWatch::OnButtonPushed() {
 
 void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    if (currentState == States::INIT) {
-      currentEvent = Events::PLAY;
+    if (currentState == States::Init) {
+      currentEvent = Events::Play;
     } else {
       // Simple Toggle for play/pause
-      currentEvent = (currentEvent == Events::PLAY ? Events::PAUSE : Events::PLAY);
+      currentEvent = (currentEvent == Events::Play ? Events::Pause : Events::Play);
     }
   }
 }
@@ -196,13 +196,13 @@ void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
 void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     // If running, then this button is used to save laps
-    if (currentState == States::RUNNING) {
+    if (currentState == States::Running) {
       lapBuffer.addLaps(currentTimeSeparated);
       lapNr++;
       lapPressed = true;
 
-    } else if (currentState == States::HALTED) {
-      currentEvent = Events::STOP;
+    } else if (currentState == States::Halted) {
+      currentEvent = Events::Stop;
     } else {
       // Not possible to reach here. Do nothing.
     }
