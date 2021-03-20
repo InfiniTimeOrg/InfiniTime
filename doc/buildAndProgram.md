@@ -8,8 +8,8 @@ To build this project, you'll need:
 ## Build steps 
 ### Clone the repo
 ```
-git clone https://github.com/JF002/Pinetime.git
-cd Pinetime
+git clone https://github.com/JF002/InfiniTime.git
+cd InfiniTime
 git submodule update --init
 mkdir build
 cd build
