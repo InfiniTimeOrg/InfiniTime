@@ -10,7 +10,10 @@ static void event_handler(lv_obj_t * obj, lv_event_t event) {
   screen->OnObjectEvent(obj, event, eventData);
 }
 
-Tile::Tile(DisplayApp* app, std::array<Applications, 6>& applications) : Screen(app) {
+Tile::Tile(uint8_t screenID, DisplayApp* app, Controllers::Settings& settingsController, std::array<Applications, 6>& applications) : Screen(app) {
+  
+  settingsController.SetAppMenu(screenID);
+  
   for(int i = 0, appIndex = 0; i < 8; i++) {
     if(i == 3) btnm_map1[i] = "\n";
     else if(i == 7) btnm_map1[i] = "";

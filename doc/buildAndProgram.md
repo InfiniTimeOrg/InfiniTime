@@ -8,8 +8,8 @@ To build this project, you'll need:
 ## Build steps 
 ### Clone the repo
 ```
-git clone https://github.com/JF002/Pinetime.git
-cd Pinetime
+git clone https://github.com/JF002/InfiniTime.git
+cd InfiniTime
 git submodule update --init
 mkdir build
 cd build
@@ -26,7 +26,10 @@ CMake configures the project according to variables you specify the command line
 **NRFJPROG**|Path to the NRFJProg executable. Used only if `USE_JLINK` is 1.|`-DNRFJPROG=/opt/nrfjprog/nrfjprog`
 **GDB_CLIENT_BIN_PATH**|Path to arm-none-eabi-gdb executable. Used only if `USE_GDB_CLIENT` is 1.|`-DGDB_CLIENT_BIN_PATH=/home/jf/nrf52/gcc-arm-none-eabi-9-2019-q4-major/bin/arm-none-eabi-gdb`
 **GDB_CLIENT_TARGET_REMOTE**|Target remote connection string. Used only if `USE_GDB_CLIENT` is 1.|`-DGDB_CLIENT_TARGET_REMOTE=/dev/ttyACM0`
+**BUILD_DFU (\*)**|Build DFU files while building (needs [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil)).|`-BUILD_DFU=1`
 
+####(*) Note about **BUILD_DFU**:
+DFU files are the files you'll need to install your build of InfiniTime using OTA (over-the-air) mecanism. To generate the DFU file, the Python tool [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil) is needed on your system. Check that this tool is properly installed before enabling this option.
 
 #### CMake command line for JLink
 ```
@@ -45,11 +48,14 @@ cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_OPENOCD=1 -DG
 
 ### Build the project
 During the project generation, CMake created the following targets:
-- FLASH_ERASE : mass erase the flash memory of the NRF52.
-- FLASH_pinetime-app : flash the firmware into the NRF52.
-- pinetime-app : build the standalone (without bootloader support) version of the firmware.
-- pinetime-mcuboot-app : build the firmware with the support of the bootloader (based on MCUBoot).
-- pinetime-graphics : small firmware that writes the boot graphics into the SPI flash.
+- **FLASH_ERASE** : mass erase the flash memory of the NRF52.
+- **FLASH_pinetime-app** : flash the firmware into the NRF52.
+- **pinetime-app** : build the standalone (without bootloader support) version of the firmware.
+- **pinetime-recovery** : build the standalone recovery version of infinitime (light firmware that only supports OTA and basic UI)
+- **pinetime-recovery-loader** : build the standalone tool that flashes the recovery firmware into the external SPI flash
+- **pinetime-mcuboot-app** : build the firmware with the support of the bootloader (based on MCUBoot).
+- **pinetime-mcuboot-recovery** : build pinetime-recovery with bootloader support
+- **pinetime-mcuboot-recovery-loader** : build pinetime-recovery-loader with bootloader support
 
 If you just want to build the project and run it on the Pinetime, using *pinetime-app* is recommanded. See [this page](../bootloader/README.md) for more info about bootloader support.
 
@@ -64,8 +70,11 @@ Binary files are generated into the folder `src`:
  - **pinetime-app.map** : map file
  - **pinetime-mcuboot-app.bin, .hex and .out** : firmware with bootloader support in bin, hex and out formats.
  - **pinetime-mcuboot-app.map** : map file
- - **pinetime-graphics.bin, .hex and .out** : firmware for the boot graphic in bin, hex and out formats.
- - **pinetime-graphics.map** : map file
+ - **pinetime-mcuboot-app-image** : MCUBoot image of the firmware
+ - **pinetime-mcuboot-ap-dfu** : DFU file of the firmware
+
+The same files are generated for **pinetime-recovery** and **pinetime-recoveryloader** 
+
  
 ### Program and run
 #### Using CMake targets

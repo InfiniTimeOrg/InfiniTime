@@ -1,19 +1,5 @@
 {
-    "cmake.configureArgs": [
-        "-DARM_NONE_EABI_TOOLCHAIN_PATH=/home/panky92/embedded/gcc-arm-none-eabi-9-2020-q2-update",
-        "-DNRF5_SDK_PATH=/home/panky92/embedded/nRF5_sdk",
-        "-DUSE_OPENOCD=1"
-    ],
-    "cmake.buildTask": true,
     "files.associations": {
-        "streambuf": "cpp",
-        "chrono": "cpp",
-        "tuple": "cpp",
-        "functional": "cpp",
-        "*.tcc": "cpp",
-        "string": "cpp",
-        "fstream": "cpp",
-        "iosfwd": "cpp",
-        "nrf_rtc.h": "c"
+        "chrono": "cpp"
     }
 }
