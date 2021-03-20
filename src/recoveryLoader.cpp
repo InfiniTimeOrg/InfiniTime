@@ -134,8 +134,7 @@ void DisplayLogo() {
   for(int i = 0; i < displayWidth; i++) {
     rleDecoder.DecodeNext(displayBuffer, displayWidth * bytesPerPixel);
     ulTaskNotifyTake(pdTRUE, 500);
-    lcd.BeginDrawBuffer(0, i, displayWidth, 1);
-    lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(displayBuffer), displayWidth * bytesPerPixel);
+    lcd.DrawBuffer(0, i, displayWidth, 1, reinterpret_cast<const uint8_t *>(displayBuffer), displayWidth * bytesPerPixel);
   }
 }
 
@@ -145,8 +144,7 @@ void DisplayProgressBar(uint8_t percent, uint16_t color) {
   for(int i = 0; i < barHeight; i++) {
     ulTaskNotifyTake(pdTRUE, 500);
     uint16_t barWidth = std::min(static_cast<float>(percent) * 2.4f, static_cast<float>(displayWidth));
-    lcd.BeginDrawBuffer(0, displayWidth - barHeight + i, barWidth, 1);
-    lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(displayBuffer), barWidth * bytesPerPixel);
+    lcd.DrawBuffer(0, displayWidth - barHeight + i, barWidth, 1, reinterpret_cast<const uint8_t *>(displayBuffer), barWidth * bytesPerPixel);
   }
 }
 
