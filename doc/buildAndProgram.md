@@ -8,8 +8,8 @@ To build this project, you'll need:
 ## Build steps 
 ### Clone the repo
 ```
-git clone https://github.com/JF002/Pinetime.git
-cd Pinetime
+git clone https://github.com/JF002/InfiniTime.git
+cd InfiniTime
 git submodule update --init
 mkdir build
 cd build
@@ -22,18 +22,23 @@ CMake configures the project according to variables you specify the command line
 **ARM_NONE_EABI_TOOLCHAIN_PATH**|path to the toolchain directory|`-DARM_NONE_EABI_TOOLCHAIN_PATH=/home/jf/nrf52/gcc-arm-none-eabi-9-2020-q2-update/`|
 **NRF5_SDK_PATH**|path to the NRF52 SDK|`-DNRF5_SDK_PATH=/home/jf/nrf52/Pinetime/sdk`|
 **USE_JLINK, USE_GDB_CLIENT and USE_OPENOCD**|Enable *JLink* mode, *GDB Client* (Black Magic Probe) mode or *OpenOCD* mode (set the one you want to use to `1`)|`-DUSE_JLINK=1`
-**CMAKE_BUILD_TYPE**| Build type (Release or Debug). Release is applied by default if this variable is not specified.|`-DCMAKE_BUILD_TYPE=Debug`
+**CMAKE_BUILD_TYPE (\*)**| Build type (Release or Debug). Release is applied by default if this variable is not specified.|`-DCMAKE_BUILD_TYPE=Debug`
 **NRFJPROG**|Path to the NRFJProg executable. Used only if `USE_JLINK` is 1.|`-DNRFJPROG=/opt/nrfjprog/nrfjprog`
 **GDB_CLIENT_BIN_PATH**|Path to arm-none-eabi-gdb executable. Used only if `USE_GDB_CLIENT` is 1.|`-DGDB_CLIENT_BIN_PATH=/home/jf/nrf52/gcc-arm-none-eabi-9-2019-q4-major/bin/arm-none-eabi-gdb`
 **GDB_CLIENT_TARGET_REMOTE**|Target remote connection string. Used only if `USE_GDB_CLIENT` is 1.|`-DGDB_CLIENT_TARGET_REMOTE=/dev/ttyACM0`
-**BUILD_DFU (\*)**|Build DFU files while building (needs [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil)).|`-BUILD_DFU=1`
+**BUILD_DFU (\*\*)**|Build DFU files while building (needs [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil)).|`-BUILD_DFU=1`
 
-####(*) Note about **BUILD_DFU**:
+####(**) Note about **CMAKE_BUILD_TYPE**:
+By default, this variable is set to *Release*. It compiles the code with size and speed optimizations. We use this value for all the binaries we publish when we [release](https://github.com/JF002/InfiniTime/releases) new versions of InfiniTime.
+
+The *Debug* mode disables all optimizations, which makes the code easier to debug. However, the binary size will likely be too big to fit in the internal flash memory. If you want to build and debug a *Debug* binary, you'll need to disable some parts of the code. For example, the icons for the **Navigation** app use a lot of memory space. You can comment the content of `m_iconMap` in the [Navigation](https://github.com/JF002/InfiniTime/blob/develop/src/displayapp/screens/Navigation.h#L148) application to free some memory.
+
+####(**) Note about **BUILD_DFU**:
 DFU files are the files you'll need to install your build of InfiniTime using OTA (over-the-air) mecanism. To generate the DFU file, the Python tool [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil) is needed on your system. Check that this tool is properly installed before enabling this option.
 
 #### CMake command line for JLink
 ```
-cmake -DCMAKE_BUILD_TYPE=Debug -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_JLINK=1 -DNRFJPROG=... ../
+cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=... -DNRF5_SDK_PATH=... -DUSE_JLINK=1 -DNRFJPROG=... ../
 ```
 
 #### CMake command line for GDB Client (Black Magic Probe)
@@ -57,7 +62,7 @@ During the project generation, CMake created the following targets:
 - **pinetime-mcuboot-recovery** : build pinetime-recovery with bootloader support
 - **pinetime-mcuboot-recovery-loader** : build pinetime-recovery-loader with bootloader support
 
-If you just want to build the project and run it on the Pinetime, using *pinetime-app* is recommanded. See [this page](../bootloader/README.md) for more info about bootloader support.
+If you just want to build the project and run it on the Pinetime, using *pinetime-app* is recommended. See [this page](../bootloader/README.md) for more info about bootloader support.
 
 Build:
 ```

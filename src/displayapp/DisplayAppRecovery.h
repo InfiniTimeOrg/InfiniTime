@@ -14,8 +14,9 @@
 #include "components/firmwarevalidator/FirmwareValidator.h"
 #include "drivers/Cst816s.h"
 #include <date/date.h>
-#include "displayapp/screens/Clock.h"
 #include <drivers/Watchdog.h>
+#include <components/heartrate/HeartRateController.h>
+#include <components/settings/Settings.h>
 #include "TouchEvents.h"
 #include "Apps.h"
 #include "Messages.h"
@@ -33,7 +34,8 @@ namespace Pinetime {
                  Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                  System::SystemTask &systemTask,
                  Pinetime::Controllers::NotificationManager& notificationManager,
-                 Pinetime::Controllers::HeartRateController& heartRateController);
+                 Pinetime::Controllers::HeartRateController& heartRateController,
+                 Pinetime::Controllers::Settings& settingsController);
       void Start();
       void PushMessage(Pinetime::Applications::Display::Messages msg);
 

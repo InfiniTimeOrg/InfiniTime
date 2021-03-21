@@ -20,11 +20,14 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp *app,
         Screen(app),
         dateTimeController{dateTimeController}, batteryController{batteryController},
         brightnessController{brightnessController}, bleController{bleController}, watchdog{watchdog},
-        screens{app, {
+        screens{app, 
+          0,
+          {
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen1(); },
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen2(); },
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen3(); }
-          }
+          },
+          Screens::ScreenListModes::UpDown
         } {}
 
 
@@ -119,6 +122,6 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
               "Public License v3\n"
               "Source code:\n"
               "https://github.com/\n"
-              "    JF002/Pinetime");
+              "  JF002/InfiniTime");
   return std::unique_ptr<Screen>(new Screens::Label(app, t3));
 }

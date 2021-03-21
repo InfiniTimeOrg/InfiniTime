@@ -17,9 +17,8 @@ void Gfx::ClearScreen() {
   state.busy = true;
   state.action = Action::FillRectangle;
   state.taskToNotify = xTaskGetCurrentTaskHandle();
-
-  lcd.BeginDrawBuffer(0, 0, width, height);
-  lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(buffer), width * 2);
+  
+  lcd.DrawBuffer(0, 0, width, height, reinterpret_cast<const uint8_t *>(buffer), width * 2);
   WaitTransferFinished();
 
 }
@@ -34,8 +33,7 @@ void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint16_t col
   state.color = color;
   state.taskToNotify = xTaskGetCurrentTaskHandle();
 
-  lcd.BeginDrawBuffer(x, y, w, h);
-  lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(buffer), width * 2);
+  lcd.DrawBuffer(x, y, w, h, reinterpret_cast<const uint8_t *>(buffer), width * 2);
 
   WaitTransferFinished();
 }
@@ -48,8 +46,7 @@ void Gfx::FillRectangle(uint8_t x, uint8_t y, uint8_t w, uint8_t h, uint8_t* b) 
   state.color = 0x00;
   state.taskToNotify = xTaskGetCurrentTaskHandle();
 
-  lcd.BeginDrawBuffer(x, y, w, h);
-  lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(b), width * 2);
+  lcd.DrawBuffer(x, y, w, h, reinterpret_cast<const uint8_t *>(b), width * 2);
 
   WaitTransferFinished();
 }
@@ -120,8 +117,7 @@ void Gfx::DrawChar(const FONT_INFO *font, uint8_t c, uint8_t *x, uint8_t y, uint
   state.color = color;
   state.taskToNotify = xTaskGetCurrentTaskHandle();
 
-  lcd.BeginDrawBuffer(*x, y, bytes_in_line*8, font->height);
-  lcd.NextDrawBuffer(reinterpret_cast<const uint8_t *>(&buffer), bytes_in_line*8*2);
+  lcd.DrawBuffer(*x, y, bytes_in_line*8, font->height, reinterpret_cast<const uint8_t *>(&buffer), bytes_in_line*8*2);
   WaitTransferFinished();
 
   *x += font->charInfo[char_idx].widthBits + font->spacePixels;

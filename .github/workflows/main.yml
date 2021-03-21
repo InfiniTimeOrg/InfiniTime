@@ -1,7 +1,7 @@
 # GitHub Actions Workflow to build FreeRTOS Firmware for PineTime Smart Watch
 # See https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud
-# Based on https://github.com/JF002/Pinetime/blob/master/doc/buildAndProgram.md
-# and https://github.com/JF002/Pinetime/blob/master/bootloader/README.md
+# Based on https://github.com/JF002/InfiniTime/blob/master/doc/buildAndProgram.md
+# and https://github.com/JF002/InfiniTime/blob/master/bootloader/README.md
 
 # Name of this Workflow
 name: Build PineTime Firmware
