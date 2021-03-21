@@ -44,6 +44,7 @@ As of now, here is the list of achievements of this project:
     * Notification (displays the last notification received)
     * Paddle (single player pong-like game)
     * Two (2048 clone game)
+    * Stopwatch (with all the necessary functions such as play, pause, lap, stop)
  - Supported by 2 companion apps (development is in progress):
     * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android)
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)
