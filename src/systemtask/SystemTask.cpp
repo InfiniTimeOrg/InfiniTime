@@ -14,7 +14,6 @@
 
 #include "BootloaderVersion.h"
 #include "components/ble/BleController.h"
-#include "displayapp/LittleVgl.h"
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 #include "drivers/InternalFlash.h"
@@ -43,13 +42,15 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController,
                        Pinetime::Controllers::MotorController& motorController,
-                       Pinetime::Drivers::Hrs3300& heartRateSensor) :
+                       Pinetime::Drivers::Hrs3300& heartRateSensor,
+                       Controllers::Settings &settingsController) :
                        spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash},
                        twiMaster{twiMaster}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        heartRateController{*this},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog},
                        motorController{motorController}, heartRateSensor{heartRateSensor},
+                       settingsController{settingsController},
                        nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
   systemTasksMsgQueue = xQueueCreate(10, 1);
 }
@@ -76,6 +77,7 @@ void SystemTask::Work() {
   spiNorFlash.Wakeup();
   nimbleController.Init();
   nimbleController.StartAdvertising();
+  brightnessController.Init();
   lcd.Init();
 
   twiMaster.Init();
@@ -83,14 +85,16 @@ void SystemTask::Work() {
   batteryController.Init();
   motorController.Init();
 
+  settingsController.Init();
+
 
   displayApp =  std::make_unique<Pinetime::Applications::DisplayApp>(lcd, lvgl, touchPanel, batteryController, bleController,
                                                           dateTimeController, watchdogView, *this, notificationManager,
-                                                          heartRateController);
+                                                          heartRateController, settingsController);
   displayApp->Start();
 
   batteryController.Update();
-  displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateBatteryLevel);
+  displayApp->PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
 
   heartRateSensor.Init();
   heartRateSensor.Disable();
@@ -143,8 +147,8 @@ void SystemTask::Work() {
           touchPanel.Wakeup();
           lcd.Wakeup();
 
-          displayApp->PushMessage(Applications::DisplayApp::Messages::GoToRunning);
-          displayApp->PushMessage(Applications::DisplayApp::Messages::UpdateBatteryLevel);
+          displayApp->PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
+          displayApp->PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
           heartRateApp->PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
 
           isSleeping = false;
@@ -154,17 +158,17 @@ void SystemTask::Work() {
           isGoingToSleep = true;
           NRF_LOG_INFO("[systemtask] Going to sleep");
           xTimerStop(idleTimer, 0);
-          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::GoToSleep);
+          displayApp->PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
           heartRateApp->PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
           break;
         case Messages::OnNewTime:
           ReloadIdleTimer();
-          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::UpdateDateTime);
+          displayApp->PushMessage(Pinetime::Applications::Display::Messages::UpdateDateTime);
           break;
         case Messages::OnNewNotification:
           if(isSleeping && !isWakingUp) GoToRunning();
           if(notificationManager.IsVibrationEnabled()) motorController.SetDuration(35);
-          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::NewNotification);
+          displayApp->PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;
         case Messages::BleConnected:
           ReloadIdleTimer();
@@ -174,7 +178,7 @@ void SystemTask::Work() {
         case Messages::BleFirmwareUpdateStarted:
           doNotGoToSleep = true;
           if(isSleeping && !isWakingUp) GoToRunning();
-          displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::BleFirmwareUpdateStarted);
+          displayApp->PushMessage(Pinetime::Applications::Display::Messages::BleFirmwareUpdateStarted);
           break;
         case Messages::BleFirmwareUpdateFinished:
           doNotGoToSleep = false;
@@ -232,7 +236,7 @@ void SystemTask::OnButtonPushed() {
   if(!isSleeping) {
     NRF_LOG_INFO("[systemtask] Button pushed");
     PushMessage(Messages::OnButtonEvent);
-    displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::ButtonPushed);
+    displayApp->PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
   }
   else {
     if(!isWakingUp) {
@@ -252,7 +256,7 @@ void SystemTask::OnTouchEvent() {
   NRF_LOG_INFO("[systemtask] Touch event");
   if(!isSleeping) {
     PushMessage(Messages::OnTouchEvent);
-    displayApp->PushMessage(Pinetime::Applications::DisplayApp::Messages::TouchEvent);
+    displayApp->PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
   }
 }
 

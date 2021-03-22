@@ -36,6 +36,9 @@ namespace Pinetime {
         static constexpr const char* stepBackward = "\xEF\x81\x88";
         static constexpr const char* play = "\xEF\x81\x8B";
         static constexpr const char* pause = "\xEF\x81\x8C";
+        static constexpr const char* stop = "\xEF\x81\x8D";
+        static constexpr const char* stopWatch = "\xEF\x8B\xB2";
+        static constexpr const char* lapsFlag = "\xEF\x80\xA4";
       }
     }
   }
