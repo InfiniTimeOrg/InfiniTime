@@ -98,7 +98,7 @@ void SystemTask::Work() {
 
   heartRateSensor.Init();
   heartRateSensor.Disable();
-  heartRateApp.reset(new Pinetime::Applications::HeartRateTask(heartRateSensor, heartRateController));
+  heartRateApp = std::make_unique<Pinetime::Applications::HeartRateTask>(heartRateSensor, heartRateController);
   heartRateApp->Start();
 
 

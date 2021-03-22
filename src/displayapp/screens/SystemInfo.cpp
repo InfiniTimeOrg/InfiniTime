@@ -104,14 +104,14 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
           uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds,
           batteryPercent, brightness, resetReason);
 
-  return std::unique_ptr<Screen>(new Screens::Label(app, t1));
+  return std::make_unique<Screens::Label>(app, t1);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   auto& bleAddr = bleController.Address();
   sprintf(t2, "BLE MAC: \n  %02x:%02x:%02x:%02x:%02x:%02x",
           bleAddr[5], bleAddr[4], bleAddr[3], bleAddr[2], bleAddr[1], bleAddr[0]);
-  return std::unique_ptr<Screen>(new Screens::Label(app, t2));
+  return std::make_unique<Screens::Label>(app, t2);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
@@ -123,5 +123,5 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
               "Source code:\n"
               "https://github.com/\n"
               "  JF002/InfiniTime");
-  return std::unique_ptr<Screen>(new Screens::Label(app, t3));
+  return std::make_unique<Screens::Label>(app, t3);
 }
