@@ -1,7 +1,7 @@
 
 # PineTime
 
-![Build PineTime Firmware](https://github.com/JF002/Pinetime/workflows/Build%20PineTime%20Firmware/badge.svg?branch=master)
+![Build PineTime Firmware](https://github.com/JF002/InfiniTime/workflows/Build%20PineTime%20Firmware/badge.svg?branch=master)
 
 > The PineTime is a free and open source smartwatch capable of running custom-built open operating systems. Some of the notable features include a heart rate monitor, a week-long battery as well as a capacitive touch IPS display that is legible in direct sunlight. It is a fully community driven side-project, which means that it will ultimately be up to the developers and end-users to determine when they deem the PineTime ready to ship.
 
@@ -44,9 +44,11 @@ As of now, here is the list of achievements of this project:
     * Notification (displays the last notification received)
     * Paddle (single player pong-like game)
     * Two (2048 clone game)
+    * Stopwatch (with all the necessary functions such as play, pause, lap, stop)
  - Supported by 2 companion apps (development is in progress):
     * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android)
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)
+    * **[Experimental]** [WebBLEWatch](https://hubmartin.github.io/WebBLEWatch/) Synchronize time directly from your web browser. [video](https://youtu.be/IakiuhVDdrY)
  - **[Experimental]** OTA (Over-the-air) update via BLE
  - **[Experimental]** Bootloader based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/)
  

@@ -12,6 +12,7 @@
 #include "displayapp/screens/FirmwareValidation.h"
 #include "displayapp/screens/InfiniPaint.h"
 #include "displayapp/screens/Paddle.h"
+#include "displayapp/screens/StopWatch.h"
 #include "displayapp/screens/Meter.h"
 #include "displayapp/screens/Music.h"
 #include "displayapp/screens/Navigation.h"
@@ -25,13 +26,15 @@
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Applications;
+using namespace Pinetime::Applications::Display;
 
 DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &touchPanel,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
                        Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
                        System::SystemTask &systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
-                       Pinetime::Controllers::HeartRateController& heartRateController) :
+                       Pinetime::Controllers::HeartRateController& heartRateController,
+                       Controllers::Settings &settingsController) :
         lcd{lcd},
         lvgl{lvgl},
         batteryController{batteryController},
@@ -39,10 +42,11 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
         dateTimeController{dateTimeController},
         watchdog{watchdog},
         touchPanel{touchPanel},
-        currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, heartRateController) },
+        currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController) },
         systemTask{systemTask},
         notificationManager{notificationManager},
-        heartRateController{heartRateController} {
+        heartRateController{heartRateController},
+        settingsController{settingsController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   onClockApp = true;
 }
@@ -194,13 +198,14 @@ void DisplayApp::RunningState() {
     onClockApp = false;
     switch(nextApp) {
       case Apps::None:
-      case Apps::Launcher: currentScreen.reset(new Screens::ApplicationList(this)); break;
+      case Apps::Launcher: currentScreen.reset(new Screens::ApplicationList(this, settingsController)); break;
       case Apps::Clock:
-        currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, heartRateController));
+        currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController));
         onClockApp = true;
         break;
       case Apps::SysInfo: currentScreen.reset(new Screens::SystemInfo(this, dateTimeController, batteryController, brightnessController, bleController, watchdog)); break;
       case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
+      case Apps::StopWatch: currentScreen.reset(new Screens::StopWatch(this)); break;
       case Apps::Twos: currentScreen.reset(new Screens::Twos(this)); break;
       case Apps::Paint: currentScreen.reset(new Screens::InfiniPaint(this, lvgl)); break;
       case Apps::Paddle: currentScreen.reset(new Screens::Paddle(this, lvgl)); break;
@@ -220,7 +225,7 @@ void DisplayApp::IdleState() {
 
 }
 
-void DisplayApp::PushMessage(DisplayApp::Messages msg) {
+void DisplayApp::PushMessage(Messages msg) {
   BaseType_t xHigherPriorityTaskWoken;
   xHigherPriorityTaskWoken = pdFALSE;
   xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
