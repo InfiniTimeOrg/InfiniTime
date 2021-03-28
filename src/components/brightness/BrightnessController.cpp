@@ -68,3 +68,12 @@ void BrightnessController::Restore() {
   Set(backupLevel);
 }
 
+const char* BrightnessController::ToString() {
+  switch(level) {
+    case Levels::Off: return "Off";
+    case Levels::Low: return "Low";    
+    case Levels::Medium: return "Medium";    
+    case Levels::High: return "High";
+    default : return "???";
+  }
+}

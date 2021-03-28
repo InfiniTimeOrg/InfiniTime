@@ -35,20 +35,21 @@ namespace Pinetime {
         private:
           bool running = true;
 
+          lv_obj_t* container1;
+
           Pinetime::Controllers::DateTime& dateTimeController;
           Pinetime::Controllers::Battery& batteryController;
           Pinetime::Controllers::BrightnessController& brightnessController;
           Pinetime::Controllers::Ble& bleController;
           Pinetime::Drivers::WatchdogView& watchdog;
 
-          char t1[200];
-          char t2[200];
-          char t3[200];
-
-          ScreenList<3> screens;
+          ScreenList<4> screens;
           std::unique_ptr<Screen> CreateScreen1();
           std::unique_ptr<Screen> CreateScreen2();
           std::unique_ptr<Screen> CreateScreen3();
+          std::unique_ptr<Screen> CreateScreen4();
+
+          void CreateContainer();
       };
     }
   }

@@ -17,6 +17,8 @@ namespace Pinetime {
       void Backup();
       void Restore();
 
+      const char* ToString();
+
     private:
       static constexpr uint8_t pinLcdBacklight1 = 14;
       static constexpr uint8_t pinLcdBacklight2 = 22;
