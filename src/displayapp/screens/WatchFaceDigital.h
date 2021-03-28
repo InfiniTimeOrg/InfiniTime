@@ -34,7 +34,6 @@ namespace Pinetime {
           bool Refresh() override;
           bool OnButtonPushed() override;
 
-          void OnObjectEvent(lv_obj_t *pObj, lv_event_t i);
         private:
 
 
@@ -75,6 +74,8 @@ namespace Pinetime {
           Controllers::HeartRateController& heartRateController;
 
           bool running = true;
+
+          void Update();
 
       };
     }
