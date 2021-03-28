@@ -8,7 +8,7 @@
 using namespace Pinetime::Controllers;
 
 #define BATTERY_VOL NRF_SAADC_INPUT_AIN7   // 31 Analog
-#define SAMPLES_IN_BUFFER 8
+#define SAMPLES_IN_BUFFER 1
 static nrf_saadc_value_t m_buffer_pool[2][SAMPLES_IN_BUFFER];
 
 static float voltage = 0.0f;
@@ -20,18 +20,14 @@ void Battery::Init() {
 }
 
 void Battery::Update() {
+
   isCharging = !nrf_gpio_pin_read(chargingPin);
   isPowerPresent = !nrf_gpio_pin_read(powerPresentPin);
   
   // Non blocking read
   SaadcInit();
-  percentRemaining = -1;
-
-  while(percentRemaining==-1) {
-    nrfx_saadc_sample();
-  }
-    
-
+  nrfx_saadc_sample();
+  
 }
 
 void Battery::SaadcInit() {
@@ -58,7 +54,6 @@ void Battery::SaadcInit() {
 }
 
 void Battery::SaadcEventHandler(nrfx_saadc_evt_t const * p_event) {
-
   int avg_sample = 0;
   int i = 0;
 
