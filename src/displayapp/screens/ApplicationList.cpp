@@ -56,7 +56,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
 
   };
 
-  return std::unique_ptr<Screen>(new Screens::Tile(0, app, settingsController, applications));
+  return std::make_unique<Screens::Tile>(0, app, settingsController, applications);
 }
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
@@ -70,7 +70,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
           }
   };
 
-  return std::unique_ptr<Screen>(new Screens::Tile(1, app, settingsController, applications));
+  return std::make_unique<Screens::Tile>(1, app, settingsController, applications);
 }
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen3() {
@@ -84,6 +84,6 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen3() {
           }
   };
 
-  return std::unique_ptr<Screen>(new Screens::Tile(2, app, settingsController, applications));
+  return std::make_unique<Screens::Tile>(2, app, settingsController, applications);
 }
 

@@ -17,22 +17,22 @@ Notifications::Notifications(DisplayApp *app,
   auto notification = notificationManager.GetLastNotification();
   if(notification.valid) {
     currentId = notification.id;
-    currentItem.reset(new NotificationItem("\nNotification",
+    currentItem = std::make_unique<NotificationItem>("\nNotification",
                                            notification.message.data(),
                                            notification.index,
                                            notification.category,
                                            notificationManager.NbNotifications(),
                                            mode,
-                                           alertNotificationService));
+                                           alertNotificationService);
     validDisplay = true;
   } else {
-    currentItem.reset(new NotificationItem("\nNotification",
+    currentItem = std::make_unique<NotificationItem>("\nNotification",
                                            "No notification to display",
                                            0,
                                            notification.category,
                                            notificationManager.NbNotifications(),
                                            Modes::Preview,
-                                           alertNotificationService));
+                                           alertNotificationService);
   }
 
   if(mode == Modes::Preview) {
@@ -87,13 +87,13 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       currentId = previousNotification.id;
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Up);
-      currentItem.reset(new NotificationItem("\nNotification",
+      currentItem = std::make_unique<NotificationItem>("\nNotification",
                                              previousNotification.message.data(),
                                              previousNotification.index,
                                              previousNotification.category,
                                              notificationManager.NbNotifications(),
                                              mode,
-                                             alertNotificationService));
+                                             alertNotificationService);
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeDown: {
@@ -109,13 +109,13 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       currentId = nextNotification.id;
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Down);
-      currentItem.reset(new NotificationItem("\nNotification",
+      currentItem = std::make_unique<NotificationItem>("\nNotification",
                                              nextNotification.message.data(),
                                              nextNotification.index,
                                              nextNotification.category,
                                              notificationManager.NbNotifications(),
                                              mode,
-                                             alertNotificationService));
+                                             alertNotificationService);
     }
       return true;
     case Pinetime::Applications::TouchEvents::LongTap: {
