@@ -43,13 +43,14 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Controllers::DateTime &dateTimeController,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Drivers::Hrs3300& heartRateSensor,
+                       Pinetime::Drivers::Bma421& motionSensor,
                        Controllers::Settings &settingsController) :
                        spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash},
                        twiMaster{twiMaster}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        heartRateController{*this},
                        bleController{bleController}, dateTimeController{dateTimeController},
                        watchdog{}, watchdogView{watchdog},
-                       motorController{motorController}, heartRateSensor{heartRateSensor},
+                       motorController{motorController}, heartRateSensor{heartRateSensor}, motionSensor{motionSensor},
                        settingsController{settingsController},
                        nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
   systemTasksMsgQueue = xQueueCreate(10, 1);
@@ -84,13 +85,14 @@ void SystemTask::Work() {
   touchPanel.Init();
   batteryController.Init();
   motorController.Init();
+  motionSensor.Init();
 
   settingsController.Init();
 
 
   displayApp =  std::make_unique<Pinetime::Applications::DisplayApp>(lcd, lvgl, touchPanel, batteryController, bleController,
                                                           dateTimeController, watchdogView, *this, notificationManager,
-                                                          heartRateController, settingsController);
+                                                          heartRateController, settingsController, motionController);
   displayApp->Start();
 
   batteryController.Update();
@@ -132,8 +134,10 @@ void SystemTask::Work() {
   #pragma clang diagnostic push
   #pragma ide diagnostic ignored "EndlessLoop"
   while(true) {
+    UpdateMotion();
+
     uint8_t msg;
-    if (xQueueReceive(systemTasksMsgQueue, &msg, isSleeping ? 2500 : 1000)) {
+    if (xQueueReceive(systemTasksMsgQueue, &msg, 100)) {
       batteryController.Update();
       Messages message = static_cast<Messages >(msg);
       switch(message) {
@@ -230,6 +234,23 @@ void SystemTask::Work() {
   // Clear diagnostic suppression
   #pragma clang diagnostic pop
 }
+void SystemTask::UpdateMotion() {
+  if(isGoingToSleep or isWakingUp) return;
+
+  if(isSleeping)
+    twiMaster.Wakeup();
+  auto motionValues = motionSensor.Process();
+  if(isSleeping)
+    twiMaster.Sleep();
+
+  motionController.Update(motionValues.y,
+                          motionValues.x,
+                          motionValues.z,
+                          motionValues.steps);
+  if (motionController.ShouldWakeUp(isSleeping)) {
+    GoToRunning();
+  }
+}
 
 void SystemTask::OnButtonPushed() {
   if(isGoingToSleep) return;
@@ -247,6 +268,7 @@ void SystemTask::OnButtonPushed() {
 }
 
 void SystemTask::GoToRunning() {
+  if(isGoingToSleep or (not isSleeping) or isWakingUp) return;
   isWakingUp = true;
   PushMessage(Messages::GoToRunning);
 }

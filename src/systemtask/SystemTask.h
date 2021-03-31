@@ -8,6 +8,8 @@
 #include <heartratetask/HeartRateTask.h>
 #include <components/heartrate/HeartRateController.h>
 #include <components/settings/Settings.h>
+#include <drivers/Bma421.h>
+#include <components/motion/MotionController.h>
 
 #include "SystemMonitor.h"
 #include "components/battery/BatteryController.h"
@@ -49,6 +51,7 @@ namespace Pinetime {
                    Controllers::DateTime &dateTimeController,
                    Pinetime::Controllers::MotorController& motorController,
                    Pinetime::Drivers::Hrs3300& heartRateSensor,
+                   Pinetime::Drivers::Bma421& motionSensor,
                    Controllers::Settings &settingsController);
 
 
@@ -87,9 +90,11 @@ namespace Pinetime {
         Pinetime::Controllers::NotificationManager notificationManager;
         Pinetime::Controllers::MotorController& motorController;
         Pinetime::Drivers::Hrs3300& heartRateSensor;
+        Pinetime::Drivers::Bma421& motionSensor;
         Pinetime::Controllers::Settings& settingsController;
         Pinetime::Controllers::NimbleController nimbleController;
         Controllers::BrightnessController brightnessController;
+        Pinetime::Controllers::MotionController motionController;
 
         static constexpr uint8_t pinSpiSck = 2;
         static constexpr uint8_t pinSpiMosi = 3;
@@ -109,6 +114,7 @@ namespace Pinetime {
         bool doNotGoToSleep = false;
 
         void GoToRunning();
+        void UpdateMotion();
 
 #if configUSE_TRACE_FACILITY == 1
         SystemMonitor<FreeRtosMonitor> monitor;

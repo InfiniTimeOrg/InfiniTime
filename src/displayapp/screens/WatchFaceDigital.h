@@ -15,6 +15,7 @@ namespace Pinetime {
     class Ble;
     class NotificationManager;
     class HeartRateController;
+    class MotionController;
   }
 
   namespace Applications {
@@ -28,7 +29,8 @@ namespace Pinetime {
                   Controllers::Ble& bleController,
                   Controllers::NotificationManager& notificatioManager,
                   Controllers::Settings &settingsController,
-                  Controllers::HeartRateController& heartRateController);
+                  Controllers::HeartRateController& heartRateController,
+                  Controllers::MotionController& motionController);
           ~WatchFaceDigital() override;
 
           bool Refresh() override;
@@ -73,6 +75,7 @@ namespace Pinetime {
           Controllers::NotificationManager& notificatioManager;
           Controllers::Settings& settingsController;
           Controllers::HeartRateController& heartRateController;
+          Controllers::MotionController& motionController;
 
           bool running = true;
 

@@ -1,10 +1,12 @@
 #include "DisplayApp.h"
 #include <libraries/log/nrf_log.h>
 #include <displayapp/screens/HeartRate.h>
+#include <displayapp/screens/Motion.h>
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/NotificationManager.h"
+#include "components/motion/MotionController.h"
 #include "displayapp/screens/ApplicationList.h"
 #include "displayapp/screens/Brightness.h"
 #include "displayapp/screens/Clock.h"
@@ -34,7 +36,8 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
                        System::SystemTask &systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::HeartRateController& heartRateController,
-                       Controllers::Settings &settingsController) :
+                       Controllers::Settings &settingsController,
+                       Pinetime::Controllers::MotionController& motionController) :
         lcd{lcd},
         lvgl{lvgl},
         batteryController{batteryController},
@@ -42,11 +45,12 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
         dateTimeController{dateTimeController},
         watchdog{watchdog},
         touchPanel{touchPanel},
-        currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController) },
+        currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController, motionController) },
         systemTask{systemTask},
         notificationManager{notificationManager},
         heartRateController{heartRateController},
-        settingsController{settingsController} {
+        settingsController{settingsController},
+        motionController{motionController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   onClockApp = true;
 }
@@ -178,7 +182,7 @@ void DisplayApp::Refresh() {
         break;
        case Messages::UpdateDateTime:
        // Added to remove warning
-       // What should happen here? 
+       // What should happen here?
        break;
     }
   }
@@ -204,7 +208,7 @@ void DisplayApp::RunningState() {
       case Apps::None:
       case Apps::Launcher: currentScreen = std::make_unique<Screens::ApplicationList>(this, settingsController); break;
       case Apps::Clock:
-        currentScreen = std::make_unique<Screens::Clock>(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController);
+        currentScreen = std::make_unique<Screens::Clock>(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController, motionController);
         onClockApp = true;
         break;
       case Apps::SysInfo: currentScreen = std::make_unique<Screens::SystemInfo>(this, dateTimeController, batteryController, brightnessController, bleController, watchdog); break;
@@ -219,6 +223,7 @@ void DisplayApp::RunningState() {
       case Apps::FirmwareValidation: currentScreen = std::make_unique<Screens::FirmwareValidation>(this, validator); break;
       case Apps::Notifications: currentScreen = std::make_unique<Screens::Notifications>(this, notificationManager, systemTask.nimble().alertService(), Screens::Notifications::Modes::Normal); break;
       case Apps::HeartRate: currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController); break;
+      case Apps::Motion: currentScreen = std::make_unique<Screens::Motion>(this, motionController); break;
     }
     nextApp = Apps::None;
   }

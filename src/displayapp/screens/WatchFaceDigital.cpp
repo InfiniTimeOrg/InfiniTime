@@ -11,6 +11,7 @@
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/heartrate/HeartRateController.h"
+#include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
 #include "../DisplayApp.h"
 
@@ -23,11 +24,13 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
         Controllers::Ble& bleController,
         Controllers::NotificationManager& notificatioManager,
         Controllers::Settings &settingsController,
-        Controllers::HeartRateController& heartRateController): Screen(app), currentDateTime{{}},
+        Controllers::HeartRateController& heartRateController,
+        Controllers::MotionController& motionController) : Screen(app), currentDateTime{{}},
                                            dateTimeController{dateTimeController}, batteryController{batteryController},
                                            bleController{bleController}, notificatioManager{notificatioManager},
                                            settingsController{settingsController},
-                                           heartRateController{heartRateController} {
+                                           heartRateController{heartRateController},
+                                           motionController{motionController} {
   settingsController.SetClockFace(0);
 
   displayedChar[0] = 0;
@@ -236,7 +239,7 @@ bool WatchFaceDigital::Refresh() {
     lv_obj_align(heartbeatBpm, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
   }
 
-  // TODO stepCount = stepController.GetValue();
+  stepCount = motionController.NbSteps();
   if(stepCount.IsUpdated()) {
     char stepBuffer[5];
     sprintf(stepBuffer, "%lu", stepCount.Get());
