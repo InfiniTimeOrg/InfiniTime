@@ -243,8 +243,8 @@ void SystemTask::UpdateMotion() {
   if(isSleeping)
     twiMaster.Sleep();
 
-  motionController.Update(motionValues.y,
-                          motionValues.x,
+  motionController.Update(motionValues.x,
+                          motionValues.y,
                           motionValues.z,
                           motionValues.steps);
   if (motionController.ShouldWakeUp(isSleeping)) {

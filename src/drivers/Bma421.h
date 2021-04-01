@@ -25,19 +25,12 @@ namespace Pinetime {
       void Read(uint8_t registerAddress, uint8_t *buffer, size_t size);
       void Write(uint8_t registerAddress, const uint8_t *data, size_t size);
 
-      void OnIrq();
-
-      uint32_t GetNbInterrupts() const {return nbInterrupts;}
-
     private:
       TwiMaster& twiMaster;
-      uint8_t twiAddress;
+      uint8_t deviceAddress = 0x18;
+
 
       struct bma4_dev bma;
-      struct bma4_accel_config accel_conf;
-      static constexpr uint8_t deviceAddress = 0x18;
-
-      uint32_t nbInterrupts = 0;
     };
   }
 }
