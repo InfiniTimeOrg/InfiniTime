@@ -31,3 +31,6 @@ bool MotionController::ShouldWakeUp(bool isSleeping) {
   }
   return false;
 }
+void MotionController::IsSensorOk(bool isOk) {
+  isSensorOk = isOk;
+}

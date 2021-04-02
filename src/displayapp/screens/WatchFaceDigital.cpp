@@ -240,9 +240,13 @@ bool WatchFaceDigital::Refresh() {
   }
 
   stepCount = motionController.NbSteps();
-  if(stepCount.IsUpdated()) {
+  motionSensorOk = motionController.IsSensorOk();
+  if(stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
     char stepBuffer[5];
-    sprintf(stepBuffer, "%lu", stepCount.Get());
+    if(motionSensorOk.Get())
+      sprintf(stepBuffer, "%lu", stepCount.Get());
+    else
+      sprintf(stepBuffer, "---", stepCount.Get());
     lv_label_set_text(stepValue, stepBuffer);
     lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
     lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);

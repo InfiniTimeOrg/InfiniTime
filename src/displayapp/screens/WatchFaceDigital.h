@@ -50,6 +50,7 @@ namespace Pinetime {
           DirtyValue<int> batteryPercentRemaining  {};
           DirtyValue<bool> bleState {};
           DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime{};
+          DirtyValue<bool> motionSensorOk  {};
           DirtyValue<uint32_t> stepCount  {};
           DirtyValue<uint8_t> heartbeat  {};
           DirtyValue<bool> heartbeatRunning  {};

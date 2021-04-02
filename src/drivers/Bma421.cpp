@@ -36,27 +36,27 @@ Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster{twiMaster},
 
 void Bma421::Init() {
   auto ret = bma4_soft_reset(&bma);
-  ASSERT(ret == BMA4_OK);
+  if(ret != BMA4_OK) return;
 
   nrf_delay_ms(1);
 
   ret = bma423_init(&bma);
-  ASSERT(ret == BMA4_OK);
+  if(ret != BMA4_OK) return;
 
   ret = bma423_write_config_file(&bma);
-  ASSERT(ret == BMA4_OK);
+  if(ret != BMA4_OK) return;
 
   ret = bma4_set_interrupt_mode(BMA4_LATCH_MODE, &bma);
-  ASSERT(ret == BMA4_OK);
+  if(ret != BMA4_OK) return;
 
   ret = bma423_feature_enable(BMA423_STEP_CNTR, 1, &bma);
-  ASSERT(ret == BMA4_OK);
+  if(ret != BMA4_OK) return;
 
   ret = bma423_step_detector_enable(0, &bma);
-  ASSERT(ret == BMA4_OK);
+  if(ret != BMA4_OK) return;
 
   ret = bma4_set_accel_enable(1, &bma);
-  ASSERT(ret == BMA4_OK);
+  if(ret != BMA4_OK) return;
 
   struct bma4_accel_config accel_conf;
   accel_conf.odr = BMA4_OUTPUT_DATA_RATE_100HZ;
@@ -64,7 +64,9 @@ void Bma421::Init() {
   accel_conf.bandwidth = BMA4_ACCEL_NORMAL_AVG4;
   accel_conf.perf_mode = BMA4_CIC_AVG_MODE;
   ret = bma4_set_accel_config(&accel_conf, &bma);
-  ASSERT(ret == BMA4_OK);
+  if(ret != BMA4_OK) return;
+
+  isOk = true;
 }
 
 void Bma421::Reset() {
@@ -81,6 +83,7 @@ void Bma421::Write(uint8_t registerAddress, const uint8_t *data, size_t size) {
 }
 
 Bma421::Values Bma421::Process() {
+  if(not isOk) return {};
   struct bma4_accel data;
   bma4_read_accel_xyz(&data, &bma);
 
@@ -99,4 +102,6 @@ Bma421::Values Bma421::Process() {
   // X and Y axis are swapped because of the way the sensor is mounted in the PineTime
   return {steps, data.y, data.x, data.z};
 }
-
+bool Bma421::IsOk() const {
+  return isOk;
+}
