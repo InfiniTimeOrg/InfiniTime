@@ -49,6 +49,8 @@ Pinetime::Logging::NrfLogger logger;
 Pinetime::Logging::DummyLogger logger;
 #endif
 
+#include <memory>
+
 static constexpr uint8_t pinSpiSck = 2;
 static constexpr uint8_t pinSpiMosi = 3;
 static constexpr uint8_t pinSpiMiso = 4;
@@ -254,8 +256,8 @@ int main(void) {
 
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
-  systemTask.reset(new Pinetime::System::SystemTask(spi, lcd, spiNorFlash, twiMaster, touchPanel, lvgl, batteryController, bleController,
-                                                    dateTimeController, motorController, heartRateSensor, settingsController));
+  systemTask = std::make_unique<Pinetime::System::SystemTask>(spi, lcd, spiNorFlash, twiMaster, touchPanel, lvgl, batteryController, bleController,
+                                                    dateTimeController, motorController, heartRateSensor, settingsController);
   systemTask->Start();
   nimble_port_init();
 

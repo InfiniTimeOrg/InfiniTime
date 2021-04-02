@@ -5,6 +5,8 @@
 #include "Symbols.h"
 #include "NotificationIcon.h"
 
+#include <cmath>
+
 LV_IMG_DECLARE(bg_clock);
 
 using namespace Pinetime::Applications::Screens;

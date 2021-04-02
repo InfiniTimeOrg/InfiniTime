@@ -23,6 +23,8 @@
 #include "drivers/Hrs3300.h"
 #include "main.h"
 
+#include <memory>
+
 using namespace Pinetime::System;
 
 void IdleTimerCallback(TimerHandle_t xTimer) {
@@ -86,9 +88,9 @@ void SystemTask::Work() {
   settingsController.Init();
 
 
-  displayApp.reset(new Pinetime::Applications::DisplayApp(lcd, lvgl, touchPanel, batteryController, bleController,
+  displayApp =  std::make_unique<Pinetime::Applications::DisplayApp>(lcd, lvgl, touchPanel, batteryController, bleController,
                                                           dateTimeController, watchdogView, *this, notificationManager,
-                                                          heartRateController, settingsController));
+                                                          heartRateController, settingsController);
   displayApp->Start();
 
   batteryController.Update();
@@ -96,7 +98,7 @@ void SystemTask::Work() {
 
   heartRateSensor.Init();
   heartRateSensor.Disable();
-  heartRateApp.reset(new Pinetime::Applications::HeartRateTask(heartRateSensor, heartRateController));
+  heartRateApp = std::make_unique<Pinetime::Applications::HeartRateTask>(heartRateSensor, heartRateController);
   heartRateApp->Start();
 
 
