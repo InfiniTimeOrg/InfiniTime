@@ -7,7 +7,6 @@
 
 using namespace Pinetime::Controllers;
 
-#define BATTERY_VOL NRF_SAADC_INPUT_AIN7   // 31 Analog
 #define SAMPLES_IN_BUFFER 1
 static nrf_saadc_value_t m_buffer_pool[2][SAMPLES_IN_BUFFER];
 
@@ -42,7 +41,7 @@ void Battery::SaadcInit() {
           .acq_time   = NRF_SAADC_ACQTIME_3US,
           .mode       = NRF_SAADC_MODE_SINGLE_ENDED,
           .burst      = NRF_SAADC_BURST_ENABLED,
-          .pin_p      = BATTERY_VOL,
+          .pin_p      = batteryVoltageAdcInput,
           .pin_n      = NRF_SAADC_INPUT_DISABLED
   };
   APP_ERROR_CHECK(nrfx_saadc_channel_init(0, &adcChannelConfig));
