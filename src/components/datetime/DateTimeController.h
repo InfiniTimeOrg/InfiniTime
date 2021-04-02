@@ -4,11 +4,16 @@
 #include <chrono>
 
 namespace Pinetime {
+  namespace System {
+    class SystemTask;
+  }
   namespace Controllers {
     class DateTime {
       public:
         enum class Days : uint8_t {Unknown, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday};
         enum class Months : uint8_t {Unknown, January, February, March, April, May, June, July, August, September, October, November, December};
+
+        DateTime(System::SystemTask& systemTask);
 
         void SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfWeek, uint8_t hour, uint8_t minute, uint8_t second, uint32_t systickCounter);
         void UpdateTime(uint32_t systickCounter);
@@ -31,6 +36,7 @@ namespace Pinetime {
         std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const { return currentDateTime; }
         std::chrono::seconds Uptime() const { return uptime; }
       private:
+        System::SystemTask& systemTask;
         uint16_t year = 0;
         Months month = Months::Unknown;
         uint8_t day = 0;
@@ -42,6 +48,8 @@ namespace Pinetime {
         uint32_t previousSystickCounter = 0;
         std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> currentDateTime;
         std::chrono::seconds uptime {0};
+
+        bool isMidnightAlreadyNotified = false;
 
         static char const *DaysString[];
         static char const *DaysStringShort[];

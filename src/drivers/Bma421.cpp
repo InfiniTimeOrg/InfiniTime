@@ -105,3 +105,7 @@ Bma421::Values Bma421::Process() {
 bool Bma421::IsOk() const {
   return isOk;
 }
+
+void Bma421::ResetStepCounter() {
+  bma423_reset_step_counter(&bma);
+}

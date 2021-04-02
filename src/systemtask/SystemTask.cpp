@@ -40,7 +40,6 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Drivers::TwiMaster& twiMaster, Drivers::Cst816S &touchPanel,
                        Components::LittleVgl &lvgl,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
-                       Controllers::DateTime &dateTimeController,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Drivers::Hrs3300& heartRateSensor,
                        Pinetime::Drivers::Bma421& motionSensor,
@@ -48,7 +47,7 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash},
                        twiMaster{twiMaster}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        heartRateController{*this},
-                       bleController{bleController}, dateTimeController{dateTimeController},
+                       bleController{bleController}, dateTimeController{*this},
                        watchdog{}, watchdogView{watchdog},
                        motorController{motorController}, heartRateSensor{heartRateSensor}, motionSensor{motionSensor},
                        settingsController{settingsController},
@@ -210,6 +209,11 @@ void SystemTask::Work() {
           isSleeping = true;
           isGoingToSleep = false;
           break;
+        case Messages::OnNewDay:
+          // We might be sleeping (with TWI device disabled.
+          // Remember we'll have to reset the counter next time we're awake
+          stepCounterMustBeReset = true;
+          break;
         default: break;
       }
     }
@@ -239,6 +243,12 @@ void SystemTask::UpdateMotion() {
 
   if(isSleeping)
     twiMaster.Wakeup();
+
+  if(stepCounterMustBeReset) {
+    motionSensor.ResetStepCounter();
+    stepCounterMustBeReset = false;
+  }
+
   auto motionValues = motionSensor.Process();
   if(isSleeping)
     twiMaster.Sleep();

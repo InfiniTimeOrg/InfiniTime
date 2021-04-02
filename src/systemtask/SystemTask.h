@@ -40,7 +40,8 @@ namespace Pinetime {
     class SystemTask {
       public:
         enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification, OnNewCall, BleConnected,
-            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent, OnDisplayTaskSleeping
+            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent, OnDisplayTaskSleeping,
+            OnNewDay
         };
 
         SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
@@ -48,7 +49,6 @@ namespace Pinetime {
                    Drivers::TwiMaster& twiMaster, Drivers::Cst816S &touchPanel,
                    Components::LittleVgl &lvgl,
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
-                   Controllers::DateTime &dateTimeController,
                    Pinetime::Controllers::MotorController& motorController,
                    Pinetime::Drivers::Hrs3300& heartRateSensor,
                    Pinetime::Drivers::Bma421& motionSensor,
@@ -80,7 +80,7 @@ namespace Pinetime {
         std::unique_ptr<Pinetime::Applications::HeartRateTask> heartRateApp;
 
         Pinetime::Controllers::Ble& bleController;
-        Pinetime::Controllers::DateTime& dateTimeController;
+        Pinetime::Controllers::DateTime dateTimeController;
         QueueHandle_t systemTasksMsgQueue;
         std::atomic<bool> isSleeping{false};
         std::atomic<bool> isGoingToSleep{false};
@@ -115,6 +115,7 @@ namespace Pinetime {
 
         void GoToRunning();
         void UpdateMotion();
+        bool stepCounterMustBeReset = false;
 
 #if configUSE_TRACE_FACILITY == 1
         SystemMonitor<FreeRtosMonitor> monitor;
