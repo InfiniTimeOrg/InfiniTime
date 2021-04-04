@@ -75,6 +75,7 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
     os_mbuf_copydata(ctxt->om, headerSize, messageSize-1, notif.message.data());
     os_mbuf_copydata(ctxt->om, 0, 1, &category);
     notif.message[messageSize-1] = '\0';
+    notif.size = messageSize;
 
     // TODO convert all ANS categories to NotificationController categories
     switch(category) {

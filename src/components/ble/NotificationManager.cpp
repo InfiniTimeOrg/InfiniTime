@@ -87,3 +87,19 @@ size_t NotificationManager::NbNotifications() const {
   return std::count_if(notifications.begin(), notifications.end(), [](const Notification& n){ return n.valid;});
 }
 
+const char* NotificationManager::Notification::Message() const {
+  const char* itField = std::find(message.begin(), message.begin()+size-1, '\0');
+  if(itField != message.begin()+size-1) {
+    const char* ptr = (itField)+1;
+    return ptr;
+  }
+  return const_cast<char*>(message.data());
+}
+
+const char* NotificationManager::Notification::Title() const {
+  const char * itField = std::find(message.begin(), message.begin()+size-1, '\0');
+  if(itField != message.begin()+size-1) {
+    return message.data();
+  }
+  return {};
+}

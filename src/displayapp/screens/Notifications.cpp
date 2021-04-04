@@ -17,8 +17,8 @@ Notifications::Notifications(DisplayApp *app,
   auto notification = notificationManager.GetLastNotification();
   if(notification.valid) {
     currentId = notification.id;
-    currentItem = std::make_unique<NotificationItem>("\nNotification",
-                                           notification.message.data(),
+    currentItem = std::make_unique<NotificationItem>(notification.Title(),
+                                           notification.Message(),
                                            notification.index,
                                            notification.category,
                                            notificationManager.NbNotifications(),
@@ -87,8 +87,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       currentId = previousNotification.id;
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Up);
-      currentItem = std::make_unique<NotificationItem>("\nNotification",
-                                             previousNotification.message.data(),
+      currentItem = std::make_unique<NotificationItem>(previousNotification.Title(),
+                                             previousNotification.Message(),
                                              previousNotification.index,
                                              previousNotification.category,
                                              notificationManager.NbNotifications(),
@@ -109,8 +109,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       currentId = nextNotification.id;
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Down);
-      currentItem = std::make_unique<NotificationItem>("\nNotification",
-                                             nextNotification.message.data(),
+      currentItem = std::make_unique<NotificationItem>(nextNotification.Title(),
+                                             nextNotification.Message(),
                                              nextNotification.index,
                                              nextNotification.category,
                                              notificationManager.NbNotifications(),
@@ -178,8 +178,9 @@ namespace {
 
   lv_obj_t* alert_type = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x888888));
+  if(title == nullptr) title = "Notification";
   lv_label_set_text(alert_type, title);
-  lv_obj_align(alert_type, NULL, LV_ALIGN_IN_TOP_LEFT, 0, -4);
+  lv_obj_align(alert_type, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 16);
 
   /////////
   switch(category) {
