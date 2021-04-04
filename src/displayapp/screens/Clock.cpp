@@ -54,11 +54,6 @@ bool Clock::Refresh() {
   return running;
 }
 
-bool Clock::OnButtonPushed() {
-  running = false;
-  return false;
-}
-
 bool Clock::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return screens.OnTouchEvent(event);
 }

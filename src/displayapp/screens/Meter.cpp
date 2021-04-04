@@ -36,8 +36,3 @@ bool Meter::Refresh() {
 
   return running;
 }
-
-bool Meter::OnButtonPushed() {
-  running = false;
-  return true;
-}

@@ -61,18 +61,27 @@ void LittleVgl::InitTouchpad() {
 void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
   if(scrollDirection == FullRefreshDirections::None) {
     scrollDirection = direction;
-    if (scrollDirection == FullRefreshDirections::Down)
+    if (scrollDirection == FullRefreshDirections::Down) {
       lv_disp_set_direction(lv_disp_get_default(), 1);
+    } else if (scrollDirection == FullRefreshDirections::Right) {
+      lv_disp_set_direction(lv_disp_get_default(), 2);
+    } else if (scrollDirection == FullRefreshDirections::Left) {
+      lv_disp_set_direction(lv_disp_get_default(), 3);
+    } else if (scrollDirection == FullRefreshDirections::RightAnim) {
+      lv_disp_set_direction(lv_disp_get_default(), 5);
+    } else if (scrollDirection == FullRefreshDirections::LeftAnim) {
+      lv_disp_set_direction(lv_disp_get_default(), 4);
+    }
   }
 }
 
 void LittleVgl::FlushDisplay(const lv_area_t *area, lv_color_t *color_p) {
   uint16_t y1, y2, width, height = 0;
 
-  ulTaskNotifyTake(pdTRUE, 500);
-  // Notification is still needed (even if there is a mutex on SPI) because of the DataCommand pin
-  // which cannot be set/clear during a transfer.
-
+  ulTaskNotifyTake(pdTRUE, 200);
+  // NOtification is still needed (even if there is a mutex on SPI) because of the DataCommand pin
+  // which cannot be set/clear during a transfert.
+  
   if( (scrollDirection == LittleVgl::FullRefreshDirections::Down) && (area->y2 == visibleNbLines - 1)) {
     writeOffset = ((writeOffset + totalNbLines) - visibleNbLines) % totalNbLines;
   } else if( (scrollDirection == FullRefreshDirections::Up) && (area->y1 == 0) ) {
@@ -86,6 +95,7 @@ void LittleVgl::FlushDisplay(const lv_area_t *area, lv_color_t *color_p) {
   height = (area->y2 - area->y1) + 1;
 
   if(scrollDirection == LittleVgl::FullRefreshDirections::Down) {
+
     if(area->y2 < visibleNbLines - 1) {
       uint16_t toScroll = 0;
         if(area->y1 == 0) {
@@ -95,6 +105,7 @@ void LittleVgl::FlushDisplay(const lv_area_t *area, lv_color_t *color_p) {
       } else {
         toScroll = height;
       }
+
       if(scrollOffset >= toScroll)
         scrollOffset -= toScroll;
       else {
@@ -117,6 +128,16 @@ void LittleVgl::FlushDisplay(const lv_area_t *area, lv_color_t *color_p) {
       scrollOffset = scrollOffset % totalNbLines;
       lcd.VerticalScrollStartAddress(scrollOffset);
     }
+  } else if(scrollDirection == FullRefreshDirections::Left or scrollDirection == FullRefreshDirections::LeftAnim) {
+    if(area->x2 == visibleNbLines - 1) {
+      scrollDirection = FullRefreshDirections::None;
+      lv_disp_set_direction(lv_disp_get_default(), 0);
+    }
+  } else if(scrollDirection == FullRefreshDirections::Right or scrollDirection == FullRefreshDirections::RightAnim) {
+    if(area->x1 == 0) {
+      scrollDirection = FullRefreshDirections::None;
+      lv_disp_set_direction(lv_disp_get_default(), 0);
+    }
   }
 
   if (y2 < y1) {
@@ -124,13 +145,14 @@ void LittleVgl::FlushDisplay(const lv_area_t *area, lv_color_t *color_p) {
 
     if ( height > 0 ) {
       lcd.DrawBuffer(area->x1, y1, width, height, reinterpret_cast<const uint8_t *>(color_p), width * height * 2);
-      ulTaskNotifyTake(pdTRUE, 320);
+      ulTaskNotifyTake(pdTRUE, 100);
     }
+    
     uint16_t pixOffset = width * height;
     height = y2 + 1;
     lcd.DrawBuffer(area->x1, 0, width, height, reinterpret_cast<const uint8_t *>(color_p + pixOffset), width * height * 2);
 
-  } else {    
+  } else {
     lcd.DrawBuffer(area->x1, y1, width, height, reinterpret_cast<const uint8_t *>(color_p), width * height * 2);
   }
 

@@ -103,7 +103,8 @@ Paddle::Paddle(Pinetime::Applications::DisplayApp* app, Pinetime::Components::Li
   app->SetTouchMode(DisplayApp::TouchModes::Polling);
 	
   points = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(points, "0");	
+  lv_label_set_text(points, "0000");
+  lv_obj_set_style_local_text_color(points, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x444444));
   lv_obj_align(points, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
 	
   paddle.header.always_zero = 0;
@@ -164,16 +165,10 @@ bool Paddle::Refresh() {
       ballX = 107;
       ballY = 107; 
       score = 0;	    
-    } 
-    sprintf(scoreStr, "%d", score);	
-    lv_label_set_text(points, scoreStr);	  
+    }
+    lv_label_set_text_fmt(points, "%04d", score);
   }      
   return running;
-}
-
-bool Paddle::OnButtonPushed() {
-  running = false;
-  return true;
 }
 
 bool Paddle::OnTouchEvent(Pinetime::Applications::TouchEvents event) { 

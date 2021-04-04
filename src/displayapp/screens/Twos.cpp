@@ -101,11 +101,6 @@ bool Twos::Refresh() {
   return running;
 }
 
-bool Twos::OnButtonPushed() {
-  running = false;
-  return true;
-}
-
 bool Twos::placeNewTile() {
   std::vector< std::pair <int,int> > availableCells; 
   for(int row = 0; row < 4; row++) {

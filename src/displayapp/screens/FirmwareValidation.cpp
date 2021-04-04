@@ -46,20 +46,20 @@ FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp *app,
     lv_obj_align(buttonValidate, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
     buttonValidate->user_data = this;
     lv_obj_set_event_cb(buttonValidate, ButtonEventHandler);
+    lv_obj_set_style_local_bg_color(buttonValidate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x009900));
 
     labelButtonValidate = lv_label_create(buttonValidate, nullptr);
-    lv_label_set_recolor(labelButtonValidate, true);
-    lv_label_set_text(labelButtonValidate, "#00ff00 Validate#");
+    lv_label_set_text_static(labelButtonValidate, "Validate");    
 
     buttonReset = lv_btn_create(lv_scr_act(), nullptr);
     buttonReset->user_data = this;
     lv_obj_align(buttonReset, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+    lv_obj_set_style_local_bg_color(buttonReset, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x990000));
     lv_obj_set_event_cb(buttonReset, ButtonEventHandler);
-
+    
     labelButtonReset = lv_label_create(buttonReset, nullptr);
-    lv_label_set_recolor(labelButtonReset, true);
-    lv_label_set_text(labelButtonReset, "#ff0000 Reset#");
-  }
+    lv_label_set_text_static(labelButtonReset, "Reset"); 
+  }    
 }
 
 
@@ -69,11 +69,6 @@ FirmwareValidation::~FirmwareValidation() {
 
 bool FirmwareValidation::Refresh() {
   return running;
-}
-
-bool FirmwareValidation::OnButtonPushed() {
-  running = false;
-  return true;
 }
 
 void FirmwareValidation::OnButtonEvent(lv_obj_t *object, lv_event_t event) {

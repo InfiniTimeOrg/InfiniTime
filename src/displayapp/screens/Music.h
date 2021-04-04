@@ -37,7 +37,7 @@ namespace Pinetime {
         
         bool Refresh() override;
         
-        bool OnButtonPushed() override;
+        
         
         void OnObjectEvent(lv_obj_t *obj, lv_event_t event);
       
@@ -81,7 +81,7 @@ namespace Pinetime {
         bool playing;
         
         /** Watchapp */
-        bool running = true;
+        
       };
     }
   }

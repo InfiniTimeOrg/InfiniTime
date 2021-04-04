@@ -18,21 +18,21 @@ Notifications::Notifications(DisplayApp *app,
   if(notification.valid) {
     currentId = notification.id;
     currentItem = std::make_unique<NotificationItem>("\nNotification",
-                                           notification.message.data(),
-                                           notification.index,
-                                           notification.category,
-                                           notificationManager.NbNotifications(),
-                                           mode,
-                                           alertNotificationService);
+                                          notification.message.data(),
+                                          notification.index,
+                                          notification.category,
+                                          notificationManager.NbNotifications(),
+                                          mode,
+                                          alertNotificationService);
     validDisplay = true;
   } else {
     currentItem = std::make_unique<NotificationItem>("\nNotification",
-                                           "No notification to display",
-                                           0,
-                                           notification.category,
-                                           notificationManager.NbNotifications(),
-                                           Modes::Preview,
-                                           alertNotificationService);
+                                          "No notification to display",
+                                          0,
+                                          notification.category,
+                                          notificationManager.NbNotifications(),
+                                          Modes::Preview,
+                                          alertNotificationService);
   }
 
   if(mode == Modes::Preview) {
@@ -62,11 +62,6 @@ bool Notifications::Refresh() {
 
     timeoutLinePoints[1].x = pos;
     lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
-
-    if (!running) {
-      // Start clock app when exiting this one
-      app->StartApp(Apps::Clock);
-    }
   }
 
   return running;
@@ -74,7 +69,7 @@ bool Notifications::Refresh() {
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   switch (event) {
-    case Pinetime::Applications::TouchEvents::SwipeUp: {
+    case Pinetime::Applications::TouchEvents::SwipeDown: {
       Controllers::NotificationManager::Notification previousNotification;
       if(validDisplay)
         previousNotification = notificationManager.GetPrevious(currentId);
@@ -86,7 +81,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       validDisplay = true;
       currentId = previousNotification.id;
       currentItem.reset(nullptr);
-      app->SetFullRefresh(DisplayApp::FullRefreshDirections::Up);
+      app->SetFullRefresh(DisplayApp::FullRefreshDirections::Down);
       currentItem = std::make_unique<NotificationItem>("\nNotification",
                                              previousNotification.message.data(),
                                              previousNotification.index,
@@ -96,19 +91,22 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                              alertNotificationService);
     }
       return true;
-    case Pinetime::Applications::TouchEvents::SwipeDown: {
+    case Pinetime::Applications::TouchEvents::SwipeUp: {
       Controllers::NotificationManager::Notification nextNotification;
       if(validDisplay)
         nextNotification = notificationManager.GetNext(currentId);
       else
         nextNotification = notificationManager.GetLastNotification();
 
-      if (!nextNotification.valid) return true;
+      if (!nextNotification.valid) {
+        running = false;
+        return false;
+      }
 
       validDisplay = true;
       currentId = nextNotification.id;
       currentItem.reset(nullptr);
-      app->SetFullRefresh(DisplayApp::FullRefreshDirections::Down);
+      app->SetFullRefresh(DisplayApp::FullRefreshDirections::Up);
       currentItem = std::make_unique<NotificationItem>("\nNotification",
                                              nextNotification.message.data(),
                                              nextNotification.index,
@@ -125,12 +123,6 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
     default:
       return false;
   }
-}
-
-
-bool Notifications::OnButtonPushed() {
-  running = false;
-  return true;
 }
 
 namespace {

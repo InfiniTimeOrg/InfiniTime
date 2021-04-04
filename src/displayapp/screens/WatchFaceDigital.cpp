@@ -249,9 +249,3 @@ bool WatchFaceDigital::Refresh() {
 }
 
 
-bool WatchFaceDigital::OnButtonPushed() {
-  running = false;
-  return false;
-}
-
-

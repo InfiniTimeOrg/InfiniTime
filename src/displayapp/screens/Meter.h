@@ -15,14 +15,13 @@ namespace Pinetime {
           ~Meter() override;
 
           bool Refresh() override;
-          bool OnButtonPushed() override;
 
         private:
           lv_style_t style_lmeter;
           lv_obj_t * lmeter;
 
           uint32_t value=0;
-          bool running = true;
+          
 
       };
     }

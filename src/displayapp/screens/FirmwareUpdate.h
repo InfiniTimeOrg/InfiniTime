@@ -16,7 +16,7 @@ namespace Pinetime {
           ~FirmwareUpdate() override;
 
           bool Refresh() override;
-          bool OnButtonPushed() override;
+          
 
         private:
           enum class States { Idle, Running, Validated, Error };
@@ -25,7 +25,7 @@ namespace Pinetime {
           lv_obj_t* percentLabel;
           lv_obj_t* titleLabel;
           mutable char percentStr[10];
-          bool running = true;
+          
           States state;
 
           bool DisplayProgression() const;

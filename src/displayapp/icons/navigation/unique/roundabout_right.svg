@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="WORKING_ICONS"
+   data-name="WORKING ICONS"
+   width="20"
+   height="14.657716"
+   viewBox="0 0 20 14.657716"
+   version="1.1"
+   sodipodi:docname="roundabout_right.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
+  <metadata
+     id="metadata11">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>direction</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs9" />
+  <sodipodi:namedview
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     inkscape:document-rotation="0"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1027"
+     id="namedview7"
+     showgrid="false"
+     inkscape:zoom="21.5"
+     inkscape:cx="10.164237"
+     inkscape:cy="6.5667351"
+     inkscape:window-x="-8"
+     inkscape:window-y="22"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="WORKING_ICONS" />
+  <title
+     id="title2">direction</title>
+  <path
+     fill="#000000"
+     d="M 5.3300781,0.2665039 A 5.0635745,5.0635745 0 1 1 0.2665036,5.330078 5.0692777,5.0692777 0 0 1 5.3300781,0.2665039 m 0,9.3276371 A 4.2640627,4.2640627 0 1 0 1.0660154,5.330078 4.2688998,4.2688998 0 0 0 5.3300781,9.594141 M 5.3300781,0 A 5.3300784,5.3300784 0 1 0 10.660157,5.330078 5.3361814,5.3361814 0 0 0 5.3300781,0 Z m 0,9.327637 A 3.9975588,3.9975588 0 1 1 9.3276367,5.330078 4.0019295,4.0019295 0 0 1 5.3300781,9.327637 Z M 15.774061,2.0629536 a 0.25757604,0.25757604 0 0 0 -0.41544,0.27278 L 16.253914,4.302386 A 0.23826783,0.23826783 0 0 1 16.002441,4.663819 H 9.3276367 V 5.330078 A 3.9974789,3.9974789 0 0 1 5.3300781,9.327637 H 4.6638183 v 5.330079 H 5.9963379 V 10.619169 A 5.3343425,5.3343425 0 0 0 10.619169,5.996338 h 5.383272 a 0.23826783,0.23826783 0 0 1 0.251473,0.361433 l -0.895293,1.966652 a 0.25757604,0.25757604 0 0 0 0.41544,0.27278 L 20,5.330078 Z"
+     id="path4"
+     style="stroke-width:1.33252" />
+</svg>
