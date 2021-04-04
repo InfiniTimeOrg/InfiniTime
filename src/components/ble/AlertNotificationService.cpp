@@ -66,8 +66,11 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
     const auto maxMessageSize {NotificationManager::MaximumMessageSize()};
     const auto maxBufferSize{maxMessageSize + headerSize};
 
-    const auto dbgPacketLen = OS_MBUF_PKTLEN(ctxt->om);
-    size_t bufferSize = std::min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
+    // Ignore notifications with empty message
+    const auto packetLen = OS_MBUF_PKTLEN(ctxt->om);
+    if(packetLen <= headerSize) return 0;
+
+    size_t bufferSize = std::min(packetLen + stringTerminatorSize, maxBufferSize);
     auto messageSize = std::min(maxMessageSize, (bufferSize-headerSize));
     Categories category;
 

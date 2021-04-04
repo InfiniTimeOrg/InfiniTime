@@ -158,8 +158,11 @@ void AlertNotificationClient::OnNotification(ble_gap_event *event) {
     const auto maxMessageSize{NotificationManager::MaximumMessageSize()};
     const auto maxBufferSize{maxMessageSize + headerSize};
 
-    const auto dbgPacketLen = OS_MBUF_PKTLEN(event->notify_rx.om);
-    size_t bufferSize = std::min(dbgPacketLen + stringTerminatorSize, maxBufferSize);
+    // Ignore notifications with empty message
+    const auto packetLen = OS_MBUF_PKTLEN(event->notify_rx.om);
+    if(packetLen <= headerSize) return;
+
+    size_t bufferSize = std::min(packetLen + stringTerminatorSize, maxBufferSize);
     auto messageSize = std::min(maxMessageSize, (bufferSize - headerSize));
 
     NotificationManager::Notification notif;
