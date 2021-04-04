@@ -56,6 +56,8 @@ bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       std::fill(b, b + bufferSize, selectColor);  
       color++;
       return true;
+    default:
+      return true;
   }
   return true;
 }

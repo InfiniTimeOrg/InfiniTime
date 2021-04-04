@@ -117,7 +117,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
     }
       return true;
     case Pinetime::Applications::TouchEvents::LongTap: {
-      notificationManager.ToggleVibrations();
+      //notificationManager.ToggleVibrations();
       return true;
     }
     default:
@@ -214,6 +214,7 @@ namespace {
       lv_obj_set_size(bt_accept, (LV_HOR_RES / 3) - 5, 80);
       label_accept = lv_label_create(bt_accept, nullptr);
       lv_label_set_text(label_accept, Symbols::phone);
+      lv_obj_set_style_local_bg_color(bt_accept, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
 
       bt_reject = lv_btn_create(callBtnContainer, nullptr);
       bt_reject->user_data = this;
@@ -221,6 +222,7 @@ namespace {
       lv_obj_set_size(bt_reject, (LV_HOR_RES / 3) - 5, 80);
       label_reject = lv_label_create(bt_reject, nullptr);
       lv_label_set_text(label_reject, Symbols::phoneSlash);
+      lv_obj_set_style_local_bg_color(bt_reject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
 
       bt_mute = lv_btn_create(callBtnContainer, nullptr);
       bt_mute->user_data = this;
@@ -228,6 +230,7 @@ namespace {
       lv_obj_set_size(bt_mute, (LV_HOR_RES / 3) - 5, 80);
       label_mute = lv_label_create(bt_mute, nullptr);
       lv_label_set_text(label_mute, Symbols::volumMute);
+      lv_obj_set_style_local_bg_color(bt_mute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
     }
     break;
   }

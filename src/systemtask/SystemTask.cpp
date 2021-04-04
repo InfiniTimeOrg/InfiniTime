@@ -148,8 +148,12 @@ void SystemTask::Work() {
         break;
         case Messages::GoToRunning:
           spi.Wakeup();
-          //twiMaster.Wakeup();
-          //touchPanel.Wakeup();
+
+          // Double Tap needs the touch screen to be in normal mode
+          if ( settingsController.getWakeUpMode() != Pinetime::Controllers::Settings::WakeUpMode::DoubleTap ) {
+            twiMaster.Wakeup();
+            touchPanel.Wakeup();
+          }
 
           nimbleController.StartAdvertising();
           xTimerStart(idleTimer, 0);
@@ -212,14 +216,10 @@ void SystemTask::Work() {
 
           // Double Tap needs the touch screen to be in normal mode
           if ( settingsController.getWakeUpMode() != Pinetime::Controllers::Settings::WakeUpMode::DoubleTap ) {
-            //touchPanel.Sleep();
+            touchPanel.Sleep();
+            twiMaster.Sleep();
           }
           
-          // No Wake uo mode, we can put the twi to sleep
-          if ( settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::None ) {
-            //twiMaster.Sleep();
-          }
-
           isSleeping = true;
           isGoingToSleep = false;
           break;
@@ -281,10 +281,10 @@ void SystemTask::OnTouchEvent() {
       GoToRunning();
     } else if( settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::DoubleTap ) {
       // error 
-      /*auto info = touchPanel.GetTouchInfo();
+      auto info = touchPanel.GetTouchInfo();
       if( info.isTouch and info.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap ) {
         GoToRunning();
-      }*/
+      }
     }
   }
 }
