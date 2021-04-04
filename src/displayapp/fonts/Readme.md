@@ -24,9 +24,18 @@ static constex char* newSymbol = "\xEF\x86\x85";
 
 #### Navigation font
 
-navigation.ttf
-0xe900-0xe929
+To create the navigtion.ttf I use the web app [icomoon](https://icomoon.io/app)
+this app can import the svg files from the folder *src/displayapp/icons/navigation/unique* and creat a ttf file
+the project for the site is *lv_font_navi_80.json* you can import it to add or remove icons
 
-0xe900,0xe901,0xe902,0xe903,0xe904,0xe905,0xe906,0xe907,0xe908,0xe909,0xe90a,0xe90b,0xe90c,0xe90d,0xe90e,0xe90f,0xe910,0xe911,0xe912,0xe913,0xe914,0xe915,0xe916,0xe917,0xe918,0xe919,0xe91a,0xe91b,0xe91c,0xe91d,0xe91e,0xe91f,0xe920,0xe921,0xe922,0xe923,0xe924,0xe925,0xe926,0xe927,0xe928,0xe929
+You can also use the online LVGL tool to create the .c
 
-lv_font_conv --font navigation.ttf -r '0xe900-0xe929' --size 70 --format lvgl --bpp 2 --no-prefilter -o lv_font_navi_70.c 
+ttf file : navigation.ttf
+name : lv_font_navi_80
+size : 80px
+Bpp : 2 bit-per-pixel
+range : 0xe900-0xe929
+
+$lv_font_conv --font navigation.ttf -r '0xe900-0xe929' --size 80 --format lvgl --bpp 2 --no-prefilter -o lv_font_navi_80.c 
+
+#### I use the method above to create the other ttf
