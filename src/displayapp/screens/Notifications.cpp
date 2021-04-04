@@ -73,6 +73,8 @@ bool Notifications::Refresh() {
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  if(mode != Modes::Normal) return true;
+
   switch (event) {
     case Pinetime::Applications::TouchEvents::SwipeUp: {
       Controllers::NotificationManager::Notification previousNotification;
