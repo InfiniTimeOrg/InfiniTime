@@ -280,7 +280,7 @@ void SystemTask::OnTouchEvent() {
     if( settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::SingleTap ) {
       GoToRunning();
     } else if( settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::DoubleTap ) {
-      // error 
+      
       auto info = touchPanel.GetTouchInfo();
       if( info.isTouch and info.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap ) {
         GoToRunning();
