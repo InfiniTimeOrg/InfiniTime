@@ -167,6 +167,21 @@ void SystemTask::Work() {
           isSleeping = false;
           isWakingUp = false;
           break;
+        case Messages::TouchWakeUp: {
+          auto touchInfo = touchPanel.GetTouchInfo();
+          if( touchInfo.isTouch and 
+              (
+                ( touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and 
+                  settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::DoubleTap 
+                ) or
+                ( touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and 
+                  settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::SingleTap
+                )
+              )
+            ) {
+            GoToRunning();
+          }
+        } break;
         case Messages::GoToSleep:
           isGoingToSleep = true;
           NRF_LOG_INFO("[systemtask] Going to sleep");
@@ -276,16 +291,7 @@ void SystemTask::OnTouchEvent() {
   } else if(!isWakingUp) {
     if( settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::None or 
           settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist ) return;
-
-    if( settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::SingleTap ) {
-      GoToRunning();
-    } else if( settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::DoubleTap ) {
-      
-      auto info = touchPanel.GetTouchInfo();
-      if( info.isTouch and info.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap ) {
-        GoToRunning();
-      }
-    }
+    PushMessage(Messages::TouchWakeUp);
   }
 }
 

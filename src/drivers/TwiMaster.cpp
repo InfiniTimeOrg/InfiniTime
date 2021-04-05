@@ -62,11 +62,9 @@ void TwiMaster::Init() {
 }
 
 TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t *data, size_t size) {
-  // this is causing an error when came from sleep
-  // 
-  //xSemaphoreTake(mutex, portMAX_DELAY);  
+  xSemaphoreTake(mutex, portMAX_DELAY);  
   auto ret = ReadWithRetry(deviceAddress, registerAddress, data, size);
-  //xSemaphoreGive(mutex);
+  xSemaphoreGive(mutex);
 
   return ret;
 }

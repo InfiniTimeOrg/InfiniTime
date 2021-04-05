@@ -37,7 +37,7 @@ namespace Pinetime {
   namespace System {
     class SystemTask {
       public:
-        enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification, OnNewCall, BleConnected, UpdateTimeOut,
+        enum class Messages {GoToSleep, GoToRunning, TouchWakeUp, OnNewTime, OnNewNotification, OnNewCall, BleConnected, UpdateTimeOut,
             BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent, OnDisplayTaskSleeping, EnableSleeping, DisableSleeping
         };
 
