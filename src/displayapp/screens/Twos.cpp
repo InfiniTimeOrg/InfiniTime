@@ -153,8 +153,7 @@ bool Twos::tryMove(Tile grid[][4], int newRow, int newCol, int oldRow, int oldCo
 }
 
 bool Twos::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  bool validMove;
-  validMove = false;
+  bool validMove = false;
   for(int row = 0; row < 4; row++) {
     for(int col = 0; col < 4; col++) {
       grid[row][col].merged = false; // reinitialize merge state

@@ -66,18 +66,12 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const * p_event) {
       percentRemaining = std::max(percentRemaining, 0);
       percentRemaining = std::min(percentRemaining, 100);
 
+      percentRemainingBuffer.insert(percentRemaining);
+
       nrfx_saadc_uninit();
     }
   }
 
 void Battery::adcCallbackStatic(nrfx_saadc_evt_t const *event) {
     instance->SaadcEventHandler(event);
-}
-
-int Battery::PercentRemaining() {
-  return percentRemaining;
-}
-
-float Battery::Voltage() {
-  return voltage;
 }
