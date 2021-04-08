@@ -18,6 +18,9 @@ namespace Pinetime {
       Bma421(Bma421&&) = delete;
       Bma421& operator=(Bma421&&) = delete;
 
+      /// The chip freezes the TWI bus after the softreset operation. Softreset is separated from the
+      /// Init() method to allow the caller to uninit and then reinit the TWI device after the softreset.
+      void SoftReset();
       void Init();
       Values Process();
       void ResetStepCounter();
@@ -34,6 +37,7 @@ namespace Pinetime {
       uint8_t deviceAddress = 0x18;
       struct bma4_dev bma;
       bool isOk = false;
+      bool isResetOk = false;
     };
   }
 }

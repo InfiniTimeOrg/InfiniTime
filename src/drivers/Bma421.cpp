@@ -35,12 +35,9 @@ Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster{twiMaster},
 }
 
 void Bma421::Init() {
-  auto ret = bma4_soft_reset(&bma);
-  if(ret != BMA4_OK) return;
+  if(not isResetOk) return; // Call SoftReset (and reset TWI device) first!
 
-  nrf_delay_ms(1);
-
-  ret = bma423_init(&bma);
+  auto ret = bma423_init(&bma);
   if(ret != BMA4_OK) return;
 
   ret = bma423_write_config_file(&bma);
@@ -108,4 +105,12 @@ bool Bma421::IsOk() const {
 
 void Bma421::ResetStepCounter() {
   bma423_reset_step_counter(&bma);
+}
+
+void Bma421::SoftReset() {
+  auto ret = bma4_soft_reset(&bma);
+  if(ret == BMA4_OK) {
+    isResetOk = true;
+    nrf_delay_ms(1);
+  }
 }

@@ -83,7 +83,7 @@ set(SDK_SOURCE_FILES
         "${NRF5_SDK_PATH}/external/fprintf/nrf_fprintf_format.c"
 
         # TWI
-        "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_twi.c"
+        "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_twim.c"
 
         # GPIOTE
         "${NRF5_SDK_PATH}/components/libraries/gpiote/app_gpiote.c"

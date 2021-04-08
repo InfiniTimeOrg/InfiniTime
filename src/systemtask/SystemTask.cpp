@@ -84,10 +84,14 @@ void SystemTask::Work() {
   touchPanel.Init();
   batteryController.Init();
   motorController.Init();
+  motionSensor.SoftReset();
+
+  // Reset the TWI device because the motion sensor chip most probably crashed it...
+  twiMaster.Sleep();
+  twiMaster.Init();
+
   motionSensor.Init();
-
   settingsController.Init();
-
 
   displayApp =  std::make_unique<Pinetime::Applications::DisplayApp>(lcd, lvgl, touchPanel, batteryController, bleController,
                                                           dateTimeController, watchdogView, *this, notificationManager,
