@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="notification_right.svg"
+   version="1.1"
+   viewBox="0 0 20 20"
+   height="20"
+   width="20"
+   data-name="WORKING ICONS"
+   id="WORKING_ICONS">
+  <metadata
+     id="metadata11">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs9" />
+  <sodipodi:namedview
+     inkscape:current-layer="WORKING_ICONS"
+     inkscape:window-maximized="1"
+     inkscape:window-y="22"
+     inkscape:window-x="-8"
+     inkscape:cy="15.722397"
+     inkscape:cx="11.540154"
+     inkscape:zoom="21.5"
+     showgrid="false"
+     id="namedview7"
+     inkscape:window-height="1027"
+     inkscape:window-width="1920"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <title
+     id="title2">direction</title>
+  <path
+     style="stroke-width:1.24853"
+     id="path4"
+     d="M 8.7426433,7.4918486 A 5.0663062,5.0663062 0 0 0 3.7625481,12.577407 v 6.803048 A 0.61954509,0.61954509 0 0 1 3.143003,20 H 1.886396 A 0.6194452,0.6194452 0 0 1 1.2669383,19.379693 l 0.00243,-1.876751 h -0.00388 v -4.925535 a 7.5663233,7.5663233 0 0 1 7.477442,-7.5826165 l 0.01373,-0.00228 v 0.00228 h 2.4815137 a 0.44643653,0.44643653 0 0 0 0.47117,-0.6772271 L 10.031633,0.63210537 a 0.48266885,0.48266885 0 0 1 0.778495,-0.5111853 L 18.73453,6.2661801 10.810116,12.365794 A 0.48266885,0.48266885 0 0 1 10.031608,11.854621 L 11.709319,8.169163 A 0.44647399,0.44647399 0 0 0 11.238149,7.4918611 H 8.7426393 Z"
+     fill="#000000" />
+</svg>

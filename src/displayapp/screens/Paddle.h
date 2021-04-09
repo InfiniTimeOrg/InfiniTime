@@ -17,7 +17,7 @@ namespace Pinetime {
           ~Paddle() override;
 
           bool Refresh() override;
-          bool OnButtonPushed() override;
+          
           bool OnTouchEvent(TouchEvents event) override;
           bool OnTouchEvent(uint16_t x, uint16_t y) override;
           
@@ -36,8 +36,6 @@ namespace Pinetime {
           int counter = 0;	            // init Frame refresh limit counter
           int score = 0;   
 
-          char scoreStr[10];
-
           lv_img_dsc_t paddle; 
           lv_img_dsc_t ball;
 
@@ -45,7 +43,7 @@ namespace Pinetime {
           lv_obj_t* paddle_image;		// pointer to paddle image
           lv_obj_t* ball_image;		// pointer to ball image
 
-          bool running = true;
+          
       };
     }
   }

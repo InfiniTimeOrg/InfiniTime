@@ -37,7 +37,7 @@ namespace Pinetime {
         
         bool Refresh() override;
         
-        bool OnButtonPushed() override;
+        
         
         void OnObjectEvent(lv_obj_t *obj, lv_event_t event);
       
@@ -76,12 +76,12 @@ namespace Pinetime {
         /** Last length */
         int lastLength;
         /** Last time an animation update or timer was incremented */
-        TickType_t lastIncrement;
+        TickType_t lastIncrement = 0;
         
         bool playing;
         
         /** Watchapp */
-        bool running = true;
+        
       };
     }
   }

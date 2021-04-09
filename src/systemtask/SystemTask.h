@@ -37,8 +37,8 @@ namespace Pinetime {
   namespace System {
     class SystemTask {
       public:
-        enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification, OnNewCall, BleConnected,
-            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent, OnDisplayTaskSleeping
+        enum class Messages {GoToSleep, GoToRunning, TouchWakeUp, OnNewTime, OnNewNotification, OnNewCall, BleConnected, UpdateTimeOut,
+            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent, OnDisplayTaskSleeping, EnableSleeping, DisableSleeping
         };
 
         SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
@@ -104,7 +104,6 @@ namespace Pinetime {
         void ReloadIdleTimer() const;
         bool isBleDiscoveryTimerRunning = false;
         uint8_t bleDiscoveryTimer = 0;
-        static constexpr uint32_t idleTime = 15000;
         TimerHandle_t idleTimer;
         bool doNotGoToSleep = false;
 

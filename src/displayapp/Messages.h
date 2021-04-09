@@ -4,7 +4,7 @@ namespace Pinetime {
     namespace Display {
       enum class Messages : uint8_t {
         GoToSleep, GoToRunning, UpdateDateTime, UpdateBleConnection, UpdateBatteryLevel, TouchEvent, ButtonPushed,
-        NewNotification, BleFirmwareUpdateStarted
+        NewNotification, BleFirmwareUpdateStarted, UpdateTimeOut
       };
     }
   }

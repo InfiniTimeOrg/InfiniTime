@@ -374,95 +374,6 @@ list(APPEND IMAGE_FILES
         displayapp/icons/bluetooth/os_bt_connected.c
         displayapp/icons/bluetooth/os_bt_disconnected.c
 
-        displayapp/icons/navigation/arrive-left.c
-        displayapp/icons/navigation/arrive-right.c
-        displayapp/icons/navigation/arrive-straight.c
-        displayapp/icons/navigation/arrive.c
-        displayapp/icons/navigation/close.c
-        displayapp/icons/navigation/continue-left.c
-        displayapp/icons/navigation/continue-right.c
-        displayapp/icons/navigation/continue-slight-left.c
-        displayapp/icons/navigation/continue-slight-right.c
-        displayapp/icons/navigation/continue-straight.c
-        displayapp/icons/navigation/continue-uturn.c
-        displayapp/icons/navigation/continue.c
-        displayapp/icons/navigation/depart-left.c
-        displayapp/icons/navigation/depart-right.c
-        displayapp/icons/navigation/depart-straight.c
-        displayapp/icons/navigation/end-of-road-left.c
-        displayapp/icons/navigation/end-of-road-right.c
-        displayapp/icons/navigation/ferry.c
-        displayapp/icons/navigation/flag.c
-        displayapp/icons/navigation/fork-left.c
-        displayapp/icons/navigation/fork-right.c
-        displayapp/icons/navigation/fork-slight-left.c
-        displayapp/icons/navigation/fork-slight-right.c
-        displayapp/icons/navigation/fork-straight.c
-        displayapp/icons/navigation/invalid.c
-        displayapp/icons/navigation/invalid-left.c
-        displayapp/icons/navigation/invalid-right.c
-        displayapp/icons/navigation/invalid-slight-left.c
-        displayapp/icons/navigation/invalid-slight-right.c
-        displayapp/icons/navigation/invalid-straight.c
-        displayapp/icons/navigation/invalid-uturn.c
-        displayapp/icons/navigation/merge-left.c
-        displayapp/icons/navigation/merge-right.c
-        displayapp/icons/navigation/merge-slight-left.c
-        displayapp/icons/navigation/merge-slight-right.c
-        displayapp/icons/navigation/merge-straight.c
-        displayapp/icons/navigation/new-name-left.c
-        displayapp/icons/navigation/new-name-right.c
-        displayapp/icons/navigation/new-name-sharp-left.c
-        displayapp/icons/navigation/new-name-sharp-right.c
-        displayapp/icons/navigation/new-name-slight-left.c
-        displayapp/icons/navigation/new-name-slight-right.c
-        displayapp/icons/navigation/new-name-straight.c
-        displayapp/icons/navigation/notification-left.c
-        displayapp/icons/navigation/notification-right.c
-        displayapp/icons/navigation/notification-sharp-left.c
-        displayapp/icons/navigation/notification-sharp-right.c
-        displayapp/icons/navigation/notification-slight-left.c
-        displayapp/icons/navigation/notification-slight-right.c
-        displayapp/icons/navigation/notification-straight.c
-        displayapp/icons/navigation/off-ramp-left.c
-        displayapp/icons/navigation/off-ramp-right.c
-        displayapp/icons/navigation/off-ramp-sharp-left.c
-        displayapp/icons/navigation/off-ramp-sharp-right.c
-        displayapp/icons/navigation/off-ramp-slight-left.c
-        displayapp/icons/navigation/off-ramp-slight-right.c
-        displayapp/icons/navigation/off-ramp-straight.c
-        displayapp/icons/navigation/on-ramp-left.c
-        displayapp/icons/navigation/on-ramp-right.c
-        displayapp/icons/navigation/on-ramp-sharp-left.c
-        displayapp/icons/navigation/on-ramp-sharp-right.c
-        displayapp/icons/navigation/on-ramp-slight-left.c
-        displayapp/icons/navigation/on-ramp-slight-right.c
-        displayapp/icons/navigation/on-ramp-straight.c
-        displayapp/icons/navigation/rotary.c
-        displayapp/icons/navigation/rotary-left.c
-        displayapp/icons/navigation/rotary-right.c
-        displayapp/icons/navigation/rotary-sharp-left.c
-        displayapp/icons/navigation/rotary-sharp-right.c
-        displayapp/icons/navigation/rotary-slight-left.c
-        displayapp/icons/navigation/rotary-slight-right.c
-        displayapp/icons/navigation/rotary-straight.c
-        displayapp/icons/navigation/roundabout.c
-        displayapp/icons/navigation/roundabout-left.c
-        displayapp/icons/navigation/roundabout-right.c
-        displayapp/icons/navigation/roundabout-sharp-left.c
-        displayapp/icons/navigation/roundabout-sharp-right.c
-        displayapp/icons/navigation/roundabout-slight-left.c
-        displayapp/icons/navigation/roundabout-slight-right.c
-        displayapp/icons/navigation/roundabout-straight.c
-        displayapp/icons/navigation/turn-left.c
-        displayapp/icons/navigation/turn-right.c
-        displayapp/icons/navigation/turn-sharp-left.c
-        displayapp/icons/navigation/turn-sharp-right.c
-        displayapp/icons/navigation/turn-slight-left.c
-        displayapp/icons/navigation/turn-slight-right.c
-        displayapp/icons/navigation/turn-stright.c
-        displayapp/icons/navigation/updown.c
-        displayapp/icons/navigation/uturn.c
         )
 
 list(APPEND SOURCE_FILES
@@ -490,11 +401,21 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Notifications.cpp
         displayapp/screens/Twos.cpp
         displayapp/screens/HeartRate.cpp
+        displayapp/screens/FlashLight.cpp
+        displayapp/screens/List.cpp
+        displayapp/screens/BatteryInfo.cpp
+
+        ## Settings
+        displayapp/screens/settings/QuickSettings.cpp
+        displayapp/screens/settings/Settings.cpp
+        displayapp/screens/settings/SettingWatchFace.cpp
+        displayapp/screens/settings/SettingTimeFormat.cpp
+        displayapp/screens/settings/SettingWakeUp.cpp
+        displayapp/screens/settings/SettingDisplay.cpp
 
         ## Watch faces
         displayapp/icons/bg_clock.c
         displayapp/screens/WatchFaceAnalog.cpp
-        
         displayapp/screens/WatchFaceDigital.cpp
 
         ##
@@ -522,6 +443,7 @@ list(APPEND SOURCE_FILES
         components/ble/AlertNotificationService.cpp
         components/ble/MusicService.cpp
         components/ble/NavigationService.cpp
+        displayapp/fonts/lv_font_navi_80.c
         components/ble/BatteryInformationService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/ServiceDiscovery.cpp
@@ -537,6 +459,8 @@ list(APPEND SOURCE_FILES
         displayapp/LittleVgl.cpp
         displayapp/fonts/jetbrains_mono_extrabold_compressed.c
         displayapp/fonts/jetbrains_mono_bold_20.c
+        displayapp/fonts/jetbrains_mono_76.c
+        displayapp/fonts/lv_font_sys_48.c
         displayapp/lv_pinetime_theme.c
 
         systemtask/SystemTask.cpp
@@ -624,6 +548,7 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
 
 
 set(INCLUDE_FILES
+
         BootloaderVersion.h
         logging/Logger.h
         logging/NrfLogger.h
@@ -970,7 +895,7 @@ add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
         COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.bin"
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_RECOVERYY_MCUBOOT_FILE_NAME}.hex"
         COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.bin ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME}
-        COMMAND python ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME} recoveryImage > recoveryImage.h
+        COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME} recoveryImage > recoveryImage.h
         COMMENT "post build steps for ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}"
         )
 
@@ -1044,7 +969,7 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
         COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.bin"
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.hex"
         COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.bin ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME}
-        COMMAND python ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME} recoveryLoaderImage > recoveryLoaderImage.h
+        COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME} recoveryLoaderImage > recoveryLoaderImage.h
         COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}"
         )
 

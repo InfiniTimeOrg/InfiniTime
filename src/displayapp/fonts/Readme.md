@@ -22,3 +22,20 @@ Add new symbols:
 static constex char* newSymbol = "\xEF\x86\x85";
 ```
 
+#### Navigation font
+
+To create the navigtion.ttf I use the web app [icomoon](https://icomoon.io/app)
+this app can import the svg files from the folder *src/displayapp/icons/navigation/unique* and creat a ttf file
+the project for the site is *lv_font_navi_80.json* you can import it to add or remove icons
+
+You can also use the online LVGL tool to create the .c
+
+ttf file : navigation.ttf
+name : lv_font_navi_80
+size : 80px
+Bpp : 2 bit-per-pixel
+range : 0xe900-0xe929
+
+$lv_font_conv --font navigation.ttf -r '0xe900-0xe929' --size 80 --format lvgl --bpp 2 --no-prefilter -o lv_font_navi_80.c 
+
+#### I use the method above to create the other ttf

@@ -65,11 +65,6 @@ bool FirmwareUpdate::DisplayProgression() const {
   return running;
 }
 
-bool FirmwareUpdate::OnButtonPushed() {
-  running = false;
-  return true;
-}
-
 void FirmwareUpdate::UpdateValidated() {
   lv_label_set_recolor(percentLabel, true);
   lv_label_set_text(percentLabel, "#00ff00 Image Ok!#");

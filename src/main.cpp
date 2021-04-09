@@ -111,9 +111,9 @@ void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
 std::unique_ptr<Pinetime::System::SystemTask> systemTask;
 
-Pinetime::Controllers::MotorController motorController;
+Pinetime::Controllers::Settings settingsController{spiNorFlash};
 
-Pinetime::Controllers::Settings settingsController;
+Pinetime::Controllers::MotorController motorController{settingsController};
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if(pin == pinTouchIrq) {

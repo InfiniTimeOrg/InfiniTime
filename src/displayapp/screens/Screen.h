@@ -56,6 +56,8 @@ namespace Pinetime {
 
         protected:
           DisplayApp* app;
+          bool running = true;
+
       };
     }
   }

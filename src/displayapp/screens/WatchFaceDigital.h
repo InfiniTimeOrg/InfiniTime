@@ -32,7 +32,7 @@ namespace Pinetime {
           ~WatchFaceDigital() override;
 
           bool Refresh() override;
-          bool OnButtonPushed() override;
+          
 
           void OnObjectEvent(lv_obj_t *pObj, lv_event_t i);
         private:
@@ -74,7 +74,7 @@ namespace Pinetime {
           Controllers::Settings& settingsController;
           Controllers::HeartRateController& heartRateController;
 
-          bool running = true;
+          
 
       };
     }

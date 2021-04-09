@@ -125,7 +125,7 @@ void SystemTask::Work() {
 
   nrfx_gpiote_in_init(pinTouchIrq, &pinConfig, nrfx_gpiote_evt_handler);
 
-  idleTimer = xTimerCreate ("idleTimer", idleTime, pdFALSE, this, IdleTimerCallback);
+  idleTimer = xTimerCreate ("idleTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut()), pdFALSE, this, IdleTimerCallback);
   xTimerStart(idleTimer, 0);
 
   // Suppress endless loop diagnostic
@@ -137,14 +137,27 @@ void SystemTask::Work() {
       batteryController.Update();
       Messages message = static_cast<Messages >(msg);
       switch(message) {
+        case Messages::EnableSleeping:
+          doNotGoToSleep = false;
+        break;
+        case Messages::DisableSleeping:
+          doNotGoToSleep = true;
+        break;
+        case Messages::UpdateTimeOut:
+          xTimerChangePeriod(idleTimer, pdMS_TO_TICKS(settingsController.GetScreenTimeOut()), 0);
+        break;
         case Messages::GoToRunning:
           spi.Wakeup();
-          twiMaster.Wakeup();
+
+          // Double Tap needs the touch screen to be in normal mode
+          if ( settingsController.getWakeUpMode() != Pinetime::Controllers::Settings::WakeUpMode::DoubleTap ) {
+            twiMaster.Wakeup();
+            touchPanel.Wakeup();
+          }
 
           nimbleController.StartAdvertising();
           xTimerStart(idleTimer, 0);
-          spiNorFlash.Wakeup();
-          touchPanel.Wakeup();
+          spiNorFlash.Wakeup();          
           lcd.Wakeup();
 
           displayApp->PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
@@ -154,6 +167,21 @@ void SystemTask::Work() {
           isSleeping = false;
           isWakingUp = false;
           break;
+        case Messages::TouchWakeUp: {
+          auto touchInfo = touchPanel.GetTouchInfo();
+          if( touchInfo.isTouch and 
+              (
+                ( touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and 
+                  settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::DoubleTap 
+                ) or
+                ( touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and 
+                  settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::SingleTap
+                )
+              )
+            ) {
+            GoToRunning();
+          }
+        } break;
         case Messages::GoToSleep:
           isGoingToSleep = true;
           NRF_LOG_INFO("[systemtask] Going to sleep");
@@ -167,7 +195,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewNotification:
           if(isSleeping && !isWakingUp) GoToRunning();
-          if(notificationManager.IsVibrationEnabled()) motorController.SetDuration(35);
+          motorController.SetDuration(35);
           displayApp->PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;
         case Messages::BleConnected:
@@ -199,10 +227,14 @@ void SystemTask::Work() {
             spiNorFlash.Sleep();
           }
           lcd.Sleep();
-          touchPanel.Sleep();
-
           spi.Sleep();
-          twiMaster.Sleep();
+
+          // Double Tap needs the touch screen to be in normal mode
+          if ( settingsController.getWakeUpMode() != Pinetime::Controllers::Settings::WakeUpMode::DoubleTap ) {
+            touchPanel.Sleep();
+            twiMaster.Sleep();
+          }
+          
           isSleeping = true;
           isGoingToSleep = false;
           break;
@@ -253,10 +285,13 @@ void SystemTask::GoToRunning() {
 
 void SystemTask::OnTouchEvent() {
   if(isGoingToSleep) return ;
-  NRF_LOG_INFO("[systemtask] Touch event");
   if(!isSleeping) {
     PushMessage(Messages::OnTouchEvent);
     displayApp->PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
+  } else if(!isWakingUp) {
+    if( settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::None or 
+          settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist ) return;
+    PushMessage(Messages::TouchWakeUp);
   }
 }
 
