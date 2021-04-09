@@ -16,7 +16,7 @@ ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp *app,
         settingsController{settingsController},
         batteryController{batteryController},
         dateTimeController{dateTimeController},
-        screens{app, 
+        screens{app,
           settingsController.GetAppMenu(),
           {
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen1(); },
@@ -47,7 +47,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
             {Symbols::stopWatch,    Apps::StopWatch},
             {Symbols::music,        Apps::Music},
             {Symbols::map,          Apps::Navigation},
-            {Symbols::shoe,         Apps::Clock},
+            {Symbols::shoe,         Apps::Motion},
             {Symbols::heartBeat,    Apps::HeartRate},
             {"",                    Apps::None},
           }

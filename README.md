@@ -34,6 +34,9 @@ As of now, here is the list of achievements of this project:
  - Rich user interface via display, touchscreen and pushbutton
  - Time synchronization via BLE
  - Notification via BLE
+ - Heart rate measurements
+ - Step counting
+ - Wake-up on wrist rotation
  - Multiple 'apps' : 
     * Clock (displays the date, time, battery level, ble connection status, heart rate)
     * System info (displays various info : BLE MAC, build date/time, uptime, version,...)

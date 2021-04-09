@@ -26,6 +26,7 @@
 #include <task.h>
 #include <timers.h>
 #include <drivers/Hrs3300.h>
+#include <drivers/Bma421.h>
 
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
@@ -60,6 +61,7 @@ static constexpr uint8_t pinLcdDataCommand = 18;
 static constexpr uint8_t pinTwiScl = 7;
 static constexpr uint8_t pinTwiSda = 6;
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
+static constexpr uint8_t motionSensorTwiAddress = 0x18;
 static constexpr uint8_t heartRateSensorTwiAddress = 0x44;
 
 Pinetime::Drivers::SpiMaster spi{Pinetime::Drivers::SpiMaster::SpiModule::SPI0, {
@@ -98,14 +100,13 @@ static constexpr bool isFactory = false;
 Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 #endif
 
-
+Pinetime::Drivers::Bma421 motionSensor{twiMaster, motionSensorTwiAddress};
 Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
 
 
 TimerHandle_t debounceTimer;
 Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
-Pinetime::Controllers::DateTime dateTimeController;
 void ble_manager_set_ble_connection_callback(void (*connection)());
 void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
@@ -257,7 +258,7 @@ int main(void) {
   debounceTimer = xTimerCreate ("debounceTimer", 200, pdFALSE, (void *) 0, DebounceTimerCallback);
 
   systemTask = std::make_unique<Pinetime::System::SystemTask>(spi, lcd, spiNorFlash, twiMaster, touchPanel, lvgl, batteryController, bleController,
-                                                    dateTimeController, motorController, heartRateSensor, settingsController);
+                                                    motorController, heartRateSensor, motionSensor, settingsController);
   systemTask->Start();
   nimble_port_init();
 

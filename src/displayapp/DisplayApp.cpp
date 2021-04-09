@@ -1,10 +1,12 @@
 #include "DisplayApp.h"
 #include <libraries/log/nrf_log.h>
 #include <displayapp/screens/HeartRate.h>
+#include <displayapp/screens/Motion.h>
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/NotificationManager.h"
+#include "components/motion/MotionController.h"
 #include "displayapp/screens/ApplicationList.h"
 #include "displayapp/screens/Brightness.h"
 #include "displayapp/screens/Clock.h"
@@ -43,7 +45,8 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
                        System::SystemTask &systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::HeartRateController& heartRateController,
-                       Controllers::Settings &settingsController) :
+                       Controllers::Settings &settingsController,
+                       Pinetime::Controllers::MotionController& motionController) :
         lcd{lcd},
         lvgl{lvgl},
         touchPanel{touchPanel},
@@ -54,7 +57,8 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
         systemTask{systemTask},
         notificationManager{notificationManager},
         heartRateController{heartRateController},
-        settingsController{settingsController} {
+        settingsController{settingsController},
+        motionController{motionController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   // Start clock when smartwatch boots
   LoadApp( Apps::Clock, DisplayApp::FullRefreshDirections::None );
@@ -174,7 +178,7 @@ void DisplayApp::Refresh() {
         break;
        case Messages::UpdateDateTime:
        // Added to remove warning
-       // What should happen here? 
+       // What should happen here?
        break;
     }
   }
@@ -220,7 +224,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::None:
     case Apps::Clock:
-      currentScreen = std::make_unique<Screens::Clock>(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController); 
+      currentScreen = std::make_unique<Screens::Clock>(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController, motionController);
       break;
 
     case Apps::FirmwareValidation:
@@ -232,7 +236,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
 
     case Apps::Notifications:
-      currentScreen = std::make_unique<Screens::Notifications>(this, notificationManager, systemTask.nimble().alertService(), Screens::Notifications::Modes::Normal); 
+      currentScreen = std::make_unique<Screens::Notifications>(this, notificationManager, systemTask.nimble().alertService(), Screens::Notifications::Modes::Normal);
       returnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::NotificationsPreview:
@@ -245,37 +249,37 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::QuickSettings>(this, batteryController, dateTimeController, brightnessController, settingsController);
       returnApp(Apps::Clock, FullRefreshDirections::LeftAnim, TouchEvents::SwipeLeft);
       break;
-    case Apps::Settings: 
+    case Apps::Settings:
       currentScreen = std::make_unique<Screens::Settings>(this, settingsController);
       returnApp(Apps::QuickSettings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
-    case Apps::SettingWatchFace: 
+    case Apps::SettingWatchFace:
       currentScreen = std::make_unique<Screens::SettingWatchFace>(this, settingsController);
       returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
-    case Apps::SettingTimeFormat: 
+    case Apps::SettingTimeFormat:
       currentScreen = std::make_unique<Screens::SettingTimeFormat>(this, settingsController);
       returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
-    case Apps::SettingWakeUp: 
+    case Apps::SettingWakeUp:
       currentScreen = std::make_unique<Screens::SettingWakeUp>(this, settingsController);
       returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
-    case Apps::SettingDisplay: 
+    case Apps::SettingDisplay:
       currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);
       returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController);
-      returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);      
+      returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SysInfo:
       currentScreen = std::make_unique<Screens::SystemInfo>(this, dateTimeController, batteryController, brightnessController, bleController, watchdog);
       returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     //
-    
-    case Apps::FlashLight: 
+
+    case Apps::FlashLight:
       currentScreen = std::make_unique<Screens::FlashLight>(this, systemTask, brightnessController);
       returnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
       break;
@@ -283,23 +287,27 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::StopWatch>(this);
       break;
     case Apps::Twos:
-      currentScreen = std::make_unique<Screens::Twos>(this); 
+      currentScreen = std::make_unique<Screens::Twos>(this);
       break;
     case Apps::Paint:
-      currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl); 
+      currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl);
       break;
     case Apps::Paddle:
-      currentScreen = std::make_unique<Screens::Paddle>(this, lvgl); 
+      currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
       break;
     case Apps::Music:
-      currentScreen = std::make_unique<Screens::Music>(this, systemTask.nimble().music()); 
+      currentScreen = std::make_unique<Screens::Music>(this, systemTask.nimble().music());
       break;
     case Apps::Navigation:
-      currentScreen = std::make_unique<Screens::Navigation>(this, systemTask.nimble().navigation()); 
+      currentScreen = std::make_unique<Screens::Navigation>(this, systemTask.nimble().navigation());
       break;
     case Apps::HeartRate:
-      currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, systemTask); 
+      currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, systemTask);
       break;
+    case Apps::Motion:
+      currentScreen = std::make_unique<Screens::Motion>(this, motionController);
+      break;
+
   }
   currentApp = app;
 }

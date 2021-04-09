@@ -83,7 +83,7 @@ set(SDK_SOURCE_FILES
         "${NRF5_SDK_PATH}/external/fprintf/nrf_fprintf_format.c"
 
         # TWI
-        "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_twi.c"
+        "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_twim.c"
 
         # GPIOTE
         "${NRF5_SDK_PATH}/components/libraries/gpiote/app_gpiote.c"
@@ -396,11 +396,13 @@ list(APPEND SOURCE_FILES
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
         displayapp/screens/Navigation.cpp
+        displayapp/screens/Motion.cpp
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
         displayapp/screens/Twos.cpp
         displayapp/screens/HeartRate.cpp
+        displayapp/screens/Motion.cpp
         displayapp/screens/FlashLight.cpp
         displayapp/screens/List.cpp
         displayapp/screens/BatteryInfo.cpp
@@ -429,11 +431,15 @@ list(APPEND SOURCE_FILES
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
         drivers/Hrs3300.cpp
+        drivers/Bma421.cpp
+        drivers/Bma421_C/bma4.c
+        drivers/Bma421_C/bma423.c
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
         components/ble/NotificationManager.cpp
         components/datetime/DateTimeController.cpp
         components/brightness/BrightnessController.cpp
+        components/motion/MotionController.cpp
         components/ble/NimbleController.cpp
         components/ble/DeviceInformationService.cpp
         components/ble/CurrentTimeClient.cpp
@@ -487,11 +493,15 @@ list(APPEND RECOVERY_SOURCE_FILES
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
         drivers/Hrs3300.cpp
+        drivers/Bma421.cpp
+        drivers/Bma421_C/bma4.c
+        drivers/Bma421_C/bma423.c
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
         components/ble/NotificationManager.cpp
         components/datetime/DateTimeController.cpp
         components/brightness/BrightnessController.cpp
+        components/motion/MotionController.cpp
         components/ble/NimbleController.cpp
         components/ble/DeviceInformationService.cpp
         components/ble/CurrentTimeClient.cpp
@@ -576,6 +586,7 @@ set(INCLUDE_FILES
         displayapp/Apps.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
+        displayapp/screens/Motion.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h
@@ -584,11 +595,15 @@ set(INCLUDE_FILES
         drivers/DebugPins.h
         drivers/InternalFlash.h
         drivers/Hrs3300.h
+        drivers/Bma421.h
+        drivers/Bma421_C/bma4.c
+        drivers/Bma421_C/bma423.c
         components/battery/BatteryController.h
         components/ble/BleController.h
         components/ble/NotificationManager.h
         components/datetime/DateTimeController.h
         components/brightness/BrightnessController.h
+        components/motion/MotionController.h
         components/ble/NimbleController.h
         components/ble/DeviceInformationService.h
         components/ble/CurrentTimeClient.h

@@ -40,16 +40,16 @@ SystemTask::SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
                        Drivers::TwiMaster& twiMaster, Drivers::Cst816S &touchPanel,
                        Components::LittleVgl &lvgl,
                        Controllers::Battery &batteryController, Controllers::Ble &bleController,
-                       Controllers::DateTime &dateTimeController,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Drivers::Hrs3300& heartRateSensor,
+                       Pinetime::Drivers::Bma421& motionSensor,
                        Controllers::Settings &settingsController) :
                        spi{spi}, lcd{lcd}, spiNorFlash{spiNorFlash},
                        twiMaster{twiMaster}, touchPanel{touchPanel}, lvgl{lvgl}, batteryController{batteryController},
                        heartRateController{*this},
-                       bleController{bleController}, dateTimeController{dateTimeController},
+                       bleController{bleController}, dateTimeController{*this},
                        watchdog{}, watchdogView{watchdog},
-                       motorController{motorController}, heartRateSensor{heartRateSensor},
+                       motorController{motorController}, heartRateSensor{heartRateSensor}, motionSensor{motionSensor},
                        settingsController{settingsController},
                        nimbleController(*this, bleController,dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
   systemTasksMsgQueue = xQueueCreate(10, 1);
@@ -84,13 +84,18 @@ void SystemTask::Work() {
   touchPanel.Init();
   batteryController.Init();
   motorController.Init();
+  motionSensor.SoftReset();
 
+  // Reset the TWI device because the motion sensor chip most probably crashed it...
+  twiMaster.Sleep();
+  twiMaster.Init();
+
+  motionSensor.Init();
   settingsController.Init();
-
 
   displayApp =  std::make_unique<Pinetime::Applications::DisplayApp>(lcd, lvgl, touchPanel, batteryController, bleController,
                                                           dateTimeController, watchdogView, *this, notificationManager,
-                                                          heartRateController, settingsController);
+                                                          heartRateController, settingsController, motionController);
   displayApp->Start();
 
   batteryController.Update();
@@ -132,8 +137,10 @@ void SystemTask::Work() {
   #pragma clang diagnostic push
   #pragma ide diagnostic ignored "EndlessLoop"
   while(true) {
+    UpdateMotion();
+
     uint8_t msg;
-    if (xQueueReceive(systemTasksMsgQueue, &msg, isSleeping ? 2500 : 1000)) {
+    if (xQueueReceive(systemTasksMsgQueue, &msg, 100)) {
       batteryController.Update();
       Messages message = static_cast<Messages >(msg);
       switch(message) {
@@ -148,10 +155,10 @@ void SystemTask::Work() {
         break;
         case Messages::GoToRunning:
           spi.Wakeup();
+          twiMaster.Wakeup();
 
           // Double Tap needs the touch screen to be in normal mode
           if ( settingsController.getWakeUpMode() != Pinetime::Controllers::Settings::WakeUpMode::DoubleTap ) {
-            twiMaster.Wakeup();
             touchPanel.Wakeup();
           }
 
@@ -168,7 +175,9 @@ void SystemTask::Work() {
           isWakingUp = false;
           break;
         case Messages::TouchWakeUp: {
+          twiMaster.Wakeup();
           auto touchInfo = touchPanel.GetTouchInfo();
+          twiMaster.Sleep();
           if( touchInfo.isTouch and 
               (
                 ( touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and 
@@ -232,11 +241,16 @@ void SystemTask::Work() {
           // Double Tap needs the touch screen to be in normal mode
           if ( settingsController.getWakeUpMode() != Pinetime::Controllers::Settings::WakeUpMode::DoubleTap ) {
             touchPanel.Sleep();
-            twiMaster.Sleep();
           }
+          twiMaster.Sleep();
           
           isSleeping = true;
           isGoingToSleep = false;
+          break;
+        case Messages::OnNewDay:
+          // We might be sleeping (with TWI device disabled.
+          // Remember we'll have to reset the counter next time we're awake
+          stepCounterMustBeReset = true;
           break;
         default: break;
       }
@@ -262,6 +276,30 @@ void SystemTask::Work() {
   // Clear diagnostic suppression
   #pragma clang diagnostic pop
 }
+void SystemTask::UpdateMotion() {
+  if(isGoingToSleep or isWakingUp) return;
+
+  if(isSleeping)
+    twiMaster.Wakeup();
+
+  if(stepCounterMustBeReset) {
+    motionSensor.ResetStepCounter();
+    stepCounterMustBeReset = false;
+  }
+
+  auto motionValues = motionSensor.Process();
+  if(isSleeping)
+    twiMaster.Sleep();
+
+  motionController.IsSensorOk(motionSensor.IsOk());
+  motionController.Update(motionValues.x,
+                          motionValues.y,
+                          motionValues.z,
+                          motionValues.steps);
+  if (motionController.ShouldWakeUp(isSleeping)) {
+    GoToRunning();
+  }
+}
 
 void SystemTask::OnButtonPushed() {
   if(isGoingToSleep) return;
@@ -279,6 +317,7 @@ void SystemTask::OnButtonPushed() {
 }
 
 void SystemTask::GoToRunning() {
+  if(isGoingToSleep or (not isSleeping) or isWakingUp) return;
   isWakingUp = true;
   PushMessage(Messages::GoToRunning);
 }
