@@ -33,11 +33,6 @@ bool Brightness::Refresh() {
   return running;
 }
 
-bool Brightness::OnButtonPushed() {
-  running = false;
-  return true;
-}
-
 const char *Brightness::LevelToString(Pinetime::Controllers::BrightnessController::Levels level) {
   switch(level) {
     case Pinetime::Controllers::BrightnessController::Levels::Off: return "Off";

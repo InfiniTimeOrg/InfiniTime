@@ -50,14 +50,16 @@ StopWatch::StopWatch(DisplayApp* app)
     currentTimeSeparated {}, lapBuffer {}, lapNr {}, lapPressed {false} {
 
   time = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -45);
+  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_label_set_text(time, "00:00");
+  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -45);  
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 108, 3);
+  //lv_obj_set_style_local_text_font(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_label_set_text(msecTime, "00");
+  lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 108, 3);  
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
@@ -68,12 +70,14 @@ StopWatch::StopWatch(DisplayApp* app)
   lv_label_set_text(txtPlayPause, Symbols::play);
 
   lapOneText = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(lapOneText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  //lv_obj_set_style_local_text_font(lapOneText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_set_style_local_text_color(lapOneText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   lv_obj_align(lapOneText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 30);
   lv_label_set_text(lapOneText, "");
 
   lapTwoText = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(lapTwoText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  //lv_obj_set_style_local_text_font(lapTwoText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_set_style_local_text_color(lapTwoText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   lv_obj_align(lapTwoText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 55);
   lv_label_set_text(lapTwoText, "");
 
@@ -156,6 +160,11 @@ bool StopWatch::Refresh() {
         // Store the current time elapsed in cache
         oldTimeElapsed += timeElapsed;
         currentState = States::Halted;
+        lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+        lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+      } else {
+        lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+        lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
       }
       break;
     }
@@ -170,16 +179,13 @@ bool StopWatch::Refresh() {
       if (currentEvent == Events::Stop) {
         currentState = States::Init;
         oldTimeElapsed = 0;
+        lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+        lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
       }
       break;
     }
   }
   return running;
-}
-
-bool StopWatch::OnButtonPushed() {
-  running = false;
-  return true;
 }
 
 void StopWatch::playPauseBtnEventHandler(lv_event_t event) {

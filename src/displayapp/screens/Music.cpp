@@ -134,11 +134,6 @@ Music::~Music() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool Music::OnButtonPushed() {
-  running = false;
-  return true;
-}
-
 bool Music::Refresh() {
   if (artist != musicService.getArtist()) {
     artist = musicService.getArtist();

@@ -15,7 +15,7 @@ namespace Pinetime {
           Twos(DisplayApp* app);
           ~Twos() override;
           bool Refresh() override;
-          bool OnButtonPushed() override;
+          
           bool OnTouchEvent(TouchEvents event) override;
 
         private:
@@ -26,7 +26,7 @@ namespace Pinetime {
           lv_style_t style_cell4;
           lv_style_t style_cell5;
           
-          bool running = true;
+          
           lv_obj_t *scoreText;
           lv_obj_t *gridDisplay;
           Tile grid[4][4];

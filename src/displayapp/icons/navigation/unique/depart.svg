@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="WORKING_ICONS"
+   data-name="WORKING ICONS"
+   width="11.112293"
+   height="20"
+   viewBox="0 0 11.112293 20"
+   version="1.1"
+   sodipodi:docname="depart.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
+  <metadata
+     id="metadata11">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>direction</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs9" />
+  <sodipodi:namedview
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     inkscape:document-rotation="0"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1027"
+     id="namedview7"
+     showgrid="false"
+     inkscape:zoom="21.5"
+     inkscape:cx="1.4836494"
+     inkscape:cy="9.8236635"
+     inkscape:window-x="-8"
+     inkscape:window-y="22"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="WORKING_ICONS" />
+  <title
+     id="title2">direction</title>
+  <path
+     fill="#000000"
+     d="M 5.5459876,20 A 2.2222222,2.2222222 0 1 1 7.7682098,17.777778 2.2222222,2.2222222 0 0 1 5.5459876,20 Z M 11.004699,7.0475889 5.5561538,0 0.10762067,7.0475889 a 0.42954445,0.42954445 0 0 0 0.454911,0.6928222 L 3.842354,6.2473555 a 0.39491111,0.39491111 0 0 1 0.6011111,0.410089 h -0.00859 v 6.1111775 a 0.55546667,0.55546667 0 0 0 0.5554889,0.555489 h 1.1112448 a 0.55546667,0.55546667 0 0 0 0.555489,-0.555489 V 6.6666667 h 0.01017 a 0.3973,0.3973 0 0 1 0.602701,-0.4193112 l 3.2798232,1.4930556 a 0.42955555,0.42955555 0 0 0 0.454907,-0.6928222 z"
+     id="path4"
+     style="stroke-width:1.11111" />
+</svg>

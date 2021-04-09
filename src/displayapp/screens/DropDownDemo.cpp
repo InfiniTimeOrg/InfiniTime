@@ -44,11 +44,6 @@ bool DropDownDemo::Refresh() {
   return running;
 }
 
-bool DropDownDemo::OnButtonPushed() {
-  running = false;
-  return true;
-}
-
 bool DropDownDemo::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   // If the dropdown is opened, notify Display app that it doesn't need to handle the event
   // (this will prevent displayApp from going back to the menu or clock scree).

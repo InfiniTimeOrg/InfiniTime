@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="depart.svg"
+   version="1.1"
+   viewBox="0 0 20 20"
+   height="20"
+   width="20"
+   data-name="WORKING ICONS"
+   id="WORKING_ICONS">
+  <metadata
+     id="metadata11">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs9" />
+  <sodipodi:namedview
+     inkscape:current-layer="WORKING_ICONS"
+     inkscape:window-maximized="1"
+     inkscape:window-y="22"
+     inkscape:window-x="-8"
+     inkscape:cy="9.8236635"
+     inkscape:cx="5.9275026"
+     inkscape:zoom="21.5"
+     showgrid="false"
+     id="namedview7"
+     inkscape:window-height="1027"
+     inkscape:window-width="1920"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     guidetolerance="10"
+     gridtolerance="10"
+     objecttolerance="10"
+     borderopacity="1"
+     bordercolor="#666666"
+     pagecolor="#ffffff" />
+  <title
+     id="title2">direction</title>
+  <path
+     style="stroke-width:1.11111"
+     id="path4"
+     d="M 9.9898408,20 A 2.2222222,2.2222222 0 1 1 12.212063,17.777778 2.2222222,2.2222222 0 0 1 9.9898408,20 Z M 15.448552,7.0475889 10.000007,0 4.5514739,7.0475889 a 0.42954445,0.42954445 0 0 0 0.454911,0.6928222 L 8.2862072,6.2473555 a 0.39491111,0.39491111 0 0 1 0.6011111,0.410089 h -0.00859 v 6.1111775 a 0.55546667,0.55546667 0 0 0 0.5554889,0.555489 h 1.1112448 a 0.55546667,0.55546667 0 0 0 0.555489,-0.555489 V 6.6666667 h 0.01017 a 0.3973,0.3973 0 0 1 0.602701,-0.4193112 l 3.279823,1.4930556 a 0.42955555,0.42955555 0 0 0 0.454907,-0.6928222 z"
+     fill="#000000" />
+</svg>

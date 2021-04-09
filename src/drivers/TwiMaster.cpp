@@ -10,6 +10,7 @@ using namespace Pinetime::Drivers;
 
 TwiMaster::TwiMaster(const Modules module, const Parameters& params) : module{module}, params{params} {
   mutex = xSemaphoreCreateBinary();
+  ASSERT(mutex != NULL);
 }
 
 void TwiMaster::Init() {
@@ -61,7 +62,7 @@ void TwiMaster::Init() {
 }
 
 TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t *data, size_t size) {
-  xSemaphoreTake(mutex, portMAX_DELAY);
+  xSemaphoreTake(mutex, portMAX_DELAY);  
   auto ret = ReadWithRetry(deviceAddress, registerAddress, data, size);
   xSemaphoreGive(mutex);
 
