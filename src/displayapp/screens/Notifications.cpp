@@ -26,7 +26,7 @@ Notifications::Notifications(DisplayApp *app,
                                            alertNotificationService);
     validDisplay = true;
   } else {
-    currentItem = std::make_unique<NotificationItem>("\nNotification",
+    currentItem = std::make_unique<NotificationItem>("Notification",
                                           "No notification to display",
                                           0,
                                           notification.category,
