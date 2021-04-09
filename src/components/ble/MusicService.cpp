@@ -164,7 +164,7 @@ Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask &
   
   artistName = "Waiting for";
   albumName = "";
-  trackName = "track information...";
+  trackName = "track information..";
   playing = false;
   repeat = false;
   shuffle = false;

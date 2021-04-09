@@ -76,7 +76,7 @@ namespace Pinetime {
         /** Last length */
         int lastLength;
         /** Last time an animation update or timer was incremented */
-        TickType_t lastIncrement;
+        TickType_t lastIncrement = 0;
         
         bool playing;
         
