@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="WORKING_ICONS"
+   data-name="WORKING ICONS"
+   width="20"
+   height="19.966103"
+   viewBox="0 0 20 19.966103"
+   version="1.1"
+   sodipodi:docname="merge_right.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
+  <metadata
+     id="metadata11">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>direction</dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs9" />
+  <sodipodi:namedview
+     fit-margin-bottom="0"
+     fit-margin-right="0"
+     fit-margin-left="0"
+     fit-margin-top="0"
+     inkscape:document-rotation="0"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1027"
+     id="namedview7"
+     showgrid="false"
+     inkscape:zoom="21.5"
+     inkscape:cx="6.5541583"
+     inkscape:cy="11.782041"
+     inkscape:window-x="-8"
+     inkscape:window-y="22"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="WORKING_ICONS" />
+  <title
+     id="title2">direction</title>
+  <path
+     fill="#000000"
+     d="M 14.732643,6.4819883 V 19.340851 A 0.37595707,0.37595707 0 0 1 14.35711,19.716409 H 13.110541 A 0.37595707,0.37595707 0 0 1 12.734996,19.340851 V 6.4819883 h 1.997647 M 14.982349,6.2322825 H 12.485291 V 19.340851 a 0.62525086,0.62525086 0 0 0 0.62525,0.625251 h 1.246544 a 0.62525086,0.62525086 0 0 0 0.625264,-0.625251 z M 15.005209,9.97787 V 7.4963557 A 0.44643653,0.44643653 0 0 1 15.682436,7.0251858 L 19.367894,8.702897 A 0.48266885,0.48266885 0 0 0 19.87908,7.9244014 L 13.73382,0 7.6342058,7.9244139 A 0.48266885,0.48266885 0 0 0 8.145379,8.702922 l 3.685458,-1.6777112 a 0.44647399,0.44647399 0 0 1 0.677302,0.4711699 V 9.991916 a 5.0663062,5.0663062 0 0 1 -5.0855464,4.98007 H 0.6195451 A 0.61954509,0.61954509 0 0 0 0,15.591531 v 1.256607 a 0.6194452,0.6194452 0 0 0 0.6203067,0.619458 l 1.8767514,-0.0024 v 0.0039 H 7.4225926 A 7.5663233,7.5663233 0 0 0 15.005209,9.991655 l 0.0023,-0.01373"
+     id="path4"
+     style="stroke-width:1.24853" />
+</svg>

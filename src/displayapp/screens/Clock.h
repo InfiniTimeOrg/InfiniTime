@@ -35,7 +35,7 @@ namespace Pinetime {
           ~Clock() override;
 
           bool Refresh() override;
-          bool OnButtonPushed() override;
+          
           bool OnTouchEvent(TouchEvents event) override;
 
         private:
@@ -57,7 +57,7 @@ namespace Pinetime {
           //std::unique_ptr<Screen> WatchFaceMinimalScreen();
           //std::unique_ptr<Screen> WatchFaceCustomScreen();
 
-          bool running = true;
+          
 
       };
     }

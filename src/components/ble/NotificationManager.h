@@ -17,8 +17,12 @@ namespace Pinetime {
           Id id;
           bool valid = false;
           uint8_t index;
+          uint8_t size;
           std::array<char, MessageSize+1> message;
           Categories category = Categories::Unknown;
+
+          const char* Message() const;
+          const char* Title() const;
         };
         Notification::Id nextId {0};
 

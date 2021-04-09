@@ -164,7 +164,7 @@ Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask &
   
   artistName = "Waiting for";
   albumName = "";
-  trackName = "track information...";
+  trackName = "track information..";
   playing = false;
   repeat = false;
   shuffle = false;
@@ -191,7 +191,6 @@ int Pinetime::Controllers::MusicService::OnCommand(uint16_t conn_handle, uint16_
     data[notifSize] = '\0';
     os_mbuf_copydata(ctxt->om, 0, notifSize, data);
     char *s = (char *) &data[0];
-    NRF_LOG_INFO("DATA : %s", s);
     if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msArtistCharUuid) == 0) {
       artistName = s;
     } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msTrackCharUuid) == 0) {

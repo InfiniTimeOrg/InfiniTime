@@ -17,7 +17,7 @@ namespace Pinetime {
           ~FirmwareValidation() override;
 
           bool Refresh() override;
-          bool OnButtonPushed() override;
+          
 
           void OnButtonEvent(lv_obj_t *object, lv_event_t event);
 
@@ -32,7 +32,7 @@ namespace Pinetime {
           lv_obj_t* labelButtonValidate;
           lv_obj_t* buttonReset;
           lv_obj_t* labelButtonReset;
-          bool running = true;
+          
       };
     }
   }

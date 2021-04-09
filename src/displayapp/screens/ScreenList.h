@@ -29,11 +29,6 @@ namespace Pinetime {
             return running;
           }
 
-          bool OnButtonPushed() override {
-            running = false;
-            return true;
-          }
-
           bool OnTouchEvent(TouchEvents event) override {
 
             if ( mode == ScreenListModes::UpDown) {
@@ -108,7 +103,7 @@ namespace Pinetime {
           uint8_t screenIndex = 0;          
           std::unique_ptr<Screen> current;
 
-          bool running = true;
+          
       };
     }
   }

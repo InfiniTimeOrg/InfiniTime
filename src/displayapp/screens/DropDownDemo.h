@@ -14,12 +14,12 @@ namespace Pinetime {
           ~DropDownDemo() override;
 
           bool Refresh() override;
-          bool OnButtonPushed() override;
+          
           bool OnTouchEvent(TouchEvents event) override;
 
         private:
           lv_obj_t * ddlist;
-          bool running = true;
+          
           bool isDropDownOpened = false;
       };
     }
