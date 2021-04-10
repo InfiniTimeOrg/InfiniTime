@@ -31,7 +31,7 @@ Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster{twiMaster},
   bma.variant = BMA42X_VARIANT;
   bma.intf_ptr = this;
   bma.delay_us = user_delay;
-  bma.read_write_len = 8;
+  bma.read_write_len = 16;
 }
 
 void Bma421::Init() {

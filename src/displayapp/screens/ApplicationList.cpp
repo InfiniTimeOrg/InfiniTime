@@ -49,7 +49,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
             {Symbols::map,          Apps::Navigation},
             {Symbols::shoe,         Apps::Motion},
             {Symbols::heartBeat,    Apps::HeartRate},
-            {"",                    Apps::None},
+            {"Tasks",                    Apps::Tasks},
           }
   };
 

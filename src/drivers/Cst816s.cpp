@@ -31,7 +31,8 @@ void Cst816S::Init() {
   twiMaster.Read(twiAddress, 0x15, &dummy, 1);
   vTaskDelay(5);
   twiMaster.Read(twiAddress, 0xa7, &dummy, 1);
-
+  vTaskDelay(5);
+  
   /*
   [2] EnConLR - Continuous operation can slide around
   [1] EnConUD - Slide up and down to enable continuous operation
