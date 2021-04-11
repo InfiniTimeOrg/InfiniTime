@@ -406,7 +406,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/FlashLight.cpp
         displayapp/screens/List.cpp
         displayapp/screens/BatteryInfo.cpp
-        displayapp/screens/Tasks.cpp
 
         ## Settings
         displayapp/screens/settings/QuickSettings.cpp

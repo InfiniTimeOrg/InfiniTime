@@ -24,7 +24,7 @@
 #include "displayapp/screens/Twos.h"
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
-#include "displayapp/screens/Tasks.h"
+
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 #include "drivers/Watchdog.h"
@@ -308,11 +308,6 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
     case Apps::Motion:
       currentScreen = std::make_unique<Screens::Motion>(this, motionController);
       break;
-    case Apps::Tasks: 
-      currentScreen = std::make_unique<Screens::Tasks>(this);
-      returnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::SwipeDown);
-      break;
-
   }
   currentApp = app;
 }

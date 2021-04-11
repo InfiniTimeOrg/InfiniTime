@@ -26,7 +26,8 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp *app,
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen1(); },
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen2(); },
                 [this]() -> std::unique_ptr<Screen> { return CreateScreen3(); },
-                [this]() -> std::unique_ptr<Screen> { return CreateScreen4(); }
+                [this]() -> std::unique_ptr<Screen> { return CreateScreen4(); },
+                [this]() -> std::unique_ptr<Screen> { return CreateScreen5(); }
           },
           Screens::ScreenListModes::UpDown
         } {}
@@ -37,7 +38,9 @@ SystemInfo::~SystemInfo() {
 }
 
 bool SystemInfo::Refresh() {
-  screens.Refresh();
+  if (running) {
+    screens.Refresh();
+  }
   return running;
 }
 
@@ -50,27 +53,8 @@ bool SystemInfo::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return screens.OnTouchEvent(event);
 }
 
-void SystemInfo::CreateContainer() {
-
-  if ( container1 ) {
-    container1 = lv_cont_create(lv_scr_act(), nullptr);
-
-    lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-    lv_obj_set_style_local_pad_all(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
-    lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
-    lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
-
-    lv_obj_set_pos(container1, 0, 0);
-    lv_obj_set_width(container1, LV_HOR_RES - 10);
-    lv_obj_set_height(container1, LV_VER_RES);
-    lv_cont_set_layout(container1, LV_LAYOUT_CENTER);
-  }
-}
-
 std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
-  CreateContainer();
-
-  lv_obj_t * label = lv_label_create(container1, nullptr);
+  lv_obj_t * label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
   lv_label_set_text_fmt(label, 
               "#FFFF00 InfiniTime#\n\n"
@@ -81,12 +65,11 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
           Version::Major(), Version::Minor(), Version::Patch(),
           __DATE__, __TIME__);
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
-  return std::unique_ptr<Screen>(new Screens::Label(0, 4, app, label));
+  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  return std::unique_ptr<Screen>(new Screens::Label(0, 5, app, label));
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
-  CreateContainer();
-
   auto batteryPercent = static_cast<uint8_t>(batteryController.PercentRemaining());
   float batteryVoltage = batteryController.Voltage();
 
@@ -126,7 +109,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   batteryVoltageBytes[0] = static_cast<uint8_t>((batteryVoltage - batteryVoltageBytes[1]) * 100); //remove whole part of flt and shift 2 places over
   //
 
-  lv_obj_t * label = lv_label_create(container1, nullptr);
+  lv_obj_t * label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
   lv_label_set_text_fmt(label, 
               "#444444 Date# %02d/%02d/%04d\n"
@@ -140,6 +123,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
           uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds,
           batteryPercent, batteryVoltageBytes[1], batteryVoltageBytes[0], brightnessController.ToString(), resetReason
           );
+  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::unique_ptr<Screen>(new Screens::Label(1, 4, app, label));
 
 }
@@ -147,9 +131,8 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
 std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
   lv_mem_monitor_t mon;
   lv_mem_monitor(&mon);  
-  CreateContainer();
-
-  lv_obj_t * label = lv_label_create(container1, nullptr);
+  
+  lv_obj_t * label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
   auto& bleAddr = bleController.Address();
   lv_label_set_text_fmt(label, 
@@ -169,13 +152,46 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
           (int)mon.free_biggest_size,
           0
           );
-
-  return std::unique_ptr<Screen>(new Screens::Label(2, 4, app, label));
+  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  return std::unique_ptr<Screen>(new Screens::Label(2, 5, app, label));
 }
 
+
+bool sortById(const TaskStatus_t &lhs, const TaskStatus_t &rhs) { return lhs.xTaskNumber < rhs.xTaskNumber; }
+
 std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
-  CreateContainer();
-  lv_obj_t * label = lv_label_create(container1, nullptr);
+  TaskStatus_t tasksStatus[7];
+  lv_obj_t * infoTask = lv_table_create(lv_scr_act(), NULL);
+  lv_table_set_col_cnt(infoTask, 3);
+  lv_table_set_row_cnt(infoTask, 8);
+  lv_obj_set_pos(infoTask, 10, 10);
+
+  lv_table_set_cell_value(infoTask, 0, 0, "#");
+  lv_table_set_col_width(infoTask, 0, 50);
+  lv_table_set_cell_value(infoTask, 0, 1, "Task");
+  lv_table_set_col_width(infoTask, 1, 80);
+  lv_table_set_cell_value(infoTask, 0, 2, "Free");
+  lv_table_set_col_width(infoTask, 2, 90);
+
+  auto nb = uxTaskGetSystemState(tasksStatus, 7, nullptr);
+  std::sort(tasksStatus, tasksStatus + nb, sortById);
+  for (uint8_t i = 0; i < nb; i++) {
+    
+    lv_table_set_cell_value(infoTask, i + 1, 0, std::to_string(tasksStatus[i].xTaskNumber).c_str());
+    lv_table_set_cell_value(infoTask, i + 1, 1, tasksStatus[i].pcTaskName);    
+    if (tasksStatus[i].usStackHighWaterMark < 20) {
+      std::string str1 = std::to_string(tasksStatus[i].usStackHighWaterMark) + " low";
+      lv_table_set_cell_value(infoTask, i + 1, 2, str1.c_str());
+    } else {
+      lv_table_set_cell_value(infoTask, i + 1, 2, std::to_string(tasksStatus[i].usStackHighWaterMark).c_str());
+    }
+
+  }
+  return std::unique_ptr<Screen>(new Screens::Label(3, 5, app, infoTask));
+}
+
+std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
+  lv_obj_t * label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
   lv_label_set_text_static(label,
               "Software Licensed\n"
@@ -186,5 +202,6 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
               "#FFFF00 https://github.com/#\n"
               "#FFFF00 JF002/InfiniTime#");
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
-  return std::unique_ptr<Screen>(new Screens::Label(3, 4, app, label));
+  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  return std::unique_ptr<Screen>(new Screens::Label(4, 5, app, label));
 }
