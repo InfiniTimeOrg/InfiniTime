@@ -63,6 +63,7 @@ As of now, here is the list of achievements of this project:
 
 ### Develop
  - [Generate the fonts and symbols](src/displayapp/fonts/Readme.md)
+ - [Creating a stopwatch in Pinetime(article)](https://pankajraghav.com/2021/04/03/PINETIME-STOPCLOCK.html)
 
 ### Build, flash and debug
  - [Project branches](doc/branches.md)
