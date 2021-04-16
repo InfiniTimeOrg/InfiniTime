@@ -284,6 +284,9 @@ void SystemTask::Work() {
 void SystemTask::UpdateMotion() {
   if(isGoingToSleep or isWakingUp) return;
 
+  if(isSleeping && settingsController.getWakeUpMode() != Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist)
+    return;
+
   if(isSleeping)
     twiMaster.Wakeup();
 
