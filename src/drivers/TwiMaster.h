@@ -3,13 +3,13 @@
 #include <semphr.h>
 #include <drivers/include/nrfx_twi.h> // NRF_TWIM_Type
 #include <cstdint>
-#include <nrfx_twim.h>
 
 namespace Pinetime {
   namespace Drivers {
     class TwiMaster {
       public:
         enum class Modules { TWIM1 };
+        enum class Frequencies {Khz100, Khz250, Khz400};
         enum class ErrorCodes {NoError, TransactionFailed};
         struct Parameters {
           uint32_t frequency;
@@ -27,13 +27,19 @@ namespace Pinetime {
         void Wakeup();
 
       private:
-        nrfx_twim_t twim;
+
+        ErrorCodes Read(uint8_t deviceAddress, uint8_t* buffer, size_t size, bool stop);
+        ErrorCodes Write(uint8_t deviceAddress, const uint8_t* data, size_t size, bool stop);
+        void FixHwFreezed();
+        NRF_TWIM_Type* twiBaseAddress;
+        SemaphoreHandle_t mutex;
         const Modules module;
         const Parameters params;
-        SemaphoreHandle_t mutex;
-        static constexpr uint8_t maxDataSize{8};
+        static constexpr uint8_t maxDataSize{16};
         static constexpr uint8_t registerSize{1};
         uint8_t internalBuffer[maxDataSize + registerSize];
+        uint32_t txStartedCycleCount = 0;
+        static constexpr uint32_t HwFreezedDelay{161000};
     };
   }
 }

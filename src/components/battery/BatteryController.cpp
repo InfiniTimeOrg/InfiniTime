@@ -23,10 +23,18 @@ void Battery::Update() {
   isCharging = !nrf_gpio_pin_read(chargingPin);
   isPowerPresent = !nrf_gpio_pin_read(powerPresentPin);
   
+  if ( isReading ) return;
   // Non blocking read
-  SaadcInit();
-  nrfx_saadc_sample();
+  samples = 0;
+  isReading = true;
+  SaadcInit();	
+
+	nrfx_saadc_sample();
   
+}
+
+void Battery::adcCallbackStatic(nrfx_saadc_evt_t const *event) {
+  instance->SaadcEventHandler(event);
 }
 
 void Battery::SaadcInit() {
@@ -68,10 +76,13 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const * p_event) {
 
       percentRemainingBuffer.insert(percentRemaining);
 
-      nrfx_saadc_uninit();
+      samples++;
+      if ( samples > percentRemainingSamples ) {
+        nrfx_saadc_uninit();
+        isReading = false;
+      } else {
+        nrfx_saadc_sample();
+      }
     }
   }
 
-void Battery::adcCallbackStatic(nrfx_saadc_evt_t const *event) {
-    instance->SaadcEventHandler(event);
-}

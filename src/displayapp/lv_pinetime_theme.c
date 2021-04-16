@@ -246,10 +246,10 @@ static void basic_init(void)
     lv_style_set_border_color(&style_table_cell, LV_STATE_DEFAULT, LV_PINETIME_GRAY);
     lv_style_set_border_width(&style_table_cell, LV_STATE_DEFAULT, 1);
     lv_style_set_border_side(&style_table_cell, LV_STATE_DEFAULT, LV_BORDER_SIDE_FULL);
-    lv_style_set_pad_left(&style_table_cell, LV_STATE_DEFAULT, 12);
-    lv_style_set_pad_right(&style_table_cell, LV_STATE_DEFAULT, 12);
-    lv_style_set_pad_top(&style_table_cell, LV_STATE_DEFAULT, 12);
-    lv_style_set_pad_bottom(&style_table_cell, LV_STATE_DEFAULT, 12);
+    lv_style_set_pad_left(&style_table_cell, LV_STATE_DEFAULT, 5);
+    lv_style_set_pad_right(&style_table_cell, LV_STATE_DEFAULT, 5);
+    lv_style_set_pad_top(&style_table_cell, LV_STATE_DEFAULT, 2);
+    lv_style_set_pad_bottom(&style_table_cell, LV_STATE_DEFAULT, 2);
 
     style_init_reset(&style_pad_small);
     lv_style_int_t pad_small_value = 10;
@@ -356,6 +356,7 @@ static void theme_apply(lv_obj_t * obj, lv_theme_style_t name)
             lv_obj_clean_style_list(obj, LV_OBJ_PART_MAIN);
             list = lv_obj_get_style_list(obj, LV_OBJ_PART_MAIN);
             _lv_style_list_add_style(list, &style_bg);
+            _lv_style_list_add_style(list, &style_label_white);
             break;
 
         case LV_THEME_OBJ:
@@ -499,6 +500,7 @@ static void theme_apply(lv_obj_t * obj, lv_theme_style_t name)
             for(; idx <= LV_TABLE_CELL_STYLE_CNT; idx ++) {
                 list = lv_obj_get_style_list(obj, idx);
                 _lv_style_list_add_style(list, &style_table_cell);
+                _lv_style_list_add_style(list, &style_label_white);
             }
             break;
 

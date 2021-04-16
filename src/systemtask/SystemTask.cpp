@@ -98,14 +98,12 @@ void SystemTask::Work() {
                                                           heartRateController, settingsController, motionController);
   displayApp->Start();
 
-  batteryController.Update();
   displayApp->PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
 
   heartRateSensor.Init();
   heartRateSensor.Disable();
   heartRateApp = std::make_unique<Pinetime::Applications::HeartRateTask>(heartRateSensor, heartRateController);
   heartRateApp->Start();
-
 
   nrf_gpio_cfg_sense_input(pinButton, (nrf_gpio_pin_pull_t)GPIO_PIN_CNF_PULL_Pulldown, (nrf_gpio_pin_sense_t)GPIO_PIN_CNF_SENSE_High);
   nrf_gpio_cfg_output(15);
@@ -141,7 +139,14 @@ void SystemTask::Work() {
 
     uint8_t msg;
     if (xQueueReceive(systemTasksMsgQueue, &msg, 100)) {
+      
+      // call the battery controller or use the MSG in DisplayApp to get the battery status ???
+      // it is necessary to validate which is the most efficient
       batteryController.Update();
+      //displayApp->PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
+      // analyze a more efficient way to do this refreshment
+      // this and the UpdateMotion(); can be called on a timer to be independent of the main process ???
+
       Messages message = static_cast<Messages >(msg);
       switch(message) {
         case Messages::EnableSleeping:

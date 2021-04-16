@@ -21,28 +21,33 @@ Twos::Twos(Pinetime::Applications::DisplayApp *app) : Screen(app) {
   lv_style_set_border_width(&style_cell1, LV_STATE_DEFAULT, 3);
   lv_style_set_bg_opa(&style_cell1, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_style_set_bg_color(&style_cell1, LV_STATE_DEFAULT, lv_color_hex(0xcdc0b4));
+  lv_style_set_pad_top(&style_cell1, LV_STATE_DEFAULT, 25);
+  lv_style_set_text_color(&style_cell1, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
   lv_style_set_border_color(&style_cell2, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
   lv_style_set_border_width(&style_cell2, LV_STATE_DEFAULT, 3);
   lv_style_set_bg_opa(&style_cell2, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_style_set_bg_color(&style_cell2, LV_STATE_DEFAULT, lv_color_hex(0xefdfc6));
+  lv_style_set_pad_top(&style_cell2, LV_STATE_DEFAULT, 25);
+  lv_style_set_text_color(&style_cell2, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
   lv_style_set_border_color(&style_cell3, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
   lv_style_set_border_width(&style_cell3, LV_STATE_DEFAULT, 3);
   lv_style_set_bg_opa(&style_cell3, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_style_set_bg_color(&style_cell3, LV_STATE_DEFAULT, lv_color_hex(0xef9263));
+  lv_style_set_pad_top(&style_cell3, LV_STATE_DEFAULT, 25);
 
   lv_style_set_border_color(&style_cell4, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
   lv_style_set_border_width(&style_cell4, LV_STATE_DEFAULT, 3);
   lv_style_set_bg_opa(&style_cell4, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_style_set_bg_color(&style_cell4, LV_STATE_DEFAULT, lv_color_hex(0xf76142));
-  //lv_style_set_text_color(&style_cell4, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_style_set_pad_top(&style_cell4, LV_STATE_DEFAULT, 25);
 
   lv_style_set_border_color(&style_cell5, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
   lv_style_set_border_width(&style_cell5, LV_STATE_DEFAULT, 3);
   lv_style_set_bg_opa(&style_cell5, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_style_set_bg_color(&style_cell5, LV_STATE_DEFAULT, lv_color_hex(0x007dc5));
-  //lv_style_set_text_color(&style_cell5, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_style_set_pad_top(&style_cell5, LV_STATE_DEFAULT, 25);
 
   // format grid display
   

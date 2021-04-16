@@ -52,13 +52,13 @@ namespace Pinetime {
         float Voltage() const { return voltage; }
 
         bool IsCharging() const { return isCharging; }
-        bool IsPowerPresent() const { return isPowerPresent; }
+        bool IsPowerPresent() const { return isPowerPresent; }        
 
       private:
         static Battery *instance;
         nrf_saadc_value_t  saadc_value;
         
-        static constexpr uint8_t percentRemainingSamples = 10;
+        static constexpr uint8_t percentRemainingSamples = 5;
         CircBuffer<percentRemainingSamples> percentRemainingBuffer {};
 
         static constexpr uint32_t chargingPin = 12;
@@ -74,6 +74,9 @@ namespace Pinetime {
 
         void SaadcEventHandler(nrfx_saadc_evt_t const * p_event);
         static void adcCallbackStatic(nrfx_saadc_evt_t const *event);
+
+        bool isReading = false;
+        uint8_t samples = 0;
     };
   }
 }

@@ -227,13 +227,11 @@ bool WatchFaceDigital::Refresh() {
   heartbeat = heartRateController.HeartRate();
   heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
   if(heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
-    char heartbeatBuffer[4];
     if(heartbeatRunning.Get())
-      sprintf(heartbeatBuffer, "%d", heartbeat.Get());
+      lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());     
     else
-      sprintf(heartbeatBuffer, "---");
-
-    lv_label_set_text(heartbeatValue, heartbeatBuffer);
+      lv_label_set_text_static(heartbeatValue, "---");
+    
     lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
     lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
     lv_obj_align(heartbeatBpm, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
@@ -242,12 +240,7 @@ bool WatchFaceDigital::Refresh() {
   stepCount = motionController.NbSteps();
   motionSensorOk = motionController.IsSensorOk();
   if(stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
-    char stepBuffer[5];
-    if(motionSensorOk.Get())
-      sprintf(stepBuffer, "%lu", stepCount.Get());
-    else
-      sprintf(stepBuffer, "---", stepCount.Get());
-    lv_label_set_text(stepValue, stepBuffer);
+    lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
     lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
     lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
