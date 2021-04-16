@@ -132,7 +132,7 @@ void DisplayApp::Refresh() {
 //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected : Screens::Clock::BleConnectionStates::NotConnected);
         break;
       case Messages::UpdateBatteryLevel:
-//        clockScreen.SetBatteryPercentRemaining(batteryController.PercentRemaining());
+        batteryController.Update();
         break;
       case Messages::NewNotification:
         LoadApp( Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down );
