@@ -161,10 +161,10 @@ Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask &
       .characteristics = characteristicDefinition
   };
   serviceDefinition[1] = {0};
-  
-  artistName = "Waiting for";
+
+  artistName = "";
   albumName = "";
-  trackName = "track information..";
+  trackName = "";
   playing = false;
   repeat = false;
   shuffle = false;
