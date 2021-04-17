@@ -138,25 +138,29 @@ Music::~Music() {
   lv_obj_clean(lv_scr_act());
 }
 
+// If some of the metadata of a specific track happens to be empty, it should be
+// overwritten, instead of retaining and displaying the older metadata. The artist
+// or the track may not change and get reported again, while some other metadata
+// may not get reported to InfiniTime.
 bool Music::Refresh() {
-  if (artist != musicService.getArtist()) {
+  if (artist != musicService.getArtist() or musicService.getArtist() = "") {
     artist = musicService.getArtist();
     currentLength = 0;
     lv_label_set_text(txtArtist, artist.data());
   }
   
-  if (track != musicService.getTrack()) {
+  if (track != musicService.getTrack() or musicService.getTrack() = "") {
     track = musicService.getTrack();
     currentLength = 0;
     lv_label_set_text(txtTrack, track.data());
   }
   
-  if (album != musicService.getAlbum()) {
+  if (album != musicService.getAlbum() or musicService.getAlbum() == "") {
     album = musicService.getAlbum();
     currentLength = 0;
   }
   
-  if (playing != musicService.isPlaying()) {
+  if (playing != musicService.isPlaying() or musicService.isPlaying() == False) {
     playing = musicService.isPlaying();
   }
   
