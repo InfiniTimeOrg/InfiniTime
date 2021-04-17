@@ -16,10 +16,10 @@ namespace {
   TimeSeparated_t convertTicksToTimeSegments(const TickType_t timeElapsed) {
     const int timeElapsedMillis = (static_cast<float>(timeElapsed) / static_cast<float>(configTICK_RATE_HZ)) * 1000;
 
-    const int milliSecs = (timeElapsedMillis % 1000) / 10; // Get only the first two digits and ignore the last
+    const int hundredths = (timeElapsedMillis % 1000) / 10; // Get only the first two digits and ignore the last
     const int secs = (timeElapsedMillis / 1000) % 60;
     const int mins = (timeElapsedMillis / 1000) / 60;
-    return TimeSeparated_t {mins, secs, milliSecs};
+    return TimeSeparated_t {mins, secs, hundredths};
   }
 
   TickType_t calculateDelta(const TickType_t startTime, const TickType_t currentTime) {
@@ -141,14 +141,14 @@ bool StopWatch::Refresh() {
       currentTimeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
 
       lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
-      lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.msecs);
+      lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
 
       if (lapPressed == true) {
         if (lapBuffer[1]) {
-          lv_label_set_text_fmt(lapOneText, "#2%d   %2d:%02d.%02d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->msecs);
+          lv_label_set_text_fmt(lapOneText, "#2%d   %2d:%02d.%02d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->hundredths);
         }
         if (lapBuffer[0]) {
-          lv_label_set_text_fmt(lapTwoText, "#2%d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->msecs);
+          lv_label_set_text_fmt(lapTwoText, "#2%d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
         }
         // Reset the bool to avoid setting the text in each cycle until there is a change
         lapPressed = false;
