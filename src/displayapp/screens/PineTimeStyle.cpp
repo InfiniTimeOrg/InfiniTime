@@ -47,6 +47,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
 
   timebar = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
+  lv_obj_set_style_local_radius(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(timebar, 200, 240);
   lv_obj_align(timebar, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 5, 0);
 
@@ -67,6 +68,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
 
   sidebar = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x008080));
+  lv_obj_set_style_local_radius(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(sidebar, 40, 240);
   lv_obj_align(sidebar, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
