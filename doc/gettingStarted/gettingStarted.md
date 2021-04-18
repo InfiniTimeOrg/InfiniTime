@@ -91,7 +91,7 @@ Good news! Gadgetbridge **automatically** synchronizes the time when connecting 
 ### Using NRFConnect
 You must enable the **CTS** *GATT server* into NRFConnect so that InfiniTime can synchronize the time with your smartphone.
 
-Launch NRFConnect, tap the sandwish button on the top left and select *Configure GATT server*:
+Launch NRFConnect, tap the sandwich button on the top left and select *Configure GATT server*:
 
 ![NRFConnect CTS 0](nrfconnectcts0.jpg)
 
