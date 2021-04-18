@@ -53,8 +53,11 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   btnVolDown = lv_btn_create(lv_scr_act(), nullptr);
   btnVolDown->user_data = this;
   lv_obj_set_event_cb(btnVolDown, event_handler);
-  lv_obj_set_size(btnVolDown, LV_HOR_RES / 3, 80);
-  lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_set_size(btnVolDown, 65, 75);
+  lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 15, -10);
+  lv_obj_set_style_local_radius(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 20);
+  lv_obj_set_style_local_bg_color(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+  lv_obj_set_style_local_bg_opa(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
   label = lv_label_create(btnVolDown, nullptr);
   lv_label_set_text(label, Symbols::volumDown);
   lv_obj_set_hidden(btnVolDown, !displayVolumeButtons);
@@ -62,33 +65,45 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   btnVolUp = lv_btn_create(lv_scr_act(), nullptr);
   btnVolUp->user_data = this;
   lv_obj_set_event_cb(btnVolUp, event_handler);
-  lv_obj_set_size(btnVolUp, LV_HOR_RES / 3, 80);
-  lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lv_obj_set_size(btnVolUp, 65, 75);
+  lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, -15, -10);
+  lv_obj_set_style_local_radius(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 20);
+  lv_obj_set_style_local_bg_color(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+  lv_obj_set_style_local_bg_opa(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
   label = lv_label_create(btnVolUp, nullptr);
   lv_label_set_text(label, Symbols::volumUp);
-  lv_obj_set_hidden(btnVolDown, !displayVolumeButtons);
+  lv_obj_set_hidden(btnVolUp, !displayVolumeButtons);
   
   btnPrev = lv_btn_create(lv_scr_act(), nullptr);
   btnPrev->user_data = this;
   lv_obj_set_event_cb(btnPrev, event_handler);
-  lv_obj_set_size(btnPrev, LV_HOR_RES / 3, 80);
-  lv_obj_align(btnPrev, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_set_size(btnPrev, 65, 75);
+  lv_obj_align(btnPrev, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 15, -10);
+  lv_obj_set_style_local_radius(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 20);
+  lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+  lv_obj_set_style_local_bg_opa(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
   label = lv_label_create(btnPrev, nullptr);
   lv_label_set_text(label, Symbols::stepBackward);
   
   btnNext = lv_btn_create(lv_scr_act(), nullptr);
   btnNext->user_data = this;
   lv_obj_set_event_cb(btnNext, event_handler);
-  lv_obj_set_size(btnNext, LV_HOR_RES / 3, 80);
-  lv_obj_align(btnNext, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lv_obj_set_size(btnNext, 65, 75);
+  lv_obj_align(btnNext, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, -15, -10);
+  lv_obj_set_style_local_radius(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 20);
+  lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+  lv_obj_set_style_local_bg_opa(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
   label = lv_label_create(btnNext, nullptr);
   lv_label_set_text(label, Symbols::stepForward);
   
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
   lv_obj_set_event_cb(btnPlayPause, event_handler);
-  lv_obj_set_size(btnPlayPause, LV_HOR_RES / 3, 80);
-  lv_obj_align(btnPlayPause, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_obj_set_size(btnPlayPause, 65, 75);
+  lv_obj_align(btnPlayPause, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
+  lv_obj_set_style_local_radius(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 20);
+  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+  lv_obj_set_style_local_bg_opa(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   lv_label_set_text(txtPlayPause, Symbols::play);
   
