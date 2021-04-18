@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <bitset>
 #include "components/datetime/DateTimeController.h"
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
@@ -8,69 +9,111 @@
 namespace Pinetime {
   namespace Controllers {
     class Settings {
-      public:
-        enum class ClockType {H24, H12};
-        enum class Vibration {ON, OFF};
-        enum class WakeUpMode : uint8_t {
-            None = 1,
-            SingleTap = 2,
-            DoubleTap = 4,
-            RaiseWrist = 8
-        };
+    public:
+      enum class ClockType : uint8_t { H24, H12 };
+      enum class Vibration : uint8_t { ON, OFF };
+      enum class WakeUpMode : uint8_t {
+        SingleTap = 0,
+        DoubleTap = 1,
+        RaiseWrist = 2,
+      };
 
-        Settings( Pinetime::Drivers::SpiNorFlash &spiNorFlash );
+      Settings(Pinetime::Controllers::FS& fs);
 
-        void Init();
-        void SaveSettings();
+      void Init();
+      void SaveSettings();
 
-        void SetClockFace( uint8_t face ) {
-          if ( face != settings.clockFace ) settingsChanged = true;
-          settings.clockFace = face; 
-        };
-        uint8_t GetClockFace() const { return settings.clockFace; };
+      void SetClockFace(uint8_t face) {
+        if (face != settings.clockFace) {
+          settingsChanged = true;
+        }
+        settings.clockFace = face;
+      };
+      uint8_t GetClockFace() const {
+        return settings.clockFace;
+      };
 
-        void SetAppMenu( uint8_t menu ) { appMenu = menu; };
-        uint8_t GetAppMenu() { return appMenu; };
+      void SetAppMenu(uint8_t menu) {
+        appMenu = menu;
+      };
+      uint8_t GetAppMenu() {
+        return appMenu;
+      };
 
-        void SetSettingsMenu( uint8_t menu ) { settingsMenu = menu; };
-        uint8_t GetSettingsMenu() const { return settingsMenu; };
+      void SetSettingsMenu(uint8_t menu) {
+        settingsMenu = menu;
+      };
+      uint8_t GetSettingsMenu() const {
+        return settingsMenu;
+      };
 
-        void SetClockType( ClockType clocktype ) { 
-          if ( clocktype != settings.clockType ) settingsChanged = true;
-          settings.clockType = clocktype; 
-        };
-        ClockType GetClockType() const { return settings.clockType; };
+      void SetClockType(ClockType clocktype) {
+        if (clocktype != settings.clockType) {
+          settingsChanged = true;
+        }
+        settings.clockType = clocktype;
+      };
+      ClockType GetClockType() const {
+        return settings.clockType;
+      };
 
-        void SetVibrationStatus( Vibration status ) { 
-          if ( status != settings.vibrationStatus ) settingsChanged = true;
-          settings.vibrationStatus = status; 
-        };
-        Vibration GetVibrationStatus() const { return settings.vibrationStatus; };
+      void SetVibrationStatus(Vibration status) {
+        if (status != settings.vibrationStatus) {
+          settingsChanged = true;
+        }
+        settings.vibrationStatus = status;
+      };
+      Vibration GetVibrationStatus() const {
+        return settings.vibrationStatus;
+      };
 
-        void SetScreenTimeOut( uint32_t timeout ) { 
-          if ( timeout != settings.screenTimeOut ) settingsChanged = true;
-          settings.screenTimeOut = timeout; 
-        };
-        uint32_t GetScreenTimeOut() const { return settings.screenTimeOut; };        
+      void SetScreenTimeOut(uint32_t timeout) {
+        if (timeout != settings.screenTimeOut) {
+          settingsChanged = true;
+        }
+        settings.screenTimeOut = timeout;
+      };
+      uint32_t GetScreenTimeOut() const {
+        return settings.screenTimeOut;
+      };
 
-        void setWakeUpMode( WakeUpMode wakeUp ) { 
-          if ( !isWakeUpModeOn(wakeUp) ) settingsChanged = true;
-          settings.wakeUpMode |= static_cast<uint8_t>(wakeUp); 
-        };
-        void unsetWakeUpMode( WakeUpMode wakeUp ) {
-            if ( isWakeUpModeOn(wakeUp) ) settingsChanged = true;
-            settings.wakeUpMode &= ~(static_cast<uint8_t>(wakeUp));
-        };
-        uint8_t getWakeUpModes() const { return settings.wakeUpMode; };
-        bool isWakeUpModeOn( const WakeUpMode mode ) const {
-            return (getWakeUpModes() & static_cast<uint8_t>(mode)) != 0;
-        };
+      void setWakeUpMode(WakeUpMode wakeUp, bool enabled) {
+        if (!isWakeUpModeOn(wakeUp)) {
+          settingsChanged = true;
+        }
+        settings.wakeUpMode.set(static_cast<size_t>(wakeUp), enabled);
+        // Handle special behavior
+        if (enabled) {
+          switch (wakeUp) {
+            case WakeUpMode::SingleTap:
+              settings.wakeUpMode.set(static_cast<size_t>(WakeUpMode::DoubleTap), false);
+              break;
+            case WakeUpMode::DoubleTap:
+              settings.wakeUpMode.set(static_cast<size_t>(WakeUpMode::SingleTap), false);
+              break;
+            case WakeUpMode::RaiseWrist:
+              break;
+          }
+        }
+      };
 
-        void SetBrightness( Controllers::BrightnessController::Levels level ) { 
-          if ( level != settings.brightLevel ) settingsChanged = true;
-          settings.brightLevel = level; 
-        };
-        Controllers::BrightnessController::Levels GetBrightness() const { return settings.brightLevel; };
+      std::bitset<3> getWakeUpModes() const {
+        return settings.wakeUpMode;
+      }
+
+      bool isWakeUpModeOn(const WakeUpMode mode) const {
+        return getWakeUpModes()[static_cast<size_t>(mode)];
+      }
+
+      void SetBrightness(Controllers::BrightnessController::Levels level) {
+        if (level != settings.brightLevel) {
+          settingsChanged = true;
+        }
+        settings.brightLevel = level;
+      };
+      Controllers::BrightnessController::Levels GetBrightness() const {
+        return settings.brightLevel;
+      };
 
       void SetStepsGoal( uint32_t goal ) { 
         if ( goal != settings.stepsGoal ) {
@@ -94,42 +137,21 @@ namespace Pinetime {
         ClockType clockType = ClockType::H24;
         Vibration vibrationStatus = Vibration::ON;
 
-          ClockType clockType = ClockType::H24;
-          Vibration vibrationStatus = Vibration::ON;
+        uint8_t clockFace = 0;
 
-          uint8_t clockFace = 0;
+        std::bitset<3> wakeUpMode {0};
 
-          uint32_t stepsGoal = 1000;
-          uint32_t screenTimeOut = 15000;
+        Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+      };
 
-          uint8_t wakeUpMode = static_cast<uint8_t>(WakeUpMode::None);
+      SettingsData settings;
+      bool settingsChanged = false;
 
-          Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
-
-        };
-
-        SettingsData settings;
-        bool settingsChanged = false;
-
-        uint8_t appMenu = 0;
-        uint8_t settingsMenu = 0;
+      uint8_t appMenu = 0;
+      uint8_t settingsMenu = 0;
 
       void LoadSettingsFromFile();
       void SaveSettingsToFile();
-        // There are 10 blocks of reserved flash to save settings
-        // to minimize wear, the recording is done in a rotating way by the 10 blocks
-        uint8_t settingsFlashBlock = 99; // default to indicate it needs to find the active block
-
-        static constexpr uint32_t settingsBaseAddr =  0x3F6000; // Flash Settings Location
-        static constexpr uint16_t settingsVersion =  0x0100; // Flash Settings Version
-
-        bool FindHeader();
-        void ReadSettingsData();
-        void EraseBlock();
-        void SetHeader( bool state );
-        void SaveSettingsData();
-        void LoadSettingsFromFlash();
-        void SaveSettingsToFlash();
     };
   }
 }

@@ -16,7 +16,7 @@ namespace {
 
 SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
-
+  ignoringEvents = false;
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
 
   lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
@@ -42,34 +42,26 @@ SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::
 
   optionsTotal = 0;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " None");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);  
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::None) ) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Single Tap");
   cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);  
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) ) {
+  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
   optionsTotal++;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Double Tap");
   cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);  
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap) ) {
+  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
   optionsTotal++;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Raise Wrist");
   cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);  
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ) {
+  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist)) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
   optionsTotal++;
@@ -85,27 +77,31 @@ bool SettingWakeUp::Refresh() {
 }
 
 void SettingWakeUp::UpdateSelected(lv_obj_t* object, lv_event_t event) {
-  if (event == LV_EVENT_VALUE_CHANGED) {
-    for (int i = 0; i < optionsTotal; i++) {
-      if (object == cbOption[i]) {
-        lv_checkbox_set_checked(cbOption[i], true);
+  using WakeUpMode = Pinetime::Controllers::Settings::WakeUpMode;
+  if (event == LV_EVENT_VALUE_CHANGED && !ignoringEvents) {
+    ignoringEvents = true;
 
-        if (i == 0) {
-          settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::None);
-        };
-        if (i == 1) {
-          settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::SingleTap);
-        };
-        if (i == 2) {
-          settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap);
-        };
-        if (i == 3) {
-          settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist);
-        };
-
-      } else {
-        lv_checkbox_set_checked(cbOption[i], false);
+    // Find the index of the checkbox that triggered the event
+    int index = 0;
+    for (; index < optionsTotal; ++index) {
+      if (cbOption[index] == object) {
+        break;
       }
     }
+
+    // Toggle needed wakeup mode
+    auto mode = static_cast<WakeUpMode>(index);
+    auto currentState = settingsController.isWakeUpModeOn(mode);
+    settingsController.setWakeUpMode(mode, !currentState);
+
+    // Update checkbox according to current wakeup modes.
+    // This is needed because we can have extra logic when setting or unsetting wakeup modes,
+    // for example, when setting SingleTap, DoubleTap is unset and vice versa.
+    auto modes = settingsController.getWakeUpModes();
+    for (int i = 0; i < optionsTotal; ++i) {
+      lv_checkbox_set_checked(cbOption[i], modes[i]);
+    }
+
+    ignoringEvents = false;
   }
 }
