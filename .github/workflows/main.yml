@@ -9,13 +9,17 @@ name: Build PineTime Firmware
 # When to run this Workflow...
 on:
 
+  # Run this Workflow if a user presses the "Run workflow" button on GitHub
+  workflow_dispatch:
+    branches: [ master, nan_fix_build, develop ]
+    
   # Run this Workflow when files are updated (Pushed) in the "master" Branch
   push:
-    branches: [ master ]
+    branches: [ develop, master ]
 
   # Also run this Workflow when a Pull Request is created or updated in the "master" Branch
   pull_request:
-    branches: [ master ]
+    branches: [ develop, master ]
 
 # Steps to run for the Workflow
 jobs:
@@ -28,7 +32,7 @@ jobs:
 
       #########################################################################################
       # Download and Cache Dependencies
-
+      
       - name: Install cmake
         uses: lukka/get-cmake@v3.18.3
 
@@ -45,11 +49,14 @@ jobs:
       - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
         if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
         uses: fiam/arm-none-eabi-gcc@v1.0.2
-        with:
+        with:          
           # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
           release: 9-2020-q2
           # Directory to unpack GCC to. Defaults to a temporary directory.
           directory: ${{ runner.temp }}/arm-none-eabi
+        env:
+          # needed for set-env (https://github.com/actions/toolkit/issues/641)
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
       - name: Check cache for nRF5 SDK
         id:   cache-nrf5sdk
@@ -83,10 +90,16 @@ jobs:
         if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
         run:  |
           cd ${{ runner.temp }}
-          git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
+          git clone --branch v1.5.0 https://github.com/mcu-tools/mcuboot
 
       - name: Install imgtool dependencies
-        run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
+        run:  |
+          pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt          
+
+      # cbor is a dependency that is not currently included in mcuboot requirements.txt
+      - name: Install imgtool dependencies (cbor)
+        run:  |
+          pip3 install --user cbor
 
       - name: Install adafruit-nrfutil
         run:  |
@@ -99,6 +112,8 @@ jobs:
 
       - name: Checkout source files
         uses: actions/checkout@v2
+        with:
+          submodules: 'true'
 
       - name: Show files
         run:  set ; pwd ; ls -l
@@ -124,12 +139,17 @@ jobs:
         run:  |
           cd build
           make pinetime-mcuboot-app
+          echo ""
 
       - name: Create firmware image
         run:  |
           # The generated firmware binary looks like "pinetime-mcuboot-app-0.8.2.bin"
           ls -l build/src/pinetime-mcuboot-app*.bin
-          ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app*.bin build/src/pinetime-mcuboot-app-img.bin
+          IMGTOOL_INPUT_ARGUMENT=$( ls build/src | grep "pinetime-mcuboot-app-[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.bin" )
+          echo ""
+          echo -e "\u001b[32m ${IMGTOOL_INPUT_ARGUMENT} \u001b[0m"
+          echo ""
+          ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/${IMGTOOL_INPUT_ARGUMENT} build/src/pinetime-mcuboot-app-img.bin
           ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
 
       - name: Create DFU package
