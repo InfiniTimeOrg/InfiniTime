@@ -16,10 +16,10 @@ namespace {
   TimeSeparated_t convertTicksToTimeSegments(const TickType_t timeElapsed) {
     const int timeElapsedMillis = (static_cast<float>(timeElapsed) / static_cast<float>(configTICK_RATE_HZ)) * 1000;
 
-    const int milliSecs = (timeElapsedMillis % 1000) / 10; // Get only the first two digits and ignore the last
+    const int hundredths = (timeElapsedMillis % 1000) / 10; // Get only the first two digits and ignore the last
     const int secs = (timeElapsedMillis / 1000) % 60;
     const int mins = (timeElapsedMillis / 1000) / 60;
-    return TimeSeparated_t {mins, secs, milliSecs};
+    return TimeSeparated_t {mins, secs, hundredths};
   }
 
   TickType_t calculateDelta(const TickType_t startTime, const TickType_t currentTime) {
@@ -53,13 +53,13 @@ StopWatch::StopWatch(DisplayApp* app)
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_label_set_text(time, "00:00");
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -45);  
+  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -45);
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
   //lv_obj_set_style_local_text_font(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_label_set_text(msecTime, "00");
-  lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 108, 3);  
+  lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 108, 3);
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
@@ -141,14 +141,14 @@ bool StopWatch::Refresh() {
       currentTimeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
 
       lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
-      lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.msecs);
+      lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
 
       if (lapPressed == true) {
         if (lapBuffer[1]) {
-          lv_label_set_text_fmt(lapOneText, "#%d   %d:%d:%d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->msecs);
+          lv_label_set_text_fmt(lapOneText, "#2%d   %2d:%02d.%02d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->hundredths);
         }
         if (lapBuffer[0]) {
-          lv_label_set_text_fmt(lapTwoText, "#%d   %d:%d:%d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->msecs);
+          lv_label_set_text_fmt(lapTwoText, "#2%d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
         }
         // Reset the bool to avoid setting the text in each cycle until there is a change
         lapPressed = false;
