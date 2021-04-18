@@ -44,32 +44,32 @@ SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
   lv_checkbox_set_text_static(cbOption[optionsTotal], " None");
   cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::None) {
+  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);  
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::None) ) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
   optionsTotal++;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Single Tap");
   cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::SingleTap) {
+  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);  
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) ) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
   optionsTotal++;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Double Tap");
   cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::DoubleTap) {
+  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);  
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap) ) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
   optionsTotal++;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Raise Wrist");
   cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) {
+  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);  
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
   optionsTotal++;
