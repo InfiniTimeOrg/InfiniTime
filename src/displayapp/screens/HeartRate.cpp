@@ -29,18 +29,22 @@ namespace {
 
 HeartRate::HeartRate(Pinetime::Applications::DisplayApp *app, Controllers::HeartRateController& heartRateController, System::SystemTask &systemTask) : 
   Screen(app), heartRateController{heartRateController}, systemTask{systemTask} {
-  
+  bool isHrRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
   label_hr = lv_label_create(lv_scr_act(), nullptr);
 
   lv_obj_set_style_local_text_font(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+
+  if(isHrRunning)
+    lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+  else
+    lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+
   lv_label_set_text(label_hr, "000");
   lv_obj_align(label_hr, nullptr, LV_ALIGN_CENTER, 0, -40);  
 
   label_bpm = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(label_bpm, "Heart rate BPM");  
   lv_obj_align(label_bpm, label_hr, LV_ALIGN_OUT_TOP_MID, 0, -20);
-
 
   label_status = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(label_status, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x222222));
@@ -55,7 +59,9 @@ HeartRate::HeartRate(Pinetime::Applications::DisplayApp *app, Controllers::Heart
   lv_obj_align(btn_startStop, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   label_startStop = lv_label_create(btn_startStop, nullptr);
-  UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
+  UpdateStartStopButton(isHrRunning);
+  if(isHrRunning)
+    systemTask.PushMessage(Pinetime::System::SystemTask::Messages::DisableSleeping);
 }
 
 HeartRate::~HeartRate() {
