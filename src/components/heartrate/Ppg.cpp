@@ -13,7 +13,7 @@ using namespace Pinetime::Controllers;
 namespace {
   int Compare(int* d1, int* d2, size_t count) {
     int e = 0;
-    for(size_t i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
       auto d = d1[i] - d2[i];
       e += d * d;
     }
@@ -21,15 +21,15 @@ namespace {
   }
 
   int CompareShift(int* d, int shift, size_t count) {
-    return Compare(d +shift, d, count - shift);
+    return Compare(d + shift, d, count - shift);
   }
 
   int Trough(int* d, size_t size, float mn, float mx) {
-    auto z2 = CompareShift(d, mn-2, size);
-    auto z1 = CompareShift(d, mn-1, size);
-    for(int i = mn; i < mx + 1; i++) {
+    auto z2 = CompareShift(d, mn - 2, size);
+    auto z1 = CompareShift(d, mn - 1, size);
+    for (int i = mn; i < mx + 1; i++) {
       auto z = CompareShift(d, i, size);
-      if(z2 > z1 && z1 < z)
+      if (z2 > z1 && z1 < z)
         return i;
       z2 = z1;
       z1 = z;
@@ -38,11 +38,11 @@ namespace {
   }
 }
 
-Ppg::Ppg(float spl) : offset{spl},
-                      hpf{0.87033078, -1.74066156, 0.87033078,-1.72377617, 0.75754694},
-                      agc{20, 0.971, 2},
-                      lpf{0.11595249, 0.23190498, 0.11595249,-0.72168143, 0.18549138} {
-
+Ppg::Ppg(float spl)
+  : offset {spl},
+    hpf {0.87033078, -1.74066156, 0.87033078, -1.72377617, 0.75754694},
+    agc {20, 0.971, 2},
+    lpf {0.11595249, 0.23190498, 0.11595249, -0.72168143, 0.18549138} {
 }
 
 int Ppg::Preprocess(float spl) {
@@ -53,13 +53,13 @@ int Ppg::Preprocess(float spl) {
 
   auto spl_int = static_cast<int>(spl);
 
-  if(dataIndex < 200)
+  if (dataIndex < 200)
     data[dataIndex++] = spl_int;
   return spl_int;
 }
 
 float Ppg::HeartRate() {
-  if(dataIndex < 200)
+  if (dataIndex < 200)
     return 0;
 
   NRF_LOG_INFO("PREPROCESS, offset = %d", offset);
@@ -71,26 +71,26 @@ float Ppg::HeartRate() {
 int cccount = 0;
 float Ppg::ProcessHeartRate() {
 
-  if(cccount > 2)
+  if (cccount > 2)
     asm("nop");
-  cccount ++;
+  cccount++;
   auto t0 = Trough(data.data(), dataIndex, 7, 48);
-  if(t0 < 0)
+  if (t0 < 0)
     return 0;
 
   float t1 = t0 * 2;
-  t1 = Trough(data.data(), dataIndex, t1-5, t1+5);
-  if(t1 < 0)
+  t1 = Trough(data.data(), dataIndex, t1 - 5, t1 + 5);
+  if (t1 < 0)
     return 0;
 
   float t2 = static_cast<int>(t1 * 3) / 2;
   t2 = Trough(data.data(), dataIndex, t2 - 5, t2 + 5);
-  if(t2 < 0)
+  if (t2 < 0)
     return 0;
 
   float t3 = static_cast<int>(t2 * 4) / 3;
   t3 = Trough(data.data(), dataIndex, t3 - 4, t3 + 4);
-  if(t3 < 0)
+  if (t3 < 0)
     return static_cast<int>(60 * 24 * 3) / static_cast<int>(t2);
 
   return static_cast<int>(60 * 24 * 4) / static_cast<int>(t3);

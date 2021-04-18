@@ -9,8 +9,7 @@
 using namespace Pinetime::Controllers;
 
 /** Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/ppg.py */
-Biquad::Biquad(float b0, float b1, float b2, float a1, float a2) : b0{b0}, b1{b1}, b2{b2}, a1{a1}, a2{a2} {
-
+Biquad::Biquad(float b0, float b1, float b2, float a1, float a2) : b0 {b0}, b1 {b1}, b2 {b2}, a1 {a1}, a2 {a2} {
 }
 
 float Biquad::Step(float x) {

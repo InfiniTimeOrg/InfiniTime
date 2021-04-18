@@ -7,7 +7,7 @@
 namespace Pinetime {
   namespace Controllers {
     class Ppg {
-    public:
+        public:
       explicit Ppg(float spl);
 
       int Preprocess(float spl);
@@ -16,14 +16,13 @@ namespace Pinetime {
       void SetOffset(uint16_t i);
       void Reset();
 
-    private:
+        private:
       std::array<int, 200> data;
       size_t dataIndex = 0;
       float offset;
       Biquad hpf;
       Ptagc agc;
       Biquad lpf;
-
 
       float ProcessHeartRate();
     };

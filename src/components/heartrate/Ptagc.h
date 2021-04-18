@@ -3,16 +3,15 @@
 namespace Pinetime {
   namespace Controllers {
     class Ptagc {
-    public:
+        public:
       Ptagc(float start, float decay, float threshold);
       float Step(float spl);
 
-    private:
+        private:
       float peak;
       float decay;
       float boost;
       float threshold;
-
     };
   }
 }

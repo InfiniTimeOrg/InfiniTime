@@ -15,16 +15,16 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class HeartRate : public Screen{
-      public:
-        HeartRate(DisplayApp* app, Controllers::HeartRateController& HeartRateController, System::SystemTask &systemTask);
+      class HeartRate : public Screen {
+          public:
+        HeartRate(DisplayApp* app, Controllers::HeartRateController& HeartRateController, System::SystemTask& systemTask);
         ~HeartRate() override;
 
         bool Refresh() override;
-        
+
         void OnStartStopEvent(lv_event_t event);
 
-      private:
+          private:
         Controllers::HeartRateController& heartRateController;
         Pinetime::System::SystemTask& systemTask;
         void UpdateStartStopButton(bool isRunning);
@@ -33,9 +33,6 @@ namespace Pinetime {
         lv_obj_t* label_status;
         lv_obj_t* btn_startStop;
         lv_obj_t* label_startStop;
-
-        
-
       };
     }
   }

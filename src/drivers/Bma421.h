@@ -5,7 +5,7 @@ namespace Pinetime {
   namespace Drivers {
     class TwiMaster;
     class Bma421 {
-    public:
+        public:
       struct Values {
         uint32_t steps;
         int16_t x;
@@ -25,12 +25,12 @@ namespace Pinetime {
       Values Process();
       void ResetStepCounter();
 
-      void Read(uint8_t registerAddress, uint8_t *buffer, size_t size);
-      void Write(uint8_t registerAddress, const uint8_t *data, size_t size);
+      void Read(uint8_t registerAddress, uint8_t* buffer, size_t size);
+      void Write(uint8_t registerAddress, const uint8_t* data, size_t size);
 
       bool IsOk() const;
 
-    private:
+        private:
       void Reset();
 
       TwiMaster& twiMaster;

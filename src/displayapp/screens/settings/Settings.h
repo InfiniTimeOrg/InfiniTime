@@ -6,31 +6,26 @@
 
 namespace Pinetime {
 
-
   namespace Applications {
     namespace Screens {
 
-      class Settings : public Screen{
-        public:
-          Settings(DisplayApp* app,
-          Pinetime::Controllers::Settings &settingsController);
-          ~Settings() override;
+      class Settings : public Screen {
+          public:
+        Settings(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
+        ~Settings() override;
 
-          bool Refresh() override;
-          
-          void OnButtonEvent(lv_obj_t *object, lv_event_t event);
-          bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
+        bool Refresh() override;
 
-        private:          
+        void OnButtonEvent(lv_obj_t* object, lv_event_t event);
+        bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
-          Controllers::Settings& settingsController;
-          
-          ScreenList<2> screens;
+          private:
+        Controllers::Settings& settingsController;
 
-          std::unique_ptr<Screen> CreateScreen1();
-          std::unique_ptr<Screen> CreateScreen2();
+        ScreenList<2> screens;
 
-
+        std::unique_ptr<Screen> CreateScreen1();
+        std::unique_ptr<Screen> CreateScreen2();
       };
     }
   }

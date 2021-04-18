@@ -5,8 +5,8 @@
 namespace Pinetime {
   namespace Controllers {
     class BrightnessController {
-    public:
-      enum class Levels {Off, Low, Medium, High};
+        public:
+      enum class Levels { Off, Low, Medium, High };
       void Init();
 
       void Set(Levels level);
@@ -21,7 +21,7 @@ namespace Pinetime {
       const char* GetIcon();
       const char* ToString();
 
-    private:
+        private:
       static constexpr uint8_t pinLcdBacklight1 = 14;
       static constexpr uint8_t pinLcdBacklight2 = 22;
       static constexpr uint8_t pinLcdBacklight3 = 23;

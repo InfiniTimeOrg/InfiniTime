@@ -17,7 +17,7 @@ uint32_t BootloaderVersion::Patch() {
   return 0;
 }
 
-const char *BootloaderVersion::VersionString() {
+const char* BootloaderVersion::VersionString() {
   return "0.0.0";
 }
 

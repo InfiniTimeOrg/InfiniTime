@@ -11,13 +11,13 @@ namespace Pinetime {
      * Code from https://github.com/daniel-thompson/wasp-bootloader by Daniel Thompson released under the MIT license.
      */
     class RleDecoder {
-    public:
+        public:
       RleDecoder(const uint8_t* buffer, size_t size);
       RleDecoder(const uint8_t* buffer, size_t size, uint16_t foregroundColor, uint16_t backgroundColor);
 
       void DecodeNext(uint8_t* output, size_t maxBytes);
 
-    private:
+        private:
       const uint8_t* buffer;
       size_t size;
 

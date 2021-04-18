@@ -10,47 +10,44 @@
 #include "components/settings/Settings.h"
 #include "components/battery/BatteryController.h"
 
-
 namespace Pinetime {
 
   namespace Applications {
     namespace Screens {
 
-      class QuickSettings : public Screen{
-        public:
-          QuickSettings(DisplayApp* app, 
-            Pinetime::Controllers::Battery& batteryController,
-            Controllers::DateTime& dateTimeController,
-            Controllers::BrightnessController& brightness,
-            Pinetime::Controllers::Settings &settingsController);
+      class QuickSettings : public Screen {
+          public:
+        QuickSettings(DisplayApp* app,
+                      Pinetime::Controllers::Battery& batteryController,
+                      Controllers::DateTime& dateTimeController,
+                      Controllers::BrightnessController& brightness,
+                      Pinetime::Controllers::Settings& settingsController);
 
-          ~QuickSettings() override;
+        ~QuickSettings() override;
 
-          bool Refresh() override;
-          
-          bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
-          void OnButtonEvent(lv_obj_t *object, lv_event_t event);
+        bool Refresh() override;
 
-          void UpdateScreen();
+        bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
+        void OnButtonEvent(lv_obj_t* object, lv_event_t event);
 
-        private:          
+        void UpdateScreen();
 
-          Pinetime::Controllers::Battery& batteryController;
-          Controllers::DateTime& dateTimeController;
-          Controllers::BrightnessController& brightness;
-          Controllers::Settings& settingsController;
+          private:
+        Pinetime::Controllers::Battery& batteryController;
+        Controllers::DateTime& dateTimeController;
+        Controllers::BrightnessController& brightness;
+        Controllers::Settings& settingsController;
 
-          lv_task_t* taskUpdate;
-          lv_obj_t * batteryIcon;
-          lv_obj_t * label_time;
+        lv_task_t* taskUpdate;
+        lv_obj_t* batteryIcon;
+        lv_obj_t* label_time;
 
-          lv_obj_t * btn1;
-          lv_obj_t * btn1_lvl;
-          lv_obj_t * btn2;
-          lv_obj_t * btn3;
-          lv_obj_t * btn3_lvl;
-          lv_obj_t * btn4;
-
+        lv_obj_t* btn1;
+        lv_obj_t* btn1_lvl;
+        lv_obj_t* btn2;
+        lv_obj_t* btn3;
+        lv_obj_t* btn3_lvl;
+        lv_obj_t* btn4;
       };
     }
   }

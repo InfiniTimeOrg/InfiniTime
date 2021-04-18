@@ -7,14 +7,14 @@
 using namespace Pinetime::Drivers;
 
 /* References :
- * This implementation is based on this article : https://medium.com/@ly.lee/building-a-rust-driver-for-pinetimes-touch-controller-cbc1a5d5d3e9
- * Touch panel datasheet (weird chinese translation) : https://wiki.pine64.org/images/5/51/CST816S%E6%95%B0%E6%8D%AE%E6%89%8B%E5%86%8CV1.1.en.pdf
+ * This implementation is based on this article :
+ * https://medium.com/@ly.lee/building-a-rust-driver-for-pinetimes-touch-controller-cbc1a5d5d3e9 Touch panel datasheet (weird chinese
+ * translation) : https://wiki.pine64.org/images/5/51/CST816S%E6%95%B0%E6%8D%AE%E6%89%8B%E5%86%8CV1.1.en.pdf
  *
  * TODO : we need a complete datasheet and protocol reference!
  * */
 
-Cst816S::Cst816S(TwiMaster &twiMaster, uint8_t twiAddress) : twiMaster{twiMaster}, twiAddress{twiAddress} {
-
+Cst816S::Cst816S(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}, twiAddress {twiAddress} {
 }
 
 void Cst816S::Init() {
@@ -32,7 +32,7 @@ void Cst816S::Init() {
   vTaskDelay(5);
   twiMaster.Read(twiAddress, 0xa7, &dummy, 1);
   vTaskDelay(5);
-  
+
   /*
   [2] EnConLR - Continuous operation can slide around
   [1] EnConUD - Slide up and down to enable continuous operation
@@ -40,23 +40,22 @@ void Cst816S::Init() {
   */
   static constexpr uint8_t motionMask = 0b00000101;
   twiMaster.Write(twiAddress, 0xEC, &motionMask, 1);
-
 }
-
 
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
 
   auto ret = twiMaster.Read(twiAddress, 0, touchData, sizeof(touchData));
-  if(ret != TwiMaster::ErrorCodes::NoError) return {};
+  if (ret != TwiMaster::ErrorCodes::NoError)
+    return {};
 
   auto nbTouchPoints = touchData[2] & 0x0f;
 
   uint8_t i = 0;
 
   uint8_t pointId = (touchData[touchIdIndex + (touchStep * i)]) >> 4;
-  if(nbTouchPoints == 0 && pointId == lastTouchId) return info;
-
+  if (nbTouchPoints == 0 && pointId == lastTouchId)
+    return info;
 
   info.isTouch = true;
 

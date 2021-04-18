@@ -26,8 +26,8 @@
 
 using namespace Pinetime::Applications::Screens;
 
-static void event_handler(lv_obj_t *obj, lv_event_t event) {
-  Music *screen = static_cast<Music *>(obj->user_data);
+static void event_handler(lv_obj_t* obj, lv_event_t event) {
+  Music* screen = static_cast<Music*>(obj->user_data);
   screen->OnObjectEvent(obj, event);
 }
 
@@ -38,7 +38,7 @@ static void event_handler(lv_obj_t *obj, lv_event_t event) {
  * @param img pointer to an image object
  * @param data the image array
  */
-inline void lv_img_set_src_arr(lv_obj_t *img, const lv_img_dsc_t *src_img) {
+inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
   lv_img_set_src(img, src_img);
 }
 
@@ -47,9 +47,9 @@ inline void lv_img_set_src_arr(lv_obj_t *img, const lv_img_dsc_t *src_img) {
  *
  * TODO: Investigate Apple Media Service and AVRCPv1.6 support for seamless integration
  */
-Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::MusicService &music) : Screen(app), musicService(music) {
-  lv_obj_t *label;
-  
+Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::MusicService& music) : Screen(app), musicService(music) {
+  lv_obj_t* label;
+
   btnVolDown = lv_btn_create(lv_scr_act(), nullptr);
   btnVolDown->user_data = this;
   lv_obj_set_event_cb(btnVolDown, event_handler);
@@ -61,7 +61,7 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   label = lv_label_create(btnVolDown, nullptr);
   lv_label_set_text(label, Symbols::volumDown);
   lv_obj_set_hidden(btnVolDown, !displayVolumeButtons);
-  
+
   btnVolUp = lv_btn_create(lv_scr_act(), nullptr);
   btnVolUp->user_data = this;
   lv_obj_set_event_cb(btnVolUp, event_handler);
@@ -73,7 +73,7 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   label = lv_label_create(btnVolUp, nullptr);
   lv_label_set_text(label, Symbols::volumUp);
   lv_obj_set_hidden(btnVolUp, !displayVolumeButtons);
-  
+
   btnPrev = lv_btn_create(lv_scr_act(), nullptr);
   btnPrev->user_data = this;
   lv_obj_set_event_cb(btnPrev, event_handler);
@@ -84,7 +84,7 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   lv_obj_set_style_local_bg_opa(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
   label = lv_label_create(btnPrev, nullptr);
   lv_label_set_text(label, Symbols::stepBackward);
-  
+
   btnNext = lv_btn_create(lv_scr_act(), nullptr);
   btnNext->user_data = this;
   lv_obj_set_event_cb(btnNext, event_handler);
@@ -95,7 +95,7 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   lv_obj_set_style_local_bg_opa(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
   label = lv_label_create(btnNext, nullptr);
   lv_label_set_text(label, Symbols::stepForward);
-  
+
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
   lv_obj_set_event_cb(btnPlayPause, event_handler);
@@ -106,7 +106,7 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   lv_obj_set_style_local_bg_opa(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   lv_label_set_text(txtPlayPause, Symbols::play);
-  
+
   txtTrackDuration = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrackDuration, LV_LABEL_LONG_SROLL);
   lv_obj_align(txtTrackDuration, nullptr, LV_ALIGN_IN_TOP_LEFT, 12, 20);
@@ -122,9 +122,8 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   lv_label_set_anim_speed(txtArtist, 1);
   lv_obj_align(txtArtist, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 1 * FONT_HEIGHT);
   lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
-  lv_obj_set_width(txtArtist, LV_HOR_RES-12);
+  lv_obj_set_width(txtArtist, LV_HOR_RES - 12);
   lv_label_set_text(txtArtist, "Artist Name");
-
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
@@ -132,20 +131,20 @@ Music::Music(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Mus
   lv_obj_align(txtTrack, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 2 * FONT_HEIGHT + LINE_PAD);
 
   lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
-  lv_obj_set_width(txtTrack, LV_HOR_RES-12);
+  lv_obj_set_width(txtTrack, LV_HOR_RES - 12);
   lv_label_set_text(txtTrack, "This is a very long getTrack name");
 
   /** Init animation */
   imgDisc = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_src_arr(imgDisc, &disc);
   lv_obj_align(imgDisc, nullptr, LV_ALIGN_IN_TOP_RIGHT, -15, 15);
-  
+
   imgDiscAnim = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_src_arr(imgDiscAnim, &disc_f_1);
   lv_obj_align(imgDiscAnim, nullptr, LV_ALIGN_IN_TOP_RIGHT, -15 - 32, 15);
-  
+
   frameB = false;
-  
+
   musicService.event(Controllers::MusicService::EVENT_MUSIC_OPEN);
 }
 
@@ -159,22 +158,22 @@ bool Music::Refresh() {
     currentLength = 0;
     lv_label_set_text(txtArtist, artist.data());
   }
-  
+
   if (track != musicService.getTrack()) {
     track = musicService.getTrack();
     currentLength = 0;
     lv_label_set_text(txtTrack, track.data());
   }
-  
+
   if (album != musicService.getAlbum()) {
     album = musicService.getAlbum();
     currentLength = 0;
   }
-  
+
   if (playing != musicService.isPlaying()) {
     playing = musicService.isPlaying();
   }
-  
+
   // Because we increment this ourselves,
   // we can't compare with the old data directly
   // have to update it when there's actually new data
@@ -184,26 +183,26 @@ bool Music::Refresh() {
     lastLength = currentLength;
     UpdateLength();
   }
-  
+
   if (totalLength != musicService.getTrackLength()) {
     totalLength = musicService.getTrackLength();
     UpdateLength();
   }
-  
+
   if (playing == Pinetime::Controllers::MusicService::MusicStatus::Playing) {
     lv_label_set_text(txtPlayPause, Symbols::pause);
     if (xTaskGetTickCount() - 1024 >= lastIncrement) {
-    
+
       if (frameB) {
         lv_img_set_src(imgDiscAnim, &disc_f_1);
       } else {
         lv_img_set_src(imgDiscAnim, &disc_f_2);
       }
       frameB = !frameB;
-      
+
       if (currentLength < totalLength) {
-        currentLength += static_cast<int>((static_cast<float>(xTaskGetTickCount() - lastIncrement) / 1024.0f) *
-                                          musicService.getPlaybackSpeed());
+        currentLength +=
+          static_cast<int>((static_cast<float>(xTaskGetTickCount() - lastIncrement) / 1024.0f) * musicService.getPlaybackSpeed());
       } else {
         // Let's assume the getTrack finished, paused when the timer ends
         //  and there's no new getTrack being sent to us
@@ -211,13 +210,13 @@ bool Music::Refresh() {
         playing = false;
       }
       lastIncrement = xTaskGetTickCount();
-      
+
       UpdateLength();
     }
   } else {
     lv_label_set_text(txtPlayPause, Symbols::play);
   }
-  
+
   return running;
 }
 
@@ -226,26 +225,26 @@ void Music::UpdateLength() {
     lv_label_set_text(txtTrackDuration, "Inf/Inf");
   } else if (totalLength > (99 * 60)) {
     char timer[12];
-    sprintf(timer, "%02d:%02d/%02d:%02d",
+    sprintf(timer,
+            "%02d:%02d/%02d:%02d",
             (currentLength / (60 * 60)) % 100,
             ((currentLength % (60 * 60)) / 60) % 100,
             (totalLength / (60 * 60)) % 100,
-            ((totalLength % (60 * 60)) / 60) % 100
-    );
+            ((totalLength % (60 * 60)) / 60) % 100);
     lv_label_set_text(txtTrackDuration, timer);
   } else {
     char timer[12];
-    sprintf(timer, "%02d:%02d/%02d:%02d",
+    sprintf(timer,
+            "%02d:%02d/%02d:%02d",
             (currentLength / 60) % 100,
             (currentLength % 60) % 100,
             (totalLength / 60) % 100,
-            (totalLength % 60) % 100
-    );
+            (totalLength % 60) % 100);
     lv_label_set_text(txtTrackDuration, timer);
   }
 }
 
-void Music::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
+void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     if (obj == btnVolDown) {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_VOLDOWN);
@@ -256,12 +255,12 @@ void Music::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
     } else if (obj == btnPlayPause) {
       if (playing == Pinetime::Controllers::MusicService::MusicStatus::Playing) {
         musicService.event(Controllers::MusicService::EVENT_MUSIC_PAUSE);
-    
+
         // Let's assume it stops playing instantly
         playing = Controllers::MusicService::NotPlaying;
       } else {
         musicService.event(Controllers::MusicService::EVENT_MUSIC_PLAY);
-    
+
         // Let's assume it starts playing instantly
         // TODO: In the future should check for BT connection for better UX
         playing = Controllers::MusicService::Playing;
@@ -272,14 +271,13 @@ void Music::OnObjectEvent(lv_obj_t *obj, lv_event_t event) {
   }
 }
 
-
 bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   switch (event) {
     case TouchEvents::SwipeUp: {
       displayVolumeButtons = true;
       lv_obj_set_hidden(btnVolDown, !displayVolumeButtons);
       lv_obj_set_hidden(btnVolUp, !displayVolumeButtons);
-      
+
       lv_obj_set_hidden(btnNext, displayVolumeButtons);
       lv_obj_set_hidden(btnPrev, displayVolumeButtons);
       return true;
@@ -288,7 +286,7 @@ bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       displayVolumeButtons = false;
       lv_obj_set_hidden(btnNext, displayVolumeButtons);
       lv_obj_set_hidden(btnPrev, displayVolumeButtons);
-      
+
       lv_obj_set_hidden(btnVolDown, !displayVolumeButtons);
       lv_obj_set_hidden(btnVolUp, !displayVolumeButtons);
       return true;
