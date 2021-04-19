@@ -145,10 +145,10 @@ bool StopWatch::Refresh() {
 
       if (lapPressed == true) {
         if (lapBuffer[1]) {
-          lv_label_set_text_fmt(lapOneText, "#2%d   %2d:%02d.%02d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->hundredths);
+          lv_label_set_text_fmt(lapOneText, "#%d   %2d:%02d.%02d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->hundredths);
         }
         if (lapBuffer[0]) {
-          lv_label_set_text_fmt(lapTwoText, "#2%d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
+          lv_label_set_text_fmt(lapTwoText, "#%d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
         }
         // Reset the bool to avoid setting the text in each cycle until there is a change
         lapPressed = false;
