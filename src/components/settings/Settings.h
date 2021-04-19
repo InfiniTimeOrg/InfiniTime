@@ -60,6 +60,12 @@ namespace Pinetime {
         };
         Controllers::BrightnessController::Levels GetBrightness() const { return settings.brightLevel; };
 
+        void SetStepsGoal( uint32_t goal ) { 
+          if ( goal != settings.stepsGoal ) settingsChanged = true;
+          settings.stepsGoal = goal; 
+        };
+        uint32_t GetStepsGoal() const { return settings.stepsGoal; };
+
       private:
 
         Pinetime::Drivers::SpiNorFlash& spiNorFlash;        

@@ -57,10 +57,10 @@ std::unique_ptr<Screen> Settings::CreateScreen2() {
 
   std::array<Screens::List::Applications, 4> applications {
           {
+            {Symbols::shoe,         "Steps",     Apps::SettingSteps},
             {Symbols::batteryHalf,  "Battery",   Apps::BatteryInfo},
             {Symbols::check,        "Firmware",  Apps::FirmwareValidation},
             {Symbols::list,         "About",     Apps::SysInfo},
-            {"",   "",     Apps::None},
           }
 
   };
