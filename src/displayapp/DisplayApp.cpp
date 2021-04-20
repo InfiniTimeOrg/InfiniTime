@@ -7,6 +7,7 @@
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motion/MotionController.h"
+#include "components/motor/MotorController.h"
 #include "displayapp/screens/ApplicationList.h"
 #include "displayapp/screens/Brightness.h"
 #include "displayapp/screens/Clock.h"
@@ -51,6 +52,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Controllers::Settings& settingsController,
+                       Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Controllers::MotionController& motionController)
   : lcd {lcd},
     lvgl {lvgl},
@@ -63,6 +65,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     notificationManager {notificationManager},
     heartRateController {heartRateController},
     settingsController {settingsController},
+    motorController{motorController},
     motionController {motionController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   // Start clock when smartwatch boots
@@ -262,7 +265,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
     // Settings
     case Apps::QuickSettings:
       currentScreen =
-        std::make_unique<Screens::QuickSettings>(this, batteryController, dateTimeController, brightnessController, settingsController);
+        std::make_unique<Screens::QuickSettings>(this, batteryController, dateTimeController, brightnessController, motorController, settingsController);
       returnApp(Apps::Clock, FullRefreshDirections::LeftAnim, TouchEvents::SwipeLeft);
       break;
     case Apps::Settings:

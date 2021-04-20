@@ -8,6 +8,7 @@
 #include "LittleVgl.h"
 #include "TouchEvents.h"
 #include "components/brightness/BrightnessController.h"
+#include "components/motor/MotorController.h"
 #include "components/firmwarevalidator/FirmwareValidator.h"
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
@@ -51,6 +52,7 @@ namespace Pinetime {
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Controllers::Settings& settingsController,
+                 Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController);
       void Start();
       void PushMessage(Display::Messages msg);
@@ -72,6 +74,7 @@ namespace Pinetime {
       Pinetime::Controllers::NotificationManager& notificationManager;
       Pinetime::Controllers::HeartRateController& heartRateController;
       Pinetime::Controllers::Settings& settingsController;
+      Pinetime::Controllers::MotorController& motorController;
       Pinetime::Controllers::MotionController& motionController;
 
       Pinetime::Controllers::FirmwareValidator validator;
