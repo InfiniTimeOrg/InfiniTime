@@ -76,7 +76,7 @@ namespace Pinetime {
 
           uint8_t clockFace = 0;
 
-          uint32_t stepsGoal = 1000;
+          uint32_t stepsGoal = 10000;
           uint32_t screenTimeOut = 15000;
 
           WakeUpMode wakeUpMode = WakeUpMode::None;
