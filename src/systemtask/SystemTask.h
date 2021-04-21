@@ -8,6 +8,8 @@
 #include <heartratetask/HeartRateTask.h>
 #include <components/heartrate/HeartRateController.h>
 #include <components/settings/Settings.h>
+#include <drivers/Bma421.h>
+#include <components/motion/MotionController.h>
 
 #include "SystemMonitor.h"
 #include "components/battery/BatteryController.h"
@@ -37,8 +39,9 @@ namespace Pinetime {
   namespace System {
     class SystemTask {
       public:
-        enum class Messages {GoToSleep, GoToRunning, OnNewTime, OnNewNotification, OnNewCall, BleConnected,
-            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent, OnDisplayTaskSleeping
+        enum class Messages {GoToSleep, GoToRunning, TouchWakeUp, OnNewTime, OnNewNotification, OnNewCall, BleConnected, UpdateTimeOut,
+            BleFirmwareUpdateStarted, BleFirmwareUpdateFinished, OnTouchEvent, OnButtonEvent, OnDisplayTaskSleeping, EnableSleeping, DisableSleeping,
+            OnNewDay
         };
 
         SystemTask(Drivers::SpiMaster &spi, Drivers::St7789 &lcd,
@@ -46,9 +49,9 @@ namespace Pinetime {
                    Drivers::TwiMaster& twiMaster, Drivers::Cst816S &touchPanel,
                    Components::LittleVgl &lvgl,
                    Controllers::Battery &batteryController, Controllers::Ble &bleController,
-                   Controllers::DateTime &dateTimeController,
                    Pinetime::Controllers::MotorController& motorController,
                    Pinetime::Drivers::Hrs3300& heartRateSensor,
+                   Pinetime::Drivers::Bma421& motionSensor,
                    Controllers::Settings &settingsController);
 
 
@@ -77,7 +80,7 @@ namespace Pinetime {
         std::unique_ptr<Pinetime::Applications::HeartRateTask> heartRateApp;
 
         Pinetime::Controllers::Ble& bleController;
-        Pinetime::Controllers::DateTime& dateTimeController;
+        Pinetime::Controllers::DateTime dateTimeController;
         QueueHandle_t systemTasksMsgQueue;
         std::atomic<bool> isSleeping{false};
         std::atomic<bool> isGoingToSleep{false};
@@ -87,9 +90,11 @@ namespace Pinetime {
         Pinetime::Controllers::NotificationManager notificationManager;
         Pinetime::Controllers::MotorController& motorController;
         Pinetime::Drivers::Hrs3300& heartRateSensor;
+        Pinetime::Drivers::Bma421& motionSensor;
         Pinetime::Controllers::Settings& settingsController;
         Pinetime::Controllers::NimbleController nimbleController;
         Controllers::BrightnessController brightnessController;
+        Pinetime::Controllers::MotionController motionController;
 
         static constexpr uint8_t pinSpiSck = 2;
         static constexpr uint8_t pinSpiMosi = 3;
@@ -104,11 +109,12 @@ namespace Pinetime {
         void ReloadIdleTimer() const;
         bool isBleDiscoveryTimerRunning = false;
         uint8_t bleDiscoveryTimer = 0;
-        static constexpr uint32_t idleTime = 15000;
         TimerHandle_t idleTimer;
         bool doNotGoToSleep = false;
 
         void GoToRunning();
+        void UpdateMotion();
+        bool stepCounterMustBeReset = false;
 
 #if configUSE_TRACE_FACILITY == 1
         SystemMonitor<FreeRtosMonitor> monitor;

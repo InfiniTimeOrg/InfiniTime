@@ -1,10 +1,12 @@
 #include "DisplayApp.h"
 #include <libraries/log/nrf_log.h>
 #include <displayapp/screens/HeartRate.h>
+#include <displayapp/screens/Motion.h>
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/NotificationManager.h"
+#include "components/motion/MotionController.h"
 #include "displayapp/screens/ApplicationList.h"
 #include "displayapp/screens/Brightness.h"
 #include "displayapp/screens/Clock.h"
@@ -20,10 +22,20 @@
 #include "displayapp/screens/SystemInfo.h"
 #include "displayapp/screens/Tile.h"
 #include "displayapp/screens/Twos.h"
+#include "displayapp/screens/FlashLight.h"
+#include "displayapp/screens/BatteryInfo.h"
+
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 #include "drivers/Watchdog.h"
 #include "systemtask/SystemTask.h"
+
+#include "displayapp/screens/settings/QuickSettings.h"
+#include "displayapp/screens/settings/Settings.h"
+#include "displayapp/screens/settings/SettingWatchFace.h"
+#include "displayapp/screens/settings/SettingTimeFormat.h"
+#include "displayapp/screens/settings/SettingWakeUp.h"
+#include "displayapp/screens/settings/SettingDisplay.h"
 
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
@@ -34,25 +46,27 @@ DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Driver
                        System::SystemTask &systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::HeartRateController& heartRateController,
-                       Controllers::Settings &settingsController) :
+                       Controllers::Settings &settingsController,
+                       Pinetime::Controllers::MotionController& motionController) :
         lcd{lcd},
         lvgl{lvgl},
+        touchPanel{touchPanel},
         batteryController{batteryController},
         bleController{bleController},
         dateTimeController{dateTimeController},
         watchdog{watchdog},
-        touchPanel{touchPanel},
-        currentScreen{new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController) },
         systemTask{systemTask},
         notificationManager{notificationManager},
         heartRateController{heartRateController},
-        settingsController{settingsController} {
+        settingsController{settingsController},
+        motionController{motionController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
-  onClockApp = true;
+  // Start clock when smartwatch boots
+  LoadApp( Apps::Clock, DisplayApp::FullRefreshDirections::None );
 }
 
 void DisplayApp::Start() {
-  if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 512, this, 0, &taskHandle))
+  if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 800, this, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }
 
@@ -65,14 +79,13 @@ void DisplayApp::Process(void *instance) {
   xTaskNotifyGive(xTaskGetCurrentTaskHandle());
 
   while (1) {
-
     app->Refresh();
-
   }
 }
 
 void DisplayApp::InitHw() {
   brightnessController.Init();
+  brightnessController.Set(settingsController.GetBrightness());
 }
 
 uint32_t acc = 0;
@@ -112,70 +125,62 @@ void DisplayApp::Refresh() {
         brightnessController.Restore();
         state = States::Running;
         break;
+      case Messages::UpdateTimeOut:
+        systemTask.PushMessage(System::SystemTask::Messages::UpdateTimeOut);
+      break;
       case Messages::UpdateBleConnection:
 //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected : Screens::Clock::BleConnectionStates::NotConnected);
         break;
       case Messages::UpdateBatteryLevel:
-//        clockScreen.SetBatteryPercentRemaining(batteryController.PercentRemaining());
+        batteryController.Update();
         break;
-      case Messages::NewNotification: {
-        if(onClockApp) {
-          currentScreen.reset(nullptr);
-          lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
-          onClockApp = false;
-          currentScreen.reset(new Screens::Notifications(this, notificationManager, systemTask.nimble().alertService(), Screens::Notifications::Modes::Preview));
-        }
-      }
+      case Messages::NewNotification:
+        LoadApp( Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down );
         break;
       case Messages::TouchEvent: {
         if (state != States::Running) break;
         auto gesture = OnTouchEvent();
         if(!currentScreen->OnTouchEvent(gesture)) {
-          switch (gesture) {
-            case TouchEvents::SwipeUp:
-              currentScreen->OnButtonPushed();
-              lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
-              break;
-            case TouchEvents::SwipeDown:
-              currentScreen->OnButtonPushed();
-              lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
-              break;
-            default:
-              break;
+          if ( currentApp == Apps::Clock ) {
+            switch (gesture) {
+              case TouchEvents::SwipeUp:
+                LoadApp( Apps::Launcher, DisplayApp::FullRefreshDirections::Up );
+                break;
+              case TouchEvents::SwipeDown:
+                LoadApp( Apps::Notifications, DisplayApp::FullRefreshDirections::Down );
+                break;
+              case TouchEvents::SwipeRight:
+                LoadApp( Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim );
+                break;
+              case TouchEvents::DoubleTap:
+                systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
+                break;
+              default:
+                break;
+            }
+          } else if ( returnTouchEvent == gesture ) {
+            LoadApp( returnToApp, returnDirection );
           }
         }
       }
         break;
       case Messages::ButtonPushed:
-        if(onClockApp)
-            systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
-          else {
-            auto buttonUsedByApp = currentScreen->OnButtonPushed();
-            if (!buttonUsedByApp) {
-              systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
-            } else {
-              lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
+        if( currentApp == Apps::Clock ) {
+          systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
+        } else {
+          if ( !currentScreen->OnButtonPushed() ) {
+            LoadApp( returnToApp, returnDirection );
           }
         }
-
-//        lvgl.SetFullRefresh(components::LittleVgl::FullRefreshDirections::Down);
-//        currentScreen.reset(nullptr);
-//        if(toggle) {
-//          currentScreen.reset(new Screens::Tile(this));
-//          toggle = false;
-//        } else {
-//          currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController));
-//          toggle = true;
-//        }
-
         break;
+
       case Messages::BleFirmwareUpdateStarted:
-        lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Down);
-        currentScreen.reset(nullptr);
-        currentScreen.reset(new Screens::FirmwareUpdate(this, bleController));
-        onClockApp = false;
-
+        LoadApp( Apps::FirmwareUpdate, DisplayApp::FullRefreshDirections::Down );
         break;
+       case Messages::UpdateDateTime:
+       // Added to remove warning
+       // What should happen here?
+       break;
     }
   }
 
@@ -190,35 +195,121 @@ void DisplayApp::Refresh() {
 }
 
 void DisplayApp::RunningState() {
-//  clockScreen.SetCurrentDateTime(dateTimeController.CurrentDateTime());
-
   if(!currentScreen->Refresh()) {
-    currentScreen.reset(nullptr);
-    lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
-    onClockApp = false;
-    switch(nextApp) {
-      case Apps::None:
-      case Apps::Launcher: currentScreen.reset(new Screens::ApplicationList(this, settingsController)); break;
-      case Apps::Clock:
-        currentScreen.reset(new Screens::Clock(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController));
-        onClockApp = true;
-        break;
-      case Apps::SysInfo: currentScreen.reset(new Screens::SystemInfo(this, dateTimeController, batteryController, brightnessController, bleController, watchdog)); break;
-      case Apps::Meter: currentScreen.reset(new Screens::Meter(this)); break;
-      case Apps::StopWatch: currentScreen.reset(new Screens::StopWatch(this)); break;
-      case Apps::Twos: currentScreen.reset(new Screens::Twos(this)); break;
-      case Apps::Paint: currentScreen.reset(new Screens::InfiniPaint(this, lvgl)); break;
-      case Apps::Paddle: currentScreen.reset(new Screens::Paddle(this, lvgl)); break;
-      case Apps::Brightness : currentScreen.reset(new Screens::Brightness(this, brightnessController)); break;
-      case Apps::Music : currentScreen.reset(new Screens::Music(this, systemTask.nimble().music())); break;
-      case Apps::Navigation : currentScreen.reset(new Screens::Navigation(this, systemTask.nimble().navigation())); break;
-      case Apps::FirmwareValidation: currentScreen.reset(new Screens::FirmwareValidation(this, validator)); break;
-      case Apps::Notifications: currentScreen.reset(new Screens::Notifications(this, notificationManager, systemTask.nimble().alertService(), Screens::Notifications::Modes::Normal)); break;
-      case Apps::HeartRate: currentScreen.reset(new Screens::HeartRate(this, heartRateController)); break;
-    }
-    nextApp = Apps::None;
+    LoadApp( returnToApp, returnDirection );
   }
   lv_task_handler();
+}
+
+void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction) {
+  LoadApp( app, direction );
+}
+
+void DisplayApp::returnApp(Apps app, DisplayApp::FullRefreshDirections direction, TouchEvents touchEvent) {
+  returnToApp = app;
+  returnDirection = direction;
+  returnTouchEvent = touchEvent;
+}
+
+void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) {
+  currentScreen.reset(nullptr);
+  SetFullRefresh( direction );
+
+  // default return to launcher
+  returnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+
+  switch(app) {
+    case Apps::Launcher:
+      currentScreen = std::make_unique<Screens::ApplicationList>(this, settingsController, batteryController, dateTimeController);
+      returnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::None:
+    case Apps::Clock:
+      currentScreen = std::make_unique<Screens::Clock>(this, dateTimeController, batteryController, bleController, notificationManager, settingsController, heartRateController, motionController);
+      break;
+
+    case Apps::FirmwareValidation:
+      currentScreen = std::make_unique<Screens::FirmwareValidation>(this, validator);
+      returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::FirmwareUpdate:
+      currentScreen = std::make_unique<Screens::FirmwareUpdate>(this, bleController);
+      break;
+
+    case Apps::Notifications:
+      currentScreen = std::make_unique<Screens::Notifications>(this, notificationManager, systemTask.nimble().alertService(), Screens::Notifications::Modes::Normal);
+      returnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
+      break;
+    case Apps::NotificationsPreview:
+      currentScreen = std::make_unique<Screens::Notifications>(this, notificationManager, systemTask.nimble().alertService(), Screens::Notifications::Modes::Preview);
+      returnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
+      break;
+
+    // Settings
+    case Apps::QuickSettings:
+      currentScreen = std::make_unique<Screens::QuickSettings>(this, batteryController, dateTimeController, brightnessController, settingsController);
+      returnApp(Apps::Clock, FullRefreshDirections::LeftAnim, TouchEvents::SwipeLeft);
+      break;
+    case Apps::Settings:
+      currentScreen = std::make_unique<Screens::Settings>(this, settingsController);
+      returnApp(Apps::QuickSettings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingWatchFace:
+      currentScreen = std::make_unique<Screens::SettingWatchFace>(this, settingsController);
+      returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingTimeFormat:
+      currentScreen = std::make_unique<Screens::SettingTimeFormat>(this, settingsController);
+      returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingWakeUp:
+      currentScreen = std::make_unique<Screens::SettingWakeUp>(this, settingsController);
+      returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingDisplay:
+      currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);
+      returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::BatteryInfo:
+      currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController);
+      returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SysInfo:
+      currentScreen = std::make_unique<Screens::SystemInfo>(this, dateTimeController, batteryController, brightnessController, bleController, watchdog);
+      returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    //
+
+    case Apps::FlashLight:
+      currentScreen = std::make_unique<Screens::FlashLight>(this, systemTask, brightnessController);
+      returnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
+      break;
+    case Apps::StopWatch:
+      currentScreen = std::make_unique<Screens::StopWatch>(this);
+      break;
+    case Apps::Twos:
+      currentScreen = std::make_unique<Screens::Twos>(this);
+      break;
+    case Apps::Paint:
+      currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl);
+      break;
+    case Apps::Paddle:
+      currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
+      break;
+    case Apps::Music:
+      currentScreen = std::make_unique<Screens::Music>(this, systemTask.nimble().music());
+      break;
+    case Apps::Navigation:
+      currentScreen = std::make_unique<Screens::Navigation>(this, systemTask.nimble().navigation());
+      break;
+    case Apps::HeartRate:
+      currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, systemTask);
+      break;
+    case Apps::Motion:
+      currentScreen = std::make_unique<Screens::Motion>(this, motionController);
+      break;
+  }
+  currentApp = app;
 }
 
 void DisplayApp::IdleState() {
@@ -263,10 +354,6 @@ TouchEvents DisplayApp::OnTouchEvent() {
   return TouchEvents::None;
 }
 
-void DisplayApp::StartApp(Apps app) {
-  nextApp = app;
-}
-
 void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
   switch(direction){
     case DisplayApp::FullRefreshDirections::Down:
@@ -275,9 +362,20 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
     case DisplayApp::FullRefreshDirections::Up:
       lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Up);
       break;
+    case DisplayApp::FullRefreshDirections::Left:
+      lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Left);
+      break;
+    case DisplayApp::FullRefreshDirections::Right:
+      lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::Right);
+      break;
+    case DisplayApp::FullRefreshDirections::LeftAnim:
+      lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::LeftAnim);
+      break;
+    case DisplayApp::FullRefreshDirections::RightAnim:
+      lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::RightAnim);
+      break;
     default: break;
   }
-
 }
 
 void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {

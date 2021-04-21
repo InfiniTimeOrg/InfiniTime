@@ -27,8 +27,6 @@ namespace Pinetime {
         void Wakeup();
 
       private:
-        ErrorCodes ReadWithRetry(uint8_t deviceAddress, uint8_t registerAddress, uint8_t* buffer, size_t size);
-        ErrorCodes WriteWithRetry(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t* data, size_t size);
 
         ErrorCodes Read(uint8_t deviceAddress, uint8_t* buffer, size_t size, bool stop);
         ErrorCodes Write(uint8_t deviceAddress, const uint8_t* data, size_t size, bool stop);
@@ -37,7 +35,7 @@ namespace Pinetime {
         SemaphoreHandle_t mutex;
         const Modules module;
         const Parameters params;
-        static constexpr uint8_t maxDataSize{8};
+        static constexpr uint8_t maxDataSize{16};
         static constexpr uint8_t registerSize{1};
         uint8_t internalBuffer[maxDataSize + registerSize];
         uint32_t txStartedCycleCount = 0;

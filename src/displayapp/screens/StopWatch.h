@@ -18,7 +18,7 @@ namespace Pinetime::Applications::Screens {
   struct TimeSeparated_t {
     int mins;
     int secs;
-    int msecs;
+    int hundredths;
   };
 
   // A simple buffer to hold the latest two laps
@@ -66,7 +66,7 @@ namespace Pinetime::Applications::Screens {
     StopWatch(DisplayApp* app);
     ~StopWatch() override;
     bool Refresh() override;
-    bool OnButtonPushed() override;
+
     void playPauseBtnEventHandler(lv_event_t event);
     void stopLapBtnEventHandler(lv_event_t event);
 

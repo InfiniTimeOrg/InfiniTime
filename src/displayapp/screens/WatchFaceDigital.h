@@ -15,6 +15,7 @@ namespace Pinetime {
     class Ble;
     class NotificationManager;
     class HeartRateController;
+    class MotionController;
   }
 
   namespace Applications {
@@ -28,11 +29,12 @@ namespace Pinetime {
                   Controllers::Ble& bleController,
                   Controllers::NotificationManager& notificatioManager,
                   Controllers::Settings &settingsController,
-                  Controllers::HeartRateController& heartRateController);
+                  Controllers::HeartRateController& heartRateController,
+                  Controllers::MotionController& motionController);
           ~WatchFaceDigital() override;
 
           bool Refresh() override;
-          bool OnButtonPushed() override;
+          
 
           void OnObjectEvent(lv_obj_t *pObj, lv_event_t i);
         private:
@@ -48,6 +50,7 @@ namespace Pinetime {
           DirtyValue<int> batteryPercentRemaining  {};
           DirtyValue<bool> bleState {};
           DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime{};
+          DirtyValue<bool> motionSensorOk  {};
           DirtyValue<uint32_t> stepCount  {};
           DirtyValue<uint8_t> heartbeat  {};
           DirtyValue<bool> heartbeatRunning  {};
@@ -73,8 +76,9 @@ namespace Pinetime {
           Controllers::NotificationManager& notificatioManager;
           Controllers::Settings& settingsController;
           Controllers::HeartRateController& heartRateController;
+          Controllers::MotionController& motionController;
 
-          bool running = true;
+          
 
       };
     }

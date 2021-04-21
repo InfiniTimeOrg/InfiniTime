@@ -22,16 +22,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-/**
- * Set the pixel array to display by the image
- * This just calls lv_img_set_src but adds type safety
- *
- * @param img pointer to an image object
- * @param data the image array
- */
-inline void lv_img_set_src_arr(lv_obj_t *img, const lv_img_dsc_t *src_img) {
-  lv_img_set_src(img, src_img);
-}
+LV_FONT_DECLARE(lv_font_navi_80)
 
 /**
  * Navigation watchapp
@@ -39,36 +30,37 @@ inline void lv_img_set_src_arr(lv_obj_t *img, const lv_img_dsc_t *src_img) {
  */
 Navigation::Navigation(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::NavigationService &nav) : Screen(app), navService(nav) {
 
-  constexpr uint8_t FONT_HEIGHT = 12;
-  constexpr uint8_t LINE_PAD = 15;
-  constexpr int8_t MIDDLE_OFFSET = -25;
+  imgFlag = lv_label_create(lv_scr_act(), nullptr);  
+  lv_obj_set_style_local_text_font(imgFlag, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_navi_80);
+  lv_obj_set_style_local_text_color(imgFlag, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
+  lv_label_set_text(imgFlag, iconForName("flag"));
+  lv_obj_align(imgFlag, nullptr, LV_ALIGN_CENTER, 0, -60);
 
-  imgFlag = lv_img_create(lv_scr_act(), nullptr);
-  lv_img_set_src_arr(imgFlag, &flag);
-  lv_obj_align(imgFlag, nullptr, LV_ALIGN_IN_TOP_MID, 0, 15);
 
   txtNarrative = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_long_mode(txtNarrative, LV_LABEL_LONG_SROLL);
-  lv_obj_align(txtNarrative, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 1 * FONT_HEIGHT);
-  lv_label_set_text(txtNarrative, "Narrative");
-  lv_label_set_align(txtNarrative, LV_LABEL_ALIGN_CENTER);
-  lv_label_set_anim_speed(txtNarrative, 15);
+  lv_label_set_long_mode(txtNarrative, LV_LABEL_LONG_BREAK);
   lv_obj_set_width(txtNarrative, LV_HOR_RES);
+  lv_label_set_text(txtNarrative, "Welcome to navigation!");
+  lv_label_set_align(txtNarrative, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(txtNarrative, nullptr, LV_ALIGN_CENTER, 0, 10);
 
   txtManDist = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_long_mode(txtManDist, LV_LABEL_LONG_SROLL);
-  lv_obj_align(txtManDist, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 2 * FONT_HEIGHT + LINE_PAD);
-  lv_label_set_text(txtManDist, "0M");
-  lv_label_set_align(txtManDist, LV_LABEL_ALIGN_CENTER);
+  lv_label_set_long_mode(txtManDist, LV_LABEL_LONG_BREAK);
+  lv_obj_set_style_local_text_color(txtManDist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
   lv_obj_set_width(txtManDist, LV_HOR_RES);
+  lv_label_set_text(txtManDist, "--M");
+  lv_label_set_align(txtManDist, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(txtManDist, nullptr, LV_ALIGN_CENTER, 0, 60);  
 
   //Route Progress
-  barProgress = lv_bar_create(lv_scr_act(), NULL);
+  barProgress = lv_bar_create(lv_scr_act(), nullptr);
   lv_obj_set_size(barProgress, 200, 20);
-  lv_obj_align(barProgress, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_obj_align(barProgress, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
+  lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_BG, LV_STATE_DEFAULT, lv_color_hex(0x222222));
+  lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC , LV_STATE_DEFAULT, LV_COLOR_ORANGE);
   lv_bar_set_anim_time(barProgress, 500);
   lv_bar_set_range(barProgress, 0, 100);
-  lv_bar_set_value(barProgress, 0, LV_ANIM_ON);
+  lv_bar_set_value(barProgress, 0, LV_ANIM_OFF);
 }
 
 Navigation::~Navigation() {
@@ -79,8 +71,8 @@ bool Navigation::Refresh() {
 
   if (m_flag != navService.getFlag()) {
     m_flag = navService.getFlag();
-
-    lv_img_set_src_arr(imgFlag, iconForName(m_flag));
+    lv_label_set_text(imgFlag, iconForName(m_flag));
+    //lv_img_set_src_arr(imgFlag, iconForName(m_flag));
   }
 
   if (m_narrative != navService.getNarrative()) {
@@ -95,23 +87,22 @@ bool Navigation::Refresh() {
 
   if (m_progress != navService.getProgress()) {
     m_progress = navService.getProgress();
-    lv_bar_set_value(barProgress, m_progress, LV_ANIM_ON);
+    lv_bar_set_value(barProgress, m_progress, LV_ANIM_OFF);
+    if ( m_progress > 90 ) {
+      lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC , LV_STATE_DEFAULT, LV_COLOR_RED);
+    } else {
+      lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC , LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+    }
   }
 
   return running;
 }
 
-bool Navigation::OnButtonPushed() {
-  running = false;
-  return true;
-}
-
-const lv_img_dsc_t* Navigation::iconForName(std::string icon)
-{
-    for (auto iter : m_iconMap) {
-        if (iter.first == icon) {
-            return iter.second;
-        }
+const char* Navigation::iconForName(std::string icon) {
+  for (auto iter : m_iconMap) {
+    if (iter.first == icon) {
+      return iter.second;
     }
-    return &invalid;
+  }
+  return "\xEE\xA4\x90";
 }

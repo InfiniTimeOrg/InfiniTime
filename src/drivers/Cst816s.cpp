@@ -31,6 +31,15 @@ void Cst816S::Init() {
   twiMaster.Read(twiAddress, 0x15, &dummy, 1);
   vTaskDelay(5);
   twiMaster.Read(twiAddress, 0xa7, &dummy, 1);
+  vTaskDelay(5);
+  
+  /*
+  [2] EnConLR - Continuous operation can slide around
+  [1] EnConUD - Slide up and down to enable continuous operation
+  [0] EnDClick - Enable Double-click action
+  */
+  static constexpr uint8_t motionMask = 0b00000101;
+  twiMaster.Write(twiAddress, 0xEC, &motionMask, 1);
 
 }
 
@@ -38,61 +47,33 @@ void Cst816S::Init() {
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
 
-  auto ret = twiMaster.Read(twiAddress, 0, touchData, 63);
+  auto ret = twiMaster.Read(twiAddress, 0, touchData, sizeof(touchData));
   if(ret != TwiMaster::ErrorCodes::NoError) return {};
 
   auto nbTouchPoints = touchData[2] & 0x0f;
 
-//  uint8_t i = 0;
-//  NRF_LOG_INFO("#########################")
-  for(int i = 0; i < 1; i++) {
-    uint8_t pointId = (touchData[touchIdIndex + (touchStep * i)]) >> 4;
-    if(nbTouchPoints == 0 && pointId == lastTouchId) return info;
+  uint8_t i = 0;
 
-    // We fetch only the first touch point (the controller seems to handle only one anyway...)
-    info.isTouch = true;
+  uint8_t pointId = (touchData[touchIdIndex + (touchStep * i)]) >> 4;
+  if(nbTouchPoints == 0 && pointId == lastTouchId) return info;
 
 
-    auto xHigh = touchData[touchXHighIndex + (touchStep * i)] & 0x0f;
-    auto xLow = touchData[touchXLowIndex + (touchStep * i)];
-    uint16_t x = (xHigh << 8) | xLow;
+  info.isTouch = true;
 
-    auto yHigh = touchData[touchYHighIndex + (touchStep * i)] & 0x0f;
-    auto yLow = touchData[touchYLowIndex + (touchStep * i)];
-    uint16_t y = (yHigh << 8) | yLow;
+  auto xHigh = touchData[touchXHighIndex + (touchStep * i)] & 0x0f;
+  auto xLow = touchData[touchXLowIndex + (touchStep * i)];
+  uint16_t x = (xHigh << 8) | xLow;
 
-    auto action = touchData[touchEventIndex + (touchStep * i)] >> 6; /* 0 = Down, 1 = Up, 2 = contact*/
-    //auto finger = touchData[touchIdIndex + (touchStep * i)] >> 4;
-    //auto pressure = touchData[touchXYIndex + (touchStep * i)];
-    //auto area = touchData[touchMiscIndex + (touchStep * i)] >> 4;
+  auto yHigh = touchData[touchYHighIndex + (touchStep * i)] & 0x0f;
+  auto yLow = touchData[touchYLowIndex + (touchStep * i)];
+  uint16_t y = (yHigh << 8) | yLow;
 
-    info.x = x;
-    info.y = y;
-    info.action = action;
-    info.gesture = static_cast<Gestures>(touchData[gestureIndex]);
+  auto action = touchData[touchEventIndex + (touchStep * i)] >> 6; /* 0 = Down, 1 = Up, 2 = contact*/
 
-//    NRF_LOG_INFO("---------------")
-//    NRF_LOG_INFO("ID : %d", pointId);
-//    NRF_LOG_INFO("NB : %d", nbTouchPoints);
-//    NRF_LOG_INFO("X/Y :%d / %d", info.x, info.y);
-//    NRF_LOG_INFO("Action : %d", action);
-//    NRF_LOG_INFO("Finger : %d", finger);
-//    NRF_LOG_INFO("Pressure : %d", pressure);
-//    NRF_LOG_INFO("area : %d", area);
-//    NRF_LOG_INFO("Touch : %s", info.isTouch?"Yes" : "No");
-//    switch(info.gesture) {// gesture
-//      case Gestures::None: NRF_LOG_INFO("Gesture : None"); break;
-//      case Gestures::SlideDown: NRF_LOG_INFO("Gesture : Slide Down"); break;
-//      case Gestures::SlideUp: NRF_LOG_INFO("Gesture : Slide Up"); break;
-//      case Gestures::SlideLeft: NRF_LOG_INFO("Gesture : Slide Left"); break;
-//      case Gestures::SlideRight: NRF_LOG_INFO("Gesture : Slide Right"); break;
-//      case Gestures::SingleTap: NRF_LOG_INFO("Gesture : Single click"); break;
-//      case Gestures::DoubleTap: NRF_LOG_INFO("Gesture : Double click"); break;
-//      case Gestures::LongPress: NRF_LOG_INFO("Gesture : Long press"); break;
-//      default : NRF_LOG_INFO("Unknown"); break;
-//    }
-  }
-
+  info.x = x;
+  info.y = y;
+  info.action = action;
+  info.gesture = static_cast<Gestures>(touchData[gestureIndex]);
 
   return info;
 }

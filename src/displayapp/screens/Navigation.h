@@ -22,94 +22,7 @@
 #include <string>
 #include "Screen.h"
 #include <array>
-#include <lvgl/src/lv_draw/lv_img_decoder.h>
 
-#include "displayapp/icons/navigation/arrive-left.c"
-#include "displayapp/icons/navigation/arrive-right.c"
-#include "displayapp/icons/navigation/arrive-straight.c"
-#include "displayapp/icons/navigation/arrive.c"
-#include "displayapp/icons/navigation/close.c"
-#include "displayapp/icons/navigation/continue-left.c"
-#include "displayapp/icons/navigation/continue-right.c"
-#include "displayapp/icons/navigation/continue-slight-left.c"
-#include "displayapp/icons/navigation/continue-slight-right.c"
-#include "displayapp/icons/navigation/continue-straight.c"
-#include "displayapp/icons/navigation/continue-uturn.c"
-#include "displayapp/icons/navigation/continue.c"
-#include "displayapp/icons/navigation/depart-left.c"
-#include "displayapp/icons/navigation/depart-right.c"
-#include "displayapp/icons/navigation/depart-straight.c"
-#include "displayapp/icons/navigation/end-of-road-left.c"
-#include "displayapp/icons/navigation/end-of-road-right.c"
-#include "displayapp/icons/navigation/ferry.c"
-#include "displayapp/icons/navigation/flag.c"
-#include "displayapp/icons/navigation/fork-left.c"
-#include "displayapp/icons/navigation/fork-right.c"
-#include "displayapp/icons/navigation/fork-slight-left.c"
-#include "displayapp/icons/navigation/fork-slight-right.c"
-#include "displayapp/icons/navigation/fork-straight.c"
-#include "displayapp/icons/navigation/invalid.c"
-#include "displayapp/icons/navigation/invalid-left.c"
-#include "displayapp/icons/navigation/invalid-right.c"
-#include "displayapp/icons/navigation/invalid-slight-left.c"
-#include "displayapp/icons/navigation/invalid-slight-right.c"
-#include "displayapp/icons/navigation/invalid-straight.c"
-#include "displayapp/icons/navigation/invalid-uturn.c"
-#include "displayapp/icons/navigation/merge-left.c"
-#include "displayapp/icons/navigation/merge-right.c"
-#include "displayapp/icons/navigation/merge-slight-left.c"
-#include "displayapp/icons/navigation/merge-slight-right.c"
-#include "displayapp/icons/navigation/merge-straight.c"
-#include "displayapp/icons/navigation/new-name-left.c"
-#include "displayapp/icons/navigation/new-name-right.c"
-#include "displayapp/icons/navigation/new-name-sharp-left.c"
-#include "displayapp/icons/navigation/new-name-sharp-right.c"
-#include "displayapp/icons/navigation/new-name-slight-left.c"
-#include "displayapp/icons/navigation/new-name-slight-right.c"
-#include "displayapp/icons/navigation/new-name-straight.c"
-#include "displayapp/icons/navigation/notification-left.c"
-#include "displayapp/icons/navigation/notification-right.c"
-#include "displayapp/icons/navigation/notification-sharp-left.c"
-#include "displayapp/icons/navigation/notification-sharp-right.c"
-#include "displayapp/icons/navigation/notification-slight-left.c"
-#include "displayapp/icons/navigation/notification-slight-right.c"
-#include "displayapp/icons/navigation/notification-straight.c"
-#include "displayapp/icons/navigation/off-ramp-left.c"
-#include "displayapp/icons/navigation/off-ramp-right.c"
-#include "displayapp/icons/navigation/off-ramp-slight-left.c"
-#include "displayapp/icons/navigation/off-ramp-slight-right.c"
-#include "displayapp/icons/navigation/on-ramp-left.c"
-#include "displayapp/icons/navigation/on-ramp-right.c"
-#include "displayapp/icons/navigation/on-ramp-sharp-left.c"
-#include "displayapp/icons/navigation/on-ramp-sharp-right.c"
-#include "displayapp/icons/navigation/on-ramp-slight-left.c"
-#include "displayapp/icons/navigation/on-ramp-slight-right.c"
-#include "displayapp/icons/navigation/on-ramp-straight.c"
-#include "displayapp/icons/navigation/rotary.c"
-#include "displayapp/icons/navigation/rotary-left.c"
-#include "displayapp/icons/navigation/rotary-right.c"
-#include "displayapp/icons/navigation/rotary-sharp-left.c"
-#include "displayapp/icons/navigation/rotary-sharp-right.c"
-#include "displayapp/icons/navigation/rotary-slight-left.c"
-#include "displayapp/icons/navigation/rotary-slight-right.c"
-#include "displayapp/icons/navigation/rotary-straight.c"
-#include "displayapp/icons/navigation/roundabout.c"
-#include "displayapp/icons/navigation/roundabout-left.c"
-#include "displayapp/icons/navigation/roundabout-right.c"
-#include "displayapp/icons/navigation/roundabout-sharp-left.c"
-#include "displayapp/icons/navigation/roundabout-sharp-right.c"
-#include "displayapp/icons/navigation/roundabout-slight-left.c"
-#include "displayapp/icons/navigation/roundabout-slight-right.c"
-#include "displayapp/icons/navigation/roundabout-straight.c"
-#include "displayapp/icons/navigation/turn-left.c"
-#include "displayapp/icons/navigation/turn-right.c"
-#include "displayapp/icons/navigation/turn-sharp-left.c"
-#include "displayapp/icons/navigation/turn-sharp-right.c"
-#include "displayapp/icons/navigation/turn-slight-left.c"
-#include "displayapp/icons/navigation/turn-slight-right.c"
-#include "displayapp/icons/navigation/turn-straight.c"
-#include "displayapp/icons/navigation/updown.c"
-#include "displayapp/icons/navigation/uturn.c"
 
 namespace Pinetime {
   namespace Controllers {
@@ -124,8 +37,7 @@ namespace Pinetime {
         ~Navigation() override;
 
         bool Refresh() override;
-        bool OnButtonPushed() override;
-
+        
       private:
 
         lv_obj_t *imgFlag;
@@ -141,97 +53,97 @@ namespace Pinetime {
         int m_progress;
 
         /** Watchapp */
-        bool running = true;
-
-        const lv_img_dsc_t* iconForName(std::string icon);
-
-        std::array<std::pair<std::string, const lv_img_dsc_t*>, 89 > m_iconMap = { {
-            {"arrive-left", &arrive_left},
-            {"arrive-right", &arrive_right},
-            {"arrive-straight", &arrive_straight},
-            {"arrive", &arrive},
-            {"close", &close},
-            {"continue-left", &continue_left},
-            {"continue-right", &continue_right},
-            {"continue-slight-left", &continue_slight_left},
-            {"continue-slight-right", &continue_slight_right},
-            {"continue-straight", &continue_straight},
-            {"continue-uturn", &continue_uturn},
-            {"continue", &continue_icon},
-            {"depart-left", &depart_left},
-            {"depart-right", &depart_right},
-            {"depart-straight", &depart_straight},
-            {"end-of-road-left", &end_of_road_left},
-            {"end-of-road-right", &end_of_road_right},
-            {"ferry", &ferry},
-            {"flag", &flag},
-            {"fork-left", &fork_left},
-            {"fork-right", &fork_right},
-            {"fork-slight-left", &fork_slight_left},
-            {"fork-slight-right", &fork_slight_right},
-            {"fork-straight", &fork_straight},
-            {"invalid", &invalid},
-            {"invalid-left", &invalid_left},
-            {"invalid-right", &invalid_right},
-            {"invalid-slight-left", &invalid_slight_left},
-            {"invalid-slight-right", &invalid_slight_right},
-            {"invalid-straight", &invalid_straight},
-            {"invalid-uturn", &invalid_uturn},
-            {"merge-left", &merge_left},
-            {"merge-right", &merge_right},
-            {"merge-slight-left", &merge_slight_left},
-            {"merge-slight-right", &merge_slight_right},
-            {"merge-straight", &merge_straight},
-            {"new-name-left", &new_name_left},
-            {"new-name-right", &new_name_right},
-            {"new-name-sharp-left", &new_name_sharp_left},
-            {"new-name-sharp-right", &new_name_sharp_right},
-            {"new-name-slight-left", &new_name_slight_left},
-            {"new-name-slight-right", &new_name_slight_right},
-            {"new-name-straight", &new_name_straight},
-            {"notification-left", &notification_left},
-            {"notification-right", &notification_right},
-            {"notification-sharp-left", &notification_sharp_left},
-            {"notification-sharp-right", &notification_sharp_right},
-            {"notification-slight-left", &notification_slight_left},
-            {"notification-slight-right", &notification_slight_right},
-            {"notification-straight", &notification_straight},
-            {"off-ramp-left", &off_ramp_left},
-            {"off-ramp-right", &off_ramp_right},
-            {"off-ramp-slight-left", &off_ramp_slight_left},
-            {"off-ramp-slight-right", &off_ramp_slight_right},
-            {"on-ramp-left", &on_ramp_left},
-            {"on-ramp-right", &on_ramp_right},
-            {"on-ramp-sharp-left", &on_ramp_sharp_left},
-            {"on-ramp-sharp-right", &on_ramp_sharp_right},
-            {"on-ramp-slight-left", &on_ramp_slight_left},
-            {"on-ramp-slight-right", &on_ramp_slight_right},
-            {"on-ramp-straight", &on_ramp_straight},
-            {"rotary", &rotary},
-            {"rotary-left", &rotary_left},
-            {"rotary-right", &rotary_right},
-            {"rotary-sharp-left", &rotary_sharp_left},
-            {"rotary-sharp-right", &rotary_sharp_right},
-            {"rotary-slight-left", &rotary_slight_left},
-            {"rotary-slight-right", &rotary_slight_right},
-            {"rotary-straight", &rotary_straight},
-            {"roundabout", &roundabout},
-            {"roundabout-left", &roundabout_left},
-            {"roundabout-right", &roundabout_right},
-            {"roundabout-sharp-left", &roundabout_sharp_left},
-            {"roundabout-sharp-right", &roundabout_sharp_right},
-            {"roundabout-slight-left", &roundabout_slight_left},
-            {"roundabout-slight-right", &roundabout_slight_right},
-            {"roundabout-straight", &roundabout_straight},
-            {"turn-left", &turn_left},
-            {"turn-right", &turn_right},
-            {"turn-sharp-left", &turn_sharp_left},
-            {"turn-sharp-right", &turn_sharp_right},
-            {"turn-slight-left", &turn_slight_left},
-            {"turn-slight-right", &turn_slight_right},
-            {"turn-straight", &turn_straight},
-            {"updown", &updown},
-            {"uturn", &uturn} } };
+        
+        const char* iconForName(std::string icon);
+        
+        std::array<std::pair<std::string, const char*>, 89 > m_iconMap = { {
+            {"arrive-left"                ,"\xEE\xA4\x81" },
+            {"arrive-right"               ,"\xEE\xA4\x82" },
+            {"arrive-straight"            ,"\xEE\xA4\x80" },
+            {"arrive"                     ,"\xEE\xA4\x80" },
+            {"close"                      ,"\xEE\xA4\x83" },
+            {"continue-left"              ,"\xEE\xA4\x85" },
+            {"continue-right"             ,"\xEE\xA4\x86" },
+            {"continue-slight-left"       ,"\xEE\xA4\x87" },
+            {"continue-slight-right"      ,"\xEE\xA4\x88" },
+            {"continue-straight"          ,"\xEE\xA4\x84" },
+            {"continue-uturn"             ,"\xEE\xA4\x89" },
+            {"continue"                   ,"\xEE\xA4\x84" },
+            {"depart-left"                ,"\xEE\xA4\x8B" },
+            {"depart-right"               ,"\xEE\xA4\x8C" },
+            {"depart-straight"            ,"\xEE\xA4\x8A" },
+            {"end-of-road-left"           ,"\xEE\xA4\x8D" },
+            {"end-of-road-right"          ,"\xEE\xA4\x8E" },
+            {"ferry"                      ,"\xEE\xA4\x8F" },
+            {"flag"                       ,"\xEE\xA4\x90" },
+            {"fork-left"                  ,"\xEE\xA4\x92" },
+            {"fork-right"                 ,"\xEE\xA4\x93" },
+            {"fork-slight-left"           ,"\xEE\xA4\x94" },
+            {"fork-slight-right"          ,"\xEE\xA4\x95" },
+            {"fork-straight"              ,"\xEE\xA4\x96" },
+            {"invalid"                    ,"\xEE\xA4\x84" },
+            {"invalid-left"               ,"\xEE\xA4\x85" },
+            {"invalid-right"              ,"\xEE\xA4\x86" },
+            {"invalid-slight-left"        ,"\xEE\xA4\x87" },
+            {"invalid-slight-right"       ,"\xEE\xA4\x88" },
+            {"invalid-straight"           ,"\xEE\xA4\x84" },
+            {"invalid-uturn"              ,"\xEE\xA4\x89" },
+            {"merge-left"                 ,"\xEE\xA4\x97" },
+            {"merge-right"                ,"\xEE\xA4\x98" },
+            {"merge-slight-left"          ,"\xEE\xA4\x99" },
+            {"merge-slight-right"         ,"\xEE\xA4\x9A" },
+            {"merge-straight"             ,"\xEE\xA4\x84" },
+            {"new-name-left"              ,"\xEE\xA4\x85" },
+            {"new-name-right"             ,"\xEE\xA4\x86" },
+            {"new-name-sharp-left"        ,"\xEE\xA4\x9B" },
+            {"new-name-sharp-right"       ,"\xEE\xA4\x9C" },
+            {"new-name-slight-left"       ,"\xEE\xA4\x87" },
+            {"new-name-slight-right"      ,"\xEE\xA4\x88" },
+            {"new-name-straight"          ,"\xEE\xA4\x84" },
+            {"notification-left"          ,"\xEE\xA4\x85" },
+            {"notification-right"         ,"\xEE\xA4\x86" },
+            {"notification-sharp-left"    ,"\xEE\xA4\x9B" },
+            {"notification-sharp-right"   ,"\xEE\xA4\xA5" },
+            {"notification-slight-left"   ,"\xEE\xA4\x87" },
+            {"notification-slight-right"  ,"\xEE\xA4\x88" },
+            {"notification-straight"      ,"\xEE\xA4\x84" },
+            {"off-ramp-left"              ,"\xEE\xA4\x9D" },
+            {"off-ramp-right"             ,"\xEE\xA4\x9E" },
+            {"off-ramp-slight-left"       ,"\xEE\xA4\x9F" },
+            {"off-ramp-slight-right"      ,"\xEE\xA4\xA0" },
+            {"on-ramp-left"               ,"\xEE\xA4\x85" },
+            {"on-ramp-right"              ,"\xEE\xA4\x86" },
+            {"on-ramp-sharp-left"         ,"\xEE\xA4\x9B" },
+            {"on-ramp-sharp-right"        ,"\xEE\xA4\xA5" },
+            {"on-ramp-slight-left"        ,"\xEE\xA4\x87" },
+            {"on-ramp-slight-right"       ,"\xEE\xA4\x88" },
+            {"on-ramp-straight"           ,"\xEE\xA4\x84" },
+            {"rotary"                     ,"\xEE\xA4\xA1" },
+            {"rotary-left"                ,"\xEE\xA4\xA2" },
+            {"rotary-right"               ,"\xEE\xA4\xA3" },
+            {"rotary-sharp-left"          ,"\xEE\xA4\xA4" },
+            {"rotary-sharp-right"         ,"\xEE\xA4\xA5" },
+            {"rotary-slight-left"         ,"\xEE\xA4\xA6" },
+            {"rotary-slight-right"        ,"\xEE\xA4\xA7" },
+            {"rotary-straight"            ,"\xEE\xA4\xA8" },
+            {"roundabout"                 ,"\xEE\xA4\xA1" },
+            {"roundabout-left"            ,"\xEE\xA4\xA2" },
+            {"roundabout-right"           ,"\xEE\xA4\xA3" },
+            {"roundabout-sharp-left"      ,"\xEE\xA4\xA4" },
+            {"roundabout-sharp-right"     ,"\xEE\xA4\xA5" },
+            {"roundabout-slight-left"     ,"\xEE\xA4\xA6" },
+            {"roundabout-slight-right"    ,"\xEE\xA4\xA7" },
+            {"roundabout-straight"        ,"\xEE\xA4\xA8" },
+            {"turn-left"                  ,"\xEE\xA4\x85" },
+            {"turn-right"                 ,"\xEE\xA4\x86" },
+            {"turn-sharp-left"            ,"\xEE\xA4\x9B" },
+            {"turn-sharp-right"           ,"\xEE\xA4\xA5" },
+            {"turn-slight-left"           ,"\xEE\xA4\x87" },
+            {"turn-slight-right"          ,"\xEE\xA4\x88" },
+            {"turn-straight"              ,"\xEE\xA4\x84" },
+            {"updown"                     ,"\xEE\xA4\xA9" },
+            {"uturn"                      ,"\xEE\xA4\x89" },
+        } };
       };
     }
   }

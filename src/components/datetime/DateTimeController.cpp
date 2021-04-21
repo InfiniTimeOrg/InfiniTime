@@ -1,8 +1,13 @@
 #include "DateTimeController.h"
 #include <date/date.h>
 #include <libraries/log/nrf_log.h>
+#include <systemtask/SystemTask.h>
 
 using namespace Pinetime::Controllers;
+
+DateTime::DateTime(System::SystemTask& systemTask) : systemTask{systemTask} {
+
+}
 
 
 void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfWeek, uint8_t hour, uint8_t minute,
@@ -62,6 +67,14 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   hour = time.hours().count();
   minute = time.minutes().count();
   second = time.seconds().count();
+
+  // Notify new day to SystemTask
+  if(hour == 0 and not isMidnightAlreadyNotified) {
+    isMidnightAlreadyNotified = true;
+    systemTask.PushMessage(System::SystemTask::Messages::OnNewDay);
+  } else if (hour != 0) {
+    isMidnightAlreadyNotified = false;
+  }
 }
 
 const char *DateTime::MonthShortToString() {

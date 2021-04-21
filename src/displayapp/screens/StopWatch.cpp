@@ -16,10 +16,10 @@ namespace {
   TimeSeparated_t convertTicksToTimeSegments(const TickType_t timeElapsed) {
     const int timeElapsedMillis = (static_cast<float>(timeElapsed) / static_cast<float>(configTICK_RATE_HZ)) * 1000;
 
-    const int milliSecs = (timeElapsedMillis % 1000) / 10; // Get only the first two digits and ignore the last
+    const int hundredths = (timeElapsedMillis % 1000) / 10; // Get only the first two digits and ignore the last
     const int secs = (timeElapsedMillis / 1000) % 60;
     const int mins = (timeElapsedMillis / 1000) / 60;
-    return TimeSeparated_t {mins, secs, milliSecs};
+    return TimeSeparated_t {mins, secs, hundredths};
   }
 
   TickType_t calculateDelta(const TickType_t startTime, const TickType_t currentTime) {
@@ -50,14 +50,16 @@ StopWatch::StopWatch(DisplayApp* app)
     currentTimeSeparated {}, lapBuffer {}, lapNr {}, lapPressed {false} {
 
   time = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -45);
+  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_label_set_text(time, "00:00");
+  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -45);
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 108, 3);
+  //lv_obj_set_style_local_text_font(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_label_set_text(msecTime, "00");
+  lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 108, 3);
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
@@ -68,12 +70,14 @@ StopWatch::StopWatch(DisplayApp* app)
   lv_label_set_text(txtPlayPause, Symbols::play);
 
   lapOneText = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(lapOneText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  //lv_obj_set_style_local_text_font(lapOneText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_set_style_local_text_color(lapOneText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   lv_obj_align(lapOneText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 30);
   lv_label_set_text(lapOneText, "");
 
   lapTwoText = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(lapTwoText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  //lv_obj_set_style_local_text_font(lapTwoText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_set_style_local_text_color(lapTwoText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   lv_obj_align(lapTwoText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 55);
   lv_label_set_text(lapTwoText, "");
 
@@ -137,14 +141,14 @@ bool StopWatch::Refresh() {
       currentTimeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
 
       lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
-      lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.msecs);
+      lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
 
       if (lapPressed == true) {
         if (lapBuffer[1]) {
-          lv_label_set_text_fmt(lapOneText, "#%d   %d:%d:%d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->msecs);
+          lv_label_set_text_fmt(lapOneText, "#%2d   %2d:%02d.%02d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->hundredths);
         }
         if (lapBuffer[0]) {
-          lv_label_set_text_fmt(lapTwoText, "#%d   %d:%d:%d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->msecs);
+          lv_label_set_text_fmt(lapTwoText, "#%2d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
         }
         // Reset the bool to avoid setting the text in each cycle until there is a change
         lapPressed = false;
@@ -156,6 +160,11 @@ bool StopWatch::Refresh() {
         // Store the current time elapsed in cache
         oldTimeElapsed += timeElapsed;
         currentState = States::Halted;
+        lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+        lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+      } else {
+        lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+        lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
       }
       break;
     }
@@ -170,16 +179,13 @@ bool StopWatch::Refresh() {
       if (currentEvent == Events::Stop) {
         currentState = States::Init;
         oldTimeElapsed = 0;
+        lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+        lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
       }
       break;
     }
   }
   return running;
-}
-
-bool StopWatch::OnButtonPushed() {
-  running = false;
-  return true;
 }
 
 void StopWatch::playPauseBtnEventHandler(lv_event_t event) {

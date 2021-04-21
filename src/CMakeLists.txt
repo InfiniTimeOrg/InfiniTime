@@ -3,16 +3,6 @@ cmake_minimum_required(VERSION 3.10)
 project(pinetime-app C CXX ASM)
 
 
-set(CMAKE_C_STANDARD 99)
-set(CMAKE_CXX_STANDARD 14)
-
-# set(CMAKE_GENERATOR "Unix Makefiles")
-set(CMAKE_C_EXTENSIONS OFF)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 # define some variables just for this example to determine file locations
 set(NRF_PROJECT_NAME pinetime-app)
 set(NRF_BOARD pca10040)
@@ -93,7 +83,7 @@ set(SDK_SOURCE_FILES
         "${NRF5_SDK_PATH}/external/fprintf/nrf_fprintf_format.c"
 
         # TWI
-        "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_twi.c"
+        "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_twim.c"
 
         # GPIOTE
         "${NRF5_SDK_PATH}/components/libraries/gpiote/app_gpiote.c"
@@ -384,95 +374,6 @@ list(APPEND IMAGE_FILES
         displayapp/icons/bluetooth/os_bt_connected.c
         displayapp/icons/bluetooth/os_bt_disconnected.c
 
-        displayapp/icons/navigation/arrive-left.c
-        displayapp/icons/navigation/arrive-right.c
-        displayapp/icons/navigation/arrive-straight.c
-        displayapp/icons/navigation/arrive.c
-        displayapp/icons/navigation/close.c
-        displayapp/icons/navigation/continue-left.c
-        displayapp/icons/navigation/continue-right.c
-        displayapp/icons/navigation/continue-slight-left.c
-        displayapp/icons/navigation/continue-slight-right.c
-        displayapp/icons/navigation/continue-straight.c
-        displayapp/icons/navigation/continue-uturn.c
-        displayapp/icons/navigation/continue.c
-        displayapp/icons/navigation/depart-left.c
-        displayapp/icons/navigation/depart-right.c
-        displayapp/icons/navigation/depart-straight.c
-        displayapp/icons/navigation/end-of-road-left.c
-        displayapp/icons/navigation/end-of-road-right.c
-        displayapp/icons/navigation/ferry.c
-        displayapp/icons/navigation/flag.c
-        displayapp/icons/navigation/fork-left.c
-        displayapp/icons/navigation/fork-right.c
-        displayapp/icons/navigation/fork-slight-left.c
-        displayapp/icons/navigation/fork-slight-right.c
-        displayapp/icons/navigation/fork-straight.c
-        displayapp/icons/navigation/invalid.c
-        displayapp/icons/navigation/invalid-left.c
-        displayapp/icons/navigation/invalid-right.c
-        displayapp/icons/navigation/invalid-slight-left.c
-        displayapp/icons/navigation/invalid-slight-right.c
-        displayapp/icons/navigation/invalid-straight.c
-        displayapp/icons/navigation/invalid-uturn.c
-        displayapp/icons/navigation/merge-left.c
-        displayapp/icons/navigation/merge-right.c
-        displayapp/icons/navigation/merge-slight-left.c
-        displayapp/icons/navigation/merge-slight-right.c
-        displayapp/icons/navigation/merge-straight.c
-        displayapp/icons/navigation/new-name-left.c
-        displayapp/icons/navigation/new-name-right.c
-        displayapp/icons/navigation/new-name-sharp-left.c
-        displayapp/icons/navigation/new-name-sharp-right.c
-        displayapp/icons/navigation/new-name-slight-left.c
-        displayapp/icons/navigation/new-name-slight-right.c
-        displayapp/icons/navigation/new-name-straight.c
-        displayapp/icons/navigation/notification-left.c
-        displayapp/icons/navigation/notification-right.c
-        displayapp/icons/navigation/notification-sharp-left.c
-        displayapp/icons/navigation/notification-sharp-right.c
-        displayapp/icons/navigation/notification-slight-left.c
-        displayapp/icons/navigation/notification-slight-right.c
-        displayapp/icons/navigation/notification-straight.c
-        displayapp/icons/navigation/off-ramp-left.c
-        displayapp/icons/navigation/off-ramp-right.c
-        displayapp/icons/navigation/off-ramp-sharp-left.c
-        displayapp/icons/navigation/off-ramp-sharp-right.c
-        displayapp/icons/navigation/off-ramp-slight-left.c
-        displayapp/icons/navigation/off-ramp-slight-right.c
-        displayapp/icons/navigation/off-ramp-straight.c
-        displayapp/icons/navigation/on-ramp-left.c
-        displayapp/icons/navigation/on-ramp-right.c
-        displayapp/icons/navigation/on-ramp-sharp-left.c
-        displayapp/icons/navigation/on-ramp-sharp-right.c
-        displayapp/icons/navigation/on-ramp-slight-left.c
-        displayapp/icons/navigation/on-ramp-slight-right.c
-        displayapp/icons/navigation/on-ramp-straight.c
-        displayapp/icons/navigation/rotary.c
-        displayapp/icons/navigation/rotary-left.c
-        displayapp/icons/navigation/rotary-right.c
-        displayapp/icons/navigation/rotary-sharp-left.c
-        displayapp/icons/navigation/rotary-sharp-right.c
-        displayapp/icons/navigation/rotary-slight-left.c
-        displayapp/icons/navigation/rotary-slight-right.c
-        displayapp/icons/navigation/rotary-straight.c
-        displayapp/icons/navigation/roundabout.c
-        displayapp/icons/navigation/roundabout-left.c
-        displayapp/icons/navigation/roundabout-right.c
-        displayapp/icons/navigation/roundabout-sharp-left.c
-        displayapp/icons/navigation/roundabout-sharp-right.c
-        displayapp/icons/navigation/roundabout-slight-left.c
-        displayapp/icons/navigation/roundabout-slight-right.c
-        displayapp/icons/navigation/roundabout-straight.c
-        displayapp/icons/navigation/turn-left.c
-        displayapp/icons/navigation/turn-right.c
-        displayapp/icons/navigation/turn-sharp-left.c
-        displayapp/icons/navigation/turn-sharp-right.c
-        displayapp/icons/navigation/turn-slight-left.c
-        displayapp/icons/navigation/turn-slight-right.c
-        displayapp/icons/navigation/turn-stright.c
-        displayapp/icons/navigation/updown.c
-        displayapp/icons/navigation/uturn.c
         )
 
 list(APPEND SOURCE_FILES
@@ -495,16 +396,28 @@ list(APPEND SOURCE_FILES
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
         displayapp/screens/Navigation.cpp
+        displayapp/screens/Motion.cpp
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
         displayapp/screens/Twos.cpp
         displayapp/screens/HeartRate.cpp
+        displayapp/screens/Motion.cpp
+        displayapp/screens/FlashLight.cpp
+        displayapp/screens/List.cpp
+        displayapp/screens/BatteryInfo.cpp
+
+        ## Settings
+        displayapp/screens/settings/QuickSettings.cpp
+        displayapp/screens/settings/Settings.cpp
+        displayapp/screens/settings/SettingWatchFace.cpp
+        displayapp/screens/settings/SettingTimeFormat.cpp
+        displayapp/screens/settings/SettingWakeUp.cpp
+        displayapp/screens/settings/SettingDisplay.cpp
 
         ## Watch faces
         displayapp/icons/bg_clock.c
         displayapp/screens/WatchFaceAnalog.cpp
-        
         displayapp/screens/WatchFaceDigital.cpp
 
         ##
@@ -518,11 +431,15 @@ list(APPEND SOURCE_FILES
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
         drivers/Hrs3300.cpp
+        drivers/Bma421.cpp
+        drivers/Bma421_C/bma4.c
+        drivers/Bma421_C/bma423.c
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
         components/ble/NotificationManager.cpp
         components/datetime/DateTimeController.cpp
         components/brightness/BrightnessController.cpp
+        components/motion/MotionController.cpp
         components/ble/NimbleController.cpp
         components/ble/DeviceInformationService.cpp
         components/ble/CurrentTimeClient.cpp
@@ -532,6 +449,7 @@ list(APPEND SOURCE_FILES
         components/ble/AlertNotificationService.cpp
         components/ble/MusicService.cpp
         components/ble/NavigationService.cpp
+        displayapp/fonts/lv_font_navi_80.c
         components/ble/BatteryInformationService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/ServiceDiscovery.cpp
@@ -547,6 +465,8 @@ list(APPEND SOURCE_FILES
         displayapp/LittleVgl.cpp
         displayapp/fonts/jetbrains_mono_extrabold_compressed.c
         displayapp/fonts/jetbrains_mono_bold_20.c
+        displayapp/fonts/jetbrains_mono_76.c
+        displayapp/fonts/lv_font_sys_48.c
         displayapp/lv_pinetime_theme.c
 
         systemtask/SystemTask.cpp
@@ -573,11 +493,15 @@ list(APPEND RECOVERY_SOURCE_FILES
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
         drivers/Hrs3300.cpp
+        drivers/Bma421.cpp
+        drivers/Bma421_C/bma4.c
+        drivers/Bma421_C/bma423.c
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
         components/ble/NotificationManager.cpp
         components/datetime/DateTimeController.cpp
         components/brightness/BrightnessController.cpp
+        components/motion/MotionController.cpp
         components/ble/NimbleController.cpp
         components/ble/DeviceInformationService.cpp
         components/ble/CurrentTimeClient.cpp
@@ -634,6 +558,7 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
 
 
 set(INCLUDE_FILES
+
         BootloaderVersion.h
         logging/Logger.h
         logging/NrfLogger.h
@@ -661,6 +586,7 @@ set(INCLUDE_FILES
         displayapp/Apps.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
+        displayapp/screens/Motion.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h
@@ -669,11 +595,15 @@ set(INCLUDE_FILES
         drivers/DebugPins.h
         drivers/InternalFlash.h
         drivers/Hrs3300.h
+        drivers/Bma421.h
+        drivers/Bma421_C/bma4.c
+        drivers/Bma421_C/bma423.c
         components/battery/BatteryController.h
         components/ble/BleController.h
         components/ble/NotificationManager.h
         components/datetime/DateTimeController.h
         components/brightness/BrightnessController.h
+        components/motion/MotionController.h
         components/ble/NimbleController.h
         components/ble/DeviceInformationService.h
         components/ble/CurrentTimeClient.h
@@ -875,8 +805,6 @@ target_compile_options(${EXECUTABLE_NAME} PUBLIC
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_FILE_NAME}.map"
-        CXX_STANDARD 11
-        C_STANDARD 99
         )
 
 add_custom_command(TARGET ${EXECUTABLE_NAME}
@@ -907,8 +835,6 @@ target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_MCUBOOT_FILE_NAME}.map"
-        CXX_STANDARD 11
-        C_STANDARD 99
         )
 
 add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
@@ -946,8 +872,6 @@ target_compile_options(${EXECUTABLE_RECOVERY_NAME} PUBLIC
 set_target_properties(${EXECUTABLE_RECOVERY_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_RECOVERY_FILE_NAME}.map"
-        CXX_STANDARD 11
-        C_STANDARD 99
         )
 
 add_custom_command(TARGET ${EXECUTABLE_RECOVERY_NAME}
@@ -977,9 +901,7 @@ target_compile_options(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC
 
 set_target_properties(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PROPERTIES
         SUFFIX ".out"
-        LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.map"
-        CXX_STANDARD 11
-        C_STANDARD 99
+        LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_GRAPHICS_FILE_NAME}.map"
         )
 
 add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
@@ -988,7 +910,7 @@ add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
         COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.bin"
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_RECOVERYY_MCUBOOT_FILE_NAME}.hex"
         COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.bin ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME}
-        COMMAND python ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME} recoveryImage > recoveryImage.h
+        COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME} recoveryImage > recoveryImage.h
         COMMENT "post build steps for ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}"
         )
 
@@ -1021,8 +943,6 @@ add_dependencies(${EXECUTABLE_RECOVERYLOADER_NAME} ${EXECUTABLE_RECOVERY_MCUBOOT
 set_target_properties(${EXECUTABLE_RECOVERYLOADER_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_RECOVERYLOADER_FILE_NAME}.map"
-        CXX_STANDARD 11
-        C_STANDARD 99
         )
 
 add_custom_command(TARGET ${EXECUTABLE_RECOVERYLOADER_NAME}
@@ -1056,8 +976,6 @@ add_dependencies(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} ${EXECUTABLE_RECOVERY
 set_target_properties(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PROPERTIES
         SUFFIX ".out"
         LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.map"
-        CXX_STANDARD 11
-        C_STANDARD 99
         )
 
 add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
@@ -1066,7 +984,7 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
         COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.bin"
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.hex"
         COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.bin ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME}
-        COMMAND python ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME} recoveryLoaderImage > recoveryLoaderImage.h
+        COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME} recoveryLoaderImage > recoveryLoaderImage.h
         COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}"
         )
 

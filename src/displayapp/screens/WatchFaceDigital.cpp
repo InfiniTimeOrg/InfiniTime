@@ -11,6 +11,7 @@
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/heartrate/HeartRateController.h"
+#include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
 #include "../DisplayApp.h"
 
@@ -23,11 +24,13 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
         Controllers::Ble& bleController,
         Controllers::NotificationManager& notificatioManager,
         Controllers::Settings &settingsController,
-        Controllers::HeartRateController& heartRateController): Screen(app), currentDateTime{{}},
+        Controllers::HeartRateController& heartRateController,
+        Controllers::MotionController& motionController) : Screen(app), currentDateTime{{}},
                                            dateTimeController{dateTimeController}, batteryController{batteryController},
                                            bleController{bleController}, notificatioManager{notificatioManager},
                                            settingsController{settingsController},
-                                           heartRateController{heartRateController} {
+                                           heartRateController{heartRateController},
+                                           motionController{motionController} {
   settingsController.SetClockFace(0);
 
   displayedChar[0] = 0;
@@ -224,34 +227,25 @@ bool WatchFaceDigital::Refresh() {
   heartbeat = heartRateController.HeartRate();
   heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
   if(heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
-    char heartbeatBuffer[4];
     if(heartbeatRunning.Get())
-      sprintf(heartbeatBuffer, "%d", heartbeat.Get());
+      lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());     
     else
-      sprintf(heartbeatBuffer, "---");
-
-    lv_label_set_text(heartbeatValue, heartbeatBuffer);
+      lv_label_set_text_static(heartbeatValue, "---");
+    
     lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
     lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
     lv_obj_align(heartbeatBpm, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
   }
 
-  // TODO stepCount = stepController.GetValue();
-  if(stepCount.IsUpdated()) {
-    char stepBuffer[5];
-    sprintf(stepBuffer, "%lu", stepCount.Get());
-    lv_label_set_text(stepValue, stepBuffer);
+  stepCount = motionController.NbSteps();
+  motionSensorOk = motionController.IsSensorOk();
+  if(stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
+    lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
     lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
     lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
 
   return running;
-}
-
-
-bool WatchFaceDigital::OnButtonPushed() {
-  running = false;
-  return false;
 }
 
 

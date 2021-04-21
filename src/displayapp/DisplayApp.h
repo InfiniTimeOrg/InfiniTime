@@ -27,6 +27,7 @@ namespace Pinetime {
     class DateTime;
     class NotificationManager;
     class HeartRateController;
+    class MotionController;
   }
 
   namespace System {
@@ -36,7 +37,7 @@ namespace Pinetime {
     class DisplayApp {
       public:
         enum class States {Idle, Running};
-        enum class FullRefreshDirections { None, Up, Down };
+        enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
         enum class TouchModes { Gestures, Polling };
 
         DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &,
@@ -45,53 +46,61 @@ namespace Pinetime {
                    System::SystemTask &systemTask,
                    Pinetime::Controllers::NotificationManager& notificationManager,
                    Pinetime::Controllers::HeartRateController& heartRateController,
-                   Controllers::Settings &settingsController
+                   Controllers::Settings &settingsController,
+                   Pinetime::Controllers::MotionController& motionController
                    );
         void Start();
         void PushMessage(Display::Messages msg);
 
-        void StartApp(Apps app);
+        void StartApp(Apps app, DisplayApp::FullRefreshDirections direction);
 
         void SetFullRefresh(FullRefreshDirections direction);
         void SetTouchMode(TouchModes mode);
 
       private:
-        TaskHandle_t taskHandle;
-        static void Process(void* instance);
-        void InitHw();
+
         Pinetime::Drivers::St7789& lcd;
         Pinetime::Components::LittleVgl& lvgl;
-        void Refresh();
+        Pinetime::Drivers::Cst816S& touchPanel;
+        Pinetime::Controllers::Battery &batteryController;
+        Pinetime::Controllers::Ble &bleController;
+        Pinetime::Controllers::DateTime& dateTimeController;
+        Pinetime::Drivers::WatchdogView& watchdog;
+        Pinetime::System::SystemTask& systemTask;
+        Pinetime::Controllers::NotificationManager& notificationManager;
+        Pinetime::Controllers::HeartRateController& heartRateController;
+        Pinetime::Controllers::Settings& settingsController;
+        Pinetime::Controllers::MotionController& motionController;
+
+        Pinetime::Controllers::FirmwareValidator validator;
+        Controllers::BrightnessController brightnessController;
+
+        TaskHandle_t taskHandle;
 
         States state = States::Running;
-        void RunningState();
-        void IdleState();
         QueueHandle_t msgQueue;
 
         static constexpr uint8_t queueSize = 10;
         static constexpr uint8_t itemSize = 1;
 
-        Pinetime::Controllers::Battery &batteryController;
-        Pinetime::Controllers::Ble &bleController;
-        Pinetime::Controllers::DateTime& dateTimeController;
-        Pinetime::Drivers::WatchdogView& watchdog;
-
-        Pinetime::Drivers::Cst816S& touchPanel;
-        TouchEvents OnTouchEvent();
-
         std::unique_ptr<Screens::Screen> currentScreen;
 
-        bool isClock = true;
+        Apps currentApp = Apps::None;
+        Apps returnToApp = Apps::None;
+        FullRefreshDirections returnDirection = FullRefreshDirections::None;
+        TouchEvents returnTouchEvent = TouchEvents::None;
 
-        Pinetime::System::SystemTask& systemTask;
-        Apps nextApp = Apps::None;
-        bool onClockApp = false; // TODO find a better way to know that we should handle gestures and button differently for the Clock app.
-        Controllers::BrightnessController brightnessController;
-        Pinetime::Controllers::NotificationManager& notificationManager;
-        Pinetime::Controllers::FirmwareValidator validator;
         TouchModes touchMode = TouchModes::Gestures;
-        Pinetime::Controllers::HeartRateController& heartRateController;
-        Pinetime::Controllers::Settings& settingsController;
+
+        TouchEvents OnTouchEvent();
+        void RunningState();
+        void IdleState();
+        static void Process(void* instance);
+        void InitHw();
+        void Refresh();
+        void returnApp(Apps app, DisplayApp::FullRefreshDirections direction, TouchEvents touchEvent);
+        void LoadApp(Apps app, DisplayApp::FullRefreshDirections direction);
+
     };
   }
 }

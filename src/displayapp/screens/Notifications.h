@@ -20,7 +20,6 @@ namespace Pinetime {
           ~Notifications() override;
 
           bool Refresh() override;
-          bool OnButtonPushed() override;
           bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
         class NotificationItem {
@@ -55,7 +54,7 @@ namespace Pinetime {
         };
 
         private:
-          bool running = true;
+          
 
           struct NotificationData {
             const char* title;

@@ -74,7 +74,7 @@ typedef int16_t lv_coord_t;
 #define LV_MEM_CUSTOM      0
 #if LV_MEM_CUSTOM == 0
 /* Size of the memory used by `lv_mem_alloc` in bytes (>= 2kB)*/
-#define LV_MEM_SIZE    (12U * 1024U)
+#define LV_MEM_SIZE    (14U * 1024U)
 
 /* Complier prefix for a big array declaration */
 #define LV_MEM_ATTR
@@ -140,7 +140,7 @@ typedef int16_t lv_coord_t;
  *==================*/
 
 /*1: Enable the Animations */
-#define LV_USE_ANIMATION        0
+#define LV_USE_ANIMATION        1
 #if LV_USE_ANIMATION
 
 /*Declare the type of the user data of animations (can be e.g. `void *`, `int`, `struct`)*/
@@ -177,7 +177,7 @@ typedef void* lv_anim_user_data_t;
 #define LV_USE_IMG_TRANSFORM    0
 
 /* 1: Enable object groups (for keyboard/encoder navigation) */
-#define LV_USE_GROUP            1
+#define LV_USE_GROUP            0
 #if LV_USE_GROUP
 typedef void* lv_group_user_data_t;
 #endif  /*LV_USE_GROUP*/
@@ -414,7 +414,9 @@ typedef void* lv_indev_drv_user_data_t;            /*Type of user data in the in
  */
 
 #define LV_FONT_CUSTOM_DECLARE LV_FONT_DECLARE(jetbrains_mono_bold_20) \
-                               LV_FONT_DECLARE(jetbrains_mono_extrabold_compressed)
+                               LV_FONT_DECLARE(jetbrains_mono_extrabold_compressed) \
+                               LV_FONT_DECLARE(jetbrains_mono_76) \
+                               LV_FONT_DECLARE(lv_font_sys_48)
 
 /* Enable it if you have fonts with a lot of characters.
  * The limit depends on the font size, font face and bpp
@@ -424,7 +426,7 @@ typedef void* lv_indev_drv_user_data_t;            /*Type of user data in the in
 /* Enables/disables support for compressed fonts. If it's disabled, compressed
  * glyphs cannot be processed by the library and won't be rendered.
  */
-#define LV_USE_FONT_COMPRESSED 0
+#define LV_USE_FONT_COMPRESSED 1
 
 /* Enable subpixel rendering */
 #define LV_USE_FONT_SUBPX 0
@@ -588,7 +590,7 @@ typedef void* lv_obj_user_data_t;
 #endif
 
 /*Canvas (dependencies: lv_img)*/
-#define LV_USE_CANVAS   1
+#define LV_USE_CANVAS   0
 
 /*Check box (dependencies: lv_btn, lv_label)*/
 #define LV_USE_CHECKBOX       1
@@ -674,10 +676,10 @@ typedef void* lv_obj_user_data_t;
 #endif
 
 /*Mask (dependencies: -)*/
-#define LV_USE_OBJMASK  1
+#define LV_USE_OBJMASK  0
 
 /*Message box (dependencies: lv_rect, lv_btnm, lv_label)*/
-#define LV_USE_MSGBOX     1
+#define LV_USE_MSGBOX     0
 
 /*Page (dependencies: lv_cont)*/
 #define LV_USE_PAGE     1
@@ -708,7 +710,7 @@ typedef void* lv_obj_user_data_t;
 #define LV_USE_SLIDER    1
 
 /*Spinbox (dependencies: lv_ta)*/
-#define LV_USE_SPINBOX       1
+#define LV_USE_SPINBOX       0
 
 /*Switch (dependencies: lv_slider)*/
 #define LV_USE_SWITCH       1
@@ -729,21 +731,21 @@ typedef void* lv_obj_user_data_t;
 
 
 /*Tab (dependencies: lv_page, lv_btnm)*/
-#define LV_USE_TABVIEW      1
+#define LV_USE_TABVIEW      0
 #  if LV_USE_TABVIEW != 0
 /*Time of slide animation [ms] (0: no animation)*/
 #define LV_TABVIEW_DEF_ANIM_TIME    300
 #endif
 
 /*Tileview (dependencies: lv_page) */
-#define LV_USE_TILEVIEW     1
+#define LV_USE_TILEVIEW     0
 #if LV_USE_TILEVIEW
 /*Time of slide animation [ms] (0: no animation)*/
 #define LV_TILEVIEW_DEF_ANIM_TIME   300
 #endif
 
 /*Window (dependencies: lv_cont, lv_btn, lv_label, lv_img, lv_page)*/
-#define LV_USE_WIN      1
+#define LV_USE_WIN      0
 
 /*==================
  * Non-user section

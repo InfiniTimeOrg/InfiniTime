@@ -41,14 +41,13 @@ namespace Pinetime {
           Pinetime::Controllers::Ble& bleController;
           Pinetime::Drivers::WatchdogView& watchdog;
 
-          char t1[200];
-          char t2[200];
-          char t3[200];
-
-          ScreenList<3> screens;
+          ScreenList<5> screens;
           std::unique_ptr<Screen> CreateScreen1();
           std::unique_ptr<Screen> CreateScreen2();
           std::unique_ptr<Screen> CreateScreen3();
+          std::unique_ptr<Screen> CreateScreen4();
+          std::unique_ptr<Screen> CreateScreen5();
+
       };
     }
   }

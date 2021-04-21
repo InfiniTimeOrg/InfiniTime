@@ -16,6 +16,7 @@
 #include <date/date.h>
 #include <drivers/Watchdog.h>
 #include <components/heartrate/HeartRateController.h>
+#include <components/motion/MotionController.h>
 #include <components/settings/Settings.h>
 #include "TouchEvents.h"
 #include "Apps.h"
@@ -35,7 +36,8 @@ namespace Pinetime {
                  System::SystemTask &systemTask,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,
-                 Pinetime::Controllers::Settings& settingsController);
+                 Pinetime::Controllers::Settings& settingsController,
+                 Pinetime::Controllers::MotionController& motionController);
       void Start();
       void PushMessage(Pinetime::Applications::Display::Messages msg);
 

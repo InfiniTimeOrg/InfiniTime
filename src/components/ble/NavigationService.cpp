@@ -101,7 +101,6 @@ int Pinetime::Controllers::NavigationService::OnCommand(uint16_t conn_handle, ui
     data[notifSize] = '\0';
     os_mbuf_copydata(ctxt->om, 0, notifSize, data);
     char *s = (char *) &data[0];
-    NRF_LOG_INFO("DATA : %s", s);
     if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &navFlagCharUuid) == 0) {
       m_flag = s;
     } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &navNarrativeCharUuid) == 0) {

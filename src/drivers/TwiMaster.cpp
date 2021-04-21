@@ -62,49 +62,21 @@ void TwiMaster::Init() {
 
 TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t *data, size_t size) {
   xSemaphoreTake(mutex, portMAX_DELAY);
-  auto ret = ReadWithRetry(deviceAddress, registerAddress, data, size);
+  auto ret = Write(deviceAddress, &registerAddress, 1, false);
+  ret = Read(deviceAddress, data, size, true);
   xSemaphoreGive(mutex);
-
   return ret;
 }
 
 TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t *data, size_t size) {
   ASSERT(size <= maxDataSize);
   xSemaphoreTake(mutex, portMAX_DELAY);
-
-  auto ret = WriteWithRetry(deviceAddress, registerAddress, data, size);
+  internalBuffer[0] = registerAddress;
+  std::memcpy(internalBuffer + 1, data, size);
+  auto ret = Write(deviceAddress, internalBuffer, size + 1, true);
   xSemaphoreGive(mutex);
   return ret;
 }
-
-/* Execute a read transaction (composed of a write and a read operation). If one of these opeartion fails,
- * it's retried once. If it fails again, an error is returned */
-TwiMaster::ErrorCodes TwiMaster::ReadWithRetry(uint8_t deviceAddress, uint8_t registerAddress, uint8_t *data, size_t size) {
-  TwiMaster::ErrorCodes ret;
-  ret = Write(deviceAddress, &registerAddress, 1, false);
-  if(ret != ErrorCodes::NoError)
-    ret = Write(deviceAddress, &registerAddress, 1, false);
-
-  if(ret != ErrorCodes::NoError) return ret;
-
-  ret = Read(deviceAddress, data, size, true);
-  if(ret != ErrorCodes::NoError)
-    ret = Read(deviceAddress, data, size, true);
-
-  return ret;
-}
-
-/* Execute a write transaction. If it fails, it is retried once. If it fails again, an error is returned. */
-TwiMaster::ErrorCodes TwiMaster::WriteWithRetry(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t *data, size_t size) {
-  internalBuffer[0] = registerAddress;
-  std::memcpy(internalBuffer+1, data, size);
-  auto ret = Write(deviceAddress, internalBuffer, size+1, true);
-  if(ret != ErrorCodes::NoError)
-    ret = Write(deviceAddress, internalBuffer, size+1, true);
-
-  return ret;
-}
-
 
 TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t *buffer, size_t size, bool stop) {
   twiBaseAddress->ADDRESS = deviceAddress;

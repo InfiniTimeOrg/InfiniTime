@@ -13,12 +13,12 @@ namespace Pinetime {
           Brightness(DisplayApp* app, Controllers::BrightnessController& brightness);
           ~Brightness() override;
           bool Refresh() override;
-          bool OnButtonPushed() override;
+          
           bool OnTouchEvent(TouchEvents event) override;
 
           void OnValueChanged();
         private:
-          bool running = true;
+          
           Controllers::BrightnessController& brightness;
 
           lv_obj_t * slider_label;
