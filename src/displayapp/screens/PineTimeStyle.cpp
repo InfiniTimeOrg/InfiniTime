@@ -93,7 +93,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
-  lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 7, 25);
+  lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 8, 25);
 
   /* Calendar icon */
 
@@ -201,7 +201,7 @@ bool PineTimeStyle::Refresh() {
   if (notificationState.IsUpdated()) {
     if (notificationState.Get() == true) {
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(true));
-      lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, -13, 25);
+      lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, -8, 25);
     } else {
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
       lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
