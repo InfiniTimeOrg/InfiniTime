@@ -14,7 +14,7 @@ namespace Pinetime {
     namespace Screens {
 
       class Notifications : public Screen {
-          public:
+      public:
         enum class Modes { Normal, Preview };
         explicit Notifications(DisplayApp* app,
                                Pinetime::Controllers::NotificationManager& notificationManager,
@@ -26,7 +26,7 @@ namespace Pinetime {
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
         class NotificationItem {
-            public:
+        public:
           NotificationItem(const char* title,
                            const char* msg,
                            uint8_t notifNr,
@@ -42,7 +42,7 @@ namespace Pinetime {
           void OnMuteIncomingCall(lv_event_t event);
           void OnRejectIncomingCall(lv_event_t event);
 
-            private:
+        private:
           uint8_t notifNr = 0;
           uint8_t notifNb = 0;
           char pageText[4];
@@ -62,7 +62,7 @@ namespace Pinetime {
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
         };
 
-          private:
+      private:
         struct NotificationData {
           const char* title;
           const char* text;

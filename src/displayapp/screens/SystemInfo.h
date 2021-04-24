@@ -21,7 +21,7 @@ namespace Pinetime {
 
     namespace Screens {
       class SystemInfo : public Screen {
-          public:
+      public:
         explicit SystemInfo(DisplayApp* app,
                             Pinetime::Controllers::DateTime& dateTimeController,
                             Pinetime::Controllers::Battery& batteryController,
@@ -33,7 +33,7 @@ namespace Pinetime {
         bool OnButtonPushed() override;
         bool OnTouchEvent(TouchEvents event) override;
 
-          private:
+      private:
         bool running = true;
 
         Pinetime::Controllers::DateTime& dateTimeController;

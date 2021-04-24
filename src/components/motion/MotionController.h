@@ -5,7 +5,7 @@
 namespace Pinetime {
   namespace Controllers {
     class MotionController {
-        public:
+    public:
       void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps);
 
       uint16_t X() const {
@@ -27,7 +27,7 @@ namespace Pinetime {
         return isSensorOk;
       }
 
-        private:
+    private:
       uint32_t nbSteps;
       int16_t x;
       int16_t y;

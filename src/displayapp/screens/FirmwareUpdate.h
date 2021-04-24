@@ -11,13 +11,13 @@ namespace Pinetime {
     namespace Screens {
 
       class FirmwareUpdate : public Screen {
-          public:
+      public:
         FirmwareUpdate(DisplayApp* app, Pinetime::Controllers::Ble& bleController);
         ~FirmwareUpdate() override;
 
         bool Refresh() override;
 
-          private:
+      private:
         enum class States { Idle, Running, Validated, Error };
         Pinetime::Controllers::Ble& bleController;
         lv_obj_t* bar1;

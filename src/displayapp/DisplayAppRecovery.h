@@ -29,7 +29,7 @@ namespace Pinetime {
   };
   namespace Applications {
     class DisplayApp {
-        public:
+    public:
       DisplayApp(Drivers::St7789& lcd,
                  Components::LittleVgl& lvgl,
                  Drivers::Cst816S&,
@@ -45,7 +45,7 @@ namespace Pinetime {
       void Start();
       void PushMessage(Pinetime::Applications::Display::Messages msg);
 
-        private:
+    private:
       TaskHandle_t taskHandle;
       static void Process(void* instance);
       void DisplayLogo(uint16_t color);

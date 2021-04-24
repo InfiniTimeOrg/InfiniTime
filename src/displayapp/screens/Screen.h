@@ -9,7 +9,7 @@ namespace Pinetime {
     namespace Screens {
 
       template <class T> class DirtyValue {
-          public:
+      public:
         DirtyValue() = default; // Use NSDMI
         explicit DirtyValue(T const& v) : value {v} {
         } // Use MIL and const-lvalue-ref
@@ -28,13 +28,13 @@ namespace Pinetime {
           return *this;
         }
 
-          private:
+      private:
         T value {};            // NSDMI - default initialise type
         bool isUpdated {true}; // NSDMI - use brace initilisation
       };
 
       class Screen {
-          public:
+      public:
         explicit Screen(DisplayApp* app) : app {app} {
         }
         virtual ~Screen() = default;
@@ -67,7 +67,7 @@ namespace Pinetime {
           return false;
         }
 
-          protected:
+      protected:
         DisplayApp* app;
         bool running = true;
       };

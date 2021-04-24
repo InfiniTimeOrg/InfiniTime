@@ -19,7 +19,7 @@ namespace Pinetime {
     class NotificationManager;
 
     class AlertNotificationClient : public BleClient {
-        public:
+    public:
       explicit AlertNotificationClient(Pinetime::System::SystemTask& systemTask,
                                        Pinetime::Controllers::NotificationManager& notificationManager);
 
@@ -34,7 +34,7 @@ namespace Pinetime {
       void Reset();
       void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
 
-        private:
+    private:
       static constexpr uint16_t ansServiceId {0x1811};
       static constexpr uint16_t supportedNewAlertCategoryId = 0x2a47;
       static constexpr uint16_t supportedUnreadAlertCategoryId = 0x2a48;

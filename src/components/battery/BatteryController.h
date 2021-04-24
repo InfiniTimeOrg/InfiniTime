@@ -12,7 +12,7 @@ namespace Pinetime {
     is given as the template parameter N.
     */
     template <int N> class CircBuffer {
-        public:
+    public:
       CircBuffer() : arr {}, sz {}, cap {N}, head {} {
       }
       /**
@@ -32,7 +32,7 @@ namespace Pinetime {
         return (sum / sz);
       }
 
-        private:
+    private:
       std::array<int, N> arr; /**< internal array used to store the values*/
       uint8_t sz;             /**< The current size of the array.*/
       uint8_t cap;            /**< Total capacity of the CircBuffer.*/
@@ -40,7 +40,7 @@ namespace Pinetime {
     };
 
     class Battery {
-        public:
+    public:
       Battery();
 
       void Init();
@@ -61,7 +61,7 @@ namespace Pinetime {
         return isPowerPresent;
       }
 
-        private:
+    private:
       static Battery* instance;
       nrf_saadc_value_t saadc_value;
 

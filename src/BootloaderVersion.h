@@ -2,7 +2,7 @@
 
 namespace Pinetime {
   class BootloaderVersion {
-      public:
+  public:
     static uint32_t Major();
     static uint32_t Minor();
     static uint32_t Patch();

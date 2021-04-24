@@ -6,7 +6,7 @@ namespace Pinetime {
   namespace Drivers {
     class Spi;
     class SpiNorFlash {
-        public:
+    public:
       explicit SpiNorFlash(Spi& spi);
       SpiNorFlash(const SpiNorFlash&) = delete;
       SpiNorFlash& operator=(const SpiNorFlash&) = delete;
@@ -38,7 +38,7 @@ namespace Pinetime {
       void Sleep();
       void Wakeup();
 
-        private:
+    private:
       enum class Commands : uint8_t {
         PageProgram = 0x02,
         Read = 0x03,

@@ -10,13 +10,13 @@ namespace Pinetime {
     namespace Screens {
 
       class Meter : public Screen {
-          public:
+      public:
         Meter(DisplayApp* app);
         ~Meter() override;
 
         bool Refresh() override;
 
-          private:
+      private:
         lv_style_t style_lmeter;
         lv_obj_t* lmeter;
 

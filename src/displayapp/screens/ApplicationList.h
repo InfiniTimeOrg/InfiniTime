@@ -12,7 +12,7 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class ApplicationList : public Screen {
-          public:
+      public:
         explicit ApplicationList(DisplayApp* app,
                                  Pinetime::Controllers::Settings& settingsController,
                                  Pinetime::Controllers::Battery& batteryController,
@@ -21,7 +21,7 @@ namespace Pinetime {
         bool Refresh() override;
         bool OnTouchEvent(TouchEvents event) override;
 
-          private:
+      private:
         Controllers::Settings& settingsController;
         Pinetime::Controllers::Battery& batteryController;
         Controllers::DateTime& dateTimeController;

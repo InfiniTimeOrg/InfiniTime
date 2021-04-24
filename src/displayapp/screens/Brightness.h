@@ -9,7 +9,7 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class Brightness : public Screen {
-          public:
+      public:
         Brightness(DisplayApp* app, Controllers::BrightnessController& brightness);
         ~Brightness() override;
         bool Refresh() override;
@@ -18,7 +18,7 @@ namespace Pinetime {
 
         void OnValueChanged();
 
-          private:
+      private:
         Controllers::BrightnessController& brightness;
 
         lv_obj_t* slider_label;

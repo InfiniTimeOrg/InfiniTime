@@ -37,7 +37,7 @@ namespace Pinetime {
   namespace Controllers {
 
     class NavigationService {
-        public:
+    public:
       explicit NavigationService(Pinetime::System::SystemTask& system);
 
       void Init();
@@ -52,7 +52,7 @@ namespace Pinetime {
 
       int getProgress();
 
-        private:
+    private:
       static constexpr uint8_t navId[2] = {0x01, 0x00};
       static constexpr uint8_t navFlagCharId[2] = {0x01, 0x00};
       static constexpr uint8_t navNarrativeCharId[2] = {0x02, 0x00};

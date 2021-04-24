@@ -8,7 +8,7 @@
 namespace Pinetime {
   namespace Controllers {
     class Settings {
-        public:
+    public:
       enum class ClockType { H24, H12 };
       enum class Vibration { ON, OFF };
       enum class WakeUpMode { None, SingleTap, DoubleTap, RaiseWrist };
@@ -86,7 +86,7 @@ namespace Pinetime {
         return settings.brightLevel;
       };
 
-        private:
+    private:
       Pinetime::Drivers::SpiNorFlash& spiNorFlash;
       struct SettingsData {
 

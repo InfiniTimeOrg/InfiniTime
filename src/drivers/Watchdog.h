@@ -4,7 +4,7 @@
 namespace Pinetime {
   namespace Drivers {
     class Watchdog {
-        public:
+    public:
       enum class ResetReasons { ResetPin, Watchdog, SoftReset, CpuLockup, SystemOff, LpComp, DebugInterface, NFC, HardReset };
       void Setup(uint8_t timeoutSeconds);
       void Start();
@@ -14,20 +14,20 @@ namespace Pinetime {
       }
       static const char* ResetReasonToString(ResetReasons reason);
 
-        private:
+    private:
       ResetReasons resetReason;
       ResetReasons ActualResetReason() const;
     };
 
     class WatchdogView {
-        public:
+    public:
       WatchdogView(const Watchdog& watchdog) : watchdog {watchdog} {
       }
       Watchdog::ResetReasons ResetReason() const {
         return watchdog.ResetReason();
       }
 
-        private:
+    private:
       const Watchdog& watchdog;
     };
   }

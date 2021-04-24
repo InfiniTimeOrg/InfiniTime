@@ -20,7 +20,7 @@ namespace Pinetime {
     class Ble;
 
     class DfuService {
-        public:
+    public:
       DfuService(Pinetime::System::SystemTask& systemTask,
                  Pinetime::Controllers::Ble& bleController,
                  Pinetime::Drivers::SpiNorFlash& spiNorFlash);
@@ -30,24 +30,24 @@ namespace Pinetime {
       void Reset();
 
       class NotificationManager {
-          public:
+      public:
         NotificationManager();
         bool AsyncSend(uint16_t connection, uint16_t charactHandle, uint8_t* data, size_t size);
         void Send(uint16_t connection, uint16_t characteristicHandle, const uint8_t* data, const size_t s);
 
-          private:
+      private:
         TimerHandle_t timer;
         uint16_t connectionHandle = 0;
         uint16_t characteristicHandle = 0;
         size_t size = 0;
         uint8_t buffer[10];
 
-          public:
+      public:
         void OnNotificationTimer();
         void Reset();
       };
       class DfuImage {
-          public:
+      public:
         DfuImage(Pinetime::Drivers::SpiNorFlash& spiNorFlash) : spiNorFlash {spiNorFlash} {
         }
         void Init(size_t chunkSize, size_t totalSize, uint16_t expectedCrc);
@@ -56,7 +56,7 @@ namespace Pinetime {
         bool Validate();
         bool IsComplete();
 
-          private:
+      private:
         Pinetime::Drivers::SpiNorFlash& spiNorFlash;
         static constexpr size_t bufferSize = 200;
         bool ready = false;
@@ -73,7 +73,7 @@ namespace Pinetime {
         uint16_t ComputeCrc(uint8_t const* p_data, uint32_t size, uint16_t const* p_crc);
       };
 
-        private:
+    private:
       Pinetime::System::SystemTask& systemTask;
       Pinetime::Controllers::Ble& bleController;
       DfuImage dfuImage;

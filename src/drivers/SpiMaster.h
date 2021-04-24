@@ -9,7 +9,7 @@
 namespace Pinetime {
   namespace Drivers {
     class SpiMaster {
-        public:
+    public:
       ;
       enum class SpiModule : uint8_t { SPI0, SPI1 };
       enum class BitOrder : uint8_t { Msb_Lsb, Lsb_Msb };
@@ -42,7 +42,7 @@ namespace Pinetime {
       void Sleep();
       void Wakeup();
 
-        private:
+    private:
       void SetupWorkaroundForFtpan58(NRF_SPIM_Type* spim, uint32_t ppi_channel, uint32_t gpiote_channel);
       void DisableWorkaroundForFtpan58(NRF_SPIM_Type* spim, uint32_t ppi_channel, uint32_t gpiote_channel);
       void PrepareTx(const volatile uint32_t bufferAddress, const volatile size_t size);

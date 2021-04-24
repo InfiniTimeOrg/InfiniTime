@@ -54,7 +54,7 @@ namespace Pinetime::Applications::Screens {
       return nullptr;
     }
 
-      private:
+  private:
     std::array<TimeSeparated_t, N> buffer;
     uint8_t currentSize;
     uint8_t capacity;
@@ -62,7 +62,7 @@ namespace Pinetime::Applications::Screens {
   };
 
   class StopWatch : public Screen {
-      public:
+  public:
     StopWatch(DisplayApp* app);
     ~StopWatch() override;
     bool Refresh() override;
@@ -70,7 +70,7 @@ namespace Pinetime::Applications::Screens {
     void playPauseBtnEventHandler(lv_event_t event);
     void stopLapBtnEventHandler(lv_event_t event);
 
-      private:
+  private:
     bool running;
     States currentState;
     Events currentEvent;

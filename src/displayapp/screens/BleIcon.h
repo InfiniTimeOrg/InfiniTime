@@ -4,7 +4,7 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class BleIcon {
-          public:
+      public:
         static const char* GetIcon(bool isConnected);
       };
     }

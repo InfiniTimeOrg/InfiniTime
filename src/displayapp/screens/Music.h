@@ -30,7 +30,7 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class Music : public Screen {
-          public:
+      public:
         Music(DisplayApp* app, Pinetime::Controllers::MusicService& music);
 
         ~Music() override;
@@ -39,7 +39,7 @@ namespace Pinetime {
 
         void OnObjectEvent(lv_obj_t* obj, lv_event_t event);
 
-          private:
+      private:
         bool OnTouchEvent(TouchEvents event);
 
         void UpdateLength();

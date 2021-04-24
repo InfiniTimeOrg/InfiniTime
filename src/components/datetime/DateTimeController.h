@@ -9,7 +9,7 @@ namespace Pinetime {
   }
   namespace Controllers {
     class DateTime {
-        public:
+    public:
       enum class Days : uint8_t { Unknown, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday };
       enum class Months : uint8_t {
         Unknown,
@@ -75,7 +75,7 @@ namespace Pinetime {
         return uptime;
       }
 
-        private:
+    private:
       System::SystemTask& systemTask;
       uint16_t year = 0;
       Months month = Months::Unknown;

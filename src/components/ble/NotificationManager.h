@@ -8,7 +8,7 @@
 namespace Pinetime {
   namespace Controllers {
     class NotificationManager {
-        public:
+    public:
       enum class Categories {
         Unknown,
         SimpleAlert,
@@ -52,7 +52,7 @@ namespace Pinetime {
       };
       size_t NbNotifications() const;
 
-        private:
+    private:
       Notification::Id GetNextId();
       static constexpr uint8_t TotalNbNotifications = 5;
       std::array<Notification, TotalNbNotifications> notifications;

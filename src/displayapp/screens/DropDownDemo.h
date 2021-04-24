@@ -9,7 +9,7 @@ namespace Pinetime {
     namespace Screens {
 
       class DropDownDemo : public Screen {
-          public:
+      public:
         DropDownDemo(DisplayApp* app);
         ~DropDownDemo() override;
 
@@ -17,7 +17,7 @@ namespace Pinetime {
 
         bool OnTouchEvent(TouchEvents event) override;
 
-          private:
+      private:
         lv_obj_t* ddlist;
 
         bool isDropDownOpened = false;

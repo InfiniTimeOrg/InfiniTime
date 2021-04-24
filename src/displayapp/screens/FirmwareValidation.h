@@ -12,7 +12,7 @@ namespace Pinetime {
     namespace Screens {
 
       class FirmwareValidation : public Screen {
-          public:
+      public:
         FirmwareValidation(DisplayApp* app, Pinetime::Controllers::FirmwareValidator& validator);
         ~FirmwareValidation() override;
 
@@ -20,7 +20,7 @@ namespace Pinetime {
 
         void OnButtonEvent(lv_obj_t* object, lv_event_t event);
 
-          private:
+      private:
         Pinetime::Controllers::FirmwareValidator& validator;
 
         lv_obj_t* labelVersionInfo;

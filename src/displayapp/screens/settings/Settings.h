@@ -10,7 +10,7 @@ namespace Pinetime {
     namespace Screens {
 
       class Settings : public Screen {
-          public:
+      public:
         Settings(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~Settings() override;
 
@@ -19,7 +19,7 @@ namespace Pinetime {
         void OnButtonEvent(lv_obj_t* object, lv_event_t event);
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
-          private:
+      private:
         Controllers::Settings& settingsController;
 
         ScreenList<2> screens;

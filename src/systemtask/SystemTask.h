@@ -38,7 +38,7 @@ namespace Pinetime {
   }
   namespace System {
     class SystemTask {
-        public:
+    public:
       enum class Messages {
         GoToSleep,
         GoToRunning,
@@ -83,7 +83,7 @@ namespace Pinetime {
         return nimbleController;
       };
 
-        private:
+    private:
       TaskHandle_t taskHandle;
 
       Pinetime::Drivers::SpiMaster& spi;

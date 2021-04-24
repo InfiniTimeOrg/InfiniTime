@@ -31,13 +31,13 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class Navigation : public Screen {
-          public:
+      public:
         Navigation(DisplayApp* app, Pinetime::Controllers::NavigationService& nav);
         ~Navigation() override;
 
         bool Refresh() override;
 
-          private:
+      private:
         lv_obj_t* imgFlag;
         lv_obj_t* txtNarrative;
         lv_obj_t* txtManDist;

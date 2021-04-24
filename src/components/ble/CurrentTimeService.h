@@ -12,13 +12,13 @@
 namespace Pinetime {
   namespace Controllers {
     class CurrentTimeService {
-        public:
+    public:
       CurrentTimeService(DateTime& dateTimeController);
       void Init();
 
       int OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
 
-        private:
+    private:
       static constexpr uint16_t ctsId {0x1805};
       static constexpr uint16_t ctsCharId {0x2a2b};
 

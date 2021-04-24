@@ -15,7 +15,7 @@ namespace Pinetime {
     namespace Screens {
 
       class BatteryInfo : public Screen {
-          public:
+      public:
         BatteryInfo(DisplayApp* app, Pinetime::Controllers::Battery& batteryController);
         ~BatteryInfo() override;
 
@@ -24,7 +24,7 @@ namespace Pinetime {
         void UpdateScreen();
         void UpdateAnim();
 
-          private:
+      private:
         Pinetime::Controllers::Battery& batteryController;
 
         lv_obj_t* voltage;

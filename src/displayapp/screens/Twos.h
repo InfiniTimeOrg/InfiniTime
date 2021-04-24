@@ -11,14 +11,14 @@ namespace Pinetime {
     };
     namespace Screens {
       class Twos : public Screen {
-          public:
+      public:
         Twos(DisplayApp* app);
         ~Twos() override;
         bool Refresh() override;
 
         bool OnTouchEvent(TouchEvents event) override;
 
-          private:
+      private:
         lv_style_t style_cell1;
         lv_style_t style_cell2;
         lv_style_t style_cell3;

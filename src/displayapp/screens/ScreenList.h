@@ -12,7 +12,7 @@ namespace Pinetime {
 
       enum class ScreenListModes { UpDown, RightLeft, LongPress };
       template <size_t N> class ScreenList : public Screen {
-          public:
+      public:
         ScreenList(DisplayApp* app,
                    uint8_t initScreen,
                    std::array<std::function<std::unique_ptr<Screen>()>, N>&& screens,
@@ -95,7 +95,7 @@ namespace Pinetime {
           return false;
         }
 
-          private:
+      private:
         uint8_t initScreen = 0;
         std::array<std::function<std::unique_ptr<Screen>()>, N> screens;
         ScreenListModes mode = ScreenListModes::UpDown;

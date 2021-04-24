@@ -20,7 +20,7 @@ namespace Pinetime {
     class NotificationManager;
 
     class AlertNotificationService {
-        public:
+    public:
       AlertNotificationService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::NotificationManager& notificationManager);
       void Init();
 
@@ -32,7 +32,7 @@ namespace Pinetime {
 
       enum class IncomingCallResponses : uint8_t { Reject = 0x00, Answer = 0x01, Mute = 0x02 };
 
-        private:
+    private:
       enum class Categories : uint8_t {
         SimpleAlert = 0x00,
         Email = 0x01,

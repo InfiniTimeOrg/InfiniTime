@@ -36,7 +36,7 @@ namespace Pinetime {
 
     class NimbleController {
 
-        public:
+    public:
       NimbleController(Pinetime::System::SystemTask& systemTask,
                        Pinetime::Controllers::Ble& bleController,
                        DateTime& dateTimeController,
@@ -71,7 +71,7 @@ namespace Pinetime {
 
       uint16_t connHandle();
 
-        private:
+    private:
       static constexpr const char* deviceName = "InfiniTime";
       Pinetime::System::SystemTask& systemTask;
       Pinetime::Controllers::Ble& bleController;

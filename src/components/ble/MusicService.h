@@ -37,7 +37,7 @@ namespace Pinetime {
   namespace Controllers {
 
     class MusicService {
-        public:
+    public:
       explicit MusicService(Pinetime::System::SystemTask& system);
 
       void Init();
@@ -70,7 +70,7 @@ namespace Pinetime {
 
       enum MusicStatus { NotPlaying = 0x00, Playing = 0x01 };
 
-        private:
+    private:
       static constexpr uint8_t msId[2] = {0x00, 0x00};
       static constexpr uint8_t msEventCharId[2] = {0x01, 0x00};
       static constexpr uint8_t msStatusCharId[2] = {0x02, 0x00};

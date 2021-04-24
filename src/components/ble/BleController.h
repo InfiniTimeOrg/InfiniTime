@@ -6,7 +6,7 @@
 namespace Pinetime {
   namespace Controllers {
     class Ble {
-        public:
+    public:
       using BleAddress = std::array<uint8_t, 6>;
       enum class FirmwareUpdateStates { Idle, Running, Validated, Error };
       enum class AddressTypes { Public, Random };
@@ -49,7 +49,7 @@ namespace Pinetime {
         addressType = t;
       }
 
-        private:
+    private:
       bool isConnected = false;
       bool isFirmwareUpdating = false;
       uint32_t firmwareUpdateTotalBytes = 0;

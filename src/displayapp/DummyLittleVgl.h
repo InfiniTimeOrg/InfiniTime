@@ -9,7 +9,7 @@
 namespace Pinetime {
   namespace Components {
     class LittleVgl {
-        public:
+    public:
       enum class FullRefreshDirections { None, Up, Down };
       LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel) {
       }

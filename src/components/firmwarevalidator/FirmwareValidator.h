@@ -5,13 +5,13 @@
 namespace Pinetime {
   namespace Controllers {
     class FirmwareValidator {
-        public:
+    public:
       void Validate();
       bool IsValidated() const;
 
       void Reset();
 
-        private:
+    private:
       static constexpr uint32_t validBitAdress {0x7BFE8};
       static constexpr uint32_t validBitValue {1};
     };

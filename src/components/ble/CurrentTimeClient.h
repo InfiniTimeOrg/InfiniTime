@@ -12,7 +12,7 @@ namespace Pinetime {
     class DateTime;
 
     class CurrentTimeClient : public BleClient {
-        public:
+    public:
       explicit CurrentTimeClient(DateTime& dateTimeController);
       void Init();
       void Reset();
@@ -27,7 +27,7 @@ namespace Pinetime {
       }
       void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
 
-        private:
+    private:
       typedef struct __attribute__((packed)) {
         uint16_t year;
         uint8_t month;

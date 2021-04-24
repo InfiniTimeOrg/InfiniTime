@@ -9,18 +9,18 @@ namespace Pinetime {
     struct FreeRtosMonitor {};
 
     template <class T> class SystemMonitor {
-        public:
+    public:
       SystemMonitor() = delete;
     };
 
     template <> class SystemMonitor<DummyMonitor> {
-        public:
+    public:
       void Process() const {
       }
     };
 
     template <> class SystemMonitor<FreeRtosMonitor> {
-        public:
+    public:
       void Process() const {
         if (xTaskGetTickCount() - lastTick > 10000) {
           NRF_LOG_INFO("---------------------------------------\nFree heap : %d", xPortGetFreeHeapSize());
@@ -36,7 +36,7 @@ namespace Pinetime {
         }
       }
 
-        private:
+    private:
       mutable TickType_t lastTick = 0;
       mutable TaskStatus_t tasksStatus[10];
     };

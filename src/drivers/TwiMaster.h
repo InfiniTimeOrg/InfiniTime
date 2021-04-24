@@ -7,7 +7,7 @@
 namespace Pinetime {
   namespace Drivers {
     class TwiMaster {
-        public:
+    public:
       enum class Modules { TWIM1 };
       enum class Frequencies { Khz100, Khz250, Khz400 };
       enum class ErrorCodes { NoError, TransactionFailed };
@@ -26,7 +26,7 @@ namespace Pinetime {
       void Sleep();
       void Wakeup();
 
-        private:
+    private:
       ErrorCodes Read(uint8_t deviceAddress, uint8_t* buffer, size_t size, bool stop);
       ErrorCodes Write(uint8_t deviceAddress, const uint8_t* data, size_t size, bool stop);
       void FixHwFreezed();

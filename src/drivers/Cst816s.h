@@ -5,7 +5,7 @@
 namespace Pinetime {
   namespace Drivers {
     class Cst816S {
-        public:
+    public:
       enum class Gestures : uint8_t {
         None = 0x00,
         SlideDown = 0x01,
@@ -38,7 +38,7 @@ namespace Pinetime {
       void Sleep();
       void Wakeup();
 
-        private:
+    private:
       static constexpr uint8_t pinIrq = 28;
       static constexpr uint8_t pinReset = 10;
       static constexpr uint8_t lastTouchId = 0x0f;

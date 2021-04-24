@@ -11,14 +11,14 @@ namespace Pinetime {
     namespace Screens {
 
       class SettingTimeFormat : public Screen {
-          public:
+      public:
         SettingTimeFormat(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingTimeFormat() override;
 
         bool Refresh() override;
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
-          private:
+      private:
         Controllers::Settings& settingsController;
         uint8_t optionsTotal;
         lv_obj_t* cbOption[2];

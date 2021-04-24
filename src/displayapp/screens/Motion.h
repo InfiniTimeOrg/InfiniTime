@@ -13,14 +13,14 @@ namespace Pinetime {
     namespace Screens {
 
       class Motion : public Screen {
-          public:
+      public:
         Motion(DisplayApp* app, Controllers::MotionController& motionController);
         ~Motion() override;
 
         bool Refresh() override;
         bool OnButtonPushed() override;
 
-          private:
+      private:
         Controllers::MotionController& motionController;
         lv_obj_t* chart;
         lv_chart_series_t* ser1;

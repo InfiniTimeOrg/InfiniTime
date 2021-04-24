@@ -14,7 +14,7 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class Tile : public Screen {
-          public:
+      public:
         struct Applications {
           const char* icon;
           Pinetime::Applications::Apps application;
@@ -34,7 +34,7 @@ namespace Pinetime {
         void UpdateScreen();
         void OnObjectEvent(lv_obj_t* obj, lv_event_t event, uint32_t buttonId);
 
-          private:
+      private:
         Pinetime::Controllers::Battery& batteryController;
         Controllers::DateTime& dateTimeController;
 

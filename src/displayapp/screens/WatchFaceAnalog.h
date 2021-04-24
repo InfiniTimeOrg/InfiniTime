@@ -22,7 +22,7 @@ namespace Pinetime {
     namespace Screens {
 
       class WatchFaceAnalog : public Screen {
-          public:
+      public:
         WatchFaceAnalog(DisplayApp* app,
                         Controllers::DateTime& dateTimeController,
                         Controllers::Battery& batteryController,
@@ -34,7 +34,7 @@ namespace Pinetime {
 
         bool Refresh() override;
 
-          private:
+      private:
         uint8_t sHour, sMinute, sSecond;
         uint8_t hour;
         uint8_t minute;

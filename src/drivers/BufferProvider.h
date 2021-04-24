@@ -5,7 +5,7 @@
 namespace Pinetime {
   namespace Drivers {
     class BufferProvider {
-        public:
+    public:
       virtual bool GetNextBuffer(uint8_t** buffer, size_t& size) = 0;
     };
   }

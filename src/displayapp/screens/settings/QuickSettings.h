@@ -16,7 +16,7 @@ namespace Pinetime {
     namespace Screens {
 
       class QuickSettings : public Screen {
-          public:
+      public:
         QuickSettings(DisplayApp* app,
                       Pinetime::Controllers::Battery& batteryController,
                       Controllers::DateTime& dateTimeController,
@@ -32,7 +32,7 @@ namespace Pinetime {
 
         void UpdateScreen();
 
-          private:
+      private:
         Pinetime::Controllers::Battery& batteryController;
         Controllers::DateTime& dateTimeController;
         Controllers::BrightnessController& brightness;

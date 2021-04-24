@@ -8,13 +8,13 @@ namespace Pinetime {
     namespace Screens {
 
       class Label : public Screen {
-          public:
+      public:
         Label(uint8_t screenID, uint8_t numScreens, DisplayApp* app, lv_obj_t* labelText);
         ~Label() override;
 
         bool Refresh() override;
 
-          private:
+      private:
         bool running = true;
 
         lv_obj_t* labelText = nullptr;

@@ -12,7 +12,7 @@ namespace Pinetime {
   }
   namespace Components {
     class Gfx : public Pinetime::Drivers::BufferProvider {
-        public:
+    public:
       explicit Gfx(Drivers::St7789& lcd);
       void Init();
       void ClearScreen();
@@ -28,7 +28,7 @@ namespace Pinetime {
       bool GetNextBuffer(uint8_t** buffer, size_t& size) override;
       void pixel_draw(uint8_t x, uint8_t y, uint16_t color);
 
-        private:
+    private:
       static constexpr uint8_t width = 240;
       static constexpr uint8_t height = 240;
 

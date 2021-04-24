@@ -12,7 +12,7 @@ namespace Pinetime {
     namespace Screens {
 
       class FlashLight : public Screen {
-          public:
+      public:
         FlashLight(DisplayApp* app, System::SystemTask& systemTask, Controllers::BrightnessController& brightness);
         ~FlashLight() override;
 
@@ -21,7 +21,7 @@ namespace Pinetime {
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
         void OnClickEvent(lv_obj_t* obj, lv_event_t event);
 
-          private:
+      private:
         Pinetime::System::SystemTask& systemTask;
         Controllers::BrightnessController& brightness;
 

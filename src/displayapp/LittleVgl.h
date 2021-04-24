@@ -10,7 +10,7 @@ namespace Pinetime {
 
   namespace Components {
     class LittleVgl {
-        public:
+    public:
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
       LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel);
 
@@ -24,7 +24,7 @@ namespace Pinetime {
       void SetFullRefresh(FullRefreshDirections direction);
       void SetNewTapEvent(uint16_t x, uint16_t y);
 
-        private:
+    private:
       void InitDisplay();
       void InitTouchpad();
       void InitTheme();

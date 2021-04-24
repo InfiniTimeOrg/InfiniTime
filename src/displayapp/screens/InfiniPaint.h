@@ -12,7 +12,7 @@ namespace Pinetime {
     namespace Screens {
 
       class InfiniPaint : public Screen {
-          public:
+      public:
         InfiniPaint(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl);
 
         ~InfiniPaint() override;
@@ -23,7 +23,7 @@ namespace Pinetime {
 
         bool OnTouchEvent(uint16_t x, uint16_t y) override;
 
-          private:
+      private:
         Pinetime::Components::LittleVgl& lvgl;
         static constexpr uint16_t width = 10;
         static constexpr uint16_t height = 10;

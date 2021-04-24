@@ -4,11 +4,11 @@ namespace Pinetime {
   namespace Controllers {
     /// Direct Form II Biquad Filter
     class Biquad {
-        public:
+    public:
       Biquad(float b0, float b1, float b2, float a1, float a2);
       float Step(float x);
 
-        private:
+    private:
       float b0;
       float b1;
       float b2;

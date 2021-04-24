@@ -5,7 +5,7 @@
 namespace Pinetime {
   namespace Drivers {
     class Hrs3300 {
-        public:
+    public:
       enum class Registers : uint8_t {
         Id = 0x00,
         Enable = 0x01,
@@ -35,7 +35,7 @@ namespace Pinetime {
       void SetGain(uint8_t gain);
       void SetDrive(uint8_t drive);
 
-        private:
+    private:
       TwiMaster& twiMaster;
       uint8_t twiAddress;
 

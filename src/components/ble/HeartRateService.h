@@ -12,13 +12,13 @@ namespace Pinetime {
   namespace Controllers {
     class HeartRateController;
     class HeartRateService {
-        public:
+    public:
       HeartRateService(Pinetime::System::SystemTask& system, Controllers::HeartRateController& heartRateController);
       void Init();
       int OnHeartRateRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context);
       void OnNewHeartRateValue(uint8_t hearRateValue);
 
-        private:
+    private:
       Pinetime::System::SystemTask& system;
       Controllers::HeartRateController& heartRateController;
       static constexpr uint16_t heartRateServiceId {0x180D};

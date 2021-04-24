@@ -13,7 +13,7 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class List : public Screen {
-          public:
+      public:
         struct Applications {
           const char* icon;
           const char* name;
@@ -31,7 +31,7 @@ namespace Pinetime {
 
         void OnButtonEvent(lv_obj_t* object, lv_event_t event);
 
-          private:
+      private:
         Controllers::Settings& settingsController;
         Pinetime::Applications::Apps apps[MAXLISTITEMS];
 

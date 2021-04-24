@@ -12,7 +12,7 @@ namespace Pinetime {
     namespace Screens {
 
       class Paddle : public Screen {
-          public:
+      public:
         Paddle(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl);
         ~Paddle() override;
 
@@ -21,7 +21,7 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
         bool OnTouchEvent(uint16_t x, uint16_t y) override;
 
-          private:
+      private:
         Pinetime::Components::LittleVgl& lvgl;
 
         int paddleBottomY = 90; // bottom extreme of the paddle

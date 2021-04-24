@@ -9,13 +9,13 @@
 namespace Pinetime {
   namespace Controllers {
     class DeviceInformationService {
-        public:
+    public:
       DeviceInformationService();
       void Init();
 
       int OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
 
-        private:
+    private:
       static constexpr uint16_t deviceInfoId {0x180a};
       static constexpr uint16_t manufacturerNameId {0x2a29};
       static constexpr uint16_t modelNumberId {0x2a24};
