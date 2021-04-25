@@ -1,3 +1,8 @@
+---
+layout: page
+title: Build and Program
+---
+
 # Build
 ## Dependencies
 To build this project, you'll need:
@@ -5,7 +10,7 @@ To build this project, you'll need:
  - The NRF52 SDK 15.3.0 : [nRF-SDK v15.3.0](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip)
  - A reasonably recent version of CMake (I use 3.16.5)
 
-## Build steps 
+## Build steps
 ### Clone the repo
 ```
 git clone https://github.com/JF002/InfiniTime.git
@@ -78,9 +83,9 @@ Binary files are generated into the folder `src`:
  - **pinetime-mcuboot-app-image** : MCUBoot image of the firmware
  - **pinetime-mcuboot-ap-dfu** : DFU file of the firmware
 
-The same files are generated for **pinetime-recovery** and **pinetime-recoveryloader** 
+The same files are generated for **pinetime-recovery** and **pinetime-recoveryloader**
 
- 
+
 ### Program and run
 #### Using CMake targets
 These target have been configured during the project generation by CMake according to the parameters you provided to the command line.
@@ -88,7 +93,7 @@ These target have been configured during the project generation by CMake accordi
 Mass erase:
 ```
 make FLASH_ERASE
-``` 
+```
 
 Flash the application:
 ```
@@ -140,7 +145,7 @@ J-Link>
 
 Use the command loadfile to program the .hex file:
 ```
-J-Link>loadfile pinetime-app.hex 
+J-Link>loadfile pinetime-app.hex
 Downloading file [pinetime-app.hex]...
 Comparing flash   [100%] Done.
 Erasing flash     [100%] Done.
@@ -166,7 +171,7 @@ RTT is a feature from Segger's JLink devices that allows bidirectionnal communic
 
  - Program the MCU with the code (see above)
  - Start JLinkExe
- 
+
 ```
 $ JLinkExe -device nrf52 -if swd -speed 4000 -autoconnect 1
 ```
@@ -183,7 +188,7 @@ Enter the following command into GDB:
 target extended-remote /dev/ttyACM0
 monitor swdp_scan
 attach 1
-file ./pinetime-app-full.hex 
+file ./pinetime-app-full.hex
 load
 run
 ```
@@ -199,14 +204,14 @@ Target voltage: ABSENT!
 Available Targets:
 No. Att Driver
  1      Nordic nRF52 M3/M4
- 2      Nordic nRF52 Access Port 
+ 2      Nordic nRF52 Access Port
 
 (gdb) attach 1
 Attaching to Remote target
 warning: No executable has been specified and target does not support
 determining executable automatically.  Try using the "file" command.
 0xfffffffe in ?? ()
-(gdb) file ./pinetime-app-full.hex 
+(gdb) file ./pinetime-app-full.hex
 A program is being debugged already.
 Are you sure you want to change the file? (y or n) y
 Reading symbols from ./pinetime-app-full.hex...

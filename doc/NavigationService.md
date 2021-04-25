@@ -1,3 +1,8 @@
+---
+layout: page
+title: Navigation Structure
+---
+
 # Navigation Service
 ## Introduction
 The navigation ble service provides 4 characteristics to allow the the watch to display navigation instructions from a companion application.  The intended purpose is when performing some outdoor activities, for example running or cycling.

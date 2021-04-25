@@ -1,13 +1,18 @@
+---
+layout: page
+title: Build a stub for PineTime using NRF52-DK
+---
+
 # Build a stub for PineTime using NRF52-DK
 [NRF52-DK](https://www.nordicsemi.com/Software-and-Tools/Development-Kits/nRF52-DK) is the official developpment kit for NRF52832 SoC from Nordic Semiconductor.
 
 It can be very useful for PineTime developpment:
  * You can use it embedded JLink SWD programmer/debugger to program and debug you code on the PineTime
- * As it's based on the same SoC than the PineTime, you can program it to actually run the same code than the PineTime. 
- 
+ * As it's based on the same SoC than the PineTime, you can program it to actually run the same code than the PineTime.
+
 This page is about the 2nd point : we will build a stub that will allow us to run the same code than the one you could run on the PineTime. This will allow you to work more easily if you don't have a PineTime dev kit around, if you don't want to modify your dev kit for SWD programming, or if you want to use some feature from the DK (like power measurement).
 
-This stub only implements the display, the button and the BLE radio. The other features from the pintime are missing: 
+This stub only implements the display, the button and the BLE radio. The other features from the pintime are missing:
  * heart rate sensor
  * SPI flash
  * touchpad
@@ -15,7 +20,7 @@ This stub only implements the display, the button and the BLE radio. The other f
 
 These devices could be added on this stub, but I do not have the parts to try them out for now.
 
-![Pinetime stub](../images/pinetimestub1.jpg "PinetimeStub")
+![Pinetime stub](..images/pinetimestub1.jpg "PinetimeStub")
 
 
 Here are the parts you need to build this simulator:
@@ -23,7 +28,7 @@ Here are the parts you need to build this simulator:
  * An ST7889 display (I bought [this one](https://www.aliexpress.com/item/32859772356.html?spm=a2g0s.9042311.0.0.1b774c4dSoc4Xz))
  * A push-button (the one I use comes from a previous project build around ESP8266 board Wemos D1 Mini).
  * Dupont wires
- 
+
 You just need to make the following connections:
 
 | NRF52-DK | ST7889 display |

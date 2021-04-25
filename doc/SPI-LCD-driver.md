@@ -1,10 +1,15 @@
+---
+layout: page
+title: SPI LCD driver
+---
+
 # The SPI LCD driver
 ## Introduction
 The LCD controller that drive the display of the Pinetime is the Sitronix ST7789V. This controller is easy to integrate with an MCU thanks to its SPI interface, and has some interesting features like:
 - an on-chip display data RAM that can store the whole framebuffer
 - partial screen update
 - hardware assisted vertical scrolling
-- interrupt pin, allowing to drive the display with DMA and IRQ 
+- interrupt pin, allowing to drive the display with DMA and IRQ
 - ...
 
 When you want to write a device driver for a specific component, its datasheet is your holy bible. This document contains a lot of information about the chip, its specification, characteristics, features and functionalities.

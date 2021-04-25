@@ -1,3 +1,9 @@
+---
+layout: page
+title: OpenOCD
+---
+
+
 # OpenOCD and STLink
 OpenOCD (**Open O**n **C**hip **D**ebugger) is an open source tool that interfaces with many SWD/JTAG debugger to provide debugging and *in-system* programming for embedded target devices.
 
@@ -6,7 +12,7 @@ It supports the **NRF52** (the CPU of the PineTime) and the **STLinkV2**, a chea
 It works on X86 computers, as well as ARM/ARM64 computers and SBC (like the RaspberryPi and Pine64 Pinebook Pro) !
 
 ## Installation
-We will build OpenOCD from sources, as packages from Linux distributions are most of the time outdated and do not support the NRF52 correctly. 
+We will build OpenOCD from sources, as packages from Linux distributions are most of the time outdated and do not support the NRF52 correctly.
 
  - Fetch the sources from GIT, and build and install it:
 
@@ -99,7 +105,7 @@ openocd -f ./openocd-stlink.ocd -f ./flash_graphics.ocd
 
 ## Connect the STLinkV2 to the PineTime
 Here is an example using the pogo pins:
-![SWD pinout](../images/swd_pinout.jpg)
-![Pogo pins](../images/pogopins.jpg)
+![SWD pinout](..images/swd_pinout.jpg)
+![Pogo pins](..images/pogopins.jpg)
 
 You can find more information about the SWD wiring [on the wiki](https://wiki.pine64.org/index.php?title=PineTime_devkit_wiring).

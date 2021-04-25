@@ -1,3 +1,9 @@
+---
+layout: page
+title: Build with Docker
+---
+
+
 # Build the project using Docker
 
 A [Docker image (Dockerfile)](../docker) containing all the build environment is available for X86_64 and AMD64 architectures. These images make the build of the firmware and the generation of the DFU file for OTA quite easy, as well as preventing clashes with any other toolchains or development environments you may have installed.
@@ -11,7 +17,7 @@ Based on Ubuntu 18.04 with the following build dependencies:
 
 ## Run a container to build the project
 
-The `infinitime-build` image contains all the dependencies you need. The default `CMD` will compile sources found in `/sources`, so you need only mount your code. 
+The `infinitime-build` image contains all the dependencies you need. The default `CMD` will compile sources found in `/sources`, so you need only mount your code.
 
 This example  will build the firmware, generate the MCUBoot image and generate the DFU file. Outputs will be written to **<project_root>/build/output**:
 

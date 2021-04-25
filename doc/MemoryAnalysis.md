@@ -1,3 +1,8 @@
+---
+layout: page
+title: Memory Analysis
+---
+
 # Memory analysis
 ## FreeRTOS heap and task stack
 FreeRTOS statically allocate its own heap buffer in a global variable named `ucHeap`. This is an array of *uint8_t*. Its size is specified by the definition `configTOTAL_HEAP_SIZE` in *FreeRTOSConfig.h*
@@ -25,7 +30,7 @@ Heap is used for **dynamic memory allocation (malloc() / new)**. NRF SDK default
 
 ```
 add_definitions(-D__HEAP_SIZE=8192)
-``` 
+```
 
 You can trace the dynamic memory allocation by using the flag `--wrap` of the linker. When this flag is enabled, the linker will replace the calls to a specific function by a call to __wrap_the_function(). For example, if you specify `-Wl,-wrap,malloc` in the linker flags, the linker will replace all calls to `void* malloc(size_t)` by calls to `void* __wrap_malloc(size_t)`. This is a function you'll have to define in your code. In this function, you can call `__real_malloc()` to call the actual `malloc()' function.
 
@@ -59,14 +64,14 @@ This function sums all the memory that is allocated during the runtime. You can 
 
 # Global stack
 The stack is used to allocate memory used by functions : **parameters and local variables**. NRF SDK defaults the heap size to 8KB. The size of the heap can be specified by defining `__STACK_SIZE=8192` in *src/CMakeLists.txt*:
-                                                                                             
+
 ```
 add_definitions(-D__STACK_SIZE=8192)
-``` 
+```
 
 *NOTE*: FreeRTOS uses its own stack buffer. Thus, the global stack is only used for main() and IRQ handlers. It should be possible to reduce its size to a much lower value.
 
-**NOTE**: [?] How to track the global stack usage? 
+**NOTE**: [?] How to track the global stack usage?
 
 #LittleVGL buffer
 *TODO*

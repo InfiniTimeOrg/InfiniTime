@@ -1,3 +1,8 @@
+---
+layout: page
+title: Getting Started
+---
+
 # Flash and upgrade InfiniTime
 If you just want to flash or upgrade InfiniTime on your PineTime, this page is for you!
 
@@ -17,10 +22,10 @@ Release files are available under the *Assets* button.
 ## How to upgrade Over-The-Air (OTA)
 OTA is the easiest method to upgrade InfiniTime. Note that it's only possible is your PineTime is already running InfiniTime (>= 0.7.1).
 
-2 companion apps provide support for OTA : 
- - [Gadgetbridge](https://gadgetbridge.org/) (open source, runs on Android, [available on F-Droid](https://f-droid.org/packages/nodomain.freeyourgadget.gadgetbridge/)). 
+2 companion apps provide support for OTA :
+ - [Gadgetbridge](https://gadgetbridge.org/) (open source, runs on Android, [available on F-Droid](https://f-droid.org/packages/nodomain.freeyourgadget.gadgetbridge/)).
  - [NRFConnect](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Connect-for-mobile) (close source, runs on Android and iOS).
- 
+
 Both applications need you to download the **DFU file** of InfiniTime. This file contains the new version of InfiniTime that will be flashed into your device. It's called **dfu-x.y.z.zip** (ex: dfu-0.9.0.zip) in the release note.
 ![Dfu file](dfuFile.png )
 
@@ -80,7 +85,7 @@ Then, using your SWD tool, flash those file at specific offset:
  - image-x.y.z.bin : **0x8000**
 
 Reset and voilà, you're running InfiniTime on your PineTime!
- 
+
 If you are using OpenOCD with a STLinkV2, you can find more info [on this page](../openOCD.md).
 
 ## How to synchronize the time

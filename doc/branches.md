@@ -1,3 +1,8 @@
+---
+layout: page
+title: Branches
+---
+
 # Branches
 The branching model of this project is based on the workflow named [Git flow](https://nvie.com/posts/a-successful-git-branching-model/).
 

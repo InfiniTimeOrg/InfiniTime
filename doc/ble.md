@@ -1,4 +1,9 @@
-# Bluetooth Low-Energy : 
+---
+layout: page
+title: Bluetooth Low-Energy
+---
+
+# Bluetooth Low-Energy :
 ## Introduction
 This page describes the BLE implementation and API built in this firmware.
 
@@ -16,7 +21,7 @@ If **CTS** is detected, it'll request the current time to the companion applicat
 ![BLE connection sequence diagram](ble/connection_sequence.png "BLE connection sequence diagram")
 
 ## BLE UUIDs
-When possible, InfiniTime tries to implement BLE services defined by the BLE specification. 
+When possible, InfiniTime tries to implement BLE services defined by the BLE specification.
 
 When the service does not exist in the BLE specification, InfiniTime implement custom services. As all BLE services, custom services are identified by a UUID. Here is how to define the UUID of custom services in InfiniTime:
 
@@ -32,7 +37,7 @@ The following custom services are implemented in InfiniTime:
    ```
     * Music Service :             00000000-78fc-48fe-8e23-433b3a1942d0
    ```
-   
+
  - Since InfiniTime 0.11:
    ```
      * Navigation Service :        00010000-78fc-48fe-8e23-433b3a1942d0
@@ -48,4 +53,3 @@ The following custom services are implemented in InfiniTime:
 [Alert Notification Service](https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Services/org.bluetooth.service.alert_notification.xml)
 
 ![ANS sequence diagram](./ble/ans_sequence.png "ANS sequence diagram")
-

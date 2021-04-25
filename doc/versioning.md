@@ -1,3 +1,8 @@
+---
+layout: page
+title: Versioning
+---
+
 # Versioning
 The versioning of this project is based on [Semantic versionning](https://semver.org/) :
 
