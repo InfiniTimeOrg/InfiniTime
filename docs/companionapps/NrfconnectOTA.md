@@ -1,3 +1,9 @@
+---
+layout: page
+title: NRFConnect
+---
+
+
 # OTA using NRFConnect
 [NRFConnect](https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Connect-for-mobile) is a powerful application (running on Android and iOS) which allows to scan and connect to BLE devices.
 
@@ -5,7 +11,7 @@
  - Scanning, connect, disconnect
  - Time synchronization
  - OTA
- 
+
 InfiniTime implements the Nordic DFU protocol for the OTA functionality. NRFConnect also supports this protocol.
 
 # Demo

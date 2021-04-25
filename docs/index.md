@@ -77,37 +77,37 @@ As of now, here is the list of achievements of this project:
 ## Documentation
 
 ### Getting started
- - [Flash, upgrade (OTA), time synchronization,...](doc/gettingStarted/gettingStarted.md)
+ - [Flash, upgrade (OTA), time synchronization,...](gettingStarted/gettingStarted.html)
 
 ### Develop
- - [Generate the fonts and symbols](src/displayapp/fonts/Readme.md)
+ - [Generate the fonts and symbols](src/displayapp/fonts/Readme.html)
  - [Creating a stopwatch in Pinetime(article)](https://pankajraghav.com/2021/04/03/PINETIME-STOPCLOCK.html)
 
 ### Build, flash and debug
- - [Project branches](doc/branches.md)
- - [Versioning](doc/versioning.md)
- - [Files included in the release notes](doc/filesInReleaseNotes.md)
- - [Build the project](doc/buildAndProgram.md)
- - [Flash the firmware using OpenOCD and STLinkV2](doc/openOCD.md)
- - [Build the project with Docker](doc/buildWithDocker.md)
- - [Bootloader, OTA and DFU](./bootloader/README.md)
- - [Stub using NRF52-DK](./doc/PinetimeStubWithNrf52DK.md)
+ - [Project branches](branches.html)
+ - [Versioning](versioning.html)
+ - [Files included in the release notes](filesInReleaseNotes.html)
+ - [Build the project](buildAndProgram.html)
+ - [Flash the firmware using OpenOCD and STLinkV2](openOCD.html)
+ - [Build the project with Docker](buildWithDocker.html)
+ - [Bootloader, OTA and DFU](./bootloader/README.html)
+ - [Stub using NRF52-DK](./PinetimeStubWithNrf52DK.html)
  - Logging with JLink RTT.
  - Using files from the releases
 
 ### Contribute
- - [How to contribute ?](doc/contribute.md)
+ - [How to contribute ?](contribute.html)
 
 ### API
- - [BLE implementation and API](./doc/ble.md)
+ - [BLE implementation and API](./ble.html)
 
 ### Architecture and technical topics
- - [Memory analysis](./doc/MemoryAnalysis.md)
+ - [Memory analysis](./MemoryAnalysis.html)
 
 ### Using the firmware
- - [Integration with Gadgetbridge](doc/companionapps/Gadgetbridge.md)
- - [Integration with AmazFish](doc/companionapps/Amazfish.md)
- - [Firmware update, OTA](doc/companionapps/NrfconnectOTA.md)
+ - [Integration with Gadgetbridge](companionapps/Gadgetbridge.html)
+ - [Integration with AmazFish](companionapps/Amazfish.html)
+ - [Firmware update, OTA](companionapps/NrfconnectOTA.html)
 
 
 ## TODO - contribute

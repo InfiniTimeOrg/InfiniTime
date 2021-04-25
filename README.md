@@ -12,9 +12,9 @@
 The **Pinetime** smartwatch is built around the NRF52832 MCU (512KB Flash, 64KB RAM), a 240*240 LCD display driven by the ST7789 controller, an accelerometer, a heart rate sensor, and a vibration motor.
 
 # InfiniTime
-![InfiniTime logo](images/logo.svg "InfiniTime Logo")
+![InfiniTime logo](docs/images/logo.svg "InfiniTime Logo")
 
-The goal of this project is to design an open-source firmware for the Pinetime smartwatch : 
+The goal of this project is to design an open-source firmware for the Pinetime smartwatch :
 
  - Code written in **modern C++**;
  - Build system based on **CMake**;
@@ -24,7 +24,7 @@ The goal of this project is to design an open-source firmware for the Pinetime s
 
 ## Overview
 
-![Pinetime screens](images/1.0.0/collage.png "PinetimeScreens")
+![Pinetime screens](docs/images/1.0.0/collage.png "PinetimeScreens")
 
 As of now, here is the list of achievements of this project:
 
@@ -36,7 +36,7 @@ As of now, here is the list of achievements of this project:
  - Heart rate measurements
  - Step counting
  - Wake-up on wrist rotation
- - Quick actions 
+ - Quick actions
     * Disable vibration on notification
     * Brightness settings
     * Flashlight
@@ -68,43 +68,43 @@ As of now, here is the list of achievements of this project:
     * **[Experimental]** [WebBLEWatch](https://hubmartin.github.io/WebBLEWatch/) Synchronize time directly from your web browser. [video](https://youtu.be/IakiuhVDdrY)
  - OTA (Over-the-air) update via BLE
  - [Bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader) based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/)
- 
+
 ## Documentation
 
 ### Getting started
- - [Flash, upgrade (OTA), time synchronization,...](doc/gettingStarted/gettingStarted.md)
+ - [Flash, upgrade (OTA), time synchronization,...](docs/gettingStarted/gettingStarted.md)
 
 ### Develop
  - [Generate the fonts and symbols](src/displayapp/fonts/Readme.md)
  - [Creating a stopwatch in Pinetime(article)](https://pankajraghav.com/2021/04/03/PINETIME-STOPCLOCK.html)
 
 ### Build, flash and debug
- - [Project branches](doc/branches.md)
- - [Versioning](doc/versioning.md)
- - [Files included in the release notes](doc/filesInReleaseNotes.md)
- - [Build the project](doc/buildAndProgram.md)
- - [Flash the firmware using OpenOCD and STLinkV2](doc/openOCD.md)
- - [Build the project with Docker](doc/buildWithDocker.md)
+ - [Project branches](docs/branches.md)
+ - [Versioning](docs/versioning.md)
+ - [Files included in the release notes](docs/filesInReleaseNotes.md)
+ - [Build the project](docs/buildAndProgram.md)
+ - [Flash the firmware using OpenOCD and STLinkV2](docs/openOCD.md)
+ - [Build the project with Docker](docs/buildWithDocker.md)
  - [Bootloader, OTA and DFU](./bootloader/README.md)
- - [Stub using NRF52-DK](./doc/PinetimeStubWithNrf52DK.md)
+ - [Stub using NRF52-DK](./docs/PinetimeStubWithNrf52DK.md)
  - Logging with JLink RTT.
  - Using files from the releases
 
 ### Contribute
- - [How to contribute ?](doc/contribute.md)
+ - [How to contribute ?](docs/contribute.md)
 
 ### API
- - [BLE implementation and API](./doc/ble.md)
- 
+ - [BLE implementation and API](./docs/ble.md)
+
 ### Architecture and technical topics
- - [Memory analysis](./doc/MemoryAnalysis.md)
- 
+ - [Memory analysis](./docs/MemoryAnalysis.md)
+
 ### Using the firmware
- - [Integration with Gadgetbridge](doc/companionapps/Gadgetbridge.md)
- - [Integration with AmazFish](doc/companionapps/Amazfish.md)
- - [Firmware update, OTA](doc/companionapps/NrfconnectOTA.md)
- 
-    
+ - [Integration with Gadgetbridge](docs/companionapps/Gadgetbridge.md)
+ - [Integration with AmazFish](docs/companionapps/Amazfish.md)
+ - [Firmware update, OTA](docs/companionapps/NrfconnectOTA.md)
+
+
 ## TODO - contribute
 
 This project is far from being finished, and there are still a lot of things to do for this project to become a firmware usable by the general public.
@@ -118,9 +118,9 @@ Here a quick list out of my head of things to do for this project:
  - Measure power consumption and improve battery life
  - Improve documentation, take better pictures and video than mine
  - Improve the UI
- - Create companion app for multiple OSes (Linux, Android, iOS) and platforms (desktop, ARM, mobile). Do not forget the other devices from Pine64 like [the Pinephone](https://www.pine64.org/pinephone/) and the [Pinebook Pro](https://www.pine64.org/pinebook-pro/). 
+ - Create companion app for multiple OSes (Linux, Android, iOS) and platforms (desktop, ARM, mobile). Do not forget the other devices from Pine64 like [the Pinephone](https://www.pine64.org/pinephone/) and the [Pinebook Pro](https://www.pine64.org/pinebook-pro/).
  - Design a simple CI (preferably self-hosted and easy to reproduce).
- 
+
 Do not hesitate to clone/fork the code, hack it and create pull-requests. I'll do my best to review and merge them :)
 
 ## Licenses
@@ -131,8 +131,8 @@ It integrates the following projects:
  - UI : **[LittleVGL/LVGL](https://lvgl.io/)** under the MIT license
  - BLE stack : **[NimBLE](https://github.com/apache/mynewt-nimble)** under the Apache 2.0 license
  - Font : **[Jetbrains Mono](https://www.jetbrains.com/fr-fr/lp/mono/)** under the Apache 2.0 license
-  
-## Credits 
+
+## Credits
 I’m not working alone on this project. First, many people create PR for this projects. Then, there is the whole #pinetime community : a lot of people all around the world who are hacking, searching, experimenting and programming the Pinetime. We exchange our ideas, experiments and code in the chat rooms and forums.
 
 Here are some people I would like to highlight:
