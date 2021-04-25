@@ -1,6 +1,7 @@
 ---
 layout: page
 title: NRFConnect
+parent: Companion Apps
 ---
 
 

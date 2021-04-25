@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Gadgetbridge
+parent: Companion Apps
 ---
 
 

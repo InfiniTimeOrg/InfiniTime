@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Amazfish
+parent: Companion Apps
 ---
 
 # Amazfish

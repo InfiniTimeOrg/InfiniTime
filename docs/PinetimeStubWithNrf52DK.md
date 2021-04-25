@@ -20,7 +20,7 @@ This stub only implements the display, the button and the BLE radio. The other f
 
 These devices could be added on this stub, but I do not have the parts to try them out for now.
 
-![Pinetime stub](..images/pinetimestub1.jpg "PinetimeStub")
+![Pinetime stub](images/pinetimestub1.jpg "PinetimeStub")
 
 
 Here are the parts you need to build this simulator:

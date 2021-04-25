@@ -90,7 +90,7 @@ As of now, here is the list of achievements of this project:
  - [Build the project](buildAndProgram.html)
  - [Flash the firmware using OpenOCD and STLinkV2](openOCD.html)
  - [Build the project with Docker](buildWithDocker.html)
- - [Bootloader, OTA and DFU](./bootloader/README.html)
+ - [Bootloader, OTA and DFU](bootloader/bootloader.html)
  - [Stub using NRF52-DK](./PinetimeStubWithNrf52DK.html)
  - Logging with JLink RTT.
  - Using files from the releases

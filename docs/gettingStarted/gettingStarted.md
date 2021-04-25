@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Getting Started
+nav_order: 10
 ---
 
 # Flash and upgrade InfiniTime
