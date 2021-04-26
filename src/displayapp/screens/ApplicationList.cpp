@@ -8,31 +8,34 @@
 
 using namespace Pinetime::Applications::Screens;
 
-ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp *app,
-          Pinetime::Controllers::Settings &settingsController,
-          Pinetime::Controllers::Battery& batteryController,
-          Controllers::DateTime& dateTimeController) :
-        Screen(app),
-        settingsController{settingsController},
-        batteryController{batteryController},
-        dateTimeController{dateTimeController},
-        screens{app,
-          settingsController.GetAppMenu(),
-          {
-                [this]() -> std::unique_ptr<Screen> { return CreateScreen1(); },
-                [this]() -> std::unique_ptr<Screen> { return CreateScreen2(); },
-                //[this]() -> std::unique_ptr<Screen> { return CreateScreen3(); }
-          },
-          Screens::ScreenListModes::UpDown
-        } {}
-
+ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp* app,
+                                 Pinetime::Controllers::Settings& settingsController,
+                                 Pinetime::Controllers::Battery& batteryController,
+                                 Controllers::DateTime& dateTimeController)
+  : Screen(app),
+    settingsController {settingsController},
+    batteryController {batteryController},
+    dateTimeController {dateTimeController},
+    screens {app,
+             settingsController.GetAppMenu(),
+             {
+               [this]() -> std::unique_ptr<Screen> {
+                 return CreateScreen1();
+               },
+               [this]() -> std::unique_ptr<Screen> {
+                 return CreateScreen2();
+               },
+               //[this]() -> std::unique_ptr<Screen> { return CreateScreen3(); }
+             },
+             Screens::ScreenListModes::UpDown} {
+}
 
 ApplicationList::~ApplicationList() {
   lv_obj_clean(lv_scr_act());
 }
 
 bool ApplicationList::Refresh() {
-  if(running)
+  if (running)
     running = screens.Refresh();
   return running;
 }
@@ -42,31 +45,27 @@ bool ApplicationList::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
-  std::array<Screens::Tile::Applications, 6> applications {
-          {
-            {Symbols::stopWatch,    Apps::StopWatch},
-            {Symbols::music,        Apps::Music},
-            {Symbols::map,          Apps::Navigation},
-            {Symbols::shoe,         Apps::Steps},
-            {Symbols::heartBeat,    Apps::HeartRate},
-            {"",                    Apps::None},
-          }
-  };
+  std::array<Screens::Tile::Applications, 6> applications {{
+    {Symbols::stopWatch, Apps::StopWatch},
+    {Symbols::music, Apps::Music},
+    {Symbols::map, Apps::Navigation},
+    {Symbols::shoe, Apps::Steps},
+    {Symbols::heartBeat, Apps::HeartRate},
+    {"", Apps::None},
+  }};
 
   return std::make_unique<Screens::Tile>(0, 2, app, settingsController, batteryController, dateTimeController, applications);
 }
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
-  std::array<Screens::Tile::Applications, 6> applications {
-          {
-            {Symbols::paintbrush,   Apps::Paint},
-            {Symbols::paddle,       Apps::Paddle},
-            {"2",                   Apps::Twos},
-            {"M",                   Apps::Motion},
-            {"",                    Apps::None},
-            {"",                    Apps::None},
-          }
-  };
+  std::array<Screens::Tile::Applications, 6> applications {{
+    {Symbols::paintbrush, Apps::Paint},
+    {Symbols::paddle, Apps::Paddle},
+    {"2", Apps::Twos},
+    {"M", Apps::Motion},
+    {"", Apps::None},
+    {"", Apps::None},
+  }};
 
   return std::make_unique<Screens::Tile>(1, 2, app, settingsController, batteryController, dateTimeController, applications);
 }
@@ -84,4 +83,3 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
 
   return std::make_unique<Screens::Tile>(2, 3, app, settingsController, batteryController, dateTimeController, applications);
 }*/
-

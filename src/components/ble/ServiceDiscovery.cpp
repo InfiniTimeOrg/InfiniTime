@@ -4,8 +4,7 @@
 
 using namespace Pinetime::Controllers;
 
-ServiceDiscovery::ServiceDiscovery(std::array<BleClient*, 2>&& clients) : clients{clients} {
-
+ServiceDiscovery::ServiceDiscovery(std::array<BleClient*, 2>&& clients) : clients {clients} {
 }
 
 void ServiceDiscovery::StartDiscovery(uint16_t connectionHandle) {
@@ -16,7 +15,7 @@ void ServiceDiscovery::StartDiscovery(uint16_t connectionHandle) {
 
 void ServiceDiscovery::OnServiceDiscovered(uint16_t connectionHandle) {
   clientIterator++;
-  if(clientIterator != clients.end()) {
+  if (clientIterator != clients.end()) {
     DiscoverNextService(connectionHandle);
   } else {
     NRF_LOG_INFO("End of service discovery");
@@ -26,7 +25,7 @@ void ServiceDiscovery::OnServiceDiscovered(uint16_t connectionHandle) {
 void ServiceDiscovery::DiscoverNextService(uint16_t connectionHandle) {
   NRF_LOG_INFO("[Discovery] Discover next service");
 
-  auto discoverNextService = [this](uint16_t connectionHandle){
+  auto discoverNextService = [this](uint16_t connectionHandle) {
     this->OnServiceDiscovered(connectionHandle);
   };
   (*clientIterator)->Discover(connectionHandle, discoverNextService);

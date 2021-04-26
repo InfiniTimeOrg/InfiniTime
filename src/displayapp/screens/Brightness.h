@@ -9,25 +9,25 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class Brightness : public Screen {
-        public:
-          Brightness(DisplayApp* app, Controllers::BrightnessController& brightness);
-          ~Brightness() override;
-          bool Refresh() override;
-          
-          bool OnTouchEvent(TouchEvents event) override;
+      public:
+        Brightness(DisplayApp* app, Controllers::BrightnessController& brightness);
+        ~Brightness() override;
+        bool Refresh() override;
 
-          void OnValueChanged();
-        private:
-          
-          Controllers::BrightnessController& brightness;
+        bool OnTouchEvent(TouchEvents event) override;
 
-          lv_obj_t * slider_label;
-          lv_obj_t * slider;
+        void OnValueChanged();
 
-          const char* LevelToString(Controllers::BrightnessController::Levels level);
-          uint8_t LevelToInt(Controllers::BrightnessController::Levels level);
-          void SetValue(uint8_t value);
-          void SetValue();
+      private:
+        Controllers::BrightnessController& brightness;
+
+        lv_obj_t* slider_label;
+        lv_obj_t* slider;
+
+        const char* LevelToString(Controllers::BrightnessController::Levels level);
+        uint8_t LevelToInt(Controllers::BrightnessController::Levels level);
+        void SetValue(uint8_t value);
+        void SetValue();
       };
     }
   }

@@ -24,7 +24,7 @@ namespace {
   }
 }
 
-Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster{twiMaster}, deviceAddress{twiAddress} {
+Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}, deviceAddress {twiAddress} {
   bma.intf = BMA4_I2C_INTF;
   bma.bus_read = user_i2c_read;
   bma.bus_write = user_i2c_write;
@@ -35,25 +35,32 @@ Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster{twiMaster},
 }
 
 void Bma421::Init() {
-  if(not isResetOk) return; // Call SoftReset (and reset TWI device) first!
+  if (not isResetOk)
+    return; // Call SoftReset (and reset TWI device) first!
 
   auto ret = bma423_init(&bma);
-  if(ret != BMA4_OK) return;
+  if (ret != BMA4_OK)
+    return;
 
   ret = bma423_write_config_file(&bma);
-  if(ret != BMA4_OK) return;
+  if (ret != BMA4_OK)
+    return;
 
   ret = bma4_set_interrupt_mode(BMA4_LATCH_MODE, &bma);
-  if(ret != BMA4_OK) return;
+  if (ret != BMA4_OK)
+    return;
 
   ret = bma423_feature_enable(BMA423_STEP_CNTR, 1, &bma);
-  if(ret != BMA4_OK) return;
+  if (ret != BMA4_OK)
+    return;
 
   ret = bma423_step_detector_enable(0, &bma);
-  if(ret != BMA4_OK) return;
+  if (ret != BMA4_OK)
+    return;
 
   ret = bma4_set_accel_enable(1, &bma);
-  if(ret != BMA4_OK) return;
+  if (ret != BMA4_OK)
+    return;
 
   struct bma4_accel_config accel_conf;
   accel_conf.odr = BMA4_OUTPUT_DATA_RATE_100HZ;
@@ -61,7 +68,8 @@ void Bma421::Init() {
   accel_conf.bandwidth = BMA4_ACCEL_NORMAL_AVG4;
   accel_conf.perf_mode = BMA4_CIC_AVG_MODE;
   ret = bma4_set_accel_config(&accel_conf, &bma);
-  if(ret != BMA4_OK) return;
+  if (ret != BMA4_OK)
+    return;
 
   isOk = true;
 }
@@ -71,16 +79,17 @@ void Bma421::Reset() {
   twiMaster.Write(deviceAddress, 0x7E, &data, 1);
 }
 
-void Bma421::Read(uint8_t registerAddress, uint8_t *buffer, size_t size) {
+void Bma421::Read(uint8_t registerAddress, uint8_t* buffer, size_t size) {
   twiMaster.Read(deviceAddress, registerAddress, buffer, size);
 }
 
-void Bma421::Write(uint8_t registerAddress, const uint8_t *data, size_t size) {
+void Bma421::Write(uint8_t registerAddress, const uint8_t* data, size_t size) {
   twiMaster.Write(deviceAddress, registerAddress, data, size);
 }
 
 Bma421::Values Bma421::Process() {
-  if(not isOk) return {};
+  if (not isOk)
+    return {};
   struct bma4_accel data;
   bma4_read_accel_xyz(&data, &bma);
 
@@ -109,7 +118,7 @@ void Bma421::ResetStepCounter() {
 
 void Bma421::SoftReset() {
   auto ret = bma4_soft_reset(&bma);
-  if(ret == BMA4_OK) {
+  if (ret == BMA4_OK) {
     isResetOk = true;
     nrf_delay_ms(1);
   }

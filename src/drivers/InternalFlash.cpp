@@ -25,7 +25,7 @@ void InternalFlash::WriteWord(uint32_t address, uint32_t value) {
   __DSB();
 
   // Write word
-  *(uint32_t*)address = value;
+  *(uint32_t*) address = value;
   Wait();
 
   // Disable write
@@ -35,5 +35,7 @@ void InternalFlash::WriteWord(uint32_t address, uint32_t value) {
 }
 
 void InternalFlash::Wait() {
-  while (NRF_NVMC->READY == NVMC_READY_READY_Busy) {;}
+  while (NRF_NVMC->READY == NVMC_READY_READY_Busy) {
+    ;
+  }
 }

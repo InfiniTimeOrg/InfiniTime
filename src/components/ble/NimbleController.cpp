@@ -19,36 +19,37 @@ using namespace Pinetime::Controllers;
 
 NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
                                    Pinetime::Controllers::Ble& bleController,
-        DateTime& dateTimeController,
-        Pinetime::Controllers::NotificationManager& notificationManager,
-        Controllers::Battery& batteryController,
-        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
-        Controllers::HeartRateController& heartRateController) :
-        systemTask{systemTask},
-        bleController{bleController},
-        dateTimeController{dateTimeController},
-        notificationManager{notificationManager},
-        spiNorFlash{spiNorFlash},
-        dfuService{systemTask, bleController, spiNorFlash},
-        currentTimeClient{dateTimeController},
-        anService{systemTask, notificationManager},
-        alertNotificationClient{systemTask, notificationManager},
-        currentTimeService{dateTimeController},
-        musicService{systemTask},
-        navService{systemTask},
-        batteryInformationService{batteryController},
-        immediateAlertService{systemTask, notificationManager},
-        heartRateService{systemTask, heartRateController},
-        serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
+                                   DateTime& dateTimeController,
+                                   Pinetime::Controllers::NotificationManager& notificationManager,
+                                   Controllers::Battery& batteryController,
+                                   Pinetime::Drivers::SpiNorFlash& spiNorFlash,
+                                   Controllers::HeartRateController& heartRateController)
+  : systemTask {systemTask},
+    bleController {bleController},
+    dateTimeController {dateTimeController},
+    notificationManager {notificationManager},
+    spiNorFlash {spiNorFlash},
+    dfuService {systemTask, bleController, spiNorFlash},
+    currentTimeClient {dateTimeController},
+    anService {systemTask, notificationManager},
+    alertNotificationClient {systemTask, notificationManager},
+    currentTimeService {dateTimeController},
+    musicService {systemTask},
+    navService {systemTask},
+    batteryInformationService {batteryController},
+    immediateAlertService {systemTask, notificationManager},
+    heartRateService {systemTask, heartRateController},
+    serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
 }
 
-int GAPEventCallback(struct ble_gap_event *event, void *arg) {
+int GAPEventCallback(struct ble_gap_event* event, void* arg) {
   auto nimbleController = static_cast<NimbleController*>(arg);
   return nimbleController->OnGAPEvent(event);
 }
 
 void NimbleController::Init() {
-  while (!ble_hs_synced()) {}
+  while (!ble_hs_synced()) {
+  }
 
   ble_svc_gap_init();
   ble_svc_gatt_init();
@@ -81,7 +82,8 @@ void NimbleController::Init() {
 }
 
 void NimbleController::StartAdvertising() {
-  if(bleController.IsConnected() || ble_gap_conn_active() || ble_gap_adv_active()) return;
+  if (bleController.IsConnected() || ble_gap_conn_active() || ble_gap_adv_active())
+    return;
 
   ble_svc_gap_device_name_set(deviceName);
 
@@ -101,29 +103,27 @@ void NimbleController::StartAdvertising() {
   adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
   adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
 
-  fields.flags = BLE_HS_ADV_F_DISC_GEN |
-                 BLE_HS_ADV_F_BREDR_UNSUP;
-//  fields.uuids128 = BLE_UUID128(BLE_UUID128_DECLARE(
-//          0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-//          0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff));
+  fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
+  //  fields.uuids128 = BLE_UUID128(BLE_UUID128_DECLARE(
+  //          0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+  //          0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff));
   fields.uuids128 = &dfuServiceUuid;
   fields.num_uuids128 = 1;
   fields.uuids128_is_complete = 1;
   fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
 
-  rsp_fields.name = (uint8_t *)deviceName;
+  rsp_fields.name = (uint8_t*) deviceName;
   rsp_fields.name_len = strlen(deviceName);
   rsp_fields.name_is_complete = 1;
 
   ble_gap_adv_set_fields(&fields);
-//  ASSERT(res == 0); // TODO this one sometimes fails with error 22 (notsync)
+  //  ASSERT(res == 0); // TODO this one sometimes fails with error 22 (notsync)
 
   ble_gap_adv_rsp_set_fields(&rsp_fields);
-//  ASSERT(res == 0);
+  //  ASSERT(res == 0);
 
-  ble_gap_adv_start(addrType, NULL, 180000,
-                          &adv_params, GAPEventCallback, this);
-//  ASSERT(res == 0);// TODO I've disabled these ASSERT as they sometime asserts and reset the mcu.
+  ble_gap_adv_start(addrType, NULL, 180000, &adv_params, GAPEventCallback, this);
+  //  ASSERT(res == 0);// TODO I've disabled these ASSERT as they sometime asserts and reset the mcu.
   // For now, the advertising is restarted as soon as it ends. There may be a race condition
   // that prevent the advertising from restarting reliably.
   // I remove the assert to prevent this uncesseray crash, but in the long term, the management of
@@ -131,7 +131,7 @@ void NimbleController::StartAdvertising() {
   // the application has been woken up, for example.
 }
 
-int NimbleController::OnGAPEvent(ble_gap_event *event) {
+int NimbleController::OnGAPEvent(ble_gap_event* event) {
   switch (event->type) {
     case BLE_GAP_EVENT_ADV_COMPLETE:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_ADV_COMPLETE");
@@ -141,8 +141,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_CONNECT");
 
       /* A new connection was established or a connection attempt failed. */
-      NRF_LOG_INFO("connection %s; status=%d ", event->connect.status == 0 ? "established" : "failed",
-                   event->connect.status);
+      NRF_LOG_INFO("connection %s; status=%d ", event->connect.status == 0 ? "established" : "failed", event->connect.status);
 
       if (event->connect.status != 0) {
         /* Connection failed; resume advertising. */
@@ -154,8 +153,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
         connectionHandle = event->connect.conn_handle;
         // Service discovery is deffered via systemtask
       }
-    }
-      break;
+    } break;
     case BLE_GAP_EVENT_DISCONNECT:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_DISCONNECT");
       NRF_LOG_INFO("disconnect; reason=%d", event->disconnect.reason);
@@ -178,19 +176,16 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
       return 0;
     case BLE_GAP_EVENT_SUBSCRIBE:
       NRF_LOG_INFO("subscribe event; conn_handle=%d attr_handle=%d "
-                        "reason=%d prevn=%d curn=%d previ=%d curi=???\n",
-                  event->subscribe.conn_handle,
-                  event->subscribe.attr_handle,
-                  event->subscribe.reason,
-                  event->subscribe.prev_notify,
-                  event->subscribe.cur_notify,
-                  event->subscribe.prev_indicate);
+                   "reason=%d prevn=%d curn=%d previ=%d curi=???\n",
+                   event->subscribe.conn_handle,
+                   event->subscribe.attr_handle,
+                   event->subscribe.reason,
+                   event->subscribe.prev_notify,
+                   event->subscribe.cur_notify,
+                   event->subscribe.prev_indicate);
       return 0;
     case BLE_GAP_EVENT_MTU:
-      NRF_LOG_INFO("mtu update event; conn_handle=%d cid=%d mtu=%d\n",
-                  event->mtu.conn_handle,
-                  event->mtu.channel_id,
-                  event->mtu.value);
+      NRF_LOG_INFO("mtu update event; conn_handle=%d cid=%d mtu=%d\n", event->mtu.conn_handle, event->mtu.channel_id, event->mtu.value);
       return 0;
 
     case BLE_GAP_EVENT_REPEAT_PAIRING: {
@@ -216,9 +211,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
 
       NRF_LOG_INFO("received %s; conn_handle=%d attr_handle=%d "
                    "attr_len=%d",
-                   event->notify_rx.indication ?
-                   "indication" :
-                   "notification",
+                   event->notify_rx.indication ? "indication" : "notification",
                    event->notify_rx.conn_handle,
                    event->notify_rx.attr_handle,
                    notifSize);
@@ -229,7 +222,7 @@ int NimbleController::OnGAPEvent(ble_gap_event *event) {
       /* Attribute data is contained in event->notify_rx.attr_data. */
 
     default:
-//      NRF_LOG_INFO("Advertising event : %d", event->type);
+      //      NRF_LOG_INFO("Advertising event : %d", event->type);
       break;
   }
   return 0;
@@ -239,8 +232,6 @@ void NimbleController::StartDiscovery() {
   serviceDiscovery.StartDiscovery(connectionHandle);
 }
 
-
 uint16_t NimbleController::connHandle() {
-    return connectionHandle;
+  return connectionHandle;
 }
-

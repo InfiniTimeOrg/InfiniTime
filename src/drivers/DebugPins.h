@@ -22,4 +22,3 @@ void debugpins_pulse(debugpins_pins pin);
 #ifdef __cplusplus
 }
 #endif
-

@@ -9,14 +9,14 @@ namespace Pinetime {
     static constexpr uint8_t pinMotor = 16;
 
     class MotorController {
-      public:
-        MotorController( Controllers::Settings &settingsController );
-        void Init();
-        void SetDuration(uint8_t motorDuration);
+    public:
+      MotorController(Controllers::Settings& settingsController);
+      void Init();
+      void SetDuration(uint8_t motorDuration);
 
-      private:
-        Controllers::Settings& settingsController;
-        static void vibrate(void * p_context);
+    private:
+      Controllers::Settings& settingsController;
+      static void vibrate(void* p_context);
     };
   }
 }
