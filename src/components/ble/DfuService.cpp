@@ -11,67 +11,60 @@ constexpr ble_uuid128_t DfuService::controlPointCharacteristicUuid;
 constexpr ble_uuid128_t DfuService::revisionCharacteristicUuid;
 constexpr ble_uuid128_t DfuService::packetCharacteristicUuid;
 
-int DfuServiceCallback(uint16_t conn_handle, uint16_t attr_handle,
-                       struct ble_gatt_access_ctxt *ctxt, void *arg) {
-  auto dfuService = static_cast<DfuService *>(arg);
+int DfuServiceCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+  auto dfuService = static_cast<DfuService*>(arg);
   return dfuService->OnServiceData(conn_handle, attr_handle, ctxt);
 }
 
 void NotificationTimerCallback(TimerHandle_t xTimer) {
-  auto notificationManager = static_cast<DfuService::NotificationManager *>(pvTimerGetTimerID(xTimer));
+  auto notificationManager = static_cast<DfuService::NotificationManager*>(pvTimerGetTimerID(xTimer));
   notificationManager->OnNotificationTimer();
 }
 
 void TimeoutTimerCallback(TimerHandle_t xTimer) {
-  auto dfuService = static_cast<DfuService *>(pvTimerGetTimerID(xTimer));
+  auto dfuService = static_cast<DfuService*>(pvTimerGetTimerID(xTimer));
   dfuService->OnTimeout();
 }
 
-DfuService::DfuService(Pinetime::System::SystemTask &systemTask, Pinetime::Controllers::Ble &bleController,
-                       Pinetime::Drivers::SpiNorFlash &spiNorFlash) :
-        systemTask{systemTask},
-        bleController{bleController},
-        dfuImage{spiNorFlash},
-        characteristicDefinition{
-                {
-                        .uuid = (ble_uuid_t *) &packetCharacteristicUuid,
-                        .access_cb = DfuServiceCallback,
-                        .arg = this,
-                        .flags = BLE_GATT_CHR_F_WRITE_NO_RSP,
-                        .val_handle = nullptr,
-                },
-                {
-                        .uuid = (ble_uuid_t *) &controlPointCharacteristicUuid,
-                        .access_cb = DfuServiceCallback,
-                        .arg = this,
-                        .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_NOTIFY,
-                        .val_handle = nullptr,
-                },
-                {
-                        .uuid = (ble_uuid_t *) &revisionCharacteristicUuid,
-                        .access_cb = DfuServiceCallback,
-                        .arg = this,
-                        .flags = BLE_GATT_CHR_F_READ,
-                        .val_handle = &revision,
+DfuService::DfuService(Pinetime::System::SystemTask& systemTask,
+                       Pinetime::Controllers::Ble& bleController,
+                       Pinetime::Drivers::SpiNorFlash& spiNorFlash)
+  : systemTask {systemTask},
+    bleController {bleController},
+    dfuImage {spiNorFlash},
+    characteristicDefinition {{
+                                .uuid = (ble_uuid_t*) &packetCharacteristicUuid,
+                                .access_cb = DfuServiceCallback,
+                                .arg = this,
+                                .flags = BLE_GATT_CHR_F_WRITE_NO_RSP,
+                                .val_handle = nullptr,
+                              },
+                              {
+                                .uuid = (ble_uuid_t*) &controlPointCharacteristicUuid,
+                                .access_cb = DfuServiceCallback,
+                                .arg = this,
+                                .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_NOTIFY,
+                                .val_handle = nullptr,
+                              },
+                              {
+                                .uuid = (ble_uuid_t*) &revisionCharacteristicUuid,
+                                .access_cb = DfuServiceCallback,
+                                .arg = this,
+                                .flags = BLE_GATT_CHR_F_READ,
+                                .val_handle = &revision,
 
-                },
-                {
-                        0
-                }
+                              },
+                              {0}
 
-        },
-        serviceDefinition{
-                {
-                        /* Device Information Service */
-                        .type = BLE_GATT_SVC_TYPE_PRIMARY,
-                        .uuid = (ble_uuid_t *) &serviceUuid,
-                        .characteristics = characteristicDefinition
-                },
-                {
-                        0
-                },
-        } {
-  timeoutTimer = xTimerCreate ("notificationTimer", 10000, pdFALSE, this, TimeoutTimerCallback);
+    },
+    serviceDefinition {
+      {/* Device Information Service */
+       .type = BLE_GATT_SVC_TYPE_PRIMARY,
+       .uuid = (ble_uuid_t*) &serviceUuid,
+       .characteristics = characteristicDefinition},
+      {0},
+    } {
+  timeoutTimer = xTimerCreate("notificationTimer", 10000, pdFALSE, this, TimeoutTimerCallback);
 }
 
 void DfuService::Init() {
@@ -83,55 +76,54 @@ void DfuService::Init() {
   ASSERT(res == 0);
 }
 
-int DfuService::OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt *context) {
-  if(bleController.IsFirmwareUpdating()){
+int DfuService::OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
+  if (bleController.IsFirmwareUpdating()) {
     xTimerStart(timeoutTimer, 0);
   }
 
-
-  ble_gatts_find_chr((ble_uuid_t *) &serviceUuid, (ble_uuid_t *) &packetCharacteristicUuid, nullptr,
-                     &packetCharacteristicHandle);
-  ble_gatts_find_chr((ble_uuid_t *) &serviceUuid, (ble_uuid_t *) &controlPointCharacteristicUuid, nullptr,
-                     &controlPointCharacteristicHandle);
-  ble_gatts_find_chr((ble_uuid_t *) &serviceUuid, (ble_uuid_t *) &revisionCharacteristicUuid, nullptr,
-                     &revisionCharacteristicHandle);
+  ble_gatts_find_chr((ble_uuid_t*) &serviceUuid, (ble_uuid_t*) &packetCharacteristicUuid, nullptr, &packetCharacteristicHandle);
+  ble_gatts_find_chr((ble_uuid_t*) &serviceUuid, (ble_uuid_t*) &controlPointCharacteristicUuid, nullptr, &controlPointCharacteristicHandle);
+  ble_gatts_find_chr((ble_uuid_t*) &serviceUuid, (ble_uuid_t*) &revisionCharacteristicUuid, nullptr, &revisionCharacteristicHandle);
 
   if (attributeHandle == packetCharacteristicHandle) {
     if (context->op == BLE_GATT_ACCESS_OP_WRITE_CHR)
       return WritePacketHandler(connectionHandle, context->om);
-    else return 0;
+    else
+      return 0;
   } else if (attributeHandle == controlPointCharacteristicHandle) {
     if (context->op == BLE_GATT_ACCESS_OP_WRITE_CHR)
       return ControlPointHandler(connectionHandle, context->om);
-    else return 0;
+    else
+      return 0;
   } else if (attributeHandle == revisionCharacteristicHandle) {
     if (context->op == BLE_GATT_ACCESS_OP_READ_CHR)
       return SendDfuRevision(context->om);
-    else return 0;
+    else
+      return 0;
   } else {
     NRF_LOG_INFO("[DFU] Unknown Characteristic : %d", attributeHandle);
     return 0;
   }
 }
 
-int DfuService::SendDfuRevision(os_mbuf *om) const {
+int DfuService::SendDfuRevision(os_mbuf* om) const {
   int res = os_mbuf_append(om, &revision, sizeof(revision));
   return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
 }
 
-int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
+int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
   switch (state) {
     case States::Start: {
       softdeviceSize = om->om_data[0] + (om->om_data[1] << 8) + (om->om_data[2] << 16) + (om->om_data[3] << 24);
       bootloaderSize = om->om_data[4] + (om->om_data[5] << 8) + (om->om_data[6] << 16) + (om->om_data[7] << 24);
       applicationSize = om->om_data[8] + (om->om_data[9] << 8) + (om->om_data[10] << 16) + (om->om_data[11] << 24);
       bleController.FirmwareUpdateTotalBytes(applicationSize);
-      NRF_LOG_INFO("[DFU] -> Start data received : SD size : %d, BT size : %d, app size : %d", softdeviceSize,
-                   bootloaderSize, applicationSize);
+      NRF_LOG_INFO(
+        "[DFU] -> Start data received : SD size : %d, BT size : %d, app size : %d", softdeviceSize, bootloaderSize, applicationSize);
 
       dfuImage.Erase();
 
-      uint8_t data[]{16, 1, 1};
+      uint8_t data[] {16, 1, 1};
       notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 3);
       state = States::Init;
     }
@@ -139,19 +131,22 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
     case States::Init: {
       uint16_t deviceType = om->om_data[0] + (om->om_data[1] << 8);
       uint16_t deviceRevision = om->om_data[2] + (om->om_data[3] << 8);
-      uint32_t applicationVersion =
-              om->om_data[4] + (om->om_data[5] << 8) + (om->om_data[6] << 16) + (om->om_data[7] << 24);
+      uint32_t applicationVersion = om->om_data[4] + (om->om_data[5] << 8) + (om->om_data[6] << 16) + (om->om_data[7] << 24);
       uint16_t softdeviceArrayLength = om->om_data[8] + (om->om_data[9] << 8);
       uint16_t sd[softdeviceArrayLength];
       for (int i = 0; i < softdeviceArrayLength; i++) {
         sd[i] = om->om_data[10 + (i * 2)] + (om->om_data[10 + (i * 2) + 1] << 8);
       }
-      expectedCrc =
-              om->om_data[10 + (softdeviceArrayLength * 2)] + (om->om_data[10 + (softdeviceArrayLength * 2) + 1] << 8);
+      expectedCrc = om->om_data[10 + (softdeviceArrayLength * 2)] + (om->om_data[10 + (softdeviceArrayLength * 2) + 1] << 8);
 
       NRF_LOG_INFO(
-              "[DFU] -> Init data received : deviceType = %d, deviceRevision = %d, applicationVersion = %d, nb SD = %d, First SD = %d, CRC = %u",
-              deviceType, deviceRevision, applicationVersion, softdeviceArrayLength, sd[0], expectedCrc);
+        "[DFU] -> Init data received : deviceType = %d, deviceRevision = %d, applicationVersion = %d, nb SD = %d, First SD = %d, CRC = %u",
+        deviceType,
+        deviceRevision,
+        applicationVersion,
+        softdeviceArrayLength,
+        sd[0],
+        expectedCrc);
 
       return 0;
     }
@@ -163,16 +158,18 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
       bleController.FirmwareUpdateCurrentBytes(bytesReceived);
 
       if ((nbPacketReceived % nbPacketsToNotify) == 0 && bytesReceived != applicationSize) {
-        uint8_t data[5]{static_cast<uint8_t>(Opcodes::PacketReceiptNotification),
-                        (uint8_t) (bytesReceived & 0x000000FFu), (uint8_t) (bytesReceived >> 8u),
-                        (uint8_t) (bytesReceived >> 16u), (uint8_t) (bytesReceived >> 24u)};
+        uint8_t data[5] {static_cast<uint8_t>(Opcodes::PacketReceiptNotification),
+                         (uint8_t) (bytesReceived & 0x000000FFu),
+                         (uint8_t) (bytesReceived >> 8u),
+                         (uint8_t) (bytesReceived >> 16u),
+                         (uint8_t) (bytesReceived >> 24u)};
         NRF_LOG_INFO("[DFU] -> Send packet notification: %d bytes received", bytesReceived);
         notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 5);
       }
       if (dfuImage.IsComplete()) {
-        uint8_t data[3]{static_cast<uint8_t>(Opcodes::Response),
-                        static_cast<uint8_t>(Opcodes::ReceiveFirmwareImage),
-                        static_cast<uint8_t>(ErrorCodes::NoError)};
+        uint8_t data[3] {static_cast<uint8_t>(Opcodes::Response),
+                         static_cast<uint8_t>(Opcodes::ReceiveFirmwareImage),
+                         static_cast<uint8_t>(ErrorCodes::NoError)};
         NRF_LOG_INFO("[DFU] -> Send packet notification : all bytes received!");
         notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 3);
         state = States::Validate;
@@ -186,7 +183,7 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf *om) {
   return 0;
 }
 
-int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
+int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
   auto opcode = static_cast<Opcodes>(om->om_data[0]);
   NRF_LOG_INFO("[DFU] -> ControlPointHandler");
 
@@ -214,8 +211,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
         NRF_LOG_INFO("[DFU] -> Start DFU, mode %d not supported!", imageType);
         return 0;
       }
-    }
-      break;
+    } break;
     case Opcodes::InitDFUParameters: {
       if (state != States::Init) {
         NRF_LOG_INFO("[DFU] -> Init DFU requested, but we are not in Init state");
@@ -225,11 +221,9 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
       NRF_LOG_INFO("[DFU] -> Init DFU parameters %s", isInitComplete ? " complete" : " not complete");
 
       if (isInitComplete) {
-        uint8_t data[3] {
-                static_cast<uint8_t>(Opcodes::Response),
-                static_cast<uint8_t>(Opcodes::InitDFUParameters),
-                (isInitComplete ? uint8_t{1} : uint8_t{0})
-        };
+        uint8_t data[3] {static_cast<uint8_t>(Opcodes::Response),
+                         static_cast<uint8_t>(Opcodes::InitDFUParameters),
+                         (isInitComplete ? uint8_t {1} : uint8_t {0})};
         notificationManager.AsyncSend(connectionHandle, controlPointCharacteristicHandle, data, 3);
         return 0;
       }
@@ -257,26 +251,22 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf *om) {
 
       NRF_LOG_INFO("[DFU] -> Validate firmware image requested -- %d", connectionHandle);
 
-      if(dfuImage.Validate()){
+      if (dfuImage.Validate()) {
         state = States::Validated;
         bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated);
         NRF_LOG_INFO("Image OK");
 
-        uint8_t data[3] {
-                static_cast<uint8_t>(Opcodes::Response),
-                static_cast<uint8_t>(Opcodes::ValidateFirmware),
-                static_cast<uint8_t>(ErrorCodes::NoError)
-        };
+        uint8_t data[3] {static_cast<uint8_t>(Opcodes::Response),
+                         static_cast<uint8_t>(Opcodes::ValidateFirmware),
+                         static_cast<uint8_t>(ErrorCodes::NoError)};
         notificationManager.AsyncSend(connectionHandle, controlPointCharacteristicHandle, data, 3);
       } else {
         bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Error);
         NRF_LOG_INFO("Image Error : bad CRC");
 
-        uint8_t data[3] {
-                static_cast<uint8_t>(Opcodes::Response),
-                static_cast<uint8_t>(Opcodes::ValidateFirmware),
-                static_cast<uint8_t>(ErrorCodes::CrcError)
-        };
+        uint8_t data[3] {static_cast<uint8_t>(Opcodes::Response),
+                         static_cast<uint8_t>(Opcodes::ValidateFirmware),
+                         static_cast<uint8_t>(ErrorCodes::CrcError)};
         notificationManager.AsyncSend(connectionHandle, controlPointCharacteristicHandle, data, 3);
       }
 
@@ -318,11 +308,11 @@ void DfuService::Reset() {
 }
 
 DfuService::NotificationManager::NotificationManager() {
-  timer = xTimerCreate ("notificationTimer", 1000, pdFALSE, this, NotificationTimerCallback);
+  timer = xTimerCreate("notificationTimer", 1000, pdFALSE, this, NotificationTimerCallback);
 }
 
-bool DfuService::NotificationManager::AsyncSend(uint16_t connection, uint16_t charactHandle, uint8_t *data, size_t s) {
-  if(size != 0 || s > 10)
+bool DfuService::NotificationManager::AsyncSend(uint16_t connection, uint16_t charactHandle, uint8_t* data, size_t s) {
+  if (size != 0 || s > 10)
     return false;
 
   connectionHandle = connection;
@@ -334,14 +324,14 @@ bool DfuService::NotificationManager::AsyncSend(uint16_t connection, uint16_t ch
 }
 
 void DfuService::NotificationManager::OnNotificationTimer() {
-  if(size > 0) {
+  if (size > 0) {
     Send(connectionHandle, characteristicHandle, buffer, size);
     size = 0;
   }
 }
 
-void DfuService::NotificationManager::Send(uint16_t connection, uint16_t charactHandle, const uint8_t *data, const size_t s) {
-  auto *om = ble_hs_mbuf_from_flat(data, s);
+void DfuService::NotificationManager::Send(uint16_t connection, uint16_t charactHandle, const uint8_t* data, const size_t s) {
+  auto* om = ble_hs_mbuf_from_flat(data, s);
   auto ret = ble_gattc_notify_custom(connection, charactHandle, om);
   ASSERT(ret == 0);
 }
@@ -354,27 +344,29 @@ void DfuService::NotificationManager::Reset() {
 }
 
 void DfuService::DfuImage::Init(size_t chunkSize, size_t totalSize, uint16_t expectedCrc) {
-  if(chunkSize != 20) return;
+  if (chunkSize != 20)
+    return;
   this->chunkSize = chunkSize;
   this->totalSize = totalSize;
   this->expectedCrc = expectedCrc;
   this->ready = true;
 }
 
-void DfuService::DfuImage::Append(uint8_t *data, size_t size) {
-  if(!ready) return;
+void DfuService::DfuImage::Append(uint8_t* data, size_t size) {
+  if (!ready)
+    return;
   ASSERT(size <= 20);
 
   std::memcpy(tempBuffer + bufferWriteIndex, data, size);
   bufferWriteIndex += size;
 
-  if(bufferWriteIndex == bufferSize) {
+  if (bufferWriteIndex == bufferSize) {
     spiNorFlash.Write(writeOffset + totalWriteIndex, tempBuffer, bufferWriteIndex);
     totalWriteIndex += bufferWriteIndex;
     bufferWriteIndex = 0;
   }
 
-  if(bufferWriteIndex > 0 && totalWriteIndex + bufferWriteIndex == totalSize) {
+  if (bufferWriteIndex > 0 && totalWriteIndex + bufferWriteIndex == totalSize) {
     spiNorFlash.Write(writeOffset + totalWriteIndex, tempBuffer, bufferWriteIndex);
     totalWriteIndex += bufferWriteIndex;
     if (totalSize < maxSize)
@@ -383,15 +375,16 @@ void DfuService::DfuImage::Append(uint8_t *data, size_t size) {
 }
 
 void DfuService::DfuImage::WriteMagicNumber() {
-  uint32_t magic[4] = { // TODO When this variable is a static constexpr, the values written to the memory are not correct. Why?
-          0xf395c277,
-          0x7fefd260,
-          0x0f505235,
-          0x8079b62c,
+  uint32_t magic[4] = {
+    // TODO When this variable is a static constexpr, the values written to the memory are not correct. Why?
+    0xf395c277,
+    0x7fefd260,
+    0x0f505235,
+    0x8079b62c,
   };
 
   uint32_t offset = writeOffset + (maxSize - (4 * sizeof(uint32_t)));
-  spiNorFlash.Write(offset, reinterpret_cast<const uint8_t *>(magic), 4 * sizeof(uint32_t));
+  spiNorFlash.Write(offset, reinterpret_cast<const uint8_t*>(magic), 4 * sizeof(uint32_t));
 }
 
 void DfuService::DfuImage::Erase() {
@@ -421,7 +414,7 @@ bool DfuService::DfuImage::Validate() {
   return (crc == expectedCrc);
 }
 
-uint16_t DfuService::DfuImage::ComputeCrc(uint8_t const *p_data, uint32_t size, uint16_t const *p_crc) {
+uint16_t DfuService::DfuImage::ComputeCrc(uint8_t const* p_data, uint32_t size, uint16_t const* p_crc) {
   uint16_t crc = (p_crc == NULL) ? 0xFFFF : *p_crc;
 
   for (uint32_t i = 0; i < size; i++) {
@@ -436,6 +429,7 @@ uint16_t DfuService::DfuImage::ComputeCrc(uint8_t const *p_data, uint32_t size, 
 }
 
 bool DfuService::DfuImage::IsComplete() {
-  if(!ready) return false;
+  if (!ready)
+    return false;
   return totalWriteIndex == totalSize;
 }

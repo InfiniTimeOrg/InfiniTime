@@ -25,5 +25,3 @@ void Ble::FirmwareUpdateTotalBytes(uint32_t totalBytes) {
 void Ble::FirmwareUpdateCurrentBytes(uint32_t currentBytes) {
   firmwareUpdateCurrentBytes = currentBytes;
 }
-
-

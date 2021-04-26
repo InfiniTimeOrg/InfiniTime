@@ -12,24 +12,24 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class ApplicationList : public Screen {
-        public:
-          explicit ApplicationList(DisplayApp* app,
-            Pinetime::Controllers::Settings &settingsController,
-            Pinetime::Controllers::Battery& batteryController,
-            Controllers::DateTime& dateTimeController);
-          ~ApplicationList() override;
-          bool Refresh() override;
-          bool OnTouchEvent(TouchEvents event) override;
-        private:
+      public:
+        explicit ApplicationList(DisplayApp* app,
+                                 Pinetime::Controllers::Settings& settingsController,
+                                 Pinetime::Controllers::Battery& batteryController,
+                                 Controllers::DateTime& dateTimeController);
+        ~ApplicationList() override;
+        bool Refresh() override;
+        bool OnTouchEvent(TouchEvents event) override;
 
-          Controllers::Settings& settingsController;
-          Pinetime::Controllers::Battery& batteryController;
-          Controllers::DateTime& dateTimeController;
+      private:
+        Controllers::Settings& settingsController;
+        Pinetime::Controllers::Battery& batteryController;
+        Controllers::DateTime& dateTimeController;
 
-          ScreenList<2> screens;
-          std::unique_ptr<Screen> CreateScreen1();
-          std::unique_ptr<Screen> CreateScreen2();
-          //std::unique_ptr<Screen> CreateScreen3();
+        ScreenList<2> screens;
+        std::unique_ptr<Screen> CreateScreen1();
+        std::unique_ptr<Screen> CreateScreen2();
+        // std::unique_ptr<Screen> CreateScreen3();
       };
     }
   }

@@ -5,7 +5,7 @@ namespace Pinetime {
     /// Direct Form II Biquad Filter
     class Biquad {
     public:
-      Biquad(float b0, float  b1, float b2, float a1, float a2);
+      Biquad(float b0, float b1, float b2, float a1, float a2);
       float Step(float x);
 
     private:

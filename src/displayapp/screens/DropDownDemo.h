@@ -9,18 +9,18 @@ namespace Pinetime {
     namespace Screens {
 
       class DropDownDemo : public Screen {
-        public:
-          DropDownDemo(DisplayApp* app);
-          ~DropDownDemo() override;
+      public:
+        DropDownDemo(DisplayApp* app);
+        ~DropDownDemo() override;
 
-          bool Refresh() override;
-          
-          bool OnTouchEvent(TouchEvents event) override;
+        bool Refresh() override;
 
-        private:
-          lv_obj_t * ddlist;
-          
-          bool isDropDownOpened = false;
+        bool OnTouchEvent(TouchEvents event) override;
+
+      private:
+        lv_obj_t* ddlist;
+
+        bool isDropDownOpened = false;
       };
     }
   }

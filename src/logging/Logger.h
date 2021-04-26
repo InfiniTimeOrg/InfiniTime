@@ -3,9 +3,9 @@
 namespace Pinetime {
   namespace Logging {
     class Logger {
-      public:
-        virtual void Init() = 0;
-        virtual void Resume() = 0;
+    public:
+      virtual void Init() = 0;
+      virtual void Resume() = 0;
     };
   }
 }

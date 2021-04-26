@@ -10,29 +10,28 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class FirmwareUpdate : public Screen{
-        public:
-          FirmwareUpdate(DisplayApp* app, Pinetime::Controllers::Ble& bleController);
-          ~FirmwareUpdate() override;
+      class FirmwareUpdate : public Screen {
+      public:
+        FirmwareUpdate(DisplayApp* app, Pinetime::Controllers::Ble& bleController);
+        ~FirmwareUpdate() override;
 
-          bool Refresh() override;
-          
+        bool Refresh() override;
 
-        private:
-          enum class States { Idle, Running, Validated, Error };
-          Pinetime::Controllers::Ble& bleController;
-          lv_obj_t* bar1;
-          lv_obj_t* percentLabel;
-          lv_obj_t* titleLabel;
-          mutable char percentStr[10];
-          
-          States state;
+      private:
+        enum class States { Idle, Running, Validated, Error };
+        Pinetime::Controllers::Ble& bleController;
+        lv_obj_t* bar1;
+        lv_obj_t* percentLabel;
+        lv_obj_t* titleLabel;
+        mutable char percentStr[10];
 
-          bool DisplayProgression() const;
+        States state;
 
-          void UpdateValidated();
+        bool DisplayProgression() const;
 
-          void UpdateError();
+        void UpdateValidated();
+
+        void UpdateError();
       };
     }
   }

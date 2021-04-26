@@ -10,17 +10,16 @@
 using namespace Pinetime::Controllers;
 
 /** Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/ppg.py */
-Ptagc::Ptagc(float start, float decay, float threshold) : peak{start}, decay{decay}, boost{1.0f/decay}, threshold{threshold} {
-
+Ptagc::Ptagc(float start, float decay, float threshold) : peak {start}, decay {decay}, boost {1.0f / decay}, threshold {threshold} {
 }
 
 float Ptagc::Step(float spl) {
-  if(std::abs(spl) > peak)
+  if (std::abs(spl) > peak)
     peak *= boost;
   else
     peak *= decay;
 
-  if((spl > (peak * threshold)) || (spl < (peak * -threshold)))
+  if ((spl > (peak * threshold)) || (spl < (peak * -threshold)))
     return 0.0f;
 
   spl = 100.0f * spl / (2.0f * peak);

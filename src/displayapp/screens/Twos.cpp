@@ -8,7 +8,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Twos::Twos(Pinetime::Applications::DisplayApp *app) : Screen(app) {
+Twos::Twos(Pinetime::Applications::DisplayApp* app) : Screen(app) {
 
   // create styles to apply to different valued tiles
   lv_style_init(&style_cell1);
@@ -50,8 +50,8 @@ Twos::Twos(Pinetime::Applications::DisplayApp *app) : Screen(app) {
   lv_style_set_pad_top(&style_cell5, LV_STATE_DEFAULT, 25);
 
   // format grid display
-  
-  gridDisplay = lv_table_create(lv_scr_act(), nullptr);  
+
+  gridDisplay = lv_table_create(lv_scr_act(), nullptr);
   lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL1, &style_cell1);
   lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL2, &style_cell2);
   lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL3, &style_cell3);
@@ -59,17 +59,17 @@ Twos::Twos(Pinetime::Applications::DisplayApp *app) : Screen(app) {
   lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL4 + 1, &style_cell5);
   lv_table_set_col_cnt(gridDisplay, 4);
   lv_table_set_row_cnt(gridDisplay, 4);
-  lv_table_set_col_width(gridDisplay, 0, LV_HOR_RES/4);
-  lv_table_set_col_width(gridDisplay, 1, LV_HOR_RES/4);
-  lv_table_set_col_width(gridDisplay, 2, LV_HOR_RES/4);
-  lv_table_set_col_width(gridDisplay, 3, LV_HOR_RES/4);
+  lv_table_set_col_width(gridDisplay, 0, LV_HOR_RES / 4);
+  lv_table_set_col_width(gridDisplay, 1, LV_HOR_RES / 4);
+  lv_table_set_col_width(gridDisplay, 2, LV_HOR_RES / 4);
+  lv_table_set_col_width(gridDisplay, 3, LV_HOR_RES / 4);
   lv_obj_align(gridDisplay, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   lv_obj_clean_style_list(gridDisplay, LV_TABLE_PART_BG);
 
   // initialize grid
-  for(int row = 0; row < 4; row++) {
-    for(int col = 0; col < 4; col++) {
+  for (int row = 0; row < 4; row++) {
+    for (int col = 0; col < 4; col++) {
       grid[row][col].value = 0;
       lv_table_set_cell_type(gridDisplay, row, col, 1);
       lv_table_set_cell_align(gridDisplay, row, col, LV_LABEL_ALIGN_CENTER);
@@ -86,7 +86,7 @@ Twos::Twos(Pinetime::Applications::DisplayApp *app) : Screen(app) {
   lv_label_set_recolor(scoreText, true);
   lv_label_set_text_fmt(scoreText, "Score #FFFF00 %i#", score);
 
-  lv_obj_t * backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
@@ -107,10 +107,10 @@ bool Twos::Refresh() {
 }
 
 bool Twos::placeNewTile() {
-  std::vector< std::pair <int,int> > availableCells; 
-  for(int row = 0; row < 4; row++) {
-    for(int col = 0; col < 4; col++) {
-      if(!grid[row][col].value) {
+  std::vector<std::pair<int, int>> availableCells;
+  for (int row = 0; row < 4; row++) {
+    for (int col = 0; col < 4; col++) {
+      if (!grid[row][col].value) {
         availableCells.push_back(std::make_pair(row, col));
       }
     }
@@ -119,22 +119,24 @@ bool Twos::placeNewTile() {
   if (availableCells.size() == 0) {
     return false; // game lost
   }
-  
+
   auto it = availableCells.cbegin();
   int random = rand() % availableCells.size();
   std::advance(it, random);
-  std::pair <int,int> newCell = *it;
+  std::pair<int, int> newCell = *it;
 
-  if ((rand() % 100) < 90) grid[newCell.first][newCell.second].value = 2;
-  else grid[newCell.first][newCell.second].value = 4;
+  if ((rand() % 100) < 90)
+    grid[newCell.first][newCell.second].value = 2;
+  else
+    grid[newCell.first][newCell.second].value = 4;
   updateGridDisplay(grid);
   return true;
 }
 
-bool Twos::tryMerge(Tile grid[][4], int &newRow, int &newCol, int oldRow, int oldCol) {
-  if((grid[newRow][newCol].value == grid[oldRow][oldCol].value)) {
-    if((newCol != oldCol) || (newRow != oldRow)) {
-      if(!grid[newRow][newCol].merged) {
+bool Twos::tryMerge(Tile grid[][4], int& newRow, int& newCol, int oldRow, int oldCol) {
+  if ((grid[newRow][newCol].value == grid[oldRow][oldCol].value)) {
+    if ((newCol != oldCol) || (newRow != oldRow)) {
+      if (!grid[newRow][newCol].merged) {
         unsigned int newVal = grid[oldRow][oldCol].value *= 2;
         grid[newRow][newCol].value = newVal;
         score += newVal;
@@ -149,7 +151,7 @@ bool Twos::tryMerge(Tile grid[][4], int &newRow, int &newCol, int oldRow, int ol
 }
 
 bool Twos::tryMove(Tile grid[][4], int newRow, int newCol, int oldRow, int oldCol) {
-  if(((newCol >= 0) && (newCol != oldCol)) || ((newRow >= 0) && (newRow != oldRow))) {
+  if (((newCol >= 0) && (newCol != oldCol)) || ((newRow >= 0) && (newRow != oldRow))) {
     grid[newRow][newCol].value = grid[oldRow][oldCol].value;
     grid[oldRow][oldCol].value = 0;
     return true;
@@ -159,27 +161,28 @@ bool Twos::tryMove(Tile grid[][4], int newRow, int newCol, int oldRow, int oldCo
 
 bool Twos::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   bool validMove = false;
-  for(int row = 0; row < 4; row++) {
-    for(int col = 0; col < 4; col++) {
+  for (int row = 0; row < 4; row++) {
+    for (int col = 0; col < 4; col++) {
       grid[row][col].merged = false; // reinitialize merge state
     }
   }
-  switch(event) {
+  switch (event) {
     case TouchEvents::SwipeLeft:
-      for(int col = 1; col < 4; col++) { // ignore tiles already on far left
-        for(int row = 0; row < 4; row++) {
-          if(grid[row][col].value) {
+      for (int col = 1; col < 4; col++) { // ignore tiles already on far left
+        for (int row = 0; row < 4; row++) {
+          if (grid[row][col].value) {
             int newCol = -1;
-            for(int potentialNewCol = col - 1; potentialNewCol >= 0; potentialNewCol--) {
-              if(!grid[row][potentialNewCol].value) {
+            for (int potentialNewCol = col - 1; potentialNewCol >= 0; potentialNewCol--) {
+              if (!grid[row][potentialNewCol].value) {
                 newCol = potentialNewCol;
-              }
-              else { // blocked by another tile
-                if(tryMerge(grid, row, potentialNewCol, row, col)) validMove = true;
+              } else { // blocked by another tile
+                if (tryMerge(grid, row, potentialNewCol, row, col))
+                  validMove = true;
                 break;
               }
             }
-            if(tryMove(grid, row, newCol, row, col)) validMove = true;
+            if (tryMove(grid, row, newCol, row, col))
+              validMove = true;
           }
         }
       }
@@ -188,20 +191,21 @@ bool Twos::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       }
       return true;
     case TouchEvents::SwipeRight:
-      for(int col = 2; col >= 0; col--) { // ignore tiles already on far right
-        for(int row = 0; row < 4; row++) {
-          if(grid[row][col].value) {
+      for (int col = 2; col >= 0; col--) { // ignore tiles already on far right
+        for (int row = 0; row < 4; row++) {
+          if (grid[row][col].value) {
             int newCol = -1;
-            for(int potentialNewCol = col + 1; potentialNewCol < 4; potentialNewCol++) {
-              if(!grid[row][potentialNewCol].value) {
+            for (int potentialNewCol = col + 1; potentialNewCol < 4; potentialNewCol++) {
+              if (!grid[row][potentialNewCol].value) {
                 newCol = potentialNewCol;
-              }
-              else { // blocked by another tile
-                if(tryMerge(grid, row, potentialNewCol, row, col)) validMove = true;
+              } else { // blocked by another tile
+                if (tryMerge(grid, row, potentialNewCol, row, col))
+                  validMove = true;
                 break;
               }
             }
-            if(tryMove(grid, row, newCol, row, col)) validMove = true;
+            if (tryMove(grid, row, newCol, row, col))
+              validMove = true;
           }
         }
       }
@@ -210,20 +214,21 @@ bool Twos::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       }
       return true;
     case TouchEvents::SwipeUp:
-      for(int row = 1; row < 4; row++) { // ignore tiles already on top
-        for(int col = 0; col < 4; col++) {
-          if(grid[row][col].value) {
+      for (int row = 1; row < 4; row++) { // ignore tiles already on top
+        for (int col = 0; col < 4; col++) {
+          if (grid[row][col].value) {
             int newRow = -1;
-            for(int potentialNewRow = row - 1; potentialNewRow >= 0; potentialNewRow--) {
-              if(!grid[potentialNewRow][col].value) {
+            for (int potentialNewRow = row - 1; potentialNewRow >= 0; potentialNewRow--) {
+              if (!grid[potentialNewRow][col].value) {
                 newRow = potentialNewRow;
-              }
-              else { // blocked by another tile
-                if(tryMerge(grid, potentialNewRow, col, row, col)) validMove = true;
+              } else { // blocked by another tile
+                if (tryMerge(grid, potentialNewRow, col, row, col))
+                  validMove = true;
                 break;
               }
             }
-            if(tryMove(grid, newRow, col, row, col)) validMove = true;
+            if (tryMove(grid, newRow, col, row, col))
+              validMove = true;
           }
         }
       }
@@ -232,20 +237,21 @@ bool Twos::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       }
       return true;
     case TouchEvents::SwipeDown:
-      for(int row = 2; row >=0; row--) { // ignore tiles already on bottom
-        for(int col = 0; col < 4; col++) {
-          if(grid[row][col].value) {
+      for (int row = 2; row >= 0; row--) { // ignore tiles already on bottom
+        for (int col = 0; col < 4; col++) {
+          if (grid[row][col].value) {
             int newRow = -1;
-            for(int potentialNewRow = row + 1; potentialNewRow < 4; potentialNewRow++) {         
-              if(!grid[potentialNewRow][col].value) {
+            for (int potentialNewRow = row + 1; potentialNewRow < 4; potentialNewRow++) {
+              if (!grid[potentialNewRow][col].value) {
                 newRow = potentialNewRow;
-              }
-              else { // blocked by another tile
-                if(tryMerge(grid, potentialNewRow, col, row, col)) validMove = true;
+              } else { // blocked by another tile
+                if (tryMerge(grid, potentialNewRow, col, row, col))
+                  validMove = true;
                 break;
               }
             }
-            if(tryMove(grid, newRow, col, row, col)) validMove = true;
+            if (tryMove(grid, newRow, col, row, col))
+              validMove = true;
           }
         }
       }
@@ -260,12 +266,11 @@ bool Twos::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 void Twos::updateGridDisplay(Tile grid[][4]) {
-  for(int row = 0; row < 4; row++) {
-    for(int col = 0; col < 4; col++) {
+  for (int row = 0; row < 4; row++) {
+    for (int col = 0; col < 4; col++) {
       if (grid[row][col].value) {
         lv_table_set_cell_value(gridDisplay, row, col, (std::to_string(grid[row][col].value)).c_str());
-      }
-      else {
+      } else {
         lv_table_set_cell_value(gridDisplay, row, col, "");
       }
       switch (grid[row][col].value) {

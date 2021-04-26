@@ -24,7 +24,6 @@ namespace Pinetime {
       Ptagc agc;
       Biquad lpf;
 
-
       float ProcessHeartRate();
     };
   }

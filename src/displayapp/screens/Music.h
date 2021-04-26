@@ -31,44 +31,42 @@ namespace Pinetime {
     namespace Screens {
       class Music : public Screen {
       public:
-        Music(DisplayApp *app, Pinetime::Controllers::MusicService &music);
-        
+        Music(DisplayApp* app, Pinetime::Controllers::MusicService& music);
+
         ~Music() override;
-        
+
         bool Refresh() override;
-        
-        
-        
-        void OnObjectEvent(lv_obj_t *obj, lv_event_t event);
-      
+
+        void OnObjectEvent(lv_obj_t* obj, lv_event_t event);
+
       private:
         bool OnTouchEvent(TouchEvents event);
-        
+
         void UpdateLength();
-        
-        lv_obj_t *btnPrev;
-        lv_obj_t *btnPlayPause;
-        lv_obj_t *btnNext;
-        lv_obj_t *btnVolDown;
-        lv_obj_t *btnVolUp;
-        lv_obj_t *txtArtist;
-        lv_obj_t *txtTrack;
-        lv_obj_t *txtPlayPause;
-        
-        lv_obj_t *imgDisc;
-        lv_obj_t *imgDiscAnim;
-        lv_obj_t *txtTrackDuration;
-        
+
+        lv_obj_t* btnPrev;
+        lv_obj_t* btnPlayPause;
+        lv_obj_t* btnNext;
+        lv_obj_t* btnVolDown;
+        lv_obj_t* btnVolUp;
+        lv_obj_t* txtArtist;
+        lv_obj_t* txtTrack;
+        lv_obj_t* txtPlayPause;
+
+        lv_obj_t* imgDisc;
+        lv_obj_t* imgDiscAnim;
+        lv_obj_t* txtTrackDuration;
+
         /** For the spinning disc animation */
         bool frameB;
-        
+
         bool displayVolumeButtons = false;
-        Pinetime::Controllers::MusicService &musicService;
-        
+        Pinetime::Controllers::MusicService& musicService;
+
         std::string artist;
         std::string album;
         std::string track;
-        
+
         /** Total length in seconds */
         int totalLength;
         /** Current length in seconds */
@@ -77,11 +75,10 @@ namespace Pinetime {
         int lastLength;
         /** Last time an animation update or timer was incremented */
         TickType_t lastIncrement = 0;
-        
+
         bool playing;
-        
+
         /** Watchapp */
-        
       };
     }
   }

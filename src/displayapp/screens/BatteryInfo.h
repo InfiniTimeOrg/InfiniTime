@@ -6,7 +6,6 @@
 #include "Screen.h"
 #include <lvgl/lvgl.h>
 
-
 namespace Pinetime {
   namespace Controllers {
     class Battery;
@@ -15,34 +14,30 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class BatteryInfo : public Screen{
-        public:
-          BatteryInfo(DisplayApp* app, 
-            Pinetime::Controllers::Battery& batteryController);
-          ~BatteryInfo() override;
+      class BatteryInfo : public Screen {
+      public:
+        BatteryInfo(DisplayApp* app, Pinetime::Controllers::Battery& batteryController);
+        ~BatteryInfo() override;
 
-          bool Refresh() override;
-          
+        bool Refresh() override;
 
-          void UpdateScreen();
-          void UpdateAnim();
+        void UpdateScreen();
+        void UpdateAnim();
 
-        private:          
+      private:
+        Pinetime::Controllers::Battery& batteryController;
 
-          Pinetime::Controllers::Battery& batteryController;
+        lv_obj_t* voltage;
+        lv_obj_t* percent;
+        lv_obj_t* charging_bar;
+        lv_obj_t* status;
 
-          lv_obj_t* voltage;
-          lv_obj_t* percent;
-          lv_obj_t* charging_bar;
-          lv_obj_t* status;
+        lv_task_t* taskUpdate;
+        lv_task_t* taskAnim;
 
-          lv_task_t* taskUpdate;
-          lv_task_t* taskAnim;
-
-          int8_t animation = 0;
-          int8_t batteryPercent = -1;
-          float batteryVoltage = 0.0f;
-
+        int8_t animation = 0;
+        int8_t batteryPercent = -1;
+        float batteryVoltage = 0.0f;
       };
     }
   }

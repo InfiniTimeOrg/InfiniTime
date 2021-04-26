@@ -41,7 +41,6 @@ namespace Pinetime {
 
       void WriteRegister(uint8_t reg, uint8_t data);
       uint8_t ReadRegister(uint8_t reg);
-
     };
   }
 }

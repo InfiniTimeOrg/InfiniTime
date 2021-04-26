@@ -10,20 +10,18 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class SettingWakeUp : public Screen{
-        public:
-          SettingWakeUp(DisplayApp* app, Pinetime::Controllers::Settings &settingsController);
-          ~SettingWakeUp() override;
+      class SettingWakeUp : public Screen {
+      public:
+        SettingWakeUp(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
+        ~SettingWakeUp() override;
 
-          bool Refresh() override;
-          void UpdateSelected(lv_obj_t *object, lv_event_t event);
-         
-        private:          
+        bool Refresh() override;
+        void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
-          Controllers::Settings& settingsController;
-          uint8_t optionsTotal;
-          lv_obj_t * cbOption[4];
-          
+      private:
+        Controllers::Settings& settingsController;
+        uint8_t optionsTotal;
+        lv_obj_t* cbOption[4];
       };
     }
   }

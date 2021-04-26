@@ -75,7 +75,7 @@ As of now, here is the list of achievements of this project:
  - [Flash, upgrade (OTA), time synchronization,...](doc/gettingStarted/gettingStarted.md)
 
 ### Develop
- - [Generate the fonts and symbols](src/displayapp/fonts/Readme.md)
+ - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
  - [Creating a stopwatch in Pinetime(article)](https://pankajraghav.com/2021/04/03/PINETIME-STOPCLOCK.html)
 
 ### Build, flash and debug

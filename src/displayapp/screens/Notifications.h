@@ -14,19 +14,30 @@ namespace Pinetime {
     namespace Screens {
 
       class Notifications : public Screen {
-        public:
-          enum class Modes {Normal, Preview};
-          explicit Notifications(DisplayApp* app, Pinetime::Controllers::NotificationManager& notificationManager, Pinetime::Controllers::AlertNotificationService& alertNotificationService, Modes mode);
-          ~Notifications() override;
+      public:
+        enum class Modes { Normal, Preview };
+        explicit Notifications(DisplayApp* app,
+                               Pinetime::Controllers::NotificationManager& notificationManager,
+                               Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                               Modes mode);
+        ~Notifications() override;
 
-          bool Refresh() override;
-          bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
+        bool Refresh() override;
+        bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
         class NotificationItem {
         public:
-          NotificationItem(const char* title, const char* msg, uint8_t notifNr, Controllers::NotificationManager::Categories, uint8_t notifNb, Modes mode, Pinetime::Controllers::AlertNotificationService& alertNotificationService);
+          NotificationItem(const char* title,
+                           const char* msg,
+                           uint8_t notifNr,
+                           Controllers::NotificationManager::Categories,
+                           uint8_t notifNb,
+                           Modes mode,
+                           Pinetime::Controllers::AlertNotificationService& alertNotificationService);
           ~NotificationItem();
-          bool Refresh() {return false;}
+          bool Refresh() {
+            return false;
+          }
           void OnAcceptIncomingCall(lv_event_t event);
           void OnMuteIncomingCall(lv_event_t event);
           void OnRejectIncomingCall(lv_event_t event);
@@ -49,28 +60,24 @@ namespace Pinetime {
           lv_obj_t* bottomPlaceholder;
           Modes mode;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
-
-
         };
 
-        private:
-          
+      private:
+        struct NotificationData {
+          const char* title;
+          const char* text;
+        };
+        Pinetime::Controllers::NotificationManager& notificationManager;
+        Pinetime::Controllers::AlertNotificationService& alertNotificationService;
+        Modes mode = Modes::Normal;
+        std::unique_ptr<NotificationItem> currentItem;
+        Controllers::NotificationManager::Notification::Id currentId;
+        bool validDisplay = false;
 
-          struct NotificationData {
-            const char* title;
-            const char* text;
-          };
-          Pinetime::Controllers::NotificationManager& notificationManager;
-          Pinetime::Controllers::AlertNotificationService& alertNotificationService;
-          Modes mode = Modes::Normal;
-          std::unique_ptr<NotificationItem> currentItem;
-          Controllers::NotificationManager::Notification::Id currentId;
-          bool validDisplay = false;
-
-          lv_point_t timeoutLinePoints[2]  { {0, 1}, {239, 1} };
-          lv_obj_t* timeoutLine;
-          uint32_t timeoutTickCountStart;
-          uint32_t timeoutTickCountEnd;
+        lv_point_t timeoutLinePoints[2] {{0, 1}, {239, 1}};
+        lv_obj_t* timeoutLine;
+        uint32_t timeoutTickCountStart;
+        uint32_t timeoutTickCountEnd;
       };
     }
   }

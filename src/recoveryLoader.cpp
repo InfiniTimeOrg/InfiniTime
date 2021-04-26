@@ -19,12 +19,11 @@
 #include "displayapp/icons/infinitime/infinitime-nb.c"
 #include "components/rle/RleDecoder.h"
 
-
 #if NRF_LOG_ENABLED
-#include "logging/NrfLogger.h"
+  #include "logging/NrfLogger.h"
 Pinetime::Logging::NrfLogger logger;
 #else
-#include "logging/DummyLogger.h"
+  #include "logging/DummyLogger.h"
 Pinetime::Logging::DummyLogger logger;
 #endif
 
@@ -42,22 +41,20 @@ static constexpr uint8_t bytesPerPixel = 2;
 static constexpr uint16_t colorWhite = 0xFFFF;
 static constexpr uint16_t colorGreen = 0xE007;
 
-Pinetime::Drivers::SpiMaster spi{Pinetime::Drivers::SpiMaster::SpiModule::SPI0, {
-    Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
-    Pinetime::Drivers::SpiMaster::Modes::Mode3,
-    Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
-    pinSpiSck,
-    pinSpiMosi,
-    pinSpiMiso
-}
-};
-Pinetime::Drivers::Spi flashSpi{spi, pinSpiFlashCsn};
-Pinetime::Drivers::SpiNorFlash spiNorFlash{flashSpi};
+Pinetime::Drivers::SpiMaster spi {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,
+                                  {Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
+                                   Pinetime::Drivers::SpiMaster::Modes::Mode3,
+                                   Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
+                                   pinSpiSck,
+                                   pinSpiMosi,
+                                   pinSpiMiso}};
+Pinetime::Drivers::Spi flashSpi {spi, pinSpiFlashCsn};
+Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
 
 Pinetime::Drivers::Spi lcdSpi {spi, pinLcdCsn};
 Pinetime::Drivers::St7789 lcd {lcdSpi, pinLcdDataCommand};
 
-Pinetime::Components::Gfx gfx{lcd};
+Pinetime::Components::Gfx gfx {lcd};
 Pinetime::Controllers::BrightnessController brightnessController;
 
 void DisplayProgressBar(uint8_t percent, uint16_t color);
@@ -66,21 +63,20 @@ void DisplayLogo();
 
 extern "C" {
 void vApplicationIdleHook(void) {
-
 }
 
 void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
-  if(((NRF_SPIM0->INTENSET & (1<<6)) != 0) && NRF_SPIM0->EVENTS_END == 1) {
+  if (((NRF_SPIM0->INTENSET & (1 << 6)) != 0) && NRF_SPIM0->EVENTS_END == 1) {
     NRF_SPIM0->EVENTS_END = 0;
     spi.OnEndEvent();
   }
 
-  if(((NRF_SPIM0->INTENSET & (1<<19)) != 0) && NRF_SPIM0->EVENTS_STARTED == 1) {
+  if (((NRF_SPIM0->INTENSET & (1 << 19)) != 0) && NRF_SPIM0->EVENTS_STARTED == 1) {
     NRF_SPIM0->EVENTS_STARTED = 0;
     spi.OnStartedEvent();
   }
 
-  if(((NRF_SPIM0->INTENSET & (1<<1)) != 0) && NRF_SPIM0->EVENTS_STOPPED == 1) {
+  if (((NRF_SPIM0->INTENSET & (1 << 1)) != 0) && NRF_SPIM0->EVENTS_STOPPED == 1) {
     NRF_SPIM0->EVENTS_STOPPED = 0;
   }
 }
@@ -115,7 +111,7 @@ void Process(void* instance) {
   NRF_LOG_INFO("Writing factory image...");
   static constexpr uint32_t memoryChunkSize = 200;
   uint8_t writeBuffer[memoryChunkSize];
-  for(size_t offset = 0; offset < sizeof(recoveryImage); offset+=memoryChunkSize) {
+  for (size_t offset = 0; offset < sizeof(recoveryImage); offset += memoryChunkSize) {
     std::memcpy(writeBuffer, &recoveryImage[offset], memoryChunkSize);
     spiNorFlash.Write(offset, writeBuffer, memoryChunkSize);
     DisplayProgressBar((static_cast<float>(offset) / static_cast<float>(sizeof(recoveryImage))) * 100.0f, colorWhite);
@@ -124,27 +120,27 @@ void Process(void* instance) {
   NRF_LOG_INFO("Writing factory image done!");
   DisplayProgressBar(100.0f, colorGreen);
 
-  while(1) {
-    asm("nop" );
+  while (1) {
+    asm("nop");
   }
 }
 
 void DisplayLogo() {
   Pinetime::Tools::RleDecoder rleDecoder(infinitime_nb, sizeof(infinitime_nb));
-  for(int i = 0; i < displayWidth; i++) {
+  for (int i = 0; i < displayWidth; i++) {
     rleDecoder.DecodeNext(displayBuffer, displayWidth * bytesPerPixel);
     ulTaskNotifyTake(pdTRUE, 500);
-    lcd.DrawBuffer(0, i, displayWidth, 1, reinterpret_cast<const uint8_t *>(displayBuffer), displayWidth * bytesPerPixel);
+    lcd.DrawBuffer(0, i, displayWidth, 1, reinterpret_cast<const uint8_t*>(displayBuffer), displayWidth * bytesPerPixel);
   }
 }
 
 void DisplayProgressBar(uint8_t percent, uint16_t color) {
   static constexpr uint8_t barHeight = 20;
-  std::fill(displayBuffer, displayBuffer+(displayWidth * bytesPerPixel), color);
-  for(int i = 0; i < barHeight; i++) {
+  std::fill(displayBuffer, displayBuffer + (displayWidth * bytesPerPixel), color);
+  for (int i = 0; i < barHeight; i++) {
     ulTaskNotifyTake(pdTRUE, 500);
     uint16_t barWidth = std::min(static_cast<float>(percent) * 2.4f, static_cast<float>(displayWidth));
-    lcd.DrawBuffer(0, displayWidth - barHeight + i, barWidth, 1, reinterpret_cast<const uint8_t *>(displayBuffer), barWidth * bytesPerPixel);
+    lcd.DrawBuffer(0, displayWidth - barHeight + i, barWidth, 1, reinterpret_cast<const uint8_t*>(displayBuffer), barWidth * bytesPerPixel);
   }
 }
 
