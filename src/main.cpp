@@ -106,6 +106,7 @@ Pinetime::Controllers::Ble bleController;
 void ble_manager_set_ble_connection_callback(void (*connection)());
 void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
+static constexpr uint8_t pinPowerPresentIrq = 19;
 std::unique_ptr<Pinetime::System::SystemTask> systemTask;
 
 Pinetime::Controllers::Settings settingsController {spiNorFlash};
@@ -116,6 +117,10 @@ void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action
   if (pin == pinTouchIrq) {
     systemTask->OnTouchEvent();
     return;
+  }
+  if(pin == pinPowerPresentIrq and action == NRF_GPIOTE_POLARITY_TOGGLE) {
+      systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnChargingEvent);
+      return ;
   }
 
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;

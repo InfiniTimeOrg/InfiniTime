@@ -55,7 +55,8 @@ namespace Pinetime {
         OnDisplayTaskSleeping,
         EnableSleeping,
         DisableSleeping,
-        OnNewDay
+        OnNewDay,
+        OnChargingEvent
       };
 
       SystemTask(Drivers::SpiMaster& spi,
@@ -121,6 +122,7 @@ namespace Pinetime {
       static constexpr uint8_t pinLcdDataCommand = 18;
       static constexpr uint8_t pinButton = 13;
       static constexpr uint8_t pinTouchIrq = 28;
+      static constexpr uint8_t pinPowerPresentIrq = 19;
 
       static void Process(void* instance);
       void Work();

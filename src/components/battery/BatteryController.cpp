@@ -15,7 +15,6 @@ Battery::Battery() {
 
 void Battery::Init() {
   nrf_gpio_cfg_input(chargingPin, (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pullup);
-  nrf_gpio_cfg_input(powerPresentPin, (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pullup);
 }
 
 void Battery::Update() {
