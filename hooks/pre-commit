@@ -1,13 +1,19 @@
 #!/bin/bash
+if clang-format --version | grep -q 'version 11\.'; then
+   CLANG_FORMAT_EXECUTABLE="clang-format"
+else
+   CLANG_FORMAT_EXECUTABLE="clang-format-11"
+fi
+
 for FILE in $(git diff --cached --name-only)
 do
 	if [[ "$FILE" =~ src/[A-Za-z0-9\ \-]+*\.(c|h|cpp|cc)$ ]]; then
-		echo Autoformatting $FILE with clang-format
-		clang-format-11 -style=file -i -- $FILE
+		echo Autoformatting $FILE with $CLANG_FORMAT_EXECUTABLE
+		$CLANG_FORMAT_EXECUTABLE -style=file -i -- $FILE
 		git add -- $FILE
 	elif [[ "$FILE" =~ src/(components|displayapp|drivers|heartratetask|logging|systemtask)/.*\.(c|h|cpp|cc)$ ]]; then
-		echo Autoformatting $FILE with clang-format
-		clang-format-11 -style=file -i -- $FILE
+		echo Autoformatting $FILE with $CLANG_FORMAT_EXECUTABLE
+		$CLANG_FORMAT_EXECUTABLE -style=file -i -- $FILE
 		git add -- $FILE
 	fi
 done
