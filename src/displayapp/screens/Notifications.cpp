@@ -123,6 +123,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       }
 
       notificationManager.Pop(currentId);
+      nextNotification = notificationManager.Refresh(nextNotification.id);
 
       if (nextNotification.valid) {
         currentId = nextNotification.id;
@@ -214,7 +215,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
   lv_obj_t* alert_count = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
+  lv_label_set_text_fmt(alert_count, "%i/%i", notifNb - notifNr + 1, notifNb);
   lv_obj_align(alert_count, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
 
   lv_obj_t* alert_type = lv_label_create(lv_scr_act(), nullptr);

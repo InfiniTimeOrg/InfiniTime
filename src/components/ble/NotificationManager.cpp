@@ -44,26 +44,28 @@ void NotificationManager::Pop(Notification::Id id) {
     readIndex = 0;
     writeIndex = 0;
     ClearNewNotificationFlag();
-    return;
   }
 }
 
 void NotificationManager::Push(NotificationManager::Notification&& notif) {
   notif.id = GetNextId();
   notif.valid = true;
-  notifications[writeIndex] = std::move(notif);
+  auto prevWriteIndex = writeIndex;
   writeIndex = (writeIndex + 1 < TotalNbNotifications) ? writeIndex + 1 : 0;
-  if (!empty)
+  if (!empty) {
+    notif.index = notifications[readIndex].index + 1;
     readIndex = (readIndex + 1 < TotalNbNotifications) ? readIndex + 1 : 0;
-  else
+  } else {
+    notif.index = 1;
     empty = false;
+  }
 
+  notifications[prevWriteIndex] = std::move(notif);
   newNotification = true;
 }
 
 NotificationManager::Notification NotificationManager::GetLastNotification() {
   NotificationManager::Notification notification = notifications[readIndex];
-  notification.index = 1;
   return notification;
 }
 
@@ -78,8 +80,6 @@ NotificationManager::Notification NotificationManager::GetNext(NotificationManag
   if (currentIterator == notifications.end() || currentIterator->id != id)
     return Notification {};
 
-  auto& lastNotification = notifications[readIndex];
-
   NotificationManager::Notification result;
 
   if (currentIterator == (notifications.end() - 1))
@@ -90,7 +90,6 @@ NotificationManager::Notification NotificationManager::GetNext(NotificationManag
   if (result.id <= id)
     return {};
 
-  result.index = (lastNotification.id - result.id) + 1;
   return result;
 }
 
@@ -100,8 +99,6 @@ NotificationManager::Notification NotificationManager::GetPrevious(NotificationM
   });
   if (currentIterator == notifications.end() || currentIterator->id != id)
     return Notification {};
-
-  auto& lastNotification = notifications[readIndex];
 
   NotificationManager::Notification result;
 
@@ -113,7 +110,6 @@ NotificationManager::Notification NotificationManager::GetPrevious(NotificationM
   if (result.id >= id)
     return {};
 
-  result.index = (lastNotification.id - result.id) + 1;
   return result;
 }
 
@@ -154,4 +150,18 @@ const char* NotificationManager::Notification::Title() const {
     return message.data();
   }
   return {};
+}
+
+NotificationManager::Notification NotificationManager::Refresh(NotificationManager::Notification::Id id) {
+  auto currentIterator = std::find_if(notifications.begin(), notifications.end(), [id](const Notification& n) {
+    return n.valid && n.id == id;
+  });
+  if (currentIterator == notifications.end() || currentIterator->id != id) {
+    return Notification {};
+  }
+  NotificationManager::Notification result;
+
+  result = notifications[currentIterator - notifications.begin()];
+
+  return result;
 }
