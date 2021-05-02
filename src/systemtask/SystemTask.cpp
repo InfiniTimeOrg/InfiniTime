@@ -167,6 +167,10 @@ void SystemTask::Work() {
     uint8_t msg;
     if (xQueueReceive(systemTasksMsgQueue, &msg, 100)) {
 
+      batteryController.Update();
+      // the battery does not emit events when changing charge levels, so we piggyback
+      // on any system event to read and update the current values
+
       Messages message = static_cast<Messages>(msg);
       switch (message) {
         case Messages::EnableSleeping:
