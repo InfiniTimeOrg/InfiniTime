@@ -118,9 +118,9 @@ void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action
     systemTask->OnTouchEvent();
     return;
   }
-  if(pin == pinPowerPresentIrq and action == NRF_GPIOTE_POLARITY_TOGGLE) {
-      systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnChargingEvent);
-      return ;
+  if (pin == pinPowerPresentIrq and action == NRF_GPIOTE_POLARITY_TOGGLE) {
+    systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnChargingEvent);
+    return;
   }
 
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;

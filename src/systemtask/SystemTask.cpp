@@ -150,14 +150,10 @@ void SystemTask::Work() {
 
   nrf_gpio_cfg_sense_input(pinPowerPresentIrq, (nrf_gpio_pin_pull_t) NRF_GPIO_PIN_NOPULL, (nrf_gpio_pin_sense_t) GPIO_PIN_CNF_SENSE_Low);
 
-  pinConfig.sense = NRF_GPIOTE_POLARITY_TOGGLE,
-  pinConfig.pull = NRF_GPIO_PIN_NOPULL,
-  pinConfig.is_watcher = false,
-  pinConfig.hi_accuracy = false,
-  pinConfig.skip_gpio_setup = true,
+  pinConfig.sense = NRF_GPIOTE_POLARITY_TOGGLE, pinConfig.pull = NRF_GPIO_PIN_NOPULL, pinConfig.is_watcher = false,
+  pinConfig.hi_accuracy = false, pinConfig.skip_gpio_setup = true,
 
   nrfx_gpiote_in_init(pinPowerPresentIrq, &pinConfig, nrfx_gpiote_evt_handler);
-
 
   idleTimer = xTimerCreate("idleTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut()), pdFALSE, this, IdleTimerCallback);
   xTimerStart(idleTimer, 0);
@@ -277,7 +273,7 @@ void SystemTask::Work() {
           // Remember we'll have to reset the counter next time we're awake
           stepCounterMustBeReset = true;
           break;
-	case Messages::OnChargingEvent:
+        case Messages::OnChargingEvent:
           // call the battery controller or use the MSG in DisplayApp to get the battery status ???
           // it is necessary to validate which is the most efficient
           batteryController.Update();
