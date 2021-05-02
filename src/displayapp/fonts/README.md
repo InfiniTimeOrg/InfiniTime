@@ -22,10 +22,10 @@ Add new symbols:
   readme updated with newest range list)
 * Convert this hex value into a UTF-8 code
   using [this site](http://www.ltg.ed.ac.uk/~richard/utf-8.cgi?input=f185&mode=hex)
-* Define the new symbols in `src/DisplayApp/Screens/Symbols.h`:
+* Define the new symbols in `src/displayapp/screens/Symbols.h`:
 
 ```
-static constex char* newSymbol = "\xEF\x86\x85";
+static constexpr const char* newSymbol = "\xEF\x86\x85";
 ```
 
 #### Navigation font
