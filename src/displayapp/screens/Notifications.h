@@ -5,6 +5,7 @@
 #include <memory>
 #include "Screen.h"
 #include "components/ble/NotificationManager.h"
+#include "FreeRTOS.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -78,6 +79,7 @@ namespace Pinetime {
         lv_obj_t* timeoutLine;
         uint32_t timeoutTickCountStart;
         uint32_t timeoutTickCountEnd;
+        uint32_t last_gesture;
       };
     }
   }

@@ -38,6 +38,7 @@ namespace Pinetime {
       };
       Notification::Id nextId {0};
 
+      void Pop(Notification::Id id);
       void Push(Notification&& notif);
       Notification GetLastNotification();
       Notification GetNext(Notification::Id id);
