@@ -13,15 +13,32 @@ Pinetime is a cool open source project that deserves to be know. Talk about it a
 # How to submit a pull request ?
 Your contribution is more than welcome! 
 
-If you want to fix a bug, add a functionality or improve the code, you'll first need to create a branch from the **develop** branch (see [this page about the branching model](./branches.md)). This branch is called a feature branch, and you should choose a name that explains what you are working on (ex: "add-doc-about-contributions"). In this branch, try to focus on only one topic, bug or feature. For example, if you created this branch to work on the UI of a specific application, do not commit modifications about the SPI driver. If you want to work on multiple topics, create one branch per topic.
+If you want to fix a bug, add a functionality or improve the code, you'll first need to create a branch from the **develop** branch (see [this page about the branching model](./branches.md)). This branch is called a feature branch, and you should choose a name that explains what you are working on (ex: "add-doc-about-contributions"). In this branch, **focus on only one topic, bug or feature**. For example, if you created this branch to work on the UI of a specific application, do not commit modifications about the SPI driver. If you want to work on multiple topics, create one branch per topic.
 
-When your feature branch is ready, make sure it actually works and do not forget to write documentation about it if necessary.
+When your feature branch is ready, **make sure it actually works** and **do not forget to write documentation** about it if it's relevant.
 
-Then, you can submit a pull-request for review. Try to describe your pull request as much as possible: what did you do in this branch, how does it work, how is it designed, are there any limitations,... This will help the contributors to understand and review your code easily.
+I **strongly discourage to create a PR containing modifications that haven't been tested**. If, for any reason, you cannot test your modifications but want to publish them anyway, **please mention it in the description**. This way, other contributors might be willing to test it and provide feedbacks about your code.
+
+Also, before submitting your PR, check the coding style of your code against the **coding conventions** detailed below. This project also provides [clang-format](../.clang-format) and [clang-tidy](../.clang-tidy) configuration files. You can use them to ensure correct formatting of your code.
+
+Then, you can submit a pull-request for review. Try to **describe your pull request as much as possible**: what did you do in this branch, how does it work, how is it designed, are there any limitations,... This will help the contributors to understand and review your code easily. You can add pictures and video to the description so that contributors will have a quick overview of you work.
 
 Other contributors can post comments about the pull request, maybe ask for more info or adjustements in the code.
 
 Once the pull request is reviewed an accepted, it'll be merge in **develop** and will be released in the next release version of the firmware.
+
+## Why  all these rules?
+Reviewing pull-requests is a **very time consuming task** for the creator of this project ([JF002](https://github.com/JF002)) and for other contributors who take the time to review them. Every little thing you do to make their lifes easier will **increase the chances your PR will be merge quickly**.
+
+When reviewing PR, the author and contributors will first look at the **description**. If it's easy to understand what the PR does, why the modification is needed or interesting and how it's done, a good part of the work is already done : we understand the PR and its context.
+
+Then, reviewing **a few files that were modified for a single purpose** is a lot more easier than to review 30 files modified for many reasons (bug fix, UI improvements, typos in doc,...), even if all these changes make sense. Also, it's possible that we agree on some modification but not on some other, and we won't be able to merge the PR because of the changes that are not accepted.
+
+We do our best to keep the code as consistent as possible, and that mean we pay attention to the **formatting** of the code. If the code formatting is not consistent with our code base, we'll ask you to review it, which will take more time.
+
+The last step of the review consists in **testing** the modification. If it doesn't work out of the box, we'll ask your to review your code and to ensure that it works as expected.
+
+It's totally normal for a PR to need some more work even after it was created, that's why we review them. But every round trip takes time, and it's good practice to try to reduce them as much as possible by following those simple rules.
 
 # Coding convention
 ## Language
