@@ -73,9 +73,7 @@ namespace Pinetime {
         return nimbleController;
       };
 
-      bool IsSleeping() const {
-        return isSleeping;
-      }
+      std::atomic<bool> isSleeping {false};
 
     private:
       TaskHandle_t taskHandle;
@@ -93,7 +91,6 @@ namespace Pinetime {
       Pinetime::Controllers::DateTime& dateTimeController;
       Pinetime::Controllers::TimerController& timerController;
       QueueHandle_t systemTasksMsgQueue;
-      std::atomic<bool> isSleeping {false};
       std::atomic<bool> isGoingToSleep {false};
       std::atomic<bool> isWakingUp {false};
       Pinetime::Drivers::Watchdog& watchdog;
