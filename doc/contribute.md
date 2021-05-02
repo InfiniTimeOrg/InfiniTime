@@ -11,6 +11,18 @@ You want to fix a bug, add a cool new functionality or improve the code? See *Ho
 Pinetime is a cool open source project that deserves to be know. Talk about it around you, on social networks, on your blog,... and let people know that we are working on an open-source firmware for a smartwatch!
 
 # How to submit a pull request ?
+
+## TL;DR
+ - Create a branch from develop;
+ - Work on a single subject in this branch. Create multiple branches/pulls-requests if you want to work on multiple subjects (bugs, features,...);
+ - Test your modifications on the actual hardware;
+ - Check the code formatting against our coding conventions and [clang-format](../.clang-format) and [clang-tidy](../.clang-tidy);
+ - Clean your code and remove files that are not needed;
+ - Write documentation related to your new feature is applicable;
+ - Create the pull-request and write a great description about it : what does your PR do, why, how,... Add pictures and video if possible;
+ - Wait for someone to review your PR and take part in the review process;
+ - You PR will eventually be merged :)
+
 Your contribution is more than welcome! 
 
 If you want to fix a bug, add a functionality or improve the code, you'll first need to create a branch from the **develop** branch (see [this page about the branching model](./branches.md)). This branch is called a feature branch, and you should choose a name that explains what you are working on (ex: "add-doc-about-contributions"). In this branch, **focus on only one topic, bug or feature**. For example, if you created this branch to work on the UI of a specific application, do not commit modifications about the SPI driver. If you want to work on multiple topics, create one branch per topic.
@@ -20,6 +32,8 @@ When your feature branch is ready, **make sure it actually works** and **do not 
 I **strongly discourage to create a PR containing modifications that haven't been tested**. If, for any reason, you cannot test your modifications but want to publish them anyway, **please mention it in the description**. This way, other contributors might be willing to test it and provide feedbacks about your code.
 
 Also, before submitting your PR, check the coding style of your code against the **coding conventions** detailed below. This project also provides [clang-format](../.clang-format) and [clang-tidy](../.clang-tidy) configuration files. You can use them to ensure correct formatting of your code.
+
+Do not forget to check the files you are going to commit and remove those who are not necessary (config files from your IDE, for example). Remove old comments, commented code,...
 
 Then, you can submit a pull-request for review. Try to **describe your pull request as much as possible**: what did you do in this branch, how does it work, how is it designed, are there any limitations,... This will help the contributors to understand and review your code easily. You can add pictures and video to the description so that contributors will have a quick overview of you work.
 
