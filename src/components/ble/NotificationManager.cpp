@@ -53,6 +53,11 @@ void NotificationManager::Push(NotificationManager::Notification&& notif) {
   auto prevWriteIndex = writeIndex;
   writeIndex = (writeIndex + 1 < TotalNbNotifications) ? writeIndex + 1 : 0;
   if (!empty) {
+    if (NbNotifications() == TotalNbNotifications) {
+      for(auto &n : notifications) {
+        n.index--;
+      }
+    }
     notif.index = notifications[readIndex].index + 1;
     readIndex = (readIndex + 1 < TotalNbNotifications) ? readIndex + 1 : 0;
   } else {
