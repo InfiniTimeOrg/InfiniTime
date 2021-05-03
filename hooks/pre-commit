@@ -5,6 +5,12 @@ else
    CLANG_FORMAT_EXECUTABLE="clang-format-11"
 fi
 
+if ! command -v $CLANG_FORMAT_EXECUTABLE &> /dev/null
+then
+    echo $CLANG_FORMAT_EXECUTABLE does not exist, make sure to install it
+    exit 1
+fi
+
 for FILE in $(git diff --cached --name-only)
 do
 	if [[ "$FILE" =~ src/[A-Za-z0-9\ \-]+*\.(c|h|cpp|cc)$ ]]; then
