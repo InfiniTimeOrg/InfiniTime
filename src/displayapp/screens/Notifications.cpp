@@ -16,7 +16,6 @@ Notifications::Notifications(DisplayApp* app,
   notificationManager.ClearNewNotificationFlag();
   auto notification = notificationManager.GetLastNotification();
 
-  last_gesture = 0;
   if (notification.valid) {
     currentId = notification.id;
     currentItem = std::make_unique<NotificationItem>(notification.Title(),
@@ -97,20 +96,9 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        alertNotificationService);
     }
       return true;
-    case Pinetime::Applications::TouchEvents::SwipeLeft: {
-      // FIXME: SwipeLeft only because otherwise settings pop up on the main screen
-      // I'd rather this be SwipeRight
+    case Pinetime::Applications::TouchEvents::DoubleTap: {
       if (!validDisplay)
         return false;
-
-      // FIXME: this is a hack, without it the event triggers repeatedly
-      // causing all notifications to be dismissed in a single swipe
-      auto timeElapsed = xTaskGetTickCount() - last_gesture; // TODO wrapping
-      const int timeElapsedMillis = (static_cast<float>(timeElapsed) / static_cast<float>(configTICK_RATE_HZ)) * 1000;
-      if (timeElapsedMillis < 200) {
-        return true;
-      }
-      last_gesture = xTaskGetTickCount();
 
       Controllers::NotificationManager::Notification nextNotification;
       nextNotification = notificationManager.GetPrevious(currentId);
