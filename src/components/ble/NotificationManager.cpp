@@ -35,8 +35,8 @@ void NotificationManager::Pop(Notification::Id id) {
     next = (idx + 1) % TotalNbNotifications;
   }
 
-  readIndex = readIndex == 0 ? TotalNbNotifications : readIndex - 1;
-  writeIndex = writeIndex == 0 ? TotalNbNotifications : writeIndex - 1;
+  readIndex = readIndex == 0 ? TotalNbNotifications - 1 : readIndex - 1;
+  writeIndex = writeIndex == 0 ? TotalNbNotifications - 1 : writeIndex - 1;
 
   // popped last notification
   if (NbNotifications() == 0) {
