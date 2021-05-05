@@ -212,6 +212,12 @@ jobs:
           make -j pinetime-app
           cp src/pinetime-app-1.0.0.map ../maps/${{ github.event.pull_request.base.sha }}.map 
 
+      - name: Checkout repo again
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+          clean: false
+
       - name: Compare map versions
         run: |
           python3 tools/compare_maps.py maps/${{ github.event.pull_request.base.sha }}.map maps/proposed.map
