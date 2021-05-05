@@ -11,11 +11,11 @@ on:
 
   # Run this Workflow when files are updated (Pushed) in the "master" Branch
   push:
-    branches: [ master ]
+    branches: [ master, develop ]
 
   # Also run this Workflow when a Pull Request is created or updated in the "master" Branch
   pull_request:
-    branches: [ master ]
+    branches: [ master, develop ]
 
 # Steps to run for the Workflow
 jobs:
@@ -45,6 +45,8 @@ jobs:
       - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
         if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
         uses: fiam/arm-none-eabi-gcc@v1.0.2
+        env:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
         with:
           # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
           release: 9-2020-q2
@@ -86,19 +88,24 @@ jobs:
           git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
 
       - name: Install imgtool dependencies
-        run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
+        run:  |
+          cat ${{ runner.temp }}/mcuboot/scripts/requirements.txt
+          pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
 
       - name: Install adafruit-nrfutil
         run:  |
           pip3 install --user wheel
           pip3 install --user setuptools
           pip3 install --user adafruit-nrfutil
+          pip3 install --user 'cbor>=1.0.0'
 
         #########################################################################################
         # Checkout
 
       - name: Checkout source files
         uses: actions/checkout@v2
+        with:
+          submodules: true
 
       - name: Show files
         run:  set ; pwd ; ls -l
@@ -112,29 +119,22 @@ jobs:
           cd build
           cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
 
-        #########################################################################################
-        # Make and Upload DFU Package
-        # pinetime-mcuboot-app.img must be flashed at address 0x8000 in the internal flash memory with OpenOCD:
-        # program image.bin 0x8000
+      #########################################################################################
+      # Make and Upload DFU Package
+      # pinetime-mcuboot-app.img must be flashed at address 0x8000 in the internal flash memory with OpenOCD:
+      # program image.bin 0x8000
 
-        # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
-        # For Faster Builds: Add "make" option "-j"
+      # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
+      # For Faster Builds: Add "make" option "-j"
 
       - name: Make pinetime-mcuboot-app
         run:  |
           cd build
           make pinetime-mcuboot-app
 
-      - name: Create firmware image
-        run:  |
-          # The generated firmware binary looks like "pinetime-mcuboot-app-0.8.2.bin"
-          ls -l build/src/pinetime-mcuboot-app*.bin
-          ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app*.bin build/src/pinetime-mcuboot-app-img.bin
-          ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
-
       - name: Create DFU package
         run:  |
-          ~/.local/bin/adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application build/src/pinetime-mcuboot-app-img.bin build/src/pinetime-mcuboot-app-dfu.zip
+          ~/.local/bin/adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application build/src/pinetime-mcuboot-app-image-1.0.0.bin build/src/pinetime-mcuboot-app-dfu.zip
           unzip -v build/src/pinetime-mcuboot-app-dfu.zip
           # Unzip the package because Upload Artifact will zip up the files
           unzip build/src/pinetime-mcuboot-app-dfu.zip -d build/src/pinetime-mcuboot-app-dfu
@@ -150,8 +150,10 @@ jobs:
 
       - name: Make pinetime-app
         run:  |
+          mkdir -p maps/
           cd build
-          make pinetime-app
+          make -j pinetime-app
+          cp src/pinetime-app-1.0.0.map ../maps/proposed.map
 
       - name: Upload standalone firmware
         uses: actions/upload-artifact@v2
@@ -166,6 +168,71 @@ jobs:
         run:  |
           find . -name "pinetime-app.*" -ls
           find . -name "pinetime-mcuboot-app.*" -ls
+ 
+      #########################################################################################
+      # PR related tasks
+      - name: Get map for target branch
+        uses: actions/cache@v2
+        id: cache-map
+        if: github.event_name == 'pull_request'
+        with:
+          path: maps/${{ github.event.pull_request.base.sha }}.map
+          key: map-${{ github.event.pull_request.base.sha }}
+
+
+      - name: Checkout PR target files
+        uses: actions/checkout@v2
+        if: steps.cache-map.outputs.cache-hit != 'true' && github.event_name == 'pull_request'
+        with:
+          # using sha instead of ref as different points in time will have different map files
+          ref: ${{ github.event.pull_request.base.sha }}
+          submodules: true
+
+      - name: CMake
+        if: steps.cache-map.outputs.cache-hit != 'true' && github.event_name == 'pull_request'
+        run:  |
+          rm -rf build
+          mkdir -p build maps
+          cd build
+          cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
+
+        #########################################################################################
+        # Make and Upload DFU Package
+        # pinetime-mcuboot-app.img must be flashed at address 0x8000 in the internal flash memory with OpenOCD:
+        # program image.bin 0x8000
+
+        # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
+        # For Faster Builds: Add "make" option "-j"
+
+      - name: Make pinetime-app
+        if: steps.cache-map.outputs.cache-hit != 'true' && github.event_name == 'pull_request'
+        run:  |
+          cd build
+          make -j pinetime-app
+          cp src/pinetime-app-1.0.0.map ../maps/${{ github.event.pull_request.base.sha }}.map 
+
+      - name: Compare map versions
+        run: |
+          python3 tools/compare_maps.py maps/${{ github.event.pull_request.base.sha }}.map maps/proposed.map
+          echo 'CHANGES_TABLE<<EOF' >> $GITHUB_ENV
+          python3 tools/compare_maps.py maps/${{ github.event.pull_request.base.sha }}.map maps/proposed.map >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+      - uses: actions/github-script@v4
+        if: github.event_name == 'pull_request'
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const { CHANGES_TABLE } = process.env;
+            if (CHANGES_TABLE.trim() !== '') {
+              github.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: CHANGES_TABLE,
+              });
+            }
+
 
 # Embedded Arm Toolchain and nRF5 SDK will only be cached if the build succeeds.
 # So make sure that the first build always succeeds, e.g. comment out the "Make" step.
