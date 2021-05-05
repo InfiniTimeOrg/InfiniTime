@@ -87,39 +87,40 @@ def measure_map(fname):
 
     sectionWhitelist = {'.text', '.data', '.bss', '.rodata'}
     whitelistedSections = list (filter (lambda x: x.section in sectionWhitelist, sections))
-    grouped_objects = {}
+    grouped_objects = {s: {} for s in sectionWhitelist}
     for s in whitelistedSections:
         for k, g in groupby (sorted (s.children, key=lambda x: x.basepath), lambda x: x.basepath):
             size = sum (map (lambda x: x.size, g))
-            grouped_objects[k] = size
+            grouped_objects[s.section][k] = size
     return grouped_objects
 
 def main(old_fname, new_fname):
-    old = measure_map(old_fname)
-    new = measure_map(new_fname)
-    total_new = sum(new.values())
-    total_old = sum(old.values())
-    diff = total_new-total_old
-
-    if diff == 0:
-        return
-
-    new_keys = new.keys() - old.keys()
-    shared_keys = set(new.keys()).intersection(old.keys())
-    old_keys = old.keys() - new.keys()
+    old_by_section = measure_map(old_fname)
+    new_by_section = measure_map(new_fname)
 
     diffs = []
-    for k in shared_keys:
-        delta = new[k] - old[k]
-        if delta == 0:
+    total_diff = 0
+    for section in old_by_section.keys(): # sections are on both
+        new = new_by_section[section]
+        old = old_by_section[section]
+        total_new = sum(new.values())
+        total_old = sum(old.values())
+        diff = total_new-total_old
+        total_diff += diff
+
+        if diff == 0:
             continue
-        diffs.append((delta, k))
 
-    for k in new_keys:
-        diffs.append((new[k], k))
+        all_keys = set(new.keys()).union(old.keys())
 
-    for k in old_keys:
-        diffs.append((-old[k], k))
+        for k in all_keys:
+            delta = new.get(k, 0) - old.get(k, 0)
+            if delta == 0:
+                continue
+            name = k
+            if section != '.text':
+                name = f'({section}){name}'
+            diffs.append((delta, name))
 
     if diffs:
         print('Object|Change (bytes)')
@@ -128,8 +129,8 @@ def main(old_fname, new_fname):
             sign = "+" if change > 0 else "-"
             print(f'{obj}|{sign}{abs(change)}')
 
-        sign = "+" if diff > 0 else "-"
-        print(f'**Total**|{sign}{abs(diff)}')
+        sign = "+" if total_diff > 0 else "-"
+        print(f'**Total**|{sign}{abs(total_diff)}')
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Compare the respective sizes in 2 map files", epilog='''
