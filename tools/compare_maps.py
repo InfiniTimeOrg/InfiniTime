@@ -129,7 +129,7 @@ def main(old_fname, new_fname):
             sign = "+" if change > 0 else "-"
             print(f'{obj}|{sign}{abs(change)}')
 
-        print(f'Total|{sign}{abs(diff)}')
+        print(f'**Total**|{sign}{abs(diff)}')
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Compare the respective sizes in 2 map files", epilog='''
