@@ -187,6 +187,7 @@ jobs:
           # using sha instead of ref as different points in time will have different map files
           ref: ${{ github.event.pull_request.base.sha }}
           submodules: true
+          clean: false
 
       - name: CMake
         if: steps.cache-map.outputs.cache-hit != 'true' && github.event_name == 'pull_request'
