@@ -100,7 +100,6 @@ def main(old_fname, new_fname):
     total_new = sum(new.values())
     total_old = sum(old.values())
     diff = total_new-total_old
-    sign = "+" if diff > 0 else "-"
 
     if diff == 0:
         return
@@ -129,6 +128,7 @@ def main(old_fname, new_fname):
             sign = "+" if change > 0 else "-"
             print(f'{obj}|{sign}{abs(change)}')
 
+        sign = "+" if diff > 0 else "-"
         print(f'**Total**|{sign}{abs(diff)}')
 
 def parse_args():
