@@ -153,6 +153,7 @@ jobs:
           cd build
           make -j pinetime-app
           ls -lh src
+          mkdir -p ../maps
           cp src/pinetime-app-1.0.0.map ../maps/proposed.map
 
       - name: Upload standalone firmware
