@@ -150,9 +150,9 @@ jobs:
 
       - name: Make pinetime-app
         run:  |
-          mkdir -p maps/
           cd build
           make -j pinetime-app
+          ls -lh src
           cp src/pinetime-app-1.0.0.map ../maps/proposed.map
 
       - name: Upload standalone firmware
@@ -178,7 +178,6 @@ jobs:
         with:
           path: maps/${{ github.event.pull_request.base.sha }}.map
           key: map-${{ github.event.pull_request.base.sha }}
-
 
       - name: Checkout PR target files
         uses: actions/checkout@v2
