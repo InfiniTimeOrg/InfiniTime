@@ -124,7 +124,7 @@ def main(old_fname, new_fname):
 
     if diffs:
         print('Object|Change (bytes)')
-        print('------|--------------')
+        print('|:----|------------:|')
         for change, obj in sorted(diffs):
             sign = "+" if change > 0 else "-"
             print(f'{obj}|{sign}{abs(change)}')
