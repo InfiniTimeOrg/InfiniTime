@@ -278,12 +278,8 @@ void SystemTask::Work() {
           stepCounterMustBeReset = true;
           break;
         case Messages::OnChargingEvent:
-          // call the battery controller or use the MSG in DisplayApp to get the battery status ???
-          // it is necessary to validate which is the most efficient
-          batteryController.Update();
-          // displayApp->PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
-          //  analyze a more efficient way to do this refreshment
-          //  this and the UpdateMotion(); can be called on a timer to be independent of the main process ???
+	  // Battery level is updated on every message - there's no need to do anything
+          break;
 
         default:
           break;
