@@ -21,7 +21,7 @@ void MotorController::Init() {
   isBusy = false;
 }
 
-void MotorController::RunForDuration(uint8_t motorDuration) {
+void MotorController::runForDuration(uint8_t motorDuration) {
 
   if (settingsController.GetVibrationStatus() == Controllers::Settings::Vibration::OFF || isBusy)
     return;

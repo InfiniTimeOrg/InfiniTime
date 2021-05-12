@@ -45,6 +45,7 @@ namespace Pinetime {
           void OnAcceptIncomingCall(lv_event_t event);
           void OnMuteIncomingCall(lv_event_t event);
           void OnRejectIncomingCall(lv_event_t event);
+          
           bool timeoutOnHold = false;
         private:
           void callPreviewInteraction();
@@ -81,7 +82,6 @@ namespace Pinetime {
         std::unique_ptr<NotificationItem> currentItem;
         Controllers::NotificationManager::Notification::Id currentId;
         Controllers::MotorController& motorController;
-        
         bool validDisplay = false;
 
         lv_point_t timeoutLinePoints[2] {{0, 1}, {239, 1}};

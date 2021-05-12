@@ -12,7 +12,7 @@ namespace Pinetime {
     public:
       MotorController(Controllers::Settings& settingsController);
       void Init();
-      void RunForDuration(uint8_t motorDuration);
+      void runForDuration(uint8_t motorDuration);
       void startRunning(uint8_t motorDuration);
       void stopRunning();
 

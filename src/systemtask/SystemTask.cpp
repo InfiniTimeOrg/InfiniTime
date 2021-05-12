@@ -228,7 +228,7 @@ void SystemTask::Work() {
           if (notificationManager.GetLastNotification().category == Controllers::NotificationManager::Categories::IncomingCall) {
             motorController.startRunning(500);
           } else {
-            motorController.RunForDuration(35);
+            motorController.runForDuration(35);
           }
           displayApp->PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;

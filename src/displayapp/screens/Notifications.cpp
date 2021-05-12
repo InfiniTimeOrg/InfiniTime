@@ -13,11 +13,11 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Controllers::MotorController& motorController,
                              Modes mode)
-  : Screen(app),
-  notificationManager {notificationManager},
-  alertNotificationService {alertNotificationService},
-  motorController{motorController},
-  mode {mode} {
+    : Screen(app),
+      notificationManager{notificationManager},
+      alertNotificationService{alertNotificationService},
+      motorController{motorController},
+      mode{mode} {
   notificationManager.ClearNewNotificationFlag();
   auto notification = notificationManager.GetLastNotification();
   if (notification.valid) {
@@ -45,8 +45,6 @@ Notifications::Notifications(DisplayApp* app,
   }
 
   if (mode == Modes::Preview) {
-    
-    
 
     timeoutLine = lv_line_create(lv_scr_act(), nullptr);
 
@@ -75,9 +73,8 @@ bool Notifications::Refresh() {
     lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
   }
   //make sure we stop any vibrations before exiting
-  if (!running) {
+  if (!running)
     motorController.stopRunning();
-  }
   return running;
 }
 
@@ -173,9 +170,8 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                                   Controllers::MotorController& motorController,
                                                   uint32_t* timeoutEnd)
-  : notifNr {notifNr}, notifNb {notifNb}, mode {mode}, alertNotificationService {alertNotificationService},
-  motorController{motorController}, timeoutEnd{timeoutEnd} {
-
+    : notifNr{notifNr}, notifNb{notifNb}, mode{mode}, alertNotificationService{alertNotificationService},
+      motorController{motorController}, timeoutEnd{timeoutEnd} {
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), NULL);
 
   lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x222222));
@@ -260,7 +256,6 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       timeoutOnHold = true;
     } break;
   }
-  
 
   lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
@@ -291,7 +286,7 @@ void Notifications::NotificationItem::OnRejectIncomingCall(lv_event_t event) {
 }
 
 inline void Notifications::NotificationItem::callPreviewInteraction() {
-  *timeoutEnd = xTaskGetTickCount()  + (5 * 1024);
+  *timeoutEnd = xTaskGetTickCount() + (5 * 1024);
   timeoutOnHold = false;
   motorController.stopRunning();
 }
