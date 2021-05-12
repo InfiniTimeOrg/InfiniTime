@@ -226,7 +226,7 @@ void SystemTask::Work() {
           if (isSleeping && !isWakingUp)
             GoToRunning();
           if (notificationManager.GetLastNotification().category == Controllers::NotificationManager::Categories::IncomingCall) {
-            motorController.startRunning(50);
+            motorController.startRunning(500);
           } else {
             motorController.RunForDuration(35);
           }

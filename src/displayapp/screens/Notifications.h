@@ -36,7 +36,8 @@ namespace Pinetime {
                            uint8_t notifNb,
                            Modes mode,
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                           Controllers::MotorController& motorController);
+                           Controllers::MotorController& motorController,
+                           uint32_t* timeoutEnd);
           ~NotificationItem();
           bool Refresh() {
             return false;
@@ -44,8 +45,10 @@ namespace Pinetime {
           void OnAcceptIncomingCall(lv_event_t event);
           void OnMuteIncomingCall(lv_event_t event);
           void OnRejectIncomingCall(lv_event_t event);
-
+          bool timeoutOnHold = false;
         private:
+          void callPreviewInteraction();
+          
           uint8_t notifNr = 0;
           uint8_t notifNb = 0;
           char pageText[4];
@@ -61,6 +64,7 @@ namespace Pinetime {
           lv_obj_t* label_mute;
           lv_obj_t* label_reject;
           lv_obj_t* bottomPlaceholder;
+          uint32_t* timeoutEnd;
           Modes mode;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           Controllers::MotorController& motorController;
