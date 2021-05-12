@@ -225,7 +225,11 @@ void SystemTask::Work() {
         case Messages::OnNewNotification:
           if (isSleeping && !isWakingUp)
             GoToRunning();
-          motorController.SetDuration(35);
+          if (notificationManager.GetLastNotification().category == Controllers::NotificationManager::Categories::IncomingCall) {
+            motorController.startRunning(50);
+          } else {
+            motorController.RunForDuration(35);
+          }
           displayApp->PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;
         case Messages::BleConnected:

@@ -12,11 +12,14 @@ namespace Pinetime {
     public:
       MotorController(Controllers::Settings& settingsController);
       void Init();
-      void SetDuration(uint8_t motorDuration);
+      void RunForDuration(uint8_t motorDuration);
+      void startRunning(uint8_t motorDuration);
+      void stopRunning();
 
     private:
       Controllers::Settings& settingsController;
       static void vibrate(void* p_context);
-    };
+      bool isBusy;
+      };
   }
 }
