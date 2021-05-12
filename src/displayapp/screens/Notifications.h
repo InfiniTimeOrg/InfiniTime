@@ -37,7 +37,8 @@ namespace Pinetime {
                            Modes mode,
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                            Controllers::MotorController& motorController,
-                           uint32_t* timeoutEnd);
+                           uint32_t* timeoutEnd,
+                           uint32_t* timeoutStart);
           ~NotificationItem();
           bool Refresh() {
             return false;
@@ -66,6 +67,7 @@ namespace Pinetime {
           lv_obj_t* label_reject;
           lv_obj_t* bottomPlaceholder;
           uint32_t* timeoutEnd;
+          uint32_t* timeoutStart;
           Modes mode;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           Controllers::MotorController& motorController;

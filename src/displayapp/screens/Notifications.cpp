@@ -30,7 +30,8 @@ Notifications::Notifications(DisplayApp* app,
                                                      mode,
                                                      alertNotificationService,
                                                      motorController,
-                                                     &timeoutTickCountEnd);
+                                                     &timeoutTickCountEnd,
+                                                     &timeoutTickCountStart);
     validDisplay = true;
   } else {
     currentItem = std::make_unique<NotificationItem>("Notification",
@@ -41,7 +42,8 @@ Notifications::Notifications(DisplayApp* app,
                                                      Modes::Preview,
                                                      alertNotificationService,
                                                      motorController,
-                                                     &timeoutTickCountEnd);
+                                                     &timeoutTickCountEnd,
+                                                     &timeoutTickCountStart);
   }
 
   if (mode == Modes::Preview) {
@@ -105,7 +107,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        mode,
                                                        alertNotificationService,
                                                        motorController,
-                                                       &timeoutTickCountEnd);
+                                                       &timeoutTickCountEnd,
+                                                       &timeoutTickCountStart);
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeUp: {
@@ -132,7 +135,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        mode,
                                                        alertNotificationService,
                                                        motorController,
-                                                       &timeoutTickCountEnd);
+                                                       &timeoutTickCountEnd,
+                                                       &timeoutTickCountStart);
     }
       return true;
     case Pinetime::Applications::TouchEvents::LongTap: {
@@ -169,9 +173,10 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Modes mode,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                                   Controllers::MotorController& motorController,
-                                                  uint32_t* timeoutEnd)
+                                                  uint32_t* timeoutEnd,
+                                                  uint32_t* timeoutStart)
     : notifNr{notifNr}, notifNb{notifNb}, mode{mode}, alertNotificationService{alertNotificationService},
-      motorController{motorController}, timeoutEnd{timeoutEnd} {
+      motorController{motorController}, timeoutEnd{timeoutEnd}, timeoutStart{timeoutStart} {
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), NULL);
 
   lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x222222));
@@ -286,7 +291,8 @@ void Notifications::NotificationItem::OnRejectIncomingCall(lv_event_t event) {
 }
 
 inline void Notifications::NotificationItem::callPreviewInteraction() {
-  *timeoutEnd = xTaskGetTickCount() + (5 * 1024);
+  *timeoutStart = xTaskGetTickCount();
+  *timeoutEnd = *timeoutStart + (5 * 1024);
   timeoutOnHold = false;
   motorController.stopRunning();
 }
