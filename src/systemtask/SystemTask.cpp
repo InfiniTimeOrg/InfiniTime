@@ -282,6 +282,7 @@ void SystemTask::Work() {
           stepCounterMustBeReset = true;
           break;
         case Messages::OnChargingEvent:
+          motorController.SetDuration(15);
 	  // Battery level is updated on every message - there's no need to do anything
           break;
 
