@@ -22,7 +22,7 @@ RUN apt-get update -qq \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
 RUN pip3 install adafruit-nrfutil
-RUN pip3 install -Iv cryptography==3.3
+RUN pip3 install -Iv cryptography==3.3 click==7.1.2
 
 # build.sh knows how to compile
 COPY build.sh /opt/

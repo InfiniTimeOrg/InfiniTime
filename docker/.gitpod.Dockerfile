@@ -23,7 +23,7 @@ RUN apt-get update -qq \
 
 # Needs to be installed as root
 RUN pip3 install adafruit-nrfutil
-RUN pip3 install -Iv cryptography==3.3
+RUN pip3 install -Iv cryptography==3.3 click==7.1.2
 
 COPY docker/build.sh /opt/
 # Lets get each in a separate docker layer for better downloads
