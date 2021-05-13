@@ -52,7 +52,7 @@ If your PineTime is currently running InfiniTime 0.7.1 and the old bootloader, w
 
 Using the companion app of your choice, you'll need to apply the OTA procedure for these 3 firmwares in this sequence (failing to follow this specific order might temporarily or permanently brick your device):
  
- 1. Flash the latest version of InfiniTime. The file to upload is named **pinetime-mcuboot-app-dfu-x.y.z.zip. Here is the link to [InfiniTime 1.0](https://github.com/JF002/InfiniTime/releases/download/1.0.0/pinetime-mcuboot-app-dfu-1.0.0.zip.
+ 1. Flash the latest version of InfiniTime. The file to upload is named **pinetime-mcuboot-app-dfu-x.y.z.zip**. Here is the link to [InfiniTime 1.0](https://github.com/JF002/InfiniTime/releases/download/1.0.0/pinetime-mcuboot-app-dfu-1.0.0.zip).
  2. Update the bootloader by applying the OTA procedure with the file named [**reloader-mcuboot.zip** from the repo of the bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader/releases/download/1.0.0/reloader-mcuboot.zip). 
  3. Install the recovery firmware by applying the OTA procedure with the file named [**pinetime-mcuboot-recovery-loader-dfu-0.14.1.zip** from the version 0.14.1 of InfiniTime](https://github.com/JF002/InfiniTime/releases/download/0.14.1/pinetime-mcuboot-recovery-loader-dfu-0.14.1.zip).
 
