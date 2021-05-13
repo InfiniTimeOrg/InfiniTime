@@ -115,6 +115,7 @@ void SystemTask::Work() {
                                                                     notificationManager,
                                                                     heartRateController,
                                                                     settingsController,
+                                                                    motorController,
                                                                     motionController);
   displayApp->Start();
 

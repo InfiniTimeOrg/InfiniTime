@@ -11,7 +11,7 @@ using namespace Pinetime::Controllers;
 
 /** Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/ppg.py */
 namespace {
-  int Compare(int* d1, int* d2, size_t count) {
+  int Compare(int8_t* d1, int8_t* d2, size_t count) {
     int e = 0;
     for (size_t i = 0; i < count; i++) {
       auto d = d1[i] - d2[i];
@@ -20,11 +20,11 @@ namespace {
     return e;
   }
 
-  int CompareShift(int* d, int shift, size_t count) {
+  int CompareShift(int8_t* d, int shift, size_t count) {
     return Compare(d + shift, d, count - shift);
   }
 
-  int Trough(int* d, size_t size, float mn, float mx) {
+  int Trough(int8_t* d, size_t size, uint8_t mn, uint8_t mx) {
     auto z2 = CompareShift(d, mn - 2, size);
     auto z1 = CompareShift(d, mn - 1, size);
     for (int i = mn; i < mx + 1; i++) {
@@ -45,13 +45,13 @@ Ppg::Ppg(float spl)
     lpf {0.11595249, 0.23190498, 0.11595249, -0.72168143, 0.18549138} {
 }
 
-int Ppg::Preprocess(float spl) {
+int8_t Ppg::Preprocess(float spl) {
   spl -= offset;
   spl = hpf.Step(spl);
   spl = agc.Step(spl);
   spl = lpf.Step(spl);
 
-  auto spl_int = static_cast<int>(spl);
+  auto spl_int = static_cast<int8_t>(spl);
 
   if (dataIndex < 200)
     data[dataIndex++] = spl_int;

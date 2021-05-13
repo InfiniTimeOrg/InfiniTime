@@ -21,11 +21,13 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
                              Pinetime::Controllers::Battery& batteryController,
                              Controllers::DateTime& dateTimeController,
                              Controllers::BrightnessController& brightness,
+                             Controllers::MotorController& motorController,
                              Pinetime::Controllers::Settings& settingsController)
   : Screen(app),
     batteryController {batteryController},
     dateTimeController {dateTimeController},
     brightness {brightness},
+    motorController{motorController},
     settingsController {settingsController} {
 
   // Time
@@ -138,6 +140,7 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
 
     if (lv_obj_get_state(btn3, LV_BTN_PART_MAIN) & LV_STATE_CHECKED) {
       settingsController.SetVibrationStatus(Controllers::Settings::Vibration::ON);
+      motorController.SetDuration(35);
       lv_label_set_text_static(btn3_lvl, Symbols::notificationsOn);
     } else {
       settingsController.SetVibrationStatus(Controllers::Settings::Vibration::OFF);

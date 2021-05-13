@@ -40,7 +40,7 @@ Navigation::Navigation(Pinetime::Applications::DisplayApp* app, Pinetime::Contro
   txtNarrative = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtNarrative, LV_LABEL_LONG_BREAK);
   lv_obj_set_width(txtNarrative, LV_HOR_RES);
-  lv_label_set_text(txtNarrative, "Welcome to navigation!");
+  lv_label_set_text(txtNarrative, "Navigation");
   lv_label_set_align(txtNarrative, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(txtNarrative, nullptr, LV_ALIGN_CENTER, 0, 10);
 
