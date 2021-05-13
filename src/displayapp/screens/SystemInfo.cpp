@@ -70,8 +70,8 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
                         "#FFFF00 InfiniTime#\n\n"
                         "#444444 Version# %ld.%ld.%ld\n\n"
                         "#444444 Build date#\n"
-                        "\t%s\n"
-                        "\t%s\n",
+                        "%s\n"
+                        "%s\n",
                         Version::Major(),
                         Version::Minor(),
                         Version::Patch(),
