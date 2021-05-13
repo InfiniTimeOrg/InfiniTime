@@ -95,6 +95,7 @@ set(TINYCRYPT_SRC
         )
 
 set(NIMBLE_SRC
+        libs/syscfg/syscfg.h
         libs/mynewt-nimble/porting/npl/freertos/src/nimble_port_freertos.c
         libs/mynewt-nimble/porting/npl/freertos/src/npl_os_freertos.c
         libs/mynewt-nimble/nimble/host/src/ble_hs.c
