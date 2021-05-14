@@ -12,8 +12,9 @@ void NrfLogger::Init() {
 
   NRF_LOG_DEFAULT_BACKENDS_INIT();
 
-  if (pdPASS != xTaskCreate(NrfLogger::Process, "LOGGER", 200, this, 0, &m_logger_thread))
+  if (pdPASS != xTaskCreate(NrfLogger::Process, "LOGGER", 200, this, 0, &m_logger_thread)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+  }
 }
 
 void NrfLogger::Process(void*) {

@@ -51,10 +51,11 @@ void DisplayApp::Refresh() {
   if (xQueueReceive(msgQueue, &msg, 200)) {
     switch (msg) {
       case Display::Messages::UpdateBleConnection:
-        if (bleController.IsConnected())
+        if (bleController.IsConnected()) {
           DisplayLogo(colorBlue);
-        else
+        } else {
           DisplayLogo(colorWhite);
+        }
         break;
       case Display::Messages::BleFirmwareUpdateStarted:
         DisplayLogo(colorGreen);
