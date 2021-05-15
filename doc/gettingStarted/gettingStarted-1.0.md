@@ -8,9 +8,9 @@ Basically, a **firmware** is just a software running on the embedded hardware of
 **InfiniTime** is based on 3 distinct **firmwares**:
  - **[InfiniTime](https://github.com/JF002/InfiniTime)** itself, this is the *application firmware* running on the PineTime. This is the main firmware which provides most of the functionalities you'll use on a daily basis : bluetooth low-energy (BLE) connectivity, applications, watchfaces,...
  - **[The bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader)** is responsible for safely applying **updates** of the *application firmware*, reverting them in case of issues and load the recovery firmware when requested.
- - **The recovery firmware** is a specific *application firmware* than can be loaded by the bootloader on user request. This firmware can be useful in case of serious issue, when the main application firmware cannot perform an OTA update correctly. Currently, this  recovery firmwarae is based on [InfiniTime 0.14.1](https://github.com/JF002/InfiniTime/releases/tag/0.14.1).
+ - **The recovery firmware** is a specific *application firmware* than can be loaded by the bootloader on user request. This firmware can be useful in case of serious issue, when the main application firmware cannot perform an OTA update correctly. Currently, this  recovery firmware is based on [InfiniTime 0.14.1](https://github.com/JF002/InfiniTime/releases/tag/0.14.1).
 
-**OTA** and **DFU** refer to the update of the firmware over BLE (**B**luetooth **L**ow **E**nergy). **OTA** means **O**ver **T**he **A**ir, this is a functionality that allows the user to update the firmware how their device using a wireless communication like BLE. When we talk about **DFU** (**D**igital **F**irmware **U**pdate), we refer to the file format and protocol used to send the update of the firmware to the watch over-the-air. InfiniTime implement the (legacy) DFU protocol from Nordi Semiconductor (NRF).
+**OTA** and **DFU** refer to the update of the firmware over BLE (**B**luetooth **L**ow **E**nergy). **OTA** means **O**ver **T**he **A**ir, this is a functionality that allows the user to update the firmware how their device using a wireless communication like BLE. When we talk about **DFU** (**D**igital **F**irmware **U**pdate), we refer to the file format and protocol used to send the update of the firmware to the watch over-the-air. InfiniTime implement the (legacy) DFU protocol from Nordic Semiconductor (NRF).
 
 ## How to check the version of InfiniTime and the bootloader?
 Since September 2020, all PineTimes (devkits or sealed) are flashed using the **[first iteration of the bootloader](https://github.com/lupyuen/pinetime-rust-mynewt/releases/tag/v4.1.7)** and **[InfiniTime 0.7.1](https://github.com/JF002/InfiniTime/releases/tag/0.7.1)**. There was no recovery firmware at that time.
@@ -52,7 +52,7 @@ If your PineTime is currently running InfiniTime 0.7.1 and the old bootloader, w
 
 Using the companion app of your choice, you'll need to apply the OTA procedure for these 3 firmwares in this sequence (failing to follow this specific order might temporarily or permanently brick your device):
  
- 1. Flash the latest version of InfiniTime. The file to upload is named **pinetime-mcuboot-app-dfu-x.y.z.zip. Here is the link to [InfiniTime 1.0](https://github.com/JF002/InfiniTime/releases/download/1.0.0/pinetime-mcuboot-app-dfu-1.0.0.zip.
+ 1. Flash the latest version of InfiniTime. The file to upload is named **pinetime-mcuboot-app-dfu-x.y.z.zip**. Here is the link to [InfiniTime 1.0](https://github.com/JF002/InfiniTime/releases/download/1.0.0/pinetime-mcuboot-app-dfu-1.0.0.zip).
  2. Update the bootloader by applying the OTA procedure with the file named [**reloader-mcuboot.zip** from the repo of the bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader/releases/download/1.0.0/reloader-mcuboot.zip). 
  3. Install the recovery firmware by applying the OTA procedure with the file named [**pinetime-mcuboot-recovery-loader-dfu-0.14.1.zip** from the version 0.14.1 of InfiniTime](https://github.com/JF002/InfiniTime/releases/download/0.14.1/pinetime-mcuboot-recovery-loader-dfu-0.14.1.zip).
 
