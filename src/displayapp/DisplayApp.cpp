@@ -73,8 +73,9 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
 }
 
 void DisplayApp::Start() {
-  if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 800, this, 0, &taskHandle))
+  if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 800, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
+  }
 }
 
 void DisplayApp::Process(void* instance) {
@@ -349,8 +350,9 @@ TouchEvents DisplayApp::OnTouchEvent() {
   if (info.isTouch) {
     switch (info.gesture) {
       case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        if (touchMode == TouchModes::Gestures)
+        if (touchMode == TouchModes::Gestures) {
           lvgl.SetNewTapEvent(info.x, info.y);
+        }
         return TouchEvents::Tap;
       case Pinetime::Drivers::Cst816S::Gestures::LongPress:
         return TouchEvents::LongTap;
