@@ -86,7 +86,7 @@ void DisplayApp::Process(void* instance) {
   // Send a dummy notification to unlock the lvgl display driver for the first iteration
   xTaskNotifyGive(xTaskGetCurrentTaskHandle());
 
-  while (1) {
+  while (true) {
     app->Refresh();
   }
 }

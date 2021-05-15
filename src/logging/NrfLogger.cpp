@@ -22,7 +22,7 @@ void NrfLogger::Process(void*) {
 // Suppress endless loop diagnostic
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
-  while (1) {
+  while (true) {
     NRF_LOG_FLUSH();
     vTaskDelay(100); // Not good for power consumption, it will wake up every 100ms...
   }

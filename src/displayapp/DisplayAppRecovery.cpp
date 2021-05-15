@@ -37,7 +37,7 @@ void DisplayApp::Process(void* instance) {
   xTaskNotifyGive(xTaskGetCurrentTaskHandle());
 
   app->InitHw();
-  while (1) {
+  while (true) {
     app->Refresh();
   }
 }
