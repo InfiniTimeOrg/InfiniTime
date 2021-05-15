@@ -86,6 +86,14 @@ namespace Pinetime {
         return settings.brightLevel;
       };
 
+      void SetStepsGoal( uint32_t goal ) { 
+        if ( goal != settings.stepsGoal ) 
+          settingsChanged = true;
+        settings.stepsGoal = goal; 
+      };
+      
+      uint32_t GetStepsGoal() const { return settings.stepsGoal; };
+
     private:
       Pinetime::Drivers::SpiNorFlash& spiNorFlash;
       struct SettingsData {
@@ -95,7 +103,7 @@ namespace Pinetime {
 
         uint8_t clockFace = 0;
 
-        uint32_t stepsGoal = 1000;
+        uint32_t stepsGoal = 10000;
         uint32_t screenTimeOut = 15000;
 
         WakeUpMode wakeUpMode = WakeUpMode::None;

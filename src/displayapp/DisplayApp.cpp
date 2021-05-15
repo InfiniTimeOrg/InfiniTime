@@ -25,6 +25,7 @@
 #include "displayapp/screens/Twos.h"
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
+#include "displayapp/screens/Steps.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -37,6 +38,7 @@
 #include "displayapp/screens/settings/SettingTimeFormat.h"
 #include "displayapp/screens/settings/SettingWakeUp.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
+#include "displayapp/screens/settings/SettingSteps.h"
 
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
@@ -289,6 +291,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
+    case Apps::SettingSteps: 
+      currentScreen = std::make_unique<Screens::SettingSteps>(this, settingsController);
+      returnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
@@ -327,6 +333,9 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Motion:
       currentScreen = std::make_unique<Screens::Motion>(this, motionController);
+      break;
+    case Apps::Steps: 
+      currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
   }
   currentApp = app;
