@@ -13,13 +13,13 @@ using namespace Pinetime::Controllers;
 APP_TIMER_DEF(timerAppTimer);
 
 
-TimerController::TimerController(System::SystemTask& systemTask) : systemTask {systemTask} {
+TimerController::TimerController(System::SystemTask& systemTask) : systemTask{systemTask} {
 }
 
 
 void TimerController::Init() {
   app_timer_create(&timerAppTimer, APP_TIMER_MODE_SINGLE_SHOT, timerEnd);
-
+  
 }
 
 void TimerController::StartTimer(uint32_t duration) {
@@ -30,7 +30,7 @@ void TimerController::StartTimer(uint32_t duration) {
   //you might be wondering why im not simply using app_timer_cnt_get() here. I am too. It is in app_timer.h, but the compiler says it
   // doesnt exist
   endTime = ((static_cast<float >(xTaskGetTickCount()) / static_cast<float >(configTICK_RATE_HZ)) * 1000 + APP_TIMER_TICKS(duration)) -
-      APP_TIMER_TICKS(duration) * 0.024;
+            APP_TIMER_TICKS(duration) * 0.024;
   timerRunning = true;
 }
 
@@ -44,7 +44,7 @@ uint32_t TimerController::GetTimeRemaining() {
 
 void TimerController::timerEnd(void* p_context) {
   
-  auto *controller = static_cast<Controllers::TimerController*> (p_context);
+  auto* controller = static_cast<Controllers::TimerController*> (p_context);
   controller->timerRunning = false;
   controller->systemTask.PushMessage(System::SystemTask::Messages::OnTimerDone);
 }

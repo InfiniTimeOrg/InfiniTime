@@ -276,8 +276,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::Timer:
-      currentScreen = std::make_unique<Screens::Timer>(
-          this, timerController);
+      currentScreen = std::make_unique<Screens::Timer>(this, timerController);
       break;
 
     // Settings

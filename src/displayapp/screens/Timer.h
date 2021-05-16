@@ -12,13 +12,19 @@ namespace Pinetime::Applications::Screens {
   
   class Timer : public Screen {
   public:
-  
-    enum class Modes { Normal, Done };
+    
+    enum class Modes {
+      Normal, Done
+    };
+    
     Timer(DisplayApp* app, Controllers::TimerController& timerController);
+    
     ~Timer() override;
+    
     bool Refresh() override;
     
     void setDone();
+    
     void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
   
   private:
@@ -30,7 +36,7 @@ namespace Pinetime::Applications::Screens {
     
     void createButtons();
     
-    lv_obj_t *time, *msecTime, *btnPlayPause, *txtPlayPause, *btnMinutesUp, *btnMinutesDown, *btnSecondsUp, *btnSecondsDown, *txtMUp,
-    *txtMDown, *txtSUp, *txtSDown;
+    lv_obj_t* time, * msecTime, * btnPlayPause, * txtPlayPause, * btnMinutesUp, * btnMinutesDown, * btnSecondsUp, * btnSecondsDown, * txtMUp,
+        * txtMDown, * txtSUp, * txtSDown;
   };
 }
