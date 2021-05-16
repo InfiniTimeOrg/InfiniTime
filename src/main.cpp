@@ -101,6 +101,7 @@ Pinetime::Drivers::Bma421 motionSensor {twiMaster, motionSensorTwiAddress};
 Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
 
 TimerHandle_t debounceTimer;
+TimerHandle_t debounceChargeTimer;
 Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
 void ble_manager_set_ble_connection_callback(void (*connection)());
@@ -118,12 +119,15 @@ void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action
     systemTask->OnTouchEvent();
     return;
   }
+
+  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+
   if (pin == pinPowerPresentIrq and action == NRF_GPIOTE_POLARITY_TOGGLE) {
-    systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnChargingEvent);
+    xTimerStartFromISR(debounceChargeTimer, &xHigherPriorityTaskWoken);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     return;
   }
 
-  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   xTimerStartFromISR(debounceTimer, &xHigherPriorityTaskWoken);
   portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
@@ -133,6 +137,11 @@ void vApplicationIdleHook(void) {
   if (!isFactory)
     lv_tick_inc(1);
 }
+}
+
+void DebounceTimerChargeCallback(TimerHandle_t xTimer) {
+  xTimerStop(xTimer, 0);
+  systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnChargingEvent);
 }
 
 void DebounceTimerCallback(TimerHandle_t xTimer) {
@@ -253,6 +262,7 @@ int main(void) {
   nrf_drv_clock_init();
 
   debounceTimer = xTimerCreate("debounceTimer", 200, pdFALSE, (void*) 0, DebounceTimerCallback);
+  debounceChargeTimer = xTimerCreate("debounceTimerCharge", 200, pdFALSE, (void*) 0, DebounceTimerChargeCallback);
 
   systemTask = std::make_unique<Pinetime::System::SystemTask>(spi,
                                                               lcd,
