@@ -77,9 +77,8 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
     lv_label_set_text(txtPlayPause, Symbols::pause);
   } else {
     lv_label_set_text(txtPlayPause, Symbols::play);
+    createButtons();
   }
-  
-  createButtons();
   
 }
 
@@ -170,4 +169,5 @@ void Timer::setDone() {
   lv_label_set_text(txtPlayPause, Symbols::play);
   secondsToSet = 0;
   minutesToSet = 0;
+  createButtons();
 }
