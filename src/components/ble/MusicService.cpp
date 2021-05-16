@@ -1,4 +1,4 @@
-/*  Copyright (C) 2020 JF, Adam Pigg, Avamander
+/*  Copyright (C) 2020-2021 JF, Adam Pigg, Avamander
 
     This file is part of InfiniTime.
 
