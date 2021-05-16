@@ -56,6 +56,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     heartRateController {*this},
     bleController {bleController},
     dateTimeController {*this},
+    timerController {*this},
     watchdog {},
     watchdogView {watchdog},
     motorController {motorController},
@@ -83,6 +84,8 @@ void SystemTask::Work() {
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
 
+  app_timer_init();
+  
   spi.Init();
   spiNorFlash.Init();
   spiNorFlash.Wakeup();
@@ -96,6 +99,7 @@ void SystemTask::Work() {
   batteryController.Init();
   motorController.Init();
   motionSensor.SoftReset();
+  timerController.Init();
 
   // Reset the TWI device because the motion sensor chip most probably crashed it...
   twiMaster.Sleep();
@@ -116,7 +120,8 @@ void SystemTask::Work() {
                                                                     heartRateController,
                                                                     settingsController,
                                                                     motorController,
-                                                                    motionController);
+                                                                    motionController,
+                                                                    timerController);
   displayApp->Start();
 
   displayApp->PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
@@ -227,6 +232,12 @@ void SystemTask::Work() {
             GoToRunning();
           motorController.SetDuration(35);
           displayApp->PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
+          break;
+        case Messages::OnTimerDone:
+          if (isSleeping && !isWakingUp)
+            GoToRunning();
+          motorController.SetDuration(35);
+          displayApp->PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
         case Messages::BleConnected:
           ReloadIdleTimer();
