@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include "app_timer.h"
+#include "portmacro_cmsis.h"
 
 namespace Pinetime {
   namespace System {
@@ -27,8 +28,8 @@ namespace Pinetime {
       System::SystemTask& systemTask;
       
       static void timerEnd(void* p_context);
-      
-      uint32_t endTime{};
+  
+      TickType_t endTicks;
       bool timerRunning = false;
     };
   }

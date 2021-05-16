@@ -24,13 +24,9 @@ void TimerController::Init() {
 
 void TimerController::StartTimer(uint32_t duration) {
   app_timer_stop(timerAppTimer);
+  auto currentTicks = xTaskGetTickCount();
   app_timer_start(timerAppTimer, APP_TIMER_TICKS(duration), this);
-  //dont ask why this random scaling factor is here. i got a difference between the time set and the time displayed and it works out to
-  //be exactly this linear factor
-  //you might be wondering why im not simply using app_timer_cnt_get() here. I am too. It is in app_timer.h, but the compiler says it
-  // doesnt exist
-  endTime = ((static_cast<float >(xTaskGetTickCount()) / static_cast<float >(configTICK_RATE_HZ)) * 1000 + APP_TIMER_TICKS(duration)) -
-            APP_TIMER_TICKS(duration) * 0.024;
+  endTicks = currentTicks + APP_TIMER_TICKS(duration);
   timerRunning = true;
 }
 
@@ -38,8 +34,17 @@ uint32_t TimerController::GetTimeRemaining() {
   if (!timerRunning) {
     return 0;
   }
-  uint32_t currentTime = (static_cast<uint32_t>(xTaskGetTickCount()) / static_cast<uint32_t>(configTICK_RATE_HZ)) * 1000;
-  return endTime - currentTime;
+  auto currentTicks = xTaskGetTickCount();
+  
+  TickType_t deltaTicks = 0;
+  if (currentTicks > endTicks) {
+    deltaTicks = 0xffffffff - currentTicks;
+    deltaTicks += (endTicks + 1);
+  } else {
+    deltaTicks = endTicks - currentTicks;
+  }
+  
+  return (static_cast<TickType_t>(deltaTicks) / static_cast<TickType_t>(configTICK_RATE_HZ)) * 1000;
 }
 
 void TimerController::timerEnd(void* p_context) {
