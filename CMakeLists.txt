@@ -55,10 +55,22 @@ if(BUILD_DFU)
   set(BUILD_DFU true)
 endif()
 
+set(PROJECT_GIT_COMMIT_HASH "")
+
+execute_process(COMMAND git rev-parse --short HEAD
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                OUTPUT_VARIABLE PROJECT_GIT_COMMIT_HASH
+                RESULT_VARIABLE PROJECT_GIT_COMMIT_HASH_SUCCESS)
+
+string(STRIP ${PROJECT_GIT_COMMIT_HASH} PROJECT_GIT_COMMIT_HASH)
+
+message("PROJECT_GIT_COMMIT_HASH_SUCCESS? " ${PROJECT_GIT_COMMIT_HASH_SUCCESS})
+
 message("BUILD CONFIGURATION")
 message("-------------------")
 message("    * Version : " ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
 message("    * Toolchain : " ${ARM_NONE_EABI_TOOLCHAIN_PATH})
+message("    * GitRef(S) : " ${PROJECT_GIT_COMMIT_HASH})
 message("    * NRF52 SDK : " ${NRF5_SDK_PATH})
 set(PROGRAMMER "???")
 if(USE_JLINK)
