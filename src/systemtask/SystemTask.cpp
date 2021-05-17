@@ -149,15 +149,18 @@ void SystemTask::Work() {
 
   nrfx_gpiote_in_init(pinTouchIrq, &pinConfig, nrfx_gpiote_evt_handler);
 
-  nrf_gpio_cfg_sense_input(pinPowerPresentIrq, (nrf_gpio_pin_pull_t) NRF_GPIO_PIN_NOPULL, (nrf_gpio_pin_sense_t) GPIO_PIN_CNF_SENSE_Low);
-
   pinConfig.sense = NRF_GPIOTE_POLARITY_TOGGLE;
   pinConfig.pull = NRF_GPIO_PIN_NOPULL;
   pinConfig.is_watcher = false;
   pinConfig.hi_accuracy = false;
   pinConfig.skip_gpio_setup = true;
-
   nrfx_gpiote_in_init(pinPowerPresentIrq, &pinConfig, nrfx_gpiote_evt_handler);
+
+  if (nrf_gpio_pin_read(pinPowerPresentIrq)) {
+    nrf_gpio_cfg_sense_input(pinPowerPresentIrq, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_LOW);
+  } else {
+    nrf_gpio_cfg_sense_input(pinPowerPresentIrq, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_HIGH);
+  }
 
   idleTimer = xTimerCreate("idleTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut()), pdFALSE, this, IdleTimerCallback);
   xTimerStart(idleTimer, 0);
