@@ -38,7 +38,7 @@ This firmware is a small utility firmware that writes the boot graphic in the ex
 ### Firmware with bootloader
 This firmware is intended to be used with our [MCUBoot-based bootloader](../bootloader/README.md).
 
- - **pinetime-mcuboot-app-image.hex** : Firmware wrapped into an MCUBoot image. This is **the** file that must be flashed **@ 0x8000** into flash memory. If the [bootloader](../bootloader/README.md) has been successfully programmed, it should run this firmware after the next reset.
+ - **pinetime-mcuboot-app-image.hex**: Firmware wrapped into an MCUBoot image. This is **the** file that must be flashed at **0x8000** into the flash memory. If the [bootloader](../bootloader/README.md) has been successfully programmed, it should run this firmware after the next reset.
 
 The following files are not directly usable by the bootloader:
 
