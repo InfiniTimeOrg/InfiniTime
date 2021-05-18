@@ -30,13 +30,6 @@ extern "C" {
  */
 typedef void (*lv_async_cb_t)(void *);
 
-typedef struct _lv_async_info_t {
-    lv_async_cb_t cb;
-    void * user_data;
-} lv_async_info_t;
-
-struct _lv_obj_t;
-
 /**********************
  * GLOBAL PROTOTYPES
  **********************/
@@ -59,4 +52,4 @@ lv_res_t lv_async_call(lv_async_cb_t async_xcb, void * user_data);
 } /* extern "C" */
 #endif
 
-#endif /*LV_TEMPL_H*/
+#endif /*LV_ASYNC_H*/

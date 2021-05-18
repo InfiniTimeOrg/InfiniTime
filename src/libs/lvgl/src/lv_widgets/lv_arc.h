@@ -51,6 +51,7 @@ typedef struct {
     uint16_t dragging    : 1;
     uint16_t type        : 2;
     uint16_t adjustable  : 1;
+    uint16_t min_close   : 1;  /*1: the last pressed angle was closer to minimum end*/
     uint16_t chg_rate; /*Drag angle rate of change of the arc (degrees/sec)*/
     uint32_t last_tick; /*Last dragging event timestamp of the arc*/
     int16_t last_angle; /*Last dragging angle of the arc*/
@@ -136,7 +137,6 @@ void lv_arc_set_bg_angles(lv_obj_t * arc, uint16_t start, uint16_t end);
  * @param rotation_angle rotation angle
  */
 void lv_arc_set_rotation(lv_obj_t * arc, uint16_t rotation_angle);
-
 
 /**
  * Set the type of arc.

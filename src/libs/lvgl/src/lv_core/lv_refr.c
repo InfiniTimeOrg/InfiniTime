@@ -23,10 +23,6 @@
     #include "../lv_widgets/lv_label.h"
 #endif
 
-#if defined(LV_GC_INCLUDE)
-    #include LV_GC_INCLUDE
-#endif /* LV_ENABLE_GC */
-
 /*********************
  *      DEFINES
  *********************/
@@ -54,6 +50,10 @@ static void lv_refr_vdb_flush(void);
  **********************/
 static uint32_t px_num;
 static lv_disp_t * disp_refr; /*Display being refreshed*/
+#if LV_USE_PERF_MONITOR
+    static uint32_t fps_sum_cnt;
+    static uint32_t fps_sum_all;
+#endif
 
 /**********************
  *      MACROS
@@ -74,7 +74,7 @@ void _lv_refr_init(void)
 /**
  * Redraw the invalidated areas now.
  * Normally the redrawing is periodically executed in `lv_task_handler` but a long blocking process
- * can prevent the call of `lv_task_handler`. In this case if the the GUI is updated in the process
+ * can prevent the call of `lv_task_handler`. In this case if the GUI is updated in the process
  * (e.g. progress bar) this function can be called when the screen should be updated.
  * @param disp pointer to display to refresh. NULL to refresh all displays.
  */
@@ -290,17 +290,28 @@ void _lv_disp_refr_task(lv_task_t * task)
     }
 
     static uint32_t perf_last_time = 0;
-    static uint32_t elaps_max = 1;
+    static uint32_t elaps_sum = 0;
+    static uint32_t frame_cnt = 0;
     if(lv_tick_elaps(perf_last_time) < 300) {
-        elaps_max = LV_MATH_MAX(elaps, elaps_max);
+        if(px_num > 5000) {
+            elaps_sum += elaps;
+            frame_cnt ++;
+        }
     }
     else {
         perf_last_time = lv_tick_get();
-        uint32_t fps = 1000 / (elaps_max == 0 ? 1 : elaps_max);
-        elaps_max = 1;
         uint32_t fps_limit = 1000 / disp_refr->refr_task->period;
+        uint32_t fps;
+
+        if(elaps_sum == 0) elaps_sum = 1;
+        if(frame_cnt == 0) fps = fps_limit;
+        else fps = (1000 * frame_cnt) / elaps_sum;
+        elaps_sum = 0;
+        frame_cnt = 0;
         if(fps > fps_limit) fps = fps_limit;
 
+        fps_sum_all += fps;
+        fps_sum_cnt ++;
         uint32_t cpu = 100 - lv_task_get_idle();
         lv_label_set_text_fmt(perf_label, "%d FPS\n%d%% CPU", fps, cpu);
         lv_obj_align(perf_label, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
@@ -309,6 +320,13 @@ void _lv_disp_refr_task(lv_task_t * task)
 
     LV_LOG_TRACE("lv_refr_task: ready");
 }
+
+#if LV_USE_PERF_MONITOR
+uint32_t lv_refr_get_fps_avg(void)
+{
+    return fps_sum_all / fps_sum_cnt;
+}
+#endif
 
 /**********************
  *   STATIC FUNCTIONS
@@ -381,14 +399,14 @@ static void lv_refr_areas(void)
             disp_refr->driver.buffer->last_part = 0;
             lv_refr_area(&disp_refr->inv_areas[i]);
 
-            if(disp_refr->driver.monitor_cb) px_num += lv_area_get_size(&disp_refr->inv_areas[i]);
+            px_num += lv_area_get_size(&disp_refr->inv_areas[i]);
         }
     }
 }
 
 /**
  * Refresh an area if there is Virtual Display Buffer
- * @param area_p  pointer to an area to refresh
+ * @param area_p pointer to an area to refresh
  */
 static void lv_refr_area(const lv_area_t * area_p)
 {
@@ -409,67 +427,268 @@ static void lv_refr_area(const lv_area_t * area_p)
         /*Calculate the max row num*/
         lv_coord_t w = lv_area_get_width(area_p);
         lv_coord_t h = lv_area_get_height(area_p);
-        lv_coord_t y2 =
-            area_p->y2 >= lv_disp_get_ver_res(disp_refr) ? lv_disp_get_ver_res(disp_refr) - 1 : area_p->y2;
 
-        int32_t max_row = (uint32_t)vdb->size / w;
+        if (disp_refr->render_direction == 1 || disp_refr->render_direction == 0) {
 
-        if(max_row > h) max_row = h;
+            lv_coord_t y2 =
+                area_p->y2 >= lv_disp_get_ver_res(disp_refr) ? lv_disp_get_ver_res(disp_refr) - 1 : area_p->y2;
 
-        /*Round down the lines of VDB if rounding is added*/
-        if(disp_refr->driver.rounder_cb) {
-            lv_area_t tmp;
-            tmp.x1 = 0;
-            tmp.x2 = 0;
-            tmp.y1 = 0;
+            int32_t max_row = (uint32_t)vdb->size / w;
 
-            lv_coord_t h_tmp = max_row;
-            do {
-                tmp.y2 = h_tmp - 1;
-                disp_refr->driver.rounder_cb(&disp_refr->driver, &tmp);
+            if(max_row > h) max_row = h;
 
-                /*If this height fits into `max_row` then fine*/
-                if(lv_area_get_height(&tmp) <= max_row) break;
+            /*Round down the lines of VDB if rounding is added*/
+            if(disp_refr->driver.rounder_cb) {
+                lv_area_t tmp;
+                tmp.x1 = 0;
+                tmp.x2 = 0;
+                tmp.y1 = 0;
 
-                /*Decrement the height of the area until it fits into `max_row` after rounding*/
-                h_tmp--;
-            } while(h_tmp > 0);
+                lv_coord_t h_tmp = max_row;
+                do {
+                    tmp.y2 = h_tmp - 1;
+                    disp_refr->driver.rounder_cb(&disp_refr->driver, &tmp);
 
-            if(h_tmp <= 0) {
-                LV_LOG_WARN("Can't set VDB height using the round function. (Wrong round_cb or to "
-                            "small VDB)");
-                return;
+                    /*If this height fits into `max_row` then fine*/
+                    if(lv_area_get_height(&tmp) <= max_row) break;
+
+                    /*Decrement the height of the area until it fits into `max_row` after rounding*/
+                    h_tmp--;
+                } while(h_tmp > 0);
+
+                if(h_tmp <= 0) {
+                    LV_LOG_WARN("Can't set VDB height using the round function. (Wrong round_cb or to "
+                                "small VDB)");
+                    return;
+                }
+                else {
+                    max_row = tmp.y2 + 1;
+                }
+            }
+
+            if (disp_refr->render_direction == 1) {
+                /*Always use the full row*/
+                lv_coord_t row;
+                lv_coord_t row_last = y2;
+                for(row = area_p->y2; row > max_row - 1 + area_p->y1; row -= max_row) {
+                    /*Calc. the next y coordinates of VDB*/
+                    vdb->area.x1 = area_p->x1;
+                    vdb->area.x2 = area_p->x2;
+                    vdb->area.y1 = row - max_row + 1;
+                    vdb->area.y2 = row;
+                    if(vdb->area.y2 > y2) vdb->area.y2 = y2;
+                    row_last = vdb->area.y1;
+                    if(y2 == row_last) disp_refr->driver.buffer->last_part = 1;
+                    lv_refr_area_part(area_p);
+                }
+
+                /*If the last (first) y coordinates are not handled yet ...*/
+                if(area_p->y1 != row_last) {
+                    /*Calc. the next y coordinates of VDB*/
+                    vdb->area.x1 = area_p->x1;
+                    vdb->area.x2 = area_p->x2;
+                    vdb->area.y1 = area_p->y1;
+                    vdb->area.y2 = row;
+                    disp_refr->driver.buffer->last_part = 1;
+                    /*Refresh this part too*/
+                    lv_refr_area_part(area_p);
+                }
             }
             else {
-                max_row = tmp.y2 + 1;
+                /*Always use the full row*/
+                lv_coord_t row;
+                lv_coord_t row_last = 0;
+                for(row = area_p->y1; row + max_row - 1 <= y2; row += max_row) {
+                    /*Calc. the next y coordinates of VDB*/
+                    vdb->area.x1 = area_p->x1;
+                    vdb->area.x2 = area_p->x2;
+                    vdb->area.y1 = row;
+                    vdb->area.y2 = row + max_row - 1;
+                    if(vdb->area.y2 > y2) vdb->area.y2 = y2;
+                    row_last = vdb->area.y2;
+                    if(y2 == row_last) disp_refr->driver.buffer->last_part = 1;
+                    lv_refr_area_part(area_p);
+                }
+            
+                /*If the last y coordinates are not handled yet ...*/
+                if(y2 != row_last) {
+                    /*Calc. the next y coordinates of VDB*/
+                    vdb->area.x1 = area_p->x1;
+                    vdb->area.x2 = area_p->x2;
+                    vdb->area.y1 = row;
+                    vdb->area.y2 = y2;
+                    disp_refr->driver.buffer->last_part = 1;
+                    lv_refr_area_part(area_p);
+                }
             }
-        }
+        } else {
+            lv_coord_t x2 =
+                area_p->x2 >= lv_disp_get_ver_res(disp_refr) ? lv_disp_get_ver_res(disp_refr) - 1 : area_p->x2;
 
-        /*Always use the full row*/
-        lv_coord_t row;
-        lv_coord_t row_last = 0;
-        for(row = area_p->y1; row + max_row - 1 <= y2; row += max_row) {
-            /*Calc. the next y coordinates of VDB*/
-            vdb->area.x1 = area_p->x1;
-            vdb->area.x2 = area_p->x2;
-            vdb->area.y1 = row;
-            vdb->area.y2 = row + max_row - 1;
-            if(vdb->area.y2 > y2) vdb->area.y2 = y2;
-            row_last = vdb->area.y2;
-            if(y2 == row_last) disp_refr->driver.buffer->last_part = 1;
-            lv_refr_area_part(area_p);
-        }
+            int32_t max_column = (uint32_t)vdb->size / h;
 
-        /*If the last y coordinates are not handled yet ...*/
-        if(y2 != row_last) {
-            /*Calc. the next y coordinates of VDB*/
-            vdb->area.x1 = area_p->x1;
-            vdb->area.x2 = area_p->x2;
-            vdb->area.y1 = row;
-            vdb->area.y2 = y2;
+            if(max_column > w) max_column = w;
 
-            disp_refr->driver.buffer->last_part = 1;
-            lv_refr_area_part(area_p);
+            /*Round down the columns of VDB if rounding is added*/
+            if(disp_refr->driver.rounder_cb) {
+                lv_area_t tmp;
+                tmp.x1 = 0;                
+                tmp.y1 = 0;
+                tmp.y2 = 0;
+
+                lv_coord_t v_tmp = max_column;
+                do {
+                    tmp.x2 = v_tmp - 1;
+                    disp_refr->driver.rounder_cb(&disp_refr->driver, &tmp);
+
+                    /*If this width fits into `max_column` then fine*/
+                    if(lv_area_get_width(&tmp) <= max_column) break;
+
+                    /*Decrement the width of the area until it fits into `max_column` after rounding*/
+                    v_tmp--;
+                } while(v_tmp > 0);
+
+                if(v_tmp <= 0) {
+                    LV_LOG_WARN("Can't set VDB height using the round function. (Wrong round_cb or to "
+                                "small VDB)");
+                    return;
+                }
+                else {
+                    max_column = tmp.x2 + 1;
+                }
+            }
+
+            if (disp_refr->render_direction == 2) {
+                /*Always use the full column*/
+                lv_coord_t column;
+                lv_coord_t column_last = x2;
+                for(column = area_p->x2; column > max_column - 1 + area_p->x1; column -= max_column) {
+                    /*Calc. the next x coordinates of VDB*/                    
+                    vdb->area.x1 = column - max_column + 1;
+                    vdb->area.x2 = column;
+                    vdb->area.y1 = area_p->y1;
+                    vdb->area.y2 = area_p->y2;
+                    if(vdb->area.x2 > x2) vdb->area.x2 = x2;
+                    column_last = vdb->area.x1;
+                    if(x2 == column_last) disp_refr->driver.buffer->last_part = 1;
+                    lv_refr_area_part(area_p);
+                }
+
+                /*If the last (first) x coordinates are not handled yet ...*/
+                if(area_p->x1 != column_last) {
+                    /*Calc. the next x coordinates of VDB*/
+                    vdb->area.x1 = area_p->x1;
+                    vdb->area.x2 = column;
+                    vdb->area.y1 = area_p->y1;
+                    vdb->area.y2 = area_p->y2;
+                    disp_refr->driver.buffer->last_part = 1;
+                    /*Refresh this part too*/
+                    lv_refr_area_part(area_p);
+                }
+            } else if (disp_refr->render_direction == 4) {
+                /*Always use the full column*/
+                lv_coord_t column;
+                lv_coord_t column_last = x2;
+                for(column = area_p->x2; column > max_column - 1 + area_p->x1; column -= max_column * 2) {
+                    /*Calc. the next x coordinates of VDB*/                    
+                    vdb->area.x1 = column - max_column + 1;
+                    vdb->area.x2 = column;
+                    vdb->area.y1 = area_p->y1;
+                    vdb->area.y2 = area_p->y2;
+                    if(vdb->area.x2 > x2) vdb->area.x2 = x2;
+                    column_last = vdb->area.x1;
+                    if(x2 == column_last) disp_refr->driver.buffer->last_part = 1;
+                    lv_refr_area_part(area_p);
+                }
+
+                for(column = area_p->x2; column > max_column - 1 + area_p->x1; column -= max_column * 2) {
+                    /*Calc. the next x coordinates of VDB*/                    
+                    vdb->area.x1 = (column - max_column + 1) - max_column;
+                    vdb->area.x2 = column - max_column;
+                    vdb->area.y1 = area_p->y1;
+                    vdb->area.y2 = area_p->y2;
+                    if(vdb->area.x2 > x2) vdb->area.x2 = x2;
+                    column_last = vdb->area.x1;
+                    if(x2 == column_last) disp_refr->driver.buffer->last_part = 1;
+                    lv_refr_area_part(area_p);
+                }
+
+                /*If the last (first) x coordinates are not handled yet ...*/
+                if(area_p->x1 != column_last) {
+                    /*Calc. the next x coordinates of VDB*/
+                    vdb->area.x1 = area_p->x1;
+                    vdb->area.x2 = column;
+                    vdb->area.y1 = area_p->y1;
+                    vdb->area.y2 = area_p->y2;
+                    disp_refr->driver.buffer->last_part = 1;
+                    /*Refresh this part too*/
+                    lv_refr_area_part(area_p);
+                }
+            } else if (disp_refr->render_direction == 3) {
+                /*Always use the full column*/
+                lv_coord_t column;
+                lv_coord_t column_last = 0;
+                for(column = area_p->x1; column + max_column - 1 <= x2; column += max_column) {
+                    /*Calc. the next y coordinates of VDB*/
+                    vdb->area.x1 = column;
+                    vdb->area.x2 = column + max_column - 1;
+                    vdb->area.y1 = area_p->y1;
+                    vdb->area.y2 = area_p->y2;                    
+                    if(vdb->area.x2 > x2) vdb->area.x2 = x2;
+                    column_last = vdb->area.x2;
+                    if(x2 == column_last) disp_refr->driver.buffer->last_part = 1;
+                    lv_refr_area_part(area_p);
+                }
+            
+                /*If the last y coordinates are not handled yet ...*/
+                if(x2 != column_last) {
+                    /*Calc. the next y coordinates of VDB*/
+                    vdb->area.x1 = column;
+                    vdb->area.x2 = x2;
+                    vdb->area.y1 = area_p->y1;
+                    vdb->area.y2 = area_p->y2;
+                    disp_refr->driver.buffer->last_part = 1;
+                    lv_refr_area_part(area_p);
+                }
+            } else if (disp_refr->render_direction == 5) {
+                /*Always use the full column*/
+                lv_coord_t column;
+                lv_coord_t column_last = 0;
+                for(column = area_p->x1; column + max_column - 1 <= x2; column += max_column * 2) {
+                    /*Calc. the next y coordinates of VDB*/
+                    vdb->area.x1 = column;
+                    vdb->area.x2 = column + max_column - 1;
+                    vdb->area.y1 = area_p->y1;
+                    vdb->area.y2 = area_p->y2;                    
+                    if(vdb->area.x2 > x2) vdb->area.x2 = x2;
+                    column_last = vdb->area.x2;
+                    if(x2 == column_last) disp_refr->driver.buffer->last_part = 1;
+                    lv_refr_area_part(area_p);
+                }
+
+                for(column = area_p->x1; column + max_column - 1 <= x2; column += max_column * 2) {
+                    /*Calc. the next y coordinates of VDB*/
+                    vdb->area.x1 = column + max_column;
+                    vdb->area.x2 = (column + max_column - 1) + max_column;
+                    vdb->area.y1 = area_p->y1;
+                    vdb->area.y2 = area_p->y2;                    
+                    if(vdb->area.x2 > x2) vdb->area.x2 = x2;
+                    column_last = vdb->area.x2;
+                    if(x2 == column_last) disp_refr->driver.buffer->last_part = 1;
+                    lv_refr_area_part(area_p);
+                }
+            
+                /*If the last y coordinates are not handled yet ...*/
+                if(x2 != column_last) {
+                    /*Calc. the next y coordinates of VDB*/
+                    vdb->area.x1 = column;
+                    vdb->area.x2 = x2;
+                    vdb->area.y1 = area_p->y1;
+                    vdb->area.y2 = area_p->y2;
+                    disp_refr->driver.buffer->last_part = 1;
+                    lv_refr_area_part(area_p);
+                }
+            }
         }
     }
 }
@@ -541,7 +760,6 @@ static void lv_refr_area_part(const lv_area_t * area_p)
         lv_refr_obj_and_children(top_prev_scr, &start_mask);
 
     }
-
 
     if(top_act_scr == NULL) {
         top_act_scr = disp_refr->act_scr;
@@ -724,12 +942,182 @@ static void lv_refr_obj(lv_obj_t * obj, const lv_area_t * mask_ori_p)
     }
 }
 
+static void lv_refr_vdb_rotate_180(lv_disp_drv_t * drv, lv_area_t * area, lv_color_t * color_p)
+{
+    lv_coord_t area_w = lv_area_get_width(area);
+    lv_coord_t area_h = lv_area_get_height(area);
+    uint32_t total = area_w * area_h;
+    /* Swap the beginning and end values */
+    lv_color_t tmp;
+    uint32_t i = total - 1, j = 0;
+    while(i > j) {
+        tmp = color_p[i];
+        color_p[i] = color_p[j];
+        color_p[j] = tmp;
+        i--;
+        j++;
+    }
+    lv_coord_t tmp_coord;
+    tmp_coord = area->y2;
+    area->y2 = drv->ver_res - area->y1 - 1;
+    area->y1 = drv->ver_res - tmp_coord - 1;
+    tmp_coord = area->x2;
+    area->x2 = drv->hor_res - area->x1 - 1;
+    area->x1 = drv->hor_res - tmp_coord - 1;
+}
+
+static LV_ATTRIBUTE_FAST_MEM void lv_refr_vdb_rotate_90(bool invert_i, lv_coord_t area_w, lv_coord_t area_h,
+                                                        lv_color_t * orig_color_p, lv_color_t * rot_buf)
+{
+
+    uint32_t invert = (area_w * area_h) - 1;
+    uint32_t initial_i = ((area_w - 1) * area_h);
+    for(lv_coord_t y = 0; y < area_h; y++) {
+        uint32_t i = initial_i + y;
+        if(invert_i)
+            i = invert - i;
+        for(lv_coord_t x = 0; x < area_w; x++) {
+            rot_buf[i] = *(orig_color_p++);
+            if(invert_i)
+                i += area_h;
+            else
+                i -= area_h;
+        }
+    }
+}
+
+/**
+ * Helper function for lv_refr_vdb_rotate_90_sqr. Given a list of four numbers, rotate the entire list to the left.
+ */
+static inline void lv_vdb_rotate4(lv_color_t * a, lv_color_t * b, lv_color_t * c, lv_color_t * d)
+{
+    lv_color_t tmp;
+    tmp = *a;
+    *a = *b;
+    *b = *c;
+    *c = *d;
+    *d = tmp;
+}
+
+/**
+ * Rotate a square image 90/270 degrees in place.
+ * @note inspired by https://stackoverflow.com/a/43694906
+ */
+static void lv_refr_vdb_rotate_90_sqr(bool is_270, lv_coord_t w, lv_color_t * color_p)
+{
+    for(lv_coord_t i = 0; i < w / 2; i++) {
+        for(lv_coord_t j = 0; j < (w + 1) / 2; j++) {
+            lv_coord_t inv_i = (w - 1) - i;
+            lv_coord_t inv_j = (w - 1) - j;
+            if(is_270) {
+                lv_vdb_rotate4(
+                    &color_p[i * w + j],
+                    &color_p[inv_j * w + i],
+                    &color_p[inv_i * w + inv_j],
+                    &color_p[j * w + inv_i]
+                );
+            }
+            else {
+                lv_vdb_rotate4(
+                    &color_p[i * w + j],
+                    &color_p[j * w + inv_i],
+                    &color_p[inv_i * w + inv_j],
+                    &color_p[inv_j * w + i]
+                );
+            }
+
+        }
+    }
+}
+
+/**
+ * Rotate the VDB to the display's native orientation.
+ */
+static void lv_refr_vdb_rotate(lv_area_t * area, lv_color_t * color_p)
+{
+    lv_disp_drv_t * drv = &disp_refr->driver;
+    if(lv_disp_is_true_double_buf(disp_refr) && drv->sw_rotate) {
+        LV_LOG_ERROR("cannot rotate a true double-buffered display!");
+        return;
+    }
+    if(drv->rotated == LV_DISP_ROT_180) {
+        lv_refr_vdb_rotate_180(drv, area, color_p);
+        drv->flush_cb(drv, area, color_p);
+    }
+    else if(drv->rotated == LV_DISP_ROT_90 || drv->rotated == LV_DISP_ROT_270) {
+        /*Allocate a temporary buffer to store rotated image */
+        lv_color_t * rot_buf = NULL;
+        lv_disp_buf_t * vdb = lv_disp_get_buf(disp_refr);
+        lv_coord_t area_w = lv_area_get_width(area);
+        lv_coord_t area_h = lv_area_get_height(area);
+        /*Determine the maximum number of rows that can be rotated at a time*/
+        lv_coord_t max_row = LV_MATH_MIN((lv_coord_t)((LV_DISP_ROT_MAX_BUF / sizeof(lv_color_t)) / area_w), area_h);
+        lv_coord_t init_y_off;
+        init_y_off = area->y1;
+        if(drv->rotated == LV_DISP_ROT_90) {
+            area->y2 = drv->ver_res - area->x1 - 1;
+            area->y1 = area->y2 - area_w + 1;
+        }
+        else {
+            area->y1 = area->x1;
+            area->y2 = area->y1 + area_w - 1;
+        }
+        vdb->flushing = 0;
+        /*Rotate the screen in chunks, flushing after each one*/
+        lv_coord_t row = 0;
+        while(row < area_h) {
+            lv_coord_t height = LV_MATH_MIN(max_row, area_h - row);
+            vdb->flushing = 1;
+            if((row == 0) && (area_h >= area_w)) {
+                /*Rotate the initial area as a square*/
+                height = area_w;
+                lv_refr_vdb_rotate_90_sqr(drv->rotated == LV_DISP_ROT_270, area_w, color_p);
+                if(drv->rotated == LV_DISP_ROT_90) {
+                    area->x1 = init_y_off;
+                    area->x2 = init_y_off + area_w - 1;
+                }
+                else {
+                    area->x2 = drv->hor_res - 1 - init_y_off;
+                    area->x1 = area->x2 - area_w + 1;
+                }
+            }
+            else {
+                /*Rotate other areas using a maximum buffer size*/
+                if(rot_buf == NULL)
+                    rot_buf = _lv_mem_buf_get(LV_DISP_ROT_MAX_BUF);
+                lv_refr_vdb_rotate_90(drv->rotated == LV_DISP_ROT_270, area_w, height, color_p, rot_buf);
+
+                if(drv->rotated == LV_DISP_ROT_90) {
+                    area->x1 = init_y_off + row;
+                    area->x2 = init_y_off + row + height - 1;
+                }
+                else {
+                    area->x2 = drv->hor_res - 1 - init_y_off - row;
+                    area->x1 = area->x2 - height + 1;
+                }
+            }
+            /*Flush the completed area to the display*/
+            drv->flush_cb(drv, area, rot_buf == NULL ? color_p : rot_buf);
+            /*FIXME: Rotation forces legacy behavior where rendering and flushing are done serially*/
+            while(vdb->flushing) {
+                if(drv->wait_cb) drv->wait_cb(drv);
+            }
+            color_p += area_w * height;
+            row += height;
+        }
+        /*Free the allocated buffer at the end if necessary*/
+        if(rot_buf != NULL)
+            _lv_mem_buf_release(rot_buf);
+    }
+}
+
 /**
  * Flush the content of the VDB
  */
 static void lv_refr_vdb_flush(void)
 {
     lv_disp_buf_t * vdb = lv_disp_get_buf(disp_refr);
+    lv_color_t * color_p = vdb->buf_act;
 
     /*In double buffered mode wait until the other buffer is flushed before flushing the current
      * one*/
@@ -748,8 +1136,15 @@ static void lv_refr_vdb_flush(void)
     lv_disp_t * disp = _lv_refr_get_disp_refreshing();
     if(disp->driver.gpu_wait_cb) disp->driver.gpu_wait_cb(&disp->driver);
 
-    if(disp->driver.flush_cb) disp->driver.flush_cb(&disp->driver, &vdb->area, vdb->buf_act);
-
+    if(disp->driver.flush_cb) {
+        /*Rotate the buffer to the display's native orientation if necessary*/
+        if(disp->driver.rotated != LV_DISP_ROT_NONE && disp->driver.sw_rotate) {
+            lv_refr_vdb_rotate(&vdb->area, vdb->buf_act);
+        }
+        else {
+            disp->driver.flush_cb(&disp->driver, &vdb->area, color_p);
+        }
+    }
     if(vdb->buf1 && vdb->buf2) {
         if(vdb->buf_act == vdb->buf1)
             vdb->buf_act = vdb->buf2;

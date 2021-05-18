@@ -15,10 +15,6 @@
 #include "../lv_misc/lv_gc.h"
 #include "lv_hal_disp.h"
 
-#if defined(LV_GC_INCLUDE)
-    #include LV_GC_INCLUDE
-#endif /* LV_ENABLE_GC */
-
 /*********************
  *      DEFINES
  *********************/
@@ -136,10 +132,10 @@ bool _lv_indev_read(lv_indev_t * indev, lv_indev_data_t * data)
     /* For touchpad sometimes users don't the last pressed coordinate on release.
      * So be sure a coordinates are initialized to the last point */
     if(indev->driver.type == LV_INDEV_TYPE_POINTER) {
-        data->point.x = indev->proc.types.pointer.act_point.x;
-        data->point.y = indev->proc.types.pointer.act_point.y;
+        data->point.x = indev->proc.types.pointer.last_raw_point.x;
+        data->point.y = indev->proc.types.pointer.last_raw_point.y;
     }
-    /*Similarly set at least the last key in case of the  the user doesn't set it  on release*/
+    /*Similarly set at least the last key in case of the user doesn't set it on release*/
     else if(indev->driver.type == LV_INDEV_TYPE_KEYPAD) {
         data->key = indev->proc.types.keypad.last_key;
     }
@@ -150,9 +146,9 @@ bool _lv_indev_read(lv_indev_t * indev, lv_indev_data_t * data)
     }
 
     if(indev->driver.read_cb) {
-        LV_LOG_TRACE("idnev read started");
+        LV_LOG_TRACE("indev read started");
         cont = indev->driver.read_cb(&indev->driver, data);
-        LV_LOG_TRACE("idnev read finished");
+        LV_LOG_TRACE("indev read finished");
     }
     else {
         LV_LOG_WARN("indev function registered");

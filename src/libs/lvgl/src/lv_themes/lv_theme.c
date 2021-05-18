@@ -91,7 +91,6 @@ void lv_theme_copy(lv_theme_t * theme, const lv_theme_t * copy)
         theme->apply_cb = copy->apply_cb;
         theme->apply_xcb = copy->apply_xcb;
     }
-
 }
 
 /**
@@ -337,7 +336,7 @@ static void clear_styles(lv_obj_t * obj, lv_theme_style_t name)
 #if LV_USE_TABVIEW
         case LV_THEME_TABVIEW:
             lv_obj_clean_style_list(obj, LV_TABVIEW_PART_BG);
-            lv_obj_clean_style_list(obj, LV_TABVIEW_PART_BG_SCRLLABLE);
+            lv_obj_clean_style_list(obj, LV_TABVIEW_PART_BG_SCROLLABLE);
             lv_obj_clean_style_list(obj, LV_TABVIEW_PART_TAB_BG);
             lv_obj_clean_style_list(obj, LV_TABVIEW_PART_INDIC);
             lv_obj_clean_style_list(obj, LV_TABVIEW_PART_TAB_BTN);
@@ -357,14 +356,12 @@ static void clear_styles(lv_obj_t * obj, lv_theme_style_t name)
             break;
 #endif
 
-
 #if LV_USE_ROLLER
         case LV_THEME_ROLLER:
             lv_obj_clean_style_list(obj, LV_ROLLER_PART_BG);
             lv_obj_clean_style_list(obj, LV_ROLLER_PART_SELECTED);
             break;
 #endif
-
 
 #if LV_USE_OBJMASK
         case LV_THEME_OBJMASK:
@@ -432,7 +429,6 @@ static void clear_styles(lv_obj_t * obj, lv_theme_style_t name)
             break;
 #endif
 
-
 #if LV_USE_SPINBOX
         case LV_THEME_SPINBOX:
             lv_obj_clean_style_list(obj, LV_SPINBOX_PART_BG);
@@ -474,5 +470,4 @@ static void clear_styles(lv_obj_t * obj, lv_theme_style_t name)
         default:
             break;
     }
-
 }

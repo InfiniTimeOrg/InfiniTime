@@ -1,11 +1,11 @@
 #include "../lvgl.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
 #include "lv_test_core/lv_test_core.h"
 #include "lv_test_widgets/lv_test_label.h"
 
 #if LV_BUILD_TEST
+#include <sys/time.h>
 
 static void hal_init(void);
 static void dummy_flush_cb(lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
@@ -25,7 +25,6 @@ int main(void)
     printf("Exit with success!\n");
     return 0;
 }
-
 
 #if LV_USE_FILESYSTEM
 static lv_fs_res_t open_cb(struct _lv_fs_drv_t * drv, void * file_p, const char * path, lv_fs_mode_t mode)
@@ -144,4 +143,3 @@ uint32_t custom_tick_get(void)
 }
 
 #endif
-

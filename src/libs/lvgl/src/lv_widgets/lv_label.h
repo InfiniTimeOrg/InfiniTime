@@ -155,7 +155,7 @@ void lv_label_set_long_mode(lv_obj_t * label, lv_label_long_mode_t long_mode);
 /**
  * Set the align of the label (left or center)
  * @param label pointer to a label object
- * @param align 'LV_LABEL_ALIGN_LEFT' or 'LV_LABEL_ALIGN_LEFT'
+ * @param align LV_LABEL_ALIGN_LEFT/RIGHT/CENTER
  */
 void lv_label_set_align(lv_obj_t * label, lv_label_align_t align);
 
@@ -167,7 +167,7 @@ void lv_label_set_align(lv_obj_t * label, lv_label_align_t align);
 void lv_label_set_recolor(lv_obj_t * label, bool en);
 
 /**
- * Set the label's animation speed in LV_LABEL_LONG_SROLL/SCROLL_CIRC modes
+ * Set the label's animation speed in LV_LABEL_LONG_SROLL/SROLL_CIRC modes
  * @param label pointer to a label object
  * @param anim_speed speed of animation in px/sec unit
  */
@@ -186,7 +186,6 @@ void lv_label_set_text_sel_start(lv_obj_t * label, uint32_t index);
  * @param index index to set. `LV_LABEL_TXT_SEL_OFF` to select nothing.
  */
 void lv_label_set_text_sel_end(lv_obj_t * label, uint32_t index);
-
 /*=====================
  * Getter functions
  *====================*/
@@ -208,7 +207,7 @@ lv_label_long_mode_t lv_label_get_long_mode(const lv_obj_t * label);
 /**
  * Get the align attribute
  * @param label pointer to a label object
- * @return LV_LABEL_ALIGN_LEFT or LV_LABEL_ALIGN_CENTER
+ * @return LV_LABEL_ALIGN_LEFT/RIGHT/CENTER
  */
 lv_label_align_t lv_label_get_align(const lv_obj_t * label);
 
@@ -266,7 +265,6 @@ uint32_t lv_label_get_text_sel_start(const lv_obj_t * label);
  */
 uint32_t lv_label_get_text_sel_end(const lv_obj_t * label);
 
-
 lv_style_list_t * lv_label_get_style(lv_obj_t * label, uint8_t type);
 
 /*=====================
@@ -290,6 +288,12 @@ void lv_label_ins_text(lv_obj_t * label, uint32_t pos, const char * txt);
  * @param cnt number of characters to cut
  */
 void lv_label_cut_text(lv_obj_t * label, uint32_t pos, uint32_t cnt);
+
+/**
+ * Refresh the label with its text stored in its extended data
+ * @param label pointer to a label object
+ */
+void lv_label_refr_text(lv_obj_t * label);
 
 /**********************
  *      MACROS

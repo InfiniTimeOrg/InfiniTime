@@ -31,7 +31,7 @@
  *      INCLUDES
  *********************/
 
-#include "lv_conf.h"
+#include "../lv_conf_internal.h"
 
 #if LV_USE_GPU_NXP_VG_LITE
 
@@ -40,7 +40,6 @@
 #include "../lv_misc/lv_log.h"
 #include "fsl_cache.h"
 #include "vg_lite.h"
-
 
 /*********************
  *      DEFINES
@@ -117,7 +116,6 @@ lv_res_t lv_gpu_nxp_vglite_fill(lv_color_t * dest_buf, lv_coord_t dest_width, lv
     }
     else {   /* fill with transparency */
 
-
         vg_lite_path_t path;
         lv_color32_t colMix;
         int16_t path_data[] = { /* VG rectangular path */
@@ -128,7 +126,6 @@ lv_res_t lv_gpu_nxp_vglite_fill(lv_color_t * dest_buf, lv_coord_t dest_width, lv
             VLC_OP_LINE, fill_area->x1,  fill_area->y1,
             VLC_OP_END
         };
-
 
         err |= vg_lite_init_path(&path, VG_LITE_S16, VG_LITE_LOW, sizeof(path_data), path_data,
                                  fill_area->x1, fill_area->y1, fill_area->x2 + 1, fill_area->y2 + 1);
@@ -175,7 +172,6 @@ lv_res_t lv_gpu_nxp_vglite_fill(lv_color_t * dest_buf, lv_coord_t dest_width, lv
         return LV_RES_INV;
     }
 }
-
 
 /***
  * BLock Image Transfer.

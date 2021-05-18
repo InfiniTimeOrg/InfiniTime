@@ -34,7 +34,6 @@ typedef struct {
     const lv_area_t * clip_area;
 } quarter_draw_dsc_t;
 
-
 /**********************
  *  STATIC PROTOTYPES
  **********************/
@@ -42,8 +41,7 @@ static void draw_quarter_0(quarter_draw_dsc_t * q);
 static void draw_quarter_1(quarter_draw_dsc_t * q);
 static void draw_quarter_2(quarter_draw_dsc_t * q);
 static void draw_quarter_3(quarter_draw_dsc_t * q);
-static void get_rounded_area(int16_t angle, lv_coord_t radius, uint8_t tickness, lv_area_t * res_area);
-
+static void get_rounded_area(int16_t angle, lv_coord_t radius, uint8_t thickness, lv_area_t * res_area);
 
 /**********************
  *  STATIC VARIABLES
@@ -331,7 +329,6 @@ static void draw_quarter_2(quarter_draw_dsc_t * q)
     }
 }
 
-
 static void draw_quarter_3(quarter_draw_dsc_t * q)
 {
     lv_area_t quarter_area;
@@ -385,29 +382,19 @@ static void draw_quarter_3(quarter_draw_dsc_t * q)
     }
 }
 
-
-static void get_rounded_area(int16_t angle, lv_coord_t radius, uint8_t tickness, lv_area_t * res_area)
+static void get_rounded_area(int16_t angle, lv_coord_t radius, uint8_t thickness, lv_area_t * res_area)
 {
     const uint8_t ps = 8;
     const uint8_t pa = 127;
 
-    int32_t thick_half = tickness / 2;
-    uint8_t thick_corr = (tickness & 0x01) ? 0 : 1;
-
-    int32_t rx_corr;
-    int32_t ry_corr;
-
-    if(angle > 90 && angle < 270) rx_corr = 0;
-    else  rx_corr = 0;
-
-    if(angle > 0 && angle < 180) ry_corr = 0;
-    else  ry_corr = 0;
+    int32_t thick_half = thickness / 2;
+    uint8_t thick_corr = (thickness & 0x01) ? 0 : 1;
 
     int32_t cir_x;
     int32_t cir_y;
 
-    cir_x = ((radius - rx_corr - thick_half) * _lv_trigo_sin(90 - angle)) >> (LV_TRIGO_SHIFT - ps);
-    cir_y = ((radius - ry_corr - thick_half) * _lv_trigo_sin(angle)) >> (LV_TRIGO_SHIFT - ps);
+    cir_x = ((radius - thick_half) * _lv_trigo_sin(90 - angle)) >> (LV_TRIGO_SHIFT - ps);
+    cir_y = ((radius - thick_half) * _lv_trigo_sin(angle)) >> (LV_TRIGO_SHIFT - ps);
 
     /* Actually the center of the pixel need to be calculated so apply 1/2 px offset*/
     if(cir_x > 0) {
@@ -432,4 +419,3 @@ static void get_rounded_area(int16_t angle, lv_coord_t radius, uint8_t tickness,
         res_area->y2 = cir_y + thick_half - thick_corr;
     }
 }
-

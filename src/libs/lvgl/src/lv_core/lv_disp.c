@@ -106,7 +106,7 @@ lv_obj_t * lv_disp_get_layer_top(lv_disp_t * disp)
 /**
  * Return with the sys. layer. (Same on every screen and it is above the normal screen and the top
  * layer)
- * @param disp pointer to display which sys. layer  should be get. (NULL to use the default screen)
+ * @param disp pointer to display which sys. layer should be get. (NULL to use the default screen)
  * @return pointer to the sys layer object  (transparent screen sized lv_obj)
  */
 lv_obj_t * lv_disp_get_layer_sys(lv_disp_t * disp)
@@ -180,7 +180,6 @@ void lv_disp_set_bg_image(lv_disp_t * disp, const void  * img_src)
     _lv_inv_area(disp, &a);
 }
 
-
 /**
  * Opacity of the background
  * @param disp pointer to a display
@@ -214,6 +213,19 @@ void lv_disp_set_bg_opa(lv_disp_t * disp, lv_opa_t opa)
 void lv_scr_load_anim(lv_obj_t * new_scr, lv_scr_load_anim_t anim_type, uint32_t time, uint32_t delay, bool auto_del)
 {
     lv_disp_t * d = lv_obj_get_disp(new_scr);
+    lv_obj_t * act_scr = lv_scr_act();
+
+    if(d->del_prev && act_scr != d->scr_to_load && d->scr_to_load) {
+        lv_obj_del(act_scr);
+        lv_disp_load_scr(d->scr_to_load);
+        lv_anim_del(d->scr_to_load, NULL);
+        lv_obj_set_pos(d->scr_to_load, 0, 0);
+        lv_style_remove_prop(lv_obj_get_local_style(d->scr_to_load, LV_OBJ_PART_MAIN), LV_STYLE_OPA_SCALE);
+
+        act_scr = d->scr_to_load;
+    }
+
+    d->scr_to_load = new_scr;
 
     if(d->prev_scr && d->del_prev) {
         lv_obj_del(d->prev_scr);
@@ -396,13 +408,13 @@ static void opa_scale_anim(lv_obj_t * obj, lv_anim_value_t v)
     lv_obj_set_style_local_opa_scale(obj, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, v);
 }
 
-
 static void scr_anim_ready(lv_anim_t * a)
 {
     lv_disp_t * d = lv_obj_get_disp(a->var);
 
     if(d->prev_scr && d->del_prev) lv_obj_del(d->prev_scr);
     d->prev_scr = NULL;
+    d->scr_to_load = NULL;
     lv_style_remove_prop(lv_obj_get_local_style(a->var, LV_OBJ_PART_MAIN), LV_STYLE_OPA_SCALE);
 }
 #endif

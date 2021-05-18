@@ -1,5 +1,5 @@
 /**
- * @file lv_font_loader.h
+ * @file lv_test_font_loader.h
  *
  */
 
@@ -36,4 +36,3 @@ void lv_test_font_loader(void);
 #endif
 
 #endif /*LV_TEST_FONT_LOADER_H*/
-

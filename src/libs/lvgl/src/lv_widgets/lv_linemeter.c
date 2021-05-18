@@ -131,83 +131,9 @@ void lv_linemeter_set_value(lv_obj_t * lmeter, int32_t value)
     int16_t level_new =
         (int32_t)((int32_t)(ext->cur_value - ext->min_value) * (ext->line_cnt - 1)) / (ext->max_value - ext->min_value);
 
-    if(level_new == level_old) {
-        return;
-    }
+    if(level_new == level_old) return;
 
-    lv_style_int_t left = lv_obj_get_style_pad_left(lmeter, LV_LINEMETER_PART_MAIN);
-    lv_style_int_t right = lv_obj_get_style_pad_right(lmeter, LV_LINEMETER_PART_MAIN);
-    lv_style_int_t top = lv_obj_get_style_pad_top(lmeter, LV_LINEMETER_PART_MAIN);
-    lv_style_int_t bottom = lv_obj_get_style_pad_bottom(lmeter, LV_LINEMETER_PART_MAIN);
-
-    lv_coord_t r_out = (lv_obj_get_width(lmeter) - left - right) / 2 ;
-    lv_coord_t r_in  = r_out - lv_obj_get_style_scale_width(lmeter, LV_LINEMETER_PART_MAIN);
-    if(r_in < 1) r_in = 1;
-
-    lv_coord_t x_ofs  = lmeter->coords.x1 + r_out + left;
-    lv_coord_t y_ofs  = lmeter->coords.y1 + r_out + top;
-    int16_t angle_ofs = ext->angle_ofs + 90 + (360 - ext->scale_angle) / 2;
-
-    lv_style_int_t line_width = lv_obj_get_style_scale_end_line_width(lmeter, LV_LINEMETER_PART_MAIN);
-    lv_style_int_t end_line_width = lv_obj_get_style_scale_end_line_width(lmeter, LV_LINEMETER_PART_MAIN);
-    line_width = LV_MATH_MAX(line_width, end_line_width);
-
-    int32_t angle_old = (level_old * ext->scale_angle) / (ext->line_cnt - 1);
-
-    /*Use smaller clip area only around the visible line*/
-    int32_t y_in_old  = (int32_t)((int32_t)_lv_trigo_sin(angle_old + angle_ofs) * r_in) >> LV_TRIGO_SHIFT;
-    int32_t x_in_old  = (int32_t)((int32_t)_lv_trigo_sin(angle_old + 90 + angle_ofs) * r_in) >> LV_TRIGO_SHIFT;
-
-
-    int32_t y_out_old  = (int32_t)((int32_t)_lv_trigo_sin(angle_old + angle_ofs) * r_out) >> LV_TRIGO_SHIFT;
-    int32_t x_out_old  = (int32_t)((int32_t)_lv_trigo_sin(angle_old + 90 + angle_ofs) * r_out) >> LV_TRIGO_SHIFT;
-
-
-
-    int32_t angle_new = (level_new * ext->scale_angle) / (ext->line_cnt - 1);
-
-    /*Use smaller clip area only around the visible line*/
-    int32_t y_in_new  = (int32_t)((int32_t)_lv_trigo_sin(angle_new + angle_ofs) * r_in) >> LV_TRIGO_SHIFT;
-    int32_t x_in_new  = (int32_t)((int32_t)_lv_trigo_sin(angle_new + 90 + angle_ofs) * r_in) >> LV_TRIGO_SHIFT;
-
-
-    int32_t y_out_new  = (int32_t)((int32_t)_lv_trigo_sin(angle_new + angle_ofs) * r_out) >> LV_TRIGO_SHIFT;
-    int32_t x_out_new  = (int32_t)((int32_t)_lv_trigo_sin(angle_new + 90 + angle_ofs) * r_out) >> LV_TRIGO_SHIFT;
-
-    lv_area_t a;
-    if(x_out_old < 0 && x_out_new < 0) {
-        a.x1 = lmeter->coords.x1 + left - line_width;
-        a.y1 = LV_MATH_MIN4(y_out_old, y_out_new, y_in_old, y_in_new) + y_ofs - line_width;
-        a.x2 = LV_MATH_MAX(x_in_old, x_in_new) + x_ofs + line_width;
-        a.y2 = LV_MATH_MAX4(y_out_old, y_out_new, y_in_old, y_in_new) + y_ofs + line_width;
-    }
-    else if(x_out_old > 0 && x_out_new > 0) {
-        a.x1 = LV_MATH_MIN(x_in_old, x_in_new) + x_ofs - line_width;
-        a.y1 = LV_MATH_MIN4(y_out_old, y_out_new, y_in_old, y_in_new) + y_ofs - line_width;
-        a.x2 = lmeter->coords.x2 - right + line_width;
-        a.y2 = LV_MATH_MAX4(y_out_old, y_out_new, y_in_old, y_in_new) + y_ofs + line_width;
-    }
-    else if(y_out_old < 0 && y_out_new < 0) {
-        a.x1 = LV_MATH_MIN4(x_out_old, x_out_new, x_in_old, x_in_new) + x_ofs - line_width;
-        a.y1 = lmeter->coords.y1 + top - line_width;
-        a.x2 = LV_MATH_MAX4(x_out_old, x_out_new, x_in_old, x_in_new) + x_ofs + line_width;
-        a.y2 = LV_MATH_MAX(y_in_old, y_in_new) + y_ofs + line_width;
-    }
-    else if(y_out_old > 0 && y_out_new > 0) {
-        a.x1 = LV_MATH_MIN4(x_out_old, x_out_new, x_in_old, x_in_new) + x_ofs - line_width;
-        a.y1 = LV_MATH_MIN(y_in_old, y_in_new) + y_ofs - line_width;
-        a.x2 = LV_MATH_MAX4(x_out_old, x_out_new, x_in_old, x_in_new) + x_ofs + line_width;
-        a.y2 = lmeter->coords.y2 - bottom + line_width;
-    }
-    else {
-        a.x1 = lmeter->coords.x1 + left - line_width;
-        a.y1 = lmeter->coords.y1 + top - line_width;
-        a.x2 = lmeter->coords.x2 - right + line_width;
-        a.y2 = lmeter->coords.y2 - bottom + line_width;
-    }
-
-    lv_obj_invalidate_area(lmeter, &a);
-
+    lv_obj_invalidate(lmeter);
 }
 
 /**
@@ -423,7 +349,6 @@ void lv_linemeter_draw_scale(lv_obj_t * lmeter, const lv_area_t * clip_area, uin
     int16_t mask_in_id = lv_draw_mask_add(&mask_in_param, 0);
 #endif
 
-
 #if LV_LINEMETER_PRECISE > 1
     mask_area.x1 = x_ofs - r_out;
     mask_area.x2 = x_ofs + r_out - 1;
@@ -521,7 +446,7 @@ void lv_linemeter_draw_scale(lv_obj_t * lmeter, const lv_area_t * clip_area, uin
         p1.y = y_out_extra;
 
         /* Set the color of the lines */
-        if((!ext->mirrored && i >= level) || (ext->mirrored && i <= level)) {
+        if(ext->cur_value == ext->min_value || (!ext->mirrored && i > level) || (ext->mirrored && i < level)) {
             line_dsc.color = end_color;
             line_dsc.width = end_line_width;
         }
@@ -540,12 +465,12 @@ void lv_linemeter_draw_scale(lv_obj_t * lmeter, const lv_area_t * clip_area, uin
     lv_draw_mask_remove_id(mask_out_id);
 #endif
 
-    if(part == LV_LINEMETER_PART_MAIN && level < ext->line_cnt - 1) {
+    if(part == LV_LINEMETER_PART_MAIN && level + 1 < ext->line_cnt - 1) {
         lv_style_int_t border_width = lv_obj_get_style_scale_border_width(lmeter, part);
         lv_style_int_t end_border_width = lv_obj_get_style_scale_end_border_width(lmeter, part);
 
         if(border_width || end_border_width) {
-            int16_t end_angle = ((level) * ext->scale_angle) / (ext->line_cnt - 1) + angle_ofs;
+            int16_t end_angle = ((level + 1) * ext->scale_angle) / (ext->line_cnt - 1) + angle_ofs;
             lv_draw_line_dsc_t arc_dsc;
             lv_draw_line_dsc_init(&arc_dsc);
             lv_obj_init_draw_line_dsc(lmeter, part, &arc_dsc);
@@ -563,7 +488,6 @@ void lv_linemeter_draw_scale(lv_obj_t * lmeter, const lv_area_t * clip_area, uin
             }
         }
     }
-
 
 }
 

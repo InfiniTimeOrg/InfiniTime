@@ -10,8 +10,25 @@
 
 #include <stdint.h>
 
+/* Handle special Kconfig options */
+#ifndef LV_KCONFIG_IGNORE
+#   include "lv_conf_kconfig.h"
+#   ifdef CONFIG_LV_CONF_SKIP
+#       define LV_CONF_SKIP
+#   endif
+#endif
+
+/* If "lv_conf.h" is available from here try to use it later.*/
+#if defined __has_include
+#  if __has_include("lv_conf.h")
+#   ifndef LV_CONF_INCLUDE_SIMPLE
+#    define LV_CONF_INCLUDE_SIMPLE
+#   endif
+#  endif
+#endif
+
 /*If lv_conf.h is not skipped include it*/
-#if !defined(LV_CONF_SKIP) && !defined(CONFIG_LV_CONF_SKIP)
+#if !defined(LV_CONF_SKIP)
 #  if defined(LV_CONF_PATH)											/*If there is a path defined for lv_conf.h use it*/
 #    define __LV_TO_STR_AUX(x) #x
 #    define __LV_TO_STR(x) __LV_TO_STR_AUX(x)
@@ -154,6 +171,15 @@
 
 /* Type of coordinates. Should be `int16_t` (or `int32_t` for extreme cases) */
 
+/* Maximum buffer size to allocate for rotation. Only used if software rotation is enabled. */
+#ifndef LV_DISP_ROT_MAX_BUF
+#  ifdef CONFIG_LV_DISP_ROT_MAX_BUF
+#    define LV_DISP_ROT_MAX_BUF CONFIG_LV_DISP_ROT_MAX_BUF
+#  else
+#    define  LV_DISP_ROT_MAX_BUF  (10U * 1024U)
+#  endif
+#endif
+
 /*=========================
    Memory manager settings
  *=========================*/
@@ -179,7 +205,7 @@
 #  endif
 #endif
 
-/* Complier prefix for a big array declaration */
+/* Compiler prefix for a big array declaration */
 #ifndef LV_MEM_ATTR
 #  ifdef CONFIG_LV_MEM_ATTR
 #    define LV_MEM_ATTR CONFIG_LV_MEM_ATTR
@@ -308,7 +334,7 @@
 #endif
 
 /* Long press time in milliseconds.
- * Time to send `LV_EVENT_LONG_PRESSSED`) */
+ * Time to send `LV_EVENT_LONG_PRESSED`) */
 #ifndef LV_INDEV_DEF_LONG_PRESS_TIME
 #  ifdef CONFIG_LV_INDEV_DEF_LONG_PRESS_TIME
 #    define LV_INDEV_DEF_LONG_PRESS_TIME CONFIG_LV_INDEV_DEF_LONG_PRESS_TIME
@@ -326,7 +352,6 @@
 #    define  LV_INDEV_DEF_LONG_PRESS_REP_TIME  100
 #  endif
 #endif
-
 
 /* Gesture threshold in pixels */
 #ifndef LV_INDEV_DEF_GESTURE_LIMIT
@@ -580,7 +605,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h" */
  * (I.e. no new image decoder is added)
  * With complex image decoders (e.g. PNG or JPG) caching can save the continuous open/decode of images.
  * However the opened images might consume additional RAM.
- * LV_IMG_CACHE_DEF_SIZE must be >= 1 */
+ * Set it to 0 to disable caching */
 #ifndef LV_IMG_CACHE_DEF_SIZE
 #  ifdef CONFIG_LV_IMG_CACHE_DEF_SIZE
 #    define LV_IMG_CACHE_DEF_SIZE CONFIG_LV_IMG_CACHE_DEF_SIZE
@@ -775,7 +800,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h" */
  * If an invalid parameter is found an error log message is printed and
  * the MCU halts at the error. (`LV_USE_LOG` should be enabled)
  * If you are debugging the MCU you can pause
- * the debugger to see exactly where  the issue is.
+ * the debugger to see exactly where the issue is.
  *
  * The behavior of asserts can be overwritten by redefining them here.
  * E.g. #define LV_ASSERT_MEM(p)  <my_assert_code>
@@ -852,7 +877,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h" */
  *    FONT USAGE
  *===================*/
 
-/* The built-in fonts contains the ASCII range and some Symbols with  4 bit-per-pixel.
+/* The built-in fonts contains the ASCII range and some Symbols with 4 bit-per-pixel.
  * The symbols are available via `LV_SYMBOL_...` defines
  * More info about fonts: https://docs.lvgl.io/v7/en/html/overview/font.html
  * To create a new font go to: https://lvgl.com/ttf-font-to-c-array
@@ -1045,6 +1070,13 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h" */
 #    define LV_FONT_UNSCII_8 CONFIG_LV_FONT_UNSCII_8
 #  else
 #    define  LV_FONT_UNSCII_8     0
+#  endif
+#endif
+#ifndef LV_FONT_UNSCII_16
+#  ifdef CONFIG_LV_FONT_UNSCII_16
+#    define LV_FONT_UNSCII_16 CONFIG_LV_FONT_UNSCII_16
+#  else
+#    define  LV_FONT_UNSCII_16     0
 #  endif
 #endif
 
@@ -1293,7 +1325,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h" */
 
 /* Support bidirectional texts.
  * Allows mixing Left-to-Right and Right-to-Left texts.
- * The direction will be processed according to the Unicode Bidirectioanl Algorithm:
+ * The direction will be processed according to the Unicode Bidirectional Algorithm:
  * https://www.w3.org/International/articles/inline-bidi-markup/uba-basics*/
 #ifndef LV_USE_BIDI
 #  ifdef CONFIG_LV_USE_BIDI
@@ -1344,15 +1376,15 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h" */
 #  endif
 #endif
 #ifndef lv_snprintf
-#  ifdef CONFIG_lv_snprintf
-#    define lv_snprintf CONFIG_lv_snprintf
+#  ifdef CONFIG_LV_SNPRINTF
+#    define lv_snprintf CONFIG_LV_SNPRINTF
 #  else
 #    define  lv_snprintf     snprintf
 #  endif
 #endif
 #ifndef lv_vsnprintf
-#  ifdef CONFIG_lv_vsnprintf
-#    define lv_vsnprintf CONFIG_lv_vsnprintf
+#  ifdef CONFIG_LV_VSNPRINTF
+#    define lv_vsnprintf CONFIG_LV_VSNPRINTF
 #  else
 #    define  lv_vsnprintf    vsnprintf
 #  endif
@@ -1899,7 +1931,6 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h" */
 #endif
 #endif
 
-
 /*Tab (dependencies: lv_page, lv_btnm)*/
 #ifndef LV_USE_TABVIEW
 #  ifdef CONFIG_LV_USE_TABVIEW
@@ -1964,7 +1995,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h" */
 
 
 /*If running without lv_conf.h add typdesf with default value*/
-#if defined(LV_CONF_SKIP) || defined(CONFIG_LV_CONF_SKIP)
+#if defined(LV_CONF_SKIP)
 
   /* Type of coordinates. Should be `int16_t` (or `int32_t` for extreme cases) */
   typedef int16_t lv_coord_t;

@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
 '''
-Generates a checker file for lv_conf.h from lv_conf_templ.h define all the not defined values
+Generates a checker file for lv_conf.h from lv_conf_template.h define all the not defined values
 '''
-
 
 import sys
 import re
@@ -14,7 +13,6 @@ if sys.version_info < (3,6,0):
 
 fin = open("../lv_conf_template.h", "r")
 fout = open("../src/lv_conf_internal.h", "w")
-
 
 fout.write(
 '''/**
@@ -29,8 +27,25 @@ fout.write(
 
 #include <stdint.h>
 
+/* Handle special Kconfig options */
+#ifndef LV_KCONFIG_IGNORE
+#   include "lv_conf_kconfig.h"
+#   ifdef CONFIG_LV_CONF_SKIP
+#       define LV_CONF_SKIP
+#   endif
+#endif
+
+/* If "lv_conf.h" is available from here try to use it later.*/
+#if defined __has_include
+#  if __has_include("lv_conf.h")
+#   ifndef LV_CONF_INCLUDE_SIMPLE
+#    define LV_CONF_INCLUDE_SIMPLE
+#   endif
+#  endif
+#endif
+
 /*If lv_conf.h is not skipped include it*/
-#if !defined(LV_CONF_SKIP) && !defined(CONFIG_LV_CONF_SKIP)
+#if !defined(LV_CONF_SKIP)
 #  if defined(LV_CONF_PATH)											/*If there is a path defined for lv_conf.h use it*/
 #    define __LV_TO_STR_AUX(x) #x
 #    define __LV_TO_STR(x) __LV_TO_STR_AUX(x)
@@ -60,7 +75,7 @@ for i in fin.read().splitlines():
   if '/*--END OF LV_CONF_H--*/' in i: break
 
   r = re.search(r'^ *# *define ([^\s]+).*$', i)
-  
+
 #ifndef LV_USE_BTN               /*Only if not defined in lv_conf.h*/
 #  ifdef CONFIG_LV_USE_BTN    /*Use KConfig value if set*/
 #    define LV_USE_BTN  CONFIG_LV_USE_BTN
@@ -68,17 +83,16 @@ for i in fin.read().splitlines():
 #    define LV_USE_BTN      1      /*Use default value*/
 #  endif
 #endif
-  
+
   if r:
     line = re.sub('\(.*?\)', '', r[1], 1)    #remove parentheses from macros
-    
     dr = re.sub('.*# *define', '', i, 1)
     d = "#    define " + dr
-
+		
     fout.write(
       f'#ifndef {line}\n'
-      f'#  ifdef CONFIG_{line}\n'
-      f'#    define {line} CONFIG_{line}\n'
+      f'#  ifdef CONFIG_{line.upper()}\n'
+      f'#    define {line} CONFIG_{line.upper()}\n'
       f'#  else\n'
       f'{d}\n'
       f'#  endif\n'
@@ -89,12 +103,11 @@ for i in fin.read().splitlines():
   else:
     fout.write(f'{i}\n')
 
-
 fout.write(
 '''
 
 /*If running without lv_conf.h add typdesf with default value*/
-#if defined(LV_CONF_SKIP) || defined(CONFIG_LV_CONF_SKIP)
+#if defined(LV_CONF_SKIP)
 
   /* Type of coordinates. Should be `int16_t` (or `int32_t` for extreme cases) */
   typedef int16_t lv_coord_t;

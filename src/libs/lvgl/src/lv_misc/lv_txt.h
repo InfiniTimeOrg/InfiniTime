@@ -16,9 +16,10 @@ extern "C" {
 #include "../lv_conf_internal.h"
 
 #include <stdbool.h>
-#include "lv_area.h"
+#include <stdarg.h>
 #include "lv_area.h"
 #include "../lv_font/lv_font.h"
+#include "lv_printf.h"
 
 /*********************
  *      DEFINES
@@ -127,8 +128,15 @@ void _lv_txt_ins(char * txt_buf, uint32_t pos, const char * ins_txt);
  */
 void _lv_txt_cut(char * txt, uint32_t pos, uint32_t len);
 
+/**
+ * return a new formatted text. Memory will be allocated to store the text.
+ * @param fmt `printf`-like format
+ * @return pointer to the allocated text string.
+ */
+char * _lv_txt_set_text_vfmt(const char * fmt, va_list ap);
+
 /***************************************************************
- *  GLOBAL FUNCTION POINTERS FOR CAHRACTER ENCODING INTERFACE
+ *  GLOBAL FUNCTION POINTERS FOR CHARACTER ENCODING INTERFACE
  ***************************************************************/
 
 /**

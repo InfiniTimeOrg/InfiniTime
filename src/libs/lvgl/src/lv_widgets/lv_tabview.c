@@ -165,8 +165,8 @@ lv_obj_t * lv_tabview_create(lv_obj_t * par, const lv_obj_t * copy)
         ext->tab_name_ptr[0] = "";
         lv_btnmatrix_set_map(ext->btns, ext->tab_name_ptr);
 
-        lv_style_list_copy(lv_obj_get_style_list(tabview, LV_TABVIEW_PART_BG_SCRLLABLE), lv_obj_get_style_list(copy,
-                                                                                                               LV_TABVIEW_PART_BG_SCRLLABLE));
+        lv_style_list_copy(lv_obj_get_style_list(tabview, LV_TABVIEW_PART_BG_SCROLLABLE), lv_obj_get_style_list(copy,
+                                                                                                                LV_TABVIEW_PART_BG_SCROLLABLE));
         lv_style_list_copy(lv_obj_get_style_list(tabview, LV_TABVIEW_PART_TAB_BG), lv_obj_get_style_list(copy,
                                                                                                          LV_TABVIEW_PART_TAB_BG));
         lv_style_list_copy(lv_obj_get_style_list(tabview, LV_TABVIEW_PART_TAB_BTN), lv_obj_get_style_list(copy,
@@ -223,7 +223,7 @@ lv_obj_t * lv_tabview_add_tab(lv_obj_t * tabview, const char * name)
 
     /*Extend the button matrix map with the new name*/
     char * name_dm;
-    name_dm = lv_mem_alloc(strlen(name) + 1); /*+1 for the the closing '\0' */
+    name_dm = lv_mem_alloc(strlen(name) + 1); /*+1 for the closing '\0' */
     LV_ASSERT_MEM(name_dm);
     if(name_dm == NULL) return NULL;
     strcpy(name_dm, name);
@@ -615,8 +615,8 @@ static lv_res_t lv_tabview_signal(lv_obj_t * tabview, lv_signal_t sign, void * p
         if(info->part == LV_TABVIEW_PART_TAB_BG) info->result = lv_obj_get_state(ext->btns, LV_BTNMATRIX_PART_BG);
         else if(info->part == LV_TABVIEW_PART_TAB_BTN) info->result = lv_obj_get_state(ext->btns, LV_BTNMATRIX_PART_BTN);
         else if(info->part == LV_TABVIEW_PART_INDIC) info->result = lv_obj_get_state(ext->indic, LV_OBJ_PART_MAIN);
-        else if(info->part == LV_TABVIEW_PART_BG_SCRLLABLE) info->result = lv_obj_get_state(ext->content,
-                                                                                                LV_PAGE_PART_SCROLLABLE);
+        else if(info->part == LV_TABVIEW_PART_BG_SCROLLABLE) info->result = lv_obj_get_state(ext->content,
+                                                                                                 LV_PAGE_PART_SCROLLABLE);
         return LV_RES_OK;
     }
 
@@ -747,15 +747,15 @@ static lv_res_t tabview_scrl_signal(lv_obj_t * tabview_scrl, lv_signal_t sign, v
         if(tab_page == NULL) return LV_RES_OK;
         lv_coord_t page_x1  = tab_page->coords.x1 - tabview->coords.x1 + x_predict;
         lv_coord_t page_x2  = page_x1 + lv_obj_get_width(tabview);
-        lv_coord_t treshold = lv_obj_get_width(tabview) / 2;
+        lv_coord_t threshold = lv_obj_get_width(tabview) / 2;
 
         lv_bidi_dir_t base_dir = lv_obj_get_base_dir(tabview);
         int16_t tab_cur = ext->tab_cur;
-        if(page_x1 > treshold) {
+        if(page_x1 > threshold) {
             if(base_dir != LV_BIDI_DIR_RTL) tab_cur--;
             else tab_cur ++;
         }
-        else if(page_x2 < treshold) {
+        else if(page_x2 < threshold) {
             if(base_dir != LV_BIDI_DIR_RTL) tab_cur++;
             else tab_cur --;
         }
@@ -791,7 +791,7 @@ static lv_style_list_t * lv_tabview_get_style(lv_obj_t * tabview, uint8_t part)
         case LV_TABVIEW_PART_BG:
             style_dsc_p = &tabview->style_list;
             break;
-        case LV_TABVIEW_PART_BG_SCRLLABLE:
+        case LV_TABVIEW_PART_BG_SCROLLABLE:
             style_dsc_p = lv_obj_get_style_list(ext->content, LV_PAGE_PART_SCROLLABLE);
             break;
         case LV_TABVIEW_PART_TAB_BG:
@@ -809,7 +809,6 @@ static lv_style_list_t * lv_tabview_get_style(lv_obj_t * tabview, uint8_t part)
 
     return style_dsc_p;
 }
-
 
 /**
  * Called when a tab button is clicked
@@ -911,7 +910,6 @@ static void refr_indic_size(lv_obj_t * tabview)
     lv_obj_set_height(ext->indic, indic_h);
 }
 
-
 static void refr_btns_size(lv_obj_t * tabview)
 {
     lv_tabview_ext_t * ext = lv_obj_get_ext_attr(tabview);
@@ -985,8 +983,8 @@ static void refr_content_size(lv_obj_t * tabview)
     lv_obj_set_size(ext->content, cont_w, cont_h);
 
     /*Refresh the size of the tab pages too. `ext->content` has a layout to align the pages*/
-    lv_style_int_t bg_top = lv_obj_get_style_pad_top(tabview, LV_TABVIEW_PART_BG_SCRLLABLE);
-    lv_style_int_t bg_bottom = lv_obj_get_style_pad_bottom(tabview, LV_TABVIEW_PART_BG_SCRLLABLE);
+    lv_style_int_t bg_top = lv_obj_get_style_pad_top(tabview, LV_TABVIEW_PART_BG_SCROLLABLE);
+    lv_style_int_t bg_bottom = lv_obj_get_style_pad_bottom(tabview, LV_TABVIEW_PART_BG_SCROLLABLE);
     cont_h -= bg_top + bg_bottom;
     lv_obj_t * content_scrl = lv_page_get_scrollable(ext->content);
     lv_obj_t * pages = lv_obj_get_child(content_scrl, NULL);

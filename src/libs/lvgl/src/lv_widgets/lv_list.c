@@ -51,7 +51,6 @@ static lv_signal_cb_t label_signal;
 static lv_signal_cb_t ancestor_page_signal;
 static lv_signal_cb_t ancestor_btn_signal;
 
-
 /**********************
  *      MACROS
  **********************/
@@ -189,10 +188,8 @@ lv_obj_t * lv_list_add_btn(lv_obj_t * list, const void * img_src, const char * t
         lv_obj_set_width(btn, w);
     }
 
-
     lv_obj_add_protect(btn, LV_PROTECT_PRESS_LOST);
     lv_obj_set_signal_cb(btn, lv_list_btn_signal);
-
 
 #if LV_USE_IMG != 0
     lv_obj_t * img = NULL;
@@ -250,10 +247,16 @@ bool lv_list_remove(const lv_obj_t * list, uint16_t index)
 {
     LV_ASSERT_OBJ(list, LV_OBJX_NAME);
 
+    lv_list_ext_t * ext = lv_obj_get_ext_attr(list);
     uint16_t count = 0;
     lv_obj_t * e   = lv_list_get_next_btn(list, NULL);
     while(e != NULL) {
         if(count == index) {
+#if LV_USE_GROUP
+            if(e == ext->last_sel_btn) ext->last_sel_btn = NULL;
+#endif
+            if(e == ext->act_sel_btn) ext->act_sel_btn = NULL;
+
             lv_obj_del(e);
             return true;
         }
@@ -290,7 +293,6 @@ void lv_list_focus_btn(lv_obj_t * list, lv_obj_t * btn)
      * It will be restored when the list is focused again.*/
     if(btn) ext->last_sel_btn = btn;
 #endif
-
     /*Focus the new button*/
     ext->act_sel_btn = btn;
 
@@ -738,7 +740,6 @@ static lv_res_t lv_list_signal(lv_obj_t * list, lv_signal_t sign, void * param)
 #endif
     }
     else if(sign == LV_SIGNAL_CONTROL) {
-
 #if LV_USE_GROUP
         char c = *((char *)param);
         if(c == LV_KEY_RIGHT || c == LV_KEY_DOWN) {
@@ -830,6 +831,12 @@ static lv_res_t lv_list_btn_signal(lv_obj_t * btn, lv_signal_t sign, void * para
         lv_obj_t * sel  = lv_list_get_btn_selected(list);
         if(sel == btn) lv_list_focus_btn(list, lv_list_get_next_btn(list, btn));
         if(ext->last_sel_btn == btn) ext->last_sel_btn = NULL;
+#endif
+    }
+    else if(sign == LV_SIGNAL_FOCUS) {
+#if LV_USE_GROUP
+        lv_obj_t * list = lv_obj_get_parent(lv_obj_get_parent(btn));
+        lv_list_focus_btn(list, btn);
 #endif
     }
 

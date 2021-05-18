@@ -19,11 +19,11 @@ extern "C" {
 
 /*Testing of dependencies*/
 #if LV_USE_BTNMATRIX == 0
-#error "lv_tabview: lv_btnm is required. Enable it in lv_conf.h (LV_USE_BTNMATRIX  1) "
+#error "lv_tabview: lv_btnm is required. Enable it in lv_conf.h (LV_USE_BTNMATRIX 1)"
 #endif
 
 #if LV_USE_PAGE == 0
-#error "lv_tabview: lv_page is required. Enable it in lv_conf.h (LV_USE_PAGE  1) "
+#error "lv_tabview: lv_page is required. Enable it in lv_conf.h (LV_USE_PAGE 1)"
 #endif
 
 #include "../lv_core/lv_obj.h"
@@ -69,7 +69,7 @@ enum {
     LV_TABVIEW_PART_BG = LV_OBJ_PART_MAIN,
     _LV_TABVIEW_PART_VIRTUAL_LAST = _LV_OBJ_PART_VIRTUAL_LAST,
 
-    LV_TABVIEW_PART_BG_SCRLLABLE = _LV_OBJ_PART_REAL_LAST,
+    LV_TABVIEW_PART_BG_SCROLLABLE = _LV_OBJ_PART_REAL_LAST,
     LV_TABVIEW_PART_TAB_BG,
     LV_TABVIEW_PART_TAB_BTN,
     LV_TABVIEW_PART_INDIC,

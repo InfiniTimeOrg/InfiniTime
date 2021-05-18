@@ -50,7 +50,6 @@ typedef uint8_t lv_indev_type_t;
 enum { LV_INDEV_STATE_REL = 0, LV_INDEV_STATE_PR };
 typedef uint8_t lv_indev_state_t;
 
-
 enum {
     LV_DRAG_DIR_HOR = 0x1, /**< Object can be dragged horizontally. */
     LV_DRAG_DIR_VER = 0x2, /**< Object can be dragged vertically. */
@@ -77,7 +76,6 @@ typedef struct {
 
     lv_indev_state_t state; /**< LV_INDEV_STATE_REL or LV_INDEV_STATE_PR*/
 } lv_indev_data_t;
-
 
 /** Initialized by the user and registered by 'lv_indev_add()'*/
 typedef struct _lv_indev_drv_t {
@@ -133,6 +131,7 @@ typedef struct _lv_indev_proc_t {
             /*Pointer and button data*/
             lv_point_t act_point; /**< Current point of input device. */
             lv_point_t last_point; /**< Last point of input device. */
+            lv_point_t last_raw_point; /**< Last point read from read_cb. */
             lv_point_t vect; /**< Difference between `act_point` and `last_point`. */
             lv_point_t drag_sum; /*Count the dragged pixels to check LV_INDEV_DEF_DRAG_LIMIT*/
             lv_point_t drag_throw_vect;

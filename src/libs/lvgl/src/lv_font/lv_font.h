@@ -24,11 +24,6 @@ extern "C" {
 /*********************
  *      DEFINES
  *********************/
-/*Number of fractional digits in the advanced width (`adv_w`) field of `lv_font_glyph_dsc_t`*/
-#define LV_FONT_WIDTH_FRACT_DIGIT       4
-
-#define LV_FONT_KERN_POSITIVE        0
-#define LV_FONT_KERN_NEGATIVE        1
 
 /**********************
  *      TYPEDEFS
@@ -40,14 +35,13 @@ extern "C" {
 
 /** Describes the properties of a glyph. */
 typedef struct {
-    uint16_t adv_w; /**< The glyph needs this space. Draw the next glyph after this width. 8 bit integer, 4 bit fractional */
+    uint16_t adv_w; /**< The glyph needs this space. Draw the next glyph after this width. */
     uint16_t box_w;  /**< Width of the glyph's bounding box*/
     uint16_t box_h;  /**< Height of the glyph's bounding box*/
     int16_t ofs_x;   /**< x offset of the bounding box*/
     int16_t ofs_y;  /**< y offset of the bounding box*/
     uint8_t bpp;   /**< Bit-per-pixel: 1, 2, 4, 8*/
 } lv_font_glyph_dsc_t;
-
 
 /** The bitmaps might be upscaled by 3 to achieve subpixel rendering. */
 enum {
@@ -61,7 +55,7 @@ typedef uint8_t lv_font_subpx_t;
 
 /** Describe the properties of a font*/
 typedef struct _lv_font_struct {
-    /** Get a glyph's  descriptor from a font*/
+    /** Get a glyph's descriptor from a font*/
     bool (*get_glyph_dsc)(const struct _lv_font_struct *, lv_font_glyph_dsc_t *, uint32_t letter, uint32_t letter_next);
 
     /** Get a glyph's bitmap from a font*/
@@ -73,13 +67,12 @@ typedef struct _lv_font_struct {
     uint8_t subpx  : 2;             /**< An element of `lv_font_subpx_t`*/
 
     int8_t underline_position;      /**< Distance between the top of the underline and base line (< 0 means below the base line)*/
-    int8_t  underline_thickness;     /**< Thickness of the underline*/
+    int8_t underline_thickness;     /**< Thickness of the underline*/
 
     void * dsc;                     /**< Store implementation specific or run_time data or caching here*/
 #if LV_USE_USER_DATA
     lv_font_user_data_t user_data;  /**< Custom user data for font. */
 #endif
-
 
 } lv_font_t;
 
@@ -91,7 +84,7 @@ typedef struct _lv_font_struct {
  * Return with the bitmap of a font.
  * @param font_p pointer to a font
  * @param letter an UNICODE character code
- * @return  pointer to the bitmap of the letter
+ * @return pointer to the bitmap of the letter
  */
 const uint8_t * lv_font_get_glyph_bitmap(const lv_font_t * font_p, uint32_t letter);
 
@@ -225,6 +218,10 @@ LV_FONT_DECLARE(lv_font_montserrat_12_subpx)
 
 #if LV_FONT_UNSCII_8
 LV_FONT_DECLARE(lv_font_unscii_8)
+#endif
+
+#if LV_FONT_UNSCII_16
+LV_FONT_DECLARE(lv_font_unscii_16)
 #endif
 
 #if LV_FONT_DEJAVU_16_PERSIAN_HEBREW

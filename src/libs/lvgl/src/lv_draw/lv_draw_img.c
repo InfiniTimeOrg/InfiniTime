@@ -40,6 +40,7 @@ LV_ATTRIBUTE_FAST_MEM static void lv_draw_map(const lv_area_t * map_area, const 
                                               bool chroma_key, bool alpha_byte);
 
 static void show_error(const lv_area_t * coords, const lv_area_t * clip_area, const char * msg);
+static void draw_cleanup(lv_img_cache_entry_t * cache);
 
 /**********************
  *  STATIC VARIABLES
@@ -267,9 +268,10 @@ LV_ATTRIBUTE_FAST_MEM static lv_res_t lv_img_draw_core(const lv_area_t * coords,
         lv_area_t mask_com; /*Common area of mask and coords*/
         bool union_ok;
         union_ok = _lv_area_intersect(&mask_com, clip_area, &map_area_rot);
+        /*Out of mask. There is nothing to draw so the image is drawn successfully.*/
         if(union_ok == false) {
-            return LV_RES_OK; /*Out of mask. There is nothing to draw so the image is drawn
-                                 successfully.*/
+            draw_cleanup(cdsc);
+            return LV_RES_OK;
         }
 
         lv_draw_map(coords, &mask_com, cdsc->dec_dsc.img_data, draw_dsc, chroma_keyed, alpha_byte);
@@ -279,9 +281,10 @@ LV_ATTRIBUTE_FAST_MEM static lv_res_t lv_img_draw_core(const lv_area_t * coords,
         lv_area_t mask_com; /*Common area of mask and coords*/
         bool union_ok;
         union_ok = _lv_area_intersect(&mask_com, clip_area, coords);
+        /*Out of mask. There is nothing to draw so the image is drawn successfully.*/
         if(union_ok == false) {
-            return LV_RES_OK; /*Out of mask. There is nothing to draw so the image is drawn
-                                 successfully.*/
+            draw_cleanup(cdsc);
+            return LV_RES_OK;
         }
 
         int32_t width = lv_area_get_width(&mask_com);
@@ -306,9 +309,9 @@ LV_ATTRIBUTE_FAST_MEM static lv_res_t lv_img_draw_core(const lv_area_t * coords,
                 lv_img_decoder_close(&cdsc->dec_dsc);
                 LV_LOG_WARN("Image draw can't read the line");
                 _lv_mem_buf_release(buf);
+                draw_cleanup(cdsc);
                 return LV_RES_INV;
             }
-
 
             lv_draw_map(&line, &mask_line, buf, draw_dsc, chroma_keyed, alpha_byte);
             line.y1++;
@@ -318,6 +321,7 @@ LV_ATTRIBUTE_FAST_MEM static lv_res_t lv_img_draw_core(const lv_area_t * coords,
         _lv_mem_buf_release(buf);
     }
 
+    draw_cleanup(cdsc);
     return LV_RES_OK;
 }
 
@@ -507,7 +511,6 @@ LV_ATTRIBUTE_FAST_MEM static void lv_draw_map(const lv_area_t * map_area, const 
             mask_res = (alpha_byte || chroma_key || draw_dsc->angle ||
                         draw_dsc->zoom != LV_IMG_ZOOM_NONE) ? LV_DRAW_MASK_RES_CHANGED : LV_DRAW_MASK_RES_FULL_COVER;
 
-
             /*Prepare the `mask_buf`if there are other masks*/
             if(other_mask_cnt) {
                 _lv_memset_ff(mask_buf, mask_buf_size);
@@ -526,7 +529,6 @@ LV_ATTRIBUTE_FAST_MEM static void lv_draw_map(const lv_area_t * map_area, const 
                 int32_t rot_x = disp_area->x1 + draw_area.x1 - map_area->x1;
 #endif
                 for(x = 0; x < draw_area_w; x++, map_px += px_size_byte, px_i++) {
-
 
 #if LV_USE_IMG_TRANSFORM
                     if(transform) {
@@ -551,7 +553,7 @@ LV_ATTRIBUTE_FAST_MEM static void lv_draw_map(const lv_area_t * map_area, const 
                             lv_opa_t px_opa = map_px[LV_IMG_PX_SIZE_ALPHA_BYTE - 1];
                             mask_buf[px_i] = px_opa;
                             if(px_opa == 0) {
-#if  LV_COLOR_DEPTH == 32
+#if LV_COLOR_DEPTH == 32
                                 map2[px_i].full = 0;
 #endif
                                 continue;
@@ -574,7 +576,7 @@ LV_ATTRIBUTE_FAST_MEM static void lv_draw_map(const lv_area_t * map_area, const 
                         if(chroma_key) {
                             if(c.full == chroma_keyed_color.full) {
                                 mask_buf[px_i] = LV_OPA_TRANSP;
-#if  LV_COLOR_DEPTH == 32
+#if LV_COLOR_DEPTH == 32
                                 map2[px_i].full = 0;
 #endif
                                 continue;
@@ -649,3 +651,12 @@ static void show_error(const lv_area_t * coords, const lv_area_t * clip_area, co
     lv_draw_label(coords, clip_area, &label_dsc, msg, NULL);
 }
 
+static void draw_cleanup(lv_img_cache_entry_t * cache)
+{
+    /*Automatically close images with no caching*/
+#if LV_IMG_CACHE_DEF_SIZE == 0
+    lv_img_decoder_close(&cache->dec_dsc);
+#else
+    LV_UNUSED(cache);
+#endif
+}

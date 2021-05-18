@@ -19,19 +19,19 @@ extern "C" {
 
 /*Testing of dependencies*/
 #if LV_USE_BTN == 0
-#error "lv_win: lv_btn is required. Enable it in lv_conf.h (LV_USE_BTN  1) "
+#error "lv_win: lv_btn is required. Enable it in lv_conf.h (LV_USE_BTN 1)"
 #endif
 
 #if LV_USE_LABEL == 0
-#error "lv_win: lv_label is required. Enable it in lv_conf.h (LV_USE_LABEL  1) "
+#error "lv_win: lv_label is required. Enable it in lv_conf.h (LV_USE_LABEL 1)"
 #endif
 
 #if LV_USE_IMG == 0
-#error "lv_win: lv_img is required. Enable it in lv_conf.h (LV_USE_IMG  1) "
+#error "lv_win: lv_img is required. Enable it in lv_conf.h (LV_USE_IMG 1)"
 #endif
 
 #if LV_USE_PAGE == 0
-#error "lv_win: lv_page is required. Enable it in lv_conf.h (LV_USE_PAGE  1) "
+#error "lv_win: lv_page is required. Enable it in lv_conf.h (LV_USE_PAGE 1)"
 #endif
 
 #include "../lv_core/lv_obj.h"
@@ -57,6 +57,7 @@ typedef struct {
     lv_obj_t * header;                /*Pointer to the header container of the window*/
     char * title_txt;                 /*Pointer to the title label of the window*/
     lv_coord_t btn_w;                 /*Width of the control buttons*/
+    uint8_t title_txt_align;          /*Control the alignment of the header text*/
 } lv_win_ext_t;
 
 /** Window parts. */
@@ -114,7 +115,7 @@ lv_obj_t * lv_win_add_btn_left(lv_obj_t * win, const void * img_src);
 /**
  * Can be assigned to a window control button to close the window
  * @param btn pointer to the control button on the widows header
- * @param evet the event type
+ * @param event the event type
  */
 void lv_win_close_event_cb(lv_obj_t * btn, lv_event_t event);
 
@@ -175,6 +176,13 @@ void lv_win_set_anim_time(lv_obj_t * win, uint16_t anim_time);
  */
 void lv_win_set_drag(lv_obj_t * win, bool en);
 
+/**
+ * Set alignment of title text in window header.
+ * @param win pointer to a window object
+ * @param alignment set the type of alignment with LV_TXT_FLAGS
+ */
+void lv_win_title_set_alignment(lv_obj_t * win, uint8_t alignment);
+
 /*=====================
  * Getter functions
  *====================*/
@@ -200,7 +208,6 @@ lv_obj_t * lv_win_get_content(const lv_obj_t * win);
  */
 lv_coord_t lv_win_get_header_height(const lv_obj_t * win);
 
-
 /**
  * Get the width of the control buttons on the header
  * @param win pointer to a window object
@@ -209,7 +216,7 @@ lv_coord_t lv_win_get_header_height(const lv_obj_t * win);
 lv_coord_t lv_win_get_btn_width(lv_obj_t * win);
 
 /**
- * Get the pointer of a widow from one of  its control button.
+ * Get the pointer of a widow from one of its control button.
  * It is useful in the action of the control buttons where only button is known.
  * @param ctrl_btn pointer to a control button of a window
  * @return pointer to the window of 'ctrl_btn'
@@ -253,6 +260,12 @@ static inline bool lv_win_get_drag(const lv_obj_t * win)
 {
     return lv_obj_get_drag(win);
 }
+
+/**
+ * Get the current alignment of title text in window header.
+ * @param win pointer to a window object
+ */
+uint8_t lv_win_title_get_alignment(lv_obj_t * win);
 
 /*=====================
  * Other functions

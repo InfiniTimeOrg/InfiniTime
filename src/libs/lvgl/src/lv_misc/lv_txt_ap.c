@@ -12,7 +12,6 @@
 #include "lv_txt_ap.h"
 #include "../lv_draw/lv_draw.h"
 
-
 /*********************
  *      DEFINES
  *********************/
@@ -26,6 +25,7 @@
  **********************/
 #if LV_USE_ARABIC_PERSIAN_CHARS == 1
 static uint32_t lv_ap_get_char_index(uint16_t c);
+static uint32_t lv_txt_lam_alef(uint32_t ch_curr, uint32_t ch_next);
 
 /**********************
  *  STATIC VARIABLES
@@ -59,6 +59,7 @@ const ap_chars_map_t ap_chars_map[] = {
     {22, 0xFEC6, 1, 2, -1,  {1, 1}},   // ظ
     {23, 0xFECA, 1, 2, -1,  {1, 1}},   // ع
     {24, 0xFECE, 1, 2, -1,  {1, 1}},   // غ
+    {30, 0x0640, 0, 0, 0,  {1, 1}},   // - (mad, hyphen)
     {31, 0xFED2, 1, 2, -1,  {1, 1}},   // ف
     {32, 0xFED6, 1, 2, -1,  {1, 1}},   // ق
     {135, 0xFB8F, 1, 2, -1,  {1, 1}},  // ک
@@ -69,7 +70,7 @@ const ap_chars_map_t ap_chars_map[] = {
     {36, 0xFEE6, 1, 2, -1,  {1, 1}},   // ن
     {38, 0xFEEE, -1, 0, -1,  {1, 0}},   // و
     {37, 0xFEEA, 1, 2, -1,  {1, 1}},   // ه
-    {39, 0xFBFD, 1, 2, -1,  {1, 1}},   // ي
+    {39, 0xFEF0, 0, 0, -1, {1, 0}},   // ى
     {40, 0xFEF2, 1, 2, -1,  {1, 1}},   // ي
     {170, 0xFBFD, 1, 2, -1,  {1, 1}},   // ی
     {7, 0xFE94, 1, 2, -1,  {1, 0}},   // ة
@@ -115,7 +116,7 @@ uint32_t _lv_txt_ap_calc_bytes_cnt(const char * txt)
             chars_cnt++;
         else if(ch_enc < 0x0800)
             chars_cnt += 2;
-        else  if(ch_enc < 0x010000)
+        else if(ch_enc < 0x010000)
             chars_cnt += 3;
         else
             chars_cnt += 4;
@@ -126,17 +127,18 @@ uint32_t _lv_txt_ap_calc_bytes_cnt(const char * txt)
     return chars_cnt + 1;
 }
 
-
 void _lv_txt_ap_proc(const char * txt, char * txt_out)
 {
     uint32_t txt_length = 0;
     uint32_t index_current, idx_next, idx_previous, i, j;
     uint32_t * ch_enc;
+    uint32_t * ch_fin;
     char * txt_out_temp;
 
     txt_length = _lv_txt_get_encoded_length(txt);
 
     ch_enc = (uint32_t *)lv_mem_alloc(sizeof(uint32_t) * (txt_length + 1));
+    ch_fin = (uint32_t *)lv_mem_alloc(sizeof(uint32_t) * (txt_length + 1));
 
     i = 0;
     j = 0;
@@ -146,12 +148,15 @@ void _lv_txt_ap_proc(const char * txt, char * txt_out)
     ch_enc[j] = 0;
 
     i = 0;
+    j = 0;
     idx_previous = LV_UNDEF_ARABIC_PERSIAN_CHARS;
     while(i < txt_length) {
         index_current = lv_ap_get_char_index(ch_enc[i]);
         idx_next = lv_ap_get_char_index(ch_enc[i + 1]);
 
         if(index_current == LV_UNDEF_ARABIC_PERSIAN_CHARS) {
+            ch_fin[j] = ch_enc[i];
+            j++;
             i++;
             idx_previous = LV_UNDEF_ARABIC_PERSIAN_CHARS;
             continue;
@@ -162,17 +167,36 @@ void _lv_txt_ap_proc(const char * txt, char * txt_out)
         uint8_t conjunction_to_next = ((i == txt_length - 1) ||
                                        idx_next == LV_UNDEF_ARABIC_PERSIAN_CHARS) ? 0 : ap_chars_map[idx_next].ap_chars_conjunction.conj_to_previous;
 
+        uint32_t lam_alef = lv_txt_lam_alef(index_current, idx_next);
+        if(lam_alef) {
+            if(conjunction_to_previuse) {
+                lam_alef ++;
+            }
+            ch_fin[j] = lam_alef;
+            idx_previous = LV_UNDEF_ARABIC_PERSIAN_CHARS;
+            i += 2;
+            j++;
+            continue;
+        }
+
         if(conjunction_to_previuse && conjunction_to_next)
-            ch_enc[i] = ap_chars_map[index_current].char_end_form + ap_chars_map[index_current].char_middle_form_offset;
+            ch_fin[j] = ap_chars_map[index_current].char_end_form + ap_chars_map[index_current].char_middle_form_offset;
         else if(!conjunction_to_previuse && conjunction_to_next)
-            ch_enc[i] = ap_chars_map[index_current].char_end_form + ap_chars_map[index_current].char_begining_form_offset;
+            ch_fin[j] = ap_chars_map[index_current].char_end_form + ap_chars_map[index_current].char_begining_form_offset;
         else if(conjunction_to_previuse && !conjunction_to_next)
-            ch_enc[i] = ap_chars_map[index_current].char_end_form;
+            ch_fin[j] = ap_chars_map[index_current].char_end_form;
         else
-            ch_enc[i] = ap_chars_map[index_current].char_end_form + ap_chars_map[index_current].char_isolated_form_offset;
+            ch_fin[j] = ap_chars_map[index_current].char_end_form + ap_chars_map[index_current].char_isolated_form_offset;
         idx_previous = index_current;
         i++;
+        j++;
     }
+    ch_fin[j] = 0;
+    for(i = 0; i < txt_length; i++)
+        ch_enc[i] = 0;
+    for(i = 0; i < j; i++)
+        ch_enc[i] = ch_fin[i];
+    lv_mem_free(ch_fin);
 
     txt_out_temp = txt_out;
     i = 0;
@@ -211,8 +235,39 @@ static uint32_t lv_ap_get_char_index(uint16_t c)
     for(uint8_t i = 0; ap_chars_map[i].char_end_form; i++) {
         if(c == (ap_chars_map[i].char_offset + LV_AP_ALPHABET_BASE_CODE))
             return i;
+        else if(c == ap_chars_map[i].char_end_form                                                  //is it an End form
+                || c == (ap_chars_map[i].char_end_form + ap_chars_map[i].char_begining_form_offset)     //is it a Beginning form
+                || c == (ap_chars_map[i].char_end_form + ap_chars_map[i].char_middle_form_offset)       //is it a middle form
+                || c == (ap_chars_map[i].char_end_form + ap_chars_map[i].char_isolated_form_offset)) {  //is it an isolated form
+            return i;
+        }
     }
     return LV_UNDEF_ARABIC_PERSIAN_CHARS;
+}
+
+static uint32_t lv_txt_lam_alef(uint32_t ch_curr, uint32_t ch_next)
+{
+    uint32_t ch_code = 0;
+    if(ap_chars_map[ch_curr].char_offset != 34) {
+        return 0;
+    }
+    if(ch_next == LV_UNDEF_ARABIC_PERSIAN_CHARS) {
+        return 0;
+    }
+    ch_code = ap_chars_map[ch_next].char_offset + LV_AP_ALPHABET_BASE_CODE;
+    if(ch_code == 0x0622) {
+        return 0xFEF5;    // (lam-alef) mad
+    }
+    if(ch_code == 0x0623) {
+        return 0xFEF7;    // (lam-alef) top hamza
+    }
+    if(ch_code == 0x0625) {
+        return 0xFEF9;    // (lam-alef) bot hamza
+    }
+    if(ch_code == 0x0627) {
+        return 0xFEFB;    // (lam-alef) alef
+    }
+    return 0;
 }
 
 #endif

@@ -3,8 +3,8 @@
  *
  */
 
-#ifndef LV_IMG_DEOCER_H
-#define LV_IMG_DEOCER_H
+#ifndef LV_IMG_DECODER_H
+#define LV_IMG_DECODER_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,7 +20,7 @@ extern "C" {
 #include "../lv_misc/lv_fs.h"
 #include "../lv_misc/lv_types.h"
 #include "../lv_misc/lv_area.h"
-#include "../lv_core/lv_style.h"
+#include "../lv_misc/lv_color.h"
 
 /*********************
  *      DEFINES
@@ -59,7 +59,7 @@ typedef lv_res_t (*lv_img_decoder_info_f_t)(struct _lv_img_decoder * decoder, co
 /**
  * Open an image for decoding. Prepare it as it is required to read it later
  * @param decoder pointer to the decoder the function associated with
- * @param dsc pointer to decoder descriptor. `src`, `style` are already initialized in it.
+ * @param dsc pointer to decoder descriptor. `src`, `color` are already initialized in it.
  */
 typedef lv_res_t (*lv_img_decoder_open_f_t)(struct _lv_img_decoder * decoder, struct _lv_img_decoder_dsc * dsc);
 
@@ -267,4 +267,4 @@ void lv_img_decoder_built_in_close(lv_img_decoder_t * decoder, lv_img_decoder_ds
 } /* extern "C" */
 #endif
 
-#endif /*LV_TEMPL_H*/
+#endif /*LV_IMG_DECODER_H*/

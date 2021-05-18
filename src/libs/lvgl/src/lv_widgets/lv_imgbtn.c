@@ -12,7 +12,6 @@
 #include "lv_imgbtn.h"
 #include "lv_label.h"
 
-
 #if LV_USE_IMGBTN != 0
 
 /*********************
@@ -30,6 +29,7 @@
 static lv_design_res_t lv_imgbtn_design(lv_obj_t * imgbtn, const lv_area_t * clip_area, lv_design_mode_t mode);
 static lv_res_t lv_imgbtn_signal(lv_obj_t * imgbtn, lv_signal_t sign, void * param);
 static void refr_img(lv_obj_t * imgbtn);
+static lv_btn_state_t suggest_state(lv_obj_t * imgbtn, lv_btn_state_t state);
 
 /**********************
  *  STATIC VARIABLES
@@ -187,7 +187,7 @@ void lv_imgbtn_set_state(lv_obj_t * imgbtn, lv_btn_state_t state)
  */
 void lv_imgbtn_toggle(lv_obj_t * imgbtn)
 {
-    lv_imgbtn_toggle(imgbtn);
+    lv_btn_toggle(imgbtn);
     refr_img(imgbtn);
 }
 /*=====================
@@ -195,7 +195,7 @@ void lv_imgbtn_toggle(lv_obj_t * imgbtn)
  *====================*/
 
 /**
- * Get the images in a  given state
+ * Get the images in a given state
  * @param imgbtn pointer to an image button object
  * @param state the state where to get the image (from `lv_btn_state_t`) `
  * @return pointer to an image source (a C array or path to a file)
@@ -327,7 +327,7 @@ static lv_design_res_t lv_imgbtn_design(lv_obj_t * imgbtn, const lv_area_t * cli
 
         /*Just draw an image*/
         lv_imgbtn_ext_t * ext    = lv_obj_get_ext_attr(imgbtn);
-        lv_btn_state_t state     = lv_imgbtn_get_state(imgbtn);
+        lv_btn_state_t state     = suggest_state(imgbtn, lv_imgbtn_get_state(imgbtn));
 
         /*Simply draw the middle src if no tiled*/
         if(!ext->tiled) {
@@ -440,7 +440,6 @@ static lv_design_res_t lv_imgbtn_design(lv_obj_t * imgbtn, const lv_area_t * cli
             draw_dsc.shadow_opa = LV_OPA_TRANSP;
             lv_obj_init_draw_rect_dsc(imgbtn, LV_OBJ_PART_MAIN, &draw_dsc);
 
-
             lv_area_t bg_coords;
             lv_area_copy(&bg_coords, &imgbtn->coords);
             bg_coords.x1 -= lv_obj_get_style_pad_left(imgbtn, LV_IMGBTN_PART_MAIN);
@@ -501,7 +500,7 @@ static lv_res_t lv_imgbtn_signal(lv_obj_t * imgbtn, lv_signal_t sign, void * par
 static void refr_img(lv_obj_t * imgbtn)
 {
     lv_imgbtn_ext_t * ext = lv_obj_get_ext_attr(imgbtn);
-    lv_btn_state_t state  = lv_imgbtn_get_state(imgbtn);
+    lv_btn_state_t state  = suggest_state(imgbtn, lv_imgbtn_get_state(imgbtn));
     lv_img_header_t header;
 
     const void * src = ext->img_src_mid[state];
@@ -522,13 +521,51 @@ static void refr_img(lv_obj_t * imgbtn)
     if(info_res == LV_RES_OK) {
         ext->act_cf = header.cf;
         if(ext->tiled) lv_obj_set_height(imgbtn, header.h); /*Keep the sure defined width*/
-        else  lv_obj_set_size(imgbtn, header.w, header.h);
+        else lv_obj_set_size(imgbtn, header.w, header.h);
     }
     else {
         ext->act_cf = LV_IMG_CF_UNKNOWN;
     }
 
     lv_obj_invalidate(imgbtn);
+}
+
+/**
+ * If `src` is not defined for the current state try to get a state which is related to the current but has `src`.
+ * E.g. if the PRESSED src is not set but the RELEASED does, use the RELEASED.
+ * @param imgbtn pointer to an image button
+ * @param state the state to convert
+ * @return the suggested state
+ */
+static lv_btn_state_t suggest_state(lv_obj_t * imgbtn, lv_btn_state_t state)
+{
+    lv_imgbtn_ext_t * ext = lv_obj_get_ext_attr(imgbtn);
+    if(ext->img_src_mid[state] == NULL) {
+        switch(state) {
+            case LV_BTN_STATE_PRESSED:
+                if(ext->img_src_mid[LV_BTN_STATE_RELEASED]) return LV_BTN_STATE_RELEASED;
+                break;
+            case LV_BTN_STATE_CHECKED_RELEASED:
+                if(ext->img_src_mid[LV_BTN_STATE_RELEASED]) return LV_BTN_STATE_RELEASED;
+                break;
+            case LV_BTN_STATE_CHECKED_PRESSED:
+                if(ext->img_src_mid[LV_BTN_STATE_CHECKED_RELEASED]) return LV_BTN_STATE_CHECKED_RELEASED;
+                if(ext->img_src_mid[LV_BTN_STATE_PRESSED]) return LV_BTN_STATE_PRESSED;
+                if(ext->img_src_mid[LV_BTN_STATE_RELEASED]) return LV_BTN_STATE_RELEASED;
+                break;
+            case LV_BTN_STATE_DISABLED:
+                if(ext->img_src_mid[LV_BTN_STATE_RELEASED]) return LV_BTN_STATE_RELEASED;
+                break;
+            case LV_BTN_STATE_CHECKED_DISABLED:
+                if(ext->img_src_mid[LV_BTN_STATE_CHECKED_RELEASED]) return LV_BTN_STATE_CHECKED_RELEASED;
+                if(ext->img_src_mid[LV_BTN_STATE_RELEASED]) return LV_BTN_STATE_RELEASED;
+                break;
+            default:
+                break;
+        }
+    }
+
+    return state;
 }
 
 #endif

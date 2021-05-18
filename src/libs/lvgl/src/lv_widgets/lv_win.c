@@ -47,7 +47,7 @@ static lv_design_res_t lv_win_header_design(lv_obj_t * header, const lv_area_t *
 static lv_style_list_t * lv_win_get_style(lv_obj_t * win, uint8_t part);
 static void lv_win_realign(lv_obj_t * win);
 static lv_obj_t * lv_win_btn_create(lv_obj_t * par, const void * img_src);
-static void lv_win_btn_set_alignment(lv_obj_t * par, const lv_win_btn_align_t alignment);
+static void lv_win_btn_set_alignment(lv_obj_t * win_btn, const lv_win_btn_align_t alignment);
 static lv_win_btn_align_t lv_win_btn_get_alignment(const lv_obj_t * par);
 
 /**********************
@@ -92,6 +92,7 @@ lv_obj_t * lv_win_create(lv_obj_t * par, const lv_obj_t * copy)
     ext->page          = NULL;
     ext->header        = NULL;
     ext->title_txt    = lv_mem_alloc(strlen(DEF_TITLE) + 1);
+    ext->title_txt_align = LV_TXT_FLAG_NONE;
     strcpy(ext->title_txt, DEF_TITLE);
 
     /*Init the new window object*/
@@ -232,7 +233,7 @@ lv_obj_t * lv_win_add_btn_left(lv_obj_t * win, const void * img_src)
 /**
  * Can be assigned to a window control button to close the window
  * @param btn pointer to the control button on the widows header
- * @param evet the event type
+ * @param event the event type
  */
 void lv_win_close_event_cb(lv_obj_t * btn, lv_event_t event)
 {
@@ -257,11 +258,20 @@ void lv_win_set_title(lv_obj_t * win, const char * title)
 
     lv_win_ext_t * ext = lv_obj_get_ext_attr(win);
 
-    ext->title_txt    = lv_mem_realloc(ext->title_txt, strlen(title) + 1);
+#if LV_USE_ARABIC_PERSIAN_CHARS == 0
+    size_t len = strlen(title) + 1;
+#else
+    size_t len = _lv_txt_ap_calc_bytes_cnt(title) + 1;
+#endif
+
+    ext->title_txt    = lv_mem_realloc(ext->title_txt, len + 1);
     LV_ASSERT_MEM(ext->title_txt);
     if(ext->title_txt == NULL) return;
-
+#if LV_USE_ARABIC_PERSIAN_CHARS == 0
     strcpy(ext->title_txt, title);
+#else
+    _lv_txt_ap_proc(title, ext->title_txt);
+#endif
     lv_obj_invalidate(ext->header);
 }
 
@@ -363,6 +373,14 @@ void lv_win_set_drag(lv_obj_t * win, bool en)
     lv_obj_set_drag(win, en);
 }
 
+void lv_win_title_set_alignment(lv_obj_t * win, uint8_t alignment)
+{
+    lv_win_ext_t * ext = lv_obj_get_ext_attr(win);
+
+    ext->title_txt_align = alignment;
+
+}
+
 /*=====================
  * Getter functions
  *====================*/
@@ -421,7 +439,7 @@ lv_coord_t lv_win_get_btn_width(lv_obj_t * win)
 }
 
 /**
- * Get the pointer of a widow from one of  its control button.
+ * Get the pointer of a widow from one of its control button.
  * It is useful in the action of the control buttons where only button is known.
  * @param ctrl_btn pointer to a control button of a window
  * @return pointer to the window of 'ctrl_btn'
@@ -491,6 +509,13 @@ lv_coord_t lv_win_get_width(lv_obj_t * win)
     return lv_obj_get_width_fit(scrl) - left - right;
 }
 
+uint8_t lv_win_title_get_alignment(lv_obj_t * win)
+{
+    lv_win_ext_t * ext = lv_obj_get_ext_attr(win);
+
+    return ext->title_txt_align;
+}
+
 /*=====================
  * Other functions
  *====================*/
@@ -505,7 +530,6 @@ void lv_win_focus(lv_obj_t * win, lv_obj_t * obj, lv_anim_enable_t anim_en)
 {
     LV_ASSERT_OBJ(win, LV_OBJX_NAME);
     LV_ASSERT_OBJ(obj, "");
-
 
     lv_win_ext_t * ext = lv_obj_get_ext_attr(win);
     lv_page_focus(ext->page, obj, anim_en);
@@ -538,11 +562,13 @@ static lv_design_res_t lv_win_header_design(lv_obj_t * header, const lv_area_t *
         lv_win_ext_t * ext = lv_obj_get_ext_attr(win);
 
         lv_style_int_t header_left = lv_obj_get_style_pad_left(win, LV_WIN_PART_HEADER);
+        lv_style_int_t header_right = lv_obj_get_style_pad_right(win, LV_WIN_PART_HEADER);
         lv_style_int_t header_inner = lv_obj_get_style_pad_inner(win, LV_WIN_PART_HEADER);
 
         lv_draw_label_dsc_t label_dsc;
         lv_draw_label_dsc_init(&label_dsc);
         lv_obj_init_draw_label_dsc(header, LV_OBJ_PART_MAIN, &label_dsc);
+        label_dsc.flag = ext->title_txt_align;
 
         lv_area_t txt_area;
         lv_point_t txt_size;
@@ -557,21 +583,42 @@ static lv_design_res_t lv_win_header_design(lv_obj_t * header, const lv_area_t *
 
         /*Get x position of the title (should be on the right of the buttons on the left)*/
 
-        lv_coord_t left_btn_offset = 0;
+        lv_coord_t btn_offset = 0;
         btn = lv_obj_get_child_back(ext->header, NULL);
         while(btn != NULL) {
             if(LV_WIN_BTN_ALIGN_LEFT == lv_win_btn_get_alignment(btn)) {
-                left_btn_offset += btn_w + header_inner;
+                btn_offset += btn_w + header_inner;
             }
 
             btn = lv_obj_get_child_back(header, btn);
         }
-
-        txt_area.x1 = header->coords.x1 + header_left + left_btn_offset;
-        txt_area.y1 = header->coords.y1 + (lv_obj_get_height(header) - txt_size.y) / 2;
-        txt_area.x2 = txt_area.x1 + txt_size.x  + left_btn_offset;
-        txt_area.y2 = txt_area.y1 + txt_size.y;
-
+        switch(label_dsc.flag) {
+            case LV_TXT_FLAG_CENTER:
+                txt_area.x1 = header->coords.x1 + header_left + btn_offset;
+                txt_area.x2 = header->coords.x2 - header_right - btn_offset;
+                txt_area.y1 = header->coords.y1 + (lv_obj_get_height(header) - txt_size.y) / 2;
+                txt_area.y2 = txt_area.y1 + txt_size.y;
+                break;
+            case LV_TXT_FLAG_RIGHT:
+                txt_area.x1 = header->coords.x1;
+                txt_area.x2 = header->coords.x2 - header_right - btn_offset;
+                txt_area.y1 = header->coords.y1 + (lv_obj_get_height(header) - txt_size.y) / 2;
+                txt_area.y2 = txt_area.y1 + txt_size.y;
+                break;
+            case LV_TXT_FLAG_FIT:
+            case LV_TXT_FLAG_EXPAND:
+                txt_area.x1 = header->coords.x1;
+                txt_area.x2 = header->coords.x2;
+                txt_area.y1 = header->coords.y1 + (lv_obj_get_height(header) - txt_size.y) / 2;
+                txt_area.y2 = txt_area.y1 + txt_size.y;
+                break;
+            default:
+                txt_area.x1 = header->coords.x1 + header_left + btn_offset;
+                txt_area.x2 = txt_area.x1 + txt_size.x  + btn_offset;
+                txt_area.y1 = header->coords.y1 + (lv_obj_get_height(header) - txt_size.y) / 2;
+                txt_area.y2 = txt_area.y1 + txt_size.y;
+                break;
+        }
         lv_draw_label(&txt_area, clip_area, &label_dsc, ext->title_txt, NULL);
     }
     else if(mode == LV_DESIGN_DRAW_POST) {
