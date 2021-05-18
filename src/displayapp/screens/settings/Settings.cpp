@@ -44,7 +44,9 @@ std::unique_ptr<Screen> Settings::CreateScreen1() {
     {Symbols::clock, "Wake Up", Apps::SettingWakeUp},
     {Symbols::clock, "Time format", Apps::SettingTimeFormat},
     {Symbols::clock, "Watch face", Apps::SettingWatchFace},
-  }};
+  }
+
+  };
 
   return std::unique_ptr<Screen>(new Screens::List(0, 2, app, settingsController, applications));
 }
@@ -52,11 +54,13 @@ std::unique_ptr<Screen> Settings::CreateScreen1() {
 std::unique_ptr<Screen> Settings::CreateScreen2() {
 
   std::array<Screens::List::Applications, 4> applications {{
-    {Symbols::shoe, "Steps", Apps::SettingSteps},
     {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
     {Symbols::check, "Firmware", Apps::FirmwareValidation},
     {Symbols::list, "About", Apps::SysInfo},
-  }};
+    {"", "", Apps::None},
+  }
+
+  };
 
   return std::unique_ptr<Screen>(new Screens::List(1, 2, app, settingsController, applications));
 }

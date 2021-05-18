@@ -49,7 +49,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
     {Symbols::stopWatch, Apps::StopWatch},
     {Symbols::music, Apps::Music},
     {Symbols::map, Apps::Navigation},
-    {Symbols::shoe, Apps::Steps},
+    {Symbols::shoe, Apps::Motion},
     {Symbols::heartBeat, Apps::HeartRate},
     {"", Apps::None},
   }};
@@ -62,7 +62,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
     {Symbols::paintbrush, Apps::Paint},
     {Symbols::paddle, Apps::Paddle},
     {"2", Apps::Twos},
-    {"M", Apps::Motion},
+    {"", Apps::None},
     {"", Apps::None},
     {"", Apps::None},
   }};

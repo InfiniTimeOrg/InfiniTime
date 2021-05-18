@@ -27,17 +27,6 @@ FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, 
   sprintf(version, "%ld.%ld.%ld", Version::Major(), Version::Minor(), Version::Patch());
   lv_label_set_text(labelVersionValue, version);
 
-  labelShortRefInfo = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(labelShortRefInfo, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 25);
-  lv_label_set_text(labelShortRefInfo, "ShortRef : ");
-  lv_label_set_align(labelShortRefInfo, LV_LABEL_ALIGN_LEFT);
-
-  labelShortRefValue = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(labelShortRefValue, labelShortRefInfo, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
-  lv_label_set_recolor(labelShortRefValue, true);
-  sprintf(shortref, "%s", Version::GitCommitHash());
-  lv_label_set_text(labelShortRefValue, shortref);
-
   labelIsValidated = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(labelIsValidated, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 50);
   lv_label_set_recolor(labelIsValidated, true);

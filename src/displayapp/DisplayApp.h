@@ -103,7 +103,7 @@ namespace Pinetime {
       static void Process(void* instance);
       void InitHw();
       void Refresh();
-      void ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction, TouchEvents touchEvent);
+      void returnApp(Apps app, DisplayApp::FullRefreshDirections direction, TouchEvents touchEvent);
       void LoadApp(Apps app, DisplayApp::FullRefreshDirections direction);
     };
   }

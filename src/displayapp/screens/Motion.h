@@ -26,9 +26,9 @@ namespace Pinetime {
         lv_chart_series_t* ser1;
         lv_chart_series_t* ser2;
         lv_chart_series_t* ser3;
-        lv_obj_t* label;
 
         lv_obj_t* labelStep;
+        lv_obj_t* labelStepValue;
         static constexpr uint8_t nbStepsBufferSize = 9;
         char nbStepsBuffer[nbStepsBufferSize + 1];
         bool running = true;

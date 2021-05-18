@@ -25,10 +25,7 @@ namespace Pinetime {
 
         lv_obj_t* labelVersionInfo;
         lv_obj_t* labelVersionValue;
-        lv_obj_t* labelShortRefInfo;
-        lv_obj_t* labelShortRefValue;
         char version[9];
-        char shortref[9];
         lv_obj_t* labelIsValidated;
         lv_obj_t* buttonValidate;
         lv_obj_t* labelButtonValidate;

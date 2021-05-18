@@ -8,13 +8,13 @@ namespace Pinetime {
     public:
       void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps);
 
-      int16_t X() const {
+      uint16_t X() const {
         return x;
       }
-      int16_t Y() const {
+      uint16_t Y() const {
         return y;
       }
-      int16_t Z() const {
+      uint16_t Z() const {
         return z;
       }
       uint32_t NbSteps() const {

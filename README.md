@@ -72,8 +72,7 @@ As of now, here is the list of achievements of this project:
 ## Documentation
 
 ### Getting started
- - [Getting started with InfiniTime 1.0 (quick user guide, update bootloader and InfiniTime,...)](doc/gettingStarted/gettingStarted-1.0.md)
- - [Flash, upgrade (OTA), time synchronization,...](doc/gettingStarted/ota-gadgetbridge-nrfconnect.md)
+ - [Flash, upgrade (OTA), time synchronization,...](doc/gettingStarted/gettingStarted.md)
 
 ### Develop
  - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
