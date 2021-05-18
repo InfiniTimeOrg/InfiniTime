@@ -123,7 +123,7 @@ jobs:
     - name: Make pinetime-mcuboot-app
       run:  |
         cd build
-        make pinetime-mcuboot-app
+        make pinetime-mcuboot-app -j --trace
 
     - name: Create firmware image
       run:  |
