@@ -106,11 +106,11 @@ jobs:
       #########################################################################################
       # CMake
 
-      - name: CMake
-        run:  |
-          mkdir -p build
-          cd build
-          cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
+      # - name: CMake
+        # run:  |
+          # mkdir -p build
+          # cd build
+          # cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
 
         #########################################################################################
         # Make and Upload DFU Package
