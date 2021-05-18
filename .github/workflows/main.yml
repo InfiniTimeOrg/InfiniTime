@@ -108,7 +108,7 @@ jobs:
 
     - name: CMake
       run:  |
-        add_library (libs/lvgl "")
+        add_library (lvgl "")
         mkdir -p build
         cd build
         cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
