@@ -56,9 +56,6 @@ jobs:
           release: 9-2020-q2
           # Directory to unpack GCC to. Defaults to a temporary directory.
           directory: ${{ runner.temp }}/arm-none-eabi
-        env:
-          # needed for set-env (https://github.com/actions/toolkit/issues/641)
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
 
       - name: Check cache for nRF5 SDK
         id:   cache-nrf5sdk
