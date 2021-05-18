@@ -69,12 +69,14 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
   lv_label_set_text_fmt(label,
                         "#FFFF00 InfiniTime#\n\n"
                         "#444444 Version# %ld.%ld.%ld\n\n"
+                        "#444444 Short Ref# %s\n\n"
                         "#444444 Build date#\n"
-                        "\t%s\n"
-                        "\t%s\n",
+                        "%s\n"
+                        "%s\n",
                         Version::Major(),
                         Version::Minor(),
                         Version::Patch(),
+                        Version::GitCommitHash(),
                         __DATE__,
                         __TIME__);
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);

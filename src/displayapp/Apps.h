@@ -21,12 +21,14 @@ namespace Pinetime {
       Navigation,
       StopWatch,
       Motion,
+      Steps,
       QuickSettings,
       Settings,
       SettingWatchFace,
       SettingTimeFormat,
       SettingDisplay,
-      SettingWakeUp
+      SettingWakeUp,
+      SettingSteps
     };
   }
 }

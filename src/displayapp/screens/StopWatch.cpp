@@ -115,8 +115,9 @@ bool StopWatch::Refresh() {
     // Init state when an user first opens the app
     // and when a stop/reset button is pressed
     case States::Init: {
-      if (btnStopLap) {
+      if (btnStopLap != nullptr) {
         lv_obj_del(btnStopLap);
+        btnStopLap = nullptr;
       }
       // The initial default value
       lv_label_set_text(time, "00:00");
