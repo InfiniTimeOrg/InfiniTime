@@ -180,7 +180,6 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   pchar = strchr(title, '\n');
   while (pchar != nullptr) {
     *pchar = ' ';
-    pchar =
     pchar = strchr(pchar + 1, '\n');
   }
   lv_label_set_text(alert_type, title);
