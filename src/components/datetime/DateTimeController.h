@@ -74,6 +74,8 @@ namespace Pinetime {
       std::chrono::seconds Uptime() const {
         return uptime;
       }
+  
+      void GetTimeStr(char* string, bool is24h = true);
 
     private:
       System::SystemTask& systemTask;

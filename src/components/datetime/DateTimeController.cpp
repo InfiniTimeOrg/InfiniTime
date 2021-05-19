@@ -118,3 +118,29 @@ char const* DateTime::MonthsStringLow[] = {"--", "Jan", "Feb", "Mar", "Apr", "Ma
 
 char const* DateTime::MonthsLow[] = {
   "--", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+
+void DateTime::GetTimeStr(char* string, bool is24h) {
+  char minutesChar[3];
+  sprintf(minutesChar, "%02d", static_cast<int>(minute));
+  char hoursChar[3];
+  char ampmChar[3] = "  ";
+  if (is24h) {
+    sprintf(hoursChar, "%02d", hour);
+  } else {
+    if (hour == 0) {
+      hour = 12;
+      sprintf(ampmChar, "AM");
+    } else if (hour < 12) {
+      sprintf(ampmChar, "AM");
+    } else if (hour >= 12) {
+      hour = hour - 12;
+      sprintf(ampmChar, "PM");
+    }
+    sprintf(hoursChar, "%02d", hour);
+    if (hoursChar[0] == '0') {
+      hoursChar[0] = ' ';
+    }
+  }
+  
+  sprintf(string, "%c%c:%c%c %c%c", hoursChar[0], hoursChar[1], minutesChar[0], minutesChar[1], ampmChar[0], ampmChar[1]);
+}

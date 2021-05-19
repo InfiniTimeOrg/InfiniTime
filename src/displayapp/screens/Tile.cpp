@@ -31,7 +31,9 @@ Tile::Tile(uint8_t screenID,
 
   // Time
   label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(label_time, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
+  char timeStr[9];
+  dateTimeController.GetTimeStr(timeStr, settingsController.GetClockType() == Controllers::Settings::ClockType::H24);
+  lv_label_set_text(label_time, timeStr);
   lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 15, 6);
 
