@@ -28,3 +28,6 @@ queue.h
 
 # mbuf implementation - BSD License
 os_mbuf.c
+
+# Bluetooth Mesh badge sample - Apache 2.0 License
+mesh_badge

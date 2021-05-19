@@ -1525,6 +1525,47 @@ ble_ll_hci_status_params_cmd_proc(const uint8_t *cmdbuf, uint8_t len,
     return rc;
 }
 
+#if MYNEWT_VAL(BLE_HCI_VS)
+static int
+ble_ll_hci_vs_rd_static_addr(uint8_t *rspbuf, uint8_t *rsplen)
+{
+    struct ble_hci_vs_rd_static_addr_rp *rsp = (void *) rspbuf;
+    ble_addr_t addr;
+
+    if (ble_hw_get_static_addr(&addr) < 0) {
+        return BLE_ERR_UNSPECIFIED;
+    }
+
+    memcpy(rsp->addr, addr.val, sizeof(rsp->addr));
+
+    *rsplen = sizeof(*rsp);
+    return BLE_ERR_SUCCESS;
+}
+
+static int
+ble_ll_hci_vs_cmd_proc(const uint8_t *cmdbuf, uint8_t len, uint16_t ocf,
+                       uint8_t *rspbuf, uint8_t *rsplen)
+{
+    int rc;
+
+    /* Assume error; if all pass rc gets set to 0 */
+    rc = BLE_ERR_INV_HCI_CMD_PARMS;
+
+    switch (ocf) {
+    case BLE_HCI_OCF_VS_RD_STATIC_ADDR:
+        if (len == 0) {
+            rc = ble_ll_hci_vs_rd_static_addr(rspbuf, rsplen);
+        }
+        break;
+    default:
+        rc = BLE_ERR_UNKNOWN_HCI_CMD;
+        break;
+    }
+
+    return rc;
+}
+#endif
+
 /**
  * Called to process an HCI command from the host.
  *
@@ -1584,6 +1625,11 @@ ble_ll_hci_cmd_proc(struct ble_npl_event *ev)
     case BLE_HCI_OGF_LE:
         rc = ble_ll_hci_le_cmd_proc(cmd->data, cmd->length, ocf, rspbuf, &rsplen, &post_cb);
         break;
+#if MYNEWT_VAL(BLE_HCI_VS)
+    case BLE_HCI_OGF_VENDOR:
+        rc = ble_ll_hci_vs_cmd_proc(cmd->data, cmd->length, ocf, rspbuf, &rsplen);
+        break;
+#endif
     default:
         /* XXX: Need to support other OGF. For now, return unsupported */
         rc = BLE_ERR_UNKNOWN_HCI_CMD;

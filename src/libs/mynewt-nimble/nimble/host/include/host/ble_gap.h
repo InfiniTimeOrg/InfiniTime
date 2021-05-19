@@ -1592,6 +1592,16 @@ int ble_gap_disc(uint8_t own_addr_type, int32_t duration_ms,
  *                              its last Scan Duration until it begins the
  *                              subsequent Scan Duration. Specify 0 to scan
  *                              continuously. Units are 1.28 second.
+ * @param filter_duplicates     Set to enable packet filtering in the
+ *                              controller
+ * @param filter_policy         Set the used filter policy. Valid values are:
+ *                                      - BLE_HCI_SCAN_FILT_NO_WL
+ *                                      - BLE_HCI_SCAN_FILT_USE_WL
+ *                                      - BLE_HCI_SCAN_FILT_NO_WL_INITA
+ *                                      - BLE_HCI_SCAN_FILT_USE_WL_INITA
+ *                                      - BLE_HCI_SCAN_FILT_MAX
+ *                              This parameter is ignored unless
+ *                              @p filter_duplicates is set.
  * @param limited               If limited discovery procedure should be used.
  * @param uncoded_params        Additional arguments specifying the particulars
  *                              of the discovery procedure for uncoded PHY.
@@ -1800,6 +1810,22 @@ int ble_gap_wl_set(const ble_addr_t *addrs, uint8_t white_list_count);
  */
 int ble_gap_update_params(uint16_t conn_handle,
                           const struct ble_gap_upd_params *params);
+
+/**
+ * Configure LE Data Length in controller (OGF = 0x08, OCF = 0x0022).
+ *
+ * @param conn_handle      Connection handle.
+ * @param tx_octets        The preferred value of payload octets that the Controller
+ *                         should use for a new connection (Range
+ *                         0x001B-0x00FB).
+ * @param tx_time          The preferred maximum number of microseconds that the local Controller
+ *                         should use to transmit a single link layer packet
+ *                         (Range 0x0148-0x4290).
+ *
+ * @return                 0 on success,
+ *                         other error code on failure.
+ */
+int ble_gap_set_data_len(uint16_t conn_handle, uint16_t tx_octets, uint16_t tx_time);
 
 /**
  * Initiates the GAP security procedure.

@@ -785,6 +785,14 @@
 #define MYNEWT_VAL_BLE_SM_SC (1)
 #endif
 
+#ifndef MYNEWT_VAL_BLE_SM_SC_ONLY
+#define MYNEWT_VAL_BLE_SM_SC_ONLY (0)
+#endif
+
+#ifndef MYNEWT_VAL_BLE_SM_SC_LVL
+#define MYNEWT_VAL_BLE_SM_SC_LVL (0)
+#endif
+
 #ifndef MYNEWT_VAL_BLE_SM_SC_DEBUG_KEYS
 #define MYNEWT_VAL_BLE_SM_SC_DEBUG_KEYS (0)
 #endif

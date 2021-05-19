@@ -23,6 +23,7 @@
 #include "syscfg/syscfg.h"
 #include "nimble/nimble_opt.h"
 
+#if NIMBLE_BLE_CONNECT
 #if NIMBLE_BLE_SM
 
 #include "nimble/ble.h"
@@ -494,6 +495,10 @@ ble_sm_alg_gen_key_pair(uint8_t *pub, uint8_t *priv)
     return 0;
 }
 
+#if MYNEWT_VAL(SELFTEST)
+/* Unit tests rely on custom RNG function not being set */
+#define ble_sm_alg_rand NULL
+#else
 /* used by uECC to get random data */
 static int
 ble_sm_alg_rand(uint8_t *dst, unsigned int size)
@@ -519,6 +524,7 @@ ble_sm_alg_rand(uint8_t *dst, unsigned int size)
 
     return 1;
 }
+#endif
 
 void
 ble_sm_alg_ecc_init(void)
@@ -526,5 +532,6 @@ ble_sm_alg_ecc_init(void)
     uECC_set_rng(ble_sm_alg_rand);
 }
 
+#endif
 #endif
 #endif

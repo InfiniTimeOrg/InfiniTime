@@ -97,6 +97,17 @@ static void
 app_ble_sync_cb(void)
 {
     int rc;
+    ble_addr_t addr;
+
+    /* generate new non-resolvable private address */
+
+    rc = ble_hs_id_gen_rnd(1, &addr);
+    assert(rc == 0);
+
+    /* set generated address */
+
+    rc = ble_hs_id_set_rnd(addr.val);
+    assert(rc == 0);
 
     rc = ble_hs_util_ensure_addr(0);
     assert(rc == 0);

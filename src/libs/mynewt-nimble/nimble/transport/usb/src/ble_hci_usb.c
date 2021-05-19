@@ -211,7 +211,7 @@ tud_bt_acl_data_received_cb(void *acl_data, uint16_t data_len)
     if (om->om_len > BLE_HCI_DATA_HDR_SZ) {
         data = incoming_acl_data->om_data;
         len = data[2] + (data[3] << 8) + BLE_HCI_DATA_HDR_SZ;
-        if (len >= incoming_acl_data->om_len) {
+        if (incoming_acl_data->om_len >= len) {
             incoming_acl_data = NULL;
             rc = ble_hci_usb_rx_acl_ll_cb(om, ble_hci_usb_rx_acl_ll_arg);
             (void)rc;

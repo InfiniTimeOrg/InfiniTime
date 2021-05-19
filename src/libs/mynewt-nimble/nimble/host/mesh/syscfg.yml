@@ -311,13 +311,6 @@ syscfg.defs:
         value: 4
         retrictions: 'BLE_MESH_SEG_RETRANSMIT_ATTEMPTS > 1'
 
-    BLE_MESH_RELAY:
-        description: >
-            Controls the initial number of retransmissions of original messages,
-            in addition to the first transmission. Can be changed through runtime
-            configuration.
-        value: 2
-
     BLE_MESH_NETWORK_TRANSMIT_COUNT:
         description: >
             Controls the initial number of retransmissions of original messages,
@@ -332,7 +325,7 @@ syscfg.defs:
             configuration.
         value: 20
 
-    BT_MESH_RELAY:
+    BLE_MESH_RELAY:
         description: >
             Support for acting as a Mesh Relay Node.
         value: 1
@@ -341,14 +334,13 @@ syscfg.defs:
         description: >
             Controls whether the Mesh Relay feature is enabled by default. Can be
             changed through runtime configuration.
-        value: 1
+        value: MYNEWT_VAL(BLE_MESH_RELAY)
 
     BLE_MESH_RELAY_RETRANSMIT_COUNT:
         description: >
             Controls the initial number of retransmissions of relayed messages, in
             addition to the first transmission. Can be changed through runtime
             configuration.
-
         value: 2
 
     BLE_MESH_RELAY_RETRANSMIT_INTERVAL:

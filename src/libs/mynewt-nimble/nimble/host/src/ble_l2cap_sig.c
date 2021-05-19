@@ -48,6 +48,7 @@
 #include "host/ble_monitor.h"
 #include "ble_hs_priv.h"
 
+#if NIMBLE_BLE_CONNECT
 /*****************************************************************************
  * $definitions / declarations                                               *
  *****************************************************************************/
@@ -1639,6 +1640,10 @@ ble_l2cap_sig_disconnect(struct ble_l2cap_chan *chan)
     struct ble_l2cap_sig_proc *proc;
     int rc;
 
+    if (chan->flags & BLE_L2CAP_CHAN_F_DISCONNECTING) {
+        return 0;
+    }
+
     proc = ble_l2cap_sig_proc_alloc();
     if (proc == NULL) {
         return BLE_HS_ENOMEM;
@@ -1660,6 +1665,10 @@ ble_l2cap_sig_disconnect(struct ble_l2cap_chan *chan)
     req->scid = htole16(chan->scid);
 
     rc = ble_l2cap_sig_tx(proc->conn_handle, txom);
+    /* Mark channel as disconnecting */
+    if (rc == 0) {
+        chan->flags |= BLE_L2CAP_CHAN_F_DISCONNECTING;
+    }
 
 done:
     ble_l2cap_sig_process_status(proc, rc);
@@ -1953,3 +1962,5 @@ ble_l2cap_sig_init(void)
 
     return 0;
 }
+
+#endif

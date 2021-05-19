@@ -133,6 +133,34 @@ syscfg.defs:
         description: 'Security manager secure connections (4.2).'
         value: 0
 
+    BLE_SM_SC_ONLY:
+        description: >
+            Force global Secure Connections Pairing Only mode. This means
+            that only SC pairing mode 1 level 4 shall be used, and all
+            characteristics will require it to access, except these
+            requiring mode 1 level 1.
+        value: 0
+        restrictions:
+            - 'BLE_SM_SC_LVL == 4 if 1'
+
+    BLE_SM_SC_LVL:
+        description: >
+          Force global Secure Connections mode 1 level. This level
+          describes requirements for pairing response/request received
+          to accept pairing:
+          - 1 - do not pair; only access to characteristics with no
+                authentication requirements is granted
+          - 2 - allow to pair despite MITM being on or off
+          - 3 - allow to pair only when MITM protection is on
+          - 4 - allow to pair only when 128 bit key is used and MITM is on
+          When set to 0 level is no forced and pairing is allowed for all
+          requests/responses with valid values (for example pairing will be
+          rejected with key longer than 128 bits). Successful pairing with
+          insufficient security will still cause denying access to protected
+          GATT characteristics.
+        value: 0
+        range: 0..4
+
     BLE_SM_MAX_PROCS:
         description: >
             The maximum number of concurrent security manager procedures.

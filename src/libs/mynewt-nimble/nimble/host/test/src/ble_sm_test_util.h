@@ -119,6 +119,7 @@ void ble_sm_test_util_peer_lgcy_good(struct ble_sm_test_params *params);
 void ble_sm_test_util_peer_bonding_bad(uint16_t ediv, uint64_t rand_num);
 void ble_sm_test_util_peer_sc_good(struct ble_sm_test_params *params);
 void ble_sm_test_util_us_sc_good(struct ble_sm_test_params *params);
+void ble_sm_test_util_us_sc_bad(struct ble_sm_test_params *params);
 void ble_sm_test_util_us_fail_inval(struct ble_sm_test_params *params);
 
 #ifdef __cplusplus

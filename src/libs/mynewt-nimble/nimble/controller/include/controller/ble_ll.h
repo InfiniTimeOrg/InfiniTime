@@ -444,6 +444,14 @@ struct ble_dev_addr
 #define BLE_LL_ADDR_SUBTYPE_RPA         (1)
 #define BLE_LL_ADDR_SUBTYPE_NRPA        (2)
 
+/* ACAD data types */
+#define BLE_LL_ACAD_CHANNEL_MAP_UPDATE_IND 0x28
+
+struct ble_ll_acad_channel_map_update_ind {
+    uint8_t map[5];
+    uint16_t instant;
+} __attribute__((packed));
+
 /*--- External API ---*/
 /* Initialize the Link Layer */
 void ble_ll_init(void);

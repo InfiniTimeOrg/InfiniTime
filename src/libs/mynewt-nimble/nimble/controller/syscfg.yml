@@ -243,6 +243,8 @@ syscfg.defs:
             This option is used to enable/disable support for Periodic
             Advertising Feature.
         value: MYNEWT_VAL(BLE_PERIODIC_ADV)
+        restrictions:
+            - 'BLE_LL_CFG_FEAT_LL_EXT_ADV if 1'
 
     BLE_LL_CFG_FEAT_LL_PERIODIC_ADV_SYNC_CNT:
         description: >

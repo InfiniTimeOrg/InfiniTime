@@ -59,10 +59,14 @@ syscfg.defs:
         description: >
             This enables periodic advertising feature.
         value: 0
+        restrictions:
+            - 'BLE_EXT_ADV if 1'
     BLE_PERIODIC_ADV_SYNC_TRANSFER:
         description: >
             This enables Periodic Advertising Sync Transfer Feature.
         value: 0
+        restrictions:
+            - 'BLE_PERIODIC_ADV if 1'
 
     BLE_EXT_ADV_MAX_SIZE:
         description: >
@@ -91,6 +95,15 @@ syscfg.defs:
         restrictions:
             - 'BLE_ISO if 1'
 
+    BLE_HCI_VS:
+        description: >
+            Enables support for NimBLE specific vendor HCI commands
+        value: 0
+
 # Allow periodic sync transfer only if 5.1 or higher
 syscfg.restrictions:
     - "'BLE_PERIODIC_ADV_SYNC_TRANSFER == 0' || 'BLE_VERSION >= 51'"
+
+# Enable VS HCI by default for combined or standalone controller build
+syscfg.vals.BLE_CONTROLLER:
+    BLE_HCI_VS: 1

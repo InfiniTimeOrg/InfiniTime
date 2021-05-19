@@ -36,7 +36,9 @@
      MYNEWT_VAL(BLE_HCI_EVT_LO_BUF_COUNT))
 
 static void ble_hs_event_rx_hci_ev(struct ble_npl_event *ev);
+#if NIMBLE_BLE_CONNECT
 static void ble_hs_event_tx_notify(struct ble_npl_event *ev);
+#endif
 static void ble_hs_event_reset(struct ble_npl_event *ev);
 static void ble_hs_event_start_stage1(struct ble_npl_event *ev);
 static void ble_hs_event_start_stage2(struct ble_npl_event *ev);
@@ -401,10 +403,8 @@ ble_hs_timer_exp(struct ble_npl_event *ev)
 
     switch (ble_hs_sync_state) {
     case BLE_HS_SYNC_STATE_GOOD:
+#if NIMBLE_BLE_CONNECT
         ticks_until_next = ble_gattc_timer();
-        ble_hs_timer_sched(ticks_until_next);
-
-        ticks_until_next = ble_gap_timer();
         ble_hs_timer_sched(ticks_until_next);
 
         ticks_until_next = ble_l2cap_sig_timer();
@@ -415,6 +415,11 @@ ble_hs_timer_exp(struct ble_npl_event *ev)
 
         ticks_until_next = ble_hs_conn_timer();
         ble_hs_timer_sched(ticks_until_next);
+#endif
+
+        ticks_until_next = ble_gap_timer();
+        ble_hs_timer_sched(ticks_until_next);
+
         break;
 
     case BLE_HS_SYNC_STATE_BAD:
@@ -509,11 +514,13 @@ ble_hs_event_rx_hci_ev(struct ble_npl_event *ev)
     ble_hs_hci_evt_process(hci_ev);
 }
 
+#if NIMBLE_BLE_CONNECT
 static void
 ble_hs_event_tx_notify(struct ble_npl_event *ev)
 {
     ble_gatts_tx_notifications();
 }
+#endif
 
 static void
 ble_hs_event_rx_data(struct ble_npl_event *ev)
@@ -646,11 +653,12 @@ ble_hs_start(void)
 
     ble_npl_callout_init(&ble_hs_timer, ble_hs_evq, ble_hs_timer_exp, NULL);
 
+#if NIMBLE_BLE_CONNECT
     rc = ble_gatts_start();
     if (rc != 0) {
         return rc;
     }
-
+#endif
     ble_hs_sync();
 
     return 0;
@@ -723,8 +731,10 @@ ble_hs_init(void)
     ble_hs_reset_reason = 0;
     ble_hs_enabled_state = BLE_HS_ENABLED_STATE_OFF;
 
+#if NIMBLE_BLE_CONNECT
     ble_npl_event_init(&ble_hs_ev_tx_notifications, ble_hs_event_tx_notify,
                        NULL);
+#endif
     ble_npl_event_init(&ble_hs_ev_reset, ble_hs_event_reset, NULL);
     ble_npl_event_init(&ble_hs_ev_start_stage1, ble_hs_event_start_stage1,
                        NULL);
@@ -741,6 +751,7 @@ ble_hs_init(void)
     SYSINIT_PANIC_ASSERT(rc == 0);
 #endif
 
+#if NIMBLE_BLE_CONNECT
     rc = ble_l2cap_init();
     SYSINIT_PANIC_ASSERT(rc == 0);
 
@@ -750,13 +761,13 @@ ble_hs_init(void)
     rc = ble_att_svr_init();
     SYSINIT_PANIC_ASSERT(rc == 0);
 
-    rc = ble_gap_init();
-    SYSINIT_PANIC_ASSERT(rc == 0);
-
     rc = ble_gattc_init();
     SYSINIT_PANIC_ASSERT(rc == 0);
 
     rc = ble_gatts_init();
+    SYSINIT_PANIC_ASSERT(rc == 0);
+#endif
+    rc = ble_gap_init();
     SYSINIT_PANIC_ASSERT(rc == 0);
 
     ble_hs_stop_init();

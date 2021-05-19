@@ -170,12 +170,14 @@ void bt_test_print_credentials(void)
 
 		console_printf("Friend cred: %d\n", i);
 		console_printf("\tNetKeyIdx: %04x\n",
-			           sub[i].net_idx);
-		console_printf("\tNID: %02x\n", subnet->keys->msg.nid);
-		console_printf("\tEncKey: %s\n",
-			       bt_hex(subnet->keys->msg.enc, 16));
-		console_printf("\tPrivKey: %s\n",
-			       bt_hex(subnet->keys->msg.privacy, 16));
+			       sub[i].net_idx);
+		if (subnet) {
+			console_printf("\tNID: %02x\n", subnet->keys->msg.nid);
+			console_printf("\tEncKey: %s\n",
+				       bt_hex(subnet->keys->msg.enc, 16));
+			console_printf("\tPrivKey: %s\n",
+				       bt_hex(subnet->keys->msg.privacy, 16));
+		}
 	}
 }
 

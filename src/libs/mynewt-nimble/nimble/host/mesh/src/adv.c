@@ -233,7 +233,6 @@ struct os_mbuf *bt_mesh_adv_create_from_pool(struct os_mbuf_pool *pool,
 	ble_npl_event_set_arg(&adv->ev, buf);
 
 	return buf;
-	os_mbuf_free_chain(buf);
 }
 
 struct os_mbuf *bt_mesh_adv_create(enum bt_mesh_adv_type type, uint8_t xmit,
@@ -361,7 +360,7 @@ ble_adv_gap_mesh_cb(struct ble_gap_event *event, void *arg)
 	case BLE_GAP_EVENT_EXT_DISC:
 		ext_desc = &event->ext_disc;
 		buf = os_mbuf_get_pkthdr(&adv_os_mbuf_pool, 0);
-		if (!buf || os_mbuf_append(buf, ext_desc->om_data, ext_desc->length_data)) {
+		if (!buf || os_mbuf_append(buf, ext_desc->data, ext_desc->length_data)) {
 			BT_ERR("Could not append data");
 			goto done;
 		}

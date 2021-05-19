@@ -61,6 +61,8 @@ typedef struct os_mbuf *mem_frag_alloc_fn(uint16_t frag_size, void *arg);
 struct os_mbuf *mem_split_frag(struct os_mbuf **om, uint16_t max_frag_sz,
                                mem_frag_alloc_fn *alloc_cb, void *cb_arg);
 
+void *mem_pullup_obj(struct os_mbuf **om, uint16_t len);
+
 #ifdef __cplusplus
 }
 #endif

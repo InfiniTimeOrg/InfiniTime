@@ -110,7 +110,6 @@ struct ble_ll_adv_sm
     uint32_t adv_event_start_time;
     uint32_t adv_pdu_start_time;
     uint32_t adv_end_time;
-    uint32_t adv_rpa_timer;
     uint8_t adva[BLE_DEV_ADDR_LEN];
     uint8_t adv_rpa[BLE_DEV_ADDR_LEN];
     uint8_t peer_addr[BLE_DEV_ADDR_LEN];

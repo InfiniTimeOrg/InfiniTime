@@ -71,10 +71,11 @@ int main(int argc, char *argv[])
         ble_hci_sock_set_device(atoi(argv[1]));
     }
 
-    printf("hci init\n");
-    ble_hci_sock_init();
     printf("port init\n");
     nimble_port_init();
+
+    printf("hci init\n");
+    ble_hci_sock_init();
 
     /* This example provides GATT Alert service */
     printf("gap init\n");

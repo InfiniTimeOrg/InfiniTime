@@ -17,7 +17,6 @@
  * under the License.
  */
 
-#include <stdio.h>
 #include "host/ble_monitor.h"
 
 #if BLE_MONITOR
@@ -35,7 +34,7 @@
 #include "uart/uart.h"
 #endif
 #if MYNEWT_VAL(BLE_MONITOR_RTT)
-#include "SEGGER_RTT.h"
+#include "rtt/SEGGER_RTT.h"
 #endif
 #include "ble_hs_priv.h"
 #include "ble_monitor_priv.h"
@@ -161,7 +160,7 @@ update_drop_counters(struct ble_monitor_hdr *failed_hdr)
 
     if (*cnt < UINT8_MAX) {
         (*cnt)++;
-        ble_npl_callout_reset(&rtt_drops.tmo, portMAX_DELAY);
+        ble_npl_callout_reset(&rtt_drops.tmo, OS_TICKS_PER_SEC);
     }
 }
 
@@ -237,7 +236,7 @@ monitor_write_header(uint16_t opcode, uint16_t len)
     hdr.flags    = 0;
 
     /* Use uptime for timestamp */
-    ts = os_cputime_ticks_to_usecs(os_cputime_get32());
+    ts = os_get_uptime_usec();
 
     /*
      * btsnoop specification states that fields of extended header must be
@@ -267,17 +266,6 @@ btmon_write(FILE *instance, const char *bp, size_t n)
     return n;
 }
 
-struct File_methods
-{
-  size_t (*write)(FILE* instance, const char *bp, size_t n);
-  size_t (*read)(FILE* instance, char *bp, size_t n);
-};
-
-struct File
-{
-  const struct File_methods *vmt;
-};
-
 static FILE *btmon = (FILE *) &(struct File) {
     .vmt = &(struct File_methods) {
         .write = btmon_write,
@@ -288,7 +276,7 @@ static FILE *btmon = (FILE *) &(struct File) {
 static void
 drops_tmp_cb(struct ble_npl_event *ev)
 {
-    ble_npl_mutex_pend(&lock, portMAX_DELAY);
+    ble_npl_mutex_pend(&lock, OS_TIMEOUT_NEVER);
 
     /*
      * There's no "nop" in btsnoop protocol so we just send empty system note
@@ -357,7 +345,7 @@ ble_monitor_init(void)
 int
 ble_monitor_send(uint16_t opcode, const void *data, size_t len)
 {
-    ble_npl_mutex_pend(&lock, portMAX_DELAY);
+    ble_npl_mutex_pend(&lock, OS_TIMEOUT_NEVER);
 
     monitor_write_header(opcode, len);
     monitor_write(data, len);
@@ -379,7 +367,7 @@ ble_monitor_send_om(uint16_t opcode, const struct os_mbuf *om)
         om_tmp = SLIST_NEXT(om_tmp, om_next);
     }
 
-    ble_npl_mutex_pend(&lock, portMAX_DELAY);
+    ble_npl_mutex_pend(&lock, OS_TIMEOUT_NEVER);
 
     monitor_write_header(opcode, length);
 
@@ -441,7 +429,7 @@ ble_monitor_log(int level, const char *fmt, ...)
 
     ulog.ident_len = sizeof(id);
 
-    ble_npl_mutex_pend(&lock, portMAX_DELAY);
+    ble_npl_mutex_pend(&lock, OS_TIMEOUT_NEVER);
 
     monitor_write_header(BLE_MONITOR_OPCODE_USER_LOGGING,
                          sizeof(ulog) + sizeof(id) + len + 1);

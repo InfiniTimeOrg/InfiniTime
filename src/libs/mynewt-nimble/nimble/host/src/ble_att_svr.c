@@ -25,6 +25,7 @@
 #include "host/ble_uuid.h"
 #include "ble_hs_priv.h"
 
+#if NIMBLE_BLE_CONNECT
 /**
  * ATT server - Attribute Protocol
  *
@@ -244,14 +245,14 @@ ble_att_svr_get_sec_state(uint16_t conn_handle,
 
 static int
 ble_att_svr_check_perms(uint16_t conn_handle, int is_read,
-                        struct ble_att_svr_entry *entry,
-                        uint8_t *out_att_err)
+    struct ble_att_svr_entry* entry,
+    uint8_t* out_att_err)
 {
     struct ble_gap_sec_state sec_state;
     struct ble_store_value_sec value_sec;
     struct ble_store_key_sec key_sec;
     struct ble_hs_conn_addrs addrs;
-    struct ble_hs_conn *conn;
+    struct ble_hs_conn* conn;
     int author;
     int authen;
     int enc;
@@ -266,7 +267,8 @@ ble_att_svr_check_perms(uint16_t conn_handle, int is_read,
         enc = entry->ha_flags & BLE_ATT_F_READ_ENC;
         authen = entry->ha_flags & BLE_ATT_F_READ_AUTHEN;
         author = entry->ha_flags & BLE_ATT_F_READ_AUTHOR;
-    } else {
+    }
+    else {
         if (!(entry->ha_flags & BLE_ATT_F_WRITE)) {
             *out_att_err = BLE_ATT_ERR_WRITE_NOT_PERMITTED;
             return BLE_HS_EREJECT;
@@ -297,7 +299,8 @@ ble_att_svr_check_perms(uint16_t conn_handle, int is_read,
         rc = ble_store_read_peer_sec(&key_sec, &value_sec);
         if (rc == 0 && value_sec.ltk_present) {
             *out_att_err = BLE_ATT_ERR_INSUFFICIENT_ENC;
-        } else {
+        }
+        else {
             *out_att_err = BLE_ATT_ERR_INSUFFICIENT_AUTHEN;
         }
 
@@ -2727,3 +2730,5 @@ ble_att_svr_init(void)
 
     return 0;
 }
+
+#endif

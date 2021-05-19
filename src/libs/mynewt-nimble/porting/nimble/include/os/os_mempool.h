@@ -66,7 +66,7 @@ struct os_mempool {
     /** Bitmap of OS_MEMPOOL_F_[...] values. */
     uint8_t mp_flags;
     /** Address of memory buffer used by pool */
-    uintptr_t mp_membuf_addr;
+    uint32_t mp_membuf_addr;
     STAILQ_ENTRY(os_mempool) mp_list;
     SLIST_HEAD(,os_memblock);
     /** Name for memory block */
@@ -140,20 +140,31 @@ struct os_mempool_info {
  *         when at the last memory pool.
  */
 struct os_mempool *os_mempool_info_get_next(struct os_mempool *,
-        struct os_mempool_info *);
+                                            struct os_mempool_info *);
 
 /*
  * To calculate size of the memory buffer needed for the pool. NOTE: This size
  * is NOT in bytes! The size is the number of os_membuf_t elements required for
  * the memory pool.
  */
-#if (OS_CFG_ALIGNMENT == OS_CFG_ALIGN_4)
-#define OS_MEMPOOL_SIZE(n,blksize)      ((((blksize) + 3) / 4) * (n))
-typedef uint32_t os_membuf_t;
+#if MYNEWT_VAL(OS_MEMPOOL_GUARD)
+/*
+ * Leave extra 4 bytes of guard area at the end.
+ */
+#define OS_MEMPOOL_BLOCK_SZ(sz) ((sz) + sizeof(os_membuf_t))
 #else
-#define OS_MEMPOOL_SIZE(n,blksize)      ((((blksize) + 7) / 8) * (n))
-typedef uint64_t os_membuf_t;
+#define OS_MEMPOOL_BLOCK_SZ(sz) (sz)
 #endif
+#if (OS_ALIGNMENT == 4)
+typedef uint32_t os_membuf_t;
+#elif (OS_ALIGNMENT == 8)
+typedef uint64_t os_membuf_t;
+#elif (OS_ALIGNMENT == 16)
+typedef __uint128_t os_membuf_t;
+#else
+#error "Unhandled `OS_ALIGNMENT` for `os_membuf_t`"
+#endif /* OS_ALIGNMENT == * */
+#define OS_MEMPOOL_SIZE(n,blksize)      ((((blksize) + ((OS_ALIGNMENT)-1)) / (OS_ALIGNMENT)) * (n))
 
 /** Calculates the number of bytes required to initialize a memory pool. */
 #define OS_MEMPOOL_BYTES(n,blksize)     \
@@ -188,6 +199,17 @@ os_error_t os_mempool_init(struct os_mempool *mp, uint16_t blocks,
  */
 os_error_t os_mempool_ext_init(struct os_mempool_ext *mpe, uint16_t blocks,
                                uint32_t block_size, void *membuf, char *name);
+
+/**
+ * Removes the specified mempool from the list of initialized mempools.
+ *
+ * @param mp                    The mempool to unregister.
+ *
+ * @return                      0 on success;
+ *                              OS_INVALID_PARM if the mempool is not
+ *                                  registered.
+ */
+os_error_t os_mempool_unregister(struct os_mempool *mp);
 
 /**
  * Clears a memory pool.

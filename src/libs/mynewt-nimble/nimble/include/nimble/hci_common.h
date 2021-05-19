@@ -1061,6 +1061,12 @@ struct ble_hci_le_set_host_feat_cp {
     uint8_t val;
 } __attribute__((packed));
 
+/* --- Vendor specific commands (OGF 0x00FF) */
+#define BLE_HCI_OCF_VS_RD_STATIC_ADDR                 (0x0001)
+struct ble_hci_vs_rd_static_addr_rp {
+    uint8_t addr[6];
+} __attribute__((packed));
+
 /* Command Specific Definitions */
 /* --- Set controller to host flow control (OGF 0x03, OCF 0x0031) --- */
 #define BLE_HCI_CTLR_TO_HOST_FC_OFF         (0)

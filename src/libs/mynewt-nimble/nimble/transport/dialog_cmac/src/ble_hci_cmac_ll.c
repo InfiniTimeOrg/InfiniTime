@@ -92,11 +92,16 @@ int
 ble_hci_trans_ll_evt_tx(uint8_t *evt)
 {
     uint8_t pkt_type = BLE_HCI_TRANS_H4_PKT_TYPE_EVT;
+    os_sr_t sr;
+
+    OS_ENTER_CRITICAL(sr);
 
     cmac_mbox_write(&pkt_type, sizeof(pkt_type));
     cmac_mbox_write(evt, evt[1] + 2);
 
     ble_hci_trans_buf_free(evt);
+
+    OS_EXIT_CRITICAL(sr);
 
     return 0;
 }

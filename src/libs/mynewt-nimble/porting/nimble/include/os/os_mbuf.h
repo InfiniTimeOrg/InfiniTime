@@ -189,7 +189,7 @@ _os_mbuf_leadingspace(struct os_mbuf *om)
     }
 
     leadingspace = (uint16_t) (OS_MBUF_DATA(om, uint8_t *) -
-        ((uint8_t *) &om->om_databuf[0] + startoff));
+                               ((uint8_t *) &om->om_databuf[0] + startoff));
 
     return (leadingspace);
 }
@@ -220,7 +220,7 @@ _os_mbuf_trailingspace(struct os_mbuf *om)
     omp = om->om_omp;
 
     return (&om->om_databuf[0] + omp->omp_databuf_len) -
-      (om->om_data + om->om_len);
+           (om->om_data + om->om_len);
 }
 
 /** @endcond */
@@ -347,7 +347,7 @@ int os_msys_num_free(void);
  * @return 0 on success, error code on failure.
  */
 int os_mbuf_pool_init(struct os_mbuf_pool *, struct os_mempool *mp,
-        uint16_t, uint16_t);
+                      uint16_t, uint16_t);
 
 /**
  * Get an mbuf from the mbuf pool.  The mbuf is allocated, and initialized
@@ -370,7 +370,7 @@ struct os_mbuf *os_mbuf_get(struct os_mbuf_pool *omp, uint16_t);
  * @return A freshly allocated mbuf on success, NULL on failure.
  */
 struct os_mbuf *os_mbuf_get_pkthdr(struct os_mbuf_pool *omp,
-        uint8_t pkthdr_len);
+                                   uint8_t pkthdr_len);
 
 /**
  * Duplicate a chain of mbufs.  Return the start of the duplicated chain.
@@ -412,6 +412,20 @@ struct os_mbuf *os_mbuf_off(const struct os_mbuf *om, int off,
  *                              -1 if the mbuf does not contain enough data.
  */
 int os_mbuf_copydata(const struct os_mbuf *m, int off, int len, void *dst);
+
+/**
+ * @brief Calculates the length of an mbuf chain.
+ *
+ * Calculates the length of an mbuf chain.  If the mbuf contains a packet
+ * header, you should use `OS_MBUF_PKTLEN()` as a more efficient alternative to
+ * this function.
+ *
+ * @param om                    The mbuf to measure.
+ *
+ * @return                      The length, in bytes, of the provided mbuf
+ *                                  chain.
+ */
+uint16_t os_mbuf_len(const struct os_mbuf *om);
 
 /**
  * Append data onto a mbuf
@@ -613,6 +627,22 @@ struct os_mbuf *os_mbuf_pullup(struct os_mbuf *om, uint16_t len);
  * @return                      The head of the trimmed mbuf chain.
  */
 struct os_mbuf *os_mbuf_trim_front(struct os_mbuf *om);
+
+/**
+ * Increases the length of an mbuf chain by inserting a gap at the specified
+ * offset.  The contents of the gap are indeterminate.  If the mbuf chain
+ * contains a packet header, its total length is increased accordingly.
+ *
+ * This function never frees the provided mbuf chain.
+ *
+ * @param om                    The mbuf chain to widen.
+ * @param off                   The offset at which to insert the gap.
+ * @param len                   The size of the gap to insert.
+ *
+ * @return                      0 on success; SYS_[...] error code on failure.
+ */
+int os_mbuf_widen(struct os_mbuf *om, uint16_t off, uint16_t len);
+
 
 /**
  * Creates a single chained mbuf from m1 and m2 utilizing all

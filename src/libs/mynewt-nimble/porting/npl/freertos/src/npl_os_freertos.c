@@ -268,10 +268,8 @@ void
 npl_freertos_callout_init(struct ble_npl_callout *co, struct ble_npl_eventq *evq,
                      ble_npl_event_fn *ev_cb, void *ev_arg)
 {
-  if(co->handle == NULL) {
     memset(co, 0, sizeof(*co));
     co->handle = xTimerCreate("co", 1, pdFALSE, co, os_callout_timer_cb);
-  }
     co->evq = evq;
     ble_npl_event_init(&co->ev, ev_cb, ev_arg);
 }

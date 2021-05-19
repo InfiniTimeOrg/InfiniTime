@@ -118,12 +118,12 @@ struct name {                                           \
 
 #define	SLIST_HEAD_INITIALIZER(head)                    \
     { NULL }
- 
+
 #define	SLIST_ENTRY(type)                               \
 struct {                                                \
     struct type *sle_next;  /* next element */          \
 }
- 
+
 /*
  * Singly-linked List functions.
  */
@@ -519,4 +519,4 @@ struct {								\
 }
 #endif
 
-#endif /* !_QUEUE_H_ */
+#endif /* !_SYS_QUEUE_H_ */

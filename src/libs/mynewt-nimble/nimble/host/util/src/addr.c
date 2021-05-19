@@ -19,23 +19,21 @@
 
 #include "host/ble_hs.h"
 #include "host/util/util.h"
-
-#if MYNEWT_VAL(BLE_CONTROLLER)
-#include "controller/ble_hw.h"
-#endif
+#include "../src/ble_hs_hci_priv.h"
 
 static int
 ble_hs_util_load_rand_addr(ble_addr_t *addr)
 {
-    /* XXX: It is unfortunate that the function to retrieve the random address
-     * is in the controller package.  A host-only device ought to be able to
-     * automically restore a random address.
-     */
-#if MYNEWT_VAL(BLE_CONTROLLER)
+#if MYNEWT_VAL(BLE_HCI_VS)
+    struct ble_hci_vs_rd_static_addr_rp rsp;
     int rc;
 
-    rc = ble_hw_get_static_addr(addr);
+    rc = ble_hs_hci_cmd_tx(BLE_HCI_OP(BLE_HCI_OGF_VENDOR,
+                                      BLE_HCI_OCF_VS_RD_STATIC_ADDR),
+                           NULL, 0, &rsp, sizeof(rsp));
     if (rc == 0) {
+        addr->type = BLE_ADDR_RANDOM;
+        memcpy(addr->val, rsp.addr, sizeof(addr->val));
         return 0;
     }
 #endif

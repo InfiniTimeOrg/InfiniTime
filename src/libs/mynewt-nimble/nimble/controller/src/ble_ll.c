@@ -711,6 +711,7 @@ ble_ll_tx_pkt_in(void)
     uint16_t pb;
     struct os_mbuf_pkthdr *pkthdr;
     struct os_mbuf *om;
+    os_sr_t sr;
 
     /* Drain all packets off the queue */
     while (STAILQ_FIRST(&g_ble_ll_data.ll_tx_pkt_q)) {
@@ -719,7 +720,9 @@ ble_ll_tx_pkt_in(void)
         om = (struct os_mbuf *)((uint8_t *)pkthdr - sizeof(struct os_mbuf));
 
         /* Remove from queue */
+        OS_ENTER_CRITICAL(sr);
         STAILQ_REMOVE_HEAD(&g_ble_ll_data.ll_tx_pkt_q, omp_next);
+        OS_EXIT_CRITICAL(sr);
 
         /* Strip HCI ACL header to get handle and length */
         handle = get_le16(om->om_data);

@@ -17,8 +17,26 @@
 # under the License.
 #
 
-pkg.name: targets/dialog_cmac
-pkg.type: target
-pkg.description: Sample target for BLE controller on Dialog CMAC
-pkg.author: "Apache Mynewt <dev@mynewt.apache.org>"
-pkg.homepage: "http://mynewt.apache.org/"
+syscfg.vals:
+    BLE_HCI_TRANSPORT: nrf5340
+
+    MSYS_1_BLOCK_COUNT: 12
+    MSYS_1_BLOCK_SIZE: 292
+    BLE_LL_CFG_FEAT_DATA_LEN_EXT: 1
+    BLE_LL_CFG_FEAT_LE_2M_PHY: 1
+    BLE_LL_CFG_FEAT_LE_CODED_PHY: 1
+    BLE_LL_CFG_FEAT_LL_PRIVACY: 1
+    BLE_LL_CFG_FEAT_CTRL_TO_HOST_FLOW_CONTROL: 1
+    BLE_LL_CONN_INIT_MAX_TX_BYTES: 251
+    BLE_LL_CONN_INIT_SLOTS: 4
+    BLE_LL_DTM: 1
+    BLE_LL_DTM_EXTENSIONS: 1
+    BLE_LL_VND_EVENT_ON_ASSERT: 1
+    BLE_MAX_CONNECTIONS: 5
+    BLE_EXT_ADV: 1
+    BLE_EXT_ADV_MAX_SIZE: 1650
+    BLE_MAX_PERIODIC_SYNCS: 5
+    BLE_MULTI_ADV_INSTANCES: 5
+    BLE_PERIODIC_ADV: 1
+    BLE_PERIODIC_ADV_SYNC_TRANSFER: 1
+    BLE_VERSION: 51

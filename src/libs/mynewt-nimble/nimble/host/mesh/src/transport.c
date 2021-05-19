@@ -994,6 +994,7 @@ static inline int32_t ack_timeout(struct seg_rx *rx)
 int bt_mesh_ctl_send(struct bt_mesh_net_tx *tx, uint8_t ctl_op, void *data,
 		     size_t data_len, const struct bt_mesh_send_cb *cb, void *cb_data)
 {
+	int err;
 	struct os_mbuf *buf = NET_BUF_SIMPLE(data_len);
 
 	net_buf_simple_init_with_data(buf, data, data_len);
@@ -1022,11 +1023,12 @@ int bt_mesh_ctl_send(struct bt_mesh_net_tx *tx, uint8_t ctl_op, void *data,
 	BT_DBG("len %zu: %s", data_len, bt_hex(data, data_len));
 
 	if (tx->ctx->send_rel) {
-		return send_seg(tx, buf, cb, cb_data, &ctl_op);
+		err = send_seg(tx, buf, cb, cb_data, &ctl_op);
 	} else {
-		return send_unseg(tx, buf, cb, cb_data, &ctl_op);
+		err = send_unseg(tx, buf, cb, cb_data, &ctl_op);
 	}
 	os_mbuf_free_chain(buf);
+	return err;
 }
 
 static int send_ack(struct bt_mesh_subnet *sub, uint16_t src, uint16_t dst,

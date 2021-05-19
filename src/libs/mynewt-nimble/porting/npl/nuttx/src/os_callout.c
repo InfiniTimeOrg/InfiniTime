@@ -28,17 +28,52 @@
 
 #include "nimble/nimble_npl.h"
 
-static void
-ble_npl_callout_timer_cb(union sigval sv)
+#ifndef CONFIG_NIMBLE_CALLOUT_THREAD_STACKSIZE
+#define CONFIG_NIMBLE_CALLOUT_THREAD_STACKSIZE 1024
+#endif
+
+struct ble_npl_callout *pending_callout = NULL;
+
+bool thread_started = false;
+pthread_t callout_thread;
+pthread_mutex_t callout_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t callout_cond = PTHREAD_COND_INITIALIZER;
+
+static pthread_addr_t
+callout_handler(pthread_addr_t arg)
 {
-    struct ble_npl_callout *c = (struct ble_npl_callout *)sv.sival_ptr;
-    assert(c);
+    struct ble_npl_callout *c;
+
+    pthread_mutex_lock(&callout_mutex);
+    while (!pending_callout) {
+      pthread_cond_wait(&callout_cond, &callout_mutex);
+    }
+
+    c = pending_callout;
+    pending_callout = NULL;
+    pthread_mutex_unlock(&callout_mutex);
+
+    /* Invoke callback */
 
     if (c->c_evq) {
         ble_npl_eventq_put(c->c_evq, &c->c_ev);
     } else {
         c->c_ev.ev_cb(&c->c_ev);
     }
+
+    return NULL;
+}
+
+static void
+ble_npl_callout_timer_cb(union sigval sv)
+{
+    struct ble_npl_callout *c = (struct ble_npl_callout *)sv.sival_ptr;
+    assert(c);
+
+    pthread_mutex_lock(&callout_mutex);
+    pending_callout = c;
+    pthread_cond_signal(&callout_cond);
+    pthread_mutex_unlock(&callout_mutex);
 }
 
 void
@@ -48,6 +83,14 @@ ble_npl_callout_init(struct ble_npl_callout *c,
                      void *ev_arg)
 {
     struct sigevent         event;
+
+    if (!thread_started) {
+        pthread_attr_t attr;
+        pthread_attr_init(&attr);
+        pthread_attr_setstacksize(&attr, CONFIG_NIMBLE_CALLOUT_THREAD_STACKSIZE);
+        pthread_create(&callout_thread, &attr, callout_handler, NULL);
+        thread_started = true;
+    }
 
     /* Initialize the callout. */
     memset(c, 0, sizeof(*c));

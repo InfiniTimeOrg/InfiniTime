@@ -2719,7 +2719,7 @@ struct shell_cmd_help cmd_del_fault_help = {
 	NULL, "[Fault ID]", NULL
 };
 
-#if BLE_MESH_CDB
+#if MYNEWT_VAL(BLE_MESH_CDB)
 struct shell_cmd_help cmd_cdb_create_help = {
 	NULL, "[NetKey]", NULL
 };

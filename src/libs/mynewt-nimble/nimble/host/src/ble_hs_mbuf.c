@@ -29,7 +29,11 @@ ble_hs_mbuf_gen_pkt(uint16_t leading_space)
     struct os_mbuf *om;
     int rc;
 
+#if MYNEWT_VAL(BLE_CONTROLLER)
+    om = os_msys_get_pkthdr(0, sizeof(struct ble_mbuf_hdr));
+#else
     om = os_msys_get_pkthdr(0, 0);
+#endif
     if (om == NULL) {
         return NULL;
     }

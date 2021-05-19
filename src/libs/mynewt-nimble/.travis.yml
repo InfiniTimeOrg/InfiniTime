@@ -17,6 +17,8 @@
 
 language: go
 
+dist: bionic
+
 _addons: &addon_conf
   apt:
     sources:

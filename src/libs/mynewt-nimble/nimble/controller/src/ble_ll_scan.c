@@ -2687,10 +2687,16 @@ ble_ll_hci_send_ext_adv_report(uint8_t ptype, uint8_t *adva, uint8_t adva_type,
 
         /*
          * We need another event if either there are still some data left to
-         * send in current PDU or scan is not completed. The only exception is
-         * when this is a scannable event which is not a scan response.
+         * send in current PDU or scan is not completed. There are two exceptions
+         * though:
+         * - we sent all data from this PDU and there is scan error set already;
+         *   it may be set before entering current function due to failed aux
+         *   scan scheduling
+         * - this is a scannable event which is not a scan response
          */
-        need_event = ((offset < datalen) || (aux_data && !(aux_data->flags_ll & BLE_LL_AUX_FLAG_SCAN_COMPLETE))) && !is_scannable_aux;
+        need_event = ((offset < datalen) || (aux_data && !(aux_data->flags_ll & BLE_LL_AUX_FLAG_SCAN_COMPLETE))) &&
+                     !((offset == datalen) && (aux_data->flags_ll & BLE_LL_AUX_FLAG_SCAN_ERROR)) &&
+                     !is_scannable_aux;
 
         if (need_event) {
             /*
