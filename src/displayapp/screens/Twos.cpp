@@ -269,7 +269,12 @@ void Twos::updateGridDisplay(Tile grid[][4]) {
   for (int row = 0; row < 4; row++) {
     for (int col = 0; col < 4; col++) {
       if (grid[row][col].value) {
-        lv_table_set_cell_value(gridDisplay, row, col, (std::to_string(grid[row][col].value)).c_str());
+        //64 should be a pinecone, smh
+        if (grid[row][col].value == 64) {
+          lv_table_set_cell_value(gridDisplay, row, col, "\uE900");
+        } else {
+          lv_table_set_cell_value(gridDisplay, row, col, (std::to_string(grid[row][col].value)).c_str());
+        }
       } else {
         lv_table_set_cell_value(gridDisplay, row, col, "");
       }
