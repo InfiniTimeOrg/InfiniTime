@@ -1,19 +1,3 @@
-#include "PineTimeStyle.h"
-
-#include <date/date.h>
-#include <lvgl/lvgl.h>
-#include <cstdio>
-#include "BatteryIcon.h"
-#include "BleIcon.h"
-#include "NotificationIcon.h"
-#include "Symbols.h"
-#include "components/battery/BatteryController.h"
-#include "components/ble/BleController.h"
-#include "components/ble/NotificationManager.h"
-#include "components/heartrate/HeartRateController.h"
-#include "components/settings/Settings.h"
-#include "../DisplayApp.h"
-
 /*
  * This file is part of the Infinitime distribution (https://github.com/JF002/Infinitime).
  * Copyright (c) 2021 Kieran Cawthray.
@@ -34,6 +18,21 @@
  * Based on WatchFaceDigital
  * Style/layout copied from TimeStyle for Pebble by Dan Tilden (github.com/tilden)
  */
+
+#include "PineTimeStyle.h"
+#include <date/date.h>
+#include <lvgl/lvgl.h>
+#include <cstdio>
+#include "BatteryIcon.h"
+#include "BleIcon.h"
+#include "NotificationIcon.h"
+#include "Symbols.h"
+#include "components/battery/BatteryController.h"
+#include "components/ble/BleController.h"
+#include "components/ble/NotificationManager.h"
+#include "components/heartrate/HeartRateController.h"
+#include "components/settings/Settings.h"
+#include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
 
