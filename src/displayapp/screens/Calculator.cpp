@@ -1,7 +1,3 @@
-//
-// Created by florian on 05.04.21.
-//
-
 #include "Calculator.h"
 #include <string>
 #include <stack>
@@ -29,8 +25,8 @@ namespace {
   
   
   struct BinOp : CalcTreeNode {
-    CalcTreeNode *left;
-    CalcTreeNode *right;
+    CalcTreeNode* left;
+    CalcTreeNode* right;
     
     char op;
     
@@ -64,10 +60,10 @@ Calculator::~Calculator() {
   lv_obj_clean(lv_scr_act());
 }
 
-static const char * buttonMap[] = {"7", "8", "9", "/", "\n",
-                                   "4", "5", "6", "x", "\n",
-                                   "1", "2", "3", "-", "\n",
-                                   ".", "0", "=", "+", "",};
+static const char* buttonMap[] = {"7", "8", "9", "/", "\n",
+                                  "4", "5", "6", "x", "\n",
+                                  "1", "2", "3", "-", "\n",
+                                  ".", "0", "=", "+", "",};
 
 Calculator::Calculator(DisplayApp* app) : Screen(app) {
   result = lv_label_create(lv_scr_act(), nullptr);
@@ -79,7 +75,7 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
   returnButton = lv_btn_create(lv_scr_act(), nullptr);
   lv_obj_set_size(returnButton, 60, 60);
   lv_obj_set_pos(returnButton, 180, 0);
-  lv_obj_t *returnLabel;
+  lv_obj_t* returnLabel;
   returnLabel = lv_label_create(returnButton, nullptr);
   lv_label_set_text(returnLabel, "r");
   lv_obj_align(returnLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
@@ -97,13 +93,13 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
 
 void Calculator::eval() {
   std::stack<char> input(std::deque<char>(0, ' '));
-  for (int i = position - 1; i >= 0; i--) {
+  for (int8_t i = position - 1; i >= 0; i--) {
     input.push(text[i]);
   }
   std::stack<CalcTreeNode*> output(std::deque<CalcTreeNode*>(0, nullptr));
   std::stack<char> operators(std::deque<char>(0, ' '));
   bool expectingNumber = true;
-  int sign = +1;
+  int8_t sign = +1;
   while (!input.empty()) {
     
     if (isdigit(input.top())) {
@@ -217,7 +213,7 @@ void Calculator::eval() {
   
 }
 
-int Calculator::getPrecedence(char op) {
+uint8_t Calculator::getPrecedence(char op) {
   switch (op) {
     case '^':
       return 4;
@@ -231,6 +227,7 @@ int Calculator::getPrecedence(char op) {
   running = false;
   return 0;
 }
+
 bool Calculator::leftAssociative(char op) {
   switch (op) {
     case '^':
@@ -254,17 +251,16 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       } else {
         
         
-        
         text[position] = *buttonstr;
         position++;
         
       }
     } else if (obj == returnButton) {
       if (position != 0) {
-  
+        
         position--;
       } else {
-  
+        
         lv_label_set_text(result, "0");
       }
     }
@@ -282,4 +278,8 @@ bool Calculator::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
     return true;
   }
   return false;
+}
+
+bool Calculator::Refresh() {
+  return running;
 }
