@@ -2,6 +2,7 @@
 #include <libraries/log/nrf_log.h>
 #include <displayapp/screens/HeartRate.h>
 #include <displayapp/screens/Motion.h>
+#include <displayapp/screens/Timer.h>
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
@@ -55,7 +56,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::MotorController& motorController,
-                       Pinetime::Controllers::MotionController& motionController)
+                       Pinetime::Controllers::MotionController& motionController,
+                       Pinetime::Controllers::TimerController& timerController)
   : lcd {lcd},
     lvgl {lvgl},
     touchPanel {touchPanel},
@@ -68,7 +70,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     heartRateController {heartRateController},
     settingsController {settingsController},
     motorController {motorController},
-    motionController {motionController} {
+    motionController {motionController},
+    timerController {timerController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
   // Start clock when smartwatch boots
   LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::None);
@@ -147,6 +150,14 @@ void DisplayApp::Refresh() {
         break;
       case Messages::NewNotification:
         LoadApp(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
+        break;
+      case Messages::TimerDone:
+        if (currentApp == Apps::Timer) {
+          auto *timer = dynamic_cast<Screens::Timer*>(currentScreen.get());
+          timer->setDone();
+        } else {
+          LoadApp(Apps::Timer, DisplayApp::FullRefreshDirections::Down);
+        }
         break;
       case Messages::TouchEvent: {
         if (state != States::Running)
@@ -263,6 +274,9 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Notifications>(
         this, notificationManager, systemTask.nimble().alertService(), Screens::Notifications::Modes::Preview);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
+      break;
+    case Apps::Timer:
+      currentScreen = std::make_unique<Screens::Timer>(this, timerController);
       break;
 
     // Settings
