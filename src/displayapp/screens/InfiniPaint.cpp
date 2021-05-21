@@ -4,7 +4,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-InfiniPaint::InfiniPaint(Pinetime::Applications::DisplayApp* app, Pinetime::Components::LittleVgl& lvgl) : Screen(app), lvgl{lvgl} {
+InfiniPaint::InfiniPaint(Pinetime::Applications::DisplayApp* app, Pinetime::Components::LittleVgl& lvgl) : Screen(app), lvgl {lvgl} {
   app->SetTouchMode(DisplayApp::TouchModes::Polling);
   std::fill(b, b + bufferSize, selectColor);
 }
@@ -20,8 +20,8 @@ bool InfiniPaint::Refresh() {
 }
 
 bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  switch(event) {
-    case Pinetime::Applications::TouchEvents::LongTap:      
+  switch (event) {
+    case Pinetime::Applications::TouchEvents::LongTap:
       switch (color) {
         case 0:
           selectColor = LV_COLOR_MAGENTA;
@@ -47,13 +47,13 @@ bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
         case 7:
           selectColor = LV_COLOR_BLACK;
           break;
-      
+
         default:
           color = 0;
           break;
       }
 
-      std::fill(b, b + bufferSize, selectColor);  
+      std::fill(b, b + bufferSize, selectColor);
       color++;
       return true;
     default:
@@ -72,4 +72,3 @@ bool InfiniPaint::OnTouchEvent(uint16_t x, uint16_t y) {
   lvgl.FlushDisplay(&area, b);
   return true;
 }
-

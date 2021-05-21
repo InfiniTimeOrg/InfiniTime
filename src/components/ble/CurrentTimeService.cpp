@@ -7,8 +7,7 @@ using namespace Pinetime::Controllers;
 constexpr ble_uuid16_t CurrentTimeService::ctsUuid;
 constexpr ble_uuid16_t CurrentTimeService::ctChrUuid;
 
-
-int CTSCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
+int CTSCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   auto cts = static_cast<CurrentTimeService*>(arg);
   return cts->OnTimeAccessed(conn_handle, attr_handle, ctxt);
 }
@@ -22,22 +21,19 @@ void CurrentTimeService::Init() {
   ASSERT(res == 0);
 }
 
+int CurrentTimeService::OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
 
-int CurrentTimeService::OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handle,
-                                                    struct ble_gatt_access_ctxt *ctxt) {
-
-    NRF_LOG_INFO("Setting time...");
+  NRF_LOG_INFO("Setting time...");
 
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     CtsData result;
     os_mbuf_copydata(ctxt->om, 0, sizeof(CtsData), &result);
 
-    NRF_LOG_INFO("Received data: %d-%d-%d %d:%d:%d", result.year,
-            result.month, result.dayofmonth,
-            result.hour, result.minute, result.second);
+    NRF_LOG_INFO(
+      "Received data: %d-%d-%d %d:%d:%d", result.year, result.month, result.dayofmonth, result.hour, result.minute, result.second);
 
-    m_dateTimeController.SetTime(result.year, result.month, result.dayofmonth,
-                        0, result.hour, result.minute, result.second, nrf_rtc_counter_get(portNRF_RTC_REG));
+    m_dateTimeController.SetTime(
+      result.year, result.month, result.dayofmonth, 0, result.hour, result.minute, result.second, nrf_rtc_counter_get(portNRF_RTC_REG));
 
   } else if (ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR) {
     CtsData currentDateTime;
@@ -49,39 +45,26 @@ int CurrentTimeService::OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handl
     currentDateTime.second = m_dateTimeController.Seconds();
     currentDateTime.millis = 0;
 
-
     int res = os_mbuf_append(ctxt->om, &currentDateTime, sizeof(CtsData));
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
-
   }
 
   return 0;
 }
 
-CurrentTimeService::CurrentTimeService(DateTime &dateTimeController) :
-        characteristicDefinition{
-                {
-                        .uuid = (ble_uuid_t *) &ctChrUuid,
-                        .access_cb = CTSCallback,
+CurrentTimeService::CurrentTimeService(DateTime& dateTimeController)
+  : characteristicDefinition {{.uuid = (ble_uuid_t*) &ctChrUuid,
+                               .access_cb = CTSCallback,
 
-                        .arg = this,
-                        .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-                },
-                {
-                  0
-                }
-        },
-        serviceDefinition{
-                {
-                        /* Device Information Service */
-                        .type = BLE_GATT_SVC_TYPE_PRIMARY,
-                        .uuid = (ble_uuid_t *) &ctsUuid,
-                        .characteristics = characteristicDefinition
-                },
-                {
-                        0
-                },
-        }, m_dateTimeController{dateTimeController} {
-
+                               .arg = this,
+                               .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ},
+                              {0}},
+    serviceDefinition {
+      {/* Device Information Service */
+       .type = BLE_GATT_SVC_TYPE_PRIMARY,
+       .uuid = (ble_uuid_t*) &ctsUuid,
+       .characteristics = characteristicDefinition},
+      {0},
+    },
+    m_dateTimeController {dateTimeController} {
 }
-

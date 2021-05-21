@@ -13,36 +13,34 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class List : public Screen {
-        public:
-          struct Applications {
-            const char* icon;
-            const char* name;
-            Pinetime::Applications::Apps application;
-          };
+      public:
+        struct Applications {
+          const char* icon;
+          const char* name;
+          Pinetime::Applications::Apps application;
+        };
 
-          explicit List(uint8_t screenID, uint8_t numScreens,
-              DisplayApp* app,
-              Controllers::Settings& settingsController, 
-              std::array<Applications, MAXLISTITEMS>& applications);
-          ~List() override;
+        explicit List(uint8_t screenID,
+                      uint8_t numScreens,
+                      DisplayApp* app,
+                      Controllers::Settings& settingsController,
+                      std::array<Applications, MAXLISTITEMS>& applications);
+        ~List() override;
 
-          bool Refresh() override;
-          
+        bool Refresh() override;
 
-          void OnButtonEvent(lv_obj_t *object, lv_event_t event);
+        void OnButtonEvent(lv_obj_t* object, lv_event_t event);
 
-        private:
+      private:
+        Controllers::Settings& settingsController;
+        Pinetime::Applications::Apps apps[MAXLISTITEMS];
 
-          Controllers::Settings& settingsController;
-          Pinetime::Applications::Apps apps[MAXLISTITEMS];
+        lv_obj_t* itemApps[MAXLISTITEMS];
 
-          lv_obj_t * itemApps[MAXLISTITEMS];
-
-          lv_point_t pageIndicatorBasePoints[2];
-          lv_point_t pageIndicatorPoints[2];
-          lv_obj_t* pageIndicatorBase;
-          lv_obj_t* pageIndicator;
-         
+        lv_point_t pageIndicatorBasePoints[2];
+        lv_point_t pageIndicatorPoints[2];
+        lv_obj_t* pageIndicatorBase;
+        lv_obj_t* pageIndicator;
       };
     }
   }

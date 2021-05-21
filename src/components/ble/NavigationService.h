@@ -26,8 +26,9 @@
 #undef max
 #undef min
 
-//c7e60000-78fc-48fe-8e23-433b3a1942d0
-#define NAVIGATION_SERVICE_UUID_BASE {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0x00, 0x00}
+// c7e60000-78fc-48fe-8e23-433b3a1942d0
+#define NAVIGATION_SERVICE_UUID_BASE                                                                                                       \
+  { 0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0x00, 0x00 }
 
 namespace Pinetime {
   namespace System {
@@ -37,12 +38,11 @@ namespace Pinetime {
 
     class NavigationService {
     public:
-      explicit NavigationService(Pinetime::System::SystemTask &system);
+      explicit NavigationService(Pinetime::System::SystemTask& system);
 
       void Init();
 
-      int OnCommand(uint16_t conn_handle, uint16_t attr_handle,
-                    struct ble_gatt_access_ctxt *ctxt);
+      int OnCommand(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
 
       std::string getFlag();
 
@@ -59,27 +59,12 @@ namespace Pinetime {
       static constexpr uint8_t navManDistCharId[2] = {0x03, 0x00};
       static constexpr uint8_t navProgressCharId[2] = {0x04, 0x00};
 
-      ble_uuid128_t navUuid{
-          .u = {.type = BLE_UUID_TYPE_128},
-          .value = NAVIGATION_SERVICE_UUID_BASE
-      };
+      ble_uuid128_t navUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = NAVIGATION_SERVICE_UUID_BASE};
 
-      ble_uuid128_t navFlagCharUuid{
-          .u = {.type = BLE_UUID_TYPE_128},
-          .value = NAVIGATION_SERVICE_UUID_BASE
-      };
-      ble_uuid128_t navNarrativeCharUuid{
-          .u = {.type = BLE_UUID_TYPE_128},
-          .value = NAVIGATION_SERVICE_UUID_BASE
-      };
-      ble_uuid128_t navManDistCharUuid{
-          .u = {.type = BLE_UUID_TYPE_128},
-          .value = NAVIGATION_SERVICE_UUID_BASE
-      };
-      ble_uuid128_t navProgressCharUuid{
-          .u = {.type = BLE_UUID_TYPE_128},
-          .value = NAVIGATION_SERVICE_UUID_BASE
-      };
+      ble_uuid128_t navFlagCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = NAVIGATION_SERVICE_UUID_BASE};
+      ble_uuid128_t navNarrativeCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = NAVIGATION_SERVICE_UUID_BASE};
+      ble_uuid128_t navManDistCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = NAVIGATION_SERVICE_UUID_BASE};
+      ble_uuid128_t navProgressCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = NAVIGATION_SERVICE_UUID_BASE};
 
       struct ble_gatt_chr_def characteristicDefinition[5];
       struct ble_gatt_svc_def serviceDefinition[2];
@@ -89,8 +74,7 @@ namespace Pinetime {
       std::string m_manDist;
       int m_progress;
 
-      Pinetime::System::SystemTask &m_system;
+      Pinetime::System::SystemTask& m_system;
     };
   }
 }
-

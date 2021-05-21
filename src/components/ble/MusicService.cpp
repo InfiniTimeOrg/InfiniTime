@@ -18,12 +18,12 @@
 #include "MusicService.h"
 #include "systemtask/SystemTask.h"
 
-int MSCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt *ctxt, void *arg) {
-  auto musicService = static_cast<Pinetime::Controllers::MusicService *>(arg);
+int MSCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+  auto musicService = static_cast<Pinetime::Controllers::MusicService*>(arg);
   return musicService->OnCommand(conn_handle, attr_handle, ctxt);
 }
 
-Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask &system) : m_system(system) {
+Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask& system) : m_system(system) {
   msUuid.value[14] = msId[0];
   msUuid.value[15] = msId[1];
 
@@ -86,82 +86,51 @@ Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask &
   msShuffleCharUuid.value[13] = msShuffleCharId[1];
   msShuffleCharUuid.value[14] = msId[0];
   msShuffleCharUuid.value[15] = msId[1];
-  
-  characteristicDefinition[0] = {.uuid = (ble_uuid_t *) (&msEventCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags =  BLE_GATT_CHR_F_NOTIFY,
-      .val_handle = &eventHandle
-  };
-  characteristicDefinition[1] = {.uuid = (ble_uuid_t *) (&msStatusCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-  };
-  characteristicDefinition[2] = {.uuid = (ble_uuid_t *) (&msTrackCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-  };
-  characteristicDefinition[3] = {.uuid = (ble_uuid_t *) (&msArtistCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-  };
-  characteristicDefinition[4] = {.uuid = (ble_uuid_t *) (&msAlbumCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-  };
-  characteristicDefinition[5] = {.uuid = (ble_uuid_t *) (&msPositionCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-  };
-  characteristicDefinition[6] = {.uuid = (ble_uuid_t *) (&msTotalLengthCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-  };
-  characteristicDefinition[7] = {.uuid = (ble_uuid_t *) (&msTotalLengthCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-  };
-  characteristicDefinition[8] = {.uuid = (ble_uuid_t *) (&msTrackNumberCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-  };
-  characteristicDefinition[9] = {.uuid = (ble_uuid_t *) (&msTrackTotalCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-  };
-  characteristicDefinition[10] = {.uuid = (ble_uuid_t *) (&msPlaybackSpeedCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-  };
-  characteristicDefinition[11] = {.uuid = (ble_uuid_t *) (&msRepeatCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-  };
-  characteristicDefinition[12] = {.uuid = (ble_uuid_t *) (&msShuffleCharUuid),
-      .access_cb = MSCallback,
-      .arg = this,
-      .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ
-  };
+
+  characteristicDefinition[0] = {.uuid = (ble_uuid_t*) (&msEventCharUuid),
+                                 .access_cb = MSCallback,
+                                 .arg = this,
+                                 .flags = BLE_GATT_CHR_F_NOTIFY,
+                                 .val_handle = &eventHandle};
+  characteristicDefinition[1] = {
+    .uuid = (ble_uuid_t*) (&msStatusCharUuid), .access_cb = MSCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[2] = {
+    .uuid = (ble_uuid_t*) (&msTrackCharUuid), .access_cb = MSCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[3] = {
+    .uuid = (ble_uuid_t*) (&msArtistCharUuid), .access_cb = MSCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[4] = {
+    .uuid = (ble_uuid_t*) (&msAlbumCharUuid), .access_cb = MSCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[5] = {
+    .uuid = (ble_uuid_t*) (&msPositionCharUuid), .access_cb = MSCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[6] = {.uuid = (ble_uuid_t*) (&msTotalLengthCharUuid),
+                                 .access_cb = MSCallback,
+                                 .arg = this,
+                                 .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[7] = {.uuid = (ble_uuid_t*) (&msTotalLengthCharUuid),
+                                 .access_cb = MSCallback,
+                                 .arg = this,
+                                 .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[8] = {.uuid = (ble_uuid_t*) (&msTrackNumberCharUuid),
+                                 .access_cb = MSCallback,
+                                 .arg = this,
+                                 .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[9] = {.uuid = (ble_uuid_t*) (&msTrackTotalCharUuid),
+                                 .access_cb = MSCallback,
+                                 .arg = this,
+                                 .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[10] = {.uuid = (ble_uuid_t*) (&msPlaybackSpeedCharUuid),
+                                  .access_cb = MSCallback,
+                                  .arg = this,
+                                  .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[11] = {
+    .uuid = (ble_uuid_t*) (&msRepeatCharUuid), .access_cb = MSCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[12] = {
+    .uuid = (ble_uuid_t*) (&msShuffleCharUuid), .access_cb = MSCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
   characteristicDefinition[13] = {0};
-  
-  serviceDefinition[0] = {
-      .type = BLE_GATT_SVC_TYPE_PRIMARY,
-      .uuid = (ble_uuid_t *) &msUuid,
-      .characteristics = characteristicDefinition
-  };
+
+  serviceDefinition[0] = {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = (ble_uuid_t*) &msUuid, .characteristics = characteristicDefinition};
   serviceDefinition[1] = {0};
-  
+
   artistName = "Waiting for";
   albumName = "";
   trackName = "track information..";
@@ -177,41 +146,40 @@ void Pinetime::Controllers::MusicService::Init() {
   int res = 0;
   res = ble_gatts_count_cfg(serviceDefinition);
   ASSERT(res == 0);
-  
+
   res = ble_gatts_add_svcs(serviceDefinition);
   ASSERT(res == 0);
 }
 
-int Pinetime::Controllers::MusicService::OnCommand(uint16_t conn_handle, uint16_t attr_handle,
-                                                   struct ble_gatt_access_ctxt *ctxt) {
-  
+int Pinetime::Controllers::MusicService::OnCommand(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     size_t notifSize = OS_MBUF_PKTLEN(ctxt->om);
     uint8_t data[notifSize + 1];
     data[notifSize] = '\0';
     os_mbuf_copydata(ctxt->om, 0, notifSize, data);
-    char *s = (char *) &data[0];
-    if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msArtistCharUuid) == 0) {
+    char* s = (char*) &data[0];
+    if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &msArtistCharUuid) == 0) {
       artistName = s;
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msTrackCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &msTrackCharUuid) == 0) {
       trackName = s;
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msAlbumCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &msAlbumCharUuid) == 0) {
       albumName = s;
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msStatusCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &msStatusCharUuid) == 0) {
       playing = s[0];
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msRepeatCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &msRepeatCharUuid) == 0) {
       repeat = s[0];
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msShuffleCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &msShuffleCharUuid) == 0) {
       shuffle = s[0];
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msPositionCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &msPositionCharUuid) == 0) {
       trackProgress = (s[0] << 24) | (s[1] << 16) | (s[2] << 8) | s[3];
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msTotalLengthCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &msTotalLengthCharUuid) == 0) {
       trackLength = (s[0] << 24) | (s[1] << 16) | (s[2] << 8) | s[3];
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msTrackNumberCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &msTrackNumberCharUuid) == 0) {
       trackNumber = (s[0] << 24) | (s[1] << 16) | (s[2] << 8) | s[3];
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msTrackTotalCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &msTrackTotalCharUuid) == 0) {
       tracksTotal = (s[0] << 24) | (s[1] << 16) | (s[2] << 8) | s[3];
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &msPlaybackSpeedCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &msPlaybackSpeedCharUuid) == 0) {
       playbackSpeed = static_cast<float>(((s[0] << 24) | (s[1] << 16) | (s[2] << 8) | s[3])) / 100.0f;
     }
   }
@@ -239,14 +207,14 @@ float Pinetime::Controllers::MusicService::getPlaybackSpeed() {
 }
 
 void Pinetime::Controllers::MusicService::event(char event) {
-  auto *om = ble_hs_mbuf_from_flat(&event, 1);
-  
+  auto* om = ble_hs_mbuf_from_flat(&event, 1);
+
   uint16_t connectionHandle = m_system.nimble().connHandle();
-  
+
   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
     return;
   }
-  
+
   ble_gattc_notify_custom(connectionHandle, eventHandle, om);
 }
 
@@ -257,4 +225,3 @@ int Pinetime::Controllers::MusicService::getProgress() {
 int Pinetime::Controllers::MusicService::getTrackLength() {
   return trackLength;
 }
-

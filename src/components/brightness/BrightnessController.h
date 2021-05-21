@@ -6,7 +6,7 @@ namespace Pinetime {
   namespace Controllers {
     class BrightnessController {
     public:
-      enum class Levels {Off, Low, Medium, High};
+      enum class Levels { Off, Low, Medium, High };
       void Init();
 
       void Set(Levels level);

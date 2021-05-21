@@ -3,6 +3,7 @@
 To build this project, you'll need:
  - A cross-compiler : [ARM-GCC (9-2020-q2-update)](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads/9-2020-q2-update)
  - The NRF52 SDK 15.3.0 : [nRF-SDK v15.3.0](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip)
+ - The `cbor` and `intelhex` modules for Python 3
  - A reasonably recent version of CMake (I use 3.16.5)
 
 ## Build steps 

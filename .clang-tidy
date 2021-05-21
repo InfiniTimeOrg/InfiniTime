@@ -22,5 +22,9 @@ Checks: '*,
   -hicpp-no-assembler,
   -hicpp-avoid-c-arrays,
   -hicpp-uppercase-literal-suffix,
+  -hicpp-no-array-decay,
   -cert-err58-cpp,
   -cert-err60-cpp'
+CheckOptions:
+  - key: readability-function-cognitive-complexity.Threshold
+    value: 100

@@ -31,7 +31,6 @@ namespace Pinetime {
         lv_color_t b[bufferSize];
         lv_color_t selectColor = LV_COLOR_WHITE;
         uint8_t color = 2;
-        
       };
     }
   }

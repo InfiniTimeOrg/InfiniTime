@@ -26,7 +26,7 @@ namespace Pinetime {
         static constexpr const char* paintbrush = "\xEF\x87\xBC";
         static constexpr const char* paddle = "\xEF\x91\x9D";
         static constexpr const char* map = "\xEF\x96\xa0";
-        static constexpr const char* qrcode = "\xEF\x80\xa9"; 
+        static constexpr const char* qrcode = "\xEF\x80\xa9";
         static constexpr const char* phone = "\xEF\x82\x95";
         static constexpr const char* phoneSlash = "\xEF\x8F\x9D";
         static constexpr const char* volumMute = "\xEF\x9A\xA9";
@@ -38,22 +38,22 @@ namespace Pinetime {
         static constexpr const char* pause = "\xEF\x81\x8C";
         static constexpr const char* stop = "\xEF\x81\x8D";
         static constexpr const char* stopWatch = "\xEF\x8B\xB2";
+        static constexpr const char* hourGlass = "\xEF\x89\x92";
         static constexpr const char* lapsFlag = "\xEF\x80\xA4";
 
         // lv_font_sys_48.c
-        static constexpr const char* settings             = "\xEE\xA4\x82";//e902
+        static constexpr const char* settings = "\xEE\xA4\x82"; // e902
 
-        static constexpr const char* brightnessHigh       = "\xEE\xA4\x84";//e904
-        static constexpr const char* brightnessLow        = "\xEE\xA4\x85";//e905
-        static constexpr const char* brightnessMedium     = "\xEE\xA4\x86";//e906
+        static constexpr const char* brightnessHigh = "\xEE\xA4\x84";   // e904
+        static constexpr const char* brightnessLow = "\xEE\xA4\x85";    // e905
+        static constexpr const char* brightnessMedium = "\xEE\xA4\x86"; // e906
 
-        static constexpr const char* notificationsOff     = "\xEE\xA4\x8B";//e90b
-        static constexpr const char* notificationsOn      = "\xEE\xA4\x8C";//e90c
+        static constexpr const char* notificationsOff = "\xEE\xA4\x8B"; // e90b
+        static constexpr const char* notificationsOn = "\xEE\xA4\x8C";  // e90c
 
-        static constexpr const char* highlight            = "\xEE\xA4\x87";//e907
+        static constexpr const char* highlight = "\xEE\xA4\x87"; // e907
 
       }
     }
   }
 }
-

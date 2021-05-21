@@ -17,6 +17,7 @@
 #include <drivers/Watchdog.h>
 #include <components/heartrate/HeartRateController.h>
 #include <components/motion/MotionController.h>
+#include <components/motor/MotorController.h>
 #include <components/settings/Settings.h>
 #include "TouchEvents.h"
 #include "Apps.h"
@@ -30,13 +31,18 @@ namespace Pinetime {
   namespace Applications {
     class DisplayApp {
     public:
-      DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &,
-                 Controllers::Battery &batteryController, Controllers::Ble &bleController,
-                 Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
-                 System::SystemTask &systemTask,
+      DisplayApp(Drivers::St7789& lcd,
+                 Components::LittleVgl& lvgl,
+                 Drivers::Cst816S&,
+                 Controllers::Battery& batteryController,
+                 Controllers::Ble& bleController,
+                 Controllers::DateTime& dateTimeController,
+                 Drivers::WatchdogView& watchdog,
+                 System::SystemTask& systemTask,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Pinetime::Controllers::Settings& settingsController,
+                 Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController);
       void Start();
       void PushMessage(Pinetime::Applications::Display::Messages msg);
@@ -49,7 +55,7 @@ namespace Pinetime {
       void InitHw();
       void Refresh();
       Pinetime::Drivers::St7789& lcd;
-      Controllers::Ble &bleController;
+      Controllers::Ble& bleController;
 
       static constexpr uint8_t queueSize = 10;
       static constexpr uint8_t itemSize = 1;
@@ -66,10 +72,6 @@ namespace Pinetime {
       static constexpr uint16_t colorRedSwapped = 0x00ff;
       static constexpr uint16_t colorBlack = 0x0000;
       uint8_t displayBuffer[displayWidth * bytesPerPixel];
-
-
     };
   }
 }
-
-

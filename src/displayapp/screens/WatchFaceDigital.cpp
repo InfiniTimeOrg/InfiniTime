@@ -17,20 +17,23 @@
 
 using namespace Pinetime::Applications::Screens;
 
-
 WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
-        Controllers::DateTime& dateTimeController,
-        Controllers::Battery& batteryController,
-        Controllers::Ble& bleController,
-        Controllers::NotificationManager& notificatioManager,
-        Controllers::Settings &settingsController,
-        Controllers::HeartRateController& heartRateController,
-        Controllers::MotionController& motionController) : Screen(app), currentDateTime{{}},
-                                           dateTimeController{dateTimeController}, batteryController{batteryController},
-                                           bleController{bleController}, notificatioManager{notificatioManager},
-                                           settingsController{settingsController},
-                                           heartRateController{heartRateController},
-                                           motionController{motionController} {
+                                   Controllers::DateTime& dateTimeController,
+                                   Controllers::Battery& batteryController,
+                                   Controllers::Ble& bleController,
+                                   Controllers::NotificationManager& notificatioManager,
+                                   Controllers::Settings& settingsController,
+                                   Controllers::HeartRateController& heartRateController,
+                                   Controllers::MotionController& motionController)
+  : Screen(app),
+    currentDateTime {{}},
+    dateTimeController {dateTimeController},
+    batteryController {batteryController},
+    bleController {bleController},
+    notificatioManager {notificatioManager},
+    settingsController {settingsController},
+    heartRateController {heartRateController},
+    motionController {motionController} {
   settingsController.SetClockFace(0);
 
   displayedChar[0] = 0;
@@ -62,22 +65,21 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
   lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
 
-  label_time = lv_label_create(lv_scr_act(), nullptr);  
-  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);  
+  label_time = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
 
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
 
   label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(label_time_ampm, "");
-  lv_obj_align(label_time_ampm, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -30, -55);  
-  
+  lv_obj_align(label_time_ampm, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -30, -55);
+
   backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_click(backgroundLabel, true);
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text(backgroundLabel, "");
-
 
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(heartbeatIcon, Symbols::heartBeat);
@@ -86,13 +88,8 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
 
   heartbeatValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
-  lv_label_set_text(heartbeatValue, "---");
+  lv_label_set_text(heartbeatValue, "");
   lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
-
-  heartbeatBpm = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(heartbeatBpm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
-  lv_label_set_text(heartbeatBpm, "BPM");
-  lv_obj_align(heartbeatBpm, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
@@ -120,7 +117,7 @@ bool WatchFaceDigital::Refresh() {
 
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
-    if(bleState.Get() == true) {
+    if (bleState.Get() == true) {
       lv_label_set_text(bleIcon, BleIcon::GetIcon(true));
     } else {
       lv_label_set_text(bleIcon, BleIcon::GetIcon(false));
@@ -131,8 +128,8 @@ bool WatchFaceDigital::Refresh() {
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
-  if(notificationState.IsUpdated()) {
-    if(notificationState.Get() == true)
+  if (notificationState.IsUpdated()) {
+    if (notificationState.Get() == true)
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(true));
     else
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
@@ -140,16 +137,16 @@ bool WatchFaceDigital::Refresh() {
 
   currentDateTime = dateTimeController.CurrentDateTime();
 
-  if(currentDateTime.IsUpdated()) {
+  if (currentDateTime.IsUpdated()) {
     auto newDateTime = currentDateTime.Get();
 
     auto dp = date::floor<date::days>(newDateTime);
-    auto time = date::make_time(newDateTime-dp);
+    auto time = date::make_time(newDateTime - dp);
     auto yearMonthDay = date::year_month_day(dp);
 
-    auto year = (int)yearMonthDay.year();
-    auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned)yearMonthDay.month());
-    auto day = (unsigned)yearMonthDay.day();
+    auto year = (int) yearMonthDay.year();
+    auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned) yearMonthDay.month());
+    auto day = (unsigned) yearMonthDay.day();
     auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
     int hour = time.hours().count();
@@ -160,29 +157,26 @@ bool WatchFaceDigital::Refresh() {
 
     char hoursChar[3];
     char ampmChar[3];
-    if ( settingsController.GetClockType() == Controllers::Settings::ClockType::H24 ) {      
+    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
       sprintf(hoursChar, "%02d", hour);
     } else {
       if (hour == 0 && hour != 12) {
-          hour = 12;
-          sprintf(ampmChar, "AM");
-      }
-      else if (hour == 12 && hour != 0) {
-          hour = 12;
-          sprintf(ampmChar, "PM");
-      }
-      else if (hour < 12 && hour != 0) {
-          sprintf(ampmChar, "AM");
-      }
-      else if (hour > 12 && hour != 0)
-      {
-          hour = hour - 12;
-          sprintf(ampmChar, "PM");
+        hour = 12;
+        sprintf(ampmChar, "AM");
+      } else if (hour == 12 && hour != 0) {
+        hour = 12;
+        sprintf(ampmChar, "PM");
+      } else if (hour < 12 && hour != 0) {
+        sprintf(ampmChar, "AM");
+      } else if (hour > 12 && hour != 0) {
+        hour = hour - 12;
+        sprintf(ampmChar, "PM");
       }
       sprintf(hoursChar, "%02d", hour);
     }
 
-    if(hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] || minutesChar[1] != displayedChar[3]) {
+    if (hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] ||
+        minutesChar[1] != displayedChar[3]) {
       displayedChar[0] = hoursChar[0];
       displayedChar[1] = hoursChar[1];
       displayedChar[2] = minutesChar[0];
@@ -190,32 +184,32 @@ bool WatchFaceDigital::Refresh() {
 
       char timeStr[6];
 
-      if ( settingsController.GetClockType() == Controllers::Settings::ClockType::H12 ) {
+      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         lv_label_set_text(label_time_ampm, ampmChar);
-        if ( hoursChar[0] == '0' ) { hoursChar[0] = ' '; }
+        if (hoursChar[0] == '0') {
+          hoursChar[0] = ' ';
+        }
       }
 
-      sprintf(timeStr, "%c%c:%c%c", hoursChar[0],hoursChar[1],minutesChar[0], minutesChar[1]);
+      sprintf(timeStr, "%c%c:%c%c", hoursChar[0], hoursChar[1], minutesChar[0], minutesChar[1]);
       lv_label_set_text(label_time, timeStr);
-      
-      if ( settingsController.GetClockType() == Controllers::Settings::ClockType::H12 ) {
+
+      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
       } else {
         lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
       }
-
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
       char dateStr[22];
-      if ( settingsController.GetClockType() == Controllers::Settings::ClockType::H24 ) {
+      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
         sprintf(dateStr, "%s %d %s %d", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString(), year);
       } else {
         sprintf(dateStr, "%s %s %d %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day, year);
       }
       lv_label_set_text(label_date, dateStr);
       lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
-
 
       currentYear = year;
       currentMonth = month;
@@ -226,20 +220,22 @@ bool WatchFaceDigital::Refresh() {
 
   heartbeat = heartRateController.HeartRate();
   heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
-  if(heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
-    if(heartbeatRunning.Get())
-      lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());     
-    else
-      lv_label_set_text_static(heartbeatValue, "---");
-    
+  if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
+    if (heartbeatRunning.Get()) {
+      lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
+      lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());
+    } else {
+      lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x1B1B1B));
+      lv_label_set_text_static(heartbeatValue, "");
+    }
+
     lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
     lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
-    lv_obj_align(heartbeatBpm, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
   }
 
   stepCount = motionController.NbSteps();
   motionSensorOk = motionController.IsSensorOk();
-  if(stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
+  if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
     lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
     lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
@@ -247,5 +243,3 @@ bool WatchFaceDigital::Refresh() {
 
   return running;
 }
-
-

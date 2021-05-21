@@ -7,17 +7,21 @@
 
 using namespace Pinetime::Applications;
 
-DisplayApp::DisplayApp(Drivers::St7789 &lcd, Components::LittleVgl &lvgl, Drivers::Cst816S &touchPanel,
-                       Controllers::Battery &batteryController, Controllers::Ble &bleController,
-                       Controllers::DateTime &dateTimeController, Drivers::WatchdogView &watchdog,
-                       System::SystemTask &systemTask,
+DisplayApp::DisplayApp(Drivers::St7789& lcd,
+                       Components::LittleVgl& lvgl,
+                       Drivers::Cst816S& touchPanel,
+                       Controllers::Battery& batteryController,
+                       Controllers::Ble& bleController,
+                       Controllers::DateTime& dateTimeController,
+                       Drivers::WatchdogView& watchdog,
+                       System::SystemTask& systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Pinetime::Controllers::Settings& settingsController,
-                       Pinetime::Controllers::MotionController& motionController):
-    lcd{lcd}, bleController{bleController} {
+                       Pinetime::Controllers::MotorController& motorController,
+                       Pinetime::Controllers::MotionController& motionController)
+  : lcd {lcd}, bleController {bleController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
-
 }
 
 void DisplayApp::Start() {
@@ -25,15 +29,15 @@ void DisplayApp::Start() {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }
 
-void DisplayApp::Process(void *instance) {
-  auto *app = static_cast<DisplayApp *>(instance);
+void DisplayApp::Process(void* instance) {
+  auto* app = static_cast<DisplayApp*>(instance);
   NRF_LOG_INFO("displayapp task started!");
 
   // Send a dummy notification to unlock the lvgl display driver for the first iteration
   xTaskNotifyGive(xTaskGetCurrentTaskHandle());
 
   app->InitHw();
-  while (1) {
+  while (true) {
     app->Refresh();
   }
 }
@@ -47,10 +51,11 @@ void DisplayApp::Refresh() {
   if (xQueueReceive(msgQueue, &msg, 200)) {
     switch (msg) {
       case Display::Messages::UpdateBleConnection:
-        if (bleController.IsConnected())
+        if (bleController.IsConnected()) {
           DisplayLogo(colorBlue);
-        else
+        } else {
           DisplayLogo(colorWhite);
+        }
         break;
       case Display::Messages::BleFirmwareUpdateStarted:
         DisplayLogo(colorGreen);
@@ -61,8 +66,9 @@ void DisplayApp::Refresh() {
   }
 
   if (bleController.IsFirmwareUpdating()) {
-    uint8_t percent = (static_cast<float>(bleController.FirmwareUpdateCurrentBytes()) /
-                       static_cast<float>(bleController.FirmwareUpdateTotalBytes())) * 100.0f;
+    uint8_t percent =
+      (static_cast<float>(bleController.FirmwareUpdateCurrentBytes()) / static_cast<float>(bleController.FirmwareUpdateTotalBytes())) *
+      100.0f;
     switch (bleController.State()) {
       case Controllers::Ble::FirmwareUpdateStates::Running:
         DisplayOtaProgress(percent, colorWhite);
@@ -81,20 +87,20 @@ void DisplayApp::Refresh() {
 
 void DisplayApp::DisplayLogo(uint16_t color) {
   Pinetime::Tools::RleDecoder rleDecoder(infinitime_nb, sizeof(infinitime_nb), color, colorBlack);
-  for(int i = 0; i < displayWidth; i++) {
+  for (int i = 0; i < displayWidth; i++) {
     rleDecoder.DecodeNext(displayBuffer, displayWidth * bytesPerPixel);
     ulTaskNotifyTake(pdTRUE, 500);
-    lcd.DrawBuffer(0, i, displayWidth, 1, reinterpret_cast<const uint8_t *>(displayBuffer), displayWidth * bytesPerPixel);
+    lcd.DrawBuffer(0, i, displayWidth, 1, reinterpret_cast<const uint8_t*>(displayBuffer), displayWidth * bytesPerPixel);
   }
 }
 
 void DisplayApp::DisplayOtaProgress(uint8_t percent, uint16_t color) {
   const uint8_t barHeight = 20;
-  std::fill(displayBuffer, displayBuffer+(displayWidth * bytesPerPixel), color);
-  for(int i = 0; i < barHeight; i++) {
+  std::fill(displayBuffer, displayBuffer + (displayWidth * bytesPerPixel), color);
+  for (int i = 0; i < barHeight; i++) {
     ulTaskNotifyTake(pdTRUE, 500);
     uint16_t barWidth = std::min(static_cast<float>(percent) * 2.4f, static_cast<float>(displayWidth));
-    lcd.DrawBuffer(0, displayWidth - barHeight + i, barWidth, 1, reinterpret_cast<const uint8_t *>(displayBuffer), barWidth * bytesPerPixel);
+    lcd.DrawBuffer(0, displayWidth - barHeight + i, barWidth, 1, reinterpret_cast<const uint8_t*>(displayBuffer), barWidth * bytesPerPixel);
   }
 }
 

@@ -406,6 +406,8 @@ list(APPEND SOURCE_FILES
         displayapp/screens/FlashLight.cpp
         displayapp/screens/List.cpp
         displayapp/screens/BatteryInfo.cpp
+        displayapp/screens/Steps.cpp
+        displayapp/screens/Timer.cpp
 
         ## Settings
         displayapp/screens/settings/QuickSettings.cpp
@@ -414,6 +416,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingTimeFormat.cpp
         displayapp/screens/settings/SettingWakeUp.cpp
         displayapp/screens/settings/SettingDisplay.cpp
+        displayapp/screens/settings/SettingSteps.cpp
 
         ## Watch faces
         displayapp/icons/bg_clock.c
@@ -457,6 +460,7 @@ list(APPEND SOURCE_FILES
         components/firmwarevalidator/FirmwareValidator.cpp
         components/motor/MotorController.cpp
         components/settings/Settings.cpp
+        components/timer/TimerController.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -466,6 +470,7 @@ list(APPEND SOURCE_FILES
         displayapp/fonts/jetbrains_mono_extrabold_compressed.c
         displayapp/fonts/jetbrains_mono_bold_20.c
         displayapp/fonts/jetbrains_mono_76.c
+        displayapp/fonts/jetbrains_mono_42.c
         displayapp/fonts/lv_font_sys_48.c
         displayapp/lv_pinetime_theme.c
 
@@ -517,6 +522,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/HeartRateService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
         components/settings/Settings.cpp
+        components/timer/TimerController.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -587,6 +593,7 @@ set(INCLUDE_FILES
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
         displayapp/screens/Motion.h
+        displayapp/screens/Timer.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h
@@ -616,6 +623,7 @@ set(INCLUDE_FILES
         components/ble/BleClient.h
         components/ble/HeartRateService.h
         components/settings/Settings.h
+        components/timer/TimerController.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h

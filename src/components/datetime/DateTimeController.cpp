@@ -5,22 +5,21 @@
 
 using namespace Pinetime::Controllers;
 
-DateTime::DateTime(System::SystemTask& systemTask) : systemTask{systemTask} {
-
+DateTime::DateTime(System::SystemTask& systemTask) : systemTask {systemTask} {
 }
 
-
-void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfWeek, uint8_t hour, uint8_t minute,
-                       uint8_t second, uint32_t systickCounter) {
-  std::tm tm = { /* .tm_sec  = */ second,
-          /* .tm_min  = */ minute,
-          /* .tm_hour = */ hour,
-          /* .tm_mday = */ day,
-          /* .tm_mon  = */ month - 1,
-          /* .tm_year = */ year - 1900,
+void DateTime::SetTime(
+  uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfWeek, uint8_t hour, uint8_t minute, uint8_t second, uint32_t systickCounter) {
+  std::tm tm = {
+    /* .tm_sec  = */ second,
+    /* .tm_min  = */ minute,
+    /* .tm_hour = */ hour,
+    /* .tm_mday = */ day,
+    /* .tm_mon  = */ month - 1,
+    /* .tm_year = */ year - 1900,
   };
   tm.tm_isdst = -1; // Use DST value from local time zone
-  currentDateTime =  std::chrono::system_clock::from_time_t(std::mktime(&tm));
+  currentDateTime = std::chrono::system_clock::from_time_t(std::mktime(&tm));
 
   NRF_LOG_INFO("%d %d %d ", day, month, year);
   NRF_LOG_INFO("%d %d %d ", hour, minute, second);
@@ -34,7 +33,7 @@ void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfW
 void DateTime::UpdateTime(uint32_t systickCounter) {
   // Handle systick counter overflow
   uint32_t systickDelta = 0;
-  if(systickCounter < previousSystickCounter) {
+  if (systickCounter < previousSystickCounter) {
     systickDelta = 0xffffff - previousSystickCounter;
     systickDelta += systickCounter + 1;
   } else {
@@ -42,11 +41,11 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   }
 
   /*
- * 1000 ms = 1024 ticks
- */
+   * 1000 ms = 1024 ticks
+   */
   auto correctedDelta = systickDelta / 1024;
-  auto rest = (systickDelta - (correctedDelta*1024));
-  if(systickCounter >= rest) {
+  auto rest = (systickDelta - (correctedDelta * 1024));
+  if (systickCounter >= rest) {
     previousSystickCounter = systickCounter - rest;
   } else {
     previousSystickCounter = 0xffffff - (rest - systickCounter);
@@ -56,12 +55,12 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   uptime += std::chrono::seconds(correctedDelta);
 
   auto dp = date::floor<date::days>(currentDateTime);
-  auto time = date::make_time(currentDateTime-dp);
+  auto time = date::make_time(currentDateTime - dp);
   auto yearMonthDay = date::year_month_day(dp);
 
-  year = (int)yearMonthDay.year();
-  month = static_cast<Months>((unsigned)yearMonthDay.month());
-  day = (unsigned)yearMonthDay.day();
+  year = (int) yearMonthDay.year();
+  month = static_cast<Months>((unsigned) yearMonthDay.month());
+  day = (unsigned) yearMonthDay.day();
   dayOfWeek = static_cast<Days>(date::weekday(yearMonthDay).iso_encoding());
 
   hour = time.hours().count();
@@ -69,7 +68,7 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   second = time.seconds().count();
 
   // Notify new day to SystemTask
-  if(hour == 0 and not isMidnightAlreadyNotified) {
+  if (hour == 0 and not isMidnightAlreadyNotified) {
     isMidnightAlreadyNotified = true;
     systemTask.PushMessage(System::SystemTask::Messages::OnNewDay);
   } else if (hour != 0) {
@@ -77,123 +76,45 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   }
 }
 
-const char *DateTime::MonthShortToString() {
-  return DateTime::MonthsString[(uint8_t)month];
+const char* DateTime::MonthShortToString() {
+  return DateTime::MonthsString[(uint8_t) month];
 }
 
-const char *DateTime::MonthShortToStringLow() {
-  return DateTime::MonthsStringLow[(uint8_t)month];
+const char* DateTime::MonthShortToStringLow() {
+  return DateTime::MonthsStringLow[(uint8_t) month];
 }
 
-const char *DateTime::MonthsToStringLow() {
-  return DateTime::MonthsLow[(uint8_t)month];
+const char* DateTime::MonthsToStringLow() {
+  return DateTime::MonthsLow[(uint8_t) month];
 }
 
-const char *DateTime::DayOfWeekToString() {
-  return DateTime::DaysString[(uint8_t)dayOfWeek];
+const char* DateTime::DayOfWeekToString() {
+  return DateTime::DaysString[(uint8_t) dayOfWeek];
 }
 
-const char *DateTime::DayOfWeekShortToString() {
-  return DateTime::DaysStringShort[(uint8_t)dayOfWeek];
+const char* DateTime::DayOfWeekShortToString() {
+  return DateTime::DaysStringShort[(uint8_t) dayOfWeek];
 }
 
-const char *DateTime::DayOfWeekToStringLow() {
-  return DateTime::DaysStringLow[(uint8_t)dayOfWeek];
+const char* DateTime::DayOfWeekToStringLow() {
+  return DateTime::DaysStringLow[(uint8_t) dayOfWeek];
 }
 
-const char *DateTime::DayOfWeekShortToStringLow() {
-  return DateTime::DaysStringShortLow[(uint8_t)dayOfWeek];
+const char* DateTime::DayOfWeekShortToStringLow() {
+  return DateTime::DaysStringShortLow[(uint8_t) dayOfWeek];
 }
 
+char const* DateTime::DaysStringLow[] = {"--", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
-char const *DateTime::DaysStringLow[] = {
-        "--",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday"
-};
+char const* DateTime::DaysStringShortLow[] = {"--", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
-char const *DateTime::DaysStringShortLow[] = {
-        "--",
-        "Mon",
-        "Tue",
-        "Wed",
-        "Thu",
-        "Fri",
-        "Sat",
-        "Sun"
-};
+char const* DateTime::DaysStringShort[] = {"--", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
 
-char const *DateTime::DaysStringShort[] = {
-        "--",
-        "MON",
-        "TUE",
-        "WED",
-        "THU",
-        "FRI",
-        "SAT",
-        "SUN"
-};
+char const* DateTime::DaysString[] = {"--", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"};
 
-char const *DateTime::DaysString[] = {
-        "--",
-        "MONDAY",
-        "TUESDAY",
-        "WEDNESDAY",
-        "THURSDAY",
-        "FRIDAY",
-        "SATURDAY",
-        "SUNDAY"
-};
+char const* DateTime::MonthsString[] = {"--", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
 
-char const *DateTime::MonthsString[] = {
-        "--",
-        "JAN",
-        "FEB",
-        "MAR",
-        "APR",
-        "MAY",
-        "JUN",
-        "JUL",
-        "AUG",
-        "SEP",
-        "OCT",
-        "NOV",
-        "DEC"
-};
+char const* DateTime::MonthsStringLow[] = {"--", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
-char const *DateTime::MonthsStringLow[] = {
-        "--",
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec"
-};
-
-char const *DateTime::MonthsLow[] = {
-        "--",
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December"
-};
+char const* DateTime::MonthsLow[] = {
+  "--", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};

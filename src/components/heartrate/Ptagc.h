@@ -12,7 +12,6 @@ namespace Pinetime {
       float decay;
       float boost;
       float threshold;
-
     };
   }
 }

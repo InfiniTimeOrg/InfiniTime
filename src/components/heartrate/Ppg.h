@@ -10,20 +10,19 @@ namespace Pinetime {
     public:
       explicit Ppg(float spl);
 
-      int Preprocess(float spl);
+      int8_t Preprocess(float spl);
       float HeartRate();
 
       void SetOffset(uint16_t i);
       void Reset();
 
     private:
-      std::array<int, 200> data;
+      std::array<int8_t, 200> data;
       size_t dataIndex = 0;
       float offset;
       Biquad hpf;
       Ptagc agc;
       Biquad lpf;
-
 
       float ProcessHeartRate();
     };
