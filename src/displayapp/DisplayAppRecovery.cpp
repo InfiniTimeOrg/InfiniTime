@@ -17,9 +17,10 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        System::SystemTask& systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::HeartRateController& heartRateController,
-                       Pinetime::Controllers::Settings& settingsController,
+                       Controllers::Settings& settingsController,
                        Pinetime::Controllers::MotorController& motorController,
-                       Pinetime::Controllers::MotionController& motionController)
+                       Pinetime::Controllers::MotionController& motionController,
+                       Pinetime::Controllers::TimerController& timerController)
   : lcd {lcd}, bleController {bleController} {
   msgQueue = xQueueCreate(queueSize, itemSize);
 }
