@@ -457,7 +457,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
     case Apps::Calculator:
-      currentScreen = std::make_unique<Screens::Calculator>(this);
+      currentScreen = std::make_unique<Screens::Calculator>(this, motorController);
       break;
   }
   currentApp = app;

@@ -5,6 +5,7 @@
 #include "Screen.h"
 #include "../LittleVgl.h"
 #include <string>
+#include "components/motor/MotorController.h"
 
 
 namespace Pinetime {
@@ -15,7 +16,7 @@ namespace Pinetime {
       public:
         ~Calculator() override;
         
-        Calculator(DisplayApp* app);
+        Calculator(DisplayApp* app, Controllers::MotorController& motorController);
   
         bool Refresh() override;
         
@@ -35,6 +36,9 @@ namespace Pinetime {
         uint8_t getPrecedence(char op);
         
         bool leftAssociative(char op);
+  
+        Controllers::MotorController& motorController;
+        
       };
       
     }
