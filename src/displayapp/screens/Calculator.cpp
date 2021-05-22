@@ -70,7 +70,8 @@ static const char* buttonMap2[] = {"7", "8", "9", "(", "\n",
                                    "1", "2", "3", "^", "\n",
                                    ".", "0", "=", "+", "",};
 
-Calculator::Calculator(DisplayApp* app) : Screen(app) {
+Calculator::Calculator(DisplayApp* app, Controllers::MotorController& motorController)
+    : Screen(app), motorController{motorController} {
   result = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(result, LV_LABEL_LONG_BREAK);
   lv_label_set_text(result, "0");
@@ -122,6 +123,7 @@ void Calculator::eval() {
       expectingNumber = false;
       continue;
     }
+    
     if (expectingNumber && input.top() == '+') {
       input.pop();
       continue;
@@ -149,6 +151,11 @@ void Calculator::eval() {
                    //or (the operator at the top of the operator stack has equal precedence and the token is left associative))
                    || (getPrecedence(operators.top()) == getPrecedence(next) && leftAssociative(next))
                )) {
+          //need two elements on the output stack to add a binary operator
+          if (output.size() < 2 ) {
+            motorController.SetDuration(10);
+            return;
+          }
           auto* node = new BinOp();
           node->right = output.top();
           output.pop();
@@ -168,6 +175,11 @@ void Calculator::eval() {
         break;
       case ')':
         while (operators.top() != '(') {
+          //need two elements on the output stack to add a binary operator
+          if (output.size() < 2 ) {
+            motorController.SetDuration(10);
+            return;
+          }
           auto* node = new BinOp();
           node->right = output.top();
           output.pop();
@@ -177,9 +189,7 @@ void Calculator::eval() {
           operators.pop();
           output.push(node);
           if (operators.empty()) {
-            text[0] = 'm';
-            text[1] = 'p';
-            position = 2;
+            motorController.SetDuration(10);
             return;
           }
         }
@@ -190,9 +200,12 @@ void Calculator::eval() {
   while (!operators.empty()) {
     char op = operators.top();
     if (op == ')' || op == '(') {
-      text[0] = 'm';
-      text[1] = 'p';
-      position = 2;
+      motorController.SetDuration(10);
+      return;
+    }
+    //need two elements on the output stack to add a binary operator
+    if (output.size() < 2 ) {
+      motorController.SetDuration(10);
       return;
     }
     auto* node = new BinOp();
@@ -209,9 +222,23 @@ void Calculator::eval() {
   //weird workaround because sprintf crashes when trying to use a float
   double resultFloat = output.top()->calculate();
   int32_t upper = resultFloat;
-  int32_t lower = std::abs(resultFloat - upper) * 10000;
+  int32_t lower = round(std::abs(resultFloat - upper) * 10000);
+  //round up to the next int value
+  if (lower >= 10000) {
+    lower = 0;
+    upper++;
+  }
+  //see if decimal places have to be printed
   if (lower != 0) {
-    position = sprintf(text, "%d.%d", upper, lower);
+    if (upper == 0 && resultFloat < 0) {
+      position = sprintf(text, "-%d.%d", upper, lower);
+    } else {
+      position = sprintf(text, "%d.%d", upper, lower);
+    }
+    //remove extra zeros
+    while (text[position -1] == '0') {
+      position--;
+    }
   } else {
     position = sprintf(text, "%d", upper);
   }
