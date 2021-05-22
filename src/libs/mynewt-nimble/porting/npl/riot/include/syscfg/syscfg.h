@@ -15,45 +15,6 @@
 #define MYNEWT_VAL(_name)                       MYNEWT_VAL_ ## _name
 #define MYNEWT_VAL_CHOICE(_name, _val)          MYNEWT_VAL_ ## _name ## __ ## _val
 
-
-/*** Repository @apache-mynewt-core info */
-#ifndef MYNEWT_VAL_REPO_HASH_APACHE_MYNEWT_CORE
-#define MYNEWT_VAL_REPO_HASH_APACHE_MYNEWT_CORE ("6b205affd69a6f05787264fa2c70c621bbbdd325")
-#endif
-
-#ifndef MYNEWT_VAL_REPO_VERSION_APACHE_MYNEWT_CORE
-#define MYNEWT_VAL_REPO_VERSION_APACHE_MYNEWT_CORE ("0.0.0")
-#endif
-
-/*** Repository @apache-mynewt-mcumgr info */
-#ifndef MYNEWT_VAL_REPO_HASH_APACHE_MYNEWT_MCUMGR
-#define MYNEWT_VAL_REPO_HASH_APACHE_MYNEWT_MCUMGR ("64f5060bd8bb466367e0da94da8b425d5b9f6388")
-#endif
-
-#ifndef MYNEWT_VAL_REPO_VERSION_APACHE_MYNEWT_MCUMGR
-#define MYNEWT_VAL_REPO_VERSION_APACHE_MYNEWT_MCUMGR ("0.0.0")
-#endif
-
-/*** Repository @apache-mynewt-nimble info */
-#ifndef MYNEWT_VAL_REPO_HASH_APACHE_MYNEWT_NIMBLE
-#define MYNEWT_VAL_REPO_HASH_APACHE_MYNEWT_NIMBLE ("3e5d7a994e117b2758906154433a1aac860cc845-dirty")
-#endif
-
-#ifndef MYNEWT_VAL_REPO_VERSION_APACHE_MYNEWT_NIMBLE
-#define MYNEWT_VAL_REPO_VERSION_APACHE_MYNEWT_NIMBLE ("0.0.0")
-#endif
-
-/*** Repository @mcuboot info */
-#ifndef MYNEWT_VAL_REPO_HASH_MCUBOOT
-#define MYNEWT_VAL_REPO_HASH_MCUBOOT ("579b30c29999860f9f7d843a25ff5453b6542cce")
-#endif
-
-#ifndef MYNEWT_VAL_REPO_VERSION_MCUBOOT
-#define MYNEWT_VAL_REPO_VERSION_MCUBOOT ("0.0.0")
-#endif
-
-
-
 /*** @apache-mynewt-core/compiler/arm-none-eabi-m4 */
 #ifndef MYNEWT_VAL_HARDFLOAT
 #define MYNEWT_VAL_HARDFLOAT (0)
@@ -814,11 +775,6 @@
 #define MYNEWT_VAL_BLE_EXT_ADV_MAX_SIZE (31)
 #endif
 
-/* Overridden by @apache-mynewt-nimble/porting/targets/riot (defined by @apache-mynewt-nimble/nimble) */
-#ifndef MYNEWT_VAL_BLE_HCI_VS
-#define MYNEWT_VAL_BLE_HCI_VS (1)
-#endif
-
 #ifndef MYNEWT_VAL_BLE_ISO
 #define MYNEWT_VAL_BLE_ISO (0)
 #endif
@@ -1485,14 +1441,6 @@
 /* Overridden by @apache-mynewt-nimble/porting/targets/riot (defined by @apache-mynewt-nimble/nimble/host) */
 #ifndef MYNEWT_VAL_BLE_SM_SC
 #define MYNEWT_VAL_BLE_SM_SC (0)
-#endif
-
-#ifndef MYNEWT_VAL_BLE_SM_SC_ONLY
-#define MYNEWT_VAL_BLE_SM_SC_ONLY (0)
-#endif
-
-#ifndef MYNEWT_VAL_BLE_SM_SC_LVL
-#define MYNEWT_VAL_BLE_SM_SC_LVL (0)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_SC_DEBUG_KEYS

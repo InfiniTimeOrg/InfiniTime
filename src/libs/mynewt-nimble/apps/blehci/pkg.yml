@@ -1,4 +1,3 @@
-#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -16,9 +15,20 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-
-pkg.name: targets/nordic_pca10095-blehci
-pkg.type: target
-pkg.description: Sample target for BLE controller on NRF5340
-pkg.author: "Apache Mynewt <dev@mynewt.apache.org>"
+pkg.name: apps/blehci
+pkg.type: app
+pkg.description: BLE controller application exposing HCI over external interface
+pkg.author: "Johan Hedberg <johan.hedberg@intel.com>"
 pkg.homepage: "http://mynewt.apache.org/"
+pkg.keywords:
+
+pkg.deps:
+    - "@apache-mynewt-core/sys/console/stub"
+    - "@apache-mynewt-core/sys/log/stub"
+    - "@apache-mynewt-core/sys/stats/full"
+    - "@apache-mynewt-core/kernel/os"
+    - nimble/controller
+    - nimble/transport
+
+pkg.req_apis:
+    - ble_transport

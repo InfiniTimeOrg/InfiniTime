@@ -24,8 +24,8 @@
 #include <stdbool.h>
 #include "event/callback.h"
 #include "mutex.h"
-#include "sema.h"
-#include "ztimer.h"
+#include "semaphore.h"
+#include "xtimer.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,8 +50,8 @@ struct ble_npl_eventq {
 };
 
 struct ble_npl_callout {
-    ztimer_t timer;
-    ble_npl_time_t ticks;
+    xtimer_t timer;
+    uint64_t target_us;
     struct ble_npl_event e;
     event_queue_t *q;
 };
@@ -61,7 +61,7 @@ struct ble_npl_mutex {
 };
 
 struct ble_npl_sem {
-    sema_t sem;
+    sem_t sem;
 };
 
 static inline bool
@@ -100,9 +100,8 @@ ble_npl_eventq_get(struct ble_npl_eventq *evq, ble_npl_time_t tmo)
     } else if (tmo == BLE_NPL_TIME_FOREVER) {
         return (struct ble_npl_event *)event_wait(&evq->q);
     } else {
-        return (struct ble_npl_event *)event_wait_timeout_ztimer(&evq->q,
-                                                                 ZTIMER_MSEC,
-                                                                 (uint32_t)tmo);
+        return (struct ble_npl_event *)event_wait_timeout64(&evq->q,
+                                                            tmo * US_PER_MS);
     }
 }
 
@@ -175,39 +174,49 @@ ble_npl_mutex_release(struct ble_npl_mutex *mu)
 static inline ble_npl_error_t
 ble_npl_sem_init(struct ble_npl_sem *sem, uint16_t tokens)
 {
-    sema_create(&sem->sem, (unsigned)tokens);
-    return BLE_NPL_OK;
+    int rc;
+
+    rc = sem_init(&sem->sem, 0, tokens);
+
+    return rc == 0 ? BLE_NPL_OK : BLE_NPL_ERROR;
 }
 
 static inline ble_npl_error_t
 ble_npl_sem_release(struct ble_npl_sem *sem)
 {
-    int rc = sema_post(&sem->sem);
-    return (rc == 0) ? BLE_NPL_OK : BLE_NPL_ERROR;
+    int rc;
+
+    rc = sem_post(&sem->sem);
+
+    return rc == 0 ? BLE_NPL_OK : BLE_NPL_ERROR;
 }
 
 static inline uint16_t
 ble_npl_sem_get_count(struct ble_npl_sem *sem)
 {
-    return (uint16_t)sema_get_value(&sem->sem);
+    int val = 0;
+
+    sem_getvalue(&sem->sem, &val);
+
+    return (uint16_t)val;
 }
 
 static inline void
 ble_npl_callout_stop(struct ble_npl_callout *co)
 {
-    ztimer_remove(ZTIMER_MSEC, &co->timer);
+    xtimer_remove(&co->timer);
 }
 
 static inline bool
 ble_npl_callout_is_active(struct ble_npl_callout *c)
 {
-    return ztimer_is_set(ZTIMER_MSEC, &c->timer);
+    return (c->timer.offset || c->timer.long_offset);
 }
 
 static inline ble_npl_time_t
 ble_npl_callout_get_ticks(struct ble_npl_callout *co)
 {
-    return co->ticks;
+    return (ble_npl_time_t)(co->target_us / US_PER_MS);
 }
 
 static inline void
@@ -219,7 +228,7 @@ ble_npl_callout_set_arg(struct ble_npl_callout *co, void *arg)
 static inline ble_npl_time_t
 ble_npl_time_get(void)
 {
-    return (ble_npl_time_t)ztimer_now(ZTIMER_MSEC);
+    return (ble_npl_time_t)(xtimer_now_usec64() / US_PER_MS);
 }
 
 static inline ble_npl_error_t
@@ -251,7 +260,7 @@ ble_npl_time_ticks_to_ms32(ble_npl_time_t ticks)
 static inline void
 ble_npl_time_delay(ble_npl_time_t ticks)
 {
-    ztimer_sleep(ZTIMER_MSEC, (uint32_t)ticks);
+    xtimer_usleep64(ticks * US_PER_MS);
 }
 
 static inline uint32_t

@@ -1239,7 +1239,7 @@ static void clear_rpl(struct bt_mesh_rpl *rpl, void *user_data)
 		return;
 	}
 
-	snprintk(path, sizeof(path), "bt_mesh/RPL/%x", rpl->src);
+	snprintk(path, sizeof(path), "bt/mesh/RPL/%x", rpl->src);
 	err = settings_save_one(path, NULL);
 	if (err) {
 		BT_ERR("Failed to clear RPL");
@@ -1388,7 +1388,7 @@ static void store_subnet(uint16_t net_idx)
 
 	BT_DBG("NetKeyIndex 0x%03x", net_idx);
 
-	snprintk(path, sizeof(path), "bt_mesh/NetKey/%x", net_idx);
+	snprintk(path, sizeof(path), "bt/mesh/NetKey/%x", net_idx);
 
 	memcpy(&key.val[0], sub->keys[0].net, 16);
 	memcpy(&key.val[1], sub->keys[1].net, 16);
@@ -1418,7 +1418,7 @@ static void store_app(uint16_t app_idx)
 	char *str;
 	int err;
 
-	snprintk(path, sizeof(path), "bt_mesh/AppKey/%x", app_idx);
+	snprintk(path, sizeof(path), "bt/mesh/AppKey/%x", app_idx);
 
 	app = bt_mesh_app_key_get(app_idx);
 	if (!app) {
@@ -1532,7 +1532,7 @@ static void store_cdb_node(const struct bt_mesh_cdb_node *node)
 	memcpy(val.uuid, node->uuid, 16);
 	memcpy(val.dev_key, node->dev_key, 16);
 
-	snprintk(path, sizeof(path), "bt_mesh/cdb/Node/%x", node->addr);
+	snprintk(path, sizeof(path), "bt/mesh/cdb/Node/%x", node->addr);
 
 	str = settings_str_from_bytes(&val, sizeof(val), buf, sizeof(buf));
 	if (!str) {

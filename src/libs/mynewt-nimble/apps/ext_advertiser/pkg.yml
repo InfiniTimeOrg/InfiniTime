@@ -1,4 +1,3 @@
-#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -17,6 +16,25 @@
 # under the License.
 #
 
-target.app: "@apache-mynewt-nimble/apps/blehci"
-target.bsp: "@apache-mynewt-core/hw/bsp/nordic_pca10095_net"
-target.build_profile: debug
+pkg.name: apps/ext_advertiser
+pkg.type: app
+pkg.description: Extended Advertising sample application.
+pkg.author: "Szymon Janc"
+pkg.email: "szymon.janc@codecoup.pl"
+pkg.homepage: "http://mynewt.apache.org/"
+pkg.keywords:
+
+pkg.deps:
+    - nimble/controller
+    - nimble/host
+    - nimble/host/util
+    - nimble/host/services/gap
+    - nimble/host/services/gatt
+    - nimble/host/store/config
+    - nimble/transport/ram
+    - "@apache-mynewt-core/kernel/os"
+    - "@apache-mynewt-core/sys/console/full"
+    - "@apache-mynewt-core/sys/log/full"
+    - "@apache-mynewt-core/sys/stats/full"
+    - "@apache-mynewt-core/sys/sysinit"
+    - "@apache-mynewt-core/sys/id"

@@ -35,8 +35,18 @@ _callout_fire(void *arg)
 ble_npl_error_t
 ble_npl_sem_pend(struct ble_npl_sem *sem, ble_npl_time_t timeout)
 {
-    int rc = sema_wait_timed_ztimer(&sem->sem, ZTIMER_MSEC, timeout);
-    return (rc == 0) ? BLE_NPL_OK : BLE_NPL_ENOENT;
+    int rc;
+    struct timespec abs;
+    uint64_t time;
+
+    time = xtimer_now_usec64() +
+        (ble_npl_time_ticks_to_ms32(timeout) * US_PER_MS);
+    abs.tv_sec = (time_t)(time / US_PER_SEC);
+    abs.tv_nsec = (long)((time % US_PER_SEC) * NS_PER_US);
+
+    rc = sem_timedwait(&sem->sem, &abs);
+
+    return rc == 0 ? BLE_NPL_OK : BLE_NPL_ENOENT;
 }
 
 void
@@ -52,18 +62,19 @@ ble_npl_callout_init(struct ble_npl_callout *c, struct ble_npl_eventq *evq,
 ble_npl_error_t
 ble_npl_callout_reset(struct ble_npl_callout *c, ble_npl_time_t ticks)
 {
-    /* Use critical section to ensure matching target_us and ztimer value. */
+    /* Use critical section to ensure matching target_us and xtimer value. */
     uint32_t crit_state = ble_npl_hw_enter_critical();
-    c->ticks = ztimer_now(ZTIMER_MSEC) + ticks;
-    ztimer_set(ZTIMER_MSEC, &c->timer, ticks);
+    uint64_t now = xtimer_now_usec64();
+    c->target_us = now  + ticks * US_PER_MS;
+    xtimer_set64(&c->timer, ticks * US_PER_MS);
     ble_npl_hw_exit_critical(crit_state);
     return BLE_NPL_OK;
 }
 
-ble_npl_time_t
+uint32_t
 ble_npl_callout_remaining_ticks(struct ble_npl_callout *co,
                                 ble_npl_time_t time)
 {
-    ztimer_now_t now = ztimer_now(ZTIMER_MSEC);
-    return (ble_npl_time_t)(co->ticks - now);
+    uint64_t now = xtimer_now_usec64();
+    return (uint32_t)((co->target_us - now) / US_PER_MS);
 }

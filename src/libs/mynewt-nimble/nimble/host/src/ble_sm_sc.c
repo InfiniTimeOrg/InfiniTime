@@ -612,13 +612,6 @@ ble_sm_sc_public_key_rx(uint16_t conn_handle, struct os_mbuf **om,
     }
 
     cmd = (struct ble_sm_public_key *)(*om)->om_data;
-    /* Check if the peer public key is same as our generated public key.
-     * Return fail if the public keys match. */
-    if (memcmp(cmd, ble_sm_sc_pub_key, 64) == 0) {
-        res->enc_cb = 1;
-        res->sm_err = BLE_SM_ERR_AUTHREQ;
-        return;
-    }
 
     ble_hs_lock();
     proc = ble_sm_proc_find(conn_handle, BLE_SM_PROC_STATE_PUBLIC_KEY, -1,

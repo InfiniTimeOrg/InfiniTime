@@ -959,8 +959,8 @@ ble_ll_conn_tx_pdu(struct ble_ll_conn_sm *connsm)
     uint8_t hdr_byte;
     uint8_t end_transition;
     uint8_t cur_txlen;
-    uint16_t next_txlen;
-    uint16_t cur_offset;
+    uint8_t next_txlen;
+    uint8_t cur_offset;
     uint16_t pktlen;
     uint32_t next_event_time;
     uint32_t ticks;
@@ -1129,10 +1129,11 @@ ble_ll_conn_tx_pdu(struct ble_ll_conn_sm *connsm)
         if ((cur_offset + cur_txlen) < pktlen) {
             next_txlen = pktlen - (cur_offset + cur_txlen);
         } else {
-            next_txlen = connsm->eff_max_tx_octets;
-        }
-        if (next_txlen > connsm->eff_max_tx_octets) {
-            next_txlen = connsm->eff_max_tx_octets;
+            if (nextpkthdr->omp_len > connsm->eff_max_tx_octets) {
+                next_txlen = connsm->eff_max_tx_octets;
+            } else {
+                next_txlen = nextpkthdr->omp_len;
+            }
         }
 
         /*
@@ -1490,7 +1491,7 @@ ble_ll_conn_can_send_next_pdu(struct ble_ll_conn_sm *connsm, uint32_t begtime,
                               uint32_t add_usecs)
 {
     int rc;
-    uint16_t rem_bytes;
+    uint8_t rem_bytes;
     uint32_t ticks;
     uint32_t usecs;
     uint32_t next_sched_time;
@@ -1566,6 +1567,22 @@ ble_ll_conn_auth_pyld_timer_cb(struct ble_npl_event *ev)
     ble_ll_auth_pyld_tmo_event_send(connsm);
     ble_ll_ctrl_proc_start(connsm, BLE_LL_CTRL_PROC_LE_PING);
     ble_ll_conn_auth_pyld_timer_start(connsm);
+}
+
+void
+ble_ll_conn_rd_features_timer_cb(struct ble_npl_event *ev)
+{
+    struct ble_ll_conn_sm *connsm;
+
+    connsm = (struct ble_ll_conn_sm *)ble_npl_event_get_arg(ev);
+
+    if (!connsm->csmflags.cfbit.pending_hci_rd_features ||
+                                        !connsm->csmflags.cfbit.rxd_features) {
+        return;
+    }
+
+    ble_ll_hci_ev_rd_rem_used_feat(connsm, BLE_ERR_SUCCESS);
+    connsm->csmflags.cfbit.pending_hci_rd_features = 0;
 }
 
 /**
@@ -3774,7 +3791,7 @@ ble_ll_conn_rx_isr_end(uint8_t *rxbuf, struct ble_mbuf_hdr *rxhdr)
     uint8_t conn_sn;
     uint8_t conn_nesn;
     uint8_t reply;
-    uint16_t rem_bytes;
+    uint8_t rem_bytes;
     uint8_t opcode = 0;
     uint8_t rx_pyld_len;
     uint32_t begtime;
@@ -4057,7 +4074,7 @@ conn_exit:
  */
 void
 ble_ll_conn_enqueue_pkt(struct ble_ll_conn_sm *connsm, struct os_mbuf *om,
-                        uint8_t hdr_byte, uint16_t length)
+                        uint8_t hdr_byte, uint8_t length)
 {
     os_sr_t sr;
     struct os_mbuf_pkthdr *pkthdr;
