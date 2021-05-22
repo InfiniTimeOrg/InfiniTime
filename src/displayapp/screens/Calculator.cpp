@@ -138,7 +138,7 @@ void Calculator::eval() {
         //while ((there is an operator at the top of the operator stack)
         while (!operators.empty()
                //and (the operator at the top of the operator stack is not a left parenthesis))
-               && operators.top() == '('
+               && operators.top() != '('
                //and ((the operator at the top of the operator stack has greater precedence)
                && (getPrecedence(operators.top()) > getPrecedence(next)
                    //or (the operator at the top of the operator stack has equal precedence and the token is left associative))
@@ -149,7 +149,7 @@ void Calculator::eval() {
           output.pop();
           node->left = output.top();
           output.pop();
-          node->op = next;
+          node->op = operators.top();
           operators.pop();
           output.push(node);
           
