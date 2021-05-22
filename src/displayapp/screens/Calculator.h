@@ -17,7 +17,7 @@ namespace Pinetime {
         ~Calculator() override;
         
         Calculator(DisplayApp* app, Controllers::MotorController& motorController);
-  
+        
         bool Refresh() override;
         
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
@@ -33,10 +33,6 @@ namespace Pinetime {
         
         void eval();
         
-        uint8_t getPrecedence(char op);
-        
-        bool leftAssociative(char op);
-  
         Controllers::MotorController& motorController;
         
       };

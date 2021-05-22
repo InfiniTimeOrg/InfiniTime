@@ -48,6 +48,33 @@ namespace {
     
   };
   
+  uint8_t getPrecedence(char op) {
+    switch (op) {
+      case '^':
+        return 4;
+      case 'x':
+      case '/':
+        return 3;
+      case '+':
+      case '-':
+        return 2;
+    }
+    return 0;
+  }
+  
+  bool leftAssociative(char op) {
+    switch (op) {
+      case '^':
+        return false;
+      case 'x':
+      case '/':
+      case '+':
+      case '-':
+        return true;
+    }
+    return false;
+  }
+  
 }
 
 
@@ -243,35 +270,6 @@ void Calculator::eval() {
     position = sprintf(text, "%d", upper);
   }
   
-}
-
-uint8_t Calculator::getPrecedence(char op) {
-  switch (op) {
-    case '^':
-      return 4;
-    case 'x':
-    case '/':
-      return 3;
-    case '+':
-    case '-':
-      return 2;
-  }
-  running = false;
-  return 0;
-}
-
-bool Calculator::leftAssociative(char op) {
-  switch (op) {
-    case '^':
-      return false;
-    case 'x':
-    case '/':
-    case '+':
-    case '-':
-      return true;
-  }
-  running = false;
-  return false;
 }
 
 void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
