@@ -60,10 +60,15 @@ Calculator::~Calculator() {
   lv_obj_clean(lv_scr_act());
 }
 
-static const char* buttonMap[] = {"7", "8", "9", "/", "\n",
-                                  "4", "5", "6", "x", "\n",
-                                  "1", "2", "3", "-", "\n",
-                                  ".", "0", "=", "+", "",};
+static const char* buttonMap1[] = {"7", "8", "9", "/", "\n",
+                                   "4", "5", "6", "x", "\n",
+                                   "1", "2", "3", "-", "\n",
+                                   ".", "0", "=", "+", "",};
+
+static const char* buttonMap2[] = {"7", "8", "9", "(", "\n",
+                                   "4", "5", "6", ")", "\n",
+                                   "1", "2", "3", "^", "\n",
+                                   ".", "0", "=", "+", "",};
 
 Calculator::Calculator(DisplayApp* app) : Screen(app) {
   result = lv_label_create(lv_scr_act(), nullptr);
@@ -83,7 +88,7 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
   lv_obj_set_event_cb(returnButton, eventHandler);
   
   buttonMatrix = lv_btnmatrix_create(lv_scr_act(), nullptr);
-  lv_btnmatrix_set_map(buttonMatrix, buttonMap);
+  lv_btnmatrix_set_map(buttonMatrix, buttonMap1);
   lv_obj_set_size(buttonMatrix, 240, 180);
   lv_obj_set_pos(buttonMatrix, 0, 60);
   buttonMatrix->user_data = this;
@@ -250,7 +255,6 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         eval();
       } else {
         
-        
         text[position] = *buttonstr;
         position++;
         
@@ -275,6 +279,14 @@ bool Calculator::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   if (event == Pinetime::Applications::TouchEvents::LongTap) {
     position = 0;
     lv_label_set_text(result, "0");
+    return true;
+  }
+  if (event == Pinetime::Applications::TouchEvents::SwipeLeft) {
+    lv_btnmatrix_set_map(buttonMatrix, buttonMap2);
+    return true;
+  }
+  if (event == Pinetime::Applications::TouchEvents::SwipeRight) {
+    lv_btnmatrix_set_map(buttonMatrix, buttonMap1);
     return true;
   }
   return false;
