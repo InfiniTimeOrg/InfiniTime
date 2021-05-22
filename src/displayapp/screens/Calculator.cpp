@@ -79,11 +79,11 @@ Calculator::Calculator(DisplayApp* app, Controllers::MotorController& motorContr
   lv_obj_set_pos(result, 0, 0);
   
   returnButton = lv_btn_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(returnButton, 60, 60);
-  lv_obj_set_pos(returnButton, 180, 0);
+  lv_obj_set_size(returnButton, 52, 52);
+  lv_obj_set_pos(returnButton, 180, 8);
   lv_obj_t* returnLabel;
   returnLabel = lv_label_create(returnButton, nullptr);
-  lv_label_set_text(returnLabel, "r");
+  lv_label_set_text(returnLabel, "<=");
   lv_obj_align(returnLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
   returnButton->user_data = this;
   lv_obj_set_event_cb(returnButton, eventHandler);
@@ -287,12 +287,13 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         
       }
     } else if (obj == returnButton) {
-      if (position != 0) {
+      if (position > 1) {
         
         position--;
       } else {
-        
+        position = 0;
         lv_label_set_text(result, "0");
+        return;
       }
     }
     
