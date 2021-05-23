@@ -1,3 +1,5 @@
+#pragma GCC push_options
+#pragma GCC optimize ("Os")
 #include "Calculator.h"
 #include <string>
 #include <stack>
@@ -136,14 +138,36 @@ void Calculator::eval() {
   while (!input.empty()) {
     
     if (isdigit(input.top())) {
-      std::string numberStr = "";
-      
+      char numberStr[31];
+      uint8_t strln = 0;
+      uint8_t pointpos = 0;
       while (!input.empty() && (isdigit(input.top()) || input.top() == '.')) {
-        numberStr.push_back(input.top());
+        if (input.top() == '.') {
+          if (pointpos != 0) {
+            motorController.SetDuration(10);
+            return;
+          }
+          pointpos = strln;
+        } else {
+          numberStr[strln] = input.top();
+          strln++;
+        }
         input.pop();
       }
+      //replacement for strtod() since using that increased .txt by 76858 bzt
+      if (pointpos == 0) {
+        pointpos = strln;
+      }
+      double num = 0;
+      for (uint8_t i = 0; i <  pointpos; i++) {
+        num += (numberStr[i] - '0') * pow(10,   pointpos - i - 1 );
+      }
+      for (uint8_t i = 0; i < strln - pointpos; i++) {
+        num += (numberStr[i + pointpos] - '0') / pow(10,i+1);
+      }
+  
       NumNode* number = new NumNode();
-      number->value = std::strtod(numberStr.c_str(), nullptr) * sign;
+      number->value = num; //std::strtod(numberStr.c_str(), nullptr) * sign;
       output.push(number);
       
       sign = +1;
@@ -321,3 +345,5 @@ bool Calculator::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 bool Calculator::Refresh() {
   return running;
 }
+
+#pragma GCC pop_options
