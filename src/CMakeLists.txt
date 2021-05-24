@@ -531,7 +531,6 @@ list(APPEND RECOVERY_SOURCE_FILES
         systemtask/SystemTask.cpp
         drivers/TwiMaster.cpp
         components/gfx/Gfx.cpp
-        displayapp/icons/infinitime/infinitime-nb.c
         components/rle/RleDecoder.cpp
         components/heartrate/HeartRateController.cpp
         heartratetask/HeartRateTask.cpp
@@ -558,7 +557,6 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
         drivers/St7789.cpp
         components/brightness/BrightnessController.cpp
 
-        displayapp/icons/infinitime/infinitime-nb.c
         recoveryLoader.cpp
         )
 
