@@ -21,7 +21,7 @@ namespace Pinetime {
       const uint8_t* buffer;
       size_t size;
 
-      int encodedBufferIndex = 0;
+      size_t encodedBufferIndex = 0;
       int y = 0;
       uint16_t bp = 0;
       uint16_t foregroundColor = 0xffff;
