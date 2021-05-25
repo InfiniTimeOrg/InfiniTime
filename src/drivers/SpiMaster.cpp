@@ -53,6 +53,7 @@ bool SpiMaster::Init() {
       break;
     case BitOrder::Lsb_Msb:
       regConfig = 1;
+      break;
     default:
       return false;
   }
