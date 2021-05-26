@@ -167,7 +167,7 @@ void Calculator::eval() {
       }
   
       NumNode* number = new NumNode();
-      number->value = num; //std::strtod(numberStr.c_str(), nullptr) * sign;
+      number->value = num;
       output.push(number);
       
       sign = +1;
@@ -318,6 +318,7 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         return;
       }
     }
+    
     
     text[position] = '\0';
     lv_label_set_text(result, text);
