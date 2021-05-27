@@ -211,5 +211,3 @@ void Timer::setDone() {
   valueToSet->minutes = 0;
   createButtons();
 }
-
-

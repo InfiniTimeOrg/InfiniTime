@@ -29,8 +29,6 @@ namespace Pinetime {
       private:
         Mode currentMode = Normal;
         Controllers::TimerController& timerController;
-        //leave space the set button
-        uint32_t timers[MAXLISTITEMS - 1];
         
         
       };

@@ -21,7 +21,6 @@ TimerList::TimerList(uint8_t screenID,
   }};
   
   for (int i = 0; i < MAXLISTITEMS; i++) {
-    timers[i] = *static_cast<uint32_t *>(timerItems[i].data);
     createButtonNr(i, timerItems[i]);
   }
   lv_btn_set_checkable(buttons[0], true);

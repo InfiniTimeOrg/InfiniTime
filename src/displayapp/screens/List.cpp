@@ -1,5 +1,3 @@
-
-
 #include "List.h"
 
 using namespace Pinetime::Applications::Screens;

@@ -1,6 +1,5 @@
 #include "SettingsList.h"
 #include "displayapp/DisplayApp.h"
-#include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
