@@ -62,3 +62,19 @@ void TimerController::StopTimer() {
 bool TimerController::IsRunning() {
   return timerRunning;
 }
+
+void TimerController::selectPreset(int8_t i) {
+  initialValue = presets[i];
+}
+
+void TimerController::setPreset(int8_t i) {
+  presets[i] = initialValue;
+}
+
+TimerController::TimerValue* TimerController::getInitialValue(){
+  return &initialValue;
+}
+
+const TimerController::TimerValue& TimerController::getPreset(uint8_t i) const {
+  return presets[i];
+}

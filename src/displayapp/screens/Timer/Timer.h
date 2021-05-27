@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "systemtask/SystemTask.h"
-#include "../LittleVgl.h"
+#include "displayapp/LittleVgl.h"
 
 #include "components/timer/TimerController.h"
 
@@ -27,11 +27,12 @@ namespace Pinetime::Applications::Screens {
     
     void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
   
+    bool OnTouchEvent(TouchEvents event);
+  
   private:
-    
+  
+    Controllers::TimerController::TimerValue* valueToSet;
     bool running;
-    uint8_t secondsToSet = 0;
-    uint8_t minutesToSet = 0;
     Controllers::TimerController& timerController;
     
     void createButtons();

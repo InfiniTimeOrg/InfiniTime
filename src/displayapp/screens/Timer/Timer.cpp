@@ -1,7 +1,7 @@
 #include "Timer.h"
 
-#include "Screen.h"
-#include "Symbols.h"
+#include "displayapp/screens/Screen.h"
+#include "displayapp/screens/Symbols.h"
 #include "lvgl/lvgl.h"
 
 
@@ -56,14 +56,14 @@ void Timer::createButtons() {
 Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
     : Screen(app),
       running{true},
-      timerController{timerController} {
+      timerController{timerController}, valueToSet{timerController.getInitialValue()} {
+  
   
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   
-  uint32_t seconds = timerController.GetTimeRemaining() / 1000;
-  lv_label_set_text_fmt(time, "%02d:%02d", seconds / 60, seconds % 60);
+  
   
   lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
   
@@ -74,8 +74,11 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   lv_obj_set_height(btnPlayPause, 40);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   if (timerController.IsRunning()) {
+    uint32_t seconds = timerController.GetTimeRemaining() / 1000;
+    lv_label_set_text_fmt(time, "%02d:%02d", seconds / 60, seconds % 60);
     lv_label_set_text(txtPlayPause, Symbols::pause);
   } else {
+    lv_label_set_text_fmt(time, "%02d:%02d", valueToSet->minutes, valueToSet->seconds);
     lv_label_set_text(txtPlayPause, Symbols::play);
     createButtons();
   }
@@ -101,14 +104,14 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       if (timerController.IsRunning()) {
         lv_label_set_text(txtPlayPause, Symbols::play);
         uint32_t seconds = timerController.GetTimeRemaining() / 1000;
-        minutesToSet = seconds / 60;
-        secondsToSet = seconds % 60;
+        valueToSet->minutes = seconds / 60;
+        valueToSet->seconds = seconds % 60;
         timerController.StopTimer();
         createButtons();
         
-      } else if (secondsToSet + minutesToSet > 0) {
+      } else if (valueToSet->seconds + valueToSet->minutes > 0) {
         lv_label_set_text(txtPlayPause, Symbols::pause);
-        timerController.StartTimer((secondsToSet + minutesToSet * 60) * 1000);
+        timerController.StartTimer((valueToSet->seconds + valueToSet->minutes * 60) * 1000);
         
         lv_obj_del(btnSecondsDown);
         btnSecondsDown = nullptr;
@@ -123,36 +126,36 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     } else {
       if (!timerController.IsRunning()) {
         if (obj == btnMinutesUp) {
-          if (minutesToSet >= 59) {
-            minutesToSet = 0;
+          if (valueToSet->minutes >= 59) {
+            valueToSet->minutes = 0;
           } else {
-            minutesToSet++;
+            valueToSet->minutes++;
           }
-          lv_label_set_text_fmt(time, "%02d:%02d", minutesToSet, secondsToSet);
+          lv_label_set_text_fmt(time, "%02d:%02d", valueToSet->minutes, valueToSet->seconds);
           
         } else if (obj == btnMinutesDown) {
-          if (minutesToSet == 0) {
-            minutesToSet = 59;
+          if (valueToSet->minutes == 0) {
+            valueToSet->minutes = 59;
           } else {
-            minutesToSet--;
+            valueToSet->minutes--;
           }
-          lv_label_set_text_fmt(time, "%02d:%02d", minutesToSet, secondsToSet);
+          lv_label_set_text_fmt(time, "%02d:%02d", valueToSet->minutes, valueToSet->seconds);
           
         } else if (obj == btnSecondsUp) {
-          if (secondsToSet >= 59) {
-            secondsToSet = 0;
+          if (valueToSet->seconds >= 59) {
+            valueToSet->seconds = 0;
           } else {
-            secondsToSet++;
+            valueToSet->seconds++;
           }
-          lv_label_set_text_fmt(time, "%02d:%02d", minutesToSet, secondsToSet);
+          lv_label_set_text_fmt(time, "%02d:%02d", valueToSet->minutes, valueToSet->seconds);
           
         } else if (obj == btnSecondsDown) {
-          if (secondsToSet == 0) {
-            secondsToSet = 59;
+          if (valueToSet->seconds == 0) {
+            valueToSet->seconds = 59;
           } else {
-            secondsToSet--;
+            valueToSet->seconds--;
           }
-          lv_label_set_text_fmt(time, "%02d:%02d", minutesToSet, secondsToSet);
+          lv_label_set_text_fmt(time, "%02d:%02d", valueToSet->minutes, valueToSet->seconds);
           
         }
       }
@@ -163,11 +166,46 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   
 }
 
+bool Timer::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  //dont react to swipes while running
+  if (timerController.IsRunning()) {
+    return false;
+  }
+  if (event == TouchEvents::SwipeUp) {
+    if (valueToSet->seconds < 50) {
+      valueToSet->seconds += 10;
+    } else if (valueToSet->minutes < 59) {
+      valueToSet->minutes++;
+      valueToSet->seconds = valueToSet->seconds - 60 + 10;
+    } else {
+      valueToSet->minutes = 0;
+      valueToSet->seconds = valueToSet->seconds - 60 + 10;
+    }
+    lv_label_set_text_fmt(time, "%02d:%02d", valueToSet->minutes, valueToSet->seconds);
+    return true;
+  }
+  if (event == TouchEvents::SwipeDown) {
+    if (valueToSet->seconds >= 10) {
+      valueToSet->seconds -= 10;
+    } else if (valueToSet->minutes > 0){
+      valueToSet->seconds = 60 + valueToSet->seconds - 10;
+      valueToSet->minutes--;
+    } else {
+      valueToSet->minutes = 59;
+      valueToSet->seconds = 60 + valueToSet->seconds - 10;
+    }
+    lv_label_set_text_fmt(time, "%02d:%02d", valueToSet->minutes, valueToSet->seconds);
+    return true;
+  }
+  return false;
+}
 
 void Timer::setDone() {
   lv_label_set_text(time, "00:00");
   lv_label_set_text(txtPlayPause, Symbols::play);
-  secondsToSet = 0;
-  minutesToSet = 0;
+  valueToSet->seconds = 0;
+  valueToSet->minutes = 0;
   createButtons();
 }
+
+
