@@ -1,11 +1,8 @@
 #pragma once
 
 #include <lvgl/lvgl.h>
-#include <cstdint>
-#include <memory>
+#include <array>
 #include "Screen.h"
-#include "../Apps.h"
-#include "components/settings/Settings.h"
 
 #define MAXLISTITEMS 4
 
@@ -14,29 +11,26 @@ namespace Pinetime {
     namespace Screens {
       class List : public Screen {
       public:
-        struct Applications {
+        struct Item {
           const char* icon;
           const char* name;
-          Pinetime::Applications::Apps application;
+          void* data;
         };
-
-        explicit List(uint8_t screenID,
-                      uint8_t numScreens,
-                      DisplayApp* app,
-                      Controllers::Settings& settingsController,
-                      std::array<Applications, MAXLISTITEMS>& applications);
-        ~List() override;
-
-        bool Refresh() override;
-
-        void OnButtonEvent(lv_obj_t* object, lv_event_t event);
-
+        
+        virtual void OnButtonEvent(lv_obj_t* object, lv_event_t event) = 0;
+      
+      protected:
+        explicit List(Pinetime::Applications::DisplayApp* app, uint8_t screenID, uint8_t numScreens, std::array<Item, MAXLISTITEMS>&
+        items);
+        
+        lv_obj_t* buttons[MAXLISTITEMS];
+        lv_obj_t* container1;
+        
+        void createButtonNr(int i, std::array<Item, MAXLISTITEMS>&
+        items);
+      
       private:
-        Controllers::Settings& settingsController;
-        Pinetime::Applications::Apps apps[MAXLISTITEMS];
-
-        lv_obj_t* itemApps[MAXLISTITEMS];
-
+        
         lv_point_t pageIndicatorBasePoints[2];
         lv_point_t pageIndicatorPoints[2];
         lv_obj_t* pageIndicatorBase;

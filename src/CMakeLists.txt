@@ -404,6 +404,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/HeartRate.cpp
         displayapp/screens/Motion.cpp
         displayapp/screens/FlashLight.cpp
+        displayapp/screens/settings/SettingsList.cpp
         displayapp/screens/List.cpp
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp

@@ -1,7 +1,7 @@
 #include "Settings.h"
 #include <lvgl/lvgl.h>
 #include <array>
-#include "displayapp/screens/List.h"
+#include "SettingsList.h"
 #include "displayapp/Apps.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
@@ -39,24 +39,24 @@ bool Settings::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
 std::unique_ptr<Screen> Settings::CreateScreen1() {
 
-  std::array<Screens::List::Applications, 4> applications {{
-    {Symbols::sun, "Display", Apps::SettingDisplay},
-    {Symbols::clock, "Wake Up", Apps::SettingWakeUp},
-    {Symbols::clock, "Time format", Apps::SettingTimeFormat},
-    {Symbols::clock, "Watch face", Apps::SettingWatchFace},
+  std::array<Screens::List::Item, 4> applications {{
+    {Symbols::sun, "Display", static_cast<void*>(new Apps(Apps::SettingDisplay))},
+    {Symbols::clock, "Wake Up", static_cast<void*>(new Apps(Apps::SettingWakeUp))},
+    {Symbols::clock, "Time format", static_cast<void*>(new Apps(Apps::SettingTimeFormat))},
+    {Symbols::clock, "Watch face",static_cast<void*>(new Apps(Apps::SettingWatchFace))},
   }};
 
-  return std::unique_ptr<Screen>(new Screens::List(0, 2, app, settingsController, applications));
+  return std::unique_ptr<Screen>(new Screens::SettingsList(0, 2, app, settingsController, applications));
 }
 
 std::unique_ptr<Screen> Settings::CreateScreen2() {
 
-  std::array<Screens::List::Applications, 4> applications {{
-    {Symbols::shoe, "Steps", Apps::SettingSteps},
-    {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
-    {Symbols::check, "Firmware", Apps::FirmwareValidation},
-    {Symbols::list, "About", Apps::SysInfo},
+  std::array<Screens::List::Item, 4> applications {{
+    {Symbols::shoe, "Steps", static_cast<void*>(new Apps(Apps::SettingSteps))},
+    {Symbols::batteryHalf, "Battery", static_cast<void*>(new Apps(Apps::BatteryInfo))},
+    {Symbols::check, "Firmware", static_cast<void*>(new Apps(Apps::FirmwareValidation))},
+    {Symbols::list, "About", static_cast<void*>(new Apps(Apps::SysInfo))},
   }};
 
-  return std::unique_ptr<Screen>(new Screens::List(1, 2, app, settingsController, applications));
+  return std::unique_ptr<Screen>(new Screens::SettingsList(1, 2, app, settingsController, applications));
 }
