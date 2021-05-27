@@ -197,6 +197,10 @@ bool Timer::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
     lv_label_set_text_fmt(time, "%02d:%02d", valueToSet->minutes, valueToSet->seconds);
     return true;
   }
+  if (event == TouchEvents::SwipeRight) {
+    running = false;
+    app->StartApp(Apps::TimerTemplates, DisplayApp::FullRefreshDirections::RightAnim);
+  }
   return false;
 }
 

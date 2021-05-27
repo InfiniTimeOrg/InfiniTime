@@ -12,8 +12,7 @@ namespace {
   
 }
 
-List::List(Pinetime::Applications::DisplayApp* app, uint8_t screenID, uint8_t numScreens, std::array<Item, MAXLISTITEMS>&
-items)
+List::List(Pinetime::Applications::DisplayApp* app, uint8_t screenID, uint8_t numScreens)
     : Screen(app) {
   // Set the background to Black
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0, 0, 0));
@@ -67,8 +66,7 @@ items)
 }
 
 //Derived Classes shall call this in their constructor to create the buttons
-void List::createButtonNr(int i, std::array<Item, MAXLISTITEMS>&
-items) {
+void List::createButtonNr(int i, Item& item) {
   
   lv_obj_t* labelBt;
   lv_obj_t* labelBtIco;
@@ -86,8 +84,8 @@ items) {
   
   labelBtIco = lv_label_create(buttons[i], nullptr);
   lv_obj_set_style_local_text_color(labelBtIco, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-  lv_label_set_text_static(labelBtIco, items[i].icon);
+  lv_label_set_text_static(labelBtIco, item.icon);
   
   labelBt = lv_label_create(buttons[i], nullptr);
-  lv_label_set_text_fmt(labelBt, " %s", items[i].name);
+  lv_label_set_text_fmt(labelBt, " %s", item.name);
 }

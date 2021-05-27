@@ -10,7 +10,7 @@ SettingsList::SettingsList(uint8_t screenID,
                            DisplayApp* app,
                            Controllers::Settings& settingsController,
                            std::array<Item, 4>& applications)
-    : List(app, screenID, numScreens, applications), settingsController{settingsController} {
+    : List(app, screenID, numScreens), settingsController{settingsController} {
   
   settingsController.SetSettingsMenu(screenID);
   
@@ -19,7 +19,7 @@ SettingsList::SettingsList(uint8_t screenID,
     apps[i] = *static_cast<Pinetime::Applications::Apps*>(applications[i].data);
     //only create buttons for applications that exist
     if (apps[i] != Apps::None) {
-      createButtonNr(i, applications);
+      createButtonNr(i, applications[i]);
     }
   }
   

@@ -20,14 +20,12 @@ namespace Pinetime {
         virtual void OnButtonEvent(lv_obj_t* object, lv_event_t event) = 0;
       
       protected:
-        explicit List(Pinetime::Applications::DisplayApp* app, uint8_t screenID, uint8_t numScreens, std::array<Item, MAXLISTITEMS>&
-        items);
+        explicit List(Pinetime::Applications::DisplayApp* app, uint8_t screenID, uint8_t numScreens);
         
         lv_obj_t* buttons[MAXLISTITEMS];
         lv_obj_t* container1;
         
-        void createButtonNr(int i, std::array<Item, MAXLISTITEMS>&
-        items);
+        void createButtonNr(int i, Item& item);
       
       private:
         
