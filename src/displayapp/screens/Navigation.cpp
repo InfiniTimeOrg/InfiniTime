@@ -25,7 +25,7 @@ using namespace Pinetime::Applications::Screens;
 LV_FONT_DECLARE(lv_font_navi_80)
 
 namespace {
-  static constexpr std::array<std::pair<const char*, const char*>, 86> m_iconMap = {{
+  constexpr std::array<std::pair<const char*, const char*>, 86> m_iconMap = {{
     {"arrive-left", "\xEE\xA4\x81"},
     {"arrive-right", "\xEE\xA4\x82"},
     {"arrive-straight", "\xEE\xA4\x80"},
