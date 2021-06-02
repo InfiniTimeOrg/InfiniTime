@@ -33,19 +33,26 @@ namespace {
     char op;
     
     double calculate() override {
+      double rightVal = right->calculate();
+      double leftVal = left->calculate();
       switch (op) {
         case '^':
-          return pow(left->calculate(), right->calculate());
+          return pow(leftVal, rightVal);
         case 'x':
-          return left->calculate() * right->calculate();
+          return leftVal * rightVal;
         case '/':
-          return left->calculate() / right->calculate();
+          if (rightVal == 0.0) {
+            errno = EDOM;
+            return 0.0;
+          }
+          return leftVal / rightVal;
         case '+':
-          return left->calculate() + right->calculate();
+          return leftVal + rightVal;
         case '-':
-          return left->calculate() - right->calculate();
+          return leftVal - rightVal;
       }
-      return 0;
+      errno = EINVAL;
+      return 0.0;
     };
     
   };
@@ -270,8 +277,13 @@ void Calculator::eval() {
     
   }
   
-  //weird workaround because sprintf crashes when trying to use a float
+  errno = 0;
   double resultFloat = output.top()->calculate();
+  if (errno != 0) {
+    motorController.SetDuration(10);
+    return;
+  }
+  //weird workaround because sprintf crashes when trying to use a float
   int32_t upper = resultFloat;
   int32_t lower = round(std::abs(resultFloat - upper) * 10000);
   //round up to the next int value
