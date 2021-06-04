@@ -12,7 +12,7 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  TickType_t calculateDelta(const TickType_t startTime, const TickType_t currentTime) {
+  float calculateDelta(const TickType_t startTime, const TickType_t currentTime) {
     TickType_t delta = 0;
     // Take care of overflow
     if (startTime > currentTime) {
@@ -21,62 +21,68 @@ namespace {
     } else {
       delta = currentTime - startTime;
     }
-    return delta;
+    return static_cast<float>(delta) / static_cast<float>(configTICK_RATE_HZ);
+  }
+
+  static void eventHandler(lv_obj_t* obj, lv_event_t event) {
+    Metronome* screen = static_cast<Metronome*>(obj->user_data);
+    screen->OnEvent(obj, event);
+  }
+
+  lv_obj_t* createLabel(const char* name, lv_obj_t* reference, lv_align_t align, lv_font_t* font, uint8_t x = 0, uint8_t y = 0) {
+    lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font);
+    lv_obj_set_style_local_text_color(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+    lv_label_set_text(label, name);
+    lv_obj_align(label, reference, align, x, y);
+
+    return label;
   }
 }
 
-static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
-  Metronome* screen = static_cast<Metronome*>(obj->user_data);
-  screen->OnButtonEvent(obj, event);
-}
+Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorController, System::SystemTask& systemTask)
+  : Screen(app), running {true}, currentState {States::Stopped}, startTime {}, motorController {motorController}, systemTask {systemTask} {
 
-Metronome::Metronome(DisplayApp* app,
-                     Controllers::MotorController& motorController,
-                     System::SystemTask& systemTask)
-  : Screen(app),
-    running {true},
-    currentState {States::Stopped},
-    startTime {},
-    motorController {motorController},
-    systemTask {systemTask} {
+  bpmArc = lv_arc_create(lv_scr_act(), nullptr);
+  bpmArc->user_data = this;
+  lv_obj_set_event_cb(bpmArc, eventHandler);
+  // lv_arc_set_angles(bpmArc, 0, 270);
+  lv_arc_set_bg_angles(bpmArc, 0, 270);
+  lv_arc_set_rotation(bpmArc, 135);
+  lv_arc_set_range(bpmArc, 0, 270);
+  lv_arc_set_value(bpmArc, bpm);
+  lv_obj_set_size(bpmArc, 200, 200);
+  lv_arc_set_adjustable(bpmArc, true);
+  lv_obj_align(bpmArc, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 10);
 
-  bpmText = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(bpmText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(bpmText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-  lv_label_set_text(bpmText, std::to_string(bpm).c_str());
-  lv_obj_align(bpmText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -45);
+  bpmValue = createLabel(std::to_string(lv_arc_get_value(bpmArc)).c_str(), bpmArc, LV_ALIGN_IN_TOP_MID, &jetbrains_mono_76, 0, 50);
+  bpmLegend = createLabel("bpm", bpmValue, LV_ALIGN_OUT_BOTTOM_MID, &jetbrains_mono_bold_20, 0, 0);
 
-  bpmLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(bpmLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_set_style_local_text_color(bpmLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-  lv_label_set_text(bpmLabel, "bpm");
-  lv_obj_align(bpmLabel, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 70, 3);
+  bpmTap = lv_btn_create(lv_scr_act(), nullptr);
+  bpmTap->user_data = this;
+  lv_obj_set_event_cb(bpmTap, eventHandler);
+  lv_obj_set_style_local_bg_opa(bpmTap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_height(bpmTap, 80);
+  lv_obj_align(bpmTap, bpmValue, LV_ALIGN_IN_TOP_MID, 0, 0);
 
-  bpmUp = lv_btn_create(lv_scr_act(), nullptr);
-  bpmUp->user_data = this;
-  lv_obj_set_event_cb(bpmUp, btnEventHandler);
-  lv_obj_align(bpmUp, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 10, -70);
-  lv_obj_set_height(bpmUp, 40);
-  lv_obj_set_width(bpmUp, 60);
-  bpmUpTxt = lv_label_create(bpmUp, nullptr);
-  lv_label_set_text(bpmUpTxt, "+");
+  bpbDropdown = lv_dropdown_create(lv_scr_act(), nullptr);
+  bpbDropdown->user_data = this;
+  lv_obj_set_event_cb(bpbDropdown, eventHandler);
+  lv_obj_set_style_local_pad_left(bpbDropdown, LV_DROPDOWN_PART_MAIN, LV_STATE_DEFAULT, 20);
+  lv_obj_align(bpbDropdown, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 15, -10);
+  lv_dropdown_set_options(bpbDropdown, "1\n2\n3\n4\n5\n6\n7\n8\n9");
+  lv_dropdown_set_selected(bpbDropdown, bpb - 1);
+  bpbLegend = lv_label_create(bpbDropdown, nullptr);
+  lv_label_set_text(bpbLegend, "bpb");
+  lv_obj_align(bpbLegend, bpbDropdown, LV_ALIGN_IN_RIGHT_MID, -15, 0);
 
-  bpmDown = lv_btn_create(lv_scr_act(), nullptr);
-  bpmDown->user_data = this;
-  lv_obj_set_event_cb(bpmDown, btnEventHandler);
-  lv_obj_align(bpmDown, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 10, -20);
-  lv_obj_set_height(bpmDown, 40);
-  lv_obj_set_width(bpmDown, 60);
-  bpmDownTxt = lv_label_create(bpmDown, nullptr);
-  lv_label_set_text(bpmDownTxt, "-");
-
-  btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
-  btnPlayPause->user_data = this;
-  lv_obj_set_event_cb(btnPlayPause, btnEventHandler);
-  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -10);
-  lv_obj_set_height(btnPlayPause, 40);
-  txtPlayPause = lv_label_create(btnPlayPause, nullptr);
-  lv_label_set_text(txtPlayPause, Symbols::play);
+  playPause = lv_btn_create(lv_scr_act(), nullptr);
+  playPause->user_data = this;
+  lv_obj_set_event_cb(playPause, eventHandler);
+  lv_obj_align(playPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -15, -16);
+  lv_obj_set_height(playPause, 39);
+  playPauseLabel = lv_label_create(playPause, nullptr);
+  lv_label_set_text(playPauseLabel, Symbols::play);
 }
 
 Metronome::~Metronome() {
@@ -89,11 +95,16 @@ bool Metronome::Refresh() {
       break;
     }
     case States::Running: {
-      TickType_t elapsedTime = calculateDelta(startTime, xTaskGetTickCount());
-
-      if (static_cast<float>(elapsedTime) / static_cast<float>(configTICK_RATE_HZ) >= (60.0 / bpm)) {
-        motorController.SetDuration(30);
+      if (calculateDelta(startTime, xTaskGetTickCount()) >= (60.0 / bpm)) {
+        counter--;
+        startTime -= 60.0 / bpm;
         startTime = xTaskGetTickCount();
+        if (counter == 0) {
+          counter = bpb;
+          motorController.SetDuration(90);
+        } else {
+          motorController.SetDuration(30);
+        }
       }
       break;
     }
@@ -101,40 +112,46 @@ bool Metronome::Refresh() {
   return running;
 }
 
-void Metronome::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
-  if (event == LV_EVENT_CLICKED) {
-    if (obj == btnPlayPause) {
-      currentState = (currentState == States::Stopped ? States::Running : States::Stopped);
-      switch (currentState) {
-        case States::Stopped: {
-          lv_label_set_text(txtPlayPause, Symbols::play);
-          systemTask.PushMessage(Pinetime::System::SystemTask::Messages::EnableSleeping);
-          break;
+void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
+  switch (event) {
+    case LV_EVENT_VALUE_CHANGED: {
+      if (obj == bpmArc) {
+        bpm = lv_arc_get_value(bpmArc);
+        lv_label_set_text_fmt(bpmValue, "%03d", bpm);
+      } else if (obj == bpbDropdown) {
+        bpb = lv_dropdown_get_selected(obj) + 1;
+      }
+      break;
+    }
+    case LV_EVENT_CLICKED: {
+      if (obj == bpmTap) {
+        float timeDelta = calculateDelta(tappedTime, xTaskGetTickCount());
+        if (tappedTime == 0 || timeDelta > 3) {
+          tappedTime = xTaskGetTickCount();
+        } else {
+          bpm = ceil(60.0 / timeDelta);
+          lv_arc_set_value(bpmArc, bpm);
+          lv_label_set_text_fmt(bpmValue, "%03d", bpm);
+          tappedTime = xTaskGetTickCount();
         }
-        case States::Running: {
-          lv_label_set_text(txtPlayPause, Symbols::pause);
-          systemTask.PushMessage(Pinetime::System::SystemTask::Messages::DisableSleeping);
-          startTime = xTaskGetTickCount();
-          break;
+      } else if (obj == playPause) {
+        currentState = (currentState == States::Stopped ? States::Running : States::Stopped);
+        switch (currentState) {
+          case States::Stopped: {
+            lv_label_set_text(playPauseLabel, Symbols::play);
+            systemTask.PushMessage(Pinetime::System::SystemTask::Messages::EnableSleeping);
+            break;
+          }
+          case States::Running: {
+            lv_label_set_text(playPauseLabel, Symbols::pause);
+            systemTask.PushMessage(Pinetime::System::SystemTask::Messages::DisableSleeping);
+            startTime = xTaskGetTickCount();
+            counter = 1;
+            break;
+          }
         }
       }
-    } else {
-      if (obj == bpmUp) {
-        if (bpm >= 300) {
-          bpm = 0;
-        } else {
-          bpm++;
-        }
-        lv_label_set_text_fmt(bpmText, "%03d", bpm);
-
-      } else if (obj == bpmDown) {
-        if (bpm == 0) {
-          bpm = 300;
-        } else {
-          bpm--;
-        }
-        lv_label_set_text_fmt(bpmText, "%03d", bpm);
-      }
+      break;
     }
   }
 }

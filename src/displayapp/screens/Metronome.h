@@ -12,19 +12,22 @@ namespace Pinetime::Applications::Screens {
     Metronome(DisplayApp* app, Controllers::MotorController& motorController, System::SystemTask& systemTask);
     ~Metronome() override;
     bool Refresh() override;
-    void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
+    void OnEvent(lv_obj_t* obj, lv_event_t event);
     enum class States { Running, Stopped };
 
   private:
     bool running;
     States currentState;
     TickType_t startTime;
+    TickType_t tappedTime = 0;
     Controllers::MotorController& motorController;
     System::SystemTask& systemTask;
     uint16_t bpm = 120;
+    uint8_t bpb = 4;
+    uint8_t counter = 1;
 
-    lv_obj_t *bpmText, *bpmLabel;
-    lv_obj_t *btnPlayPause, *txtPlayPause;
-    lv_obj_t *bpmUp, *bpmUpTxt, *bpmDown, *bpmDownTxt;
+    lv_obj_t *bpmArc, *bpmTap, *bpmValue, *bpmLegend;
+    lv_obj_t *bpbDropdown, *bpbLegend;
+    lv_obj_t *playPause, *playPauseLabel;
   };
 }
