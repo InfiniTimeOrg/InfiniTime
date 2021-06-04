@@ -123,7 +123,7 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
       }
       break;
     }
-    case LV_EVENT_CLICKED: {
+    case LV_EVENT_PRESSED: {
       if (obj == bpmTap) {
         float timeDelta = calculateDelta(tappedTime, xTaskGetTickCount());
         if (tappedTime == 0 || timeDelta > 3) {
@@ -134,7 +134,11 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
           lv_label_set_text_fmt(bpmValue, "%03d", bpm);
           tappedTime = xTaskGetTickCount();
         }
-      } else if (obj == playPause) {
+        break;
+      }
+    }
+    case LV_EVENT_CLICKED: {
+      if (obj == playPause) {
         currentState = (currentState == States::Stopped ? States::Running : States::Stopped);
         switch (currentState) {
           case States::Stopped: {
