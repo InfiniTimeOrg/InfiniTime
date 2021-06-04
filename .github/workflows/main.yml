@@ -44,7 +44,7 @@ jobs:
 
       - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
         if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
-        uses: fiam/arm-none-eabi-gcc@v1.0.2
+        uses: fiam/arm-none-eabi-gcc@v1.0.4
         with:
           # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
           release: 9-2020-q2
