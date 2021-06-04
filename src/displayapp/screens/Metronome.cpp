@@ -134,8 +134,8 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
           lv_label_set_text_fmt(bpmValue, "%03d", bpm);
           tappedTime = xTaskGetTickCount();
         }
-        break;
       }
+      break;
     }
     case LV_EVENT_CLICKED: {
       if (obj == playPause) {
