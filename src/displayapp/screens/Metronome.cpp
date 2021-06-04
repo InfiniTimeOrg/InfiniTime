@@ -46,16 +46,15 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   bpmArc = lv_arc_create(lv_scr_act(), nullptr);
   bpmArc->user_data = this;
   lv_obj_set_event_cb(bpmArc, eventHandler);
-  // lv_arc_set_angles(bpmArc, 0, 270);
   lv_arc_set_bg_angles(bpmArc, 0, 270);
   lv_arc_set_rotation(bpmArc, 135);
   lv_arc_set_range(bpmArc, 40, 220);
   lv_arc_set_value(bpmArc, bpm);
-  lv_obj_set_size(bpmArc, 200, 200);
+  lv_obj_set_size(bpmArc, 210, 210);
   lv_arc_set_adjustable(bpmArc, true);
-  lv_obj_align(bpmArc, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 10);
+  lv_obj_align(bpmArc, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 7);
 
-  bpmValue = createLabel(std::to_string(lv_arc_get_value(bpmArc)).c_str(), bpmArc, LV_ALIGN_IN_TOP_MID, &jetbrains_mono_76, 0, 50);
+  bpmValue = createLabel(std::to_string(lv_arc_get_value(bpmArc)).c_str(), bpmArc, LV_ALIGN_IN_TOP_MID, &jetbrains_mono_76, 0, 55);
   bpmLegend = createLabel("bpm", bpmValue, LV_ALIGN_OUT_BOTTOM_MID, &jetbrains_mono_bold_20, 0, 0);
 
   bpmTap = lv_btn_create(lv_scr_act(), nullptr);

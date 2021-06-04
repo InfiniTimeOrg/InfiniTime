@@ -241,13 +241,13 @@ static void basic_init(void) {
   lv_style_set_line_color(&style_arc_bg, LV_STATE_DEFAULT, LV_PINETIME_GRAY);
   lv_style_set_line_width(&style_arc_bg, LV_STATE_DEFAULT, LV_DPX(25));
   lv_style_set_line_rounded(&style_arc_bg, LV_STATE_DEFAULT, true);
+  lv_style_set_pad_all(&style_arc_bg, LV_STATE_DEFAULT, LV_DPX(5));
 
   lv_style_reset(&style_arc_knob);
   lv_style_set_radius(&style_arc_knob, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_style_set_bg_opa(&style_arc_knob, LV_STATE_DEFAULT, LV_OPA_0);
-  lv_style_set_line_color(&style_arc_knob, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_style_set_line_width(&style_arc_knob, LV_STATE_DEFAULT, LV_DPX(30));
-  lv_style_set_pad_all(&style_arc_knob, LV_STATE_DEFAULT, LV_DPX(30));
+  lv_style_set_bg_opa(&style_arc_knob, LV_STATE_DEFAULT, LV_OPA_COVER);
+  lv_style_set_bg_color(&style_arc_knob, LV_STATE_DEFAULT, LV_PINETIME_LIGHT_GRAY);
+  lv_style_set_pad_all(&style_arc_knob, LV_STATE_DEFAULT, LV_DPX(5));
 
   style_init_reset(&style_table_cell);
   lv_style_set_border_color(&style_table_cell, LV_STATE_DEFAULT, LV_PINETIME_GRAY);
