@@ -21,7 +21,7 @@ if (NOT NRF5_SDK_PATH)
   message(FATAL_ERROR "The path to the NRF52 SDK must be specified on the command line (add -DNRF5_SDK_PATH=<path>")
 endif ()
 
-if(NOT USE_JLINK AND NOT USE_GDB_CLIENT AND NOT USE_OPENOCD)
+if(NOT USE_JLINK AND NOT USE_GDB_CLIENT AND NOT USE_OPENOCD AND NOT BUILD_DFU)
   set(USE_JLINK true)
 endif()
 
