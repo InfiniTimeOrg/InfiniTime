@@ -49,7 +49,7 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   // lv_arc_set_angles(bpmArc, 0, 270);
   lv_arc_set_bg_angles(bpmArc, 0, 270);
   lv_arc_set_rotation(bpmArc, 135);
-  lv_arc_set_range(bpmArc, 0, 270);
+  lv_arc_set_range(bpmArc, 40, 220);
   lv_arc_set_value(bpmArc, bpm);
   lv_obj_set_size(bpmArc, 200, 200);
   lv_arc_set_adjustable(bpmArc, true);
@@ -69,7 +69,8 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   bpbDropdown->user_data = this;
   lv_obj_set_event_cb(bpbDropdown, eventHandler);
   lv_obj_set_style_local_pad_left(bpbDropdown, LV_DROPDOWN_PART_MAIN, LV_STATE_DEFAULT, 20);
-  lv_obj_align(bpbDropdown, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 15, -10);
+  lv_obj_set_style_local_pad_left(bpbDropdown, LV_DROPDOWN_PART_LIST, LV_STATE_DEFAULT, 20);
+  lv_obj_align(bpbDropdown, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 15, -4);
   lv_dropdown_set_options(bpbDropdown, "1\n2\n3\n4\n5\n6\n7\n8\n9");
   lv_dropdown_set_selected(bpbDropdown, bpb - 1);
   bpbLegend = lv_label_create(bpbDropdown, nullptr);
@@ -79,14 +80,21 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   playPause = lv_btn_create(lv_scr_act(), nullptr);
   playPause->user_data = this;
   lv_obj_set_event_cb(playPause, eventHandler);
-  lv_obj_align(playPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -15, -16);
+  lv_obj_align(playPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -15, -10);
   lv_obj_set_height(playPause, 39);
   playPauseLabel = lv_label_create(playPause, nullptr);
   lv_label_set_text(playPauseLabel, Symbols::play);
+
+  app->SetTouchMode(DisplayApp::TouchModes::Polling);
 }
 
 Metronome::~Metronome() {
+  app->SetTouchMode(DisplayApp::TouchModes::Gestures);
   lv_obj_clean(lv_scr_act());
+}
+
+bool Metronome::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  return true;
 }
 
 bool Metronome::Refresh() {
