@@ -32,6 +32,7 @@
 #include "drivers/St7789.h"
 #include "drivers/Watchdog.h"
 #include "systemtask/SystemTask.h"
+#include "systemtask/Messages.h"
 
 #include "displayapp/screens/settings/QuickSettings.h"
 #include "displayapp/screens/settings/Settings.h"
@@ -51,7 +52,6 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,
                        Drivers::WatchdogView& watchdog,
-                       System::SystemTask& systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Controllers::Settings& settingsController,
@@ -65,7 +65,6 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     bleController {bleController},
     dateTimeController {dateTimeController},
     watchdog {watchdog},
-    systemTask {systemTask},
     notificationManager {notificationManager},
     heartRateController {heartRateController},
     settingsController {settingsController},
@@ -130,7 +129,7 @@ void DisplayApp::Refresh() {
           vTaskDelay(100);
         }
         lcd.DisplayOff();
-        systemTask.PushMessage(System::SystemTask::Messages::OnDisplayTaskSleeping);
+        PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
         state = States::Idle;
         break;
       case Messages::GoToRunning:
@@ -139,7 +138,7 @@ void DisplayApp::Refresh() {
         state = States::Running;
         break;
       case Messages::UpdateTimeOut:
-        systemTask.PushMessage(System::SystemTask::Messages::UpdateTimeOut);
+        PushMessageToSystemTask(System::Messages::UpdateTimeOut);
         break;
       case Messages::UpdateBleConnection:
         //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
@@ -176,7 +175,7 @@ void DisplayApp::Refresh() {
                 LoadApp(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
                 break;
               case TouchEvents::DoubleTap:
-                systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
+                PushMessageToSystemTask(System::Messages::GoToSleep);
                 break;
               default:
                 break;
@@ -188,7 +187,7 @@ void DisplayApp::Refresh() {
       } break;
       case Messages::ButtonPushed:
         if (currentApp == Apps::Clock) {
-          systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
+          PushMessageToSystemTask(System::Messages::GoToSleep);
         } else {
           if (!currentScreen->OnButtonPushed()) {
             LoadApp(returnToApp, returnDirection);
@@ -267,12 +266,12 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
 
     case Apps::Notifications:
       currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask.nimble().alertService(), Screens::Notifications::Modes::Normal);
+        this, notificationManager, systemTask->nimble().alertService(), Screens::Notifications::Modes::Normal);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::NotificationsPreview:
       currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask.nimble().alertService(), Screens::Notifications::Modes::Preview);
+        this, notificationManager, systemTask->nimble().alertService(), Screens::Notifications::Modes::Preview);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::Timer:
@@ -321,7 +320,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       //
 
     case Apps::FlashLight:
-      currentScreen = std::make_unique<Screens::FlashLight>(this, systemTask, brightnessController);
+      currentScreen = std::make_unique<Screens::FlashLight>(this, *systemTask, brightnessController);
       ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
       break;
     case Apps::StopWatch:
@@ -337,13 +336,13 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
       break;
     case Apps::Music:
-      currentScreen = std::make_unique<Screens::Music>(this, systemTask.nimble().music());
+      currentScreen = std::make_unique<Screens::Music>(this, systemTask->nimble().music());
       break;
     case Apps::Navigation:
-      currentScreen = std::make_unique<Screens::Navigation>(this, systemTask.nimble().navigation());
+      currentScreen = std::make_unique<Screens::Navigation>(this, systemTask->nimble().navigation());
       break;
     case Apps::HeartRate:
-      currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, systemTask);
+      currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, *systemTask);
       break;
     case Apps::Motion:
       currentScreen = std::make_unique<Screens::Motion>(this, motionController);
@@ -424,4 +423,13 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
 
 void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {
   touchMode = mode;
+}
+
+void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
+  if(systemTask != nullptr)
+    systemTask->PushMessage(message);
+}
+
+void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
+  this->systemTask = systemTask;
 }
