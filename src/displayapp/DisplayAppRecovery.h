@@ -39,7 +39,6 @@ namespace Pinetime {
                  Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
                  Drivers::WatchdogView& watchdog,
-                 System::SystemTask& systemTask,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Controllers::Settings& settingsController,
@@ -48,6 +47,7 @@ namespace Pinetime {
                  Pinetime::Controllers::TimerController& timerController);
       void Start();
       void PushMessage(Pinetime::Applications::Display::Messages msg);
+      void Register(Pinetime::System::SystemTask* systemTask);
 
     private:
       TaskHandle_t taskHandle;

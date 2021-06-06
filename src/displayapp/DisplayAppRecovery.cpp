@@ -14,7 +14,6 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,
                        Drivers::WatchdogView& watchdog,
-                       System::SystemTask& systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Controllers::Settings& settingsController,
@@ -113,4 +112,8 @@ void DisplayApp::PushMessage(Display::Messages msg) {
     /* Actual macro used here is port specific. */
     // TODO : should I do something here?
   }
+}
+
+void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
+
 }

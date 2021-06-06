@@ -33,7 +33,6 @@
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
 #include "components/datetime/DateTimeController.h"
-#include "components/settings/Settings.h"
 #include "components/heartrate/HeartRateController.h"
 #include "drivers/Spi.h"
 #include "drivers/SpiMaster.h"
