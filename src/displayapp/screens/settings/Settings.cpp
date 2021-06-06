@@ -5,6 +5,7 @@
 #include "displayapp/Apps.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
+#include "lv_i18n/lv_i18n.h" 
 
 using namespace Pinetime::Applications::Screens;
 
@@ -40,10 +41,10 @@ bool Settings::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 std::unique_ptr<Screen> Settings::CreateScreen1() {
 
   std::array<Screens::List::Applications, 4> applications {{
-    {Symbols::sun, "Display", Apps::SettingDisplay},
-    {Symbols::clock, "Wake Up", Apps::SettingWakeUp},
-    {Symbols::clock, "Time format", Apps::SettingTimeFormat},
-    {Symbols::clock, "Watch face", Apps::SettingWatchFace},
+    {Symbols::sun, _("settings_display"), Apps::SettingDisplay},
+    {Symbols::clock, _("settings_wakeup"), Apps::SettingWakeUp},
+    {Symbols::clock, _("settings_timeformat"), Apps::SettingTimeFormat},
+    {Symbols::clock, _("settings_watchface"), Apps::SettingWatchFace},
   }};
 
   return std::make_unique<Screens::List>(0, 2, app, settingsController, applications);
@@ -52,10 +53,10 @@ std::unique_ptr<Screen> Settings::CreateScreen1() {
 std::unique_ptr<Screen> Settings::CreateScreen2() {
 
   std::array<Screens::List::Applications, 4> applications {{
-    {Symbols::shoe, "Steps", Apps::SettingSteps},
-    {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
-    {Symbols::check, "Firmware", Apps::FirmwareValidation},
-    {Symbols::list, "About", Apps::SysInfo},
+    {Symbols::shoe, _("settings_steps"), Apps::SettingSteps},
+    {Symbols::batteryHalf, _("settings_battery"), Apps::BatteryInfo},
+    {Symbols::check, _("settings_firmware"), Apps::FirmwareValidation},
+    {Symbols::list, _("settings_about"), Apps::SysInfo},
   }};
 
   return std::make_unique<Screens::List>(1, 2, app, settingsController, applications);
