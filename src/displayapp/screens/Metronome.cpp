@@ -89,6 +89,7 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
 
 Metronome::~Metronome() {
   app->SetTouchMode(DisplayApp::TouchModes::Gestures);
+  systemTask.PushMessage(Pinetime::System::SystemTask::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }
 
