@@ -50,7 +50,6 @@ void TimerList::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
             //first button is "Set"
             timerController.selectPreset(i -1);
             app->StartApp(Apps::Timer, DisplayApp::FullRefreshDirections::LeftAnim);
-            running = false;
             return;
           }
         }
@@ -71,7 +70,6 @@ void TimerList::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
             Item newItem = {"", newTxt, nullptr};
             createButtonNr(i, newItem);
             app->StartApp(Apps::Timer, DisplayApp::FullRefreshDirections::LeftAnim);
-            running = false;
             return;
           }
         }
@@ -83,7 +81,6 @@ void TimerList::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
 bool TimerList::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   
   if (event == TouchEvents::SwipeLeft) {
-    running = false;
     app->StartApp(Apps::Timer, DisplayApp::FullRefreshDirections::LeftAnim);
   }
   return false;
