@@ -134,12 +134,12 @@ Calculator::Calculator(DisplayApp* app, Controllers::MotorController& motorContr
 }
 
 void Calculator::eval() {
-  std::stack<char> input(std::deque<char>(0, ' '));
+  std::stack<char> input {};
   for (int8_t i = position - 1; i >= 0; i--) {
     input.push(text[i]);
   }
-  std::stack<CalcTreeNode*> output(std::deque<CalcTreeNode*>(0, nullptr));
-  std::stack<char> operators(std::deque<char>(0, ' '));
+  std::stack<CalcTreeNode*> output {};
+  std::stack<char> operators {};
   bool expectingNumber = true;
   int8_t sign = +1;
   while (!input.empty()) {
@@ -276,7 +276,7 @@ void Calculator::eval() {
     output.push(node);
     
   }
-  
+  //perform the calculation
   errno = 0;
   double resultFloat = output.top()->calculate();
   if (errno != 0) {
