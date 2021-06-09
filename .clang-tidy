@@ -1,4 +1,5 @@
 Checks: '*,
+  -altera-unroll-loops,
   -llvmlibc-callee-namespace,
   -llvm-header-guard,
   -llvm-namespace-comment,
@@ -23,6 +24,7 @@ Checks: '*,
   -hicpp-avoid-c-arrays,
   -hicpp-uppercase-literal-suffix,
   -hicpp-no-array-decay,
+  -hicpp-vararg,
   -cert-err58-cpp,
   -cert-err60-cpp'
 CheckOptions:
