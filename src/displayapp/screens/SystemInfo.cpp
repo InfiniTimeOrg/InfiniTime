@@ -175,8 +175,9 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         "#444444 BLE MAC#\n"
                         " %02x:%02x:%02x:%02x:%02x:%02x"
                         "\n"
-                        "#444444 Memory#\n"
+                        "#444444 LVGL Memory#\n"
                         " #444444 used# %d (%d%%)\n"
+                        " #444444 max used# %d\n"
                         " #444444 frag# %d%%\n"
                         " #444444 free# %d"
                         "\n"
@@ -189,6 +190,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         bleAddr[0],
                         (int) mon.total_size - mon.free_size,
                         mon.used_pct,
+                        mon.max_used,
                         mon.frag_pct,
                         (int) mon.free_biggest_size,
                         0);

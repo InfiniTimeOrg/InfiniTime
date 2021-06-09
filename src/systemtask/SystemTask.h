@@ -16,6 +16,7 @@
 #include "components/ble/NimbleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
+#include "components/timer/TimerController.h"
 #ifdef PINETIME_IS_RECOVERY
   #include "displayapp/DisplayAppRecovery.h"
   #include "displayapp/DummyLittleVgl.h"
@@ -45,6 +46,7 @@ namespace Pinetime {
         TouchWakeUp,
         OnNewTime,
         OnNewNotification,
+        OnTimerDone,
         OnNewCall,
         BleConnected,
         UpdateTimeOut,
@@ -55,7 +57,8 @@ namespace Pinetime {
         OnDisplayTaskSleeping,
         EnableSleeping,
         DisableSleeping,
-        OnNewDay
+        OnNewDay,
+        OnChargingEvent
       };
 
       SystemTask(Drivers::SpiMaster& spi,
@@ -99,6 +102,7 @@ namespace Pinetime {
 
       Pinetime::Controllers::Ble& bleController;
       Pinetime::Controllers::DateTime dateTimeController;
+      Pinetime::Controllers::TimerController timerController;
       QueueHandle_t systemTasksMsgQueue;
       std::atomic<bool> isSleeping {false};
       std::atomic<bool> isGoingToSleep {false};
@@ -121,6 +125,7 @@ namespace Pinetime {
       static constexpr uint8_t pinLcdDataCommand = 18;
       static constexpr uint8_t pinButton = 13;
       static constexpr uint8_t pinTouchIrq = 28;
+      static constexpr uint8_t pinPowerPresentIrq = 19;
 
       static void Process(void* instance);
       void Work();
