@@ -415,6 +415,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Label.cpp
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
+        displayapp/screens/Weather.cpp
         displayapp/screens/Navigation.cpp
         displayapp/screens/Metronome.cpp
         displayapp/screens/Motion.cpp
@@ -479,6 +480,7 @@ list(APPEND SOURCE_FILES
         components/ble/CurrentTimeService.cpp
         components/ble/AlertNotificationService.cpp
         components/ble/MusicService.cpp
+        components/ble/weather/WeatherService.cpp
         components/ble/NavigationService.cpp
         displayapp/fonts/lv_font_navi_80.c
         components/ble/BatteryInformationService.cpp
@@ -653,6 +655,9 @@ set(INCLUDE_FILES
         components/datetime/DateTimeController.h
         components/brightness/BrightnessController.h
         components/motion/MotionController.h
+        components/firmwarevalidator/FirmwareValidator.h
+        components/ble/BleController.h
+        components/ble/NotificationManager.h
         components/ble/NimbleController.h
         components/ble/DeviceInformationService.h
         components/ble/CurrentTimeClient.h
@@ -665,6 +670,7 @@ set(INCLUDE_FILES
         components/ble/BleClient.h
         components/ble/HeartRateService.h
         components/ble/MotionService.h
+        components/ble/weather/WeatherService.h
         components/settings/Settings.h
         components/timer/TimerController.h
         components/alarm/AlarmController.h
