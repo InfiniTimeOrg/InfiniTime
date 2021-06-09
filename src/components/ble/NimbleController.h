@@ -20,6 +20,7 @@
 #include "components/ble/ServiceDiscovery.h"
 #include "components/ble/HeartRateService.h"
 #include "components/ble/MotionService.h"
+#include "components/ble/weather/WeatherService.h"
 
 namespace Pinetime {
   namespace Drivers {
@@ -93,6 +94,7 @@ namespace Pinetime {
       AlertNotificationClient alertNotificationClient;
       CurrentTimeService currentTimeService;
       MusicService musicService;
+      WeatherService weatherService;
       NavigationService navService;
       BatteryInformationService batteryInformationService;
       ImmediateAlertService immediateAlertService;
