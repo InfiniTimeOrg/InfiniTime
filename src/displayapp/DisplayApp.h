@@ -111,6 +111,9 @@ namespace Pinetime {
       void ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction, TouchEvents touchEvent);
       void LoadApp(Apps app, DisplayApp::FullRefreshDirections direction);
       void PushMessageToSystemTask(Pinetime::System::Messages message);
+
+      Apps nextApp = Apps::None;
+      DisplayApp::FullRefreshDirections nextDirection;
     };
   }
 }

@@ -205,6 +205,11 @@ void DisplayApp::Refresh() {
     }
   }
 
+  if(nextApp != Apps::None) {
+    LoadApp(nextApp, nextDirection);
+    nextApp = Apps::None;
+  }
+
   if (state != States::Idle && touchMode == TouchModes::Polling) {
     auto info = touchPanel.GetTouchInfo();
     if (info.action == 2) { // 2 = contact
@@ -223,7 +228,8 @@ void DisplayApp::RunningState() {
 }
 
 void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction) {
-  LoadApp(app, direction);
+  nextApp = app;
+  nextDirection = direction;
 }
 
 void DisplayApp::ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction, TouchEvents touchEvent) {
