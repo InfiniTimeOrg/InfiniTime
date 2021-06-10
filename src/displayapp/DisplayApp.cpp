@@ -45,6 +45,12 @@
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
 
+namespace {
+  static inline bool in_isr(void) {
+    return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
+  }
+}
+
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Components::LittleVgl& lvgl,
                        Drivers::Cst816S& touchPanel,
@@ -364,12 +370,15 @@ void DisplayApp::IdleState() {
 }
 
 void DisplayApp::PushMessage(Messages msg) {
-  BaseType_t xHigherPriorityTaskWoken;
-  xHigherPriorityTaskWoken = pdFALSE;
-  xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
-  if (xHigherPriorityTaskWoken) {
-    /* Actual macro used here is port specific. */
-    // TODO : should I do something here?
+  if(in_isr()) {
+    BaseType_t xHigherPriorityTaskWoken;
+    xHigherPriorityTaskWoken = pdFALSE;
+    xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
+    if (xHigherPriorityTaskWoken) {
+      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+  } else {
+    xQueueSend(msgQueue, &msg, portMAX_DELAY);
   }
 }
 

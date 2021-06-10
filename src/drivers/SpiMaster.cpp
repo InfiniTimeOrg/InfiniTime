@@ -132,17 +132,17 @@ void SpiMaster::OnEndEvent() {
 
     spiBaseAddress->TASKS_START = 1;
   } else {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     if (taskToNotify != nullptr) {
-      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
       vTaskNotifyGiveFromISR(taskToNotify, &xHigherPriorityTaskWoken);
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 
     nrf_gpio_pin_set(this->pinCsn);
     currentBufferAddr = 0;
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken);
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    BaseType_t xHigherPriorityTaskWoken2 = pdFALSE;
+    xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken2);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken | xHigherPriorityTaskWoken2);
   }
 }
 

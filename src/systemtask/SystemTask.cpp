@@ -27,6 +27,12 @@
 
 using namespace Pinetime::System;
 
+namespace {
+  static inline bool in_isr(void) {
+    return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
+  }
+}
+
 void IdleTimerCallback(TimerHandle_t xTimer) {
 
   NRF_LOG_INFO("IdleTimerCallback");
@@ -392,12 +398,18 @@ void SystemTask::PushMessage(System::Messages msg) {
   if (msg == Messages::GoToSleep) {
     isGoingToSleep = true;
   }
-  BaseType_t xHigherPriorityTaskWoken;
-  xHigherPriorityTaskWoken = pdFALSE;
-  xQueueSendFromISR(systemTasksMsgQueue, &msg, &xHigherPriorityTaskWoken);
-  if (xHigherPriorityTaskWoken) {
-    /* Actual macro used here is port specific. */
-    // TODO: should I do something here?
+
+  if(in_isr()) {
+    BaseType_t xHigherPriorityTaskWoken;
+    xHigherPriorityTaskWoken = pdFALSE;
+    xQueueSendFromISR(systemTasksMsgQueue, &msg, &xHigherPriorityTaskWoken);
+    if (xHigherPriorityTaskWoken) {
+      /* Actual macro used here is port specific. */
+      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+
+    }
+  } else {
+    xQueueSend(systemTasksMsgQueue, &msg, portMAX_DELAY);
   }
 }
 
