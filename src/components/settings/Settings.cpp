@@ -1,6 +1,5 @@
 #include "Settings.h"
 #include <cstdlib>
-#include <cstring>
 
 using namespace Pinetime::Controllers;
 
@@ -109,3 +108,4 @@ void Settings::SaveSettingsToFlash() {
   SetHeader(true);
   SaveSettingsData();
 }
+

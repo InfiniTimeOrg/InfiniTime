@@ -1,9 +1,11 @@
 #pragma once
 #include <cstdint>
+#include <cstring>
 #include "components/datetime/DateTimeController.h"
 #include "components/brightness/BrightnessController.h"
 #include "drivers/SpiNorFlash.h"
 #include "drivers/Cst816s.h"
+#include "lv_i18n/lv_i18n.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -94,6 +96,17 @@ namespace Pinetime {
       
       uint32_t GetStepsGoal() const { return settings.stepsGoal; };
 
+      void SetLocale(const char locale[]) {
+        if (locale != settings.locale) {
+	  settingsChanged = true;
+	  lv_i18n_set_locale(locale);
+	}
+	strncpy(settings.locale, locale, 9);
+      }
+      const char* GetLocale() const {
+        return settings.locale;
+      }
+
     private:
       Pinetime::Drivers::SpiNorFlash& spiNorFlash;
       struct SettingsData {
@@ -109,6 +122,8 @@ namespace Pinetime {
         WakeUpMode wakeUpMode = WakeUpMode::None;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+	char locale[9];
       };
 
       SettingsData settings;
@@ -122,7 +137,7 @@ namespace Pinetime {
       uint8_t settingsFlashBlock = 99; // default to indicate it needs to find the active block
 
       static constexpr uint32_t settingsBaseAddr = 0x3F6000; // Flash Settings Location
-      static constexpr uint16_t settingsVersion = 0x0100;    // Flash Settings Version
+      static constexpr uint16_t settingsVersion = 0x0200;    // Flash Settings Version
 
       bool FindHeader();
       void ReadSettingsData();

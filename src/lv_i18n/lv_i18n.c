@@ -26,6 +26,7 @@ static lv_i18n_phrase_t en_gb_singulars[] = {
     {"settings_battery", "Battery"},
     {"settings_firmware", "Firmware"},
     {"settings_about", "About"},
+    {"settings_language", "Language"},
     {NULL, NULL} // End mark
 };
 

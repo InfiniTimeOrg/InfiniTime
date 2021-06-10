@@ -56,7 +56,8 @@ std::unique_ptr<Screen> Settings::CreateScreen2() {
     {Symbols::shoe, _("settings_steps"), Apps::SettingSteps},
     {Symbols::batteryHalf, _("settings_battery"), Apps::BatteryInfo},
     {Symbols::check, _("settings_firmware"), Apps::FirmwareValidation},
-    {Symbols::list, _("settings_about"), Apps::SysInfo},
+    {Symbols::list, _("settings_language"), Apps::SettingLanguage},
+    //{Symbols::list, _("settings_about"), Apps::SysInfo},
   }};
 
   return std::make_unique<Screens::List>(1, 2, app, settingsController, applications);
