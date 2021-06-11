@@ -162,7 +162,8 @@ void DisplayApp::Refresh() {
       case Messages::TouchEvent: {
         if (state != States::Running)
           break;
-        auto gesture = OnTouchEvent();
+        auto info = touchPanel.GetTouchInfo();
+        auto gesture = OnTouchEvent(info);
         if (!currentScreen->OnTouchEvent(gesture)) {
           if (currentApp == Apps::Clock) {
             switch (gesture) {
@@ -183,6 +184,8 @@ void DisplayApp::Refresh() {
             }
           } else if (returnTouchEvent == gesture) {
             LoadApp(returnToApp, returnDirection);
+          } else if (touchMode == TouchModes::Gestures) {
+            lvgl.SetNewTapEvent(info.x, info.y);
           }
         }
       } break;
@@ -368,14 +371,10 @@ void DisplayApp::PushMessage(Messages msg) {
   }
 }
 
-TouchEvents DisplayApp::OnTouchEvent() {
-  auto info = touchPanel.GetTouchInfo();
+TouchEvents DisplayApp::OnTouchEvent(Pinetime::Drivers::Cst816S::TouchInfos info) {
   if (info.isTouch) {
     switch (info.gesture) {
       case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        if (touchMode == TouchModes::Gestures) {
-          lvgl.SetNewTapEvent(info.x, info.y);
-        }
         return TouchEvents::Tap;
       case Pinetime::Drivers::Cst816S::Gestures::LongPress:
         return TouchEvents::LongTap;

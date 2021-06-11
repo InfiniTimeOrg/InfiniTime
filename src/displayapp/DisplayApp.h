@@ -100,7 +100,7 @@ namespace Pinetime {
 
       TouchModes touchMode = TouchModes::Gestures;
 
-      TouchEvents OnTouchEvent();
+      TouchEvents OnTouchEvent(Pinetime::Drivers::Cst816S::TouchInfos);
       void RunningState();
       void IdleState();
       static void Process(void* instance);
