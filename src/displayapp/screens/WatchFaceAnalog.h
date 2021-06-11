@@ -49,6 +49,7 @@ namespace Pinetime {
         uint8_t currentDay = 0;
 
         DirtyValue<float> batteryPercentRemaining {0};
+        DirtyValue<bool> bleState {};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
         DirtyValue<bool> notificationState {false};
 
@@ -74,6 +75,8 @@ namespace Pinetime {
 
         lv_obj_t* label_date_day;
         lv_obj_t* batteryIcon;
+        lv_obj_t* batteryPlug;
+        lv_obj_t* bleIcon;
         lv_obj_t* notificationIcon;
 
         Controllers::DateTime& dateTimeController;

@@ -53,6 +53,14 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_label_set_text(batteryIcon, Symbols::batteryHalf);
   lv_obj_align(batteryIcon, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -8, -4);
 
+  batteryPlug = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text(batteryPlug, Symbols::plug);
+  lv_obj_align(batteryPlug, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 8, 4);
+
+  bleIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text(bleIcon, Symbols::bluetooth);
+  lv_obj_align(bleIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -8, 4);
+
   notificationIcon = lv_label_create(lv_scr_act(), NULL);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
@@ -170,6 +178,19 @@ bool WatchFaceAnalog::Refresh() {
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
     lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+    auto isCharging = batteryController.IsCharging() || batteryController.IsPowerPresent();
+    lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
+    lv_obj_realign(batteryPlug);
+  }
+
+  bleState = bleController.IsConnected();
+  if (bleState.IsUpdated()) {
+    if (bleState.Get() == true) {
+      lv_label_set_text(bleIcon, BleIcon::GetIcon(true));
+      lv_obj_realign(bleIcon);
+    } else {
+      lv_label_set_text(bleIcon, BleIcon::GetIcon(false));
+    }
   }
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
