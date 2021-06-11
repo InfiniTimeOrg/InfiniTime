@@ -1,5 +1,6 @@
 #include "Settings.h"
 #include <cstdlib>
+#include <cstring>
 
 using namespace Pinetime::Controllers;
 
@@ -11,6 +12,7 @@ struct SettingsHeader {
 #define HEADER_SIZE sizeof(SettingsHeader)
 
 Settings::Settings(Pinetime::Drivers::SpiNorFlash& spiNorFlash) : spiNorFlash {spiNorFlash} {
+  strncpy(settings.locale, "en-GB", 9);
 }
 
 void Settings::Init() {

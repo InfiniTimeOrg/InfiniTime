@@ -52,8 +52,6 @@ Pinetime::Logging::DummyLogger logger;
 
 #include <memory>
 
-#include "lv_i18n/lv_i18n.h" 
-
 static constexpr uint8_t pinSpiSck = 2;
 static constexpr uint8_t pinSpiMosi = 3;
 static constexpr uint8_t pinSpiMiso = 4;
@@ -304,8 +302,6 @@ void nimble_port_ll_task_func(void* args) {
 
 int main(void) {
   logger.Init();
-  lv_i18n_init(lv_i18n_language_pack);
-  lv_i18n_set_locale("en-GB");
 
   nrf_drv_clock_init();
 

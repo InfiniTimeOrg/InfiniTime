@@ -47,9 +47,11 @@ SettingLanguage::SettingLanguage(Pinetime::Applications::DisplayApp* app, Pineti
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
   const char* current_locale = lv_i18n_get_current_locale();
-  int ix = 0;
-  while (lv_i18n_language_pack[ix] != nullptr) {
-    lv_i18n_language_pack_t lp = lv_i18n_language_pack[ix];
+  for (int i=0; i<maxOpts; i++) {
+    lv_i18n_language_pack_t lp = lv_i18n_language_pack[i];
+    if (lp == nullptr) {
+      break;
+    }
     lv_obj_t* cb = lv_checkbox_create(container1, nullptr);
     cb->user_data = this;
     lv_obj_set_event_cb(cb, event_handler);
@@ -57,7 +59,7 @@ SettingLanguage::SettingLanguage(Pinetime::Applications::DisplayApp* app, Pineti
     lv_checkbox_set_text_static(cb, locale);
     bool checked = strcmp(locale, current_locale) == 0;
     lv_checkbox_set_checked(cb, checked);
-    ix++;
+    cbOption[i] = cb;
   }
 }
 
@@ -74,29 +76,15 @@ void SettingLanguage::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
     const char* selected_locale = lv_checkbox_get_text(object);
     settingsController.SetLocale(selected_locale);
-    /*
-    lv_i18n_set_locale(selected_locale);
-    for (int i = 0; i < optionsTotal; i++) {
-      if (object == cbOption[i]) {
-        lv_checkbox_set_checked(cbOption[i], true);
-
-        if (i == 0) {
-          settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::None);
-        };
-        if (i == 1) {
-          settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::SingleTap);
-        };
-        if (i == 2) {
-          settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap);
-        };
-        if (i == 3) {
-          settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist);
-        };
-
-      } else {
-        lv_checkbox_set_checked(cbOption[i], false);
+    for (int i=0; i<maxOpts; i++) {
+      lv_i18n_language_pack_t lp = lv_i18n_language_pack[i];
+      if (lp == nullptr) {
+        break;
       }
+      lv_obj_t* cb = cbOption[i];
+      const char* locale = lv_checkbox_get_text(cb);
+      bool checked = strcmp(locale, selected_locale) == 0;
+      lv_checkbox_set_checked(cb, checked);
     }
-    */
   }
 }

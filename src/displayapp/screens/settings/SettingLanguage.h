@@ -21,6 +21,8 @@ namespace Pinetime {
 
       private:
         Controllers::Settings& settingsController;
+	static const int maxOpts = 4;
+	lv_obj_t* cbOption[maxOpts];
       };
     }
   }

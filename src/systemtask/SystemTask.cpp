@@ -25,6 +25,8 @@
 
 #include <memory>
 
+#include "lv_i18n/lv_i18n.h" 
+
 using namespace Pinetime::System;
 
 namespace {
@@ -128,6 +130,9 @@ void SystemTask::Work() {
   motionSensor.Init();
   motionController.Init(motionSensor.DeviceType());
   settingsController.Init();
+
+  lv_i18n_init(lv_i18n_language_pack);
+  lv_i18n_set_locale(settingsController.GetLocale());
 
   displayApp.Register(this);
   displayApp.Start();
