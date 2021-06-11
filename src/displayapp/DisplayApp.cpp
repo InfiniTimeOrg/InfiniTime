@@ -185,7 +185,9 @@ void DisplayApp::Refresh() {
           } else if (returnTouchEvent == gesture) {
             LoadApp(returnToApp, returnDirection);
           } else if (touchMode == TouchModes::Gestures) {
-            lvgl.SetNewTapEvent(info.x, info.y);
+            if (gesture == TouchEvents::Tap) {
+              lvgl.SetNewTapEvent(info.x, info.y);
+            }
           }
         }
       } break;
