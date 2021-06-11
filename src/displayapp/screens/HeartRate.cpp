@@ -1,6 +1,7 @@
 #include <libs/lvgl/lvgl.h>
 #include "HeartRate.h"
 #include <components/heartrate/HeartRateController.h>
+#include "lv_i18n/lv_i18n.h"
 
 #include "../DisplayApp.h"
 
@@ -10,13 +11,13 @@ namespace {
   const char* ToString(Pinetime::Controllers::HeartRateController::States s) {
     switch (s) {
       case Pinetime::Controllers::HeartRateController::States::NotEnoughData:
-        return "Not enough data,\nplease wait...";
+        return _("heartrate_notenoughdata") ;
       case Pinetime::Controllers::HeartRateController::States::NoTouch:
-        return "No touch detected";
+        return _("heartrate_notouchdetected");
       case Pinetime::Controllers::HeartRateController::States::Running:
-        return "Measuring...";
+        return _("heartrate_measuring");
       case Pinetime::Controllers::HeartRateController::States::Stopped:
-        return "Stopped";
+        return _("heartrate_stopped");
     }
     return "";
   }
@@ -45,7 +46,7 @@ HeartRate::HeartRate(Pinetime::Applications::DisplayApp* app,
   lv_obj_align(label_hr, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   label_bpm = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(label_bpm, "Heart rate BPM");
+  lv_label_set_text(label_bpm, _("heartrate_bpm_title"));
   lv_obj_align(label_bpm, label_hr, LV_ALIGN_OUT_TOP_MID, 0, -20);
 
   label_status = lv_label_create(lv_scr_act(), nullptr);
@@ -108,7 +109,7 @@ void HeartRate::OnStartStopEvent(lv_event_t event) {
 
 void HeartRate::UpdateStartStopButton(bool isRunning) {
   if (isRunning)
-    lv_label_set_text(label_startStop, "Stop");
+    lv_label_set_text(label_startStop, _("heartrate_stop"));
   else
-    lv_label_set_text(label_startStop, "Start");
+    lv_label_set_text(label_startStop, _("heartrate_start"));
 }

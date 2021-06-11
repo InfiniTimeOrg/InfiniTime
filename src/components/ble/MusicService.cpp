@@ -17,6 +17,7 @@
 */
 #include "MusicService.h"
 #include "systemtask/SystemTask.h"
+#include "lv_i18n/lv_i18n.h"
 
 int MusicCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   return static_cast<Pinetime::Controllers::MusicService*>(arg)->OnCommand(conn_handle, attr_handle, ctxt);
@@ -82,9 +83,9 @@ Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask& 
     .type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = reinterpret_cast<ble_uuid_t*>(&msUuid), .characteristics = characteristicDefinition};
   serviceDefinition[1] = {0};
 
-  artistName = "Waiting for";
+  artistName = _("music_artist_placeholder");
   albumName = "";
-  trackName = "track information..";
+  trackName = _("music_track_placeholder");
   playing = false;
   repeat = false;
   shuffle = false;

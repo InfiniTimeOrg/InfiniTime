@@ -19,6 +19,7 @@
 #include <cstdint>
 #include "../DisplayApp.h"
 #include "components/ble/NavigationService.h"
+#include "lv_i18n/lv_i18n.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -140,7 +141,7 @@ Navigation::Navigation(Pinetime::Applications::DisplayApp* app, Pinetime::Contro
   txtNarrative = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtNarrative, LV_LABEL_LONG_BREAK);
   lv_obj_set_width(txtNarrative, LV_HOR_RES);
-  lv_label_set_text(txtNarrative, "Navigation");
+  lv_label_set_text(txtNarrative, _("navigation_title"));
   lv_label_set_align(txtNarrative, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(txtNarrative, nullptr, LV_ALIGN_CENTER, 0, 10);
 

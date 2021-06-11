@@ -14,12 +14,17 @@ Settings::Settings(Pinetime::Applications::DisplayApp* app, Pinetime::Controller
     settingsController {settingsController},
     screens {app,
              settingsController.GetSettingsMenu(),
-             {[this]() -> std::unique_ptr<Screen> {
+             {
+              [this]() -> std::unique_ptr<Screen> {
                 return CreateScreen1();
               },
               [this]() -> std::unique_ptr<Screen> {
                 return CreateScreen2();
-              }},
+              },
+	      [this]() -> std::unique_ptr<Screen> {
+                return CreateScreen3();
+	      },
+	     },
              Screens::ScreenListModes::UpDown} {
 }
 
@@ -56,9 +61,20 @@ std::unique_ptr<Screen> Settings::CreateScreen2() {
     {Symbols::shoe, _("settings_steps"), Apps::SettingSteps},
     {Symbols::batteryHalf, _("settings_battery"), Apps::BatteryInfo},
     {Symbols::check, _("settings_firmware"), Apps::FirmwareValidation},
-    {Symbols::list, _("settings_language"), Apps::SettingLanguage},
-    //{Symbols::list, _("settings_about"), Apps::SysInfo},
+    {Symbols::list, _("settings_about"), Apps::SysInfo},
   }};
 
   return std::make_unique<Screens::List>(1, 2, app, settingsController, applications);
+}
+
+std::unique_ptr<Screen> Settings::CreateScreen3() {
+
+  std::array<Screens::List::Applications, 4> applications {{
+    {Symbols::list, _("settings_language"), Apps::SettingLanguage},
+    {"", "", Apps::None},
+    {"", "", Apps::None},
+    {"", "", Apps::None},
+  }};
+
+  return std::unique_ptr<Screen>(new Screens::List(2, 2, app, settingsController, applications));
 }

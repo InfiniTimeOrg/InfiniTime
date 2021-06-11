@@ -5,6 +5,7 @@
 #include <array>
 #include <vector>
 #include <utility>
+#include "lv_i18n/lv_i18n.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -84,7 +85,7 @@ Twos::Twos(Pinetime::Applications::DisplayApp* app) : Screen(app) {
   lv_label_set_align(scoreText, LV_ALIGN_IN_LEFT_MID);
   lv_obj_align(scoreText, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 10);
   lv_label_set_recolor(scoreText, true);
-  lv_label_set_text_fmt(scoreText, "Score #FFFF00 %i#", score);
+  lv_label_set_text_fmt(scoreText, _("twos_score"), score);
 
   lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
@@ -140,7 +141,7 @@ bool Twos::tryMerge(Tile grid[][4], int& newRow, int& newCol, int oldRow, int ol
         unsigned int newVal = grid[oldRow][oldCol].value *= 2;
         grid[newRow][newCol].value = newVal;
         score += newVal;
-        lv_label_set_text_fmt(scoreText, "Score #FFFF00 %i#", score);
+        lv_label_set_text_fmt(scoreText, _("twos_score"), score);
         grid[oldRow][oldCol].value = 0;
         grid[newRow][newCol].merged = true;
         return true;

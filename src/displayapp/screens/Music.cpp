@@ -23,6 +23,7 @@
 #include "displayapp/icons/music/disc.cpp"
 #include "displayapp/icons/music/disc_f_1.cpp"
 #include "displayapp/icons/music/disc_f_2.cpp"
+#include "lv_i18n/lv_i18n.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -123,7 +124,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_obj_align(txtArtist, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 1 * FONT_HEIGHT);
   lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtArtist, LV_HOR_RES - 12);
-  lv_label_set_text(txtArtist, "Artist Name");
+  lv_label_set_text(txtArtist, _("music_artist_name"));
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
@@ -132,7 +133,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
 
   lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtTrack, LV_HOR_RES - 12);
-  lv_label_set_text(txtTrack, "This is a very long getTrack name");
+  lv_label_set_text(txtTrack, _("music_track_name"));
 
   /** Init animation */
   imgDisc = lv_img_create(lv_scr_act(), nullptr);

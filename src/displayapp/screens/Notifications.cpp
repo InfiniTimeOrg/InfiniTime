@@ -3,6 +3,7 @@
 #include "components/ble/MusicService.h"
 #include "components/ble/AlertNotificationService.h"
 #include "Symbols.h"
+#include "lv_i18n/lv_i18n.h"
 
 using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
@@ -26,8 +27,8 @@ Notifications::Notifications(DisplayApp* app,
                                                      alertNotificationService);
     validDisplay = true;
   } else {
-    currentItem = std::make_unique<NotificationItem>("Notification",
-                                                     "No notification to display",
+    currentItem = std::make_unique<NotificationItem>(_("notification_title"),
+                                                     _("notification_empty"),
                                                      0,
                                                      notification.category,
                                                      notificationManager.NbNotifications(),
@@ -175,7 +176,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_t* alert_type = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x888888));
   if (title == nullptr)
-    title = "Notification";
+    title = _("notification_title");
   char* pchar;
   pchar = strchr(title, '\n');
   while (pchar != nullptr) {
@@ -202,7 +203,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
       lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
       lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
-      lv_label_set_text(alert_subject, "Incoming call from");
+      lv_label_set_text(alert_subject, _("notification_incoming_call"));
 
       lv_obj_t* alert_caller = lv_label_create(container1, nullptr);
       lv_obj_align(alert_caller, alert_subject, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
