@@ -70,5 +70,5 @@ bool FlashLight::Refresh() {
 }
 
 bool FlashLight::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  return true;
+  return false;
 }
