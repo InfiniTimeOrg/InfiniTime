@@ -81,10 +81,11 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     motionController{motionController},
     displayApp{displayApp},
     heartRateApp(heartRateApp) {
-  systemTasksMsgQueue = xQueueCreate(10, 1);
+
 }
 
 void SystemTask::Start() {
+  systemTasksMsgQueue = xQueueCreate(10, 1);
   if (pdPASS != xTaskCreate(SystemTask::Process, "MAIN", 350, this, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }

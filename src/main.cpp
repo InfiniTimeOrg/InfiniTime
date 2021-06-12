@@ -306,6 +306,8 @@ int main(void) {
   debounceTimer = xTimerCreate("debounceTimer", 200, pdFALSE, (void*) 0, DebounceTimerCallback);
   debounceChargeTimer = xTimerCreate("debounceTimerCharge", 200, pdFALSE, (void*) 0, DebounceTimerChargeCallback);
 
+  lvgl.Init();
+
   systemTask.Start();
   nimble_port_init();
 

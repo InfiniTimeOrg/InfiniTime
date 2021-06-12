@@ -77,12 +77,14 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     motorController {motorController},
     motionController {motionController},
     timerController {timerController} {
-  msgQueue = xQueueCreate(queueSize, itemSize);
-  // Start clock when smartwatch boots
-  LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::None);
 }
 
 void DisplayApp::Start() {
+  msgQueue = xQueueCreate(queueSize, itemSize);
+
+  // Start clock when smartwatch boots
+  LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+
   if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 800, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }

@@ -9,10 +9,12 @@ using namespace Pinetime::Drivers;
 // TODO use DMA/IRQ
 
 TwiMaster::TwiMaster(const Modules module, const Parameters& params) : module {module}, params {params} {
-  mutex = xSemaphoreCreateBinary();
 }
 
 void TwiMaster::Init() {
+  if(mutex == nullptr)
+    mutex = xSemaphoreCreateBinary();
+  
   NRF_GPIO->PIN_CNF[params.pinScl] =
     ((uint32_t) GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) | ((uint32_t) GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
     ((uint32_t) GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos) | ((uint32_t) GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos) |

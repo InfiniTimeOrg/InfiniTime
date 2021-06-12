@@ -21,10 +21,11 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::TimerController& timerController)
   : lcd {lcd}, bleController {bleController} {
-  msgQueue = xQueueCreate(queueSize, itemSize);
+
 }
 
 void DisplayApp::Start() {
+  msgQueue = xQueueCreate(queueSize, itemSize);
   if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 512, this, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }
