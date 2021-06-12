@@ -69,23 +69,23 @@ namespace Pinetime {
       struct ble_gatt_chr_def characteristicDefinition[14];
       struct ble_gatt_svc_def serviceDefinition[2];
 
-      uint16_t eventHandle;
+      uint16_t eventHandle {};
 
-      std::string artistName;
-      std::string albumName;
-      std::string trackName;
+      std::string artistName {"Waiting for"};
+      std::string albumName {};
+      std::string trackName {"track information.."};
 
-      bool playing;
+      bool playing {false};
 
-      int trackProgress;
-      int trackLength;
-      int trackNumber;
-      int tracksTotal;
+      int trackProgress {0};
+      int trackLength {0};
+      int trackNumber {};
+      int tracksTotal {};
 
-      float playbackSpeed;
+      float playbackSpeed {1.0f};
 
-      bool repeat;
-      bool shuffle;
+      bool repeat {false};
+      bool shuffle {false};
 
       Pinetime::System::SystemTask& m_system;
     };
