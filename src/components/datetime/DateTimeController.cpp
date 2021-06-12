@@ -5,9 +5,6 @@
 
 using namespace Pinetime::Controllers;
 
-DateTime::DateTime(System::SystemTask& systemTask) : systemTask {systemTask} {
-}
-
 void DateTime::SetTime(
   uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfWeek, uint8_t hour, uint8_t minute, uint8_t second, uint32_t systickCounter) {
   std::tm tm = {
@@ -70,7 +67,8 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   // Notify new day to SystemTask
   if (hour == 0 and not isMidnightAlreadyNotified) {
     isMidnightAlreadyNotified = true;
-    systemTask.PushMessage(System::SystemTask::Messages::OnNewDay);
+    if(systemTask != nullptr)
+      systemTask->PushMessage(System::Messages::OnNewDay);
   } else if (hour != 0) {
     isMidnightAlreadyNotified = false;
   }
@@ -102,6 +100,10 @@ const char* DateTime::DayOfWeekToStringLow() {
 
 const char* DateTime::DayOfWeekShortToStringLow() {
   return DateTime::DaysStringShortLow[(uint8_t) dayOfWeek];
+}
+
+void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
+  this->systemTask = systemTask;
 }
 
 char const* DateTime::DaysStringLow[] = {"--", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};

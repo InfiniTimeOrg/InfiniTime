@@ -27,8 +27,6 @@ namespace Pinetime {
         December
       };
 
-      DateTime(System::SystemTask& systemTask);
-
       void SetTime(uint16_t year,
                    uint8_t month,
                    uint8_t day,
@@ -75,8 +73,9 @@ namespace Pinetime {
         return uptime;
       }
 
+      void Register(System::SystemTask* systemTask);
+
     private:
-      System::SystemTask& systemTask;
       uint16_t year = 0;
       Months month = Months::Unknown;
       uint8_t day = 0;
@@ -90,6 +89,7 @@ namespace Pinetime {
       std::chrono::seconds uptime {0};
 
       bool isMidnightAlreadyNotified = false;
+      System::SystemTask* systemTask = nullptr;
 
       static char const* DaysString[];
       static char const* DaysStringShort[];

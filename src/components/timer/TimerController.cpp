@@ -12,14 +12,17 @@ using namespace Pinetime::Controllers;
 
 APP_TIMER_DEF(timerAppTimer);
 
-
-TimerController::TimerController(System::SystemTask& systemTask) : systemTask{systemTask} {
+namespace {
+  void TimerEnd(void* p_context) {
+    auto* controller = static_cast<Pinetime::Controllers::TimerController*> (p_context);
+    if(controller != nullptr)
+      controller->OnTimerEnd();
+  }
 }
 
 
 void TimerController::Init() {
-  app_timer_create(&timerAppTimer, APP_TIMER_MODE_SINGLE_SHOT, timerEnd);
-  
+  app_timer_create(&timerAppTimer, APP_TIMER_MODE_SINGLE_SHOT, TimerEnd);
 }
 
 void TimerController::StartTimer(uint32_t duration) {
@@ -47,13 +50,6 @@ uint32_t TimerController::GetTimeRemaining() {
   return (static_cast<TickType_t>(deltaTicks) / static_cast<TickType_t>(configTICK_RATE_HZ)) * 1000;
 }
 
-void TimerController::timerEnd(void* p_context) {
-  
-  auto* controller = static_cast<Controllers::TimerController*> (p_context);
-  controller->timerRunning = false;
-  controller->systemTask.PushMessage(System::SystemTask::Messages::OnTimerDone);
-}
-
 void TimerController::StopTimer() {
   app_timer_stop(timerAppTimer);
   timerRunning = false;
@@ -61,4 +57,13 @@ void TimerController::StopTimer() {
 
 bool TimerController::IsRunning() {
   return timerRunning;
+}
+void TimerController::OnTimerEnd() {
+  timerRunning = false;
+  if(systemTask != nullptr)
+    systemTask->PushMessage(System::Messages::OnTimerDone);
+}
+
+void TimerController::Register(Pinetime::System::SystemTask* systemTask) {
+  this->systemTask = systemTask;
 }

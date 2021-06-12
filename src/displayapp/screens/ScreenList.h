@@ -15,11 +15,16 @@ namespace Pinetime {
       public:
         ScreenList(DisplayApp* app,
                    uint8_t initScreen,
-                   std::array<std::function<std::unique_ptr<Screen>()>, N>&& screens,
+                   const std::array<std::function<std::unique_ptr<Screen>()>, N>&& screens,
                    ScreenListModes mode)
-          : Screen(app), initScreen {initScreen}, screens {std::move(screens)}, mode {mode}, current {this->screens[initScreen]()} {
-          screenIndex = initScreen;
+          : Screen(app), initScreen {initScreen}, screens {std::move(screens)}, mode {mode}, screenIndex{initScreen}, current {this->screens[initScreen]()} {
+
         }
+
+        ScreenList(const ScreenList&) = delete;
+        ScreenList& operator=(const ScreenList&) = delete;
+        ScreenList(ScreenList&&) = delete;
+        ScreenList& operator=(ScreenList&&) = delete;
 
         ~ScreenList() override {
           lv_obj_clean(lv_scr_act());
@@ -97,7 +102,7 @@ namespace Pinetime {
 
       private:
         uint8_t initScreen = 0;
-        std::array<std::function<std::unique_ptr<Screen>()>, N> screens;
+        const std::array<std::function<std::unique_ptr<Screen>()>, N> screens;
         ScreenListModes mode = ScreenListModes::UpDown;
 
         uint8_t screenIndex = 0;
