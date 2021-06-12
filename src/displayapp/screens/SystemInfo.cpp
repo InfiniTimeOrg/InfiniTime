@@ -81,7 +81,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
                         __TIME__);
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::unique_ptr<Screen>(new Screens::Label(0, 5, app, label));
+  return std::make_unique<Screens::Label>(0, 5, app, label);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
@@ -161,7 +161,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         brightnessController.ToString(),
                         resetReason);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::unique_ptr<Screen>(new Screens::Label(1, 5, app, label));
+  return std::make_unique<Screens::Label>(1, 5, app, label);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
@@ -175,8 +175,9 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         "#444444 BLE MAC#\n"
                         " %02x:%02x:%02x:%02x:%02x:%02x"
                         "\n"
-                        "#444444 Memory#\n"
+                        "#444444 LVGL Memory#\n"
                         " #444444 used# %d (%d%%)\n"
+                        " #444444 max used# %d\n"
                         " #444444 frag# %d%%\n"
                         " #444444 free# %d"
                         "\n"
@@ -189,11 +190,12 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         bleAddr[0],
                         (int) mon.total_size - mon.free_size,
                         mon.used_pct,
+                        mon.max_used,
                         mon.frag_pct,
                         (int) mon.free_biggest_size,
                         0);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::unique_ptr<Screen>(new Screens::Label(2, 5, app, label));
+  return std::make_unique<Screens::Label>(2, 5, app, label);
 }
 
 bool sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
@@ -227,7 +229,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
       lv_table_set_cell_value(infoTask, i + 1, 2, std::to_string(tasksStatus[i].usStackHighWaterMark).c_str());
     }
   }
-  return std::unique_ptr<Screen>(new Screens::Label(3, 5, app, infoTask));
+  return std::make_unique<Screens::Label>(3, 5, app, infoTask);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
@@ -243,5 +245,5 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
                            "#FFFF00 JF002/InfiniTime#");
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::unique_ptr<Screen>(new Screens::Label(4, 5, app, label));
+  return std::make_unique<Screens::Label>(4, 5, app, label);
 }

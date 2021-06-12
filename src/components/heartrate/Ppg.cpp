@@ -38,9 +38,8 @@ namespace {
   }
 }
 
-Ppg::Ppg(float spl)
-  : offset {spl},
-    hpf {0.87033078, -1.74066156, 0.87033078, -1.72377617, 0.75754694},
+Ppg::Ppg()
+  : hpf {0.87033078, -1.74066156, 0.87033078, -1.72377617, 0.75754694},
     agc {20, 0.971, 2},
     lpf {0.11595249, 0.23190498, 0.11595249, -0.72168143, 0.18549138} {
 }
@@ -67,13 +66,7 @@ float Ppg::HeartRate() {
   dataIndex = 0;
   return hr;
 }
-
-int cccount = 0;
 float Ppg::ProcessHeartRate() {
-
-  if (cccount > 2)
-    asm("nop");
-  cccount++;
   auto t0 = Trough(data.data(), dataIndex, 7, 48);
   if (t0 < 0)
     return 0;
