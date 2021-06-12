@@ -32,25 +32,18 @@ Clock::Clock(DisplayApp* app,
     notificatioManager {notificatioManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
-    motionController {motionController} {
-  
-  switch (settingsController.GetClockFace()) {
-    case 0:
-      screen = WatchFaceDigitalScreen();
-      break;
-    case 1:
-      screen = WatchFaceAnalogScreen();
-      break;
-    /*
-    // Examples for more watch faces
-    case 2:
-      screen = WatchFaceMinimalScreen();
-      break;
-    case 3:
-      screen = WatchFaceCustomScreen();
-      break;
-    */
-  }
+    motionController {motionController},
+    screen {[this, &settingsController]() {
+      switch (settingsController.GetClockFace()) {
+        case 0:
+          return WatchFaceDigitalScreen();
+          break;
+        case 1:
+          return WatchFaceAnalogScreen();
+          break;
+      }
+      return WatchFaceDigitalScreen();
+    }()} {
   settingsController.SetAppMenu(0);
 }
 
