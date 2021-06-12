@@ -111,16 +111,6 @@ Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask& 
   serviceDefinition[0] = {
     .type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = &msUuid.u, .characteristics = characteristicDefinition};
   serviceDefinition[1] = {0};
-
-  artistName = "Waiting for";
-  albumName = "";
-  trackName = "track information..";
-  playing = false;
-  repeat = false;
-  shuffle = false;
-  playbackSpeed = 1.0f;
-  trackProgress = 0;
-  trackLength = 0;
 }
 
 void Pinetime::Controllers::MusicService::Init() {
