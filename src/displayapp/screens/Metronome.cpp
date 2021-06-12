@@ -89,7 +89,7 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
 
 Metronome::~Metronome() {
   app->SetTouchMode(DisplayApp::TouchModes::Gestures);
-  systemTask.PushMessage(Pinetime::System::SystemTask::Messages::EnableSleeping);
+  systemTask.PushMessage(System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }
 
@@ -151,12 +151,12 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
         switch (currentState) {
           case States::Stopped: {
             lv_label_set_text(playPauseLabel, Symbols::play);
-            systemTask.PushMessage(Pinetime::System::SystemTask::Messages::EnableSleeping);
+            systemTask.PushMessage(System::Messages::EnableSleeping);
             break;
           }
           case States::Running: {
             lv_label_set_text(playPauseLabel, Symbols::pause);
-            systemTask.PushMessage(Pinetime::System::SystemTask::Messages::DisableSleeping);
+            systemTask.PushMessage(System::Messages::DisableSleeping);
             startTime = xTaskGetTickCount();
             counter = 1;
             break;

@@ -358,7 +358,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, *systemTask);
       break;
     case Apps::Metronome:
-      currentScreen = std::make_unique<Screens::Metronome>(this, motorController, systemTask);
+      currentScreen = std::make_unique<Screens::Metronome>(this, motorController, *systemTask);
       break;
     case Apps::Motion:
       currentScreen = std::make_unique<Screens::Motion>(this, motionController);
