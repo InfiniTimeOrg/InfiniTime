@@ -14,7 +14,6 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,
                        Drivers::WatchdogView& watchdog,
-                       System::SystemTask& systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Controllers::Settings& settingsController,
@@ -22,10 +21,11 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::TimerController& timerController)
   : lcd {lcd}, bleController {bleController} {
-  msgQueue = xQueueCreate(queueSize, itemSize);
+
 }
 
 void DisplayApp::Start() {
+  msgQueue = xQueueCreate(queueSize, itemSize);
   if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 512, this, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }
@@ -113,4 +113,8 @@ void DisplayApp::PushMessage(Display::Messages msg) {
     /* Actual macro used here is port specific. */
     // TODO : should I do something here?
   }
+}
+
+void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
+
 }
