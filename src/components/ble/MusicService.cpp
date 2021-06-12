@@ -18,6 +18,37 @@
 #include "MusicService.h"
 #include "systemtask/SystemTask.h"
 
+namespace {
+  // 0000yyxx-78fc-48fe-8e23-433b3a1942d0
+  constexpr ble_uuid128_t CharUuid(uint8_t x, uint8_t y) {
+    return ble_uuid128_t{
+      .u = {.type = BLE_UUID_TYPE_128},
+      .value =  { 0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, x, y, 0x00, 0x00 }
+    };
+  }
+
+  // 00000000-78fc-48fe-8e23-433b3a1942d0
+  constexpr ble_uuid128_t BaseUuid() {
+    return CharUuid(0x00, 0x00);
+  }
+
+  constexpr ble_uuid128_t msUuid {BaseUuid()};
+
+  constexpr ble_uuid128_t msEventCharUuid {CharUuid(0x01, 0x00)};
+  constexpr ble_uuid128_t msStatusCharUuid {CharUuid(0x02, 0x00)};
+  constexpr ble_uuid128_t msArtistCharUuid {CharUuid(0x03, 0x00)};
+  constexpr ble_uuid128_t msTrackCharUuid {CharUuid(0x04, 0x00)};
+  constexpr ble_uuid128_t msAlbumCharUuid {CharUuid(0x05, 0x00)};
+  constexpr ble_uuid128_t msPositionCharUuid {CharUuid(0x06, 0x00)};
+  constexpr ble_uuid128_t msTotalLengthCharUuid {CharUuid(0x07, 0x00)};
+  constexpr ble_uuid128_t msTrackNumberCharUuid {CharUuid(0x08, 0x00)};
+  constexpr ble_uuid128_t msTrackTotalCharUuid {CharUuid(0x09, 0x00)};
+  constexpr ble_uuid128_t msPlaybackSpeedCharUuid {CharUuid(0x0a, 0x00)};
+  constexpr ble_uuid128_t msRepeatCharUuid {CharUuid(0x0b, 0x00)};
+  constexpr ble_uuid128_t msShuffleCharUuid {CharUuid(0x0c, 0x00)};
+
+}
+
 int MusicCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   return static_cast<Pinetime::Controllers::MusicService*>(arg)->OnCommand(conn_handle, attr_handle, ctxt);
 }
