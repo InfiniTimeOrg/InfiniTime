@@ -26,18 +26,11 @@
 #undef max
 #undef min
 
-// 00000000-78fc-48fe-8e23-433b3a1942d0
-#define MUSIC_SERVICE_UUID_BASE                                                                                                            \
-  { 0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0x00, 0x00 }
-#define MUSIC_SERVICE_CHAR_UUID(x, y)                                                                                                      \
-  { 0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, x, y, 0x00, 0x00 }
-
 namespace Pinetime {
   namespace System {
     class SystemTask;
   }
   namespace Controllers {
-
     class MusicService {
     public:
       explicit MusicService(Pinetime::System::SystemTask& system);
@@ -73,21 +66,6 @@ namespace Pinetime {
       enum MusicStatus { NotPlaying = 0x00, Playing = 0x01 };
 
     private:
-      ble_uuid128_t msUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_UUID_BASE};
-
-      ble_uuid128_t msEventCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_CHAR_UUID(0x01, 0x00)};
-      ble_uuid128_t msStatusCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_CHAR_UUID(0x02, 0x00)};
-      ble_uuid128_t msArtistCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_CHAR_UUID(0x03, 0x00)};
-      ble_uuid128_t msTrackCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_CHAR_UUID(0x04, 0x00)};
-      ble_uuid128_t msAlbumCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_CHAR_UUID(0x05, 0x00)};
-      ble_uuid128_t msPositionCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_CHAR_UUID(0x06, 0x00)};
-      ble_uuid128_t msTotalLengthCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_CHAR_UUID(0x07, 0x00)};
-      ble_uuid128_t msTrackNumberCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_CHAR_UUID(0x08, 0x00)};
-      ble_uuid128_t msTrackTotalCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_CHAR_UUID(0x09, 0x00)};
-      ble_uuid128_t msPlaybackSpeedCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_CHAR_UUID(0x0a, 0x00)};
-      ble_uuid128_t msRepeatCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_CHAR_UUID(0x0b, 0x00)};
-      ble_uuid128_t msShuffleCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = MUSIC_SERVICE_CHAR_UUID(0x0c, 0x00)};
-
       struct ble_gatt_chr_def characteristicDefinition[14];
       struct ble_gatt_svc_def serviceDefinition[2];
 
