@@ -198,7 +198,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
   return std::make_unique<Screens::Label>(2, 5, app, label);
 }
 
-bool sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
+bool SystemInfo::sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
   return lhs.xTaskNumber < rhs.xTaskNumber;
 }
 
