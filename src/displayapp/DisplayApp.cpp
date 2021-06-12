@@ -18,6 +18,7 @@
 #include "displayapp/screens/Paddle.h"
 #include "displayapp/screens/StopWatch.h"
 #include "displayapp/screens/Meter.h"
+#include "displayapp/screens/Metronome.h"
 #include "displayapp/screens/Music.h"
 #include "displayapp/screens/Navigation.h"
 #include "displayapp/screens/Notifications.h"
@@ -318,7 +319,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
-    case Apps::SettingSteps: 
+    case Apps::SettingSteps:
       currentScreen = std::make_unique<Screens::SettingSteps>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
@@ -356,10 +357,13 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
     case Apps::HeartRate:
       currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, *systemTask);
       break;
+    case Apps::Metronome:
+      currentScreen = std::make_unique<Screens::Metronome>(this, motorController, systemTask);
+      break;
     case Apps::Motion:
       currentScreen = std::make_unique<Screens::Motion>(this, motionController);
       break;
-    case Apps::Steps: 
+    case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
   }
