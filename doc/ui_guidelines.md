@@ -12,3 +12,5 @@
 	- It is acceptable to leave 8px on the left side as well to center the content
 - Top bar takes at least 20px + padding
 	- Top bar right icons move 8px to the left when using a page indicator
+
+![example layouts](./ui/example.png)
