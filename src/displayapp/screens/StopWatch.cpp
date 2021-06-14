@@ -105,6 +105,7 @@ StopWatch::StopWatch(DisplayApp* app,
 }
 
 StopWatch::~StopWatch() {
+  systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }
 
