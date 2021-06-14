@@ -45,8 +45,7 @@ static void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
   stopWatch->stopLapBtnEventHandler(event);
 }
 
-StopWatch::StopWatch(DisplayApp* app,
-                     System::SystemTask& systemTask)
+StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
   : Screen(app),
     systemTask {systemTask},
     running {true},
@@ -187,24 +186,18 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
         lapOneText, "#%2d   %2d:%02d.%02d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->hundredths);
     }
     if (lapBuffer[0]) {
-      lv_label_set_text_fmt(
-        lapTwoText, "#%2d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
+      lv_label_set_text_fmt(lapTwoText, "#%2d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
     }
   } else if (currentState == States::Halted) {
     reset();
-  } else if (currentState == States::Init) {
   }
 }
 
 bool StopWatch::OnButtonPushed() {
   if (currentState == States::Running) {
     pause();
-  } else if (currentState == States::Halted) {
+  } else {
     running = false;
-    //reset();
-  } else if (currentState == States::Init) {
-    running = false;
-    //start();
   }
   return true;
 }
