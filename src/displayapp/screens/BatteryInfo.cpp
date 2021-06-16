@@ -112,10 +112,10 @@ void BatteryInfo::UpdateScreen() {
       lv_label_set_text_static(status, "Battery charging");
     } else if (batteryPercent == 100) {
       lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_BLUE);
-      lv_label_set_text_static(status, "Battery is fully charged");
+      lv_label_set_text_static(status, "Battery charged");
     } else if (batteryPercent < 10) {
       lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-      lv_label_set_text_static(status, "Battery is low");
+      lv_label_set_text_static(status, "Battery low");
     } else {
       lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_GREEN);
       lv_label_set_text_static(status, "Battery discharging");
