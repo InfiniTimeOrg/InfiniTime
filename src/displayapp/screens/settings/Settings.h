@@ -16,7 +16,6 @@ namespace Pinetime {
 
         bool Refresh() override;
 
-        void OnButtonEvent(lv_obj_t* object, lv_event_t event);
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
       private:

@@ -34,24 +34,20 @@ Clock::Clock(DisplayApp* app,
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
-    screens {app,
-             settingsController.GetClockFace(),
-             {
-               [this]() -> std::unique_ptr<Screen> {
-                 return WatchFaceDigitalScreen();
-               },
-               [this]() -> std::unique_ptr<Screen> {
-                 return WatchFaceAnalogScreen();
-               },
-               [this]() -> std::unique_ptr<Screen> {
-                 return PineTimeStyleScreen();
-               },
-               // Examples for more watch faces
-               //[this]() -> std::unique_ptr<Screen> { return WatchFaceMinimalScreen(); },
-               //[this]() -> std::unique_ptr<Screen> { return WatchFaceCustomScreen(); }
-             },
-             Screens::ScreenListModes::LongPress} {
-
+    screen {[this, &settingsController]() {
+      switch (settingsController.GetClockFace()) {
+        case 0:
+          return WatchFaceDigitalScreen();
+          break;
+        case 1:
+          return WatchFaceAnalogScreen();
+          break;
+        case 2:
+          return PineTimeStyleScreen();
+          break;
+      }
+      return WatchFaceDigitalScreen();
+    }()} {
   settingsController.SetAppMenu(0);
 }
 
@@ -60,12 +56,12 @@ Clock::~Clock() {
 }
 
 bool Clock::Refresh() {
-  screens.Refresh();
+  screen->Refresh();
   return running;
 }
 
 bool Clock::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  return screens.OnTouchEvent(event);
+  return screen->OnTouchEvent(event);
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceDigitalScreen() {
