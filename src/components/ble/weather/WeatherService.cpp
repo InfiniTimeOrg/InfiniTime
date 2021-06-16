@@ -40,58 +40,125 @@ namespace Pinetime {
     }
 
     int WeatherService::OnCommand(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+      // TODO: Detect control messages
       if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
-        getCurrentPressure();
-        tidyTimeline();
-        getTimelineLength();
         const auto packetLen = OS_MBUF_PKTLEN(ctxt->om);
         if (packetLen <= 0) {
           return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
         }
         // Decode
         QCBORDecodeContext decodeContext;
-        UsefulBufC EncodedCBOR;
-        // TODO: Check uninit fine
-        QCBORDecode_Init(&decodeContext, EncodedCBOR, QCBOR_DECODE_MODE_NORMAL);
+        UsefulBufC encodedCbor;
+        // TODO: Check, uninit fine?
+
+        QCBORDecode_Init(&decodeContext, encodedCbor, QCBOR_DECODE_MODE_NORMAL);
         QCBORDecode_EnterMap(&decodeContext, nullptr);
-        WeatherData::timelineheader timelineHeader {};
         // Always encodes to the smallest number of bytes based on the value
-        QCBORDecode_GetInt64InMapSZ(&decodeContext, "Timestamp", reinterpret_cast<int64_t*>(&(timelineHeader.timestamp)));
-        QCBORDecode_GetInt64InMapSZ(&decodeContext, "Expires", reinterpret_cast<int64_t*>(&(timelineHeader.expires)));
-        QCBORDecode_GetInt64InMapSZ(&decodeContext, "EventType", reinterpret_cast<int64_t*>(&(timelineHeader.eventType)));
-        switch (timelineHeader.eventType) {
-            // TODO: Populate
+        int64_t tmpVersion = 0;
+        QCBORDecode_GetInt64InMapSZ(&decodeContext, "Version", &tmpVersion);
+        if (tmpVersion != 1) {
+          // TODO: Return better error?
+          return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+        }
+        int64_t tmpTimestamp = 0;
+        QCBORDecode_GetInt64InMapSZ(&decodeContext, "Timestamp", &tmpTimestamp);
+        int64_t tmpExpires = 0;
+        QCBORDecode_GetInt64InMapSZ(&decodeContext, "Expires", &tmpExpires);
+        if (tmpExpires > 4294967295) {
+          // TODO: Return better error?
+          return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+        }
+        int64_t tmpEventType = 0;
+        QCBORDecode_GetInt64InMapSZ(&decodeContext, "EventType", &tmpEventType);
+        if (tmpEventType > static_cast<int64_t>(WeatherData::eventtype::Length)) {
+          // TODO: Return better error?
+          return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+        }
+
+        switch (static_cast<WeatherData::eventtype>(tmpEventType)) {
+          // TODO: Populate
           case WeatherData::eventtype::AirQuality: {
+            std::unique_ptr<WeatherData::AirQuality> airquality = std::make_unique<WeatherData::AirQuality>();
+            airquality->timestamp = tmpTimestamp;
+            airquality->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
+            airquality->expires = tmpExpires;
+
+            timeline.push_back(std::move(airquality));
             break;
           }
           case WeatherData::eventtype::Obscuration: {
+            std::unique_ptr<WeatherData::Obscuration> obscuration = std::make_unique<WeatherData::Obscuration>();
+            obscuration->timestamp = tmpTimestamp;
+            obscuration->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
+            obscuration->expires = tmpExpires;
+
+            timeline.push_back(std::move(obscuration));
             break;
           }
           case WeatherData::eventtype::Precipitation: {
+            std::unique_ptr<WeatherData::Precipitation> precipitation = std::make_unique<WeatherData::Precipitation>();
+            precipitation->timestamp = tmpTimestamp;
+            precipitation->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
+            precipitation->expires = tmpExpires;
+            timeline.push_back(std::move(precipitation));
             break;
           }
           case WeatherData::eventtype::Wind: {
+            std::unique_ptr<WeatherData::Wind> wind = std::make_unique<WeatherData::Wind>();
+            wind->timestamp = tmpTimestamp;
+            wind->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
+            wind->expires = tmpExpires;
+            timeline.push_back(std::move(wind));
             break;
           }
           case WeatherData::eventtype::Temperature: {
+            std::unique_ptr<WeatherData::Temperature> temperature = std::make_unique<WeatherData::Temperature>();
+            temperature->timestamp = tmpTimestamp;
+            temperature->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
+            temperature->expires = tmpExpires;
+            timeline.push_back(std::move(temperature));
             break;
           }
           case WeatherData::eventtype::Special: {
+            std::unique_ptr<WeatherData::Special> special = std::make_unique<WeatherData::Special>();
+            special->timestamp = tmpTimestamp;
+            special->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
+            special->expires = tmpExpires;
+            timeline.push_back(std::move(special));
             break;
           }
           case WeatherData::eventtype::Pressure: {
+            std::unique_ptr<WeatherData::Pressure> pressure = std::make_unique<WeatherData::Pressure>();
+            pressure->timestamp = tmpTimestamp;
+            pressure->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
+            pressure->expires = tmpExpires;
+            timeline.push_back(std::move(pressure));
             break;
           }
           case WeatherData::eventtype::Location: {
+            std::unique_ptr<WeatherData::Location> location = std::make_unique<WeatherData::Location>();
+            location->timestamp = tmpTimestamp;
+            location->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
+            location->expires = tmpExpires;
+            timeline.push_back(std::move(location));
             break;
           }
           case WeatherData::eventtype::Clouds: {
+            std::unique_ptr<WeatherData::Clouds> clouds = std::make_unique<WeatherData::Clouds>();
+            clouds->timestamp = tmpTimestamp;
+            clouds->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
+            clouds->expires = tmpExpires;
+            timeline.push_back(std::move(clouds));
             break;
           }
           default: {
             break;
           }
         }
+
+        getCurrentPressure();
+        tidyTimeline();
+        getTimelineLength();
         QCBORDecode_ExitMap(&decodeContext);
 
         auto uErr = QCBORDecode_Finish(&decodeContext);
@@ -99,8 +166,6 @@ namespace Pinetime {
           return BLE_ATT_ERR_INSUFFICIENT_RES;
         }
       } else if (ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR) {
-        // TODO: Detect control messages
-
         // Encode
         uint8_t buffer[64];
         QCBOREncodeContext encodeContext;
@@ -125,46 +190,46 @@ namespace Pinetime {
       return 0;
     }
 
-    WeatherData::location WeatherService::getCurrentLocation() const {
-      return WeatherData::location();
+    WeatherData::Location WeatherService::getCurrentLocation() const {
+      return WeatherData::Location();
     }
-    WeatherData::clouds WeatherService::getCurrentClouds() const {
-      return WeatherData::clouds();
+    WeatherData::Clouds WeatherService::getCurrentClouds() const {
+      return WeatherData::Clouds();
     }
-    WeatherData::obscuration WeatherService::getCurrentObscuration() const {
-      return WeatherData::obscuration();
+    WeatherData::Obscuration WeatherService::getCurrentObscuration() const {
+      return WeatherData::Obscuration();
     }
-    WeatherData::precipitation WeatherService::getCurrentPrecipitation() const {
-      return WeatherData::precipitation();
+    WeatherData::Precipitation WeatherService::getCurrentPrecipitation() const {
+      return WeatherData::Precipitation();
     }
-    WeatherData::wind WeatherService::getCurrentWind() const {
-      return WeatherData::wind();
+    WeatherData::Wind WeatherService::getCurrentWind() const {
+      return WeatherData::Wind();
     }
-    WeatherData::temperature WeatherService::getCurrentTemperature() const {
-      return WeatherData::temperature();
+    WeatherData::Temperature WeatherService::getCurrentTemperature() const {
+      return WeatherData::Temperature();
     }
-    WeatherData::humidity WeatherService::getCurrentHumidity() const {
-      return WeatherData::humidity();
+    WeatherData::Humidity WeatherService::getCurrentHumidity() const {
+      return WeatherData::Humidity();
     }
-    WeatherData::pressure WeatherService::getCurrentPressure() const {
+    WeatherData::Pressure WeatherService::getCurrentPressure() const {
       uint64_t currentTimestamp = getCurrentUNIXTimestamp();
       for (auto&& header : timeline) {
         if (header->eventType == WeatherData::eventtype::Pressure && header->timestamp + header->expires <= currentTimestamp) {
-          return WeatherData::pressure();
+          return WeatherData::Pressure();
         }
       }
-      return WeatherData::pressure();
+      return WeatherData::Pressure();
     }
 
-    WeatherData::airquality WeatherService::getCurrentQuality() const {
-      return WeatherData::airquality();
+    WeatherData::AirQuality WeatherService::getCurrentQuality() const {
+      return WeatherData::AirQuality();
     }
 
     size_t WeatherService::getTimelineLength() const {
       return timeline.size();
     }
 
-    bool WeatherService::addEventToTimeline(std::unique_ptr<WeatherData::timelineheader> event) {
+    bool WeatherService::addEventToTimeline(std::unique_ptr<WeatherData::TimelineHeader> event) {
       if (timeline.size() == timeline.max_size()) {
         return false;
       }
@@ -188,7 +253,7 @@ namespace Pinetime {
       uint64_t timeCurrent = 0;
       timeline.erase(std::remove_if(std::begin(timeline),
                                     std::end(timeline),
-                                    [&](std::unique_ptr<WeatherData::timelineheader> const& header) {
+                                    [&](std::unique_ptr<WeatherData::TimelineHeader> const& header) {
                                       return header->timestamp + header->expires > timeCurrent;
                                     }),
                      std::end(timeline));
@@ -196,8 +261,8 @@ namespace Pinetime {
       std::sort(std::begin(timeline), std::end(timeline), compareTimelineEvents);
     }
 
-    bool WeatherService::compareTimelineEvents(const std::unique_ptr<WeatherData::timelineheader>& first,
-                                               const std::unique_ptr<WeatherData::timelineheader>& second) {
+    bool WeatherService::compareTimelineEvents(const std::unique_ptr<WeatherData::TimelineHeader>& first,
+                                               const std::unique_ptr<WeatherData::TimelineHeader>& second) {
       return first->timestamp > second->timestamp;
     }
 

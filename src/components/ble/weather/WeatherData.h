@@ -39,7 +39,7 @@ namespace Pinetime {
         None = 0,
         /** Water particles suspended in the air; low visibility; does not fall */
         Fog = 1,
-        /** Extremely small, dry particles in the air; invisible to the eye; opalescent */
+        /** Tiny, dry particles in the air; invisible to the eye; opalescent */
         Haze = 2,
         /** Small fire-created particles suspended in the air */
         Smoke = 3,
@@ -51,6 +51,7 @@ namespace Pinetime {
         Sand = 6,
         /** Water particles suspended in the air; low-ish visibility; temperature is near dewpoint */
         Mist = 7,
+        Length
       };
 
       /**
@@ -82,7 +83,8 @@ namespace Pinetime {
         /** Frozen drizzle; very small snow crystals */
         SnowGrains = 8,
         /** Needles; columns or plates of ice. Sometimes described as "diamond dust". In very cold regions */
-        IceCrystals = 9
+        IceCrystals = 9,
+        Length
       };
 
       /**
@@ -99,6 +101,7 @@ namespace Pinetime {
         Fire = 3,
         /** Thunder and/or lightning */
         Thunder = 4,
+        Length
       };
 
       /**
@@ -111,7 +114,8 @@ namespace Pinetime {
         /** This wipes the entire timeline */
         DelTimeline = 1,
         /** There's a currently valid timeline event with the given type */
-        HasValidEvent = 3
+        HasValidEvent = 3,
+        Length
       };
 
       /**
@@ -137,19 +141,20 @@ namespace Pinetime {
         Location = 7,
         /** @see cloud */
         Clouds = 8,
+        Length
       };
 
       /**
        * Valid event query
        */
-      class valideventquery {
+      class ValidEventQuery {
       public:
         static constexpr controlcodes code = controlcodes::HasValidEvent;
         eventtype eventType;
       };
 
       /** The header used for further parsing */
-      class timelineheader {
+      class TimelineHeader {
       public:
         /** UNIX timestamp */
         uint64_t timestamp;
@@ -168,23 +173,23 @@ namespace Pinetime {
       };
 
       /** Specifies how cloudiness is stored */
-      class clouds : public timelineheader {
+      class Clouds : public TimelineHeader {
       public:
         /** Cloud coverage in percentage, 0-100% */
         uint8_t amount;
       };
 
       /** Specifies how obscuration is stored */
-      class obscuration : public timelineheader {
+      class Obscuration : public TimelineHeader {
       public:
         /** Type */
         obscurationtype type;
         /** Visibility distance in meters */
-        uint8_t amount;
+        uint16_t amount;
       };
 
       /** Specifies how precipitation is stored */
-      class precipitation : public timelineheader {
+      class Precipitation : public TimelineHeader {
       public:
         /** Type */
         precipitationtype type;
@@ -201,7 +206,7 @@ namespace Pinetime {
        * As direction can fluctuate wildly and some watchfaces might wish to display it nicely,
        * we're following the aerospace industry weather report option of specifying a range.
        */
-      class wind : public timelineheader {
+      class Wind : public TimelineHeader {
       public:
         /** Meters per second */
         uint8_t speedMin;
@@ -221,7 +226,7 @@ namespace Pinetime {
        *
        * We don't do floats, microdegrees are not useful. Make sure to multiply.
        */
-      class temperature : public timelineheader {
+      class Temperature : public TimelineHeader {
       public:
         /** Temperature °C but multiplied by 100 (e.g. -12.50°C becomes -1250) */
         int16_t temperature;
@@ -240,7 +245,7 @@ namespace Pinetime {
        * or daylight calculations, should those be required.
        *
        */
-      class location : public timelineheader {
+      class Location : public TimelineHeader {
       public:
         /** Location name */
         std::string location;
@@ -255,7 +260,7 @@ namespace Pinetime {
       /**
        * How humidity is stored
        */
-      class humidity : public timelineheader {
+      class Humidity : public TimelineHeader {
       public:
         /** Relative humidity, 0-100% */
         uint8_t humidity;
@@ -264,7 +269,7 @@ namespace Pinetime {
       /**
        * How air pressure is stored
        */
-      class pressure : public timelineheader {
+      class Pressure : public TimelineHeader {
       public:
         /** Air pressure in hectopascals (hPa) */
         int16_t pressure;
@@ -273,7 +278,7 @@ namespace Pinetime {
       /**
        * How special events are stored
        */
-      class special : public timelineheader {
+      class Special : public TimelineHeader {
       public:
         /** Special event's type */
         specialtype type;
@@ -288,7 +293,7 @@ namespace Pinetime {
        *
        * If this needs further enforced standardization, pull requests are welcome
        */
-      class airquality : public timelineheader {
+      class AirQuality : public TimelineHeader {
       public:
         /**
          * The name of the pollution

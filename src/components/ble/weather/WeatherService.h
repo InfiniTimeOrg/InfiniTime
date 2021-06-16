@@ -57,15 +57,15 @@ namespace Pinetime {
       /*
        * Helper functions for quick access to currently valid data
        */
-      WeatherData::location getCurrentLocation() const;
-      WeatherData::clouds getCurrentClouds() const;
-      WeatherData::obscuration getCurrentObscuration() const;
-      WeatherData::precipitation getCurrentPrecipitation() const;
-      WeatherData::wind getCurrentWind() const;
-      WeatherData::temperature getCurrentTemperature() const;
-      WeatherData::humidity getCurrentHumidity() const;
-      WeatherData::pressure getCurrentPressure() const;
-      WeatherData::airquality getCurrentQuality() const;
+      WeatherData::Location getCurrentLocation() const;
+      WeatherData::Clouds getCurrentClouds() const;
+      WeatherData::Obscuration getCurrentObscuration() const;
+      WeatherData::Precipitation getCurrentPrecipitation() const;
+      WeatherData::Wind getCurrentWind() const;
+      WeatherData::Temperature getCurrentTemperature() const;
+      WeatherData::Humidity getCurrentHumidity() const;
+      WeatherData::Pressure getCurrentPressure() const;
+      WeatherData::AirQuality getCurrentQuality() const;
 
       /*
        * Management functions
@@ -74,7 +74,7 @@ namespace Pinetime {
        * Adds an event to the timeline
        * @return
        */
-      bool addEventToTimeline(std::unique_ptr<WeatherData::timelineheader> event);
+      bool addEventToTimeline(std::unique_ptr<WeatherData::TimelineHeader> event);
       /**
        * Gets the current timeline length
        */
@@ -86,37 +86,36 @@ namespace Pinetime {
       bool hasTimelineEventOfType(WeatherData::eventtype type) const;
 
     private:
-      ble_uuid128_t msUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = WEATHER_SERVICE_UUID_BASE};
+      ble_uuid128_t weatherUUID {.u = {.type = BLE_UUID_TYPE_128}, .value = WEATHER_SERVICE_UUID_BASE};
 
       /**
        * Just write timeline data here
        */
-      ble_uuid128_t wDataCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = WEATHER_SERVICE_CHAR_UUID(0x00, 0x01)};
+      ble_uuid128_t weatherDataCharUUID {.u = {.type = BLE_UUID_TYPE_128}, .value = WEATHER_SERVICE_CHAR_UUID(0x00, 0x01)};
       /**
-       * This doesn't take timeline data
-       * but provides some control over it
+       * This doesn't take timeline data,
+       * provides some control over it
        */
-      ble_uuid128_t wControlCharUuid {.u = {.type = BLE_UUID_TYPE_128}, .value = WEATHER_SERVICE_CHAR_UUID(0x00, 0x02)};
+      ble_uuid128_t weatherControlCharUUID {.u = {.type = BLE_UUID_TYPE_128}, .value = WEATHER_SERVICE_CHAR_UUID(0x00, 0x02)};
 
-      const struct ble_gatt_chr_def characteristicDefinition[2] = {{.uuid = reinterpret_cast<ble_uuid_t*>(&wDataCharUuid),
+      const struct ble_gatt_chr_def characteristicDefinition[2] = {{.uuid = &weatherDataCharUUID.u,
                                                                     .access_cb = WeatherCallback,
                                                                     .arg = this,
                                                                     .flags = BLE_GATT_CHR_F_NOTIFY,
                                                                     .val_handle = &eventHandle},
-                                                                   {.uuid = reinterpret_cast<ble_uuid_t*>(&wControlCharUuid),
+                                                                   {.uuid = &weatherControlCharUUID.u,
                                                                     .access_cb = WeatherCallback,
                                                                     .arg = this,
                                                                     .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ}};
       const struct ble_gatt_svc_def serviceDefinition[2] = {
-        {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = reinterpret_cast<ble_uuid_t*>(&msUuid), .characteristics = characteristicDefinition},
-        {0}};
+        {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = &weatherUUID.u, .characteristics = characteristicDefinition}, {0}};
 
       uint16_t eventHandle {};
 
       Pinetime::System::SystemTask& system;
       Pinetime::Controllers::DateTime& dateTimeController;
 
-      std::vector<std::unique_ptr<WeatherData::timelineheader>> timeline;
+      std::vector<std::unique_ptr<WeatherData::TimelineHeader>> timeline;
 
       /**
        * Cleans up the timeline of expired events
@@ -127,11 +126,11 @@ namespace Pinetime {
       /**
        * Compares two timeline events
        */
-      static bool compareTimelineEvents(const std::unique_ptr<WeatherData::timelineheader>& first,
-                                        const std::unique_ptr<WeatherData::timelineheader>& second);
+      static bool compareTimelineEvents(const std::unique_ptr<WeatherData::TimelineHeader>& first,
+                                        const std::unique_ptr<WeatherData::TimelineHeader>& second);
 
       /**
-       *
+       * Returns current UNIX timestamp
        */
       uint64_t getCurrentUNIXTimestamp() const;
     };
