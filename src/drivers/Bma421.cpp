@@ -103,8 +103,6 @@ Bma421::Values Bma421::Process() {
   uint8_t activity = 0;
   bma423_activity_output(&activity, &bma);
 
-  NRF_LOG_INFO("MOTION : %d - %d/%d/%d", steps, data.x, data.y, data.z);
-
   // X and Y axis are swapped because of the way the sensor is mounted in the PineTime
   return {steps, data.y, data.x, data.z};
 }

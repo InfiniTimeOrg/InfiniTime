@@ -4,9 +4,6 @@
 
 using namespace Pinetime::Controllers;
 
-HeartRateController::HeartRateController(Pinetime::System::SystemTask& systemTask) : systemTask {systemTask} {
-}
-
 void HeartRateController::Update(HeartRateController::States newState, uint8_t heartRate) {
   this->state = newState;
   if (this->heartRate != heartRate) {

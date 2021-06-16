@@ -23,6 +23,10 @@ bool touchpad_read(lv_indev_drv_t* indev_drv, lv_indev_data_t* data) {
 
 LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel)
   : lcd {lcd}, touchPanel {touchPanel}, previousClick {0, 0} {
+
+}
+
+void LittleVgl::Init() {
   lv_init();
   InitTheme();
   InitDisplay();

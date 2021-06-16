@@ -63,7 +63,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
     {Symbols::paddle, Apps::Paddle},
     {"2", Apps::Twos},
     {"M", Apps::Motion},
-    {"", Apps::None},
+    {"b", Apps::Metronome},
     {"", Apps::None},
   }};
 

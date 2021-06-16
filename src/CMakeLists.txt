@@ -403,6 +403,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
         displayapp/screens/Navigation.cpp
+        displayapp/screens/Metronome.cpp
         displayapp/screens/Motion.cpp
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp
@@ -539,7 +540,6 @@ list(APPEND RECOVERY_SOURCE_FILES
         systemtask/SystemTask.cpp
         drivers/TwiMaster.cpp
         components/gfx/Gfx.cpp
-        displayapp/icons/infinitime/infinitime-nb.c
         components/rle/RleDecoder.cpp
         components/heartrate/HeartRateController.cpp
         heartratetask/HeartRateTask.cpp
@@ -566,7 +566,6 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
         drivers/St7789.cpp
         components/brightness/BrightnessController.cpp
 
-        displayapp/icons/infinitime/infinitime-nb.c
         recoveryLoader.cpp
         )
 
@@ -600,6 +599,7 @@ set(INCLUDE_FILES
         displayapp/Apps.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
+        displayapp/screens/Metronome.h
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
         drivers/St7789.h
@@ -758,8 +758,8 @@ add_definitions(-DNIMBLE_CFG_CONTROLLER)
 add_definitions(-DOS_CPUTIME_FREQ)
 add_definitions(-DNRF52 -DNRF52832 -DNRF52832_XXAA -DNRF52_PAN_74 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040)
 add_definitions(-DFREERTOS)
-add_definitions(-D__STACK_SIZE=8192)
-add_definitions(-D__HEAP_SIZE=8192)
+add_definitions(-D__STACK_SIZE=1024)
+add_definitions(-D__HEAP_SIZE=4096)
 
 # NOTE : Add the following defines to enable debug mode of the NRF SDK:
 #add_definitions(-DDEBUG)

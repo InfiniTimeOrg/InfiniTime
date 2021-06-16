@@ -62,7 +62,7 @@ As of now, here is the list of achievements of this project:
     * Firmware validation
     * System information
  - Supported by 3 companion apps (development is in progress):
-    * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android)
+    * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android via F-Droid)
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)
     * [Siglo](https://github.com/alexr4535/siglo) (on Linux)
     * **[Experimental]** [WebBLEWatch](https://hubmartin.github.io/WebBLEWatch/) Synchronize time directly from your web browser. [video](https://youtu.be/IakiuhVDdrY)
