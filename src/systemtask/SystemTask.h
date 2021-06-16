@@ -17,6 +17,7 @@
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
 #include "components/timer/TimerController.h"
+
 #ifdef PINETIME_IS_RECOVERY
   #include "displayapp/DisplayAppRecovery.h"
   #include "displayapp/DummyLittleVgl.h"
@@ -24,6 +25,7 @@
   #include "components/settings/Settings.h"
   #include "displayapp/DisplayApp.h"
   #include "displayapp/LittleVgl.h"
+  #include "components/fs/FS.h"
 #endif
 
 #include "drivers/Watchdog.h"
@@ -117,7 +119,9 @@ namespace Pinetime {
       Pinetime::Controllers::NimbleController nimbleController;
       Controllers::BrightnessController brightnessController;
       Pinetime::Controllers::MotionController motionController;
-
+#ifndef PINETIME_IS_RECOVERY
+      Pinetime::Controllers::FS fs;
+#endif
       static constexpr uint8_t pinSpiSck = 2;
       static constexpr uint8_t pinSpiMosi = 3;
       static constexpr uint8_t pinSpiMiso = 4;

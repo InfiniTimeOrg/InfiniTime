@@ -63,7 +63,11 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     heartRateSensor {heartRateSensor},
     motionSensor {motionSensor},
     settingsController {settingsController},
-    nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
+    nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController)
+    #ifndef PINETIME_IS_RECOVERY
+    ,fs(spiNorFlash)
+    #endif
+    {
   systemTasksMsgQueue = xQueueCreate(10, 1);
 }
 
@@ -89,6 +93,9 @@ void SystemTask::Work() {
   spi.Init();
   spiNorFlash.Init();
   spiNorFlash.Wakeup();
+  #ifndef PINETIME_IS_RECOVERY
+  fs.Init();
+  #endif
   nimbleController.Init();
   nimbleController.StartAdvertising();
   brightnessController.Init();
