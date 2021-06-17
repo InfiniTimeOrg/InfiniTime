@@ -34,6 +34,7 @@
 #include "components/motor/MotorController.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/heartrate/HeartRateController.h"
+#include "components/fs/FS.h"
 #include "drivers/Spi.h"
 #include "drivers/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
@@ -107,10 +108,6 @@ void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
 static constexpr uint8_t pinPowerPresentIrq = 19;
 
-Pinetime::Controllers::Settings settingsController {spiNorFlash};
-
-Pinetime::Controllers::MotorController motorController {settingsController};
-
 Pinetime::Controllers::HeartRateController heartRateController;
 Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController);
 
@@ -120,6 +117,11 @@ Pinetime::Drivers::WatchdogView watchdogView(watchdog);
 Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::TimerController timerController;
+
+Pinetime::Controllers::FS fs {spiNorFlash};
+Pinetime::Controllers::Settings settingsController {fs};
+Pinetime::Controllers::MotorController motorController {settingsController};
+
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               lvgl,
@@ -154,7 +156,8 @@ Pinetime::System::SystemTask systemTask(spi,
                                         settingsController,
                                         heartRateController,
                                         displayApp,
-                                        heartRateApp);
+                                        heartRateApp,
+                                        fs);
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if (pin == pinTouchIrq) {

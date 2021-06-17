@@ -53,7 +53,7 @@ namespace Pinetime {
             static constexpr size_t mSize = 0x3C0000;
 
         private:
-            bool fsValid = false;
+            bool resourcesValid = false;
             const struct lfs_config mLfsConfig;
 
             lfs_t mLfs;

@@ -2,7 +2,7 @@
 #include <cstdint>
 #include "components/datetime/DateTimeController.h"
 #include "components/brightness/BrightnessController.h"
-#include "drivers/SpiNorFlash.h"
+#include "components/fs/FS.h"
 #include "drivers/Cst816s.h"
 
 namespace Pinetime {
@@ -13,7 +13,7 @@ namespace Pinetime {
       enum class Vibration { ON, OFF };
       enum class WakeUpMode { None, SingleTap, DoubleTap, RaiseWrist };
 
-      Settings(Pinetime::Drivers::SpiNorFlash& spiNorFlash);
+      Settings(Pinetime::Controllers::FS& fs);
 
       void Init();
       void SaveSettings();
@@ -95,8 +95,12 @@ namespace Pinetime {
       uint32_t GetStepsGoal() const { return settings.stepsGoal; };
 
     private:
-      Pinetime::Drivers::SpiNorFlash& spiNorFlash;
+      Pinetime::Controllers::FS& fs;
+
+      static constexpr uint32_t settingsVersion = 0x0001;
       struct SettingsData {
+
+        uint32_t version = settingsVersion;
 
         ClockType clockType = ClockType::H24;
         Vibration vibrationStatus = Vibration::ON;
@@ -117,20 +121,10 @@ namespace Pinetime {
       uint8_t appMenu = 0;
       uint8_t settingsMenu = 0;
 
-      // There are 10 blocks of reserved flash to save settings
-      // to minimize wear, the recording is done in a rotating way by the 10 blocks
-      uint8_t settingsFlashBlock = 99; // default to indicate it needs to find the active block
+      lfs_file_t settingsFile;
 
-      static constexpr uint32_t settingsBaseAddr = 0x3F6000; // Flash Settings Location
-      static constexpr uint16_t settingsVersion = 0x0100;    // Flash Settings Version
-
-      bool FindHeader();
-      void ReadSettingsData();
-      void EraseBlock();
-      void SetHeader(bool state);
-      void SaveSettingsData();
-      void LoadSettingsFromFlash();
-      void SaveSettingsToFlash();
+      void LoadSettingsFromFile();
+      void SaveSettingsToFile();
     };
   }
 }

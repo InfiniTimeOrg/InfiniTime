@@ -59,7 +59,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Pinetime::Applications::DisplayApp& displayApp,
-                       Pinetime::Applications::HeartRateTask& heartRateApp)
+                       Pinetime::Applications::HeartRateTask& heartRateApp,
+                       Pinetime::Controllers::FS& fs)
   : spi {spi},
     lcd {lcd},
     spiNorFlash {spiNorFlash},
@@ -77,13 +78,11 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     motionSensor {motionSensor},
     settingsController {settingsController},
     heartRateController{heartRateController},
-    #ifndef PINETIME_IS_RECOVERY
-    ,fs(spiNorFlash)
-    #endif
-    nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController),
     motionController{motionController},
     displayApp{displayApp},
-    heartRateApp(heartRateApp) {
+    heartRateApp(heartRateApp),
+    fs{fs},
+    nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
 
 }
 
@@ -110,9 +109,9 @@ void SystemTask::Work() {
   spi.Init();
   spiNorFlash.Init();
   spiNorFlash.Wakeup();
-  #ifndef PINETIME_IS_RECOVERY
+  
   fs.Init();
-  #endif
+
   nimbleController.Init();
   nimbleController.StartAdvertising();
   brightnessController.Init();

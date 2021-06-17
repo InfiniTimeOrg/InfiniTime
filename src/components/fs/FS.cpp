@@ -90,15 +90,17 @@ void FS::Init() {
             return;
         }
     }
-    VerifyResource();
-    
+
+#ifndef PINETIME_IS_RECOVERY    
+    VerifyResource();    
     LVGLFileSystemInit();
+#endif
 
 }
 
 void FS::VerifyResource() {
     // validate the resource metadata
-    fsValid = true;
+    resourcesValid = true;
 }
 
 void FS::FileOpen(lfs_file_t* file_p, const char* fileName, const int flags) {
@@ -175,8 +177,6 @@ lv_fs_res_t lvglSeek(lv_fs_drv_t* drv, void* file_p, uint32_t pos) {
 
 void FS::LVGLFileSystemInit() {
 
-    if ( !fsValid ) return;
-    
     lv_fs_drv_t fs_drv;
     lv_fs_drv_init(&fs_drv);
 
