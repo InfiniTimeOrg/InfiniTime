@@ -79,7 +79,7 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
         break;
     }
 
-    auto event = Pinetime::System::SystemTask::Messages::OnNewNotification;
+    auto event = Pinetime::System::Messages::OnNewNotification;
     notificationManager.Push(std::move(notif));
     systemTask.PushMessage(event);
   }

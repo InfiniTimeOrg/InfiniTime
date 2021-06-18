@@ -8,6 +8,7 @@ The following features are implemented:
  - Time synchronization
  - Notifications
  - Music control
+ - Navigation with Puremaps
  
 ## Demo
 [This video](https://seafile.codingfield.com/f/21c5d023452740279e36/) shows how to connect to the Pinetime and control the playback of the music on the phone.

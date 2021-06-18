@@ -12,7 +12,7 @@ namespace Pinetime {
     
     class TimerController {
     public:
-      TimerController(Pinetime::System::SystemTask& systemTask);
+      TimerController() = default;
       
       void Init();
       
@@ -23,12 +23,13 @@ namespace Pinetime {
       uint32_t GetTimeRemaining();
       
       bool IsRunning();
-    
+
+      void OnTimerEnd();
+
+      void Register(System::SystemTask* systemTask);
+
     private:
-      System::SystemTask& systemTask;
-      
-      static void timerEnd(void* p_context);
-  
+      System::SystemTask* systemTask = nullptr;
       TickType_t endTicks;
       bool timerRunning = false;
     };

@@ -4,8 +4,8 @@
 #include <chrono>
 #include <cstdint>
 #include <memory>
+#include <components/heartrate/HeartRateController.h>
 #include "Screen.h"
-#include "ScreenList.h"
 #include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
@@ -47,7 +47,7 @@ namespace Pinetime {
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
 
-        ScreenList<2> screens;
+        std::unique_ptr<Screen> screen;
         std::unique_ptr<Screen> WatchFaceDigitalScreen();
         std::unique_ptr<Screen> WatchFaceAnalogScreen();
 
