@@ -7,6 +7,7 @@
 #include <math.h>
 #include <cmath>
 #include <map>
+#include <memory>
 
 using namespace Pinetime::Applications::Screens;
 
@@ -27,8 +28,8 @@ namespace {
   
   
   struct BinOp : CalcTreeNode {
-    CalcTreeNode* left;
-    CalcTreeNode* right;
+    std::shared_ptr<CalcTreeNode> left;
+    std::shared_ptr<CalcTreeNode> right;
     
     char op;
     
@@ -138,7 +139,7 @@ void Calculator::eval() {
   for (int8_t i = position - 1; i >= 0; i--) {
     input.push(text[i]);
   }
-  std::stack<CalcTreeNode*> output {};
+  std::stack<std::shared_ptr<CalcTreeNode>> output {};
   std::stack<char> operators {};
   bool expectingNumber = true;
   int8_t sign = +1;
@@ -172,9 +173,9 @@ void Calculator::eval() {
       for (uint8_t i = 0; i < strln - pointpos; i++) {
         num += (numberStr[i + pointpos] - '0') / pow(10,i+1);
       }
-  
-      NumNode* number = new NumNode();
-      number->value = num;
+      
+      auto number = std::make_shared<NumNode>();
+      number->value = sign * num;
       output.push(number);
       
       sign = +1;
@@ -214,7 +215,7 @@ void Calculator::eval() {
             motorController.SetDuration(10);
             return;
           }
-          auto* node = new BinOp();
+          auto node = std::make_shared<BinOp>();
           node->right = output.top();
           output.pop();
           node->left = output.top();
@@ -238,7 +239,7 @@ void Calculator::eval() {
             motorController.SetDuration(10);
             return;
           }
-          auto* node = new BinOp();
+          auto node = std::make_shared<BinOp>();
           node->right = output.top();
           output.pop();
           node->left = output.top();
@@ -266,7 +267,7 @@ void Calculator::eval() {
       motorController.SetDuration(10);
       return;
     }
-    auto* node = new BinOp();
+    auto node = std::make_shared<BinOp>();
     node->right = output.top();
     output.pop();
     node->left = output.top();
@@ -315,7 +316,6 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       if (*buttonstr == '=') {
         eval();
       } else {
-        
         text[position] = *buttonstr;
         position++;
         
