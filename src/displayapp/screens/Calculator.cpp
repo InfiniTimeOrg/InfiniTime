@@ -144,7 +144,9 @@ void Calculator::eval() {
   bool expectingNumber = true;
   int8_t sign = +1;
   while (!input.empty()) {
-    
+    if (input.top() == '.') {
+      input.push('0');
+    }
     if (isdigit(input.top())) {
       char numberStr[31];
       uint8_t strln = 0;
@@ -316,6 +318,10 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       if (*buttonstr == '=') {
         eval();
       } else {
+        if (position >= 30) {
+          motorController.SetDuration(10);
+          return;
+        }
         text[position] = *buttonstr;
         position++;
         
