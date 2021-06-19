@@ -7,22 +7,37 @@
 #include "components/ble/BleController.h"
 #include "components/brightness/BrightnessController.h"
 #include "components/datetime/DateTimeController.h"
+#include "components/motion/MotionController.h"
 #include "drivers/Watchdog.h"
 
 using namespace Pinetime::Applications::Screens;
+
+namespace {
+  const char* ToString(const Pinetime::Controllers::MotionController::DeviceTypes deviceType) {
+    switch (deviceType) {
+      case Pinetime::Controllers::MotionController::DeviceTypes::BMA421:
+        return "BMA421";
+      case Pinetime::Controllers::MotionController::DeviceTypes::BMA425:
+        return "BMA425";
+    }
+    return "???";
+  }
+}
 
 SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
                        Pinetime::Controllers::DateTime& dateTimeController,
                        Pinetime::Controllers::Battery& batteryController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::Ble& bleController,
-                       Pinetime::Drivers::WatchdogView& watchdog)
+                       Pinetime::Drivers::WatchdogView& watchdog,
+                       Pinetime::Controllers::MotionController& motionController)
   : Screen(app),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     brightnessController {brightnessController},
     bleController {bleController},
     watchdog {watchdog},
+    motionController{motionController},
     screens {app,
              0,
              {[this]() -> std::unique_ptr<Screen> {
@@ -132,9 +147,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   // hack to not use the flot functions from printf
   uint8_t batteryVoltageBytes[2];
   batteryVoltageBytes[1] = static_cast<uint8_t>(batteryVoltage); // truncate whole numbers
-  batteryVoltageBytes[0] =
-    static_cast<uint8_t>((batteryVoltage - batteryVoltageBytes[1]) * 100); // remove whole part of flt and shift 2 places over
-  //
+  batteryVoltageBytes[0] = static_cast<uint8_t>((batteryVoltage - batteryVoltageBytes[1]) * 100); // remove whole part of flt and shift 2 places over
 
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
@@ -144,7 +157,8 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         "#444444 Uptime#\n %02lud %02lu:%02lu:%02lu\n"
                         "#444444 Battery# %d%%/%1i.%02iv\n"
                         "#444444 Backlight# %s\n"
-                        "#444444 Last reset# %s\n",
+                        "#444444 Last reset# %s\n"
+                        "#444444 Accel.# %s\n",
                         dateTimeController.Day(),
                         static_cast<uint8_t>(dateTimeController.Month()),
                         dateTimeController.Year(),
@@ -159,7 +173,8 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         batteryVoltageBytes[1],
                         batteryVoltageBytes[0],
                         brightnessController.ToString(),
-                        resetReason);
+                        resetReason,
+                        ToString(motionController.DeviceType()));
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(1, 5, app, label);
 }
