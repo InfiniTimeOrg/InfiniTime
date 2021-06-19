@@ -2,26 +2,33 @@
 
 #include <cstdint>
 #include <lvgl/lvgl.h>
+#include <memory>
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
+#include "displayapp/screens/CheckBoxes.h"
 
 namespace Pinetime {
-
   namespace Applications {
     namespace Screens {
-
       class SettingWakeUp : public Screen {
       public:
         SettingWakeUp(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingWakeUp() override;
 
         bool Refresh() override;
-        void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
       private:
+        CheckBoxes::Options options[5] = {
+          {false, "None"},
+          {false, "Single Tap"},
+          {false, "Double Tap"},
+          {false, "Raise Wrist"},
+          {false, ""},
+        };
+
         Controllers::Settings& settingsController;
-        uint8_t optionsTotal;
-        lv_obj_t* cbOption[4];
+        std::unique_ptr<Screen> screen;
+        std::unique_ptr<Screen> CreateScreen();
       };
     }
   }

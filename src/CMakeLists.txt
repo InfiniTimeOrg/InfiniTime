@@ -409,6 +409,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
+        displayapp/screens/CheckBoxes.cpp
 
         ## Settings
         displayapp/screens/settings/QuickSettings.cpp
