@@ -88,7 +88,6 @@ static const uint8_t scaledVoltageToPercentage[] = {
   100
 };
 
-
 int Battery::GetPercentageFromVoltage(float voltage) {
   const int scaledVoltageMinimum = 298; // Minimum observed voltage (x100) of battery before shutdown.
   const int scaledVoltageMaximum = 418; // Maximum observed voltage (x100) of battery (when not charging).
