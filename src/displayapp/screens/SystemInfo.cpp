@@ -12,6 +12,18 @@
 
 using namespace Pinetime::Applications::Screens;
 
+namespace {
+  const char* ToString(const Pinetime::Controllers::MotionController::DeviceTypes deviceType) {
+    switch (deviceType) {
+      case Pinetime::Controllers::MotionController::DeviceTypes::BMA421:
+        return "BMA421";
+      case Pinetime::Controllers::MotionController::DeviceTypes::BMA425:
+        return "BMA425";
+    }
+    return "???";
+  }
+}
+
 SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
                        Pinetime::Controllers::DateTime& dateTimeController,
                        Pinetime::Controllers::Battery& batteryController,
@@ -135,15 +147,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   // hack to not use the flot functions from printf
   uint8_t batteryVoltageBytes[2];
   batteryVoltageBytes[1] = static_cast<uint8_t>(batteryVoltage); // truncate whole numbers
-  batteryVoltageBytes[0] =
-    static_cast<uint8_t>((batteryVoltage - batteryVoltageBytes[1]) * 100); // remove whole part of flt and shift 2 places over
-
-  char accel;
-  switch(motionController.DeviceType()) {
-    case Pinetime::Controllers::MotionController::DeviceTypes::BMA421: accel = '1'; break;
-    case Pinetime::Controllers::MotionController::DeviceTypes::BMA425: accel = '5'; break;
-    default: accel = '?'; break;
-  }
+  batteryVoltageBytes[0] = static_cast<uint8_t>((batteryVoltage - batteryVoltageBytes[1]) * 100); // remove whole part of flt and shift 2 places over
 
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
@@ -154,7 +158,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         "#444444 Battery# %d%%/%1i.%02iv\n"
                         "#444444 Backlight# %s\n"
                         "#444444 Last reset# %s\n"
-                        "#444444 Accel.# BMA42%c\n",
+                        "#444444 Accel.# %s\n",
                         dateTimeController.Day(),
                         static_cast<uint8_t>(dateTimeController.Month()),
                         dateTimeController.Year(),
@@ -170,7 +174,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         batteryVoltageBytes[0],
                         brightnessController.ToString(),
                         resetReason,
-                        accel);
+                        ToString(motionController.DeviceType()));
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(1, 5, app, label);
 }
