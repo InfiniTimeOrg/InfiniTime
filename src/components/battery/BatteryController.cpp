@@ -54,10 +54,6 @@ void Battery::SaadcInit() {
 }
 
 void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
-
-  const float battery_max = 4.18; // maximum voltage of battery ( max charging voltage is 4.21 )
-  const float battery_min = 3.20; // minimum voltage of battery before shutdown ( depends on the battery )
-
   if (p_event->type == NRFX_SAADC_EVT_DONE) {
 
     APP_ERROR_CHECK(nrfx_saadc_buffer_convert(&saadc_value, 1));
@@ -65,11 +61,7 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     voltage = (static_cast<float>(p_event->data.done.p_buffer[0]) * 2.04f) / (1024 / 3.0f);
     voltage = roundf(voltage * 100) / 100;
 
-    percentRemaining = static_cast<int>(((voltage - battery_min) / (battery_max - battery_min)) * 100);
-
-    percentRemaining = std::max(percentRemaining, 0);
-    percentRemaining = std::min(percentRemaining, 100);
-
+    percentRemaining = GetPercentageFromVoltage(voltage);
     percentRemainingBuffer.insert(percentRemaining);
 
     samples++;
@@ -80,4 +72,37 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
       nrfx_saadc_sample();
     }
   }
+}
+
+// Voltage-to-percentage conversion table. Indexed by voltage, where index 0 represents 2.98v, index 1
+// represents 2.99v, and so on. Valid indices range from 0 to 120 (or 2.98v to 4.18v).
+static const uint8_t scaledVoltageToPercentage[] = {
+  0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,
+  2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,
+  3,4,4,4,4,4,4,4,5,5,5,5,5,5,6,
+  6,6,6,7,7,7,8,8,9,9,10,11,11,12,13,
+  14,14,15,16,17,19,20,22,24,26,28,32,37,41,46,
+  49,51,53,55,57,59,60,62,64,65,67,68,70,71,73,
+  74,75,77,78,80,81,82,83,84,85,86,88,89,90,91,
+  92,93,94,94,95,96,97,98,98,99,99,100,100,100,100,
+  100
+};
+
+
+int Battery::GetPercentageFromVoltage(float voltage) {
+  const int scaledVoltageMinimum = 298; // Minimum observed voltage (x100) of battery before shutdown.
+  const int scaledVoltageMaximum = 418; // Maximum observed voltage (x100) of battery (when not charging).
+
+  // Scale up the floating point voltage (assuming 2 decimal digits) to an integer.
+  int scaledVoltage = static_cast<int>(voltage * 100);
+
+  // If the voltage is not within range of our conversion table, return clamped percentage.
+  if (scaledVoltage < scaledVoltageMinimum)
+    return 0;
+  if (scaledVoltage > scaledVoltageMaximum)
+    return 100;
+
+  // Calculate the index into the table and return the battery percentage corresponding to the voltage.
+  int index = scaledVoltage - scaledVoltageMinimum;
+  return scaledVoltageToPercentage[index];
 }
