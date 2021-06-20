@@ -248,7 +248,7 @@ namespace Pinetime {
       class Location : public TimelineHeader {
       public:
         /** Location name */
-        std::string location;
+        std::unique_ptr<std::string> location;
         /** Altitude relative to sea level in meters */
         int16_t altitude;
         /** Latitude, EPSG:3857 (Google Maps, Openstreetmaps datum) */
@@ -309,7 +309,7 @@ namespace Pinetime {
          * For chemical compounds use the molecular formula e.g. "NO2", "CO2", "O3"
          * For pollen use the genus, e.g. "Betula" for birch or "Alternaria" for that mold's spores
          */
-        std::string polluter;
+        std::unique_ptr<std::string> polluter;
         /**
          * Amount of the pollution in SI units,
          * otherwise it's going to be difficult to create UI, alerts

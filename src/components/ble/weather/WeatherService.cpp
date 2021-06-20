@@ -33,7 +33,7 @@ namespace Pinetime {
     void WeatherService::Init() {
       uint8_t res = 0;
       res = ble_gatts_count_cfg(serviceDefinition);
-      ASSERT(res == 0)
+      ASSERT(res == 0);
 
       res = ble_gatts_add_svcs(serviceDefinition);
       ASSERT(res == 0);
@@ -64,13 +64,13 @@ namespace Pinetime {
         QCBORDecode_GetInt64InMapSZ(&decodeContext, "Timestamp", &tmpTimestamp);
         int64_t tmpExpires = 0;
         QCBORDecode_GetInt64InMapSZ(&decodeContext, "Expires", &tmpExpires);
-        if (tmpExpires > 4294967295) {
+        if (tmpExpires < 0 || tmpExpires > 4294967295) {
           // TODO: Return better error?
           return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
         }
         int64_t tmpEventType = 0;
         QCBORDecode_GetInt64InMapSZ(&decodeContext, "EventType", &tmpEventType);
-        if (tmpEventType > static_cast<int64_t>(WeatherData::eventtype::Length)) {
+        if (tmpEventType < 0 || tmpEventType > static_cast<int64_t>(WeatherData::eventtype::Length)) {
           // TODO: Return better error?
           return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
         }
@@ -82,7 +82,18 @@ namespace Pinetime {
             airquality->timestamp = tmpTimestamp;
             airquality->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
             airquality->expires = tmpExpires;
-
+            UsefulBufC String;
+            QCBORDecode_GetTextStringInMapSZ(&decodeContext, "Polluter", &String);
+            if (UsefulBuf_IsNULLOrEmptyC(String) != 0) {
+              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+            }
+            airquality->polluter = std::make_unique<std::string>(static_cast<const char*>(String.ptr), String.len);
+            int64_t tmpAmount = 0;
+            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Amount", &tmpAmount);
+            if (tmpAmount < 0 || tmpAmount > 4294967295) {
+              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+            }
+            airquality->amount = tmpAmount;
             timeline.push_back(std::move(airquality));
             break;
           }
