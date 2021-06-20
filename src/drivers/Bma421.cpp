@@ -42,6 +42,12 @@ void Bma421::Init() {
   if (ret != BMA4_OK)
     return;
 
+  switch(bma.chip_id) {
+    case BMA423_CHIP_ID: deviceType = DeviceTypes::BMA421; break;
+    case BMA425_CHIP_ID: deviceType = DeviceTypes::BMA425; break;
+    default: deviceType = DeviceTypes::Unknown; break;
+  }
+
   ret = bma423_write_config_file(&bma);
   if (ret != BMA4_OK)
     return;
@@ -103,8 +109,6 @@ Bma421::Values Bma421::Process() {
   uint8_t activity = 0;
   bma423_activity_output(&activity, &bma);
 
-  NRF_LOG_INFO("MOTION : %d - %d/%d/%d", steps, data.x, data.y, data.z);
-
   // X and Y axis are swapped because of the way the sensor is mounted in the PineTime
   return {steps, data.y, data.x, data.z};
 }
@@ -122,4 +126,7 @@ void Bma421::SoftReset() {
     isResetOk = true;
     nrf_delay_ms(1);
   }
+}
+Bma421::DeviceTypes Bma421::DeviceType() const {
+  return deviceType;
 }

@@ -48,6 +48,7 @@ static lv_style_t style_sw_bg;
 static lv_style_t style_sw_indic;
 static lv_style_t style_sw_knob;
 static lv_style_t style_arc_bg;
+static lv_style_t style_arc_knob;
 static lv_style_t style_arc_indic;
 static lv_style_t style_table_cell;
 static lv_style_t style_pad_small;
@@ -191,6 +192,7 @@ static void basic_init(void) {
   lv_style_set_text_line_space(&style_ddlist_list, LV_STATE_DEFAULT, LV_VER_RES / 25);
   lv_style_set_shadow_width(&style_ddlist_list, LV_STATE_DEFAULT, LV_VER_RES / 20);
   lv_style_set_shadow_color(&style_ddlist_list, LV_STATE_DEFAULT, LV_PINETIME_GRAY);
+  lv_style_set_bg_color(&style_ddlist_list, LV_STATE_DEFAULT, LV_PINETIME_GRAY);
 
   style_init_reset(&style_ddlist_selected);
   lv_style_set_bg_opa(&style_ddlist_selected, LV_STATE_DEFAULT, LV_OPA_COVER);
@@ -239,6 +241,13 @@ static void basic_init(void) {
   lv_style_set_line_color(&style_arc_bg, LV_STATE_DEFAULT, LV_PINETIME_GRAY);
   lv_style_set_line_width(&style_arc_bg, LV_STATE_DEFAULT, LV_DPX(25));
   lv_style_set_line_rounded(&style_arc_bg, LV_STATE_DEFAULT, true);
+  lv_style_set_pad_all(&style_arc_bg, LV_STATE_DEFAULT, LV_DPX(5));
+
+  lv_style_reset(&style_arc_knob);
+  lv_style_set_radius(&style_arc_knob, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+  lv_style_set_bg_opa(&style_arc_knob, LV_STATE_DEFAULT, LV_OPA_COVER);
+  lv_style_set_bg_color(&style_arc_knob, LV_STATE_DEFAULT, LV_PINETIME_LIGHT_GRAY);
+  lv_style_set_pad_all(&style_arc_knob, LV_STATE_DEFAULT, LV_DPX(5));
 
   style_init_reset(&style_table_cell);
   lv_style_set_border_color(&style_table_cell, LV_STATE_DEFAULT, LV_PINETIME_GRAY);
@@ -447,6 +456,10 @@ static void theme_apply(lv_obj_t* obj, lv_theme_style_t name) {
       lv_obj_clean_style_list(obj, LV_ARC_PART_INDIC);
       list = lv_obj_get_style_list(obj, LV_ARC_PART_INDIC);
       _lv_style_list_add_style(list, &style_arc_indic);
+
+      lv_obj_clean_style_list(obj, LV_ARC_PART_KNOB);
+      list = lv_obj_get_style_list(obj, LV_ARC_PART_KNOB);
+      _lv_style_list_add_style(list, &style_arc_knob);
       break;
 
     case LV_THEME_SWITCH:
