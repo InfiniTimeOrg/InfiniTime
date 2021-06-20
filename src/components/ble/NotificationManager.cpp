@@ -75,11 +75,11 @@ NotificationManager::Notification NotificationManager::GetPrevious(NotificationM
   return result;
 }
 
-bool NotificationManager::AreNewNotificationsAvailable() {
+bool NotificationManager::AreNewNotificationsAvailable() const {
   return newNotification;
 }
 
-bool NotificationManager::IsVibrationEnabled() {
+bool NotificationManager::IsVibrationEnabled() const {
   return vibrationEnabled;
 }
 

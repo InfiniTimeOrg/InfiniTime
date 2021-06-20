@@ -9,6 +9,7 @@ namespace Pinetime {
     class DateTimeController;
     class Battery;
     class Ble;
+    class NotificationManager;
   }
   namespace Applications {
     class DisplayApp;
@@ -55,10 +56,19 @@ namespace Pinetime {
           }
         };
 
+        struct NotificationState {
+          bool newNotificationsAvailable;
+
+          bool operator!=(NotificationState const& rhs) {
+            return newNotificationsAvailable != rhs.newNotificationsAvailable;
+          }
+        };
+
         WatchFaceBase(DisplayApp* app,
                       Controllers::DateTimeController const& dateTimeController,
                       Controllers::Battery const& batteryController,
-                      Controllers::Ble const& bleController);
+                      Controllers::Ble const& bleController,
+                      Controllers::NotificationManager const& notificationManager);
 
         virtual ~WatchFaceBase() = default;
 
@@ -97,15 +107,26 @@ namespace Pinetime {
           return ble;
         }
 
+        void UpdateNotifications();
+        DirtyValue<NotificationState> const& GetNotifications() const {
+          return notifications;
+        }
+        DirtyValue<NotificationState> const& GetUpdatedNotifications() {
+          UpdateNotifications();
+          return notifications;
+        }
+
       private:
         DirtyValue<DateState> date;
         DirtyValue<TimeState> time;
         DirtyValue<BatteryState> battery;
         DirtyValue<BleState> ble;
+        DirtyValue<NotificationState> notifications;
 
         Controllers::DateTimeController const& dateTimeController;
         Controllers::Battery const& batteryController;
         Controllers::Ble const& bleController;
+        Controllers::NotificationManager const& notificationManager;
       };
     }
   }

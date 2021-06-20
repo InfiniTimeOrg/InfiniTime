@@ -7,7 +7,6 @@
 #include "BleIcon.h"
 #include "NotificationIcon.h"
 #include "Symbols.h"
-#include "components/ble/NotificationManager.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
@@ -19,12 +18,11 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
                                    Controllers::DateTimeController const& dateTimeController,
                                    Controllers::Battery const& batteryController,
                                    Controllers::Ble const& bleController,
-                                   Controllers::NotificationManager& notificatioManager,
+                                   Controllers::NotificationManager const& notificationManager,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController)
-  : WatchFaceBase{app, dateTimeController, batteryController, bleController},
-    notificatioManager {notificatioManager},
+  : WatchFaceBase{app, dateTimeController, batteryController, bleController, notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController} {
@@ -111,12 +109,10 @@ bool WatchFaceDigital::Refresh() {
   lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
-  notificationState = notificatioManager.AreNewNotificationsAvailable();
-  if (notificationState.IsUpdated()) {
-    if (notificationState.Get() == true)
-      lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(true));
-    else
-      lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
+  auto const& notifications = GetUpdatedNotifications();
+  if (notifications.IsUpdated()) {
+    auto const icon = NotificationIcon::GetIcon(notifications.Get().newNotificationsAvailable);
+    lv_label_set_text(notificationIcon, icon);
   }
 
   auto const clock_type = settingsController.GetClockType();

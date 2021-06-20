@@ -43,8 +43,8 @@ namespace Pinetime {
       Notification GetNext(Notification::Id id);
       Notification GetPrevious(Notification::Id id);
       bool ClearNewNotificationFlag();
-      bool AreNewNotificationsAvailable();
-      bool IsVibrationEnabled();
+      bool AreNewNotificationsAvailable() const;
+      bool IsVibrationEnabled() const;
       void ToggleVibrations();
 
       static constexpr size_t MaximumMessageSize() {

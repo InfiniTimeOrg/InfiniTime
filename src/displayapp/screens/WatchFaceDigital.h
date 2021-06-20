@@ -29,7 +29,7 @@ namespace Pinetime {
                          Controllers::DateTimeController const& dateTimeController,
                          Controllers::Battery const& batteryController,
                          Controllers::Ble const& bleController,
-                         Controllers::NotificationManager& notificatioManager,
+                         Controllers::NotificationManager const& notificationManager,
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
                          Controllers::MotionController& motionController);
@@ -47,7 +47,6 @@ namespace Pinetime {
         DirtyValue<uint32_t> stepCount {};
         DirtyValue<uint8_t> heartbeat {};
         DirtyValue<bool> heartbeatRunning {};
-        DirtyValue<bool> notificationState {};
 
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;
@@ -63,7 +62,6 @@ namespace Pinetime {
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
 
-        Controllers::NotificationManager& notificatioManager;
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
