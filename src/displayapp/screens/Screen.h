@@ -13,28 +13,24 @@ namespace Pinetime {
         DirtyValue() = default; // Use NSDMI
         explicit DirtyValue(T const& v) : value {v} {
         } // Use MIL and const-lvalue-ref
-        bool IsUpdated() {
-          if (this->isUpdated) {
-            this->isUpdated = false;
-            return true;
-          }
-          return false;
+        bool IsUpdated() const {
+          return std::exchange(isUpdated, false);
         }
-        T const& Get() {
-          this->isUpdated = false;
+        T const& Get() const {
+          isUpdated = false;
           return value;
         } // never expose a non-const lvalue-ref
         DirtyValue& operator=(const T& other) {
-          if (this->value != other) {
-            this->value = other;
-            this->isUpdated = true;
+          if (value != other) {
+            value = other;
+            isUpdated = true;
           }
           return *this;
         }
 
       private:
-        T value {};            // NSDMI - default initialise type
-        bool isUpdated {true}; // NSDMI - use brace initilisation
+        T value {};                    // NSDMI - default initialise type
+        mutable bool isUpdated {true}; // NSDMI - use brace initilisation
       };
 
       class Screen {

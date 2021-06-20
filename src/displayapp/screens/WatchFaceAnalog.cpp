@@ -45,23 +45,17 @@ lv_point_t coordinate_relocate(int16_t radius, int16_t angle) {
 } // namespace
 
 WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
-                                 Controllers::DateTimeController& dateTimeController,
+                                 Controllers::DateTimeController const& dateTimeController,
                                  Controllers::Battery& batteryController,
                                  Controllers::Ble& bleController,
                                  Controllers::NotificationManager& notificationManager,
                                  Controllers::Settings& settingsController)
-  : WatchFaceBase(app),
-    currentDateTime {{}},
-    dateTimeController {dateTimeController},
+  : WatchFaceBase{app, dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
     notificationManager {notificationManager},
     settingsController {settingsController} {
   settingsController.SetClockFace(1);
-
-  sHour = 99;
-  sMinute = 99;
-  sSecond = 99;
 
   lv_obj_t* bg_clock_img = lv_img_create(lv_scr_act(), NULL);
   lv_img_set_src(bg_clock_img, &bg_clock);
@@ -77,10 +71,10 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_obj_align(notificationIcon, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 8, -4);
 
   // Date - Day / Week day
-
+  auto const& date = GetUpdatedDate().Get();
   label_date_day = lv_label_create(lv_scr_act(), NULL);
   lv_obj_set_style_local_text_color(label_date_day, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xf0a500));
-  lv_label_set_text_fmt(label_date_day, "%s\n%02i", DayOfWeekShortToString(currentDayOfWeek), dateTimeController.Day());
+  lv_label_set_text_fmt(label_date_day, "%s\n%02i", DayOfWeekShortToString(date.dayOfWeek), date.day);
   lv_label_set_align(label_date_day, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label_date_day, NULL, LV_ALIGN_CENTER, 50, 0);
 
@@ -136,12 +130,9 @@ WatchFaceAnalog::~WatchFaceAnalog() {
 
 void WatchFaceAnalog::UpdateClock() {
 
-  hour = dateTimeController.Hours();
-  minute = dateTimeController.Minutes();
-  second = dateTimeController.Seconds();
-
-  if (sMinute != minute) {
-    auto const angle = minute * 6;
+  bool const minute_changed = minute.IsUpdated();
+  if (minute_changed) {
+    auto const angle = minute.Get() * 6;
     minute_point[0] = coordinate_relocate(30, angle);
     minute_point[1] = coordinate_relocate(MINUTE_LENGTH, angle);
 
@@ -152,10 +143,8 @@ void WatchFaceAnalog::UpdateClock() {
     lv_line_set_points(minute_body_trace, minute_point_trace, 2);
   }
 
-  if (sHour != hour || sMinute != minute) {
-    sHour = hour;
-    sMinute = minute;
-    auto const angle = (hour * 30 + minute / 2);
+  if (hour.IsUpdated() || minute_changed) {
+    auto const angle = (hour.Get() * 30 + minute.Get() / 2);
 
     hour_point[0] = coordinate_relocate(30, angle);
     hour_point[1] = coordinate_relocate(HOUR_LENGTH, angle);
@@ -167,12 +156,12 @@ void WatchFaceAnalog::UpdateClock() {
     lv_line_set_points(hour_body_trace, hour_point_trace, 2);
   }
 
-  if (sSecond != second) {
-    sSecond = second;
+  if (second.IsUpdated()) {
     auto const angle = second * 6;
 
     second_point[0] = coordinate_relocate(-20, angle);
     second_point[1] = coordinate_relocate(SECOND_LENGTH, angle);
+
     lv_line_set_points(second_body, second_point, 2);
   }
 }
@@ -193,24 +182,20 @@ bool WatchFaceAnalog::Refresh() {
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
   }
 
-  currentDateTime = dateTimeController.CurrentDateTime();
-
-  if (currentDateTime.IsUpdated()) {
-
-    month = dateTimeController.Month();
-    day = dateTimeController.Day();
-    dayOfWeek = dateTimeController.DayOfWeek();
+  auto const& time = GetUpdatedTime();
+  if (time.IsUpdated()) {
+    auto const& t = time.Get();
+    hour = t.hour;
+    minute = t.minute;
+    second = t.second;
 
     UpdateClock();
+  }
 
-    if ((month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-
-      lv_label_set_text_fmt(label_date_day, "%s\n%02i", DayOfWeekShortToString(dayOfWeek), day);
-
-      currentMonth = month;
-      currentDayOfWeek = dayOfWeek;
-      currentDay = day;
-    }
+  auto const& date = GetUpdatedDate();
+  if (date.IsUpdated()) {
+    auto const& d = date.Get();
+    lv_label_set_text_fmt(label_date_day, "%s\n%02i", DayOfWeekShortToString(d.dayOfWeek), d.day);
   }
 
   return true;

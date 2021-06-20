@@ -19,16 +19,14 @@ using namespace Pinetime::Applications::Screens;
 using namespace Pinetime::DateTime;
 
 WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
-                                   Controllers::DateTimeController& dateTimeController,
+                                   Controllers::DateTimeController const& dateTimeController,
                                    Controllers::Battery& batteryController,
                                    Controllers::Ble& bleController,
                                    Controllers::NotificationManager& notificatioManager,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController)
-  : WatchFaceBase(app),
-    currentDateTime {{}},
-    dateTimeController {dateTimeController},
+  : WatchFaceBase{app, dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
     notificatioManager {notificatioManager},
@@ -36,12 +34,6 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
     heartRateController {heartRateController},
     motionController {motionController} {
   settingsController.SetClockFace(0);
-
-  displayedChar[0] = 0;
-  displayedChar[1] = 0;
-  displayedChar[2] = 0;
-  displayedChar[3] = 0;
-  displayedChar[4] = 0;
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
@@ -136,56 +128,41 @@ bool WatchFaceDigital::Refresh() {
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
   }
 
-  currentDateTime = dateTimeController.CurrentDateTime();
-
-  if (currentDateTime.IsUpdated()) {
-    auto newDateTime = currentDateTime.Get();
-
-    auto dp = date::floor<date::days>(newDateTime);
-    auto time = date::make_time(newDateTime - dp);
-    auto yearMonthDay = date::year_month_day(dp);
-
-    auto year = (int) yearMonthDay.year();
-    auto month = static_cast<DateTime::Months>((unsigned) yearMonthDay.month());
-    auto day = (unsigned) yearMonthDay.day();
-    auto dayOfWeek = static_cast<DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
-
-    int hour = time.hours().count();
-    auto minute = time.minutes().count();
+  auto const clock_type = settingsController.GetClockType();
+  auto const& time = GetUpdatedTime();
+  if (time.IsUpdated()) {
+    auto const& t = time.Get();
 
     char minutesChar[3];
-    sprintf(minutesChar, "%02d", static_cast<int>(minute));
+    sprintf(minutesChar, "%02u", t.minute);
 
     char hoursChar[3];
     char ampmChar[3];
-    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-      sprintf(hoursChar, "%02d", hour);
-    } else {
-      if (hour == 0 && hour != 12) {
-        hour = 12;
+    auto hour = t.hour;
+    if (clock_type == Controllers::Settings::ClockType::H12) {
+      if (hour > 0 && hour < 12) {
         sprintf(ampmChar, "AM");
-      } else if (hour == 12 && hour != 0) {
-        hour = 12;
-        sprintf(ampmChar, "PM");
-      } else if (hour < 12 && hour != 0) {
-        sprintf(ampmChar, "AM");
-      } else if (hour > 12 && hour != 0) {
-        hour = hour - 12;
+      } else {
         sprintf(ampmChar, "PM");
       }
-      sprintf(hoursChar, "%02d", hour);
+      if (hour == 0) {
+        hour = 12;
+      } else if (hour > 12) {
+        hour -= 12;
+      }
     }
+    sprintf(hoursChar, "%02u", hour);
 
-    if (hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] ||
-        minutesChar[1] != displayedChar[3]) {
-      displayedChar[0] = hoursChar[0];
-      displayedChar[1] = hoursChar[1];
-      displayedChar[2] = minutesChar[0];
-      displayedChar[3] = minutesChar[1];
+    if (hoursChar[0] != displayedTime[0] || hoursChar[1] != displayedTime[1] || minutesChar[0] != displayedTime[2] ||
+        minutesChar[1] != displayedTime[3]) {
+      displayedTime[0] = hoursChar[0];
+      displayedTime[1] = hoursChar[1];
+      displayedTime[2] = minutesChar[0];
+      displayedTime[3] = minutesChar[1];
 
       char timeStr[6];
 
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+      if (clock_type == Controllers::Settings::ClockType::H12) {
         lv_label_set_text(label_time_ampm, ampmChar);
         if (hoursChar[0] == '0') {
           hoursChar[0] = ' ';
@@ -195,28 +172,26 @@ bool WatchFaceDigital::Refresh() {
       sprintf(timeStr, "%c%c:%c%c", hoursChar[0], hoursChar[1], minutesChar[0], minutesChar[1]);
       lv_label_set_text(label_time, timeStr);
 
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+      if (clock_type == Controllers::Settings::ClockType::H12) {
         lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
       } else {
         lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
       }
     }
+  }
 
-    if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      char dateStr[22];
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        sprintf(dateStr, "%s %d %s %d", DayOfWeekShortToString(dayOfWeek), day, MonthShortToString(month), year);
-      } else {
-        sprintf(dateStr, "%s %s %d %d", DayOfWeekShortToString(dayOfWeek), MonthShortToString(month), day, year);
-      }
-      lv_label_set_text(label_date, dateStr);
-      lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
+  auto const& date = GetUpdatedDate();
+  if (date.IsUpdated()) {
+    auto const& d = date.Get();
+    char dateStr[22];
 
-      currentYear = year;
-      currentMonth = month;
-      currentDayOfWeek = dayOfWeek;
-      currentDay = day;
+    if (clock_type == Controllers::Settings::ClockType::H24) {
+      sprintf(dateStr, "%s %d %s %d", DayOfWeekShortToString(d.dayOfWeek), d.day, MonthShortToString(d.month), d.year);
+    } else {
+      sprintf(dateStr, "%s %s %d %d", DayOfWeekShortToString(d.dayOfWeek), MonthShortToString(d.month), d.day, d.year);
     }
+    lv_label_set_text(label_date, dateStr);
+    lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
   }
 
   heartbeat = heartRateController.HeartRate();

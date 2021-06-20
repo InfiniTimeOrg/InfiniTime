@@ -6,7 +6,6 @@
 #include <memory>
 #include "WatchFaceBase.h"
 #include "components/datetime/DateTime.h"
-#include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -16,6 +15,7 @@ namespace Pinetime {
     class NotificationManager;
     class HeartRateController;
     class MotionController;
+    class DateTimeController;
   }
 
   namespace Applications {
@@ -24,7 +24,7 @@ namespace Pinetime {
       class WatchFaceDigital : public WatchFaceBase {
       public:
         WatchFaceDigital(DisplayApp* app,
-                         Controllers::DateTimeController& dateTimeController,
+                         Controllers::DateTimeController const& dateTimeController,
                          Controllers::Battery& batteryController,
                          Controllers::Ble& bleController,
                          Controllers::NotificationManager& notificatioManager,
@@ -38,12 +38,7 @@ namespace Pinetime {
         void OnObjectEvent(lv_obj_t* pObj, lv_event_t i);
 
       private:
-        char displayedChar[5];
-
-        uint16_t currentYear = 1970;
-        Pinetime::DateTime::Months currentMonth = Pinetime::DateTime::Months::Unknown;
-        Pinetime::DateTime::Days currentDayOfWeek = Pinetime::DateTime::Days::Unknown;
-        uint8_t currentDay = 0;
+        char displayedTime[5] = {};
 
         DirtyValue<uint8_t> batteryPercentRemaining {};
         DirtyValue<bool> bleState {};
@@ -68,7 +63,6 @@ namespace Pinetime {
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
 
-        Controllers::DateTimeController& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificatioManager;

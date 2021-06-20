@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <memory>
 #include "WatchFaceBase.h"
-#include "components/datetime/DateTimeController.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
@@ -16,6 +15,7 @@ namespace Pinetime {
     class Battery;
     class Ble;
     class NotificationManager;
+    class DateTimeController;
   }
   namespace Applications {
     namespace Screens {
@@ -23,7 +23,7 @@ namespace Pinetime {
       class WatchFaceAnalog : public WatchFaceBase {
       public:
         WatchFaceAnalog(DisplayApp* app,
-                        Controllers::DateTimeController& dateTimeController,
+                        Controllers::DateTimeController const& dateTimeController,
                         Controllers::Battery& batteryController,
                         Controllers::Ble& bleController,
                         Controllers::NotificationManager& notificationManager,
@@ -34,21 +34,11 @@ namespace Pinetime {
         bool Refresh() override;
 
       private:
-        uint8_t sHour, sMinute, sSecond;
-        uint8_t hour;
-        uint8_t minute;
-        uint8_t second;
-
-        Pinetime::DateTime::Months month;
-        uint8_t day;
-        Pinetime::DateTime::Days dayOfWeek;
-
-        Pinetime::DateTime::Months currentMonth = Pinetime::DateTime::Months::Unknown;
-        Pinetime::DateTime::Days currentDayOfWeek = Pinetime::DateTime::Days::Unknown;
-        uint8_t currentDay = 0;
+        DirtyValue<uint8_t> hour{99};
+        DirtyValue<uint8_t> minute{99};
+        DirtyValue<uint8_t> second{99};
 
         DirtyValue<uint8_t> batteryPercentRemaining {0};
-        DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
         DirtyValue<bool> notificationState {false};
 
         lv_obj_t* hour_body;
@@ -75,7 +65,6 @@ namespace Pinetime {
         lv_obj_t* batteryIcon;
         lv_obj_t* notificationIcon;
 
-        Controllers::DateTimeController& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
