@@ -62,7 +62,12 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
 
     APP_ERROR_CHECK(nrfx_saadc_buffer_convert(&saadc_value, 1));
 
-    voltage = p_event->data.done.p_buffer[0] * 2000 / 341;
+    // A hardware voltage divider divides the battery voltage by 2
+    // ADC gain is 1/5
+    // thus adc_voltage = battery_voltage / 2 * gain = battery_voltage / 10
+    // reference_voltage is 0.6V
+    // p_event->data.done.p_buffer[0] = (adc_voltage / reference_voltage) * 1024
+    voltage = p_event->data.done.p_buffer[0] * 6000 / 1024;
 
     percentRemaining = (voltage - battery_min) * 100 / (battery_max - battery_min);
 
