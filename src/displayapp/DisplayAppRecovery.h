@@ -37,7 +37,7 @@ namespace Pinetime {
                  Drivers::Cst816S&,
                  Controllers::Battery& batteryController,
                  Controllers::Ble& bleController,
-                 Controllers::DateTime& dateTimeController,
+                 Controllers::DateTimeController& dateTimeController,
                  Drivers::WatchdogView& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,

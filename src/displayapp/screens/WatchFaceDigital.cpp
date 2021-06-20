@@ -16,9 +16,10 @@
 #include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::DateTime;
 
 WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
-                                   Controllers::DateTime& dateTimeController,
+                                   Controllers::DateTimeController& dateTimeController,
                                    Controllers::Battery& batteryController,
                                    Controllers::Ble& bleController,
                                    Controllers::NotificationManager& notificatioManager,
@@ -145,9 +146,9 @@ bool WatchFaceDigital::Refresh() {
     auto yearMonthDay = date::year_month_day(dp);
 
     auto year = (int) yearMonthDay.year();
-    auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned) yearMonthDay.month());
+    auto month = static_cast<DateTime::Months>((unsigned) yearMonthDay.month());
     auto day = (unsigned) yearMonthDay.day();
-    auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
+    auto dayOfWeek = static_cast<DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
     int hour = time.hours().count();
     auto minute = time.minutes().count();
@@ -204,9 +205,9 @@ bool WatchFaceDigital::Refresh() {
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
       char dateStr[22];
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        sprintf(dateStr, "%s %d %s %d", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString(), year);
+        sprintf(dateStr, "%s %d %s %d", DayOfWeekShortToString(dayOfWeek), day, MonthShortToString(month), year);
       } else {
-        sprintf(dateStr, "%s %s %d %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day, year);
+        sprintf(dateStr, "%s %s %d %d", DayOfWeekShortToString(dayOfWeek), MonthShortToString(month), day, year);
       }
       lv_label_set_text(label_date, dateStr);
       lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);

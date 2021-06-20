@@ -1,5 +1,6 @@
 #pragma once
 
+#include "DateTime.h"
 #include <cstdint>
 #include <chrono>
 
@@ -8,25 +9,8 @@ namespace Pinetime {
     class SystemTask;
   }
   namespace Controllers {
-    class DateTime {
+    class DateTimeController {
     public:
-      enum class Days : uint8_t { Unknown, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday };
-      enum class Months : uint8_t {
-        Unknown,
-        January,
-        February,
-        March,
-        April,
-        May,
-        June,
-        July,
-        August,
-        September,
-        October,
-        November,
-        December
-      };
-
       void SetTime(uint16_t year,
                    uint8_t month,
                    uint8_t day,
@@ -39,13 +23,13 @@ namespace Pinetime {
       uint16_t Year() const {
         return year;
       }
-      Months Month() const {
+      DateTime::Months Month() const {
         return month;
       }
       uint8_t Day() const {
         return day;
       }
-      Days DayOfWeek() const {
+      DateTime::Days DayOfWeek() const {
         return dayOfWeek;
       }
       uint8_t Hours() const {
@@ -58,14 +42,6 @@ namespace Pinetime {
         return second;
       }
 
-      const char* MonthShortToString();
-      const char* MonthShortToStringLow();
-      const char* MonthsToStringLow();
-      const char* DayOfWeekToString();
-      const char* DayOfWeekShortToString();
-      const char* DayOfWeekToStringLow();
-      const char* DayOfWeekShortToStringLow();
-
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const {
         return currentDateTime;
       }
@@ -77,9 +53,9 @@ namespace Pinetime {
 
     private:
       uint16_t year = 0;
-      Months month = Months::Unknown;
+      DateTime::Months month = DateTime::Months::Unknown;
       uint8_t day = 0;
-      Days dayOfWeek = Days::Unknown;
+      DateTime::Days dayOfWeek = DateTime::Days::Unknown;
       uint8_t hour = 0;
       uint8_t minute = 0;
       uint8_t second = 0;
@@ -90,14 +66,6 @@ namespace Pinetime {
 
       bool isMidnightAlreadyNotified = false;
       System::SystemTask* systemTask = nullptr;
-
-      static char const* DaysString[];
-      static char const* DaysStringShort[];
-      static char const* DaysStringLow[];
-      static char const* DaysStringShortLow[];
-      static char const* MonthsString[];
-      static char const* MonthsStringLow[];
-      static char const* MonthsLow[];
     };
   }
 }

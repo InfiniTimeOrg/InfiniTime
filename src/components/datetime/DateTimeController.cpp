@@ -5,7 +5,7 @@
 
 using namespace Pinetime::Controllers;
 
-void DateTime::SetTime(
+void DateTimeController::SetTime(
   uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfWeek, uint8_t hour, uint8_t minute, uint8_t second, uint32_t systickCounter) {
   std::tm tm = {
     /* .tm_sec  = */ second,
@@ -27,7 +27,7 @@ void DateTime::SetTime(
   NRF_LOG_INFO("* %d %d %d ", this->day, this->month, this->year);
 }
 
-void DateTime::UpdateTime(uint32_t systickCounter) {
+void DateTimeController::UpdateTime(uint32_t systickCounter) {
   // Handle systick counter overflow
   uint32_t systickDelta = 0;
   if (systickCounter < previousSystickCounter) {
@@ -56,9 +56,9 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   auto yearMonthDay = date::year_month_day(dp);
 
   year = (int) yearMonthDay.year();
-  month = static_cast<Months>((unsigned) yearMonthDay.month());
+  month = static_cast<DateTime::Months>(static_cast<unsigned>(yearMonthDay.month()));
   day = (unsigned) yearMonthDay.day();
-  dayOfWeek = static_cast<Days>(date::weekday(yearMonthDay).iso_encoding());
+  dayOfWeek = static_cast<DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
   hour = time.hours().count();
   minute = time.minutes().count();
@@ -74,49 +74,6 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   }
 }
 
-const char* DateTime::MonthShortToString() {
-  return DateTime::MonthsString[(uint8_t) month];
-}
-
-const char* DateTime::MonthShortToStringLow() {
-  return DateTime::MonthsStringLow[(uint8_t) month];
-}
-
-const char* DateTime::MonthsToStringLow() {
-  return DateTime::MonthsLow[(uint8_t) month];
-}
-
-const char* DateTime::DayOfWeekToString() {
-  return DateTime::DaysString[(uint8_t) dayOfWeek];
-}
-
-const char* DateTime::DayOfWeekShortToString() {
-  return DateTime::DaysStringShort[(uint8_t) dayOfWeek];
-}
-
-const char* DateTime::DayOfWeekToStringLow() {
-  return DateTime::DaysStringLow[(uint8_t) dayOfWeek];
-}
-
-const char* DateTime::DayOfWeekShortToStringLow() {
-  return DateTime::DaysStringShortLow[(uint8_t) dayOfWeek];
-}
-
-void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
+void DateTimeController::Register(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
 }
-
-char const* DateTime::DaysStringLow[] = {"--", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-
-char const* DateTime::DaysStringShortLow[] = {"--", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-
-char const* DateTime::DaysStringShort[] = {"--", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
-
-char const* DateTime::DaysString[] = {"--", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"};
-
-char const* DateTime::MonthsString[] = {"--", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
-
-char const* DateTime::MonthsStringLow[] = {"--", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
-char const* DateTime::MonthsLow[] = {
-  "--", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};

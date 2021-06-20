@@ -28,7 +28,7 @@ namespace {
 }
 
 SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
-                       Pinetime::Controllers::DateTime& dateTimeController,
+                       Pinetime::Controllers::DateTimeController& dateTimeController,
                        Pinetime::Controllers::Battery& batteryController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::Ble& bleController,

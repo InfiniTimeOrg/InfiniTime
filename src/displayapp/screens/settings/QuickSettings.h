@@ -20,7 +20,7 @@ namespace Pinetime {
       public:
         QuickSettings(DisplayApp* app,
                       Pinetime::Controllers::Battery& batteryController,
-                      Controllers::DateTime& dateTimeController,
+                      Controllers::DateTimeController& dateTimeController,
                       Controllers::BrightnessController& brightness,
                       Controllers::MotorController& motorController,
                       Pinetime::Controllers::Settings& settingsController);
@@ -35,7 +35,7 @@ namespace Pinetime {
 
       private:
         Pinetime::Controllers::Battery& batteryController;
-        Controllers::DateTime& dateTimeController;
+        Controllers::DateTimeController& dateTimeController;
         Controllers::BrightnessController& brightness;
         Controllers::MotorController& motorController;
         Controllers::Settings& settingsController;

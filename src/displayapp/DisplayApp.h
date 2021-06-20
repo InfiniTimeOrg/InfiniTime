@@ -27,7 +27,7 @@ namespace Pinetime {
     class Settings;
     class Battery;
     class Ble;
-    class DateTime;
+    class DControllerateTime;
     class NotificationManager;
     class HeartRateController;
     class MotionController;
@@ -48,7 +48,7 @@ namespace Pinetime {
                  Drivers::Cst816S&,
                  Controllers::Battery& batteryController,
                  Controllers::Ble& bleController,
-                 Controllers::DateTime& dateTimeController,
+                 Controllers::DateTimeController& dateTimeController,
                  Drivers::WatchdogView& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,
@@ -72,7 +72,7 @@ namespace Pinetime {
       Pinetime::Drivers::Cst816S& touchPanel;
       Pinetime::Controllers::Battery& batteryController;
       Pinetime::Controllers::Ble& bleController;
-      Pinetime::Controllers::DateTime& dateTimeController;
+      Pinetime::Controllers::DateTimeController& dateTimeController;
       Pinetime::Drivers::WatchdogView& watchdog;
       Pinetime::System::SystemTask* systemTask = nullptr;
       Pinetime::Controllers::NotificationManager& notificationManager;

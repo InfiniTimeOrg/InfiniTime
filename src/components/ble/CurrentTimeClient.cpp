@@ -28,7 +28,7 @@ namespace {
   }
 }
 
-CurrentTimeClient::CurrentTimeClient(DateTime& dateTimeController) : dateTimeController {dateTimeController} {
+CurrentTimeClient::CurrentTimeClient(DateTimeController& dateTimeController) : dateTimeController {dateTimeController} {
 }
 
 void CurrentTimeClient::Init() {

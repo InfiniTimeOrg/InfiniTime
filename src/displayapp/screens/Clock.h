@@ -25,7 +25,7 @@ namespace Pinetime {
       class Clock : public Screen {
       public:
         Clock(DisplayApp* app,
-              Controllers::DateTime& dateTimeController,
+              Controllers::DateTimeController& dateTimeController,
               Controllers::Battery& batteryController,
               Controllers::Ble& bleController,
               Controllers::NotificationManager& notificatioManager,
@@ -39,7 +39,7 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
-        Controllers::DateTime& dateTimeController;
+        Controllers::DateTimeController& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificatioManager;

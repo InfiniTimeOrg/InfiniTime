@@ -112,7 +112,7 @@ static constexpr uint8_t pinPowerPresentIrq = 19;
 Pinetime::Controllers::HeartRateController heartRateController;
 Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController);
 
-Pinetime::Controllers::DateTime dateTimeController;
+Pinetime::Controllers::DateTimeController dateTimeController;
 Pinetime::Drivers::Watchdog watchdog;
 Pinetime::Drivers::WatchdogView watchdogView(watchdog);
 Pinetime::Controllers::NotificationManager notificationManager;

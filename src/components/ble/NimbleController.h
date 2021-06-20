@@ -31,7 +31,7 @@ namespace Pinetime {
 
   namespace Controllers {
     class Ble;
-    class DateTime;
+    class DateTimeController;
     class NotificationManager;
 
     class NimbleController {
@@ -39,7 +39,7 @@ namespace Pinetime {
     public:
       NimbleController(Pinetime::System::SystemTask& systemTask,
                        Pinetime::Controllers::Ble& bleController,
-                       DateTime& dateTimeController,
+                       DateTimeController& dateTimeController,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Controllers::Battery& batteryController,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
@@ -76,7 +76,7 @@ namespace Pinetime {
       static constexpr const char* deviceName = "InfiniTime";
       Pinetime::System::SystemTask& systemTask;
       Pinetime::Controllers::Ble& bleController;
-      DateTime& dateTimeController;
+      DateTimeController& dateTimeController;
       Pinetime::Controllers::NotificationManager& notificationManager;
       Pinetime::Drivers::SpiNorFlash& spiNorFlash;
       Pinetime::Controllers::DfuService dfuService;

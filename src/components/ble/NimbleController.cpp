@@ -19,7 +19,7 @@ using namespace Pinetime::Controllers;
 
 NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
                                    Pinetime::Controllers::Ble& bleController,
-                                   DateTime& dateTimeController,
+                                   DateTimeController& dateTimeController,
                                    Pinetime::Controllers::NotificationManager& notificationManager,
                                    Controllers::Battery& batteryController,
                                    Pinetime::Drivers::SpiNorFlash& spiNorFlash,

@@ -24,7 +24,7 @@ namespace Pinetime {
       class WatchFaceAnalog : public Screen {
       public:
         WatchFaceAnalog(DisplayApp* app,
-                        Controllers::DateTime& dateTimeController,
+                        Controllers::DateTimeController& dateTimeController,
                         Controllers::Battery& batteryController,
                         Controllers::Ble& bleController,
                         Controllers::NotificationManager& notificationManager,
@@ -40,12 +40,12 @@ namespace Pinetime {
         uint8_t minute;
         uint8_t second;
 
-        Pinetime::Controllers::DateTime::Months month;
+        Pinetime::DateTime::Months month;
         uint8_t day;
-        Pinetime::Controllers::DateTime::Days dayOfWeek;
+        Pinetime::DateTime::Days dayOfWeek;
 
-        Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
-        Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
+        Pinetime::DateTime::Months currentMonth = Pinetime::DateTime::Months::Unknown;
+        Pinetime::DateTime::Days currentDayOfWeek = Pinetime::DateTime::Days::Unknown;
         uint8_t currentDay = 0;
 
         DirtyValue<uint8_t> batteryPercentRemaining {0};
@@ -76,7 +76,7 @@ namespace Pinetime {
         lv_obj_t* batteryIcon;
         lv_obj_t* notificationIcon;
 
-        Controllers::DateTime& dateTimeController;
+        Controllers::DateTimeController& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;

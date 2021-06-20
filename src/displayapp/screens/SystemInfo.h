@@ -6,7 +6,7 @@
 
 namespace Pinetime {
   namespace Controllers {
-    class DateTime;
+    class DateTimeController;
     class Battery;
     class BrightnessController;
     class Ble;
@@ -23,7 +23,7 @@ namespace Pinetime {
       class SystemInfo : public Screen {
       public:
         explicit SystemInfo(DisplayApp* app,
-                            Pinetime::Controllers::DateTime& dateTimeController,
+                            Pinetime::Controllers::DateTimeController& dateTimeController,
                             Pinetime::Controllers::Battery& batteryController,
                             Pinetime::Controllers::BrightnessController& brightnessController,
                             Pinetime::Controllers::Ble& bleController,
@@ -34,7 +34,7 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
-        Pinetime::Controllers::DateTime& dateTimeController;
+        Pinetime::Controllers::DateTimeController& dateTimeController;
         Pinetime::Controllers::Battery& batteryController;
         Pinetime::Controllers::BrightnessController& brightnessController;
         Pinetime::Controllers::Ble& bleController;

@@ -11,7 +11,7 @@ using namespace Pinetime::Applications::Screens;
 ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp* app,
                                  Pinetime::Controllers::Settings& settingsController,
                                  Pinetime::Controllers::Battery& batteryController,
-                                 Controllers::DateTime& dateTimeController)
+                                 Controllers::DateTimeController& dateTimeController)
   : Screen(app),
     settingsController {settingsController},
     batteryController {batteryController},

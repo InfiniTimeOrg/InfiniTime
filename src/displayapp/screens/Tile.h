@@ -25,7 +25,7 @@ namespace Pinetime {
                       DisplayApp* app,
                       Controllers::Settings& settingsController,
                       Pinetime::Controllers::Battery& batteryController,
-                      Controllers::DateTime& dateTimeController,
+                      Controllers::DateTimeController& dateTimeController,
                       std::array<Applications, 6>& applications);
 
         ~Tile() override;
@@ -36,7 +36,7 @@ namespace Pinetime {
 
       private:
         Pinetime::Controllers::Battery& batteryController;
-        Controllers::DateTime& dateTimeController;
+        Controllers::DateTimeController& dateTimeController;
 
         lv_task_t* taskUpdate;
 

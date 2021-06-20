@@ -23,7 +23,7 @@ Tile::Tile(uint8_t screenID,
            DisplayApp* app,
            Controllers::Settings& settingsController,
            Pinetime::Controllers::Battery& batteryController,
-           Controllers::DateTime& dateTimeController,
+           Controllers::DateTimeController& dateTimeController,
            std::array<Applications, 6>& applications)
   : Screen(app), batteryController {batteryController}, dateTimeController {dateTimeController} {
 

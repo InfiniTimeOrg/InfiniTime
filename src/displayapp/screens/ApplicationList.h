@@ -16,7 +16,7 @@ namespace Pinetime {
         explicit ApplicationList(DisplayApp* app,
                                  Pinetime::Controllers::Settings& settingsController,
                                  Pinetime::Controllers::Battery& batteryController,
-                                 Controllers::DateTime& dateTimeController);
+                                 Controllers::DateTimeController& dateTimeController);
         ~ApplicationList() override;
         bool Refresh() override;
         bool OnTouchEvent(TouchEvents event) override;
@@ -24,7 +24,7 @@ namespace Pinetime {
       private:
         Controllers::Settings& settingsController;
         Pinetime::Controllers::Battery& batteryController;
-        Controllers::DateTime& dateTimeController;
+        Controllers::DateTimeController& dateTimeController;
 
         ScreenList<2> screens;
         std::unique_ptr<Screen> CreateScreen1();

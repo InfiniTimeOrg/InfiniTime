@@ -451,6 +451,7 @@ list(APPEND SOURCE_FILES
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
         components/ble/NotificationManager.cpp
+        components/datetime/DateTime.cpp
         components/datetime/DateTimeController.cpp
         components/brightness/BrightnessController.cpp
         components/motion/MotionController.cpp

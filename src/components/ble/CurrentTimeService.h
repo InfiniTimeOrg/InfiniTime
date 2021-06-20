@@ -13,7 +13,7 @@ namespace Pinetime {
   namespace Controllers {
     class CurrentTimeService {
     public:
-      CurrentTimeService(DateTime& dateTimeController);
+      CurrentTimeService(DateTimeController& dateTimeController);
       void Init();
 
       int OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
@@ -40,7 +40,7 @@ namespace Pinetime {
         uint8_t reason;
       } CtsData;
 
-      DateTime& m_dateTimeController;
+      DateTimeController& m_dateTimeController;
     };
   }
 }
