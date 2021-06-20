@@ -50,7 +50,7 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
                                  Controllers::Ble& bleController,
                                  Controllers::NotificationManager& notificationManager,
                                  Controllers::Settings& settingsController)
-  : Screen(app),
+  : WatchFaceBase(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
     batteryController {batteryController},

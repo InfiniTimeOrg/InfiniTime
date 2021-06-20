@@ -26,7 +26,7 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController)
-  : Screen(app),
+  : WatchFaceBase(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
     batteryController {batteryController},

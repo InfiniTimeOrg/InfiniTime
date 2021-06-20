@@ -4,8 +4,7 @@
 #include <chrono>
 #include <cstdint>
 #include <memory>
-#include "Screen.h"
-#include "ScreenList.h"
+#include "WatchFaceBase.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
@@ -21,7 +20,7 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class WatchFaceAnalog : public Screen {
+      class WatchFaceAnalog : public WatchFaceBase {
       public:
         WatchFaceAnalog(DisplayApp* app,
                         Controllers::DateTimeController& dateTimeController,
