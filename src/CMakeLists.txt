@@ -235,6 +235,7 @@ set(LVGL_SRC
         libs/lvgl/src/lv_widgets/lv_cont.h
         libs/lvgl/src/lv_widgets/lv_cpicker.h
         libs/lvgl/src/lv_widgets/lv_dropdown.h
+        libs/lvgl/src/lv_widgets/lv_gauge.h
         libs/lvgl/src/lv_widgets/lv_img.h
         libs/lvgl/src/lv_widgets/lv_imgbtn.h
         libs/lvgl/src/lv_widgets/lv_keyboard.h
@@ -321,6 +322,7 @@ set(LVGL_SRC
         libs/lvgl/src/lv_widgets/lv_cont.c
         libs/lvgl/src/lv_widgets/lv_cpicker.c
         libs/lvgl/src/lv_widgets/lv_dropdown.c
+        libs/lvgl/src/lv_widgets/lv_gauge.c
         libs/lvgl/src/lv_widgets/lv_img.c
         libs/lvgl/src/lv_widgets/lv_imgbtn.c
         libs/lvgl/src/lv_widgets/lv_keyboard.c

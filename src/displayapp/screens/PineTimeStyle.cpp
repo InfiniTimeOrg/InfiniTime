@@ -30,7 +30,7 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
-#include "components/heartrate/HeartRateController.h"
+#include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
 #include "../DisplayApp.h"
 
@@ -42,7 +42,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
                              Controllers::Ble& bleController,
                              Controllers::NotificationManager& notificatioManager,
                              Controllers::Settings& settingsController,
-                             Controllers::HeartRateController& heartRateController)
+                             Controllers::MotionController& motionController)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -50,7 +50,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
     bleController {bleController},
     notificatioManager {notificatioManager},
     settingsController {settingsController},
-    heartRateController {heartRateController} {
+    motionController {motionController} {
 
   /* This sets the watchface number to return to after leaving the menu */
   settingsController.SetClockFace(2);
@@ -165,17 +165,29 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_label_set_text(dateMonth, "MAR");
   lv_obj_align(dateMonth, sidebar, LV_ALIGN_CENTER, 0, 32);
 
-  /* Display heartrate info */
+  // Step count gauge
+  static lv_color_t needle_colors[1];
+  needle_colors[0] = LV_COLOR_WHITE;
+  stepGauge = lv_gauge_create(lv_scr_act(), nullptr);
+  lv_gauge_set_needle_count(stepGauge, 1, needle_colors);
+  lv_obj_set_size(stepGauge, 40, 40);
+  lv_obj_align(stepGauge, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_gauge_set_scale(stepGauge, 360, 11, 0);
+  lv_gauge_set_angle_offset(stepGauge, 180);
+  lv_gauge_set_critical_value(stepGauge, (settingsController.GetStepsGoal() / 100));
+  lv_gauge_set_range(stepGauge, 0, (settingsController.GetStepsGoal() / 100));
+  lv_gauge_set_value(stepGauge, 0, 0);
 
-  heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_label_set_text(heartbeatIcon, Symbols::heartBeat);
-  lv_obj_align(heartbeatIcon, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, -30);
-
-  heartbeatValue = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_label_set_text(heartbeatValue, "---");
-  lv_obj_align(heartbeatValue, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
+  lv_obj_set_style_local_pad_right(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
+  lv_obj_set_style_local_pad_left(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
+  lv_obj_set_style_local_pad_bottom(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
+  lv_obj_set_style_local_line_opa(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
+  lv_obj_set_style_local_scale_width(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 4);
+  lv_obj_set_style_local_line_width(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 4);
+  lv_obj_set_style_local_line_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_line_opa(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, LV_OPA_COVER);
+  lv_obj_set_style_local_line_width(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 4);
+  lv_obj_set_style_local_pad_inner(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 4);
 
   backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_click(backgroundLabel, true);
@@ -286,17 +298,11 @@ bool PineTimeStyle::Refresh() {
     }
   }
 
-  heartbeat = heartRateController.HeartRate();
-  heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
-  if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
-    char heartbeatBuffer[4];
-    if (heartbeatRunning.Get())
-      sprintf(heartbeatBuffer, "%d", heartbeat.Get());
-    else
-      sprintf(heartbeatBuffer, "---");
-
-    lv_label_set_text(heartbeatValue, heartbeatBuffer);
-    lv_obj_realign(heartbeatValue);
+  stepCount = motionController.NbSteps();
+  motionSensorOk = motionController.IsSensorOk();
+  if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
+      lv_gauge_set_value(stepGauge, 0, (stepCount.Get() / 100));
+      lv_obj_realign(stepGauge);
   }
 
   return running;
