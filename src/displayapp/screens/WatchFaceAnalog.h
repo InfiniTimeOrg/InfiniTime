@@ -61,8 +61,6 @@ namespace Pinetime {
         lv_obj_t* batteryIcon;
         lv_obj_t* notificationIcon;
 
-        Controllers::Settings& settingsController;
-
         void UpdateClock();
       };
     }

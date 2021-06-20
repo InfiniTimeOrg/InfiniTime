@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Screen.h"
+#include "components/settings/Settings.h"
 #include "components/datetime/DateTime.h"
 #include <cstdint>
 
@@ -64,13 +65,17 @@ namespace Pinetime {
           }
         };
 
-        WatchFaceBase(DisplayApp* app,
+        WatchFaceBase(Controllers::Settings::ClockFace face,
+                      DisplayApp* app,
+                      Controllers::Settings& settingsController,
                       Controllers::DateTimeController const& dateTimeController,
                       Controllers::Battery const& batteryController,
                       Controllers::Ble const& bleController,
                       Controllers::NotificationManager const& notificationManager);
 
         virtual ~WatchFaceBase() = default;
+
+        Controllers::Settings::ClockType GetClockType() const;
 
         void UpdateDate();
         void UpdateTime();
@@ -123,6 +128,7 @@ namespace Pinetime {
         DirtyValue<BleState> ble;
         DirtyValue<NotificationState> notifications;
 
+        Controllers::Settings& settingsController;
         Controllers::DateTimeController const& dateTimeController;
         Controllers::Battery const& batteryController;
         Controllers::Ble const& bleController;

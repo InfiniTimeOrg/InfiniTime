@@ -6,16 +6,24 @@
 
 using namespace Pinetime::Applications::Screens;
 
-WatchFaceBase::WatchFaceBase(DisplayApp* app,
+WatchFaceBase::WatchFaceBase(Controllers::Settings::ClockFace face,
+                             DisplayApp* app,
+                             Controllers::Settings& settingsController,
                              Controllers::DateTimeController const& dateTimeController,
                              Controllers::Battery const& batteryController,
                              Controllers::Ble const& bleController,
                              Controllers::NotificationManager const& notificationManager)
   : Screen{app},
+    settingsController{settingsController},
     dateTimeController{dateTimeController},
     batteryController{batteryController},
     bleController{bleController},
     notificationManager{notificationManager} {
+  settingsController.SetClockFace(face);
+}
+
+Pinetime::Controllers::Settings::ClockType WatchFaceBase::GetClockType() const {
+  return settingsController.GetClockType();
 }
 
 void WatchFaceBase::UpdateDate() {

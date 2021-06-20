@@ -50,9 +50,13 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
                                  Controllers::Ble const& bleController,
                                  Controllers::NotificationManager const& notificationManager,
                                  Controllers::Settings& settingsController)
-  : WatchFaceBase{app, dateTimeController, batteryController, bleController, notificationManager},
-    settingsController {settingsController} {
-  settingsController.SetClockFace(1);
+  : WatchFaceBase{Pinetime::Controllers::Settings::ClockFace::Analog,
+      app,
+      settingsController,
+      dateTimeController,
+      batteryController,
+      bleController,
+      notificationManager} {
 
   lv_obj_t* bg_clock_img = lv_img_create(lv_scr_act(), NULL);
   lv_img_set_src(bg_clock_img, &bg_clock);

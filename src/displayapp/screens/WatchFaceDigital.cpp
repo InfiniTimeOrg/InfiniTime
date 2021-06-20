@@ -22,11 +22,15 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController)
-  : WatchFaceBase{app, dateTimeController, batteryController, bleController, notificationManager},
-    settingsController {settingsController},
+  : WatchFaceBase{Pinetime::Controllers::Settings::ClockFace::Digital,
+      app,
+      settingsController,
+      dateTimeController,
+      batteryController,
+      bleController,
+      notificationManager},
     heartRateController {heartRateController},
     motionController {motionController} {
-  settingsController.SetClockFace(0);
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
@@ -115,7 +119,7 @@ bool WatchFaceDigital::Refresh() {
     lv_label_set_text(notificationIcon, icon);
   }
 
-  auto const clock_type = settingsController.GetClockType();
+  auto const clock_type = GetClockType();
   auto const& time = GetUpdatedTime();
   if (time.IsUpdated()) {
     auto const& t = time.Get();

@@ -45,7 +45,7 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pine
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Digital face");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetClockFace() == 0) {
+  if (settingsController.GetClockFace() == Pinetime::Controllers::Settings::ClockFace::Digital) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
 
@@ -54,7 +54,7 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pine
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Analog face");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetClockFace() == 1) {
+  if (settingsController.GetClockFace() == Pinetime::Controllers::Settings::ClockFace::Analog) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
 
@@ -84,7 +84,7 @@ void SettingWatchFace::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     for (uint8_t i = 0; i < optionsTotal; i++) {
       if (object == cbOption[i]) {
         lv_checkbox_set_checked(cbOption[i], true);
-        settingsController.SetClockFace(i);
+        settingsController.SetClockFace(static_cast<Pinetime::Controllers::Settings::ClockFace>(i));
       } else {
         lv_checkbox_set_checked(cbOption[i], false);
       }
