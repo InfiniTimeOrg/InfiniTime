@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <memory>
 #include "WatchFaceBase.h"
-#include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 
@@ -18,13 +17,15 @@ namespace Pinetime {
     class DateTimeController;
   }
   namespace Applications {
+    class DisplayApp;
+
     namespace Screens {
 
       class WatchFaceAnalog : public WatchFaceBase {
       public:
         WatchFaceAnalog(DisplayApp* app,
                         Controllers::DateTimeController const& dateTimeController,
-                        Controllers::Battery& batteryController,
+                        Controllers::Battery const& batteryController,
                         Controllers::Ble& bleController,
                         Controllers::NotificationManager& notificationManager,
                         Controllers::Settings& settingsController);
@@ -38,7 +39,6 @@ namespace Pinetime {
         DirtyValue<uint8_t> minute{99};
         DirtyValue<uint8_t> second{99};
 
-        DirtyValue<uint8_t> batteryPercentRemaining {0};
         DirtyValue<bool> notificationState {false};
 
         lv_obj_t* hour_body;
@@ -65,7 +65,6 @@ namespace Pinetime {
         lv_obj_t* batteryIcon;
         lv_obj_t* notificationIcon;
 
-        Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;

@@ -1,15 +1,17 @@
 #pragma once
 
 #include "Screen.h"
-#include "../DisplayApp.h"
 #include "components/datetime/DateTime.h"
 #include <cstdint>
 
 namespace Pinetime {
   namespace Controllers {
     class DateTimeController;
+    class Battery;
   }
   namespace Applications {
+    class DisplayApp;
+
     namespace Screens {
       class WatchFaceBase : public Screen {
       public:
@@ -34,8 +36,19 @@ namespace Pinetime {
           }
         };
 
+        struct BatteryState {
+          uint8_t percentRemaining;
+          bool charging;
+          bool powerPresent;
+
+          bool operator!=(BatteryState const& rhs) {
+            return percentRemaining != rhs.percentRemaining || charging != rhs.charging || powerPresent != rhs.powerPresent;
+          }
+        };
+
         WatchFaceBase(DisplayApp* app,
-                      Controllers::DateTimeController const& dateTimeController);
+                      Controllers::DateTimeController const& dateTimeController,
+                      Controllers::Battery const& batteryController);
 
         virtual ~WatchFaceBase() = default;
 
@@ -56,11 +69,22 @@ namespace Pinetime {
           return time;
         }
 
+        void UpdateBattery();
+        DirtyValue<BatteryState> const& GetBattery() const {
+          return battery;
+        }
+        DirtyValue<BatteryState> const& GetUpdatedBattery() {
+          UpdateBattery();
+          return battery;
+        }
+
       private:
         DirtyValue<DateState> date;
         DirtyValue<TimeState> time;
+        DirtyValue<BatteryState> battery;
 
         Controllers::DateTimeController const& dateTimeController;
+        Controllers::Battery const& batteryController;
       };
     }
   }

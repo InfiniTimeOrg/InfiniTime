@@ -19,13 +19,15 @@ namespace Pinetime {
   }
 
   namespace Applications {
+    class DisplayApp;
+
     namespace Screens {
 
       class WatchFaceDigital : public WatchFaceBase {
       public:
         WatchFaceDigital(DisplayApp* app,
                          Controllers::DateTimeController const& dateTimeController,
-                         Controllers::Battery& batteryController,
+                         Controllers::Battery const& batteryController,
                          Controllers::Ble& bleController,
                          Controllers::NotificationManager& notificatioManager,
                          Controllers::Settings& settingsController,
@@ -40,7 +42,6 @@ namespace Pinetime {
       private:
         char displayedTime[5] = {};
 
-        DirtyValue<uint8_t> batteryPercentRemaining {};
         DirtyValue<bool> bleState {};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
         DirtyValue<bool> motionSensorOk {};
@@ -63,7 +64,6 @@ namespace Pinetime {
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
 
-        Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificatioManager;
         Controllers::Settings& settingsController;

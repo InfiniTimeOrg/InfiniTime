@@ -7,27 +7,24 @@
 #include "BleIcon.h"
 #include "NotificationIcon.h"
 #include "Symbols.h"
-#include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
-#include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
 using namespace Pinetime::DateTime;
 
 WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
                                    Controllers::DateTimeController const& dateTimeController,
-                                   Controllers::Battery& batteryController,
+                                   Controllers::Battery const& batteryController,
                                    Controllers::Ble& bleController,
                                    Controllers::NotificationManager& notificatioManager,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController)
-  : WatchFaceBase{app, dateTimeController},
-    batteryController {batteryController},
+  : WatchFaceBase{app, dateTimeController, batteryController },
     bleController {bleController},
     notificatioManager {notificatioManager},
     settingsController {settingsController},
@@ -100,11 +97,11 @@ WatchFaceDigital::~WatchFaceDigital() {
 }
 
 bool WatchFaceDigital::Refresh() {
-  batteryPercentRemaining = batteryController.PercentRemaining();
-  if (batteryPercentRemaining.IsUpdated()) {
-    auto batteryPercent = batteryPercentRemaining.Get();
-    lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
-    auto isCharging = batteryController.IsCharging() || batteryController.IsPowerPresent();
+  auto const& battery = GetUpdatedBattery();
+  if (battery.IsUpdated()) {
+    auto const& b = battery.Get();
+    lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(b.percentRemaining));
+    auto const isCharging = b.charging || b.powerPresent;
     lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
   }
 

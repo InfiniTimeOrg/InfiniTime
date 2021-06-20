@@ -4,6 +4,7 @@
 #include "BleIcon.h"
 #include "Symbols.h"
 #include "NotificationIcon.h"
+#include "components/settings/Settings.h"
 
 LV_IMG_DECLARE(bg_clock);
 
@@ -46,12 +47,11 @@ lv_point_t coordinate_relocate(int16_t radius, int16_t angle) {
 
 WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
                                  Controllers::DateTimeController const& dateTimeController,
-                                 Controllers::Battery& batteryController,
+                                 Controllers::Battery const& batteryController,
                                  Controllers::Ble& bleController,
                                  Controllers::NotificationManager& notificationManager,
                                  Controllers::Settings& settingsController)
-  : WatchFaceBase{app, dateTimeController},
-    batteryController {batteryController},
+  : WatchFaceBase{app, dateTimeController, batteryController},
     bleController {bleController},
     notificationManager {notificationManager},
     settingsController {settingsController} {
@@ -167,10 +167,10 @@ void WatchFaceAnalog::UpdateClock() {
 }
 
 bool WatchFaceAnalog::Refresh() {
-  batteryPercentRemaining = batteryController.PercentRemaining();
-  if (batteryPercentRemaining.IsUpdated()) {
-    auto batteryPercent = batteryPercentRemaining.Get();
-    lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+  auto const& battery = GetUpdatedBattery();
+  if (battery.IsUpdated()) {
+    auto const icon = BatteryIcon::GetBatteryIcon(battery.Get().percentRemaining);
+    lv_label_set_text_static(batteryIcon, icon);
   }
 
   notificationState = notificationManager.AreNewNotificationsAvailable();
