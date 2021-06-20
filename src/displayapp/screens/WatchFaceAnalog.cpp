@@ -1,7 +1,6 @@
 #include <libs/lvgl/lvgl.h>
 #include "WatchFaceAnalog.h"
 #include "BatteryIcon.h"
-#include "BleIcon.h"
 #include "Symbols.h"
 #include "NotificationIcon.h"
 #include "components/settings/Settings.h"
@@ -48,12 +47,11 @@ lv_point_t coordinate_relocate(int16_t radius, int16_t angle) {
 WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
                                  Controllers::DateTimeController const& dateTimeController,
                                  Controllers::Battery const& batteryController,
-                                 Controllers::Ble& bleController,
+                                 Controllers::Ble const& bleController,
                                  Controllers::NotificationManager& notificationManager,
                                  Controllers::Settings& settingsController)
-  : WatchFaceBase{app, dateTimeController, batteryController},
-    bleController {bleController},
-    notificationManager {notificationManager},
+  : WatchFaceBase{app, dateTimeController, batteryController, bleController},
+    notificatioManager {notificatioManager},
     settingsController {settingsController} {
   settingsController.SetClockFace(1);
 

@@ -7,7 +7,6 @@
 #include "BleIcon.h"
 #include "NotificationIcon.h"
 #include "Symbols.h"
-#include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
@@ -19,13 +18,12 @@ using namespace Pinetime::DateTime;
 WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
                                    Controllers::DateTimeController const& dateTimeController,
                                    Controllers::Battery const& batteryController,
-                                   Controllers::Ble& bleController,
+                                   Controllers::Ble const& bleController,
                                    Controllers::NotificationManager& notificatioManager,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController)
-  : WatchFaceBase{app, dateTimeController, batteryController },
-    bleController {bleController},
+  : WatchFaceBase{app, dateTimeController, batteryController, bleController},
     notificatioManager {notificatioManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
@@ -105,13 +103,9 @@ bool WatchFaceDigital::Refresh() {
     lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
   }
 
-  bleState = bleController.IsConnected();
-  if (bleState.IsUpdated()) {
-    if (bleState.Get() == true) {
-      lv_label_set_text(bleIcon, BleIcon::GetIcon(true));
-    } else {
-      lv_label_set_text(bleIcon, BleIcon::GetIcon(false));
-    }
+  auto const& ble = GetUpdatedBle();
+  if (ble.IsUpdated()) {
+    lv_label_set_text(bleIcon, BleIcon::GetIcon(ble.Get().connected));
   }
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 5);
   lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);

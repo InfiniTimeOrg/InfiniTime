@@ -28,7 +28,7 @@ namespace Pinetime {
         WatchFaceDigital(DisplayApp* app,
                          Controllers::DateTimeController const& dateTimeController,
                          Controllers::Battery const& batteryController,
-                         Controllers::Ble& bleController,
+                         Controllers::Ble const& bleController,
                          Controllers::NotificationManager& notificatioManager,
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
@@ -42,7 +42,6 @@ namespace Pinetime {
       private:
         char displayedTime[5] = {};
 
-        DirtyValue<bool> bleState {};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
         DirtyValue<bool> motionSensorOk {};
         DirtyValue<uint32_t> stepCount {};
@@ -64,7 +63,6 @@ namespace Pinetime {
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
 
-        Controllers::Ble& bleController;
         Controllers::NotificationManager& notificatioManager;
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;

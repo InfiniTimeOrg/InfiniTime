@@ -8,6 +8,7 @@ namespace Pinetime {
   namespace Controllers {
     class DateTimeController;
     class Battery;
+    class Ble;
   }
   namespace Applications {
     class DisplayApp;
@@ -46,9 +47,18 @@ namespace Pinetime {
           }
         };
 
+        struct BleState {
+          bool connected;
+
+          bool operator!=(BleState const& rhs) {
+            return connected != rhs.connected;
+          }
+        };
+
         WatchFaceBase(DisplayApp* app,
                       Controllers::DateTimeController const& dateTimeController,
-                      Controllers::Battery const& batteryController);
+                      Controllers::Battery const& batteryController,
+                      Controllers::Ble const& bleController);
 
         virtual ~WatchFaceBase() = default;
 
@@ -78,13 +88,24 @@ namespace Pinetime {
           return battery;
         }
 
+        void UpdateBle();
+        DirtyValue<BleState> const& GetBle() const {
+          return ble;
+        }
+        DirtyValue<BleState> const& GetUpdatedBle() {
+          UpdateBle();
+          return ble;
+        }
+
       private:
         DirtyValue<DateState> date;
         DirtyValue<TimeState> time;
         DirtyValue<BatteryState> battery;
+        DirtyValue<BleState> ble;
 
         Controllers::DateTimeController const& dateTimeController;
         Controllers::Battery const& batteryController;
+        Controllers::Ble const& bleController;
       };
     }
   }

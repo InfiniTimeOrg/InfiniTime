@@ -1,15 +1,18 @@
 #include "WatchFaceBase.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/battery/BatteryController.h"
+#include "components/ble/BleController.h"
 
 using namespace Pinetime::Applications::Screens;
 
 WatchFaceBase::WatchFaceBase(DisplayApp* app,
                              Controllers::DateTimeController const& dateTimeController,
-                             Controllers::Battery const& batteryController)
+                             Controllers::Battery const& batteryController,
+                             Controllers::Ble const& bleController)
   : Screen{app},
     dateTimeController{dateTimeController},
-    batteryController{batteryController} {
+    batteryController{batteryController},
+    bleController{bleController} {
 }
 
 void WatchFaceBase::UpdateDate() {
@@ -34,5 +37,11 @@ void WatchFaceBase::UpdateBattery() {
     .percentRemaining = batteryController.PercentRemaining(),
     .charging = batteryController.IsCharging(),
     .powerPresent = batteryController.IsPowerPresent()
+  };
+}
+
+void WatchFaceBase::UpdateBle() {
+  ble = BleState{
+    .connected = bleController.IsConnected()
   };
 }

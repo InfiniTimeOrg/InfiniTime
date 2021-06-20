@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <memory>
 #include "WatchFaceBase.h"
-#include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 
 namespace Pinetime {
@@ -26,7 +25,7 @@ namespace Pinetime {
         WatchFaceAnalog(DisplayApp* app,
                         Controllers::DateTimeController const& dateTimeController,
                         Controllers::Battery const& batteryController,
-                        Controllers::Ble& bleController,
+                        Controllers::Ble const& bleController,
                         Controllers::NotificationManager& notificationManager,
                         Controllers::Settings& settingsController);
 
@@ -65,7 +64,6 @@ namespace Pinetime {
         lv_obj_t* batteryIcon;
         lv_obj_t* notificationIcon;
 
-        Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
 
