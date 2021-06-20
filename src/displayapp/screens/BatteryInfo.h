@@ -37,7 +37,7 @@ namespace Pinetime {
 
         int8_t animation = 0;
         int8_t batteryPercent = -1;
-        float batteryVoltage = 0.0f;
+        uint16_t batteryVoltage = 0;
       };
     }
   }

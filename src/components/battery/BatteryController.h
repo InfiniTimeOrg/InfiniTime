@@ -50,7 +50,7 @@ namespace Pinetime {
         return percentRemainingBuffer.GetAverage();
       }
 
-      float Voltage() const {
+      uint16_t Voltage() const {
         return voltage;
       }
 
@@ -71,7 +71,7 @@ namespace Pinetime {
       static constexpr uint32_t chargingPin = 12;
       static constexpr uint32_t powerPresentPin = 19;
       static constexpr nrf_saadc_input_t batteryVoltageAdcInput = NRF_SAADC_INPUT_AIN7;
-      float voltage = 0.0f;
+      uint16_t voltage = 0;
       int percentRemaining = -1;
 
       bool isCharging = false;
