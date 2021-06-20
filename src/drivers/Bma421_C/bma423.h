@@ -52,6 +52,7 @@ extern "C" {
 
 /**\name Chip ID of BMA423 sensor */
 #define BMA423_CHIP_ID                 UINT8_C(0x11)
+#define BMA425_CHIP_ID                 UINT8_C(0x13)
 
 /**\ Configuration ID start position of BMA423 sensor */
 #define BMA423_CONFIG_ID_START_ADDR    UINT8_C(66)
