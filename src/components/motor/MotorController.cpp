@@ -7,7 +7,8 @@ APP_TIMER_DEF(vibTimer);
 
 using namespace Pinetime::Controllers;
 
-MotorController::MotorController(Controllers::Settings& settingsController) : settingsController {settingsController} {
+MotorController::MotorController(Controllers::Settings& settingsController, Controllers::Battery& batteryController)
+  : settingsController {settingsController}, batteryController {batteryController} {
 }
 
 void MotorController::Init() {
@@ -19,6 +20,8 @@ void MotorController::Init() {
 void MotorController::SetDuration(uint8_t motorDuration) {
 
   if (settingsController.GetVibrationStatus() == Controllers::Settings::Vibration::OFF)
+    return;
+  if (batteryController.IsCharging())
     return;
 
   nrf_gpio_pin_clear(pinMotor);

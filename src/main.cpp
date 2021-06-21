@@ -109,7 +109,7 @@ static constexpr uint8_t pinPowerPresentIrq = 19;
 
 Pinetime::Controllers::Settings settingsController {spiNorFlash};
 
-Pinetime::Controllers::MotorController motorController {settingsController};
+Pinetime::Controllers::MotorController motorController {settingsController, batteryController};
 
 Pinetime::Controllers::HeartRateController heartRateController;
 Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController);
