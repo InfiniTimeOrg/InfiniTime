@@ -31,7 +31,7 @@ namespace Pinetime {
                          Controllers::Ble const& bleController,
                          Controllers::NotificationManager const& notificationManager,
                          Controllers::Settings& settingsController,
-                         Controllers::HeartRateController& heartRateController,
+                         Controllers::HeartRateController const& heartRateController,
                          Controllers::MotionController& motionController);
         ~WatchFaceDigital() override;
 
@@ -62,7 +62,6 @@ namespace Pinetime {
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
 
-        Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
       };
     }

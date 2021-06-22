@@ -11,6 +11,7 @@ namespace Pinetime {
     class Battery;
     class Ble;
     class NotificationManager;
+    class HeartRateController;
   }
   namespace Applications {
     class DisplayApp;
@@ -65,13 +66,23 @@ namespace Pinetime {
           }
         };
 
+        struct HeartRateState {
+          bool running;
+          uint8_t rate;
+
+          bool operator!=(HeartRateState const& rhs) {
+            return running != rhs.running || rate != rhs.rate;
+          }
+        };
+
         WatchFaceBase(Controllers::Settings::ClockFace face,
                       DisplayApp* app,
                       Controllers::Settings& settingsController,
                       Controllers::DateTimeController const& dateTimeController,
                       Controllers::Battery const& batteryController,
                       Controllers::Ble const& bleController,
-                      Controllers::NotificationManager const& notificationManager);
+                      Controllers::NotificationManager const& notificationManager,
+                      Controllers::HeartRateController const& heartRateController);
 
         virtual ~WatchFaceBase() = default;
 
@@ -121,18 +132,29 @@ namespace Pinetime {
           return notifications;
         }
 
+        void UpdateHeartRate();
+        DirtyValue<HeartRateState> const& GetHeartRate() const {
+          return heartRate;
+        }
+        DirtyValue<HeartRateState> const& GetUpdatedHeartRate() {
+          UpdateHeartRate();
+          return heartRate;
+        }
+
       private:
         DirtyValue<DateState> date;
         DirtyValue<TimeState> time;
         DirtyValue<BatteryState> battery;
         DirtyValue<BleState> ble;
         DirtyValue<NotificationState> notifications;
+        DirtyValue<HeartRateState> heartRate;
 
         Controllers::Settings& settingsController;
         Controllers::DateTimeController const& dateTimeController;
         Controllers::Battery const& batteryController;
         Controllers::Ble const& bleController;
         Controllers::NotificationManager const& notificationManager;
+        Controllers::HeartRateController const& heartRateController;
       };
     }
   }

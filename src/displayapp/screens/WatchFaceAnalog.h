@@ -12,6 +12,7 @@ namespace Pinetime {
     class Battery;
     class Ble;
     class NotificationManager;
+    class HeartRateController;
     class DateTimeController;
   }
   namespace Applications {
@@ -26,7 +27,8 @@ namespace Pinetime {
                         Controllers::Battery const& batteryController,
                         Controllers::Ble const& bleController,
                         Controllers::NotificationManager const& notificationManager,
-                        Controllers::Settings& settingsController);
+                        Controllers::Settings& settingsController,
+                        Controllers::HeartRateController const& heartRateController);
 
         ~WatchFaceAnalog() override;
 

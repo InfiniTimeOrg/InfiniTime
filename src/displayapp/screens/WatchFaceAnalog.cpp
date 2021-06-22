@@ -49,14 +49,16 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
                                  Controllers::Battery const& batteryController,
                                  Controllers::Ble const& bleController,
                                  Controllers::NotificationManager const& notificationManager,
-                                 Controllers::Settings& settingsController)
+                                 Controllers::Settings& settingsController,
+                                 Controllers::HeartRateController const& heartRateController)
   : WatchFaceBase{Pinetime::Controllers::Settings::ClockFace::Analog,
       app,
       settingsController,
       dateTimeController,
       batteryController,
       bleController,
-      notificationManager} {
+      notificationManager,
+      heartRateController} {
 
   lv_obj_t* bg_clock_img = lv_img_create(lv_scr_act(), NULL);
   lv_img_set_src(bg_clock_img, &bg_clock);

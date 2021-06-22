@@ -7,7 +7,6 @@
 #include "BleIcon.h"
 #include "NotificationIcon.h"
 #include "Symbols.h"
-#include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
 
@@ -20,7 +19,7 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
                                    Controllers::Ble const& bleController,
                                    Controllers::NotificationManager const& notificationManager,
                                    Controllers::Settings& settingsController,
-                                   Controllers::HeartRateController& heartRateController,
+                                   Controllers::HeartRateController const& heartRateController,
                                    Controllers::MotionController& motionController)
   : WatchFaceBase{Pinetime::Controllers::Settings::ClockFace::Digital,
       app,
@@ -28,8 +27,8 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
       dateTimeController,
       batteryController,
       bleController,
-      notificationManager},
-    heartRateController {heartRateController},
+      notificationManager,
+      heartRateController},
     motionController {motionController} {
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
@@ -185,12 +184,13 @@ bool WatchFaceDigital::Refresh() {
     lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
   }
 
-  heartbeat = heartRateController.HeartRate();
-  heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
-  if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
-    if (heartbeatRunning.Get()) {
+  auto const& heartRate = GetUpdatedHeartRate();
+  if (heartRate.IsUpdated()) {
+    auto const& hr = heartRate.Get();
+
+    if (hr.running) {
       lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
-      lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());
+      lv_label_set_text_fmt(heartbeatValue, "%d", hr.rate);
     } else {
       lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x1B1B1B));
       lv_label_set_text_static(heartbeatValue, "");

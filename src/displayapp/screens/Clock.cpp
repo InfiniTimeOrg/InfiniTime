@@ -77,8 +77,13 @@ std::unique_ptr<Screen> Clock::WatchFaceDigitalScreen() {
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceAnalogScreen() {
-  return std::make_unique<Screens::WatchFaceAnalog>(
-    app, dateTimeController, batteryController, bleController, notificatioManager, settingsController);
+  return std::make_unique<Screens::WatchFaceAnalog>(app,
+                                                    dateTimeController,
+                                                    batteryController,
+                                                    bleController,
+                                                    notificatioManager,
+                                                    settingsController,
+                                                    heartRateController);
 }
 
 std::unique_ptr<Screen> Clock::PineTimeStyleScreen() {
@@ -94,12 +99,22 @@ std::unique_ptr<Screen> Clock::PineTimeStyleScreen() {
 /*
 // Examples for more watch faces
 std::unique_ptr<Screen> Clock::WatchFaceMinimalScreen() {
-  return std::make_unique<Screens::WatchFaceMinimal>(app, dateTimeController, batteryController, bleController, notificatioManager,
-settingsController);
+  return std::make_unique<Screens::WatchFaceMinimal>(app,
+                                                     dateTimeController,
+                                                     batteryController,
+                                                     bleController,
+                                                     notificatioManager,
+                                                     settingsController,
+                                                     heartRateController);
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceCustomScreen() {
-  return std::make_unique<Screens::WatchFaceCustom>(app, dateTimeController, batteryController, bleController, notificatioManager,
-settingsController);
+  return std::make_unique<Screens::WatchFaceCustom>(app,
+                                                    dateTimeController,
+                                                    batteryController,
+                                                    bleController,
+                                                    notificatioManager,
+                                                    settingsController,
+                                                    heartRateController);
 }
 */
