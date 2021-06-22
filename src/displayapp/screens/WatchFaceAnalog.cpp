@@ -30,14 +30,14 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
                                  Controllers::DateTime& dateTimeController,
                                  Controllers::Battery& batteryController,
                                  Controllers::Ble& bleController,
-                                 Controllers::NotificationManager& notificatioManager,
+                                 Controllers::NotificationManager& notificationManager,
                                  Controllers::Settings& settingsController)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
-    notificatioManager {notificatioManager},
+    notificationManager {notificationManager},
     settingsController {settingsController} {
   settingsController.SetClockFace(1);
 
@@ -172,7 +172,7 @@ bool WatchFaceAnalog::Refresh() {
     lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
   }
 
-  notificationState = notificatioManager.AreNewNotificationsAvailable();
+  notificationState = notificationManager.AreNewNotificationsAvailable();
 
   if (notificationState.IsUpdated()) {
     if (notificationState.Get() == true)
