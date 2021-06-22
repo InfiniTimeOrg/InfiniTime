@@ -141,9 +141,6 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   uptimeSeconds = uptimeSeconds % secondsInAMinute;
   // TODO handle more than 100 days of uptime
 
-  if (batteryPercent == -1)
-    batteryPercent = 0;
-
   // hack to not use the flot functions from printf
   uint8_t batteryVoltageBytes[2];
   batteryVoltageBytes[1] = static_cast<uint8_t>(batteryVoltage); // truncate whole numbers
