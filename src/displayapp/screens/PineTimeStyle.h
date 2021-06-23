@@ -72,6 +72,7 @@ namespace Pinetime {
         lv_obj_t* heartbeatBpm;
         lv_obj_t* notificationIcon;
         lv_obj_t* stepGauge;
+        lv_color_t needle_colors[1];
 
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;

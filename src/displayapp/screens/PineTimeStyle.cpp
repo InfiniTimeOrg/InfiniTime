@@ -172,7 +172,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(dateMonth, sidebar, LV_ALIGN_CENTER, 0, 32);
 
   // Step count gauge
-  static lv_color_t needle_colors[1];
   needle_colors[0] = LV_COLOR_WHITE;
   stepGauge = lv_gauge_create(lv_scr_act(), nullptr);
   lv_gauge_set_needle_count(stepGauge, 1, needle_colors);
