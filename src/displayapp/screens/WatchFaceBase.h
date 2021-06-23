@@ -12,6 +12,7 @@ namespace Pinetime {
     class Ble;
     class NotificationManager;
     class HeartRateController;
+    class MotionController;
   }
   namespace Applications {
     class DisplayApp;
@@ -75,6 +76,15 @@ namespace Pinetime {
           }
         };
 
+        struct MotionState {
+          uint32_t stepCount;
+          bool sensorOk;
+
+          bool operator!=(MotionState const& rhs) {
+            return stepCount != rhs.stepCount || sensorOk != rhs.sensorOk;
+          }
+        };
+
         WatchFaceBase(Controllers::Settings::ClockFace face,
                       DisplayApp* app,
                       Controllers::Settings& settingsController,
@@ -82,7 +92,8 @@ namespace Pinetime {
                       Controllers::Battery const& batteryController,
                       Controllers::Ble const& bleController,
                       Controllers::NotificationManager const& notificationManager,
-                      Controllers::HeartRateController const& heartRateController);
+                      Controllers::HeartRateController const& heartRateController,
+                      Controllers::MotionController const& motionController);
 
         virtual ~WatchFaceBase() = default;
 
@@ -141,6 +152,15 @@ namespace Pinetime {
           return heartRate;
         }
 
+        void UpdateMotion();
+        DirtyValue<MotionState> const& GetMotion() const {
+          return motion;
+        }
+        DirtyValue<MotionState> const& GetUpdatedMotion() {
+          UpdateMotion();
+          return motion;
+        }
+
       private:
         DirtyValue<DateState> date;
         DirtyValue<TimeState> time;
@@ -148,6 +168,7 @@ namespace Pinetime {
         DirtyValue<BleState> ble;
         DirtyValue<NotificationState> notifications;
         DirtyValue<HeartRateState> heartRate;
+        DirtyValue<MotionState> motion;
 
         Controllers::Settings& settingsController;
         Controllers::DateTimeController const& dateTimeController;
@@ -155,6 +176,7 @@ namespace Pinetime {
         Controllers::Ble const& bleController;
         Controllers::NotificationManager const& notificationManager;
         Controllers::HeartRateController const& heartRateController;
+        Controllers::MotionController const& motionController;
       };
     }
   }

@@ -7,7 +7,6 @@
 #include "BleIcon.h"
 #include "NotificationIcon.h"
 #include "Symbols.h"
-#include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -20,7 +19,7 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
                                    Controllers::NotificationManager const& notificationManager,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController const& heartRateController,
-                                   Controllers::MotionController& motionController)
+                                   Controllers::MotionController const& motionController)
   : WatchFaceBase{Pinetime::Controllers::Settings::ClockFace::Digital,
       app,
       settingsController,
@@ -28,8 +27,8 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
       batteryController,
       bleController,
       notificationManager,
-      heartRateController},
-    motionController {motionController} {
+      heartRateController,
+      motionController} {
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
@@ -200,10 +199,9 @@ bool WatchFaceDigital::Refresh() {
     lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
   }
 
-  stepCount = motionController.NbSteps();
-  motionSensorOk = motionController.IsSensorOk();
-  if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
-    lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
+  auto const& motion = GetUpdatedMotion();
+  if (motion.IsUpdated()) {
+    lv_label_set_text_fmt(stepValue, "%lu", motion.Get().stepCount);
     lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
     lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }

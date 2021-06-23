@@ -4,6 +4,7 @@
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/heartrate/HeartRateController.h"
+#include "components/motion/MotionController.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -14,14 +15,16 @@ WatchFaceBase::WatchFaceBase(Controllers::Settings::ClockFace face,
                              Controllers::Battery const& batteryController,
                              Controllers::Ble const& bleController,
                              Controllers::NotificationManager const& notificationManager,
-                             Controllers::HeartRateController const& heartRateController)
+                             Controllers::HeartRateController const& heartRateController,
+                             Controllers::MotionController const& motionController)
   : Screen{app},
     settingsController{settingsController},
     dateTimeController{dateTimeController},
     batteryController{batteryController},
     bleController{bleController},
     notificationManager{notificationManager},
-    heartRateController{heartRateController} {
+    heartRateController{heartRateController},
+    motionController{motionController} {
   settingsController.SetClockFace(face);
 }
 
@@ -70,5 +73,12 @@ void WatchFaceBase::UpdateHeartRate() {
   heartRate = HeartRateState{
     .running = heartRateController.State() == Controllers::HeartRateController::States::Running,
     .rate = heartRateController.HeartRate()
+  };
+}
+
+void WatchFaceBase::UpdateMotion() {
+  motion = MotionState{
+    .stepCount = motionController.NbSteps(),
+    .sensorOk = motionController.IsSensorOk()
   };
 }
