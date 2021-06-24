@@ -45,12 +45,11 @@ Steps::Steps(
   lv_label_set_align(lstepsGoal, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lstepsGoal, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 60);
 
-  lv_obj_t * backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text_static(backgroundLabel, "");
-
 }
 
 Steps::~Steps() {
@@ -58,10 +57,10 @@ Steps::~Steps() {
 }
 
 bool Steps::Refresh() {
-  
-  stepsCount = motionController.NbSteps();
 
-  lv_label_set_text_fmt(lSteps,"%li", stepsCount);
+  stepsCount = motionController.NbSteps();
+  
+  lv_label_set_text_fmt(lSteps, "%li", stepsCount);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -20);
   
   lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
