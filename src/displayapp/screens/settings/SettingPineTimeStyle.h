@@ -19,7 +19,6 @@ namespace Pinetime {
           void UpdateSelected(lv_obj_t *object, lv_event_t event);
          
         private:          
-
           Controllers::Settings& settingsController;
 
           lv_obj_t * btnNextTime;
@@ -51,7 +50,6 @@ namespace Pinetime {
           lv_obj_t * stepGauge;
           lv_color_t needle_colors[1];
           lv_color_t pts_colors[17];
-          
       };
     }
   }

@@ -30,7 +30,7 @@ SettingPineTimeStyle::SettingPineTimeStyle(
   lv_obj_set_size(timebar, 200, 240);
   lv_obj_align(timebar, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 5, 0);
 
-  /* Display the time */
+  // Display the time
 
   timeDD1 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
@@ -50,7 +50,7 @@ SettingPineTimeStyle::SettingPineTimeStyle(
   lv_label_set_text(timeAMPM, "A\nM");
   lv_obj_align(timeAMPM, timebar, LV_ALIGN_IN_BOTTOM_LEFT, 2, -20);
 
-  /* Create a 40px wide bar down the right side of the screen */
+  // Create a 40px wide bar down the right side of the screen
 
   sidebar = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_TEAL);
@@ -58,7 +58,7 @@ SettingPineTimeStyle::SettingPineTimeStyle(
   lv_obj_set_size(sidebar, 40, 240);
   lv_obj_align(sidebar, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
-  /* Display icons */
+  // Display icons
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
@@ -70,7 +70,7 @@ SettingPineTimeStyle::SettingPineTimeStyle(
   lv_label_set_text(bleIcon, Symbols::bluetooth);
   lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
 
-  /* Calendar icon */
+  // Calendar icon
 
   calendarOuter = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(calendarOuter, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
@@ -108,7 +108,7 @@ SettingPineTimeStyle::SettingPineTimeStyle(
   lv_obj_set_size(calendarCrossBar2, 8, 3);
   lv_obj_align(calendarCrossBar2, calendarBar2, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
-  /* Display date */
+  // Display date
 
   dateDayOfWeek = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(dateDayOfWeek, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
@@ -155,8 +155,6 @@ SettingPineTimeStyle::SettingPineTimeStyle(
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text(backgroundLabel, "");
 
-//   lv_style_copy(&style_button, &lv_style_plain_color);
-//   style_button.body.opa = LV_OPA_50;
   btnNextTime = lv_btn_create(lv_scr_act(), nullptr);
   btnNextTime->user_data = this;
   lv_obj_set_size(btnNextTime, 50, 50);
@@ -198,29 +196,6 @@ SettingPineTimeStyle::SettingPineTimeStyle(
   lv_obj_align(btnPrevBG, lv_scr_act(), LV_ALIGN_CENTER, -55, 80);
   lv_obj_set_style_local_value_str(btnPrevBG, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<");
   lv_obj_set_event_cb(btnPrevBG, event_handler);
-
-/*
-    
-  stepValue = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text_fmt(stepValue,"%i", settingsController.GetStepsGoal());
-  lv_label_set_align(stepValue, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
-
-  btnPlus = lv_btn_create(lv_scr_act(), nullptr);
-  btnPlus->user_data = this;
-  lv_obj_set_size(btnPlus, 80, 50);
-  lv_obj_align(btnPlus, lv_scr_act(), LV_ALIGN_CENTER, 55, 80);
-  lv_obj_set_style_local_value_str(btnPlus, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "+");
-  lv_obj_set_event_cb(btnPlus, event_handler);
-
-  btnMinus = lv_btn_create(lv_scr_act(), nullptr);
-  btnMinus->user_data = this;
-  lv_obj_set_size(btnMinus, 80, 50);
-  lv_obj_set_event_cb(btnMinus, event_handler);
-  lv_obj_align(btnMinus, lv_scr_act(), LV_ALIGN_CENTER, -55, 80);
-  lv_obj_set_style_local_value_str(btnMinus, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "-");
-*/
 }
 
 SettingPineTimeStyle::~SettingPineTimeStyle() {
@@ -276,7 +251,6 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t *object, lv_event_t event) {
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueBG]);
     }
   }
-
   if((object == btnPrevBG) && (event == LV_EVENT_PRESSED)) {
     if ( valueBG > 0 ) {
       valueBG -= 1;
@@ -284,27 +258,4 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t *object, lv_event_t event) {
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueBG]);
     }
   }
-    
-    
-    
-/*    
-  uint32_t value = settingsController.GetStepsGoal();
-  if(object == btnPlus && (event == LV_EVENT_PRESSED)) {
-    value += 1000;
-    if ( value <= 500000 ) {
-      settingsController.SetStepsGoal(value);
-      lv_label_set_text_fmt(stepValue,"%i", settingsController.GetStepsGoal());
-      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
-    }
-  }
-
-  if(object == btnMinus && (event == LV_EVENT_PRESSED)) {
-    value -= 1000;
-    if ( value >= 1000 ) {
-      settingsController.SetStepsGoal(value);
-      lv_label_set_text_fmt(stepValue,"%i", settingsController.GetStepsGoal());
-      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
-    }
-  }
-*/
 }
