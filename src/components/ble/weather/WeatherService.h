@@ -32,7 +32,7 @@
 #include "WeatherData.h"
 #include <components/datetime/DateTimeController.h>
 
-int WeatherCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg);
+int WeatherCallback(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_access_ctxt* ctxt, void* arg);
 
 namespace Pinetime {
   namespace System {
@@ -46,20 +46,20 @@ namespace Pinetime {
 
       void Init();
 
-      int OnCommand(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
+      int OnCommand(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_access_ctxt* ctxt);
 
       /*
        * Helper functions for quick access to currently valid data
        */
-      WeatherData::Location getCurrentLocation() const;
-      WeatherData::Clouds getCurrentClouds() const;
-      WeatherData::Obscuration getCurrentObscuration() const;
-      WeatherData::Precipitation getCurrentPrecipitation() const;
-      WeatherData::Wind getCurrentWind() const;
-      WeatherData::Temperature getCurrentTemperature() const;
-      WeatherData::Humidity getCurrentHumidity() const;
-      WeatherData::Pressure getCurrentPressure() const;
-      WeatherData::AirQuality getCurrentQuality() const;
+      WeatherData::Location GetCurrentLocation() const;
+      WeatherData::Clouds GetCurrentClouds() const;
+      WeatherData::Obscuration GetCurrentObscuration() const;
+      WeatherData::Precipitation GetCurrentPrecipitation() const;
+      WeatherData::Wind GetCurrentWind() const;
+      WeatherData::Temperature GetCurrentTemperature() const;
+      WeatherData::Humidity GetCurrentHumidity() const;
+      WeatherData::Pressure GetCurrentPressure() const;
+      WeatherData::AirQuality GetCurrentQuality() const;
 
       /*
        * Management functions
@@ -68,16 +68,16 @@ namespace Pinetime {
        * Adds an event to the timeline
        * @return
        */
-      bool addEventToTimeline(std::unique_ptr<WeatherData::TimelineHeader> event);
+      bool AddEventToTimeline(std::unique_ptr<WeatherData::TimelineHeader> event);
       /**
        * Gets the current timeline length
        */
-      size_t getTimelineLength() const;
+      size_t GetTimelineLength() const;
       /**
        * Checks if an event of a certain type exists in the timeline
        * @return
        */
-      bool hasTimelineEventOfType(WeatherData::eventtype type) const;
+      bool HasTimelineEventOfType(const WeatherData::eventtype type) const;
 
     private:
       // 00030000-78fc-48fe-8e23-433b3a1942d0
@@ -125,18 +125,18 @@ namespace Pinetime {
        * Cleans up the timeline of expired events
        * @return result code
        */
-      void tidyTimeline();
+      void TidyTimeline();
 
       /**
        * Compares two timeline events
        */
-      static bool compareTimelineEvents(const std::unique_ptr<WeatherData::TimelineHeader>& first,
+      static bool CompareTimelineEvents(const std::unique_ptr<WeatherData::TimelineHeader>& first,
                                         const std::unique_ptr<WeatherData::TimelineHeader>& second);
 
       /**
        * Returns current UNIX timestamp
        */
-      uint64_t getCurrentUNIXTimestamp() const;
+      uint64_t GetCurrentUnixTimestamp() const;
     };
   }
 }

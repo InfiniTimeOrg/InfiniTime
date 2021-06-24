@@ -20,8 +20,8 @@
 #include "libs/QCBOR/inc/qcbor/qcbor.h"
 #include "systemtask/SystemTask.h"
 
-int WeatherCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
-  return static_cast<Pinetime::Controllers::WeatherService*>(arg)->OnCommand(conn_handle, attr_handle, ctxt);
+int WeatherCallback(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+  return static_cast<Pinetime::Controllers::WeatherService*>(arg)->OnCommand(connHandle, attrHandle, ctxt);
 }
 
 namespace Pinetime {
@@ -39,7 +39,7 @@ namespace Pinetime {
       ASSERT(res == 0);
     }
 
-    int WeatherService::OnCommand(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+    int WeatherService::OnCommand(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_access_ctxt* ctxt) {
       // TODO: Detect control messages
       if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
         const auto packetLen = OS_MBUF_PKTLEN(ctxt->om);
@@ -167,9 +167,9 @@ namespace Pinetime {
           }
         }
 
-        getCurrentPressure();
-        tidyTimeline();
-        getTimelineLength();
+        GetCurrentPressure();
+        TidyTimeline();
+        GetTimelineLength();
         QCBORDecode_ExitMap(&decodeContext);
 
         auto uErr = QCBORDecode_Finish(&decodeContext);
@@ -201,29 +201,36 @@ namespace Pinetime {
       return 0;
     }
 
-    WeatherData::Location WeatherService::getCurrentLocation() const {
+    WeatherData::Location WeatherService::GetCurrentLocation() const {
       return WeatherData::Location();
     }
-    WeatherData::Clouds WeatherService::getCurrentClouds() const {
+
+    WeatherData::Clouds WeatherService::GetCurrentClouds() const {
       return WeatherData::Clouds();
     }
-    WeatherData::Obscuration WeatherService::getCurrentObscuration() const {
+
+    WeatherData::Obscuration WeatherService::GetCurrentObscuration() const {
       return WeatherData::Obscuration();
     }
-    WeatherData::Precipitation WeatherService::getCurrentPrecipitation() const {
+
+    WeatherData::Precipitation WeatherService::GetCurrentPrecipitation() const {
       return WeatherData::Precipitation();
     }
-    WeatherData::Wind WeatherService::getCurrentWind() const {
+
+    WeatherData::Wind WeatherService::GetCurrentWind() const {
       return WeatherData::Wind();
     }
-    WeatherData::Temperature WeatherService::getCurrentTemperature() const {
+
+    WeatherData::Temperature WeatherService::GetCurrentTemperature() const {
       return WeatherData::Temperature();
     }
-    WeatherData::Humidity WeatherService::getCurrentHumidity() const {
+
+    WeatherData::Humidity WeatherService::GetCurrentHumidity() const {
       return WeatherData::Humidity();
     }
-    WeatherData::Pressure WeatherService::getCurrentPressure() const {
-      uint64_t currentTimestamp = getCurrentUNIXTimestamp();
+
+    WeatherData::Pressure WeatherService::GetCurrentPressure() const {
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
       for (auto&& header : timeline) {
         if (header->eventType == WeatherData::eventtype::Pressure && header->timestamp + header->expires <= currentTimestamp) {
           return WeatherData::Pressure();
@@ -232,15 +239,15 @@ namespace Pinetime {
       return WeatherData::Pressure();
     }
 
-    WeatherData::AirQuality WeatherService::getCurrentQuality() const {
+    WeatherData::AirQuality WeatherService::GetCurrentQuality() const {
       return WeatherData::AirQuality();
     }
 
-    size_t WeatherService::getTimelineLength() const {
+    size_t WeatherService::GetTimelineLength() const {
       return timeline.size();
     }
 
-    bool WeatherService::addEventToTimeline(std::unique_ptr<WeatherData::TimelineHeader> event) {
+    bool WeatherService::AddEventToTimeline(std::unique_ptr<WeatherData::TimelineHeader> event) {
       if (timeline.size() == timeline.max_size()) {
         return false;
       }
@@ -249,8 +256,8 @@ namespace Pinetime {
       return true;
     }
 
-    bool WeatherService::hasTimelineEventOfType(const WeatherData::eventtype type) const {
-      uint64_t currentTimestamp = getCurrentUNIXTimestamp();
+    bool WeatherService::HasTimelineEventOfType(const WeatherData::eventtype type) const {
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
       for (auto&& header : timeline) {
         if (header->eventType == type && header->timestamp + header->expires <= currentTimestamp) {
           // TODO: Check if its currently valid
@@ -260,7 +267,7 @@ namespace Pinetime {
       return false;
     }
 
-    void WeatherService::tidyTimeline() {
+    void WeatherService::TidyTimeline() {
       uint64_t timeCurrent = 0;
       timeline.erase(std::remove_if(std::begin(timeline),
                                     std::end(timeline),
@@ -269,15 +276,15 @@ namespace Pinetime {
                                     }),
                      std::end(timeline));
 
-      std::sort(std::begin(timeline), std::end(timeline), compareTimelineEvents);
+      std::sort(std::begin(timeline), std::end(timeline), CompareTimelineEvents);
     }
 
-    bool WeatherService::compareTimelineEvents(const std::unique_ptr<WeatherData::TimelineHeader>& first,
+    bool WeatherService::CompareTimelineEvents(const std::unique_ptr<WeatherData::TimelineHeader>& first,
                                                const std::unique_ptr<WeatherData::TimelineHeader>& second) {
       return first->timestamp > second->timestamp;
     }
 
-    uint64_t WeatherService::getCurrentUNIXTimestamp() const {
+    uint64_t WeatherService::GetCurrentUnixTimestamp() const {
       return std::chrono::duration_cast<std::chrono::seconds>(dateTimeController.CurrentDateTime().time_since_epoch()).count();
     }
   }
