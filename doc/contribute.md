@@ -73,3 +73,6 @@ The most important rule to follow is to try to keep the code as easy to read and
  - **Includes** :
     - files from the project : `#include "relative/path/to/the/file.h"`
     - external files and std : `#include <file.h>`
+
+# Translate
+Read [translation.md](../src/translation/translation.md) to see how to extract and compile strings files, then make a Pull Request as described above.

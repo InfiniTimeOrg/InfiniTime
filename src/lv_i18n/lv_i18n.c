@@ -88,7 +88,15 @@ static const lv_i18n_lang_t en_gb_lang = {
 };
 
 static lv_i18n_phrase_t es_es_singulars[] = {
-    {"settings_display", "Ajustes Pantalla"},
+    {"settings_display", "Pantalla"},
+    {"settings_wakeup", "Despierta"},
+    {"settings_timeformat", "Formato"},
+    {"settings_watchface", "Cara"},
+    {"settings_steps", "Pasos"},
+    {"settings_battery", "Batería"},
+    {"settings_firmware", "Firmware"},
+    {"settings_about", "Propaganda"},
+    {"settings_language", "Idioma"},
     {NULL, NULL} // End mark
 };
 
