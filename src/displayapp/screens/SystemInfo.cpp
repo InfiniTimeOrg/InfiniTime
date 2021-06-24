@@ -192,11 +192,11 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         "\n"
                         "#444444 LVGL Memory#\n"
                         " #444444 used# %d (%d%%)\n"
-                        " #444444 max used# %d\n"
+                        " #444444 max used# %lu\n"
                         " #444444 frag# %d%%\n"
                         " #444444 free# %d"
                         "\n"
-                        "#444444 Steps# %li",
+                        "#444444 Steps# %i",
                         bleAddr[5],
                         bleAddr[4],
                         bleAddr[3],
