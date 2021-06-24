@@ -203,11 +203,11 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         bleAddr[2],
                         bleAddr[1],
                         bleAddr[0],
-                        (int) mon.total_size - mon.free_size,
+                        static_cast<int>(mon.total_size - mon.free_size),
                         mon.used_pct,
                         mon.max_used,
                         mon.frag_pct,
-                        (int) mon.free_biggest_size,
+                        static_cast<int>(mon.free_biggest_size),
                         0);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(2, 5, app, label);
