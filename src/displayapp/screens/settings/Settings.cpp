@@ -18,6 +18,9 @@ Settings::Settings(Pinetime::Applications::DisplayApp* app, Pinetime::Controller
               },
               [this]() -> std::unique_ptr<Screen> {
                 return CreateScreen2();
+              },
+              [this]() -> std::unique_ptr<Screen> {
+                return CreateScreen3();
               }},
              Screens::ScreenListModes::UpDown} {
 }
@@ -59,4 +62,16 @@ std::unique_ptr<Screen> Settings::CreateScreen2() {
   }};
 
   return std::make_unique<Screens::List>(1, 2, app, settingsController, applications);
+}
+
+std::unique_ptr<Screen> Settings::CreateScreen3() {
+
+  std::array<Screens::List::Applications, 4> applications {{
+    {Symbols::paintbrush, "PTS Colors", Apps::SettingPineTimeStyle},
+    {Symbols::none, "None", Apps::None},
+    {Symbols::none, "None", Apps::None},
+    {Symbols::none, "None", Apps::None},
+  }};
+
+  return std::make_unique<Screens::List>(2, 2, app, settingsController, applications);
 }
