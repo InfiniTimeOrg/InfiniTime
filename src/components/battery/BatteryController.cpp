@@ -3,6 +3,7 @@
 #include <hal/nrf_gpio.h>
 #include <nrfx_saadc.h>
 #include <algorithm>
+#include <cmath>
 
 using namespace Pinetime::Controllers;
 
