@@ -12,20 +12,13 @@ namespace {
   }
 }
 
-lv_color_t pts_colors[17] = {LV_COLOR_WHITE, LV_COLOR_SILVER, LV_COLOR_GRAY, LV_COLOR_BLACK,
-                             LV_COLOR_RED, LV_COLOR_MAROON, LV_COLOR_YELLOW, LV_COLOR_OLIVE,
-                             LV_COLOR_LIME, LV_COLOR_GREEN, LV_COLOR_CYAN, LV_COLOR_TEAL,
-                             LV_COLOR_BLUE, LV_COLOR_NAVY, LV_COLOR_MAGENTA, LV_COLOR_PURPLE,
-                             LV_COLOR_ORANGE};
-
 SettingPineTimeStyle::SettingPineTimeStyle(
   Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::Settings &settingsController) :
   Screen(app),
   settingsController{settingsController}
 {
-
   timebar = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorBG()]);
   lv_obj_set_style_local_radius(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(timebar, 200, 240);
   lv_obj_align(timebar, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 5, 0);
@@ -34,18 +27,18 @@ SettingPineTimeStyle::SettingPineTimeStyle(
 
   timeDD1 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
-  lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_TEAL);
+  lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorTime()]);
   lv_label_set_text(timeDD1, "12");
   lv_obj_align(timeDD1, timebar, LV_ALIGN_IN_TOP_MID, 5, 5);
 
   timeDD2 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
-  lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_TEAL);
+  lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorTime()]);
   lv_label_set_text(timeDD2, "34");
   lv_obj_align(timeDD2, timebar, LV_ALIGN_IN_BOTTOM_MID, 5, -5);
 
   timeAMPM = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_TEAL);
+  lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorTime()]);
   lv_obj_set_style_local_text_line_space(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, -3);
   lv_label_set_text(timeAMPM, "A\nM");
   lv_obj_align(timeAMPM, timebar, LV_ALIGN_IN_BOTTOM_LEFT, 2, -20);
@@ -53,7 +46,7 @@ SettingPineTimeStyle::SettingPineTimeStyle(
   // Create a 40px wide bar down the right side of the screen
 
   sidebar = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_TEAL);
+  lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorBar()]);
   lv_obj_set_style_local_radius(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(sidebar, 40, 240);
   lv_obj_align(sidebar, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
