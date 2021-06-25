@@ -138,7 +138,7 @@ SettingPineTimeStyle::SettingPineTimeStyle(
   lv_obj_set_style_local_line_width(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 4);
   lv_obj_set_style_local_line_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_line_opa(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_obj_set_style_local_line_width(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 4);
+  lv_obj_set_style_local_line_width(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 3);
   lv_obj_set_style_local_pad_inner(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 4);
   
   backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
@@ -206,7 +206,7 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t *object, lv_event_t event) {
   uint8_t valueBG = settingsController.GetPTSColorBG();
     
   if((object == btnNextTime) && (event == LV_EVENT_PRESSED)) {
-    if ( valueTime < 17 ) {
+    if ( valueTime < 16 ) {
       valueTime += 1;
       settingsController.SetPTSColorTime(valueTime);
       lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueTime]);
@@ -224,7 +224,7 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t *object, lv_event_t event) {
     }
   }
   if((object == btnNextBar) && (event == LV_EVENT_PRESSED)) {
-    if ( valueBar < 17 ) {
+    if ( valueBar < 16 ) {
       valueBar += 1;
       settingsController.SetPTSColorBar(valueBar);
       lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueBar]);
@@ -238,7 +238,7 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t *object, lv_event_t event) {
     }
   }
   if((object == btnNextBG) && (event == LV_EVENT_PRESSED)) {
-    if ( valueBG < 17 ) {
+    if ( valueBG < 16 ) {
       valueBG += 1;
       settingsController.SetPTSColorBG(valueBG);
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueBG]);
