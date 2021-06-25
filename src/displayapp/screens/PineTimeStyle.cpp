@@ -61,6 +61,13 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   displayedChar[3] = 0;
   displayedChar[4] = 0;
 
+  //Feels like a hack, but if all the colors are white, this is probably not what the user wants
+  if (settingsController.GetPTSColorTime() + settingsController.GetPTSColorBar() + settingsController.GetPTSColorBG() == 0) {
+      settingsController.SetPTSColorTime(11);
+      settingsController.SetPTSColorBar(11);
+      settingsController.SetPTSColorBG(3);
+  }
+
   /* Create a 200px wide background rectangle */
 
   timebar = lv_obj_create(lv_scr_act(), nullptr);
@@ -207,13 +214,6 @@ PineTimeStyle::~PineTimeStyle() {
 }
 
 bool PineTimeStyle::Refresh() {
-  //Feels like a hack, but if all the colors are white, this is probably not what the user wants
-  if (settingsController.GetPTSColorTime() + settingsController.GetPTSColorBar() + settingsController.GetPTSColorBG() == 0) {
-      settingsController.SetPTSColorTime(11);
-      settingsController.SetPTSColorBar(11);
-      settingsController.SetPTSColorBG(3);
-  }
-
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
