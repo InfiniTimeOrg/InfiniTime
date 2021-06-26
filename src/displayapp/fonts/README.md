@@ -2,6 +2,7 @@
 
 * [Jetbrains Mono](https://www.jetbrains.com/fr-fr/lp/mono/)
 * [Awesome font from LVGL](https://lvgl.io/assets/others/FontAwesome5-Solid+Brands+Regular.woff)
+* [Open Sans Light from Google](https://fonts.google.com/specimen/Open+Sans)
 
 ## Generate the fonts:
 
