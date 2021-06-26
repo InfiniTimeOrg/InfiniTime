@@ -27,7 +27,8 @@ namespace Pinetime {
                             Pinetime::Controllers::Battery& batteryController,
                             Pinetime::Controllers::BrightnessController& brightnessController,
                             Pinetime::Controllers::Ble& bleController,
-                            Pinetime::Drivers::WatchdogView& watchdog);
+                            Pinetime::Drivers::WatchdogView& watchdog,
+                            Pinetime::Controllers::MotionController& motionController);
         ~SystemInfo() override;
         bool Refresh() override;
         bool OnButtonPushed() override;
@@ -41,6 +42,7 @@ namespace Pinetime {
         Pinetime::Controllers::BrightnessController& brightnessController;
         Pinetime::Controllers::Ble& bleController;
         Pinetime::Drivers::WatchdogView& watchdog;
+        Pinetime::Controllers::MotionController& motionController;
 
         ScreenList<5> screens;
 

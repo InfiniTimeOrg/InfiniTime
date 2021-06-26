@@ -6,6 +6,11 @@ namespace Pinetime {
     class TwiMaster;
     class Bma421 {
     public:
+      enum class DeviceTypes : uint8_t {
+        Unknown,
+        BMA421,
+        BMA425
+      };
       struct Values {
         uint32_t steps;
         int16_t x;
@@ -29,6 +34,7 @@ namespace Pinetime {
       void Write(uint8_t registerAddress, const uint8_t* data, size_t size);
 
       bool IsOk() const;
+      DeviceTypes DeviceType() const;
 
     private:
       void Reset();
@@ -38,6 +44,7 @@ namespace Pinetime {
       struct bma4_dev bma;
       bool isOk = false;
       bool isResetOk = false;
+      DeviceTypes deviceType = DeviceTypes::Unknown;
     };
   }
 }

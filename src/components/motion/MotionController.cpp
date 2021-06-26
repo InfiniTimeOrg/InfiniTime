@@ -34,3 +34,10 @@ bool MotionController::ShouldWakeUp(bool isSleeping) {
 void MotionController::IsSensorOk(bool isOk) {
   isSensorOk = isOk;
 }
+void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
+  switch(types){
+    case Drivers::Bma421::DeviceTypes::BMA421: this->deviceType = DeviceTypes::BMA421; break;
+    case Drivers::Bma421::DeviceTypes::BMA425: this->deviceType = DeviceTypes::BMA425; break;
+    default: this->deviceType = DeviceTypes::Unknown; break;
+  }
+}
