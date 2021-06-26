@@ -30,7 +30,7 @@ Add new symbols:
 static constexpr const char* newSymbol = "\xEF\x86\x85";
 ```
 
-# Simple method to generate a font
+## Simple method to generate a font
 
 If you want to generate a basic font containing only numbers and letters, you can use the above settings but instead of specifying a range, simply list the characters you need in the Symbols field and leave the range blank. This is the approach used for the PineTimeStyle watchface.
 This works well for fonts which will only be used to display numbers, but will fail if you try to add a colon or other punctuation.
