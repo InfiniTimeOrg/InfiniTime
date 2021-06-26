@@ -28,6 +28,7 @@
 #include <drivers/Hrs3300.h>
 #include <drivers/Bma421.h>
 
+#include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
@@ -305,6 +306,9 @@ int main(void) {
 
   debounceTimer = xTimerCreate("debounceTimer", 200, pdFALSE, (void*) 0, DebounceTimerCallback);
   debounceChargeTimer = xTimerCreate("debounceTimerCharge", 200, pdFALSE, (void*) 0, DebounceTimerChargeCallback);
+
+  // retrieve version stored by bootloader
+  Pinetime::BootloaderVersion::SetVersion(NRF_TIMER2->CC[0]);
 
   lvgl.Init();
 
