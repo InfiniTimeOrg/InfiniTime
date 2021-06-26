@@ -25,7 +25,9 @@ void Settings::SaveSettings() {
 void Settings::LoadSettingsFromFile() {
   SettingsData bufferSettings;
 
-  fs.FileOpen(&settingsFile, "/settings.dat", LFS_O_RDWR | LFS_O_CREAT);
+  if ( fs.FileOpen(&settingsFile, "/settings.dat", LFS_O_RDWR | LFS_O_CREAT) != LFS_ERR_OK) {
+    return;
+  }
   fs.FileRead(&settingsFile, (uint8_t *)&bufferSettings, sizeof(settings));
   fs.FileClose(&settingsFile);
   if ( bufferSettings.version == settingsVersion ) {
@@ -34,7 +36,10 @@ void Settings::LoadSettingsFromFile() {
 }
 
 void Settings::SaveSettingsToFile() {
-  fs.FileOpen(&settingsFile, "/settings.dat", LFS_O_RDWR | LFS_O_CREAT);
+  
+  if ( fs.FileOpen(&settingsFile, "/settings.dat", LFS_O_RDWR | LFS_O_CREAT) != LFS_ERR_OK) {
+    return;
+  }
   fs.FileWrite(&settingsFile, (uint8_t *)&settings, sizeof(settings));
   fs.FileClose(&settingsFile);
 }
