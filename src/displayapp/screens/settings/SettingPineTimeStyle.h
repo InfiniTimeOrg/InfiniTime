@@ -27,6 +27,7 @@ namespace Pinetime {
           lv_obj_t * btnPrevBar;
           lv_obj_t * btnNextBG;
           lv_obj_t * btnPrevBG;
+          lv_obj_t * btnReset;
           lv_obj_t * timeColor;
           lv_obj_t * barColor;
           lv_obj_t * bgColor;

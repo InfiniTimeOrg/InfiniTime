@@ -150,45 +150,59 @@ SettingPineTimeStyle::SettingPineTimeStyle(
 
   btnNextTime = lv_btn_create(lv_scr_act(), nullptr);
   btnNextTime->user_data = this;
-  lv_obj_set_size(btnNextTime, 50, 50);
-  lv_obj_align(btnNextTime, lv_scr_act(), LV_ALIGN_CENTER, 55, -80);
+  lv_obj_set_size(btnNextTime, 60, 60);
+  lv_obj_align(btnNextTime, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -15, -80);
+  lv_obj_set_style_local_bg_opa(btnNextTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_30);
   lv_obj_set_style_local_value_str(btnNextTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, ">");
   lv_obj_set_event_cb(btnNextTime, event_handler);
 
   btnPrevTime = lv_btn_create(lv_scr_act(), nullptr);
   btnPrevTime->user_data = this;
-  lv_obj_set_size(btnPrevTime, 50, 50);
-  lv_obj_align(btnPrevTime, lv_scr_act(), LV_ALIGN_CENTER, -55, -80);
+  lv_obj_set_size(btnPrevTime, 60, 60);
+  lv_obj_align(btnPrevTime, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 15, -80);
+  lv_obj_set_style_local_bg_opa(btnPrevTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_30);
   lv_obj_set_style_local_value_str(btnPrevTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<");
   lv_obj_set_event_cb(btnPrevTime, event_handler);
 
   btnNextBar = lv_btn_create(lv_scr_act(), nullptr);
   btnNextBar->user_data = this;
-  lv_obj_set_size(btnNextBar, 50, 50);
-  lv_obj_align(btnNextBar, lv_scr_act(), LV_ALIGN_CENTER, 55, 0);
+  lv_obj_set_size(btnNextBar, 60, 60);
+  lv_obj_align(btnNextBar, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -15, 0);
+  lv_obj_set_style_local_bg_opa(btnNextBar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_30);
   lv_obj_set_style_local_value_str(btnNextBar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, ">");
   lv_obj_set_event_cb(btnNextBar, event_handler);
 
   btnPrevBar = lv_btn_create(lv_scr_act(), nullptr);
   btnPrevBar->user_data = this;
-  lv_obj_set_size(btnPrevBar, 50, 50);
-  lv_obj_align(btnPrevBar, lv_scr_act(), LV_ALIGN_CENTER, -55, 0);
+  lv_obj_set_size(btnPrevBar, 60, 60);
+  lv_obj_align(btnPrevBar, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 15, 0);
+  lv_obj_set_style_local_bg_opa(btnPrevBar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_30);
   lv_obj_set_style_local_value_str(btnPrevBar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<");
   lv_obj_set_event_cb(btnPrevBar, event_handler);
 
   btnNextBG = lv_btn_create(lv_scr_act(), nullptr);
   btnNextBG->user_data = this;
-  lv_obj_set_size(btnNextBG, 50, 50);
-  lv_obj_align(btnNextBG, lv_scr_act(), LV_ALIGN_CENTER, 55, 80);
+  lv_obj_set_size(btnNextBG, 60, 60);
+  lv_obj_align(btnNextBG, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -15, 80);
+  lv_obj_set_style_local_bg_opa(btnNextBG, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_30);
   lv_obj_set_style_local_value_str(btnNextBG, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, ">");
   lv_obj_set_event_cb(btnNextBG, event_handler);
 
   btnPrevBG = lv_btn_create(lv_scr_act(), nullptr);
   btnPrevBG->user_data = this;
-  lv_obj_set_size(btnPrevBG, 50, 50);
-  lv_obj_align(btnPrevBG, lv_scr_act(), LV_ALIGN_CENTER, -55, 80);
+  lv_obj_set_size(btnPrevBG, 60, 60);
+  lv_obj_align(btnPrevBG, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 15, 80);
+  lv_obj_set_style_local_bg_opa(btnPrevBG, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_30);
   lv_obj_set_style_local_value_str(btnPrevBG, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<");
   lv_obj_set_event_cb(btnPrevBG, event_handler);
+
+  btnReset = lv_btn_create(lv_scr_act(), nullptr);
+  btnReset->user_data = this;
+  lv_obj_set_size(btnReset, 60, 60);
+  lv_obj_align(btnReset, lv_scr_act(), LV_ALIGN_CENTER, 0, 80);
+  lv_obj_set_style_local_bg_opa(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_30);
+  lv_obj_set_style_local_value_str(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Rst");
+  lv_obj_set_event_cb(btnReset, event_handler);
 }
 
 SettingPineTimeStyle::~SettingPineTimeStyle() {
@@ -278,5 +292,15 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t *object, lv_event_t event) {
       settingsController.SetPTSColorBG(valueBG);
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueBG]);
     }
+  }
+  if((object == btnReset) && (event == LV_EVENT_PRESSED)) {
+      settingsController.SetPTSColorTime(11);
+      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[11]);
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[11]);
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[11]);
+      settingsController.SetPTSColorBar(11);
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[11]);
+      settingsController.SetPTSColorBG(3);
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[3]);
   }
 }
