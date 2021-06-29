@@ -18,9 +18,10 @@ namespace Pinetime {
         bool Refresh() override;
 
       private:
-        CheckBoxes::Options options[3] = {
+        CheckBoxes::Options options[4] = {
           {false, "Digital face"},
           {false, "Analog face"},
+          {false, "PineTimeStyle"},
           {false, ""},
         };
 

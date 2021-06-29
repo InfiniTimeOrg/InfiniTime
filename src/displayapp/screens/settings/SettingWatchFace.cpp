@@ -19,7 +19,7 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen() {
 }
 
 SettingWatchFace::~SettingWatchFace() {
-  for (uint8_t i = 0; i < 2; i++) {
+  for (uint8_t i = 0; i < 3; i++) {
     if (options[i].state == true) {
       settingsController.SetClockFace(i);
       break;
