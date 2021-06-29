@@ -3,6 +3,7 @@
 #include "../DisplayApp.h"
 #include "Label.h"
 #include "Version.h"
+#include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/brightness/BrightnessController.h"
@@ -83,17 +84,19 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
   lv_label_set_recolor(label, true);
   lv_label_set_text_fmt(label,
                         "#FFFF00 InfiniTime#\n\n"
-                        "#444444 Version# %ld.%ld.%ld\n\n"
-                        "#444444 Short Ref# %s\n\n"
+                        "#444444 Version# %ld.%ld.%ld\n"
+                        "#444444 Short Ref# %s\n"
                         "#444444 Build date#\n"
                         "%s\n"
-                        "%s\n",
+                        "%s\n\n"
+                        "#444444 Bootloader# %s",
                         Version::Major(),
                         Version::Minor(),
                         Version::Patch(),
                         Version::GitCommitHash(),
                         __DATE__,
-                        __TIME__);
+                        __TIME__,
+                        BootloaderVersion::VersionString());
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(0, 5, app, label);

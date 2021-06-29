@@ -73,6 +73,10 @@ namespace Pinetime {
         return nimbleController;
       };
 
+      bool IsSleeping() const {
+        return isSleeping;
+      }
+
     private:
       TaskHandle_t taskHandle;
 
