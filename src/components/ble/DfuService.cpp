@@ -121,6 +121,11 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
       NRF_LOG_INFO(
         "[DFU] -> Start data received : SD size : %d, BT size : %d, app size : %d", softdeviceSize, bootloaderSize, applicationSize);
 
+      // wait until SystemTask has finished waking up all devices
+      while (systemTask.IsSleeping()) {
+        vTaskDelay(50); // 50ms
+      }
+
       dfuImage.Erase();
 
       uint8_t data[] {16, 1, 1};
