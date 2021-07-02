@@ -104,8 +104,6 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   auto batteryPercent = static_cast<uint8_t>(batteryController.PercentRemaining());
-  float batteryVoltage = batteryController.Voltage();
-
   auto resetReason = [this]() {
     switch (watchdog.ResetReason()) {
       case Drivers::Watchdog::ResetReasons::Watchdog:
@@ -144,18 +142,13 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   uptimeSeconds = uptimeSeconds % secondsInAMinute;
   // TODO handle more than 100 days of uptime
 
-  // hack to not use the flot functions from printf
-  uint8_t batteryVoltageBytes[2];
-  batteryVoltageBytes[1] = static_cast<uint8_t>(batteryVoltage); // truncate whole numbers
-  batteryVoltageBytes[0] = static_cast<uint8_t>((batteryVoltage - batteryVoltageBytes[1]) * 100); // remove whole part of flt and shift 2 places over
-
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
   lv_label_set_text_fmt(label,
                         "#444444 Date# %02d/%02d/%04d\n"
                         "#444444 Time# %02d:%02d:%02d\n"
                         "#444444 Uptime#\n %02lud %02lu:%02lu:%02lu\n"
-                        "#444444 Battery# %d%%/%1i.%02iv\n"
+                        "#444444 Battery# %d%%/%03imV\n"
                         "#444444 Backlight# %s\n"
                         "#444444 Last reset# %s\n"
                         "#444444 Accel.# %s\n",
@@ -170,8 +163,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         uptimeMinutes,
                         uptimeSeconds,
                         batteryPercent,
-                        batteryVoltageBytes[1],
-                        batteryVoltageBytes[0],
+                        batteryController.Voltage(),
                         brightnessController.ToString(),
                         resetReason,
                         ToString(motionController.DeviceType()));

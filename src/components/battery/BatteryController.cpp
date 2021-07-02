@@ -55,17 +55,21 @@ void Battery::SaadcInit() {
 
 void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
 
-  const float battery_max = 4.18; // maximum voltage of battery ( max charging voltage is 4.21 )
-  const float battery_min = 3.20; // minimum voltage of battery before shutdown ( depends on the battery )
+  const uint16_t battery_max = 4180; // maximum voltage of battery ( max charging voltage is 4.21 )
+  const uint16_t battery_min = 3200; // minimum voltage of battery before shutdown ( depends on the battery )
 
   if (p_event->type == NRFX_SAADC_EVT_DONE) {
 
     APP_ERROR_CHECK(nrfx_saadc_buffer_convert(&saadc_value, 1));
 
-    voltage = (static_cast<float>(p_event->data.done.p_buffer[0]) * 2.04f) / (1024 / 3.0f);
-    voltage = roundf(voltage * 100) / 100;
+    // A hardware voltage divider divides the battery voltage by 2
+    // ADC gain is 1/5
+    // thus adc_voltage = battery_voltage / 2 * gain = battery_voltage / 10
+    // reference_voltage is 0.6V
+    // p_event->data.done.p_buffer[0] = (adc_voltage / reference_voltage) * 1024
+    voltage = p_event->data.done.p_buffer[0] * 6000 / 1024;
 
-    percentRemaining = static_cast<int>(((voltage - battery_min) / (battery_max - battery_min)) * 100);
+    percentRemaining = (voltage - battery_min) * 100 / (battery_max - battery_min);
 
     percentRemaining = std::max(percentRemaining, 0);
     percentRemaining = std::min(percentRemaining, 100);
