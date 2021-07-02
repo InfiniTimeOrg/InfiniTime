@@ -27,7 +27,7 @@ namespace Pinetime {
                         Controllers::DateTime& dateTimeController,
                         Controllers::Battery& batteryController,
                         Controllers::Ble& bleController,
-                        Controllers::NotificationManager& notificatioManager,
+                        Controllers::NotificationManager& notificationManager,
                         Controllers::Settings& settingsController);
 
         ~WatchFaceAnalog() override;
@@ -79,7 +79,7 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
-        Controllers::NotificationManager& notificatioManager;
+        Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
 
         void UpdateClock();
