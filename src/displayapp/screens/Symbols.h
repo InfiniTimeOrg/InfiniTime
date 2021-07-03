@@ -40,6 +40,7 @@ namespace Pinetime {
         static constexpr const char* stopWatch = "\xEF\x8B\xB2";
         static constexpr const char* hourGlass = "\xEF\x89\x92";
         static constexpr const char* lapsFlag = "\xEF\x80\xA4";
+        static constexpr const char* drum = "\xEF\x95\xA9";
 
         // lv_font_sys_48.c
         static constexpr const char* settings = "\xEE\xA4\x82"; // e902

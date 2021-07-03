@@ -63,8 +63,8 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   
   uint32_t seconds = timerController.GetTimeRemaining() / 1000;
-  lv_label_set_text_fmt(time, "%02d:%02d", seconds / 60, seconds % 60);
-  
+  lv_label_set_text_fmt(time, "%02lu:%02lu", seconds / 60, seconds % 60);
+
   lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
   
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
@@ -90,7 +90,7 @@ Timer::~Timer() {
 bool Timer::Refresh() {
   if (timerController.IsRunning()) {
     uint32_t seconds = timerController.GetTimeRemaining() / 1000;
-    lv_label_set_text_fmt(time, "%02d:%02d", seconds / 60, seconds % 60);
+    lv_label_set_text_fmt(time, "%02lu:%02lu", seconds / 60, seconds % 60);
   }
   return running;
 }
