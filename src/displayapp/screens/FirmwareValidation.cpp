@@ -17,12 +17,13 @@ namespace {
 FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::FirmwareValidator& validator)
   : Screen {app}, validator {validator} {
   labelVersion = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(labelVersion, "Version : %d.%d.%d\n"
-                                      "ShortRef : %s",
-                                      Version::Major(),
-                                      Version::Minor(),
-                                      Version::Patch(),
-                                      Version::GitCommitHash());
+  lv_label_set_text_fmt(labelVersion,
+                        "Version : %d.%d.%d\n"
+                        "ShortRef : %s",
+                        Version::Major(),
+                        Version::Minor(),
+                        Version::Patch(),
+                        Version::GitCommitHash());
   lv_obj_align(labelVersion, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   labelIsValidated = lv_label_create(lv_scr_act(), nullptr);
