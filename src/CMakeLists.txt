@@ -235,6 +235,7 @@ set(LVGL_SRC
         libs/lvgl/src/lv_widgets/lv_cont.h
         libs/lvgl/src/lv_widgets/lv_cpicker.h
         libs/lvgl/src/lv_widgets/lv_dropdown.h
+        libs/lvgl/src/lv_widgets/lv_gauge.h
         libs/lvgl/src/lv_widgets/lv_img.h
         libs/lvgl/src/lv_widgets/lv_imgbtn.h
         libs/lvgl/src/lv_widgets/lv_keyboard.h
@@ -321,6 +322,7 @@ set(LVGL_SRC
         libs/lvgl/src/lv_widgets/lv_cont.c
         libs/lvgl/src/lv_widgets/lv_cpicker.c
         libs/lvgl/src/lv_widgets/lv_dropdown.c
+        libs/lvgl/src/lv_widgets/lv_gauge.c
         libs/lvgl/src/lv_widgets/lv_img.c
         libs/lvgl/src/lv_widgets/lv_imgbtn.c
         libs/lvgl/src/lv_widgets/lv_keyboard.c
@@ -423,6 +425,7 @@ list(APPEND SOURCE_FILES
         displayapp/icons/bg_clock.c
         displayapp/screens/WatchFaceAnalog.cpp
         displayapp/screens/WatchFaceDigital.cpp
+        displayapp/screens/PineTimeStyle.cpp
 
         ##
 
@@ -473,6 +476,7 @@ list(APPEND SOURCE_FILES
         displayapp/fonts/jetbrains_mono_76.c
         displayapp/fonts/jetbrains_mono_42.c
         displayapp/fonts/lv_font_sys_48.c
+        displayapp/fonts/open_sans_light.c
         displayapp/lv_pinetime_theme.c
 
         systemtask/SystemTask.cpp
