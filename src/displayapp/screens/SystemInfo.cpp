@@ -70,11 +70,6 @@ bool SystemInfo::Refresh() {
   return running;
 }
 
-bool SystemInfo::OnButtonPushed() {
-  running = false;
-  return true;
-}
-
 bool SystemInfo::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return screens.OnTouchEvent(event);
 }

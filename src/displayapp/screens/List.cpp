@@ -19,9 +19,6 @@ List::List(uint8_t screenID,
            std::array<Applications, MAXLISTITEMS>& applications)
   : Screen(app), settingsController {settingsController} {
 
-  // Set the background to Black
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0, 0, 0));
-
   settingsController.SetSettingsMenu(screenID);
 
   if (numScreens > 1) {
@@ -90,12 +87,6 @@ List::List(uint8_t screenID,
       lv_label_set_text_fmt(labelBt, " %s", applications[i].name);
     }
   }
-
-  lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
-  lv_obj_set_size(backgroundLabel, LV_HOR_RES, LV_VER_RES);
-  lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text_static(backgroundLabel, "");
 }
 
 List::~List() {
