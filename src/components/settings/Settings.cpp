@@ -24,22 +24,24 @@ void Settings::SaveSettings() {
 
 void Settings::LoadSettingsFromFile() {
   SettingsData bufferSettings;
+  lfs_file_t settingsFile;
 
   if ( fs.FileOpen(&settingsFile, "/settings.dat", LFS_O_RDWR | LFS_O_CREAT) != LFS_ERR_OK) {
     return;
   }
-  fs.FileRead(&settingsFile, (uint8_t *)&bufferSettings, sizeof(settings));
+  fs.FileRead(&settingsFile, reinterpret_cast<uint8_t*>(&bufferSettings), sizeof(settings));
   fs.FileClose(&settingsFile);
   if ( bufferSettings.version == settingsVersion ) {
-    std::memcpy((void *)&settings, (void *)&bufferSettings, sizeof(settings));
+    settings = bufferSettings;
   }
 }
 
 void Settings::SaveSettingsToFile() {
-  
+  lfs_file_t settingsFile;
+
   if ( fs.FileOpen(&settingsFile, "/settings.dat", LFS_O_RDWR | LFS_O_CREAT) != LFS_ERR_OK) {
     return;
   }
-  fs.FileWrite(&settingsFile, (uint8_t *)&settings, sizeof(settings));
+  fs.FileWrite(&settingsFile, reinterpret_cast<uint8_t*>(&settings), sizeof(settings));
   fs.FileClose(&settingsFile);
 }

@@ -9,9 +9,9 @@ namespace Pinetime {
   namespace Controllers {
     class Settings {
     public:
-      enum class ClockType { H24, H12 };
-      enum class Vibration { ON, OFF };
-      enum class WakeUpMode { None, SingleTap, DoubleTap, RaiseWrist };
+      enum class ClockType : uint8_t { H24, H12 };
+      enum class Vibration : uint8_t { ON, OFF };
+      enum class WakeUpMode : uint8_t { None, SingleTap, DoubleTap, RaiseWrist };
 
       Settings(Pinetime::Controllers::FS& fs);
 
@@ -101,14 +101,13 @@ namespace Pinetime {
       struct SettingsData {
 
         uint32_t version = settingsVersion;
+        uint32_t stepsGoal = 10000;
+        uint32_t screenTimeOut = 15000;
 
         ClockType clockType = ClockType::H24;
         Vibration vibrationStatus = Vibration::ON;
 
         uint8_t clockFace = 0;
-
-        uint32_t stepsGoal = 10000;
-        uint32_t screenTimeOut = 15000;
 
         WakeUpMode wakeUpMode = WakeUpMode::None;
 
@@ -120,8 +119,6 @@ namespace Pinetime {
 
       uint8_t appMenu = 0;
       uint8_t settingsMenu = 0;
-
-      lfs_file_t settingsFile;
 
       void LoadSettingsFromFile();
       void SaveSettingsToFile();
