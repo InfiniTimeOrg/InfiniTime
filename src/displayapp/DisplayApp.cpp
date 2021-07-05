@@ -161,7 +161,7 @@ void DisplayApp::Refresh() {
         break;
       case Messages::TimerDone:
         if (currentApp == Apps::Timer) {
-          auto *timer = static_cast<Screens::Timer*>(currentScreen.get());
+          auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
           timer->setDone();
         } else {
           LoadApp(Apps::Timer, DisplayApp::FullRefreshDirections::Down);
@@ -214,7 +214,7 @@ void DisplayApp::Refresh() {
     }
   }
 
-  if(nextApp != Apps::None) {
+  if (nextApp != Apps::None) {
     LoadApp(nextApp, nextDirection);
     nextApp = Apps::None;
   }
@@ -328,8 +328,8 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SysInfo:
-      currentScreen =
-        std::make_unique<Screens::SystemInfo>(this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController);
+      currentScreen = std::make_unique<Screens::SystemInfo>(
+        this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::FlashLight:
@@ -337,7 +337,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
       break;
     case Apps::StopWatch:
-      currentScreen = std::make_unique<Screens::StopWatch>(this);
+      currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask);
       break;
     case Apps::Twos:
       currentScreen = std::make_unique<Screens::Twos>(this);
@@ -374,7 +374,7 @@ void DisplayApp::IdleState() {
 }
 
 void DisplayApp::PushMessage(Messages msg) {
-  if(in_isr()) {
+  if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken;
     xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
@@ -445,7 +445,7 @@ void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {
 }
 
 void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
-  if(systemTask != nullptr)
+  if (systemTask != nullptr)
     systemTask->PushMessage(message);
 }
 
