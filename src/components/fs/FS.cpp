@@ -1,12 +1,9 @@
 #include "FS.h"
 #include <cstring>
-#include <cstdlib>
-#include "drivers/SpiNorFlash.h"
 #include <littlefs/lfs.h>
 #include <lvgl/lvgl.h>
 
 using namespace Pinetime::Controllers;
-
 
 static constexpr size_t BLOCK_SIZE_BYTES = 4096;
 
@@ -18,8 +15,8 @@ namespace {
   int read(const struct lfs_config* c, lfs_block_t block,
     lfs_off_t off, void* buffer, lfs_size_t size) {
     Pinetime::Controllers::FS& lfs = *(static_cast<Pinetime::Controllers::FS*>(c->context));
-    const size_t address = lfs.mStartAddress + (block * BLOCK_SIZE_BYTES) + off;
-    lfs.mDriver.Read(address, (uint8_t*)buffer, size);
+    const size_t address = Pinetime::Controllers::FS::startAddress + (block * BLOCK_SIZE_BYTES) + off;
+    lfs.mDriver.Read(address, static_cast<uint8_t*>(buffer), size);
 
     return 0;
   }
@@ -27,14 +24,14 @@ namespace {
   int prog(const struct lfs_config* c, lfs_block_t block,
     lfs_off_t off, const void* buffer, lfs_size_t size) {
     Pinetime::Controllers::FS& lfs = *(static_cast<Pinetime::Controllers::FS*>(c->context));
-    const size_t address = lfs.mStartAddress + (block * BLOCK_SIZE_BYTES) + off;
-    lfs.mDriver.Write(address, (uint8_t*)buffer, size);
+    const size_t address = Pinetime::Controllers::FS::startAddress + (block * BLOCK_SIZE_BYTES) + off;
+    lfs.mDriver.Write(address, (uint8_t*) buffer, size);
     return lfs.mDriver.ProgramFailed() ? -1 : 0;
   }
 
   int erase(const struct lfs_config* c, lfs_block_t block) {
     Pinetime::Controllers::FS& lfs = *(static_cast<Pinetime::Controllers::FS*>(c->context));
-    const size_t address = lfs.mStartAddress + (block * BLOCK_SIZE_BYTES);
+    const size_t address = Pinetime::Controllers::FS::startAddress + (block * BLOCK_SIZE_BYTES);
     lfs.mDriver.SectorErase(address);
     return lfs.mDriver.EraseFailed() ? -1 : 0;
   }
@@ -73,19 +70,19 @@ constexpr struct lfs_config createLfsConfig(Pinetime::Controllers::FS& fs, const
 
 FS::FS(Pinetime::Drivers::SpiNorFlash& driver) :
   mDriver{ driver },
-  mLfsConfig{ createLfsConfig(*this, mSize) } { }
+  lfsConfig{ createLfsConfig(*this, size) } { }
 
 
 void FS::Init() {
 
   // try mount
-  int err = lfs_mount(&mLfs, &mLfsConfig);
+  int err = lfs_mount(&lfs, &lfsConfig);
 
   // reformat if we can't mount the filesystem
   // this should only happen on the first boot
   if (err != LFS_ERR_OK) {
-    lfs_format(&mLfs, &mLfsConfig);
-    err = lfs_mount(&mLfs, &mLfsConfig);
+    lfs_format(&lfs, &lfsConfig);
+    err = lfs_mount(&lfs, &lfsConfig);
     if (err != LFS_ERR_OK) {
       return;
     }
@@ -104,49 +101,49 @@ void FS::VerifyResource() {
 }
 
 int  FS::FileOpen(lfs_file_t* file_p, const char* fileName, const int flags) {
-  return lfs_file_open(&mLfs, file_p, fileName, flags);
+  return lfs_file_open(&lfs, file_p, fileName, flags);
 }
 
 int FS::FileClose(lfs_file_t* file_p) {
-  return lfs_file_close(&mLfs, file_p);
+  return lfs_file_close(&lfs, file_p);
 }
 
 int FS::FileRead(lfs_file_t* file_p, uint8_t* buff, uint32_t size) {
-  return lfs_file_read(&mLfs, file_p, buff, size);
+  return lfs_file_read(&lfs, file_p, buff, size);
 }
 
 int FS::FileWrite(lfs_file_t* file_p, const uint8_t* buff, uint32_t size) {
-  return lfs_file_write(&mLfs, file_p, buff, size);
+  return lfs_file_write(&lfs, file_p, buff, size);
 }
 
 int FS::FileSeek(lfs_file_t* file_p, uint32_t pos) {
-  return lfs_file_seek(&mLfs, file_p, pos, LFS_SEEK_SET);
+  return lfs_file_seek(&lfs, file_p, pos, LFS_SEEK_SET);
 }
 
 int FS::FileDelete(const char* fileName) {
-  return lfs_remove(&mLfs, fileName);
+  return lfs_remove(&lfs, fileName);
 }
 
 
 int FS::DirCreate(const char* path) {
-  return lfs_mkdir(&mLfs, path);
+  return lfs_mkdir(&lfs, path);
 }
 
 // Delete directory and all files inside
 int FS::DirDelete(const char* path) {
 
-  lfs_dir_t mLfs_dir;
+  lfs_dir_t lfs_dir;
   lfs_info entryInfo;
 
   int err;
-  err = lfs_dir_open(&mLfs, &mLfs_dir, path);
+  err = lfs_dir_open(&lfs, &lfs_dir, path);
   if (err) {
     return err;
   }
-  while (lfs_dir_read(&mLfs, &mLfs_dir, &entryInfo)) {
-    lfs_remove(&mLfs, entryInfo.name);
+  while (lfs_dir_read(&lfs, &lfs_dir, &entryInfo)) {
+    lfs_remove(&lfs, entryInfo.name);
   }
-  lfs_dir_close(&mLfs, &mLfs_dir);
+  lfs_dir_close(&lfs, &lfs_dir);
   return LFS_ERR_OK;
 }
 
@@ -183,7 +180,7 @@ namespace {
   lv_fs_res_t lvglRead(lv_fs_drv_t* drv, void* file_p, void* buf, uint32_t btr, uint32_t* br) {
     FS* filesys = static_cast<FS*>(drv->user_data);
     lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
-    filesys->FileRead(file, (uint8_t*)buf, btr);
+    filesys->FileRead(file, static_cast<uint8_t*>(buf), btr);
     *br = btr;
     return LV_FS_RES_OK;
   }

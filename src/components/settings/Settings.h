@@ -19,8 +19,9 @@ namespace Pinetime {
       void SaveSettings();
 
       void SetClockFace(uint8_t face) {
-        if (face != settings.clockFace)
+        if (face != settings.clockFace) {
           settingsChanged = true;
+        }
         settings.clockFace = face;
       };
       uint8_t GetClockFace() const {
@@ -42,8 +43,9 @@ namespace Pinetime {
       };
 
       void SetClockType(ClockType clocktype) {
-        if (clocktype != settings.clockType)
+        if (clocktype != settings.clockType) {
           settingsChanged = true;
+        }
         settings.clockType = clocktype;
       };
       ClockType GetClockType() const {
@@ -51,8 +53,9 @@ namespace Pinetime {
       };
 
       void SetVibrationStatus(Vibration status) {
-        if (status != settings.vibrationStatus)
+        if (status != settings.vibrationStatus) {
           settingsChanged = true;
+        }
         settings.vibrationStatus = status;
       };
       Vibration GetVibrationStatus() const {
@@ -60,8 +63,9 @@ namespace Pinetime {
       };
 
       void SetScreenTimeOut(uint32_t timeout) {
-        if (timeout != settings.screenTimeOut)
+        if (timeout != settings.screenTimeOut) {
           settingsChanged = true;
+        }
         settings.screenTimeOut = timeout;
       };
       uint32_t GetScreenTimeOut() const {
@@ -69,8 +73,9 @@ namespace Pinetime {
       };
 
       void setWakeUpMode(WakeUpMode wakeUp) {
-        if (wakeUp != settings.wakeUpMode)
+        if (wakeUp != settings.wakeUpMode) {
           settingsChanged = true;
+        }
         settings.wakeUpMode = wakeUp;
       };
       WakeUpMode getWakeUpMode() const {
@@ -78,8 +83,9 @@ namespace Pinetime {
       };
 
       void SetBrightness(Controllers::BrightnessController::Levels level) {
-        if (level != settings.brightLevel)
+        if (level != settings.brightLevel) {
           settingsChanged = true;
+        }
         settings.brightLevel = level;
       };
       Controllers::BrightnessController::Levels GetBrightness() const {
@@ -87,8 +93,9 @@ namespace Pinetime {
       };
 
       void SetStepsGoal( uint32_t goal ) { 
-        if ( goal != settings.stepsGoal ) 
+        if ( goal != settings.stepsGoal ) {
           settingsChanged = true;
+        }
         settings.stepsGoal = goal; 
       };
       
