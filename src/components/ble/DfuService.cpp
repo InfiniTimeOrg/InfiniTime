@@ -114,12 +114,21 @@ int DfuService::SendDfuRevision(os_mbuf* om) const {
 int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
   switch (state) {
     case States::Start: {
+      // wait until SystemTask has finished waking up all devices
+      while (systemTask.isSleeping) {
+        vTaskDelay(50); // 50ms
+      }
       softdeviceSize = om->om_data[0] + (om->om_data[1] << 8) + (om->om_data[2] << 16) + (om->om_data[3] << 24);
       bootloaderSize = om->om_data[4] + (om->om_data[5] << 8) + (om->om_data[6] << 16) + (om->om_data[7] << 24);
       applicationSize = om->om_data[8] + (om->om_data[9] << 8) + (om->om_data[10] << 16) + (om->om_data[11] << 24);
       bleController.FirmwareUpdateTotalBytes(applicationSize);
       NRF_LOG_INFO(
         "[DFU] -> Start data received : SD size : %d, BT size : %d, app size : %d", softdeviceSize, bootloaderSize, applicationSize);
+
+      // wait until SystemTask has finished waking up all devices
+      while (systemTask.IsSleeping()) {
+        vTaskDelay(50); // 50ms
+      }
 
       dfuImage.Erase();
 
@@ -205,7 +214,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
         bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Running);
         bleController.FirmwareUpdateTotalBytes(0xffffffffu);
         bleController.FirmwareUpdateCurrentBytes(0);
-        systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleFirmwareUpdateStarted);
+        systemTask.PushMessage(Pinetime::System::Messages::BleFirmwareUpdateStarted);
         return 0;
       } else {
         NRF_LOG_INFO("[DFU] -> Start DFU, mode %d not supported!", imageType);
@@ -279,7 +288,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
       }
       NRF_LOG_INFO("[DFU] -> Activate image and reset!");
       bleController.StopFirmwareUpdate();
-      systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleFirmwareUpdateFinished);
+      systemTask.PushMessage(Pinetime::System::Messages::BleFirmwareUpdateFinished);
       Reset();
       bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated);
       return 0;
@@ -304,7 +313,7 @@ void DfuService::Reset() {
   notificationManager.Reset();
   bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Error);
   bleController.StopFirmwareUpdate();
-  systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleFirmwareUpdateFinished);
+  systemTask.PushMessage(Pinetime::System::Messages::BleFirmwareUpdateFinished);
 }
 
 DfuService::NotificationManager::NotificationManager() {

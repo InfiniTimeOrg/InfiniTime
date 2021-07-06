@@ -8,8 +8,7 @@ namespace Pinetime {
   namespace Controllers {
     class Ppg {
     public:
-      explicit Ppg(float spl);
-
+      Ppg();
       int8_t Preprocess(float spl);
       float HeartRate();
 

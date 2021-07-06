@@ -31,7 +31,7 @@ namespace Pinetime {
       ErrorCodes Write(uint8_t deviceAddress, const uint8_t* data, size_t size, bool stop);
       void FixHwFreezed();
       NRF_TWIM_Type* twiBaseAddress;
-      SemaphoreHandle_t mutex;
+      SemaphoreHandle_t mutex = nullptr;
       const Modules module;
       const Parameters params;
       static constexpr uint8_t maxDataSize {16};

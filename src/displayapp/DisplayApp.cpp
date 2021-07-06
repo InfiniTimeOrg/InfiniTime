@@ -2,6 +2,7 @@
 #include <libraries/log/nrf_log.h>
 #include <displayapp/screens/HeartRate.h>
 #include <displayapp/screens/Motion.h>
+#include <displayapp/screens/Timer.h>
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
@@ -17,6 +18,7 @@
 #include "displayapp/screens/Paddle.h"
 #include "displayapp/screens/StopWatch.h"
 #include "displayapp/screens/Meter.h"
+#include "displayapp/screens/Metronome.h"
 #include "displayapp/screens/Music.h"
 #include "displayapp/screens/Navigation.h"
 #include "displayapp/screens/Notifications.h"
@@ -31,6 +33,7 @@
 #include "drivers/St7789.h"
 #include "drivers/Watchdog.h"
 #include "systemtask/SystemTask.h"
+#include "systemtask/Messages.h"
 
 #include "displayapp/screens/settings/QuickSettings.h"
 #include "displayapp/screens/settings/Settings.h"
@@ -43,6 +46,12 @@
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
 
+namespace {
+  static inline bool in_isr(void) {
+    return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
+  }
+}
+
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Components::LittleVgl& lvgl,
                        Drivers::Cst816S& touchPanel,
@@ -50,12 +59,12 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,
                        Drivers::WatchdogView& watchdog,
-                       System::SystemTask& systemTask,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::MotorController& motorController,
-                       Pinetime::Controllers::MotionController& motionController)
+                       Pinetime::Controllers::MotionController& motionController,
+                       Pinetime::Controllers::TimerController& timerController)
   : lcd {lcd},
     lvgl {lvgl},
     touchPanel {touchPanel},
@@ -63,18 +72,20 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     bleController {bleController},
     dateTimeController {dateTimeController},
     watchdog {watchdog},
-    systemTask {systemTask},
     notificationManager {notificationManager},
     heartRateController {heartRateController},
     settingsController {settingsController},
     motorController {motorController},
-    motionController {motionController} {
-  msgQueue = xQueueCreate(queueSize, itemSize);
-  // Start clock when smartwatch boots
-  LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+    motionController {motionController},
+    timerController {timerController} {
 }
 
 void DisplayApp::Start() {
+  msgQueue = xQueueCreate(queueSize, itemSize);
+
+  // Start clock when smartwatch boots
+  LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+
   if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 800, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }
@@ -127,7 +138,7 @@ void DisplayApp::Refresh() {
           vTaskDelay(100);
         }
         lcd.DisplayOff();
-        systemTask.PushMessage(System::SystemTask::Messages::OnDisplayTaskSleeping);
+        PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
         state = States::Idle;
         break;
       case Messages::GoToRunning:
@@ -136,7 +147,7 @@ void DisplayApp::Refresh() {
         state = States::Running;
         break;
       case Messages::UpdateTimeOut:
-        systemTask.PushMessage(System::SystemTask::Messages::UpdateTimeOut);
+        PushMessageToSystemTask(System::Messages::UpdateTimeOut);
         break;
       case Messages::UpdateBleConnection:
         //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
@@ -147,6 +158,14 @@ void DisplayApp::Refresh() {
         break;
       case Messages::NewNotification:
         LoadApp(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
+        break;
+      case Messages::TimerDone:
+        if (currentApp == Apps::Timer) {
+          auto *timer = static_cast<Screens::Timer*>(currentScreen.get());
+          timer->setDone();
+        } else {
+          LoadApp(Apps::Timer, DisplayApp::FullRefreshDirections::Down);
+        }
         break;
       case Messages::TouchEvent: {
         if (state != States::Running)
@@ -165,7 +184,7 @@ void DisplayApp::Refresh() {
                 LoadApp(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
                 break;
               case TouchEvents::DoubleTap:
-                systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
+                PushMessageToSystemTask(System::Messages::GoToSleep);
                 break;
               default:
                 break;
@@ -177,7 +196,7 @@ void DisplayApp::Refresh() {
       } break;
       case Messages::ButtonPushed:
         if (currentApp == Apps::Clock) {
-          systemTask.PushMessage(System::SystemTask::Messages::GoToSleep);
+          PushMessageToSystemTask(System::Messages::GoToSleep);
         } else {
           if (!currentScreen->OnButtonPushed()) {
             LoadApp(returnToApp, returnDirection);
@@ -193,6 +212,11 @@ void DisplayApp::Refresh() {
         // What should happen here?
         break;
     }
+  }
+
+  if(nextApp != Apps::None) {
+    LoadApp(nextApp, nextDirection);
+    nextApp = Apps::None;
   }
 
   if (state != States::Idle && touchMode == TouchModes::Polling) {
@@ -213,7 +237,8 @@ void DisplayApp::RunningState() {
 }
 
 void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction) {
-  LoadApp(app, direction);
+  nextApp = app;
+  nextDirection = direction;
 }
 
 void DisplayApp::ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction, TouchEvents touchEvent) {
@@ -256,13 +281,16 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
 
     case Apps::Notifications:
       currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask.nimble().alertService(), motorController, Screens::Notifications::Modes::Normal);
+        this, notificationManager, systemTask->nimble().alertService(), motorController, Screens::Notifications::Modes::Normal);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::NotificationsPreview:
       currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask.nimble().alertService(), motorController, Screens::Notifications::Modes::Preview);
+        this, notificationManager, systemTask->nimble().alertService(), motorController, Screens::Notifications::Modes::Preview);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
+      break;
+    case Apps::Timer:
+      currentScreen = std::make_unique<Screens::Timer>(this, timerController);
       break;
 
     // Settings
@@ -291,7 +319,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
-    case Apps::SettingSteps: 
+    case Apps::SettingSteps:
       currentScreen = std::make_unique<Screens::SettingSteps>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
@@ -301,17 +329,15 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::SysInfo:
       currentScreen =
-        std::make_unique<Screens::SystemInfo>(this, dateTimeController, batteryController, brightnessController, bleController, watchdog);
+        std::make_unique<Screens::SystemInfo>(this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
-      //
-
     case Apps::FlashLight:
-      currentScreen = std::make_unique<Screens::FlashLight>(this, systemTask, brightnessController);
+      currentScreen = std::make_unique<Screens::FlashLight>(this, *systemTask, brightnessController);
       ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
       break;
     case Apps::StopWatch:
-      currentScreen = std::make_unique<Screens::StopWatch>(this);
+      currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask);
       break;
     case Apps::Twos:
       currentScreen = std::make_unique<Screens::Twos>(this);
@@ -323,18 +349,21 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
       break;
     case Apps::Music:
-      currentScreen = std::make_unique<Screens::Music>(this, systemTask.nimble().music());
+      currentScreen = std::make_unique<Screens::Music>(this, systemTask->nimble().music());
       break;
     case Apps::Navigation:
-      currentScreen = std::make_unique<Screens::Navigation>(this, systemTask.nimble().navigation());
+      currentScreen = std::make_unique<Screens::Navigation>(this, systemTask->nimble().navigation());
       break;
     case Apps::HeartRate:
-      currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, systemTask);
+      currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, *systemTask);
+      break;
+    case Apps::Metronome:
+      currentScreen = std::make_unique<Screens::Metronome>(this, motorController, *systemTask);
       break;
     case Apps::Motion:
       currentScreen = std::make_unique<Screens::Motion>(this, motionController);
       break;
-    case Apps::Steps: 
+    case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
   }
@@ -345,12 +374,15 @@ void DisplayApp::IdleState() {
 }
 
 void DisplayApp::PushMessage(Messages msg) {
-  BaseType_t xHigherPriorityTaskWoken;
-  xHigherPriorityTaskWoken = pdFALSE;
-  xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
-  if (xHigherPriorityTaskWoken) {
-    /* Actual macro used here is port specific. */
-    // TODO : should I do something here?
+  if(in_isr()) {
+    BaseType_t xHigherPriorityTaskWoken;
+    xHigherPriorityTaskWoken = pdFALSE;
+    xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
+    if (xHigherPriorityTaskWoken) {
+      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+  } else {
+    xQueueSend(msgQueue, &msg, portMAX_DELAY);
   }
 }
 
@@ -410,4 +442,13 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
 
 void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {
   touchMode = mode;
+}
+
+void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
+  if(systemTask != nullptr)
+    systemTask->PushMessage(message);
+}
+
+void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
+  this->systemTask = systemTask;
 }

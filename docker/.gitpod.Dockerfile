@@ -19,7 +19,10 @@ RUN apt-get update -qq \
       libffi-dev \
       libssl-dev \
       python3-dev \
+      git \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
+
+# Git needed for PROJECT_GIT_COMMIT_HASH variable setting
 
 # Needs to be installed as root
 RUN pip3 install adafruit-nrfutil
