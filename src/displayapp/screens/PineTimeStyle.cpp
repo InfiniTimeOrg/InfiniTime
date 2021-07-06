@@ -186,8 +186,8 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(stepGauge, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   lv_gauge_set_scale(stepGauge, 360, 11, 0);
   lv_gauge_set_angle_offset(stepGauge, 180);
-  lv_gauge_set_critical_value(stepGauge, (settingsController.GetStepsGoal() / 100));
-  lv_gauge_set_range(stepGauge, 0, (settingsController.GetStepsGoal() / 100));
+  lv_gauge_set_critical_value(stepGauge, 100);
+  lv_gauge_set_range(stepGauge, 0, 100);
   lv_gauge_set_value(stepGauge, 0, 0);
 
   lv_obj_set_style_local_pad_right(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
@@ -335,7 +335,7 @@ bool PineTimeStyle::Refresh() {
   stepCount = motionController.NbSteps();
   motionSensorOk = motionController.IsSensorOk();
   if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
-    lv_gauge_set_value(stepGauge, 0, (stepCount.Get() / 100));
+    lv_gauge_set_value(stepGauge, 0, (stepCount.Get() / (settingsController.GetStepsGoal() / 100)));
     lv_obj_realign(stepGauge);
     if (stepCount.Get() > settingsController.GetStepsGoal()) {
       lv_obj_set_style_local_line_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
