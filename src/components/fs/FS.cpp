@@ -5,72 +5,28 @@
 
 using namespace Pinetime::Controllers;
 
-static constexpr size_t BLOCK_SIZE_BYTES = 4096;
-
-/*
-*   Interface between littlefs and SpiNorFlash
-*/
-
-namespace {
-  int read(const struct lfs_config* c, lfs_block_t block,
-    lfs_off_t off, void* buffer, lfs_size_t size) {
-    Pinetime::Controllers::FS& lfs = *(static_cast<Pinetime::Controllers::FS*>(c->context));
-    const size_t address = Pinetime::Controllers::FS::startAddress + (block * BLOCK_SIZE_BYTES) + off;
-    lfs.mDriver.Read(address, static_cast<uint8_t*>(buffer), size);
-
-    return 0;
-  }
-
-  int prog(const struct lfs_config* c, lfs_block_t block,
-    lfs_off_t off, const void* buffer, lfs_size_t size) {
-    Pinetime::Controllers::FS& lfs = *(static_cast<Pinetime::Controllers::FS*>(c->context));
-    const size_t address = Pinetime::Controllers::FS::startAddress + (block * BLOCK_SIZE_BYTES) + off;
-    lfs.mDriver.Write(address, (uint8_t*) buffer, size);
-    return lfs.mDriver.ProgramFailed() ? -1 : 0;
-  }
-
-  int erase(const struct lfs_config* c, lfs_block_t block) {
-    Pinetime::Controllers::FS& lfs = *(static_cast<Pinetime::Controllers::FS*>(c->context));
-    const size_t address = Pinetime::Controllers::FS::startAddress + (block * BLOCK_SIZE_BYTES);
-    lfs.mDriver.SectorErase(address);
-    return lfs.mDriver.EraseFailed() ? -1 : 0;
-  }
-
-  int sync(const struct lfs_config* c) {
-    // no hardware caching used
-    return 0;
-  }
-}
-
-const static struct lfs_config baseLfsConfig = {
-    .read = read,
-    .prog = prog,
-    .erase = erase,
-    .sync = sync,
+FS::FS(Pinetime::Drivers::SpiNorFlash& driver) :
+  flashDriver{ driver },
+  lfsConfig{
+    .context = this,
+    .read = SectorRead,
+    .prog = SectorProg,
+    .erase = SectorErase,
+    .sync = SectorSync,
 
     .read_size = 16,
     .prog_size = 8,
-    .block_size = BLOCK_SIZE_BYTES,
+    .block_size = blockSize,
+    .block_count = size / blockSize,
     .block_cycles = 1000u,
 
     .cache_size = 16,
     .lookahead_size = 16,
 
     .name_max = 50,
-    .attr_max = 50
-
-};
-
-constexpr struct lfs_config createLfsConfig(Pinetime::Controllers::FS& fs, const size_t totalSizeBytes) {
-  struct lfs_config config = baseLfsConfig;
-  config.context = &fs;
-  config.block_count = totalSizeBytes / BLOCK_SIZE_BYTES;
-  return config;
-}
-
-FS::FS(Pinetime::Drivers::SpiNorFlash& driver) :
-  mDriver{ driver },
-  lfsConfig{ createLfsConfig(*this, size) } { }
+    .attr_max = 50,
+  }
+{ }
 
 
 void FS::Init() {
@@ -147,6 +103,35 @@ int FS::DirDelete(const char* path) {
   return LFS_ERR_OK;
 }
 
+/*
+
+    ----------- Interface between littlefs and SpiNorFlash -----------
+
+*/
+int FS::SectorSync(const struct lfs_config* c) {
+  return 0;
+}
+
+int FS::SectorErase(const struct lfs_config* c, lfs_block_t block) {
+  Pinetime::Controllers::FS& lfs = *(static_cast<Pinetime::Controllers::FS*>(c->context));
+  const size_t address = startAddress + (block * blockSize);
+  lfs.flashDriver.SectorErase(address);
+  return lfs.flashDriver.EraseFailed() ? -1 : 0;
+}
+
+int FS::SectorProg(const struct lfs_config* c, lfs_block_t block, lfs_off_t off, const void* buffer, lfs_size_t size) {
+  Pinetime::Controllers::FS& lfs = *(static_cast<Pinetime::Controllers::FS*>(c->context));
+  const size_t address = startAddress + (block * blockSize) + off;
+  lfs.flashDriver.Write(address, (uint8_t*) buffer, size);
+  return lfs.flashDriver.ProgramFailed() ? -1 : 0;
+}
+
+int FS::SectorRead(const struct lfs_config* c, lfs_block_t block, lfs_off_t off, void* buffer, lfs_size_t size) {
+  Pinetime::Controllers::FS& lfs = *(static_cast<Pinetime::Controllers::FS*>(c->context));
+  const size_t address = startAddress + (block * blockSize) + off;
+  lfs.flashDriver.Read(address, static_cast<uint8_t*>(buffer), size);
+  return 0;
+}
 
 /*
 

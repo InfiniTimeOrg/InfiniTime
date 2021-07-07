@@ -10,8 +10,6 @@ namespace Pinetime {
     public:
       FS(Pinetime::Drivers::SpiNorFlash&);
 
-      Pinetime::Drivers::SpiNorFlash& mDriver;
-
       void Init();
       void LVGLFileSystemInit();
 
@@ -27,6 +25,10 @@ namespace Pinetime {
       int DirDelete(const char* path);
 
       void VerifyResource();
+
+    private:
+
+      Pinetime::Drivers::SpiNorFlash& flashDriver;
 
       /*
       * External Flash MAP (4 MBytes)
@@ -52,12 +54,17 @@ namespace Pinetime {
       */
       static constexpr size_t startAddress = 0x0B4000;
       static constexpr size_t size = 0x3C0000;
+      static constexpr size_t blockSize = 4096;
 
-    private:
       bool resourcesValid = false;
       const struct lfs_config lfsConfig;
 
       lfs_t lfs;
+
+      static int SectorSync(const struct lfs_config* c);
+      static int SectorErase(const struct lfs_config* c, lfs_block_t block);
+      static int SectorProg(const struct lfs_config* c, lfs_block_t block, lfs_off_t off, const void* buffer, lfs_size_t size);
+      static int SectorRead(const struct lfs_config* c, lfs_block_t block, lfs_off_t off, void* buffer, lfs_size_t size);
 
     };
   }
