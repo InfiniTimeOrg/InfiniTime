@@ -22,8 +22,9 @@ void Battery::Update() {
   isCharging = !nrf_gpio_pin_read(chargingPin);
   isPowerPresent = !nrf_gpio_pin_read(powerPresentPin);
 
-  if (isReading)
+  if (isReading) {
     return;
+  }
   // Non blocking read
   samples = 0;
   isReading = true;
