@@ -270,10 +270,11 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::BleFirmwareUpdateStarted);
           break;
         case Messages::BleFirmwareUpdateFinished:
+          if (bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated) {
+            NVIC_SystemReset();
+          }
           doNotGoToSleep = false;
           xTimerStart(idleTimer, 0);
-          if (bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated)
-            NVIC_SystemReset();
           break;
         case Messages::OnTouchEvent:
           ReloadIdleTimer();

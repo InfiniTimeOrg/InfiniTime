@@ -25,13 +25,17 @@ namespace Pinetime {
         lv_obj_t* titleLabel;
         mutable char percentStr[10];
 
-        States state;
+        States state = States::Idle;
 
-        bool DisplayProgression() const;
+        void DisplayProgression() const;
+
+        bool OnButtonPushed() override;
 
         void UpdateValidated();
 
         void UpdateError();
+
+        uint32_t startTime;
       };
     }
   }

@@ -132,6 +132,9 @@ void DisplayApp::Refresh() {
   if (xQueueReceive(msgQueue, &msg, queueTimeout)) {
     switch (msg) {
       case Messages::GoToSleep:
+        if (bleController.IsFirmwareUpdating()) {
+          break;
+        }
         brightnessController.Backup();
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
           brightnessController.Lower();
@@ -277,6 +280,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::FirmwareUpdate:
       currentScreen = std::make_unique<Screens::FirmwareUpdate>(this, bleController);
+      ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
       break;
 
     case Apps::Notifications:
