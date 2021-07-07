@@ -175,13 +175,6 @@ void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action
   portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-extern "C" {
-void vApplicationIdleHook(void) {
-  if (!isFactory)
-    lv_tick_inc(1);
-}
-}
-
 void DebounceTimerChargeCallback(TimerHandle_t xTimer) {
   xTimerStop(xTimer, 0);
   systemTask.PushMessage(Pinetime::System::Messages::OnChargingEvent);
