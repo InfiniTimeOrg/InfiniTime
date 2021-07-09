@@ -199,7 +199,17 @@ void DisplayApp::Refresh() {
           PushMessageToSystemTask(System::Messages::GoToSleep);
         } else {
           if (!currentScreen->OnButtonPushed()) {
-            LoadApp(returnToApp, returnDirection);
+            switch (settingsController.GetButtonFunction())
+            {
+            case Pinetime::Controllers::Settings::ButtonFunction::BACK:
+              LoadApp(returnToApp, returnDirection);
+              break;
+            case Pinetime::Controllers::Settings::ButtonFunction::WATCHFACE:
+              LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
+              break;            
+            default:
+              break;
+            }
           }
         }
         break;
