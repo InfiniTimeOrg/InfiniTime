@@ -40,24 +40,26 @@ SettingSetDate::SettingSetDate(
 
   dayValue = static_cast<int>(dateTimeController.Day());
   lblDay = lv_label_create(lv_scr_act(), NULL);
-  //lv_obj_set_style_local_text_font(lblDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_label_set_text_fmt(lblDay, "%d", dayValue);
   lv_label_set_align(lblDay, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lblDay, lv_scr_act(), LV_ALIGN_CENTER, POS_X_DAY, POS_Y_TEXT);
+  lv_obj_set_auto_realign(lblDay, true);
 
   monthValue = static_cast<int>(dateTimeController.Month());
   lblMonth = lv_label_create(lv_scr_act(), NULL);
-  //lv_obj_set_style_local_text_font(lblMonth, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   UpdateMonthLabel();
+  lv_label_set_align(lblMonth, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(lblMonth, lv_scr_act(), LV_ALIGN_CENTER, POS_X_MONTH, POS_Y_TEXT);
+  lv_obj_set_auto_realign(lblMonth, true);
 
   yearValue = static_cast<int>(dateTimeController.Year());
   if (yearValue < 2021)
     yearValue = 2021;
   lblYear = lv_label_create(lv_scr_act(), NULL);
-  //lv_obj_set_style_local_text_font(lblYear, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_label_set_text_fmt(lblYear, "%d", yearValue);
   lv_label_set_align(lblYear, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lblYear, lv_scr_act(), LV_ALIGN_CENTER, POS_X_YEAR, POS_Y_TEXT);
+  lv_obj_set_auto_realign(lblYear, true);
 
   btnDayPlus = lv_btn_create(lv_scr_act(), NULL);
   btnDayPlus->user_data = this;
@@ -128,7 +130,6 @@ void SettingSetDate::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
     if (dayValue > MaximumDayOfMonth())
       dayValue = 1;
     lv_label_set_text_fmt(lblDay, "%d", dayValue);
-    lv_obj_align(lblDay, lv_scr_act(), LV_ALIGN_CENTER, POS_X_DAY, POS_Y_TEXT);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   }
   else if (object == btnDayMinus) {
@@ -136,7 +137,6 @@ void SettingSetDate::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
     if (dayValue < 1)
       dayValue = MaximumDayOfMonth();
     lv_label_set_text_fmt(lblDay, "%d", dayValue);
-    lv_obj_align(lblDay, lv_scr_act(), LV_ALIGN_CENTER, POS_X_DAY, POS_Y_TEXT);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   }
   else if (object == btnMonthPlus) {
@@ -158,14 +158,12 @@ void SettingSetDate::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
   else if (object == btnYearPlus) {
     yearValue++;
     lv_label_set_text_fmt(lblYear, "%d", yearValue);
-    lv_obj_align(lblYear, lv_scr_act(), LV_ALIGN_CENTER, POS_X_YEAR, POS_Y_TEXT);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
     CheckDay();
   }
   else if (object == btnYearMinus) {
     yearValue--;
     lv_label_set_text_fmt(lblYear, "%d", yearValue);
-    lv_obj_align(lblYear, lv_scr_act(), LV_ALIGN_CENTER, POS_X_YEAR, POS_Y_TEXT);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
     CheckDay();
   }
@@ -211,7 +209,5 @@ void SettingSetDate::CheckDay() {
 void SettingSetDate::UpdateMonthLabel() {
   lv_label_set_text_static(lblMonth,
                            Pinetime::Controllers::DateTime::MonthShortToStringLow(static_cast<Pinetime::Controllers::DateTime::Months>(monthValue)));
-  lv_label_set_align(lblMonth, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(lblMonth, lv_scr_act(), LV_ALIGN_CENTER, POS_X_MONTH, POS_Y_TEXT);
 }
 
