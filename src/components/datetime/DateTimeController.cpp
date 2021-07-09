@@ -75,31 +75,59 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
 }
 
 const char* DateTime::MonthShortToString() {
-  return DateTime::MonthsString[(uint8_t) month];
+  return DateTime::MonthsString[static_cast<uint8_t>(month)];
 }
 
 const char* DateTime::MonthShortToStringLow() {
-  return DateTime::MonthsStringLow[(uint8_t) month];
+  return DateTime::MonthsStringLow[static_cast<uint8_t>(month)];
 }
 
 const char* DateTime::MonthsToStringLow() {
-  return DateTime::MonthsLow[(uint8_t) month];
+  return DateTime::MonthsLow[static_cast<uint8_t>(month)];
 }
 
 const char* DateTime::DayOfWeekToString() {
-  return DateTime::DaysString[(uint8_t) dayOfWeek];
+  return DateTime::DaysString[static_cast<uint8_t>(dayOfWeek)];
 }
 
 const char* DateTime::DayOfWeekShortToString() {
-  return DateTime::DaysStringShort[(uint8_t) dayOfWeek];
+  return DateTime::DaysStringShort[static_cast<uint8_t>(dayOfWeek)];
 }
 
 const char* DateTime::DayOfWeekToStringLow() {
-  return DateTime::DaysStringLow[(uint8_t) dayOfWeek];
+  return DateTime::DaysStringLow[static_cast<uint8_t>(dayOfWeek)];
 }
 
 const char* DateTime::DayOfWeekShortToStringLow() {
-  return DateTime::DaysStringShortLow[(uint8_t) dayOfWeek];
+  return DateTime::DaysStringShortLow[static_cast<uint8_t>(dayOfWeek)];
+}
+
+const char* DateTime::MonthShortToString(Months month) {
+  return DateTime::MonthsString[static_cast<uint8_t>(month)];
+}
+
+const char* DateTime::MonthShortToStringLow(Months month) {
+  return DateTime::MonthsStringLow[static_cast<uint8_t>(month)];
+}
+
+const char* DateTime::MonthsToStringLow(Months month) {
+  return DateTime::MonthsLow[static_cast<uint8_t>(month)];
+}
+
+const char* DateTime::DayOfWeekToString(Days dayOfWeek) {
+  return DateTime::DaysString[static_cast<uint8_t>(dayOfWeek)];
+}
+
+const char* DateTime::DayOfWeekShortToString(Days dayOfWeek) {
+  return DateTime::DaysStringShort[static_cast<uint8_t>(dayOfWeek)];
+}
+
+const char* DateTime::DayOfWeekToStringLow(Days dayOfWeek) {
+  return DateTime::DaysStringLow[static_cast<uint8_t>(dayOfWeek)];
+}
+
+const char* DateTime::DayOfWeekShortToStringLow(Days dayOfWeek) {
+  return DateTime::DaysStringShortLow[static_cast<uint8_t>(dayOfWeek)];
 }
 
 void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
