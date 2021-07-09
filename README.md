@@ -1,4 +1,3 @@
-
 # PineTime
 
 [![Build PineTime Firmware](https://github.com/JF002/InfiniTime/workflows/Build%20PineTime%20Firmware/badge.svg?branch=master)](https://github.com/JF002/InfiniTime/actions)
@@ -12,6 +11,7 @@
 The **Pinetime** smartwatch is built around the NRF52832 MCU (512KB Flash, 64KB RAM), a 240*240 LCD display driven by the ST7789 controller, an accelerometer, a heart rate sensor, and a vibration motor.
 
 # InfiniTime
+
 ![InfiniTime logo](images/infinitime-logo.jpg "InfiniTime Logo")
 
 The goal of this project is to design an open-source firmware for the Pinetime smartwatch :
@@ -74,14 +74,17 @@ As of now, here is the list of achievements of this project:
 ## Documentation
 
 ### Getting started
+
  - [Getting started with InfiniTime 1.0 (quick user guide, update bootloader and InfiniTime,...)](doc/gettingStarted/gettingStarted-1.0.md)
  - [Flash, upgrade (OTA), time synchronization,...](doc/gettingStarted/ota-gadgetbridge-nrfconnect.md)
 
 ### Develop
+
  - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
  - [Creating a stopwatch in Pinetime(article)](https://pankajraghav.com/2021/04/03/PINETIME-STOPCLOCK.html)
 
 ### Build, flash and debug
+
  - [Project branches](doc/branches.md)
  - [Versioning](doc/versioning.md)
  - [Files included in the release notes](doc/filesInReleaseNotes.md)
@@ -94,15 +97,19 @@ As of now, here is the list of achievements of this project:
  - Using files from the releases
 
 ### Contribute
+
  - [How to contribute ?](doc/contribute.md)
 
 ### API
+
  - [BLE implementation and API](./doc/ble.md)
 
 ### Architecture and technical topics
+
  - [Memory analysis](./doc/MemoryAnalysis.md)
 
 ### Using the firmware
+
  - [Integration with Gadgetbridge](doc/companionapps/Gadgetbridge.md)
  - [Integration with AmazFish](doc/companionapps/Amazfish.md)
  - [Firmware update, OTA](doc/companionapps/NrfconnectOTA.md)
@@ -126,6 +133,7 @@ Here a quick list out of my head of things to do for this project:
 Do not hesitate to clone/fork the code, hack it and create pull-requests. I'll do my best to review and merge them :)
 
 ## Licenses
+
 This project is released under the GNU General Public License version 3 or, at your option, any later version.
 
 It integrates the following projects:
@@ -135,6 +143,7 @@ It integrates the following projects:
  - Font : **[Jetbrains Mono](https://www.jetbrains.com/fr-fr/lp/mono/)** under the Apache 2.0 license
 
 ## Credits
+
 I’m not working alone on this project. First, many people create PR for this projects. Then, there is the whole #pinetime community : a lot of people all around the world who are hacking, searching, experimenting and programming the Pinetime. We exchange our ideas, experiments and code in the chat rooms and forums.
 
 Here are some people I would like to highlight:
