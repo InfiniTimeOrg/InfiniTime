@@ -26,19 +26,6 @@ SettingSetDate::SettingSetDate(
   Screen(app),
   dateTimeController {dateTimeController}
 {
-
-  lv_obj_t * container1 = lv_cont_create(lv_scr_act(), nullptr);
-
-  //lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
-  lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_style_local_pad_all(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
-  lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
-  lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_pos(container1, 30, 60);
-  lv_obj_set_width(container1, LV_HOR_RES - 50);
-  lv_obj_set_height(container1, LV_VER_RES - 60);
-  lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
-
   lv_obj_t * title = lv_label_create(lv_scr_act(), NULL);  
   lv_label_set_text_static(title, "Set current date");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
@@ -116,8 +103,8 @@ SettingSetDate::SettingSetDate(
 
   btnSetTime = lv_btn_create(lv_scr_act(), NULL);
   btnSetTime->user_data = this;
-  lv_obj_set_size(btnSetTime, 70, 40);
-  lv_obj_align(btnSetTime, lv_scr_act(), LV_ALIGN_CENTER, 0, 90);
+  lv_obj_set_size(btnSetTime, 120, 48);
+  lv_obj_align(btnSetTime, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   lv_obj_set_style_local_value_str(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Set");
   lv_obj_set_event_cb(btnSetTime, event_handler);
 }
@@ -133,7 +120,10 @@ bool SettingSetDate::Refresh() {
 
 void SettingSetDate::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
 
-  if(object == btnDayPlus && (event == LV_EVENT_PRESSED)) {
+  if (event != LV_EVENT_CLICKED)
+    return;
+
+  if (object == btnDayPlus) {
     dayValue++;
     if (dayValue > MaximumDayOfMonth())
       dayValue = 1;
@@ -141,8 +131,7 @@ void SettingSetDate::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
     lv_obj_align(lblDay, lv_scr_act(), LV_ALIGN_CENTER, POS_X_DAY, POS_Y_TEXT);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   }
-
-  if(object == btnDayMinus && (event == LV_EVENT_PRESSED)) {
+  else if (object == btnDayMinus) {
     dayValue--;
     if (dayValue < 1)
       dayValue = MaximumDayOfMonth();
@@ -150,8 +139,7 @@ void SettingSetDate::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
     lv_obj_align(lblDay, lv_scr_act(), LV_ALIGN_CENTER, POS_X_DAY, POS_Y_TEXT);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   }
-
-  if(object == btnMonthPlus && (event == LV_EVENT_PRESSED)) {
+  else if (object == btnMonthPlus) {
     monthValue++;
     if (monthValue > 12)
       monthValue = 1;
@@ -159,8 +147,7 @@ void SettingSetDate::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
     CheckDay();
   }
-
-  if(object == btnMonthMinus && (event == LV_EVENT_PRESSED)) {
+  else if (object == btnMonthMinus) {
     monthValue--;
     if (monthValue < 1)
       monthValue = 12;
@@ -168,24 +155,21 @@ void SettingSetDate::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
     CheckDay();
   }
-
-  if(object == btnYearPlus && (event == LV_EVENT_PRESSED)) {
+  else if (object == btnYearPlus) {
     yearValue++;
     lv_label_set_text_fmt(lblYear, "%d", yearValue);
     lv_obj_align(lblYear, lv_scr_act(), LV_ALIGN_CENTER, POS_X_YEAR, POS_Y_TEXT);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
     CheckDay();
   }
-
-  if(object == btnYearMinus && (event == LV_EVENT_PRESSED)) {
+  else if (object == btnYearMinus) {
     yearValue--;
     lv_label_set_text_fmt(lblYear, "%d", yearValue);
     lv_obj_align(lblYear, lv_scr_act(), LV_ALIGN_CENTER, POS_X_YEAR, POS_Y_TEXT);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
     CheckDay();
   }
-
-  if(object == btnSetTime && (event == LV_EVENT_PRESSED)) {
+  else if (object == btnSetTime) {
     NRF_LOG_INFO("Setting date (manually) to %04d-%02d-%02d", yearValue, monthValue, dayValue);
     dateTimeController.SetTime(static_cast<uint16_t>(yearValue),
                                static_cast<uint8_t>(monthValue),
