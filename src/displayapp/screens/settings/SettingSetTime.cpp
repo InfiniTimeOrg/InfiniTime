@@ -19,19 +19,6 @@ SettingSetTime::SettingSetTime(
   Screen(app),
   dateTimeController {dateTimeController}
 {
-
-  lv_obj_t * container1 = lv_cont_create(lv_scr_act(), nullptr);
-
-  //lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
-  lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_style_local_pad_all(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
-  lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
-  lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_pos(container1, 30, 60);
-  lv_obj_set_width(container1, LV_HOR_RES - 50);
-  lv_obj_set_height(container1, LV_VER_RES - 60);
-  lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
-
   lv_obj_t * title = lv_label_create(lv_scr_act(), NULL);  
   lv_label_set_text_static(title, "Set current time");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
@@ -106,8 +93,8 @@ SettingSetTime::SettingSetTime(
 
   btnSetTime = lv_btn_create(lv_scr_act(), NULL);
   btnSetTime->user_data = this;
-  lv_obj_set_size(btnSetTime, 70, 40);
-  lv_obj_align(btnSetTime, lv_scr_act(), LV_ALIGN_CENTER, 0, 90);
+  lv_obj_set_size(btnSetTime, 120, 48);
+  lv_obj_align(btnSetTime, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   lv_obj_set_style_local_value_str(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Set");
   lv_obj_set_event_cb(btnSetTime, event_handler);
 }
@@ -123,7 +110,10 @@ bool SettingSetTime::Refresh() {
 
 void SettingSetTime::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
 
-  if(object == btnHoursPlus && (event == LV_EVENT_PRESSED)) {
+  if (event != LV_EVENT_CLICKED)
+    return;
+
+  if (object == btnHoursPlus) {
     hoursValue++;
     if (hoursValue > 23)
       hoursValue = 0;
@@ -131,8 +121,7 @@ void SettingSetTime::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
     lv_obj_align(lblHours, lv_scr_act(), LV_ALIGN_CENTER, -72, -6);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   }
-
-  if(object == btnHoursMinus && (event == LV_EVENT_PRESSED)) {
+  else if (object == btnHoursMinus) {
     hoursValue--;
     if (hoursValue < 0)
       hoursValue = 23;
@@ -140,8 +129,7 @@ void SettingSetTime::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
     lv_obj_align(lblHours, lv_scr_act(), LV_ALIGN_CENTER, -72, -6);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   }
-
-  if(object == btnMinutesPlus && (event == LV_EVENT_PRESSED)) {
+  else if (object == btnMinutesPlus) {
     minutesValue++;
     if (minutesValue > 59)
       minutesValue = 0;
@@ -149,8 +137,7 @@ void SettingSetTime::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
     lv_obj_align(lblMinutes, lv_scr_act(), LV_ALIGN_CENTER, 0, -6);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   }
-
-  if(object == btnMinutesMinus && (event == LV_EVENT_PRESSED)) {
+  else if (object == btnMinutesMinus) {
     minutesValue--;
     if (minutesValue < 0)
       minutesValue = 59;
@@ -158,8 +145,7 @@ void SettingSetTime::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
     lv_obj_align(lblMinutes, lv_scr_act(), LV_ALIGN_CENTER, 0, -6);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   }
-
-  if(object == btnSetTime && (event == LV_EVENT_PRESSED)) {
+  else if (object == btnSetTime) {
     NRF_LOG_INFO("Setting time (manually) to %02d:%02d:00", hoursValue, minutesValue);
     dateTimeController.SetTime(dateTimeController.Year(),
                                static_cast<uint8_t>(dateTimeController.Month()),
