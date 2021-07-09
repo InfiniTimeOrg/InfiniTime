@@ -132,6 +132,8 @@ namespace Pinetime {
       void UpdateMotion();
       bool stepCounterMustBeReset = false;
 
+      TaskHandle_t displayAppTaskHandle;
+
 #if configUSE_TRACE_FACILITY == 1
       SystemMonitor<FreeRtosMonitor> monitor;
 #else

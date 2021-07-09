@@ -130,7 +130,7 @@ void SystemTask::Work() {
   settingsController.Init();
 
   displayApp.Register(this);
-  displayApp.Start();
+  displayAppTaskHandle = displayApp.Start();
 
   displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
 
@@ -215,6 +215,7 @@ void SystemTask::Work() {
           spiNorFlash.Wakeup();
           lcd.Wakeup();
 
+          vTaskResume(displayAppTaskHandle);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);

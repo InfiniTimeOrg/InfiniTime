@@ -80,7 +80,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     timerController {timerController} {
 }
 
-void DisplayApp::Start() {
+TaskHandle_t DisplayApp::Start() {
   msgQueue = xQueueCreate(queueSize, itemSize);
 
   // Start clock when smartwatch boots
@@ -89,6 +89,7 @@ void DisplayApp::Start() {
   if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 800, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }
+  return taskHandle;
 }
 
 void DisplayApp::Process(void* instance) {
@@ -99,9 +100,7 @@ void DisplayApp::Process(void* instance) {
   // Send a dummy notification to unlock the lvgl display driver for the first iteration
   xTaskNotifyGive(xTaskGetCurrentTaskHandle());
 
-  while (true) {
-    app->Refresh();
-  }
+  app->Refresh();
 }
 
 void DisplayApp::InitHw() {
@@ -109,131 +108,119 @@ void DisplayApp::InitHw() {
   brightnessController.Set(settingsController.GetBrightness());
 }
 
-uint32_t acc = 0;
-uint32_t count = 0;
-bool toggle = true;
 void DisplayApp::Refresh() {
-  TickType_t queueTimeout;
-  switch (state) {
-    case States::Idle:
-      IdleState();
-      queueTimeout = portMAX_DELAY;
-      break;
-    case States::Running:
-      RunningState();
-      queueTimeout = 20;
-      break;
-    default:
-      queueTimeout = portMAX_DELAY;
-      break;
-  }
-
+  TickType_t xLastWakeTime = 0;
   Messages msg;
-  if (xQueueReceive(msgQueue, &msg, queueTimeout)) {
-    switch (msg) {
-      case Messages::GoToSleep:
-        brightnessController.Backup();
-        while (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
-          brightnessController.Lower();
-          vTaskDelay(100);
-        }
-        lcd.DisplayOff();
-        PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
-        state = States::Idle;
-        break;
-      case Messages::GoToRunning:
-        lcd.DisplayOn();
-        brightnessController.Restore();
-        state = States::Running;
-        break;
-      case Messages::UpdateTimeOut:
-        PushMessageToSystemTask(System::Messages::UpdateTimeOut);
-        break;
-      case Messages::UpdateBleConnection:
-        //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
-        //        Screens::Clock::BleConnectionStates::NotConnected);
-        break;
-      case Messages::UpdateBatteryLevel:
-        batteryController.Update();
-        break;
-      case Messages::NewNotification:
-        LoadApp(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
-        break;
-      case Messages::TimerDone:
-        if (currentApp == Apps::Timer) {
-          auto *timer = static_cast<Screens::Timer*>(currentScreen.get());
-          timer->setDone();
-        } else {
-          LoadApp(Apps::Timer, DisplayApp::FullRefreshDirections::Down);
-        }
-        break;
-      case Messages::TouchEvent: {
-        if (state != States::Running)
-          break;
-        auto gesture = OnTouchEvent();
-        if (!currentScreen->OnTouchEvent(gesture)) {
-          if (currentApp == Apps::Clock) {
-            switch (gesture) {
-              case TouchEvents::SwipeUp:
-                LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
-                break;
-              case TouchEvents::SwipeDown:
-                LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
-                break;
-              case TouchEvents::SwipeRight:
-                LoadApp(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
-                break;
-              case TouchEvents::DoubleTap:
-                PushMessageToSystemTask(System::Messages::GoToSleep);
-                break;
-              default:
-                break;
-            }
-          } else if (returnTouchEvent == gesture) {
-            LoadApp(returnToApp, returnDirection);
-          }
-        }
-      } break;
-      case Messages::ButtonPushed:
-        if (currentApp == Apps::Clock) {
-          PushMessageToSystemTask(System::Messages::GoToSleep);
-        } else {
-          if (!currentScreen->OnButtonPushed()) {
-            LoadApp(returnToApp, returnDirection);
-          }
-        }
-        break;
-
-      case Messages::BleFirmwareUpdateStarted:
-        LoadApp(Apps::FirmwareUpdate, DisplayApp::FullRefreshDirections::Down);
-        break;
-      case Messages::UpdateDateTime:
-        // Added to remove warning
-        // What should happen here?
-        break;
+  while (true) {
+    // Refresh rate is ~50Hz
+    auto currentTime = xTaskGetTickCount();
+    // No need to compensate for missed refreshes
+    if (xLastWakeTime + pdMS_TO_TICKS(20) <= currentTime) {
+      xLastWakeTime = currentTime;
     }
-  }
+    vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(20));
 
-  if(nextApp != Apps::None) {
-    LoadApp(nextApp, nextDirection);
-    nextApp = Apps::None;
-  }
+    while (xQueueReceive(msgQueue, &msg, 0) == pdTRUE) {
+      switch (msg) {
+        case Messages::GoToSleep:
+          brightnessController.Backup();
+          while (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
+            brightnessController.Lower();
+            vTaskDelay(100);
+          }
+          lcd.DisplayOff();
+          PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
+          vTaskSuspend(taskHandle);
+          break;
+        case Messages::GoToRunning:
+          lcd.DisplayOn();
+          brightnessController.Restore();
+          break;
+        case Messages::UpdateTimeOut:
+          PushMessageToSystemTask(System::Messages::UpdateTimeOut);
+          break;
+        case Messages::UpdateBleConnection:
+          //clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
+          //Screens::Clock::BleConnectionStates::NotConnected);
+          break;
+        case Messages::UpdateBatteryLevel:
+          batteryController.Update();
+          break;
+        case Messages::NewNotification:
+          LoadApp(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
+          break;
+        case Messages::TimerDone:
+          if (currentApp == Apps::Timer) {
+            auto *timer = static_cast<Screens::Timer*>(currentScreen.get());
+            timer->setDone();
+          } else {
+            LoadApp(Apps::Timer, DisplayApp::FullRefreshDirections::Down);
+          }
+          break;
+        case Messages::TouchEvent: {
+          auto gesture = OnTouchEvent();
+          if (!currentScreen->OnTouchEvent(gesture)) {
+            if (currentApp == Apps::Clock) {
+              switch (gesture) {
+                case TouchEvents::SwipeUp:
+                  LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
+                  break;
+                case TouchEvents::SwipeDown:
+                  LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
+                  break;
+                case TouchEvents::SwipeRight:
+                  LoadApp(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
+                  break;
+                case TouchEvents::DoubleTap:
+                  PushMessageToSystemTask(System::Messages::GoToSleep);
+                  break;
+                default:
+                  break;
+              }
+            } else if (returnTouchEvent == gesture) {
+              LoadApp(returnToApp, returnDirection);
+            }
+          }
+        } break;
+        case Messages::ButtonPushed:
+          if (currentApp == Apps::Clock) {
+            PushMessageToSystemTask(System::Messages::GoToSleep);
+          } else {
+            if (!currentScreen->OnButtonPushed()) {
+              LoadApp(returnToApp, returnDirection);
+            }
+          }
+          break;
 
-  if (state != States::Idle && touchMode == TouchModes::Polling) {
-    auto info = touchPanel.GetTouchInfo();
-    if (info.action == 2) { // 2 = contact
-      if (!currentScreen->OnTouchEvent(info.x, info.y)) {
-        lvgl.SetNewTapEvent(info.x, info.y);
+        case Messages::BleFirmwareUpdateStarted:
+          LoadApp(Apps::FirmwareUpdate, DisplayApp::FullRefreshDirections::Down);
+          break;
+        case Messages::UpdateDateTime:
+          // Added to remove warning
+          // What should happen here?
+          break;
       }
     }
-  }
-}
 
-void DisplayApp::RunningState() {
-  if (!currentScreen->Refresh()) {
-    LoadApp(returnToApp, returnDirection);
+    if(nextApp != Apps::None) {
+      LoadApp(nextApp, nextDirection);
+      nextApp = Apps::None;
+    }
+
+    if (touchMode == TouchModes::Polling) {
+      auto info = touchPanel.GetTouchInfo();
+      if (info.action == 2) { // 2 = contact
+        if (!currentScreen->OnTouchEvent(info.x, info.y)) {
+          lvgl.SetNewTapEvent(info.x, info.y);
+        }
+      }
+    }
+
+    if (!currentScreen->Refresh()) {
+      LoadApp(returnToApp, returnDirection);
+    }
+    lv_task_handler();
   }
-  lv_task_handler();
 }
 
 void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction) {
@@ -368,9 +355,6 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
   }
   currentApp = app;
-}
-
-void DisplayApp::IdleState() {
 }
 
 void DisplayApp::PushMessage(Messages msg) {

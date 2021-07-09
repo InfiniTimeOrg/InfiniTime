@@ -39,7 +39,6 @@ namespace Pinetime {
   namespace Applications {
     class DisplayApp {
     public:
-      enum class States { Idle, Running };
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
       enum class TouchModes { Gestures, Polling };
 
@@ -56,7 +55,7 @@ namespace Pinetime {
                  Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::TimerController& timerController);
-      void Start();
+      TaskHandle_t Start();
       void PushMessage(Display::Messages msg);
 
       void StartApp(Apps app, DisplayApp::FullRefreshDirections direction);
@@ -87,7 +86,6 @@ namespace Pinetime {
 
       TaskHandle_t taskHandle;
 
-      States state = States::Running;
       QueueHandle_t msgQueue;
 
       static constexpr uint8_t queueSize = 10;
@@ -103,8 +101,6 @@ namespace Pinetime {
       TouchModes touchMode = TouchModes::Gestures;
 
       TouchEvents OnTouchEvent();
-      void RunningState();
-      void IdleState();
       static void Process(void* instance);
       void InitHw();
       void Refresh();
