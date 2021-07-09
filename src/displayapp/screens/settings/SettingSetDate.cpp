@@ -209,47 +209,8 @@ void SettingSetDate::CheckDay() {
 }
 
 void SettingSetDate::UpdateMonthLabel() {
-  switch (monthValue) {
-    case 1:
-      lv_label_set_text_static(lblMonth, "Jan");
-      break;
-    case 2:
-      lv_label_set_text_static(lblMonth, "Feb");
-      break;
-    case 3:
-      lv_label_set_text_static(lblMonth, "Mar");
-      break;
-    case 4:
-      lv_label_set_text_static(lblMonth, "Apr");
-      break;
-    case 5:
-      lv_label_set_text_static(lblMonth, "May");
-      break;
-    case 6:
-      lv_label_set_text_static(lblMonth, "Jun");
-      break;
-    case 7:
-      lv_label_set_text_static(lblMonth, "Jul");
-      break;
-    case 8:
-      lv_label_set_text_static(lblMonth, "Aug");
-      break;
-    case 9:
-      lv_label_set_text_static(lblMonth, "Sep");
-      break;
-    case 10:
-      lv_label_set_text_static(lblMonth, "Oct");
-      break;
-    case 11:
-      lv_label_set_text_static(lblMonth, "Nov");
-      break;
-    case 12:
-      lv_label_set_text_static(lblMonth, "Dec");
-      break;
-    default:
-      lv_label_set_text_static(lblMonth, "---");
-      break;
-  }
+  lv_label_set_text_static(lblMonth,
+                           Pinetime::Controllers::DateTime::MonthShortToStringLow(static_cast<Pinetime::Controllers::DateTime::Months>(monthValue)));
   lv_label_set_align(lblMonth, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lblMonth, lv_scr_act(), LV_ALIGN_CENTER, POS_X_MONTH, POS_Y_TEXT);
 }
