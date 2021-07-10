@@ -18,6 +18,10 @@ Settings::Settings(Pinetime::Applications::DisplayApp* app, Pinetime::Controller
               },
               [this]() -> std::unique_ptr<Screen> {
                 return CreateScreen2();
+              }
+              ,
+              [this]() -> std::unique_ptr<Screen> {
+                return CreateScreen3();
               }},
              Screens::ScreenListModes::UpDown} {
 }
@@ -45,8 +49,7 @@ std::unique_ptr<Screen> Settings::CreateScreen1() {
     {Symbols::clock, "Time format", Apps::SettingTimeFormat},
     {Symbols::clock, "Watch face", Apps::SettingWatchFace},
   }};
-
-  return std::make_unique<Screens::List>(0, 2, app, settingsController, applications);
+  return std::make_unique<Screens::List>(0, 3, app, settingsController, applications);
 }
 
 std::unique_ptr<Screen> Settings::CreateScreen2() {
@@ -54,9 +57,19 @@ std::unique_ptr<Screen> Settings::CreateScreen2() {
   std::array<Screens::List::Applications, 4> applications {{
     {Symbols::shoe, "Steps", Apps::SettingSteps},
     {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
+    {Symbols::list, "Button Action", Apps::SettingPushButtonAction},
     {Symbols::check, "Firmware", Apps::FirmwareValidation},
-    {Symbols::list, "About", Apps::SysInfo},
   }};
+  return std::make_unique<Screens::List>(1, 3, app, settingsController, applications);
+}
 
-  return std::make_unique<Screens::List>(1, 2, app, settingsController, applications);
+std::unique_ptr<Screen> Settings::CreateScreen3() {
+
+  std::array<Screens::List::Applications, 4> applications {{
+    {Symbols::list, "About", Apps::SysInfo},    
+    {Symbols::list, "", Apps::None},
+    {Symbols::list, "", Apps::None},
+    {Symbols::list, "", Apps::None},
+  }};
+  return std::make_unique<Screens::List>(2, 3, app, settingsController, applications);
 }

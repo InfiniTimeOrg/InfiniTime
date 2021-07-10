@@ -38,6 +38,7 @@
 #include "displayapp/screens/settings/QuickSettings.h"
 #include "displayapp/screens/settings/Settings.h"
 #include "displayapp/screens/settings/SettingWatchFace.h"
+#include "displayapp/screens/settings/SettingPushButtonAction.h"
 #include "displayapp/screens/settings/SettingTimeFormat.h"
 #include "displayapp/screens/settings/SettingWakeUp.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
@@ -199,18 +200,17 @@ void DisplayApp::Refresh() {
           PushMessageToSystemTask(System::Messages::GoToSleep);
         } else {
           if (!currentScreen->OnButtonPushed()) {
-            LoadApp(returnToApp, returnDirection);
-            // switch (settingsController.GetButtonFunction())
-            // {
-            // case Pinetime::Controllers::Settings::ButtonFunction::BACK:
-            //   LoadApp(returnToApp, returnDirection);
-            //   break;
-            // case Pinetime::Controllers::Settings::ButtonFunction::WATCHFACE:
-            //   LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
-            //   break;            
-            // default:
-            //   break;
-            // }
+            switch (settingsController.GetSettingPushButtonAction())
+            {
+            case Pinetime::Controllers::Settings::SettingPushButtonAction::BACK:
+              LoadApp(returnToApp, returnDirection);
+              break;
+            case Pinetime::Controllers::Settings::SettingPushButtonAction::WATCHFACE:
+              LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
+              break;            
+            default:
+              break;
+            }
           }
         }
         break;
@@ -326,6 +326,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::SettingWakeUp>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
+    case Apps::SettingPushButtonAction:
+      currentScreen = std::make_unique<Screens::SettingPushButtonAction>(this, settingsController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;      
     case Apps::SettingDisplay:
       currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);

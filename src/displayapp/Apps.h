@@ -27,6 +27,7 @@ namespace Pinetime {
       QuickSettings,
       Settings,
       SettingWatchFace,
+      SettingPushButtonAction,
       SettingTimeFormat,
       SettingDisplay,
       SettingWakeUp,

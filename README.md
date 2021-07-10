@@ -61,6 +61,7 @@ As of now, here is the list of achievements of this project:
     * Battery status
     * Firmware validation
     * System information
+    * Pushbutton action (back to previous screen and back to main screen)
  - Supported by 3 companion apps (development is in progress):
     * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android via F-Droid)
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)

@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.yaml": "home-assistant",
         "chrono": "cpp",
         "list": "cpp",
         "array": "cpp",
@@ -54,6 +55,7 @@
         "streambuf": "cpp",
         "thread": "cpp",
         "cinttypes": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "map": "cpp"
     }
 }

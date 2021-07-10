@@ -9,7 +9,7 @@ namespace Pinetime {
   namespace Controllers {
     class Settings {
     public:
-      enum class ButtonFunction { BACK, WATCHFACE };
+      enum class SettingPushButtonAction { BACK, WATCHFACE };
       enum class ClockType { H24, H12 };
       enum class Vibration { ON, OFF };
       enum class WakeUpMode { None, SingleTap, DoubleTap, RaiseWrist };
@@ -42,13 +42,13 @@ namespace Pinetime {
         return settingsMenu;
       };
 
-      void SetButtonFunction(ButtonFunction buttonFunction) {
-        if (buttonFunction != settings.buttonFunction)
+      void SetSettingPushButtonAction(SettingPushButtonAction pushButtonAction) {
+        if (pushButtonAction != settings.pushButtonAction)
           settingsChanged = true;
-        settings.buttonFunction = buttonFunction;
+        settings.pushButtonAction = pushButtonAction;
       };
-      ButtonFunction GetButtonFunction() const {
-        return settings.buttonFunction;
+      SettingPushButtonAction GetSettingPushButtonAction() const {
+        return settings.pushButtonAction;
       };
 
 
@@ -109,7 +109,6 @@ namespace Pinetime {
       Pinetime::Drivers::SpiNorFlash& spiNorFlash;
       struct SettingsData {
 
-        ButtonFunction buttonFunction = ButtonFunction::BACK;
         ClockType clockType = ClockType::H24;
         Vibration vibrationStatus = Vibration::ON;
 
@@ -121,6 +120,7 @@ namespace Pinetime {
         WakeUpMode wakeUpMode = WakeUpMode::None;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+        SettingPushButtonAction pushButtonAction = SettingPushButtonAction::BACK;
       };
 
       SettingsData settings;
