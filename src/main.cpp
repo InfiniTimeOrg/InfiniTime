@@ -35,6 +35,7 @@
 #include "components/motor/MotorController.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/heartrate/HeartRateController.h"
+#include "components/fs/FS.h"
 #include "drivers/Spi.h"
 #include "drivers/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
@@ -110,10 +111,6 @@ static constexpr uint8_t pinTouchIrq = 28;
 static constexpr uint8_t pinPowerPresentIrq = 19;
 static constexpr uint8_t pinButton = 13;
 
-Pinetime::Controllers::Settings settingsController {spiNorFlash};
-
-Pinetime::Controllers::MotorController motorController {settingsController};
-
 Pinetime::Controllers::HeartRateController heartRateController;
 Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController);
 
@@ -124,6 +121,11 @@ Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::TimerController timerController;
 Pinetime::Controllers::ButtonHandler buttonHandler;
+
+Pinetime::Controllers::FS fs {spiNorFlash};
+Pinetime::Controllers::Settings settingsController {fs};
+Pinetime::Controllers::MotorController motorController {settingsController};
+
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               lvgl,
@@ -158,7 +160,8 @@ Pinetime::System::SystemTask systemTask(spi,
                                         settingsController,
                                         heartRateController,
                                         displayApp,
-                                        heartRateApp);
+                                        heartRateApp,
+                                        fs);
 
 TaskHandle_t buttonHandlerTask;
 
