@@ -487,6 +487,8 @@ list(APPEND SOURCE_FILES
         components/heartrate/Biquad.cpp
         components/heartrate/Ptagc.cpp
         components/heartrate/HeartRateController.cpp
+
+        buttonhandler/ButtonHandlerTask.cpp
         )
 
 list(APPEND RECOVERY_SOURCE_FILES
@@ -543,6 +545,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/heartrate/Biquad.cpp
         components/heartrate/Ptagc.cpp
         components/motor/MotorController.cpp
+        buttonhandler/ButtonHandlerTask.cpp
         )
 
 list(APPEND RECOVERYLOADER_SOURCE_FILES
@@ -651,6 +654,7 @@ set(INCLUDE_FILES
         components/heartrate/Ptagc.h
         components/heartrate/HeartRateController.h
         components/motor/MotorController.h
+        buttonhandler/ButtonHandlerTask.h
         )
 
 include_directories(

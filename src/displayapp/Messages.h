@@ -10,6 +10,8 @@ namespace Pinetime {
         UpdateBatteryLevel,
         TouchEvent,
         ButtonPushed,
+        ButtonLongPressed,
+        ButtonDoubleClicked,
         NewNotification,
         TimerDone,
         BleFirmwareUpdateStarted,

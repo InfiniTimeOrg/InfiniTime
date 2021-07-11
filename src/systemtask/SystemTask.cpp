@@ -146,7 +146,7 @@ void SystemTask::Work() {
   pinConfig.skip_gpio_setup = true;
   pinConfig.hi_accuracy = false;
   pinConfig.is_watcher = false;
-  pinConfig.sense = (nrf_gpiote_polarity_t) NRF_GPIOTE_POLARITY_HITOLO;
+  pinConfig.sense = NRF_GPIOTE_POLARITY_LOTOHI;
   pinConfig.pull = (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pulldown;
 
   nrfx_gpiote_in_init(pinButton, &pinConfig, nrfx_gpiote_evt_handler);
@@ -372,6 +372,20 @@ void SystemTask::OnButtonPushed() {
       NRF_LOG_INFO("[systemtask] Button pushed, waking up");
       GoToRunning();
     }
+  }
+}
+
+void SystemTask::OnButtonLongPressed() {
+  if (!isSleeping) {
+    NRF_LOG_INFO("[systemtask] Button longpressed");
+    displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonLongPressed);
+  }
+}
+
+void SystemTask::OnButtonDoubleClicked() {
+  if (!isSleeping) {
+    NRF_LOG_INFO("[systemtask] Button doubleclicked");
+    displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonDoubleClicked);
   }
 }
 

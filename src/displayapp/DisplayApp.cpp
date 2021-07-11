@@ -203,6 +203,16 @@ void DisplayApp::Refresh() {
           }
         }
         break;
+      case Messages::ButtonLongPressed:
+        if (currentApp != Apps::Clock) {
+          LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
+        }
+        break;
+      case Messages::ButtonDoubleClicked:
+        if (currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
+          LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
+        }
+        break;
 
       case Messages::BleFirmwareUpdateStarted:
         LoadApp(Apps::FirmwareUpdate, DisplayApp::FullRefreshDirections::Down);
