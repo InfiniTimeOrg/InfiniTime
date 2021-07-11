@@ -108,7 +108,6 @@ namespace Pinetime {
       Pinetime::Drivers::Bma421& motionSensor;
       Pinetime::Controllers::Settings& settingsController;
       Pinetime::Controllers::HeartRateController& heartRateController;
-      Controllers::BrightnessController brightnessController;
       Pinetime::Controllers::MotionController& motionController;
 
       Pinetime::Applications::DisplayApp& displayApp;
