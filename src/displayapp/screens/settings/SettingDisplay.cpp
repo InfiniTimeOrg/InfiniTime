@@ -42,6 +42,7 @@ SettingDisplay::~SettingDisplay() {
   for (uint8_t i = 0; i < 6; i++) {
     if (options[i].state == true) {
       settingsController.SetScreenTimeOut((i + 1) * 5000);
+      break;
     }
   }
   lv_obj_clean(lv_scr_act());
