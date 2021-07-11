@@ -330,6 +330,11 @@ void SystemTask::Work() {
       }
     }
 
+    if (xTaskGetTickCount() - batteryNotificationTick > batteryNotificationPeriod) {
+      nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
+      batteryNotificationTick = xTaskGetTickCount();
+    }
+
     monitor.Process();
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);
