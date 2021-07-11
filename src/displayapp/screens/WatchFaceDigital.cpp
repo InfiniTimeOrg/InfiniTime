@@ -100,6 +100,25 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  label_ticker = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(label_ticker, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x888888));
+  /*
+  if (title == nullptr)
+    title = "Notification";
+  char* pchar;
+  pchar = strchr(title, '\n');
+  while (pchar != nullptr) {
+    *pchar = ' ';
+    pchar = strchr(pchar + 1, '\n');
+  }
+  */
+  lv_label_set_text(label_ticker, "Eph 2:8,9 For by grace you have been saved through faith, and this is not your own doing, it is the gift of God, that no one may boast.");
+  lv_label_set_long_mode(label_ticker, LV_LABEL_LONG_SROLL_CIRC);
+  lv_label_set_anim_speed(label_ticker, 6);
+  lv_obj_set_width(label_ticker, 240);
+  lv_obj_align(label_ticker, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 32);
+
 }
 
 WatchFaceDigital::~WatchFaceDigital() {
