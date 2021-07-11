@@ -14,6 +14,7 @@
 #include "../DisplayApp.h"
 #include "WatchFaceDigital.h"
 #include "WatchFaceAnalog.h"
+#include "PineTimeStyle.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -33,21 +34,20 @@ Clock::Clock(DisplayApp* app,
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
-    screens {app,
-             settingsController.GetClockFace(),
-             {
-               [this]() -> std::unique_ptr<Screen> {
-                 return WatchFaceDigitalScreen();
-               },
-               [this]() -> std::unique_ptr<Screen> {
-                 return WatchFaceAnalogScreen();
-               },
-               // Examples for more watch faces
-               //[this]() -> std::unique_ptr<Screen> { return WatchFaceMinimalScreen(); },
-               //[this]() -> std::unique_ptr<Screen> { return WatchFaceCustomScreen(); }
-             },
-             Screens::ScreenListModes::LongPress} {
-
+    screen {[this, &settingsController]() {
+      switch (settingsController.GetClockFace()) {
+        case 0:
+          return WatchFaceDigitalScreen();
+          break;
+        case 1:
+          return WatchFaceAnalogScreen();
+          break;
+        case 2:
+          return PineTimeStyleScreen();
+          break;
+      }
+      return WatchFaceDigitalScreen();
+    }()} {
   settingsController.SetAppMenu(0);
 }
 
@@ -56,12 +56,12 @@ Clock::~Clock() {
 }
 
 bool Clock::Refresh() {
-  screens.Refresh();
+  screen->Refresh();
   return running;
 }
 
 bool Clock::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  return screens.OnTouchEvent(event);
+  return screen->OnTouchEvent(event);
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceDigitalScreen() {
@@ -78,6 +78,16 @@ std::unique_ptr<Screen> Clock::WatchFaceDigitalScreen() {
 std::unique_ptr<Screen> Clock::WatchFaceAnalogScreen() {
   return std::make_unique<Screens::WatchFaceAnalog>(
     app, dateTimeController, batteryController, bleController, notificatioManager, settingsController);
+}
+
+std::unique_ptr<Screen> Clock::PineTimeStyleScreen() {
+  return std::make_unique<Screens::PineTimeStyle>(app,
+                                                     dateTimeController,
+                                                     batteryController,
+                                                     bleController,
+                                                     notificatioManager,
+                                                     settingsController,
+                                                     motionController);
 }
 
 /*

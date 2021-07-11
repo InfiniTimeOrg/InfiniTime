@@ -46,16 +46,9 @@ BatteryInfo::BatteryInfo(Pinetime::Applications::DisplayApp* app, Pinetime::Cont
   lv_label_set_align(percent, LV_LABEL_ALIGN_LEFT);
   lv_obj_align(percent, nullptr, LV_ALIGN_CENTER, 0, -60);
 
-  // hack to not use the flot functions from printf
-  uint8_t batteryVoltageBytes[2];
-  batteryVoltageBytes[1] = static_cast<uint8_t>(batteryVoltage); // truncate whole numbers
-  batteryVoltageBytes[0] =
-    static_cast<uint8_t>((batteryVoltage - batteryVoltageBytes[1]) * 100); // remove whole part of flt and shift 2 places over
-  //
-
   voltage = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(voltage, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xC6A600));
-  lv_label_set_text_fmt(voltage, "%1i.%02i volts", batteryVoltageBytes[1], batteryVoltageBytes[0]);
+  lv_label_set_text_fmt(voltage, "%1i.%02i volts", batteryVoltage / 1000, batteryVoltage % 1000 / 10);
   lv_label_set_align(voltage, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(voltage, nullptr, LV_ALIGN_CENTER, 0, 95);
 
@@ -109,16 +102,16 @@ void BatteryInfo::UpdateScreen() {
   if (batteryPercent >= 0) {
     if (batteryController.IsCharging() and batteryPercent < 100) {
       lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
-      lv_label_set_text_static(status, "Battery charging");
+      lv_label_set_text_static(status, "Charging");
     } else if (batteryPercent == 100) {
       lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_BLUE);
-      lv_label_set_text_static(status, "Battery is fully charged");
+      lv_label_set_text_static(status, "Fully charged");
     } else if (batteryPercent < 10) {
       lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-      lv_label_set_text_static(status, "Battery is low");
+      lv_label_set_text_static(status, "Battery low");
     } else {
       lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_GREEN);
-      lv_label_set_text_static(status, "Battery discharging");
+      lv_label_set_text_static(status, "Discharging");
     }
 
     lv_label_set_text_fmt(percent, "%02i%%", batteryPercent);
@@ -129,13 +122,7 @@ void BatteryInfo::UpdateScreen() {
   }
 
   lv_obj_align(status, charging_bar, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
-  // hack to not use the flot functions from printf
-  uint8_t batteryVoltageBytes[2];
-  batteryVoltageBytes[1] = static_cast<uint8_t>(batteryVoltage); // truncate whole numbers
-  batteryVoltageBytes[0] =
-    static_cast<uint8_t>((batteryVoltage - batteryVoltageBytes[1]) * 100); // remove whole part of flt and shift 2 places over
-  //
-  lv_label_set_text_fmt(voltage, "%1i.%02i volts", batteryVoltageBytes[1], batteryVoltageBytes[0]);
+  lv_label_set_text_fmt(voltage, "%1i.%02i volts", batteryVoltage / 1000, batteryVoltage % 1000 / 10);
 }
 
 bool BatteryInfo::Refresh() {

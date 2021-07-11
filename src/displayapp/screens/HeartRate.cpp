@@ -63,12 +63,12 @@ HeartRate::HeartRate(Pinetime::Applications::DisplayApp* app,
   label_startStop = lv_label_create(btn_startStop, nullptr);
   UpdateStartStopButton(isHrRunning);
   if (isHrRunning)
-    systemTask.PushMessage(Pinetime::System::SystemTask::Messages::DisableSleeping);
+    systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
 }
 
 HeartRate::~HeartRate() {
   lv_obj_clean(lv_scr_act());
-  systemTask.PushMessage(Pinetime::System::SystemTask::Messages::EnableSleeping);
+  systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
 bool HeartRate::Refresh() {
@@ -95,12 +95,12 @@ void HeartRate::OnStartStopEvent(lv_event_t event) {
     if (heartRateController.State() == Controllers::HeartRateController::States::Stopped) {
       heartRateController.Start();
       UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
-      systemTask.PushMessage(Pinetime::System::SystemTask::Messages::DisableSleeping);
+      systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
       lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
     } else {
       heartRateController.Stop();
       UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
-      systemTask.PushMessage(Pinetime::System::SystemTask::Messages::EnableSleeping);
+      systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
       lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
     }
   }
