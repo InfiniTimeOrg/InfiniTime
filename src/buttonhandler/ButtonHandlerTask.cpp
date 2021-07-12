@@ -54,12 +54,14 @@ void ButtonHandler::Work() {
             // doubleclick handling while sleeping
             if (systemTask->IsSleeping()) {
               systemTask->PushMessage(System::Messages::GoToRunning);
-              break;
+              handled = true;
             }
 
             if (calculateDelta(releaseTime, xTaskGetTickCount()) < doubleClickTime) {
-              handled = true;
-              systemTask->OnButtonDoubleClicked();
+              if (!handled) {
+                handled = true;
+                systemTask->OnButtonDoubleClicked();
+              }
             }
           } else if (calculateDelta(pressTime, xTaskGetTickCount()) >= longPressTime) {
             if (!handled) {
@@ -85,8 +87,6 @@ void ButtonHandler::Work() {
         vTaskDelay(20);
         pressed = nrf_gpio_pin_read(pinButton);
       }
-    } else {
-      lastState = false;
     }
   }
 }
