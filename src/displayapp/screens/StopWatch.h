@@ -8,12 +8,11 @@
 #include "portmacro_cmsis.h"
 
 #include <array>
+#include "systemtask/SystemTask.h"
 
 namespace Pinetime::Applications::Screens {
 
   enum class States { Init, Running, Halted };
-
-  enum class Events { Play, Pause, Stop };
 
   struct TimeSeparated_t {
     int mins;
@@ -63,23 +62,28 @@ namespace Pinetime::Applications::Screens {
 
   class StopWatch : public Screen {
   public:
-    StopWatch(DisplayApp* app);
+    StopWatch(DisplayApp* app, System::SystemTask& systemTask);
     ~StopWatch() override;
     bool Refresh() override;
 
     void playPauseBtnEventHandler(lv_event_t event);
     void stopLapBtnEventHandler(lv_event_t event);
+    bool OnButtonPushed() override;
+
+    void reset();
+    void start();
+    void pause();
 
   private:
+    Pinetime::System::SystemTask& systemTask;
+    TickType_t timeElapsed;
     bool running;
     States currentState;
-    Events currentEvent;
     TickType_t startTime;
     TickType_t oldTimeElapsed;
     TimeSeparated_t currentTimeSeparated; // Holds Mins, Secs, millisecs
     LapTextBuffer_t<2> lapBuffer;
-    int lapNr;
-    bool lapPressed;
+    int lapNr = 0;
     lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
     lv_obj_t *lapOneText, *lapTwoText;
   };
