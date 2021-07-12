@@ -36,7 +36,7 @@ void ButtonHandler::Work() {
   bool lastState = false;
   bool pressed = false;
   static constexpr TickType_t doubleClickTime = pdMS_TO_TICKS(200);
-  static constexpr TickType_t longPressTime = pdMS_TO_TICKS(500);
+  static constexpr TickType_t longPressTime = pdMS_TO_TICKS(400);
   static constexpr uint8_t pinButton = 13;
 
   while (true) {
@@ -85,6 +85,8 @@ void ButtonHandler::Work() {
         vTaskDelay(20);
         pressed = nrf_gpio_pin_read(pinButton);
       }
+    } else {
+      lastState = false;
     }
   }
 }
