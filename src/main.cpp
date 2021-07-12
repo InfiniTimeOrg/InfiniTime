@@ -163,8 +163,6 @@ Pinetime::System::SystemTask systemTask(spi,
                                         heartRateApp,
                                         fs);
 
-TaskHandle_t buttonHandlerTask;
-
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
@@ -193,7 +191,7 @@ void DebounceTimerChargeCallback(TimerHandle_t xTimer) {
 }
 
 void DebounceTimerCallback(TimerHandle_t /*unused*/) {
-  vTaskResume(buttonHandlerTask);
+  buttonHandler.WakeUp();
 }
 
 void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
@@ -319,7 +317,7 @@ int main(void) {
   systemTask.Start();
 
   buttonHandler.Register(&systemTask);
-  buttonHandlerTask = buttonHandler.Start();
+  buttonHandler.Start();
 
   nimble_port_init();
 

@@ -33,12 +33,12 @@ void ButtonHandler::Process(void* instance) {
 void ButtonHandler::Work() {
   TickType_t pressTime = 0;
   TickType_t releaseTime = 0;
-  bool pressed = false;
-  bool lastState = false;
   bool handled = false;
+  bool lastState = false;
+  bool pressed = false;
+  static constexpr TickType_t doubleClickTime = pdMS_TO_TICKS(200);
+  static constexpr TickType_t longPressTime = pdMS_TO_TICKS(500);
   static constexpr uint8_t pinButton = 13;
-  static constexpr uint16_t longPressTime = pdMS_TO_TICKS(500);
-  static constexpr uint16_t doubleClickTime = pdMS_TO_TICKS(300);
 
   while (true) {
     vTaskSuspend(taskHandle);
@@ -51,11 +51,12 @@ void ButtonHandler::Work() {
             pressTime = xTaskGetTickCount();
             lastState = true;
 
-            // This might be faster
-            //if (systemTask->IsSleeping()) {
-            //  systemTask->PushMessage(System::Messages::GoToRunning);
-            //  break;;
-            //}
+            // This is for faster wakeup, sacrificing longpress and
+            // doubleclick handling while sleeping
+            if (systemTask->IsSleeping()) {
+              systemTask->PushMessage(System::Messages::GoToRunning);
+              break;
+            }
 
             if (calculateDelta(releaseTime, xTaskGetTickCount()) < doubleClickTime) {
               handled = true;
@@ -91,4 +92,8 @@ void ButtonHandler::Work() {
 
 void ButtonHandler::Register(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
+}
+
+void ButtonHandler::WakeUp() {
+  vTaskResume(taskHandle);
 }

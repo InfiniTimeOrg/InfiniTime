@@ -8,11 +8,12 @@ namespace Pinetime {
       public:
         TaskHandle_t Start();
         static void Process(void* instance);
-        void Work();
         void Register(Pinetime::System::SystemTask* systemTask);
+        void WakeUp();
+        void Work();
       private:
-        TaskHandle_t taskHandle;
         Pinetime::System::SystemTask* systemTask = nullptr;
+        TaskHandle_t taskHandle;
     };
   }
 }
