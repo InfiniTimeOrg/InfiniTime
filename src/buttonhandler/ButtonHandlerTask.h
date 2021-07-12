@@ -6,12 +6,12 @@ namespace Pinetime {
   namespace Controllers {
     class ButtonHandler {
       public:
-        TaskHandle_t Start();
-        static void Process(void* instance);
         void Register(Pinetime::System::SystemTask* systemTask);
+        void Start();
         void WakeUp();
-        void Work();
       private:
+        static void Process(void* instance);
+        void Work();
         Pinetime::System::SystemTask* systemTask = nullptr;
         TaskHandle_t taskHandle;
     };

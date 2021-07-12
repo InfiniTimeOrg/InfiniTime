@@ -18,11 +18,10 @@ namespace {
   }
 }
 
-TaskHandle_t ButtonHandler::Start() {
+void ButtonHandler::Start() {
   if (pdPASS != xTaskCreate(ButtonHandler::Process, "Button", 80, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }
-  return taskHandle;
 }
 
 void ButtonHandler::Process(void* instance) {
