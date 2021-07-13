@@ -43,6 +43,8 @@
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
 
+#include "libs/lv_conf.h"
+
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
 
@@ -123,10 +125,10 @@ void DisplayApp::Refresh() {
     case States::Running:
       RunningState();
       delta = xTaskGetTickCount() - lastWakeTime;
-      if (delta > 20) {
-        delta = 20;
+      if (delta > LV_DISP_DEF_REFR_PERIOD) {
+        delta = LV_DISP_DEF_REFR_PERIOD;
       }
-      queueTimeout = 20 - delta;
+      queueTimeout = LV_DISP_DEF_REFR_PERIOD - delta;
       break;
     default:
       queueTimeout = portMAX_DELAY;
