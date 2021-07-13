@@ -1,9 +1,7 @@
 #include "BatteryController.h"
 #include <hal/nrf_gpio.h>
 #include <nrfx_saadc.h>
-#include <libraries/log/nrf_log.h>
 #include <algorithm>
-#include <math.h>
 
 using namespace Pinetime::Controllers;
 
@@ -18,7 +16,6 @@ void Battery::Init() {
 }
 
 void Battery::Update() {
-
   isCharging = !nrf_gpio_pin_read(chargingPin);
   isPowerPresent = !nrf_gpio_pin_read(powerPresentPin);
 
@@ -33,13 +30,13 @@ void Battery::Update() {
   nrfx_saadc_sample();
 }
 
-void Battery::adcCallbackStatic(nrfx_saadc_evt_t const* event) {
+void Battery::AdcCallbackStatic(nrfx_saadc_evt_t const* event) {
   instance->SaadcEventHandler(event);
 }
 
 void Battery::SaadcInit() {
   nrfx_saadc_config_t adcConfig = NRFX_SAADC_DEFAULT_CONFIG;
-  APP_ERROR_CHECK(nrfx_saadc_init(&adcConfig, adcCallbackStatic));
+  APP_ERROR_CHECK(nrfx_saadc_init(&adcConfig, AdcCallbackStatic));
 
   nrf_saadc_channel_config_t adcChannelConfig = {.resistor_p = NRF_SAADC_RESISTOR_DISABLED,
                                                  .resistor_n = NRF_SAADC_RESISTOR_DISABLED,
@@ -55,7 +52,6 @@ void Battery::SaadcInit() {
 }
 
 void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
-
   const uint16_t battery_max = 4180; // maximum voltage of battery ( max charging voltage is 4.21 )
   const uint16_t battery_min = 3200; // minimum voltage of battery before shutdown ( depends on the battery )
 
@@ -69,13 +65,10 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     // reference_voltage is 0.6V
     // p_event->data.done.p_buffer[0] = (adc_voltage / reference_voltage) * 1024
     voltage = p_event->data.done.p_buffer[0] * 6000 / 1024;
-
     percentRemaining = (voltage - battery_min) * 100 / (battery_max - battery_min);
-
     percentRemaining = std::max(percentRemaining, 0);
     percentRemaining = std::min(percentRemaining, 100);
-
-    percentRemainingBuffer.insert(percentRemaining);
+    percentRemainingBuffer.Insert(percentRemaining);
 
     samples++;
     if (samples > percentRemainingSamples) {
