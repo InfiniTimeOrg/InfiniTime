@@ -177,7 +177,6 @@ void WatchFaceAnalog::UpdateClock() {
 }
 
 bool WatchFaceAnalog::Refresh() {
-
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
