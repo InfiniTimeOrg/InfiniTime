@@ -114,6 +114,7 @@ uint32_t count = 0;
 bool toggle = true;
 void DisplayApp::Refresh() {
   TickType_t queueTimeout;
+  TickType_t delta;
   switch (state) {
     case States::Idle:
       IdleState();
@@ -121,7 +122,11 @@ void DisplayApp::Refresh() {
       break;
     case States::Running:
       RunningState();
-      queueTimeout = 20;
+      delta = xTaskGetTickCount() - lastWakeTime;
+      if (delta > 20) {
+        delta = 20;
+      }
+      queueTimeout = 20 - delta;
       break;
     default:
       queueTimeout = portMAX_DELAY;
@@ -129,7 +134,9 @@ void DisplayApp::Refresh() {
   }
 
   Messages msg;
-  if (xQueueReceive(msgQueue, &msg, queueTimeout)) {
+  bool messageReceived = xQueueReceive(msgQueue, &msg, queueTimeout);
+  lastWakeTime = xTaskGetTickCount();
+  if (messageReceived) {
     switch (msg) {
       case Messages::GoToSleep:
         brightnessController.Backup();
