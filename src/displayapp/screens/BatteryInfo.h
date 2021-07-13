@@ -36,7 +36,7 @@ namespace Pinetime {
         lv_task_t* taskAnim;
 
         int8_t animation = 0;
-        int8_t batteryPercent = -1;
+        uint8_t batteryPercent = 0;
         uint16_t batteryVoltage = 0;
       };
     }
