@@ -40,38 +40,45 @@ void Cst816S::Init() {
   */
   static constexpr uint8_t motionMask = 0b00000101;
   twiMaster.Write(twiAddress, 0xEC, &motionMask, 1);
+
+  // There's mixed information about which register contains which information
+  if (twiMaster.Read(twiAddress, 0xA7, &chipId, 1) == TwiMaster::ErrorCodes::TransactionFailed) {
+    chipId = 0xFF;
+  }
+  if (twiMaster.Read(twiAddress, 0xA8, &vendorId, 1) == TwiMaster::ErrorCodes::TransactionFailed) {
+    vendorId = 0xFF;
+  }
+  if (twiMaster.Read(twiAddress, 0xA9, &fwVersion, 1) == TwiMaster::ErrorCodes::TransactionFailed) {
+    fwVersion = 0xFF;
+  }
 }
 
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
 
   auto ret = twiMaster.Read(twiAddress, 0, touchData, sizeof(touchData));
-  if (ret != TwiMaster::ErrorCodes::NoError)
-    return {};
-
-  auto nbTouchPoints = touchData[2] & 0x0f;
-
-  uint8_t i = 0;
-
-  uint8_t pointId = (touchData[touchIdIndex + (touchStep * i)]) >> 4;
-  if (nbTouchPoints == 0 && pointId == lastTouchId)
+  if (ret != TwiMaster::ErrorCodes::NoError) {
+    info.isValid = false;
     return info;
+  }
 
-  info.isTouch = true;
+  // This can only be 0 or 1
+  auto nbTouchPoints = touchData[touchPointNumIndex] & 0x0f;
 
-  auto xHigh = touchData[touchXHighIndex + (touchStep * i)] & 0x0f;
-  auto xLow = touchData[touchXLowIndex + (touchStep * i)];
+  auto xHigh = touchData[touchXHighIndex] & 0x0f;
+  auto xLow = touchData[touchXLowIndex];
   uint16_t x = (xHigh << 8) | xLow;
 
-  auto yHigh = touchData[touchYHighIndex + (touchStep * i)] & 0x0f;
-  auto yLow = touchData[touchYLowIndex + (touchStep * i)];
+  auto yHigh = touchData[touchYHighIndex] & 0x0f;
+  auto yLow = touchData[touchYLowIndex];
   uint16_t y = (yHigh << 8) | yLow;
 
-  auto action = touchData[touchEventIndex + (touchStep * i)] >> 6; /* 0 = Down, 1 = Up, 2 = contact*/
+  auto action = touchData[touchEventIndex] >> 6; /* 0 = Down, 1 = Up, 2 = contact*/
 
   info.x = x;
   info.y = y;
   info.action = action;
+  info.touching = (nbTouchPoints > 0);
   info.gesture = static_cast<Gestures>(touchData[gestureIndex]);
 
   return info;

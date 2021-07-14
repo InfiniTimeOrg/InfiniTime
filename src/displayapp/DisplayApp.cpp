@@ -336,7 +336,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::SysInfo:
       currentScreen =
-        std::make_unique<Screens::SystemInfo>(this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController);
+        std::make_unique<Screens::SystemInfo>(this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController, touchPanel);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::FlashLight:
@@ -395,7 +395,7 @@ void DisplayApp::PushMessage(Messages msg) {
 
 TouchEvents DisplayApp::OnTouchEvent() {
   auto info = touchPanel.GetTouchInfo();
-  if (info.isTouch) {
+  if (info.isValid) {
     switch (info.gesture) {
       case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
         if (touchMode == TouchModes::Gestures) {

@@ -31,7 +31,8 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::Ble& bleController,
                        Pinetime::Drivers::WatchdogView& watchdog,
-                       Pinetime::Controllers::MotionController& motionController)
+                       Pinetime::Controllers::MotionController& motionController,
+                       Pinetime::Drivers::Cst816S& touchPanel)
   : Screen(app),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
@@ -39,6 +40,7 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
     bleController {bleController},
     watchdog {watchdog},
     motionController{motionController},
+    touchPanel{touchPanel},
     screens {app,
              0,
              {[this]() -> std::unique_ptr<Screen> {
@@ -151,7 +153,8 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         "#444444 Battery# %d%%/%03imV\n"
                         "#444444 Backlight# %s\n"
                         "#444444 Last reset# %s\n"
-                        "#444444 Accel.# %s\n",
+                        "#444444 Accel.# %s\n"
+                        "#444444 Touch.# %x.%x.%x\n",
                         dateTimeController.Day(),
                         static_cast<uint8_t>(dateTimeController.Month()),
                         dateTimeController.Year(),
@@ -166,7 +169,10 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         batteryController.Voltage(),
                         brightnessController.ToString(),
                         resetReason,
-                        ToString(motionController.DeviceType()));
+                        ToString(motionController.DeviceType()),
+                        touchPanel.GetChipId(),
+                        touchPanel.GetVendorId(),
+                        touchPanel.GetFwVersion());
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(1, 5, app, label);
 }
