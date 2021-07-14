@@ -28,12 +28,14 @@
 #include <drivers/Hrs3300.h>
 #include <drivers/Bma421.h>
 
+#include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
 #include "components/datetime/DateTimeController.h"
-#include "components/settings/Settings.h"
+#include "components/heartrate/HeartRateController.h"
+#include "components/fs/FS.h"
 #include "drivers/Spi.h"
 #include "drivers/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
@@ -49,8 +51,6 @@ Pinetime::Logging::NrfLogger logger;
   #include "logging/DummyLogger.h"
 Pinetime::Logging::DummyLogger logger;
 #endif
-
-#include <memory>
 
 static constexpr uint8_t pinSpiSck = 2;
 static constexpr uint8_t pinSpiMosi = 3;
@@ -108,15 +108,61 @@ void ble_manager_set_ble_connection_callback(void (*connection)());
 void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
 static constexpr uint8_t pinPowerPresentIrq = 19;
-std::unique_ptr<Pinetime::System::SystemTask> systemTask;
 
-Pinetime::Controllers::Settings settingsController {spiNorFlash};
+Pinetime::Controllers::HeartRateController heartRateController;
+Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController);
 
+Pinetime::Controllers::DateTime dateTimeController;
+Pinetime::Drivers::Watchdog watchdog;
+Pinetime::Drivers::WatchdogView watchdogView(watchdog);
+Pinetime::Controllers::NotificationManager notificationManager;
+Pinetime::Controllers::MotionController motionController;
+Pinetime::Controllers::TimerController timerController;
+
+Pinetime::Controllers::FS fs {spiNorFlash};
+Pinetime::Controllers::Settings settingsController {fs};
 Pinetime::Controllers::MotorController motorController {settingsController};
+
+
+Pinetime::Applications::DisplayApp displayApp(lcd,
+                                              lvgl,
+                                              touchPanel,
+                                              batteryController,
+                                              bleController,
+                                              dateTimeController,
+                                              watchdogView,
+                                              notificationManager,
+                                              heartRateController,
+                                              settingsController,
+                                              motorController,
+                                              motionController,
+                                              timerController);
+
+Pinetime::System::SystemTask systemTask(spi,
+                                        lcd,
+                                        spiNorFlash,
+                                        twiMaster,
+                                        touchPanel,
+                                        lvgl,
+                                        batteryController,
+                                        bleController,
+                                        dateTimeController,
+                                        timerController,
+                                        watchdog,
+                                        notificationManager,
+                                        motorController,
+                                        heartRateSensor,
+                                        motionController,
+                                        motionSensor,
+                                        settingsController,
+                                        heartRateController,
+                                        displayApp,
+                                        heartRateApp,
+                                        fs);
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if (pin == pinTouchIrq) {
-    systemTask->OnTouchEvent();
+    systemTask.OnTouchEvent();
     return;
   }
 
@@ -132,21 +178,14 @@ void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action
   portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
-extern "C" {
-void vApplicationIdleHook(void) {
-  if (!isFactory)
-    lv_tick_inc(1);
-}
-}
-
 void DebounceTimerChargeCallback(TimerHandle_t xTimer) {
   xTimerStop(xTimer, 0);
-  systemTask->PushMessage(Pinetime::System::SystemTask::Messages::OnChargingEvent);
+  systemTask.PushMessage(Pinetime::System::Messages::OnChargingEvent);
 }
 
 void DebounceTimerCallback(TimerHandle_t xTimer) {
   xTimerStop(xTimer, 0);
-  systemTask->OnButtonPushed();
+  systemTask.OnButtonPushed();
 }
 
 void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
@@ -264,19 +303,12 @@ int main(void) {
   debounceTimer = xTimerCreate("debounceTimer", 200, pdFALSE, (void*) 0, DebounceTimerCallback);
   debounceChargeTimer = xTimerCreate("debounceTimerCharge", 200, pdFALSE, (void*) 0, DebounceTimerChargeCallback);
 
-  systemTask = std::make_unique<Pinetime::System::SystemTask>(spi,
-                                                              lcd,
-                                                              spiNorFlash,
-                                                              twiMaster,
-                                                              touchPanel,
-                                                              lvgl,
-                                                              batteryController,
-                                                              bleController,
-                                                              motorController,
-                                                              heartRateSensor,
-                                                              motionSensor,
-                                                              settingsController);
-  systemTask->Start();
+  // retrieve version stored by bootloader
+  Pinetime::BootloaderVersion::SetVersion(NRF_TIMER2->CC[0]);
+
+  lvgl.Init();
+
+  systemTask.Start();
   nimble_port_init();
 
   vTaskStartScheduler();

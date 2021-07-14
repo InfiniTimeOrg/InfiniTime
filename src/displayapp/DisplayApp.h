@@ -4,6 +4,7 @@
 #include <queue.h>
 #include <task.h>
 #include <memory>
+#include <systemtask/Messages.h>
 #include "Apps.h"
 #include "LittleVgl.h"
 #include "TouchEvents.h"
@@ -49,7 +50,6 @@ namespace Pinetime {
                  Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
                  Drivers::WatchdogView& watchdog,
-                 System::SystemTask& systemTask,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Controllers::Settings& settingsController,
@@ -64,6 +64,8 @@ namespace Pinetime {
       void SetFullRefresh(FullRefreshDirections direction);
       void SetTouchMode(TouchModes mode);
 
+      void Register(Pinetime::System::SystemTask* systemTask);
+
     private:
       Pinetime::Drivers::St7789& lcd;
       Pinetime::Components::LittleVgl& lvgl;
@@ -72,7 +74,7 @@ namespace Pinetime {
       Pinetime::Controllers::Ble& bleController;
       Pinetime::Controllers::DateTime& dateTimeController;
       Pinetime::Drivers::WatchdogView& watchdog;
-      Pinetime::System::SystemTask& systemTask;
+      Pinetime::System::SystemTask* systemTask = nullptr;
       Pinetime::Controllers::NotificationManager& notificationManager;
       Pinetime::Controllers::HeartRateController& heartRateController;
       Pinetime::Controllers::Settings& settingsController;
@@ -108,6 +110,11 @@ namespace Pinetime {
       void Refresh();
       void ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction, TouchEvents touchEvent);
       void LoadApp(Apps app, DisplayApp::FullRefreshDirections direction);
+      void PushMessageToSystemTask(Pinetime::System::Messages message);
+
+      Apps nextApp = Apps::None;
+      DisplayApp::FullRefreshDirections nextDirection;
+      TickType_t lastWakeTime;
     };
   }
 }

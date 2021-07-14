@@ -45,37 +45,50 @@ static void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
   stopWatch->stopLapBtnEventHandler(event);
 }
 
-StopWatch::StopWatch(DisplayApp* app)
+StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
   : Screen(app),
+    systemTask {systemTask},
     running {true},
     currentState {States::Init},
-    currentEvent {Events::Stop},
     startTime {},
     oldTimeElapsed {},
     currentTimeSeparated {},
     lapBuffer {},
-    lapNr {},
-    lapPressed {false} {
+    lapNr {} {
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_label_set_text(time, "00:00");
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -45);
+  lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -45);
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
   // lv_obj_set_style_local_text_font(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_label_set_text(msecTime, "00");
-  lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 108, 3);
+  lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_CENTER, 0, 3);
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
   lv_obj_set_event_cb(btnPlayPause, play_pause_event_handler);
-  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -10);
-  lv_obj_set_height(btnPlayPause, 40);
+  lv_obj_set_height(btnPlayPause, 50);
+  lv_obj_set_width(btnPlayPause, 115);
+  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   lv_label_set_text(txtPlayPause, Symbols::play);
+
+  btnStopLap = lv_btn_create(lv_scr_act(), nullptr);
+  btnStopLap->user_data = this;
+  lv_obj_set_event_cb(btnStopLap, stop_lap_event_handler);
+  lv_obj_set_height(btnStopLap, 50);
+  lv_obj_set_width(btnStopLap, 115);
+  lv_obj_align(btnStopLap, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DISABLED, lv_color_hex(0x080808));
+  txtStopLap = lv_label_create(btnStopLap, nullptr);
+  lv_obj_set_style_local_text_color(txtStopLap, LV_BTN_PART_MAIN, LV_STATE_DISABLED, lv_color_hex(0x888888));
+  lv_label_set_text(txtStopLap, Symbols::stop);
+  lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
+  lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
 
   lapOneText = lv_label_create(lv_scr_act(), nullptr);
   // lv_obj_set_style_local_text_font(lapOneText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
@@ -88,140 +101,103 @@ StopWatch::StopWatch(DisplayApp* app)
   lv_obj_set_style_local_text_color(lapTwoText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   lv_obj_align(lapTwoText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 55);
   lv_label_set_text(lapTwoText, "");
-
-  // We don't want this button in the init state
-  btnStopLap = nullptr;
 }
 
 StopWatch::~StopWatch() {
+  systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }
 
+void StopWatch::reset() {
+  currentState = States::Init;
+  oldTimeElapsed = 0;
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+
+  lv_label_set_text(time, "00:00");
+  lv_label_set_text(msecTime, "00");
+
+  lv_label_set_text(lapOneText, "");
+  lv_label_set_text(lapTwoText, "");
+  lapBuffer.clearBuffer();
+  lapNr = 0;
+  lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
+  lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
+}
+
+void StopWatch::start() {
+  lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
+  lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+  lv_label_set_text(txtPlayPause, Symbols::pause);
+  lv_label_set_text(txtStopLap, Symbols::lapsFlag);
+  startTime = xTaskGetTickCount();
+  currentState = States::Running;
+  systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
+}
+
+void StopWatch::pause() {
+  startTime = 0;
+  // Store the current time elapsed in cache
+  oldTimeElapsed += timeElapsed;
+  currentState = States::Halted;
+  lv_label_set_text(txtPlayPause, Symbols::play);
+  lv_label_set_text(txtStopLap, Symbols::stop);
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+  systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
+}
+
 bool StopWatch::Refresh() {
-  // @startuml CHIP8_state
-  // State "Init" as init
-  // State "Running" as run
-  // State "Halted" as halt
+  if (currentState == States::Running) {
+    timeElapsed = calculateDelta(startTime, xTaskGetTickCount());
+    currentTimeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
 
-  // [*] --> init
-  // init -> run : press play
-  // run -> run : press lap
-  // run --> halt : press pause
-  // halt --> run : press play
-  // halt --> init : press stop
-  // @enduml
-  // Copy paste the above plantuml text to visualize the state diagram
-  switch (currentState) {
-    // Init state when an user first opens the app
-    // and when a stop/reset button is pressed
-    case States::Init: {
-      if (btnStopLap != nullptr) {
-        lv_obj_del(btnStopLap);
-        btnStopLap = nullptr;
-      }
-      // The initial default value
-      lv_label_set_text(time, "00:00");
-      lv_label_set_text(msecTime, "00");
-
-      lv_label_set_text(lapOneText, "");
-      lv_label_set_text(lapTwoText, "");
-      lapBuffer.clearBuffer();
-      lapNr = 0;
-
-      if (currentEvent == Events::Play) {
-        btnStopLap = lv_btn_create(lv_scr_act(), nullptr);
-        btnStopLap->user_data = this;
-        lv_obj_set_event_cb(btnStopLap, stop_lap_event_handler);
-        lv_obj_align(btnStopLap, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
-        lv_obj_set_height(btnStopLap, 40);
-        txtStopLap = lv_label_create(btnStopLap, nullptr);
-        lv_label_set_text(txtStopLap, Symbols::lapsFlag);
-
-        startTime = xTaskGetTickCount();
-        currentState = States::Running;
-      }
-      break;
-    }
-    case States::Running: {
-      lv_label_set_text(txtPlayPause, Symbols::pause);
-      lv_label_set_text(txtStopLap, Symbols::lapsFlag);
-
-      const auto timeElapsed = calculateDelta(startTime, xTaskGetTickCount());
-      currentTimeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
-
-      lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
-      lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
-
-      if (lapPressed == true) {
-        if (lapBuffer[1]) {
-          lv_label_set_text_fmt(
-            lapOneText, "#%2d   %2d:%02d.%02d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->hundredths);
-        }
-        if (lapBuffer[0]) {
-          lv_label_set_text_fmt(
-            lapTwoText, "#%2d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
-        }
-        // Reset the bool to avoid setting the text in each cycle until there is a change
-        lapPressed = false;
-      }
-
-      if (currentEvent == Events::Pause) {
-        // Reset the start time
-        startTime = 0;
-        // Store the current time elapsed in cache
-        oldTimeElapsed += timeElapsed;
-        currentState = States::Halted;
-        lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-        lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-      } else {
-        lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
-        lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
-      }
-      break;
-    }
-    case States::Halted: {
-      lv_label_set_text(txtPlayPause, Symbols::play);
-      lv_label_set_text(txtStopLap, Symbols::stop);
-
-      if (currentEvent == Events::Play) {
-        startTime = xTaskGetTickCount();
-        currentState = States::Running;
-      }
-      if (currentEvent == Events::Stop) {
-        currentState = States::Init;
-        oldTimeElapsed = 0;
-        lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-        lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-      }
-      break;
-    }
+    lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
+    lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
   }
   return running;
 }
 
 void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
-  if (event == LV_EVENT_CLICKED) {
-    if (currentState == States::Init) {
-      currentEvent = Events::Play;
-    } else {
-      // Simple Toggle for play/pause
-      currentEvent = (currentEvent == Events::Play ? Events::Pause : Events::Play);
-    }
+  if (event != LV_EVENT_PRESSED) {
+    return;
+  }
+  if (currentState == States::Init) {
+    start();
+  } else if (currentState == States::Running) {
+    pause();
+  } else if (currentState == States::Halted) {
+    start();
   }
 }
 
 void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
-  if (event == LV_EVENT_CLICKED) {
-    // If running, then this button is used to save laps
-    if (currentState == States::Running) {
-      lapBuffer.addLaps(currentTimeSeparated);
-      lapNr++;
-      lapPressed = true;
-
-    } else if (currentState == States::Halted) {
-      currentEvent = Events::Stop;
-    } else {
-      // Not possible to reach here. Do nothing.
-    }
+  if (event != LV_EVENT_PRESSED) {
+    return;
   }
+  // If running, then this button is used to save laps
+  if (currentState == States::Running) {
+    lapBuffer.addLaps(currentTimeSeparated);
+    lapNr++;
+    if (lapBuffer[1]) {
+      lv_label_set_text_fmt(
+        lapOneText, "#%2d   %2d:%02d.%02d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->hundredths);
+    }
+    if (lapBuffer[0]) {
+      lv_label_set_text_fmt(lapTwoText, "#%2d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
+    }
+  } else if (currentState == States::Halted) {
+    reset();
+  }
+}
+
+bool StopWatch::OnButtonPushed() {
+  if (currentState == States::Running) {
+    pause();
+  } else {
+    running = false;
+  }
+  return true;
 }
