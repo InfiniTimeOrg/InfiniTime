@@ -54,6 +54,7 @@ As of now, here is the list of achievements of this project:
     * Stopwatch
     * Steps (displays the number of steps taken)
     * Timer (set a countdown timer that will notify you when it expires)
+    * Metronome (vibrates to a given bpm with a customizable beats per bar)
  - User settings:
     * Display timeout
     * Wake-up condition
