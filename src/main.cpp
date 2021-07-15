@@ -161,10 +161,12 @@ Pinetime::System::SystemTask systemTask(spi,
                                         heartRateController,
                                         displayApp,
                                         heartRateApp,
-                                        fs);
+                                        fs,
+                                        touchHandler);
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if (pin == pinTouchIrq) {
+    twiMaster.Wakeup();
     touchHandler.WakeUp();
     return;
   }

@@ -181,27 +181,6 @@ bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
     ptr->state = LV_INDEV_STATE_REL;
   }
   return false;
-  /*
-  auto info = touchPanel.GetTouchInfo();
-
-  if((previousClick.x != info.x || previousClick.y != info.y) &&
-          (info.gesture == Drivers::Cst816S::Gestures::SingleTap)) {
-    // TODO For an unknown reason, the first touch is taken twice into account.
-    // 'firstTouch' is a quite'n'dirty workaound until I find a better solution
-    if(firstTouch) ptr->state = LV_INDEV_STATE_REL;
-    else ptr->state = LV_INDEV_STATE_PR;
-    firstTouch = false;
-    previousClick.x = info.x;
-    previousClick.y = info.y;
-  }
-  else {
-    ptr->state = LV_INDEV_STATE_REL;
-  }
-
-  ptr->point.x = info.x;
-  ptr->point.y = info.y;
-  return false;
-   */
 }
 
 void LittleVgl::InitTheme() {

@@ -2,9 +2,7 @@
 
 using namespace Pinetime::Controllers;
 
-TouchHandler::TouchHandler(Drivers::Cst816S& touchPanel, Components::LittleVgl& lvgl)
-  : touchPanel {touchPanel},
-    lvgl {lvgl} {
+TouchHandler::TouchHandler(Drivers::Cst816S& touchPanel, Components::LittleVgl& lvgl) : touchPanel {touchPanel}, lvgl {lvgl} {
 }
 
 void TouchHandler::CancelTap() {
@@ -35,6 +33,7 @@ void TouchHandler::Work() {
     vTaskSuspend(taskHandle);
     info = touchPanel.GetTouchInfo();
     if (systemTask->IsSleeping()) {
+      gesture = info.gesture;
       systemTask->PushMessage(System::Messages::TouchWakeUp);
     } else {
       x = info.x;

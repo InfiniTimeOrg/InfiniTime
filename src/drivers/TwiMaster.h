@@ -39,6 +39,7 @@ namespace Pinetime {
       uint8_t internalBuffer[maxDataSize + registerSize];
       uint32_t txStartedCycleCount = 0;
       static constexpr uint32_t HwFreezedDelay {161000};
+      bool sleeping;
     };
   }
 }

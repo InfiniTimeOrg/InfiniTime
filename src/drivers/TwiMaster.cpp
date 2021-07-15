@@ -12,9 +12,10 @@ TwiMaster::TwiMaster(const Modules module, const Parameters& params) : module {m
 }
 
 void TwiMaster::Init() {
+  sleeping = false;
   if(mutex == nullptr)
     mutex = xSemaphoreCreateBinary();
-  
+
   NRF_GPIO->PIN_CNF[params.pinScl] =
     ((uint32_t) GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) | ((uint32_t) GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
     ((uint32_t) GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos) | ((uint32_t) GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos) |
@@ -176,11 +177,14 @@ void TwiMaster::Sleep() {
   nrf_gpio_cfg_default(6);
   nrf_gpio_cfg_default(7);
   NRF_LOG_INFO("[TWIMASTER] Sleep");
+  sleeping = true;
 }
 
 void TwiMaster::Wakeup() {
-  Init();
-  NRF_LOG_INFO("[TWIMASTER] Wakeup");
+  if (sleeping) {
+    Init();
+    NRF_LOG_INFO("[TWIMASTER] Wakeup");
+  }
 }
 
 /* Sometimes, the TWIM device just freeze and never set the event EVENTS_LASTTX.
