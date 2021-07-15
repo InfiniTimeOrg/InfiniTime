@@ -83,12 +83,9 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   lv_obj_set_height(playPause, 39);
   playPauseLabel = lv_label_create(playPause, nullptr);
   lv_label_set_text(playPauseLabel, Symbols::play);
-
-  app->SetTouchMode(DisplayApp::TouchModes::Polling);
 }
 
 Metronome::~Metronome() {
-  app->SetTouchMode(DisplayApp::TouchModes::Gestures);
   systemTask.PushMessage(System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }

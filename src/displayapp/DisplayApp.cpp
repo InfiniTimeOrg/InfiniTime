@@ -66,7 +66,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Controllers::MotionController& motionController,
-                       Pinetime::Controllers::TimerController& timerController)
+                       Pinetime::Controllers::TimerController& timerController,
+                       Pinetime::Controllers::TouchHandler& touchHandler)
   : lcd {lcd},
     lvgl {lvgl},
     touchPanel {touchPanel},
@@ -79,7 +80,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     settingsController {settingsController},
     motorController {motorController},
     motionController {motionController},
-    timerController {timerController} {
+    timerController {timerController},
+    touchHandler {touchHandler} {
 }
 
 void DisplayApp::Start() {
@@ -176,33 +178,6 @@ void DisplayApp::Refresh() {
           LoadApp(Apps::Timer, DisplayApp::FullRefreshDirections::Down);
         }
         break;
-      case Messages::TouchEvent: {
-        if (state != States::Running)
-          break;
-        auto gesture = OnTouchEvent();
-        if (!currentScreen->OnTouchEvent(gesture)) {
-          if (currentApp == Apps::Clock) {
-            switch (gesture) {
-              case TouchEvents::SwipeUp:
-                LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
-                break;
-              case TouchEvents::SwipeDown:
-                LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
-                break;
-              case TouchEvents::SwipeRight:
-                LoadApp(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
-                break;
-              case TouchEvents::DoubleTap:
-                PushMessageToSystemTask(System::Messages::GoToSleep);
-                break;
-              default:
-                break;
-            }
-          } else if (returnTouchEvent == gesture) {
-            LoadApp(returnToApp, returnDirection);
-          }
-        }
-      } break;
       case Messages::ButtonPushed:
         if (currentApp == Apps::Clock) {
           PushMessageToSystemTask(System::Messages::GoToSleep);
@@ -223,18 +198,41 @@ void DisplayApp::Refresh() {
     }
   }
 
-  if(nextApp != Apps::None) {
-    LoadApp(nextApp, nextDirection);
-    nextApp = Apps::None;
+  auto gesture = GetGesture();
+  if (gesture != TouchEvents::None) {
+    if (!currentScreen->OnTouchEvent(gesture)) {
+      if (currentApp == Apps::Clock) {
+        switch (gesture) {
+          case TouchEvents::SwipeUp:
+            LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
+            break;
+          case TouchEvents::SwipeDown:
+            LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
+            break;
+          case TouchEvents::SwipeRight:
+            LoadApp(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
+            break;
+          case TouchEvents::DoubleTap:
+            PushMessageToSystemTask(System::Messages::GoToSleep);
+            break;
+          default:
+            break;
+        }
+      } else if (returnTouchEvent == gesture) {
+        LoadApp(returnToApp, returnDirection);
+      }
+    } else {
+      touchHandler.CancelTap();
+    }
   }
 
-  if (state != States::Idle && touchMode == TouchModes::Polling) {
-    auto info = touchPanel.GetTouchInfo();
-    if (info.action == 2) { // 2 = contact
-      if (!currentScreen->OnTouchEvent(info.x, info.y)) {
-        lvgl.SetNewTapEvent(info.x, info.y);
-      }
-    }
+  if (touchMode == TouchModes::Polling) {
+    currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
+  }
+
+  if (nextApp != Apps::None) {
+    LoadApp(nextApp, nextDirection);
+    nextApp = Apps::None;
   }
 }
 
@@ -257,6 +255,7 @@ void DisplayApp::ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction
 }
 
 void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) {
+  touchHandler.CancelTap();
   currentScreen.reset(nullptr);
   SetFullRefresh(direction);
 
@@ -395,31 +394,28 @@ void DisplayApp::PushMessage(Messages msg) {
   }
 }
 
-TouchEvents DisplayApp::OnTouchEvent() {
-  auto info = touchPanel.GetTouchInfo();
-  if (info.isTouch) {
-    switch (info.gesture) {
-      case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        if (touchMode == TouchModes::Gestures) {
-          lvgl.SetNewTapEvent(info.x, info.y);
-        }
-        return TouchEvents::Tap;
-      case Pinetime::Drivers::Cst816S::Gestures::LongPress:
-        return TouchEvents::LongTap;
-      case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
-        return TouchEvents::DoubleTap;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
-        return TouchEvents::SwipeRight;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
-        return TouchEvents::SwipeLeft;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
-        return TouchEvents::SwipeDown;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
-        return TouchEvents::SwipeUp;
-      case Pinetime::Drivers::Cst816S::Gestures::None:
-      default:
-        return TouchEvents::None;
-    }
+TouchEvents DisplayApp::GetGesture() {
+  auto gesture = touchHandler.GestureGet();
+  switch (gesture) {
+    /*
+    case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
+      return TouchEvents::Tap;
+    */
+    case Pinetime::Drivers::Cst816S::Gestures::LongPress:
+      return TouchEvents::LongTap;
+    case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
+      return TouchEvents::DoubleTap;
+    case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
+      return TouchEvents::SwipeRight;
+    case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
+      return TouchEvents::SwipeLeft;
+    case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
+      return TouchEvents::SwipeDown;
+    case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
+      return TouchEvents::SwipeUp;
+    case Pinetime::Drivers::Cst816S::Gestures::None:
+    default:
+      return TouchEvents::None;
   }
   return TouchEvents::None;
 }

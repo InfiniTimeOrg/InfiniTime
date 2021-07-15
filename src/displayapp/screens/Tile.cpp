@@ -12,9 +12,7 @@ namespace {
 
   static void event_handler(lv_obj_t* obj, lv_event_t event) {
     Tile* screen = static_cast<Tile*>(obj->user_data);
-    uint32_t* eventDataPtr = (uint32_t*) lv_event_get_data();
-    uint32_t eventData = *eventDataPtr;
-    screen->OnObjectEvent(obj, event, eventData);
+    screen->OnObjectEvent(obj, event);
   }
 }
 
@@ -124,9 +122,9 @@ bool Tile::Refresh() {
   return running;
 }
 
-void Tile::OnObjectEvent(lv_obj_t* obj, lv_event_t event, uint32_t buttonId) {
-  if (event == LV_EVENT_VALUE_CHANGED) {
-    app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up);
+void Tile::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
+  if (event == LV_EVENT_CLICKED) {
+    app->StartApp(apps[lv_btnmatrix_get_active_btn(obj)], DisplayApp::FullRefreshDirections::Up);
     running = false;
   }
 }

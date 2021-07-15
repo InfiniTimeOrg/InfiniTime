@@ -43,6 +43,7 @@
 #include "drivers/TwiMaster.h"
 #include "drivers/Cst816s.h"
 #include "systemtask/SystemTask.h"
+#include "touchhandler/TouchHandler.h"
 
 #if NRF_LOG_ENABLED
   #include "logging/NrfLogger.h"
@@ -118,6 +119,7 @@ Pinetime::Drivers::WatchdogView watchdogView(watchdog);
 Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::TimerController timerController;
+Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);
 
 Pinetime::Controllers::FS fs {spiNorFlash};
 Pinetime::Controllers::Settings settingsController {fs};
@@ -136,7 +138,8 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               settingsController,
                                               motorController,
                                               motionController,
-                                              timerController);
+                                              timerController,
+                                              touchHandler);
 
 Pinetime::System::SystemTask systemTask(spi,
                                         lcd,
@@ -162,7 +165,7 @@ Pinetime::System::SystemTask systemTask(spi,
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if (pin == pinTouchIrq) {
-    systemTask.OnTouchEvent();
+    touchHandler.WakeUp();
     return;
   }
 
@@ -309,6 +312,10 @@ int main(void) {
   lvgl.Init();
 
   systemTask.Start();
+
+  touchHandler.Register(&systemTask);
+  touchHandler.Start();
+
   nimble_port_init();
 
   vTaskStartScheduler();

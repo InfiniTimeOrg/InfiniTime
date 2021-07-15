@@ -397,7 +397,6 @@ void SystemTask::OnTouchEvent() {
     return;
   if (!isSleeping) {
     PushMessage(Messages::OnTouchEvent);
-    displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
   } else if (!isWakingUp) {
     if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) or
         settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
