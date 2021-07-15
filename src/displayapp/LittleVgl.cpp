@@ -166,7 +166,7 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   lv_disp_flush_ready(&disp_drv);
 }
 
-void LittleVgl::SetNewTapEvent(uint16_t x, uint16_t y, bool contact) {
+void LittleVgl::SetNewTouchPoint(uint16_t x, uint16_t y, bool contact) {
   tap_x = x;
   tap_y = y;
   tapped = contact;

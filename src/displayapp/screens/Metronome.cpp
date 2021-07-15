@@ -91,7 +91,7 @@ Metronome::~Metronome() {
 }
 
 bool Metronome::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  return true;
+  return false;
 }
 
 bool Metronome::Refresh() {

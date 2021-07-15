@@ -226,9 +226,7 @@ void DisplayApp::Refresh() {
     }
   }
 
-  if (touchMode == TouchModes::Polling) {
-    currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
-  }
+  currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
 
   if (nextApp != Apps::None) {
     LoadApp(nextApp, nextDirection);
@@ -367,6 +365,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Metronome:
       currentScreen = std::make_unique<Screens::Metronome>(this, motorController, *systemTask);
+      ReturnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::None);
       break;
     case Apps::Motion:
       currentScreen = std::make_unique<Screens::Motion>(this, motionController);
@@ -397,10 +396,8 @@ void DisplayApp::PushMessage(Messages msg) {
 TouchEvents DisplayApp::GetGesture() {
   auto gesture = touchHandler.GestureGet();
   switch (gesture) {
-    /*
     case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
       return TouchEvents::Tap;
-    */
     case Pinetime::Drivers::Cst816S::Gestures::LongPress:
       return TouchEvents::LongTap;
     case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
@@ -443,10 +440,6 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
     default:
       break;
   }
-}
-
-void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {
-  touchMode = mode;
 }
 
 void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {

@@ -9,7 +9,7 @@ TouchHandler::TouchHandler(Drivers::Cst816S& touchPanel, Components::LittleVgl& 
 
 void TouchHandler::CancelTap() {
   isCancelled = true;
-  lvgl.SetNewTapEvent(-1, -1, false);
+  lvgl.SetNewTouchPoint(-1, -1, true);
 }
 
 Pinetime::Drivers::Cst816S::Gestures TouchHandler::GestureGet() {
@@ -19,7 +19,7 @@ Pinetime::Drivers::Cst816S::Gestures TouchHandler::GestureGet() {
 }
 
 void TouchHandler::Start() {
-  if (pdPASS != xTaskCreate(TouchHandler::Process, "Touch", 80, this, 0, &taskHandle)) {
+  if (pdPASS != xTaskCreate(TouchHandler::Process, "Touch", 100, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }
 }
@@ -39,13 +39,9 @@ void TouchHandler::Work() {
     } else {
       x = info.x;
       y = info.y;
-      if (info.finger == 0) {
-        lvgl.SetNewTapEvent(info.x, info.y, false);
-        prevGesture = Pinetime::Drivers::Cst816S::Gestures::None;
-        isCancelled = false;
-      } else if (info.finger == 1) {
+      if (info.touching) {
         if (!isCancelled) {
-          lvgl.SetNewTapEvent(info.x, info.y, true);
+          lvgl.SetNewTouchPoint(info.x, info.y, true);
         }
         if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
           if (prevGesture != info.gesture) {
@@ -53,6 +49,14 @@ void TouchHandler::Work() {
             gesture = info.gesture;
           }
         }
+      } else {
+        if (isCancelled) {
+          lvgl.SetNewTouchPoint(-1, -1, false);
+          isCancelled = false;
+        } else {
+          lvgl.SetNewTouchPoint(info.x, info.y, false);
+        }
+        prevGesture = Pinetime::Drivers::Cst816S::Gestures::None;
       }
       systemTask->OnTouchEvent();
     }

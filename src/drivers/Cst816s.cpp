@@ -56,32 +56,24 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
 
   auto ret = twiMaster.Read(twiAddress, 0, touchData, sizeof(touchData));
-  if (ret != TwiMaster::ErrorCodes::NoError)
-    return {};
+  if (ret != TwiMaster::ErrorCodes::NoError) {
+    info.isValid = false;
+    return info;
+  }
 
   auto nbTouchPoints = touchData[2] & 0x0f;
 
-  uint8_t i = 0;
-
-  uint8_t pointId = (touchData[touchIdIndex + (touchStep * i)]) >> 4;
-  if (nbTouchPoints == 0 && pointId == lastTouchId)
-    return info;
-
-  info.isTouch = true;
-
-  auto xHigh = touchData[touchXHighIndex + (touchStep * i)] & 0x0f;
-  auto xLow = touchData[touchXLowIndex + (touchStep * i)];
+  auto xHigh = touchData[touchXHighIndex] & 0x0f;
+  auto xLow = touchData[touchXLowIndex];
   uint16_t x = (xHigh << 8) | xLow;
 
-  auto yHigh = touchData[touchYHighIndex + (touchStep * i)] & 0x0f;
-  auto yLow = touchData[touchYLowIndex + (touchStep * i)];
+  auto yHigh = touchData[touchYHighIndex] & 0x0f;
+  auto yLow = touchData[touchYLowIndex];
   uint16_t y = (yHigh << 8) | yLow;
-
-  auto action = touchData[touchEventIndex + (touchStep * i)] >> 6; /* 0 = Down, 1 = Up, 2 = contact*/
 
   info.x = x;
   info.y = y;
-  info.finger = nbTouchPoints;
+  info.touching = (nbTouchPoints > 0);
   info.gesture = static_cast<Gestures>(touchData[gestureIndex]);
 
   return info;

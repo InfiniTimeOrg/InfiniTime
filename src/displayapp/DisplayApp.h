@@ -43,7 +43,6 @@ namespace Pinetime {
     public:
       enum class States { Idle, Running };
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
-      enum class TouchModes { Gestures, Polling };
 
       DisplayApp(Drivers::St7789& lcd,
                  Components::LittleVgl& lvgl,
@@ -65,7 +64,6 @@ namespace Pinetime {
       void StartApp(Apps app, DisplayApp::FullRefreshDirections direction);
 
       void SetFullRefresh(FullRefreshDirections direction);
-      void SetTouchMode(TouchModes mode);
 
       void Register(Pinetime::System::SystemTask* systemTask);
 
@@ -103,8 +101,6 @@ namespace Pinetime {
       Apps returnToApp = Apps::None;
       FullRefreshDirections returnDirection = FullRefreshDirections::None;
       TouchEvents returnTouchEvent = TouchEvents::None;
-
-      TouchModes touchMode = TouchModes::Gestures;
 
       TouchEvents GetGesture();
       void RunningState();

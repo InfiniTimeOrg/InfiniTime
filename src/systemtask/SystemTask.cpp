@@ -231,7 +231,7 @@ void SystemTask::Work() {
           twiMaster.Wakeup();
           auto touchInfo = touchPanel.GetTouchInfo();
           twiMaster.Sleep();
-          if (touchInfo.isTouch and ((touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
+          if (touchInfo.isValid and ((touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
                                       settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
                                      (touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
                                       settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
