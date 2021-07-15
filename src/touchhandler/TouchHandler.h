@@ -37,7 +37,6 @@ namespace Pinetime {
         Pinetime::Drivers::Cst816S& touchPanel;
         Pinetime::Components::LittleVgl& lvgl;
         Pinetime::Drivers::Cst816S::Gestures gesture;
-        Pinetime::Drivers::Cst816S::Gestures prevGesture;
         bool isCancelled = false;
         uint8_t x, y;
     };

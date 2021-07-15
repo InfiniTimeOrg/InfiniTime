@@ -29,11 +29,23 @@ void TouchHandler::Process(void* instance) {
 
 void TouchHandler::Work() {
   Pinetime::Drivers::Cst816S::TouchInfos info;
+  Pinetime::Drivers::Cst816S::Gestures prevGesture = Pinetime::Drivers::Cst816S::Gestures::None;
   while (true) {
     vTaskSuspend(taskHandle);
+
     info = touchPanel.GetTouchInfo();
+
+    if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
+      if (prevGesture != info.gesture) {
+        if (info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideDown || info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideLeft ||
+            info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideUp || info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideRight) {
+          prevGesture = info.gesture;
+        }
+        gesture = info.gesture;
+      }
+    }
+
     if (systemTask->IsSleeping()) {
-      gesture = info.gesture;
       systemTask->PushMessage(System::Messages::TouchWakeUp);
     } else {
       x = info.x;
@@ -41,12 +53,6 @@ void TouchHandler::Work() {
       if (info.touching) {
         if (!isCancelled) {
           lvgl.SetNewTouchPoint(info.x, info.y, true);
-        }
-        if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
-          if (prevGesture != info.gesture) {
-            prevGesture = info.gesture;
-            gesture = info.gesture;
-          }
         }
       } else {
         if (isCancelled) {
