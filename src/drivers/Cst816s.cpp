@@ -81,7 +81,7 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
 
   info.x = x;
   info.y = y;
-  info.action = action;
+  info.finger = nbTouchPoints;
   info.gesture = static_cast<Gestures>(touchData[gestureIndex]);
 
   return info;

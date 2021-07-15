@@ -39,13 +39,11 @@ void TouchHandler::Work() {
     } else {
       x = info.x;
       y = info.y;
-      if (info.action == 0) {
-        lvgl.SetNewTapEvent(info.x, info.y, true);
-      } else if (info.action == 1) {
+      if (info.finger == 0) {
         lvgl.SetNewTapEvent(info.x, info.y, false);
         prevGesture = Pinetime::Drivers::Cst816S::Gestures::None;
         isCancelled = false;
-      } else if (info.action == 2) {
+      } else if (info.finger == 1) {
         if (!isCancelled) {
           lvgl.SetNewTapEvent(info.x, info.y, true);
         }
