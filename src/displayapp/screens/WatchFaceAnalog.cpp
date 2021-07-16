@@ -162,7 +162,7 @@ void WatchFaceAnalog::UpdateClock() {
   }
 
   if (second.IsUpdated()) {
-    auto const angle = second * 6;
+    auto const angle = second.Get() * 6;
 
     second_point[0] = coordinate_relocate(-20, angle);
     second_point[1] = coordinate_relocate(SECOND_LENGTH, angle);

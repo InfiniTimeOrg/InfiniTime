@@ -27,6 +27,7 @@
 #include "BleIcon.h"
 #include "NotificationIcon.h"
 #include "Symbols.h"
+#include "components/datetime/DateTimeController.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
@@ -37,7 +38,7 @@
 using namespace Pinetime::Applications::Screens;
 
 PineTimeStyle::PineTimeStyle(DisplayApp* app,
-                             Controllers::DateTime& dateTimeController,
+                             Controllers::DateTimeController& dateTimeController,
                              Controllers::Battery& batteryController,
                              Controllers::Ble& bleController,
                              Controllers::NotificationManager& notificatioManager,
@@ -251,9 +252,9 @@ bool PineTimeStyle::Refresh() {
     auto yearMonthDay = date::year_month_day(dp);
 
     auto year = (int) yearMonthDay.year();
-    auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned) yearMonthDay.month());
+    auto month = static_cast<DateTime::Months>((unsigned) yearMonthDay.month());
     auto day = (unsigned) yearMonthDay.day();
-    auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
+    auto dayOfWeek = static_cast<DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
     int hour = time.hours().count();
     auto minute = time.minutes().count();
@@ -309,9 +310,9 @@ bool PineTimeStyle::Refresh() {
       char dayStr[3];
       char monthStr[4];
 
-      sprintf(dayOfWeekStr, "%s", dateTimeController.DayOfWeekShortToString());
+      sprintf(dayOfWeekStr, "%s", DayOfWeekShortToString(dayOfWeek));
       sprintf(dayStr, "%d", day);
-      sprintf(monthStr, "%s", dateTimeController.MonthShortToString());
+      sprintf(monthStr, "%s", MonthShortToString(month));
 
       lv_label_set_text(dateDayOfWeek, dayOfWeekStr);
       lv_label_set_text(dateDay, dayStr);

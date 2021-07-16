@@ -3,18 +3,18 @@
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <chrono>
 #include <cstdint>
-#include <memory>
 #include "Screen.h"
-#include "ScreenList.h"
-#include "components/datetime/DateTimeController.h"
+#include "components/datetime/DateTime.h"
 
 namespace Pinetime {
   namespace Controllers {
+    class DateTimeController;
     class Settings;
     class Battery;
     class Ble;
     class NotificationManager;
     class HeartRateController;
+    class MotionController;
   }
 
   namespace Applications {
@@ -22,7 +22,7 @@ namespace Pinetime {
       class PineTimeStyle : public Screen {
       public:
         PineTimeStyle(DisplayApp* app,
-                      Controllers::DateTime& dateTimeController,
+                      Controllers::DateTimeController& dateTimeController,
                       Controllers::Battery& batteryController,
                       Controllers::Ble& bleController,
                       Controllers::NotificationManager& notificatioManager,
@@ -38,8 +38,8 @@ namespace Pinetime {
         char displayedChar[5];
 
         uint16_t currentYear = 1970;
-        Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
-        Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
+        DateTime::Months currentMonth = DateTime::Months::Unknown;
+        DateTime::Days currentDayOfWeek = DateTime::Days::Unknown;
         uint8_t currentDay = 0;
 
         DirtyValue<uint8_t> batteryPercentRemaining {};
@@ -74,7 +74,7 @@ namespace Pinetime {
         lv_obj_t* stepGauge;
         lv_color_t needle_colors[1];
 
-        Controllers::DateTime& dateTimeController;
+        Controllers::DateTimeController& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificatioManager;
