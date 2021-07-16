@@ -129,11 +129,12 @@ bool WatchFaceDigital::Refresh() {
     char ampmChar[3];
     auto hour = t.hour;
     if (clockType == Controllers::Settings::ClockType::H12) {
-      if (hour > 0 && hour < 12) {
+      if (hour < 12) {
         sprintf(ampmChar, "AM");
       } else {
         sprintf(ampmChar, "PM");
       }
+
       if (hour == 0) {
         hour = 12;
       } else if (hour > 12) {

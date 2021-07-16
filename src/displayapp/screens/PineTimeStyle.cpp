@@ -234,11 +234,12 @@ bool PineTimeStyle::Refresh() {
 
     auto hour = t.hour;
     if (clockType == Controllers::Settings::ClockType::H12) {
-      if (hour > 0 && hour < 12) {
+      if (hour < 12) {
         sprintf(ampmChar, "A\nM");
       } else {
         sprintf(ampmChar, "P\nM");
       }
+
       if (hour == 0) {
         hour = 12;
       } else if (hour > 12) {
