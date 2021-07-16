@@ -22,23 +22,28 @@ namespace Pinetime {
         void Register(Pinetime::System::SystemTask* systemTask);
         void Start();
         void WakeUp();
+
+        bool IsTouching() const {
+          return info.touching;
+        }
         uint8_t GetX() const {
-          return x;
+          return info.x;
         }
         uint8_t GetY() const {
-          return y;
+          return info.y;
         }
         Drivers::Cst816S::Gestures GestureGet();
       private:
         static void Process(void* instance);
         void Work();
+
+        Pinetime::Drivers::Cst816S::TouchInfos info;
         Pinetime::System::SystemTask* systemTask = nullptr;
         TaskHandle_t taskHandle;
         Pinetime::Drivers::Cst816S& touchPanel;
         Pinetime::Components::LittleVgl& lvgl;
         Pinetime::Drivers::Cst816S::Gestures gesture;
         bool isCancelled = false;
-        uint8_t x, y;
     };
   }
 }

@@ -6,8 +6,10 @@ TouchHandler::TouchHandler(Drivers::Cst816S& touchPanel, Components::LittleVgl& 
 }
 
 void TouchHandler::CancelTap() {
-  isCancelled = true;
-  lvgl.SetNewTouchPoint(-1, -1, true);
+  if (info.touching) {
+    isCancelled = true;
+    lvgl.SetNewTouchPoint(-1, -1, true);
+  }
 }
 
 Pinetime::Drivers::Cst816S::Gestures TouchHandler::GestureGet() {
@@ -28,7 +30,6 @@ void TouchHandler::Process(void* instance) {
 }
 
 void TouchHandler::Work() {
-  Pinetime::Drivers::Cst816S::TouchInfos info;
   Pinetime::Drivers::Cst816S::Gestures prevGesture = Pinetime::Drivers::Cst816S::Gestures::None;
   while (true) {
     vTaskSuspend(taskHandle);
@@ -48,8 +49,6 @@ void TouchHandler::Work() {
     if (systemTask->IsSleeping()) {
       systemTask->PushMessage(System::Messages::TouchWakeUp);
     } else {
-      x = info.x;
-      y = info.y;
       if (info.touching) {
         if (!isCancelled) {
           lvgl.SetNewTouchPoint(info.x, info.y, true);

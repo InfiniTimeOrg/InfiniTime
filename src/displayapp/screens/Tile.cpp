@@ -91,6 +91,7 @@ Tile::Tile(uint8_t screenID,
   lv_obj_set_style_local_bg_color(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DISABLED, lv_color_hex(0x111111));
 
   for (uint8_t i = 0; i < 6; i++) {
+    lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_CLICK_TRIG);
     if (applications[i].application == Apps::None) {
       lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_DISABLED);
     }
@@ -123,7 +124,7 @@ bool Tile::Refresh() {
 }
 
 void Tile::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
-  if (event == LV_EVENT_CLICKED) {
+  if (event == LV_EVENT_VALUE_CHANGED) {
     app->StartApp(apps[lv_btnmatrix_get_active_btn(obj)], DisplayApp::FullRefreshDirections::Up);
     running = false;
   }
