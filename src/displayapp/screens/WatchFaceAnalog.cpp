@@ -67,12 +67,12 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_obj_align(bg_clock_img, NULL, LV_ALIGN_CENTER, 0, 0);
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(batteryIcon, Symbols::batteryHalf);
+  lv_label_set_text_static(batteryIcon, Symbols::batteryHalf);
   lv_obj_align(batteryIcon, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -8, -4);
 
   notificationIcon = lv_label_create(lv_scr_act(), NULL);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
-  lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
+  lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 8, -4);
 
   // Date - Day / Week day
@@ -181,7 +181,7 @@ bool WatchFaceAnalog::Refresh() {
   auto const& notifications = GetUpdatedNotifications();
   if (notifications.IsUpdated()) {
     auto const icon = NotificationIcon::GetIcon(notifications.Get().newNotificationsAvailable);
-    lv_label_set_text(notificationIcon, icon);
+    lv_label_set_text_static(notificationIcon, icon);
   }
 
   auto const& time = GetUpdatedTime();

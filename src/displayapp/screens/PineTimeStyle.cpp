@@ -64,19 +64,19 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   timeDD1 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
   lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x008080));
-  lv_label_set_text(timeDD1, "12");
+  lv_label_set_text_static(timeDD1, "12");
   lv_obj_align(timeDD1, timebar, LV_ALIGN_IN_TOP_MID, 5, 5);
 
   timeDD2 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
   lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x008080));
-  lv_label_set_text(timeDD2, "34");
+  lv_label_set_text_static(timeDD2, "34");
   lv_obj_align(timeDD2, timebar, LV_ALIGN_IN_BOTTOM_MID, 5, -5);
 
   timeAMPM = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x008080));
   lv_obj_set_style_local_text_line_space(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, -3);
-  lv_label_set_text(timeAMPM, "");
+  lv_label_set_text_static(timeAMPM, "");
   lv_obj_align(timeAMPM, timebar, LV_ALIGN_IN_BOTTOM_LEFT, 2, -20);
 
   /* Create a 40px wide bar down the right side of the screen */
@@ -91,7 +91,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_label_set_text(batteryIcon, Symbols::batteryFull);
+  lv_label_set_text_static(batteryIcon, Symbols::batteryFull);
   lv_obj_align(batteryIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 2);
 
   batteryPlug = lv_label_create(lv_scr_act(), nullptr);
@@ -148,17 +148,17 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
 
   dateDayOfWeek = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(dateDayOfWeek, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_label_set_text(dateDayOfWeek, "THU");
+  lv_label_set_text_static(dateDayOfWeek, "THU");
   lv_obj_align(dateDayOfWeek, sidebar, LV_ALIGN_CENTER, 0, -34);
 
   dateDay = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(dateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_label_set_text(dateDay, "25");
+  lv_label_set_text_static(dateDay, "25");
   lv_obj_align(dateDay, sidebar, LV_ALIGN_CENTER, 0, 3);
 
   dateMonth = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(dateMonth, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_label_set_text(dateMonth, "MAR");
+  lv_label_set_text_static(dateMonth, "MAR");
   lv_obj_align(dateMonth, sidebar, LV_ALIGN_CENTER, 0, 32);
 
   // Step count gauge
@@ -189,7 +189,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text(backgroundLabel, "");
+  lv_label_set_text_static(backgroundLabel, "");
 }
 
 PineTimeStyle::~PineTimeStyle() {
@@ -212,14 +212,14 @@ bool PineTimeStyle::Refresh() {
 
   auto const& ble = GetUpdatedBle();
   if (ble.IsUpdated()) {
-    lv_label_set_text(bleIcon, BleIcon::GetIcon(ble.Get().connected));
+    lv_label_set_text_static(bleIcon, BleIcon::GetIcon(ble.Get().connected));
     lv_obj_realign(bleIcon);
   }
 
   auto const& notifications = GetUpdatedNotifications();
   if (notifications.IsUpdated()) {
     auto const icon = NotificationIcon::GetIcon(notifications.Get().newNotificationsAvailable);
-    lv_label_set_text(notificationIcon, icon);
+    lv_label_set_text_static(notificationIcon, icon);
   }
 
   auto const& time = GetUpdatedTime();
