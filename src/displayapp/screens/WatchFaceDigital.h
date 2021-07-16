@@ -1,9 +1,7 @@
 #pragma once
 
 #include <lvgl/src/lv_core/lv_obj.h>
-#include <chrono>
 #include <cstdint>
-#include <memory>
 #include "WatchFaceBase.h"
 #include "components/datetime/DateTime.h"
 
@@ -41,12 +39,6 @@ namespace Pinetime {
 
       private:
         char displayedTime[5] = {};
-
-        DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
-        DirtyValue<bool> motionSensorOk {};
-        DirtyValue<uint32_t> stepCount {};
-        DirtyValue<uint8_t> heartbeat {};
-        DirtyValue<bool> heartbeatRunning {};
 
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;
