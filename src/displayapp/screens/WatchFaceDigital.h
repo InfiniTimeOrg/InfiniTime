@@ -38,7 +38,8 @@ namespace Pinetime {
         void OnObjectEvent(lv_obj_t* pObj, lv_event_t i);
 
       private:
-        char displayedTime[5] = {};
+        DirtyValue<uint8_t> hour{};
+        DirtyValue<uint8_t> minute{};
 
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;

@@ -121,50 +121,25 @@ bool WatchFaceDigital::Refresh() {
   auto const& time = GetUpdatedTime();
   if (time.IsUpdated()) {
     auto const& t = time.Get();
+    hour = t.hour;
+    minute = t.minute;
 
-    char minutesChar[3];
-    sprintf(minutesChar, "%02u", t.minute);
-
-    char hoursChar[3];
-    char ampmChar[3];
-    auto hour = t.hour;
-    if (clockType == Controllers::Settings::ClockType::H12) {
-      if (hour < 12) {
-        sprintf(ampmChar, "AM");
-      } else {
-        sprintf(ampmChar, "PM");
-      }
-
-      if (hour == 0) {
-        hour = 12;
-      } else if (hour > 12) {
-        hour -= 12;
-      }
-    }
-    sprintf(hoursChar, "%02u", hour);
-
-    if (hoursChar[0] != displayedTime[0] || hoursChar[1] != displayedTime[1] || minutesChar[0] != displayedTime[2] ||
-        minutesChar[1] != displayedTime[3]) {
-      displayedTime[0] = hoursChar[0];
-      displayedTime[1] = hoursChar[1];
-      displayedTime[2] = minutesChar[0];
-      displayedTime[3] = minutesChar[1];
-
-      char timeStr[6];
+    if (hour.IsUpdated() || minute.IsUpdated()) {
+      auto hourTemp = hour.Get();
 
       if (clockType == Controllers::Settings::ClockType::H12) {
-        lv_label_set_text(label_time_ampm, ampmChar);
-        if (hoursChar[0] == '0') {
-          hoursChar[0] = ' ';
+        lv_label_set_text(label_time_ampm, hourTemp < 12 ? "AM" : "PM");
+
+        if (hourTemp == 0) {
+          hourTemp = 12;
+        } else if (hourTemp > 12) {
+          hourTemp -= 12;
         }
-      }
 
-      sprintf(timeStr, "%c%c:%c%c", hoursChar[0], hoursChar[1], minutesChar[0], minutesChar[1]);
-      lv_label_set_text(label_time, timeStr);
-
-      if (clockType == Controllers::Settings::ClockType::H12) {
+        lv_label_set_text_fmt(label_time, "%2" PRIu8 ":%02" PRIu8, hourTemp, minute.Get());
         lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
-      } else {
+      } else if (clockType == Controllers::Settings::ClockType::H24) {
+        lv_label_set_text_fmt(label_time, "%02" PRIu8 ":%02" PRIu8, hourTemp, minute.Get());
         lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
       }
     }
@@ -173,14 +148,9 @@ bool WatchFaceDigital::Refresh() {
   auto const& date = GetUpdatedDate();
   if (date.IsUpdated()) {
     auto const& d = date.Get();
-    char dateStr[22];
 
-    if (clockType == Controllers::Settings::ClockType::H24) {
-      sprintf(dateStr, "%s %d %s %d", DayOfWeekShortToString(d.dayOfWeek), d.day, MonthShortToString(d.month), d.year);
-    } else {
-      sprintf(dateStr, "%s %s %d %d", DayOfWeekShortToString(d.dayOfWeek), MonthShortToString(d.month), d.day, d.year);
-    }
-    lv_label_set_text(label_date, dateStr);
+    lv_label_set_text_fmt(label_date, "%s %" PRIu8 " %s %" PRIu16, DayOfWeekShortToString(d.dayOfWeek),
+                          d.day, MonthShortToString(d.month), d.year);
     lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
   }
 

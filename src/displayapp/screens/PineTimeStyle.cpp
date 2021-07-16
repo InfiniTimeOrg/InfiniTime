@@ -22,6 +22,7 @@
 #include "PineTimeStyle.h"
 #include <date/date.h>
 #include <lvgl/lvgl.h>
+#include <cinttypes>
 #include <cstdio>
 #include "BatteryIcon.h"
 #include "BleIcon.h"
@@ -221,53 +222,28 @@ bool PineTimeStyle::Refresh() {
     lv_label_set_text(notificationIcon, icon);
   }
 
-  auto const clockType = GetClockType();
   auto const& time = GetUpdatedTime();
   if (time.IsUpdated()) {
     auto const& t = time.Get();
+    hour = t.hour;
+    minute = t.minute;
 
-    char minutesChar[3];
-    sprintf(minutesChar, "%02u", t.minute);
+    if (hour.IsUpdated() || minute.IsUpdated()) {
+      auto hourTemp = hour.Get();
 
-    char hoursChar[3];
-    char ampmChar[5];
+      if (GetClockType() == Controllers::Settings::ClockType::H12) {
+        lv_label_set_text_static(timeAMPM, hourTemp < 12 ? "A\nM" : "P\nM");
 
-    auto hour = t.hour;
-    if (clockType == Controllers::Settings::ClockType::H12) {
-      if (hour < 12) {
-        sprintf(ampmChar, "A\nM");
-      } else {
-        sprintf(ampmChar, "P\nM");
-      }
-
-      if (hour == 0) {
-        hour = 12;
-      } else if (hour > 12) {
-        hour -= 12;
-      }
-    }
-    sprintf(hoursChar, "%02u", hour);
-
-    if (hoursChar[0] != displayedTime[0] || hoursChar[1] != displayedTime[1] || minutesChar[0] != displayedTime[2] ||
-        minutesChar[1] != displayedTime[3]) {
-      displayedTime[0] = hoursChar[0];
-      displayedTime[1] = hoursChar[1];
-      displayedTime[2] = minutesChar[0];
-      displayedTime[3] = minutesChar[1];
-
-      char hourStr[3];
-      char minStr[3];
-
-      if (clockType == Controllers::Settings::ClockType::H12) {
-        lv_label_set_text(timeAMPM, ampmChar);
+        if (hourTemp == 0) {
+          hourTemp = 12;
+        } else if (hourTemp > 12) {
+          hourTemp -= 12;
+        }
       }
 
       /* Display the time as 2 pairs of digits */
-      sprintf(hourStr, "%c%c", hoursChar[0], hoursChar[1]);
-      lv_label_set_text(timeDD1, hourStr);
-
-      sprintf(minStr, "%c%c", minutesChar[0], minutesChar[1]);
-      lv_label_set_text(timeDD2, minStr);
+      lv_label_set_text_fmt(timeDD1, "%02" PRIu8, hourTemp);
+      lv_label_set_text_fmt(timeDD2, "%02" PRIu8, minute.Get());
     }
   }
 
@@ -275,18 +251,10 @@ bool PineTimeStyle::Refresh() {
   if (date.IsUpdated()) {
     auto const& d = date.Get();
 
-    char dayOfWeekStr[4];
-    char dayStr[3];
-    char monthStr[4];
-
-    sprintf(dayOfWeekStr, "%s", DayOfWeekShortToString(d.dayOfWeek));
-    sprintf(dayStr, "%d", d.day);
-    sprintf(monthStr, "%s", MonthShortToString(d.month));
-
-    lv_label_set_text(dateDayOfWeek, dayOfWeekStr);
-    lv_label_set_text(dateDay, dayStr);
+    lv_label_set_text_fmt(dateDayOfWeek, "%s", DayOfWeekShortToString(d.dayOfWeek));
+    lv_label_set_text_fmt(dateDay, "%d", d.day);
     lv_obj_realign(dateDay);
-    lv_label_set_text(dateMonth, monthStr);
+    lv_label_set_text_fmt(dateMonth, "%s", MonthShortToString(d.month));
   }
 
   auto const& motion = GetUpdatedMotion();
