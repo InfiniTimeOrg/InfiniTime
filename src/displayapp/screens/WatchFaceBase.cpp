@@ -32,6 +32,10 @@ Pinetime::Controllers::Settings::ClockType WatchFaceBase::GetClockType() const {
   return settingsController.GetClockType();
 }
 
+uint32_t WatchFaceBase::GetStepsGoal() const {
+  return settingsController.GetStepsGoal();
+}
+
 void WatchFaceBase::UpdateDate() {
   date = DateState{
     .year = dateTimeController.Year(),

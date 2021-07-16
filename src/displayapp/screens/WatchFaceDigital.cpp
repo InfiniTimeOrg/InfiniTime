@@ -117,7 +117,7 @@ bool WatchFaceDigital::Refresh() {
     lv_label_set_text(notificationIcon, icon);
   }
 
-  auto const clock_type = GetClockType();
+  auto const clockType = GetClockType();
   auto const& time = GetUpdatedTime();
   if (time.IsUpdated()) {
     auto const& t = time.Get();
@@ -128,7 +128,7 @@ bool WatchFaceDigital::Refresh() {
     char hoursChar[3];
     char ampmChar[3];
     auto hour = t.hour;
-    if (clock_type == Controllers::Settings::ClockType::H12) {
+    if (clockType == Controllers::Settings::ClockType::H12) {
       if (hour > 0 && hour < 12) {
         sprintf(ampmChar, "AM");
       } else {
@@ -151,7 +151,7 @@ bool WatchFaceDigital::Refresh() {
 
       char timeStr[6];
 
-      if (clock_type == Controllers::Settings::ClockType::H12) {
+      if (clockType == Controllers::Settings::ClockType::H12) {
         lv_label_set_text(label_time_ampm, ampmChar);
         if (hoursChar[0] == '0') {
           hoursChar[0] = ' ';
@@ -161,7 +161,7 @@ bool WatchFaceDigital::Refresh() {
       sprintf(timeStr, "%c%c:%c%c", hoursChar[0], hoursChar[1], minutesChar[0], minutesChar[1]);
       lv_label_set_text(label_time, timeStr);
 
-      if (clock_type == Controllers::Settings::ClockType::H12) {
+      if (clockType == Controllers::Settings::ClockType::H12) {
         lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
       } else {
         lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
@@ -174,7 +174,7 @@ bool WatchFaceDigital::Refresh() {
     auto const& d = date.Get();
     char dateStr[22];
 
-    if (clock_type == Controllers::Settings::ClockType::H24) {
+    if (clockType == Controllers::Settings::ClockType::H24) {
       sprintf(dateStr, "%s %d %s %d", DayOfWeekShortToString(d.dayOfWeek), d.day, MonthShortToString(d.month), d.year);
     } else {
       sprintf(dateStr, "%s %s %d %d", DayOfWeekShortToString(d.dayOfWeek), MonthShortToString(d.month), d.day, d.year);

@@ -98,6 +98,7 @@ namespace Pinetime {
         virtual ~WatchFaceBase() = default;
 
         Controllers::Settings::ClockType GetClockType() const;
+        uint32_t GetStepsGoal() const;
 
         void UpdateDate();
         void UpdateTime();

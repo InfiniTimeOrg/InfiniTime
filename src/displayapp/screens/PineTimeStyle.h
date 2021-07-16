@@ -1,9 +1,8 @@
 #pragma once
 
 #include <lvgl/src/lv_core/lv_obj.h>
-#include <chrono>
 #include <cstdint>
-#include "Screen.h"
+#include "WatchFaceBase.h"
 #include "components/datetime/DateTime.h"
 
 namespace Pinetime {
@@ -19,15 +18,16 @@ namespace Pinetime {
 
   namespace Applications {
     namespace Screens {
-      class PineTimeStyle : public Screen {
+      class PineTimeStyle : public WatchFaceBase {
       public:
         PineTimeStyle(DisplayApp* app,
-                      Controllers::DateTimeController& dateTimeController,
-                      Controllers::Battery& batteryController,
-                      Controllers::Ble& bleController,
-                      Controllers::NotificationManager& notificatioManager,
+                      Controllers::DateTimeController const& dateTimeController,
+                      Controllers::Battery const& batteryController,
+                      Controllers::Ble const& bleController,
+                      Controllers::NotificationManager const& notificationManager,
                       Controllers::Settings& settingsController,
-                      Controllers::MotionController& motionController);
+                      Controllers::HeartRateController const& heartRateController,
+                      Controllers::MotionController const& motionController);
         ~PineTimeStyle() override;
 
         bool Refresh() override;
@@ -35,19 +35,7 @@ namespace Pinetime {
         void OnObjectEvent(lv_obj_t* pObj, lv_event_t i);
 
       private:
-        char displayedChar[5];
-
-        uint16_t currentYear = 1970;
-        DateTime::Months currentMonth = DateTime::Months::Unknown;
-        DateTime::Days currentDayOfWeek = DateTime::Days::Unknown;
-        uint8_t currentDay = 0;
-
-        DirtyValue<uint8_t> batteryPercentRemaining {};
-        DirtyValue<bool> bleState {};
-        DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
-        DirtyValue<bool> motionSensorOk {};
-        DirtyValue<uint32_t> stepCount {};
-        DirtyValue<bool> notificationState {};
+        char displayedTime[5] = {};
 
         lv_obj_t* timebar;
         lv_obj_t* sidebar;
@@ -73,13 +61,6 @@ namespace Pinetime {
         lv_obj_t* notificationIcon;
         lv_obj_t* stepGauge;
         lv_color_t needle_colors[1];
-
-        Controllers::DateTimeController& dateTimeController;
-        Controllers::Battery& batteryController;
-        Controllers::Ble& bleController;
-        Controllers::NotificationManager& notificatioManager;
-        Controllers::Settings& settingsController;
-        Controllers::MotionController& motionController;
       };
     }
   }
