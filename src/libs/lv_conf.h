@@ -295,6 +295,7 @@ typedef void* lv_img_decoder_user_data_t;
 #define LV_TICK_CUSTOM     1
 #if LV_TICK_CUSTOM == 1
 #define LV_TICK_CUSTOM_INCLUDE  "FreeRTOS.h"       /*Header for the system time function*/
+uint32_t xTaskGetTickCount(); /*Forward declare to avoid compiler warning*/
 #define LV_TICK_CUSTOM_SYS_TIME_EXPR (xTaskGetTickCount()) /*Expression evaluating to current system time in ms*/
 #endif   /*LV_TICK_CUSTOM*/
 
