@@ -2,7 +2,7 @@
 #include <hal/nrf_rtc.h>
 #include <libraries/gpiote/app_gpiote.h>
 #include <libraries/log/nrf_log.h>
-
+#include <app_timer.h>
 #include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
@@ -152,8 +152,7 @@ void SystemTask::Work() {
   batteryController.Register(this);
   motorController.Init();
   motionSensor.SoftReset();
-  timerController.Register(this);
-  timerController.Init();
+  timerController.Init(this);
   alarmController.Init(this);
 
   // Reset the TWI device because the motion sensor chip most probably crashed it...
