@@ -34,22 +34,22 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   settingsController.SetClockFace(0);
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(batteryIcon, Symbols::batteryFull);
+  lv_label_set_text_static(batteryIcon, Symbols::batteryFull);
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   batteryPlug = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFF0000));
-  lv_label_set_text(batteryPlug, Symbols::plug);
+  lv_label_set_text_static(batteryPlug, Symbols::plug);
   lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0000FF));
-  lv_label_set_text(bleIcon, Symbols::bluetooth);
+  lv_label_set_text_static(bleIcon, Symbols::bluetooth);
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
-  lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
+  lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
@@ -70,26 +70,26 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text(backgroundLabel, "");
+  lv_label_set_text_static(backgroundLabel, "");
 
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(heartbeatIcon, Symbols::heartBeat);
+  lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
   lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
   lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
 
   heartbeatValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
-  lv_label_set_text(heartbeatValue, "");
+  lv_label_set_text_static(heartbeatValue, "");
   lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
-  lv_label_set_text(stepValue, "0");
+  lv_label_set_text_static(stepValue, "0");
   lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
 
   stepIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
-  lv_label_set_text(stepIcon, Symbols::shoe);
+  lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 }
 
@@ -101,14 +101,14 @@ bool WatchFaceDigital::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
-    lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+    lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
     auto isCharging = batteryController.IsCharging() or batteryController.IsPowerPresent();
-    lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
+    lv_label_set_text_static(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
   }
 
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
-    lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
+    lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
   }
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
   lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
@@ -116,7 +116,7 @@ bool WatchFaceDigital::Refresh() {
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
-    lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
+    lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();

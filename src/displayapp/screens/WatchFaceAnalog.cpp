@@ -14,8 +14,8 @@ constexpr int16_t HourLength = 70;
 constexpr int16_t MinuteLength = 90;
 constexpr int16_t SecondLength = 110;
 
-// sin(90) = 1 so the value of _lv_trigo_sin(90) is the scaling factor
-const auto LV_TRIG_SCALE = _lv_trigo_sin(90);
+  // sin(90) = 1 so the value of _lv_trigo_sin(90) is the scaling factor
+  const auto LV_TRIG_SCALE = _lv_trigo_sin(90);
 
 int16_t Cosine(int16_t angle) {
   return _lv_trigo_sin(angle + 90);
@@ -66,12 +66,12 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_obj_align(bg_clock_img, NULL, LV_ALIGN_CENTER, 0, 0);
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(batteryIcon, Symbols::batteryHalf);
+  lv_label_set_text_static(batteryIcon, Symbols::batteryHalf);
   lv_obj_align(batteryIcon, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   notificationIcon = lv_label_create(lv_scr_act(), NULL);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
-  lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
+  lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
 
   // Date - Day / Week day
@@ -177,13 +177,13 @@ bool WatchFaceAnalog::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
-    lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+    lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
   }
 
   notificationState = notificationManager.AreNewNotificationsAvailable();
 
   if (notificationState.IsUpdated()) {
-    lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
+    lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();

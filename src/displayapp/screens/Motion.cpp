@@ -35,7 +35,7 @@ Motion::Motion(Pinetime::Applications::DisplayApp* app, Controllers::MotionContr
 
   labelStep = lv_label_create(lv_scr_act(), NULL);
   lv_obj_align(labelStep, chart, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
-  lv_label_set_text(labelStep, "Steps ---");
+  lv_label_set_text_static(labelStep, "Steps ---");
 }
 
 Motion::~Motion() {

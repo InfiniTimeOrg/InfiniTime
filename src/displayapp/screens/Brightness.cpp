@@ -21,7 +21,7 @@ Brightness::Brightness(Pinetime::Applications::DisplayApp* app, Controllers::Bri
   lv_slider_set_value(slider, LevelToInt(brightness.Level()), LV_ANIM_OFF);
 
   slider_label = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(slider_label, LevelToString(brightness.Level()));
+  lv_label_set_text_static(slider_label, LevelToString(brightness.Level()));
   lv_obj_set_auto_realign(slider_label, true);
   lv_obj_align(slider_label, slider, LV_ALIGN_OUT_BOTTOM_MID, 0, 30);
 }
@@ -65,7 +65,7 @@ void Brightness::SetValue(uint8_t value) {
       brightness.Set(Controllers::BrightnessController::Levels::High);
       break;
   }
-  lv_label_set_text(slider_label, LevelToString(brightness.Level()));
+  lv_label_set_text_static(slider_label, LevelToString(brightness.Level()));
 }
 
 uint8_t Brightness::LevelToInt(Pinetime::Controllers::BrightnessController::Levels level) {
@@ -103,5 +103,5 @@ bool Brightness::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
 void Brightness::SetValue() {
   lv_slider_set_value(slider, LevelToInt(brightness.Level()), LV_ANIM_OFF);
-  lv_label_set_text(slider_label, LevelToString(brightness.Level()));
+  lv_label_set_text_static(slider_label, LevelToString(brightness.Level()));
 }

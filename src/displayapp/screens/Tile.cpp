@@ -39,7 +39,7 @@ Tile::Tile(uint8_t screenID,
 
   // Battery
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
+  lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
   lv_obj_align(batteryIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, -8, 0);
 
   if (numScreens > 1) {
@@ -119,7 +119,7 @@ Tile::~Tile() {
 
 void Tile::UpdateScreen() {
   lv_label_set_text_fmt(label_time, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
-  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
+  lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
 }
 
 bool Tile::Refresh() {
