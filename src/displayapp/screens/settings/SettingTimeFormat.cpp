@@ -12,6 +12,10 @@ SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pi
     }()} {
 }
 
+bool UpdateArray(Pinetime::Applications::Screens::CheckBoxes::Options* options, uint8_t clicked) {
+  return false;
+}
+
 std::unique_ptr<Screen> SettingTimeFormat::CreateScreen() {
   if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
     options[0].state = true;
@@ -19,7 +23,7 @@ std::unique_ptr<Screen> SettingTimeFormat::CreateScreen() {
     options[1].state = true;
   }
 
-  return std::make_unique<Screens::CheckBoxes>(Symbols::clock, "Time format", options, app);
+  return std::make_unique<Screens::CheckBoxes>(Symbols::clock, "Time format", options, app, UpdateArray);
 }
 
 SettingTimeFormat::~SettingTimeFormat() {

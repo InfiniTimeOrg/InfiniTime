@@ -13,7 +13,8 @@ namespace {
   }
 }
 
-CheckBoxes::CheckBoxes(const char* symbol, const char* titleText, Options *options, DisplayApp* app) : Screen(app), options {options} {
+CheckBoxes::CheckBoxes(const char* symbol, const char* titleText, Options* options, DisplayApp* app, bool (*UpdateArray)(Options*, uint8_t))
+  : Screen(app), options {options}, UpdateArray {UpdateArray} {
 
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
 
@@ -81,13 +82,31 @@ void CheckBoxes::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event != LV_EVENT_CLICKED) {
     return;
   }
-  for (uint8_t i = 0; i < optionsTotal; i++) {
-    if (object == buttons[i]) {
-      lv_obj_add_state(buttons[i], LV_STATE_CHECKED);
-      options[i].state = true;
-    } else {
-      lv_obj_clear_state(buttons[i], LV_STATE_CHECKED);
-      options[i].state = false;
+
+  uint8_t clicked;
+  for (clicked = 0; clicked < optionsTotal; clicked++) {
+    if (object == buttons[clicked]) {
+      break;
+    }
+  }
+
+  if (UpdateArray(options, clicked)) {
+    for (uint8_t i = 0; i < optionsTotal; i++) {
+      if (options[i].state) {
+        lv_obj_add_state(buttons[i], LV_STATE_CHECKED);
+      } else {
+        lv_obj_clear_state(buttons[i], LV_STATE_CHECKED);
+      }
+    }
+  } else {
+    for (uint8_t i = 0; i < optionsTotal; i++) {
+      if (object == buttons[i]) {
+        lv_obj_add_state(buttons[i], LV_STATE_CHECKED);
+        options[i].state = true;
+      } else {
+        lv_obj_clear_state(buttons[i], LV_STATE_CHECKED);
+        options[i].state = false;
+      }
     }
   }
 }

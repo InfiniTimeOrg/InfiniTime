@@ -17,6 +17,8 @@ namespace Pinetime {
 
         bool Refresh() override;
 
+        static bool UpdateArray(Pinetime::Applications::Screens::CheckBoxes::Options* options, uint8_t clicked);
+
       private:
         CheckBoxes::Options options[6] = {
           {false, "5s"},

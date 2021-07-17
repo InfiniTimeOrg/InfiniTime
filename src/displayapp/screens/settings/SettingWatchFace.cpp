@@ -12,10 +12,14 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pine
     }()} {
 }
 
+bool SettingWatchFace::UpdateArray(Pinetime::Applications::Screens::CheckBoxes::Options* options, uint8_t clicked) {
+  return false;
+}
+
 std::unique_ptr<Screen> SettingWatchFace::CreateScreen() {
   options[settingsController.GetClockFace()].state = true;
 
-  return std::make_unique<Screens::CheckBoxes>(Symbols::clock, "Watch face", options, app);
+  return std::make_unique<Screens::CheckBoxes>(Symbols::clock, "Watch face", options, app, UpdateArray);
 }
 
 SettingWatchFace::~SettingWatchFace() {
