@@ -27,7 +27,7 @@ namespace Pinetime {
     class Settings;
     class Battery;
     class Ble;
-    class DControllerateTime;
+    class DateTimeController;
     class NotificationManager;
     class HeartRateController;
     class MotionController;
