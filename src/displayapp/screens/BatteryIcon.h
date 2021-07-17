@@ -6,7 +6,7 @@ namespace Pinetime {
       class BatteryIcon {
       public:
         static const char* GetUnknownIcon();
-        static const char* GetBatteryIcon(int batteryPercent);
+        static const char* GetBatteryIcon(uint8_t batteryPercent);
         static const char* GetPlugIcon(bool isCharging);
       };
     }

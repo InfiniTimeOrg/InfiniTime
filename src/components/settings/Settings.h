@@ -1,26 +1,32 @@
 #pragma once
 #include <cstdint>
+#include <bitset>
 #include "components/datetime/DateTimeController.h"
 #include "components/brightness/BrightnessController.h"
-#include "drivers/SpiNorFlash.h"
+#include "components/fs/FS.h"
 #include "drivers/Cst816s.h"
 
 namespace Pinetime {
   namespace Controllers {
     class Settings {
     public:
-      enum class ClockType { H24, H12 };
-      enum class Vibration { ON, OFF };
-      enum class WakeUpMode { None, SingleTap, DoubleTap, RaiseWrist };
+      enum class ClockType : uint8_t { H24, H12 };
+      enum class Vibration : uint8_t { ON, OFF };
+      enum class WakeUpMode : uint8_t {
+        SingleTap = 0,
+        DoubleTap = 1,
+        RaiseWrist = 2,
+      };
 
-      Settings(Pinetime::Drivers::SpiNorFlash& spiNorFlash);
+      Settings(Pinetime::Controllers::FS& fs);
 
       void Init();
       void SaveSettings();
 
       void SetClockFace(uint8_t face) {
-        if (face != settings.clockFace)
+        if (face != settings.clockFace) {
           settingsChanged = true;
+        }
         settings.clockFace = face;
       };
       uint8_t GetClockFace() const {
@@ -42,8 +48,9 @@ namespace Pinetime {
       };
 
       void SetClockType(ClockType clocktype) {
-        if (clocktype != settings.clockType)
+        if (clocktype != settings.clockType) {
           settingsChanged = true;
+        }
         settings.clockType = clocktype;
       };
       ClockType GetClockType() const {
@@ -51,8 +58,9 @@ namespace Pinetime {
       };
 
       void SetVibrationStatus(Vibration status) {
-        if (status != settings.vibrationStatus)
+        if (status != settings.vibrationStatus) {
           settingsChanged = true;
+        }
         settings.vibrationStatus = status;
       };
       Vibration GetVibrationStatus() const {
@@ -60,26 +68,47 @@ namespace Pinetime {
       };
 
       void SetScreenTimeOut(uint32_t timeout) {
-        if (timeout != settings.screenTimeOut)
+        if (timeout != settings.screenTimeOut) {
           settingsChanged = true;
+        }
         settings.screenTimeOut = timeout;
       };
       uint32_t GetScreenTimeOut() const {
         return settings.screenTimeOut;
       };
 
-      void setWakeUpMode(WakeUpMode wakeUp) {
-        if (wakeUp != settings.wakeUpMode)
+      void setWakeUpMode(WakeUpMode wakeUp, bool enabled) {
+        if (!isWakeUpModeOn(wakeUp)) {
           settingsChanged = true;
-        settings.wakeUpMode = wakeUp;
-      };
-      WakeUpMode getWakeUpMode() const {
-        return settings.wakeUpMode;
+        }
+        settings.wakeUpMode.set(static_cast<size_t>(wakeUp), enabled);
+        // Handle special behavior
+        if (enabled) {
+          switch (wakeUp) {
+            case WakeUpMode::SingleTap:
+              settings.wakeUpMode.set(static_cast<size_t>(WakeUpMode::DoubleTap), false);
+              break;
+            case WakeUpMode::DoubleTap:
+              settings.wakeUpMode.set(static_cast<size_t>(WakeUpMode::SingleTap), false);
+              break;
+            case WakeUpMode::RaiseWrist:
+              break;
+          }
+        }
       };
 
+      std::bitset<3> getWakeUpModes() const {
+        return settings.wakeUpMode;
+      }
+
+      bool isWakeUpModeOn(const WakeUpMode mode) const {
+        return getWakeUpModes()[static_cast<size_t>(mode)];
+      }
+
       void SetBrightness(Controllers::BrightnessController::Levels level) {
-        if (level != settings.brightLevel)
+        if (level != settings.brightLevel) {
           settingsChanged = true;
+        }
         settings.brightLevel = level;
       };
       Controllers::BrightnessController::Levels GetBrightness() const {
@@ -87,26 +116,30 @@ namespace Pinetime {
       };
 
       void SetStepsGoal( uint32_t goal ) { 
-        if ( goal != settings.stepsGoal ) 
+        if ( goal != settings.stepsGoal ) {
           settingsChanged = true;
+        }
         settings.stepsGoal = goal; 
       };
       
       uint32_t GetStepsGoal() const { return settings.stepsGoal; };
 
     private:
-      Pinetime::Drivers::SpiNorFlash& spiNorFlash;
+      Pinetime::Controllers::FS& fs;
+
+      static constexpr uint32_t settingsVersion = 0x0001;
       struct SettingsData {
+
+        uint32_t version = settingsVersion;
+        uint32_t stepsGoal = 10000;
+        uint32_t screenTimeOut = 15000;
 
         ClockType clockType = ClockType::H24;
         Vibration vibrationStatus = Vibration::ON;
 
         uint8_t clockFace = 0;
 
-        uint32_t stepsGoal = 10000;
-        uint32_t screenTimeOut = 15000;
-
-        WakeUpMode wakeUpMode = WakeUpMode::None;
+        std::bitset<3> wakeUpMode {0};
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
       };
@@ -117,20 +150,8 @@ namespace Pinetime {
       uint8_t appMenu = 0;
       uint8_t settingsMenu = 0;
 
-      // There are 10 blocks of reserved flash to save settings
-      // to minimize wear, the recording is done in a rotating way by the 10 blocks
-      uint8_t settingsFlashBlock = 99; // default to indicate it needs to find the active block
-
-      static constexpr uint32_t settingsBaseAddr = 0x3F6000; // Flash Settings Location
-      static constexpr uint16_t settingsVersion = 0x0100;    // Flash Settings Version
-
-      bool FindHeader();
-      void ReadSettingsData();
-      void EraseBlock();
-      void SetHeader(bool state);
-      void SaveSettingsData();
-      void LoadSettingsFromFlash();
-      void SaveSettingsToFlash();
+      void LoadSettingsFromFile();
+      void SaveSettingsToFile();
     };
   }
 }

@@ -59,7 +59,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Pinetime::Applications::DisplayApp& displayApp,
-                       Pinetime::Applications::HeartRateTask& heartRateApp)
+                       Pinetime::Applications::HeartRateTask& heartRateApp,
+                       Pinetime::Controllers::FS& fs)
   : spi {spi},
     lcd {lcd},
     spiNorFlash {spiNorFlash},
@@ -77,10 +78,11 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     motionSensor {motionSensor},
     settingsController {settingsController},
     heartRateController{heartRateController},
-    nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController),
     motionController{motionController},
     displayApp{displayApp},
-    heartRateApp(heartRateApp) {
+    heartRateApp(heartRateApp),
+    fs{fs},
+    nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
 
 }
 
@@ -107,6 +109,9 @@ void SystemTask::Work() {
   spi.Init();
   spiNorFlash.Init();
   spiNorFlash.Wakeup();
+  
+  fs.Init();
+
   nimbleController.Init();
   nimbleController.StartAdvertising();
   brightnessController.Init();
@@ -206,7 +211,7 @@ void SystemTask::Work() {
           twiMaster.Wakeup();
 
           // Double Tap needs the touch screen to be in normal mode
-          if (settingsController.getWakeUpMode() != Pinetime::Controllers::Settings::WakeUpMode::DoubleTap) {
+          if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
             touchPanel.Wakeup();
           }
 
@@ -227,9 +232,9 @@ void SystemTask::Work() {
           auto touchInfo = touchPanel.GetTouchInfo();
           twiMaster.Sleep();
           if (touchInfo.isTouch and ((touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
-                                      settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::DoubleTap) or
+                                      settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
                                      (touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
-                                      settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::SingleTap))) {
+                                      settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
             GoToRunning();
           }
         } break;
@@ -291,7 +296,7 @@ void SystemTask::Work() {
           spi.Sleep();
 
           // Double Tap needs the touch screen to be in normal mode
-          if (settingsController.getWakeUpMode() != Pinetime::Controllers::Settings::WakeUpMode::DoubleTap) {
+          if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
             touchPanel.Sleep();
           }
           twiMaster.Sleep();
@@ -325,6 +330,11 @@ void SystemTask::Work() {
       }
     }
 
+    if (xTaskGetTickCount() - batteryNotificationTick > batteryNotificationPeriod) {
+      nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
+      batteryNotificationTick = xTaskGetTickCount();
+    }
+
     monitor.Process();
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);
@@ -338,7 +348,7 @@ void SystemTask::UpdateMotion() {
   if (isGoingToSleep or isWakingUp)
     return;
 
-  if (isSleeping && settingsController.getWakeUpMode() != Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist)
+  if (isSleeping && !settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist))
     return;
 
   if (isSleeping)
@@ -389,10 +399,10 @@ void SystemTask::OnTouchEvent() {
     PushMessage(Messages::OnTouchEvent);
     displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
   } else if (!isWakingUp) {
-    if (settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::None or
-        settingsController.getWakeUpMode() == Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist)
-      return;
-    PushMessage(Messages::TouchWakeUp);
+    if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) or
+        settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
+      PushMessage(Messages::TouchWakeUp);
+    }
   }
 }
 
