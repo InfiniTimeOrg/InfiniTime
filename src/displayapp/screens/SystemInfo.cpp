@@ -20,6 +20,8 @@ namespace {
         return "BMA421";
       case Pinetime::Controllers::MotionController::DeviceTypes::BMA425:
         return "BMA425";
+      case Pinetime::Controllers::MotionController::DeviceTypes::Unknown:
+        return "???";
     }
     return "???";
   }
