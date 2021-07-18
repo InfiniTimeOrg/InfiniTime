@@ -144,6 +144,9 @@ void SystemTask::Work() {
   heartRateSensor.Disable();
   heartRateApp.Start();
 
+  touchHandler.Register(this);
+  touchHandler.Start();
+
   nrf_gpio_cfg_sense_input(pinButton, (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pulldown, (nrf_gpio_pin_sense_t) GPIO_PIN_CNF_SENSE_High);
   nrf_gpio_cfg_output(15);
   nrf_gpio_pin_set(15);

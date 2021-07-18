@@ -21,7 +21,7 @@ namespace Pinetime {
         uint16_t y = 0;
         Gestures gesture = Gestures::None;
         bool touching = false;
-        bool isValid = false;
+        bool isValid = true;
       };
 
       Cst816S(TwiMaster& twiMaster, uint8_t twiAddress);

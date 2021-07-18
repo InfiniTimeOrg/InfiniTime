@@ -30,37 +30,39 @@ void TouchHandler::Process(void* instance) {
 }
 
 void TouchHandler::Work() {
-  Pinetime::Drivers::Cst816S::Gestures prevGesture = Pinetime::Drivers::Cst816S::Gestures::None;
+  bool slideReleased = true;
   while (true) {
     vTaskSuspend(taskHandle);
 
     info = touchPanel.GetTouchInfo();
 
-    if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
-      if (prevGesture != info.gesture) {
-        if (info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideDown || info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideLeft ||
-            info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideUp || info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideRight) {
-          prevGesture = info.gesture;
+    if (info.isValid) {
+      if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
+        if (slideReleased) {
+          if (info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideDown ||
+              info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideLeft ||
+              info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideUp ||
+              info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideRight) {
+            slideReleased = false;
+          }
+          gesture = info.gesture;
         }
-        gesture = info.gesture;
       }
-    }
 
-    if (systemTask->IsSleeping()) {
-      systemTask->PushMessage(System::Messages::TouchWakeUp);
-    } else {
-      if (info.touching) {
-        if (!isCancelled) {
-          lvgl.SetNewTouchPoint(info.x, info.y, true);
-        }
-      } else {
-        if (isCancelled) {
-          lvgl.SetNewTouchPoint(-1, -1, false);
-          isCancelled = false;
+      if (!systemTask->IsSleeping()) {
+        if (info.touching) {
+          if (!isCancelled) {
+            lvgl.SetNewTouchPoint(info.x, info.y, true);
+          }
         } else {
-          lvgl.SetNewTouchPoint(info.x, info.y, false);
+          if (isCancelled) {
+            lvgl.SetNewTouchPoint(-1, -1, false);
+            isCancelled = false;
+          } else {
+            lvgl.SetNewTouchPoint(info.x, info.y, false);
+          }
+          slideReleased = true;
         }
-        prevGesture = Pinetime::Drivers::Cst816S::Gestures::None;
       }
       systemTask->OnTouchEvent();
     }

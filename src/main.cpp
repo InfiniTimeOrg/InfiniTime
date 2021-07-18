@@ -315,9 +315,6 @@ int main(void) {
 
   systemTask.Start();
 
-  touchHandler.Register(&systemTask);
-  touchHandler.Start();
-
   nimble_port_init();
 
   vTaskStartScheduler();
