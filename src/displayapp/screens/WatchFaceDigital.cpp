@@ -113,7 +113,11 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
     pchar = strchr(pchar + 1, '\n');
   }
   */
-  lv_label_set_text(label_ticker, "Eph 2:8,9 For by grace you have been saved through faith, and this is not your own doing, it is the gift of God, that no one may boast.");
+  // update notification ticker
+  Controllers::NotificationManager::Notification lastNotification;
+  lastNotification = notificatioManager.GetLastNotification();
+  lv_label_set_text(label_ticker, lastNotification.Message());
+  //lv_label_set_text(label_ticker, "Eph 2:8,9 For by grace you have been saved through faith, and this is not your own doing, it is the gift of God, that no one may boast.");
   lv_label_set_long_mode(label_ticker, LV_LABEL_LONG_SROLL_CIRC);
   lv_label_set_anim_speed(label_ticker, 6);
   lv_obj_set_width(label_ticker, 240);
@@ -148,11 +152,12 @@ bool WatchFaceDigital::Refresh() {
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
-    if (notificationState.Get() == true)
+    if (notificationState.Get() == true) {
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(true));
-    else
+    } else
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
   }
+
 
   currentDateTime = dateTimeController.CurrentDateTime();
 
