@@ -70,6 +70,7 @@ namespace Pinetime {
       };
 
       uint16_t connHandle();
+      void NotifyBatteryLevel(uint8_t level);
 
     private:
       static constexpr const char* deviceName = "InfiniTime";
@@ -92,7 +93,7 @@ namespace Pinetime {
       HeartRateService heartRateService;
 
       uint8_t addrType; // 1 = Random, 0 = PUBLIC
-      uint16_t connectionHandle = 0;
+      uint16_t connectionHandle = BLE_HS_CONN_HANDLE_NONE;
 
       ble_uuid128_t dfuServiceUuid {
         .u {.type = BLE_UUID_TYPE_128},

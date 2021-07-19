@@ -53,6 +53,7 @@ As of now, here is the list of achievements of this project:
     * Two (2048 clone game)
     * Stopwatch (with all the necessary functions such as play, pause, lap, stop)
     * Motion sensor and step counter (displays the number of steps and the state of the motion sensor in real-time)
+    * Metronome (vibrates to a given bpm with a customizable beats per bar)
  - User settings:
     * Display timeout
     * Wake-up condition

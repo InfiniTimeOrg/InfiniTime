@@ -22,7 +22,6 @@ namespace Pinetime {
         bool Refresh() override;
 
         void UpdateScreen();
-        void UpdateAnim();
 
       private:
         Pinetime::Controllers::Battery& batteryController;
@@ -33,10 +32,8 @@ namespace Pinetime {
         lv_obj_t* status;
 
         lv_task_t* taskUpdate;
-        lv_task_t* taskAnim;
 
-        int8_t animation = 0;
-        int8_t batteryPercent = -1;
+        uint8_t batteryPercent = 0;
         uint16_t batteryVoltage = 0;
       };
     }

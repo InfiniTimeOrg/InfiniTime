@@ -114,6 +114,7 @@ namespace Pinetime {
 
       Apps nextApp = Apps::None;
       DisplayApp::FullRefreshDirections nextDirection;
+      TickType_t lastWakeTime;
     };
   }
 }
