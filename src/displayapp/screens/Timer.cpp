@@ -74,7 +74,7 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
     createButtons();
   }
 
-  taskRefresh = lv_task_create(RefreshTaskCallback, 20, LV_TASK_PRIO_MID, this);
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Timer::~Timer() {

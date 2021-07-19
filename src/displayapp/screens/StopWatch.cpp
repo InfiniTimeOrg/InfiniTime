@@ -101,7 +101,7 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
   lv_obj_align(lapTwoText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 55);
   lv_label_set_text(lapTwoText, "");
 
-  taskRefresh = lv_task_create(RefreshTaskCallback, 20, LV_TASK_PRIO_MID, this);
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 StopWatch::~StopWatch() {

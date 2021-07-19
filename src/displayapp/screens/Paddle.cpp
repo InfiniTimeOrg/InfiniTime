@@ -30,7 +30,7 @@ Paddle::Paddle(Pinetime::Applications::DisplayApp* app, Pinetime::Components::Li
   lv_obj_set_style_local_radius(ball, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_obj_set_size(ball, ballSize, ballSize);
 
-  taskRefresh = lv_task_create(RefreshTaskCallback, 20, LV_TASK_PRIO_MID, this);
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Paddle::~Paddle() {
