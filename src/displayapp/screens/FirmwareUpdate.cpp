@@ -5,21 +5,6 @@
 
 using namespace Pinetime::Applications::Screens;
 
-namespace {
-  // Copied from StopWatch.cpp
-  TickType_t calculateDelta(const TickType_t startTime, const TickType_t currentTime) {
-    TickType_t delta = 0;
-    // Take care of overflow
-    if (startTime > currentTime) {
-      delta = 0xffffffff - startTime;
-      delta += (currentTime + 1);
-    } else {
-      delta = currentTime - startTime;
-    }
-    return delta;
-  }
-}
-
 FirmwareUpdate::FirmwareUpdate(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Ble& bleController)
   : Screen(app), bleController {bleController} {
 
@@ -59,11 +44,11 @@ bool FirmwareUpdate::Refresh() {
       // This condition makes sure that the app is exited if somehow it got
       // launched without a firmware update. This should never happen.
       if (state != States::Error) {
-        if (calculateDelta(startTime, xTaskGetTickCount()) > (60 * 1024)) {
+        if (xTaskGetTickCount() - startTime > (60 * 1024)) {
           UpdateError();
           state = States::Error;
         }
-      } else if (calculateDelta(startTime, xTaskGetTickCount()) > (5 * 1024)) {
+      } else if (xTaskGetTickCount() - startTime > (5 * 1024)) {
         running = false;
       }
       break;
@@ -83,7 +68,7 @@ bool FirmwareUpdate::Refresh() {
         UpdateError();
         state = States::Error;
       }
-      if (calculateDelta(startTime, xTaskGetTickCount()) > (5 * 1024)) {
+      if (xTaskGetTickCount() - startTime > (5 * 1024)) {
         running = false;
       }
       break;
