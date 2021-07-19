@@ -3,21 +3,6 @@
 
 using namespace Pinetime::Controllers;
 
-namespace {
-  // copied from Stopwatch
-  TickType_t calculateDelta(const TickType_t startTime, const TickType_t currentTime) {
-    TickType_t delta = 0;
-    // Take care of overflow
-    if (startTime > currentTime) {
-      delta = 0xffffffff - startTime;
-      delta += (currentTime + 1);
-    } else {
-      delta = currentTime - startTime;
-    }
-    return delta;
-  }
-}
-
 void ButtonHandler::Start() {
   if (pdPASS != xTaskCreate(ButtonHandler::Process, "Button", 80, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
@@ -57,13 +42,13 @@ void ButtonHandler::Work() {
               handled = true;
             }
 
-            if (calculateDelta(releaseTime, xTaskGetTickCount()) < doubleClickTime) {
+            if (xTaskGetTickCount() - releaseTime < doubleClickTime) {
               if (!handled) {
                 handled = true;
                 systemTask->OnButtonDoubleClicked();
               }
             }
-          } else if (calculateDelta(pressTime, xTaskGetTickCount()) >= longPressTime) {
+          } else if (xTaskGetTickCount() - pressTime >= longPressTime) {
             if (!handled) {
               handled = true;
               systemTask->OnButtonLongPressed();
@@ -77,7 +62,7 @@ void ButtonHandler::Work() {
               handled = false;
               break;
             }
-          } else if (calculateDelta(releaseTime, xTaskGetTickCount()) >= doubleClickTime) {
+          } else if (xTaskGetTickCount() - releaseTime >= doubleClickTime) {
             if (!handled) {
               systemTask->OnButtonPushed();
               break;
