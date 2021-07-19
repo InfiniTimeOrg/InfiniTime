@@ -75,10 +75,6 @@ SettingWatchFace::~SettingWatchFace() {
   settingsController.SaveSettings();
 }
 
-bool SettingWatchFace::Refresh() {
-  return running;
-}
-
 void SettingWatchFace::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
     for (uint8_t i = 0; i < optionsTotal; i++) {

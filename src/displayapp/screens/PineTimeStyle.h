@@ -30,7 +30,7 @@ namespace Pinetime {
                       Controllers::MotionController& motionController);
         ~PineTimeStyle() override;
 
-        bool Refresh() override;
+        void Refresh() override;
 
         void OnObjectEvent(lv_obj_t* pObj, lv_event_t i);
 
@@ -80,6 +80,8 @@ namespace Pinetime {
         Controllers::NotificationManager& notificatioManager;
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;
+
+        lv_task_t* taskRefresh;
       };
     }
   }

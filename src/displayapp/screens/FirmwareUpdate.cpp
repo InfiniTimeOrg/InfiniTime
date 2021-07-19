@@ -30,36 +30,40 @@ FirmwareUpdate::FirmwareUpdate(Pinetime::Applications::DisplayApp* app, Pinetime
   lv_label_set_text(percentLabel, "");
   lv_obj_set_auto_realign(percentLabel, true);
   lv_obj_align(percentLabel, bar1, LV_ALIGN_OUT_TOP_MID, 0, 60);
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 FirmwareUpdate::~FirmwareUpdate() {
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-bool FirmwareUpdate::Refresh() {
+void FirmwareUpdate::Refresh() {
   switch (bleController.State()) {
     default:
     case Pinetime::Controllers::Ble::FirmwareUpdateStates::Idle:
     case Pinetime::Controllers::Ble::FirmwareUpdateStates::Running:
       if (state != States::Running)
         state = States::Running;
-      return DisplayProgression();
+      DisplayProgression();
+      return;
     case Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated:
       if (state != States::Validated) {
         UpdateValidated();
         state = States::Validated;
       }
-      return running;
+      return;
     case Pinetime::Controllers::Ble::FirmwareUpdateStates::Error:
       if (state != States::Error) {
         UpdateError();
         state = States::Error;
       }
-      return running;
+      return;
   }
 }
 
-bool FirmwareUpdate::DisplayProgression() const {
+void FirmwareUpdate::DisplayProgression() const {
   float current = bleController.FirmwareUpdateCurrentBytes() / 1024.0f;
   float total = bleController.FirmwareUpdateTotalBytes() / 1024.0f;
   int16_t pc = (current / total) * 100.0f;
@@ -67,7 +71,6 @@ bool FirmwareUpdate::DisplayProgression() const {
   lv_label_set_text(percentLabel, percentStr);
 
   lv_bar_set_value(bar1, pc, LV_ANIM_OFF);
-  return running;
 }
 
 void FirmwareUpdate::UpdateValidated() {

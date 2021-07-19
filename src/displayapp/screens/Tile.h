@@ -30,7 +30,6 @@ namespace Pinetime {
 
         ~Tile() override;
 
-        bool Refresh() override;
         void UpdateScreen();
         void OnObjectEvent(lv_obj_t* obj, lv_event_t event, uint32_t buttonId);
 

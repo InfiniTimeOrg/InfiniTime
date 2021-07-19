@@ -100,13 +100,17 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, 20, LV_TASK_PRIO_MID, this);
+  Refresh();
 }
 
 WatchFaceDigital::~WatchFaceDigital() {
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-bool WatchFaceDigital::Refresh() {
+void WatchFaceDigital::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
@@ -240,6 +244,4 @@ bool WatchFaceDigital::Refresh() {
     lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
     lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
-
-  return running;
 }

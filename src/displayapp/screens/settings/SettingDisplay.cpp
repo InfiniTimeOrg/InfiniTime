@@ -80,10 +80,6 @@ SettingDisplay::~SettingDisplay() {
   settingsController.SaveSettings();
 }
 
-bool SettingDisplay::Refresh() {
-  return running;
-}
-
 void SettingDisplay::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
     for (int i = 0; i < optionsTotal; i++) {

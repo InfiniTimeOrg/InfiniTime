@@ -119,10 +119,12 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_style_set_line_rounded(&hour_line_style_trace, LV_STATE_DEFAULT, false);
   lv_obj_add_style(hour_body_trace, LV_LINE_PART_MAIN, &hour_line_style_trace);
 
+  taskRefresh = lv_task_create(RefreshTaskCallback, 20, LV_TASK_PRIO_MID, this);
   UpdateClock();
 }
 
 WatchFaceAnalog::~WatchFaceAnalog() {
+  lv_task_del(taskRefresh);
 
   lv_style_reset(&hour_line_style);
   lv_style_reset(&hour_line_style_trace);
@@ -176,7 +178,7 @@ void WatchFaceAnalog::UpdateClock() {
   }
 }
 
-bool WatchFaceAnalog::Refresh() {
+void WatchFaceAnalog::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
@@ -211,6 +213,4 @@ bool WatchFaceAnalog::Refresh() {
       currentDay = day;
     }
   }
-
-  return true;
 }

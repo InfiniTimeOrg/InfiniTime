@@ -70,11 +70,6 @@ SettingSteps::~SettingSteps() {
   settingsController.SaveSettings();
 }
 
-bool SettingSteps::Refresh() {
-  return running;
-}
-
-
 void SettingSteps::UpdateSelected(lv_obj_t *object, lv_event_t event) {
   uint32_t value = settingsController.GetStepsGoal();
   if(object == btnPlus && (event == LV_EVENT_PRESSED)) {

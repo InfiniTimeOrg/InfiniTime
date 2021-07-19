@@ -32,7 +32,7 @@ namespace Pinetime {
 
         ~WatchFaceAnalog() override;
 
-        bool Refresh() override;
+        void Refresh() override;
 
       private:
         uint8_t sHour, sMinute, sSecond;
@@ -83,6 +83,8 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
 
         void UpdateClock();
+
+        lv_task_t* taskRefresh;
       };
     }
   }

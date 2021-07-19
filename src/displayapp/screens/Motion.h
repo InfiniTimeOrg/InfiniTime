@@ -17,7 +17,7 @@ namespace Pinetime {
         Motion(DisplayApp* app, Controllers::MotionController& motionController);
         ~Motion() override;
 
-        bool Refresh() override;
+        void Refresh() override;
         bool OnButtonPushed() override;
 
       private:
@@ -32,6 +32,8 @@ namespace Pinetime {
         static constexpr uint8_t nbStepsBufferSize = 9;
         char nbStepsBuffer[nbStepsBufferSize + 1];
         bool running = true;
+
+        lv_task_t* taskRefresh;
       };
     }
   }

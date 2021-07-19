@@ -34,8 +34,6 @@ namespace Pinetime {
               Controllers::MotionController& motionController);
         ~Clock() override;
 
-        bool Refresh() override;
-
         bool OnTouchEvent(TouchEvents event) override;
 
       private:

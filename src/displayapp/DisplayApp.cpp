@@ -239,7 +239,7 @@ void DisplayApp::Refresh() {
 }
 
 void DisplayApp::RunningState() {
-  if (!currentScreen->Refresh()) {
+  if (!currentScreen->IsRunning()) {
     LoadApp(returnToApp, returnDirection);
   }
   lv_task_handler();

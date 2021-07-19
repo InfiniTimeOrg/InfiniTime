@@ -15,7 +15,7 @@ namespace Pinetime {
         FirmwareUpdate(DisplayApp* app, Pinetime::Controllers::Ble& bleController);
         ~FirmwareUpdate() override;
 
-        bool Refresh() override;
+        void Refresh() override;
 
       private:
         enum class States { Idle, Running, Validated, Error };
@@ -27,11 +27,13 @@ namespace Pinetime {
 
         States state;
 
-        bool DisplayProgression() const;
+        void DisplayProgression() const;
 
         void UpdateValidated();
 
         void UpdateError();
+
+        lv_task_t* taskRefresh;
       };
     }
   }

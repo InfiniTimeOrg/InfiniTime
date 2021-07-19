@@ -102,11 +102,6 @@ List::~List() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool List::Refresh() {
-
-  return running;
-}
-
 void List::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_RELEASED) {
     for (int i = 0; i < MAXLISTITEMS; i++) {

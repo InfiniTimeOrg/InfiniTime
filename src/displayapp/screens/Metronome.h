@@ -11,7 +11,7 @@ namespace Pinetime::Applications::Screens {
   public:
     Metronome(DisplayApp* app, Controllers::MotorController& motorController, System::SystemTask& systemTask);
     ~Metronome() override;
-    bool Refresh() override;
+    void Refresh() override;
     bool OnTouchEvent(TouchEvents event) override;
     void OnEvent(lv_obj_t* obj, lv_event_t event);
     enum class States { Running, Stopped };
@@ -30,5 +30,7 @@ namespace Pinetime::Applications::Screens {
     lv_obj_t *bpmArc, *bpmTap, *bpmValue, *bpmLegend;
     lv_obj_t *bpbDropdown, *bpbLegend;
     lv_obj_t *playPause, *playPauseLabel;
+
+    lv_task_t* taskRefresh;
   };
 }

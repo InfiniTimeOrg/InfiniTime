@@ -63,13 +63,6 @@ SystemInfo::~SystemInfo() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool SystemInfo::Refresh() {
-  if (running) {
-    screens.Refresh();
-  }
-  return running;
-}
-
 bool SystemInfo::OnButtonPushed() {
   running = false;
   return true;

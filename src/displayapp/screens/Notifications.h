@@ -22,7 +22,7 @@ namespace Pinetime {
                                Modes mode);
         ~Notifications() override;
 
-        bool Refresh() override;
+        void Refresh() override;
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
         class NotificationItem {
@@ -35,9 +35,6 @@ namespace Pinetime {
                            Modes mode,
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService);
           ~NotificationItem();
-          bool Refresh() {
-            return false;
-          }
           void OnAcceptIncomingCall(lv_event_t event);
           void OnMuteIncomingCall(lv_event_t event);
           void OnRejectIncomingCall(lv_event_t event);
@@ -78,6 +75,8 @@ namespace Pinetime {
         lv_obj_t* timeoutLine;
         uint32_t timeoutTickCountStart;
         uint32_t timeoutTickCountEnd;
+
+        lv_task_t* taskRefresh;
       };
     }
   }

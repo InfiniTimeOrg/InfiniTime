@@ -72,10 +72,6 @@ SettingWakeUp::~SettingWakeUp() {
   settingsController.SaveSettings();
 }
 
-bool SettingWakeUp::Refresh() {
-  return running;
-}
-
 void SettingWakeUp::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   using WakeUpMode = Pinetime::Controllers::Settings::WakeUpMode;
   if (event == LV_EVENT_VALUE_CHANGED && !ignoringEvents) {

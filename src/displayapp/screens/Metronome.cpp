@@ -85,9 +85,12 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   lv_label_set_text(playPauseLabel, Symbols::play);
 
   app->SetTouchMode(DisplayApp::TouchModes::Polling);
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Metronome::~Metronome() {
+  lv_task_del(taskRefresh);
   app->SetTouchMode(DisplayApp::TouchModes::Gestures);
   systemTask.PushMessage(System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
@@ -97,7 +100,7 @@ bool Metronome::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return true;
 }
 
-bool Metronome::Refresh() {
+void Metronome::Refresh() {
   switch (currentState) {
     case States::Stopped: {
       break;
@@ -117,7 +120,6 @@ bool Metronome::Refresh() {
       break;
     }
   }
-  return running;
 }
 
 void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {

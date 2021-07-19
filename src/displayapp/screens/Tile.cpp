@@ -120,10 +120,6 @@ void Tile::UpdateScreen() {
   lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
 }
 
-bool Tile::Refresh() {
-  return running;
-}
-
 void Tile::OnObjectEvent(lv_obj_t* obj, lv_event_t event, uint32_t buttonId) {
   if (event == LV_EVENT_VALUE_CHANGED) {
     app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up);

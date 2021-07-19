@@ -164,7 +164,3 @@ bool QuickSettings::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       return true;
   }
 }
-
-bool QuickSettings::Refresh() {
-  return running;
-}
