@@ -22,6 +22,11 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         uint8_t optionsTotal;
         lv_obj_t* cbOption[4];
+        // When UpdateSelected is called, it uses lv_checkbox_set_checked,
+        // which can cause extra events to be fired,
+        // which might trigger UpdateSelected again, causing a loop.
+        // This variable is used as a mutex to prevent that.
+        bool ignoringEvents;
       };
     }
   }

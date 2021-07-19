@@ -103,7 +103,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
-  auto batteryPercent = static_cast<uint8_t>(batteryController.PercentRemaining());
+  auto batteryPercent = batteryController.PercentRemaining();
   auto resetReason = [this]() {
     switch (watchdog.ResetReason()) {
       case Drivers::Watchdog::ResetReasons::Watchdog:
