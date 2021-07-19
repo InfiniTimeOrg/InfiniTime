@@ -2,6 +2,7 @@
 
 #include "Screen.h"
 #include <lvgl/src/lv_core/lv_obj.h>
+#include "FreeRTOS.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -35,7 +36,7 @@ namespace Pinetime {
 
         void UpdateError();
 
-        uint32_t startTime;
+        TickType_t startTime;
       };
     }
   }
