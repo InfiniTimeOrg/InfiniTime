@@ -12,6 +12,7 @@ namespace Pinetime {
       enum class ClockType { H24, H12 };
       enum class Vibration { ON, OFF };
       enum class WakeUpMode { None, SingleTap, DoubleTap, RaiseWrist };
+      enum class TickerMode { Off, Update, Keep };
 
       Settings(Pinetime::Drivers::SpiNorFlash& spiNorFlash);
 
@@ -77,6 +78,15 @@ namespace Pinetime {
         return settings.wakeUpMode;
       };
 
+      void setTickerMode(TickerMode ticker) {
+        if (ticker != settings.tickerMode)
+          settingsChanged = true;
+	settings.tickerMode = ticker;
+      }
+      TickerMode getTickerMode() const {
+        return settings.tickerMode;
+      }
+
       void SetBrightness(Controllers::BrightnessController::Levels level) {
         if (level != settings.brightLevel)
           settingsChanged = true;
@@ -107,6 +117,7 @@ namespace Pinetime {
         uint32_t screenTimeOut = 15000;
 
         WakeUpMode wakeUpMode = WakeUpMode::None;
+	TickerMode tickerMode = TickerMode::Update;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
       };
