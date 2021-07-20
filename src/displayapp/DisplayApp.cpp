@@ -44,6 +44,8 @@
 #include "displayapp/screens/settings/SettingSteps.h"
 #include "displayapp/screens/settings/SettingPineTimeStyle.h"
 
+#include "libs/lv_conf.h"
+
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
 
@@ -115,6 +117,7 @@ uint32_t count = 0;
 bool toggle = true;
 void DisplayApp::Refresh() {
   TickType_t queueTimeout;
+  TickType_t delta;
   switch (state) {
     case States::Idle:
       IdleState();
@@ -122,7 +125,11 @@ void DisplayApp::Refresh() {
       break;
     case States::Running:
       RunningState();
-      queueTimeout = 20;
+      delta = xTaskGetTickCount() - lastWakeTime;
+      if (delta > LV_DISP_DEF_REFR_PERIOD) {
+        delta = LV_DISP_DEF_REFR_PERIOD;
+      }
+      queueTimeout = LV_DISP_DEF_REFR_PERIOD - delta;
       break;
     default:
       queueTimeout = portMAX_DELAY;
@@ -130,7 +137,9 @@ void DisplayApp::Refresh() {
   }
 
   Messages msg;
-  if (xQueueReceive(msgQueue, &msg, queueTimeout)) {
+  bool messageReceived = xQueueReceive(msgQueue, &msg, queueTimeout);
+  lastWakeTime = xTaskGetTickCount();
+  if (messageReceived) {
     switch (msg) {
       case Messages::GoToSleep:
         brightnessController.Backup();

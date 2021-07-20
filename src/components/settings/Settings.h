@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <bitset>
 #include "components/datetime/DateTimeController.h"
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
@@ -11,7 +12,11 @@ namespace Pinetime {
     public:
       enum class ClockType : uint8_t { H24, H12 };
       enum class Vibration : uint8_t { ON, OFF };
-      enum class WakeUpMode : uint8_t { None, SingleTap, DoubleTap, RaiseWrist };
+      enum class WakeUpMode : uint8_t {
+        SingleTap = 0,
+        DoubleTap = 1,
+        RaiseWrist = 2,
+      };
 
       Settings(Pinetime::Controllers::FS& fs);
 
@@ -99,15 +104,33 @@ namespace Pinetime {
         return settings.screenTimeOut;
       };
 
-      void setWakeUpMode(WakeUpMode wakeUp) {
-        if (wakeUp != settings.wakeUpMode) {
+      void setWakeUpMode(WakeUpMode wakeUp, bool enabled) {
+        if (!isWakeUpModeOn(wakeUp)) {
           settingsChanged = true;
         }
-        settings.wakeUpMode = wakeUp;
+        settings.wakeUpMode.set(static_cast<size_t>(wakeUp), enabled);
+        // Handle special behavior
+        if (enabled) {
+          switch (wakeUp) {
+            case WakeUpMode::SingleTap:
+              settings.wakeUpMode.set(static_cast<size_t>(WakeUpMode::DoubleTap), false);
+              break;
+            case WakeUpMode::DoubleTap:
+              settings.wakeUpMode.set(static_cast<size_t>(WakeUpMode::SingleTap), false);
+              break;
+            case WakeUpMode::RaiseWrist:
+              break;
+          }
+        }
       };
-      WakeUpMode getWakeUpMode() const {
+
+      std::bitset<3> getWakeUpModes() const {
         return settings.wakeUpMode;
-      };
+      }
+
+      bool isWakeUpModeOn(const WakeUpMode mode) const {
+        return getWakeUpModes()[static_cast<size_t>(mode)];
+      }
 
       void SetBrightness(Controllers::BrightnessController::Levels level) {
         if (level != settings.brightLevel) {
@@ -147,7 +170,7 @@ namespace Pinetime {
         uint8_t PTSColorBar = 11;
         uint8_t PTSColorBG = 3;
 
-        WakeUpMode wakeUpMode = WakeUpMode::None;
+        std::bitset<3> wakeUpMode {0};
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
       };
