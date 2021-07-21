@@ -228,8 +228,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
 
   auto nb = uxTaskGetSystemState(tasksStatus, maxTaskCount, nullptr);
   std::sort(tasksStatus, tasksStatus + nb, sortById);
-
-  for (uint8_t i = 0; i < nb; i++) {
+  for (uint8_t i = 0; i < nb && i < maxTaskCount; i++) {
 
     lv_table_set_cell_value(infoTask, i + 1, 0, std::to_string(tasksStatus[i].xTaskNumber).c_str());
     lv_table_set_cell_value(infoTask, i + 1, 1, tasksStatus[i].pcTaskName);
