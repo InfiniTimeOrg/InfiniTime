@@ -32,6 +32,14 @@ void ButtonHandler::Work() {
       while (true) {
         if (pressed) {
           if (pressed != lastState) {
+            if (xTaskGetTickCount() - pressTime < longPressTime) {
+              if (xTaskGetTickCount() - releaseTime < doubleClickTime) {
+                if (!handled) {
+                  handled = true;
+                  systemTask->OnButtonDoubleClicked();
+                }
+              }
+            }
             pressTime = xTaskGetTickCount();
             lastState = true;
 
@@ -40,13 +48,6 @@ void ButtonHandler::Work() {
             if (systemTask->IsSleeping()) {
               systemTask->PushMessage(System::Messages::GoToRunning);
               handled = true;
-            }
-
-            if (xTaskGetTickCount() - releaseTime < doubleClickTime) {
-              if (!handled) {
-                handled = true;
-                systemTask->OnButtonDoubleClicked();
-              }
             }
           } else if (xTaskGetTickCount() - pressTime >= longPressTime) {
             if (!handled) {
