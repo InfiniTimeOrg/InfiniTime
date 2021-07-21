@@ -133,7 +133,7 @@ namespace Pinetime {
       uint8_t settingsFlashBlock = 99; // default to indicate it needs to find the active block
 
       static constexpr uint32_t settingsBaseAddr = 0x3F6000; // Flash Settings Location
-      static constexpr uint16_t settingsVersion = 0x0100;    // Flash Settings Version
+      static constexpr uint16_t settingsVersion = 0x0101;    // Flash Settings Version
 
       bool FindHeader();
       void ReadSettingsData();
