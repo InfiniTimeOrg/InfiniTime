@@ -141,9 +141,6 @@ void DisplayApp::Refresh() {
   if (messageReceived) {
     switch (msg) {
       case Messages::GoToSleep:
-        if (bleController.IsFirmwareUpdating()) {
-          break;
-        }
         brightnessController.Backup();
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
           brightnessController.Lower();
