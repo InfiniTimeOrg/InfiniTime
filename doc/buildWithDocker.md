@@ -13,7 +13,7 @@ Based on Ubuntu 18.04 with the following build dependencies:
 
 The `infinitime-build` image contains all the dependencies you need. The default `CMD` will compile sources found in `/sources`, so you need only mount your code. 
 
-This example  will build the firmware, generate the MCUBoot image and generate the DFU file. For cloning the repo, see [these instructions](../doc/buildAndProgram.md#clone-the-repo). Outputs will be written to **<project_root>/build/output**:
+This example will build the firmware, generate the MCUBoot image and generate the DFU file. For cloning the repo, see [these instructions](../doc/buildAndProgram.md#clone-the-repo). Outputs will be written to **<project_root>/build/output**:
 
 ```bash
 cd <project_root> # e.g. cd ./work/Pinetime
