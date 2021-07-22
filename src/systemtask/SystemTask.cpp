@@ -26,6 +26,7 @@
 #include <memory>
 
 using namespace Pinetime::System;
+using DisplayMessages = Pinetime::Applications::Display::Messages;
 
 namespace {
   static inline bool in_isr(void) {
@@ -143,7 +144,7 @@ void SystemTask::Work() {
   displayApp.Register(this);
   displayApp.Start();
 
-  displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
+  displayApp.PushMessage(DisplayMessages::UpdateBatteryLevel);
 
   heartRateSensor.Init();
   heartRateSensor.Disable();
@@ -231,8 +232,8 @@ void SystemTask::Work() {
           spiNorFlash.Wakeup();
           lcd.Wakeup();
 
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
+          displayApp.PushMessage(DisplayMessages::GoToRunning);
+          displayApp.PushMessage(DisplayMessages::UpdateBatteryLevel);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
 
           isSleeping = false;
@@ -255,26 +256,26 @@ void SystemTask::Work() {
           NRF_LOG_INFO("[systemtask] Going to sleep");
           xTimerStop(idleTimer, 0);
           xTimerStop(dimTimer, 0);
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
+          displayApp.PushMessage(DisplayMessages::GoToSleep);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
           break;
         case Messages::OnNewTime:
           ReloadIdleTimer();
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateDateTime);
+          displayApp.PushMessage(DisplayMessages::UpdateDateTime);
           break;
         case Messages::OnNewNotification:
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
           motorController.SetDuration(35);
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
+          displayApp.PushMessage(DisplayMessages::NewNotification);
           break;
         case Messages::OnTimerDone:
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
           motorController.SetDuration(35);
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
+          displayApp.PushMessage(DisplayMessages::TimerDone);
           break;
         case Messages::BleConnected:
           ReloadIdleTimer();
@@ -285,7 +286,7 @@ void SystemTask::Work() {
           doNotGoToSleep = true;
           if (isSleeping && !isWakingUp)
             GoToRunning();
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::BleFirmwareUpdateStarted);
+          displayApp.PushMessage(DisplayMessages::BleFirmwareUpdateStarted);
           break;
         case Messages::BleFirmwareUpdateFinished:
           if (bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated) {
@@ -296,11 +297,11 @@ void SystemTask::Work() {
           break;
         case Messages::OnTouchEvent:
           ReloadIdleTimer();
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
+          displayApp.PushMessage(DisplayMessages::TouchEvent);
           break;
         case Messages::OnButtonEvent:
           ReloadIdleTimer();
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
+          displayApp.PushMessage(DisplayMessages::ButtonPushed);
           break;
         case Messages::OnDisplayTaskSleeping:
           if (BootloaderVersion::IsValid()) {
@@ -392,6 +393,7 @@ void SystemTask::OnButtonPushed() {
   if (!isSleeping) {
     NRF_LOG_INFO("[systemtask] Button pushed");
     PushMessage(Messages::OnButtonEvent);
+    displayApp.PushMessage(DisplayMessages::ButtonPushed);
   } else {
     if (!isWakingUp) {
       NRF_LOG_INFO("[systemtask] Button pushed, waking up");
@@ -443,7 +445,7 @@ void SystemTask::OnDim() {
   if (doNotGoToSleep)
     return;
   NRF_LOG_INFO("Dim timeout -> Dim screen")
-  displayApp.PushMessage(Pinetime::Applications::Display::Messages::DimScreen);
+  displayApp.PushMessage(DisplayMessages::DimScreen);
   xTimerStart(idleTimer, 0);
   isDimmed = true;
 }
@@ -459,7 +461,7 @@ void SystemTask::ReloadIdleTimer() {
   if (isSleeping || isGoingToSleep)
     return;
   if (isDimmed) {
-    displayApp.PushMessage(Pinetime::Applications::Display::Messages::RestoreBrightness);
+    displayApp.PushMessage(DisplayMessages::RestoreBrightness);
     isDimmed = false;
   }
   xTimerReset(dimTimer, 0);
