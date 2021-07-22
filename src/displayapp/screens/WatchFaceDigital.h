@@ -7,6 +7,7 @@
 #include "Screen.h"
 #include "ScreenList.h"
 #include "components/datetime/DateTimeController.h"
+#include "components/ble/NotificationManager.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -44,6 +45,8 @@ namespace Pinetime {
         Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
         Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
         uint8_t currentDay = 0;
+
+	char tickerMessage[MESSAGE_SIZE];
 
         DirtyValue<int> batteryPercentRemaining {};
         DirtyValue<bool> bleState {};

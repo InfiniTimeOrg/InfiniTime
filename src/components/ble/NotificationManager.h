@@ -5,6 +5,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#define MESSAGE_SIZE 100
+
 namespace Pinetime {
   namespace Controllers {
     class NotificationManager {
@@ -22,7 +24,7 @@ namespace Pinetime {
         HighProriotyAlert,
         InstantMessage
       };
-      static constexpr uint8_t MessageSize {100};
+      static constexpr uint8_t MessageSize {MESSAGE_SIZE};
 
       struct Notification {
         using Id = uint8_t;
