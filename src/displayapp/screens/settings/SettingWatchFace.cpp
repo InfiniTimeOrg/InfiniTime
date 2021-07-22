@@ -41,12 +41,12 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pine
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
   optionsTotal = 0;
-  constexpr int8_t watchFaceCount = 3;
+  constexpr uint8_t watchFaceCount = 3;
   const char * watchFaceNames[watchFaceCount] = {" Digital face",
                                             " Analog face",
                                             " PineTimeStyle"};
 
-  for (int i = 0; i < watchFaceCount; ++i) {
+  for (uint8_t i = 0; i < watchFaceCount; ++i) {
     cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
     lv_checkbox_set_text_static(cbOption[optionsTotal], watchFaceNames[i]);
     cbOption[optionsTotal]->user_data = this;
