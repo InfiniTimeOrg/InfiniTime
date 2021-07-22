@@ -41,33 +41,50 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pine
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
   optionsTotal = 0;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Digital face");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetClockFace() == 0) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
+  constexpr int8_t watchFaceCount = 3;
+  const char * watchFaceNames[watchFaceCount] = {" Digital face",
+                                            " Analog face",
+                                            " PineTimeStyle"};
+
+  for (int i = 0; i < watchFaceCount; ++i) {
+    cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
+    lv_checkbox_set_text_static(cbOption[optionsTotal], watchFaceNames[i]);
+    cbOption[optionsTotal]->user_data = this;
+    lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+    if (settingsController.GetClockFace() == i) {
+      lv_checkbox_set_checked(cbOption[optionsTotal], true);
+    }
+    ++optionsTotal;
   }
 
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Analog face");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetClockFace() == 1) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
 
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " PineTimeStyle");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetClockFace() == 2) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
+  // cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
+  // lv_checkbox_set_text_static(cbOption[optionsTotal], " Digital face");
+  // cbOption[optionsTotal]->user_data = this;
+  // lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+  // if (settingsController.GetClockFace() == 0) {
+  //   lv_checkbox_set_checked(cbOption[optionsTotal], true);
+  // }
 
-  optionsTotal++;
+  // optionsTotal++;
+  // cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
+  // lv_checkbox_set_text_static(cbOption[optionsTotal], " Analog face");
+  // cbOption[optionsTotal]->user_data = this;
+  // lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+  // if (settingsController.GetClockFace() == 1) {
+  //   lv_checkbox_set_checked(cbOption[optionsTotal], true);
+  // }
+
+  // optionsTotal++;
+  // cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
+  // lv_checkbox_set_text_static(cbOption[optionsTotal], " PineTimeStyle");
+  // cbOption[optionsTotal]->user_data = this;
+  // lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+  // if (settingsController.GetClockFace() == 2) {
+  //   lv_checkbox_set_checked(cbOption[optionsTotal], true);
+  // }
+
+  // optionsTotal++;
 }
 
 SettingWatchFace::~SettingWatchFace() {
