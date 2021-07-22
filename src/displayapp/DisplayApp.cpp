@@ -180,9 +180,13 @@ void DisplayApp::Refresh() {
         }
         break;
       case Messages::TouchEvent: {
-        if (state != States::Running)
+        if (state != States::Running) {
           break;
+        }
         auto gesture = OnTouchEvent();
+        if (gesture == TouchEvents::None) {
+          break;
+        }
         if (!currentScreen->OnTouchEvent(gesture)) {
           if (currentApp == Apps::Clock) {
             switch (gesture) {
