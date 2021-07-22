@@ -139,6 +139,8 @@ namespace Pinetime {
       static constexpr TickType_t batteryNotificationPeriod = 1000 * 60 * 10; // 1 tick ~= 1ms. 1ms * 60 * 10 = 10 minutes
       TickType_t batteryNotificationTick = 0;
 
+      void WorkLoopCycle();
+
 #if configUSE_TRACE_FACILITY == 1
       SystemMonitor<FreeRtosMonitor> monitor;
 #else

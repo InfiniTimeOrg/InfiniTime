@@ -194,173 +194,179 @@ void SystemTask::Work() {
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
   while (true) {
-    UpdateMotion();
-
-    uint8_t msg;
-    if (xQueueReceive(systemTasksMsgQueue, &msg, 100)) {
-
-      batteryController.Update();
-      // the battery does not emit events when changing charge levels, so we piggyback
-      // on any system event to read and update the current values
-
-      Messages message = static_cast<Messages>(msg);
-      switch (message) {
-        case Messages::EnableSleeping:
-          // Make sure that exiting an app doesn't enable sleeping,
-          // if the exiting was caused by a firmware update
-          if (!bleController.IsFirmwareUpdating()) {
-            doNotGoToSleep = false;
-          }
-          break;
-        case Messages::DisableSleeping:
-          doNotGoToSleep = true;
-          break;
-        case Messages::UpdateTimeOut:
-          xTimerChangePeriod(dimTimer, pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), 0);
-          break;
-        case Messages::GoToRunning:
-          spi.Wakeup();
-          twiMaster.Wakeup();
-
-          // Double Tap needs the touch screen to be in normal mode
-          if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
-            touchPanel.Wakeup();
-          }
-
-          nimbleController.StartAdvertising();
-          xTimerStart(dimTimer, 0);
-          spiNorFlash.Wakeup();
-          lcd.Wakeup();
-
-          displayApp.PushMessage(DisplayMessages::GoToRunning);
-          displayApp.PushMessage(DisplayMessages::UpdateBatteryLevel);
-          heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
-
-          isSleeping = false;
-          isWakingUp = false;
-          isDimmed = false;
-          break;
-        case Messages::TouchWakeUp: {
-          twiMaster.Wakeup();
-          auto touchInfo = touchPanel.GetTouchInfo();
-          twiMaster.Sleep();
-          if (touchInfo.isTouch and ((touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
-                                      settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
-                                     (touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
-                                      settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
-            GoToRunning();
-          }
-        } break;
-        case Messages::GoToSleep:
-          isGoingToSleep = true;
-          NRF_LOG_INFO("[systemtask] Going to sleep");
-          xTimerStop(idleTimer, 0);
-          xTimerStop(dimTimer, 0);
-          displayApp.PushMessage(DisplayMessages::GoToSleep);
-          heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
-          break;
-        case Messages::OnNewTime:
-          ReloadIdleTimer();
-          displayApp.PushMessage(DisplayMessages::UpdateDateTime);
-          break;
-        case Messages::OnNewNotification:
-          if (isSleeping && !isWakingUp) {
-            GoToRunning();
-          }
-          motorController.SetDuration(35);
-          displayApp.PushMessage(DisplayMessages::NewNotification);
-          break;
-        case Messages::OnTimerDone:
-          if (isSleeping && !isWakingUp) {
-            GoToRunning();
-          }
-          motorController.SetDuration(35);
-          displayApp.PushMessage(DisplayMessages::TimerDone);
-          break;
-        case Messages::BleConnected:
-          ReloadIdleTimer();
-          isBleDiscoveryTimerRunning = true;
-          bleDiscoveryTimer = 5;
-          break;
-        case Messages::BleFirmwareUpdateStarted:
-          doNotGoToSleep = true;
-          if (isSleeping && !isWakingUp)
-            GoToRunning();
-          displayApp.PushMessage(DisplayMessages::BleFirmwareUpdateStarted);
-          break;
-        case Messages::BleFirmwareUpdateFinished:
-          if (bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated) {
-            NVIC_SystemReset();
-          }
-          doNotGoToSleep = false;
-          xTimerStart(dimTimer, 0);
-          break;
-        case Messages::OnTouchEvent:
-          ReloadIdleTimer();
-          displayApp.PushMessage(DisplayMessages::TouchEvent);
-          break;
-        case Messages::OnButtonEvent:
-          ReloadIdleTimer();
-          displayApp.PushMessage(DisplayMessages::ButtonPushed);
-          break;
-        case Messages::OnDisplayTaskSleeping:
-          if (BootloaderVersion::IsValid()) {
-            // First versions of the bootloader do not expose their version and cannot initialize the SPI NOR FLASH
-            // if it's in sleep mode. Avoid bricked device by disabling sleep mode on these versions.
-            spiNorFlash.Sleep();
-          }
-          lcd.Sleep();
-          spi.Sleep();
-
-          // Double Tap needs the touch screen to be in normal mode
-          if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
-            touchPanel.Sleep();
-          }
-          twiMaster.Sleep();
-
-          isSleeping = true;
-          isGoingToSleep = false;
-          break;
-        case Messages::OnNewDay:
-          // We might be sleeping (with TWI device disabled.
-          // Remember we'll have to reset the counter next time we're awake
-          stepCounterMustBeReset = true;
-          break;
-        case Messages::OnChargingEvent:
-          motorController.SetDuration(15);
-	  // Battery level is updated on every message - there's no need to do anything
-          break;
-
-        default:
-          break;
-      }
-    }
-
-    if (isBleDiscoveryTimerRunning) {
-      if (bleDiscoveryTimer == 0) {
-        isBleDiscoveryTimerRunning = false;
-        // Services discovery is deffered from 3 seconds to avoid the conflicts between the host communicating with the
-        // tharget and vice-versa. I'm not sure if this is the right way to handle this...
-        nimbleController.StartDiscovery();
-      } else {
-        bleDiscoveryTimer--;
-      }
-    }
-
-    if (xTaskGetTickCount() - batteryNotificationTick > batteryNotificationPeriod) {
-      nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
-      batteryNotificationTick = xTaskGetTickCount();
-    }
-
-    monitor.Process();
-    uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
-    dateTimeController.UpdateTime(systick_counter);
-    if (!nrf_gpio_pin_read(pinButton))
-      watchdog.Kick();
+    WorkLoopCycle();
   }
 // Clear diagnostic suppression
 #pragma clang diagnostic pop
 }
+
+void SystemTask::WorkLoopCycle()
+{
+  UpdateMotion();
+
+  uint8_t msg;
+  if (xQueueReceive(systemTasksMsgQueue, &msg, 100)) {
+
+    batteryController.Update();
+    // the battery does not emit events when changing charge levels, so we piggyback
+    // on any system event to read and update the current values
+
+    Messages message = static_cast<Messages>(msg);
+    switch (message) {
+      case Messages::EnableSleeping:
+        // Make sure that exiting an app doesn't enable sleeping,
+        // if the exiting was caused by a firmware update
+        if (!bleController.IsFirmwareUpdating()) {
+          doNotGoToSleep = false;
+        }
+        break;
+      case Messages::DisableSleeping:
+        doNotGoToSleep = true;
+        break;
+      case Messages::UpdateTimeOut:
+        xTimerChangePeriod(dimTimer, pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), 0);
+        break;
+      case Messages::GoToRunning:
+        spi.Wakeup();
+        twiMaster.Wakeup();
+
+        // Double Tap needs the touch screen to be in normal mode
+        if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
+          touchPanel.Wakeup();
+        }
+
+        nimbleController.StartAdvertising();
+        xTimerStart(dimTimer, 0);
+        spiNorFlash.Wakeup();
+        lcd.Wakeup();
+
+        displayApp.PushMessage(DisplayMessages::GoToRunning);
+        displayApp.PushMessage(DisplayMessages::UpdateBatteryLevel);
+        heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
+
+        isSleeping = false;
+        isWakingUp = false;
+        isDimmed = false;
+        break;
+      case Messages::TouchWakeUp: {
+        twiMaster.Wakeup();
+        auto touchInfo = touchPanel.GetTouchInfo();
+        twiMaster.Sleep();
+        if (touchInfo.isTouch and ((touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
+                                    settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
+                                    (touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
+                                    settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
+          GoToRunning();
+        }
+      } break;
+      case Messages::GoToSleep:
+        isGoingToSleep = true;
+        NRF_LOG_INFO("[systemtask] Going to sleep");
+        xTimerStop(idleTimer, 0);
+        xTimerStop(dimTimer, 0);
+        displayApp.PushMessage(DisplayMessages::GoToSleep);
+        heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
+        break;
+      case Messages::OnNewTime:
+        ReloadIdleTimer();
+        displayApp.PushMessage(DisplayMessages::UpdateDateTime);
+        break;
+      case Messages::OnNewNotification:
+        if (isSleeping && !isWakingUp) {
+          GoToRunning();
+        }
+        motorController.SetDuration(35);
+        displayApp.PushMessage(DisplayMessages::NewNotification);
+        break;
+      case Messages::OnTimerDone:
+        if (isSleeping && !isWakingUp) {
+          GoToRunning();
+        }
+        motorController.SetDuration(35);
+        displayApp.PushMessage(DisplayMessages::TimerDone);
+        break;
+      case Messages::BleConnected:
+        ReloadIdleTimer();
+        isBleDiscoveryTimerRunning = true;
+        bleDiscoveryTimer = 5;
+        break;
+      case Messages::BleFirmwareUpdateStarted:
+        doNotGoToSleep = true;
+        if (isSleeping && !isWakingUp)
+          GoToRunning();
+        displayApp.PushMessage(DisplayMessages::BleFirmwareUpdateStarted);
+        break;
+      case Messages::BleFirmwareUpdateFinished:
+        if (bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated) {
+          NVIC_SystemReset();
+        }
+        doNotGoToSleep = false;
+        xTimerStart(dimTimer, 0);
+        break;
+      case Messages::OnTouchEvent:
+        ReloadIdleTimer();
+        displayApp.PushMessage(DisplayMessages::TouchEvent);
+        break;
+      case Messages::OnButtonEvent:
+        ReloadIdleTimer();
+        displayApp.PushMessage(DisplayMessages::ButtonPushed);
+        break;
+      case Messages::OnDisplayTaskSleeping:
+        if (BootloaderVersion::IsValid()) {
+          // First versions of the bootloader do not expose their version and cannot initialize the SPI NOR FLASH
+          // if it's in sleep mode. Avoid bricked device by disabling sleep mode on these versions.
+          spiNorFlash.Sleep();
+        }
+        lcd.Sleep();
+        spi.Sleep();
+
+        // Double Tap needs the touch screen to be in normal mode
+        if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
+          touchPanel.Sleep();
+        }
+        twiMaster.Sleep();
+
+        isSleeping = true;
+        isGoingToSleep = false;
+        break;
+      case Messages::OnNewDay:
+        // We might be sleeping (with TWI device disabled.
+        // Remember we'll have to reset the counter next time we're awake
+        stepCounterMustBeReset = true;
+        break;
+      case Messages::OnChargingEvent:
+        motorController.SetDuration(15);
+  // Battery level is updated on every message - there's no need to do anything
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  if (isBleDiscoveryTimerRunning) {
+    if (bleDiscoveryTimer == 0) {
+      isBleDiscoveryTimerRunning = false;
+      // Services discovery is deffered from 3 seconds to avoid the conflicts between the host communicating with the
+      // tharget and vice-versa. I'm not sure if this is the right way to handle this...
+      nimbleController.StartDiscovery();
+    } else {
+      bleDiscoveryTimer--;
+    }
+  }
+
+  if (xTaskGetTickCount() - batteryNotificationTick > batteryNotificationPeriod) {
+    nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
+    batteryNotificationTick = xTaskGetTickCount();
+  }
+
+  monitor.Process();
+  uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
+  dateTimeController.UpdateTime(systick_counter);
+  if (!nrf_gpio_pin_read(pinButton))
+    watchdog.Kick();
+}
+
 void SystemTask::UpdateMotion() {
   if (isGoingToSleep or isWakingUp)
     return;
