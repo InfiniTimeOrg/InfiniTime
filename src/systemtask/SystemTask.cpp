@@ -211,7 +211,7 @@ void SystemTask::WorkLoopCycle()
     // the battery does not emit events when changing charge levels, so we piggyback
     // on any system event to read and update the current values
 
-    Messages message = static_cast<Messages>(msg);
+    auto message = static_cast<Messages>(msg);
     switch (message) {
       case Messages::EnableSleeping:
         // Make sure that exiting an app doesn't enable sleeping,
@@ -363,8 +363,9 @@ void SystemTask::WorkLoopCycle()
   monitor.Process();
   uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
   dateTimeController.UpdateTime(systick_counter);
-  if (!nrf_gpio_pin_read(pinButton))
+  if (nrf_gpio_pin_read(pinButton) == 0u) {
     watchdog.Kick();
+  }
 }
 
 void SystemTask::UpdateMotion() {
