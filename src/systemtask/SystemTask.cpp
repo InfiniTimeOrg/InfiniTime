@@ -202,7 +202,11 @@ void SystemTask::Work() {
       Messages message = static_cast<Messages>(msg);
       switch (message) {
         case Messages::EnableSleeping:
-          doNotGoToSleep = false;
+          // Make sure that exiting an app doesn't enable sleeping,
+          // if the exiting was caused by a firmware update
+          if (!bleController.IsFirmwareUpdating()) {
+            doNotGoToSleep = false;
+          }
           break;
         case Messages::DisableSleeping:
           doNotGoToSleep = true;
@@ -279,10 +283,11 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::BleFirmwareUpdateStarted);
           break;
         case Messages::BleFirmwareUpdateFinished:
+          if (bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated) {
+            NVIC_SystemReset();
+          }
           doNotGoToSleep = false;
           xTimerStart(idleTimer, 0);
-          if (bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated)
-            NVIC_SystemReset();
           break;
         case Messages::OnTouchEvent:
           ReloadIdleTimer();

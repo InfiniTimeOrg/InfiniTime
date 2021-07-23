@@ -27,9 +27,10 @@ FirmwareUpdate::FirmwareUpdate(Pinetime::Applications::DisplayApp* app, Pinetime
   lv_bar_set_value(bar1, 0, LV_ANIM_OFF);
 
   percentLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(percentLabel, "");
+  lv_label_set_text(percentLabel, "Waiting...");
   lv_obj_set_auto_realign(percentLabel, true);
   lv_obj_align(percentLabel, bar1, LV_ALIGN_OUT_TOP_MID, 0, 60);
+  startTime = xTaskGetTickCount();
 }
 
 FirmwareUpdate::~FirmwareUpdate() {
@@ -40,26 +41,42 @@ bool FirmwareUpdate::Refresh() {
   switch (bleController.State()) {
     default:
     case Pinetime::Controllers::Ble::FirmwareUpdateStates::Idle:
+      // This condition makes sure that the app is exited if somehow it got
+      // launched without a firmware update. This should never happen.
+      if (state != States::Error) {
+        if (xTaskGetTickCount() - startTime > (60 * 1024)) {
+          UpdateError();
+          state = States::Error;
+        }
+      } else if (xTaskGetTickCount() - startTime > (5 * 1024)) {
+        running = false;
+      }
+      break;
     case Pinetime::Controllers::Ble::FirmwareUpdateStates::Running:
       if (state != States::Running)
         state = States::Running;
-      return DisplayProgression();
+      DisplayProgression();
+      break;
     case Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated:
       if (state != States::Validated) {
         UpdateValidated();
         state = States::Validated;
       }
-      return running;
+      break;
     case Pinetime::Controllers::Ble::FirmwareUpdateStates::Error:
       if (state != States::Error) {
         UpdateError();
         state = States::Error;
       }
-      return running;
+      if (xTaskGetTickCount() - startTime > (5 * 1024)) {
+        running = false;
+      }
+      break;
   }
+  return running;
 }
 
-bool FirmwareUpdate::DisplayProgression() const {
+void FirmwareUpdate::DisplayProgression() const {
   float current = bleController.FirmwareUpdateCurrentBytes() / 1024.0f;
   float total = bleController.FirmwareUpdateTotalBytes() / 1024.0f;
   int16_t pc = (current / total) * 100.0f;
@@ -67,7 +84,6 @@ bool FirmwareUpdate::DisplayProgression() const {
   lv_label_set_text(percentLabel, percentStr);
 
   lv_bar_set_value(bar1, pc, LV_ANIM_OFF);
-  return running;
 }
 
 void FirmwareUpdate::UpdateValidated() {
@@ -78,4 +94,9 @@ void FirmwareUpdate::UpdateValidated() {
 void FirmwareUpdate::UpdateError() {
   lv_label_set_recolor(percentLabel, true);
   lv_label_set_text(percentLabel, "#ff0000 Error!#");
+  startTime = xTaskGetTickCount();
+}
+
+bool FirmwareUpdate::OnButtonPushed() {
+  return true;
 }

@@ -285,6 +285,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::FirmwareUpdate:
       currentScreen = std::make_unique<Screens::FirmwareUpdate>(this, bleController);
+      ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
       break;
 
     case Apps::Notifications:
