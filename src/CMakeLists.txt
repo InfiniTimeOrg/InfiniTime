@@ -354,7 +354,7 @@ set(LVGL_SRC
         libs/lvgl/src/lv_widgets/lv_win.c
         )
 
-list(APPEND IMAGE_FILES
+set(IMAGE_FILES
         displayapp/icons/battery/os_battery_error.c
         displayapp/icons/battery/os_battery_100.c
         displayapp/icons/battery/os_battery_090.c
@@ -385,7 +385,7 @@ list(APPEND IMAGE_FILES
 
         )
 
-list(APPEND SOURCE_FILES
+set(SOURCE_FILES
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
@@ -435,7 +435,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/PineTimeStyle.cpp
 
         ##
-
         main.cpp
         drivers/St7789.cpp
         drivers/SpiNorFlash.cpp
@@ -497,7 +496,7 @@ list(APPEND SOURCE_FILES
         components/heartrate/HeartRateController.cpp
         )
 
-list(APPEND RECOVERY_SOURCE_FILES
+set(RECOVERY_SOURCE_FILES
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayAppRecovery.cpp
@@ -554,7 +553,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/fs/FS.cpp
         )
 
-list(APPEND RECOVERYLOADER_SOURCE_FILES
+set(RECOVERYLOADER_SOURCE_FILES
         # FreeRTOS
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -576,7 +575,6 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
 
 
 set(INCLUDE_FILES
-
         BootloaderVersion.h
         logging/Logger.h
         logging/NrfLogger.h
@@ -826,7 +824,7 @@ target_compile_options(littlefs PRIVATE
 set(EXECUTABLE_NAME "pinetime-app")
 set(EXECUTABLE_FILE_NAME ${EXECUTABLE_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
-add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
+add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES} ${IMAGE_FILES})
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_FILE_NAME})
 target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs)
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
@@ -856,7 +854,7 @@ set(EXECUTABLE_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-${pinetime_VERSION_M
 set(IMAGE_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-image-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.bin)
 set(DFU_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 set(NRF5_LINKER_SCRIPT_MCUBOOT "${CMAKE_SOURCE_DIR}/gcc_nrf52-mcuboot.ld")
-add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES})
+add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES} ${IMAGE_FILES})
 target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs)
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
