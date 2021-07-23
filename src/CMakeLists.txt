@@ -1086,12 +1086,31 @@ elseif (USE_OPENOCD)
                 )
     else ()
         add_custom_target(FLASH_ERASE
-                COMMAND ${OPENOCD_BIN_PATH} -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c init -c halt -c 'nrf5 mass_erase' -c reset -c shutdown
+                COMMAND ${OPENOCD_BIN_PATH}
+                -f interface/stlink.cfg
+                -f target/nrf52.cfg
+                -c 'transport select hla_swd'
+                -c 'adapter speed 8000'
+                -c init 
+                -c halt
+                -c 'nrf5 mass_erase'
+                -c reset
+                -c shutdown
                 COMMENT "erasing flashing"
                 )
         add_custom_target("FLASH_${EXECUTABLE_NAME}"
                 DEPENDS ${EXECUTABLE_NAME}
-                COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${EXECUTABLE_FILE_NAME}.hex\"" -c reset -c shutdown
+                COMMAND ${OPENOCD_BIN_PATH}
+                -f interface/stlink.cfg
+                -f target/nrf52.cfg
+                -c 'transport select hla_swd'
+                -c 'adapter speed 8000'
+                -c "tcl_port disabled"
+                -c "gdb_port 3333"
+                -c "telnet_port 4444"
+                -c "program \"${EXECUTABLE_FILE_NAME}.hex\""
+                -c reset
+                -c shutdown
                 COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
                 )
     endif ()
