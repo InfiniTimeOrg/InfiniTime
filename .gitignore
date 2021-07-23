@@ -1,7 +1,6 @@
 .idea/
 # Python virtual environment for DFU images
 .venv/
-.vscode/
 
 # CMake
 cmake-build-*
