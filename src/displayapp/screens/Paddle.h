@@ -24,24 +24,22 @@ namespace Pinetime {
       private:
         Pinetime::Components::LittleVgl& lvgl;
 
-        int paddleBottomY = 90; // bottom extreme of the paddle
-        int paddleTopY = 150;   // top extreme of the paddle
+        const uint8_t ballSize = 16;
 
-        int ballX = 107; // Initial x_coordinate for the ball (12px offset from the center to counteract the ball's 24px size)
-        int ballY = 107; // Initial y_coordinate for the ball
+        uint16_t paddlePos = 30; // Paddle center
 
-        int dx = 2; // Velocity of the ball in the x_coordinate
-        int dy = 3; // Velocity of the ball in the y_coordinate
+        int16_t ballX = (LV_HOR_RES - ballSize) / 2;
+        int16_t ballY = (LV_VER_RES - ballSize) / 2;
 
-        int counter = 0; // init Frame refresh limit counter
-        int score = 0;
+        int8_t dx = 2; // Velocity of the ball in the x_coordinate
+        int8_t dy = 3; // Velocity of the ball in the y_coordinate
 
-        lv_img_dsc_t paddle;
-        lv_img_dsc_t ball;
+        uint16_t score = 0;
 
         lv_obj_t* points;
-        lv_obj_t* paddle_image; // pointer to paddle image
-        lv_obj_t* ball_image;   // pointer to ball image
+        lv_obj_t* paddle;
+        lv_obj_t* ball;
+        lv_obj_t* background;
       };
     }
   }

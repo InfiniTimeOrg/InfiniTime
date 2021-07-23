@@ -1,9 +1,10 @@
+#include <cstdint>
 #include "BatteryIcon.h"
 #include "Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
-const char* BatteryIcon::GetBatteryIcon(int batteryPercent) {
+const char* BatteryIcon::GetBatteryIcon(uint8_t batteryPercent) {
   if (batteryPercent > 90)
     return Symbols::batteryFull;
   if (batteryPercent > 75)
