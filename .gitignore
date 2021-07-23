@@ -1,0 +1,41 @@
+.idea/
+# Python virtual environment for DFU images
+.venv/
+
+# CMake
+cmake-build-*
+cmake-*
+CMakeFiles
+**/CMakeCache.txt
+cmake_install.cmake
+Makefile
+build
+tools
+
+# Resulting binary files
+*.a
+*.so
+*.s
+*.hex
+*.bin
+!bootloader/bootloader-5.0.4.bin
+*.map
+*.out
+pinetime*.cbp
+
+# InfiniTime's files
+core
+sdk
+src/Version.h
+docker/post_build.sh
+Testing/Temporary/
+
+# Linux
+**/.directory
+**/*.swp
+
+# OSX/MacOS
+**/.DS_Store
+
+# Windows
+**/thumbs.db
