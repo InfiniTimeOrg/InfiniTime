@@ -2,6 +2,7 @@
 
 #include "Screen.h"
 #include <lvgl/src/lv_core/lv_obj.h>
+#include "FreeRTOS.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -25,15 +26,18 @@ namespace Pinetime {
         lv_obj_t* titleLabel;
         mutable char percentStr[10];
 
-        States state;
+        States state = States::Idle;
 
         void DisplayProgression() const;
+
+        bool OnButtonPushed() override;
 
         void UpdateValidated();
 
         void UpdateError();
 
         lv_task_t* taskRefresh;
+        TickType_t startTime;
       };
     }
   }
