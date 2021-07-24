@@ -26,7 +26,7 @@
 #undef max
 #undef min
 
-// c7e60000-78fc-48fe-8e23-433b3a1942d0
+// 00010000-78fc-48fe-8e23-433b3a1942d0
 #define NAVIGATION_SERVICE_UUID_BASE                                                                                                       \
   { 0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0x00, 0x00 }
 
