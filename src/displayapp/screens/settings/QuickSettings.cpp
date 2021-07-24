@@ -155,14 +155,7 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
 }
 
 bool QuickSettings::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  switch (event) {
-    case Pinetime::Applications::TouchEvents::SwipeLeft:
-      running = false;
-      return false;
-
-    default:
-      return true;
-  }
+  return false;
 }
 
 bool QuickSettings::Refresh() {
