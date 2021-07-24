@@ -28,12 +28,14 @@
 #include <drivers/Hrs3300.h>
 #include <drivers/Bma421.h>
 
+#include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/heartrate/HeartRateController.h"
+#include "components/fs/FS.h"
 #include "drivers/Spi.h"
 #include "drivers/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
@@ -107,10 +109,6 @@ void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
 static constexpr uint8_t pinPowerPresentIrq = 19;
 
-Pinetime::Controllers::Settings settingsController {spiNorFlash};
-
-Pinetime::Controllers::MotorController motorController {settingsController};
-
 Pinetime::Controllers::HeartRateController heartRateController;
 Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController);
 
@@ -120,6 +118,11 @@ Pinetime::Drivers::WatchdogView watchdogView(watchdog);
 Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::TimerController timerController;
+
+Pinetime::Controllers::FS fs {spiNorFlash};
+Pinetime::Controllers::Settings settingsController {fs};
+Pinetime::Controllers::MotorController motorController {settingsController};
+
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               lvgl,
@@ -154,7 +157,8 @@ Pinetime::System::SystemTask systemTask(spi,
                                         settingsController,
                                         heartRateController,
                                         displayApp,
-                                        heartRateApp);
+                                        heartRateApp,
+                                        fs);
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if (pin == pinTouchIrq) {
@@ -172,13 +176,6 @@ void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action
 
   xTimerStartFromISR(debounceTimer, &xHigherPriorityTaskWoken);
   portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-}
-
-extern "C" {
-void vApplicationIdleHook(void) {
-  if (!isFactory)
-    lv_tick_inc(1);
-}
 }
 
 void DebounceTimerChargeCallback(TimerHandle_t xTimer) {
@@ -305,6 +302,9 @@ int main(void) {
 
   debounceTimer = xTimerCreate("debounceTimer", 200, pdFALSE, (void*) 0, DebounceTimerCallback);
   debounceChargeTimer = xTimerCreate("debounceTimerCharge", 200, pdFALSE, (void*) 0, DebounceTimerChargeCallback);
+
+  // retrieve version stored by bootloader
+  Pinetime::BootloaderVersion::SetVersion(NRF_TIMER2->CC[0]);
 
   lvgl.Init();
 

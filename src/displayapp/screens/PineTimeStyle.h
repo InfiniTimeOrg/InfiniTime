@@ -15,23 +15,20 @@ namespace Pinetime {
     class Ble;
     class NotificationManager;
     class HeartRateController;
-    class MotionController;
   }
 
   namespace Applications {
     namespace Screens {
-
-      class WatchFaceDigital : public Screen {
+      class PineTimeStyle : public Screen {
       public:
-        WatchFaceDigital(DisplayApp* app,
-                         Controllers::DateTime& dateTimeController,
-                         Controllers::Battery& batteryController,
-                         Controllers::Ble& bleController,
-                         Controllers::NotificationManager& notificatioManager,
-                         Controllers::Settings& settingsController,
-                         Controllers::HeartRateController& heartRateController,
-                         Controllers::MotionController& motionController);
-        ~WatchFaceDigital() override;
+        PineTimeStyle(DisplayApp* app,
+                      Controllers::DateTime& dateTimeController,
+                      Controllers::Battery& batteryController,
+                      Controllers::Ble& bleController,
+                      Controllers::NotificationManager& notificatioManager,
+                      Controllers::Settings& settingsController,
+                      Controllers::MotionController& motionController);
+        ~PineTimeStyle() override;
 
         bool Refresh() override;
 
@@ -50,30 +47,38 @@ namespace Pinetime {
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
         DirtyValue<bool> motionSensorOk {};
         DirtyValue<uint32_t> stepCount {};
-        DirtyValue<uint8_t> heartbeat {};
-        DirtyValue<bool> heartbeatRunning {};
         DirtyValue<bool> notificationState {};
 
-        lv_obj_t* label_time;
-        lv_obj_t* label_time_ampm;
-        lv_obj_t* label_date;
+        lv_obj_t* timebar;
+        lv_obj_t* sidebar;
+        lv_obj_t* timeDD1;
+        lv_obj_t* timeDD2;
+        lv_obj_t* timeAMPM;
+        lv_obj_t* dateDayOfWeek;
+        lv_obj_t* dateDay;
+        lv_obj_t* dateMonth;
         lv_obj_t* backgroundLabel;
         lv_obj_t* batteryIcon;
         lv_obj_t* bleIcon;
         lv_obj_t* batteryPlug;
+        lv_obj_t* calendarOuter;
+        lv_obj_t* calendarInner;
+        lv_obj_t* calendarBar1;
+        lv_obj_t* calendarBar2;
+        lv_obj_t* calendarCrossBar1;
+        lv_obj_t* calendarCrossBar2;
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
         lv_obj_t* heartbeatBpm;
-        lv_obj_t* stepIcon;
-        lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
+        lv_obj_t* stepGauge;
+        lv_color_t needle_colors[1];
 
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificatioManager;
         Controllers::Settings& settingsController;
-        Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
       };
     }

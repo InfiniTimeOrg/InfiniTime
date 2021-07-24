@@ -106,7 +106,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text_static(backgroundLabel, "");
 
-  taskUpdate = lv_task_create(lv_update_task, 500000, LV_TASK_PRIO_MID, this);
+  taskUpdate = lv_task_create(lv_update_task, 5000, LV_TASK_PRIO_MID, this);
 }
 
 QuickSettings::~QuickSettings() {
@@ -152,14 +152,7 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
 }
 
 bool QuickSettings::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  switch (event) {
-    case Pinetime::Applications::TouchEvents::SwipeLeft:
-      running = false;
-      return false;
-
-    default:
-      return true;
-  }
+  return false;
 }
 
 bool QuickSettings::Refresh() {
