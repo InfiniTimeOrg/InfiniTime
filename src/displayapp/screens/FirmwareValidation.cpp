@@ -39,7 +39,7 @@ FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, 
 
     buttonValidate = lv_btn_create(lv_scr_act(), nullptr);
     buttonValidate->user_data = this;
-    lv_obj_set_height(buttonValidate, 50);
+    lv_obj_set_size(buttonValidate, 115, 50);
     lv_obj_align(buttonValidate, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
     lv_obj_set_event_cb(buttonValidate, ButtonEventHandler);
     lv_obj_set_style_local_bg_color(buttonValidate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x009900));
@@ -49,7 +49,7 @@ FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, 
 
     buttonReset = lv_btn_create(lv_scr_act(), nullptr);
     buttonReset->user_data = this;
-    lv_obj_set_height(buttonReset, 50);
+    lv_obj_set_size(buttonReset, 115, 50);
     lv_obj_align(buttonReset, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
     lv_obj_set_style_local_bg_color(buttonReset, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x990000));
     lv_obj_set_event_cb(buttonReset, ButtonEventHandler);
