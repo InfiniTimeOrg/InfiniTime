@@ -165,8 +165,15 @@ void DisplayApp::Refresh() {
   lastWakeTime = xTaskGetTickCount();
   if (messageReceived) {
     switch (msg) {
-      case Messages::GoToSleep:
+      case Messages::DimScreen:
+        // Backup brightness is the brightness to return to after dimming or sleeping
         brightnessController.Backup();
+        brightnessController.Set(Controllers::BrightnessController::Levels::Low);
+        break;
+      case Messages::RestoreBrightness:
+        brightnessController.Restore();
+        break;
+      case Messages::GoToSleep:
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
           brightnessController.Lower();
           vTaskDelay(100);
@@ -230,6 +237,8 @@ void DisplayApp::Refresh() {
             }
           } else if (returnTouchEvent == gesture) {
             LoadApp(returnToApp, returnDirection);
+            brightnessController.Set(settingsController.GetBrightness());
+            brightnessController.Backup();
           } else if (touchMode == TouchModes::Gestures) {
             if (gesture == TouchEvents::Tap) {
               lvgl.SetNewTapEvent(info.x, info.y);
@@ -243,6 +252,8 @@ void DisplayApp::Refresh() {
         } else {
           if (!currentScreen->OnButtonPushed()) {
             LoadApp(returnToApp, returnDirection);
+            brightnessController.Set(settingsController.GetBrightness());
+            brightnessController.Backup();
           }
         }
         break;
