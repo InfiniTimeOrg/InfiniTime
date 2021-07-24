@@ -52,6 +52,31 @@ namespace {
   static inline bool in_isr(void) {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
   }
+
+  TouchEvents Convert(Pinetime::Drivers::Cst816S::TouchInfos info) {
+    if (info.isTouch) {
+      switch (info.gesture) {
+        case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
+          return TouchEvents::Tap;
+        case Pinetime::Drivers::Cst816S::Gestures::LongPress:
+          return TouchEvents::LongTap;
+        case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
+          return TouchEvents::DoubleTap;
+        case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
+          return TouchEvents::SwipeRight;
+        case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
+          return TouchEvents::SwipeLeft;
+        case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
+          return TouchEvents::SwipeDown;
+        case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
+          return TouchEvents::SwipeUp;
+        case Pinetime::Drivers::Cst816S::Gestures::None:
+        default:
+          return TouchEvents::None;
+      }
+    }
+    return TouchEvents::None;
+  }
 }
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
@@ -180,7 +205,8 @@ void DisplayApp::Refresh() {
         if (state != States::Running) {
           break;
         }
-        auto gesture = OnTouchEvent();
+        auto info = touchPanel.GetTouchInfo();
+        auto gesture = Convert(info);
         if (gesture == TouchEvents::None) {
           break;
         }
@@ -204,6 +230,10 @@ void DisplayApp::Refresh() {
             }
           } else if (returnTouchEvent == gesture) {
             LoadApp(returnToApp, returnDirection);
+          } else if (touchMode == TouchModes::Gestures) {
+            if (gesture == TouchEvents::Tap) {
+              lvgl.SetNewTapEvent(info.x, info.y);
+            }
           }
         }
       } break;
@@ -398,35 +428,6 @@ void DisplayApp::PushMessage(Messages msg) {
   } else {
     xQueueSend(msgQueue, &msg, portMAX_DELAY);
   }
-}
-
-TouchEvents DisplayApp::OnTouchEvent() {
-  auto info = touchPanel.GetTouchInfo();
-  if (info.isTouch) {
-    switch (info.gesture) {
-      case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        if (touchMode == TouchModes::Gestures) {
-          lvgl.SetNewTapEvent(info.x, info.y);
-        }
-        return TouchEvents::Tap;
-      case Pinetime::Drivers::Cst816S::Gestures::LongPress:
-        return TouchEvents::LongTap;
-      case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
-        return TouchEvents::DoubleTap;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
-        return TouchEvents::SwipeRight;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
-        return TouchEvents::SwipeLeft;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
-        return TouchEvents::SwipeDown;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
-        return TouchEvents::SwipeUp;
-      case Pinetime::Drivers::Cst816S::Gestures::None:
-      default:
-        return TouchEvents::None;
-    }
-  }
-  return TouchEvents::None;
 }
 
 void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
