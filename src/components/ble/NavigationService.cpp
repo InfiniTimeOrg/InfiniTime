@@ -38,12 +38,12 @@ namespace {
   constexpr ble_uuid128_t navNarrativeCharUuid {CharUuid(0x02, 0x00)};
   constexpr ble_uuid128_t navManDistCharUuid {CharUuid(0x03, 0x00)};
   constexpr ble_uuid128_t navProgressCharUuid {CharUuid(0x04, 0x00)};
-} // namespace
 
-int NAVCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
-  auto navService = static_cast<Pinetime::Controllers::NavigationService*>(arg);
-  return navService->OnCommand(conn_handle, attr_handle, ctxt);
-}
+  int NAVCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+    auto navService = static_cast<Pinetime::Controllers::NavigationService*>(arg);
+    return navService->OnCommand(conn_handle, attr_handle, ctxt);
+  }
+} // namespace
 
 Pinetime::Controllers::NavigationService::NavigationService(Pinetime::System::SystemTask& system) : m_system(system) {
   characteristicDefinition[0] = {
