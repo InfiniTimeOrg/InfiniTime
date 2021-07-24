@@ -110,7 +110,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text_static(backgroundLabel, "");
 
-  taskUpdate = lv_task_create(lv_update_task, 500000, LV_TASK_PRIO_MID, this);
+  taskUpdate = lv_task_create(lv_update_task, 5000, LV_TASK_PRIO_MID, this);
 }
 
 QuickSettings::~QuickSettings() {

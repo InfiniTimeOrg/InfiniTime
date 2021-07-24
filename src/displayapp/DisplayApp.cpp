@@ -43,12 +43,39 @@
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
 
+#include "libs/lv_conf.h"
+
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
 
 namespace {
   static inline bool in_isr(void) {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
+  }
+
+  TouchEvents Convert(Pinetime::Drivers::Cst816S::TouchInfos info) {
+    if (info.isTouch) {
+      switch (info.gesture) {
+        case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
+          return TouchEvents::Tap;
+        case Pinetime::Drivers::Cst816S::Gestures::LongPress:
+          return TouchEvents::LongTap;
+        case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
+          return TouchEvents::DoubleTap;
+        case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
+          return TouchEvents::SwipeRight;
+        case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
+          return TouchEvents::SwipeLeft;
+        case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
+          return TouchEvents::SwipeDown;
+        case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
+          return TouchEvents::SwipeUp;
+        case Pinetime::Drivers::Cst816S::Gestures::None:
+        default:
+          return TouchEvents::None;
+      }
+    }
+    return TouchEvents::None;
   }
 }
 
@@ -114,6 +141,7 @@ uint32_t count = 0;
 bool toggle = true;
 void DisplayApp::Refresh() {
   TickType_t queueTimeout;
+  TickType_t delta;
   switch (state) {
     case States::Idle:
       IdleState();
@@ -121,7 +149,11 @@ void DisplayApp::Refresh() {
       break;
     case States::Running:
       RunningState();
-      queueTimeout = 20;
+      delta = xTaskGetTickCount() - lastWakeTime;
+      if (delta > LV_DISP_DEF_REFR_PERIOD) {
+        delta = LV_DISP_DEF_REFR_PERIOD;
+      }
+      queueTimeout = LV_DISP_DEF_REFR_PERIOD - delta;
       break;
     default:
       queueTimeout = portMAX_DELAY;
@@ -129,7 +161,9 @@ void DisplayApp::Refresh() {
   }
 
   Messages msg;
-  if (xQueueReceive(msgQueue, &msg, queueTimeout)) {
+  bool messageReceived = xQueueReceive(msgQueue, &msg, queueTimeout);
+  lastWakeTime = xTaskGetTickCount();
+  if (messageReceived) {
     switch (msg) {
       case Messages::GoToSleep:
         brightnessController.Backup();
@@ -168,9 +202,14 @@ void DisplayApp::Refresh() {
         }
         break;
       case Messages::TouchEvent: {
-        if (state != States::Running)
+        if (state != States::Running) {
           break;
-        auto gesture = OnTouchEvent();
+        }
+        auto info = touchPanel.GetTouchInfo();
+        auto gesture = Convert(info);
+        if (gesture == TouchEvents::None) {
+          break;
+        }
         if (!currentScreen->OnTouchEvent(gesture)) {
           if (currentApp == Apps::Clock) {
             switch (gesture) {
@@ -191,6 +230,10 @@ void DisplayApp::Refresh() {
             }
           } else if (returnTouchEvent == gesture) {
             LoadApp(returnToApp, returnDirection);
+          } else if (touchMode == TouchModes::Gestures) {
+            if (gesture == TouchEvents::Tap) {
+              lvgl.SetNewTapEvent(info.x, info.y);
+            }
           }
         }
       } break;
@@ -277,6 +320,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::FirmwareUpdate:
       currentScreen = std::make_unique<Screens::FirmwareUpdate>(this, bleController);
+      ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
       break;
 
     case Apps::Notifications:
@@ -384,35 +428,6 @@ void DisplayApp::PushMessage(Messages msg) {
   } else {
     xQueueSend(msgQueue, &msg, portMAX_DELAY);
   }
-}
-
-TouchEvents DisplayApp::OnTouchEvent() {
-  auto info = touchPanel.GetTouchInfo();
-  if (info.isTouch) {
-    switch (info.gesture) {
-      case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        if (touchMode == TouchModes::Gestures) {
-          lvgl.SetNewTapEvent(info.x, info.y);
-        }
-        return TouchEvents::Tap;
-      case Pinetime::Drivers::Cst816S::Gestures::LongPress:
-        return TouchEvents::LongTap;
-      case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
-        return TouchEvents::DoubleTap;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
-        return TouchEvents::SwipeRight;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
-        return TouchEvents::SwipeLeft;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
-        return TouchEvents::SwipeDown;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
-        return TouchEvents::SwipeUp;
-      case Pinetime::Drivers::Cst816S::Gestures::None:
-      default:
-        return TouchEvents::None;
-    }
-  }
-  return TouchEvents::None;
 }
 
 void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
