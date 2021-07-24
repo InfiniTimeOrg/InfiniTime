@@ -49,7 +49,7 @@ std::unique_ptr<Screen> Settings::CreateScreen1() {
     {Symbols::clock, "Watch face", Apps::SettingWatchFace},
   }};
 
-  return std::make_unique<Screens::List>(0, 2, app, settingsController, applications);
+  return std::make_unique<Screens::List>(0, 3, app, settingsController, applications);
 }
 
 std::unique_ptr<Screen> Settings::CreateScreen2() {
@@ -61,7 +61,7 @@ std::unique_ptr<Screen> Settings::CreateScreen2() {
     {Symbols::list, "About", Apps::SysInfo},
   }};
 
-  return std::make_unique<Screens::List>(1, 2, app, settingsController, applications);
+  return std::make_unique<Screens::List>(1, 3, app, settingsController, applications);
 }
 
 std::unique_ptr<Screen> Settings::CreateScreen3() {
@@ -73,5 +73,5 @@ std::unique_ptr<Screen> Settings::CreateScreen3() {
     {Symbols::none, "None", Apps::None},
   }};
 
-  return std::make_unique<Screens::List>(2, 2, app, settingsController, applications);
+  return std::make_unique<Screens::List>(2, 3, app, settingsController, applications);
 }
