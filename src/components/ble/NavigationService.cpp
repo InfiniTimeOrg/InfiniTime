@@ -26,28 +26,17 @@ int NAVCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_acce
 }
 
 Pinetime::Controllers::NavigationService::NavigationService(Pinetime::System::SystemTask& system) : m_system(system) {
-  navUuid.value[14] = navId[0];
-  navUuid.value[15] = navId[1];
-
   navFlagCharUuid.value[12] = navFlagCharId[0];
   navFlagCharUuid.value[13] = navFlagCharId[1];
-  navFlagCharUuid.value[14] = navId[0];
-  navFlagCharUuid.value[15] = navId[1];
 
   navNarrativeCharUuid.value[12] = navNarrativeCharId[0];
   navNarrativeCharUuid.value[13] = navNarrativeCharId[1];
-  navNarrativeCharUuid.value[14] = navId[0];
-  navNarrativeCharUuid.value[15] = navId[1];
 
   navManDistCharUuid.value[12] = navManDistCharId[0];
   navManDistCharUuid.value[13] = navManDistCharId[1];
-  navManDistCharUuid.value[14] = navId[0];
-  navManDistCharUuid.value[15] = navId[1];
 
   navProgressCharUuid.value[12] = navProgressCharId[0];
   navProgressCharUuid.value[13] = navProgressCharId[1];
-  navProgressCharUuid.value[14] = navId[0];
-  navProgressCharUuid.value[15] = navId[1];
 
   characteristicDefinition[0] = {
     .uuid = (ble_uuid_t*) (&navFlagCharUuid), .access_cb = NAVCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
