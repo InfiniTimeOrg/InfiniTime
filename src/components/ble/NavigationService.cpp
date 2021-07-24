@@ -20,24 +20,32 @@
 
 #include "systemtask/SystemTask.h"
 
+namespace {
+  // 0001yyxx-78fc-48fe-8e23-433b3a1942d0
+  constexpr ble_uuid128_t CharUuid(uint8_t x, uint8_t y) {
+    return ble_uuid128_t {.u = {.type = BLE_UUID_TYPE_128},
+                          .value = {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, x, y, 0x01, 0x00}};
+  }
+
+  // 00010000-78fc-48fe-8e23-433b3a1942d0
+  constexpr ble_uuid128_t BaseUuid() {
+    return CharUuid(0x00, 0x00);
+  }
+
+  constexpr ble_uuid128_t navUuid {BaseUuid()};
+
+  constexpr ble_uuid128_t navFlagCharUuid {CharUuid(0x01, 0x00)};
+  constexpr ble_uuid128_t navNarrativeCharUuid {CharUuid(0x02, 0x00)};
+  constexpr ble_uuid128_t navManDistCharUuid {CharUuid(0x03, 0x00)};
+  constexpr ble_uuid128_t navProgressCharUuid {CharUuid(0x04, 0x00)};
+} // namespace
+
 int NAVCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   auto navService = static_cast<Pinetime::Controllers::NavigationService*>(arg);
   return navService->OnCommand(conn_handle, attr_handle, ctxt);
 }
 
 Pinetime::Controllers::NavigationService::NavigationService(Pinetime::System::SystemTask& system) : m_system(system) {
-  navFlagCharUuid.value[12] = navFlagCharId[0];
-  navFlagCharUuid.value[13] = navFlagCharId[1];
-
-  navNarrativeCharUuid.value[12] = navNarrativeCharId[0];
-  navNarrativeCharUuid.value[13] = navNarrativeCharId[1];
-
-  navManDistCharUuid.value[12] = navManDistCharId[0];
-  navManDistCharUuid.value[13] = navManDistCharId[1];
-
-  navProgressCharUuid.value[12] = navProgressCharId[0];
-  navProgressCharUuid.value[13] = navProgressCharId[1];
-
   characteristicDefinition[0] = {
     .uuid = (ble_uuid_t*) (&navFlagCharUuid), .access_cb = NAVCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
 
