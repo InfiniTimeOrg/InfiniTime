@@ -2,7 +2,7 @@
 #include <lvgl/lvgl.h>
 #include <array>
 #include "Symbols.h"
-#include "Tile.h"
+#include "HoneyComb.h"
 #include "displayapp/Apps.h"
 #include "../DisplayApp.h"
 
@@ -35,9 +35,7 @@ ApplicationList::~ApplicationList() {
 }
 
 bool ApplicationList::Refresh() {
-  if (running)
-    running = screens.Refresh();
-  return running;
+  return screens.Refresh();
 }
 
 bool ApplicationList::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
@@ -45,29 +43,33 @@ bool ApplicationList::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
-  std::array<Screens::Tile::Applications, 6> applications {{
+  std::array<Screens::HoneyComb::Applications, 8> applications {{
     {Symbols::stopWatch, Apps::StopWatch},
     {Symbols::music, Apps::Music},
     {Symbols::map, Apps::Navigation},
     {Symbols::shoe, Apps::Steps},
     {Symbols::heartBeat, Apps::HeartRate},
     {Symbols::hourGlass, Apps::Timer},
+    {Symbols::paintbrush, Apps::Paint},
+    {Symbols::paddle, Apps::Paddle},
   }};
 
-  return std::make_unique<Screens::Tile>(0, 2, app, settingsController, batteryController, dateTimeController, applications);
+  return std::make_unique<Screens::HoneyComb>(0, 2, app, settingsController, batteryController, dateTimeController, applications);
 }
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
-  std::array<Screens::Tile::Applications, 6> applications {{
-    {Symbols::paintbrush, Apps::Paint},
-    {Symbols::paddle, Apps::Paddle},
+  std::array<Screens::HoneyComb::Applications, 8> applications {{
     {"2", Apps::Twos},
     {"M", Apps::Motion},
     {Symbols::drum, Apps::Metronome},
     {"", Apps::None},
+    {"", Apps::None},
+    {"", Apps::None},
+    {"", Apps::None},
+    {"", Apps::None},
   }};
 
-  return std::make_unique<Screens::Tile>(1, 2, app, settingsController, batteryController, dateTimeController, applications);
+  return std::make_unique<Screens::HoneyComb>(1, 2, app, settingsController, batteryController, dateTimeController, applications);
 }
 
 /*std::unique_ptr<Screen> ApplicationList::CreateScreen3() {

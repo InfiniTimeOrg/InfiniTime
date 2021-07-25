@@ -418,6 +418,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
+        displayapp/screens/HoneyComb.cpp
 
         ## Settings
         displayapp/screens/settings/QuickSettings.cpp
@@ -660,6 +661,7 @@ set(INCLUDE_FILES
         components/heartrate/Ptagc.h
         components/heartrate/HeartRateController.h
         components/motor/MotorController.h
+        displayapp/screens/HoneyComb.h
         )
 
 include_directories(
