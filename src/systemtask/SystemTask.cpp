@@ -33,6 +33,13 @@ namespace {
   }
 }
 
+void DimTimerCallback(TimerHandle_t xTimer) {
+
+  NRF_LOG_INFO("DimTimerCallback");
+  auto sysTask = static_cast<SystemTask*>(pvTimerGetTimerID(xTimer));
+  sysTask->OnDim();
+}
+
 void IdleTimerCallback(TimerHandle_t xTimer) {
 
   NRF_LOG_INFO("IdleTimerCallback");
@@ -115,7 +122,6 @@ void SystemTask::Work() {
 
   nimbleController.Init();
   nimbleController.StartAdvertising();
-  brightnessController.Init();
   lcd.Init();
 
   twiMaster.Init();
@@ -183,8 +189,9 @@ void SystemTask::Work() {
     nrf_gpio_cfg_sense_input(pinPowerPresentIrq, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_HIGH);
   }
 
-  idleTimer = xTimerCreate("idleTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut()), pdFALSE, this, IdleTimerCallback);
-  xTimerStart(idleTimer, 0);
+  idleTimer = xTimerCreate("idleTimer", pdMS_TO_TICKS(2000), pdFALSE, this, IdleTimerCallback);
+  dimTimer = xTimerCreate("dimTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), pdFALSE, this, DimTimerCallback);
+  xTimerStart(dimTimer, 0);
 
 // Suppress endless loop diagnostic
 #pragma clang diagnostic push
@@ -212,7 +219,7 @@ void SystemTask::Work() {
           doNotGoToSleep = true;
           break;
         case Messages::UpdateTimeOut:
-          xTimerChangePeriod(idleTimer, pdMS_TO_TICKS(settingsController.GetScreenTimeOut()), 0);
+          xTimerChangePeriod(dimTimer, pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), 0);
           break;
         case Messages::GoToRunning:
           spi.Wakeup();
@@ -224,7 +231,7 @@ void SystemTask::Work() {
           }
 
           nimbleController.StartAdvertising();
-          xTimerStart(idleTimer, 0);
+          xTimerStart(dimTimer, 0);
           spiNorFlash.Wakeup();
           lcd.Wakeup();
 
@@ -234,6 +241,7 @@ void SystemTask::Work() {
 
           isSleeping = false;
           isWakingUp = false;
+          isDimmed = false;
           break;
         case Messages::TouchWakeUp: {
           auto gesture = touchHandler.GestureGet();
@@ -250,6 +258,7 @@ void SystemTask::Work() {
           isGoingToSleep = true;
           NRF_LOG_INFO("[systemtask] Going to sleep");
           xTimerStop(idleTimer, 0);
+          xTimerStop(dimTimer, 0);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
           break;
@@ -287,13 +296,14 @@ void SystemTask::Work() {
             NVIC_SystemReset();
           }
           doNotGoToSleep = false;
-          xTimerStart(idleTimer, 0);
+          xTimerStart(dimTimer, 0);
           break;
         case Messages::OnTouchEvent:
           ReloadIdleTimer();
           break;
         case Messages::OnButtonEvent:
           ReloadIdleTimer();
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
           break;
         case Messages::OnDisplayTaskSleeping:
           if (BootloaderVersion::IsValid()) {
@@ -385,7 +395,6 @@ void SystemTask::OnButtonPushed() {
   if (!isSleeping) {
     NRF_LOG_INFO("[systemtask] Button pushed");
     PushMessage(Messages::OnButtonEvent);
-    displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
   } else {
     if (!isWakingUp) {
       NRF_LOG_INFO("[systemtask] Button pushed, waking up");
@@ -432,6 +441,15 @@ void SystemTask::PushMessage(System::Messages msg) {
   }
 }
 
+void SystemTask::OnDim() {
+  if (doNotGoToSleep)
+    return;
+  NRF_LOG_INFO("Dim timeout -> Dim screen")
+  displayApp.PushMessage(Pinetime::Applications::Display::Messages::DimScreen);
+  xTimerStart(idleTimer, 0);
+  isDimmed = true;
+}
+
 void SystemTask::OnIdle() {
   if (doNotGoToSleep)
     return;
@@ -439,8 +457,13 @@ void SystemTask::OnIdle() {
   PushMessage(Messages::GoToSleep);
 }
 
-void SystemTask::ReloadIdleTimer() const {
+void SystemTask::ReloadIdleTimer() {
   if (isSleeping || isGoingToSleep)
     return;
-  xTimerReset(idleTimer, 0);
+  if (isDimmed) {
+    displayApp.PushMessage(Pinetime::Applications::Display::Messages::RestoreBrightness);
+    isDimmed = false;
+  }
+  xTimerReset(dimTimer, 0);
+  xTimerStop(idleTimer, 0);
 }

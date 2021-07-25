@@ -27,7 +27,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
     batteryController {batteryController},
     dateTimeController {dateTimeController},
     brightness {brightness},
-    motorController{motorController},
+    motorController {motorController},
     settingsController {settingsController} {
 
   // Time

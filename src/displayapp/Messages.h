@@ -12,7 +12,9 @@ namespace Pinetime {
         NewNotification,
         TimerDone,
         BleFirmwareUpdateStarted,
-        UpdateTimeOut
+        UpdateTimeOut,
+        DimScreen,
+        RestoreBrightness
       };
     }
   }
