@@ -154,7 +154,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0001;
+      static constexpr uint32_t settingsVersion = 0x0002;
       struct SettingsData {
 
         uint32_t version = settingsVersion;

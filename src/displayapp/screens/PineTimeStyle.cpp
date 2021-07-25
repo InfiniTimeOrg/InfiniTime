@@ -52,7 +52,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
     settingsController {settingsController},
     motionController {motionController} {
 
-  /* This sets the watchface number to return to after leaving the menu */
+  // This sets the watchface number to return to after leaving the menu
   settingsController.SetClockFace(2);
 
   displayedChar[0] = 0;
@@ -61,14 +61,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   displayedChar[3] = 0;
   displayedChar[4] = 0;
 
-  //Feels like a hack, but if all the colors are white, this is probably not what the user wants
-  if (settingsController.GetPTSColorTime() + settingsController.GetPTSColorBar() + settingsController.GetPTSColorBG() == 0) {
-      settingsController.SetPTSColorTime(11);
-      settingsController.SetPTSColorBar(11);
-      settingsController.SetPTSColorBG(3);
-  }
-
-  /* Create a 200px wide background rectangle */
+  //Create a 200px wide background rectangle
 
   timebar = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorBG()]);
@@ -76,8 +69,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_set_size(timebar, 200, 240);
   lv_obj_align(timebar, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 5, 0);
 
-  /* Display the time */
-
+  // Display the time
   timeDD1 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
   lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorTime()]);
@@ -96,16 +88,14 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_label_set_text(timeAMPM, "");
   lv_obj_align(timeAMPM, timebar, LV_ALIGN_IN_BOTTOM_LEFT, 2, -20);
 
-  /* Create a 40px wide bar down the right side of the screen */
-
+  // Create a 40px wide bar down the right side of the screen
   sidebar = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorBar()]);
   lv_obj_set_style_local_radius(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(sidebar, 40, 240);
   lv_obj_align(sidebar, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
-  /* Display icons */
-
+  // Display icons
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
@@ -123,8 +113,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 40);
 
-  /* Calendar icon */
-
+  // Calendar icon
   calendarOuter = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(calendarOuter, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_obj_set_style_local_radius(calendarOuter, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -161,8 +150,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_set_size(calendarCrossBar2, 8, 3);
   lv_obj_align(calendarCrossBar2, calendarBar2, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
-  /* Display date */
-
+  // Display date
   dateDayOfWeek = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(dateDayOfWeek, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_label_set_text(dateDayOfWeek, "THU");
@@ -303,7 +291,7 @@ bool PineTimeStyle::Refresh() {
         lv_label_set_text(timeAMPM, ampmChar);
     }
 
-      /* Display the time as 2 pairs of digits */
+      // Display the time as 2 pairs of digits
       sprintf(hourStr, "%c%c", hoursChar[0], hoursChar[1]);
       lv_label_set_text(timeDD1, hourStr);
 
