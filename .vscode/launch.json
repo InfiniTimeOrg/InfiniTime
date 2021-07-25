@@ -1,0 +1,46 @@
+  {
+    "version": "0.1.0",
+    "configurations": [
+        {
+            "name": "Debug - Openocd docker Remote",
+            "type":"cortex-debug",
+            "cortex-debug.armToolchainPath":"${env:COMPILER_DIR}/bin",
+            "cwd": "${workspaceRoot}",
+            "executable": "${command:cmake.launchTargetPath}",
+            "request": "launch",
+            "servertype": "external",
+            // This may need to be arm-none-eabi-gdb depending on your system
+            "gdbPath" : "${env:COMPILER_DIR}/bin/arm-none-eabi-gdb",
+            // Connect to an already running OpenOCD instance
+            "gdbTarget": "host.docker.internal:3333",
+            "svdFile": "${workspaceRoot}/nrf52.svd",
+            "runToMain": true,
+            // Work around for stopping at main on restart
+            "postRestartCommands": [
+                "break main",
+                "continue"
+            ]
+        },
+        {
+            "name": "Debug - Openocd Local",
+            "type":"cortex-debug",
+            "cortex-debug.armToolchainPath":"${env:COMPILER_DIR}/bin",
+            "cwd": "${workspaceRoot}",
+            "executable": "${command:cmake.launchTargetPath}",
+            "request": "launch",
+            "servertype": "openocd",
+            // This may need to be arm-none-eabi-gdb depending on your system
+            "gdbPath" : "${env:COMPILER_DIR}/bin/arm-none-eabi-gdb",
+            // Connect to an already running OpenOCD instance
+            "gdbTarget": "localhost:3333",
+            "svdFile": "${workspaceRoot}/nrf52.svd",
+            "runToMain": true,
+            // Work around for stopping at main on restart
+            "postRestartCommands": [
+                "break main",
+                "continue"
+            ]
+        }
+
+    ]
+}
