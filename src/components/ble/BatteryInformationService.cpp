@@ -17,7 +17,7 @@ BatteryInformationService::BatteryInformationService(Controllers::Battery& batte
     characteristicDefinition {{.uuid = (ble_uuid_t*) &batteryLevelUuid,
                                .access_cb = BatteryInformationServiceCallback,
                                .arg = this,
-                               .flags = BLE_GATT_CHR_F_READ,
+                               .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
                                .val_handle = &batteryLevelHandle},
                               {0}},
     serviceDefinition {
@@ -48,4 +48,8 @@ int BatteryInformationService::OnBatteryServiceRequested(uint16_t connectionHand
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
   }
   return 0;
+}
+void BatteryInformationService::NotifyBatteryLevel(uint16_t connectionHandle, uint8_t level) {
+  auto* om = ble_hs_mbuf_from_flat(&level, 1);
+  ble_gattc_notify_custom(connectionHandle, batteryLevelHandle, om);
 }

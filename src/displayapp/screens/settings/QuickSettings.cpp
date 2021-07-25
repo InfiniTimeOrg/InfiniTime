@@ -27,7 +27,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
     batteryController {batteryController},
     dateTimeController {dateTimeController},
     brightness {brightness},
-    motorController{motorController},
+    motorController {motorController},
     settingsController {settingsController} {
 
   // Time
@@ -110,7 +110,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text_static(backgroundLabel, "");
 
-  taskUpdate = lv_task_create(lv_update_task, 500000, LV_TASK_PRIO_MID, this);
+  taskUpdate = lv_task_create(lv_update_task, 5000, LV_TASK_PRIO_MID, this);
 }
 
 QuickSettings::~QuickSettings() {
@@ -151,17 +151,6 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
     running = false;
     settingsController.SetSettingsMenu(0);
     app->StartApp(Apps::Settings, DisplayApp::FullRefreshDirections::Up);
-  }
-}
-
-bool QuickSettings::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  switch (event) {
-    case Pinetime::Applications::TouchEvents::SwipeLeft:
-      running = false;
-      return false;
-
-    default:
-      return true;
   }
 }
 

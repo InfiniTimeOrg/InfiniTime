@@ -1,7 +1,7 @@
 # Build a stub for PineTime using NRF52-DK
 [NRF52-DK](https://www.nordicsemi.com/Software-and-Tools/Development-Kits/nRF52-DK) is the official developpment kit for NRF52832 SoC from Nordic Semiconductor.
 
-It can be very useful for PineTime developpment:
+It can be very useful for PineTime development:
  * You can use it embedded JLink SWD programmer/debugger to program and debug you code on the PineTime
  * As it's based on the same SoC than the PineTime, you can program it to actually run the same code than the PineTime. 
  
@@ -47,4 +47,4 @@ You also need to enable the I/O expander to disconnect pins from buttons and led
 | --------- | --------- |
 | DETECT    | GND       |
 
-Now, you should be able to program the SoC on the NRF52-DK board, and use it as if it was running on the pintime.
+Now, you should be able to program the SoC on the NRF52-DK board, and use it as if it was running on the PineTime.
