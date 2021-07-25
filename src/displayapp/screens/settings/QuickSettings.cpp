@@ -27,7 +27,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
     batteryController {batteryController},
     dateTimeController {dateTimeController},
     brightness {brightness},
-    motorController{motorController},
+    motorController {motorController},
     settingsController {settingsController} {
 
   // Time
@@ -152,10 +152,6 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
     settingsController.SetSettingsMenu(0);
     app->StartApp(Apps::Settings, DisplayApp::FullRefreshDirections::Up);
   }
-}
-
-bool QuickSettings::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  return false;
 }
 
 bool QuickSettings::Refresh() {
