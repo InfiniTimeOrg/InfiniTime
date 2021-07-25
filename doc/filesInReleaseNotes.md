@@ -18,7 +18,7 @@ This firmware is standalone, meaning that it does not need a bootloader to actua
 **This firmware must be flashed at address 0x00 in the main flash memory**
 
 ### Bootloader
-The bootloader  is maintained by [lupyuen](https://github.com/lupyuen) and is a binary version of [this release](https://github.com/lupyuen/pinetime-rust-mynewt/releases/tag/v5.0.4).
+The bootloader is maintained by [lupyuen](https://github.com/lupyuen) and is a binary version of [this release](https://github.com/lupyuen/pinetime-rust-mynewt/releases/tag/v5.0.4).
 
  - **bootloader.hex** : Firmware in Intel HEX file format.
  
