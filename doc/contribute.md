@@ -76,6 +76,14 @@ C code is accepted if it comes from another library like FreeRTOS, NimBLE, LVGL 
 
 The most important rule to follow is to try to keep the code as easy to read and maintain as possible.
 
+Using an autoformatter is highly recommended, but make sure it's configured properly.
+
+There are preconfigured autoformatter rules for:
+
+  * CLion (IntelliJ) in .idea/codeStyles/Project.xml
+
+If there are no preconfigured rules for your IDE, you can use one of the existing ones to configure your IDE.
+
  - **Indentation** : 2 spaces, no tabulation
  - **Opening brace** at the end of the line
  - **Naming** : Choose self-describing variable name
