@@ -49,6 +49,7 @@ SettingDisplay::~SettingDisplay() {
       break;
     }
   }
+  app->PushMessage(Applications::Display::Messages::UpdateTimeOut);
   lv_obj_clean(lv_scr_act());
   settingsController.SaveSettings();
 }
