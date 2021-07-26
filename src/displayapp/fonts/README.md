@@ -3,6 +3,7 @@
 * [Jetbrains Mono](https://www.jetbrains.com/fr-fr/lp/mono/)
 * [Awesome font from LVGL](https://lvgl.io/assets/others/FontAwesome5-Solid+Brands+Regular.woff)
 * [Open Sans Light from Google](https://fonts.google.com/specimen/Open+Sans)
+* [Simple CLM (hebrew)](https://www.hebrewfont.net/download.php?id=737329)
 
 ## Generate the fonts:
 
@@ -14,7 +15,9 @@
 * Load the file `JetBrainsMono-Bold.tff` (use the file in this repo to ensure the version matches) and specify the following range : `0x20-0x7f, 0x410-0x44f`
 * Add a 2nd font, load the file `FontAwesome5-Solid+Brands+Regular.woff` and specify the following
   range : `0xf293, 0xf294, 0xf244, 0xf240, 0xf242, 0xf243, 0xf241, 0xf54b, 0xf21e, 0xf1e6, 0xf54b, 0xf017, 0xf129, 0xf03a, 0xf185, 0xf560, 0xf001, 0xf3fd, 0xf069, 0xf1fc, 0xf45d, 0xf59f, 0xf5a0, 0xf029, 0xf027, 0xf028, 0xf6a9, 0xf04b, 0xf04c, 0xf048, 0xf051, 0xf095, 0xf3dd, 0xf04d, 0xf2f2, 0xf024, 0xf252, 0xf569`
+* Add a 3rd font, load the file `SimpleCLM-Medium.ttf` and specify the following range : `0x05D0-0x05EA,0x05F3,0x05F4`
 * Click on Convert, and download the file `jetbrains_mono_bold_20.c` and copy it in `src/DisplayApp/Fonts`
+* *Or* command line: `lv_font_conv --size 20  -o jetbrains_mono_bold_20.c --bpp 1 --no-compress --format lvgl --font JetBrainsMono-Bold.ttf -r '0x20-0x7f, 0x410-0x44f' --font FontAwesome5-Solid+Brands+Regular.woff -r '0xf293, 0xf294, 0xf244, 0xf240, 0xf242, 0xf243, 0xf241, 0xf54b, 0xf21e, 0xf1e6, 0xf54b, 0xf017, 0xf129, 0xf03a, 0xf185, 0xf560, 0xf001, 0xf3fd, 0xf069, 0xf1fc, 0xf45d, 0xf59f, 0xf5a0, 0xf029, 0xf027, 0xf028, 0xf6a9, 0xf04b, 0xf04c, 0xf048, 0xf051, 0xf095, 0xf3dd, 0xf04d, 0xf2f2, 0xf024, 0xf252, 0xf569' --font SimpleCLM-Medium.ttf -r '0x05D0-0x05EA,0x05F3,0x05F4'`
 * Add the font .c file path to src/CMakeLists.txt
 * Add an LV_FONT_DECLARE line in src/libs/lv_conf.h
 
