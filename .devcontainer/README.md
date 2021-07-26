@@ -33,7 +33,7 @@ The dev enviroment comes with some scripts to make this easier, They are located
 
 There are also VSCode tasks provided should you desire to use those. 
 
-The task BuildInit will update submodules and configure for openocd
+The task "update submodules" will update the git submodules
 
 
 
@@ -41,7 +41,7 @@ The task BuildInit will update submodules and configure for openocd
 
 You can use the build.sh script located in /opt/
 
-There will also eventually be a Build task. - Not written yet
+CMake is also configured and controlls for the CMake plugin are available in VSCode
 
 
 

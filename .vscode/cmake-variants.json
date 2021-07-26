@@ -47,14 +47,14 @@
               "short": "No DFU",
               "long": "Do not build DFU",
               "settings": {
-                  "BUILD_DFU":0
+                  "BUILD_DFU":"0"
                 }
             },
             "yes": {
                 "short": "Build DFU",
                 "long": "Build DFU",
                 "settings": {
-                    "BUILD_DFU":1
+                    "BUILD_DFU":"1"
                 }
             }
         }
