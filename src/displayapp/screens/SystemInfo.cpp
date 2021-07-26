@@ -20,6 +20,8 @@ namespace {
         return "BMA421";
       case Pinetime::Controllers::MotionController::DeviceTypes::BMA425:
         return "BMA425";
+      case Pinetime::Controllers::MotionController::DeviceTypes::Unknown:
+        return "???";
     }
     return "???";
   }
@@ -68,11 +70,6 @@ bool SystemInfo::Refresh() {
     screens.Refresh();
   }
   return running;
-}
-
-bool SystemInfo::OnButtonPushed() {
-  running = false;
-  return true;
 }
 
 bool SystemInfo::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
@@ -212,28 +209,50 @@ bool SystemInfo::sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
 std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   TaskStatus_t tasksStatus[7];
   lv_obj_t* infoTask = lv_table_create(lv_scr_act(), NULL);
-  lv_table_set_col_cnt(infoTask, 3);
+  lv_table_set_col_cnt(infoTask, 4);
   lv_table_set_row_cnt(infoTask, 8);
-  lv_obj_set_pos(infoTask, 10, 10);
+  lv_obj_set_pos(infoTask, 0, 10);
 
   lv_table_set_cell_value(infoTask, 0, 0, "#");
-  lv_table_set_col_width(infoTask, 0, 50);
-  lv_table_set_cell_value(infoTask, 0, 1, "Task");
-  lv_table_set_col_width(infoTask, 1, 80);
-  lv_table_set_cell_value(infoTask, 0, 2, "Free");
-  lv_table_set_col_width(infoTask, 2, 90);
+  lv_table_set_col_width(infoTask, 0, 30);
+  lv_table_set_cell_value(infoTask, 0, 1, "S"); // State
+  lv_table_set_col_width(infoTask, 1, 30);
+  lv_table_set_cell_value(infoTask, 0, 2, "Task");
+  lv_table_set_col_width(infoTask, 2, 80);
+  lv_table_set_cell_value(infoTask, 0, 3, "Free");
+  lv_table_set_col_width(infoTask, 3, 90);
 
   auto nb = uxTaskGetSystemState(tasksStatus, 7, nullptr);
   std::sort(tasksStatus, tasksStatus + nb, sortById);
   for (uint8_t i = 0; i < nb; i++) {
 
     lv_table_set_cell_value(infoTask, i + 1, 0, std::to_string(tasksStatus[i].xTaskNumber).c_str());
-    lv_table_set_cell_value(infoTask, i + 1, 1, tasksStatus[i].pcTaskName);
+    char state[2] = {0};
+    switch (tasksStatus[i].eCurrentState) {
+      case eReady:
+      case eRunning:
+        state[0] = 'R';
+        break;
+      case eBlocked:
+        state[0] = 'B';
+        break;
+      case eSuspended:
+        state[0] = 'S';
+        break;
+      case eDeleted:
+        state[0] = 'D';
+        break;
+      default:
+        state[0] = 'I'; // Invalid
+        break;
+    }
+    lv_table_set_cell_value(infoTask, i + 1, 1, state);
+    lv_table_set_cell_value(infoTask, i + 1, 2, tasksStatus[i].pcTaskName);
     if (tasksStatus[i].usStackHighWaterMark < 20) {
       std::string str1 = std::to_string(tasksStatus[i].usStackHighWaterMark) + " low";
-      lv_table_set_cell_value(infoTask, i + 1, 2, str1.c_str());
+      lv_table_set_cell_value(infoTask, i + 1, 3, str1.c_str());
     } else {
-      lv_table_set_cell_value(infoTask, i + 1, 2, std::to_string(tasksStatus[i].usStackHighWaterMark).c_str());
+      lv_table_set_cell_value(infoTask, i + 1, 3, std::to_string(tasksStatus[i].usStackHighWaterMark).c_str());
     }
   }
   return std::make_unique<Screens::Label>(3, 5, app, infoTask);

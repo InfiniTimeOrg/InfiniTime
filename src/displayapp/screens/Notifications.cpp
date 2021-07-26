@@ -184,7 +184,6 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   }
   lv_label_set_text(alert_type, title);
   lv_label_set_long_mode(alert_type, LV_LABEL_LONG_SROLL_CIRC);
-  lv_label_set_anim_speed(alert_type, 3);
   lv_obj_set_width(alert_type, 180);
   lv_obj_align(alert_type, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 16);
 

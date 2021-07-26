@@ -38,7 +38,7 @@ std::unique_ptr<Pinetime::Applications::Screens::CheckBoxes> SettingWakeUp::Crea
     options[2].state = true;
   }
 
-  return std::make_unique<Screens::CheckBoxes>(Symbols::sun, "Wake Up", options, app, UpdateArray);
+  return std::make_unique<Screens::CheckBoxes>(Symbols::eye, "Wake Up", options, app, UpdateArray);
 }
 
 SettingWakeUp::~SettingWakeUp() {

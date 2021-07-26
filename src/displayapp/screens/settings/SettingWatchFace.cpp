@@ -19,7 +19,7 @@ bool SettingWatchFace::UpdateArray(Pinetime::Applications::Screens::CheckBoxes::
 std::unique_ptr<Screen> SettingWatchFace::CreateScreen() {
   options[settingsController.GetClockFace()].state = true;
 
-  return std::make_unique<Screens::CheckBoxes>(Symbols::clock, "Watch face", options, app, UpdateArray);
+  return std::make_unique<Screens::CheckBoxes>(Symbols::home, "Watch face", options, app, UpdateArray);
 }
 
 SettingWatchFace::~SettingWatchFace() {

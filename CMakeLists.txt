@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(pinetime VERSION 1.2.0 LANGUAGES C CXX ASM)
+project(pinetime VERSION 1.3.0 LANGUAGES C CXX ASM)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 14)
@@ -20,10 +20,6 @@ endif ()
 if (NOT NRF5_SDK_PATH)
   message(FATAL_ERROR "The path to the NRF52 SDK must be specified on the command line (add -DNRF5_SDK_PATH=<path>")
 endif ()
-
-if(NOT USE_JLINK AND NOT USE_GDB_CLIENT AND NOT USE_OPENOCD)
-  set(USE_JLINK true)
-endif()
 
 if(USE_JLINK)
   if (NOT NRFJPROG)
