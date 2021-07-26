@@ -1,6 +1,6 @@
 # Build and Develop the project using VS Code
 
-The .VSCode folder contains configuration files for developing InfiniTime with VS Code. Effort was made to have these rely on Environment variables instead of hardcoded paths.
+The .VS Code folder contains configuration files for developing InfiniTime with VS Code. Effort was made to have these rely on Environment variables instead of hardcoded paths.
 
 ## Environment Setup
 
@@ -22,7 +22,7 @@ We leverage a few VS Code extensions for ease of development.
 
 #### Optional Extensions
 
-[Cortex-Debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug) - ARM Cortex-M GDB Debugger support for VSCode
+[Cortex-Debug](https://marketplace.visualstudio.com/items?itemName=marus25.cortex-debug) - ARM Cortex-M GDB Debugger support for VS Code
 
 Cortex-Debug is only required for interactive debugging using VS Codes built in GDB support.
 
