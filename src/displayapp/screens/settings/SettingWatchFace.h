@@ -20,7 +20,7 @@ namespace Pinetime {
 
       private:
         Controllers::Settings& settingsController;
-        uint8_t optionsTotal;
+        uint8_t optionsTotal = 0;
         lv_obj_t* cbOption[2];
       };
     }
