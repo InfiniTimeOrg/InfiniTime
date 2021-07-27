@@ -12,15 +12,16 @@
 #include "drivers/Watchdog.h"
 
 using namespace Pinetime::Applications::Screens;
+using DeviceTypes = Pinetime::Controllers::MotionController::DeviceTypes;
 
 namespace {
-  const char* ToString(const Pinetime::Controllers::MotionController::DeviceTypes deviceType) {
+  const char* ToString(const DeviceTypes deviceType) {
     switch (deviceType) {
-      case Pinetime::Controllers::MotionController::DeviceTypes::BMA421:
+      case DeviceTypes::BMA421:
         return "BMA421";
-      case Pinetime::Controllers::MotionController::DeviceTypes::BMA425:
+      case DeviceTypes::BMA425:
         return "BMA425";
-      case Pinetime::Controllers::MotionController::DeviceTypes::Unknown:
+      case DeviceTypes::Unknown:
         return "???";
     }
     return "???";
@@ -102,24 +103,25 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   auto batteryPercent = batteryController.PercentRemaining();
   auto resetReason = [this]() {
+    using ResetReasons = Drivers::Watchdog::ResetReasons;
     switch (watchdog.ResetReason()) {
-      case Drivers::Watchdog::ResetReasons::Watchdog:
+      case ResetReasons::Watchdog:
         return "wtdg";
-      case Drivers::Watchdog::ResetReasons::HardReset:
+      case ResetReasons::HardReset:
         return "hardr";
-      case Drivers::Watchdog::ResetReasons::NFC:
+      case ResetReasons::NFC:
         return "nfc";
-      case Drivers::Watchdog::ResetReasons::SoftReset:
+      case ResetReasons::SoftReset:
         return "softr";
-      case Drivers::Watchdog::ResetReasons::CpuLockup:
+      case ResetReasons::CpuLockup:
         return "cpulock";
-      case Drivers::Watchdog::ResetReasons::SystemOff:
+      case ResetReasons::SystemOff:
         return "off";
-      case Drivers::Watchdog::ResetReasons::LpComp:
+      case ResetReasons::LpComp:
         return "lpcomp";
-      case Drivers::Watchdog::ResetReasons::DebugInterface:
+      case ResetReasons::DebugInterface:
         return "dbg";
-      case Drivers::Watchdog::ResetReasons::ResetPin:
+      case ResetReasons::ResetPin:
         return "rst";
       default:
         return "?";

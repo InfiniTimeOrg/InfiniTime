@@ -27,6 +27,7 @@
 
 using namespace Pinetime::System;
 using DisplayMessages = Pinetime::Applications::Display::Messages;
+using WakeUpMode = Pinetime::Controllers::Settings::WakeUpMode;
 
 namespace {
   static inline bool in_isr(void) {
@@ -231,7 +232,7 @@ void SystemTask::WorkLoopCycle()
         twiMaster.Wakeup();
 
         // Double Tap needs the touch screen to be in normal mode
-        if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
+        if (!settingsController.isWakeUpModeOn(WakeUpMode::DoubleTap)) {
           touchPanel.Wakeup();
         }
 
@@ -253,9 +254,9 @@ void SystemTask::WorkLoopCycle()
         auto touchInfo = touchPanel.GetTouchInfo();
         twiMaster.Sleep();
         if (touchInfo.isTouch and ((touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
-                                    settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
+                                    settingsController.isWakeUpModeOn(WakeUpMode::DoubleTap)) or
                                     (touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
-                                    settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
+                                    settingsController.isWakeUpModeOn(WakeUpMode::SingleTap)))) {
           GoToRunning();
         }
       } break;
@@ -321,7 +322,7 @@ void SystemTask::WorkLoopCycle()
         spi.Sleep();
 
         // Double Tap needs the touch screen to be in normal mode
-        if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
+        if (!settingsController.isWakeUpModeOn(WakeUpMode::DoubleTap)) {
           touchPanel.Sleep();
         }
         twiMaster.Sleep();
@@ -372,7 +373,7 @@ void SystemTask::UpdateMotion() {
   if (isGoingToSleep or isWakingUp)
     return;
 
-  if (isSleeping && !settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist))
+  if (isSleeping && !settingsController.isWakeUpModeOn(WakeUpMode::RaiseWrist))
     return;
 
   if (isSleeping)
@@ -422,8 +423,8 @@ void SystemTask::OnTouchEvent() {
   if (!isSleeping) {
     PushMessage(Messages::OnTouchEvent);
   } else if (!isWakingUp) {
-    if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) or
-        settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
+    if (settingsController.isWakeUpModeOn(WakeUpMode::SingleTap) or
+        settingsController.isWakeUpModeOn(WakeUpMode::DoubleTap)) {
       PushMessage(Messages::TouchWakeUp);
     }
   }
