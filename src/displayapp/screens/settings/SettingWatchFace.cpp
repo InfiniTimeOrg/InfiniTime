@@ -39,22 +39,20 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pine
   lv_label_set_text_static(icon, Symbols::clock);
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
-
-  optionsTotal = 0;
+  
   constexpr uint8_t watchFaceCount = 3;
   const char * watchFaceNames[watchFaceCount] = {" Digital face",
-                                            " Analog face",
-                                            " PineTimeStyle"};
+                                                " Analog face",
+                                                " PineTimeStyle"};
 
-  for (uint8_t i = 0; i < watchFaceCount; ++i) {
+  for (; optionsTotal < watchFaceCount; ++optionsTotal) {
     cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-    lv_checkbox_set_text_static(cbOption[optionsTotal], watchFaceNames[i]);
+    lv_checkbox_set_text_static(cbOption[optionsTotal], watchFaceNames[optionsTotal]);
     cbOption[optionsTotal]->user_data = this;
     lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-    if (settingsController.GetClockFace() == i) {
+    if (settingsController.GetClockFace() == optionsTotal) {
       lv_checkbox_set_checked(cbOption[optionsTotal], true);
     }
-    ++optionsTotal;
   }
 }
 
