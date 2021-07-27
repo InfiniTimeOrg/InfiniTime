@@ -10,7 +10,7 @@ namespace {
   const char* ToString(Pinetime::Controllers::HeartRateController::States s) {
     switch (s) {
       case Pinetime::Controllers::HeartRateController::States::NotEnoughData:
-        return "Not enough data,\nplease wait...";
+        return "LOAD,\nplease wait...";
       case Pinetime::Controllers::HeartRateController::States::NoTouch:
         return "No touch detected";
       case Pinetime::Controllers::HeartRateController::States::Running:
