@@ -381,8 +381,12 @@ void SystemTask::UpdateMotion() {
 
   motionController.IsSensorOk(motionSensor.IsOk());
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
-  if (motionController.ShouldWakeUp(isSleeping)) {
-    GoToRunning();
+  if (motionController.ShouldWakeUp()) {
+    if (isSleeping) {
+      GoToRunning();
+    } else {
+      ReloadIdleTimer();
+    }
   }
 }
 

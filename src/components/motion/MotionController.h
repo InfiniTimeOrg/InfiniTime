@@ -27,7 +27,7 @@ namespace Pinetime {
       uint32_t NbSteps() const {
         return nbSteps;
       }
-      bool ShouldWakeUp(bool isSleeping);
+      bool ShouldWakeUp();
 
       void IsSensorOk(bool isOk);
       bool IsSensorOk() const {
