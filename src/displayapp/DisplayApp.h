@@ -102,7 +102,6 @@ namespace Pinetime {
 
       TouchModes touchMode = TouchModes::Gestures;
 
-      TouchEvents OnTouchEvent();
       void RunningState();
       void IdleState();
       static void Process(void* instance);
