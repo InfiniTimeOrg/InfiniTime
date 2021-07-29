@@ -44,7 +44,7 @@ jobs:
 
       - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
         if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
-        uses: fiam/arm-none-eabi-gcc@v1.0.2
+        uses: fiam/arm-none-eabi-gcc@v1.0.4
         with:
           # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
           release: 9-2020-q2
@@ -83,7 +83,7 @@ jobs:
         if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
         run:  |
           cd ${{ runner.temp }}
-          git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
+          git clone --branch v1.7.2 https://github.com/JuulLabs-OSS/mcuboot
 
       - name: Install imgtool dependencies
         run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
@@ -99,6 +99,8 @@ jobs:
 
       - name: Checkout source files
         uses: actions/checkout@v2
+        with:
+          submodules: 'true'
 
       - name: Show files
         run:  set ; pwd ; ls -l
@@ -129,7 +131,7 @@ jobs:
         run:  |
           # The generated firmware binary looks like "pinetime-mcuboot-app-0.8.2.bin"
           ls -l build/src/pinetime-mcuboot-app*.bin
-          ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app*.bin build/src/pinetime-mcuboot-app-img.bin
+          ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app-[0-9]*.bin build/src/pinetime-mcuboot-app-img.bin
           ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
 
       - name: Create DFU package
