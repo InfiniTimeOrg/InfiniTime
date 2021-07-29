@@ -1,6 +1,7 @@
 #pragma once
 
 #include <lvgl/src/lv_core/lv_obj.h>
+#include <array>
 #include <chrono>
 #include <cstdint>
 #include <memory>
@@ -38,7 +39,7 @@ namespace Pinetime {
         void OnObjectEvent(lv_obj_t* pObj, lv_event_t i);
 
       private:
-        char displayedChar[5];
+        std::array<char, 5> displayedChar {0, 0, 0, 0, 0};
 
         uint16_t currentYear = 1970;
         Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
