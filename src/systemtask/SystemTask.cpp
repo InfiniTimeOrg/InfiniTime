@@ -265,8 +265,7 @@ void SystemTask::Work() {
             nimbleController.RestartFastAdv();
           }
 
-          isSleeping = false;
-          isWakingUp = false;
+          state = Running;
           isDimmed = false;
           break;
         case Messages::TouchWakeUp: {
@@ -285,7 +284,7 @@ void SystemTask::Work() {
           if (doNotGoToSleep) {
             break;
           }
-          isGoingToSleep = true;
+          state = GoingToSleep; // Already set in PushMessage()
           NRF_LOG_INFO("[systemtask] Going to sleep");
           xTimerStop(idleTimer, 0);
           xTimerStop(dimTimer, 0);
@@ -298,7 +297,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewNotification:
           if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::ON) {
-            if (isSleeping && !isWakingUp) {
+            if (state == Sleeping) {
               GoToRunning();
             } else {
               ReloadIdleTimer();
@@ -307,14 +306,14 @@ void SystemTask::Work() {
           }
           break;
         case Messages::OnTimerDone:
-          if (isSleeping && !isWakingUp) {
+          if (state == Sleeping) {
             GoToRunning();
           }
           motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
         case Messages::SetOffAlarm:
-          if (isSleeping && !isWakingUp) {
+          if (state == Sleeping) {
             GoToRunning();
           }
           motorController.StartRinging();
@@ -330,7 +329,7 @@ void SystemTask::Work() {
           break;
         case Messages::BleFirmwareUpdateStarted:
           doNotGoToSleep = true;
-          if (isSleeping && !isWakingUp) {
+          if (state == Sleeping) {
             GoToRunning();
           }
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::BleFirmwareUpdateStarted);
@@ -345,8 +344,9 @@ void SystemTask::Work() {
         case Messages::StartFileTransfer:
           NRF_LOG_INFO("[systemtask] FS Started");
           doNotGoToSleep = true;
-          if (isSleeping && !isWakingUp)
+          if (state == Sleeping) {
             GoToRunning();
+          }
           // TODO add intent of fs access icon or something
           break;
         case Messages::StopFileTransfer:
@@ -395,8 +395,7 @@ void SystemTask::Work() {
             touchPanel.Sleep();
           }
 
-          isSleeping = true;
-          isGoingToSleep = false;
+          state = Sleeping;
           break;
         case Messages::OnNewDay:
           // We might be sleeping (with TWI device disabled.
@@ -405,8 +404,9 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewHour:
           using Pinetime::Controllers::AlarmController;
-          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours && alarmController.State() != AlarmController::AlarmState::Alerting) {
-            if (isSleeping && !isWakingUp) {
+          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours &&
+              alarmController.State() != AlarmController::AlarmState::Alerting) {
+            if (state == Sleeping) {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
             }
@@ -415,8 +415,9 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewHalfHour:
           using Pinetime::Controllers::AlarmController;
-          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours && alarmController.State() != AlarmController::AlarmState::Alerting) {
-            if (isSleeping && !isWakingUp) {
+          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours &&
+              alarmController.State() != AlarmController::AlarmState::Alerting) {
+            if (state == Sleeping) {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
             }
@@ -427,7 +428,7 @@ void SystemTask::Work() {
           batteryController.ReadPowerState();
           motorController.RunForDuration(15);
           ReloadIdleTimer();
-          if (isSleeping && !isWakingUp) {
+          if (state == Sleeping) {
             GoToRunning();
           }
           break;
@@ -438,7 +439,7 @@ void SystemTask::Work() {
           nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
           break;
         case Messages::OnPairing:
-          if (isSleeping && !isWakingUp) {
+          if (state == Sleeping) {
             GoToRunning();
           }
           motorController.RunForDuration(35);
@@ -473,14 +474,15 @@ void SystemTask::Work() {
 }
 
 void SystemTask::UpdateMotion() {
-  if (isGoingToSleep or isWakingUp) {
+  if (state == GoingToSleep || state == WakingUp) {
     return;
   }
 
-  if (isSleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                      settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
+  if (state == Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
+                             settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
     return;
   }
+
   if (stepCounterMustBeReset) {
     motionSensor.ResetStepCounter();
     stepCounterMustBeReset = false;
@@ -492,7 +494,7 @@ void SystemTask::UpdateMotion() {
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
 
   if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) &&
-      motionController.Should_RaiseWake(isSleeping)) {
+      motionController.Should_RaiseWake(state == Sleeping)) {
     GoToRunning();
   }
   if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) &&
@@ -513,7 +515,7 @@ void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
   switch (action) {
     case Actions::Click:
       // If the first action after fast wakeup is a click, it should be ignored.
-      if (!fastWakeUpDone && !isGoingToSleep) {
+      if (!fastWakeUpDone && state != GoingToSleep) {
         displayApp.PushMessage(Applications::Display::Messages::ButtonPushed);
       }
       break;
@@ -534,20 +536,16 @@ void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
 }
 
 void SystemTask::GoToRunning() {
-  if (isGoingToSleep or (not isSleeping) or isWakingUp) {
-    return;
+  if (state == Sleeping) {
+    state = WakingUp;
+    PushMessage(Messages::GoToRunning);
   }
-  isWakingUp = true;
-  PushMessage(Messages::GoToRunning);
 }
 
 void SystemTask::OnTouchEvent() {
-  if (isGoingToSleep) {
-    return;
-  }
-  if (!isSleeping) {
+  if (state == Running) {
     PushMessage(Messages::OnTouchEvent);
-  } else if (!isWakingUp) {
+  } else if (state == Sleeping) {
     if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) or
         settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
       PushMessage(Messages::TouchWakeUp);
@@ -557,7 +555,7 @@ void SystemTask::OnTouchEvent() {
 
 void SystemTask::PushMessage(System::Messages msg) {
   if (msg == Messages::GoToSleep && !doNotGoToSleep) {
-    isGoingToSleep = true;
+    state = GoingToSleep;
   }
 
   if (in_isr()) {
@@ -592,7 +590,7 @@ void SystemTask::OnIdle() {
 }
 
 void SystemTask::ReloadIdleTimer() {
-  if (isSleeping || isGoingToSleep) {
+  if (state != Running) {
     return;
   }
   if (isDimmed) {
