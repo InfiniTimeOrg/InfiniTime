@@ -266,7 +266,7 @@ void SystemTask::Work() {
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          motorController.SetDuration(35);
+          motorController.SetDuration(settingsController.GetScreenTimeOut()/142);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;
         case Messages::OnTimerDone:
