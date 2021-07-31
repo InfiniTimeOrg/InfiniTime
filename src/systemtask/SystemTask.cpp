@@ -186,7 +186,12 @@ void SystemTask::Work() {
   }
 
   idleTimer = xTimerCreate("idleTimer", pdMS_TO_TICKS(2000), pdFALSE, this, IdleTimerCallback);
-  dimTimer = xTimerCreate("dimTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), pdFALSE, this, DimTimerCallback);
+
+  if (settingsController.GetNotificationTimeOut() > settingsController.GetScreenTimeOut()) {
+    dimTimer = xTimerCreate("dimTimer", pdMS_TO_TICKS(settingsController.GetNotificationTimeOut() - 2000), pdFALSE, this, DimTimerCallback);
+  } else {
+    dimTimer = xTimerCreate("dimTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), pdFALSE, this, DimTimerCallback);
+  }
   xTimerStart(dimTimer, 0);
 
 // Suppress endless loop diagnostic
@@ -215,7 +220,11 @@ void SystemTask::Work() {
           doNotGoToSleep = true;
           break;
         case Messages::UpdateTimeOut:
-          xTimerChangePeriod(dimTimer, pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), 0);
+          if (settingsController.GetNotificationTimeOut() > settingsController.GetScreenTimeOut()) {
+            xTimerChangePeriod(dimTimer, pdMS_TO_TICKS(settingsController.GetNotificationTimeOut() - 2000), 0);
+          } else {
+            xTimerChangePeriod(dimTimer, pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), 0);
+          }
           break;
         case Messages::GoToRunning:
           spi.Wakeup();
