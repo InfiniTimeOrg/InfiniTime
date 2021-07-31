@@ -263,10 +263,10 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateDateTime);
           break;
         case Messages::OnNewNotification:
-          if (isSleeping && !isWakingUp) {
+          if ((isSleeping && !isWakingUp) || isDimmed) {
             GoToRunning();
           }
-          motorController.SetDuration(35);
+          motorController.SetDuration(settingsController.GetNotificationTimeOut()/142);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;
         case Messages::OnTimerDone:
