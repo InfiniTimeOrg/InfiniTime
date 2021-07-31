@@ -19,7 +19,8 @@ namespace Pinetime {
         explicit Notifications(DisplayApp* app,
                                Pinetime::Controllers::NotificationManager& notificationManager,
                                Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                               Modes mode);
+                               Modes mode,
+                               uint32_t notificationTimeOut);
         ~Notifications() override;
 
         bool Refresh() override;

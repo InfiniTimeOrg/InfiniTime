@@ -42,6 +42,7 @@
 #include "displayapp/screens/settings/SettingWakeUp.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
+#include "displayapp/screens/settings/SettingNotificationTimeOut.h"
 
 #include "libs/lv_conf.h"
 
@@ -336,12 +337,12 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
 
     case Apps::Notifications:
       currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask->nimble().alertService(), Screens::Notifications::Modes::Normal);
+        this, notificationManager, systemTask->nimble().alertService(), Screens::Notifications::Modes::Normal, settingsController.GetNotificationTimeOut());
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::NotificationsPreview:
       currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask->nimble().alertService(), Screens::Notifications::Modes::Preview);
+        this, notificationManager, systemTask->nimble().alertService(), Screens::Notifications::Modes::Preview, settingsController.GetNotificationTimeOut());
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::Timer:
@@ -380,6 +381,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingNotificationTimeOut:
+      currentScreen = std::make_unique<Screens::SettingNotificationTimeOut>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SysInfo:
