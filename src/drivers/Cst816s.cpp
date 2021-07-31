@@ -18,21 +18,7 @@ Cst816S::Cst816S(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaste
 }
 
 void Cst816S::Init() {
-  nrf_gpio_cfg_output(pinReset);
-  nrf_gpio_pin_set(pinReset);
-  vTaskDelay(50);
-  nrf_gpio_pin_clear(pinReset);
-  vTaskDelay(5);
-  nrf_gpio_pin_set(pinReset);
-  vTaskDelay(50);
-
-  // Wake the touchpanel up
-  uint8_t dummy;
-  twiMaster.Read(twiAddress, 0x15, &dummy, 1);
-  vTaskDelay(5);
-  twiMaster.Read(twiAddress, 0xa7, &dummy, 1);
-  vTaskDelay(5);
-
+  Wakeup();
   /*
   [2] EnConLR - Continuous operation can slide around
   [1] EnConUD - Slide up and down to enable continuous operation
@@ -40,6 +26,9 @@ void Cst816S::Init() {
   */
   static constexpr uint8_t motionMask = 0b00000101;
   twiMaster.Write(twiAddress, 0xEC, &motionMask, 1);
+
+  static constexpr uint8_t autoSleepTime = 30;
+  twiMaster.Write(twiAddress, 0xF9, &autoSleepTime, 1);
 }
 
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
@@ -88,6 +77,19 @@ void Cst816S::Sleep() {
 }
 
 void Cst816S::Wakeup() {
-  Init();
+  nrf_gpio_cfg_output(pinReset);
+  nrf_gpio_pin_set(pinReset);
+  vTaskDelay(50);
+  nrf_gpio_pin_clear(pinReset);
+  vTaskDelay(5);
+  nrf_gpio_pin_set(pinReset);
+  vTaskDelay(50);
+
+  // Wake the touchpanel up
+  uint8_t dummy;
+  twiMaster.Read(twiAddress, 0x15, &dummy, 1);
+  vTaskDelay(5);
+  twiMaster.Read(twiAddress, 0xa7, &dummy, 1);
+  vTaskDelay(5);
   NRF_LOG_INFO("[TOUCHPANEL] Wakeup");
 }
