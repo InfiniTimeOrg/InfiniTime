@@ -124,10 +124,20 @@ namespace Pinetime {
       
       uint32_t GetStepsGoal() const { return settings.stepsGoal; };
 
+      void SetNotificationTimeOut(uint32_t timeout) {
+        if (timeout != settings.notificationTimeOut) {
+          settingsChanged = true;
+        }
+        settings.notificationTimeOut = timeout;
+      };
+      uint32_t GetNotificationTimeOut() const {
+        return settings.notificationTimeOut;
+      };
+
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0001;
+      static constexpr uint32_t settingsVersion = 0x0002;
       struct SettingsData {
 
         uint32_t version = settingsVersion;
@@ -142,6 +152,8 @@ namespace Pinetime {
         std::bitset<3> wakeUpMode {0};
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+       uint32_t notificationTimeOut = 5000;
       };
 
       SettingsData settings;
