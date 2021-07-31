@@ -288,6 +288,7 @@ void DisplayApp::RunningState() {
     LoadApp(returnToApp, returnDirection);
   }
   lv_task_handler();
+  lvgl.ClearTouch();
 }
 
 void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction) {

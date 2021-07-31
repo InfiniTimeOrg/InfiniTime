@@ -25,6 +25,7 @@ namespace Pinetime {
       bool GetTouchPadInfo(lv_indev_data_t* ptr);
       void SetFullRefresh(FullRefreshDirections direction);
       void SetNewTapEvent(uint16_t x, uint16_t y);
+      void ClearTouch();
 
     private:
       void InitDisplay();
@@ -55,6 +56,7 @@ namespace Pinetime {
       uint16_t tap_x = 0;
       uint16_t tap_y = 0;
       bool tapped = false;
+      bool touchProcessed = false;
     };
   }
 }

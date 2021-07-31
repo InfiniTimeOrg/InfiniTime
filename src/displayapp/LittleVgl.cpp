@@ -172,12 +172,19 @@ void LittleVgl::SetNewTapEvent(uint16_t x, uint16_t y) {
   tapped = true;
 }
 
-bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
-  if (tapped) {
-    ptr->point.x = tap_x;
-    ptr->point.y = tap_y;
-    ptr->state = LV_INDEV_STATE_PR;
+void LittleVgl::ClearTouch() {
+  if (touchProcessed) {
+    touchProcessed = false;
     tapped = false;
+  }
+}
+
+bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
+  touchProcessed = true;
+  ptr->point.x = tap_x;
+  ptr->point.y = tap_y;
+  if (tapped) {
+    ptr->state = LV_INDEV_STATE_PR;
   } else {
     ptr->state = LV_INDEV_STATE_REL;
   }
