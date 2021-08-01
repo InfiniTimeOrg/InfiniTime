@@ -16,41 +16,37 @@ void MotorController::Init() {
   nrf_gpio_pin_set(pinMotor);
   app_timer_init();
 
-  app_timer_create(&shortVibTimer, APP_TIMER_MODE_SINGLE_SHOT, vibrate);
-  app_timer_create(&longVibTimer, APP_TIMER_MODE_REPEATED, vibrate);
-  isBusy = false;
+  app_timer_create(&shortVibTimer, APP_TIMER_MODE_SINGLE_SHOT, StopMotor);
+  app_timer_create(&longVibTimer, APP_TIMER_MODE_REPEATED, Ring);
 }
 
-void MotorController::runForDuration(uint8_t motorDuration) {
+void MotorController::Ring(void* p_context) {
+  auto* motorController = static_cast<MotorController*>(p_context);
+  motorController->RunForDuration(50);
+}
 
-  if (settingsController.GetVibrationStatus() == Controllers::Settings::Vibration::OFF || isBusy)
+void MotorController::RunForDuration(uint8_t motorDuration) {
+  if (settingsController.GetVibrationStatus() == Controllers::Settings::Vibration::OFF) {
     return;
+  }
 
   nrf_gpio_pin_clear(pinMotor);
-  /* Start timer for motorDuration miliseconds and timer triggers vibrate() when it finishes*/
-  app_timer_start(shortVibTimer, APP_TIMER_TICKS(motorDuration), NULL);
+  app_timer_start(shortVibTimer, APP_TIMER_TICKS(motorDuration), nullptr);
 }
 
-void MotorController::startRunning(uint8_t motorDuration) {
-  if (settingsController.GetVibrationStatus() == Controllers::Settings::Vibration::OFF || isBusy )
+void MotorController::StartRinging() {
+  if (settingsController.GetVibrationStatus() == Controllers::Settings::Vibration::OFF) {
     return;
-  //prevent other vibrations while running
-  isBusy = true;
-  nrf_gpio_pin_clear(pinMotor);
-  app_timer_start(longVibTimer, APP_TIMER_TICKS(motorDuration), NULL);
+  }
+  Ring(this);
+  app_timer_start(longVibTimer, APP_TIMER_TICKS(1000), this);
 }
 
-void MotorController::stopRunning() {
-  
+void MotorController::StopRinging() {
   app_timer_stop(longVibTimer);
   nrf_gpio_pin_set(pinMotor);
-  isBusy = false;
 }
 
-void MotorController::vibrate(void* p_context) {
-  if (nrf_gpio_pin_out_read(pinMotor) == 0) {
-    nrf_gpio_pin_set(pinMotor);
-  } else {
-    nrf_gpio_pin_clear(pinMotor);
-  }
+void MotorController::StopMotor(void* p_context) {
+  nrf_gpio_pin_set(pinMotor);
 }

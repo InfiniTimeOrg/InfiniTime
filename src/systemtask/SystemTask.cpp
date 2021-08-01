@@ -267,16 +267,17 @@ void SystemTask::Work() {
             GoToRunning();
           }
           if (notificationManager.GetLastNotification().category == Controllers::NotificationManager::Categories::IncomingCall) {
-            motorController.startRunning(500);
+            motorController.StartRinging();
           } else {
-            motorController.runForDuration(35);
+            motorController.RunForDuration(35);
           }
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
+          break;
         case Messages::OnTimerDone:
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          motorController.runForDuration(35);
+          motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
         case Messages::BleConnected:
@@ -329,7 +330,7 @@ void SystemTask::Work() {
           stepCounterMustBeReset = true;
           break;
         case Messages::OnChargingEvent:
-          motorController.SetDuration(15);
+          motorController.RunForDuration(15);
 	  // Battery level is updated on every message - there's no need to do anything
           break;
 

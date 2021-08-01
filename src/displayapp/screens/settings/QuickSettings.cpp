@@ -140,7 +140,7 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
 
     if (lv_obj_get_state(btn3, LV_BTN_PART_MAIN) & LV_STATE_CHECKED) {
       settingsController.SetVibrationStatus(Controllers::Settings::Vibration::ON);
-      motorController.runForDuration(35);
+      motorController.RunForDuration(35);
       lv_label_set_text_static(btn3_lvl, Symbols::notificationsOn);
     } else {
       settingsController.SetVibrationStatus(Controllers::Settings::Vibration::OFF);

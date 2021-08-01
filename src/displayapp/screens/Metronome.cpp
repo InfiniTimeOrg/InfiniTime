@@ -109,9 +109,9 @@ bool Metronome::Refresh() {
         startTime = xTaskGetTickCount();
         if (counter == 0) {
           counter = bpb;
-          motorController.SetDuration(90);
+          motorController.RunForDuration(90);
         } else {
-          motorController.SetDuration(30);
+          motorController.RunForDuration(30);
         }
       }
       break;
