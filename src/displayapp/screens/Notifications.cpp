@@ -11,8 +11,7 @@ extern lv_font_t jetbrains_mono_bold_20;
 Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                             Modes mode,
-                             uint32_t screenTimeOut)
+                             Modes mode)
   : Screen(app), notificationManager {notificationManager}, alertNotificationService {alertNotificationService}, mode {mode} {
   notificationManager.ClearNewNotificationFlag();
   auto notification = notificationManager.GetLastNotification();
@@ -46,7 +45,7 @@ Notifications::Notifications(DisplayApp* app,
 
     lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
     timeoutTickCountStart = xTaskGetTickCount();
-    timeoutTickCountEnd = timeoutTickCountStart + screenTimeOut;
+    timeoutTickCountEnd = timeoutTickCountStart + 10000;
   }
 }
 
@@ -69,6 +68,11 @@ bool Notifications::Refresh() {
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+   if (mode == Modes::Preview && event == Pinetime::Applications::TouchEvents::SwipeDown) {
+     running = false;
+     return true;
+   }
+
   if (mode != Modes::Normal)
     return true;
 
