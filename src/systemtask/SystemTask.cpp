@@ -266,11 +266,6 @@ void SystemTask::Work() {
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          if (notificationManager.GetLastNotification().category == Controllers::NotificationManager::Categories::IncomingCall) {
-            motorController.StartRinging();
-          } else {
-            motorController.RunForDuration(35);
-          }
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;
         case Messages::OnTimerDone:
