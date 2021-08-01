@@ -5,6 +5,7 @@
 #include <memory>
 #include "Screen.h"
 #include "components/ble/NotificationManager.h"
+#include "components/motor/MotorController.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -19,6 +20,7 @@ namespace Pinetime {
         explicit Notifications(DisplayApp* app,
                                Pinetime::Controllers::NotificationManager& notificationManager,
                                Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                               Pinetime::Controllers::MotorController& motorController,
                                Modes mode);
         ~Notifications() override;
 

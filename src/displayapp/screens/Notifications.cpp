@@ -11,6 +11,7 @@ extern lv_font_t jetbrains_mono_bold_20;
 Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                             Pinetime::Controllers::MotorController& motorController,
                              Modes mode)
   : Screen(app), notificationManager {notificationManager}, alertNotificationService {alertNotificationService}, mode {mode} {
   notificationManager.ClearNewNotificationFlag();
@@ -35,16 +36,21 @@ Notifications::Notifications(DisplayApp* app,
                                                      alertNotificationService);
   }
 
-  if (mode == Modes::Preview && notification.category != Controllers::NotificationManager::Categories::IncomingCall) {
-    timeoutLine = lv_line_create(lv_scr_act(), nullptr);
+  if (mode == Modes::Preview) {
+    if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
+      motorController.StartRinging();
+    } else {
+      motorController.RunForDuration(35);
+      timeoutLine = lv_line_create(lv_scr_act(), nullptr);
 
-    lv_obj_set_style_local_line_width(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-    lv_obj_set_style_local_line_color(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-    lv_obj_set_style_local_line_rounded(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
+      lv_obj_set_style_local_line_width(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
+      lv_obj_set_style_local_line_color(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+      lv_obj_set_style_local_line_rounded(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
 
-    lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
-    timeoutTickCountStart = xTaskGetTickCount();
-    timeoutTickCountEnd = timeoutTickCountStart + (5 * 1024);
+      lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
+      timeoutTickCountStart = xTaskGetTickCount();
+      timeoutTickCountEnd = timeoutTickCountStart + (5 * 1024);
+    }
   }
 }
 
@@ -68,8 +74,9 @@ bool Notifications::Refresh() {
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  if (mode != Modes::Normal)
-    return true;
+  if (mode != Modes::Normal) {
+    return false;
+  }
 
   switch (event) {
     case Pinetime::Applications::TouchEvents::SwipeDown: {
