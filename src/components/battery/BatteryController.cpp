@@ -61,9 +61,9 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     // A hardware voltage divider divides the battery voltage by 2
     // ADC gain is 1/4
     // thus adc_voltage = battery_voltage / 2 * gain = battery_voltage / 8
-    // reference_voltage is 0.6V
+    // reference_voltage is 600mV
     // p_event->data.done.p_buffer[0] = (adc_voltage / reference_voltage) * 1024
-    voltage = p_event->data.done.p_buffer[0] * (0.6 * 8 * 1000) / 1024;
+    voltage = p_event->data.done.p_buffer[0] * (8 * 600) / 1024;
 
     if (voltage > battery_max) {
       percentRemaining = 100;
