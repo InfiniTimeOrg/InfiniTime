@@ -13,8 +13,12 @@ namespace Pinetime {
         DirtyValue() = default; // Use NSDMI
         explicit DirtyValue(T const& v) : value {v} {
         } // Use MIL and const-lvalue-ref
-        bool IsUpdated() const {
-          return isUpdated;
+        bool IsUpdated() {
+          if (this->isUpdated) {
+            this->isUpdated = false;
+            return true;
+          }
+          return false;
         }
         T const& Get() {
           this->isUpdated = false;

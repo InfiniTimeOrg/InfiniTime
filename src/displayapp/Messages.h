@@ -11,8 +11,11 @@ namespace Pinetime {
         TouchEvent,
         ButtonPushed,
         NewNotification,
+        TimerDone,
         BleFirmwareUpdateStarted,
-        UpdateTimeOut
+        UpdateTimeOut,
+        DimScreen,
+        RestoreBrightness
       };
     }
   }

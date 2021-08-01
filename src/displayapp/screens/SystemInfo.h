@@ -27,22 +27,24 @@ namespace Pinetime {
                             Pinetime::Controllers::Battery& batteryController,
                             Pinetime::Controllers::BrightnessController& brightnessController,
                             Pinetime::Controllers::Ble& bleController,
-                            Pinetime::Drivers::WatchdogView& watchdog);
+                            Pinetime::Drivers::WatchdogView& watchdog,
+                            Pinetime::Controllers::MotionController& motionController);
         ~SystemInfo() override;
         bool Refresh() override;
-        bool OnButtonPushed() override;
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
-        bool running = true;
-
         Pinetime::Controllers::DateTime& dateTimeController;
         Pinetime::Controllers::Battery& batteryController;
         Pinetime::Controllers::BrightnessController& brightnessController;
         Pinetime::Controllers::Ble& bleController;
         Pinetime::Drivers::WatchdogView& watchdog;
+        Pinetime::Controllers::MotionController& motionController;
 
         ScreenList<5> screens;
+
+        static bool sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs);
+
         std::unique_ptr<Screen> CreateScreen1();
         std::unique_ptr<Screen> CreateScreen2();
         std::unique_ptr<Screen> CreateScreen3();

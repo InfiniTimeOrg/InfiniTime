@@ -121,6 +121,11 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
       NRF_LOG_INFO(
         "[DFU] -> Start data received : SD size : %d, BT size : %d, app size : %d", softdeviceSize, bootloaderSize, applicationSize);
 
+      // wait until SystemTask has finished waking up all devices
+      while (systemTask.IsSleeping()) {
+        vTaskDelay(50); // 50ms
+      }
+
       dfuImage.Erase();
 
       uint8_t data[] {16, 1, 1};
@@ -205,7 +210,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
         bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Running);
         bleController.FirmwareUpdateTotalBytes(0xffffffffu);
         bleController.FirmwareUpdateCurrentBytes(0);
-        systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleFirmwareUpdateStarted);
+        systemTask.PushMessage(Pinetime::System::Messages::BleFirmwareUpdateStarted);
         return 0;
       } else {
         NRF_LOG_INFO("[DFU] -> Start DFU, mode %d not supported!", imageType);
@@ -261,13 +266,14 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
                          static_cast<uint8_t>(ErrorCodes::NoError)};
         notificationManager.AsyncSend(connectionHandle, controlPointCharacteristicHandle, data, 3);
       } else {
-        bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Error);
         NRF_LOG_INFO("Image Error : bad CRC");
 
         uint8_t data[3] {static_cast<uint8_t>(Opcodes::Response),
                          static_cast<uint8_t>(Opcodes::ValidateFirmware),
                          static_cast<uint8_t>(ErrorCodes::CrcError)};
         notificationManager.AsyncSend(connectionHandle, controlPointCharacteristicHandle, data, 3);
+        bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Error);
+        Reset();
       }
 
       return 0;
@@ -278,10 +284,8 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
         return 0;
       }
       NRF_LOG_INFO("[DFU] -> Activate image and reset!");
-      bleController.StopFirmwareUpdate();
-      systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleFirmwareUpdateFinished);
-      Reset();
       bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated);
+      Reset();
       return 0;
     default:
       return 0;
@@ -289,6 +293,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
 }
 
 void DfuService::OnTimeout() {
+  bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Error);
   Reset();
 }
 
@@ -302,9 +307,8 @@ void DfuService::Reset() {
   applicationSize = 0;
   expectedCrc = 0;
   notificationManager.Reset();
-  bleController.State(Pinetime::Controllers::Ble::FirmwareUpdateStates::Error);
   bleController.StopFirmwareUpdate();
-  systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleFirmwareUpdateFinished);
+  systemTask.PushMessage(Pinetime::System::Messages::BleFirmwareUpdateFinished);
 }
 
 DfuService::NotificationManager::NotificationManager() {

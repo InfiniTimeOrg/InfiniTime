@@ -166,6 +166,13 @@ set(NIMBLE_SRC
         libs/mynewt-nimble/nimble/host/util/src/addr.c
         )
 
+set(LITTLEFS_SRC
+        libs/littlefs/lfs_util.h
+        libs/littlefs/lfs.h
+        libs/littlefs/lfs_util.c
+        libs/littlefs/lfs.c
+        )
+
 set(LVGL_SRC
         libs/lv_conf.h
         libs/lvgl/lvgl.h
@@ -235,6 +242,7 @@ set(LVGL_SRC
         libs/lvgl/src/lv_widgets/lv_cont.h
         libs/lvgl/src/lv_widgets/lv_cpicker.h
         libs/lvgl/src/lv_widgets/lv_dropdown.h
+        libs/lvgl/src/lv_widgets/lv_gauge.h
         libs/lvgl/src/lv_widgets/lv_img.h
         libs/lvgl/src/lv_widgets/lv_imgbtn.h
         libs/lvgl/src/lv_widgets/lv_keyboard.h
@@ -321,6 +329,7 @@ set(LVGL_SRC
         libs/lvgl/src/lv_widgets/lv_cont.c
         libs/lvgl/src/lv_widgets/lv_cpicker.c
         libs/lvgl/src/lv_widgets/lv_dropdown.c
+        libs/lvgl/src/lv_widgets/lv_gauge.c
         libs/lvgl/src/lv_widgets/lv_img.c
         libs/lvgl/src/lv_widgets/lv_imgbtn.c
         libs/lvgl/src/lv_widgets/lv_keyboard.c
@@ -396,6 +405,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
         displayapp/screens/Navigation.cpp
+        displayapp/screens/Metronome.cpp
         displayapp/screens/Motion.cpp
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp
@@ -407,6 +417,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/List.cpp
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
+        displayapp/screens/Timer.cpp
 
         ## Settings
         displayapp/screens/settings/QuickSettings.cpp
@@ -421,6 +432,7 @@ list(APPEND SOURCE_FILES
         displayapp/icons/bg_clock.c
         displayapp/screens/WatchFaceAnalog.cpp
         displayapp/screens/WatchFaceDigital.cpp
+        displayapp/screens/PineTimeStyle.cpp
 
         ##
 
@@ -459,6 +471,8 @@ list(APPEND SOURCE_FILES
         components/firmwarevalidator/FirmwareValidator.cpp
         components/motor/MotorController.cpp
         components/settings/Settings.cpp
+        components/timer/TimerController.cpp
+        components/fs/FS.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -470,6 +484,7 @@ list(APPEND SOURCE_FILES
         displayapp/fonts/jetbrains_mono_76.c
         displayapp/fonts/jetbrains_mono_42.c
         displayapp/fonts/lv_font_sys_48.c
+        displayapp/fonts/open_sans_light.c
         displayapp/lv_pinetime_theme.c
 
         systemtask/SystemTask.cpp
@@ -520,6 +535,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/HeartRateService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
         components/settings/Settings.cpp
+        components/timer/TimerController.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -528,7 +544,6 @@ list(APPEND RECOVERY_SOURCE_FILES
         systemtask/SystemTask.cpp
         drivers/TwiMaster.cpp
         components/gfx/Gfx.cpp
-        displayapp/icons/infinitime/infinitime-nb.c
         components/rle/RleDecoder.cpp
         components/heartrate/HeartRateController.cpp
         heartratetask/HeartRateTask.cpp
@@ -536,6 +551,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/heartrate/Biquad.cpp
         components/heartrate/Ptagc.cpp
         components/motor/MotorController.cpp
+        components/fs/FS.cpp
         )
 
 list(APPEND RECOVERYLOADER_SOURCE_FILES
@@ -555,7 +571,6 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
         drivers/St7789.cpp
         components/brightness/BrightnessController.cpp
 
-        displayapp/icons/infinitime/infinitime-nb.c
         recoveryLoader.cpp
         )
 
@@ -589,7 +604,9 @@ set(INCLUDE_FILES
         displayapp/Apps.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
+        displayapp/screens/Metronome.h
         displayapp/screens/Motion.h
+        displayapp/screens/Timer.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h
@@ -619,6 +636,7 @@ set(INCLUDE_FILES
         components/ble/BleClient.h
         components/ble/HeartRateService.h
         components/settings/Settings.h
+        components/timer/TimerController.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
@@ -739,16 +757,18 @@ link_directories(
 )
 
 
-set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -Wall -Wno-unknown-pragmas -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wreturn-type -Werror=return-type)
+set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -Wall -Wno-unknown-pragmas -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wreturn-type -Werror=return-type -fstack-usage -fno-exceptions -fno-non-call-exceptions)
 add_definitions(-DCONFIG_GPIO_AS_PINRESET)
-add_definitions(-DDEBUG)
 add_definitions(-DNIMBLE_CFG_CONTROLLER)
 add_definitions(-DOS_CPUTIME_FREQ)
 add_definitions(-DNRF52 -DNRF52832 -DNRF52832_XXAA -DNRF52_PAN_74 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040)
 add_definitions(-DFREERTOS)
-add_definitions(-DDEBUG_NRF_USER)
-add_definitions(-D__STACK_SIZE=8192)
-add_definitions(-D__HEAP_SIZE=8192)
+add_definitions(-D__STACK_SIZE=1024)
+add_definitions(-D__HEAP_SIZE=4096)
+
+# NOTE : Add the following defines to enable debug mode of the NRF SDK:
+#add_definitions(-DDEBUG)
+#add_definitions(-DDEBUG_NRF_USER)
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
@@ -759,10 +779,10 @@ add_library(nrf-sdk STATIC ${SDK_SOURCE_FILES})
 target_include_directories(nrf-sdk SYSTEM PUBLIC . ../)
 target_include_directories(nrf-sdk SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(nrf-sdk PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
@@ -771,10 +791,10 @@ add_library(nimble STATIC ${NIMBLE_SRC} ${TINYCRYPT_SRC})
 target_include_directories(nimble SYSTEM PUBLIC . ../)
 target_include_directories(nimble SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(nimble PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-rtti>
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
@@ -783,10 +803,22 @@ add_library(lvgl STATIC ${LVGL_SRC})
 target_include_directories(lvgl SYSTEM PUBLIC . ../)
 target_include_directories(lvgl SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(lvgl PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        )
+
+# LITTLEFS_SRC
+add_library(littlefs STATIC ${LITTLEFS_SRC})
+target_include_directories(littlefs SYSTEM PUBLIC . ../)
+target_include_directories(littlefs SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_compile_options(littlefs PRIVATE
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wno-unused-function -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wno-unused-function -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wno-unused-function -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wno-unused-function -Os -fno-rtti>
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
@@ -796,12 +828,12 @@ set(EXECUTABLE_FILE_NAME ${EXECUTABLE_NAME}-${pinetime_VERSION_MAJOR}.${pinetime
 set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_FILE_NAME})
-target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl)
+target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs)
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
@@ -825,13 +857,13 @@ set(IMAGE_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-image-${pinetime_VERSION_
 set(DFU_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 set(NRF5_LINKER_SCRIPT_MCUBOOT "${CMAKE_SOURCE_DIR}/gcc_nrf52-mcuboot.ld")
 add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl)
+target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs)
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
@@ -861,14 +893,14 @@ endif()
 set(EXECUTABLE_RECOVERY_NAME "pinetime-recovery")
 set(EXECUTABLE_RECOVERY_FILE_NAME ${EXECUTABLE_RECOVERY_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 add_executable(${EXECUTABLE_RECOVERY_NAME} ${RECOVERY_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_RECOVERY_NAME} nimble nrf-sdk)
+target_link_libraries(${EXECUTABLE_RECOVERY_NAME} nimble nrf-sdk littlefs)
 set_target_properties(${EXECUTABLE_RECOVERY_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERY_FILE_NAME})
 target_compile_definitions(${EXECUTABLE_RECOVERY_NAME} PUBLIC "PINETIME_IS_RECOVERY")
 target_compile_options(${EXECUTABLE_RECOVERY_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
@@ -891,14 +923,14 @@ set(EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-${
 set(IMAGE_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-image-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.bin)
 set(DFU_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 add_executable(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} ${RECOVERY_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} nimble nrf-sdk)
+target_link_libraries(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} nimble nrf-sdk littlefs)
 set_target_properties(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME})
 target_compile_definitions(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC "PINETIME_IS_RECOVERY")
 target_compile_options(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
@@ -932,10 +964,10 @@ add_executable(${EXECUTABLE_RECOVERYLOADER_NAME} ${RECOVERYLOADER_SOURCE_FILES})
 target_link_libraries(${EXECUTABLE_RECOVERYLOADER_NAME} nrf-sdk)
 set_target_properties(${EXECUTABLE_RECOVERYLOADER_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERYLOADER_FILE_NAME})
 target_compile_options(${EXECUTABLE_RECOVERYLOADER_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 target_include_directories(${EXECUTABLE_RECOVERYLOADER_NAME} PUBLIC
@@ -965,10 +997,10 @@ add_executable(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} ${RECOVERYLOADER_SOURCE
 target_link_libraries(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} nrf-sdk)
 set_target_properties(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 target_include_directories(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PUBLIC

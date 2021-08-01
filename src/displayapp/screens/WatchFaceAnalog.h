@@ -27,7 +27,7 @@ namespace Pinetime {
                         Controllers::DateTime& dateTimeController,
                         Controllers::Battery& batteryController,
                         Controllers::Ble& bleController,
-                        Controllers::NotificationManager& notificatioManager,
+                        Controllers::NotificationManager& notificationManager,
                         Controllers::Settings& settingsController);
 
         ~WatchFaceAnalog() override;
@@ -48,7 +48,7 @@ namespace Pinetime {
         Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
         uint8_t currentDay = 0;
 
-        DirtyValue<float> batteryPercentRemaining {0};
+        DirtyValue<uint8_t> batteryPercentRemaining {0};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
         DirtyValue<bool> notificationState {false};
 
@@ -79,7 +79,7 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
-        Controllers::NotificationManager& notificatioManager;
+        Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
 
         void UpdateClock();

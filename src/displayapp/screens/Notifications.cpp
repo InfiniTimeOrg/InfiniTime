@@ -185,10 +185,10 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
   lv_obj_set_pos(container1, 0, 50);
-  lv_obj_set_width(container1, 240);
-  lv_obj_set_height(container1, 190);
+  lv_obj_set_size(container1, LV_HOR_RES, 190);
 
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
+  lv_cont_set_fit(container1, LV_FIT_NONE);
 
   lv_obj_t* alert_count = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
@@ -198,7 +198,15 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x888888));
   if (title == nullptr)
     title = "Notification";
+  char* pchar;
+  pchar = strchr(title, '\n');
+  while (pchar != nullptr) {
+    *pchar = ' ';
+    pchar = strchr(pchar + 1, '\n');
+  }
   lv_label_set_text(alert_type, title);
+  lv_label_set_long_mode(alert_type, LV_LABEL_LONG_SROLL_CIRC);
+  lv_obj_set_width(alert_type, 180);
   lv_obj_align(alert_type, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 16);
 
   /////////
@@ -211,6 +219,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_label_set_text(alert_subject, msg);
     } break;
     case Controllers::NotificationManager::Categories::IncomingCall: {
+      lv_obj_set_height(container1, 108);
       lv_obj_t* alert_subject = lv_label_create(container1, nullptr);
       lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
       lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
@@ -223,38 +232,29 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_set_width(alert_caller, LV_HOR_RES - 20);
       lv_label_set_text(alert_caller, msg);
 
-      lv_obj_t* callBtnContainer = lv_cont_create(container1, NULL);
-      lv_obj_set_width(callBtnContainer, 240);
-      lv_obj_set_height(callBtnContainer, 90);
-      lv_cont_set_layout(callBtnContainer, LV_LAYOUT_ROW_MID);
-
-      lv_obj_set_style_local_bg_color(callBtnContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x222222));
-      lv_obj_set_style_local_pad_all(callBtnContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
-      lv_obj_set_style_local_margin_top(callBtnContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 40);
-      lv_obj_set_style_local_margin_left(callBtnContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, -8);
-      lv_obj_set_style_local_pad_inner(callBtnContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
-      lv_obj_set_style_local_border_width(callBtnContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
-
-      bt_accept = lv_btn_create(callBtnContainer, nullptr);
+      bt_accept = lv_btn_create(lv_scr_act(), nullptr);
       bt_accept->user_data = this;
       lv_obj_set_event_cb(bt_accept, AcceptIncomingCallEventHandler);
-      lv_obj_set_size(bt_accept, (LV_HOR_RES / 3) - 5, 80);
+      lv_obj_set_size(bt_accept, 76, 76);
+      lv_obj_align(bt_accept, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
       label_accept = lv_label_create(bt_accept, nullptr);
       lv_label_set_text(label_accept, Symbols::phone);
       lv_obj_set_style_local_bg_color(bt_accept, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
 
-      bt_reject = lv_btn_create(callBtnContainer, nullptr);
+      bt_reject = lv_btn_create(lv_scr_act(), nullptr);
       bt_reject->user_data = this;
       lv_obj_set_event_cb(bt_reject, RejectIncomingCallEventHandler);
-      lv_obj_set_size(bt_reject, (LV_HOR_RES / 3) - 5, 80);
+      lv_obj_set_size(bt_reject, 76, 76);
+      lv_obj_align(bt_reject, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
       label_reject = lv_label_create(bt_reject, nullptr);
       lv_label_set_text(label_reject, Symbols::phoneSlash);
       lv_obj_set_style_local_bg_color(bt_reject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
 
-      bt_mute = lv_btn_create(callBtnContainer, nullptr);
+      bt_mute = lv_btn_create(lv_scr_act(), nullptr);
       bt_mute->user_data = this;
       lv_obj_set_event_cb(bt_mute, MuteIncomingCallEventHandler);
-      lv_obj_set_size(bt_mute, (LV_HOR_RES / 3) - 5, 80);
+      lv_obj_set_size(bt_mute, 76, 76);
+      lv_obj_align(bt_mute, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
       label_mute = lv_label_create(bt_mute, nullptr);
       lv_label_set_text(label_mute, Symbols::volumMute);
       lv_obj_set_style_local_bg_color(bt_mute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);

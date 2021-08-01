@@ -7,11 +7,14 @@
 using namespace Pinetime::Drivers;
 
 SpiMaster::SpiMaster(const SpiMaster::SpiModule spi, const SpiMaster::Parameters& params) : spi {spi}, params {params} {
-  mutex = xSemaphoreCreateBinary();
-  ASSERT(mutex != NULL);
 }
 
 bool SpiMaster::Init() {
+  if(mutex == nullptr) {
+    mutex = xSemaphoreCreateBinary();
+    ASSERT(mutex != nullptr);
+  }
+
   /* Configure GPIO pins used for pselsck, pselmosi, pselmiso and pselss for SPI0 */
   nrf_gpio_pin_set(params.pinSCK);
   nrf_gpio_cfg_output(params.pinSCK);
@@ -53,6 +56,7 @@ bool SpiMaster::Init() {
       break;
     case BitOrder::Lsb_Msb:
       regConfig = 1;
+      break;
     default:
       return false;
   }
@@ -132,17 +136,17 @@ void SpiMaster::OnEndEvent() {
 
     spiBaseAddress->TASKS_START = 1;
   } else {
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     if (taskToNotify != nullptr) {
-      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
       vTaskNotifyGiveFromISR(taskToNotify, &xHigherPriorityTaskWoken);
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 
     nrf_gpio_pin_set(this->pinCsn);
     currentBufferAddr = 0;
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken);
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    BaseType_t xHigherPriorityTaskWoken2 = pdFALSE;
+    xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken2);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken | xHigherPriorityTaskWoken2);
   }
 }
 

@@ -16,19 +16,18 @@ namespace {
 
 FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::FirmwareValidator& validator)
   : Screen {app}, validator {validator} {
-  labelVersionInfo = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(labelVersionInfo, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
-  lv_label_set_text(labelVersionInfo, "Version : ");
-  lv_label_set_align(labelVersionInfo, LV_LABEL_ALIGN_LEFT);
-
-  labelVersionValue = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(labelVersionValue, labelVersionInfo, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
-  lv_label_set_recolor(labelVersionValue, true);
-  sprintf(version, "%ld.%ld.%ld", Version::Major(), Version::Minor(), Version::Patch());
-  lv_label_set_text(labelVersionValue, version);
+  labelVersion = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_fmt(labelVersion,
+                        "Version : %d.%d.%d\n"
+                        "ShortRef : %s",
+                        Version::Major(),
+                        Version::Minor(),
+                        Version::Patch(),
+                        Version::GitCommitHash());
+  lv_obj_align(labelVersion, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   labelIsValidated = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(labelIsValidated, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 50);
+  lv_obj_align(labelIsValidated, labelVersion, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
   lv_label_set_recolor(labelIsValidated, true);
   lv_label_set_long_mode(labelIsValidated, LV_LABEL_LONG_BREAK);
   lv_obj_set_width(labelIsValidated, 240);

@@ -149,7 +149,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
         bleController.Disconnect();
       } else {
         bleController.Connect();
-        systemTask.PushMessage(Pinetime::System::SystemTask::Messages::BleConnected);
+        systemTask.PushMessage(Pinetime::System::Messages::BleConnected);
         connectionHandle = event->connect.conn_handle;
         // Service discovery is deffered via systemtask
       }
@@ -234,4 +234,10 @@ void NimbleController::StartDiscovery() {
 
 uint16_t NimbleController::connHandle() {
   return connectionHandle;
+}
+
+void NimbleController::NotifyBatteryLevel(uint8_t level) {
+  if(connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
+    batteryInformationService.NotifyBatteryLevel(connectionHandle, level);
+  }
 }

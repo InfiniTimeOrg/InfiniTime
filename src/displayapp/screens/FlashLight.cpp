@@ -39,14 +39,14 @@ FlashLight::FlashLight(Pinetime::Applications::DisplayApp* app,
   backgroundAction->user_data = this;
   lv_obj_set_event_cb(backgroundAction, event_handler);
 
-  systemTask.PushMessage(Pinetime::System::SystemTask::Messages::DisableSleeping);
+  systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
 }
 
 FlashLight::~FlashLight() {
   lv_obj_clean(lv_scr_act());
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   brightness.Restore();
-  systemTask.PushMessage(Pinetime::System::SystemTask::Messages::EnableSleeping);
+  systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
 void FlashLight::OnClickEvent(lv_obj_t* obj, lv_event_t event) {
@@ -70,5 +70,5 @@ bool FlashLight::Refresh() {
 }
 
 bool FlashLight::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  return true;
+  return false;
 }

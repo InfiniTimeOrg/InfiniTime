@@ -15,7 +15,7 @@ void MotorController::Init() {
   nrf_gpio_cfg_output(pinMotor);
   nrf_gpio_pin_set(pinMotor);
   app_timer_init();
-  
+
   app_timer_create(&shortVibTimer, APP_TIMER_MODE_SINGLE_SHOT, vibrate);
   app_timer_create(&longVibTimer, APP_TIMER_MODE_REPEATED, vibrate);
   isBusy = false;

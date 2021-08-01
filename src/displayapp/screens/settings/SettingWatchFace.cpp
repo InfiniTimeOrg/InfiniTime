@@ -36,7 +36,7 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pine
 
   lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
-  lv_label_set_text_static(icon, Symbols::clock);
+  lv_label_set_text_static(icon, Symbols::home);
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
@@ -55,6 +55,15 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pine
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
   if (settingsController.GetClockFace() == 1) {
+    lv_checkbox_set_checked(cbOption[optionsTotal], true);
+  }
+
+  optionsTotal++;
+  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
+  lv_checkbox_set_text_static(cbOption[optionsTotal], " PineTimeStyle");
+  cbOption[optionsTotal]->user_data = this;
+  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+  if (settingsController.GetClockFace() == 2) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
 

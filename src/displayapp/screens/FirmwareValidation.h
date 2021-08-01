@@ -23,9 +23,7 @@ namespace Pinetime {
       private:
         Pinetime::Controllers::FirmwareValidator& validator;
 
-        lv_obj_t* labelVersionInfo;
-        lv_obj_t* labelVersionValue;
-        char version[9];
+        lv_obj_t* labelVersion;
         lv_obj_t* labelIsValidated;
         lv_obj_t* buttonValidate;
         lv_obj_t* labelButtonValidate;

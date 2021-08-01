@@ -6,12 +6,13 @@
 using namespace Pinetime::Applications;
 
 HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor, Controllers::HeartRateController& controller)
-  : heartRateSensor {heartRateSensor}, controller {controller}, ppg {static_cast<float>(heartRateSensor.ReadHrs())} {
-  messageQueue = xQueueCreate(10, 1);
-  controller.SetHeartRateTask(this);
+  : heartRateSensor {heartRateSensor}, controller {controller}, ppg{} {
 }
 
 void HeartRateTask::Start() {
+  messageQueue = xQueueCreate(10, 1);
+  controller.SetHeartRateTask(this);
+
   if (pdPASS != xTaskCreate(HeartRateTask::Process, "Heartrate", 500, this, 0, &taskHandle))
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }

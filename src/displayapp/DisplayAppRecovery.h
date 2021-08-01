@@ -23,6 +23,7 @@
 #include "Apps.h"
 #include "Messages.h"
 #include "DummyLittleVgl.h"
+#include "components/timer/TimerController.h"
 
 namespace Pinetime {
   namespace System {
@@ -38,14 +39,15 @@ namespace Pinetime {
                  Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
                  Drivers::WatchdogView& watchdog,
-                 System::SystemTask& systemTask,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,
-                 Pinetime::Controllers::Settings& settingsController,
+                 Controllers::Settings& settingsController,
                  Pinetime::Controllers::MotorController& motorController,
-                 Pinetime::Controllers::MotionController& motionController);
+                 Pinetime::Controllers::MotionController& motionController,
+                 Pinetime::Controllers::TimerController& timerController);
       void Start();
       void PushMessage(Pinetime::Applications::Display::Messages msg);
+      void Register(Pinetime::System::SystemTask* systemTask);
 
     private:
       TaskHandle_t taskHandle;
