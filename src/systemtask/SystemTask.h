@@ -67,6 +67,7 @@ namespace Pinetime {
       void Start();
       void PushMessage(Messages msg);
 
+      uint32_t SavingSteps(uint32_t steps);
       void OnButtonPushed();
       void OnTouchEvent();
 

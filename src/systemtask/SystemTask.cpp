@@ -320,11 +320,6 @@ void SystemTask::Work() {
           isSleeping = true;
           isGoingToSleep = false;
           break;
-        case Messages::OnNewDay:
-          // We might be sleeping (with TWI device disabled.
-          // Remember we'll have to reset the counter next time we're awake
-          stepCounterMustBeReset = true;
-          break;
         case Messages::OnChargingEvent:
           motorController.SetDuration(15);
 	  // Battery level is updated on every message - there's no need to do anything
@@ -370,20 +365,39 @@ void SystemTask::UpdateMotion() {
   if (isSleeping)
     twiMaster.Wakeup();
 
-  if (stepCounterMustBeReset) {
-    motionSensor.ResetStepCounter();
-    stepCounterMustBeReset = false;
-  }
-
-  auto motionValues = motionSensor.Process();
   if (isSleeping)
     twiMaster.Sleep();
 
+  auto motionValues = motionSensor.Process();
+  motionSensor.ResetStepCounter();
+  uint32_t steps = SavingSteps(motionValues.steps);
+
   motionController.IsSensorOk(motionSensor.IsOk());
-  motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
+  motionController.Update(motionValues.x, motionValues.y, motionValues.z, steps);
   if (motionController.ShouldWakeUp(isSleeping)) {
     GoToRunning();
   }
+}
+
+uint32_t SystemTask::SavingSteps(uint32_t steps) {
+  lfs_file_t stepsFile;
+  uint32_t oldSteps;
+
+  char buff[40];
+  snprintf(buff, sizeof(buff), "/steps_%.4d%.2d%.2d.dat", dateTimeController.Year(), static_cast<u_int8_t>(dateTimeController.Month()), dateTimeController.Day());
+  std::string fileName = buff;
+
+  if ( fs.FileOpen(&stepsFile, fileName.c_str(), LFS_O_RDWR | LFS_O_CREAT) != LFS_ERR_OK) {
+    return steps;
+  }
+  fs.FileRead(&stepsFile, reinterpret_cast<uint8_t*>(&oldSteps), sizeof(oldSteps));
+  fs.FileSeek(&stepsFile, 0);
+
+  steps += oldSteps;
+
+  fs.FileWrite(&stepsFile, reinterpret_cast<uint8_t*>(&steps), sizeof(steps));
+  fs.FileClose(&stepsFile);
+  return steps;
 }
 
 void SystemTask::OnButtonPushed() {
