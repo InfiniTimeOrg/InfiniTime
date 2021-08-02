@@ -130,13 +130,16 @@ namespace Pinetime {
       void ReloadIdleTimer();
       bool isBleDiscoveryTimerRunning = false;
       uint8_t bleDiscoveryTimer = 0;
+      int stepCounterSaveTimer = 0;
+      int stepCounterSavedCount = 0;
+      int stepCounterUnsavedCount = 0;
+
       TimerHandle_t dimTimer;
       TimerHandle_t idleTimer;
       bool doNotGoToSleep = false;
 
       void GoToRunning();
       void UpdateMotion();
-      bool stepCounterMustBeReset = false;
       static constexpr TickType_t batteryNotificationPeriod = 1000 * 60 * 10; // 1 tick ~= 1ms. 1ms * 60 * 10 = 10 minutes
       TickType_t batteryNotificationTick = 0;
 

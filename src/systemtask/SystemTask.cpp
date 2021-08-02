@@ -369,11 +369,24 @@ void SystemTask::UpdateMotion() {
     twiMaster.Sleep();
 
   auto motionValues = motionSensor.Process();
+  stepCounterUnsavedCount += motionValues.steps;
   motionSensor.ResetStepCounter();
-  uint32_t steps = SavingSteps(motionValues.steps);
+
+  // As the UpdateMotion is triggered every 100ms or so we will not save
+  // the value every tick. With the code below we will save and restore
+  // values every 10th second. (100 * 100ms = 10s)
+  if (stepCounterSaveTimer > 100) {
+    motionSensor.ResetStepCounter();
+    stepCounterSavedCount = SavingSteps(stepCounterUnsavedCount);
+    stepCounterSaveTimer = 0;
+    stepCounterUnsavedCount = 0;
+  }
+
+  stepCounterSaveTimer++;
 
   motionController.IsSensorOk(motionSensor.IsOk());
-  motionController.Update(motionValues.x, motionValues.y, motionValues.z, steps);
+  motionController.Update(motionValues.x, motionValues.y, motionValues.z, stepCounterSavedCount + stepCounterUnsavedCount);
+
   if (motionController.ShouldWakeUp(isSleeping)) {
     GoToRunning();
   }
