@@ -20,8 +20,10 @@ void ButtonHandler::Work() {
   bool handled = false;
   bool lastState = false;
   bool pressed = false;
+  bool longerPressed = false;
   static constexpr TickType_t doubleClickTime = pdMS_TO_TICKS(200);
   static constexpr TickType_t longPressTime = pdMS_TO_TICKS(400);
+  static constexpr TickType_t longerPressTime = pdMS_TO_TICKS(2000);
   static constexpr uint8_t pinButton = 13;
 
   while (true) {
@@ -50,6 +52,12 @@ void ButtonHandler::Work() {
               handled = true;
             }
           } else if (xTaskGetTickCount() - pressTime >= longPressTime) {
+            if (xTaskGetTickCount() - pressTime >= longerPressTime) {
+              if (!longerPressed) {
+                longerPressed = true;
+                systemTask->OnButtonLongerPressed();
+              }
+            }
             if (!handled) {
               handled = true;
               systemTask->OnButtonLongPressed();
@@ -59,6 +67,7 @@ void ButtonHandler::Work() {
           if (pressed != lastState) {
             releaseTime = xTaskGetTickCount();
             lastState = false;
+            longerPressed = false;
             if (handled) {
               handled = false;
               break;

@@ -407,6 +407,13 @@ void SystemTask::OnButtonLongPressed() {
   }
 }
 
+void SystemTask::OnButtonLongerPressed() {
+  if (!isSleeping) {
+    NRF_LOG_INFO("[systemtask] Button longerpressed");
+    displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonLongerPressed);
+  }
+}
+
 void SystemTask::OnButtonDoubleClicked() {
   if (!isSleeping) {
     NRF_LOG_INFO("[systemtask] Button doubleclicked");

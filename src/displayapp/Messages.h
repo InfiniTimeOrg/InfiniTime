@@ -11,6 +11,7 @@ namespace Pinetime {
         TouchEvent,
         ButtonPushed,
         ButtonLongPressed,
+        ButtonLongerPressed,
         ButtonDoubleClicked,
         NewNotification,
         TimerDone,

@@ -262,6 +262,10 @@ void DisplayApp::Refresh() {
           LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
         }
         break;
+      case Messages::ButtonLongerPressed:
+        // Create reboot app and open it instead
+        LoadApp(Apps::SysInfo, DisplayApp::FullRefreshDirections::Up);
+        break;
       case Messages::ButtonDoubleClicked:
         if (currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
           LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);

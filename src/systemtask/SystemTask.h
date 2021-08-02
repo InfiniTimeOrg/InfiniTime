@@ -70,6 +70,7 @@ namespace Pinetime {
       void OnButtonPushed();
       void OnButtonDoubleClicked();
       void OnButtonLongPressed();
+      void OnButtonLongerPressed();
       void OnTouchEvent();
 
       void OnIdle();
