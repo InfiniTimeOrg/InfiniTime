@@ -375,7 +375,7 @@ void SystemTask::UpdateMotion() {
   // As the UpdateMotion is triggered every 100ms or so we will not save
   // the value every tick. With the code below we will save and restore
   // values every 10th second. (100 * 100ms = 10s)
-  if (stepCounterSaveTimer > 100) {
+  if (stepCounterSaveTimer > 100 && stepCounterUnsavedCount > 0) {
     motionSensor.ResetStepCounter();
     stepCounterSavedCount = SavingSteps(stepCounterUnsavedCount);
     stepCounterSaveTimer = 0;
