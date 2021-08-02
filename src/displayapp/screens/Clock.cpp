@@ -47,7 +47,7 @@ Clock::Clock(DisplayApp* app,
           return PineTimeStyleScreen();
           break;
         case 3:
-          return WatchFaceBinary();
+          return WatchFaceBinaryScreen();
           break;          
       }
       return WatchFaceDigitalScreen();
@@ -95,7 +95,7 @@ std::unique_ptr<Screen> Clock::PineTimeStyleScreen() {
 }
 
 
-std::unique_ptr<Screen> Clock::WatchFaceBinary() {
+std::unique_ptr<Screen> Clock::WatchFaceBinaryScreen() {
   return std::make_unique<Screens::WatchFaceDigital>(app,
                                                      dateTimeController,
                                                      batteryController,
@@ -104,7 +104,7 @@ std::unique_ptr<Screen> Clock::WatchFaceBinary() {
                                                      settingsController,
                                                      heartRateController,
                                                      motionController);
-
+}
 /*
 // Examples for more watch faces
 std::unique_ptr<Screen> Clock::WatchFaceMinimalScreen() {
