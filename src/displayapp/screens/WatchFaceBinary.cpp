@@ -33,8 +33,9 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
 		notificatioManager {notificatioManager},
 		settingsController {settingsController},
 		heartRateController {heartRateController},
-		motionController {motionController} {
-		settingsController.SetClockFace(3);
+		motionController {motionController}
+{
+	settingsController.SetClockFace(3);
 
 	displayedChar[0] = 0;
 	displayedChar[1] = 0;
@@ -414,7 +415,7 @@ bool WatchFaceBinary::Refresh()
 			}
 			else
 			{
-				lv_obj_set_style_local_bg_color(minLED5, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_OFF));
+				lv_obj_set_style_local_bg_color(minLED5, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_OFF);
 			}
 			
 			if (binMinTmp >= 16)
@@ -425,7 +426,7 @@ bool WatchFaceBinary::Refresh()
 			}
 			else
 			{
-				lv_obj_set_style_local_bg_color(minLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_OFF));
+				lv_obj_set_style_local_bg_color(minLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_OFF);
 			}	
 			
 			if (binMinTmp >= 8)
@@ -436,7 +437,7 @@ bool WatchFaceBinary::Refresh()
 			}
 			else
 			{
-				lv_obj_set_style_local_bg_color(minLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_OFF));
+				lv_obj_set_style_local_bg_color(minLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_OFF);
 			}
 			
 			if (binMinTmp >= 4)
