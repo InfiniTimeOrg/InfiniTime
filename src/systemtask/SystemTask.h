@@ -8,6 +8,7 @@
 #include <heartratetask/HeartRateTask.h>
 #include <components/settings/Settings.h>
 #include <drivers/Bma421.h>
+#include <drivers/PinMap.h>
 #include <components/motion/MotionController.h>
 
 #include "SystemMonitor.h"
@@ -120,7 +121,7 @@ namespace Pinetime {
       static constexpr uint8_t pinSpiMiso = 4;
       static constexpr uint8_t pinSpiCsn = 25;
       static constexpr uint8_t pinLcdDataCommand = 18;
-      static constexpr uint8_t pinButton = 13;
+      static constexpr uint8_t pinButton = PINMAP_BUTTON_PIN;
       static constexpr uint8_t pinTouchIrq = 28;
       static constexpr uint8_t pinPowerPresentIrq = 19;
 
