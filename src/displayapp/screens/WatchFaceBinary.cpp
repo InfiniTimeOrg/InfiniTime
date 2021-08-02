@@ -102,7 +102,7 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   //////////////////
 
   // Generate Circles //
-  
+ 
   // for minutes //
   /////////////////
   
@@ -112,7 +112,7 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_obj_set_style_local_border_width(minLED5, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING1);
   lv_obj_set_style_local_line_color(minLED5,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);  
   lv_obj_set_size(minLED5, LED_SIZE1, LED_SIZE1);
-  lv_obj_align(minLED5, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, LED_SPACE_H1/2, (5+(LED_SIZE1/2+LED_SPACE_V1)));  
+  lv_obj_align(minLED5, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, LED_SPACE_H1/2, (5-LED_SIZE1/2));    
   
   minLED4 = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(minLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_OFF);
@@ -197,6 +197,7 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_obj_set_size(hourLED0, LED_SIZE1, LED_SIZE1);
   lv_obj_align(hourLED0, hourLED1, LV_ALIGN_OUT_RIGHT_MID, LED_SPACE_H1, 0);  
 
+
   // for days //
   /////////////////
   
@@ -206,7 +207,7 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_obj_set_style_local_border_width(dayLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING2);
   lv_obj_set_style_local_line_color(dayLED4,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);  
   lv_obj_set_size(dayLED4, LED_SIZE2, LED_SIZE2);
-  lv_obj_align(dayLED4, lv_scr_act(), LV_ALIGN_CENTER, (-((2.5*LED_SIZE2)+(LED_SPACE_H2/2))), (LED_SIZE1));  
+  lv_obj_align(dayLED4, lv_scr_act(), LV_ALIGN_CENTER, (-((2.5*LED_SIZE2)+(LED_SPACE_H2/2))), (LED_SIZE1)); 
 
   dayLED3 = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(dayLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_OFF);
@@ -242,14 +243,14 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   
   // for months //
   ///////////////
-  
+
   monLED3 = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(monLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MON_OFF);
   lv_obj_set_style_local_radius(monLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_obj_set_style_local_border_width(monLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING2);
   lv_obj_set_style_local_line_color(monLED3,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);      
   lv_obj_set_size(monLED3, LED_SIZE2, LED_SIZE2);
-  lv_obj_align(monLED3, minLED3, LV_ALIGN_OUT_BOTTOM_MID, 0, (LED_SPACE_V2));  
+  lv_obj_align(monLED3, dayLED3, LV_ALIGN_OUT_BOTTOM_MID, 0, (LED_SPACE_V2));  
   
   monLED2 = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(monLED2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MON_OFF);
@@ -274,7 +275,6 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_obj_set_style_local_line_color(monLED0,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);      
   lv_obj_set_size(monLED0, LED_SIZE2, LED_SIZE2);
   lv_obj_align(monLED0, monLED1, LV_ALIGN_OUT_RIGHT_MID, LED_SPACE_H2, 0);  
-  
 }
 
 WatchFaceBinary::~WatchFaceBinary()
