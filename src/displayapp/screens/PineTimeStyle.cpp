@@ -264,23 +264,23 @@ bool PineTimeStyle::Refresh() {
     char hoursChar[3];
     char ampmChar[5];
 
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        sprintf(hoursChar, "%02d", hour);
-      } else {
-        if (hour == 0 && hour != 12) {
-          hour = 12;
-          sprintf(ampmChar, "A\nM");
-        } else if (hour == 12 && hour != 0) {
-          hour = 12;
-          sprintf(ampmChar, "P\nM");
-        } else if (hour < 12 && hour != 0) {
-          sprintf(ampmChar, "A\nM");
-        } else if (hour > 12 && hour != 0) {
-          hour = hour - 12;
-          sprintf(ampmChar, "P\nM");
-        }
-        sprintf(hoursChar, "%02d", hour);
+    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+      sprintf(hoursChar, "%02d", hour);
+    } else {
+      if (hour == 0 && hour != 12) {
+        hour = 12;
+        sprintf(ampmChar, "A\nM");
+      } else if (hour == 12 && hour != 0) {
+        hour = 12;
+        sprintf(ampmChar, "P\nM");
+      } else if (hour < 12 && hour != 0) {
+        sprintf(ampmChar, "A\nM");
+      } else if (hour > 12 && hour != 0) {
+        hour = hour - 12;
+        sprintf(ampmChar, "P\nM");
       }
+      sprintf(hoursChar, "%02d", hour);
+    }
 
     if (hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] ||
         minutesChar[1] != displayedChar[3]) {
@@ -292,9 +292,9 @@ bool PineTimeStyle::Refresh() {
       char hourStr[3];
       char minStr[3];
 
-    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         lv_label_set_text(timeAMPM, ampmChar);
-    }
+      }
 
       /* Display the time as 2 pairs of digits */
       sprintf(hourStr, "%c%c", hoursChar[0], hoursChar[1]);
