@@ -88,6 +88,10 @@ If you are using OpenOCD with a STLinkV2, you can find more info [on this page](
 ### Using Gadgetbridge
 Good news! Gadgetbridge **automatically** synchronizes the time when connecting to your PineTime!
 
+### Using any Chromium-based web browser
+You can use it from your PC, Mac, Android. Browsers now have BLE support.
+https://hubmartin.github.io/WebBLEWatch/
+
 ### Using NRFConnect
 You must enable the **CTS** *GATT server* into NRFConnect so that InfiniTime can synchronize the time with your smartphone.
 
