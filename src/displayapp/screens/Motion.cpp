@@ -52,11 +52,10 @@ void Motion::Refresh() {
 
   lv_label_set_text_fmt(labelStep, "Steps %lu", motionController.NbSteps());
 
-  lv_label_set_text_fmt(label, "X #FF0000 %d# Y #008000 %d# Z #FFFF00 %d#", motionController.X() / 0x10, motionController.Y() / 0x10, motionController.Z() / 0x10);
+  lv_label_set_text_fmt(label,
+                        "X #FF0000 %d# Y #008000 %d# Z #FFFF00 %d#",
+                        motionController.X() / 0x10,
+                        motionController.Y() / 0x10,
+                        motionController.Z() / 0x10);
   lv_obj_align(label, NULL, LV_ALIGN_IN_TOP_MID, 0, 10);
-}
-
-bool Motion::OnButtonPushed() {
-  running = false;
-  return true;
 }

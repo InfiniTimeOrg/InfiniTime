@@ -13,8 +13,6 @@ namespace Pinetime {
         ~Label() override;
 
       private:
-        bool running = true;
-
         lv_obj_t* labelText = nullptr;
         lv_point_t pageIndicatorBasePoints[2];
         lv_point_t pageIndicatorPoints[2];

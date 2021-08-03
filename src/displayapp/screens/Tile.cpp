@@ -6,15 +6,17 @@ using namespace Pinetime::Applications::Screens;
 
 namespace {
   static void lv_update_task(struct _lv_task_t* task) {
-    auto user_data = static_cast<Tile*>(task->user_data);
+    auto* user_data = static_cast<Tile*>(task->user_data);
     user_data->UpdateScreen();
   }
 
   static void event_handler(lv_obj_t* obj, lv_event_t event) {
+    if (event != LV_EVENT_VALUE_CHANGED) return;
+
     Tile* screen = static_cast<Tile*>(obj->user_data);
-    uint32_t* eventDataPtr = (uint32_t*) lv_event_get_data();
+    auto* eventDataPtr = (uint32_t*) lv_event_get_data();
     uint32_t eventData = *eventDataPtr;
-    screen->OnObjectEvent(obj, event, eventData);
+    screen->OnValueChangedEvent(obj, eventData);
   }
 }
 
@@ -120,9 +122,9 @@ void Tile::UpdateScreen() {
   lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
 }
 
-void Tile::OnObjectEvent(lv_obj_t* obj, lv_event_t event, uint32_t buttonId) {
-  if (event == LV_EVENT_VALUE_CHANGED) {
-    app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up);
-    running = false;
-  }
+void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId) {
+  if(obj != btnm1) return;
+
+  app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up);
+  running = false;
 }

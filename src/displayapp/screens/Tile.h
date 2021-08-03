@@ -31,7 +31,7 @@ namespace Pinetime {
         ~Tile() override;
 
         void UpdateScreen();
-        void OnObjectEvent(lv_obj_t* obj, lv_event_t event, uint32_t buttonId);
+        void OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId);
 
       private:
         Pinetime::Controllers::Battery& batteryController;

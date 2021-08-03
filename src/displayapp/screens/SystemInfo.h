@@ -30,12 +30,9 @@ namespace Pinetime {
                             Pinetime::Drivers::WatchdogView& watchdog,
                             Pinetime::Controllers::MotionController& motionController);
         ~SystemInfo() override;
-        bool OnButtonPushed() override;
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
-        bool running = true;
-
         Pinetime::Controllers::DateTime& dateTimeController;
         Pinetime::Controllers::Battery& batteryController;
         Pinetime::Controllers::BrightnessController& brightnessController;
