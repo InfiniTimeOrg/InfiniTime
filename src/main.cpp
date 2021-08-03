@@ -42,6 +42,7 @@
 #include "drivers/St7789.h"
 #include "drivers/TwiMaster.h"
 #include "drivers/Cst816s.h"
+#include "drivers/PinMap.h"
 #include "systemtask/SystemTask.h"
 
 #if NRF_LOG_ENABLED
@@ -52,14 +53,6 @@ Pinetime::Logging::NrfLogger logger;
 Pinetime::Logging::DummyLogger logger;
 #endif
 
-static constexpr uint8_t pinSpiSck = 2;
-static constexpr uint8_t pinSpiMosi = 3;
-static constexpr uint8_t pinSpiMiso = 4;
-static constexpr uint8_t pinSpiFlashCsn = 5;
-static constexpr uint8_t pinLcdCsn = 25;
-static constexpr uint8_t pinLcdDataCommand = 18;
-static constexpr uint8_t pinTwiScl = 7;
-static constexpr uint8_t pinTwiSda = 6;
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
 static constexpr uint8_t motionSensorTwiAddress = 0x18;
 static constexpr uint8_t heartRateSensorTwiAddress = 0x44;
@@ -68,14 +61,14 @@ Pinetime::Drivers::SpiMaster spi {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,
                                   {Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
                                    Pinetime::Drivers::SpiMaster::Modes::Mode3,
                                    Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
-                                   pinSpiSck,
-                                   pinSpiMosi,
-                                   pinSpiMiso}};
+                                   Pinetime::PinMap::SpiSck,
+                                   Pinetime::PinMap::SpiMosi,
+                                   Pinetime::PinMap::SpiMiso}};
 
-Pinetime::Drivers::Spi lcdSpi {spi, pinLcdCsn};
-Pinetime::Drivers::St7789 lcd {lcdSpi, pinLcdDataCommand};
+Pinetime::Drivers::Spi lcdSpi {spi, Pinetime::PinMap::SpiLcdCsn};
+Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
 
-Pinetime::Drivers::Spi flashSpi {spi, pinSpiFlashCsn};
+Pinetime::Drivers::Spi flashSpi {spi, Pinetime::PinMap::SpiFlashCsn};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
 
 // The TWI device should work @ up to 400Khz but there is a HW bug which prevent it from
@@ -83,7 +76,7 @@ Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
 // at ~390Khz with correct timings.
 static constexpr uint32_t MaxTwiFrequencyWithoutHardwareBug {0x06200000};
 Pinetime::Drivers::TwiMaster twiMaster {Pinetime::Drivers::TwiMaster::Modules::TWIM1,
-                                        Pinetime::Drivers::TwiMaster::Parameters {MaxTwiFrequencyWithoutHardwareBug, pinTwiSda, pinTwiScl}};
+                                        Pinetime::Drivers::TwiMaster::Parameters {MaxTwiFrequencyWithoutHardwareBug, Pinetime::PinMap::TwiSda, Pinetime::PinMap::TwiScl}};
 Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
 #ifdef PINETIME_IS_RECOVERY
 static constexpr bool isFactory = true;
@@ -106,8 +99,6 @@ Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
 void ble_manager_set_ble_connection_callback(void (*connection)());
 void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
-static constexpr uint8_t pinTouchIrq = 28;
-static constexpr uint8_t pinPowerPresentIrq = 19;
 
 Pinetime::Controllers::HeartRateController heartRateController;
 Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController);
@@ -161,14 +152,14 @@ Pinetime::System::SystemTask systemTask(spi,
                                         fs);
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
-  if (pin == pinTouchIrq) {
+  if (pin == Pinetime::PinMap::Cst816sIrq) {
     systemTask.OnTouchEvent();
     return;
   }
 
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-  if (pin == pinPowerPresentIrq and action == NRF_GPIOTE_POLARITY_TOGGLE) {
+  if (pin == Pinetime::PinMap::PowerPresent and action == NRF_GPIOTE_POLARITY_TOGGLE) {
     xTimerStartFromISR(debounceChargeTimer, &xHigherPriorityTaskWoken);
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     return;

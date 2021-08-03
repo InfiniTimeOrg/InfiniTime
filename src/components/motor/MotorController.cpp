@@ -2,6 +2,7 @@
 #include <hal/nrf_gpio.h>
 #include "systemtask/SystemTask.h"
 #include "app_timer.h"
+#include "drivers/PinMap.h"
 
 APP_TIMER_DEF(vibTimer);
 
@@ -11,8 +12,8 @@ MotorController::MotorController(Controllers::Settings& settingsController) : se
 }
 
 void MotorController::Init() {
-  nrf_gpio_cfg_output(pinMotor);
-  nrf_gpio_pin_set(pinMotor);
+  nrf_gpio_cfg_output(PinMap::Motor);
+  nrf_gpio_pin_set(PinMap::Motor);
   app_timer_create(&vibTimer, APP_TIMER_MODE_SINGLE_SHOT, vibrate);
 }
 
@@ -21,11 +22,11 @@ void MotorController::SetDuration(uint8_t motorDuration) {
   if (settingsController.GetVibrationStatus() == Controllers::Settings::Vibration::OFF)
     return;
 
-  nrf_gpio_pin_clear(pinMotor);
+  nrf_gpio_pin_clear(PinMap::Motor);
   /* Start timer for motorDuration miliseconds and timer triggers vibrate() when it finishes*/
   app_timer_start(vibTimer, APP_TIMER_TICKS(motorDuration), NULL);
 }
 
 void MotorController::vibrate(void* p_context) {
-  nrf_gpio_pin_set(pinMotor);
+  nrf_gpio_pin_set(PinMap::Motor);
 }

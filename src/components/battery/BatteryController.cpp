@@ -12,12 +12,12 @@ Battery::Battery() {
 }
 
 void Battery::Init() {
-  nrf_gpio_cfg_input(chargingPin, static_cast<nrf_gpio_pin_pull_t> GPIO_PIN_CNF_PULL_Pullup);
+  nrf_gpio_cfg_input(PinMap::Charging, static_cast<nrf_gpio_pin_pull_t> GPIO_PIN_CNF_PULL_Pullup);
 }
 
 void Battery::Update() {
-  isCharging = !nrf_gpio_pin_read(chargingPin);
-  isPowerPresent = !nrf_gpio_pin_read(powerPresentPin);
+  isCharging = !nrf_gpio_pin_read(PinMap::Charging);
+  isPowerPresent = !nrf_gpio_pin_read(PinMap::PowerPresent);
 
   if (isReading) {
     return;
