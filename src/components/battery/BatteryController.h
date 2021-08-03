@@ -3,7 +3,6 @@
 #include <drivers/include/nrfx_saadc.h>
 #include <array>
 #include <numeric>
-#include <drivers/PinMap.h>
 
 namespace Pinetime {
   namespace Controllers {
