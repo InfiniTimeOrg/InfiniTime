@@ -4,7 +4,15 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Paddle::Paddle(Pinetime::Applications::DisplayApp* app, Pinetime::Components::LittleVgl& lvgl) : Screen(app), lvgl {lvgl} {
+Paddle::Paddle(Pinetime::Applications::DisplayApp* app,
+               System::SystemTask& systemTask,
+               Pinetime::Components::LittleVgl& lvgl)
+
+  : Screen(app),
+    systemTask {systemTask},
+    lvgl {lvgl}
+
+{
   app->SetTouchMode(DisplayApp::TouchModes::Polling);
 
   background = lv_obj_create(lv_scr_act(), nullptr);
@@ -29,12 +37,15 @@ Paddle::Paddle(Pinetime::Applications::DisplayApp* app, Pinetime::Components::Li
   lv_obj_set_style_local_bg_color(ball, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_radius(ball, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_obj_set_size(ball, ballSize, ballSize);
+
+  systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
 }
 
 Paddle::~Paddle() {
   // Reset the touchmode
   app->SetTouchMode(DisplayApp::TouchModes::Gestures);
   lv_obj_clean(lv_scr_act());
+  systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
 bool Paddle::Refresh() {

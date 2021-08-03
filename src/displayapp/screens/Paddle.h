@@ -3,6 +3,7 @@
 #include <lvgl/lvgl.h>
 #include <cstdint>
 #include "Screen.h"
+#include "systemtask/SystemTask.h"
 
 namespace Pinetime {
   namespace Components {
@@ -13,7 +14,7 @@ namespace Pinetime {
 
       class Paddle : public Screen {
       public:
-        Paddle(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl);
+        Paddle(DisplayApp* app, System::SystemTask& systemTask, Pinetime::Components::LittleVgl& lvgl);
         ~Paddle() override;
 
         bool Refresh() override;
@@ -22,6 +23,7 @@ namespace Pinetime {
         bool OnTouchEvent(uint16_t x, uint16_t y) override;
 
       private:
+        Pinetime::System::SystemTask& systemTask;
         Pinetime::Components::LittleVgl& lvgl;
 
         const uint8_t ballSize = 16;

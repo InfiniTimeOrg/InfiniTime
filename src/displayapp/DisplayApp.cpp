@@ -401,7 +401,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl);
       break;
     case Apps::Paddle:
-      currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
+      currentScreen = std::make_unique<Screens::Paddle>(this, *systemTask, lvgl);
       break;
     case Apps::Music:
       currentScreen = std::make_unique<Screens::Music>(this, systemTask->nimble().music());
