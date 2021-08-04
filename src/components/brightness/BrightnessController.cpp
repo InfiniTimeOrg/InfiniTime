@@ -5,9 +5,9 @@
 using namespace Pinetime::Controllers;
 
 void BrightnessController::Init() {
-  nrf_gpio_cfg_output(PinMap::LcdBacklight1);
-  nrf_gpio_cfg_output(PinMap::LcdBacklight2);
-  nrf_gpio_cfg_output(PinMap::LcdBacklight3);
+  nrf_gpio_cfg_output(PinMap::LcdBacklightLow);
+  nrf_gpio_cfg_output(PinMap::LcdBacklightMedium);
+  nrf_gpio_cfg_output(PinMap::LcdBacklightHigh);
   Set(level);
 }
 
@@ -16,24 +16,24 @@ void BrightnessController::Set(BrightnessController::Levels level) {
   switch (level) {
     default:
     case Levels::High:
-      nrf_gpio_pin_clear(PinMap::LcdBacklight1);
-      nrf_gpio_pin_clear(PinMap::LcdBacklight2);
-      nrf_gpio_pin_clear(PinMap::LcdBacklight3);
+      nrf_gpio_pin_clear(PinMap::LcdBacklightLow);
+      nrf_gpio_pin_clear(PinMap::LcdBacklightMedium);
+      nrf_gpio_pin_clear(PinMap::LcdBacklightHigh);
       break;
     case Levels::Medium:
-      nrf_gpio_pin_clear(PinMap::LcdBacklight1);
-      nrf_gpio_pin_clear(PinMap::LcdBacklight2);
-      nrf_gpio_pin_set(PinMap::LcdBacklight3);
+      nrf_gpio_pin_clear(PinMap::LcdBacklightLow);
+      nrf_gpio_pin_clear(PinMap::LcdBacklightMedium);
+      nrf_gpio_pin_set(PinMap::LcdBacklightHigh);
       break;
     case Levels::Low:
-      nrf_gpio_pin_clear(PinMap::LcdBacklight1);
-      nrf_gpio_pin_set(PinMap::LcdBacklight2);
-      nrf_gpio_pin_set(PinMap::LcdBacklight3);
+      nrf_gpio_pin_clear(PinMap::LcdBacklightLow);
+      nrf_gpio_pin_set(PinMap::LcdBacklightMedium);
+      nrf_gpio_pin_set(PinMap::LcdBacklightHigh);
       break;
     case Levels::Off:
-      nrf_gpio_pin_set(PinMap::LcdBacklight1);
-      nrf_gpio_pin_set(PinMap::LcdBacklight2);
-      nrf_gpio_pin_set(PinMap::LcdBacklight3);
+      nrf_gpio_pin_set(PinMap::LcdBacklightLow);
+      nrf_gpio_pin_set(PinMap::LcdBacklightMedium);
+      nrf_gpio_pin_set(PinMap::LcdBacklightHigh);
       break;
   }
 }

@@ -20,9 +20,9 @@ namespace Pinetime {
 
     static constexpr uint8_t Motor = 16;
 
-    static constexpr uint8_t LcdBacklight1 = 14;
-    static constexpr uint8_t LcdBacklight2 = 22;
-    static constexpr uint8_t LcdBacklight3 = 23;
+    static constexpr uint8_t LcdBacklightLow = 14;
+    static constexpr uint8_t LcdBacklightMedium = 22;
+    static constexpr uint8_t LcdBacklightHigh = 23;
 
     static constexpr uint8_t SpiSck = 2;
     static constexpr uint8_t SpiMosi = 3;
