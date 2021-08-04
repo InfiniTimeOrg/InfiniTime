@@ -17,6 +17,7 @@ namespace Pinetime {
         DoubleTap = 1,
         RaiseWrist = 2,
       };
+      enum class InterfaceSize : uint8_t { Normal, Large };
 
       Settings(Pinetime::Controllers::FS& fs);
 
@@ -115,19 +116,32 @@ namespace Pinetime {
         return settings.brightLevel;
       };
 
-      void SetStepsGoal( uint32_t goal ) { 
-        if ( goal != settings.stepsGoal ) {
+      void SetStepsGoal(uint32_t goal) {
+        if (goal != settings.stepsGoal) {
           settingsChanged = true;
         }
-        settings.stepsGoal = goal; 
+        settings.stepsGoal = goal;
       };
-      
-      uint32_t GetStepsGoal() const { return settings.stepsGoal; };
+
+      uint32_t GetStepsGoal() const {
+        return settings.stepsGoal;
+      };
+
+      void SetInterfaceSize(InterfaceSize size) {
+        if (size != settings.interfaceSize) {
+          settingsChanged = true;
+        }
+        settings.interfaceSize = size;
+      }
+
+      InterfaceSize GetInterfaceSize() const {
+        return settings.interfaceSize;
+      }
 
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0001;
+      static constexpr uint32_t settingsVersion = 0x0002;
       struct SettingsData {
 
         uint32_t version = settingsVersion;
@@ -142,6 +156,8 @@ namespace Pinetime {
         std::bitset<3> wakeUpMode {0};
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        InterfaceSize interfaceSize = InterfaceSize::Normal;
       };
 
       SettingsData settings;

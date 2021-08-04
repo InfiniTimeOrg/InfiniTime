@@ -42,6 +42,7 @@
 #include "displayapp/screens/settings/SettingWakeUp.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
+#include "displayapp/screens/settings/SettingInterfaceSize.h"
 
 #include "libs/lv_conf.h"
 
@@ -376,6 +377,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::SettingSteps:
       currentScreen = std::make_unique<Screens::SettingSteps>(this, settingsController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingInterfaceSize:
+      currentScreen = std::make_unique<Screens::SettingInterfaceSize>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::BatteryInfo:

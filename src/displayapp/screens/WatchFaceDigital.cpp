@@ -71,8 +71,9 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
 
   label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(label_time_ampm, "");
-  lv_obj_align(label_time_ampm, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -30, -55);
+  lv_label_set_text_static(label_time_ampm, "AM");
+  lv_obj_align(label_time_ampm, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, -55);
+  lv_obj_set_hidden(label_time_ampm, settingsController.GetClockType() == Controllers::Settings::ClockType::H24);
 
   backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_click(backgroundLabel, true);
@@ -100,6 +101,13 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  if (settingsController.GetInterfaceSize() == Controllers::Settings::InterfaceSize::Large) {
+    lv_obj_set_style_local_text_font(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+    lv_obj_set_style_local_text_font(label_time_ampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+    lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+    lv_obj_set_style_local_text_font(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  }
 }
 
 WatchFaceDigital::~WatchFaceDigital() {
@@ -186,6 +194,7 @@ bool WatchFaceDigital::Refresh() {
 
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         lv_label_set_text(label_time_ampm, ampmChar);
+        lv_obj_realign(label_time_ampm);
         if (hoursChar[0] == '0') {
           hoursChar[0] = ' ';
         }
@@ -203,10 +212,18 @@ bool WatchFaceDigital::Refresh() {
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
       char dateStr[22];
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        sprintf(dateStr, "%s %d %s %d", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString(), year);
+      if (settingsController.GetInterfaceSize() == Controllers::Settings::InterfaceSize::Normal) {
+        if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+          sprintf(dateStr, "%s %d %s %d", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString(), year);
+        } else {
+          sprintf(dateStr, "%s %s %d %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day, year);
+        }
       } else {
-        sprintf(dateStr, "%s %s %d %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day, year);
+        if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+          sprintf(dateStr, "%s %d %s", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString());
+        } else {
+          sprintf(dateStr, "%s %s %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day);
+        }
       }
       lv_label_set_text(label_date, dateStr);
       lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
