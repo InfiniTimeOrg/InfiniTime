@@ -13,6 +13,7 @@
 #include "CurrentTimeClient.h"
 #include "CurrentTimeService.h"
 #include "DeviceInformationService.h"
+#include "BleNus.h"
 #include "DfuService.h"
 #include "ImmediateAlertService.h"
 #include "MusicService.h"
@@ -82,6 +83,7 @@ namespace Pinetime {
       Pinetime::Controllers::DfuService dfuService;
 
       DeviceInformationService deviceInformationService;
+      BleNus bleNus;
       CurrentTimeClient currentTimeClient;
       AlertNotificationService anService;
       AlertNotificationClient alertNotificationClient;

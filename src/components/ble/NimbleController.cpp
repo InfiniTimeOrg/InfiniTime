@@ -55,6 +55,7 @@ void NimbleController::Init() {
   ble_svc_gatt_init();
 
   deviceInformationService.Init();
+  bleNus.Init();
   currentTimeClient.Init();
   currentTimeService.Init();
   musicService.Init();

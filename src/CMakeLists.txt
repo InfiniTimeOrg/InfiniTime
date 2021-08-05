@@ -456,6 +456,7 @@ list(APPEND SOURCE_FILES
         components/motion/MotionController.cpp
         components/ble/NimbleController.cpp
         components/ble/DeviceInformationService.cpp
+        components/ble/BleNus.cpp
         components/ble/CurrentTimeClient.cpp
         components/ble/AlertNotificationClient.cpp
         components/ble/DfuService.cpp
@@ -522,6 +523,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/motion/MotionController.cpp
         components/ble/NimbleController.cpp
         components/ble/DeviceInformationService.cpp
+        components/ble/BleNus.cpp
         components/ble/CurrentTimeClient.cpp
         components/ble/AlertNotificationClient.cpp
         components/ble/DfuService.cpp
