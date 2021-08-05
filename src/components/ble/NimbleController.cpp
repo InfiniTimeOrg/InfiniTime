@@ -14,6 +14,7 @@
 #include "components/ble/NotificationManager.h"
 #include "components/datetime/DateTimeController.h"
 #include "systemtask/SystemTask.h"
+#include "components/ble/BleNus.h"
 
 using namespace Pinetime::Controllers;
 
@@ -143,6 +144,8 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
 
       /* A new connection was established or a connection attempt failed. */
       NRF_LOG_INFO("connection %s; status=%d ", event->connect.status == 0 ? "established" : "failed", event->connect.status);
+
+      bleNus.SetConnectionHandle(event->connect.conn_handle);
 
       if (event->connect.status != 0) {
         /* Connection failed; resume advertising. */

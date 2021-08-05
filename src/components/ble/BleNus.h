@@ -31,13 +31,16 @@ namespace Pinetime {
     public:
       BleNus();
       void Init();
+      void SetConnectionHandle(uint16_t conn_handle);
+      void Print(char *str);
+
 
       int OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
 
     private:
 
       static uint16_t attr_read_handle;
-
+      uint16_t conn_handle;
 
       static constexpr ble_uuid128_t nusServiceUuid {.u {.type = BLE_UUID_TYPE_128}, .value = NUS_SERVICE_UUID_BASE};
 
