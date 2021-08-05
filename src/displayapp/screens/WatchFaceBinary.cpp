@@ -37,16 +37,11 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
 {
   settingsController.SetClockFace(3);
 
-  int minute_old = 0;
-  
+  minutes_old = 0;
+
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 2);
-  
-  label_volt = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(label_volt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00CDCD));
-  lv_label_set_text(label_volt, "0.00 V");  
-  lv_obj_align(label_volt, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   batteryPlug = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xDD0000));
@@ -63,9 +58,16 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 10, 0);
 
-  label_date = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 20, 85);
-  lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+
+
+  label_year = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(label_year, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 5, (LED_SIZE1));
+  lv_obj_set_style_local_text_color(label_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  
+  label_day = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(label_day, label_year, LV_ALIGN_OUT_BOTTOM_MID, 0, (LED_SPACE_V2));  
+  lv_obj_set_style_local_text_color(label_day, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));  
+  
 
   backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_click(backgroundLabel, true);
@@ -93,8 +95,7 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
-
-
+  
   
   
   //////////////////
@@ -102,9 +103,10 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   //////////////////
 
   // Generate Circles //
- 
+  //////////////////////
+  
   // for minutes //
-  /////////////////
+  // from left to right, start with MSB
   
   minLED5 = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(minLED5, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_OFF);
@@ -112,7 +114,7 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_obj_set_style_local_border_width(minLED5, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING1);
   lv_obj_set_style_local_line_color(minLED5,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);  
   lv_obj_set_size(minLED5, LED_SIZE1, LED_SIZE1);
-  lv_obj_align(minLED5, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, LED_SPACE_H1/2, (5-LED_SIZE1/2));    
+  lv_obj_align(minLED5, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, LED_SPACE_H1/2, (5-LED_SIZE1/2));
   
   minLED4 = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(minLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_OFF);
@@ -155,7 +157,7 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_obj_align(minLED0, minLED1, LV_ALIGN_OUT_RIGHT_MID, LED_SPACE_H1, 0);    
   
   // for hours //
-  ///////////////
+  // from left to right, start with MSB
   
   hourLED4 = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(hourLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_HOUR_OFF);
@@ -199,23 +201,23 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
 
 
   // for days //
-  /////////////////
+  // oriented at right border, so alignment must be from right to left, start with LSB
   
-  dayLED4 = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(dayLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_OFF);
-  lv_obj_set_style_local_radius(dayLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_obj_set_style_local_border_width(dayLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING2);
-  lv_obj_set_style_local_line_color(dayLED4,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);  
-  lv_obj_set_size(dayLED4, LED_SIZE2, LED_SIZE2);
-  lv_obj_align(dayLED4, lv_scr_act(), LV_ALIGN_CENTER, (-((2.5*LED_SIZE2)+(LED_SPACE_H2/2))), (LED_SIZE1)); 
-
-  dayLED3 = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(dayLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_OFF);
-  lv_obj_set_style_local_radius(dayLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_obj_set_style_local_border_width(dayLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING2);
-  lv_obj_set_style_local_line_color(dayLED3,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);  
-  lv_obj_set_size(dayLED3, LED_SIZE2, LED_SIZE2);
-  lv_obj_align(dayLED3, dayLED4, LV_ALIGN_OUT_RIGHT_MID, LED_SPACE_H2, 0);    
+  dayLED0 = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_color(dayLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_OFF);
+  lv_obj_set_style_local_radius(dayLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+  lv_obj_set_style_local_border_width(dayLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING2);
+  lv_obj_set_style_local_line_color(dayLED0,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING); 
+  lv_obj_set_size(dayLED0, LED_SIZE2, LED_SIZE2);
+  lv_obj_align(dayLED0, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -5, (LED_SIZE1));
+  
+  dayLED1 = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_color(dayLED1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_OFF);
+  lv_obj_set_style_local_radius(dayLED1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+  lv_obj_set_style_local_border_width(dayLED1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING2);
+  lv_obj_set_style_local_line_color(dayLED1,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);   
+  lv_obj_set_size(dayLED1, LED_SIZE2, LED_SIZE2);
+  lv_obj_align(dayLED1, dayLED0, LV_ALIGN_OUT_LEFT_MID, -LED_SPACE_H2, 0);  
   
   dayLED2 = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(dayLED2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_OFF);
@@ -223,26 +225,27 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_obj_set_style_local_border_width(dayLED2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING2);
   lv_obj_set_style_local_line_color(dayLED2,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);
   lv_obj_set_size(dayLED2, LED_SIZE2, LED_SIZE2);
-  lv_obj_align(dayLED2, dayLED3, LV_ALIGN_OUT_RIGHT_MID, LED_SPACE_H2, 0);    
+  lv_obj_align(dayLED2, dayLED1, LV_ALIGN_OUT_LEFT_MID, -LED_SPACE_H2, 0);    
   
-  dayLED1 = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(dayLED1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_OFF);
-  lv_obj_set_style_local_radius(dayLED1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_obj_set_style_local_border_width(dayLED1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING2);
-  lv_obj_set_style_local_line_color(dayLED1,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);    
-  lv_obj_set_size(dayLED1, LED_SIZE2, LED_SIZE2);
-  lv_obj_align(dayLED1, dayLED2, LV_ALIGN_OUT_RIGHT_MID, LED_SPACE_H2, 0);    
+  dayLED3 = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_color(dayLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_OFF);
+  lv_obj_set_style_local_radius(dayLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+  lv_obj_set_style_local_border_width(dayLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING2);
+  lv_obj_set_style_local_line_color(dayLED3,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);  
+  lv_obj_set_size(dayLED3, LED_SIZE2, LED_SIZE2);
+  lv_obj_align(dayLED3, dayLED2, LV_ALIGN_OUT_LEFT_MID, -LED_SPACE_H2, 0);    
   
-  dayLED0 = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(dayLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_OFF);
-  lv_obj_set_style_local_radius(dayLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_obj_set_style_local_border_width(dayLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING2);
-  lv_obj_set_style_local_line_color(dayLED0,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);    
-  lv_obj_set_size(dayLED0, LED_SIZE2, LED_SIZE2);
-  lv_obj_align(dayLED0, dayLED1, LV_ALIGN_OUT_RIGHT_MID, LED_SPACE_H2, 0);    
+  dayLED4 = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_color(dayLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_OFF);
+  lv_obj_set_style_local_radius(dayLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+  lv_obj_set_style_local_border_width(dayLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_RING2);
+  lv_obj_set_style_local_line_color(dayLED4,LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_RING);  
+  lv_obj_set_size(dayLED4, LED_SIZE2, LED_SIZE2);
+  lv_obj_align(dayLED4, dayLED3, LV_ALIGN_OUT_LEFT_MID, -LED_SPACE_H2, 0);
+
   
   // for months //
-  ///////////////
+  // aligns with days, normal order is possible -> from left to right, start with MSB
 
   monLED3 = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(monLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MON_OFF);
@@ -293,13 +296,6 @@ bool WatchFaceBinary::Refresh()
     lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
   }
 
-  batteryVoltage = batteryController.Voltage();
-  if (batteryVoltage.IsUpdated())
-  {
-    auto batteryVolt = batteryVoltage.Get();
-    lv_label_set_text_fmt(label_volt, "%1i.%02i V", batteryVolt / 1000, (batteryVolt % 1000 / 10));
-  } 
-
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated())
   {
@@ -340,24 +336,24 @@ bool WatchFaceBinary::Refresh()
     auto year = (int) yearMonthDay.year();
     auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned) yearMonthDay.month());
     auto day = (unsigned) yearMonthDay.day();
+    auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
+    int hour = time.hours().count();
     auto minute = time.minutes().count();
+    auto second = time.seconds().count();
+
 
     // Binary Watch //
-    //////////////////
-  
-    if (minute_old != minute)
+    if (minutes_old != minutes)
     {
-    
       uint8_t binMinTmp = static_cast<int>(minute);
       uint8_t binHourTmp = static_cast<int>(hour);
       
-      // Minuten //
+      // minutes //
       if (binMinTmp >= 32)
       {
         binMinTmp -= 32;
         lv_obj_set_style_local_bg_color(minLED5, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_ON);
-        //binMinArray[5] = true;
       }
       else
       {
@@ -367,7 +363,6 @@ bool WatchFaceBinary::Refresh()
       if (binMinTmp >= 16)
       {
         binMinTmp -= 16;
-        //binMinArray[4] = true;
         lv_obj_set_style_local_bg_color(minLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_ON);
       }
       else
@@ -378,7 +373,6 @@ bool WatchFaceBinary::Refresh()
       if (binMinTmp >= 8)
       {
         binMinTmp -= 8;
-        //binMinArray[3] = true;
         lv_obj_set_style_local_bg_color(minLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_ON);
       }
       else
@@ -389,7 +383,6 @@ bool WatchFaceBinary::Refresh()
       if (binMinTmp >= 4)
       {
         binMinTmp -= 4;
-        //binMinArray[2] = true;
         lv_obj_set_style_local_bg_color(minLED2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_ON);
       }    
       else      
@@ -400,7 +393,6 @@ bool WatchFaceBinary::Refresh()
       if (binMinTmp >= 2)
       {
         binMinTmp -= 2;
-        //binMinArray[1] = true;
         lv_obj_set_style_local_bg_color(minLED1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_ON);
       }
       else
@@ -410,7 +402,6 @@ bool WatchFaceBinary::Refresh()
       
       if (binMinTmp == 1)
       {
-        //binMinArray[0] = true;
         lv_obj_set_style_local_bg_color(minLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_ON);
       }
       else
@@ -418,11 +409,10 @@ bool WatchFaceBinary::Refresh()
         lv_obj_set_style_local_bg_color(minLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MIN_OFF);
       }      
       
-      // Stunden //
+      // hours //
       if (binHourTmp >= 16)
       {
         binHourTmp -= 16;
-        //binHourArray[4] = true;
         lv_obj_set_style_local_bg_color(hourLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_HOUR_ON);
       }
       else
@@ -433,7 +423,6 @@ bool WatchFaceBinary::Refresh()
       if (binHourTmp >= 8)
       {
         binHourTmp -= 8;
-        //binHourArray[3] = true;
         lv_obj_set_style_local_bg_color(hourLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_HOUR_ON);
       }
       else
@@ -444,7 +433,6 @@ bool WatchFaceBinary::Refresh()
       if (binHourTmp >= 4)
       {
         binHourTmp -= 4;
-        //binHourArray[2] = true;
         lv_obj_set_style_local_bg_color(hourLED2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_HOUR_ON);
       }    
       else      
@@ -455,7 +443,6 @@ bool WatchFaceBinary::Refresh()
       if (binHourTmp >= 2)
       {
         binHourTmp -= 2;
-        //binHourArray[1] = true;
         lv_obj_set_style_local_bg_color(hourLED1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_HOUR_ON);
       }
       else
@@ -465,7 +452,6 @@ bool WatchFaceBinary::Refresh()
       
       if (binHourTmp == 1)
       {
-        //binHourArray[0] = true;
         lv_obj_set_style_local_bg_color(hourLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_HOUR_ON);
       }
       else
@@ -473,22 +459,22 @@ bool WatchFaceBinary::Refresh()
         lv_obj_set_style_local_bg_color(hourLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_HOUR_OFF);
       }      
       
-      minute_old = minute;
+      minutes_old = minutes;
     }
     // End Binary Watch //
 
 
-    if ((year != currentYear) || (month != currentMonth) || (day != currentDay)) 
+    if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) 
     {
-      char dateStr[5];    
+      char dateStr[6];
       sprintf(dateStr, "%d", year);    
+      lv_label_set_text(label_year, dateStr);
 
-      lv_label_set_text(label_date, dateStr);
-      lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 20, 85);
-
+      char dayStr[11];
+      sprintf(dayStr, "%s", dateTimeController.DayOfWeekToString());    
+      lv_label_set_text(label_day, dayStr);
 
       // Binary Date //
-
       uint8_t binDayTmp = static_cast<int>(day);
       uint8_t binMonTmp = static_cast<int>(month);
       
@@ -496,7 +482,6 @@ bool WatchFaceBinary::Refresh()
       if (binDayTmp >= 16)
       {
         binDayTmp -= 16;
-        //binMinArray[4] = true;
         lv_obj_set_style_local_bg_color(dayLED4, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_ON);
       }
       else
@@ -507,7 +492,6 @@ bool WatchFaceBinary::Refresh()
       if (binDayTmp >= 8)
       {
         binDayTmp -= 8;
-        //binMinArray[3] = true;
         lv_obj_set_style_local_bg_color(dayLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_ON);
       }
       else
@@ -518,7 +502,6 @@ bool WatchFaceBinary::Refresh()
       if (binDayTmp >= 4)
       {
         binDayTmp -= 4;
-        //binMinArray[2] = true;
         lv_obj_set_style_local_bg_color(dayLED2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_ON);
       }    
       else      
@@ -529,7 +512,6 @@ bool WatchFaceBinary::Refresh()
       if (binDayTmp >= 2)
       {
         binDayTmp -= 2;
-        //binMinArray[1] = true;
         lv_obj_set_style_local_bg_color(dayLED1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_ON);
       }
       else
@@ -539,7 +521,6 @@ bool WatchFaceBinary::Refresh()
       
       if (binDayTmp == 1)
       {
-        //binMinArray[0] = true;
         lv_obj_set_style_local_bg_color(dayLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_DAY_ON);
       }
       else
@@ -551,7 +532,6 @@ bool WatchFaceBinary::Refresh()
       if (binMonTmp >= 8)
       {
         binMonTmp -= 8;
-        //binHourArray[3] = true;
         lv_obj_set_style_local_bg_color(monLED3, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MON_ON);
       }
       else
@@ -562,7 +542,6 @@ bool WatchFaceBinary::Refresh()
       if (binMonTmp >= 4)
       {
         binMonTmp -= 4;
-        //binHourArray[2] = true;
         lv_obj_set_style_local_bg_color(monLED2, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MON_ON);
       }    
       else      
@@ -573,7 +552,6 @@ bool WatchFaceBinary::Refresh()
       if (binMonTmp >= 2)
       {
         binMonTmp -= 2;
-        //binHourArray[1] = true;
         lv_obj_set_style_local_bg_color(monLED1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MON_ON);
       }
       else
@@ -583,16 +561,13 @@ bool WatchFaceBinary::Refresh()
       
       if (binMonTmp == 1)
       {
-        //binHourArray[0] = true;
         lv_obj_set_style_local_bg_color(monLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MON_ON);
       }
       else
       {
         lv_obj_set_style_local_bg_color(monLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_MON_OFF);
       }      
-      
-      // End Binary Date //
-      
+      // Ende Binary Date //
     }
 
     currentYear = year;
