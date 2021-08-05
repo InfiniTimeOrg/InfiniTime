@@ -39,6 +39,7 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
 
   minutes_old = 0;
 
+  
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 2);
@@ -58,8 +59,6 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 10, 0);
 
-
-
   label_year = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_year, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 5, (LED_SIZE1));
   lv_obj_set_style_local_text_color(label_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
@@ -68,7 +67,6 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_obj_align(label_day, label_year, LV_ALIGN_OUT_BOTTOM_MID, 0, (LED_SPACE_V2));  
   lv_obj_set_style_local_text_color(label_day, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));  
   
-
   backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_click(backgroundLabel, true);
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
@@ -96,14 +94,8 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_label_set_text(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   
-  
-  
-  //////////////////
-  // Binary Watch //
-  //////////////////
-
-  // Generate Circles //
-  //////////////////////
+  // Generate Circles for Binary Watch//
+  //////////////////////////////////////
   
   // for minutes //
   // from left to right, start with MSB
