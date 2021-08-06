@@ -396,11 +396,10 @@ uint32_t SystemTask::SavingSteps(uint32_t steps) {
   lfs_file_t stepsFile;
   uint32_t oldSteps;
 
-  char buff[40];
-  snprintf(buff, sizeof(buff), "/steps_%.4d%.2d%.2d.dat", dateTimeController.Year(), static_cast<u_int8_t>(dateTimeController.Month()), dateTimeController.Day());
-  std::string fileName = buff;
+  char fileName[40];
+  snprintf(fileName, sizeof(fileName), "/steps_%.4d%.2d%.2d.dat", dateTimeController.Year(), static_cast<uint8_t>(dateTimeController.Month()), dateTimeController.Day());
 
-  if ( fs.FileOpen(&stepsFile, fileName.c_str(), LFS_O_RDWR | LFS_O_CREAT) != LFS_ERR_OK) {
+  if ( fs.FileOpen(&stepsFile, fileName, LFS_O_RDWR | LFS_O_CREAT) != LFS_ERR_OK) {
     return steps;
   }
   fs.FileRead(&stepsFile, reinterpret_cast<uint8_t*>(&oldSteps), sizeof(oldSteps));
