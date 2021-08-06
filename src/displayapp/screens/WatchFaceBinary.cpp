@@ -39,7 +39,6 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
 
   minutes_old = 0;
 
-  
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 2);
@@ -47,7 +46,7 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   batteryPlug = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xDD0000));
   lv_label_set_text(batteryPlug, Symbols::plug);
-  lv_obj_align(batteryPlug, label_volt, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0000FF));
@@ -59,6 +58,8 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 10, 0);
 
+
+
   label_year = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_year, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 5, (LED_SIZE1));
   lv_obj_set_style_local_text_color(label_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
@@ -67,6 +68,7 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_obj_align(label_day, label_year, LV_ALIGN_OUT_BOTTOM_MID, 0, (LED_SPACE_V2));  
   lv_obj_set_style_local_text_color(label_day, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));  
   
+
   backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_click(backgroundLabel, true);
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
@@ -94,8 +96,14 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_label_set_text(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   
-  // Generate Circles for Binary Watch//
-  //////////////////////////////////////
+  
+  
+  //////////////////
+  // Binary Watch //
+  //////////////////
+
+  // Generate Circles //
+  //////////////////////
   
   // for minutes //
   // from left to right, start with MSB
@@ -301,8 +309,7 @@ bool WatchFaceBinary::Refresh()
     }
   }
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 2);
-  lv_obj_align(label_volt, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
-  lv_obj_align(batteryPlug, label_volt, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
 
@@ -336,7 +343,7 @@ bool WatchFaceBinary::Refresh()
 
 
     // Binary Watch //
-    if (minutes_old != minutes)
+    if (minutes_old != minute)
     {
       uint8_t binMinTmp = static_cast<int>(minute);
       uint8_t binHourTmp = static_cast<int>(hour);
@@ -451,7 +458,7 @@ bool WatchFaceBinary::Refresh()
         lv_obj_set_style_local_bg_color(hourLED0, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LED_COL_HOUR_OFF);
       }      
       
-      minutes_old = minutes;
+      minutes_old = minute;
     }
     // End Binary Watch //
 
