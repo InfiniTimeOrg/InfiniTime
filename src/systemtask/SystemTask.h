@@ -17,6 +17,7 @@
 #include "components/motor/MotorController.h"
 #include "components/timer/TimerController.h"
 #include "components/fs/FS.h"
+#include "components/console/Console.h"
 
 #ifdef PINETIME_IS_RECOVERY
   #include "displayapp/DisplayAppRecovery.h"
@@ -114,6 +115,7 @@ namespace Pinetime {
       Pinetime::Applications::HeartRateTask& heartRateApp;
       Pinetime::Controllers::FS& fs;
       Pinetime::Controllers::NimbleController nimbleController;
+      Pinetime::Console console;
 
       static constexpr uint8_t pinSpiSck = 2;
       static constexpr uint8_t pinSpiMosi = 3;

@@ -89,7 +89,9 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     displayApp{displayApp},
     heartRateApp(heartRateApp),
     fs{fs},
-    nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
+    
+    nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController),
+    console(*this) {
 
 }
 
@@ -296,6 +298,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnTouchEvent:
           ReloadIdleTimer();
+          console.Process();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
         case Messages::OnButtonEvent:
@@ -350,6 +353,9 @@ void SystemTask::Work() {
       nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
       batteryNotificationTick = xTaskGetTickCount();
     }
+
+    
+    
 
     monitor.Process();
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);

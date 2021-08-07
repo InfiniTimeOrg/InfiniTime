@@ -6,22 +6,17 @@
 #undef min
 #include "Version.h"
 
-/* c7e60000-78fc-48fe-8e23-433b3a1942d0
-#define NAVIGATION_SERVICE_UUID_BASE                                                                                                       \
-  { 0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, 0x00, 0x00, 0x00, 0x00 }
-*/
-
 // Service UUID
 // 6E400001-B5A3-F393-E0A9-E50E24DCCA9E
-#define NUS_SERVICE_UUID_BASE                                                                                                       \
+#define NUS_SERVICE_UUID_BASE \
   { 0x9e, 0xca, 0xdc, 0x24, 0x0e, 0xe5, 0xa9, 0xe0, 0x93, 0xf3, 0xa3, 0xb5, 0x01, 0x00, 0x40, 0x6e  }
 
 //6E400002-B5A3-F393-E0A9-E50E24DCCA9E
-#define NUS_CHARACTERTISTIC_RX_UUID                                                                                                       \
+#define NUS_CHARACTERTISTIC_RX_UUID \
   { 0x9e, 0xca, 0xdc, 0x24, 0x0e, 0xe5, 0xa9, 0xe0, 0x93, 0xf3, 0xa3, 0xb5, 0x02, 0x00, 0x40, 0x6e  }
 
 //6E400003-B5A3-F393-E0A9-E50E24DCCA9E
-#define NUS_CHARACTERTISTIC_TX_UUID                                                                                                       \
+#define NUS_CHARACTERTISTIC_TX_UUID \
   { 0x9e, 0xca, 0xdc, 0x24, 0x0e, 0xe5, 0xa9, 0xe0, 0x93, 0xf3, 0xa3, 0xb5, 0x03, 0x00, 0x40, 0x6e  }
 
 
