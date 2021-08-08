@@ -11,6 +11,11 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
+namespace Components
+{
+
+
   class Console {
     public:
       Console(Pinetime::System::SystemTask& systemTask);
@@ -19,5 +24,5 @@ namespace Pinetime {
         Pinetime::System::SystemTask& systemTask;
 
     };
-  
+}
 }

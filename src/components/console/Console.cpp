@@ -4,8 +4,7 @@
 #include "components/ble/BleNus.h"
 
 
-using namespace Pinetime;
-
+using namespace Pinetime::Components;
 
 Console::Console(Pinetime::System::SystemTask& systemTask): systemTask {systemTask}
 {

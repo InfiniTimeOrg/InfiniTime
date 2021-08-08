@@ -115,7 +115,7 @@ namespace Pinetime {
       Pinetime::Applications::HeartRateTask& heartRateApp;
       Pinetime::Controllers::FS& fs;
       Pinetime::Controllers::NimbleController nimbleController;
-      Pinetime::Console console;
+      Pinetime::Components::Console console;
 
       static constexpr uint8_t pinSpiSck = 2;
       static constexpr uint8_t pinSpiMosi = 3;

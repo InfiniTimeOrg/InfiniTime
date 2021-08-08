@@ -89,7 +89,6 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     displayApp{displayApp},
     heartRateApp(heartRateApp),
     fs{fs},
-    
     nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController),
     console(*this) {
 
@@ -298,7 +297,6 @@ void SystemTask::Work() {
           break;
         case Messages::OnTouchEvent:
           ReloadIdleTimer();
-          console.Process();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
         case Messages::OnButtonEvent:
