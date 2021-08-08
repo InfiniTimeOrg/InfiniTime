@@ -179,8 +179,8 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(stepGauge, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   lv_gauge_set_scale(stepGauge, 360, 11, 0);
   lv_gauge_set_angle_offset(stepGauge, 180);
-  lv_gauge_set_critical_value(stepGauge, (settingsController.GetStepsGoal() / 100));
-  lv_gauge_set_range(stepGauge, 0, (settingsController.GetStepsGoal() / 100));
+  lv_gauge_set_critical_value(stepGauge, 100);
+  lv_gauge_set_range(stepGauge, 0, 100);
   lv_gauge_set_value(stepGauge, 0, 0);
 
   lv_obj_set_style_local_pad_right(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
@@ -264,23 +264,23 @@ bool PineTimeStyle::Refresh() {
     char hoursChar[3];
     char ampmChar[5];
 
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        sprintf(hoursChar, "%02d", hour);
-      } else {
-        if (hour == 0 && hour != 12) {
-          hour = 12;
-          sprintf(ampmChar, "A\nM");
-        } else if (hour == 12 && hour != 0) {
-          hour = 12;
-          sprintf(ampmChar, "P\nM");
-        } else if (hour < 12 && hour != 0) {
-          sprintf(ampmChar, "A\nM");
-        } else if (hour > 12 && hour != 0) {
-          hour = hour - 12;
-          sprintf(ampmChar, "P\nM");
-        }
-        sprintf(hoursChar, "%02d", hour);
+    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+      sprintf(hoursChar, "%02d", hour);
+    } else {
+      if (hour == 0 && hour != 12) {
+        hour = 12;
+        sprintf(ampmChar, "A\nM");
+      } else if (hour == 12 && hour != 0) {
+        hour = 12;
+        sprintf(ampmChar, "P\nM");
+      } else if (hour < 12 && hour != 0) {
+        sprintf(ampmChar, "A\nM");
+      } else if (hour > 12 && hour != 0) {
+        hour = hour - 12;
+        sprintf(ampmChar, "P\nM");
       }
+      sprintf(hoursChar, "%02d", hour);
+    }
 
     if (hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] ||
         minutesChar[1] != displayedChar[3]) {
@@ -292,9 +292,9 @@ bool PineTimeStyle::Refresh() {
       char hourStr[3];
       char minStr[3];
 
-    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         lv_label_set_text(timeAMPM, ampmChar);
-    }
+      }
 
       /* Display the time as 2 pairs of digits */
       sprintf(hourStr, "%c%c", hoursChar[0], hoursChar[1]);
@@ -328,7 +328,7 @@ bool PineTimeStyle::Refresh() {
   stepCount = motionController.NbSteps();
   motionSensorOk = motionController.IsSensorOk();
   if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
-    lv_gauge_set_value(stepGauge, 0, (stepCount.Get() / 100));
+    lv_gauge_set_value(stepGauge, 0, (stepCount.Get() / (settingsController.GetStepsGoal() / 100)));
     lv_obj_realign(stepGauge);
     if (stepCount.Get() > settingsController.GetStepsGoal()) {
       lv_obj_set_style_local_line_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);

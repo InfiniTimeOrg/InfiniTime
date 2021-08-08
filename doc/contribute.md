@@ -48,7 +48,7 @@ When reviewing PR, the author and contributors will first look at the **descript
 
 Then, reviewing **a few files that were modified for a single purpose** is a lot more easier than to review 30 files modified for many reasons (bug fix, UI improvements, typos in doc,...), even if all these changes make sense. Also, it's possible that we agree on some modification but not on some other, and we won't be able to merge the PR because of the changes that are not accepted.
 
-We do our best to keep the code as consistent as possible, and that mean we pay attention to the **formatting** of the code. If the code formatting is not consistent with our code base, we'll ask you to review it, which will take more time.
+We do our best to keep the code as consistent as possible, and that means we pay attention to the **formatting** of the code. If the code formatting is not consistent with our code base, we'll ask you to review it, which will take more time.
 
 The last step of the review consists in **testing** the modification. If it doesn't work out of the box, we'll ask your to review your code and to ensure that it works as expected.
 

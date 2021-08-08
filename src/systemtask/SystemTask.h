@@ -16,13 +16,15 @@
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
 #include "components/timer/TimerController.h"
+#include "components/fs/FS.h"
+
 #ifdef PINETIME_IS_RECOVERY
   #include "displayapp/DisplayAppRecovery.h"
   #include "displayapp/DummyLittleVgl.h"
 #else
   #include "components/settings/Settings.h"
   #include "displayapp/DisplayApp.h"
-  #include "displayapp/LittleVgl.h"
+  #include "displayapp/LittleVgl.h"  
 #endif
 
 #include "drivers/Watchdog.h"
@@ -59,7 +61,8 @@ namespace Pinetime {
                  Controllers::Settings& settingsController,
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Pinetime::Applications::DisplayApp& displayApp,
-                 Pinetime::Applications::HeartRateTask& heartRateApp);
+                 Pinetime::Applications::HeartRateTask& heartRateApp,
+                 Pinetime::Controllers::FS& fs);
 
       void Start();
       void PushMessage(Messages msg);
@@ -68,6 +71,7 @@ namespace Pinetime {
       void OnTouchEvent();
 
       void OnIdle();
+      void OnDim();
 
       Pinetime::Controllers::NimbleController& nimble() {
         return nimbleController;
@@ -96,6 +100,7 @@ namespace Pinetime {
       std::atomic<bool> isSleeping {false};
       std::atomic<bool> isGoingToSleep {false};
       std::atomic<bool> isWakingUp {false};
+      std::atomic<bool> isDimmed {false};
       Pinetime::Drivers::Watchdog& watchdog;
       Pinetime::Controllers::NotificationManager& notificationManager;
       Pinetime::Controllers::MotorController& motorController;
@@ -103,13 +108,12 @@ namespace Pinetime {
       Pinetime::Drivers::Bma421& motionSensor;
       Pinetime::Controllers::Settings& settingsController;
       Pinetime::Controllers::HeartRateController& heartRateController;
-      Pinetime::Controllers::NimbleController nimbleController;
-      Controllers::BrightnessController brightnessController;
       Pinetime::Controllers::MotionController& motionController;
 
       Pinetime::Applications::DisplayApp& displayApp;
       Pinetime::Applications::HeartRateTask& heartRateApp;
-
+      Pinetime::Controllers::FS& fs;
+      Pinetime::Controllers::NimbleController nimbleController;
 
       static constexpr uint8_t pinSpiSck = 2;
       static constexpr uint8_t pinSpiMosi = 3;
@@ -122,15 +126,18 @@ namespace Pinetime {
 
       static void Process(void* instance);
       void Work();
-      void ReloadIdleTimer() const;
+      void ReloadIdleTimer();
       bool isBleDiscoveryTimerRunning = false;
       uint8_t bleDiscoveryTimer = 0;
+      TimerHandle_t dimTimer;
       TimerHandle_t idleTimer;
       bool doNotGoToSleep = false;
 
       void GoToRunning();
       void UpdateMotion();
       bool stepCounterMustBeReset = false;
+      static constexpr TickType_t batteryNotificationPeriod = 1000 * 60 * 10; // 1 tick ~= 1ms. 1ms * 60 * 10 = 10 minutes
+      TickType_t batteryNotificationTick = 0;
 
 #if configUSE_TRACE_FACILITY == 1
       SystemMonitor<FreeRtosMonitor> monitor;
