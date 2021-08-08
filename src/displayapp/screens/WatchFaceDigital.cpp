@@ -61,18 +61,28 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 10, 0);
 
-  label_date = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
-  lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+    lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  } else {
+    lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
+  }
 
-  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
+  label_date = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_40);
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+    lv_obj_align(label_date, label_time, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+  } else {
+    lv_obj_align(label_date, label_time, LV_ALIGN_OUT_BOTTOM_RIGHT, 0, 10);
+  }
+  lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
 
   label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(label_time_ampm, "");
-  lv_obj_align(label_time_ampm, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -30, -55);
+  lv_obj_set_style_local_text_font(label_time_ampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_40);
+  lv_label_set_text_static(label_time_ampm, "AM");
+  lv_obj_align(label_time_ampm, label_time, LV_ALIGN_OUT_TOP_RIGHT, 0, 0);
+  lv_obj_set_hidden(label_time_ampm, settingsController.GetClockType() == Controllers::Settings::ClockType::H24);
 
   backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_click(backgroundLabel, true);
@@ -87,14 +97,16 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
 
   heartbeatValue = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_40);
   lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
   lv_label_set_text(heartbeatValue, "");
   lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_40);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text(stepValue, "0");
-  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
+  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
 
   stepIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
@@ -144,7 +156,6 @@ bool WatchFaceDigital::Refresh() {
     auto time = date::make_time(newDateTime - dp);
     auto yearMonthDay = date::year_month_day(dp);
 
-    auto year = (int) yearMonthDay.year();
     auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned) yearMonthDay.month());
     auto day = (unsigned) yearMonthDay.day();
     auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
@@ -193,25 +204,19 @@ bool WatchFaceDigital::Refresh() {
 
       sprintf(timeStr, "%c%c:%c%c", hoursChar[0], hoursChar[1], minutesChar[0], minutesChar[1]);
       lv_label_set_text(label_time, timeStr);
-
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
-      } else {
-        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-      }
+      lv_obj_realign(label_time);
     }
 
-    if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
+    if ((month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
       char dateStr[22];
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        sprintf(dateStr, "%s %d %s %d", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString(), year);
+        sprintf(dateStr, "%s %d %s", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString());
       } else {
-        sprintf(dateStr, "%s %s %d %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day, year);
+        sprintf(dateStr, "%s %s %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day);
       }
       lv_label_set_text(label_date, dateStr);
-      lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
+      lv_obj_realign(label_date);
 
-      currentYear = year;
       currentMonth = month;
       currentDayOfWeek = dayOfWeek;
       currentDay = day;
@@ -229,16 +234,16 @@ bool WatchFaceDigital::Refresh() {
       lv_label_set_text_static(heartbeatValue, "");
     }
 
-    lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
-    lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
+    lv_obj_realign(heartbeatIcon);
+    lv_obj_realign(heartbeatValue);
   }
 
   stepCount = motionController.NbSteps();
   motionSensorOk = motionController.IsSensorOk();
   if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
-    lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
-    lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+    lv_obj_realign(stepValue);
+    lv_obj_realign(stepIcon);
   }
 
   return running;

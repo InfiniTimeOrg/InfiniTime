@@ -40,7 +40,6 @@ namespace Pinetime {
       private:
         char displayedChar[5];
 
-        uint16_t currentYear = 1970;
         Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
         Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
         uint8_t currentDay = 0;
