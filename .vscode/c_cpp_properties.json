@@ -12,7 +12,7 @@
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-gcc-arm",
-            "configurationProvider": "ms-vscode.cmake-tools",
+            "configurationProvider": "ms-vscode.cpp-tools",
             "compileCommands": "${workspaceFolder}/build/compile_commands.json"
         }
     ],
