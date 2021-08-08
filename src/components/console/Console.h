@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <cstddef>
 
-#include "systemtask/SystemTask.h"
+//#include "systemtask/SystemTask.h"
 
 namespace Pinetime {
 
@@ -12,17 +12,24 @@ namespace Pinetime {
     class SystemTask;
   }
 
-namespace Components
-{
+  namespace Controllers
+  {
+    class NimbleController;
+  }
 
+  namespace Components
+  {
 
-  class Console {
-    public:
-      Console(Pinetime::System::SystemTask& systemTask);
+    class Console {
+      public:
+        Console(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::NimbleController& nimbleController);
 
-    private:
-        Pinetime::System::SystemTask& systemTask;
+        void Print(char *str);
 
-    };
-}
+      private:
+          Pinetime::System::SystemTask& systemTask;
+          Pinetime::Controllers::NimbleController& nimbleController;
+
+      };
+  }
 }

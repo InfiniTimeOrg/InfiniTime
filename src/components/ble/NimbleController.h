@@ -72,6 +72,7 @@ namespace Pinetime {
 
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);
+      void Print(char *str);
 
     private:
       static constexpr const char* deviceName = "InfiniTime";

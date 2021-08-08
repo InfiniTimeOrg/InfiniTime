@@ -245,3 +245,9 @@ void NimbleController::NotifyBatteryLevel(uint8_t level) {
     batteryInformationService.NotifyBatteryLevel(connectionHandle, level);
   }
 }
+
+
+void NimbleController::Print(char *str)
+{
+  bleNus.Print(str);
+}
