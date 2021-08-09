@@ -1,0 +1,25 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "cwd": "${workspaceRoot}",
+            "executable": "./build/src/pinetime-app-1.3.0.out",
+            "name": "Debug OpenOCD ST-LINK",
+            "request": "launch",
+            "type": "cortex-debug",
+            "showDevDebugOutput": false,
+            "servertype": "openocd",
+            "runToMain": true,
+            // Only use armToolchainPath if your arm-none-eabi-gdb is not in your path (some GCC packages does not contain arm-none-eabi-gdb)
+            "armToolchainPath": "${workspaceRoot}/../gcc-arm-none-eabi-9-2020-q2-update/bin",
+            "svdFile": "${workspaceRoot}/nrf52.svd",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/nrf52.cfg"
+            ],
+        }
+    ]
+}
