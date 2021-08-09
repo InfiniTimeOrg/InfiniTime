@@ -4,5 +4,6 @@
         "-DARM_NONE_EABI_TOOLCHAIN_PATH=${env:ARM_NONE_EABI_TOOLCHAIN_PATH}",
         "-DNRF5_SDK_PATH=${env:NRF5_SDK_PATH}",
     ],
-    "cmake.generator": "Unix Makefiles"
+    "cmake.generator": "Unix Makefiles",
+    "clang-tidy.buildPath": "build/compile_commands.json"
 }

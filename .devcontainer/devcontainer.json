@@ -19,7 +19,9 @@
 	"extensions": [
 		"ms-vscode.cpptools",
 		"ms-vscode.cmake-tools",
-		"marus25.cortex-debug"
+		"marus25.cortex-debug",
+		"notskm.clang-tidy",
+		"mjohns.clang-format"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

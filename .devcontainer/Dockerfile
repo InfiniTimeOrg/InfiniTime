@@ -16,7 +16,7 @@ RUN apt-get update -qq \
       wget \ 
       curl \
       dos2unix \
-      clang-format \
+      clang-format-12 \
       clang-tidy \
       locales \
       libncurses5 \
