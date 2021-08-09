@@ -302,7 +302,12 @@ int main(void) {
   nrf_drv_clock_init();
 
   // Unblock i2c?
-  nrf_gpio_cfg_output(pinTwiScl);
+  nrf_gpio_cfg(pinTwiScl,
+               NRF_GPIO_PIN_DIR_OUTPUT,
+               NRF_GPIO_PIN_INPUT_DISCONNECT,
+               NRF_GPIO_PIN_NOPULL,
+               NRF_GPIO_PIN_S0D1,
+               NRF_GPIO_PIN_NOSENSE);
   for (uint8_t i = 0; i < 16; i++) {
     nrf_gpio_pin_toggle(pinTwiScl);
     nrf_delay_us(5);
