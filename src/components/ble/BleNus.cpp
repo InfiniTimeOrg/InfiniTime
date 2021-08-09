@@ -1,4 +1,5 @@
 #include "BleNus.h"
+#include "components/console/Console.h"
 
 using namespace Pinetime::Controllers;
 
@@ -35,6 +36,11 @@ void BleNus::Print(char *str)
   if (om) {
       ble_gattc_notify_custom(conn_handle, attr_read_handle, om);
   }
+}
+
+void BleNus::ConsoleRegister(Pinetime::Components::Console* console)
+{
+  this->console = console;
 }
 
 

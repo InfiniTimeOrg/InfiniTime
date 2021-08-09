@@ -25,6 +25,13 @@
 
 #include <memory>
 
+#include <libraries/log/nrf_log_backend_interface.h>
+#include <libraries/log/src/nrf_log_backend_serial.h>
+#include <libraries/log/nrf_log.h>
+#include <libraries/log/nrf_log_ctrl.h>
+#include <libraries/log/nrf_log_default_backends.h>
+
+
 using namespace Pinetime::System;
 
 namespace {
@@ -105,6 +112,42 @@ void SystemTask::Process(void* instance) {
   NRF_LOG_INFO("systemtask task started!");
   app->Work();
 }
+/*
+#define NRF_LOG_BACKEND_BLENUS_TEMP_BUFFER_SIZE 128
+static uint8_t m_string_buff[NRF_LOG_BACKEND_BLENUS_TEMP_BUFFER_SIZE];
+
+static void blenus_tx(void const * p_context, char const * p_buffer, size_t len)
+{
+  //console.Print(p_buffer);
+}
+
+static void nrf_log_backend_blenus_put(nrf_log_backend_t const * p_backend, nrf_log_entry_t * p_msg)
+{
+    nrf_log_backend_serial_put(p_backend, p_msg, m_string_buff, NRF_LOG_BACKEND_BLENUS_TEMP_BUFFER_SIZE, blenus_tx);
+}
+
+static void nrf_log_backend_blenus_flush(nrf_log_backend_t const * p_backend)
+{
+
+}
+
+static void nrf_log_backend_blenus_panic_set(nrf_log_backend_t const * p_backend)
+{
+    //nrf_drv_uart_uninit(&m_uart);
+
+   // uart_init(false);
+}
+
+
+  static const nrf_log_backend_api_t nrf_log_backend_blenus_api = {
+        .put       = nrf_log_backend_blenus_put,
+        .panic_set = nrf_log_backend_blenus_panic_set,
+        .flush     = nrf_log_backend_blenus_flush,
+  };
+
+
+    NRF_LOG_BACKEND_DEF(blenus_backend, nrf_log_backend_blenus_api, NULL);
+*/
 
 void SystemTask::Work() {
   watchdog.Setup(7);
@@ -150,6 +193,12 @@ void SystemTask::Work() {
   heartRateSensor.Disable();
   heartRateApp.Start();
 
+  /*
+    int32_t backend_id = nrf_log_backend_add(&blenus_backend, NRF_LOG_SEVERITY_DEBUG);
+    ASSERT(backend_id >= 0);
+    nrf_log_backend_enable(&blenus_backend);
+*/
+  
   nrf_gpio_cfg_sense_input(pinButton, (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pulldown, (nrf_gpio_pin_sense_t) GPIO_PIN_CNF_SENSE_High);
   nrf_gpio_cfg_output(15);
   nrf_gpio_pin_set(15);

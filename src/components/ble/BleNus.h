@@ -21,6 +21,9 @@
 
 
 namespace Pinetime {
+  namespace Components {
+    class Console;
+  }
   namespace Controllers {
     class BleNus {
     public:
@@ -28,7 +31,7 @@ namespace Pinetime {
       void Init();
       void SetConnectionHandle(uint16_t conn_handle);
       void Print(char *str);
-
+      void ConsoleRegister(Pinetime::Components::Console* console);
 
       int OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
 
@@ -36,6 +39,7 @@ namespace Pinetime {
 
       static uint16_t attr_read_handle;
       uint16_t conn_handle;
+      Pinetime::Components::Console* console = nullptr;
 
       static constexpr ble_uuid128_t nusServiceUuid {.u {.type = BLE_UUID_TYPE_128}, .value = NUS_SERVICE_UUID_BASE};
 

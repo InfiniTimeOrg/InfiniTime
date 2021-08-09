@@ -79,6 +79,8 @@ void NimbleController::Init() {
   bleController.AddressType((addrType == 0) ? Ble::AddressTypes::Public : Ble::AddressTypes::Random);
   bleController.Address(std::move(address));
 
+  bleNus.ConsoleRegister(&systemTask.console);
+
   res = ble_gatts_start();
   ASSERT(res == 0);
 }

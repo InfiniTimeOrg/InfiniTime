@@ -17,3 +17,8 @@ void Console::Print(char *str)
 {
     nimbleController.Print(str);
 }
+
+void Console::Received(char *str)
+{
+    nimbleController.Print(str);
+}
