@@ -26,6 +26,8 @@ namespace Pinetime {
       void Sleep();
       void Wakeup();
 
+      void ConfigurePins() const;
+
     private:
       ErrorCodes Read(uint8_t deviceAddress, uint8_t* buffer, size_t size, bool stop);
       ErrorCodes Write(uint8_t deviceAddress, const uint8_t* data, size_t size, bool stop);

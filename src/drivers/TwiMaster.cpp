@@ -9,21 +9,25 @@ using namespace Pinetime::Drivers;
 // TODO use DMA/IRQ
 
 TwiMaster::TwiMaster(const Modules module, const Parameters& params) : module {module}, params {params} {
+  mutex = xSemaphoreCreateBinary();
+}
+
+void TwiMaster::ConfigurePins() const {
+  NRF_GPIO->PIN_CNF[params.pinScl] =
+    (GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) |
+    (GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
+    (GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos) |
+    (GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
+
+  NRF_GPIO->PIN_CNF[params.pinSda] =
+    (GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) |
+    (GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
+    (GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos) |
+    (GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
 }
 
 void TwiMaster::Init() {
-  if(mutex == nullptr)
-    mutex = xSemaphoreCreateBinary();
-  
-  NRF_GPIO->PIN_CNF[params.pinScl] =
-    ((uint32_t) GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) | ((uint32_t) GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos) | ((uint32_t) GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
-
-  NRF_GPIO->PIN_CNF[params.pinSda] =
-    ((uint32_t) GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) | ((uint32_t) GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos) | ((uint32_t) GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
+  ConfigurePins();
 
   switch (module) {
     case Modules::TWIM1:
@@ -179,7 +183,8 @@ void TwiMaster::Sleep() {
 }
 
 void TwiMaster::Wakeup() {
-  Init();
+  ConfigurePins();
+  twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
   NRF_LOG_INFO("[TWIMASTER] Wakeup");
 }
 
@@ -194,15 +199,7 @@ void TwiMaster::FixHwFreezed() {
   uint32_t twi_state = NRF_TWI1->ENABLE;
   twiBaseAddress->ENABLE = TWIM_ENABLE_ENABLE_Disabled << TWI_ENABLE_ENABLE_Pos;
 
-  NRF_GPIO->PIN_CNF[params.pinScl] =
-    ((uint32_t) GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) | ((uint32_t) GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos) | ((uint32_t) GPIO_PIN_CNF_DRIVE_S0S1 << GPIO_PIN_CNF_DRIVE_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
-
-  NRF_GPIO->PIN_CNF[params.pinSda] =
-    ((uint32_t) GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) | ((uint32_t) GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos) | ((uint32_t) GPIO_PIN_CNF_DRIVE_S0S1 << GPIO_PIN_CNF_DRIVE_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
+  ConfigurePins();
 
   // Re-enable I²C
   twiBaseAddress->ENABLE = twi_state;
