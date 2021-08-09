@@ -419,6 +419,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Weather.cpp
         displayapp/screens/Navigation.cpp
         displayapp/screens/Metronome.cpp
+        displayapp/screens/Dice.cpp
         displayapp/screens/Motion.cpp
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp

@@ -25,7 +25,9 @@ ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp* app,
                [this]() -> std::unique_ptr<Screen> {
                  return CreateScreen2();
                },
-               //[this]() -> std::unique_ptr<Screen> { return CreateScreen3(); }
+               [this]() -> std::unique_ptr<Screen> {
+                 return CreateScreen3();
+               },
              },
              Screens::ScreenListModes::UpDown} {
 }
@@ -48,7 +50,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
     {Symbols::hourGlass, Apps::Timer},
   }};
 
-  return std::make_unique<Screens::Tile>(0, 2, app, settingsController, batteryController, dateTimeController, applications);
+  return std::make_unique<Screens::Tile>(0, 3, app, settingsController, batteryController, dateTimeController, applications);
 }
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
@@ -61,19 +63,18 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
     {Symbols::clock, Apps::Alarm},
   }};
 
-  return std::make_unique<Screens::Tile>(1, 2, app, settingsController, batteryController, dateTimeController, applications);
+  return std::make_unique<Screens::Tile>(1, 3, app, settingsController, batteryController, dateTimeController, applications);
 }
 
-/*std::unique_ptr<Screen> ApplicationList::CreateScreen3() {
-  std::array<Screens::Tile::Applications, 6> applications {
-          {{"A", Apps::Meter},
-           {"B", Apps::Navigation},
-           {"C", Apps::Clock},
-           {"D", Apps::Music},
-           {"E", Apps::SysInfo},
-           {"F", Apps::Brightness}
-          }
-  };
+std::unique_ptr<Screen> ApplicationList::CreateScreen3() {
+  std::array<Screens::Tile::Applications, 6> applications {{
+    {Symbols::dice, Apps::Dice},
+    {"", Apps::None},
+    {"", Apps::None},
+    {"", Apps::None},
+    {"", Apps::None},
+    {"", Apps::None},
+  }};
 
   return std::make_unique<Screens::Tile>(2, 3, app, settingsController, batteryController, dateTimeController, applications);
-}*/
+}
