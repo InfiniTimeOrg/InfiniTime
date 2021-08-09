@@ -308,6 +308,7 @@ int main(void) {
                NRF_GPIO_PIN_NOPULL,
                NRF_GPIO_PIN_S0D1,
                NRF_GPIO_PIN_NOSENSE);
+  nrf_gpio_pin_set(pinTwiScl);
   for (uint8_t i = 0; i < 16; i++) {
     nrf_gpio_pin_toggle(pinTwiScl);
     nrf_delay_us(5);
