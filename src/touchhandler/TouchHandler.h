@@ -21,7 +21,6 @@ namespace Pinetime {
         void CancelTap();
         bool GetNewTouchInfo();
         void UpdateLvglTouchPoint();
-        void Register(Pinetime::System::SystemTask* systemTask);
 
         bool IsTouching() const {
           return info.touching;
