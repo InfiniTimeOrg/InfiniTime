@@ -51,7 +51,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
     notificatioManager {notificatioManager},
     settingsController {settingsController},
     motionController {motionController} {
-
   /* This sets the watchface number to return to after leaving the menu */
   settingsController.SetClockFace(2);
 
@@ -62,7 +61,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   displayedChar[4] = 0;
 
   /* Create a 200px wide background rectangle */
-
   timebar = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_obj_set_style_local_radius(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -70,7 +68,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(timebar, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 5, 0);
 
   /* Display the time */
-
   timeDD1 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
   lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x008080));
@@ -90,7 +87,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(timeAMPM, timebar, LV_ALIGN_IN_BOTTOM_LEFT, 2, -20);
 
   /* Create a 40px wide bar down the right side of the screen */
-
   sidebar = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x008080));
   lv_obj_set_style_local_radius(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -98,7 +94,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(sidebar, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   /* Display icons */
-
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
@@ -117,7 +112,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 40);
 
   /* Calendar icon */
-
   calendarOuter = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(calendarOuter, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_obj_set_style_local_radius(calendarOuter, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -155,7 +149,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(calendarCrossBar2, calendarBar2, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   /* Display date */
-
   dateDayOfWeek = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(dateDayOfWeek, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_label_set_text(dateDayOfWeek, "THU");
@@ -223,26 +216,17 @@ bool PineTimeStyle::Refresh() {
 
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
-    if (bleState.Get() == true) {
-      lv_label_set_text(bleIcon, BleIcon::GetIcon(true));
-      lv_obj_realign(bleIcon);
-    } else {
-      lv_label_set_text(bleIcon, BleIcon::GetIcon(false));
-    }
+    lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
+    lv_obj_realign(bleIcon);
   }
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
-    if (notificationState.Get() == true) {
-      lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(true));
-      lv_obj_realign(notificationIcon);
-    } else {
-      lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
-    }
+    lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
+    lv_obj_realign(notificationIcon);
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();
-
   if (currentDateTime.IsUpdated()) {
     auto newDateTime = currentDateTime.Get();
 
@@ -250,9 +234,9 @@ bool PineTimeStyle::Refresh() {
     auto time = date::make_time(newDateTime - dp);
     auto yearMonthDay = date::year_month_day(dp);
 
-    auto year = (int) yearMonthDay.year();
-    auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned) yearMonthDay.month());
-    auto day = (unsigned) yearMonthDay.day();
+    auto year = static_cast<int>(yearMonthDay.year());
+    auto month = static_cast<Pinetime::Controllers::DateTime::Months>(static_cast<unsigned>(yearMonthDay.month()));
+    auto day = static_cast<unsigned>(yearMonthDay.day());
     auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
     int hour = time.hours().count();
@@ -263,9 +247,8 @@ bool PineTimeStyle::Refresh() {
 
     char hoursChar[3];
     char ampmChar[5];
-
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-      sprintf(hoursChar, "%02d", hour);
+        sprintf(hoursChar, "%02d", hour);
     } else {
       if (hour == 0 && hour != 12) {
         hour = 12;
@@ -282,41 +265,26 @@ bool PineTimeStyle::Refresh() {
       sprintf(hoursChar, "%02d", hour);
     }
 
-    if (hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] ||
+    if (hoursChar[0] != displayedChar[0] or hoursChar[1] != displayedChar[1] or minutesChar[0] != displayedChar[2] or
         minutesChar[1] != displayedChar[3]) {
       displayedChar[0] = hoursChar[0];
       displayedChar[1] = hoursChar[1];
       displayedChar[2] = minutesChar[0];
       displayedChar[3] = minutesChar[1];
 
-      char hourStr[3];
-      char minStr[3];
-
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         lv_label_set_text(timeAMPM, ampmChar);
       }
 
-      /* Display the time as 2 pairs of digits */
-      sprintf(hourStr, "%c%c", hoursChar[0], hoursChar[1]);
-      lv_label_set_text(timeDD1, hourStr);
-
-      sprintf(minStr, "%c%c", minutesChar[0], minutesChar[1]);
-      lv_label_set_text(timeDD2, minStr);
+      lv_label_set_text_fmt(timeDD1, "%s", hoursChar);
+      lv_label_set_text_fmt(timeDD2, "%s", minutesChar);
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      char dayOfWeekStr[4];
-      char dayStr[3];
-      char monthStr[4];
-
-      sprintf(dayOfWeekStr, "%s", dateTimeController.DayOfWeekShortToString());
-      sprintf(dayStr, "%d", day);
-      sprintf(monthStr, "%s", dateTimeController.MonthShortToString());
-
-      lv_label_set_text(dateDayOfWeek, dayOfWeekStr);
-      lv_label_set_text(dateDay, dayStr);
+      lv_label_set_text_fmt(dateDayOfWeek, "%s", dateTimeController.DayOfWeekShortToString());
+      lv_label_set_text_fmt(dateDay, "%d", day);
       lv_obj_realign(dateDay);
-      lv_label_set_text(dateMonth, monthStr);
+      lv_label_set_text_fmt(dateMonth, "%s", dateTimeController.MonthShortToString());
 
       currentYear = year;
       currentMonth = month;

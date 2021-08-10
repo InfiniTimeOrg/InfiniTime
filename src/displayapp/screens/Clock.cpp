@@ -2,11 +2,6 @@
 
 #include <date/date.h>
 #include <lvgl/lvgl.h>
-#include <cstdio>
-#include "BatteryIcon.h"
-#include "BleIcon.h"
-#include "NotificationIcon.h"
-#include "Symbols.h"
 #include "components/battery/BatteryController.h"
 #include "components/motion/MotionController.h"
 #include "components/ble/BleController.h"
@@ -89,16 +84,3 @@ std::unique_ptr<Screen> Clock::PineTimeStyleScreen() {
                                                      settingsController,
                                                      motionController);
 }
-
-/*
-// Examples for more watch faces
-std::unique_ptr<Screen> Clock::WatchFaceMinimalScreen() {
-  return std::make_unique<Screens::WatchFaceMinimal>(app, dateTimeController, batteryController, bleController, notificatioManager,
-settingsController);
-}
-
-std::unique_ptr<Screen> Clock::WatchFaceCustomScreen() {
-  return std::make_unique<Screens::WatchFaceCustom>(app, dateTimeController, batteryController, bleController, notificatioManager,
-settingsController);
-}
-*/
