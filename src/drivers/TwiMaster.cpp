@@ -72,8 +72,10 @@ void TwiMaster::Init() {
 
 TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t* data, size_t size) {
   xSemaphoreTake(mutex, portMAX_DELAY);
+  Wakeup();
   auto ret = Write(deviceAddress, &registerAddress, 1, false);
   ret = Read(deviceAddress, data, size, true);
+  Sleep();
   xSemaphoreGive(mutex);
   return ret;
 }
@@ -81,9 +83,11 @@ TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t registerAdd
 TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t* data, size_t size) {
   ASSERT(size <= maxDataSize);
   xSemaphoreTake(mutex, portMAX_DELAY);
+  Wakeup();
   internalBuffer[0] = registerAddress;
   std::memcpy(internalBuffer + 1, data, size);
   auto ret = Write(deviceAddress, internalBuffer, size + 1, true);
+  Sleep();
   xSemaphoreGive(mutex);
   return ret;
 }
@@ -179,13 +183,11 @@ void TwiMaster::Sleep() {
   }
   nrf_gpio_cfg_default(6);
   nrf_gpio_cfg_default(7);
-  NRF_LOG_INFO("[TWIMASTER] Sleep");
 }
 
 void TwiMaster::Wakeup() {
   ConfigurePins();
   twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
-  NRF_LOG_INFO("[TWIMASTER] Wakeup");
 }
 
 /* Sometimes, the TWIM device just freeze and never set the event EVENTS_LASTTX.

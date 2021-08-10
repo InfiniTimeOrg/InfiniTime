@@ -219,7 +219,6 @@ void SystemTask::Work() {
           break;
         case Messages::GoToRunning:
           spi.Wakeup();
-          twiMaster.Wakeup();
 
           // Double Tap needs the touch screen to be in normal mode
           if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
@@ -240,9 +239,7 @@ void SystemTask::Work() {
           isDimmed = false;
           break;
         case Messages::TouchWakeUp: {
-          twiMaster.Wakeup();
           auto touchInfo = touchPanel.GetTouchInfo();
-          twiMaster.Sleep();
           if (touchInfo.isTouch and ((touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
                                       settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
                                      (touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
@@ -315,7 +312,6 @@ void SystemTask::Work() {
           if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
             touchPanel.Sleep();
           }
-          twiMaster.Sleep();
 
           isSleeping = true;
           isGoingToSleep = false;
@@ -367,17 +363,12 @@ void SystemTask::UpdateMotion() {
   if (isSleeping && !settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist))
     return;
 
-  if (isSleeping)
-    twiMaster.Wakeup();
-
   if (stepCounterMustBeReset) {
     motionSensor.ResetStepCounter();
     stepCounterMustBeReset = false;
   }
 
   auto motionValues = motionSensor.Process();
-  if (isSleeping)
-    twiMaster.Sleep();
 
   motionController.IsSensorOk(motionSensor.IsOk());
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
