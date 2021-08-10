@@ -97,7 +97,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     heartRateApp(heartRateApp),
     fs{fs},
     nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController),
-    console(*this, nimbleController) {
+    console(*this, nimbleController, fs, lvgl, motorController, touchPanel, spiNorFlash, twiMaster) {
 
 }
 
