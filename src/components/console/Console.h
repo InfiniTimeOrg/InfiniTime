@@ -24,8 +24,9 @@ namespace Pinetime {
       public:
         Console(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::NimbleController& nimbleController);
 
+        void Init();
         void Print(char *str);
-        void Received(char *str);
+        void Received(char* str, int length);
 
       private:
           Pinetime::System::SystemTask& systemTask;
@@ -33,6 +34,7 @@ namespace Pinetime {
 
           static constexpr int bufferSize = 256;
           char rxBuffer[bufferSize];
+          uint16_t rxPos;
 
       };
   }

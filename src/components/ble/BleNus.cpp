@@ -38,16 +38,16 @@ void BleNus::Print(char *str)
   }
 }
 
-void BleNus::ConsoleRegister(Pinetime::Components::Console* console)
+void BleNus::ConsoleRegister(std::function<void(char*, int)> f)
 {
-  this->console = console;
+  this->rxDataFunction = f;
 }
 
 
 int BleNus::OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
 
     struct os_mbuf *om = ctxt->om;
-    struct os_mbuf *om_tx;
+    //struct os_mbuf *om_tx;
 
     switch (ctxt->op) {
         case BLE_GATT_ACCESS_OP_WRITE_CHR:
@@ -58,10 +58,12 @@ int BleNus::OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle, st
                   // test it with Bluefruit, NRF Connect on computer or phone, or in web browser
                   //  https://wiki.makerdiary.com/web-device-cli/
 
-                  om_tx = ble_hs_mbuf_from_flat((char *)om->om_data, om->om_len);
-                  if (om_tx) {
-                      ble_gattc_notify_custom(conn_handle, attr_read_handle, om_tx);
-                  }
+                  rxDataFunction((char *)om->om_data, (int)om->om_len);
+
+                  // om_tx = ble_hs_mbuf_from_flat((char *)om->om_data, om->om_len);
+                  // if (om_tx) {
+                  //     ble_gattc_notify_custom(conn_handle, attr_read_handle, om_tx);
+                  // }
 
                   om = SLIST_NEXT(om, om_next);
               }

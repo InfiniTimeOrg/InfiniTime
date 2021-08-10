@@ -70,9 +70,12 @@ namespace Pinetime {
         return anService;
       };
 
+      Pinetime::Controllers::BleNus& bleNus() {
+        return bleNusService;
+      };
+
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);
-      void Print(char *str);
 
     private:
       static constexpr const char* deviceName = "InfiniTime";
@@ -84,7 +87,7 @@ namespace Pinetime {
       Pinetime::Controllers::DfuService dfuService;
 
       DeviceInformationService deviceInformationService;
-      BleNus bleNus;
+      BleNus bleNusService;
       CurrentTimeClient currentTimeClient;
       AlertNotificationService anService;
       AlertNotificationClient alertNotificationClient;

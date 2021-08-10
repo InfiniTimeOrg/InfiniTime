@@ -56,7 +56,7 @@ void NimbleController::Init() {
   ble_svc_gatt_init();
 
   deviceInformationService.Init();
-  bleNus.Init();
+  bleNusService.Init();
   currentTimeClient.Init();
   currentTimeService.Init();
   musicService.Init();
@@ -79,7 +79,7 @@ void NimbleController::Init() {
   bleController.AddressType((addrType == 0) ? Ble::AddressTypes::Public : Ble::AddressTypes::Random);
   bleController.Address(std::move(address));
 
-  bleNus.ConsoleRegister(&systemTask.console);
+  //bleNus.ConsoleRegister(&systemTask.console);
 
   res = ble_gatts_start();
   ASSERT(res == 0);
@@ -147,7 +147,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       /* A new connection was established or a connection attempt failed. */
       NRF_LOG_INFO("connection %s; status=%d ", event->connect.status == 0 ? "established" : "failed", event->connect.status);
 
-      bleNus.SetConnectionHandle(event->connect.conn_handle);
+      bleNusService.SetConnectionHandle(event->connect.conn_handle);
 
       if (event->connect.status != 0) {
         /* Connection failed; resume advertising. */
@@ -248,8 +248,3 @@ void NimbleController::NotifyBatteryLevel(uint8_t level) {
   }
 }
 
-
-void NimbleController::Print(char *str)
-{
-  bleNus.Print(str);
-}

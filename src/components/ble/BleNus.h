@@ -5,6 +5,8 @@
 #undef max
 #undef min
 #include "Version.h"
+#include <functional>
+
 
 // Service UUID
 // 6E400001-B5A3-F393-E0A9-E50E24DCCA9E
@@ -31,7 +33,8 @@ namespace Pinetime {
       void Init();
       void SetConnectionHandle(uint16_t conn_handle);
       void Print(char *str);
-      void ConsoleRegister(Pinetime::Components::Console* console);
+
+      void ConsoleRegister(std::function<void(char*, int)> f);
 
       int OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
 
@@ -39,7 +42,8 @@ namespace Pinetime {
 
       static uint16_t attr_read_handle;
       uint16_t conn_handle;
-      Pinetime::Components::Console* console = nullptr;
+      
+      std::function<void(char*, int)> rxDataFunction;
 
       static constexpr ble_uuid128_t nusServiceUuid {.u {.type = BLE_UUID_TYPE_128}, .value = NUS_SERVICE_UUID_BASE};
 

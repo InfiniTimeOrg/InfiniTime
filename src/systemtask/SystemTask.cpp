@@ -193,6 +193,8 @@ void SystemTask::Work() {
   heartRateSensor.Disable();
   heartRateApp.Start();
 
+  console.Init();
+
   /*
     int32_t backend_id = nrf_log_backend_add(&blenus_backend, NRF_LOG_SEVERITY_DEBUG);
     ASSERT(backend_id >= 0);
