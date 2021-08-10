@@ -19,9 +19,9 @@ namespace Pinetime {
       public:
         explicit TouchHandler(Drivers::Cst816S&, Components::LittleVgl&);
         void CancelTap();
+        bool GetNewTouchInfo();
+        void UpdateLvglTouchPoint();
         void Register(Pinetime::System::SystemTask* systemTask);
-        void Start();
-        void WakeUp();
 
         bool IsTouching() const {
           return info.touching;
@@ -34,16 +34,13 @@ namespace Pinetime {
         }
         Drivers::Cst816S::Gestures GestureGet();
       private:
-        static void Process(void* instance);
-        void Work();
 
         Pinetime::Drivers::Cst816S::TouchInfos info;
-        Pinetime::System::SystemTask* systemTask = nullptr;
-        TaskHandle_t taskHandle;
         Pinetime::Drivers::Cst816S& touchPanel;
         Pinetime::Components::LittleVgl& lvgl;
         Pinetime::Drivers::Cst816S::Gestures gesture;
         bool isCancelled = false;
+        bool slideReleased = true;
     };
   }
 }

@@ -166,8 +166,7 @@ Pinetime::System::SystemTask systemTask(spi,
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if (pin == pinTouchIrq) {
-    twiMaster.Wakeup();
-    touchHandler.WakeUp();
+    systemTask.OnTouchEvent();
     return;
   }
 
