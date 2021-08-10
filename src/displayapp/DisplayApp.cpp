@@ -52,6 +52,28 @@ namespace {
   static inline bool in_isr(void) {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
   }
+
+  TouchEvents ConvertGesture(Pinetime::Drivers::Cst816S::Gestures gesture) {
+    switch (gesture) {
+      case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
+        return TouchEvents::Tap;
+      case Pinetime::Drivers::Cst816S::Gestures::LongPress:
+        return TouchEvents::LongTap;
+      case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
+        return TouchEvents::DoubleTap;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
+        return TouchEvents::SwipeRight;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
+        return TouchEvents::SwipeLeft;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
+        return TouchEvents::SwipeDown;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
+        return TouchEvents::SwipeUp;
+      case Pinetime::Drivers::Cst816S::Gestures::None:
+      default:
+        return TouchEvents::None;
+    }
+  }
 }
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
@@ -185,6 +207,41 @@ void DisplayApp::Refresh() {
           LoadApp(Apps::Timer, DisplayApp::FullRefreshDirections::Down);
         }
         break;
+      case Messages::TouchEvent: {
+        if (state != States::Running) {
+          break;
+        }
+        auto gesture = ConvertGesture(touchHandler.GestureGet());
+        if (gesture == TouchEvents::None) {
+          break;
+        }
+        if (!currentScreen->OnTouchEvent(gesture)) {
+          if (currentApp == Apps::Clock) {
+            switch (gesture) {
+              case TouchEvents::SwipeUp:
+                LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
+                break;
+              case TouchEvents::SwipeDown:
+                LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
+                break;
+              case TouchEvents::SwipeRight:
+                LoadApp(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
+                break;
+              case TouchEvents::DoubleTap:
+                PushMessageToSystemTask(System::Messages::GoToSleep);
+                break;
+              default:
+                break;
+            }
+          } else if (returnTouchEvent == gesture) {
+            LoadApp(returnToApp, returnDirection);
+            brightnessController.Set(settingsController.GetBrightness());
+            brightnessController.Backup();
+          }
+        } else {
+          touchHandler.CancelTap();
+        }
+      } break;
       case Messages::ButtonPushed:
         if (currentApp == Apps::Clock) {
           PushMessageToSystemTask(System::Messages::GoToSleep);
@@ -207,43 +264,13 @@ void DisplayApp::Refresh() {
     }
   }
 
-  auto gesture = GetGesture();
-  if (gesture != TouchEvents::None) {
-    if (!currentScreen->OnTouchEvent(gesture)) {
-      if (currentApp == Apps::Clock) {
-        switch (gesture) {
-          case TouchEvents::SwipeUp:
-            LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
-            break;
-          case TouchEvents::SwipeDown:
-            LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
-            break;
-          case TouchEvents::SwipeRight:
-            LoadApp(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
-            break;
-          case TouchEvents::DoubleTap:
-            PushMessageToSystemTask(System::Messages::GoToSleep);
-            break;
-          default:
-            break;
-        }
-      } else if (returnTouchEvent == gesture) {
-        LoadApp(returnToApp, returnDirection);
-        brightnessController.Set(settingsController.GetBrightness());
-        brightnessController.Backup();
-      }
-    } else {
-      touchHandler.CancelTap();
-    }
+  if (nextApp != Apps::None) {
+    LoadApp(nextApp, nextDirection);
+    nextApp = Apps::None;
   }
 
   if (touchHandler.IsTouching()) {
     currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
-  }
-
-  if (nextApp != Apps::None) {
-    LoadApp(nextApp, nextDirection);
-    nextApp = Apps::None;
   }
 }
 
@@ -405,30 +432,6 @@ void DisplayApp::PushMessage(Messages msg) {
   } else {
     xQueueSend(msgQueue, &msg, portMAX_DELAY);
   }
-}
-
-TouchEvents DisplayApp::GetGesture() {
-  auto gesture = touchHandler.GestureGet();
-  switch (gesture) {
-    case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-      return TouchEvents::Tap;
-    case Pinetime::Drivers::Cst816S::Gestures::LongPress:
-      return TouchEvents::LongTap;
-    case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
-      return TouchEvents::DoubleTap;
-    case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
-      return TouchEvents::SwipeRight;
-    case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
-      return TouchEvents::SwipeLeft;
-    case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
-      return TouchEvents::SwipeDown;
-    case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
-      return TouchEvents::SwipeUp;
-    case Pinetime::Drivers::Cst816S::Gestures::None:
-    default:
-      return TouchEvents::None;
-  }
-  return TouchEvents::None;
 }
 
 void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {

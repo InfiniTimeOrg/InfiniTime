@@ -302,6 +302,7 @@ void SystemTask::Work() {
             touchHandler.UpdateLvglTouchPoint();
           }
           ReloadIdleTimer();
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
         case Messages::OnButtonEvent:
           ReloadIdleTimer();
