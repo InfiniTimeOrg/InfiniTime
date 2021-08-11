@@ -7,7 +7,6 @@ constexpr ble_uuid128_t BleNus::nusServiceUuid;
 constexpr ble_uuid128_t BleNus::rxCharacteristicUuid;
 constexpr ble_uuid128_t BleNus::txCharacteristicUuid;
 uint16_t BleNus::attr_read_handle;
-//static uint16_t conn_handle;
 
 int BleNusCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   auto deviceInformationService = static_cast<BleNus*>(arg);
@@ -25,7 +24,6 @@ void BleNus::Init() {
 
 void BleNus::SetConnectionHandle(uint16_t connection_handle) {
     conn_handle = connection_handle;
-    
 }
 
 void BleNus::Print(char *str)
