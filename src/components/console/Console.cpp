@@ -13,7 +13,8 @@ Console::Console(Pinetime::System::SystemTask& systemTask,
                 Pinetime::Controllers::MotorController& motorController,
                 Pinetime::Drivers::Cst816S& touchPanel,
                 Pinetime::Drivers::SpiNorFlash& spiNorFlash,
-                Pinetime::Drivers::TwiMaster& twiMaster):
+                Pinetime::Drivers::TwiMaster& twiMaster,
+                Pinetime::Controllers::MotionController& motionController):
                 systemTask {systemTask},
                 nimbleController{nimbleController},
                 fs{fs},
@@ -21,7 +22,8 @@ Console::Console(Pinetime::System::SystemTask& systemTask,
                 motorController{motorController},
                 touchPanel{touchPanel},
                 spiNorFlash{spiNorFlash},
-                twiMaster{twiMaster}
+                twiMaster{twiMaster},
+                motionController{motionController}
 {
 }
 
@@ -41,6 +43,8 @@ void Console::Print(char *str)
 
 void Console::Process()
 {
+    static uint32_t accCount = 0;
+
     // Simple stupid comparison, later would be nice to add commands lookup table with argument parsing
     if(hasCommandFlag)
     {
@@ -101,6 +105,21 @@ void Console::Process()
         {
             // TODO: print RAW data from FLASH
         }
+        else if(strncmp(rxBuffer, "ACC", 3) == 0)
+        {
+            // Print 50 accelerometer measurements
+            accCount = 50;
+        }
+    }
+
+    // Debug print accelerometer values
+    if(accCount)
+    {
+        accCount--;
+        char accBuf[32];
+
+        snprintf(accBuf, sizeof(accBuf), "%d, %d, %d\n", motionController.X(), motionController.Y(), motionController.Z());
+        nimbleController.bleNus().Print(accBuf);
     }
 }
 

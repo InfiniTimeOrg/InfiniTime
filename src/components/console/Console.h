@@ -17,6 +17,7 @@ namespace Pinetime {
     class NimbleController;
     class FS;
     class MotorController;
+    class MotionController;
   }
 
   namespace Drivers
@@ -40,7 +41,8 @@ namespace Pinetime {
                 Pinetime::Controllers::MotorController& motorController,
                 Pinetime::Drivers::Cst816S& touchPanel,
                 Pinetime::Drivers::SpiNorFlash& spiNorFlash,
-                Pinetime::Drivers::TwiMaster& twiMaster);
+                Pinetime::Drivers::TwiMaster& twiMaster,
+                Pinetime::Controllers::MotionController& motionController);
 
         void Init();
         void Process();
@@ -56,6 +58,7 @@ namespace Pinetime {
           Pinetime::Drivers::Cst816S& touchPanel;
           Pinetime::Drivers::SpiNorFlash& spiNorFlash;
           Pinetime::Drivers::TwiMaster& twiMaster;
+          Pinetime::Controllers::MotionController& motionController;
 
           static constexpr int bufferSize = 256;
           char rxBuffer[bufferSize];
