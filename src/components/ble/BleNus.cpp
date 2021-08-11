@@ -43,31 +43,22 @@ void BleNus::ConsoleRegister(std::function<void(char*, int)> f)
   this->rxDataFunction = f;
 }
 
-
 int BleNus::OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
 
     struct os_mbuf *om = ctxt->om;
-    //struct os_mbuf *om_tx;
 
     switch (ctxt->op) {
         case BLE_GATT_ACCESS_OP_WRITE_CHR:
               while(om) {
-                  //console_write((char *)om->om_data, om->om_len);
 
                   // reply the received data
                   // test it with Bluefruit, NRF Connect on computer or phone, or in web browser
-                  //  https://wiki.makerdiary.com/web-device-cli/
+                  // https://terminal.hardwario.com/
 
                   rxDataFunction((char *)om->om_data, (int)om->om_len);
 
-                  // om_tx = ble_hs_mbuf_from_flat((char *)om->om_data, om->om_len);
-                  // if (om_tx) {
-                  //     ble_gattc_notify_custom(conn_handle, attr_read_handle, om_tx);
-                  // }
-
                   om = SLIST_NEXT(om, om_next);
               }
-              //console_write("\n", 1);
               return 0;
         default:
             assert(0);
@@ -77,13 +68,13 @@ int BleNus::OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle, st
 
 BleNus::BleNus()
   : characteristicDefinition {{
-                                .uuid = (ble_uuid_t*) &rxCharacteristicUuid,
+                                .uuid = &rxCharacteristicUuid.u,
                                 .access_cb = BleNusCallback,
                                 .arg = this,
                                 .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_WRITE_NO_RSP,
                               },
                               {
-                                .uuid = (ble_uuid_t*) &txCharacteristicUuid,
+                                .uuid = &txCharacteristicUuid.u,
                                 .access_cb = BleNusCallback,
                                 .arg = this,
                                 .flags = BLE_GATT_CHR_F_NOTIFY,
@@ -93,7 +84,7 @@ BleNus::BleNus()
     serviceDefinition {
       {/* Device Information Service */
        .type = BLE_GATT_SVC_TYPE_PRIMARY,
-       .uuid = (ble_uuid_t*) &nusServiceUuid,
+       .uuid = &nusServiceUuid.u,
        .characteristics = characteristicDefinition},
       {0},
     } {
