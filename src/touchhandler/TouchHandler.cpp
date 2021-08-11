@@ -26,14 +26,15 @@ bool TouchHandler::GetNewTouchInfo() {
   }
 
   if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
-    if (slideReleased) {
+    if (gestureReleased) {
       if (info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideDown ||
           info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideLeft ||
           info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideUp ||
-          info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideRight) {
+          info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideRight ||
+          info.gesture == Pinetime::Drivers::Cst816S::Gestures::LongPress) {
         if (info.touching) {
           gesture = info.gesture;
-          slideReleased = false;
+          gestureReleased = false;
         }
       } else {
         gesture = info.gesture;
@@ -42,7 +43,7 @@ bool TouchHandler::GetNewTouchInfo() {
   }
 
   if (!info.touching) {
-    slideReleased = true;
+    gestureReleased = true;
   }
 
   return true;

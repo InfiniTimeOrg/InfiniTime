@@ -39,7 +39,7 @@ namespace Pinetime {
         Pinetime::Components::LittleVgl& lvgl;
         Pinetime::Drivers::Cst816S::Gestures gesture;
         bool isCancelled = false;
-        bool slideReleased = true;
+        bool gestureReleased = true;
     };
   }
 }
