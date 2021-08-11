@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <string>
+
 
 //#include "systemtask/SystemTask.h"
 
@@ -46,7 +48,7 @@ namespace Pinetime {
 
         void Init();
         void Process();
-        void Print(char *str);
+        void Print(std::string str);
         void Received(char* str, int length);
 
       private:

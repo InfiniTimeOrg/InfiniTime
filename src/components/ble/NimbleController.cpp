@@ -79,8 +79,6 @@ void NimbleController::Init() {
   bleController.AddressType((addrType == 0) ? Ble::AddressTypes::Public : Ble::AddressTypes::Random);
   bleController.Address(std::move(address));
 
-  //bleNus.ConsoleRegister(&systemTask.console);
-
   res = ble_gatts_start();
   ASSERT(res == 0);
 }
@@ -147,8 +145,6 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       /* A new connection was established or a connection attempt failed. */
       NRF_LOG_INFO("connection %s; status=%d ", event->connect.status == 0 ? "established" : "failed", event->connect.status);
 
-      bleNusService.SetConnectionHandle(event->connect.conn_handle);
-
       if (event->connect.status != 0) {
         /* Connection failed; resume advertising. */
         StartAdvertising();
@@ -157,6 +153,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
         bleController.Connect();
         systemTask.PushMessage(Pinetime::System::Messages::BleConnected);
         connectionHandle = event->connect.conn_handle;
+        bleNusService.SetConnectionHandle(event->connect.conn_handle);
         // Service discovery is deffered via systemtask
       }
     } break;

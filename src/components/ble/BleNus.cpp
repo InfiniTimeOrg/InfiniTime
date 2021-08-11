@@ -6,11 +6,11 @@ using namespace Pinetime::Controllers;
 constexpr ble_uuid128_t BleNus::nusServiceUuid;
 constexpr ble_uuid128_t BleNus::rxCharacteristicUuid;
 constexpr ble_uuid128_t BleNus::txCharacteristicUuid;
-uint16_t BleNus::attr_read_handle;
+uint16_t BleNus::attributeReadHandle;
 
-int BleNusCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+int BleNusCallback(uint16_t connectionHandle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   auto deviceInformationService = static_cast<BleNus*>(arg);
-  return deviceInformationService->OnDeviceInfoRequested(conn_handle, attr_handle, ctxt);
+  return deviceInformationService->OnDeviceInfoRequested(connectionHandle, attr_handle, ctxt);
 }
 
 void BleNus::Init() {
@@ -23,34 +23,34 @@ void BleNus::Init() {
 }
 
 void BleNus::SetConnectionHandle(uint16_t connection_handle) {
-    conn_handle = connection_handle;
+    connectionHandle = connection_handle;
 }
 
-void BleNus::Print(char *str)
+void BleNus::Print(const std::string str)
 {
-  struct os_mbuf *om;
-  om = ble_hs_mbuf_from_flat(str, strlen(str));
+  os_mbuf *om;
+  om = ble_hs_mbuf_from_flat(str.c_str(), str.length());
 
   if (om) {
-      ble_gattc_notify_custom(conn_handle, attr_read_handle, om);
+      ble_gattc_notify_custom(connectionHandle, attributeReadHandle, om);
   }
 }
 
-void BleNus::ConsoleRegister(std::function<void(char*, int)> f)
+void BleNus::RegisterRxCallback(std::function<void(char*, int)> f)
 {
   this->rxDataFunction = f;
 }
 
-int BleNus::OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+int BleNus::OnDeviceInfoRequested(uint16_t connectionHandle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
 
-    struct os_mbuf *om = ctxt->om;
+    os_mbuf *om = ctxt->om;
 
     switch (ctxt->op) {
         case BLE_GATT_ACCESS_OP_WRITE_CHR:
               while(om) {
 
-                  // reply the received data
-                  // test it with Bluefruit, NRF Connect on computer or phone, or in web browser
+                  // Test BLE console it with Bluefruit, NRF Toolbox (you must add enter before hitting send! https://devzone.nordicsemi.com/f/nordic-q-a/33687/nrf-toolbox-2-6-0-uart-does-not-send-lf-cr-or-cr-lf-as-eol)
+                  // on the phone, or in any Chromium-based web browser
                   // https://terminal.hardwario.com/
 
                   rxDataFunction((char *)om->om_data, (int)om->om_len);
@@ -76,7 +76,7 @@ BleNus::BleNus()
                                 .access_cb = BleNusCallback,
                                 .arg = this,
                                 .flags = BLE_GATT_CHR_F_NOTIFY,
-                                .val_handle = &attr_read_handle
+                                .val_handle = &attributeReadHandle
                               },
                               {0}},
     serviceDefinition {
