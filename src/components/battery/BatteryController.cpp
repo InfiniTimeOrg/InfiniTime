@@ -23,7 +23,6 @@ void Battery::Update() {
     return;
   }
   // Non blocking read
-  samples = 0;
   isReading = true;
   SaadcInit();
 
@@ -40,9 +39,9 @@ void Battery::SaadcInit() {
 
   nrf_saadc_channel_config_t adcChannelConfig = {.resistor_p = NRF_SAADC_RESISTOR_DISABLED,
                                                  .resistor_n = NRF_SAADC_RESISTOR_DISABLED,
-                                                 .gain = NRF_SAADC_GAIN1_5,
+                                                 .gain = NRF_SAADC_GAIN1_4,
                                                  .reference = NRF_SAADC_REFERENCE_INTERNAL,
-                                                 .acq_time = NRF_SAADC_ACQTIME_3US,
+                                                 .acq_time = NRF_SAADC_ACQTIME_40US,
                                                  .mode = NRF_SAADC_MODE_SINGLE_ENDED,
                                                  .burst = NRF_SAADC_BURST_ENABLED,
                                                  .pin_p = batteryVoltageAdcInput,
@@ -60,22 +59,21 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     APP_ERROR_CHECK(nrfx_saadc_buffer_convert(&saadc_value, 1));
 
     // A hardware voltage divider divides the battery voltage by 2
-    // ADC gain is 1/5
-    // thus adc_voltage = battery_voltage / 2 * gain = battery_voltage / 10
-    // reference_voltage is 0.6V
+    // ADC gain is 1/4
+    // thus adc_voltage = battery_voltage / 2 * gain = battery_voltage / 8
+    // reference_voltage is 600mV
     // p_event->data.done.p_buffer[0] = (adc_voltage / reference_voltage) * 1024
-    voltage = p_event->data.done.p_buffer[0] * 6000 / 1024;
-    percentRemaining = (voltage - battery_min) * 100 / (battery_max - battery_min);
-    percentRemaining = std::max(percentRemaining, 0);
-    percentRemaining = std::min(percentRemaining, 100);
-    percentRemainingBuffer.Insert(percentRemaining);
+    voltage = p_event->data.done.p_buffer[0] * (8 * 600) / 1024;
 
-    samples++;
-    if (samples > percentRemainingSamples) {
-      nrfx_saadc_uninit();
-      isReading = false;
+    if (voltage > battery_max) {
+      percentRemaining = 100;
+    } else if (voltage < battery_min) {
+      percentRemaining = 0;
     } else {
-      nrfx_saadc_sample();
+      percentRemaining = (voltage - battery_min) * 100 / (battery_max - battery_min);
     }
+
+    nrfx_saadc_uninit();
+    isReading = false;
   }
 }
