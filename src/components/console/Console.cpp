@@ -4,7 +4,6 @@
 #include "components/ble/NimbleController.h"
 #include "components/ble/BleNus.h"
 
-
 using namespace Pinetime::Components;
 
 Console::Console(Pinetime::System::SystemTask& systemTask,
@@ -24,7 +23,6 @@ Console::Console(Pinetime::System::SystemTask& systemTask,
                 spiNorFlash{spiNorFlash},
                 twiMaster{twiMaster}
 {
-
 }
 
 void Console::Init()
@@ -38,37 +36,15 @@ void Console::Init()
 
 void Console::Print(char *str)
 {
-    //nimbleController.Print(str);
     nimbleController.bleNus().Print(str);
 }
 
-void Console::Received(char* str, int length)
+void Console::Process()
 {
-    bool hasCommand = false;
-    //char b[128];
-
-    for(int i = 0; i < length; i++)
-    {
-        rxBuffer[rxPos++] = str[i];
-        rxBuffer[rxPos] = '\0'; // terminate for debug out
-
-        if(str[i] == 13 || str[i] == 10)
-        {
-            rxPos = 0;
-            hasCommand = true;
-            break;
-        }
-    }
-
-    //sprintf(b, "rx: %s, len: %d, buffer: %s\r\n", str, length, rxBuffer);
-    //nimbleController.bleNus().Print(b);
-
-
     // Simple stupid comparison, later would be nice to add commands lookup table with argument parsing
-    if(hasCommand)
+    if(hasCommandFlag)
     {
-         //sprintf(b, "cmd: %s\r\n", rxBuffer);
-         //nimbleController.bleNus().Print(b);
+        hasCommandFlag = false;
 
         // This AT > OK needs to be there, because https://terminal.hardwario.com/ waits for the answer
         // When we use or create better webpage terminal, this can go out
@@ -79,7 +55,6 @@ void Console::Received(char* str, int length)
         else if(strncmp(rxBuffer, "LVGL", 4) == 0)
         {
             // TODO: list of objects, changing position, size & color would be great
-            
             char lvbuf[128];
             lv_mem_monitor_t mon;
             lv_mem_monitor(&mon);
@@ -88,6 +63,23 @@ void Console::Received(char* str, int length)
             mon.frag_pct,
             (int)mon.free_biggest_size);
             nimbleController.bleNus().Print(lvbuf);
+
+            // List active screen objects
+            lv_obj_t* actStrc = lv_scr_act();
+            uint16_t childCount = lv_obj_count_children(actStrc);
+            snprintf(lvbuf, sizeof(lvbuf), "children: %d\n", childCount);
+            nimbleController.bleNus().Print(lvbuf);
+
+            lv_obj_t * child;
+            uint16_t i = 0;
+            child = lv_obj_get_child(actStrc, NULL);
+            while(child) {
+                snprintf(lvbuf, sizeof(lvbuf), "#%d, x: %d, y: %d, w: %d, h: %d\n", i++, lv_obj_get_x(child), lv_obj_get_y(child), lv_obj_get_width(child), lv_obj_get_height(child));
+                nimbleController.bleNus().Print(lvbuf);
+                vTaskDelay(50); // Add small delay for each item, so the print buffer has time to be send over BLE
+                
+                child = lv_obj_get_child(actStrc, child);
+            }
         }
         else if(strncmp(rxBuffer, "VIBRATE", 7) == 0)
         {
@@ -96,14 +88,6 @@ void Console::Received(char* str, int length)
         else if(strncmp(rxBuffer, "FS", 2) == 0)
         {
             // TODO: add directory listings etc.
-            /*
-            lfs_file_t settingsFile;
-
-            if(fs.FileOpen(&settingsFile, "/settings.dat", LFS_O_RDONLY) != LFS_ERR_OK)
-            {
-                return;
-            }*/
-
         }
         else if(strncmp(rxBuffer, "WKUP", 4) == 0)
         {
@@ -115,25 +99,28 @@ void Console::Received(char* str, int length)
         }
         else if(strncmp(rxBuffer, "SPINOR", 6) == 0)
         {
-            // Not working yet
-            /*
-            uint8_t flashBuffer[64];
-            char lineBuffer[64];
-            spiNorFlash.Read(0x0, flashBuffer, sizeof(flashBuffer));
-
-            lineBuffer[0] = '\0';
-
-            uint8_t *ptr = flashBuffer;
-
-            for(uint32_t i = 0; i < sizeof(flashBuffer) / 8; i++)
-            {
-                snprintf(lineBuffer, sizeof(lineBuffer), "%02X %02X %02X %02X %02X %02X %02X %02X\r\n", ptr[0], ptr[1], ptr[2], ptr[3], ptr[4], ptr[5], ptr[6], ptr[7]);
-                ptr += 8;
-
-                nimbleController.bleNus().Print(lineBuffer);
-                vTaskDelay(50); // not sure if this has to be, needs to be inspected how BLE communicates and if buffers are ok
-            }
-            */
+            // TODO: print RAW data from FLASH
         }
     }
+}
+
+void Console::Received(char* str, int length)
+{
+    //char b[128];
+
+    for(int i = 0; i < length; i++)
+    {
+        rxBuffer[rxPos++] = str[i];
+        rxBuffer[rxPos] = '\0'; // terminate for debug print 
+
+        if(str[i] == 13 || str[i] == 10)
+        {
+            rxPos = 0;
+            hasCommandFlag = true;
+            break;
+        }
+    }
+
+    //sprintf(b, "rx: %s, len: %d, buffer: %s\r\n", str, length, rxBuffer);
+    //nimbleController.bleNus().Print(b);
 }

@@ -43,6 +43,7 @@ namespace Pinetime {
                 Pinetime::Drivers::TwiMaster& twiMaster);
 
         void Init();
+        void Process();
         void Print(char *str);
         void Received(char* str, int length);
 
@@ -59,6 +60,7 @@ namespace Pinetime {
           static constexpr int bufferSize = 256;
           char rxBuffer[bufferSize];
           uint16_t rxPos;
+          bool hasCommandFlag;
 
       };
   }

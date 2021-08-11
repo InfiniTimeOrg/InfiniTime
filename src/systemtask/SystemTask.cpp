@@ -347,12 +347,12 @@ void SystemTask::Work() {
           xTimerStart(dimTimer, 0);
           break;
         case Messages::OnTouchEvent:
-          console.Print("Touch event\r\n");
+          console.Print((char*)"Touch event\r\n");
           ReloadIdleTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
         case Messages::OnButtonEvent:
-          console.Print("Button event\r\n");
+          console.Print((char*)"Button event\r\n");
           ReloadIdleTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
           break;
@@ -406,7 +406,7 @@ void SystemTask::Work() {
     }
 
     
-    
+    console.Process();
 
     monitor.Process();
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
@@ -509,7 +509,7 @@ void SystemTask::OnIdle() {
   if (doNotGoToSleep)
     return;
   NRF_LOG_INFO("Idle timeout -> Going to sleep")
-  console.Print("Idle timeout -> Going to sleep\r\n");
+  console.Print((char*)"Idle timeout -> Going to sleep\r\n");
   PushMessage(Messages::GoToSleep);
 }
 
