@@ -127,6 +127,12 @@ void Console::Received(char* str, int length)
 {
     //char b[128];
 
+    // Wrap if input is too long without CR/LN
+    if(rxPos == bufferSize - 1)
+    {
+        rxPos = 0;
+    }
+
     for(int i = 0; i < length; i++)
     {
         rxBuffer[rxPos++] = str[i];
