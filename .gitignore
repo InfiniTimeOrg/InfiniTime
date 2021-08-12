@@ -28,6 +28,7 @@ core
 sdk
 src/Version.h
 docker/post_build.sh
+post_build.sh
 Testing/Temporary/
 
 # Linux
