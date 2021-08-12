@@ -62,7 +62,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   displayedChar[4] = 0;
 
   //Create a 200px wide background rectangle
-
   timebar = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorBG()]);
   lv_obj_set_style_local_radius(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
