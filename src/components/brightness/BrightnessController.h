@@ -27,6 +27,10 @@ namespace Pinetime {
       static constexpr uint8_t pinLcdBacklight3 = 23;
       Levels level = Levels::High;
       Levels backupLevel = Levels::High;
+      uint16_t pwmSequence[1] = {10000};
+
+      void setPwm(uint16_t val);
+
     };
   }
 }
