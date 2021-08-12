@@ -180,15 +180,10 @@ TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, const uint8_t* dat
 }
 
 void TwiMaster::Sleep() {
-  while (twiBaseAddress->ENABLE != 0) {
-    twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Disabled << TWIM_ENABLE_ENABLE_Pos);
-  }
-  nrf_gpio_cfg_default(6);
-  nrf_gpio_cfg_default(7);
+  twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Disabled << TWIM_ENABLE_ENABLE_Pos);
 }
 
 void TwiMaster::Wakeup() {
-  ConfigurePins();
   twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 }
 
