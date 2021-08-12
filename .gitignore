@@ -11,6 +11,7 @@ cmake_install.cmake
 Makefile
 build
 tools
+compile_commands.json
 
 # Resulting binary files
 *.a
