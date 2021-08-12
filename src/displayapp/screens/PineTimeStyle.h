@@ -32,8 +32,6 @@ namespace Pinetime {
 
         bool Refresh() override;
 
-        void OnObjectEvent(lv_obj_t* pObj, lv_event_t i);
-
       private:
         char displayedChar[5];
 
@@ -67,9 +65,6 @@ namespace Pinetime {
         lv_obj_t* calendarBar2;
         lv_obj_t* calendarCrossBar1;
         lv_obj_t* calendarCrossBar2;
-        lv_obj_t* heartbeatIcon;
-        lv_obj_t* heartbeatValue;
-        lv_obj_t* heartbeatBpm;
         lv_obj_t* notificationIcon;
         lv_obj_t* stepGauge;
         lv_color_t needle_colors[1];

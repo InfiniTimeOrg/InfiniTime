@@ -218,26 +218,17 @@ bool PineTimeStyle::Refresh() {
 
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
-    if (bleState.Get() == true) {
-      lv_label_set_text(bleIcon, BleIcon::GetIcon(true));
-      lv_obj_realign(bleIcon);
-    } else {
-      lv_label_set_text(bleIcon, BleIcon::GetIcon(false));
-    }
+    lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
+    lv_obj_realign(bleIcon);
   }
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
-    if (notificationState.Get() == true) {
-      lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(true));
-      lv_obj_realign(notificationIcon);
-    } else {
-      lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
-    }
+    lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
+    lv_obj_realign(notificationIcon);
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();
-
   if (currentDateTime.IsUpdated()) {
     auto newDateTime = currentDateTime.Get();
 
@@ -245,9 +236,9 @@ bool PineTimeStyle::Refresh() {
     auto time = date::make_time(newDateTime - dp);
     auto yearMonthDay = date::year_month_day(dp);
 
-    auto year = (int) yearMonthDay.year();
-    auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned) yearMonthDay.month());
-    auto day = (unsigned) yearMonthDay.day();
+    auto year = static_cast<int>(yearMonthDay.year());
+    auto month = static_cast<Pinetime::Controllers::DateTime::Months>(static_cast<unsigned>(yearMonthDay.month()));
+    auto day = static_cast<unsigned>(yearMonthDay.day());
     auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
     int hour = time.hours().count();
@@ -258,9 +249,8 @@ bool PineTimeStyle::Refresh() {
 
     char hoursChar[3];
     char ampmChar[5];
-
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-      sprintf(hoursChar, "%02d", hour);
+        sprintf(hoursChar, "%02d", hour);
     } else {
       if (hour == 0 && hour != 12) {
         hour = 12;
@@ -277,41 +267,26 @@ bool PineTimeStyle::Refresh() {
       sprintf(hoursChar, "%02d", hour);
     }
 
-    if (hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] ||
+    if (hoursChar[0] != displayedChar[0] or hoursChar[1] != displayedChar[1] or minutesChar[0] != displayedChar[2] or
         minutesChar[1] != displayedChar[3]) {
       displayedChar[0] = hoursChar[0];
       displayedChar[1] = hoursChar[1];
       displayedChar[2] = minutesChar[0];
       displayedChar[3] = minutesChar[1];
 
-      char hourStr[3];
-      char minStr[3];
-
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         lv_label_set_text(timeAMPM, ampmChar);
       }
 
-      // Display the time as 2 pairs of digits
-      sprintf(hourStr, "%c%c", hoursChar[0], hoursChar[1]);
-      lv_label_set_text(timeDD1, hourStr);
-
-      sprintf(minStr, "%c%c", minutesChar[0], minutesChar[1]);
-      lv_label_set_text(timeDD2, minStr);
+      lv_label_set_text_fmt(timeDD1, "%s", hoursChar);
+      lv_label_set_text_fmt(timeDD2, "%s", minutesChar);
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      char dayOfWeekStr[4];
-      char dayStr[3];
-      char monthStr[4];
-
-      sprintf(dayOfWeekStr, "%s", dateTimeController.DayOfWeekShortToString());
-      sprintf(dayStr, "%d", day);
-      sprintf(monthStr, "%s", dateTimeController.MonthShortToString());
-
-      lv_label_set_text(dateDayOfWeek, dayOfWeekStr);
-      lv_label_set_text(dateDay, dayStr);
+      lv_label_set_text_fmt(dateDayOfWeek, "%s", dateTimeController.DayOfWeekShortToString());
+      lv_label_set_text_fmt(dateDay, "%d", day);
       lv_obj_realign(dateDay);
-      lv_label_set_text(dateMonth, monthStr);
+      lv_label_set_text_fmt(dateMonth, "%s", dateTimeController.MonthShortToString());
 
       currentYear = year;
       currentMonth = month;
