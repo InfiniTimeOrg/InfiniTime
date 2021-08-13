@@ -231,7 +231,7 @@ void Console::Received(char* str, int length)
         rxBuffer[rxPos++] = str[i];
         rxBuffer[rxPos] = '\0'; // terminate for debug print 
 
-        if(str[i] == 13 || str[i] == 10)
+        if(str[i] == '\n' || str[i] == '\r')
         {
             rxPos = 0;
             hasCommandFlag = true;
