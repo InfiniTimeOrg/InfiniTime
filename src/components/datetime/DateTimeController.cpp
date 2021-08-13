@@ -55,9 +55,9 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   auto time = date::make_time(currentDateTime - dp);
   auto yearMonthDay = date::year_month_day(dp);
 
-  year = (int) yearMonthDay.year();
-  month = static_cast<Months>((unsigned) yearMonthDay.month());
-  day = (unsigned) yearMonthDay.day();
+  year = static_cast<int>(yearMonthDay.year());
+  month = static_cast<Months>(static_cast<unsigned>(yearMonthDay.month()));
+  day = static_cast<unsigned>(yearMonthDay.day());
   dayOfWeek = static_cast<Days>(date::weekday(yearMonthDay).iso_encoding());
 
   hour = time.hours().count();
@@ -75,31 +75,31 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
 }
 
 const char* DateTime::MonthShortToString() {
-  return DateTime::MonthsString[(uint8_t) month];
+  return DateTime::MonthsString[static_cast<uint8_t>(month)];
 }
 
 const char* DateTime::MonthShortToStringLow() {
-  return DateTime::MonthsStringLow[(uint8_t) month];
+  return DateTime::MonthsStringLow[static_cast<uint8_t>(month)];
 }
 
 const char* DateTime::MonthsToStringLow() {
-  return DateTime::MonthsLow[(uint8_t) month];
+  return DateTime::MonthsLow[static_cast<uint8_t>(month)];
 }
 
 const char* DateTime::DayOfWeekToString() {
-  return DateTime::DaysString[(uint8_t) dayOfWeek];
+  return DateTime::DaysString[static_cast<uint8_t>(dayOfWeek)];
 }
 
 const char* DateTime::DayOfWeekShortToString() {
-  return DateTime::DaysStringShort[(uint8_t) dayOfWeek];
+  return DateTime::DaysStringShort[static_cast<uint8_t>(dayOfWeek)];
 }
 
 const char* DateTime::DayOfWeekToStringLow() {
-  return DateTime::DaysStringLow[(uint8_t) dayOfWeek];
+  return DateTime::DaysStringLow[static_cast<uint8_t>(dayOfWeek)];
 }
 
 const char* DateTime::DayOfWeekShortToStringLow() {
-  return DateTime::DaysStringShortLow[(uint8_t) dayOfWeek];
+  return DateTime::DaysStringShortLow[static_cast<uint8_t>(dayOfWeek)];
 }
 
 void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
