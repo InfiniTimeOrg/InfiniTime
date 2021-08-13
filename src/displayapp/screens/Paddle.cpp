@@ -16,7 +16,7 @@ Paddle::Paddle(Pinetime::Applications::DisplayApp* app, Pinetime::Components::Li
   lv_obj_set_style_local_border_width(background, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 1);
 
   points = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(points, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_style_local_text_font(points, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_40);
   lv_label_set_text(points, "0000");
   lv_obj_align(points, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 10);
 

@@ -53,7 +53,12 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 10, 0);
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12 &&
+      settingsController.GetInterfaceSize() == Controllers::Settings::InterfaceSize::Large) {
+    lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 60);
+  } else {
+    lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
+  }
   lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
@@ -76,7 +81,7 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(heartbeatIcon, Symbols::heartBeat);
   lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
-  lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
+  lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
 
   heartbeatValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));
@@ -86,7 +91,7 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text(stepValue, "0");
-  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
+  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
 
   stepIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
@@ -94,10 +99,10 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   if (settingsController.GetInterfaceSize() == Controllers::Settings::InterfaceSize::Large) {
-    lv_obj_set_style_local_text_font(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-    lv_obj_set_style_local_text_font(label_time_ampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-    lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-    lv_obj_set_style_local_text_font(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+    lv_obj_set_style_local_text_font(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_40);
+    lv_obj_set_style_local_text_font(label_time_ampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_40);
+    lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_40);
+    lv_obj_set_style_local_text_font(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_40);
   }
 }
 
@@ -194,18 +199,22 @@ bool WatchFaceDigital::Refresh() {
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
       if (settingsController.GetInterfaceSize() == Controllers::Settings::InterfaceSize::Normal) {
         if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-          lv_label_set_text_fmt(label_date, "%s %d %s %d", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString(), year);
+          lv_label_set_text_fmt(
+            label_date, "%s %d %s %d", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString(), year);
         } else {
-          lv_label_set_text_fmt(label_date, "%s %s %d %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day, year);
+          lv_label_set_text_fmt(
+            label_date, "%s %s %d %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day, year);
         }
       } else {
         if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-          lv_label_set_text_fmt(label_date, "%s %d %s", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString());
+          lv_label_set_text_fmt(
+            label_date, "%s %d %s", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString());
         } else {
-          lv_label_set_text_fmt(label_date, "%s %s %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day);
+          lv_label_set_text_fmt(
+            label_date, "%s %s %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day);
         }
       }
-      lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
+      lv_obj_realign(label_date);
 
       currentYear = year;
       currentMonth = month;
@@ -225,16 +234,16 @@ bool WatchFaceDigital::Refresh() {
       lv_label_set_text_static(heartbeatValue, "");
     }
 
-    lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
-    lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
+    lv_obj_realign(heartbeatIcon);
+    lv_obj_realign(heartbeatValue);
   }
 
   stepCount = motionController.NbSteps();
   motionSensorOk = motionController.IsSensorOk();
   if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
-    lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
-    lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+    lv_obj_realign(stepValue);
+    lv_obj_realign(stepIcon);
   }
 
   return running;
