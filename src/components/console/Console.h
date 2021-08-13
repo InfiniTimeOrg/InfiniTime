@@ -67,6 +67,9 @@ namespace Pinetime {
           uint16_t rxPos;
           bool hasCommandFlag;
 
+          void CommandLvgl(const char *args[], uint16_t argc);
+          void AccelerometerDebug();
+
       };
   }
 }

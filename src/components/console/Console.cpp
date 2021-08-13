@@ -82,6 +82,47 @@ static void setObjectsColor(const char *hexColor)
     }
 }
 
+void Console::AccelerometerDebug()
+{
+    char accBuf[32];
+    snprintf(accBuf, sizeof(accBuf), "%d, %d, %d\n", motionController.X(), motionController.Y(), motionController.Z());
+    Print(accBuf);
+}
+
+void Console::CommandLvgl(const char *args[], uint16_t argc)
+{
+    char lvbuf[128];
+    snprintf(lvbuf, sizeof(lvbuf), "argc: %d, cmd: %s, 1:%s, 2:%s, 3:%s", argc, args[0], args[1], args[2], args[3]);
+    Print(lvbuf);
+
+    // TODO: list of objects, changing position, size & color would be great
+    
+    lv_mem_monitor_t mon;
+    lv_mem_monitor(&mon);
+    snprintf(lvbuf, sizeof(lvbuf), "used: %6d (%3d %%), frag: %3d %%, biggest free: %6d\n", (int)(mon.total_size - mon.free_size),
+    mon.used_pct,
+    mon.frag_pct,
+    (int)mon.free_biggest_size);
+    Print(lvbuf);
+
+    // List active screen objects
+    lv_obj_t* actStrc = lv_scr_act();
+    uint16_t childCount = lv_obj_count_children(actStrc);
+    snprintf(lvbuf, sizeof(lvbuf), "children: %d\n", childCount);
+    Print(lvbuf);
+
+    lv_obj_t * child;
+    uint16_t i = 0;
+    child = lv_obj_get_child(actStrc, NULL);
+    while(child) {
+        snprintf(lvbuf, sizeof(lvbuf), "#%d, x: %d, y: %d, w: %d, h: %d\n", i++, lv_obj_get_x(child), lv_obj_get_y(child), lv_obj_get_width(child), lv_obj_get_height(child));
+        Print(lvbuf);
+        vTaskDelay(50); // Add small delay for each item, so the print buffer has time to be send over BLE
+        
+        child = lv_obj_get_child(actStrc, child);
+    }
+}
+
 void Console::Process()
 {
     static uint32_t accCount = 0;
@@ -101,10 +142,10 @@ void Console::Process()
         strncpy(arg_buffer, rxBuffer, sizeof(arg_buffer));
 
         // First argument is always command name itself
-        int argc = 1;
+        uint16_t argc = 1;
         args[0] = arg_buffer;
 
-        int param_len = strlen(rxBuffer);
+        uint16_t param_len = strlen(rxBuffer);
 
         for (uint8_t i = 0; i < param_len; i++)
         {
@@ -140,36 +181,7 @@ void Console::Process()
         }
         else if(cmdCmp(rxBuffer, "LVGL"))
         {
-            char lvbuf[128];
-            snprintf(lvbuf, sizeof(lvbuf), "argc: %d, cmd: %s, 1:%s, 2:%s, 3:%s", argc, args[0], args[1], args[2], args[3]);
-            Print(lvbuf);
-
-            // TODO: list of objects, changing position, size & color would be great
-            
-            lv_mem_monitor_t mon;
-            lv_mem_monitor(&mon);
-            snprintf(lvbuf, sizeof(lvbuf), "used: %6d (%3d %%), frag: %3d %%, biggest free: %6d\n", (int)(mon.total_size - mon.free_size),
-            mon.used_pct,
-            mon.frag_pct,
-            (int)mon.free_biggest_size);
-            Print(lvbuf);
-
-            // List active screen objects
-            lv_obj_t* actStrc = lv_scr_act();
-            uint16_t childCount = lv_obj_count_children(actStrc);
-            snprintf(lvbuf, sizeof(lvbuf), "children: %d\n", childCount);
-            Print(lvbuf);
-
-            lv_obj_t * child;
-            uint16_t i = 0;
-            child = lv_obj_get_child(actStrc, NULL);
-            while(child) {
-                snprintf(lvbuf, sizeof(lvbuf), "#%d, x: %d, y: %d, w: %d, h: %d\n", i++, lv_obj_get_x(child), lv_obj_get_y(child), lv_obj_get_width(child), lv_obj_get_height(child));
-                Print(lvbuf);
-                vTaskDelay(50); // Add small delay for each item, so the print buffer has time to be send over BLE
-                
-                child = lv_obj_get_child(actStrc, child);
-            }
+            CommandLvgl(args, argc);
         }
         else if(cmdCmp(rxBuffer, "VIBRATE"))
         {
@@ -202,10 +214,7 @@ void Console::Process()
     if(accCount)
     {
         accCount--;
-        char accBuf[32];
-
-        snprintf(accBuf, sizeof(accBuf), "%d, %d, %d\n", motionController.X(), motionController.Y(), motionController.Z());
-        Print(accBuf);
+        AccelerometerDebug();
     }
 }
 
