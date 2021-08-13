@@ -65,7 +65,6 @@ namespace Pinetime {
           static constexpr int bufferSize = 256;
           char rxBuffer[bufferSize];
           uint16_t rxPos;
-          bool hasCommandFlag;
 
           void CommandLvgl(const char *args[], uint16_t argc);
           void AccelerometerDebug();

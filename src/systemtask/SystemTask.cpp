@@ -342,6 +342,10 @@ void SystemTask::Work() {
 	  // Battery level is updated on every message - there's no need to do anything
           break;
 
+        case Messages::ConsoleProcess:
+          console.Process();
+          break;
+
         default:
           break;
       }
@@ -362,9 +366,6 @@ void SystemTask::Work() {
       nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
       batteryNotificationTick = xTaskGetTickCount();
     }
-
-    
-    console.Process();
 
     monitor.Process();
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);

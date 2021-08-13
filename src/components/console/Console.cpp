@@ -92,8 +92,6 @@ void Console::AccelerometerDebug()
 void Console::CommandLvgl(const char *args[], uint16_t argc)
 {
     char lvbuf[128];
-    snprintf(lvbuf, sizeof(lvbuf), "argc: %d, cmd: %s, 1:%s, 2:%s, 3:%s", argc, args[0], args[1], args[2], args[3]);
-    Print(lvbuf);
 
     // TODO: list of objects, changing position, size & color would be great
     
@@ -125,96 +123,78 @@ void Console::CommandLvgl(const char *args[], uint16_t argc)
 
 void Console::Process()
 {
-    static uint32_t accCount = 0;
+    static constexpr int maxArgumentsCount = 20;
+    static constexpr int maxBufferLength = 128;
 
-    // Simple stupid comparison, later would be nice to add commands lookup table with argument parsing
-    if(hasCommandFlag)
+    char arg_buffer[maxBufferLength];
+    const char *args[maxArgumentsCount];
+    
+    // Copy string, becase we replace ' ' with '\0' for proper string termination
+    strncpy(arg_buffer, rxBuffer, sizeof(arg_buffer));
+
+    // First argument is always command name itself
+    uint16_t argc = 1;
+    args[0] = arg_buffer;
+
+    uint16_t param_len = strlen(rxBuffer);
+
+    for (uint8_t i = 0; i < param_len; i++)
     {
-        hasCommandFlag = false;
-
-        static constexpr int maxArgumentsCount = 20;
-        static constexpr int maxBufferLength = 128;
-
-        char arg_buffer[maxBufferLength];
-        const char *args[maxArgumentsCount];
-        
-        // Copy string, becase we replace ' ' with '\0' for proper string termination
-        strncpy(arg_buffer, rxBuffer, sizeof(arg_buffer));
-
-        // First argument is always command name itself
-        uint16_t argc = 1;
-        args[0] = arg_buffer;
-
-        uint16_t param_len = strlen(rxBuffer);
-
-        for (uint8_t i = 0; i < param_len; i++)
+        if (rxBuffer[i] == ' ' && param_len > (i + 1))
         {
-            if (rxBuffer[i] == ' ' && param_len > (i + 1))
-            {
-                arg_buffer[i] = '\0';
-                args[argc++] = &arg_buffer[i+1];
-            }
-
-            if (argc == maxArgumentsCount)
-            {
-                // Max argument count reached
-                break;
-            }
+            arg_buffer[i] = '\0';
+            args[argc++] = &arg_buffer[i+1];
         }
 
-        // This AT > OK needs to be there, because https://terminal.hardwario.com/ waits for the answer
-        // When we use or create better webpage terminal, this can go out
-        if(cmdCmp(rxBuffer, "AT"))
+        if (argc == maxArgumentsCount)
         {
-            Print((char*)"OK\r\n");
-        }
-        else if(cmdCmp(rxBuffer, "COLOR"))
-        {
-            if(argc == 2)
-            {
-                setObjectsColor(args[1]);
-            }
-            else
-            {
-                Print("Expects 1 parameter");
-            }
-        }
-        else if(cmdCmp(rxBuffer, "LVGL"))
-        {
-            CommandLvgl(args, argc);
-        }
-        else if(cmdCmp(rxBuffer, "VIBRATE"))
-        {
-            motorController.SetDuration(100);
-        }
-        else if(cmdCmp(rxBuffer, "FS"))
-        {
-            // TODO: add directory listings etc.
-        }
-        else if(cmdCmp(rxBuffer, "WKUP"))
-        {
-            systemTask.PushMessage(Pinetime::System::Messages::GoToRunning);
-        }
-        else if(cmdCmp(rxBuffer, "SLEEP"))
-        {
-            systemTask.PushMessage(Pinetime::System::Messages::GoToSleep);
-        }
-        else if(cmdCmp(rxBuffer, "SPINOR"))
-        {
-            // TODO: print RAW data from FLASH
-        }
-        else if(cmdCmp(rxBuffer, "ACC"))
-        {
-            // Print 50 accelerometer measurements
-            accCount = 50;
+            // Max argument count reached
+            break;
         }
     }
 
-    // Debug print accelerometer values
-    if(accCount)
+    // Simple stupid command comparison, later would be nice to add commands lookup table with argument parsing
+
+    // This AT > OK needs to be there, because https://terminal.hardwario.com/ waits for the answer
+    // When we use or create better webpage terminal, this can go out
+    if(cmdCmp(rxBuffer, "AT"))
     {
-        accCount--;
-        AccelerometerDebug();
+        Print((char*)"OK\r\n");
+    }
+    else if(cmdCmp(rxBuffer, "COLOR"))
+    {
+        if(argc == 2)
+        {
+            setObjectsColor(args[1]);
+        }
+        else
+        {
+            Print("Expects 1 parameter");
+        }
+    }
+    else if(cmdCmp(rxBuffer, "LVGL"))
+    {
+        CommandLvgl(args, argc);
+    }
+    else if(cmdCmp(rxBuffer, "VIBRATE"))
+    {
+        motorController.SetDuration(100);
+    }
+    else if(cmdCmp(rxBuffer, "FS"))
+    {
+        // TODO: add directory listings etc.
+    }
+    else if(cmdCmp(rxBuffer, "WKUP"))
+    {
+        systemTask.PushMessage(Pinetime::System::Messages::GoToRunning);
+    }
+    else if(cmdCmp(rxBuffer, "SLEEP"))
+    {
+        systemTask.PushMessage(Pinetime::System::Messages::GoToSleep);
+    }
+    else if(cmdCmp(rxBuffer, "SPINOR"))
+    {
+        // TODO: print RAW data from FLASH
     }
 }
 
@@ -234,7 +214,7 @@ void Console::Received(char* str, int length)
         if(str[i] == '\n' || str[i] == '\r')
         {
             rxPos = 0;
-            hasCommandFlag = true;
+            systemTask.PushMessage(System::Messages::ConsoleProcess);
             break;
         }
     }
