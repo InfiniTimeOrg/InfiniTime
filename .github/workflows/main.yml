@@ -83,16 +83,11 @@ jobs:
         if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
         run:  |
           cd ${{ runner.temp }}
-          git clone --branch v1.5.0 https://github.com/mcu-tools/mcuboot
+          git clone --branch v1.7.2 https://github.com/mcu-tools/mcuboot
 
       - name: Install imgtool dependencies
         run:  |
           pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
-
-      # cbor is a dependency that is not currently included in mcuboot requirements.txt
-      - name: Install imgtool dependencies (cbor)
-        run:  |
-          pip3 install --user cbor
 
       - name: Install adafruit-nrfutil
         run:  |
