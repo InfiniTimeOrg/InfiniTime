@@ -266,14 +266,13 @@ void SystemTask::Work() {
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          motorController.SetDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;
         case Messages::OnTimerDone:
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          motorController.SetDuration(35);
+          motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
         case Messages::BleConnected:
@@ -327,7 +326,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnChargingEvent:
           batteryController.Update();
-          motorController.SetDuration(15);
+          motorController.RunForDuration(15);
           break;
         case Messages::MeasureBatteryTimerExpired:
           sendBatteryNotification = true;
