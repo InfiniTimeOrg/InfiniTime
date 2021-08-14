@@ -47,6 +47,11 @@ void IdleTimerCallback(TimerHandle_t xTimer) {
   sysTask->OnIdle();
 }
 
+void MeasureBatteryTimerCallback(TimerHandle_t xTimer) {
+  auto* sysTask = static_cast<SystemTask*>(pvTimerGetTimerID(xTimer));
+  sysTask->PushMessage(Pinetime::System::Messages::MeasureBatteryTimerExpired);
+}
+
 SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Drivers::St7789& lcd,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
@@ -126,7 +131,8 @@ void SystemTask::Work() {
   twiMaster.Init();
   touchPanel.Init();
   dateTimeController.Register(this);
-  batteryController.Init();
+  batteryController.Register(this);
+  batteryController.Update();
   motorController.Init();
   motionSensor.SoftReset();
   timerController.Register(this);
@@ -142,8 +148,6 @@ void SystemTask::Work() {
 
   displayApp.Register(this);
   displayApp.Start();
-
-  displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
 
   heartRateSensor.Init();
   heartRateSensor.Disable();
@@ -187,7 +191,9 @@ void SystemTask::Work() {
 
   idleTimer = xTimerCreate("idleTimer", pdMS_TO_TICKS(2000), pdFALSE, this, IdleTimerCallback);
   dimTimer = xTimerCreate("dimTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), pdFALSE, this, DimTimerCallback);
+  measureBatteryTimer = xTimerCreate("measureBattery", batteryMeasurementPeriod, pdTRUE, this, MeasureBatteryTimerCallback);
   xTimerStart(dimTimer, 0);
+  xTimerStart(measureBatteryTimer, portMAX_DELAY);
 
 // Suppress endless loop diagnostic
 #pragma clang diagnostic push
@@ -197,11 +203,6 @@ void SystemTask::Work() {
 
     uint8_t msg;
     if (xQueueReceive(systemTasksMsgQueue, &msg, 100)) {
-
-      batteryController.Update();
-      // the battery does not emit events when changing charge levels, so we piggyback
-      // on any system event to read and update the current values
-
       Messages message = static_cast<Messages>(msg);
       switch (message) {
         case Messages::EnableSleeping:
@@ -232,7 +233,6 @@ void SystemTask::Work() {
           lcd.Wakeup();
 
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
 
           isSleeping = false;
@@ -326,8 +326,18 @@ void SystemTask::Work() {
           stepCounterMustBeReset = true;
           break;
         case Messages::OnChargingEvent:
+          batteryController.Update();
           motorController.SetDuration(15);
-	  // Battery level is updated on every message - there's no need to do anything
+          break;
+        case Messages::MeasureBatteryTimerExpired:
+          sendBatteryNotification = true;
+          batteryController.Update();
+          break;
+        case Messages::BatteryMeasurementDone:
+          if (sendBatteryNotification) {
+            sendBatteryNotification = false;
+            nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
+          }
           break;
 
         default:
@@ -344,11 +354,6 @@ void SystemTask::Work() {
       } else {
         bleDiscoveryTimer--;
       }
-    }
-
-    if (xTaskGetTickCount() - batteryNotificationTick > batteryNotificationPeriod) {
-      nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
-      batteryNotificationTick = xTaskGetTickCount();
     }
 
     monitor.Process();
