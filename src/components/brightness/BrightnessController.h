@@ -30,6 +30,7 @@ namespace Pinetime {
       uint16_t pwmSequence[1] = {10000};
 
       void setPwm(uint16_t val);
+      void pwmEnable(bool enable);
 
     };
   }

@@ -45,6 +45,22 @@ void BrightnessController::setPwm(uint16_t val)
   nrf_pwm_task_trigger(NRF_PWM0, NRF_PWM_TASK_SEQSTART0);
 }
 
+void BrightnessController::pwmEnable(bool enable)
+{
+  if(enable)
+  {
+    nrf_pwm_enable(NRF_PWM0);
+    uint32_t out_pins[] = {pinLcdBacklight3, pinLcdBacklight2, pinLcdBacklight1, NRF_PWM_PIN_NOT_CONNECTED};
+    nrf_pwm_pins_set(NRF_PWM0, out_pins);
+  }
+  else
+  {
+    uint32_t out_pins[] = {NRF_PWM_PIN_NOT_CONNECTED, NRF_PWM_PIN_NOT_CONNECTED, NRF_PWM_PIN_NOT_CONNECTED, NRF_PWM_PIN_NOT_CONNECTED};
+    nrf_pwm_pins_set(NRF_PWM0, out_pins);
+    nrf_pwm_disable(NRF_PWM0);
+  }
+}
+
 void BrightnessController::Set(BrightnessController::Levels level) {
   
   this->level = level;
@@ -54,10 +70,10 @@ void BrightnessController::Set(BrightnessController::Levels level) {
       setPwm(10000);
       break;
     case Levels::Medium:
-      setPwm(5000);
+      setPwm(3800);
       break;
     case Levels::Low:
-      setPwm(500);
+      setPwm(830);
       break;
     case Levels::Off:
       setPwm(0);
