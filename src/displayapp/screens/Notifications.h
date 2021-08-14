@@ -5,6 +5,7 @@
 #include <memory>
 #include "Screen.h"
 #include "components/ble/NotificationManager.h"
+#include "components/motor/MotorController.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -19,6 +20,7 @@ namespace Pinetime {
         explicit Notifications(DisplayApp* app,
                                Pinetime::Controllers::NotificationManager& notificationManager,
                                Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                               Pinetime::Controllers::MotorController& motorController,
                                Modes mode);
         ~Notifications() override;
 
@@ -35,12 +37,10 @@ namespace Pinetime {
                            Modes mode,
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService);
           ~NotificationItem();
-          bool Refresh() {
-            return false;
+          bool IsRunning() const {
+            return running;
           }
-          void OnAcceptIncomingCall(lv_event_t event);
-          void OnMuteIncomingCall(lv_event_t event);
-          void OnRejectIncomingCall(lv_event_t event);
+          void OnCallButtonEvent(lv_obj_t*, lv_event_t event);
 
         private:
           uint8_t notifNr = 0;
@@ -60,6 +60,7 @@ namespace Pinetime {
           lv_obj_t* bottomPlaceholder;
           Modes mode;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
+          bool running = true;
         };
 
       private:
@@ -75,7 +76,7 @@ namespace Pinetime {
         bool validDisplay = false;
 
         lv_point_t timeoutLinePoints[2] {{0, 1}, {239, 1}};
-        lv_obj_t* timeoutLine;
+        lv_obj_t* timeoutLine = nullptr;
         uint32_t timeoutTickCountStart;
         uint32_t timeoutTickCountEnd;
       };
