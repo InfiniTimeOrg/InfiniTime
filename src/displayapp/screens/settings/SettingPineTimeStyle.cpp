@@ -203,6 +203,14 @@ SettingPineTimeStyle::SettingPineTimeStyle(
   lv_obj_set_style_local_bg_opa(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_30);
   lv_obj_set_style_local_value_str(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Rst");
   lv_obj_set_event_cb(btnReset, event_handler);
+
+  btnRandom = lv_btn_create(lv_scr_act(), nullptr);
+  btnRandom->user_data = this;
+  lv_obj_set_size(btnRandom, 60, 60);
+  lv_obj_align(btnRandom, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_bg_opa(btnRandom, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_30);
+  lv_obj_set_style_local_value_str(btnRandom, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Rnd");
+  lv_obj_set_event_cb(btnRandom, event_handler);
 }
 
 SettingPineTimeStyle::~SettingPineTimeStyle() {
@@ -302,5 +310,18 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t *object, lv_event_t event) {
       lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[11]);
       settingsController.SetPTSColorBG(3);
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[3]);
+  }
+  if((object == btnRandom) && (event == LV_EVENT_PRESSED)) {
+    uint8_t randTime = rand() % 17;
+    uint8_t randBar = rand() % 17;
+    uint8_t randBG = rand() % 17;
+    settingsController.SetPTSColorTime(randTime);
+    lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randTime]);
+    lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randTime]);
+    lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randTime]);
+    settingsController.SetPTSColorBar(randBar);
+    lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randBar]);
+    settingsController.SetPTSColorBG(randBG);
+    lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randBG]);
   }
 }
