@@ -98,22 +98,22 @@ void Battery::Register(Pinetime::System::SystemTask* systemTask) {
 // The number of line segments used to approximate the battery discharge curve.
 static const int LINE_SEGMENT_COUNT = 7;
 
-// The voltages at the endpoints of the line segments. Any two consecutive values
-// represent the start and end voltage of a line segment.
-static const float voltageOffsets[LINE_SEGMENT_COUNT + 1] {
-  4.180,
-  4.084,
-  3.912,
-  3.763,
-  3.721,
-  3.672,
-  3.613,
-  3.500
+// The voltages (mV) at the endpoints of the line segments. Any two consecutive
+// values represent the start and end voltage of a line segment.
+static const uint16_t voltageOffsets[LINE_SEGMENT_COUNT + 1] {
+  4180,
+  4084,
+  3912,
+  3763,
+  3721,
+  3672,
+  3613,
+  3500
 };
 
 // The battery percentages at the endpoints of the line segments. Note that last
-// value is omitted: It is not needed because we only need the percentages at the
-// start of each line segment.
+// value is omitted: It is not needed because we only need the percentages at
+// the start of each line segment.
 static const float percentageOffsets[LINE_SEGMENT_COUNT] {
   100.000,
   96.362,
@@ -125,22 +125,23 @@ static const float percentageOffsets[LINE_SEGMENT_COUNT] {
   //0.000
 };
 
-// The pre-calculated slopes (in battery percentage per volt) of the line segments.
+// The pre-calculated slopes (in battery percentage points per millivolt) of the
+// line segments.
 static const float percentageSlopes[LINE_SEGMENT_COUNT] {
-  31.940,
-  119.893,
-  166.148,
-  261.976,
-  440.041,
-  191.537,
-  76.271
+  0.031940,
+  0.119893,
+  0.166148,
+  0.261976,
+  0.440041,
+  0.191537,
+  0.076271
 };
 
-uint8_t Battery::GetBatteryPercentageFromVoltage(float voltage) {
+uint8_t Battery::GetBatteryPercentageFromVoltage(uint16_t voltage) {
   if (voltage > voltageOffsets[0])
     return 100;
   
-  for (int i = 0; i < LINE_SEGMENT_COUNT; i++)
+  for (uint8_t i = 0; i < LINE_SEGMENT_COUNT; i++)
     if (voltage > voltageOffsets[i + 1])
       return static_cast<uint8_t>(roundf(percentageOffsets[i] + percentageSlopes[i] * (voltage - voltageOffsets[i])));
   
