@@ -252,6 +252,8 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t *object, lv_event_t event) {
   if((object == btnNextBar) && (event == LV_EVENT_PRESSED)) {
     if ( valueBar < 16 ) {
       valueBar += 1;
+      // Avoid setting the sidebar black
+      if ( valueBar == 3 ) { valueBar += 1; }
     } else {
       valueBar = 0;
     }
@@ -261,6 +263,8 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t *object, lv_event_t event) {
   if((object == btnPrevBar) && (event == LV_EVENT_PRESSED)) {
     if ( valueBar > 0 ) {
       valueBar -= 1;
+      // Avoid setting the sidebar black
+      if ( valueBar == 3 ) { valueBar -= 1; }
     } else {
       valueBar = 16;
     }
