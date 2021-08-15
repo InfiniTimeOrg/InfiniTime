@@ -60,8 +60,6 @@ void Battery::SaadcInit() {
 }
 
 void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
-  const uint16_t battery_max = 4180; // maximum voltage of battery ( max charging voltage is 4.21 )
-  const uint16_t battery_min = 3200; // minimum voltage of battery before shutdown ( depends on the battery )
 
   if (p_event->type == NRFX_SAADC_EVT_DONE) {
 
@@ -77,10 +75,8 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     uint8_t newPercent;
     if (isFull) {
       newPercent = 100;
-    } else if (voltage < battery_min) {
-      newPercent = 0;
     } else {
-      newPercent = std::min((voltage - battery_min) * 100 / (battery_max - battery_min), isCharging ? 99 : 100);
+      newPercent = std::min(GetBatteryPercentageFromVoltage(voltage), static_cast<uint8_t>(isCharging ? 99 : 100));
     }
 
     if ((isPowerPresent && newPercent > percentRemaining) || (!isPowerPresent && newPercent < percentRemaining) || firstMeasurement) {
@@ -96,4 +92,38 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
 
 void Battery::Register(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
+}
+
+uint8_t Battery::GetBatteryPercentageFromVoltage(uint16_t voltage) {
+  // The number of line segments used to approximate the battery discharge curve.
+  static const uint8_t LINE_SEGMENT_COUNT = 7;
+
+  // The voltages (mV) at the endpoints of the line segments. Any two consecutive
+  // values represent the start and end voltage of a line segment.
+  static const uint16_t voltageOffsets[LINE_SEGMENT_COUNT + 1] {4157, 4063, 3882, 3747, 3716, 3678, 3583, 3500};
+
+  // The battery percentages at the endpoints of the line segments. Note that last
+  // value is omitted: It is not needed because we only need the percentages at
+  // the start of each line segment.
+  static const float percentageOffsets[LINE_SEGMENT_COUNT] {100.000, 95.197, 70.429, 48.947, 35.158, 18.971, 5.801};
+
+  // The pre-calculated slopes (in battery percentage points per millivolt) of the
+  // line segments.
+  static const float percentageSlopes[LINE_SEGMENT_COUNT] {0.05109, 0.13684, 0.15913, 0.44481, 0.42595, 0.13863, 0.06989};
+
+  if (voltage >= voltageOffsets[0]) {
+    return 100;
+  }
+
+  if (voltage <= voltageOffsets[7]) {
+    return 0;
+  }
+
+  for (uint8_t i = 0; i < LINE_SEGMENT_COUNT; i++) {
+    if (voltage > voltageOffsets[i + 1]) {
+      return static_cast<uint8_t>(roundf(percentageOffsets[i] + percentageSlopes[i] * (voltage - voltageOffsets[i])));
+    }
+  }
+
+  return 0;
 }
