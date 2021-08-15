@@ -96,7 +96,7 @@ void Battery::Register(Pinetime::System::SystemTask* systemTask) {
 }
 
 // The number of line segments used to approximate the battery discharge curve.
-static const int LINE_SEGMENT_COUNT = 7;
+static const uint8_t LINE_SEGMENT_COUNT = 7;
 
 // The voltages (mV) at the endpoints of the line segments. Any two consecutive
 // values represent the start and end voltage of a line segment.
