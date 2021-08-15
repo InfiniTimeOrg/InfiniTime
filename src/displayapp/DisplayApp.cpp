@@ -28,6 +28,7 @@
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
 #include "displayapp/screens/Steps.h"
+#include "displayapp/screens/SmartScreen.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -421,6 +422,9 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
+      break;
+    case Apps::SmartControl:
+      currentScreen = std::make_unique<Screens::SmartScreen>(this);
       break;
   }
   currentApp = app;
