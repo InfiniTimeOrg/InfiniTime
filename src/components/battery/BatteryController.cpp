@@ -136,7 +136,7 @@ static const float percentageSlopes[LINE_SEGMENT_COUNT] {
   76.271
 };
 
-int Battery::GetBatteryPercentageFromVoltage(float voltage) {
+uint8_t Battery::GetBatteryPercentageFromVoltage(float voltage) {
   if (voltage > voltageOffsets[0])
     return 100;
   
