@@ -19,8 +19,8 @@ Cst816S::Cst816S(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaste
 
 void Cst816S::Init() {
   nrf_gpio_cfg_output(pinReset);
-  nrf_gpio_pin_set(pinReset);
-  vTaskDelay(50);
+  //nrf_gpio_pin_set(pinReset);
+  //vTaskDelay(5);
   nrf_gpio_pin_clear(pinReset);
   vTaskDelay(5);
   nrf_gpio_pin_set(pinReset);
