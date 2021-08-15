@@ -310,7 +310,7 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
         randBG += 1;
       }
       if (randBar == 3) {
-        randBar = randTime;
+        randBar -= 1;
       }
       settingsController.SetPTSColorTime(randTime);
       lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randTime]);
