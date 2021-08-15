@@ -142,7 +142,7 @@ uint8_t Battery::GetBatteryPercentageFromVoltage(float voltage) {
   
   for (int i = 0; i < LINE_SEGMENT_COUNT; i++)
     if (voltage > voltageOffsets[i + 1])
-      return static_cast<uint8_t>(round(percentageOffsets[i] + percentageSlopes[i] * (voltage - voltageOffsets[i])));
+      return static_cast<uint8_t>(roundf(percentageOffsets[i] + percentageSlopes[i] * (voltage - voltageOffsets[i])));
   
   return 0;
 }
