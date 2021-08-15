@@ -31,6 +31,7 @@ void ButtonHandler::Work() {
 
     pressed = nrf_gpio_pin_read(pinButton);
     if (pressed) {
+      systemTask->PushMessage(System::Messages::ReloadIdleTimer);
       while (true) {
         if (pressed) {
           if (pressed != lastState) {
@@ -38,7 +39,7 @@ void ButtonHandler::Work() {
               if (xTaskGetTickCount() - releaseTime < doubleClickTime) {
                 if (!handled) {
                   handled = true;
-                  systemTask->OnButtonDoubleClicked();
+                  systemTask->PushMessage(System::Messages::OnButtonDoubleClicked);
                 }
               }
             }
@@ -55,16 +56,17 @@ void ButtonHandler::Work() {
             if (xTaskGetTickCount() - pressTime >= longerPressTime) {
               if (!longerPressed) {
                 longerPressed = true;
-                systemTask->OnButtonLongerPressed();
+                systemTask->PushMessage(System::Messages::OnButtonLongerPressed);
               }
             }
             if (!handled) {
               handled = true;
-              systemTask->OnButtonLongPressed();
+              systemTask->PushMessage(System::Messages::OnButtonLongPressed);
             }
           }
         } else {
           if (pressed != lastState) {
+            systemTask->PushMessage(System::Messages::ReloadIdleTimer);
             releaseTime = xTaskGetTickCount();
             lastState = false;
             longerPressed = false;
@@ -74,7 +76,7 @@ void ButtonHandler::Work() {
             }
           } else if (xTaskGetTickCount() - releaseTime >= doubleClickTime) {
             if (!handled) {
-              systemTask->OnButtonPushed();
+              systemTask->PushMessage(System::Messages::OnButtonPushed);
               break;
             }
           }

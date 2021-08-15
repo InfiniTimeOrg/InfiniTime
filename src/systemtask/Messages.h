@@ -15,12 +15,16 @@ namespace Pinetime {
         BleFirmwareUpdateStarted,
         BleFirmwareUpdateFinished,
         OnTouchEvent,
-        OnButtonEvent,
+        OnButtonPushed,
+        OnButtonLongPressed,
+        OnButtonLongerPressed,
+        OnButtonDoubleClicked,
         OnDisplayTaskSleeping,
         EnableSleeping,
         DisableSleeping,
         OnNewDay,
-        OnChargingEvent
+        OnChargingEvent,
+        ReloadIdleTimer,
       };
     }
 }

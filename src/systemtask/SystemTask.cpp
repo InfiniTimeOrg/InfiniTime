@@ -298,9 +298,25 @@ void SystemTask::Work() {
           ReloadIdleTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
-        case Messages::OnButtonEvent:
-          ReloadIdleTimer();
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
+        case Messages::OnButtonPushed:
+          if (!isSleeping) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
+          }
+          break;
+        case Messages::OnButtonLongPressed:
+          if (!isSleeping) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonLongPressed);
+          }
+          break;
+        case Messages::OnButtonLongerPressed:
+          if (!isSleeping) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonLongerPressed);
+          }
+          break;
+        case Messages::OnButtonDoubleClicked:
+          if (!isSleeping) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonDoubleClicked);
+          }
           break;
         case Messages::OnDisplayTaskSleeping:
           if (BootloaderVersion::IsValid()) {
@@ -328,6 +344,9 @@ void SystemTask::Work() {
         case Messages::OnChargingEvent:
           motorController.SetDuration(15);
 	  // Battery level is updated on every message - there's no need to do anything
+          break;
+        case Messages::ReloadIdleTimer:
+          ReloadIdleTimer();
           break;
 
         default:
@@ -383,41 +402,6 @@ void SystemTask::UpdateMotion() {
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
   if (motionController.ShouldWakeUp(isSleeping)) {
     GoToRunning();
-  }
-}
-
-void SystemTask::OnButtonPushed() {
-  if (isGoingToSleep)
-    return;
-  if (!isSleeping) {
-    NRF_LOG_INFO("[systemtask] Button pushed");
-    PushMessage(Messages::OnButtonEvent);
-  } else {
-    if (!isWakingUp) {
-      NRF_LOG_INFO("[systemtask] Button pushed, waking up");
-      GoToRunning();
-    }
-  }
-}
-
-void SystemTask::OnButtonLongPressed() {
-  if (!isSleeping) {
-    NRF_LOG_INFO("[systemtask] Button longpressed");
-    displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonLongPressed);
-  }
-}
-
-void SystemTask::OnButtonLongerPressed() {
-  if (!isSleeping) {
-    NRF_LOG_INFO("[systemtask] Button longerpressed");
-    displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonLongerPressed);
-  }
-}
-
-void SystemTask::OnButtonDoubleClicked() {
-  if (!isSleeping) {
-    NRF_LOG_INFO("[systemtask] Button doubleclicked");
-    displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonDoubleClicked);
   }
 }
 
