@@ -299,7 +299,7 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
         case Messages::OnButtonPushed:
-          if (!isSleeping) {
+          if (!isSleeping && !isGoingToSleep) {
             displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
           }
           break;
