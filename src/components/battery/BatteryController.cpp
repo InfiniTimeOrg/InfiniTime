@@ -60,8 +60,6 @@ void Battery::SaadcInit() {
 }
 
 void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
-  const uint16_t battery_max = 4180; // maximum voltage of battery ( max charging voltage is 4.21 )
-  const uint16_t battery_min = 3200; // minimum voltage of battery before shutdown ( depends on the battery )
 
   if (p_event->type == NRFX_SAADC_EVT_DONE) {
 
@@ -77,10 +75,8 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     uint8_t newPercent;
     if (isFull) {
       newPercent = 100;
-    } else if (voltage < battery_min) {
-      newPercent = 0;
     } else {
-      newPercent = std::min((voltage - battery_min) * 100 / (battery_max - battery_min), isCharging ? 99 : 100);
+      newPercent = std::min(GetBatteryPercentageFromVoltage(voltage), isCharging ? 99 : 100);
     }
 
     if ((isPowerPresent && newPercent > percentRemaining) || (!isPowerPresent && newPercent < percentRemaining) || firstMeasurement) {
@@ -94,6 +90,59 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
   }
 }
 
+
 void Battery::Register(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
+}
+
+// The number of line segments used to approximate the battery discharge curve.
+static const int LINE_SEGMENT_COUNT = 7;
+
+// The voltages at the endpoints of the line segments. Any two consecutive values
+// represent the start and end voltage of a line segment.
+static const float voltageOffsets[LINE_SEGMENT_COUNT + 1] {
+  4.180,
+  4.084,
+  3.912,
+  3.763,
+  3.721,
+  3.672,
+  3.613,
+  3.500
+};
+
+// The battery percentages at the endpoints of the line segments. Note that last
+// value is omitted: It is not needed because we only need the percentages at the
+// start of each line segment.
+static const float percentageOffsets[LINE_SEGMENT_COUNT] {
+  100.000,
+  96.362,
+  76.664,
+  51.908,
+  40.905,
+  19.343,
+  9.139
+  //0.000
+};
+
+// The pre-calculated slopes (in battery percentage per volt) of the line segments.
+static const float percentageSlopes[LINE_SEGMENT_COUNT] {
+  31.940,
+  119.893,
+  166.148,
+  261.976,
+  440.041,
+  191.537,
+  76.271
+};
+
+int Battery::GetBatteryPercentageFromVoltage(float voltage) {
+  if (voltage > voltageOffsets[0])
+    return 100;
+  
+  for (int i = 0; i < LINE_SEGMENT_COUNT; i++)
+    if (voltage > voltageOffsets[i + 1])
+      return percentageOffsets[i] + percentageSlopes[i] * (voltage - voltageOffsets[i]);
+  
+  return 0;
 }
