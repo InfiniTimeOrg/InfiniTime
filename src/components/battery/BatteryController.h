@@ -49,7 +49,7 @@ namespace Pinetime {
 
       void SaadcEventHandler(nrfx_saadc_evt_t const* p_event);
       static void AdcCallbackStatic(nrfx_saadc_evt_t const* event);
-      static int GetBatteryPercentageFromVoltage(float voltage);
+      static uint8_t GetBatteryPercentageFromVoltage(float voltage);
 
       bool isReading = false;
 
