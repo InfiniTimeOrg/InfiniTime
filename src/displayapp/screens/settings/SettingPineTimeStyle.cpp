@@ -315,6 +315,11 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t *object, lv_event_t event) {
     uint8_t randTime = rand() % 17;
     uint8_t randBar = rand() % 17;
     uint8_t randBG = rand() % 17;
+    // Check if the time color is the same as its background, or if the sidebar is black. If so, change them to more useful values.
+    if ((randTime == randBG) || (randBar == 3)) {
+      randBG += 1;
+      randBar = randTime;
+    }
     settingsController.SetPTSColorTime(randTime);
     lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randTime]);
     lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randTime]);
