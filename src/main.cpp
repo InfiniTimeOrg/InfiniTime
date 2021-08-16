@@ -81,9 +81,8 @@ Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
 // The TWI device should work @ up to 400Khz but there is a HW bug which prevent it from
 // respecting correct timings. According to erratas heet, this magic value makes it run
 // at ~390Khz with correct timings.
-static constexpr uint32_t MaxTwiFrequencyWithoutHardwareBug {0x06200000};
-Pinetime::Drivers::TwiMaster twiMaster {Pinetime::Drivers::TwiMaster::Modules::TWIM1,
-                                        Pinetime::Drivers::TwiMaster::Parameters {MaxTwiFrequencyWithoutHardwareBug, pinTwiSda, pinTwiScl}};
+//static constexpr uint32_t MaxTwiFrequencyWithoutHardwareBug {0x06200000};
+Pinetime::Drivers::TwiMaster twiMaster {NRF_TWIM1, TWI_FREQUENCY_FREQUENCY_K250, pinTwiSda, pinTwiScl};
 Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
 #ifdef PINETIME_IS_RECOVERY
 static constexpr bool isFactory = true;
