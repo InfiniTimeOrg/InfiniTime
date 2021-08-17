@@ -54,7 +54,7 @@ namespace {
   }
 
   TouchEvents Convert(Pinetime::Drivers::Cst816S::TouchInfos info) {
-    if (info.isTouch) {
+    if (info.isValid) {
       switch (info.gesture) {
         case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
           return TouchEvents::Tap;
