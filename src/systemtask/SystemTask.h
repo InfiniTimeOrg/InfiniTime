@@ -71,6 +71,7 @@ namespace Pinetime {
       void OnTouchEvent();
 
       void OnIdle();
+      void OnDim();
 
       Pinetime::Controllers::NimbleController& nimble() {
         return nimbleController;
@@ -99,6 +100,7 @@ namespace Pinetime {
       std::atomic<bool> isSleeping {false};
       std::atomic<bool> isGoingToSleep {false};
       std::atomic<bool> isWakingUp {false};
+      std::atomic<bool> isDimmed {false};
       Pinetime::Drivers::Watchdog& watchdog;
       Pinetime::Controllers::NotificationManager& notificationManager;
       Pinetime::Controllers::MotorController& motorController;
@@ -106,8 +108,6 @@ namespace Pinetime {
       Pinetime::Drivers::Bma421& motionSensor;
       Pinetime::Controllers::Settings& settingsController;
       Pinetime::Controllers::HeartRateController& heartRateController;
-            
-      Controllers::BrightnessController brightnessController;
       Pinetime::Controllers::MotionController& motionController;
 
       Pinetime::Applications::DisplayApp& displayApp;
@@ -126,9 +126,10 @@ namespace Pinetime {
 
       static void Process(void* instance);
       void Work();
-      void ReloadIdleTimer() const;
+      void ReloadIdleTimer();
       bool isBleDiscoveryTimerRunning = false;
       uint8_t bleDiscoveryTimer = 0;
+      TimerHandle_t dimTimer;
       TimerHandle_t idleTimer;
       bool doNotGoToSleep = false;
 

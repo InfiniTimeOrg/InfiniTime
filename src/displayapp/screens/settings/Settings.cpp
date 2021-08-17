@@ -41,9 +41,9 @@ std::unique_ptr<Screen> Settings::CreateScreen1() {
 
   std::array<Screens::List::Applications, 4> applications {{
     {Symbols::sun, "Display", Apps::SettingDisplay},
-    {Symbols::clock, "Wake Up", Apps::SettingWakeUp},
+    {Symbols::eye, "Wake Up", Apps::SettingWakeUp},
     {Symbols::clock, "Time format", Apps::SettingTimeFormat},
-    {Symbols::clock, "Watch face", Apps::SettingWatchFace},
+    {Symbols::home, "Watch face", Apps::SettingWatchFace},
   }};
 
   return std::make_unique<Screens::List>(0, 2, app, settingsController, applications);

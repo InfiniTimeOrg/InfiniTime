@@ -52,6 +52,31 @@ namespace {
   static inline bool in_isr(void) {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
   }
+
+  TouchEvents Convert(Pinetime::Drivers::Cst816S::TouchInfos info) {
+    if (info.isTouch) {
+      switch (info.gesture) {
+        case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
+          return TouchEvents::Tap;
+        case Pinetime::Drivers::Cst816S::Gestures::LongPress:
+          return TouchEvents::LongTap;
+        case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
+          return TouchEvents::DoubleTap;
+        case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
+          return TouchEvents::SwipeRight;
+        case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
+          return TouchEvents::SwipeLeft;
+        case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
+          return TouchEvents::SwipeDown;
+        case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
+          return TouchEvents::SwipeUp;
+        case Pinetime::Drivers::Cst816S::Gestures::None:
+        default:
+          return TouchEvents::None;
+      }
+    }
+    return TouchEvents::None;
+  }
 }
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
@@ -140,8 +165,15 @@ void DisplayApp::Refresh() {
   lastWakeTime = xTaskGetTickCount();
   if (messageReceived) {
     switch (msg) {
-      case Messages::GoToSleep:
+      case Messages::DimScreen:
+        // Backup brightness is the brightness to return to after dimming or sleeping
         brightnessController.Backup();
+        brightnessController.Set(Controllers::BrightnessController::Levels::Low);
+        break;
+      case Messages::RestoreBrightness:
+        brightnessController.Restore();
+        break;
+      case Messages::GoToSleep:
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
           brightnessController.Lower();
           vTaskDelay(100);
@@ -170,16 +202,21 @@ void DisplayApp::Refresh() {
         break;
       case Messages::TimerDone:
         if (currentApp == Apps::Timer) {
-          auto *timer = static_cast<Screens::Timer*>(currentScreen.get());
+          auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
           timer->setDone();
         } else {
           LoadApp(Apps::Timer, DisplayApp::FullRefreshDirections::Down);
         }
         break;
       case Messages::TouchEvent: {
-        if (state != States::Running)
+        if (state != States::Running) {
           break;
-        auto gesture = OnTouchEvent();
+        }
+        auto info = touchPanel.GetTouchInfo();
+        auto gesture = Convert(info);
+        if (gesture == TouchEvents::None) {
+          break;
+        }
         if (!currentScreen->OnTouchEvent(gesture)) {
           if (currentApp == Apps::Clock) {
             switch (gesture) {
@@ -200,6 +237,12 @@ void DisplayApp::Refresh() {
             }
           } else if (returnTouchEvent == gesture) {
             LoadApp(returnToApp, returnDirection);
+            brightnessController.Set(settingsController.GetBrightness());
+            brightnessController.Backup();
+          } else if (touchMode == TouchModes::Gestures) {
+            if (gesture == TouchEvents::Tap) {
+              lvgl.SetNewTapEvent(info.x, info.y);
+            }
           }
         }
       } break;
@@ -209,6 +252,8 @@ void DisplayApp::Refresh() {
         } else {
           if (!currentScreen->OnButtonPushed()) {
             LoadApp(returnToApp, returnDirection);
+            brightnessController.Set(settingsController.GetBrightness());
+            brightnessController.Backup();
           }
         }
         break;
@@ -223,7 +268,7 @@ void DisplayApp::Refresh() {
     }
   }
 
-  if(nextApp != Apps::None) {
+  if (nextApp != Apps::None) {
     LoadApp(nextApp, nextDirection);
     nextApp = Apps::None;
   }
@@ -286,16 +331,17 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::FirmwareUpdate:
       currentScreen = std::make_unique<Screens::FirmwareUpdate>(this, bleController);
+      ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
       break;
 
     case Apps::Notifications:
       currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask->nimble().alertService(), Screens::Notifications::Modes::Normal);
+        this, notificationManager, systemTask->nimble().alertService(), motorController, Screens::Notifications::Modes::Normal);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::NotificationsPreview:
       currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask->nimble().alertService(), Screens::Notifications::Modes::Preview);
+        this, notificationManager, systemTask->nimble().alertService(), motorController, Screens::Notifications::Modes::Preview);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::Timer:
@@ -337,8 +383,8 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SysInfo:
-      currentScreen =
-        std::make_unique<Screens::SystemInfo>(this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController, touchPanel);
+      currentScreen = std::make_unique<Screens::SystemInfo>(
+        this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController, touchPanel);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::FlashLight:
@@ -368,6 +414,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Metronome:
       currentScreen = std::make_unique<Screens::Metronome>(this, motorController, *systemTask);
+      ReturnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::None);
       break;
     case Apps::Motion:
       currentScreen = std::make_unique<Screens::Motion>(this, motionController);
@@ -383,7 +430,7 @@ void DisplayApp::IdleState() {
 }
 
 void DisplayApp::PushMessage(Messages msg) {
-  if(in_isr()) {
+  if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken;
     xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
@@ -393,35 +440,6 @@ void DisplayApp::PushMessage(Messages msg) {
   } else {
     xQueueSend(msgQueue, &msg, portMAX_DELAY);
   }
-}
-
-TouchEvents DisplayApp::OnTouchEvent() {
-  auto info = touchPanel.GetTouchInfo();
-  if (info.isValid) {
-    switch (info.gesture) {
-      case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        if (touchMode == TouchModes::Gestures) {
-          lvgl.SetNewTapEvent(info.x, info.y);
-        }
-        return TouchEvents::Tap;
-      case Pinetime::Drivers::Cst816S::Gestures::LongPress:
-        return TouchEvents::LongTap;
-      case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
-        return TouchEvents::DoubleTap;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
-        return TouchEvents::SwipeRight;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
-        return TouchEvents::SwipeLeft;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
-        return TouchEvents::SwipeDown;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
-        return TouchEvents::SwipeUp;
-      case Pinetime::Drivers::Cst816S::Gestures::None:
-      default:
-        return TouchEvents::None;
-    }
-  }
-  return TouchEvents::None;
 }
 
 void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
@@ -454,7 +472,7 @@ void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {
 }
 
 void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
-  if(systemTask != nullptr)
+  if (systemTask != nullptr)
     systemTask->PushMessage(message);
 }
 

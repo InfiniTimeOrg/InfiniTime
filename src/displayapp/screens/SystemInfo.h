@@ -32,12 +32,9 @@ namespace Pinetime {
                             Pinetime::Drivers::Cst816S& touchPanel);
         ~SystemInfo() override;
         bool Refresh() override;
-        bool OnButtonPushed() override;
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
-        bool running = true;
-
         Pinetime::Controllers::DateTime& dateTimeController;
         Pinetime::Controllers::Battery& batteryController;
         Pinetime::Controllers::BrightnessController& brightnessController;

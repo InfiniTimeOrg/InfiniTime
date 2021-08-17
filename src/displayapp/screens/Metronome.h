@@ -3,32 +3,32 @@
 #include "systemtask/SystemTask.h"
 #include "components/motor/MotorController.h"
 
-#include <array>
+namespace Pinetime {
+  namespace Applications {
+    namespace Screens {
 
-namespace Pinetime::Applications::Screens {
+      class Metronome : public Screen {
+      public:
+        Metronome(DisplayApp* app, Controllers::MotorController& motorController, System::SystemTask& systemTask);
+        ~Metronome() override;
+        bool Refresh() override;
+        void OnEvent(lv_obj_t* obj, lv_event_t event);
 
-  class Metronome : public Screen {
-  public:
-    Metronome(DisplayApp* app, Controllers::MotorController& motorController, System::SystemTask& systemTask);
-    ~Metronome() override;
-    bool Refresh() override;
-    bool OnTouchEvent(TouchEvents event) override;
-    void OnEvent(lv_obj_t* obj, lv_event_t event);
-    enum class States { Running, Stopped };
+      private:
+        TickType_t startTime = 0;
+        TickType_t tappedTime = 0;
+        Controllers::MotorController& motorController;
+        System::SystemTask& systemTask;
+        int16_t bpm = 120;
+        uint8_t bpb = 4;
+        uint8_t counter = 1;
 
-  private:
-    bool running;
-    States currentState;
-    TickType_t startTime;
-    TickType_t tappedTime = 0;
-    Controllers::MotorController& motorController;
-    System::SystemTask& systemTask;
-    uint16_t bpm = 120;
-    uint8_t bpb = 4;
-    uint8_t counter = 1;
+        bool metronomeStarted = false;
 
-    lv_obj_t *bpmArc, *bpmTap, *bpmValue, *bpmLegend;
-    lv_obj_t *bpbDropdown, *bpbLegend;
-    lv_obj_t *playPause, *playPauseLabel;
-  };
+        lv_obj_t *bpmArc, *bpmTap, *bpmValue;
+        lv_obj_t *bpbDropdown, *currentBpbText;
+        lv_obj_t *playPause;
+      };
+    }
+  }
 }

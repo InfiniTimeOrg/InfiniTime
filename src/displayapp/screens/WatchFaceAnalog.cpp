@@ -10,38 +10,37 @@ LV_IMG_DECLARE(bg_clock);
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-
-constexpr auto HOUR_LENGTH = 70;
-constexpr auto MINUTE_LENGTH = 90;
-constexpr auto SECOND_LENGTH = 110;
+constexpr int16_t HourLength = 70;
+constexpr int16_t MinuteLength = 90;
+constexpr int16_t SecondLength = 110;
 
 // sin(90) = 1 so the value of _lv_trigo_sin(90) is the scaling factor
 const auto LV_TRIG_SCALE = _lv_trigo_sin(90);
 
-int16_t cosine(int16_t angle) {
+int16_t Cosine(int16_t angle) {
   return _lv_trigo_sin(angle + 90);
 }
 
-int16_t sine(int16_t angle) {
+int16_t Sine(int16_t angle) {
   return _lv_trigo_sin(angle);
 }
 
-int16_t coordinate_x_relocate(int16_t x) {
+int16_t CoordinateXRelocate(int16_t x) {
   return (x + LV_HOR_RES / 2);
 }
 
-int16_t coordinate_y_relocate(int16_t y) {
+int16_t CoordinateYRelocate(int16_t y) {
   return std::abs(y - LV_HOR_RES / 2);
 }
 
-lv_point_t coordinate_relocate(int16_t radius, int16_t angle) {
+lv_point_t CoordinateRelocate(int16_t radius, int16_t angle) {
   return lv_point_t{
-    .x = coordinate_x_relocate(radius * static_cast<int32_t>(sine(angle)) / LV_TRIG_SCALE),
-    .y = coordinate_y_relocate(radius * static_cast<int32_t>(cosine(angle)) / LV_TRIG_SCALE)
+    .x = CoordinateXRelocate(radius * static_cast<int32_t>(Sine(angle)) / LV_TRIG_SCALE),
+    .y = CoordinateYRelocate(radius * static_cast<int32_t>(Cosine(angle)) / LV_TRIG_SCALE)
   };
 }
 
-} // namespace
+}
 
 WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
                                  Controllers::DateTime& dateTimeController,
@@ -68,12 +67,12 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryHalf);
-  lv_obj_align(batteryIcon, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, -8, -4);
+  lv_obj_align(batteryIcon, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   notificationIcon = lv_label_create(lv_scr_act(), NULL);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
-  lv_obj_align(notificationIcon, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 8, -4);
+  lv_obj_align(notificationIcon, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
 
   // Date - Day / Week day
 
@@ -123,7 +122,6 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
 }
 
 WatchFaceAnalog::~WatchFaceAnalog() {
-
   lv_style_reset(&hour_line_style);
   lv_style_reset(&hour_line_style_trace);
   lv_style_reset(&minute_line_style);
@@ -134,18 +132,17 @@ WatchFaceAnalog::~WatchFaceAnalog() {
 }
 
 void WatchFaceAnalog::UpdateClock() {
-
   hour = dateTimeController.Hours();
   minute = dateTimeController.Minutes();
   second = dateTimeController.Seconds();
 
   if (sMinute != minute) {
     auto const angle = minute * 6;
-    minute_point[0] = coordinate_relocate(30, angle);
-    minute_point[1] = coordinate_relocate(MINUTE_LENGTH, angle);
+    minute_point[0] = CoordinateRelocate(30, angle);
+    minute_point[1] = CoordinateRelocate(MinuteLength, angle);
 
-    minute_point_trace[0] = coordinate_relocate(5, angle);
-    minute_point_trace[1] = coordinate_relocate(31, angle);
+    minute_point_trace[0] = CoordinateRelocate(5, angle);
+    minute_point_trace[1] = CoordinateRelocate(31, angle);
 
     lv_line_set_points(minute_body, minute_point, 2);
     lv_line_set_points(minute_body_trace, minute_point_trace, 2);
@@ -156,11 +153,11 @@ void WatchFaceAnalog::UpdateClock() {
     sMinute = minute;
     auto const angle = (hour * 30 + minute / 2);
 
-    hour_point[0] = coordinate_relocate(30, angle);
-    hour_point[1] = coordinate_relocate(HOUR_LENGTH, angle);
+    hour_point[0] = CoordinateRelocate(30, angle);
+    hour_point[1] = CoordinateRelocate(HourLength, angle);
 
-    hour_point_trace[0] = coordinate_relocate(5, angle);
-    hour_point_trace[1] = coordinate_relocate(31, angle);
+    hour_point_trace[0] = CoordinateRelocate(5, angle);
+    hour_point_trace[1] = CoordinateRelocate(31, angle);
 
     lv_line_set_points(hour_body, hour_point, 2);
     lv_line_set_points(hour_body_trace, hour_point_trace, 2);
@@ -170,8 +167,8 @@ void WatchFaceAnalog::UpdateClock() {
     sSecond = second;
     auto const angle = second * 6;
 
-    second_point[0] = coordinate_relocate(-20, angle);
-    second_point[1] = coordinate_relocate(SECOND_LENGTH, angle);
+    second_point[0] = CoordinateRelocate(-20, angle);
+    second_point[1] = CoordinateRelocate(SecondLength, angle);
     lv_line_set_points(second_body, second_point, 2);
   }
 }
@@ -186,16 +183,12 @@ bool WatchFaceAnalog::Refresh() {
   notificationState = notificationManager.AreNewNotificationsAvailable();
 
   if (notificationState.IsUpdated()) {
-    if (notificationState.Get() == true)
-      lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(true));
-    else
-      lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
+    lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();
 
   if (currentDateTime.IsUpdated()) {
-
     month = dateTimeController.Month();
     day = dateTimeController.Day();
     dayOfWeek = dateTimeController.DayOfWeek();
@@ -203,7 +196,6 @@ bool WatchFaceAnalog::Refresh() {
     UpdateClock();
 
     if ((month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-
       lv_label_set_text_fmt(label_date_day, "%s\n%02i", dateTimeController.DayOfWeekShortToString(), day);
 
       currentMonth = month;
