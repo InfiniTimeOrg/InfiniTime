@@ -3,14 +3,23 @@
 SEARCH_DIR(.)
 GROUP(-lgcc -lc -lnosys)
 
+NO_INIT_SIZE = 0x100;
+RAM_MAX = 64K;
 MEMORY
 {
   FLASH (rx) : ORIGIN = 0x00000, LENGTH = 0x78000
-  RAM (rwx) :  ORIGIN = 0x20000000, LENGTH = 0x10000
+  RAM (rwx) :  ORIGIN = 0x20000000, LENGTH = RAM_MAX - NO_INIT_SIZE
+  NOINIT (rwx): ORIGIN = ORIGIN(RAM) + LENGTH(RAM), LENGTH = NO_INIT_SIZE
 }
 
 SECTIONS
 {
+  noinit (NOLOAD):
+  {
+    PROVIDE(__start_noinit_data = .);
+    KEEP(*(.noinit))
+    PROVIDE(__stop_noinit_data = .);
+  } >NOINIT
 }
 
 SECTIONS

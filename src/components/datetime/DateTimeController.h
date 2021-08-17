@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <chrono>
+extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> BackUpTime;
 
 namespace Pinetime {
   namespace System {
@@ -74,6 +75,7 @@ namespace Pinetime {
       }
 
       void Register(System::SystemTask* systemTask);
+      void SetCurrentTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> t);
 
     private:
       uint16_t year = 0;

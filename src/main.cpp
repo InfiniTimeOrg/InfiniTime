@@ -124,7 +124,6 @@ Pinetime::Controllers::FS fs {spiNorFlash};
 Pinetime::Controllers::Settings settingsController {fs};
 Pinetime::Controllers::MotorController motorController {settingsController};
 
-
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               lvgl,
                                               touchPanel,
@@ -160,6 +159,9 @@ Pinetime::System::SystemTask systemTask(spi,
                                         displayApp,
                                         heartRateApp,
                                         fs);
+
+uint32_t MAGIC_RAM __attribute__((section(".noinit")));
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> BackUpTime __attribute__((section(".noinit")));
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if (pin == pinTouchIrq) {
@@ -320,6 +322,13 @@ int main(void) {
 
   // retrieve version stored by bootloader
   Pinetime::BootloaderVersion::SetVersion(NRF_TIMER2->CC[0]);
+
+  // Check Magic Ram and reset lost variables
+  if (MAGIC_RAM == 0xDEADBEEF) {
+    dateTimeController.SetCurrentTime(BackUpTime);
+  } else {
+    MAGIC_RAM = 0xDEADBEEF;
+  }
 
   lvgl.Init();
 
