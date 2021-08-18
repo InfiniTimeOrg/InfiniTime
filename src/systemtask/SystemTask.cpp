@@ -22,6 +22,7 @@
 #include "drivers/TwiMaster.h"
 #include "drivers/Hrs3300.h"
 #include "main.h"
+#include "BootErrors.h"
 
 #include <memory>
 
@@ -106,6 +107,8 @@ void SystemTask::Process(void* instance) {
 }
 
 void SystemTask::Work() {
+  BootErrors bootError = BootErrors::None;
+
   watchdog.Setup(7);
   watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
@@ -124,7 +127,9 @@ void SystemTask::Work() {
   lcd.Init();
 
   twiMaster.Init();
-  touchPanel.Init();
+  if (!touchPanel.Init()) {
+    bootError = BootErrors::TouchController;
+  }
   dateTimeController.Register(this);
   batteryController.Init();
   motorController.Init();
@@ -141,7 +146,7 @@ void SystemTask::Work() {
   settingsController.Init();
 
   displayApp.Register(this);
-  displayApp.Start();
+  displayApp.Start(bootError);
 
   displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
 

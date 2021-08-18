@@ -30,7 +30,8 @@ namespace Pinetime {
       SettingTimeFormat,
       SettingDisplay,
       SettingWakeUp,
-      SettingSteps
+      SettingSteps,
+      Error,
     };
   }
 }

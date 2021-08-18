@@ -17,7 +17,7 @@ using namespace Pinetime::Drivers;
 Cst816S::Cst816S(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}, twiAddress {twiAddress} {
 }
 
-void Cst816S::Init() {
+bool Cst816S::Init() {
   nrf_gpio_cfg_output(pinReset);
   nrf_gpio_pin_set(pinReset);
   vTaskDelay(50);
@@ -44,13 +44,18 @@ void Cst816S::Init() {
   // There's mixed information about which register contains which information
   if (twiMaster.Read(twiAddress, 0xA7, &chipId, 1) == TwiMaster::ErrorCodes::TransactionFailed) {
     chipId = 0xFF;
+    return false;
   }
   if (twiMaster.Read(twiAddress, 0xA8, &vendorId, 1) == TwiMaster::ErrorCodes::TransactionFailed) {
     vendorId = 0xFF;
+    return false;
   }
   if (twiMaster.Read(twiAddress, 0xA9, &fwVersion, 1) == TwiMaster::ErrorCodes::TransactionFailed) {
     fwVersion = 0xFF;
+    return false;
   }
+
+  return chipId == 0xb4 && vendorId == 0 && fwVersion == 1;
 }
 
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {

@@ -15,6 +15,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/timer/TimerController.h"
 #include "Messages.h"
+#include "BootErrors.h"
 
 namespace Pinetime {
 
@@ -56,7 +57,7 @@ namespace Pinetime {
                  Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::TimerController& timerController);
-      void Start();
+      void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
 
       void StartApp(Apps app, DisplayApp::FullRefreshDirections direction);
@@ -114,6 +115,8 @@ namespace Pinetime {
       Apps nextApp = Apps::None;
       DisplayApp::FullRefreshDirections nextDirection;
       TickType_t lastWakeTime;
+
+      System::BootErrors bootError;
     };
   }
 }

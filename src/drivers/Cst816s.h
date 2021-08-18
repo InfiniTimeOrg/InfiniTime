@@ -31,7 +31,7 @@ namespace Pinetime {
       Cst816S(Cst816S&&) = delete;
       Cst816S& operator=(Cst816S&&) = delete;
 
-      void Init();
+      bool Init();
       TouchInfos GetTouchInfo();
       void Sleep();
       void Wakeup();
