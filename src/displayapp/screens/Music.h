@@ -57,10 +57,11 @@ namespace Pinetime {
         lv_obj_t* imgDiscAnim;
         lv_obj_t* txtTrackDuration;
 
+        lv_style_t btn_style;
+
         /** For the spinning disc animation */
         bool frameB;
 
-        bool displayVolumeButtons = false;
         Pinetime::Controllers::MusicService& musicService;
 
         std::string artist;
