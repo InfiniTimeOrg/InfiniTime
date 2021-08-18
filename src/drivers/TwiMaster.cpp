@@ -10,7 +10,6 @@ using namespace Pinetime::Drivers;
 
 TwiMaster::TwiMaster(NRF_TWIM_Type* module, uint32_t frequency, uint8_t pinSda, uint8_t pinScl)
   : module {module}, frequency {frequency}, pinSda {pinSda}, pinScl {pinScl} {
-  mutex = xSemaphoreCreateBinary();
 }
 
 void TwiMaster::ConfigurePins() const {
@@ -30,6 +29,10 @@ void TwiMaster::ConfigurePins() const {
 }
 
 void TwiMaster::Init() {
+  if (mutex == nullptr) {
+    mutex = xSemaphoreCreateBinary();
+  }
+
   ConfigurePins();
 
   twiBaseAddress = module;
