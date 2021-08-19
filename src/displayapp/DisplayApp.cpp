@@ -136,9 +136,6 @@ void DisplayApp::InitHw() {
   brightnessController.Set(settingsController.GetBrightness());
 }
 
-uint32_t acc = 0;
-uint32_t count = 0;
-bool toggle = true;
 void DisplayApp::Refresh() {
   TickType_t queueTimeout;
   TickType_t delta;
