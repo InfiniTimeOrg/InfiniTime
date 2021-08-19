@@ -76,7 +76,7 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   } else if (hour != 0) {
     isMidnightAlreadyNotified = false;
   }
-  BackUpTime = currentDateTime;
+  NoInit_BackUpTime = currentDateTime;
 }
 
 const char* DateTime::MonthShortToString() {
