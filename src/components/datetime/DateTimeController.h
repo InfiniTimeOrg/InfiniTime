@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <chrono>
-extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
 
 namespace Pinetime {
   namespace System {
