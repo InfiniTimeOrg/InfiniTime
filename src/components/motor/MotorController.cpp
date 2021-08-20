@@ -54,7 +54,7 @@ void MotorController::ScheduleVibrateTimer(uint8_t motorDuration, bool vibrate) 
   if (vibrate) {  
     nrf_gpio_pin_clear(pinMotor);
   } else {
-    nrf_gpio_pin_clear(pinMotor);
+    nrf_gpio_pin_set(pinMotor);
   }
   app_timer_start(shortVibTimer, APP_TIMER_TICKS(motorDuration), this);
 }
