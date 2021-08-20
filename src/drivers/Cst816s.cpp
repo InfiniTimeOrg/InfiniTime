@@ -18,6 +18,7 @@ Cst816S::Cst816S(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaste
 }
 
 void Cst816S::Init() {
+  nrf_gpio_cfg_output(pinReset);
   Wakeup();
   /*
   [2] EnConLR - Continuous operation can slide around
@@ -77,7 +78,6 @@ void Cst816S::Sleep() {
 }
 
 void Cst816S::Wakeup() {
-  nrf_gpio_cfg_output(pinReset);
   nrf_gpio_pin_set(pinReset);
   vTaskDelay(50);
   nrf_gpio_pin_clear(pinReset);
