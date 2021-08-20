@@ -32,7 +32,7 @@ void MotorController::Init() {
 
 void MotorController::Ring(void* p_context) {
   auto* motorController = static_cast<MotorController*>(p_context);
-  motorController->RunForDuration(50);
+  motorController->VibrateTune(TuneType::RING);
 }
 
 void MotorController::RunForDuration(uint8_t motorDuration) {

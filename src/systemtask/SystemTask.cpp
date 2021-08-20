@@ -272,7 +272,7 @@ void SystemTask::Work() {
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          motorController.RunForDuration(35);
+          motorController.VibrateTune(Controllers::MotorController::TuneType::SHORT);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
         case Messages::BleConnected:
