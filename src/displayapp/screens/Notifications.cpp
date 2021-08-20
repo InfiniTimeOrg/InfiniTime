@@ -40,7 +40,7 @@ Notifications::Notifications(DisplayApp* app,
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
       motorController.StartRinging();
     } else {
-      motorController.RunForDuration(35);
+      motorController.VibrateTune(Controllers::MotorController::TuneType::NOTIFICATION);
       timeoutLine = lv_line_create(lv_scr_act(), nullptr);
 
       lv_obj_set_style_local_line_width(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
