@@ -14,10 +14,10 @@ namespace Pinetime {
 
     public:
       enum TuneType : uint8_t {
+        STOP,
         NOTIFICATION,
         SHORT,
-        RING,
-        STOP
+        RING
       };
 
       MotorController(Controllers::Settings& settingsController);
@@ -26,8 +26,6 @@ namespace Pinetime {
       void StartRinging();
       static void StopRinging();
       void VibrateTune(TuneType tune);
-
-    private:
 
     private:
       struct Tune { 
@@ -40,10 +38,10 @@ namespace Pinetime {
       static uint8_t step;
 
       static constexpr Tune tunes[] =  {
-        [TuneType::NOTIFICATION] = {.tune = 0x29, .length = 6, .tempo = 50},
-        [TuneType::SHORT] = {.tune = 0x01, .length = 2, .tempo = 35},
-        [TuneType::RING] = {.tune = 0x0f, .length = 8, .tempo = 50},
-        [TuneType::STOP] = {.tune = 0x00, .length = 0, .tempo = 0},
+        [TuneType::STOP] =         {.tune = 0b00000000, .length = 0, .tempo = 0},
+        [TuneType::NOTIFICATION] = {.tune = 0b00101001, .length = 6, .tempo = 50},
+        [TuneType::SHORT] =        {.tune = 0b00000001, .length = 2, .tempo = 35},
+        [TuneType::RING] =         {.tune = 0b00001111, .length = 8, .tempo = 50},
       };
 
       static void Vibrate(void* p_context);
