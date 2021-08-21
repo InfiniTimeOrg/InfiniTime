@@ -25,42 +25,38 @@ List::List(uint8_t screenID,
   settingsController.SetSettingsMenu(screenID);
 
   if (numScreens > 1) {
-    pageIndicatorBasePoints[0].x = 240 - 1;
-    pageIndicatorBasePoints[0].y = 6;
-    pageIndicatorBasePoints[1].x = 240 - 1;
-    pageIndicatorBasePoints[1].y = 240 - 6;
+    pageIndicatorBasePoints[0].x = LV_HOR_RES - 1;
+    pageIndicatorBasePoints[0].y = 0;
+    pageIndicatorBasePoints[1].x = LV_HOR_RES - 1;
+    pageIndicatorBasePoints[1].y = LV_VER_RES;
 
     pageIndicatorBase = lv_line_create(lv_scr_act(), NULL);
     lv_obj_set_style_local_line_width(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
     lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
-    lv_obj_set_style_local_line_rounded(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
     lv_line_set_points(pageIndicatorBase, pageIndicatorBasePoints, 2);
 
-    uint16_t indicatorSize = 228 / numScreens;
-    uint16_t indicatorPos = indicatorSize * screenID;
+    const uint16_t indicatorSize = LV_VER_RES / numScreens;
+    const uint16_t indicatorPos = indicatorSize * screenID;
 
-    pageIndicatorPoints[0].x = 240 - 1;
-    pageIndicatorPoints[0].y = 6 + indicatorPos;
-    pageIndicatorPoints[1].x = 240 - 1;
-    pageIndicatorPoints[1].y = 6 + indicatorPos + indicatorSize;
+    pageIndicatorPoints[0].x = LV_HOR_RES - 1;
+    pageIndicatorPoints[0].y = indicatorPos;
+    pageIndicatorPoints[1].x = LV_HOR_RES - 1;
+    pageIndicatorPoints[1].y = indicatorPos + indicatorSize;
 
     pageIndicator = lv_line_create(lv_scr_act(), NULL);
     lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
     lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-    lv_obj_set_style_local_line_rounded(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
     lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
   }
 
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
 
-  // lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
   lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_style_local_pad_all(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
-  lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
+  lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 4);
   lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
   lv_obj_set_pos(container1, 0, 0);
-  lv_obj_set_width(container1, LV_HOR_RES - 15);
+  lv_obj_set_width(container1, LV_HOR_RES - 8);
   lv_obj_set_height(container1, LV_VER_RES);
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
@@ -73,11 +69,11 @@ List::List(uint8_t screenID,
 
       itemApps[i] = lv_btn_create(container1, nullptr);
       lv_obj_set_style_local_bg_opa(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
-      lv_obj_set_style_local_radius(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 20);
+      lv_obj_set_style_local_radius(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 57);
       lv_obj_set_style_local_bg_color(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
 
-      lv_obj_set_width(itemApps[i], LV_HOR_RES - 25);
-      lv_obj_set_height(itemApps[i], 52);
+      lv_obj_set_width(itemApps[i], LV_HOR_RES - 8);
+      lv_obj_set_height(itemApps[i], 57);
       lv_obj_set_event_cb(itemApps[i], ButtonEventHandler);
       lv_btn_set_layout(itemApps[i], LV_LAYOUT_ROW_MID);
       itemApps[i]->user_data = this;

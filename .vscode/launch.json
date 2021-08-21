@@ -43,8 +43,9 @@
         },
         {
             "cwd": "${workspaceRoot}",
+            // TODO: find better way to get latest build filename
             "executable": "./build/src/pinetime-app-1.3.0.out",
-            "name": "Debug OpenOCD ST-LINK",
+            "name": "Debug OpenOCD ST-LINK pinetime-app-1.3.0.out",
             "request": "launch",
             "type": "cortex-debug",
             "showDevDebugOutput": false,
