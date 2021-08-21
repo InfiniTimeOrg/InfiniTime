@@ -44,7 +44,7 @@ static bool cmdCmp(char *buffer, const std::string search)
 {
     return strncmp(buffer, search.c_str(), search.length()) == 0;
 }
-
+/*
 static lv_color_t parseHexColorString(const char *str)
 {
     char tmp[3];
@@ -81,7 +81,7 @@ static void setObjectsColor(const char *hexColor)
         child = lv_obj_get_child(actStrc, child);
     }
 }
-
+*/
 void Console::AccelerometerDebug()
 {
     char accBuf[32];
@@ -89,6 +89,7 @@ void Console::AccelerometerDebug()
     Print(accBuf);
 }
 
+/*
 void Console::CommandLvgl(const char *args[], uint16_t argc)
 {
     char lvbuf[128];
@@ -120,6 +121,7 @@ void Console::CommandLvgl(const char *args[], uint16_t argc)
         child = lv_obj_get_child(actStrc, child);
     }
 }
+*/
 
 void Console::Process()
 {
@@ -153,6 +155,9 @@ void Console::Process()
         }
     }
 
+    (void) args;
+    (void) argc;
+
     // Simple stupid command comparison, later would be nice to add commands lookup table with argument parsing
 
     // This AT > OK needs to be there, because https://terminal.hardwario.com/ waits for the answer
@@ -163,18 +168,18 @@ void Console::Process()
     }
     else if(cmdCmp(rxBuffer, "COLOR"))
     {
-        if(argc == 2)
+        /*if(argc == 2)
         {
             setObjectsColor(args[1]);
         }
         else
         {
             Print("Expects 1 parameter");
-        }
+        }*/
     }
     else if(cmdCmp(rxBuffer, "LVGL"))
     {
-        CommandLvgl(args, argc);
+        //CommandLvgl(args, argc);
     }
     else if(cmdCmp(rxBuffer, "VIBRATE"))
     {
