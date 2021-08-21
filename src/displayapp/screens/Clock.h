@@ -9,9 +9,6 @@
 #include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
-  namespace Drivers {
-    class BMA421;
-  }
   namespace Controllers {
     class Settings;
     class Battery;
@@ -51,10 +48,6 @@ namespace Pinetime {
         std::unique_ptr<Screen> WatchFaceDigitalScreen();
         std::unique_ptr<Screen> WatchFaceAnalogScreen();
         std::unique_ptr<Screen> PineTimeStyleScreen();
-
-        // Examples for more watch faces
-        // std::unique_ptr<Screen> WatchFaceMinimalScreen();
-        // std::unique_ptr<Screen> WatchFaceCustomScreen();
       };
     }
   }

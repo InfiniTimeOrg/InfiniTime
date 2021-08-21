@@ -110,15 +110,3 @@ std::unique_ptr<Screen> Clock::WatchFaceMinimalScreen() {
                                                      heartRateController,
                                                      motionController);
 }
-
-std::unique_ptr<Screen> Clock::WatchFaceCustomScreen() {
-  return std::make_unique<Screens::WatchFaceCustom>(app,
-                                                    dateTimeController,
-                                                    batteryController,
-                                                    bleController,
-                                                    notificatioManager,
-                                                    settingsController,
-                                                    heartRateController,
-                                                    motionController);
-}
-*/

@@ -35,11 +35,9 @@ namespace Pinetime {
 
         bool Refresh() override;
 
-        void OnObjectEvent(lv_obj_t* pObj, lv_event_t i);
-
       private:
-        DirtyValue<uint8_t> hour{};
-        DirtyValue<uint8_t> minute{};
+        DirtyValue<uint8_t> hour {};
+        DirtyValue<uint8_t> minute {};
 
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;
@@ -50,7 +48,6 @@ namespace Pinetime {
         lv_obj_t* batteryPlug;
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
-        lv_obj_t* heartbeatBpm;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;

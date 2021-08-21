@@ -79,18 +79,17 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     dateTimeController {dateTimeController},
     timerController {timerController},
     watchdog {watchdog},
-    notificationManager{notificationManager},
+    notificationManager {notificationManager},
     motorController {motorController},
     heartRateSensor {heartRateSensor},
     motionSensor {motionSensor},
     settingsController {settingsController},
-    heartRateController{heartRateController},
-    motionController{motionController},
-    displayApp{displayApp},
+    heartRateController {heartRateController},
+    motionController {motionController},
+    displayApp {displayApp},
     heartRateApp(heartRateApp),
-    fs{fs},
+    fs {fs},
     nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
-
 }
 
 void SystemTask::Start() {
@@ -116,7 +115,7 @@ void SystemTask::Work() {
   spi.Init();
   spiNorFlash.Init();
   spiNorFlash.Wakeup();
-  
+
   fs.Init();
 
   nimbleController.Init();
@@ -266,14 +265,13 @@ void SystemTask::Work() {
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          motorController.SetDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;
         case Messages::OnTimerDone:
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          motorController.SetDuration(35);
+          motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
         case Messages::BleConnected:
@@ -326,8 +324,8 @@ void SystemTask::Work() {
           stepCounterMustBeReset = true;
           break;
         case Messages::OnChargingEvent:
-          motorController.SetDuration(15);
-	  // Battery level is updated on every message - there's no need to do anything
+          motorController.RunForDuration(15);
+          // Battery level is updated on every message - there's no need to do anything
           break;
 
         default:
@@ -425,14 +423,13 @@ void SystemTask::PushMessage(System::Messages msg) {
     isGoingToSleep = true;
   }
 
-  if(in_isr()) {
+  if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken;
     xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(systemTasksMsgQueue, &msg, &xHigherPriorityTaskWoken);
     if (xHigherPriorityTaskWoken) {
       /* Actual macro used here is port specific. */
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-
     }
   } else {
     xQueueSend(systemTasksMsgQueue, &msg, portMAX_DELAY);

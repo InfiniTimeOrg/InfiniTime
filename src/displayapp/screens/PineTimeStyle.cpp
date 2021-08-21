@@ -41,18 +41,17 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
                              Controllers::Settings& settingsController,
                              Controllers::HeartRateController const& heartRateController,
                              Controllers::MotionController const& motionController)
-  : WatchFaceBase{Pinetime::Controllers::Settings::ClockFace::PineTimeStyle,
-      app,
-      settingsController,
-      dateTimeController,
-      batteryController,
-      bleController,
-      notificationManager,
-      heartRateController,
-      motionController} {
+  : WatchFaceBase {Pinetime::Controllers::Settings::ClockFace::PineTimeStyle,
+                   app,
+                   settingsController,
+                   dateTimeController,
+                   batteryController,
+                   bleController,
+                   notificationManager,
+                   heartRateController,
+                   motionController} {
 
   /* Create a 200px wide background rectangle */
-
   timebar = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_obj_set_style_local_radius(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -60,7 +59,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(timebar, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 5, 0);
 
   /* Display the time */
-
   timeDD1 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
   lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x008080));
@@ -80,7 +78,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(timeAMPM, timebar, LV_ALIGN_IN_BOTTOM_LEFT, 2, -20);
 
   /* Create a 40px wide bar down the right side of the screen */
-
   sidebar = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x008080));
   lv_obj_set_style_local_radius(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -88,7 +85,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(sidebar, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   /* Display icons */
-
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_label_set_text_static(batteryIcon, Symbols::batteryFull);
@@ -107,7 +103,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 40);
 
   /* Calendar icon */
-
   calendarOuter = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(calendarOuter, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_obj_set_style_local_radius(calendarOuter, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -145,7 +140,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(calendarCrossBar2, calendarBar2, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   /* Display date */
-
   dateDayOfWeek = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(dateDayOfWeek, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_label_set_text_static(dateDayOfWeek, "THU");

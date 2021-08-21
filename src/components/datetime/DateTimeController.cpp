@@ -55,9 +55,9 @@ void DateTimeController::UpdateTime(uint32_t systickCounter) {
   auto time = date::make_time(currentDateTime - dp);
   auto yearMonthDay = date::year_month_day(dp);
 
-  year = (int) yearMonthDay.year();
+  year = static_cast<int>(yearMonthDay.year());
   month = static_cast<DateTime::Months>(static_cast<unsigned>(yearMonthDay.month()));
-  day = (unsigned) yearMonthDay.day();
+  day = static_cast<unsigned>(yearMonthDay.day());
   dayOfWeek = static_cast<DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
   hour = time.hours().count();
@@ -67,7 +67,7 @@ void DateTimeController::UpdateTime(uint32_t systickCounter) {
   // Notify new day to SystemTask
   if (hour == 0 and not isMidnightAlreadyNotified) {
     isMidnightAlreadyNotified = true;
-    if(systemTask != nullptr)
+    if (systemTask != nullptr)
       systemTask->PushMessage(System::Messages::OnNewDay);
   } else if (hour != 0) {
     isMidnightAlreadyNotified = false;

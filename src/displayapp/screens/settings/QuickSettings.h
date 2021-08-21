@@ -44,6 +44,8 @@ namespace Pinetime {
         lv_obj_t* batteryIcon;
         lv_obj_t* label_time;
 
+        lv_style_t btn_style;
+
         lv_obj_t* btn1;
         lv_obj_t* btn1_lvl;
         lv_obj_t* btn2;
