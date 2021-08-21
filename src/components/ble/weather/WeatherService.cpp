@@ -90,7 +90,7 @@ namespace Pinetime {
             airquality->polluter = std::make_unique<std::string>(static_cast<const char*>(String.ptr), String.len);
             int64_t tmpAmount = 0;
             QCBORDecode_GetInt64InMapSZ(&decodeContext, "Amount", &tmpAmount);
-            if (tmpAmount < 0 || tmpAmount > 4294967295) {
+            if (tmpAmount < 0) {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
             airquality->amount = tmpAmount;
@@ -162,6 +162,14 @@ namespace Pinetime {
             timeline.push_back(std::move(clouds));
             break;
           }
+          case WeatherData::eventtype::Humidity: {
+            std::unique_ptr<WeatherData::Humidity> humidity = std::make_unique<WeatherData::Humidity>();
+            humidity->timestamp = tmpTimestamp;
+            humidity->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
+            humidity->expires = tmpExpires;
+            timeline.push_back(std::move(humidity));
+            break;
+          }
           default: {
             break;
           }
@@ -201,46 +209,94 @@ namespace Pinetime {
       return 0;
     }
 
-    WeatherData::Location WeatherService::GetCurrentLocation() const {
-      return WeatherData::Location();
-    }
-
     WeatherData::Clouds WeatherService::GetCurrentClouds() const {
-      return WeatherData::Clouds();
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      for (auto&& header : timeline) {
+        if (header->eventType == WeatherData::eventtype::Clouds && header->timestamp + header->expires <= currentTimestamp) {
+          return reinterpret_cast<const WeatherData::Clouds&>(header);
+        }
+      }
+      return {};
     }
 
     WeatherData::Obscuration WeatherService::GetCurrentObscuration() const {
-      return WeatherData::Obscuration();
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      for (auto&& header : timeline) {
+        if (header->eventType == WeatherData::eventtype::Obscuration && header->timestamp + header->expires <= currentTimestamp) {
+          return reinterpret_cast<const WeatherData::Obscuration&>(header);
+        }
+      }
+      return {};
     }
 
     WeatherData::Precipitation WeatherService::GetCurrentPrecipitation() const {
-      return WeatherData::Precipitation();
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      for (auto&& header : timeline) {
+        if (header->eventType == WeatherData::eventtype::Precipitation && header->timestamp + header->expires <= currentTimestamp) {
+          return reinterpret_cast<const WeatherData::Precipitation&>(header);
+        }
+      }
+      return {};
     }
 
     WeatherData::Wind WeatherService::GetCurrentWind() const {
-      return WeatherData::Wind();
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      for (auto&& header : timeline) {
+        if (header->eventType == WeatherData::eventtype::Wind && header->timestamp + header->expires <= currentTimestamp) {
+          return reinterpret_cast<const WeatherData::Wind&>(header);
+        }
+      }
+      return {};
     }
 
     WeatherData::Temperature WeatherService::GetCurrentTemperature() const {
-      return WeatherData::Temperature();
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      for (auto&& header : timeline) {
+        if (header->eventType == WeatherData::eventtype::Temperature && header->timestamp + header->expires <= currentTimestamp) {
+          return reinterpret_cast<const WeatherData::Temperature&>(header);
+        }
+      }
+      return {};
     }
 
     WeatherData::Humidity WeatherService::GetCurrentHumidity() const {
-      return WeatherData::Humidity();
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      for (auto&& header : timeline) {
+        if (header->eventType == WeatherData::eventtype::Humidity && header->timestamp + header->expires <= currentTimestamp) {
+          return reinterpret_cast<const WeatherData::Humidity&>(header);
+        }
+      }
+      return {};
     }
 
     WeatherData::Pressure WeatherService::GetCurrentPressure() const {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
       for (auto&& header : timeline) {
         if (header->eventType == WeatherData::eventtype::Pressure && header->timestamp + header->expires <= currentTimestamp) {
-          return WeatherData::Pressure();
+          return reinterpret_cast<const WeatherData::Pressure&>(header);
         }
       }
-      return WeatherData::Pressure();
+      return {};
+    }
+
+    WeatherData::Location WeatherService::GetCurrentLocation() const {
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      for (auto&& header : timeline) {
+        if (header->eventType == WeatherData::eventtype::Location && header->timestamp + header->expires <= currentTimestamp) {
+          return reinterpret_cast<const WeatherData::Location&>(header);
+        }
+      }
+      return {};
     }
 
     WeatherData::AirQuality WeatherService::GetCurrentQuality() const {
-      return WeatherData::AirQuality();
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      for (auto&& header : timeline) {
+        if (header->eventType == WeatherData::eventtype::AirQuality && header->timestamp + header->expires <= currentTimestamp) {
+          return reinterpret_cast<const WeatherData::AirQuality&>(header);
+        }
+      }
+      return {};
     }
 
     size_t WeatherService::GetTimelineLength() const {

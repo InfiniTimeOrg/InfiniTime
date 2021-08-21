@@ -122,7 +122,7 @@ namespace Pinetime {
        * Events have types
        * then they're easier to parse after sending them over the air
        */
-      enum class eventtype {
+      enum class eventtype : uint8_t {
         /** @see obscuration */
         Obscuration = 0,
         /** @see precipitation */
@@ -141,6 +141,8 @@ namespace Pinetime {
         Location = 7,
         /** @see cloud */
         Clouds = 8,
+        /** @see humidity */
+        Humidity = 9,
         Length
       };
 
