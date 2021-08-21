@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <utility>
 #include "../TouchEvents.h"
 
 namespace Pinetime {

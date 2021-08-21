@@ -97,16 +97,3 @@ std::unique_ptr<Screen> Clock::PineTimeStyleScreen() {
                                                   heartRateController,
                                                   motionController);
 }
-
-/*
-// Examples for more watch faces
-std::unique_ptr<Screen> Clock::WatchFaceMinimalScreen() {
-  return std::make_unique<Screens::WatchFaceMinimal>(app,
-                                                     dateTimeController,
-                                                     batteryController,
-                                                     bleController,
-                                                     notificatioManager,
-                                                     settingsController,
-                                                     heartRateController,
-                                                     motionController);
-}
