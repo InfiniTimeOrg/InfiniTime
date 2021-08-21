@@ -126,7 +126,7 @@ void NimbleController::StartAdvertising() {
   //  ASSERT(res == 0);// TODO I've disabled these ASSERT as they sometime asserts and reset the mcu.
   // For now, the advertising is restarted as soon as it ends. There may be a race condition
   // that prevent the advertising from restarting reliably.
-  // I remove the assert to prevent this uncesseray crash, but in the long term, the management of
+  // I remove the assert to prevent this unnecessary crash, but in the long term, the management of
   // the advertising should be improve (better error handling, and advertise for 3 minutes after
   // the application has been woken up, for example.
 }
