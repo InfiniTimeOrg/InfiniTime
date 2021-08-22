@@ -45,6 +45,7 @@
 #include "drivers/Cst816s.h"
 #include "drivers/PinMap.h"
 #include "systemtask/SystemTask.h"
+#include "drivers/PinMap.h"
 
 #if NRF_LOG_ENABLED
   #include "logging/NrfLogger.h"
@@ -293,18 +294,18 @@ int main(void) {
   nrf_drv_clock_init();
 
   // Unblock i2c?
-  nrf_gpio_cfg(pinTwiScl,
+  nrf_gpio_cfg(Pinetime::PinMap::TwiScl,
                NRF_GPIO_PIN_DIR_OUTPUT,
                NRF_GPIO_PIN_INPUT_DISCONNECT,
                NRF_GPIO_PIN_NOPULL,
                NRF_GPIO_PIN_S0D1,
                NRF_GPIO_PIN_NOSENSE);
-  nrf_gpio_pin_set(pinTwiScl);
+  nrf_gpio_pin_set(Pinetime::PinMap::TwiScl);
   for (uint8_t i = 0; i < 16; i++) {
-    nrf_gpio_pin_toggle(pinTwiScl);
+    nrf_gpio_pin_toggle(Pinetime::PinMap::TwiScl);
     nrf_delay_us(5);
   }
-  nrf_gpio_cfg_default(pinTwiScl);
+  nrf_gpio_cfg_default(Pinetime::PinMap::TwiScl);
 
   debounceTimer = xTimerCreate("debounceTimer", 200, pdFALSE, (void*) 0, DebounceTimerCallback);
   debounceChargeTimer = xTimerCreate("debounceTimerCharge", 200, pdFALSE, (void*) 0, DebounceTimerChargeCallback);
