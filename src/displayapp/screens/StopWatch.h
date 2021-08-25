@@ -22,8 +22,8 @@ namespace Pinetime {
         ~StopWatch() override;
         void Refresh() override;
 
-        void playPauseBtnEventHandler(lv_event_t event);
-        void stopLapBtnEventHandler(lv_event_t event);
+        void PlayPauseBtnEventHandler(lv_event_t event);
+        void StopLapBtnEventHandler(lv_event_t event);
         bool OnButtonPushed() override;
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
@@ -37,7 +37,7 @@ namespace Pinetime {
 
         Pinetime::System::SystemTask& systemTask;
         States currentState = States::Init;
-        TickType_t startTime;
+        TickType_t startTime = 0;
         TickType_t oldTimeElapsed = 0;
 
         static constexpr uint8_t maxLapCount = 20;

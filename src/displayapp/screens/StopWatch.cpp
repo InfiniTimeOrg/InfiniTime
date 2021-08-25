@@ -5,22 +5,20 @@ using namespace Pinetime::Applications::Screens;
 
 namespace {
   TimeSeparated_t convertTicksToTimeSegments(const TickType_t timeElapsed) {
-    TickType_t timeElapsedCentis = timeElapsed * 100 / configTICK_RATE_HZ;
-
-    const uint8_t hundredths = (timeElapsedCentis % 100);
-    const uint8_t secs = (timeElapsedCentis / 100) % 60;
-    const uint32_t mins = (timeElapsedCentis / 100) / 60;
+    const uint8_t hundredths = timeElapsed * 100 / configTICK_RATE_HZ % 100;
+    const uint8_t secs = (timeElapsed / configTICK_RATE_HZ) % 60;
+    const uint32_t mins = (timeElapsed / configTICK_RATE_HZ) / 60;
     return TimeSeparated_t {mins, secs, hundredths};
   }
 
   void play_pause_event_handler(lv_obj_t* obj, lv_event_t event) {
     auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
-    stopWatch->playPauseBtnEventHandler(event);
+    stopWatch->PlayPauseBtnEventHandler(event);
   }
 
   void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
     auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
-    stopWatch->stopLapBtnEventHandler(event);
+    stopWatch->StopLapBtnEventHandler(event);
   }
 }
 
@@ -119,8 +117,8 @@ void StopWatch::Pause() {
 void StopWatch::DisplayLaps(uint8_t startLap) {
   char buffer[22];
   std::string allLapsText = "";
-  TimeSeparated_t lapTime;
-  TimeSeparated_t runTime;
+  TimeSeparated_t lapTime = {0};
+  TimeSeparated_t runTime = {0};
   for (uint8_t i = startLap; i < savedLapsCount && i < startLap + 5 && i < maxLapCount; i++) {
     runTime = convertTicksToTimeSegments(lapTimes[i]);
     if (i > 0) {
@@ -131,10 +129,10 @@ void StopWatch::DisplayLaps(uint8_t startLap) {
     sprintf(buffer,
             "#%-2d %2d:%02d.%1d %2d:%02d.%1d\n",
             i + 1,
-            std::min(lapTime.mins, 99),
+            static_cast<uint8_t>(std::min(lapTime.mins, static_cast<uint32_t>(99))),
             lapTime.secs,
             lapTime.hundredths / 10,
-            std::min(runTime.mins, 99),
+            static_cast<uint8_t>(std::min(runTime.mins, static_cast<uint32_t>(99))),
             runTime.secs,
             runTime.hundredths / 10);
 
@@ -157,7 +155,7 @@ void StopWatch::Refresh() {
   }
 }
 
-void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
+void StopWatch::PlayPauseBtnEventHandler(lv_event_t event) {
   if (event != LV_EVENT_CLICKED) {
     return;
   }
@@ -170,7 +168,7 @@ void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
   }
 }
 
-void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
+void StopWatch::StopLapBtnEventHandler(lv_event_t event) {
   if (event != LV_EVENT_CLICKED) {
     return;
   }
