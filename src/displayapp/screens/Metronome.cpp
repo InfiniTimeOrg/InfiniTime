@@ -83,9 +83,9 @@ bool Metronome::Refresh() {
       counter--;
       if (counter == 0) {
         counter = bpb;
-        motorController.RunForDuration(90);
+        motorController.RunForDuration(90, true);
       } else {
-        motorController.RunForDuration(30);
+        motorController.RunForDuration(30, true);
       }
     }
   }

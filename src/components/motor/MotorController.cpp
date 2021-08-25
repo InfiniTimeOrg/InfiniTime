@@ -25,8 +25,8 @@ void MotorController::Ring(void* p_context) {
   motorController->RunForDuration(50);
 }
 
-void MotorController::RunForDuration(uint8_t motorDuration) {
-  if (settingsController.GetVibrationStatus() == Controllers::Settings::Vibration::OFF) {
+void MotorController::RunForDuration(uint8_t motorDuration, bool force) {
+  if (!force && settingsController.GetVibrationStatus() == Controllers::Settings::Vibration::OFF) {
     return;
   }
 
