@@ -11,9 +11,9 @@ namespace Pinetime {
       enum class States { Init, Running, Halted };
 
       struct TimeSeparated_t {
-        int mins;
-        int secs;
-        int hundredths;
+        uint32_t mins;
+        uint8_t secs;
+        uint8_t hundredths;
       };
 
       class StopWatch : public Screen {
@@ -25,7 +25,7 @@ namespace Pinetime {
         void playPauseBtnEventHandler(lv_event_t event);
         void stopLapBtnEventHandler(lv_event_t event);
         bool OnButtonPushed() override;
-        void BackgroundEventHandler(lv_event_t event);
+        bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
       private:
         void DisplayLaps(uint8_t startLap);
@@ -44,8 +44,9 @@ namespace Pinetime {
         TickType_t lapTimes[maxLapCount + 1] = {0};
 
         uint8_t savedLapsCount = 0;
+        uint8_t displayedLapsStart = 0;
 
-        lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
+        lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap;
         lv_obj_t* lapText;
       };
     }

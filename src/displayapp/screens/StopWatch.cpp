@@ -5,11 +5,11 @@ using namespace Pinetime::Applications::Screens;
 
 namespace {
   TimeSeparated_t convertTicksToTimeSegments(const TickType_t timeElapsed) {
-    const int timeElapsedMillis = (static_cast<float>(timeElapsed) / static_cast<float>(configTICK_RATE_HZ)) * 1000;
+    TickType_t timeElapsedCentis = timeElapsed * 100 / configTICK_RATE_HZ;
 
-    const int hundredths = (timeElapsedMillis % 1000) / 10; // Get only the first two digits and ignore the last
-    const int secs = (timeElapsedMillis / 1000) % 60;
-    const int mins = (timeElapsedMillis / 1000) / 60;
+    const uint8_t hundredths = (timeElapsedCentis % 100);
+    const uint8_t secs = (timeElapsedCentis / 100) % 60;
+    const uint32_t mins = (timeElapsedCentis / 100) / 60;
     return TimeSeparated_t {mins, secs, hundredths};
   }
 
@@ -33,7 +33,6 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask) : Screen(a
   lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -45);
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
-  // lv_obj_set_style_local_text_font(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_label_set_text(msecTime, "00");
   lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_CENTER, 0, 3);
@@ -43,8 +42,7 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask) : Screen(a
   lv_obj_set_event_cb(btnPlayPause, play_pause_event_handler);
   lv_obj_set_size(btnPlayPause, 115, 50);
   lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  txtPlayPause = lv_label_create(btnPlayPause, nullptr);
-  lv_label_set_text(txtPlayPause, Symbols::play);
+  lv_obj_set_style_local_value_str(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Symbols::play);
 
   btnStopLap = lv_btn_create(lv_scr_act(), nullptr);
   btnStopLap->user_data = this;
@@ -52,14 +50,13 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask) : Screen(a
   lv_obj_set_size(btnStopLap, 115, 50);
   lv_obj_align(btnStopLap, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DISABLED, lv_color_hex(0x080808));
-  txtStopLap = lv_label_create(btnStopLap, nullptr);
-  lv_obj_set_style_local_text_color(txtStopLap, LV_BTN_PART_MAIN, LV_STATE_DISABLED, lv_color_hex(0x888888));
-  lv_label_set_text(txtStopLap, Symbols::stop);
+  lv_obj_set_style_local_text_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DISABLED, lv_color_hex(0x888888));
+  lv_obj_set_style_local_value_str(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Symbols::stop);
+  lv_obj_set_style_local_value_str(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DISABLED, Symbols::stop);
   lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
-  lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
 
   lapText = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(lapText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+  lv_obj_set_style_local_text_color(lapText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_SILVER);
   lv_obj_align(lapText, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 72);
   lv_label_set_text(lapText, "");
 
@@ -75,27 +72,33 @@ StopWatch::~StopWatch() {
 void StopWatch::Reset() {
   currentState = States::Init;
   oldTimeElapsed = 0;
+  lv_obj_set_hidden(msecTime, false);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 
   lv_label_set_text(lapText, "");
   savedLapsCount = 0;
+  displayedLapsStart = 0;
   lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
-  lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
 
+  lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -45);
   SetTime(0);
 }
 
 void StopWatch::Start() {
   lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
-  lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
+  lv_obj_set_style_local_value_str(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Symbols::pause);
+  lv_obj_set_style_local_value_str(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Symbols::lapsFlag);
+
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
-  lv_label_set_text(txtPlayPause, Symbols::pause);
-  lv_label_set_text(txtStopLap, Symbols::lapsFlag);
+
   startTime = xTaskGetTickCount();
   currentState = States::Running;
   systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
+
+  displayedLapsStart = std::max(savedLapsCount - 5, 0);
+  DisplayLaps(displayedLapsStart);
 }
 
 void StopWatch::Pause() {
@@ -103,10 +106,13 @@ void StopWatch::Pause() {
   // Store the current time elapsed in cache
   oldTimeElapsed = lapTimes[savedLapsCount];
   currentState = States::Halted;
-  lv_label_set_text(txtPlayPause, Symbols::play);
-  lv_label_set_text(txtStopLap, Symbols::stop);
+
+  lv_obj_set_style_local_value_str(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Symbols::play);
+  lv_obj_set_style_local_value_str(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Symbols::stop);
+
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
@@ -123,14 +129,14 @@ void StopWatch::DisplayLaps(uint8_t startLap) {
       lapTime = runTime;
     }
     sprintf(buffer,
-            "#%d %d:%02d.%02d %d:%02d.%02d\n",
+            "#%-2d %2d:%02d.%1d %2d:%02d.%1d\n",
             i + 1,
-            lapTime.mins,
+            std::min(lapTime.mins, 99),
             lapTime.secs,
-            lapTime.hundredths,
-            runTime.mins,
+            lapTime.hundredths / 10,
+            std::min(runTime.mins, 99),
             runTime.secs,
-            runTime.hundredths);
+            runTime.hundredths / 10);
 
     allLapsText.append(buffer);
   }
@@ -142,12 +148,6 @@ void StopWatch::SetTime(TickType_t timeToSet) {
 
   lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
   lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
-
-  if (savedLapsCount > 0) {
-    lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
-  } else {
-    lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -45);
-  }
 }
 
 void StopWatch::Refresh() {
@@ -179,7 +179,10 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
     if (savedLapsCount < maxLapCount) {
       savedLapsCount++;
     }
-    DisplayLaps(std::max(savedLapsCount - 5, 0));
+    lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
+    lv_obj_set_hidden(msecTime, true);
+    displayedLapsStart = std::max(savedLapsCount - 5, 0);
+    DisplayLaps(displayedLapsStart);
   } else if (currentState == States::Halted) {
     Reset();
   }
@@ -191,4 +194,24 @@ bool StopWatch::OnButtonPushed() {
     return true;
   }
   return false;
+}
+
+bool StopWatch::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  if (currentState != States::Halted) {
+    return false;
+  }
+
+  switch (event) {
+    case TouchEvents::SwipeUp:
+      displayedLapsStart = std::min({displayedLapsStart + 5, maxLapCount - 5, savedLapsCount - 5});
+      break;
+    case TouchEvents::SwipeDown:
+      displayedLapsStart = std::max(displayedLapsStart - 5, 0);
+      break;
+    default:
+      return false;
+  }
+  DisplayLaps(displayedLapsStart);
+
+  return true;
 }
