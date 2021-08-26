@@ -78,7 +78,7 @@ namespace Pinetime {
       };
 
       void setWakeUpMode(WakeUpMode wakeUp, bool enabled) {
-        if (!isWakeUpModeOn(wakeUp)) {
+        if (enabled != isWakeUpModeOn(wakeUp)) {
           settingsChanged = true;
         }
         settings.wakeUpMode.set(static_cast<size_t>(wakeUp), enabled);
