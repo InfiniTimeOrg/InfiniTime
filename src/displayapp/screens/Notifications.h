@@ -51,7 +51,6 @@ namespace Pinetime {
           lv_obj_t* t1;
           lv_obj_t* l1;
           lv_obj_t* l2;
-          lv_obj_t* bt_accept;
           lv_obj_t* bt_mute;
           lv_obj_t* bt_reject;
           lv_obj_t* label_accept;
