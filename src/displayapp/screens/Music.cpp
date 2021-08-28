@@ -292,7 +292,7 @@ bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       return true;
     }
     default: {
-      return true;
+      return false;
     }
   }
 }

@@ -29,6 +29,9 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   };
+  namespace Controllers {
+    class TouchHandler;
+  }
   namespace Applications {
     class DisplayApp {
     public:
@@ -44,7 +47,8 @@ namespace Pinetime {
                  Controllers::Settings& settingsController,
                  Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController,
-                 Pinetime::Controllers::TimerController& timerController);
+                 Pinetime::Controllers::TimerController& timerController,
+                 Pinetime::Controllers::TouchHandler& touchHandler);
       void Start();
       void PushMessage(Pinetime::Applications::Display::Messages msg);
       void Register(Pinetime::System::SystemTask* systemTask);

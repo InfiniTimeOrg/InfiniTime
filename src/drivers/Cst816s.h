@@ -19,9 +19,8 @@ namespace Pinetime {
       struct TouchInfos {
         uint16_t x = 0;
         uint16_t y = 0;
-        uint8_t action = 0;
-        bool touching = false;
         Gestures gesture = Gestures::None;
+        bool touching = false;
         bool isValid = true;
       };
 
@@ -52,7 +51,7 @@ namespace Pinetime {
       // Unused/Unavailable commented out
       static constexpr uint8_t gestureIndex = 1;
       static constexpr uint8_t touchPointNumIndex = 2;
-      static constexpr uint8_t touchEventIndex = 3;
+      //static constexpr uint8_t touchEventIndex = 3;
       static constexpr uint8_t touchXHighIndex = 3;
       static constexpr uint8_t touchXLowIndex = 4;
       //static constexpr uint8_t touchIdIndex = 5;

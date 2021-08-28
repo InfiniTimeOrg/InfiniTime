@@ -41,6 +41,16 @@ bool Cst816S::Init() {
   static constexpr uint8_t motionMask = 0b00000101;
   twiMaster.Write(twiAddress, 0xEC, &motionMask, 1);
 
+  /*
+  [7] EnTest - Interrupt pin to test, enable automatic periodic issued after a low pulse.
+  [6] EnTouch - When a touch is detected, a periodic pulsed Low.
+  [5] EnChange - Upon detecting a touch state changes, pulsed Low.
+  [4] EnMotion - When the detected gesture is pulsed Low.
+  [0] OnceWLP - Press gesture only issue a pulse signal is low.
+  */
+  static constexpr uint8_t irqCtl = 0b01110000;
+  twiMaster.Write(twiAddress, 0xFA, &irqCtl, 1);
+
   // There's mixed information about which register contains which information
   if (twiMaster.Read(twiAddress, 0xA7, &chipId, 1) == TwiMaster::ErrorCodes::TransactionFailed) {
     chipId = 0xFF;
@@ -78,11 +88,8 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   auto yLow = touchData[touchYLowIndex];
   uint16_t y = (yHigh << 8) | yLow;
 
-  auto action = touchData[touchEventIndex] >> 6; /* 0 = Down, 1 = Up, 2 = contact*/
-
   info.x = x;
   info.y = y;
-  info.action = action;
   info.touching = (nbTouchPoints > 0);
   info.gesture = static_cast<Gestures>(touchData[gestureIndex]);
 
