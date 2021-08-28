@@ -241,7 +241,7 @@ void SystemTask::Work() {
           break;
         case Messages::TouchWakeUp: {
           auto touchInfo = touchPanel.GetTouchInfo();
-          if (touchInfo.isTouch and ((touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
+          if (touchInfo.touching and ((touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
                                       settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
                                      (touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
                                       settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
