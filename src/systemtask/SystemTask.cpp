@@ -220,7 +220,6 @@ void SystemTask::Work() {
           break;
         case Messages::GoToRunning:
           spi.Wakeup();
-          twiMaster.Wakeup();
 
           // Double Tap needs the touch screen to be in normal mode
           if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
@@ -241,16 +240,12 @@ void SystemTask::Work() {
           isDimmed = false;
           break;
         case Messages::TouchWakeUp: {
-          twiMaster.Wakeup();
-          touchHandler.GetNewTouchInfo();
-          auto gesture = touchHandler.GestureGet();
-          if ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap &&
-               settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) ||
-              (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap &&
-               settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap))) {
+          auto touchInfo = touchPanel.GetTouchInfo();
+          if (touchInfo.isTouch and ((touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
+                                      settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
+                                     (touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
+                                      settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
             GoToRunning();
-          } else {
-            twiMaster.Sleep();
           }
         } break;
         case Messages::GoToSleep:
@@ -320,7 +315,6 @@ void SystemTask::Work() {
           if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
             touchPanel.Sleep();
           }
-          twiMaster.Sleep();
 
           isSleeping = true;
           isGoingToSleep = false;
@@ -372,17 +366,12 @@ void SystemTask::UpdateMotion() {
   if (isSleeping && !settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist))
     return;
 
-  if (isSleeping)
-    twiMaster.Wakeup();
-
   if (stepCounterMustBeReset) {
     motionSensor.ResetStepCounter();
     stepCounterMustBeReset = false;
   }
 
   auto motionValues = motionSensor.Process();
-  if (isSleeping)
-    twiMaster.Sleep();
 
   motionController.IsSensorOk(motionSensor.IsOk());
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
