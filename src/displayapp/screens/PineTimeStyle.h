@@ -68,11 +68,6 @@ namespace Pinetime {
         lv_obj_t* notificationIcon;
         lv_obj_t* stepGauge;
         lv_color_t needle_colors[1];
-        lv_color_t pts_colors[17] = {LV_COLOR_WHITE, LV_COLOR_SILVER, LV_COLOR_GRAY, LV_COLOR_BLACK,
-                                     LV_COLOR_RED, LV_COLOR_MAROON, LV_COLOR_YELLOW, LV_COLOR_OLIVE,
-                                     LV_COLOR_LIME, LV_COLOR_GREEN, LV_COLOR_CYAN, LV_COLOR_TEAL,
-                                     LV_COLOR_BLUE, LV_COLOR_NAVY, LV_COLOR_MAGENTA, LV_COLOR_PURPLE,
-                                     LV_COLOR_ORANGE};
 
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;

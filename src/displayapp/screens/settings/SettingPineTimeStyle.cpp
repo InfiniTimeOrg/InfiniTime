@@ -1,5 +1,6 @@
 #include "SettingPineTimeStyle.h"
 #include <lvgl/lvgl.h>
+#include <displayapp/Colors.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
 
@@ -15,7 +16,7 @@ namespace {
 SettingPineTimeStyle::SettingPineTimeStyle(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
   timebar = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorBG()]);
+  lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetPTSColorBG()));
   lv_obj_set_style_local_radius(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(timebar, 200, 240);
   lv_obj_align(timebar, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 5, 0);
@@ -24,18 +25,18 @@ SettingPineTimeStyle::SettingPineTimeStyle(Pinetime::Applications::DisplayApp* a
 
   timeDD1 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
-  lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorTime()]);
+  lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetPTSColorTime()));
   lv_label_set_text(timeDD1, "12");
   lv_obj_align(timeDD1, timebar, LV_ALIGN_IN_TOP_MID, 5, 5);
 
   timeDD2 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &open_sans_light);
-  lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorTime()]);
+  lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetPTSColorTime()));
   lv_label_set_text(timeDD2, "34");
   lv_obj_align(timeDD2, timebar, LV_ALIGN_IN_BOTTOM_MID, 5, -5);
 
   timeAMPM = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorTime()]);
+  lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetPTSColorTime()));
   lv_obj_set_style_local_text_line_space(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, -3);
   lv_label_set_text(timeAMPM, "A\nM");
   lv_obj_align(timeAMPM, timebar, LV_ALIGN_IN_BOTTOM_LEFT, 2, -20);
@@ -43,7 +44,7 @@ SettingPineTimeStyle::SettingPineTimeStyle(Pinetime::Applications::DisplayApp* a
   // Create a 40px wide bar down the right side of the screen
 
   sidebar = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[settingsController.GetPTSColorBar()]);
+  lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetPTSColorBar()));
   lv_obj_set_style_local_radius(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_size(sidebar, 40, 240);
   lv_obj_align(sidebar, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
@@ -215,91 +216,60 @@ SettingPineTimeStyle::~SettingPineTimeStyle() {
   settingsController.SaveSettings();
 }
 
-bool SettingPineTimeStyle::Refresh() {
-  return running;
-}
-
 void SettingPineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
-  uint8_t valueTime = settingsController.GetPTSColorTime();
-  uint8_t valueBar = settingsController.GetPTSColorBar();
-  uint8_t valueBG = settingsController.GetPTSColorBG();
+  auto valueTime = settingsController.GetPTSColorTime();
+  auto valueBar = settingsController.GetPTSColorBar();
+  auto valueBG = settingsController.GetPTSColorBG();
 
   if (event == LV_EVENT_CLICKED) {
     if (object == btnNextTime) {
-      if (valueTime < 16) {
-        valueTime += 1;
-      } else {
-        valueTime = 0;
-      }
+      valueTime = GetNext(valueTime);
+
       settingsController.SetPTSColorTime(valueTime);
-      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueTime]);
-      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueTime]);
-      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueTime]);
+      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
     }
     if (object == btnPrevTime) {
-      if (valueTime > 0) {
-        valueTime -= 1;
-      } else {
-        valueTime = 16;
-      }
+      valueTime = GetPrevious(valueTime);
       settingsController.SetPTSColorTime(valueTime);
-      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueTime]);
-      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueTime]);
-      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueTime]);
+      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
     }
     if (object == btnNextBar) {
-      if (valueBar < 16) {
-        valueBar += 1;
-        // Avoid setting the sidebar black
-        if (valueBar == 3) {
-          valueBar += 1;
-        }
-      } else {
-        valueBar = 0;
-      }
+      valueBar = GetNext(valueBar);
+      if(valueBar == Controllers::Settings::Colors::Black)
+        valueBar = GetNext(valueBar);
       settingsController.SetPTSColorBar(valueBar);
-      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueBar]);
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBar));
     }
     if (object == btnPrevBar) {
-      if (valueBar > 0) {
-        valueBar -= 1;
-        // Avoid setting the sidebar black
-        if (valueBar == 3) {
-          valueBar -= 1;
-        }
-      } else {
-        valueBar = 16;
-      }
+      valueBar = GetPrevious(valueBar);
+      if(valueBar == Controllers::Settings::Colors::Black)
+        valueBar = GetPrevious(valueBar);
       settingsController.SetPTSColorBar(valueBar);
-      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueBar]);
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBar));
     }
     if (object == btnNextBG) {
-      if (valueBG < 16) {
-        valueBG += 1;
-      } else {
-        valueBG = 0;
-      }
+      valueBG = GetNext(valueBG);
       settingsController.SetPTSColorBG(valueBG);
-      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueBG]);
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBG));
     }
     if (object == btnPrevBG) {
-      if (valueBG > 0) {
-        valueBG -= 1;
-      } else {
-        valueBG = 16;
-      }
+      valueBG = GetPrevious(valueBG);
       settingsController.SetPTSColorBG(valueBG);
-      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[valueBG]);
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBG));
     }
     if (object == btnReset) {
-      settingsController.SetPTSColorTime(11);
-      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[11]);
-      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[11]);
-      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[11]);
-      settingsController.SetPTSColorBar(11);
-      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[11]);
-      settingsController.SetPTSColorBG(3);
-      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[3]);
+      settingsController.SetPTSColorTime(Controllers::Settings::Colors::Teal);
+      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
+      settingsController.SetPTSColorBar(Controllers::Settings::Colors::Teal);
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
+      settingsController.SetPTSColorBG(Controllers::Settings::Colors::Black);
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Black));
     }
     if (object == btnRandom) {
       uint8_t randTime = rand() % 17;
@@ -312,14 +282,37 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       if (randBar == 3) {
         randBar -= 1;
       }
-      settingsController.SetPTSColorTime(randTime);
-      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randTime]);
-      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randTime]);
-      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randTime]);
-      settingsController.SetPTSColorBar(randBar);
-      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randBar]);
-      settingsController.SetPTSColorBG(randBG);
-      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, pts_colors[randBG]);
+      settingsController.SetPTSColorTime(static_cast<Controllers::Settings::Colors>(randTime));
+      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(static_cast<Controllers::Settings::Colors>(randTime)));
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Controllers::Settings::Colors>(randTime)));
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Controllers::Settings::Colors>(randTime)));
+      settingsController.SetPTSColorBar(static_cast<Controllers::Settings::Colors>(randBar));
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Controllers::Settings::Colors>(randBar)));
+      settingsController.SetPTSColorBG(static_cast<Controllers::Settings::Colors>(randBG));
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Controllers::Settings::Colors>(randBG)));
     }
   }
+}
+
+Pinetime::Controllers::Settings::Colors SettingPineTimeStyle::GetNext(Pinetime::Controllers::Settings::Colors color) {
+  auto colorAsInt = static_cast<uint8_t>(color);
+  Pinetime::Controllers::Settings::Colors nextColor;
+  if (colorAsInt < 16) {
+    nextColor = static_cast<Controllers::Settings::Colors>(colorAsInt + 1);
+  } else {
+    nextColor = static_cast<Controllers::Settings::Colors>(0);
+  }
+  return nextColor;
+}
+
+Pinetime::Controllers::Settings::Colors SettingPineTimeStyle::GetPrevious(Pinetime::Controllers::Settings::Colors color) {
+  auto colorAsInt = static_cast<uint8_t>(color);
+  Pinetime::Controllers::Settings::Colors prevColor;
+
+  if (colorAsInt > 0) {
+    prevColor = static_cast<Controllers::Settings::Colors>(colorAsInt - 1);
+  } else {
+    prevColor = static_cast<Controllers::Settings::Colors>(16);
+  }
+  return prevColor;
 }

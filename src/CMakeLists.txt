@@ -418,6 +418,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
+        displayapp/Colors.cpp
 
         ## Settings
         displayapp/screens/settings/QuickSettings.cpp
@@ -611,6 +612,7 @@ set(INCLUDE_FILES
         displayapp/screens/Metronome.h
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
+        displayapp/Colors.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h

@@ -15,11 +15,13 @@ namespace Pinetime {
           SettingPineTimeStyle(DisplayApp* app, Pinetime::Controllers::Settings &settingsController);
           ~SettingPineTimeStyle() override;
 
-          bool Refresh() override;
           void UpdateSelected(lv_obj_t *object, lv_event_t event);
          
         private:          
           Controllers::Settings& settingsController;
+
+          Pinetime::Controllers::Settings::Colors GetNext(Controllers::Settings::Colors color);
+          Pinetime::Controllers::Settings::Colors GetPrevious(Controllers::Settings::Colors color);
 
           lv_obj_t * btnNextTime;
           lv_obj_t * btnPrevTime;
@@ -29,9 +31,6 @@ namespace Pinetime {
           lv_obj_t * btnPrevBG;
           lv_obj_t * btnReset;
           lv_obj_t * btnRandom;
-          lv_obj_t * timeColor;
-          lv_obj_t * barColor;
-          lv_obj_t * bgColor;
           lv_obj_t * timebar;
           lv_obj_t * sidebar;
           lv_obj_t * timeDD1;
@@ -51,11 +50,6 @@ namespace Pinetime {
           lv_obj_t * calendarCrossBar2;
           lv_obj_t * stepGauge;
           lv_color_t needle_colors[1];
-          lv_color_t pts_colors[17] = {LV_COLOR_WHITE, LV_COLOR_SILVER, LV_COLOR_GRAY, LV_COLOR_BLACK,
-                                       LV_COLOR_RED, LV_COLOR_MAROON, LV_COLOR_YELLOW, LV_COLOR_OLIVE,
-                                       LV_COLOR_LIME, LV_COLOR_GREEN, LV_COLOR_CYAN, LV_COLOR_TEAL,
-                                       LV_COLOR_BLUE, LV_COLOR_NAVY, LV_COLOR_MAGENTA, LV_COLOR_PURPLE,
-                                       LV_COLOR_ORANGE};
       };
     }
   }

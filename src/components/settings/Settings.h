@@ -17,6 +17,14 @@ namespace Pinetime {
         DoubleTap = 1,
         RaiseWrist = 2,
       };
+      enum class Colors : uint8_t {
+        White, Silver, Gray, Black, Red, Maroon, Yellow, Olive, Lime, Green, Cyan, Teal, Blue, Navy, Magenta, Purple, Orange
+      };
+      struct PineTimeStyle {
+        Colors ColorTime = Colors::Teal;
+        Colors ColorBar = Colors::Teal;
+        Colors ColorBG = Colors::Black;
+      };
 
       Settings(Pinetime::Controllers::FS& fs);
 
@@ -33,37 +41,38 @@ namespace Pinetime {
         return settings.clockFace;
       };
 
-      void SetPTSColorTime(uint8_t colorTime) {
-        if (colorTime != settings.PTSColorTime)
+      void SetPTSColorTime(Colors colorTime) {
+        if (colorTime != settings.PTS.ColorTime)
           settingsChanged = true;
-        settings.PTSColorTime = colorTime;
+        settings.PTS.ColorTime = colorTime;
       };
-      uint8_t GetPTSColorTime() const {
-        return settings.PTSColorTime;
+      Colors GetPTSColorTime() const {
+        return settings.PTS.ColorTime;
       };
 
-      void SetPTSColorBar(uint8_t colorBar) {
-        if (colorBar != settings.PTSColorBar)
+      void SetPTSColorBar(Colors colorBar) {
+        if (colorBar != settings.PTS.ColorBar)
           settingsChanged = true;
-        settings.PTSColorBar = colorBar;
+        settings.PTS.ColorBar = colorBar;
       };
-      uint8_t GetPTSColorBar() const {
-        return settings.PTSColorBar;
+      Colors GetPTSColorBar() const {
+        return settings.PTS.ColorBar;
       };
 
-      void SetPTSColorBG(uint8_t colorBG) {
-        if (colorBG != settings.PTSColorBG)
+      void SetPTSColorBG(Colors colorBG) {
+        if (colorBG != settings.PTS.ColorBG)
           settingsChanged = true;
-        settings.PTSColorBG = colorBG;
+        settings.PTS.ColorBG = colorBG;
       };
-      uint8_t GetPTSColorBG() const {
-        return settings.PTSColorBG;
+      Colors GetPTSColorBG() const {
+        return settings.PTS.ColorBG;
       };
 
       void SetAppMenu(uint8_t menu) {
         appMenu = menu;
       };
-      uint8_t GetAppMenu() {
+
+      uint8_t GetAppMenu() const {
         return appMenu;
       };
 
@@ -156,7 +165,6 @@ namespace Pinetime {
 
       static constexpr uint32_t settingsVersion = 0x0002;
       struct SettingsData {
-
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
         uint32_t screenTimeOut = 15000;
@@ -166,9 +174,7 @@ namespace Pinetime {
 
         uint8_t clockFace = 0;
 
-        uint8_t PTSColorTime = 11;
-        uint8_t PTSColorBar = 11;
-        uint8_t PTSColorBG = 3;
+        PineTimeStyle PTS;
 
         std::bitset<3> wakeUpMode {0};
 
