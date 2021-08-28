@@ -67,7 +67,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Pinetime::Applications::DisplayApp& displayApp,
                        Pinetime::Applications::HeartRateTask& heartRateApp,
-                       Pinetime::Controllers::FS& fs)
+                       Pinetime::Controllers::FS& fs,
+                       Pinetime::Controllers::TouchHandler& touchHandler)
   : spi {spi},
     lcd {lcd},
     spiNorFlash {spiNorFlash},
@@ -79,18 +80,18 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     dateTimeController {dateTimeController},
     timerController {timerController},
     watchdog {watchdog},
-    notificationManager{notificationManager},
+    notificationManager {notificationManager},
     motorController {motorController},
     heartRateSensor {heartRateSensor},
     motionSensor {motionSensor},
     settingsController {settingsController},
-    heartRateController{heartRateController},
-    motionController{motionController},
-    displayApp{displayApp},
+    heartRateController {heartRateController},
+    motionController {motionController},
+    displayApp {displayApp},
     heartRateApp(heartRateApp),
-    fs{fs},
+    fs {fs},
+    touchHandler {touchHandler},
     nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
-
 }
 
 void SystemTask::Start() {
@@ -116,7 +117,7 @@ void SystemTask::Work() {
   spi.Init();
   spiNorFlash.Init();
   spiNorFlash.Wakeup();
-  
+
   fs.Init();
 
   nimbleController.Init();
@@ -241,13 +242,15 @@ void SystemTask::Work() {
           break;
         case Messages::TouchWakeUp: {
           twiMaster.Wakeup();
-          auto touchInfo = touchPanel.GetTouchInfo();
-          twiMaster.Sleep();
-          if (touchInfo.isTouch and ((touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
-                                      settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
-                                     (touchInfo.gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
-                                      settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
+          touchHandler.GetNewTouchInfo();
+          auto gesture = touchHandler.GestureGet();
+          if ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap &&
+               settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) ||
+              (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap &&
+               settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap))) {
             GoToRunning();
+          } else {
+            twiMaster.Sleep();
           }
         } break;
         case Messages::GoToSleep:
@@ -294,6 +297,9 @@ void SystemTask::Work() {
           xTimerStart(dimTimer, 0);
           break;
         case Messages::OnTouchEvent:
+          if (touchHandler.GetNewTouchInfo()) {
+            touchHandler.UpdateLvglTouchPoint();
+          }
           ReloadIdleTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
@@ -326,7 +332,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnChargingEvent:
           motorController.RunForDuration(15);
-	  // Battery level is updated on every message - there's no need to do anything
+          // Battery level is updated on every message - there's no need to do anything
           break;
 
         default:
@@ -424,14 +430,13 @@ void SystemTask::PushMessage(System::Messages msg) {
     isGoingToSleep = true;
   }
 
-  if(in_isr()) {
+  if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken;
     xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(systemTasksMsgQueue, &msg, &xHigherPriorityTaskWoken);
     if (xHigherPriorityTaskWoken) {
       /* Actual macro used here is port specific. */
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-
     }
   } else {
     xQueueSend(systemTasksMsgQueue, &msg, portMAX_DELAY);
