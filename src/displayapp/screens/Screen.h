@@ -64,6 +64,7 @@ namespace Pinetime {
         }
 
         /** @return false if the event hasn't been handled by the app, true if it has been handled */
+        // Returning true will cancel lvgl tap
         virtual bool OnTouchEvent(TouchEvents event) {
           return false;
         }
