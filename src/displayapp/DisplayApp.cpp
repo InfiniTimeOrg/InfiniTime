@@ -53,29 +53,26 @@ namespace {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
   }
 
-  TouchEvents Convert(Pinetime::Drivers::Cst816S::TouchInfos info) {
-    if (info.isTouch) {
-      switch (info.gesture) {
-        case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-          return TouchEvents::Tap;
-        case Pinetime::Drivers::Cst816S::Gestures::LongPress:
-          return TouchEvents::LongTap;
-        case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
-          return TouchEvents::DoubleTap;
-        case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
-          return TouchEvents::SwipeRight;
-        case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
-          return TouchEvents::SwipeLeft;
-        case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
-          return TouchEvents::SwipeDown;
-        case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
-          return TouchEvents::SwipeUp;
-        case Pinetime::Drivers::Cst816S::Gestures::None:
-        default:
-          return TouchEvents::None;
-      }
+  TouchEvents ConvertGesture(Pinetime::Drivers::Cst816S::Gestures gesture) {
+    switch (gesture) {
+      case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
+        return TouchEvents::Tap;
+      case Pinetime::Drivers::Cst816S::Gestures::LongPress:
+        return TouchEvents::LongTap;
+      case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
+        return TouchEvents::DoubleTap;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
+        return TouchEvents::SwipeRight;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
+        return TouchEvents::SwipeLeft;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
+        return TouchEvents::SwipeDown;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
+        return TouchEvents::SwipeUp;
+      case Pinetime::Drivers::Cst816S::Gestures::None:
+      default:
+        return TouchEvents::None;
     }
-    return TouchEvents::None;
   }
 }
 
@@ -91,7 +88,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Controllers::MotionController& motionController,
-                       Pinetime::Controllers::TimerController& timerController)
+                       Pinetime::Controllers::TimerController& timerController,
+                       Pinetime::Controllers::TouchHandler& touchHandler)
   : lcd {lcd},
     lvgl {lvgl},
     touchPanel {touchPanel},
@@ -104,7 +102,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     settingsController {settingsController},
     motorController {motorController},
     motionController {motionController},
-    timerController {timerController} {
+    timerController {timerController},
+    touchHandler {touchHandler} {
 }
 
 void DisplayApp::Start() {
@@ -209,8 +208,7 @@ void DisplayApp::Refresh() {
         if (state != States::Running) {
           break;
         }
-        auto info = touchPanel.GetTouchInfo();
-        auto gesture = Convert(info);
+        auto gesture = ConvertGesture(touchHandler.GestureGet());
         if (gesture == TouchEvents::None) {
           break;
         }
@@ -236,11 +234,9 @@ void DisplayApp::Refresh() {
             LoadApp(returnToApp, returnDirection);
             brightnessController.Set(settingsController.GetBrightness());
             brightnessController.Backup();
-          } else if (touchMode == TouchModes::Gestures) {
-            if (gesture == TouchEvents::Tap) {
-              lvgl.SetNewTapEvent(info.x, info.y);
-            }
           }
+        } else {
+          touchHandler.CancelTap();
         }
       } break;
       case Messages::ButtonPushed:
@@ -270,13 +266,8 @@ void DisplayApp::Refresh() {
     nextApp = Apps::None;
   }
 
-  if (state != States::Idle && touchMode == TouchModes::Polling) {
-    auto info = touchPanel.GetTouchInfo();
-    if (info.action == 2) { // 2 = contact
-      if (!currentScreen->OnTouchEvent(info.x, info.y)) {
-        lvgl.SetNewTapEvent(info.x, info.y);
-      }
-    }
+  if (touchHandler.IsTouching()) {
+    currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
   }
 }
 
@@ -299,6 +290,7 @@ void DisplayApp::ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction
 }
 
 void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) {
+  touchHandler.CancelTap();
   currentScreen.reset(nullptr);
   SetFullRefresh(direction);
 
@@ -462,10 +454,6 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
     default:
       break;
   }
-}
-
-void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {
-  touchMode = mode;
 }
 
 void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {

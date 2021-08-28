@@ -19,12 +19,9 @@ namespace Pinetime {
       struct TouchInfos {
         uint16_t x = 0;
         uint16_t y = 0;
-        uint8_t action = 0;
-        uint8_t finger = 0;
-        uint8_t pressure = 0;
-        uint8_t area = 0;
         Gestures gesture = Gestures::None;
-        bool isTouch = false;
+        bool touching = false;
+        bool isValid = true;
       };
 
       Cst816S(TwiMaster& twiMaster, uint8_t twiAddress);
@@ -41,20 +38,21 @@ namespace Pinetime {
     private:
       static constexpr uint8_t pinIrq = 28;
       static constexpr uint8_t pinReset = 10;
-      static constexpr uint8_t lastTouchId = 0x0f;
+
+      // Unused/Unavailable commented out
+      static constexpr uint8_t gestureIndex = 1;
       static constexpr uint8_t touchPointNumIndex = 2;
-      static constexpr uint8_t touchMiscIndex = 8;
-      static constexpr uint8_t touchXYIndex = 7;
-      static constexpr uint8_t touchEventIndex = 3;
+      //static constexpr uint8_t touchEventIndex = 3;
       static constexpr uint8_t touchXHighIndex = 3;
       static constexpr uint8_t touchXLowIndex = 4;
+      //static constexpr uint8_t touchIdIndex = 5;
       static constexpr uint8_t touchYHighIndex = 5;
       static constexpr uint8_t touchYLowIndex = 6;
-      static constexpr uint8_t touchIdIndex = 5;
-      static constexpr uint8_t touchStep = 6;
-      static constexpr uint8_t gestureIndex = 1;
+      //static constexpr uint8_t touchStep = 6;
+      //static constexpr uint8_t touchXYIndex = 7;
+      //static constexpr uint8_t touchMiscIndex = 8;
 
-      uint8_t touchData[10];
+      uint8_t touchData[7];
       TwiMaster& twiMaster;
       uint8_t twiAddress;
     };

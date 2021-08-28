@@ -8,16 +8,9 @@ namespace Pinetime {
   namespace Drivers {
     class TwiMaster {
     public:
-      enum class Modules { TWIM1 };
-      enum class Frequencies { Khz100, Khz250, Khz400 };
       enum class ErrorCodes { NoError, TransactionFailed };
-      struct Parameters {
-        uint32_t frequency;
-        uint8_t pinSda;
-        uint8_t pinScl;
-      };
 
-      TwiMaster(const Modules module, const Parameters& params);
+      TwiMaster(NRF_TWIM_Type* module, uint32_t frequency, uint8_t pinSda, uint8_t pinScl);
 
       void Init();
       ErrorCodes Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t* buffer, size_t size);
@@ -30,10 +23,14 @@ namespace Pinetime {
       ErrorCodes Read(uint8_t deviceAddress, uint8_t* buffer, size_t size, bool stop);
       ErrorCodes Write(uint8_t deviceAddress, const uint8_t* data, size_t size, bool stop);
       void FixHwFreezed();
+      void ConfigurePins() const;
+
       NRF_TWIM_Type* twiBaseAddress;
       SemaphoreHandle_t mutex = nullptr;
-      const Modules module;
-      const Parameters params;
+      NRF_TWIM_Type* module;
+      uint32_t frequency;
+      uint8_t pinSda;
+      uint8_t pinScl;
       static constexpr uint8_t maxDataSize {16};
       static constexpr uint8_t registerSize {1};
       uint8_t internalBuffer[maxDataSize + registerSize];
