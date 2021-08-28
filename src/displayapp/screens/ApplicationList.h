@@ -18,7 +18,6 @@ namespace Pinetime {
                                  Pinetime::Controllers::Battery& batteryController,
                                  Controllers::DateTime& dateTimeController);
         ~ApplicationList() override;
-        bool Refresh() override;
         bool OnTouchEvent(TouchEvents event) override;
 
       private:

@@ -26,13 +26,6 @@ Settings::~Settings() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool Settings::Refresh() {
-
-  if (running)
-    running = screens.Refresh();
-  return running;
-}
-
 bool Settings::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return screens.OnTouchEvent(event);
 }

@@ -14,8 +14,6 @@ namespace Pinetime {
         Settings(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~Settings() override;
 
-        bool Refresh() override;
-
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
       private:

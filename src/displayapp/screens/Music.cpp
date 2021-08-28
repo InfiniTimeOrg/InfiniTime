@@ -139,14 +139,17 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   frameB = false;
 
   musicService.event(Controllers::MusicService::EVENT_MUSIC_OPEN);
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Music::~Music() {
+  lv_task_del(taskRefresh);
   lv_style_reset(&btn_style);
   lv_obj_clean(lv_scr_act());
 }
 
-bool Music::Refresh() {
+void Music::Refresh() {
   if (artist != musicService.getArtist()) {
     artist = musicService.getArtist();
     currentLength = 0;
@@ -210,8 +213,6 @@ bool Music::Refresh() {
   } else {
     lv_label_set_text(txtPlayPause, Symbols::play);
   }
-
-  return running;
 }
 
 void Music::UpdateLength() {
