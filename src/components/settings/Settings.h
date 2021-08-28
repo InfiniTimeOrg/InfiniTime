@@ -33,6 +33,33 @@ namespace Pinetime {
         return settings.clockFace;
       };
 
+      void SetPTSColorTime(uint8_t colorTime) {
+        if (colorTime != settings.PTSColorTime)
+          settingsChanged = true;
+        settings.PTSColorTime = colorTime;
+      };
+      uint8_t GetPTSColorTime() const {
+        return settings.PTSColorTime;
+      };
+
+      void SetPTSColorBar(uint8_t colorBar) {
+        if (colorBar != settings.PTSColorBar)
+          settingsChanged = true;
+        settings.PTSColorBar = colorBar;
+      };
+      uint8_t GetPTSColorBar() const {
+        return settings.PTSColorBar;
+      };
+
+      void SetPTSColorBG(uint8_t colorBG) {
+        if (colorBG != settings.PTSColorBG)
+          settingsChanged = true;
+        settings.PTSColorBG = colorBG;
+      };
+      uint8_t GetPTSColorBG() const {
+        return settings.PTSColorBG;
+      };
+
       void SetAppMenu(uint8_t menu) {
         appMenu = menu;
       };
@@ -127,7 +154,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0001;
+      static constexpr uint32_t settingsVersion = 0x0002;
       struct SettingsData {
 
         uint32_t version = settingsVersion;
@@ -138,6 +165,10 @@ namespace Pinetime {
         Vibration vibrationStatus = Vibration::ON;
 
         uint8_t clockFace = 0;
+
+        uint8_t PTSColorTime = 11;
+        uint8_t PTSColorBar = 11;
+        uint8_t PTSColorBG = 3;
 
         std::bitset<3> wakeUpMode {0};
 
