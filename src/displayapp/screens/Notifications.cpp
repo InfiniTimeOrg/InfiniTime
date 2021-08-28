@@ -11,6 +11,7 @@ extern lv_font_t jetbrains_mono_bold_20;
 Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                             Pinetime::Controllers::MotorController& motorController,
                              Modes mode)
   : Screen(app), notificationManager {notificationManager}, alertNotificationService {alertNotificationService}, mode {mode} {
   notificationManager.ClearNewNotificationFlag();
@@ -36,25 +37,31 @@ Notifications::Notifications(DisplayApp* app,
   }
 
   if (mode == Modes::Preview) {
+    if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
+      motorController.StartRinging();
+    } else {
+      motorController.RunForDuration(35);
+      timeoutLine = lv_line_create(lv_scr_act(), nullptr);
 
-    timeoutLine = lv_line_create(lv_scr_act(), nullptr);
+      lv_obj_set_style_local_line_width(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
+      lv_obj_set_style_local_line_color(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+      lv_obj_set_style_local_line_rounded(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
 
-    lv_obj_set_style_local_line_width(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-    lv_obj_set_style_local_line_color(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-    lv_obj_set_style_local_line_rounded(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
-
-    lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
-    timeoutTickCountStart = xTaskGetTickCount();
-    timeoutTickCountEnd = timeoutTickCountStart + (5 * 1024);
+      lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
+      timeoutTickCountStart = xTaskGetTickCount();
+      timeoutTickCountEnd = timeoutTickCountStart + (5 * 1024);
+    }
   }
 }
 
 Notifications::~Notifications() {
+  // make sure we stop any vibrations before exiting
+  Controllers::MotorController::StopRinging();
   lv_obj_clean(lv_scr_act());
 }
 
 bool Notifications::Refresh() {
-  if (mode == Modes::Preview) {
+  if (mode == Modes::Preview && timeoutLine != nullptr) {
     auto tick = xTaskGetTickCount();
     int32_t pos = 240 - ((tick - timeoutTickCountStart) / ((timeoutTickCountEnd - timeoutTickCountStart) / 240));
     if (pos < 0)
@@ -63,13 +70,13 @@ bool Notifications::Refresh() {
     timeoutLinePoints[1].x = pos;
     lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
   }
-
-  return running;
+  return running && currentItem->IsRunning();
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  if (mode != Modes::Normal)
-    return true;
+  if (mode != Modes::Normal) {
+    return false;
+  }
 
   switch (event) {
     case Pinetime::Applications::TouchEvents::SwipeDown: {
@@ -130,19 +137,9 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 namespace {
-  static void AcceptIncomingCallEventHandler(lv_obj_t* obj, lv_event_t event) {
+  void CallEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* item = static_cast<Notifications::NotificationItem*>(obj->user_data);
-    item->OnAcceptIncomingCall(event);
-  }
-
-  static void MuteIncomingCallEventHandler(lv_obj_t* obj, lv_event_t event) {
-    auto* item = static_cast<Notifications::NotificationItem*>(obj->user_data);
-    item->OnMuteIncomingCall(event);
-  }
-
-  static void RejectIncomingCallEventHandler(lv_obj_t* obj, lv_event_t event) {
-    auto* item = static_cast<Notifications::NotificationItem*>(obj->user_data);
-    item->OnRejectIncomingCall(event);
+    item->OnCallButtonEvent(obj, event);
   }
 }
 
@@ -154,7 +151,6 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Modes mode,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService)
   : notifNr {notifNr}, notifNb {notifNb}, mode {mode}, alertNotificationService {alertNotificationService} {
-
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), NULL);
 
   lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x222222));
@@ -212,7 +208,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
 
       bt_accept = lv_btn_create(lv_scr_act(), nullptr);
       bt_accept->user_data = this;
-      lv_obj_set_event_cb(bt_accept, AcceptIncomingCallEventHandler);
+      lv_obj_set_event_cb(bt_accept, CallEventHandler);
       lv_obj_set_size(bt_accept, 76, 76);
       lv_obj_align(bt_accept, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
       label_accept = lv_label_create(bt_accept, nullptr);
@@ -221,7 +217,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
 
       bt_reject = lv_btn_create(lv_scr_act(), nullptr);
       bt_reject->user_data = this;
-      lv_obj_set_event_cb(bt_reject, RejectIncomingCallEventHandler);
+      lv_obj_set_event_cb(bt_reject, CallEventHandler);
       lv_obj_set_size(bt_reject, 76, 76);
       lv_obj_align(bt_reject, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
       label_reject = lv_label_create(bt_reject, nullptr);
@@ -230,7 +226,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
 
       bt_mute = lv_btn_create(lv_scr_act(), nullptr);
       bt_mute->user_data = this;
-      lv_obj_set_event_cb(bt_mute, MuteIncomingCallEventHandler);
+      lv_obj_set_event_cb(bt_mute, CallEventHandler);
       lv_obj_set_size(bt_mute, 76, 76);
       lv_obj_align(bt_mute, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
       label_mute = lv_label_create(bt_mute, nullptr);
@@ -246,25 +242,22 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_label_set_text(backgroundLabel, "");
 }
 
-void Notifications::NotificationItem::OnAcceptIncomingCall(lv_event_t event) {
-  if (event != LV_EVENT_CLICKED)
+void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_t event) {
+  if (event != LV_EVENT_CLICKED) {
     return;
+  }
 
-  alertNotificationService.AcceptIncomingCall();
-}
+  Controllers::MotorController::StopRinging();
 
-void Notifications::NotificationItem::OnMuteIncomingCall(lv_event_t event) {
-  if (event != LV_EVENT_CLICKED)
-    return;
+  if (obj == bt_accept) {
+    alertNotificationService.AcceptIncomingCall();
+  } else if (obj == bt_reject) {
+    alertNotificationService.RejectIncomingCall();
+  } else if (obj == bt_mute) {
+    alertNotificationService.MuteIncomingCall();
+  }
 
-  alertNotificationService.MuteIncomingCall();
-}
-
-void Notifications::NotificationItem::OnRejectIncomingCall(lv_event_t event) {
-  if (event != LV_EVENT_CLICKED)
-    return;
-
-  alertNotificationService.RejectIncomingCall();
+  running = false;
 }
 
 Notifications::NotificationItem::~NotificationItem() {

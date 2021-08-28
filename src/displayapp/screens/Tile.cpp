@@ -35,37 +35,35 @@ Tile::Tile(uint8_t screenID,
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(label_time, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
   lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 15, 6);
+  lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   // Battery
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
-  lv_obj_align(batteryIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, -15, 6);
+  lv_obj_align(batteryIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, -8, 0);
 
   if (numScreens > 1) {
-    pageIndicatorBasePoints[0].x = 240 - 1;
-    pageIndicatorBasePoints[0].y = 6;
-    pageIndicatorBasePoints[1].x = 240 - 1;
-    pageIndicatorBasePoints[1].y = 240 - 6;
+    pageIndicatorBasePoints[0].x = LV_HOR_RES - 1;
+    pageIndicatorBasePoints[0].y = 0;
+    pageIndicatorBasePoints[1].x = LV_HOR_RES - 1;
+    pageIndicatorBasePoints[1].y = LV_VER_RES;
 
     pageIndicatorBase = lv_line_create(lv_scr_act(), nullptr);
     lv_obj_set_style_local_line_width(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
     lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
-    lv_obj_set_style_local_line_rounded(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
     lv_line_set_points(pageIndicatorBase, pageIndicatorBasePoints, 2);
 
-    uint16_t indicatorSize = 228 / numScreens;
-    uint16_t indicatorPos = indicatorSize * screenID;
+    const uint16_t indicatorSize = LV_VER_RES / numScreens;
+    const uint16_t indicatorPos = indicatorSize * screenID;
 
-    pageIndicatorPoints[0].x = 240 - 1;
-    pageIndicatorPoints[0].y = 6 + indicatorPos;
-    pageIndicatorPoints[1].x = 240 - 1;
-    pageIndicatorPoints[1].y = 6 + indicatorPos + indicatorSize;
+    pageIndicatorPoints[0].x = LV_HOR_RES - 1;
+    pageIndicatorPoints[0].y = indicatorPos;
+    pageIndicatorPoints[1].x = LV_HOR_RES - 1;
+    pageIndicatorPoints[1].y = indicatorPos + indicatorSize;
 
     pageIndicator = lv_line_create(lv_scr_act(), nullptr);
     lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
     lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-    lv_obj_set_style_local_line_rounded(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
     lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
   }
 
@@ -85,7 +83,7 @@ Tile::Tile(uint8_t screenID,
 
   btnm1 = lv_btnmatrix_create(lv_scr_act(), nullptr);
   lv_btnmatrix_set_map(btnm1, btnmMap);
-  lv_obj_set_size(btnm1, LV_HOR_RES - 10, LV_VER_RES - 60);
+  lv_obj_set_size(btnm1, LV_HOR_RES - 16, LV_VER_RES - 60);
   lv_obj_align(btnm1, NULL, LV_ALIGN_CENTER, 0, 10);
 
   lv_obj_set_style_local_radius(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, 20);
@@ -93,8 +91,11 @@ Tile::Tile(uint8_t screenID,
   lv_obj_set_style_local_bg_color(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
   lv_obj_set_style_local_bg_opa(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DISABLED, LV_OPA_20);
   lv_obj_set_style_local_bg_color(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DISABLED, lv_color_hex(0x111111));
+  lv_obj_set_style_local_pad_all(btnm1, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_pad_inner(btnm1, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 10);
 
   for (uint8_t i = 0; i < 6; i++) {
+    lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_CLICK_TRIG);
     if (applications[i].application == Apps::None) {
       lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_DISABLED);
     }

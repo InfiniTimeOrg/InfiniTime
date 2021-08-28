@@ -223,7 +223,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   lv_table_set_col_width(infoTask, 3, 90);
 
   // TODO: All tasks don't fit on one screen
-  auto nb = uxTaskGetSystemState(tasksStatus, 10, nullptr);
+  auto nb = uxTaskGetSystemState(tasksStatus, sizeof(tasksStatus) / sizeof(tasksStatus[0]), nullptr);
   std::sort(tasksStatus, tasksStatus + nb, sortById);
   for (uint8_t i = 0; i < nb && i < 7; i++) {
 
