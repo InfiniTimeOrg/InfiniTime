@@ -5,8 +5,6 @@
 using namespace Pinetime::Applications::Screens;
 
 Paddle::Paddle(Pinetime::Applications::DisplayApp* app, Pinetime::Components::LittleVgl& lvgl) : Screen(app), lvgl {lvgl} {
-  app->SetTouchMode(DisplayApp::TouchModes::Polling);
-
   background = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(background, LV_HOR_RES + 1, LV_VER_RES);
   lv_obj_set_pos(background, -1, 0);
@@ -35,8 +33,6 @@ Paddle::Paddle(Pinetime::Applications::DisplayApp* app, Pinetime::Components::Li
 
 Paddle::~Paddle() {
   lv_task_del(taskRefresh);
-  // Reset the touchmode
-  app->SetTouchMode(DisplayApp::TouchModes::Gestures);
   lv_obj_clean(lv_scr_act());
 }
 

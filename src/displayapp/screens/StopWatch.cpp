@@ -162,7 +162,7 @@ void StopWatch::Refresh() {
 }
 
 void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
-  if (event != LV_EVENT_PRESSED) {
+  if (event != LV_EVENT_CLICKED) {
     return;
   }
   if (currentState == States::Init) {
@@ -175,7 +175,7 @@ void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
 }
 
 void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
-  if (event != LV_EVENT_PRESSED) {
+  if (event != LV_EVENT_CLICKED) {
     return;
   }
   // If running, then this button is used to save laps
