@@ -50,60 +50,55 @@ inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
 Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::MusicService& music) : Screen(app), musicService(music) {
   lv_obj_t* label;
 
+  lv_style_init(&btn_style);
+  lv_style_set_radius(&btn_style, LV_STATE_DEFAULT, 20);
+  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+  lv_style_set_bg_opa(&btn_style, LV_STATE_DEFAULT, LV_OPA_20);
+
   btnVolDown = lv_btn_create(lv_scr_act(), nullptr);
   btnVolDown->user_data = this;
   lv_obj_set_event_cb(btnVolDown, event_handler);
-  lv_obj_set_size(btnVolDown, 65, 75);
-  lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 15, -10);
-  lv_obj_set_style_local_radius(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 20);
-  lv_obj_set_style_local_bg_color(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
-  lv_obj_set_style_local_bg_opa(btnVolDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
+  lv_obj_set_size(btnVolDown, 76, 76);
+  lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_add_style(btnVolDown, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnVolDown, nullptr);
   lv_label_set_text(label, Symbols::volumDown);
-  lv_obj_set_hidden(btnVolDown, !displayVolumeButtons);
+  lv_obj_set_hidden(btnVolDown, true);
 
   btnVolUp = lv_btn_create(lv_scr_act(), nullptr);
   btnVolUp->user_data = this;
   lv_obj_set_event_cb(btnVolUp, event_handler);
-  lv_obj_set_size(btnVolUp, 65, 75);
-  lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, -15, -10);
-  lv_obj_set_style_local_radius(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 20);
-  lv_obj_set_style_local_bg_color(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
-  lv_obj_set_style_local_bg_opa(btnVolUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
+  lv_obj_set_size(btnVolUp, 76, 76);
+  lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lv_obj_add_style(btnVolUp, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnVolUp, nullptr);
   lv_label_set_text(label, Symbols::volumUp);
-  lv_obj_set_hidden(btnVolUp, !displayVolumeButtons);
+  lv_obj_set_hidden(btnVolUp, true);
 
   btnPrev = lv_btn_create(lv_scr_act(), nullptr);
   btnPrev->user_data = this;
   lv_obj_set_event_cb(btnPrev, event_handler);
-  lv_obj_set_size(btnPrev, 65, 75);
-  lv_obj_align(btnPrev, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 15, -10);
-  lv_obj_set_style_local_radius(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 20);
-  lv_obj_set_style_local_bg_color(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
-  lv_obj_set_style_local_bg_opa(btnPrev, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
+  lv_obj_set_size(btnPrev, 76, 76);
+  lv_obj_align(btnPrev, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_add_style(btnPrev, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnPrev, nullptr);
   lv_label_set_text(label, Symbols::stepBackward);
 
   btnNext = lv_btn_create(lv_scr_act(), nullptr);
   btnNext->user_data = this;
   lv_obj_set_event_cb(btnNext, event_handler);
-  lv_obj_set_size(btnNext, 65, 75);
-  lv_obj_align(btnNext, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, -15, -10);
-  lv_obj_set_style_local_radius(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 20);
-  lv_obj_set_style_local_bg_color(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
-  lv_obj_set_style_local_bg_opa(btnNext, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
+  lv_obj_set_size(btnNext, 76, 76);
+  lv_obj_align(btnNext, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lv_obj_add_style(btnNext, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnNext, nullptr);
   lv_label_set_text(label, Symbols::stepForward);
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
   lv_obj_set_event_cb(btnPlayPause, event_handler);
-  lv_obj_set_size(btnPlayPause, 65, 75);
-  lv_obj_align(btnPlayPause, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
-  lv_obj_set_style_local_radius(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 20);
-  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
-  lv_obj_set_style_local_bg_opa(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
+  lv_obj_set_size(btnPlayPause, 76, 76);
+  lv_obj_align(btnPlayPause, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_obj_add_style(btnPlayPause, LV_STATE_DEFAULT, &btn_style);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   lv_label_set_text(txtPlayPause, Symbols::play);
 
@@ -147,6 +142,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
 }
 
 Music::~Music() {
+  lv_style_reset(&btn_style);
   lv_obj_clean(lv_scr_act());
 }
 
@@ -272,21 +268,19 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
 bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   switch (event) {
     case TouchEvents::SwipeUp: {
-      displayVolumeButtons = true;
-      lv_obj_set_hidden(btnVolDown, !displayVolumeButtons);
-      lv_obj_set_hidden(btnVolUp, !displayVolumeButtons);
+      lv_obj_set_hidden(btnVolDown, false);
+      lv_obj_set_hidden(btnVolUp, false);
 
-      lv_obj_set_hidden(btnNext, displayVolumeButtons);
-      lv_obj_set_hidden(btnPrev, displayVolumeButtons);
+      lv_obj_set_hidden(btnNext, true);
+      lv_obj_set_hidden(btnPrev, true);
       return true;
     }
     case TouchEvents::SwipeDown: {
-      displayVolumeButtons = false;
-      lv_obj_set_hidden(btnNext, displayVolumeButtons);
-      lv_obj_set_hidden(btnPrev, displayVolumeButtons);
+      lv_obj_set_hidden(btnNext, false);
+      lv_obj_set_hidden(btnPrev, false);
 
-      lv_obj_set_hidden(btnVolDown, !displayVolumeButtons);
-      lv_obj_set_hidden(btnVolUp, !displayVolumeButtons);
+      lv_obj_set_hidden(btnVolDown, true);
+      lv_obj_set_hidden(btnVolUp, true);
       return true;
     }
     case TouchEvents::SwipeLeft: {
@@ -298,7 +292,7 @@ bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       return true;
     }
     default: {
-      return true;
+      return false;
     }
   }
 }

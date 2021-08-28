@@ -3,6 +3,7 @@
 #include <task.h>
 #include <libraries/log/nrf_log.h>
 #include <components/rle/RleDecoder.h>
+#include <touchhandler/TouchHandler.h>
 #include "displayapp/icons/infinitime/infinitime-nb.c"
 
 using namespace Pinetime::Applications;
@@ -19,7 +20,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Controllers::MotionController& motionController,
-                       Pinetime::Controllers::TimerController& timerController)
+                       Pinetime::Controllers::TimerController& timerController,
+                       Pinetime::Controllers::TouchHandler& touchHandler)
   : lcd {lcd}, bleController {bleController} {
 
 }
