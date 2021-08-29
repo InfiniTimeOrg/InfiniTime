@@ -89,7 +89,7 @@ void Timer::SetButtonsHidden(bool hidden) {
 }
 
 void Timer::AdjustButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
-  if (event != LV_EVENT_PRESSED && event != LV_EVENT_LONG_PRESSED_REPEAT) {
+  if (event != LV_EVENT_CLICKED && event != LV_EVENT_LONG_PRESSED_REPEAT) {
     return;
   }
 
