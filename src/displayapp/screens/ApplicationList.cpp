@@ -34,12 +34,6 @@ ApplicationList::~ApplicationList() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool ApplicationList::Refresh() {
-  if (running)
-    running = screens.Refresh();
-  return running;
-}
-
 bool ApplicationList::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return screens.OnTouchEvent(event);
 }

@@ -20,17 +20,17 @@ Meter::Meter(Pinetime::Applications::DisplayApp* app) : Screen(app) {
 
   lv_obj_set_size(lmeter, 200, 200);
   lv_obj_align(lmeter, nullptr, LV_ALIGN_CENTER, 0, 0);
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Meter::~Meter() {
-
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-bool Meter::Refresh() {
+void Meter::Refresh() {
   lv_linemeter_set_value(lmeter, value++); /*Set the current value*/
   if (value >= 60)
     value = 0;
-
-  return running;
 }

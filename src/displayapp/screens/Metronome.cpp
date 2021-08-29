@@ -67,16 +67,16 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   lv_obj_align(playPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   lv_obj_set_style_local_value_str(playPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Symbols::play);
 
-  app->SetTouchMode(DisplayApp::TouchModes::Polling);
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Metronome::~Metronome() {
-  app->SetTouchMode(DisplayApp::TouchModes::Gestures);
+  lv_task_del(taskRefresh);
   systemTask.PushMessage(System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }
 
-bool Metronome::Refresh() {
+void Metronome::Refresh() {
   if (metronomeStarted) {
     if (xTaskGetTickCount() - startTime > 60 * configTICK_RATE_HZ / bpm) {
       startTime += 60 * configTICK_RATE_HZ / bpm;
@@ -89,7 +89,6 @@ bool Metronome::Refresh() {
       }
     }
   }
-  return running;
 }
 
 void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {

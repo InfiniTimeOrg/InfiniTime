@@ -161,13 +161,16 @@ Navigation::Navigation(Pinetime::Applications::DisplayApp* app, Pinetime::Contro
   lv_bar_set_anim_time(barProgress, 500);
   lv_bar_set_range(barProgress, 0, 100);
   lv_bar_set_value(barProgress, 0, LV_ANIM_OFF);
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Navigation::~Navigation() {
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-bool Navigation::Refresh() {
+void Navigation::Refresh() {
   if (flag != navService.getFlag()) {
     flag = navService.getFlag();
     lv_label_set_text(imgFlag, iconForName(flag));
@@ -192,8 +195,4 @@ bool Navigation::Refresh() {
       lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
     }
   }
-
-  return running;
 }
-
-
