@@ -18,7 +18,8 @@ namespace Pinetime {
 
         void SetDone();
 
-        void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
+        void PlayPauseEventHandler(lv_obj_t* obj, lv_event_t event);
+        void AdjustButtonEventHandler(lv_obj_t* obj, lv_event_t event);
 
       private:
         uint8_t seconds = 0;
