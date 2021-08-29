@@ -71,7 +71,7 @@ void NimbleController::Init() {
   ASSERT(res == 0);
   res = ble_svc_gap_device_name_set(deviceName);
   ASSERT(res == 0);
-  rc = ble_svc_gap_device_appearance_set(0xC4);
+  rc = ble_svc_gap_device_appearance_set(0xC2);
   ASSERT(rc == 0);
   Pinetime::Controllers::Ble::BleAddress address;
   res = ble_hs_id_copy_addr(addrType, address.data(), nullptr);
@@ -88,7 +88,7 @@ void NimbleController::StartAdvertising() {
     return;
 
   ble_svc_gap_device_name_set(deviceName);
-  ble_svc_gap_device_appearance_set(0xC4);
+  ble_svc_gap_device_appearance_set(0xC2);
 
   /* set adv parameters */
   struct ble_gap_adv_params adv_params;
