@@ -5,7 +5,6 @@ namespace Pinetime {
       enum class Messages {
         GoToSleep,
         GoToRunning,
-        TouchWakeUp,
         OnNewTime,
         OnNewNotification,
         OnTimerDone,

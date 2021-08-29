@@ -239,17 +239,6 @@ void SystemTask::Work() {
           isWakingUp = false;
           isDimmed = false;
           break;
-        case Messages::TouchWakeUp: {
-          if(touchHandler.GetNewTouchInfo()) {
-            auto gesture = touchHandler.GestureGet();
-            if (gesture != Pinetime::Drivers::Cst816S::Gestures::None and ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
-                                settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
-                                (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
-                                settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
-              GoToRunning();
-            }
-          }
-        } break;
         case Messages::GoToSleep:
           isGoingToSleep = true;
           NRF_LOG_INFO("[systemtask] Going to sleep");
@@ -294,11 +283,25 @@ void SystemTask::Work() {
           xTimerStart(dimTimer, 0);
           break;
         case Messages::OnTouchEvent:
-          if (touchHandler.GetNewTouchInfo()) {
-            touchHandler.UpdateLvglTouchPoint();
+          if (isGoingToSleep) {
+            break;
           }
-          ReloadIdleTimer();
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
+          if (!touchHandler.GetNewTouchInfo()) {
+            break;
+          }
+          if (!isSleeping) {
+            touchHandler.UpdateLvglTouchPoint();
+            ReloadIdleTimer();
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
+          } else if (!isWakingUp) {
+            auto gesture = touchHandler.GestureGet();
+            if ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
+                 settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
+                (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
+                 settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap))) {
+              GoToRunning();
+            }
+          }
           break;
         case Messages::OnButtonEvent:
           ReloadIdleTimer();
@@ -401,19 +404,6 @@ void SystemTask::GoToRunning() {
     return;
   isWakingUp = true;
   PushMessage(Messages::GoToRunning);
-}
-
-void SystemTask::OnTouchEvent() {
-  if (isGoingToSleep)
-    return;
-  if (!isSleeping) {
-    PushMessage(Messages::OnTouchEvent);
-  } else if (!isWakingUp) {
-    if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) or
-        settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
-      PushMessage(Messages::TouchWakeUp);
-    }
-  }
 }
 
 void SystemTask::PushMessage(System::Messages msg) {
