@@ -101,5 +101,7 @@ namespace Pinetime {
 
       ServiceDiscovery serviceDiscovery;
     };
+
+  static NimbleController* nptr;
   }
 }

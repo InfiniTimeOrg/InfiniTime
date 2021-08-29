@@ -120,7 +120,6 @@ void SystemTask::Work() {
   fs.Init();
 
   nimbleController.Init();
-  nimbleController.StartAdvertising();
   lcd.Init();
 
   twiMaster.Init();
@@ -226,7 +225,6 @@ void SystemTask::Work() {
             touchPanel.Wakeup();
           }
 
-          nimbleController.StartAdvertising();
           xTimerStart(dimTimer, 0);
           spiNorFlash.Wakeup();
           lcd.Wakeup();
