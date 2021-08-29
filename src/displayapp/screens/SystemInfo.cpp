@@ -65,13 +65,6 @@ SystemInfo::~SystemInfo() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool SystemInfo::Refresh() {
-  if (running) {
-    screens.Refresh();
-  }
-  return running;
-}
-
 bool SystemInfo::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return screens.OnTouchEvent(event);
 }
@@ -207,7 +200,7 @@ bool SystemInfo::sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
-  TaskStatus_t tasksStatus[7];
+  TaskStatus_t tasksStatus[10];
   lv_obj_t* infoTask = lv_table_create(lv_scr_act(), NULL);
   lv_table_set_col_cnt(infoTask, 4);
   lv_table_set_row_cnt(infoTask, 8);
@@ -222,9 +215,9 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   lv_table_set_cell_value(infoTask, 0, 3, "Free");
   lv_table_set_col_width(infoTask, 3, 90);
 
-  auto nb = uxTaskGetSystemState(tasksStatus, 7, nullptr);
+  auto nb = uxTaskGetSystemState(tasksStatus, sizeof(tasksStatus) / sizeof(tasksStatus[0]), nullptr);
   std::sort(tasksStatus, tasksStatus + nb, sortById);
-  for (uint8_t i = 0; i < nb; i++) {
+  for (uint8_t i = 0; i < nb && i < 7; i++) {
 
     lv_table_set_cell_value(infoTask, i + 1, 0, std::to_string(tasksStatus[i].xTaskNumber).c_str());
     char state[2] = {0};

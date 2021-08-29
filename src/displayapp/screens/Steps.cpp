@@ -47,20 +47,20 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text_static(backgroundLabel, "");
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
 }
 
 Steps::~Steps() {
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-bool Steps::Refresh() {
-
+void Steps::Refresh() {
   stepsCount = motionController.NbSteps();
 
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -20);
 
   lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
-
-  return running;
 }

@@ -15,24 +15,23 @@ namespace Pinetime {
     namespace Screens {
 
       class Steps : public Screen {
-        public:
-          Steps(DisplayApp* app, Controllers::MotionController& motionController, Controllers::Settings &settingsController);
-          ~Steps() override;
+      public:
+        Steps(DisplayApp* app, Controllers::MotionController& motionController, Controllers::Settings& settingsController);
+        ~Steps() override;
 
-          bool Refresh() override;
-          
+        void Refresh() override;
 
-        private:          
+      private:
+        Controllers::MotionController& motionController;
+        Controllers::Settings& settingsController;
 
-          Controllers::MotionController& motionController;
-          Controllers::Settings& settingsController;
+        lv_obj_t* lSteps;
+        lv_obj_t* lStepsIcon;
+        lv_obj_t* stepsArc;
 
-          lv_obj_t * lSteps;
-          lv_obj_t * lStepsIcon;
-          lv_obj_t * stepsArc;
+        uint32_t stepsCount;
 
-          uint32_t stepsCount;
-
+        lv_task_t* taskRefresh;
       };
     }
   }

@@ -14,13 +14,15 @@ namespace Pinetime {
         Meter(DisplayApp* app);
         ~Meter() override;
 
-        bool Refresh() override;
+        void Refresh() override;
 
       private:
         lv_style_t style_lmeter;
         lv_obj_t* lmeter;
 
         uint32_t value = 0;
+
+        lv_task_t* taskRefresh;
       };
     }
   }

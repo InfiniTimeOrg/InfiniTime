@@ -128,12 +128,12 @@ void QuickSettings::UpdateScreen() {
 }
 
 void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
-  if (object == btn2 && event == LV_EVENT_PRESSED) {
+  if (object == btn2 && event == LV_EVENT_CLICKED) {
 
     running = false;
     app->StartApp(Apps::FlashLight, DisplayApp::FullRefreshDirections::None);
 
-  } else if (object == btn1 && event == LV_EVENT_PRESSED) {
+  } else if (object == btn1 && event == LV_EVENT_CLICKED) {
 
     brightness.Step();
     lv_label_set_text_static(btn1_lvl, brightness.GetIcon());
@@ -150,13 +150,9 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
       lv_label_set_text_static(btn3_lvl, Symbols::notificationsOff);
     }
 
-  } else if (object == btn4 && event == LV_EVENT_PRESSED) {
+  } else if (object == btn4 && event == LV_EVENT_CLICKED) {
     running = false;
     settingsController.SetSettingsMenu(0);
     app->StartApp(Apps::Settings, DisplayApp::FullRefreshDirections::Up);
   }
-}
-
-bool QuickSettings::Refresh() {
-  return running;
 }

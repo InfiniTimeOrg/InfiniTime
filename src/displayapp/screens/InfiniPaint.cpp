@@ -5,18 +5,11 @@
 using namespace Pinetime::Applications::Screens;
 
 InfiniPaint::InfiniPaint(Pinetime::Applications::DisplayApp* app, Pinetime::Components::LittleVgl& lvgl) : Screen(app), lvgl {lvgl} {
-  app->SetTouchMode(DisplayApp::TouchModes::Polling);
   std::fill(b, b + bufferSize, selectColor);
 }
 
 InfiniPaint::~InfiniPaint() {
-  // Reset the touchmode
-  app->SetTouchMode(DisplayApp::TouchModes::Gestures);
   lv_obj_clean(lv_scr_act());
-}
-
-bool InfiniPaint::Refresh() {
-  return running;
 }
 
 bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {

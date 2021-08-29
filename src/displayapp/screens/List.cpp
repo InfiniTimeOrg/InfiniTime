@@ -98,13 +98,8 @@ List::~List() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool List::Refresh() {
-
-  return running;
-}
-
 void List::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
-  if (event == LV_EVENT_RELEASED) {
+  if (event == LV_EVENT_CLICKED) {
     for (int i = 0; i < MAXLISTITEMS; i++) {
       if (apps[i] != Apps::None && object == itemApps[i]) {
         app->StartApp(apps[i], DisplayApp::FullRefreshDirections::Up);

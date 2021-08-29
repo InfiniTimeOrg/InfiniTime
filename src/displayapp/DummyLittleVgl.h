@@ -32,6 +32,9 @@ namespace Pinetime {
       }
       void SetNewTapEvent(uint16_t x, uint16_t y) {
       }
+      void SetNewTouchPoint(uint16_t x, uint16_t y, bool contact) {
+
+      }
     };
   }
 }
