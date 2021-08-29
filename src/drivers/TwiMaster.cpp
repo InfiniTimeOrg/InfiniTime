@@ -8,45 +8,39 @@ using namespace Pinetime::Drivers;
 // TODO use shortcut to automatically send STOP when receive LastTX, for example
 // TODO use DMA/IRQ
 
-TwiMaster::TwiMaster(const Modules module, const Parameters& params) : module {module}, params {params} {
+TwiMaster::TwiMaster(NRF_TWIM_Type* module, uint32_t frequency, uint8_t pinSda, uint8_t pinScl)
+  : module {module}, frequency {frequency}, pinSda {pinSda}, pinScl {pinScl} {
+}
+
+void TwiMaster::ConfigurePins() const {
+  NRF_GPIO->PIN_CNF[pinScl] =
+    (GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) |
+    (GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
+    (GPIO_PIN_CNF_PULL_Disabled << GPIO_PIN_CNF_PULL_Pos) |
+    (GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos) |
+    (GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
+
+  NRF_GPIO->PIN_CNF[pinSda] =
+    (GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) |
+    (GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
+    (GPIO_PIN_CNF_PULL_Disabled << GPIO_PIN_CNF_PULL_Pos) |
+    (GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos) |
+    (GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
 }
 
 void TwiMaster::Init() {
-  if(mutex == nullptr)
+  if (mutex == nullptr) {
     mutex = xSemaphoreCreateBinary();
-  
-  NRF_GPIO->PIN_CNF[params.pinScl] =
-    ((uint32_t) GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) | ((uint32_t) GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos) | ((uint32_t) GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
-
-  NRF_GPIO->PIN_CNF[params.pinSda] =
-    ((uint32_t) GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) | ((uint32_t) GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos) | ((uint32_t) GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
-
-  switch (module) {
-    case Modules::TWIM1:
-      twiBaseAddress = NRF_TWIM1;
-      break;
-    default:
-      return;
   }
 
-  switch (static_cast<Frequencies>(params.frequency)) {
-    case Frequencies::Khz100:
-      twiBaseAddress->FREQUENCY = TWIM_FREQUENCY_FREQUENCY_K100;
-      break;
-    case Frequencies::Khz250:
-      twiBaseAddress->FREQUENCY = TWIM_FREQUENCY_FREQUENCY_K250;
-      break;
-    case Frequencies::Khz400:
-      twiBaseAddress->FREQUENCY = TWIM_FREQUENCY_FREQUENCY_K400;
-      break;
-  }
+  ConfigurePins();
 
-  twiBaseAddress->PSEL.SCL = params.pinScl;
-  twiBaseAddress->PSEL.SDA = params.pinSda;
+  twiBaseAddress = module;
+
+  twiBaseAddress->FREQUENCY = frequency;
+
+  twiBaseAddress->PSEL.SCL = pinScl;
+  twiBaseAddress->PSEL.SDA = pinSda;
   twiBaseAddress->EVENTS_LASTRX = 0;
   twiBaseAddress->EVENTS_STOPPED = 0;
   twiBaseAddress->EVENTS_LASTTX = 0;
@@ -57,19 +51,15 @@ void TwiMaster::Init() {
 
   twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 
-  /* // IRQ
-     NVIC_ClearPendingIRQ(_IRQn);
-     NVIC_SetPriority(_IRQn, 2);
-     NVIC_EnableIRQ(_IRQn);
-   */
-
   xSemaphoreGive(mutex);
 }
 
 TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t* data, size_t size) {
   xSemaphoreTake(mutex, portMAX_DELAY);
+  Wakeup();
   auto ret = Write(deviceAddress, &registerAddress, 1, false);
   ret = Read(deviceAddress, data, size, true);
+  Sleep();
   xSemaphoreGive(mutex);
   return ret;
 }
@@ -77,9 +67,11 @@ TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t registerAdd
 TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t* data, size_t size) {
   ASSERT(size <= maxDataSize);
   xSemaphoreTake(mutex, portMAX_DELAY);
+  Wakeup();
   internalBuffer[0] = registerAddress;
   std::memcpy(internalBuffer + 1, data, size);
   auto ret = Write(deviceAddress, internalBuffer, size + 1, true);
+  Sleep();
   xSemaphoreGive(mutex);
   return ret;
 }
@@ -170,17 +162,11 @@ TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, const uint8_t* dat
 }
 
 void TwiMaster::Sleep() {
-  while (twiBaseAddress->ENABLE != 0) {
-    twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Disabled << TWIM_ENABLE_ENABLE_Pos);
-  }
-  nrf_gpio_cfg_default(6);
-  nrf_gpio_cfg_default(7);
-  NRF_LOG_INFO("[TWIMASTER] Sleep");
+  twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Disabled << TWIM_ENABLE_ENABLE_Pos);
 }
 
 void TwiMaster::Wakeup() {
-  Init();
-  NRF_LOG_INFO("[TWIMASTER] Wakeup");
+  twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 }
 
 /* Sometimes, the TWIM device just freeze and never set the event EVENTS_LASTTX.
@@ -190,20 +176,10 @@ void TwiMaster::Wakeup() {
  * */
 void TwiMaster::FixHwFreezed() {
   NRF_LOG_INFO("I2C device frozen, reinitializing it!");
-  // Disable I²C
+
   uint32_t twi_state = NRF_TWI1->ENABLE;
-  twiBaseAddress->ENABLE = TWIM_ENABLE_ENABLE_Disabled << TWI_ENABLE_ENABLE_Pos;
 
-  NRF_GPIO->PIN_CNF[params.pinScl] =
-    ((uint32_t) GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) | ((uint32_t) GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos) | ((uint32_t) GPIO_PIN_CNF_DRIVE_S0S1 << GPIO_PIN_CNF_DRIVE_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
+  Sleep();
 
-  NRF_GPIO->PIN_CNF[params.pinSda] =
-    ((uint32_t) GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) | ((uint32_t) GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_PULL_Pullup << GPIO_PIN_CNF_PULL_Pos) | ((uint32_t) GPIO_PIN_CNF_DRIVE_S0S1 << GPIO_PIN_CNF_DRIVE_Pos) |
-    ((uint32_t) GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
-
-  // Re-enable I²C
   twiBaseAddress->ENABLE = twi_state;
 }

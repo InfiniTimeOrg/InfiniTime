@@ -14,7 +14,7 @@ namespace Pinetime {
 
         ~Timer() override;
 
-        bool Refresh() override;
+        void Refresh() override;
 
         void SetDone();
 
@@ -33,6 +33,7 @@ namespace Pinetime {
         lv_obj_t* time;
         lv_obj_t* btnPlayPause;
         lv_obj_t* buttons[4];
+        lv_task_t* taskRefresh;
       };
     }
   }

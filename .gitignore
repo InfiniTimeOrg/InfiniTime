@@ -4,7 +4,7 @@
 
 # CMake
 cmake-build-*
-cmake-*
+cmake-*/
 CMakeFiles
 **/CMakeCache.txt
 cmake_install.cmake

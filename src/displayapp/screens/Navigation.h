@@ -35,7 +35,7 @@ namespace Pinetime {
         Navigation(DisplayApp* app, Pinetime::Controllers::NavigationService& nav);
         ~Navigation() override;
 
-        bool Refresh() override;
+        void Refresh() override;
 
       private:
         lv_obj_t* imgFlag;
@@ -49,6 +49,8 @@ namespace Pinetime {
         std::string narrative;
         std::string manDist;
         int progress;
+
+        lv_task_t* taskRefresh;
       };
     }
   }

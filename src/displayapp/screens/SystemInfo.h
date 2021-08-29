@@ -30,7 +30,6 @@ namespace Pinetime {
                             Pinetime::Drivers::WatchdogView& watchdog,
                             Pinetime::Controllers::MotionController& motionController);
         ~SystemInfo() override;
-        bool Refresh() override;
         bool OnTouchEvent(TouchEvents event) override;
 
       private:

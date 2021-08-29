@@ -50,10 +50,13 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : S
   } else {
     lv_obj_set_style_local_value_str(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Symbols::play);
   }
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+
   Refresh();
 }
 
 Timer::~Timer() {
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
@@ -61,7 +64,7 @@ void Timer::UpdateTime() {
   lv_label_set_text_fmt(time, "%02d:%02d", minutes, seconds);
 }
 
-bool Timer::Refresh() {
+void Timer::Refresh() {
   if (timerController.IsRunning()) {
     remainingTime = timerController.GetTimeRemaining() / 1000 + 1;
     if (remainingTime.IsUpdated()) {
@@ -70,7 +73,6 @@ bool Timer::Refresh() {
       UpdateTime();
     }
   }
-  return running;
 }
 
 void Timer::SetButtonsHidden(bool hidden) {

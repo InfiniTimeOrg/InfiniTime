@@ -5,6 +5,7 @@
 #include <libraries/gpiote/app_gpiote.h>
 #include <libraries/timer/app_timer.h>
 #include <softdevice/common/nrf_sdh.h>
+#include <nrf_delay.h>
 
 // nimble
 #define min // workaround: nimble's min/max macros conflict with libstdc++
@@ -43,6 +44,7 @@
 #include "drivers/TwiMaster.h"
 #include "drivers/Cst816s.h"
 #include "systemtask/SystemTask.h"
+#include "touchhandler/TouchHandler.h"
 
 #if NRF_LOG_ENABLED
   #include "logging/NrfLogger.h"
@@ -82,8 +84,7 @@ Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
 // respecting correct timings. According to erratas heet, this magic value makes it run
 // at ~390Khz with correct timings.
 static constexpr uint32_t MaxTwiFrequencyWithoutHardwareBug {0x06200000};
-Pinetime::Drivers::TwiMaster twiMaster {Pinetime::Drivers::TwiMaster::Modules::TWIM1,
-                                        Pinetime::Drivers::TwiMaster::Parameters {MaxTwiFrequencyWithoutHardwareBug, pinTwiSda, pinTwiScl}};
+Pinetime::Drivers::TwiMaster twiMaster {NRF_TWIM1, MaxTwiFrequencyWithoutHardwareBug, pinTwiSda, pinTwiScl};
 Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
 #ifdef PINETIME_IS_RECOVERY
 static constexpr bool isFactory = true;
@@ -118,6 +119,7 @@ Pinetime::Drivers::WatchdogView watchdogView(watchdog);
 Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::TimerController timerController;
+Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);
 
 Pinetime::Controllers::FS fs {spiNorFlash};
 Pinetime::Controllers::Settings settingsController {fs};
@@ -136,7 +138,8 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               settingsController,
                                               motorController,
                                               motionController,
-                                              timerController);
+                                              timerController,
+                                              touchHandler);
 
 Pinetime::System::SystemTask systemTask(spi,
                                         lcd,
@@ -158,7 +161,8 @@ Pinetime::System::SystemTask systemTask(spi,
                                         heartRateController,
                                         displayApp,
                                         heartRateApp,
-                                        fs);
+                                        fs,
+                                        touchHandler);
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if (pin == pinTouchIrq) {
@@ -300,6 +304,20 @@ int main(void) {
 
   nrf_drv_clock_init();
 
+  // Unblock i2c?
+  nrf_gpio_cfg(pinTwiScl,
+               NRF_GPIO_PIN_DIR_OUTPUT,
+               NRF_GPIO_PIN_INPUT_DISCONNECT,
+               NRF_GPIO_PIN_NOPULL,
+               NRF_GPIO_PIN_S0D1,
+               NRF_GPIO_PIN_NOSENSE);
+  nrf_gpio_pin_set(pinTwiScl);
+  for (uint8_t i = 0; i < 16; i++) {
+    nrf_gpio_pin_toggle(pinTwiScl);
+    nrf_delay_us(5);
+  }
+  nrf_gpio_cfg_default(pinTwiScl);
+
   debounceTimer = xTimerCreate("debounceTimer", 200, pdFALSE, (void*) 0, DebounceTimerCallback);
   debounceChargeTimer = xTimerCreate("debounceTimerCharge", 200, pdFALSE, (void*) 0, DebounceTimerChargeCallback);
 
@@ -309,6 +327,7 @@ int main(void) {
   lvgl.Init();
 
   systemTask.Start();
+
   nimble_port_init();
 
   vTaskStartScheduler();
