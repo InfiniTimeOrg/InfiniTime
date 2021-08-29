@@ -71,8 +71,8 @@ void NimbleController::Init() {
   ASSERT(res == 0);
   res = ble_svc_gap_device_name_set(deviceName);
   ASSERT(res == 0);
-  rc = ble_svc_gap_device_appearance_set(0xC2);
-  ASSERT(rc == 0);
+  res = ble_svc_gap_device_appearance_set(0xC2);
+  ASSERT(res == 0);
   Pinetime::Controllers::Ble::BleAddress address;
   res = ble_hs_id_copy_addr(addrType, address.data(), nullptr);
   ASSERT(res == 0);
