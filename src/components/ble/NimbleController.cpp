@@ -87,9 +87,6 @@ void NimbleController::StartAdvertising() {
   if (bleController.IsConnected() || ble_gap_conn_active() || ble_gap_adv_active())
     return;
 
-  ble_svc_gap_device_name_set(deviceName);
-  ble_svc_gap_device_appearance_set(0xC2);
-
   /* set adv parameters */
   struct ble_gap_adv_params adv_params;
   struct ble_hs_adv_fields fields;
