@@ -19,9 +19,7 @@ namespace Pinetime {
         BatteryInfo(DisplayApp* app, Pinetime::Controllers::Battery& batteryController);
         ~BatteryInfo() override;
 
-        bool Refresh() override;
-
-        void UpdateScreen();
+        void Refresh() override;
 
       private:
         Pinetime::Controllers::Battery& batteryController;
@@ -31,7 +29,7 @@ namespace Pinetime {
         lv_obj_t* charging_bar;
         lv_obj_t* status;
 
-        lv_task_t* taskUpdate;
+        lv_task_t* taskRefresh;
 
         uint8_t batteryPercent = 0;
         uint16_t batteryVoltage = 0;

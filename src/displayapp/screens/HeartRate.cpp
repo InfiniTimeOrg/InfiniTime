@@ -64,14 +64,17 @@ HeartRate::HeartRate(Pinetime::Applications::DisplayApp* app,
   UpdateStartStopButton(isHrRunning);
   if (isHrRunning)
     systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
 }
 
 HeartRate::~HeartRate() {
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
-bool HeartRate::Refresh() {
+void HeartRate::Refresh() {
 
   auto state = heartRateController.State();
   switch (state) {
@@ -86,8 +89,6 @@ bool HeartRate::Refresh() {
 
   lv_label_set_text(label_status, ToString(state));
   lv_obj_align(label_status, label_hr, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
-
-  return running;
 }
 
 void HeartRate::OnStartStopEvent(lv_event_t event) {
