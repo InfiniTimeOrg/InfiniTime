@@ -80,12 +80,8 @@ SettingDisplay::~SettingDisplay() {
   settingsController.SaveSettings();
 }
 
-bool SettingDisplay::Refresh() {
-  return running;
-}
-
 void SettingDisplay::UpdateSelected(lv_obj_t* object, lv_event_t event) {
-  if (event == LV_EVENT_VALUE_CHANGED) {
+  if (event == LV_EVENT_CLICKED) {
     for (int i = 0; i < optionsTotal; i++) {
       if (object == cbOption[i]) {
         lv_checkbox_set_checked(cbOption[i], true);

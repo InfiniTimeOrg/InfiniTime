@@ -24,7 +24,7 @@ namespace Pinetime {
                                Modes mode);
         ~Notifications() override;
 
-        bool Refresh() override;
+        void Refresh() override;
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
         class NotificationItem {
@@ -79,6 +79,8 @@ namespace Pinetime {
         lv_obj_t* timeoutLine = nullptr;
         uint32_t timeoutTickCountStart;
         uint32_t timeoutTickCountEnd;
+
+        lv_task_t* taskRefresh;
       };
     }
   }

@@ -14,7 +14,6 @@ namespace Pinetime {
       public:
         Twos(DisplayApp* app);
         ~Twos() override;
-        bool Refresh() override;
 
         bool OnTouchEvent(TouchEvents event) override;
 

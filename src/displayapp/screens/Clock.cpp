@@ -50,11 +50,6 @@ Clock::~Clock() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool Clock::Refresh() {
-  screen->Refresh();
-  return running;
-}
-
 bool Clock::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return screen->OnTouchEvent(event);
 }

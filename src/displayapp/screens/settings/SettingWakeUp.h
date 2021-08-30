@@ -15,7 +15,6 @@ namespace Pinetime {
         SettingWakeUp(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingWakeUp() override;
 
-        bool Refresh() override;
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
       private:
