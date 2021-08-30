@@ -27,13 +27,16 @@ Paddle::Paddle(Pinetime::Applications::DisplayApp* app, Pinetime::Components::Li
   lv_obj_set_style_local_bg_color(ball, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_radius(ball, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_obj_set_size(ball, ballSize, ballSize);
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Paddle::~Paddle() {
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-bool Paddle::Refresh() {
+void Paddle::Refresh() {
   ballX += dx;
   ballY += dy;
 
@@ -65,7 +68,6 @@ bool Paddle::Refresh() {
     }
   }
   lv_label_set_text_fmt(points, "%04d", score);
-  return running;
 }
 
 bool Paddle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {

@@ -63,10 +63,6 @@ FirmwareValidation::~FirmwareValidation() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool FirmwareValidation::Refresh() {
-  return running;
-}
-
 void FirmwareValidation::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
   if (object == buttonValidate && event == LV_EVENT_CLICKED) {
     validator.Validate();

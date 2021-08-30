@@ -30,11 +30,6 @@ namespace Pinetime {
           lv_obj_clean(lv_scr_act());
         }
 
-        bool Refresh() override {
-          running = current->Refresh();
-          return running;
-        }
-
         bool OnTouchEvent(TouchEvents event) override {
 
           if (mode == ScreenListModes::UpDown) {

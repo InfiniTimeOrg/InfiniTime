@@ -17,7 +17,7 @@ namespace Pinetime {
         Motion(DisplayApp* app, Controllers::MotionController& motionController);
         ~Motion() override;
 
-        bool Refresh() override;
+        void Refresh() override;
 
       private:
         Controllers::MotionController& motionController;
@@ -28,6 +28,7 @@ namespace Pinetime {
         lv_obj_t* label;
 
         lv_obj_t* labelStep;
+        lv_task_t* taskRefresh;
       };
     }
   }

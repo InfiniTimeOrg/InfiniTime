@@ -42,6 +42,7 @@
 #include "displayapp/screens/settings/SettingWakeUp.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
+#include "displayapp/screens/settings/SettingPineTimeStyle.h"
 
 #include "libs/lv_conf.h"
 
@@ -272,7 +273,7 @@ void DisplayApp::Refresh() {
 }
 
 void DisplayApp::RunningState() {
-  if (!currentScreen->Refresh()) {
+  if (!currentScreen->IsRunning()) {
     LoadApp(returnToApp, returnDirection);
   }
   lv_task_handler();
@@ -365,6 +366,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::SettingSteps:
       currentScreen = std::make_unique<Screens::SettingSteps>(this, settingsController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingPineTimeStyle:
+      currentScreen = std::make_unique<Screens::SettingPineTimeStyle>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::BatteryInfo:

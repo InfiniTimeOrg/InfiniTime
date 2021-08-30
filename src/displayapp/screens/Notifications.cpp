@@ -52,15 +52,18 @@ Notifications::Notifications(DisplayApp* app,
       timeoutTickCountEnd = timeoutTickCountStart + (5 * 1024);
     }
   }
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Notifications::~Notifications() {
+  lv_task_del(taskRefresh);
   // make sure we stop any vibrations before exiting
   Controllers::MotorController::StopRinging();
   lv_obj_clean(lv_scr_act());
 }
 
-bool Notifications::Refresh() {
+void Notifications::Refresh() {
   if (mode == Modes::Preview && timeoutLine != nullptr) {
     auto tick = xTaskGetTickCount();
     int32_t pos = 240 - ((tick - timeoutTickCountStart) / ((timeoutTickCountEnd - timeoutTickCountStart) / 240));
@@ -70,7 +73,7 @@ bool Notifications::Refresh() {
     timeoutLinePoints[1].x = pos;
     lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
   }
-  return running && currentItem->IsRunning();
+  running = currentItem->IsRunning();
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {

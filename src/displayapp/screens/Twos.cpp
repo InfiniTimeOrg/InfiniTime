@@ -102,10 +102,6 @@ Twos::~Twos() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool Twos::Refresh() {
-  return running;
-}
-
 bool Twos::placeNewTile() {
   std::vector<std::pair<int, int>> availableCells;
   for (int row = 0; row < 4; row++) {
