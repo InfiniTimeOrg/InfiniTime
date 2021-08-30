@@ -22,6 +22,7 @@ namespace Pinetime {
       Navigation,
       StopWatch,
       Metronome,
+      ScoreApp,
       Motion,
       Steps,
       QuickSettings,
