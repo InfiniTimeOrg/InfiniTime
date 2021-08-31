@@ -30,14 +30,20 @@ ScoreApp::widget_t ScoreApp::_createButton(lv_align_t alignment, uint8_t x, uint
 ScoreApp::ScoreApp(DisplayApp* app) : Screen(app) {
     
   btnMyScore = _createButton(LV_ALIGN_IN_TOP_LEFT, 0, 0, scoreWidth, scoreHeight, "0");
-  btnYourScore = _createButton(LV_ALIGN_IN_BOTTOM_LEFT, 0, 0, scoreWidth, scoreHeight, "0");
+  lv_obj_set_style_local_text_font(btnMyScore.label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_obj_set_style_local_text_color(btnMyScore.label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+
+  btnYourScore = _createButton(LV_ALIGN_IN_TOP_LEFT, 0, +scoreHeight, scoreWidth, scoreHeight, "0");
+  lv_obj_set_style_local_text_font(btnYourScore.label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_obj_set_style_local_text_color(btnYourScore.label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+
   lv_label_set_text_fmt(btnMyScore.label, "%d", myScore);
   lv_label_set_text_fmt(btnYourScore.label, "%d", yourScore);
   
   btnMyScoreMinus = _createButton(LV_ALIGN_IN_TOP_RIGHT, 0, 0, minusWidth, minusHeight, "-1");
-  btnYourScoreMinus = _createButton(LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0, minusWidth, minusHeight, "-1");
+  btnYourScoreMinus = _createButton(LV_ALIGN_IN_TOP_RIGHT, 0, displayHeight-minusHeight, minusWidth, minusHeight, "-1");
   
-  btnReset = _createButton(LV_ALIGN_CENTER, 20, 0, resetWidth, resetHeight, "Rst");
+  btnReset = _createButton(LV_ALIGN_IN_TOP_RIGHT, 0, displayHeight/2, resetWidth, resetHeight, "Rst");
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
@@ -54,20 +60,21 @@ void ScoreApp::Refresh() {
 
 void ScoreApp::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    if (obj == btnMyScore.button)
-        myScore++;
+    if (obj == btnMyScore.button) {
+      myScore < 255 ? myScore++ : 255; // manage overflow in oneliner
+    }
     else if (obj == btnYourScore.button) {
-      yourScore++;
+      yourScore < 255 ? yourScore++ : 255;
     }
     else if (obj == btnMyScoreMinus.button) {
-      myScore--;
+     myScore > 0 ? myScore-- : 0; // manage underflow
     }
     else if (obj == btnYourScoreMinus.button) {
-      yourScore--;
+      yourScore > 0 ? yourScore-- : 0;
     }
     else if (obj == btnReset.button) {
       myScore = 0;
-        yourScore = 0;
+      yourScore = 0;
     }
   }
 }

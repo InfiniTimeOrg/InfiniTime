@@ -21,17 +21,17 @@ namespace Pinetime::Applications::Screens {
     void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
 
   private:
-    static constexpr uint8_t displayWidth = 240;
-    static constexpr uint8_t displayHeight = 240;
+    static constexpr uint16_t displayWidth = 240;
+    static constexpr uint16_t displayHeight = 240;
 
-    static constexpr uint8_t scoreWidth = (displayWidth * 60) / 100;
-    static constexpr uint8_t scoreHeight = displayHeight / 4;
+    static constexpr uint16_t scoreWidth = (displayWidth * 60) / 100;
+    static constexpr uint16_t scoreHeight = displayHeight / 2;
 
-    static constexpr uint8_t minusWidth = displayWidth - scoreWidth;
-    static constexpr uint8_t minusHeight = displayHeight / 4;
+    static constexpr uint16_t minusWidth = displayWidth - scoreWidth;
+    static constexpr uint16_t minusHeight = displayHeight / 4;
 
-    static constexpr uint8_t  resetWidth = displayWidth - scoreWidth;
-    static constexpr uint8_t  resetHeight = displayHeight / 4;
+    static constexpr uint16_t resetWidth = displayWidth - scoreWidth;
+    static constexpr uint16_t resetHeight = displayHeight / 4;
 
     struct widget_t {
       lv_obj_t* button;
