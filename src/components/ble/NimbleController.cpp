@@ -159,6 +159,9 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
 
       if (event->connect.status != 0) {
         /* Connection failed; resume advertising. */
+        currentTimeClient.Reset();
+        alertNotificationClient.Reset();
+        connectionHandle = BLE_HS_CONN_HANDLE_NONE;
         bleController.Disconnect();
         StartAdvertising();
       } else {
