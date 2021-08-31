@@ -1,18 +1,7 @@
+#include "ScoreApp.h"
 #include "Screen.h"
 #include "Symbols.h"
 #include "lvgl/lvgl.h"
-
-#define SCREEN_WIDTH 240
-#define SCREEN_HEIGHT 240
-
-#define SCORE_WIDTH (SCREEN_WIDTH*60)/100
-#define SCORE_HEIGHT SCREEN_HEIGHT/4
-
-#define MINUS_WIDTH SCREEN_WIDTH-SCORE_WIDTH
-#define MINUS_HEIGHT SCREEN_HEIGHT/4
-
-#define RESET_WIDTH SCREEN_WIDTH-SCORE_WIDTH
-#define RESET_HEIGHT SCREEN_HEIGHT/4
 
 using namespace Pinetime::Applications::Screens;
 
@@ -39,15 +28,15 @@ lv_obj_t* ScoreApp::_createButton(lv_align_t alignment, uint8_t x, uint8_t y, ui
 
 ScoreApp::ScoreApp(DisplayApp* app) : Screen(app) {
     
-  btnMyScore = _createButton(LV_ALIGN_IN_TOP_LEFT, 0, 0, SCORE_WIDTH, SCORE_HEIGHT, "0");
-  btnYourScore = _createButton(LV_ALIGN_IN_BOTTOM_LEFT, 0, 0, SCORE_WIDTH, SCORE_HEIGHT, "0");
+  btnMyScore = _createButton(LV_ALIGN_IN_TOP_LEFT, 0, 0, scoreWidth, scoreHeight, "0");
+  btnYourScore = _createButton(LV_ALIGN_IN_BOTTOM_LEFT, 0, 0, scoreWidth, scoreHeight, "0");
   lv_label_set_text_fmt(btnMyScore, "%d", myScore);
   lv_label_set_text(btnYourScore, "%d", yourScore);
   
-  btnMyScoreMinus = _createButton(LV_ALIGN_IN_TOP_RIGHT, 0, 0, MINUS_WIDTH, MINUS_HEIGHT, "-1");
-  btnYourScoreMinus = _createButton(LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0, MINUS_WIDTH, MINUS_HEIGHT, "-1");
+  btnMyScoreMinus = _createButton(LV_ALIGN_IN_TOP_RIGHT, 0, 0, minusWidth, minusHeight, "-1");
+  btnYourScoreMinus = _createButton(LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0, minusWidth, minusHeight, "-1");
   
-  btnReset = _createButton(LV_ALIGN_IN_MID_RIGHT, 0, 0, RESET_WIDTH, RESET_HEIGHT, "Rst");
+  btnReset = _createButton(LV_ALIGN_IN_MID_RIGHT, 0, 0, resetWidth, resetHeight, "Rst");
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
