@@ -406,6 +406,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Music.cpp
         displayapp/screens/Navigation.cpp
         displayapp/screens/Metronome.cpp
+        displayapp/screens/ScoreApp.cpp
         displayapp/screens/Motion.cpp
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp
@@ -610,6 +611,7 @@ set(INCLUDE_FILES
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
         displayapp/screens/Metronome.h
+        displayapp/screens/ScoreApp.h
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
         displayapp/Colors.h
