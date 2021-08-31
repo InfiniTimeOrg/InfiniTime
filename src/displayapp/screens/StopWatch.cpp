@@ -48,7 +48,6 @@ static void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
 StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
   : Screen(app),
     systemTask {systemTask},
-    running {true},
     currentState {States::Init},
     startTime {},
     oldTimeElapsed {},
@@ -101,9 +100,12 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
   lv_obj_set_style_local_text_color(lapTwoText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   lv_obj_align(lapTwoText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 55);
   lv_label_set_text(lapTwoText, "");
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 StopWatch::~StopWatch() {
+  lv_task_del(taskRefresh);
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }
@@ -149,7 +151,7 @@ void StopWatch::pause() {
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
-bool StopWatch::Refresh() {
+void StopWatch::Refresh() {
   if (currentState == States::Running) {
     timeElapsed = calculateDelta(startTime, xTaskGetTickCount());
     currentTimeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
@@ -157,11 +159,10 @@ bool StopWatch::Refresh() {
     lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
     lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
   }
-  return running;
 }
 
 void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
-  if (event != LV_EVENT_PRESSED) {
+  if (event != LV_EVENT_CLICKED) {
     return;
   }
   if (currentState == States::Init) {
@@ -174,7 +175,7 @@ void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
 }
 
 void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
-  if (event != LV_EVENT_PRESSED) {
+  if (event != LV_EVENT_CLICKED) {
     return;
   }
   // If running, then this button is used to save laps
@@ -196,8 +197,7 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
 bool StopWatch::OnButtonPushed() {
   if (currentState == States::Running) {
     pause();
-  } else {
-    running = false;
+    return true;
   }
-  return true;
+  return false;
 }
