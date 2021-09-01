@@ -26,7 +26,7 @@ ScoreApp::widget_t ScoreApp::createButton(lv_align_t alignment, uint8_t x, uint8
   return wdg;
 }
 
-ScoreApp::ScoreApp(DisplayApp* app) : Screen(app){
+ScoreApp::ScoreApp(DisplayApp* app, Controllers::MotorController& motorController) : Screen(app),  motorController {motorController}{
     
   score1Wdg = createButton(LV_ALIGN_IN_TOP_LEFT, 0, 0, scoreWidth, scoreHeight, "0");
   lv_obj_set_style_local_text_font(score1Wdg.label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -35,16 +35,17 @@ ScoreApp::ScoreApp(DisplayApp* app) : Screen(app){
   score2Wdg = createButton(LV_ALIGN_IN_TOP_LEFT, 0, +scoreHeight, scoreWidth, scoreHeight, "0");
   lv_obj_set_style_local_text_font(score2Wdg.label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(score2Wdg.label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  
+  sets1Wdg = createButton(LV_ALIGN_IN_TOP_LEFT, 5, 5, 20, 20, "0");
+  sets2Wdg = createButton(LV_ALIGN_IN_TOP_LEFT, 5, 5+scoreHeight, 20, 20, "0"); // TODO(toitoinou) align with score2
 
-  lv_label_set_text_fmt(score1Wdg.label, "%d", score1.points);
-  lv_label_set_text_fmt(score2Wdg.label, "%d", score2.points);
+  lv_label_set_text_fmt(score1Wdg.label, "%d", score[0].points);
+  lv_label_set_text_fmt(score2Wdg.label, "%d", score[1].points);
   
   score1SecondaryWdg = createButton(LV_ALIGN_IN_TOP_RIGHT, 0, 0, minusWidth, minusHeight, "-1");
   score2SecondaryWdg = createButton(LV_ALIGN_IN_TOP_RIGHT, 0, displayHeight-minusHeight, minusWidth, minusHeight, "-1");
   
   resetWdg = createButton(LV_ALIGN_IN_TOP_RIGHT, 0, displayHeight/2, resetWidth, resetHeight, "Rst");
-
-  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 ScoreApp::~ScoreApp() {
@@ -53,50 +54,75 @@ ScoreApp::~ScoreApp() {
 }
 
 void ScoreApp::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
-  if (event == LV_EVENT_CLICKED) {
+  if (event == LV_EVENT_LONG_PRESSED) {
+    mode = ScoreApp::BADMINTON;
+    motorController.RunForDuration(30);
+  }
+  else if (event == LV_EVENT_CLICKED) {
     if (obj == score1Wdg.button) {
-      score1 = scoreMainButtonAction(score1);
+      scoreMainButtonAction(0);
     }
     else if (obj == score2Wdg.button) {
-      score2 = scoreMainButtonAction(score2);
+      scoreMainButtonAction(1);
     }
     else if (obj == score1SecondaryWdg.button) {
-     score1 = scoreSecondaryButtonAction(score1);
+     scoreSecondaryButtonAction(0);
     }
     else if (obj == score2SecondaryWdg.button) {
-      score2 = scoreSecondaryButtonAction(score2);
+      scoreSecondaryButtonAction(1);
     }
     else if (obj == resetWdg.button) {
-      score1 = {0, 0, 0};
-      score2 = {0, 0, 0};
+      score[0] = {0, 0, 0};
+      score[1] = {0, 0, 0};
     }
-    lv_label_set_text_fmt(score1Wdg.label, "%d", score1.points);
-    lv_label_set_text_fmt(score2Wdg.label, "%d", score2.points);
+    lv_label_set_text_fmt(score1Wdg.label, "%d", score[0].points);
+    lv_label_set_text_fmt(score2Wdg.label, "%d", score[1].points);
+    lv_label_set_text_fmt(sets1Wdg.label, "%d", score[0].sets);
+    lv_label_set_text_fmt(sets2Wdg.label, "%d", score[1].sets);
   }
 }
 
-ScoreApp::score_t ScoreApp::scoreMainButtonAction(ScoreApp::score_t score){
+  void ScoreApp::scoreMainButtonAction(uint8_t scoreId){
   switch (mode) {
     case(ScoreApp::BADMINTON):
-      score.points < 21 ? score.points++ : 0;
+      if (score[scoreId].points < 21) {
+        score[scoreId].points++;
+      } else { // end of set
+        // save current score
+        // TODO(toitoinou) will not work to retrieve 2 sets, arrays could be used to store evolution of the game
+        for (uint8_t i : {0, 1}){
+          score[i].oldPoints = score[i].points;
+          score[i].oldSets = score[i].sets;
+          score[i].points = 0;
+        }
+        score[scoreId].sets++;
+      }
+      break;
     case(ScoreApp::SIMPLE_COUNTER):
     default:
-      score.points < 255 ? score.points++ : 255; // manage overflow
+      score[scoreId].points < 255 ? score[scoreId].points++ : 255; // manage overflow
       break;
   }
-   
-
-   return score;  
 }
 
-ScoreApp::score_t ScoreApp::scoreSecondaryButtonAction(ScoreApp::score_t score){
+  void ScoreApp::scoreSecondaryButtonAction(uint8_t scoreId){
   switch (mode) {
     case ScoreApp::BADMINTON:
-      score.points > 0 ? score.points-- : 0; // manage underflow
+      if (score[scoreId].points > 0){
+        score[scoreId].points--;
+      } else {
+        // retrieve all old points
+        if ( (score[0].points == 0) && (score[1].points == 0) ) {
+          for (uint8_t i : {0, 1}){
+            score[i].points = score[i].oldPoints;
+            score[i].sets = score[i].oldSets;
+          }
+        } // else nothing is done
+      }
+    break;
     case(ScoreApp::SIMPLE_COUNTER):
     default:
-      score.points > 0 ? score.points-- : 0; // manage underflow
-      break;
+      score[scoreId].points > 0 ? score[scoreId].points-- : 0; // manage underflow
+    break;
   }
-  return score;
 }

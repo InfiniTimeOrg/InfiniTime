@@ -2,6 +2,7 @@
 
 #include "Screen.h"
 #include "../LittleVgl.h"
+#include "components/motor/MotorController.h"
 #include "systemtask/SystemTask.h"
 #include <lvgl/src/lv_core/lv_obj.h>
 
@@ -14,7 +15,7 @@ namespace Pinetime::Applications::Screens {
     // TODO(toitoinou): Modes (tennis, other sports, magic the gathering/generic card game...)
     // enum class Modes { Normal, Done };
 
-    explicit ScoreApp(DisplayApp* app);
+    explicit ScoreApp(DisplayApp* app, Controllers::MotorController& motorController);
 
     ~ScoreApp() override;
 
@@ -33,6 +34,8 @@ namespace Pinetime::Applications::Screens {
     static constexpr uint16_t resetWidth = displayWidth - scoreWidth;
     static constexpr uint16_t resetHeight = displayHeight / 4;
 
+    Controllers::MotorController& motorController;
+
     struct widget_t {
       lv_obj_t* button;
       lv_obj_t* label;
@@ -45,21 +48,26 @@ namespace Pinetime::Applications::Screens {
 
     struct score_t {
       uint8_t points;
+      uint8_t oldPoints;
       uint8_t game; // only for tennis
-      uint8_t set;
+      uint8_t sets;
+      uint8_t oldSets;
     };
 
-    score_t score1 = {0, 0, 0};
-    score_t score2 = {0, 0, 0};
+    score_t score[2] = {0, 0, 0, 0};
     mode_t mode = SIMPLE_COUNTER;
 
     widget_t createButton(lv_align_t alignment, uint8_t x, uint8_t y, uint8_t width, uint8_t height, const char text[]);
     
-    ScoreApp::score_t scoreMainButtonAction(ScoreApp::score_t score);
-    ScoreApp::score_t scoreSecondaryButtonAction(ScoreApp::score_t score);
+    // TODO(toitoinou): instead of a general type use something specific to prevent out of bounds errors
+    void scoreMainButtonAction(uint8_t scoreId);
+    void scoreSecondaryButtonAction(uint8_t scoreId);
 
     // TODO(toitoinou): Mode button not printed and not used
-    widget_t score1Wdg, score2Wdg, score1SecondaryWdg, score2SecondaryWdg, btnMode, resetWdg;
+    widget_t score1Wdg, score2Wdg;
+    widget_t score1SecondaryWdg, score2SecondaryWdg;
+    widget_t sets1Wdg, sets2Wdg; // TODO(toitoinou) use a label only instead of a widget/button
+    widget_t btnMode, resetWdg;
 
     lv_task_t* taskRefresh;
   };
