@@ -37,14 +37,29 @@ namespace Pinetime::Applications::Screens {
       lv_obj_t* button;
       lv_obj_t* label;
     };
+    typedef enum {
+      SIMPLE_COUNTER,
+      BADMINTON,
+      TENNIS,
+    } mode_t;
 
-    uint8_t myScore = 0;
-    uint8_t yourScore = 0;
+    struct score_t {
+      uint8_t points;
+      uint8_t game; // only for tennis
+      uint8_t set;
+    };
+
+    score_t score1 = {0, 0, 0};
+    score_t score2 = {0, 0, 0};
+    mode_t mode = SIMPLE_COUNTER;
 
     widget_t createButton(lv_align_t alignment, uint8_t x, uint8_t y, uint8_t width, uint8_t height, const char text[]);
+    
+    ScoreApp::score_t scoreMainButtonAction(ScoreApp::score_t score);
+    ScoreApp::score_t scoreSecondaryButtonAction(ScoreApp::score_t score);
 
-    // TODO: Mode button not printed and not used
-    widget_t btnMyScore, btnYourScore, btnMyScoreMinus, btnYourScoreMinus, btnMode, btnReset;
+    // TODO(toitoinou): Mode button not printed and not used
+    widget_t score1Wdg, score2Wdg, score1SecondaryWdg, score2SecondaryWdg, btnMode, resetWdg;
 
     lv_task_t* taskRefresh;
   };
