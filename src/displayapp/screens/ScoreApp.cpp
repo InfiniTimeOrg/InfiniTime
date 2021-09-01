@@ -112,6 +112,7 @@ void ScoreApp::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
             score[i].points = 0;
           }
           score[scoreId].sets++;
+          motorController.RunForDuration(30);
         }
         break;
       case(ScoreApp::SIMPLE_COUNTER):
