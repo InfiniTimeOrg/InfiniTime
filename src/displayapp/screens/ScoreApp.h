@@ -1,18 +1,20 @@
 #pragma once
 
 #include "Screen.h"
-#include "systemtask/SystemTask.h"
 #include "../LittleVgl.h"
+#include "systemtask/SystemTask.h"
 #include <lvgl/src/lv_core/lv_obj.h>
+
+
 
 namespace Pinetime::Applications::Screens {
 
   class ScoreApp : public Screen {
   public:
-    // TODO: Modes (tennis, other sports, magic the gathering/generic card game...)
+    // TODO(toitoinou): Modes (tennis, other sports, magic the gathering/generic card game...)
     // enum class Modes { Normal, Done };
 
-    ScoreApp(DisplayApp* app);
+    explicit ScoreApp(DisplayApp* app);
 
     ~ScoreApp() override;
 
