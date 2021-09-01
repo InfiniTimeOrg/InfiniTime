@@ -16,8 +16,6 @@ namespace Pinetime::Applications::Screens {
 
     ~ScoreApp() override;
 
-    void Refresh() override;
-
     void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
 
   private:
@@ -41,7 +39,7 @@ namespace Pinetime::Applications::Screens {
     uint8_t myScore = 0;
     uint8_t yourScore = 0;
 
-    widget_t _createButton(lv_align_t alignment, uint8_t x, uint8_t y, uint8_t width, uint8_t height, const char text[]);
+    widget_t createButton(lv_align_t alignment, uint8_t x, uint8_t y, uint8_t width, uint8_t height, const char text[]);
 
     // TODO: Mode button not printed and not used
     widget_t btnMyScore, btnYourScore, btnMyScoreMinus, btnYourScoreMinus, btnMode, btnReset;
