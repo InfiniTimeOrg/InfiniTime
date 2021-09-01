@@ -25,6 +25,9 @@ namespace Pinetime {
         Colors ColorBar = Colors::Teal;
         Colors ColorBG = Colors::Black;
       };
+      struct FlashlightColor {
+        Colors ColorFlashlight = Colors::White;
+      };
 
       Settings(Pinetime::Controllers::FS& fs);
 
@@ -66,6 +69,15 @@ namespace Pinetime {
       };
       Colors GetPTSColorBG() const {
         return settings.PTS.ColorBG;
+      };
+
+      void SetFlashlightColor(Colors colorFlashlight) {
+        if (colorFlashlight != settings.Flash.ColorFlashlight)
+          settingsChanged = true;
+        settings.Flash.ColorFlashlight = colorFlashlight;
+      };
+      Colors GetFlashlightColor() const {
+        return settings.Flash.ColorFlashlight;
       };
 
       void SetAppMenu(uint8_t menu) {
@@ -175,6 +187,7 @@ namespace Pinetime {
         uint8_t clockFace = 0;
 
         PineTimeStyle PTS;
+        FlashlightColor Flash;
 
         std::bitset<3> wakeUpMode {0};
 

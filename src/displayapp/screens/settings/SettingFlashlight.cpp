@@ -4,6 +4,7 @@
 #include "displayapp/Messages.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include <displayapp/Colors.h>
 
 using namespace Pinetime::Applications::Screens;
 
@@ -30,7 +31,7 @@ SettingFlashlight::SettingFlashlight(Pinetime::Applications::DisplayApp* app, Pi
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Flashlight Color");
+  lv_label_set_text_static(title, "Flashlight");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 10, 15);
 
@@ -42,34 +43,34 @@ SettingFlashlight::SettingFlashlight(Pinetime::Applications::DisplayApp* app, Pi
 
   optionsTotal = 0;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], "White");
+  lv_checkbox_set_text_static(cbOption[optionsTotal], " White");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetScreenTimeOut() == 5000) {
+  if (settingsController.GetFlashlightColor() == Pinetime::Controllers::Settings::Colors::White) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
   optionsTotal++;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], "Red");
+  lv_checkbox_set_text_static(cbOption[optionsTotal], " Red");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetScreenTimeOut() == 15000) {
+  if (settingsController.GetFlashlightColor() == Pinetime::Controllers::Settings::Colors::Red) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
   optionsTotal++;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], "Green");
+  lv_checkbox_set_text_static(cbOption[optionsTotal], " Green");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetScreenTimeOut() == 20000) {
+  if (settingsController.GetFlashlightColor() == Pinetime::Controllers::Settings::Colors::Green) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
   optionsTotal++;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], "Blue");
+  lv_checkbox_set_text_static(cbOption[optionsTotal], " Blue");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetScreenTimeOut() == 30000) {
+  if (settingsController.GetFlashlightColor() == Pinetime::Controllers::Settings::Colors::Blue) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
   optionsTotal++;
@@ -80,27 +81,23 @@ SettingFlashlight::~SettingFlashlight() {
   settingsController.SaveSettings();
 }
 
-bool SettingFlashlight::Refresh() {
-  return running;
-}
-
 void SettingFlashlight::UpdateSelected(lv_obj_t* object, lv_event_t event) {
-  if (event == LV_EVENT_VALUE_CHANGED) {
+  if (event == LV_EVENT_CLICKED) {
     for (int i = 0; i < optionsTotal; i++) {
       if (object == cbOption[i]) {
         lv_checkbox_set_checked(cbOption[i], true);
 
         if (i == 0) {
-          settingsController.SetScreenTimeOut(5000);
+          settingsController.SetFlashlightColor(Pinetime::Controllers::Settings::Colors::White);
         };
         if (i == 1) {
-          settingsController.SetScreenTimeOut(15000);
+          settingsController.SetFlashlightColor(Pinetime::Controllers::Settings::Colors::Red);
         };
         if (i == 2) {
-          settingsController.SetScreenTimeOut(20000);
+          settingsController.SetFlashlightColor(Pinetime::Controllers::Settings::Colors::Green);
         };
         if (i == 3) {
-          settingsController.SetScreenTimeOut(30000);
+          settingsController.SetFlashlightColor(Pinetime::Controllers::Settings::Colors::Blue);
         };
 
         app->PushMessage(Applications::Display::Messages::UpdateTimeOut);

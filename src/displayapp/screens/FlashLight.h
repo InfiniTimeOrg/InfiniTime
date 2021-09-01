@@ -6,14 +6,22 @@
 #include "systemtask/SystemTask.h"
 #include "components/brightness/BrightnessController.h"
 
+
 namespace Pinetime {
+
+  namespace Controllers {
+    class Settings;
+  }
 
   namespace Applications {
     namespace Screens {
 
       class FlashLight : public Screen {
       public:
-        FlashLight(DisplayApp* app, System::SystemTask& systemTask, Controllers::BrightnessController& brightness);
+        FlashLight(DisplayApp* app,
+                   System::SystemTask& systemTask,
+                   Controllers::BrightnessController& brightness,
+                   Controllers::Settings& settingsController);
         ~FlashLight() override;
 
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
@@ -22,6 +30,7 @@ namespace Pinetime {
       private:
         Pinetime::System::SystemTask& systemTask;
         Controllers::BrightnessController& brightness;
+        Controllers::Settings& settingsController;
 
         lv_obj_t* flashLight;
         lv_obj_t* backgroundAction;

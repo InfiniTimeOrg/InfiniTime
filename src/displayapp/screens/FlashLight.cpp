@@ -1,6 +1,8 @@
 #include "FlashLight.h"
 #include "../DisplayApp.h"
 #include "Symbols.h"
+#include "components/settings/Settings.h"
+#include <displayapp/Colors.h>
 
 using namespace Pinetime::Applications::Screens;
 
@@ -13,16 +15,17 @@ namespace {
 
 FlashLight::FlashLight(Pinetime::Applications::DisplayApp* app,
                        System::SystemTask& systemTask,
-                       Controllers::BrightnessController& brightness)
+                       Controllers::BrightnessController& brightness,
+                       Controllers::Settings& settingsController)
   : Screen(app),
     systemTask {systemTask},
-    brightness {brightness}
+    brightness {brightness},
+    settingsController {settingsController} {
 
-{
   brightness.Backup();
   brightness.Set(Controllers::BrightnessController::Levels::High);
   // Set the background
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFF0000));
+  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetFlashlightColor()));
 
   flashLight = lv_label_create(lv_scr_act(), NULL);
   lv_obj_set_style_local_text_color(flashLight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
@@ -55,11 +58,11 @@ void FlashLight::OnClickEvent(lv_obj_t* obj, lv_event_t event) {
       isOn = !isOn;
 
       if (isOn) {
-        lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFF0000));
+        lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetFlashlightColor()));
         lv_obj_set_style_local_text_color(flashLight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
       } else {
         lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-        lv_obj_set_style_local_text_color(flashLight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFF0000));
+        lv_obj_set_style_local_text_color(flashLight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetFlashlightColor()));
       }
     }
   }
