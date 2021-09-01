@@ -46,6 +46,9 @@ ScoreApp::ScoreApp(DisplayApp* app, Controllers::MotorController& motorControlle
   score2SecondaryWdg = createButton(LV_ALIGN_IN_TOP_RIGHT, 0, displayHeight-minusHeight, minusWidth, minusHeight, "-1");
   
   resetWdg = createButton(LV_ALIGN_IN_TOP_RIGHT, 0, displayHeight/2, resetWidth, resetHeight, "Rst");
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+
 }
 
 ScoreApp::~ScoreApp() {
