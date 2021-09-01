@@ -31,8 +31,8 @@ namespace Pinetime::Applications::Screens {
     static constexpr uint16_t minusWidth = displayWidth - scoreWidth;
     static constexpr uint16_t minusHeight = displayHeight / 4;
 
-    static constexpr uint16_t resetWidth = displayWidth - scoreWidth;
-    static constexpr uint16_t resetHeight = displayHeight / 4;
+    static constexpr uint16_t modeWidth = displayWidth - scoreWidth;
+    static constexpr uint16_t modeHeight = displayHeight / 4;
 
     Controllers::MotorController& motorController;
 
@@ -40,10 +40,11 @@ namespace Pinetime::Applications::Screens {
       lv_obj_t* button;
       lv_obj_t* label;
     };
-    typedef enum {
-      SIMPLE_COUNTER,
-      BADMINTON,
-      TENNIS,
+    typedef enum : uint8_t {
+      SIMPLE_COUNTER = 0,
+      BADMINTON = 1,
+      TENNIS = 2,
+      RESET = 3,
     } mode_t;
 
     struct score_t {
@@ -63,10 +64,9 @@ namespace Pinetime::Applications::Screens {
     void scoreMainButtonAction(uint8_t scoreId);
     void scoreSecondaryButtonAction(uint8_t scoreId);
 
-    // TODO(toitoinou): Mode button not printed and not used
     widget_t score1Wdg, score2Wdg;
     widget_t score1SecondaryWdg, score2SecondaryWdg;
     widget_t sets1Wdg, sets2Wdg; // TODO(toitoinou) use a label only instead of a widget/button
-    widget_t btnMode, resetWdg;
+    lv_obj_t *modeDropdownWdg;
   };
 }
