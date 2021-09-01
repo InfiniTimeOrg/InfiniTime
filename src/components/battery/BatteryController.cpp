@@ -101,13 +101,13 @@ static const uint8_t LINE_SEGMENT_COUNT = 7;
 // The voltages (mV) at the endpoints of the line segments. Any two consecutive
 // values represent the start and end voltage of a line segment.
 static const uint16_t voltageOffsets[LINE_SEGMENT_COUNT + 1] {
-  4180,
-  4084,
-  3912,
-  3763,
-  3721,
-  3672,
-  3613,
+  4157,
+  4063,
+  3882,
+  3747,
+  3716,
+  3678,
+  3583,
   3500
 };
 
@@ -116,25 +116,25 @@ static const uint16_t voltageOffsets[LINE_SEGMENT_COUNT + 1] {
 // the start of each line segment.
 static const float percentageOffsets[LINE_SEGMENT_COUNT] {
   100.000,
-  96.362,
-  76.664,
-  51.908,
-  40.905,
-  19.343,
-  9.139
+  95.197,
+  70.429,
+  48.947,
+  35.158,
+  18.971,
+  5.801
   //0.000
 };
 
 // The pre-calculated slopes (in battery percentage points per millivolt) of the
 // line segments.
 static const float percentageSlopes[LINE_SEGMENT_COUNT] {
-  0.031940,
-  0.119893,
-  0.166148,
-  0.261976,
-  0.440041,
-  0.191537,
-  0.076271
+  0.05109,
+  0.13684,
+  0.15913,
+  0.44481,
+  0.42595,
+  0.13863,
+  0.06989
 };
 
 uint8_t Battery::GetBatteryPercentageFromVoltage(uint16_t voltage) {
