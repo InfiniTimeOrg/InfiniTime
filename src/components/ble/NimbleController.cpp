@@ -151,7 +151,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       StartAdvertising();
       break;
 
-    case BLE_GAP_EVENT_CONNECT: {
+    case BLE_GAP_EVENT_CONNECT:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_CONNECT");
 
       /* A new connection was established or a connection attempt failed. */
@@ -170,7 +170,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
         systemTask.PushMessage(Pinetime::System::Messages::BleConnected);
         // Service discovery is deferred via systemtask
       }
-    } break;
+      break;
 
     case BLE_GAP_EVENT_DISCONNECT:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_DISCONNECT");
@@ -207,7 +207,8 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       break;
 
     case BLE_GAP_EVENT_MTU:
-      NRF_LOG_INFO("mtu update event; conn_handle=%d cid=%d mtu=%d\n", event->mtu.conn_handle, event->mtu.channel_id, event->mtu.value);
+      NRF_LOG_INFO("mtu update event; conn_handle=%d cid=%d mtu=%d\n",
+        event->mtu.conn_handle, event->mtu.channel_id, event->mtu.value);
       break;
 
     case BLE_GAP_EVENT_REPEAT_PAIRING: {
@@ -224,8 +225,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       /* Return BLE_GAP_REPEAT_PAIRING_RETRY to indicate that the host should
        * continue with the pairing operation.
        */
-    }
-      return BLE_GAP_REPEAT_PAIRING_RETRY;
+    } return BLE_GAP_REPEAT_PAIRING_RETRY;
 
     case BLE_GAP_EVENT_NOTIFY_RX: {
       /* Peer sent us a notification or indication. */
@@ -260,7 +260,7 @@ uint16_t NimbleController::connHandle() {
 }
 
 void NimbleController::NotifyBatteryLevel(uint8_t level) {
-  if(connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
+  if (connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
     batteryInformationService.NotifyBatteryLevel(connectionHandle, level);
   }
 }
