@@ -73,7 +73,6 @@ void Notifications::Refresh() {
     timeoutLinePoints[1].x = pos;
     lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
   }
-  running = currentItem->IsRunning();
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
