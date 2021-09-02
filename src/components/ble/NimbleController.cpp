@@ -250,7 +250,9 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
 }
 
 void NimbleController::StartDiscovery() {
-  serviceDiscovery.StartDiscovery(connectionHandle);
+  if (connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
+    serviceDiscovery.StartDiscovery(connectionHandle);
+  }
 }
 
 uint16_t NimbleController::connHandle() {
