@@ -68,5 +68,7 @@ namespace Pinetime::Applications::Screens {
     widget_t score1SecondaryWdg, score2SecondaryWdg;
     widget_t sets1Wdg, sets2Wdg; // TODO(toitoinou) use a label only instead of a widget/button
     lv_obj_t *modeDropdownWdg;
+
+    lv_task_t* taskRefresh;
   };
 }
