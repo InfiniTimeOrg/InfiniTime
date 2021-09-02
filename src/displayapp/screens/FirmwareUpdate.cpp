@@ -30,14 +30,16 @@ FirmwareUpdate::FirmwareUpdate(Pinetime::Applications::DisplayApp* app, Pinetime
   lv_label_set_text(percentLabel, "Waiting...");
   lv_obj_set_auto_realign(percentLabel, true);
   lv_obj_align(percentLabel, bar1, LV_ALIGN_OUT_TOP_MID, 0, 60);
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   startTime = xTaskGetTickCount();
 }
 
 FirmwareUpdate::~FirmwareUpdate() {
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-bool FirmwareUpdate::Refresh() {
+void FirmwareUpdate::Refresh() {
   switch (bleController.State()) {
     default:
     case Pinetime::Controllers::Ble::FirmwareUpdateStates::Idle:
@@ -73,7 +75,6 @@ bool FirmwareUpdate::Refresh() {
       }
       break;
   }
-  return running;
 }
 
 void FirmwareUpdate::DisplayProgression() const {

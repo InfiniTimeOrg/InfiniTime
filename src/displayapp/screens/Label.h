@@ -12,11 +12,7 @@ namespace Pinetime {
         Label(uint8_t screenID, uint8_t numScreens, DisplayApp* app, lv_obj_t* labelText);
         ~Label() override;
 
-        bool Refresh() override;
-
       private:
-        bool running = true;
-
         lv_obj_t* labelText = nullptr;
         lv_point_t pageIndicatorBasePoints[2];
         lv_point_t pageIndicatorPoints[2];

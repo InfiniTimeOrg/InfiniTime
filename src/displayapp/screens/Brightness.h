@@ -12,7 +12,6 @@ namespace Pinetime {
       public:
         Brightness(DisplayApp* app, Controllers::BrightnessController& brightness);
         ~Brightness() override;
-        bool Refresh() override;
 
         bool OnTouchEvent(TouchEvents event) override;
 

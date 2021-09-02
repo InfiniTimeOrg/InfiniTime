@@ -16,7 +16,7 @@ namespace Pinetime {
         Paddle(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl);
         ~Paddle() override;
 
-        bool Refresh() override;
+        void Refresh() override;
 
         bool OnTouchEvent(TouchEvents event) override;
         bool OnTouchEvent(uint16_t x, uint16_t y) override;
@@ -40,6 +40,8 @@ namespace Pinetime {
         lv_obj_t* paddle;
         lv_obj_t* ball;
         lv_obj_t* background;
+
+        lv_task_t* taskRefresh;
       };
     }
   }

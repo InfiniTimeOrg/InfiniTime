@@ -33,12 +33,10 @@ namespace Pinetime {
                          Controllers::MotionController& motionController);
         ~WatchFaceDigital() override;
 
-        bool Refresh() override;
-
-        void OnObjectEvent(lv_obj_t* pObj, lv_event_t i);
+        void Refresh() override;
 
       private:
-        char displayedChar[5];
+        char displayedChar[5] {};
 
         uint16_t currentYear = 1970;
         Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
@@ -63,7 +61,6 @@ namespace Pinetime {
         lv_obj_t* batteryPlug;
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
-        lv_obj_t* heartbeatBpm;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
@@ -75,6 +72,8 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
+
+        lv_task_t* taskRefresh;
       };
     }
   }

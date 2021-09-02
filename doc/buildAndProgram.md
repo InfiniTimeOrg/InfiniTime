@@ -163,7 +163,7 @@ J-Link>g
 ```
 
 #### JLink RTT
-RTT is a feature from Segger's JLink devices that allows bidirectionnal communication between the debugger and the target. This feature can be used to get the logs from the embedded software on the development computer.
+RTT is a feature from Segger's JLink devices that allows bidirectional communication between the debugger and the target. This feature can be used to get the logs from the embedded software on the development computer.
 
  - Program the MCU with the code (see above)
  - Start JLinkExe

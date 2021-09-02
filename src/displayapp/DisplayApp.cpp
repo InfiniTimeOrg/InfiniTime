@@ -42,6 +42,7 @@
 #include "displayapp/screens/settings/SettingWakeUp.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
+#include "displayapp/screens/settings/SettingPineTimeStyle.h"
 
 #include "libs/lv_conf.h"
 
@@ -51,6 +52,28 @@ using namespace Pinetime::Applications::Display;
 namespace {
   static inline bool in_isr(void) {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
+  }
+
+  TouchEvents ConvertGesture(Pinetime::Drivers::Cst816S::Gestures gesture) {
+    switch (gesture) {
+      case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
+        return TouchEvents::Tap;
+      case Pinetime::Drivers::Cst816S::Gestures::LongPress:
+        return TouchEvents::LongTap;
+      case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
+        return TouchEvents::DoubleTap;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
+        return TouchEvents::SwipeRight;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
+        return TouchEvents::SwipeLeft;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
+        return TouchEvents::SwipeDown;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
+        return TouchEvents::SwipeUp;
+      case Pinetime::Drivers::Cst816S::Gestures::None:
+      default:
+        return TouchEvents::None;
+    }
   }
 }
 
@@ -66,7 +89,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Controllers::MotionController& motionController,
-                       Pinetime::Controllers::TimerController& timerController)
+                       Pinetime::Controllers::TimerController& timerController,
+                       Pinetime::Controllers::TouchHandler& touchHandler)
   : lcd {lcd},
     lvgl {lvgl},
     touchPanel {touchPanel},
@@ -79,7 +103,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     settingsController {settingsController},
     motorController {motorController},
     motionController {motionController},
-    timerController {timerController} {
+    timerController {timerController},
+    touchHandler {touchHandler} {
 }
 
 void DisplayApp::Start() {
@@ -140,8 +165,15 @@ void DisplayApp::Refresh() {
   lastWakeTime = xTaskGetTickCount();
   if (messageReceived) {
     switch (msg) {
-      case Messages::GoToSleep:
+      case Messages::DimScreen:
+        // Backup brightness is the brightness to return to after dimming or sleeping
         brightnessController.Backup();
+        brightnessController.Set(Controllers::BrightnessController::Levels::Low);
+        break;
+      case Messages::RestoreBrightness:
+        brightnessController.Restore();
+        break;
+      case Messages::GoToSleep:
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
           brightnessController.Lower();
           vTaskDelay(100);
@@ -170,7 +202,7 @@ void DisplayApp::Refresh() {
         break;
       case Messages::TimerDone:
         if (currentApp == Apps::Timer) {
-          auto *timer = static_cast<Screens::Timer*>(currentScreen.get());
+          auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
           timer->setDone();
         } else {
           LoadApp(Apps::Timer, DisplayApp::FullRefreshDirections::Down);
@@ -180,7 +212,7 @@ void DisplayApp::Refresh() {
         if (state != States::Running) {
           break;
         }
-        auto gesture = OnTouchEvent();
+        auto gesture = ConvertGesture(touchHandler.GestureGet());
         if (gesture == TouchEvents::None) {
           break;
         }
@@ -204,7 +236,11 @@ void DisplayApp::Refresh() {
             }
           } else if (returnTouchEvent == gesture) {
             LoadApp(returnToApp, returnDirection);
+            brightnessController.Set(settingsController.GetBrightness());
+            brightnessController.Backup();
           }
+        } else {
+          touchHandler.CancelTap();
         }
       } break;
       case Messages::ButtonPushed:
@@ -213,6 +249,8 @@ void DisplayApp::Refresh() {
         } else {
           if (!currentScreen->OnButtonPushed()) {
             LoadApp(returnToApp, returnDirection);
+            brightnessController.Set(settingsController.GetBrightness());
+            brightnessController.Backup();
           }
         }
         break;
@@ -227,23 +265,18 @@ void DisplayApp::Refresh() {
     }
   }
 
-  if(nextApp != Apps::None) {
+  if (nextApp != Apps::None) {
     LoadApp(nextApp, nextDirection);
     nextApp = Apps::None;
   }
 
-  if (state != States::Idle && touchMode == TouchModes::Polling) {
-    auto info = touchPanel.GetTouchInfo();
-    if (info.action == 2) { // 2 = contact
-      if (!currentScreen->OnTouchEvent(info.x, info.y)) {
-        lvgl.SetNewTapEvent(info.x, info.y);
-      }
-    }
+  if (touchHandler.IsTouching()) {
+    currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
   }
 }
 
 void DisplayApp::RunningState() {
-  if (!currentScreen->Refresh()) {
+  if (!currentScreen->IsRunning()) {
     LoadApp(returnToApp, returnDirection);
   }
   lv_task_handler();
@@ -261,6 +294,7 @@ void DisplayApp::ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction
 }
 
 void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) {
+  touchHandler.CancelTap();
   currentScreen.reset(nullptr);
   SetFullRefresh(direction);
 
@@ -295,12 +329,12 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
 
     case Apps::Notifications:
       currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask->nimble().alertService(), Screens::Notifications::Modes::Normal);
+        this, notificationManager, systemTask->nimble().alertService(), motorController, Screens::Notifications::Modes::Normal);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::NotificationsPreview:
       currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask->nimble().alertService(), Screens::Notifications::Modes::Preview);
+        this, notificationManager, systemTask->nimble().alertService(), motorController, Screens::Notifications::Modes::Preview);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::Timer:
@@ -337,13 +371,17 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::SettingSteps>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
+    case Apps::SettingPineTimeStyle:
+      currentScreen = std::make_unique<Screens::SettingPineTimeStyle>(this, settingsController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SysInfo:
-      currentScreen =
-        std::make_unique<Screens::SystemInfo>(this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController);
+      currentScreen = std::make_unique<Screens::SystemInfo>(
+        this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::FlashLight:
@@ -373,6 +411,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Metronome:
       currentScreen = std::make_unique<Screens::Metronome>(this, motorController, *systemTask);
+      ReturnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::None);
       break;
     case Apps::Motion:
       currentScreen = std::make_unique<Screens::Motion>(this, motionController);
@@ -388,7 +427,7 @@ void DisplayApp::IdleState() {
 }
 
 void DisplayApp::PushMessage(Messages msg) {
-  if(in_isr()) {
+  if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken;
     xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
@@ -398,35 +437,6 @@ void DisplayApp::PushMessage(Messages msg) {
   } else {
     xQueueSend(msgQueue, &msg, portMAX_DELAY);
   }
-}
-
-TouchEvents DisplayApp::OnTouchEvent() {
-  auto info = touchPanel.GetTouchInfo();
-  if (info.isTouch) {
-    switch (info.gesture) {
-      case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        if (touchMode == TouchModes::Gestures) {
-          lvgl.SetNewTapEvent(info.x, info.y);
-        }
-        return TouchEvents::Tap;
-      case Pinetime::Drivers::Cst816S::Gestures::LongPress:
-        return TouchEvents::LongTap;
-      case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
-        return TouchEvents::DoubleTap;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
-        return TouchEvents::SwipeRight;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
-        return TouchEvents::SwipeLeft;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
-        return TouchEvents::SwipeDown;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
-        return TouchEvents::SwipeUp;
-      case Pinetime::Drivers::Cst816S::Gestures::None:
-      default:
-        return TouchEvents::None;
-    }
-  }
-  return TouchEvents::None;
 }
 
 void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
@@ -454,12 +464,8 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
   }
 }
 
-void DisplayApp::SetTouchMode(DisplayApp::TouchModes mode) {
-  touchMode = mode;
-}
-
 void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
-  if(systemTask != nullptr)
+  if (systemTask != nullptr)
     systemTask->PushMessage(message);
 }
 

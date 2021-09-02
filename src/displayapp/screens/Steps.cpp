@@ -5,13 +5,10 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Steps::Steps(
-    Pinetime::Applications::DisplayApp *app,
-    Controllers::MotionController& motionController,
-    Controllers::Settings &settingsController)
-      : Screen(app),
-      motionController{motionController},
-      settingsController{settingsController} {
+Steps::Steps(Pinetime::Applications::DisplayApp* app,
+             Controllers::MotionController& motionController,
+             Controllers::Settings& settingsController)
+  : Screen(app), motionController {motionController}, settingsController {settingsController} {
 
   stepsArc = lv_arc_create(lv_scr_act(), nullptr);
 
@@ -34,12 +31,12 @@ Steps::Steps(
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -20);
 
-  lv_obj_t * lstepsL = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_t* lstepsL = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lstepsL, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
   lv_label_set_text_static(lstepsL, "Steps");
   lv_obj_align(lstepsL, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
-  lv_obj_t * lstepsGoal = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_t* lstepsGoal = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lstepsGoal, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
   lv_label_set_text_fmt(lstepsGoal, "Goal\n%lu", settingsController.GetStepsGoal());
   lv_label_set_align(lstepsGoal, LV_LABEL_ALIGN_CENTER);
@@ -50,20 +47,20 @@ Steps::Steps(
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text_static(backgroundLabel, "");
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
 }
 
 Steps::~Steps() {
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-bool Steps::Refresh() {
-
+void Steps::Refresh() {
   stepsCount = motionController.NbSteps();
-  
+
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -20);
-  
-  lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
 
-  return running;
+  lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
 }
