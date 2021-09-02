@@ -56,12 +56,15 @@ ScoreApp::ScoreApp(DisplayApp* app, Controllers::MotorController& motorControlle
   lv_dropdown_set_selected(modeDropdownWdg, 0);
   lv_dropdown_set_show_selected(modeDropdownWdg, true);
 
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+
   // lv_dropdown_set_text(modeDropdownWdg, "mode");
 
   // TODO(toitoinou): add active mode icon in empty area
 }
 
 ScoreApp::~ScoreApp() {
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
