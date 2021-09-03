@@ -32,10 +32,6 @@ namespace Pinetime {
         return isPowerPresent;
       }
 
-      bool IsFull() const {
-        return isFull;
-      }
-
     private:
       static Battery* instance;
       nrf_saadc_value_t saadc_value;

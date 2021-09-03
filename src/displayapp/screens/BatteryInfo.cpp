@@ -63,7 +63,7 @@ void BatteryInfo::Refresh() {
   if (batteryController.IsCharging()) {
     lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
     lv_label_set_text_static(status, "Charging");
-  } else if (batteryController.IsFull()) {
+  } else if (batteryPercent == 100) {
     lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_BLUE);
     lv_label_set_text_static(status, "Fully charged");
   } else if (batteryPercent < 10) {
