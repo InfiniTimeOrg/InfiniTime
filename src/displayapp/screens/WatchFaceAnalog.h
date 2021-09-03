@@ -72,6 +72,7 @@ namespace Pinetime {
 
         lv_obj_t* label_date_day;
         lv_obj_t* batteryIcon;
+        lv_obj_t* batteryPlug;
         lv_obj_t* notificationIcon;
 
         Controllers::DateTime& dateTimeController;
