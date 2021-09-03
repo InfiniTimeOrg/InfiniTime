@@ -69,6 +69,11 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_label_set_text(batteryIcon, Symbols::batteryHalf);
   lv_obj_align(batteryIcon, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
+  batteryPlug = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFF0000));
+  lv_label_set_text(batteryPlug, Symbols::plug);
+  lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_IN_TOP_RIGHT, 20, 0);
+
   notificationIcon = lv_label_create(lv_scr_act(), NULL);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
@@ -179,9 +184,18 @@ void WatchFaceAnalog::UpdateClock() {
 void WatchFaceAnalog::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
-    auto batteryPercent = batteryPercentRemaining.Get();
-    lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+    if (batteryController.IsCharging()) {
+      auto isCharging = batteryController.IsCharging() || batteryController.IsPowerPresent();
+      lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
+      lv_obj_realign(batteryPlug);
+      lv_label_set_text(batteryIcon, "");
+    } else {
+      auto batteryPercent = batteryPercentRemaining.Get();
+      lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+      lv_label_set_text(batteryPlug, "");
+    }
   }
+  lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_IN_TOP_RIGHT, 20, 0);
 
   notificationState = notificationManager.AreNewNotificationsAvailable();
 
