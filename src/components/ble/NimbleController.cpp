@@ -122,6 +122,8 @@ void NimbleController::StartAdvertising() {
 
   adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
   adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
+  adv_params.itvl_min = advInterval;
+  adv_params.itvl_max = advInterval + 100;
 
   fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
   fields.uuids128 = &dfuServiceUuid;
@@ -148,6 +150,8 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
     case BLE_GAP_EVENT_ADV_COMPLETE:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_ADV_COMPLETE");
       NRF_LOG_INFO("reason=%d; status=%d", event->adv_complete.reason, event->connect.status);
+      if (advInterval < 7100)
+        advInterval += 500;
       StartAdvertising();
       break;
 
@@ -181,6 +185,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       alertNotificationClient.Reset();
       connectionHandle = BLE_HS_CONN_HANDLE_NONE;
       bleController.Disconnect();
+      advInterval = 100;
       StartAdvertising();
       break;
 
