@@ -6,7 +6,9 @@ The .VS Code folder contains configuration files for developing InfiniTime with 
 
 To support as many setups as possible the VS Code configuration files expect there to be certain environment variables to be set.
 
- Variable | Description | Example
+Environment variables can be set in the Cmake Tools extension settings by changing the `cmake.configureEnvironment` setting.
+
+ Variable | Description | Example (Linux)
 ----------|-------------|--------
 **ARM_NONE_EABI_TOOLCHAIN_PATH**|path to the toolchain directory|`export ARM_NONE_EABI_TOOLCHAIN_PATH=/opt/gcc-arm-none-eabi-9-2020-q2-update`
 **NRF5_SDK_PATH**|path to the NRF52 SDK|`export NRF5_SDK_PATH=/opt/nRF5_SDK_15.3.0_59ac345`
