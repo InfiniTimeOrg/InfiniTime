@@ -233,6 +233,9 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
 
+          if (!bleController.IsConnected())
+            nimbleController.RestartFastAdv();
+
           isSleeping = false;
           isWakingUp = false;
           isDimmed = false;

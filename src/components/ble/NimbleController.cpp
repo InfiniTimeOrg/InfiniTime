@@ -122,6 +122,15 @@ void NimbleController::StartAdvertising() {
 
   adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
   adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
+  /* fast advertise for 30 sec */
+  if (fastAdvCount < 15) {
+    adv_params.itvl_min = 32;
+    adv_params.itvl_max = 47;
+    fastAdvCount++;
+  } else {
+    adv_params.itvl_min = 1636;
+    adv_params.itvl_max = 1651;
+  }
 
   fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
   fields.uuids128 = &dfuServiceUuid;
@@ -139,7 +148,7 @@ void NimbleController::StartAdvertising() {
   rc = ble_gap_adv_rsp_set_fields(&rsp_fields);
   ASSERT(rc == 0);
 
-  rc = ble_gap_adv_start(addrType, NULL, 5000, &adv_params, GAPEventCallback, this);
+  rc = ble_gap_adv_start(addrType, NULL, 2000, &adv_params, GAPEventCallback, this);
   ASSERT(rc == 0);
 }
 
@@ -163,6 +172,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
         alertNotificationClient.Reset();
         connectionHandle = BLE_HS_CONN_HANDLE_NONE;
         bleController.Disconnect();
+        fastAdvCount = 0;
         StartAdvertising();
       } else {
         connectionHandle = event->connect.conn_handle;
@@ -181,6 +191,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       alertNotificationClient.Reset();
       connectionHandle = BLE_HS_CONN_HANDLE_NONE;
       bleController.Disconnect();
+      fastAdvCount = 0;
       StartAdvertising();
       break;
 
