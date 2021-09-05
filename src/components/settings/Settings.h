@@ -12,6 +12,8 @@ namespace Pinetime {
     public:
       enum class ClockType : uint8_t { H24, H12 };
       enum class Vibration : uint8_t { ON, OFF };
+      enum class BatteryPercentage : u_int8_t { ON, OFF };
+      enum class BatteryColor : u_int8_t { ON, OFF };
       enum class WakeUpMode : uint8_t {
         SingleTap = 0,
         DoubleTap = 1,
@@ -103,6 +105,26 @@ namespace Pinetime {
         return settings.vibrationStatus;
       };
 
+      void SetBatteryPercentageStatus(BatteryPercentage status) {
+        if (status != settings.batteryPercentageStatus) {
+          settingsChanged = true;
+        }
+        settings.batteryPercentageStatus = status;
+      };
+      BatteryPercentage GetBatteryPercentageStatus() const {
+        return settings.batteryPercentageStatus;
+      };
+
+      void SetBatteryColorStatus(BatteryColor status) {
+        if (status != settings.batteryColorStatus) {
+          settingsChanged = true;
+        }
+        settings.batteryColorStatus = status;
+      };
+      BatteryColor GetBatteryColorStatus() const {
+        return settings.batteryColorStatus;
+      };
+
       void SetScreenTimeOut(uint32_t timeout) {
         if (timeout != settings.screenTimeOut) {
           settingsChanged = true;
@@ -171,6 +193,8 @@ namespace Pinetime {
 
         ClockType clockType = ClockType::H24;
         Vibration vibrationStatus = Vibration::ON;
+        BatteryPercentage batteryPercentageStatus = BatteryPercentage::OFF;
+        BatteryColor batteryColorStatus = BatteryColor::OFF;
 
         uint8_t clockFace = 0;
 

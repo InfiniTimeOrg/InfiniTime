@@ -7,6 +7,8 @@ namespace Pinetime {
       public:
         static const char* GetUnknownIcon();
         static const char* GetBatteryIcon(uint8_t batteryPercent);
+        static const lv_color_t GetBatteryColor(uint8_t batteryPercent);
+        static const lv_color_t GetDefaultBatteryColor();
         static const char* GetPlugIcon(bool isCharging);
       };
     }

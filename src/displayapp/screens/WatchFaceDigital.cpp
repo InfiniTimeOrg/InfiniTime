@@ -110,7 +110,18 @@ void WatchFaceDigital::Refresh() {
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
     lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
-    lv_label_set_text_fmt(batteryValue, "%lu", batteryPercent);
+
+    if (settingsController.GetBatteryColorStatus() == Controllers::Settings::BatteryColor::ON) {
+        lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetBatteryColor(batteryPercent));
+    } else {
+        lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetDefaultBatteryColor());
+    }
+    
+    if (settingsController.GetBatteryPercentageStatus() == Controllers::Settings::BatteryPercentage::ON) {
+      lv_label_set_text_fmt(batteryValue, "%lu", batteryPercent);
+    } else {
+      lv_label_set_text(batteryValue, "");
+    }
 
     auto isCharging = batteryController.IsCharging() or batteryController.IsPowerPresent();
     lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
