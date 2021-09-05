@@ -94,7 +94,6 @@ namespace Pinetime {
 
       uint8_t addrType; // 1 = Random, 0 = PUBLIC
       uint16_t connectionHandle = BLE_HS_CONN_HANDLE_NONE;
-      uint16_t advInterval = 100; // multiplied by 0.625ms, must be in 32..16384
 
       ble_uuid128_t dfuServiceUuid {
         .u {.type = BLE_UUID_TYPE_128},
