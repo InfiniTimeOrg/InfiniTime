@@ -22,9 +22,6 @@ namespace Pinetime {
 
       void DrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t* data, size_t size);
 
-      void DisplayOn();
-      void DisplayOff();
-
       void Sleep();
       void Wakeup();
 
@@ -42,6 +39,9 @@ namespace Pinetime {
       void DisplayInversionOn();
       void NormalModeOn();
       void WriteToRam();
+      void DisplayOn();
+      void DisplayOff();
+
       void SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
       void WriteCommand(uint8_t cmd);
       void WriteSpi(const uint8_t* data, size_t size);
