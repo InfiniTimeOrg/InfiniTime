@@ -163,12 +163,10 @@ void DisplayApp::Refresh() {
           brightnessController.Lower();
           vTaskDelay(100);
         }
-        lcd.DisplayOff();
         PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
         state = States::Idle;
         break;
       case Messages::GoToRunning:
-        lcd.DisplayOn();
         brightnessController.Restore();
         state = States::Running;
         break;
