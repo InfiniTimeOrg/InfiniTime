@@ -250,12 +250,13 @@ void SystemTask::Work() {
           isDimmed = false;
           break;
         case Messages::TouchWakeUp: {
-          if(touchHandler.GetNewTouchInfo()) {
+          if (touchHandler.GetNewTouchInfo()) {
             auto gesture = touchHandler.GestureGet();
-            if (gesture != Pinetime::Drivers::Cst816S::Gestures::None and ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
-                                settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
-                                (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
-                                settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
+            if (gesture != Pinetime::Drivers::Cst816S::Gestures::None and
+                ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
+                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
+                 (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
+                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
               GoToRunning();
             }
           }
@@ -276,6 +277,8 @@ void SystemTask::Work() {
           if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::ON) {
             if (isSleeping && !isWakingUp) {
               GoToRunning();
+            } else {
+              ReloadIdleTimer();
             }
             displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           }
