@@ -41,7 +41,7 @@ SettingBatteryFormat::SettingBatteryFormat(Pinetime::Applications::DisplayApp* a
 
   optionsTotal = 0;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Show Percent");
+  lv_checkbox_set_text_static(cbOption[optionsTotal], " Show percent");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
   if (settingsController.GetBatteryPercentageStatus() == Controllers::Settings::BatteryPercentage::ON) {
