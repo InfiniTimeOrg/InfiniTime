@@ -16,8 +16,23 @@
 			"problemMatcher": []
 		},
 		{
+			"label": "local build",
+			"type": "shell",
+			"command": "cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_DFU=1 -DARM_NONE_EABI_TOOLCHAIN_PATH=${env:ARM_NONE_EABI_TOOLCHAIN_PATH} -DNRF5_SDK_PATH=${env:NRF5_SDK_PATH} -S . -Bbuild && cd build && make -j pinetime-mcuboot-app",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
+		},
+		{
 			"label": "update submodules",
 			"type": "shell",
+
 			"command": "git submodule update --init",
 			"options": {
 				"cwd": "${workspaceFolder}"

@@ -45,6 +45,7 @@ namespace Pinetime::Applications::Screens {
       BADMINTON = 1,
       TENNIS = 2,
       RESET = 3,
+      MODE_T_MAX
     } mode_t;
 
     struct score_t {
@@ -55,14 +56,30 @@ namespace Pinetime::Applications::Screens {
       uint8_t oldSets;
     };
 
-    score_t score[2] = {0, 0, 0, 0};
+    struct mode_def_t{
+      void* drawScreen();
+      void* rules(bool mainButton, uint8_t scoreId);
+    };
+
+    score_t score[2] = {{0, 0, 0, 0}, {0, 0, 0,0}};
     mode_t mode = SIMPLE_COUNTER;
+
+
 
     widget_t createButton(lv_align_t alignment, uint8_t x, uint8_t y, uint8_t width, uint8_t height, const char text[]);
     
     // TODO(toitoinou): instead of a general type use something specific to prevent out of bounds errors
     void scoreMainButtonAction(uint8_t scoreId);
     void scoreSecondaryButtonAction(uint8_t scoreId);
+
+    // Mode methods
+    void counterScreen();
+    void badmintonScreen();
+
+    void counterMode(bool primary, uint8_t scoreId);
+    void badmintonMode(bool primary, uint8_t scoreId);
+    
+    mode_def_t mode_tab[MODE_T_MAX];
 
     widget_t score1Wdg, score2Wdg;
     widget_t score1SecondaryWdg, score2SecondaryWdg;
