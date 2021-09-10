@@ -16,6 +16,7 @@
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
 #include "components/timer/TimerController.h"
+#include "components/alarm/AlarmController.h"
 #include "components/fs/FS.h"
 #include "touchhandler/TouchHandler.h"
 
@@ -56,6 +57,7 @@ namespace Pinetime {
                  Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
                  Controllers::TimerController& timerController,
+                 Controllers::AlarmController& alarmController,
                  Drivers::Watchdog& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::MotorController& motorController,
@@ -100,6 +102,7 @@ namespace Pinetime {
       Pinetime::Controllers::Ble& bleController;
       Pinetime::Controllers::DateTime& dateTimeController;
       Pinetime::Controllers::TimerController& timerController;
+      Pinetime::Controllers::AlarmController& alarmController;
       QueueHandle_t systemTasksMsgQueue;
       std::atomic<bool> isSleeping {false};
       std::atomic<bool> isGoingToSleep {false};

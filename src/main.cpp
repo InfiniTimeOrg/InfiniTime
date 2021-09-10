@@ -119,6 +119,7 @@ Pinetime::Drivers::WatchdogView watchdogView(watchdog);
 Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::TimerController timerController;
+Pinetime::Controllers::AlarmController alarmController {dateTimeController};
 Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);
 
 Pinetime::Controllers::FS fs {spiNorFlash};
@@ -139,6 +140,7 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               motorController,
                                               motionController,
                                               timerController,
+                                              alarmController,
                                               touchHandler);
 
 Pinetime::System::SystemTask systemTask(spi,
@@ -151,6 +153,7 @@ Pinetime::System::SystemTask systemTask(spi,
                                         bleController,
                                         dateTimeController,
                                         timerController,
+                                        alarmController,
                                         watchdog,
                                         notificationManager,
                                         motorController,
