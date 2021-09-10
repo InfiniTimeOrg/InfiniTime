@@ -20,7 +20,7 @@ namespace Pinetime {
         HeartRate(DisplayApp* app, Controllers::HeartRateController& HeartRateController, System::SystemTask& systemTask);
         ~HeartRate() override;
 
-        bool Refresh() override;
+        void Refresh() override;
 
         void OnStartStopEvent(lv_event_t event);
 
@@ -33,6 +33,8 @@ namespace Pinetime {
         lv_obj_t* label_status;
         lv_obj_t* btn_startStop;
         lv_obj_t* label_startStop;
+
+        lv_task_t* taskRefresh;
       };
     }
   }

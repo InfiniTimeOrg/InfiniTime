@@ -14,17 +14,16 @@ namespace Pinetime {
         Settings(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~Settings() override;
 
-        bool Refresh() override;
-
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
       private:
         Controllers::Settings& settingsController;
 
-        ScreenList<2> screens;
+        ScreenList<3> screens;
 
         std::unique_ptr<Screen> CreateScreen1();
         std::unique_ptr<Screen> CreateScreen2();
+        std::unique_ptr<Screen> CreateScreen3();
       };
     }
   }

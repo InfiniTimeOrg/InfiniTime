@@ -30,10 +30,6 @@ Brightness::~Brightness() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool Brightness::Refresh() {
-  return running;
-}
-
 const char* Brightness::LevelToString(Pinetime::Controllers::BrightnessController::Levels level) {
   switch (level) {
     case Pinetime::Controllers::BrightnessController::Levels::Off:

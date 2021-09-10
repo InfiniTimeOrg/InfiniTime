@@ -27,8 +27,6 @@ namespace Pinetime {
 
         ~QuickSettings() override;
 
-        bool Refresh() override;
-
         void OnButtonEvent(lv_obj_t* object, lv_event_t event);
 
         void UpdateScreen();
@@ -43,6 +41,8 @@ namespace Pinetime {
         lv_task_t* taskUpdate;
         lv_obj_t* batteryIcon;
         lv_obj_t* label_time;
+
+        lv_style_t btn_style;
 
         lv_obj_t* btn1;
         lv_obj_t* btn1_lvl;
