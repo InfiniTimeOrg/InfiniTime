@@ -70,6 +70,7 @@ As of now, here is the list of achievements of this project:
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)
     * [Siglo](https://github.com/alexr4535/siglo) (on Linux)
     * **[Experimental]** [WebBLEWatch](https://hubmartin.github.io/WebBLEWatch/) Synchronize time directly from your web browser. [video](https://youtu.be/IakiuhVDdrY)
+    * **[Experimental]** [Infini-iOS](https://github.com/xan-m/Infini-iOS) (on iOS)
  - OTA (Over-the-air) update via BLE
  - [Bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader) based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/)
 
