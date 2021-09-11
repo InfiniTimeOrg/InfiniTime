@@ -99,8 +99,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     fs{fs},
     touchHandler {touchHandler},
     nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController),
-    console(*this, nimbleController, fs, lvgl, motorController, touchPanel, spiNorFlash, twiMaster, motionController)
-
+    console(*this, nimbleController, fs, lvgl, motorController, touchPanel, spiNorFlash, twiMaster, motionController) {
+      
 }
 
 void SystemTask::Start() {

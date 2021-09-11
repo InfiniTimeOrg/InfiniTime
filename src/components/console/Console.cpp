@@ -183,7 +183,7 @@ void Console::Process()
     }
     else if(cmdCmp(rxBuffer, "VIBRATE"))
     {
-        motorController.SetDuration(100);
+        motorController.RunForDuration(100);
     }
     else if(cmdCmp(rxBuffer, "FS"))
     {
