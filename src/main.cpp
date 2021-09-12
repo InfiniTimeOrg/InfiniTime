@@ -87,16 +87,13 @@ static constexpr uint32_t MaxTwiFrequencyWithoutHardwareBug {0x06200000};
 Pinetime::Drivers::TwiMaster twiMaster {NRF_TWIM1, MaxTwiFrequencyWithoutHardwareBug, pinTwiSda, pinTwiScl};
 Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
 #ifdef PINETIME_IS_RECOVERY
-static constexpr bool isFactory = true;
   #include "displayapp/DummyLittleVgl.h"
   #include "displayapp/DisplayAppRecovery.h"
-Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 #else
-static constexpr bool isFactory = false;
   #include "displayapp/LittleVgl.h"
   #include "displayapp/DisplayApp.h"
-Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 #endif
+Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 
 Pinetime::Drivers::Bma421 motionSensor {twiMaster, motionSensorTwiAddress};
 Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
@@ -105,8 +102,6 @@ TimerHandle_t debounceTimer;
 TimerHandle_t debounceChargeTimer;
 Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
-void ble_manager_set_ble_connection_callback(void (*connection)());
-void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
 static constexpr uint8_t pinTouchIrq = 28;
 static constexpr uint8_t pinPowerPresentIrq = 19;
 
