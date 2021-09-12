@@ -82,13 +82,14 @@ void WatchFaceFuzzy::Refresh() {
    * - "<min_units> past/to <hours>"
    * - "<min_tens> <min_units> past/to <hours>"
    */
-  uint8_t hours, minutes, minutesUnits;
+
+  uint8_t hours, minutes;
   char const* pastTo = "past";
   char const* hoursAccent = "ffffff";
-  char const* strings[20] = { "one", "two", "three", "four", "five",
-    "six", "seven", "eight", "nine", "ten", "eleven", "twelve",
-    "thirteen", "fourteen", "quarter", "seventeen", "eighteen", "nineteen",
-    "twenty" };
+  char const* hourStr[12] = { "twelve", "one", "two", "three", "four", "five",
+    "six", "seven", "eight", "nine", "ten", "eleven" };
+  char const* minuteStr[6] = {"five", "ten", "quarter", "twenty",
+    "twenty five", "half" };
   hours = dateTimeController.Hours() % 12;
   minutes = dateTimeController.Minutes();
   if (minutes > 30) {
@@ -96,17 +97,13 @@ void WatchFaceFuzzy::Refresh() {
     hours = (hours + 1) % 12;
     minutes = 60 - minutes;
   }
-  minutesUnits = minutes % 10;
-  auto hoursStr = strings[(hours + 11) % 12];
+  // Make it fuzzy
+  minutes = minutes / 5 + (minutes % 5 > 2);
   if (minutes == 0) {
-    lv_label_set_text_fmt(label_time, "#%s %s#\no'clock", hoursAccent, hoursStr);
-  } else if (minutes == 30) {
-    lv_label_set_text_fmt(label_time, "half\npast\n#%s %s#", hoursAccent, hoursStr);
-  } else if (minutes <= 20) {
-    lv_label_set_text_fmt(label_time, "%s\n%s\n#%s %s#", strings[minutes - 1], pastTo, hoursAccent, hoursStr);
+    lv_label_set_text_fmt(label_time, "#%s %s#\no'clock", hoursAccent, hourStr[hours]);
   } else {
-    lv_label_set_text_fmt(label_time, "twenty\n%s %s\n#%s %s#", strings[minutesUnits - 1], pastTo, hoursAccent, hoursStr);
-  }
+    lv_label_set_text_fmt(label_time, "%s %s #%s %s#", minuteStr[minutes - 1], pastTo, hoursAccent, hourStr[hours]);
+  } 
   /* Align the label w.r.t. another object (active screen in this case)
    * You can use the last two parameters to move the obj around 
    * *after the alignment*.
