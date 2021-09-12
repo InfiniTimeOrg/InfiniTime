@@ -47,6 +47,8 @@ Read carefully the warning and tap **Install**:
 
 Wait for the transfer to finish. Your PineTime should reset and reboot with the new version of InfiniTime!
 
+Don't forget to **validate** your firmware. In the InfiniTime go to the settings (swipe right, select gear icon) and Firmware option and click **validate**. Otherwise after reboot the previous firmware will be used.
+
 ![Gadgetbridge 5](gadgetbridge5.jpg)
 
 ### Using NRFConnect
@@ -63,6 +65,8 @@ Select **Distribution packet (ZIP)**:
 ![NRFConnect 2](nrfconnect2.jpg)
 
 Browse to the DFU file you downloaded previously, the DFU transfer will start automatically. When the transfer is finished, your PineTime will reset and restart on the new version of InfiniTime!
+
+Don't forget to **validate** your firmware. In the InfiniTime go to the settings (swipe right, select gear icon) and Firmware option and click **validate**. Otherwise after reboot the previous firmware will be used.
 
 ![NRFConnect 3](nrfconnect3.jpg)
 
