@@ -123,7 +123,7 @@ Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);
 
 Pinetime::Controllers::FS fs {spiNorFlash};
 Pinetime::Controllers::Settings settingsController {fs};
-Pinetime::Controllers::MotorController motorController {settingsController};
+Pinetime::Controllers::MotorController motorController {};
 
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
