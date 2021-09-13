@@ -4,11 +4,6 @@
 
 using namespace Pinetime::Applications::Screens;
 
-static void lv_update_task(struct _lv_task_t* task) {
-  auto user_data = static_cast<BatteryInfo*>(task->user_data);
-  user_data->UpdateScreen();
-}
-
 BatteryInfo::BatteryInfo(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Battery& batteryController)
   : Screen(app), batteryController {batteryController} {
 
@@ -49,18 +44,16 @@ BatteryInfo::BatteryInfo(Pinetime::Applications::DisplayApp* app, Pinetime::Cont
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text_static(backgroundLabel, "");
 
-  taskUpdate = lv_task_create(lv_update_task, 5000, LV_TASK_PRIO_LOW, this);
-  UpdateScreen();
+  taskRefresh = lv_task_create(RefreshTaskCallback, 5000, LV_TASK_PRIO_MID, this);
+  Refresh();
 }
 
 BatteryInfo::~BatteryInfo() {
-  lv_task_del(taskUpdate);
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-void BatteryInfo::UpdateScreen() {
-
-  batteryController.Update();
+void BatteryInfo::Refresh() {
 
   batteryPercent = batteryController.PercentRemaining();
   batteryVoltage = batteryController.Voltage();
@@ -84,8 +77,4 @@ void BatteryInfo::UpdateScreen() {
   lv_obj_align(status, charging_bar, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
   lv_label_set_text_fmt(voltage, "%1i.%02i volts", batteryVoltage / 1000, batteryVoltage % 1000 / 10);
   lv_bar_set_value(charging_bar, batteryPercent, LV_ANIM_ON);
-}
-
-bool BatteryInfo::Refresh() {
-  return running;
 }

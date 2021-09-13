@@ -8,35 +8,32 @@
 #include "components/timer/TimerController.h"
 
 namespace Pinetime::Applications::Screens {
-  
-  
+
   class Timer : public Screen {
   public:
-    
-    enum class Modes {
-      Normal, Done
-    };
-    
+    enum class Modes { Normal, Done };
+
     Timer(DisplayApp* app, Controllers::TimerController& timerController);
-    
+
     ~Timer() override;
-    
-    bool Refresh() override;
-    
+
+    void Refresh() override;
+
     void setDone();
-    
+
     void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
-  
+
   private:
-    
     bool running;
     uint8_t secondsToSet = 0;
     uint8_t minutesToSet = 0;
     Controllers::TimerController& timerController;
-    
+
     void createButtons();
-    
-    lv_obj_t* time, * msecTime, * btnPlayPause, * txtPlayPause, * btnMinutesUp, * btnMinutesDown, * btnSecondsUp, * btnSecondsDown, * txtMUp,
-        * txtMDown, * txtSUp, * txtSDown;
+
+    lv_obj_t *time, *msecTime, *btnPlayPause, *txtPlayPause, *btnMinutesUp, *btnMinutesDown, *btnSecondsUp, *btnSecondsDown, *txtMUp,
+      *txtMDown, *txtSUp, *txtSDown;
+
+    lv_task_t* taskRefresh;
   };
 }

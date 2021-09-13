@@ -12,10 +12,6 @@ InfiniPaint::~InfiniPaint() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool InfiniPaint::Refresh() {
-  return running;
-}
-
 bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   switch (event) {
     case Pinetime::Applications::TouchEvents::LongTap:

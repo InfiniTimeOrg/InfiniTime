@@ -42,6 +42,7 @@
 #include "displayapp/screens/settings/SettingWakeUp.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
+#include "displayapp/screens/settings/SettingPineTimeStyle.h"
 
 #include "libs/lv_conf.h"
 
@@ -135,9 +136,6 @@ void DisplayApp::InitHw() {
   brightnessController.Set(settingsController.GetBrightness());
 }
 
-uint32_t acc = 0;
-uint32_t count = 0;
-bool toggle = true;
 void DisplayApp::Refresh() {
   TickType_t queueTimeout;
   TickType_t delta;
@@ -192,9 +190,6 @@ void DisplayApp::Refresh() {
       case Messages::UpdateBleConnection:
         //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
         //        Screens::Clock::BleConnectionStates::NotConnected);
-        break;
-      case Messages::UpdateBatteryLevel:
-        batteryController.Update();
         break;
       case Messages::NewNotification:
         LoadApp(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
@@ -289,7 +284,7 @@ void DisplayApp::Refresh() {
 }
 
 void DisplayApp::RunningState() {
-  if (!currentScreen->Refresh()) {
+  if (!currentScreen->IsRunning()) {
     LoadApp(returnToApp, returnDirection);
   }
   lv_task_handler();
@@ -382,6 +377,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::SettingSteps:
       currentScreen = std::make_unique<Screens::SettingSteps>(this, settingsController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingPineTimeStyle:
+      currentScreen = std::make_unique<Screens::SettingPineTimeStyle>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::BatteryInfo:

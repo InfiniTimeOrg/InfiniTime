@@ -52,15 +52,18 @@ Notifications::Notifications(DisplayApp* app,
       timeoutTickCountEnd = timeoutTickCountStart + (5 * 1024);
     }
   }
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Notifications::~Notifications() {
+  lv_task_del(taskRefresh);
   // make sure we stop any vibrations before exiting
   Controllers::MotorController::StopRinging();
   lv_obj_clean(lv_scr_act());
 }
 
-bool Notifications::Refresh() {
+void Notifications::Refresh() {
   if (mode == Modes::Preview && timeoutLine != nullptr) {
     auto tick = xTaskGetTickCount();
     int32_t pos = 240 - ((tick - timeoutTickCountStart) / ((timeoutTickCountEnd - timeoutTickCountStart) / 240));
@@ -70,7 +73,6 @@ bool Notifications::Refresh() {
     timeoutLinePoints[1].x = pos;
     lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
   }
-  return running && currentItem->IsRunning();
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
@@ -150,7 +152,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   uint8_t notifNb,
                                                   Modes mode,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService)
-  : notifNr {notifNr}, notifNb {notifNb}, mode {mode}, alertNotificationService {alertNotificationService} {
+  : mode {mode}, alertNotificationService {alertNotificationService} {
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), NULL);
 
   lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x222222));
