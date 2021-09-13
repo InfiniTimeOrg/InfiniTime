@@ -621,6 +621,7 @@ set(INCLUDE_FILES
         drivers/DebugPins.h
         drivers/InternalFlash.h
         drivers/Hrs3300.h
+        drivers/PinMap.h
         drivers/Bma421.h
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c

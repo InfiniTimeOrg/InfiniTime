@@ -2,6 +2,7 @@
 #include <hal/nrf_gpio.h>
 #include "systemtask/SystemTask.h"
 #include "app_timer.h"
+#include "drivers/PinMap.h"
 
 APP_TIMER_DEF(shortVibTimer);
 APP_TIMER_DEF(longVibTimer);
@@ -9,8 +10,8 @@ APP_TIMER_DEF(longVibTimer);
 using namespace Pinetime::Controllers;
 
 void MotorController::Init() {
-  nrf_gpio_cfg_output(pinMotor);
-  nrf_gpio_pin_set(pinMotor);
+  nrf_gpio_cfg_output(PinMap::Motor);
+  nrf_gpio_pin_set(PinMap::Motor);
   app_timer_init();
 
   app_timer_create(&shortVibTimer, APP_TIMER_MODE_SINGLE_SHOT, StopMotor);
@@ -23,7 +24,7 @@ void MotorController::Ring(void* p_context) {
 }
 
 void MotorController::RunForDuration(uint8_t motorDuration) {
-  nrf_gpio_pin_clear(pinMotor);
+  nrf_gpio_pin_clear(PinMap::Motor);
   app_timer_start(shortVibTimer, APP_TIMER_TICKS(motorDuration), nullptr);
 }
 
@@ -34,9 +35,9 @@ void MotorController::StartRinging() {
 
 void MotorController::StopRinging() {
   app_timer_stop(longVibTimer);
-  nrf_gpio_pin_set(pinMotor);
+  nrf_gpio_pin_set(PinMap::Motor);
 }
 
 void MotorController::StopMotor(void* p_context) {
-  nrf_gpio_pin_set(pinMotor);
+  nrf_gpio_pin_set(PinMap::Motor);
 }
