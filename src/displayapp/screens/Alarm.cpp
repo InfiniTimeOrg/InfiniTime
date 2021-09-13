@@ -1,3 +1,16 @@
+/*  Copyright (C) 2021 JF, Adam Pigg, Avamander
+    This file is part of InfiniTime.
+    InfiniTime is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    InfiniTime is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 #include "Alarm.h"
 #include "Screen.h"
 #include "Symbols.h"
@@ -21,66 +34,61 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   alarmMinutes = alarmController.Minutes();
   lv_label_set_text_fmt(time, "%02lu:%02lu", alarmHours, alarmMinutes);
 
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
+  lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -25);
 
   btnHoursUp = lv_btn_create(lv_scr_act(), nullptr);
   btnHoursUp->user_data = this;
   lv_obj_set_event_cb(btnHoursUp, btnEventHandler);
-  lv_obj_align(btnHoursUp, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, -80);
-  lv_obj_set_height(btnHoursUp, 40);
-  lv_obj_set_width(btnHoursUp, 60);
+  lv_obj_set_size(btnHoursUp, 60, 40);
+  lv_obj_align(btnHoursUp, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, -85);
   txtHrUp = lv_label_create(btnHoursUp, nullptr);
   lv_label_set_text(txtHrUp, "+");
 
   btnHoursDown = lv_btn_create(lv_scr_act(), nullptr);
   btnHoursDown->user_data = this;
   lv_obj_set_event_cb(btnHoursDown, btnEventHandler);
-  lv_obj_align(btnHoursDown, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, +40);
-  lv_obj_set_height(btnHoursDown, 40);
-  lv_obj_set_width(btnHoursDown, 60);
+  lv_obj_set_size(btnHoursDown, 60, 40);
+  lv_obj_align(btnHoursDown, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, 35);
   txtHrDown = lv_label_create(btnHoursDown, nullptr);
   lv_label_set_text(txtHrDown, "-");
 
   btnMinutesUp = lv_btn_create(lv_scr_act(), nullptr);
   btnMinutesUp->user_data = this;
   lv_obj_set_event_cb(btnMinutesUp, btnEventHandler);
-  lv_obj_align(btnMinutesUp, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 10, -80);
-  lv_obj_set_height(btnMinutesUp, 40);
-  lv_obj_set_width(btnMinutesUp, 60);
+  lv_obj_set_size(btnMinutesUp, 60, 40);
+  lv_obj_align(btnMinutesUp, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, -85);
   txtMinUp = lv_label_create(btnMinutesUp, nullptr);
   lv_label_set_text(txtMinUp, "+");
 
   btnMinutesDown = lv_btn_create(lv_scr_act(), nullptr);
   btnMinutesDown->user_data = this;
   lv_obj_set_event_cb(btnMinutesDown, btnEventHandler);
-  lv_obj_align(btnMinutesDown, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 10, +40);
-  lv_obj_set_height(btnMinutesDown, 40);
-  lv_obj_set_width(btnMinutesDown, 60);
+  lv_obj_set_size(btnMinutesDown, 60, 40);
+  lv_obj_align(btnMinutesDown, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, 35);
   txtMinDown = lv_label_create(btnMinutesDown, nullptr);
   lv_label_set_text(txtMinDown, "-");
 
   btnEnable = lv_btn_create(lv_scr_act(), nullptr);
   btnEnable->user_data = this;
   lv_obj_set_event_cb(btnEnable, btnEventHandler);
-  lv_obj_align(btnEnable, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 3, -10);
-  lv_obj_set_height(btnEnable, 40);
+  lv_obj_set_size(btnEnable, 115, 50);
+  lv_obj_align(btnEnable, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   txtEnable = lv_label_create(btnEnable, nullptr);
-  setEnableButtonState();
+  SetEnableButtonState();
 
   btnRecur = lv_btn_create(lv_scr_act(), nullptr);
   btnRecur->user_data = this;
   lv_obj_set_event_cb(btnRecur, btnEventHandler);
-  lv_obj_align(btnRecur, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, -10);
-  lv_obj_set_height(btnRecur, 40);
+  lv_obj_set_size(btnRecur, 115, 50);
+  lv_obj_align(btnRecur, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   txtRecur = lv_label_create(btnRecur, nullptr);
-  setRecurButtonState();
+  SetRecurButtonState();
 
   btnInfo = lv_btn_create(lv_scr_act(), nullptr);
   btnInfo->user_data = this;
   lv_obj_set_event_cb(btnInfo, btnEventHandler);
-  lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_CENTER, 30, -80);
-  lv_obj_set_height(btnInfo, 40);
-  lv_obj_set_width(btnInfo, 30);
+  lv_obj_set_size(btnInfo, 50, 40);
+  lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_CENTER, 0, -85);
   txtInfo = lv_label_create(btnInfo, nullptr);
   lv_label_set_text(txtInfo, "i");
 }
@@ -100,11 +108,11 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       } else {
         alarmController.SetAlarm(alarmHours, alarmMinutes);
       }
-      setEnableButtonState();
+      SetEnableButtonState();
       return;
     }
     if (obj == btnInfo) {
-      showInfo();
+      ShowInfo();
       return;
     }
     if (obj == btnMessage) {
@@ -120,7 +128,7 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     // can just do it once when the alarm is re-enabled
     if (alarmController.State() == AlarmController::AlarmState::Set) {
       alarmController.DisableAlarm();
-      setEnableButtonState();
+      SetEnableButtonState();
     }
     if (obj == btnMinutesUp) {
       if (alarmMinutes >= 59) {
@@ -159,17 +167,16 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       return;
     }
     if (obj == btnRecur) {
-      alarmController.ToggleRecurrence();
-      setRecurButtonState();
+      ToggleRecurrence();
     }
   }
 }
 
 void Alarm::SetAlerting() {
-  setEnableButtonState();
+  SetEnableButtonState();
 }
 
-void Alarm::setEnableButtonState() {
+void Alarm::SetEnableButtonState() {
   switch (alarmController.State()) {
     case AlarmController::AlarmState::Set:
       lv_label_set_text(txtEnable, "ON");
@@ -185,7 +192,7 @@ void Alarm::setEnableButtonState() {
   }
 }
 
-void Alarm::showInfo() {
+void Alarm::ShowInfo() {
   btnMessage = lv_btn_create(lv_scr_act(), nullptr);
   btnMessage->user_data = this;
   lv_obj_set_event_cb(btnMessage, btnEventHandler);
@@ -210,7 +217,7 @@ void Alarm::showInfo() {
   }
 }
 
-void Alarm::setRecurButtonState() {
+void Alarm::SetRecurButtonState() {
   using Pinetime::Controllers::AlarmController;
   switch (alarmController.Recurrence()) {
     case AlarmController::RecurType::None:
@@ -220,6 +227,21 @@ void Alarm::setRecurButtonState() {
       lv_label_set_text(txtRecur, "DAILY");
       break;
     case AlarmController::RecurType::Weekdays:
-      lv_label_set_text(txtRecur, "WKDAYS");
+      lv_label_set_text(txtRecur, "MON-FRI");
   }
+}
+
+void Alarm::ToggleRecurrence() {
+  using Pinetime::Controllers::AlarmController;
+  switch (alarmController.Recurrence()) {
+    case AlarmController::RecurType::None:
+      alarmController.SetRecurrence(AlarmController::RecurType::Daily);
+      break;
+    case AlarmController::RecurType::Daily:
+      alarmController.SetRecurrence(AlarmController::RecurType::Weekdays);
+      break;
+    case AlarmController::RecurType::Weekdays:
+      alarmController.SetRecurrence(AlarmController::RecurType::None);
+  }
+  SetRecurButtonState();
 }

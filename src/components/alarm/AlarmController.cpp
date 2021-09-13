@@ -1,8 +1,16 @@
-//
-// Created by mrussell on 30.08.21.
-//
-// Copied from Florian's Timer app
-
+/*  Copyright (C) 2021 JF, Adam Pigg, Avamander
+    This file is part of InfiniTime.
+    InfiniTime is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    InfiniTime is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 #include "AlarmController.h"
 #include "systemtask/SystemTask.h"
 #include "app_timer.h"
@@ -25,18 +33,19 @@ namespace {
   }
 }
 
-void AlarmController::Init() {
+void AlarmController::Init(System::SystemTask* systemTask) {
   app_timer_create(&alarmAppTimer, APP_TIMER_MODE_SINGLE_SHOT, SetOffAlarm);
+  this->systemTask = systemTask;
 }
 
 void AlarmController::SetAlarm(uint8_t alarmHr, uint8_t alarmMin) {
   hours = alarmHr;
   minutes = alarmMin;
   state = AlarmState::Set;
-  scheduleAlarm();
+  ScheduleAlarm();
 }
 
-void AlarmController::scheduleAlarm() {
+void AlarmController::ScheduleAlarm() {
   // Determine the next time the alarm needs to go off and set the app_timer
   app_timer_stop(alarmAppTimer);
 
@@ -83,15 +92,11 @@ void AlarmController::DisableAlarm() {
 
 void AlarmController::SetOffAlarmNow() {
   state = AlarmState::Alerting;
-  if (systemTask != nullptr) {
-    systemTask->PushMessage(System::Messages::SetOffAlarm);
-  }
+  systemTask->PushMessage(System::Messages::SetOffAlarm);
 }
 
 void AlarmController::StopAlerting() {
-  if (systemTask != nullptr) {
-    systemTask->PushMessage(System::Messages::StopRinging);
-  }
+  systemTask->PushMessage(System::Messages::StopRinging);
 
   // Alarm state is off unless this is a recurring alarm
   if (recurrence == RecurType::None) {
@@ -99,20 +104,6 @@ void AlarmController::StopAlerting() {
   } else {
     state = AlarmState::Set;
     // set next instance
-    scheduleAlarm();
+    ScheduleAlarm();
   }
-}
-
-void AlarmController::ToggleRecurrence() {
-  if (recurrence == AlarmController::RecurType::None) {
-    recurrence = AlarmController::RecurType::Daily;
-  } else if (recurrence == AlarmController::RecurType::Daily) {
-    recurrence = AlarmController::RecurType::Weekdays;
-  } else {
-    recurrence = AlarmController::RecurType::None;
-  }
-}
-
-void AlarmController::Register(Pinetime::System::SystemTask* systemTask) {
-  this->systemTask = systemTask;
 }
