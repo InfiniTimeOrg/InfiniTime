@@ -44,7 +44,7 @@ jobs:
 
       - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
         if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
-        uses: fiam/arm-none-eabi-gcc@v1.0.2
+        uses: fiam/arm-none-eabi-gcc@v1.0.4
         with:
           # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
           release: 9-2020-q2
@@ -83,10 +83,11 @@ jobs:
         if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
         run:  |
           cd ${{ runner.temp }}
-          git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
+          git clone --branch v1.7.2 https://github.com/mcu-tools/mcuboot
 
       - name: Install imgtool dependencies
-        run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
+        run:  |
+          pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
 
       - name: Install adafruit-nrfutil
         run:  |
@@ -99,6 +100,8 @@ jobs:
 
       - name: Checkout source files
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
       - name: Show files
         run:  set ; pwd ; ls -l
@@ -110,7 +113,7 @@ jobs:
         run:  |
           mkdir -p build
           cd build
-          cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
+          cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 -DBUILD_DFU=1 ../
 
         #########################################################################################
         # Make and Upload DFU Package
@@ -125,19 +128,10 @@ jobs:
           cd build
           make pinetime-mcuboot-app
 
-      - name: Create firmware image
+      - name: Unzip DFU package
         run:  |
-          # The generated firmware binary looks like "pinetime-mcuboot-app-0.8.2.bin"
-          ls -l build/src/pinetime-mcuboot-app*.bin
-          ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app*.bin build/src/pinetime-mcuboot-app-img.bin
-          ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
-
-      - name: Create DFU package
-        run:  |
-          ~/.local/bin/adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application build/src/pinetime-mcuboot-app-img.bin build/src/pinetime-mcuboot-app-dfu.zip
-          unzip -v build/src/pinetime-mcuboot-app-dfu.zip
           # Unzip the package because Upload Artifact will zip up the files
-          unzip build/src/pinetime-mcuboot-app-dfu.zip -d build/src/pinetime-mcuboot-app-dfu
+          unzip build/src/pinetime-mcuboot-app-dfu*.zip -d build/src/pinetime-mcuboot-app-dfu
 
       - name: Upload DFU package
         uses: actions/upload-artifact@v2
