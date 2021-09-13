@@ -36,7 +36,3 @@ Label::Label(uint8_t screenID, uint8_t numScreens, Pinetime::Applications::Displ
 Label::~Label() {
   lv_obj_clean(lv_scr_act());
 }
-
-bool Label::Refresh() {
-  return running;
-}

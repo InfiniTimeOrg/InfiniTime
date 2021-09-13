@@ -6,7 +6,6 @@
 
 namespace Pinetime {
   namespace Controllers {
-    static constexpr uint8_t pinMotor = 16;
 
     class MotorController {
     public:

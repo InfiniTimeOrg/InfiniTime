@@ -156,7 +156,3 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
     app->StartApp(Apps::Settings, DisplayApp::FullRefreshDirections::Up);
   }
 }
-
-bool QuickSettings::Refresh() {
-  return running;
-}
