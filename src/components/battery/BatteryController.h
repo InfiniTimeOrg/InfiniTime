@@ -1,8 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <drivers/include/nrfx_saadc.h>
-#include <array>
-#include <numeric>
+#include <systemtask/SystemTask.h>
 
 namespace Pinetime {
   namespace Controllers {
@@ -11,8 +10,8 @@ namespace Pinetime {
     public:
       Battery();
 
-      void Init();
       void Update();
+      void Register(System::SystemTask* systemTask);
 
       uint8_t PercentRemaining() const {
         return percentRemaining;
@@ -47,6 +46,8 @@ namespace Pinetime {
       static void AdcCallbackStatic(nrfx_saadc_evt_t const* event);
 
       bool isReading = false;
+
+      Pinetime::System::SystemTask* systemTask = nullptr;
     };
   }
 }

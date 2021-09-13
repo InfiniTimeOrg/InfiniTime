@@ -10,10 +10,7 @@ Battery* Battery::instance = nullptr;
 
 Battery::Battery() {
   instance = this;
-}
-
-void Battery::Init() {
-  nrf_gpio_cfg_input(PinMap::Charging, static_cast<nrf_gpio_pin_pull_t> GPIO_PIN_CNF_PULL_Pullup);
+  nrf_gpio_cfg_input(PinMap::Charging, static_cast<nrf_gpio_pin_pull_t> GPIO_PIN_CNF_PULL_Disabled);
 }
 
 void Battery::Update() {
@@ -76,5 +73,11 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
 
     nrfx_saadc_uninit();
     isReading = false;
+
+    systemTask->PushMessage(System::Messages::BatteryMeasurementDone);
   }
+}
+
+void Battery::Register(Pinetime::System::SystemTask* systemTask) {
+  this->systemTask = systemTask;
 }
