@@ -24,12 +24,11 @@ void ButtonHandler::Work() {
   static constexpr TickType_t doubleClickTime = pdMS_TO_TICKS(200);
   static constexpr TickType_t longPressTime = pdMS_TO_TICKS(400);
   static constexpr TickType_t longerPressTime = pdMS_TO_TICKS(2000);
-  static constexpr uint8_t pinButton = 13;
 
   while (true) {
     vTaskSuspend(taskHandle);
 
-    pressed = nrf_gpio_pin_read(pinButton);
+    pressed = nrf_gpio_pin_read(PinMap::Button);
     if (pressed) {
       systemTask->PushMessage(System::Messages::ReloadIdleTimer);
       while (true) {
@@ -82,7 +81,7 @@ void ButtonHandler::Work() {
           }
         }
         vTaskDelay(20);
-        pressed = nrf_gpio_pin_read(pinButton);
+        pressed = nrf_gpio_pin_read(PinMap::Button);
       }
     }
   }
