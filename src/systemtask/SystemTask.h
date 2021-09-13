@@ -8,6 +8,7 @@
 #include <heartratetask/HeartRateTask.h>
 #include <components/settings/Settings.h>
 #include <drivers/Bma421.h>
+#include <drivers/PinMap.h>
 #include <components/motion/MotionController.h>
 
 #include "SystemMonitor.h"
@@ -119,15 +120,6 @@ namespace Pinetime {
       Pinetime::Controllers::FS& fs;
       Pinetime::Controllers::TouchHandler& touchHandler;
       Pinetime::Controllers::NimbleController nimbleController;
-
-      static constexpr uint8_t pinSpiSck = 2;
-      static constexpr uint8_t pinSpiMosi = 3;
-      static constexpr uint8_t pinSpiMiso = 4;
-      static constexpr uint8_t pinSpiCsn = 25;
-      static constexpr uint8_t pinLcdDataCommand = 18;
-      static constexpr uint8_t pinButton = 13;
-      static constexpr uint8_t pinTouchIrq = 28;
-      static constexpr uint8_t pinPowerPresentIrq = 19;
 
       static void Process(void* instance);
       void Work();
