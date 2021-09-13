@@ -128,7 +128,6 @@ void SystemTask::Work() {
   fs.Init();
 
   nimbleController.Init();
-  nimbleController.StartAdvertising();
   lcd.Init();
 
   twiMaster.Init();
@@ -229,13 +228,15 @@ void SystemTask::Work() {
             touchPanel.Wakeup();
           }
 
-          nimbleController.StartAdvertising();
           xTimerStart(dimTimer, 0);
           spiNorFlash.Wakeup();
           lcd.Wakeup();
 
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
+
+          if (!bleController.IsConnected())
+            nimbleController.RestartFastAdv();
 
           isSleeping = false;
           isWakingUp = false;
