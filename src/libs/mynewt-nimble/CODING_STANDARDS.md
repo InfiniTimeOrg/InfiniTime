@@ -1,6 +1,6 @@
 # Coding Style for Apache NimBLE
 
-Apache NimBLE project is part of Apache Mynewt project and follows its coding
+Apache NimBLE project is part of Apache Mynewt projct and follows its coding
 style.
 
 # Coding Style for Apache Mynewt Core
