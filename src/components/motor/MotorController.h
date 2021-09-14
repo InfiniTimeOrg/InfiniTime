@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include "app_timer.h"
 
 namespace Pinetime {
   namespace Controllers {
