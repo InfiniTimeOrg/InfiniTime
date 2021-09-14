@@ -16,8 +16,6 @@ namespace Pinetime {
         FirmwareValidation(DisplayApp* app, Pinetime::Controllers::FirmwareValidator& validator);
         ~FirmwareValidation() override;
 
-        bool Refresh() override;
-
         void OnButtonEvent(lv_obj_t* object, lv_event_t event);
 
       private:

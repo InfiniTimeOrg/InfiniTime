@@ -65,10 +65,6 @@ void FlashLight::OnClickEvent(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
-bool FlashLight::Refresh() {
-  return running;
-}
-
 bool FlashLight::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return false;
 }

@@ -35,7 +35,7 @@ namespace Pinetime {
 
         ~Music() override;
 
-        bool Refresh() override;
+        void Refresh() override;
 
         void OnObjectEvent(lv_obj_t* obj, lv_event_t event);
 
@@ -78,6 +78,8 @@ namespace Pinetime {
         TickType_t lastIncrement = 0;
 
         bool playing;
+
+        lv_task_t* taskRefresh;
 
         /** Watchapp */
       };
