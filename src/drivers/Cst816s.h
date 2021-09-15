@@ -58,7 +58,6 @@ namespace Pinetime {
       //static constexpr uint8_t touchXYIndex = 7;
       //static constexpr uint8_t touchMiscIndex = 8;
 
-      uint8_t touchData[7];
       TwiMaster& twiMaster;
       uint8_t twiAddress;
 

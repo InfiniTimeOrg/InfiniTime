@@ -48,7 +48,3 @@ void Error::ButtonEventHandler() {
 Error::~Error() {
   lv_obj_clean(lv_scr_act());
 }
-
-bool Error::Refresh() {
-  return running;
-}

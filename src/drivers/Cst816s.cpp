@@ -71,6 +71,7 @@ bool Cst816S::Init() {
 
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
+  uint8_t touchData[7];
 
   auto ret = twiMaster.Read(twiAddress, 0, touchData, sizeof(touchData));
   if (ret != TwiMaster::ErrorCodes::NoError) {
@@ -79,18 +80,16 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   }
 
   // This can only be 0 or 1
-  auto nbTouchPoints = touchData[touchPointNumIndex] & 0x0f;
+  uint8_t nbTouchPoints = touchData[touchPointNumIndex] & 0x0f;
 
-  auto xHigh = touchData[touchXHighIndex] & 0x0f;
-  auto xLow = touchData[touchXLowIndex];
-  uint16_t x = (xHigh << 8) | xLow;
+  uint8_t xHigh = touchData[touchXHighIndex] & 0x0f;
+  uint8_t xLow = touchData[touchXLowIndex];
+  info.x = (xHigh << 8) | xLow;
 
-  auto yHigh = touchData[touchYHighIndex] & 0x0f;
-  auto yLow = touchData[touchYLowIndex];
-  uint16_t y = (yHigh << 8) | yLow;
+  uint8_t yHigh = touchData[touchYHighIndex] & 0x0f;
+  uint8_t yLow = touchData[touchYLowIndex];
+  info.y = (yHigh << 8) | yLow;
 
-  info.x = x;
-  info.y = y;
   info.touching = (nbTouchPoints > 0);
   info.gesture = static_cast<Gestures>(touchData[gestureIndex]);
 
