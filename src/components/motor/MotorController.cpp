@@ -42,12 +42,6 @@ void MotorController::StartRinging() {
   app_timer_start(longVibTimer, APP_TIMER_TICKS(1000), this);
 }
 
-// This function is the same as StartRinging(), but will ring even if notifications are turned off in Settings
-void MotorController::StartRingingDisregardSettings() {
-  Ring(this);
-  app_timer_start(longVibTimer, APP_TIMER_TICKS(1000), this);
-}
-
 void MotorController::StopRinging() {
   app_timer_stop(longVibTimer);
   nrf_gpio_pin_set(pinMotor);

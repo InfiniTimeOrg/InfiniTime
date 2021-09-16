@@ -282,7 +282,7 @@ void SystemTask::Work() {
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          motorController.StartRingingDisregardSettings();
+          motorController.StartRinging();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
           break;
         case Messages::StopRinging:

@@ -43,11 +43,9 @@ void AlarmController::Init(System::SystemTask* systemTask) {
   this->systemTask = systemTask;
 }
 
-void AlarmController::SetAlarm(uint8_t alarmHr, uint8_t alarmMin) {
+void AlarmController::SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin) {
   hours = alarmHr;
   minutes = alarmMin;
-  state = AlarmState::Set;
-  ScheduleAlarm();
 }
 
 void AlarmController::ScheduleAlarm() {
@@ -84,6 +82,8 @@ void AlarmController::ScheduleAlarm() {
   alarmTime = std::chrono::system_clock::from_time_t(std::mktime(tmAlarmTime));
   auto mSecToAlarm = std::chrono::duration_cast<std::chrono::milliseconds>(alarmTime - now).count();
   app_timer_start(alarmAppTimer, APP_TIMER_TICKS(mSecToAlarm), this);
+
+  state = AlarmState::Set;
 }
 
 uint32_t AlarmController::SecondsToAlarm() {

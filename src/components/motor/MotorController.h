@@ -15,7 +15,6 @@ namespace Pinetime {
       void RunForDuration(uint8_t motorDuration);
       void StartRinging();
       static void StopRinging();
-      void StartRingingDisregardSettings();
 
     private:
       static void Ring(void* p_context);

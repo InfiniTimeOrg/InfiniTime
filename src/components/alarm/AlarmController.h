@@ -31,7 +31,8 @@ namespace Pinetime {
       AlarmController(Controllers::DateTime& dateTimeController);
 
       void Init(System::SystemTask* systemTask);
-      void SetAlarm(uint8_t alarmHr, uint8_t alarmMin);
+      void SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin);
+      void ScheduleAlarm();
       void DisableAlarm();
       void SetOffAlarmNow();
       uint32_t SecondsToAlarm();
@@ -57,12 +58,11 @@ namespace Pinetime {
     private:
       Controllers::DateTime& dateTimeController;
       System::SystemTask* systemTask = nullptr;
-      uint8_t hours;
-      uint8_t minutes;
+      uint8_t hours = 7;
+      uint8_t minutes = 0;
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> alarmTime;
       AlarmState state = AlarmState::Not_Set;
       RecurType recurrence = RecurType::None;
-      void ScheduleAlarm();
     };
   }
 }

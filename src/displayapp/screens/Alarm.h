@@ -34,8 +34,8 @@ namespace Pinetime {
 
       private:
         bool running;
-        uint8_t alarmHours = 0;
-        uint8_t alarmMinutes = 0;
+        uint8_t alarmHours;
+        uint8_t alarmMinutes;
         Controllers::AlarmController& alarmController;
 
         lv_obj_t *time, *btnEnable, *txtEnable, *btnMinutesUp, *btnMinutesDown, *btnHoursUp, *btnHoursDown, *txtMinUp, *txtMinDown,
@@ -47,6 +47,7 @@ namespace Pinetime {
         void SetAlarm();
         void ShowInfo();
         void ToggleRecurrence();
+        void UpdateAlarmTime();
       };
     };
   };

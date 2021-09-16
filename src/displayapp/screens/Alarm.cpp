@@ -46,7 +46,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_set_size(btnHoursUp, 60, 40);
   lv_obj_align(btnHoursUp, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, -85);
   txtHrUp = lv_label_create(btnHoursUp, nullptr);
-  lv_label_set_text(txtHrUp, "+");
+  lv_label_set_text_static(txtHrUp, "+");
 
   btnHoursDown = lv_btn_create(lv_scr_act(), nullptr);
   btnHoursDown->user_data = this;
@@ -54,7 +54,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_set_size(btnHoursDown, 60, 40);
   lv_obj_align(btnHoursDown, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, 35);
   txtHrDown = lv_label_create(btnHoursDown, nullptr);
-  lv_label_set_text(txtHrDown, "-");
+  lv_label_set_text_static(txtHrDown, "-");
 
   btnMinutesUp = lv_btn_create(lv_scr_act(), nullptr);
   btnMinutesUp->user_data = this;
@@ -62,7 +62,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_set_size(btnMinutesUp, 60, 40);
   lv_obj_align(btnMinutesUp, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, -85);
   txtMinUp = lv_label_create(btnMinutesUp, nullptr);
-  lv_label_set_text(txtMinUp, "+");
+  lv_label_set_text_static(txtMinUp, "+");
 
   btnMinutesDown = lv_btn_create(lv_scr_act(), nullptr);
   btnMinutesDown->user_data = this;
@@ -70,7 +70,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_set_size(btnMinutesDown, 60, 40);
   lv_obj_align(btnMinutesDown, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, 35);
   txtMinDown = lv_label_create(btnMinutesDown, nullptr);
-  lv_label_set_text(txtMinDown, "-");
+  lv_label_set_text_static(txtMinDown, "-");
 
   btnEnable = lv_btn_create(lv_scr_act(), nullptr);
   btnEnable->user_data = this;
@@ -94,7 +94,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_set_size(btnInfo, 50, 40);
   lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_CENTER, 0, -85);
   txtInfo = lv_label_create(btnInfo, nullptr);
-  lv_label_set_text(txtInfo, "i");
+  lv_label_set_text_static(txtInfo, "i");
 }
 
 Alarm::~Alarm() {
@@ -110,7 +110,7 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       } else if (alarmController.State() == AlarmController::AlarmState::Set) {
         alarmController.DisableAlarm();
       } else {
-        alarmController.SetAlarm(alarmHours, alarmMinutes);
+        alarmController.ScheduleAlarm();
       }
       SetEnableButtonState();
       return;
@@ -128,8 +128,6 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     }
     // If any other button was pressed, disable the alarm
     // this is to make it clear that the alarm won't be set until it is turned back on
-    // this avoids calling the AlarmController to change the alarm time every time the user hits minute-up or minute-down;
-    // can just do it once when the alarm is re-enabled
     if (alarmController.State() == AlarmController::AlarmState::Set) {
       alarmController.DisableAlarm();
       SetEnableButtonState();
@@ -140,7 +138,7 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       } else {
         alarmMinutes++;
       }
-      lv_label_set_text_fmt(time, "%02d:%02d", alarmHours, alarmMinutes);
+      UpdateAlarmTime();
       return;
     }
     if (obj == btnMinutesDown) {
@@ -149,7 +147,7 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       } else {
         alarmMinutes--;
       }
-      lv_label_set_text_fmt(time, "%02d:%02d", alarmHours, alarmMinutes);
+      UpdateAlarmTime();
       return;
     }
     if (obj == btnHoursUp) {
@@ -158,7 +156,7 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       } else {
         alarmHours++;
       }
-      lv_label_set_text_fmt(time, "%02d:%02d", alarmHours, alarmMinutes);
+      UpdateAlarmTime();
       return;
     }
     if (obj == btnHoursDown) {
@@ -167,13 +165,18 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       } else {
         alarmHours--;
       }
-      lv_label_set_text_fmt(time, "%02d:%02d", alarmHours, alarmMinutes);
+      UpdateAlarmTime();
       return;
     }
     if (obj == btnRecur) {
       ToggleRecurrence();
     }
   }
+}
+
+void Alarm::UpdateAlarmTime() {
+  lv_label_set_text_fmt(time, "%02d:%02d", alarmHours, alarmMinutes);
+  alarmController.SetAlarmTime(alarmHours, alarmMinutes);
 }
 
 void Alarm::SetAlerting() {
