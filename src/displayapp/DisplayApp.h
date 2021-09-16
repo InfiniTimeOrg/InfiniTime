@@ -14,6 +14,7 @@
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
 #include "components/timer/TimerController.h"
+#include "touchhandler/TouchHandler.h"
 #include "Messages.h"
 
 namespace Pinetime {
@@ -31,6 +32,7 @@ namespace Pinetime {
     class NotificationManager;
     class HeartRateController;
     class MotionController;
+    class TouchHandler;
   }
 
   namespace System {
@@ -41,7 +43,6 @@ namespace Pinetime {
     public:
       enum class States { Idle, Running };
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
-      enum class TouchModes { Gestures, Polling };
 
       DisplayApp(Drivers::St7789& lcd,
                  Components::LittleVgl& lvgl,
@@ -55,14 +56,14 @@ namespace Pinetime {
                  Controllers::Settings& settingsController,
                  Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController,
-                 Pinetime::Controllers::TimerController& timerController);
+                 Pinetime::Controllers::TimerController& timerController,
+                 Pinetime::Controllers::TouchHandler& touchHandler);
       void Start();
       void PushMessage(Display::Messages msg);
 
       void StartApp(Apps app, DisplayApp::FullRefreshDirections direction);
 
       void SetFullRefresh(FullRefreshDirections direction);
-      void SetTouchMode(TouchModes mode);
 
       void Register(Pinetime::System::SystemTask* systemTask);
 
@@ -81,6 +82,7 @@ namespace Pinetime {
       Pinetime::Controllers::MotorController& motorController;
       Pinetime::Controllers::MotionController& motionController;
       Pinetime::Controllers::TimerController& timerController;
+      Pinetime::Controllers::TouchHandler& touchHandler;
 
       Pinetime::Controllers::FirmwareValidator validator;
       Controllers::BrightnessController brightnessController;
@@ -100,8 +102,7 @@ namespace Pinetime {
       FullRefreshDirections returnDirection = FullRefreshDirections::None;
       TouchEvents returnTouchEvent = TouchEvents::None;
 
-      TouchModes touchMode = TouchModes::Gestures;
-
+      TouchEvents GetGesture();
       void RunningState();
       void IdleState();
       static void Process(void* instance);

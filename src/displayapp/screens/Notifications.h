@@ -5,6 +5,7 @@
 #include <memory>
 #include "Screen.h"
 #include "components/ble/NotificationManager.h"
+#include "components/motor/MotorController.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -19,10 +20,11 @@ namespace Pinetime {
         explicit Notifications(DisplayApp* app,
                                Pinetime::Controllers::NotificationManager& notificationManager,
                                Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                               Pinetime::Controllers::MotorController& motorController,
                                Modes mode);
         ~Notifications() override;
 
-        bool Refresh() override;
+        void Refresh() override;
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
         class NotificationItem {
@@ -35,31 +37,22 @@ namespace Pinetime {
                            Modes mode,
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService);
           ~NotificationItem();
-          bool Refresh() {
-            return false;
+          bool IsRunning() const {
+            return running;
           }
-          void OnAcceptIncomingCall(lv_event_t event);
-          void OnMuteIncomingCall(lv_event_t event);
-          void OnRejectIncomingCall(lv_event_t event);
+          void OnCallButtonEvent(lv_obj_t*, lv_event_t event);
 
         private:
-          uint8_t notifNr = 0;
-          uint8_t notifNb = 0;
-          char pageText[4];
-
           lv_obj_t* container1;
-          lv_obj_t* t1;
-          lv_obj_t* l1;
-          lv_obj_t* l2;
           lv_obj_t* bt_accept;
           lv_obj_t* bt_mute;
           lv_obj_t* bt_reject;
           lv_obj_t* label_accept;
           lv_obj_t* label_mute;
           lv_obj_t* label_reject;
-          lv_obj_t* bottomPlaceholder;
           Modes mode;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
+          bool running = true;
         };
 
       private:
@@ -75,9 +68,11 @@ namespace Pinetime {
         bool validDisplay = false;
 
         lv_point_t timeoutLinePoints[2] {{0, 1}, {239, 1}};
-        lv_obj_t* timeoutLine;
+        lv_obj_t* timeoutLine = nullptr;
         uint32_t timeoutTickCountStart;
         uint32_t timeoutTickCountEnd;
+
+        lv_task_t* taskRefresh;
       };
     }
   }

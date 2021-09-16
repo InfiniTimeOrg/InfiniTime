@@ -16,8 +16,6 @@ namespace Pinetime {
         FlashLight(DisplayApp* app, System::SystemTask& systemTask, Controllers::BrightnessController& brightness);
         ~FlashLight() override;
 
-        bool Refresh() override;
-
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
         void OnClickEvent(lv_obj_t* obj, lv_event_t event);
 

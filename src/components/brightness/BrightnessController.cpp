@@ -3,19 +3,20 @@
 #include "displayapp/screens/Symbols.h"
 
 #include "nrf_pwm.h"
+#include "drivers/PinMap.h"
 
 using namespace Pinetime::Controllers;
 
 void BrightnessController::Init() {
 
   // Use only LIGHT1 mosfet with 30R resistor for now
-  nrf_gpio_cfg_output(pinLcdBacklight1);
-  nrf_gpio_cfg_output(pinLcdBacklight2);
-  nrf_gpio_cfg_output(pinLcdBacklight3);
+  nrf_gpio_cfg_output(PinMap::LcdBacklightLow);
+  nrf_gpio_cfg_output(PinMap::LcdBacklightMedium);
+  nrf_gpio_cfg_output(PinMap::LcdBacklightHigh);
 
-  nrf_gpio_pin_clear(pinLcdBacklight1);
-  nrf_gpio_pin_clear(pinLcdBacklight2);
-  nrf_gpio_pin_clear(pinLcdBacklight3);
+  nrf_gpio_pin_clear(PinMap::LcdBacklightLow);
+  nrf_gpio_pin_clear(PinMap::LcdBacklightMedium);
+  nrf_gpio_pin_clear(PinMap::LcdBacklightHigh);
 
   static nrf_pwm_sequence_t seq;
 
@@ -24,7 +25,7 @@ void BrightnessController::Init() {
   seq.repeats         = 0;
   seq.end_delay       = 0;
 
-  uint32_t out_pins[] = {pinLcdBacklight3, pinLcdBacklight2, pinLcdBacklight1, NRF_PWM_PIN_NOT_CONNECTED};
+  uint32_t out_pins[] = {PinMap::LcdBacklightHigh, PinMap::LcdBacklightMedium, PinMap::LcdBacklightLow, NRF_PWM_PIN_NOT_CONNECTED};
 
   nrf_pwm_pins_set(NRF_PWM0, out_pins);
   nrf_pwm_enable(NRF_PWM0);
@@ -50,7 +51,7 @@ void BrightnessController::pwmEnable(bool enable)
   if(enable)
   {
     nrf_pwm_enable(NRF_PWM0);
-    uint32_t out_pins[] = {pinLcdBacklight3, pinLcdBacklight2, pinLcdBacklight1, NRF_PWM_PIN_NOT_CONNECTED};
+    uint32_t out_pins[] = {PinMap::LcdBacklightHigh, PinMap::LcdBacklightMedium, PinMap::LcdBacklightLow, NRF_PWM_PIN_NOT_CONNECTED};
     nrf_pwm_pins_set(NRF_PWM0, out_pins);
   }
   else
