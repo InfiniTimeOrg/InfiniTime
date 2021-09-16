@@ -15,7 +15,6 @@ namespace Pinetime {
         SettingDisplay(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingDisplay() override;
 
-        bool Refresh() override;
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
       private:
