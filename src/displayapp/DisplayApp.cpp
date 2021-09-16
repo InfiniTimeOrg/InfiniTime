@@ -139,9 +139,6 @@ void DisplayApp::InitHw() {
   brightnessController.Set(settingsController.GetBrightness());
 }
 
-uint32_t acc = 0;
-uint32_t count = 0;
-bool toggle = true;
 void DisplayApp::Refresh() {
   TickType_t queueTimeout;
   TickType_t delta;
@@ -196,9 +193,6 @@ void DisplayApp::Refresh() {
       case Messages::UpdateBleConnection:
         //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
         //        Screens::Clock::BleConnectionStates::NotConnected);
-        break;
-      case Messages::UpdateBatteryLevel:
-        batteryController.Update();
         break;
       case Messages::NewNotification:
         LoadApp(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
