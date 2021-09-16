@@ -42,19 +42,6 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
 }
 
-void nimble_on_reset(int reason) {
-  NRF_LOG_INFO("Resetting state; reason=%d\n", reason);
-}
-
-void nimble_on_sync(void) {
-    int rc;
-
-    rc = ble_hs_util_ensure_addr(0);
-    ASSERT(rc == 0);
-
-    nptr->StartAdvertising();
-}
-
 int GAPEventCallback(struct ble_gap_event* event, void* arg) {
   auto nimbleController = static_cast<NimbleController*>(arg);
   return nimbleController->OnGAPEvent(event);
@@ -63,10 +50,6 @@ int GAPEventCallback(struct ble_gap_event* event, void* arg) {
 void NimbleController::Init() {
   while (!ble_hs_synced()) {
   }
-
-  nptr = this;
-  ble_hs_cfg.reset_cb = nimble_on_reset;
-  ble_hs_cfg.sync_cb = nimble_on_sync;
 
   ble_svc_gap_init();
   ble_svc_gatt_init();
@@ -81,31 +64,28 @@ void NimbleController::Init() {
   batteryInformationService.Init();
   immediateAlertService.Init();
   heartRateService.Init();
-
-  int rc;
-  rc = ble_hs_util_ensure_addr(0);
-  ASSERT(rc == 0);
-  rc = ble_hs_id_infer_auto(0, &addrType);
-  ASSERT(rc == 0);
-  rc = ble_svc_gap_device_name_set(deviceName);
-  ASSERT(rc == 0);
-  rc = ble_svc_gap_device_appearance_set(0xC2);
-  ASSERT(rc == 0);
+  int res;
+  res = ble_hs_util_ensure_addr(0);
+  ASSERT(res == 0);
+  res = ble_hs_id_infer_auto(0, &addrType);
+  ASSERT(res == 0);
+  res = ble_svc_gap_device_name_set(deviceName);
+  ASSERT(res == 0);
   Pinetime::Controllers::Ble::BleAddress address;
-  rc = ble_hs_id_copy_addr(addrType, address.data(), nullptr);
-  ASSERT(rc == 0);
+  res = ble_hs_id_copy_addr(addrType, address.data(), nullptr);
+  ASSERT(res == 0);
   bleController.AddressType((addrType == 0) ? Ble::AddressTypes::Public : Ble::AddressTypes::Random);
   bleController.Address(std::move(address));
 
-  rc = ble_gatts_start();
-  ASSERT(rc == 0);
-
-  if (!ble_gap_adv_active() && !bleController.IsConnected())
-    StartAdvertising();
+  res = ble_gatts_start();
+  ASSERT(res == 0);
 }
 
 void NimbleController::StartAdvertising() {
-  int rc;
+  if (bleController.IsConnected() || ble_gap_conn_active() || ble_gap_adv_active())
+    return;
+
+  ble_svc_gap_device_name_set(deviceName);
 
   /* set adv parameters */
   struct ble_gap_adv_params adv_params;
@@ -122,17 +102,11 @@ void NimbleController::StartAdvertising() {
 
   adv_params.conn_mode = BLE_GAP_CONN_MODE_UND;
   adv_params.disc_mode = BLE_GAP_DISC_MODE_GEN;
-  /* fast advertise for 30 sec */
-  if (fastAdvCount < 15) {
-    adv_params.itvl_min = 32;
-    adv_params.itvl_max = 47;
-    fastAdvCount++;
-  } else {
-    adv_params.itvl_min = 1636;
-    adv_params.itvl_max = 1651;
-  }
 
   fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
+  //  fields.uuids128 = BLE_UUID128(BLE_UUID128_DECLARE(
+  //          0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+  //          0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff));
   fields.uuids128 = &dfuServiceUuid;
   fields.num_uuids128 = 1;
   fields.uuids128_is_complete = 1;
@@ -142,25 +116,28 @@ void NimbleController::StartAdvertising() {
   rsp_fields.name_len = strlen(deviceName);
   rsp_fields.name_is_complete = 1;
 
-  rc = ble_gap_adv_set_fields(&fields);
-  ASSERT(rc == 0);
+  ble_gap_adv_set_fields(&fields);
+  //  ASSERT(res == 0); // TODO this one sometimes fails with error 22 (notsync)
 
-  rc = ble_gap_adv_rsp_set_fields(&rsp_fields);
-  ASSERT(rc == 0);
+  ble_gap_adv_rsp_set_fields(&rsp_fields);
+  //  ASSERT(res == 0);
 
-  rc = ble_gap_adv_start(addrType, NULL, 2000, &adv_params, GAPEventCallback, this);
-  ASSERT(rc == 0);
+  ble_gap_adv_start(addrType, NULL, 180000, &adv_params, GAPEventCallback, this);
+  //  ASSERT(res == 0);// TODO I've disabled these ASSERT as they sometime asserts and reset the mcu.
+  // For now, the advertising is restarted as soon as it ends. There may be a race condition
+  // that prevent the advertising from restarting reliably.
+  // I remove the assert to prevent this uncesseray crash, but in the long term, the management of
+  // the advertising should be improve (better error handling, and advertise for 3 minutes after
+  // the application has been woken up, for example.
 }
 
 int NimbleController::OnGAPEvent(ble_gap_event* event) {
   switch (event->type) {
     case BLE_GAP_EVENT_ADV_COMPLETE:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_ADV_COMPLETE");
-      NRF_LOG_INFO("reason=%d; status=%d", event->adv_complete.reason, event->connect.status);
-      StartAdvertising();
+      NRF_LOG_INFO("advertise complete; reason=%dn status=%d", event->adv_complete.reason, event->connect.status);
       break;
-
-    case BLE_GAP_EVENT_CONNECT:
+    case BLE_GAP_EVENT_CONNECT: {
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_CONNECT");
 
       /* A new connection was established or a connection attempt failed. */
@@ -168,44 +145,35 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
 
       if (event->connect.status != 0) {
         /* Connection failed; resume advertising. */
-        currentTimeClient.Reset();
-        alertNotificationClient.Reset();
-        connectionHandle = BLE_HS_CONN_HANDLE_NONE;
-        bleController.Disconnect();
-        fastAdvCount = 0;
         StartAdvertising();
+        bleController.Disconnect();
       } else {
-        connectionHandle = event->connect.conn_handle;
         bleController.Connect();
         systemTask.PushMessage(Pinetime::System::Messages::BleConnected);
-        // Service discovery is deferred via systemtask
+        connectionHandle = event->connect.conn_handle;
+        // Service discovery is deffered via systemtask
       }
-      break;
-
+    } break;
     case BLE_GAP_EVENT_DISCONNECT:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_DISCONNECT");
-      NRF_LOG_INFO("disconnect reason=%d", event->disconnect.reason);
+      NRF_LOG_INFO("disconnect; reason=%d", event->disconnect.reason);
 
       /* Connection terminated; resume advertising. */
       currentTimeClient.Reset();
       alertNotificationClient.Reset();
       connectionHandle = BLE_HS_CONN_HANDLE_NONE;
       bleController.Disconnect();
-      fastAdvCount = 0;
       StartAdvertising();
       break;
-
     case BLE_GAP_EVENT_CONN_UPDATE:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_CONN_UPDATE");
       /* The central has updated the connection parameters. */
-      NRF_LOG_INFO("update status=%d ", event->conn_update.status);
+      NRF_LOG_INFO("connection updated; status=%d ", event->conn_update.status);
       break;
-
     case BLE_GAP_EVENT_ENC_CHANGE:
       /* Encryption has been enabled or disabled for this connection. */
       NRF_LOG_INFO("encryption change event; status=%d ", event->enc_change.status);
-      break;
-
+      return 0;
     case BLE_GAP_EVENT_SUBSCRIBE:
       NRF_LOG_INFO("subscribe event; conn_handle=%d attr_handle=%d "
                    "reason=%d prevn=%d curn=%d previ=%d curi=???\n",
@@ -215,12 +183,10 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
                    event->subscribe.prev_notify,
                    event->subscribe.cur_notify,
                    event->subscribe.prev_indicate);
-      break;
-
+      return 0;
     case BLE_GAP_EVENT_MTU:
-      NRF_LOG_INFO("mtu update event; conn_handle=%d cid=%d mtu=%d\n",
-        event->mtu.conn_handle, event->mtu.channel_id, event->mtu.value);
-      break;
+      NRF_LOG_INFO("mtu update event; conn_handle=%d cid=%d mtu=%d\n", event->mtu.conn_handle, event->mtu.channel_id, event->mtu.value);
+      return 0;
 
     case BLE_GAP_EVENT_REPEAT_PAIRING: {
       /* We already have a bond with the peer, but it is attempting to
@@ -251,7 +217,8 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
                    notifSize);
 
       alertNotificationClient.OnNotification(event);
-    } break;
+      return 0;
+    }
       /* Attribute data is contained in event->notify_rx.attr_data. */
 
     default:
@@ -262,9 +229,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
 }
 
 void NimbleController::StartDiscovery() {
-  if (connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
-    serviceDiscovery.StartDiscovery(connectionHandle);
-  }
+  serviceDiscovery.StartDiscovery(connectionHandle);
 }
 
 uint16_t NimbleController::connHandle() {
@@ -272,7 +237,7 @@ uint16_t NimbleController::connHandle() {
 }
 
 void NimbleController::NotifyBatteryLevel(uint8_t level) {
-  if (connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
+  if(connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
     batteryInformationService.NotifyBatteryLevel(connectionHandle, level);
   }
 }

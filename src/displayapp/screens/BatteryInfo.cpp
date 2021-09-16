@@ -55,6 +55,8 @@ BatteryInfo::~BatteryInfo() {
 
 void BatteryInfo::Refresh() {
 
+  batteryController.Update();
+
   batteryPercent = batteryController.PercentRemaining();
   batteryVoltage = batteryController.Voltage();
 

@@ -5,7 +5,6 @@
 #include <components/rle/RleDecoder.h>
 #include <touchhandler/TouchHandler.h>
 #include "displayapp/icons/infinitime/infinitime-nb.c"
-#include "components/ble/BleController.h"
 
 using namespace Pinetime::Applications;
 

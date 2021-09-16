@@ -1,10 +1,12 @@
 #pragma once
 
 #include <cstdint>
+#include "app_timer.h"
 #include "components/settings/Settings.h"
 
 namespace Pinetime {
   namespace Controllers {
+    static constexpr uint8_t pinMotor = 16;
 
     class MotorController {
     public:

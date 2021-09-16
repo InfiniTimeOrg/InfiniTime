@@ -7,6 +7,7 @@ namespace Pinetime {
         GoToRunning,
         UpdateDateTime,
         UpdateBleConnection,
+        UpdateBatteryLevel,
         TouchEvent,
         ButtonPushed,
         NewNotification,

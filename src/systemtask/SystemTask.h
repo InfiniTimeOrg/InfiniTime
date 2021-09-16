@@ -8,7 +8,6 @@
 #include <heartratetask/HeartRateTask.h>
 #include <components/settings/Settings.h>
 #include <drivers/Bma421.h>
-#include <drivers/PinMap.h>
 #include <components/motion/MotionController.h>
 
 #include "SystemMonitor.h"
@@ -124,6 +123,15 @@ namespace Pinetime {
       Pinetime::Controllers::TouchHandler& touchHandler;
       Pinetime::Controllers::NimbleController nimbleController;
 
+      static constexpr uint8_t pinSpiSck = 2;
+      static constexpr uint8_t pinSpiMosi = 3;
+      static constexpr uint8_t pinSpiMiso = 4;
+      static constexpr uint8_t pinSpiCsn = 25;
+      static constexpr uint8_t pinLcdDataCommand = 18;
+      static constexpr uint8_t pinButton = 13;
+      static constexpr uint8_t pinTouchIrq = 28;
+      static constexpr uint8_t pinPowerPresentIrq = 19;
+
       static void Process(void* instance);
       void Work();
       void ReloadIdleTimer();
@@ -131,15 +139,13 @@ namespace Pinetime {
       uint8_t bleDiscoveryTimer = 0;
       TimerHandle_t dimTimer;
       TimerHandle_t idleTimer;
-      TimerHandle_t measureBatteryTimer;
-      bool sendBatteryNotification = false;
       bool doNotGoToSleep = false;
 
       void GoToRunning();
       void UpdateMotion();
       bool stepCounterMustBeReset = false;
-      static constexpr TickType_t batteryMeasurementPeriod = pdMS_TO_TICKS(10 * 60 * 1000);
-      TickType_t lastBatteryNotificationTime = 0;
+      static constexpr TickType_t batteryNotificationPeriod = 1000 * 60 * 10; // 1 tick ~= 1ms. 1ms * 60 * 10 = 10 minutes
+      TickType_t batteryNotificationTick = 0;
 
 #if configUSE_TRACE_FACILITY == 1
       SystemMonitor<FreeRtosMonitor> monitor;

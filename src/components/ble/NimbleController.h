@@ -72,10 +72,6 @@ namespace Pinetime {
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);
 
-      void RestartFastAdv() {
-        fastAdvCount = 0;
-      }
-
     private:
       static constexpr const char* deviceName = "InfiniTime";
       Pinetime::System::SystemTask& systemTask;
@@ -98,7 +94,6 @@ namespace Pinetime {
 
       uint8_t addrType; // 1 = Random, 0 = PUBLIC
       uint16_t connectionHandle = BLE_HS_CONN_HANDLE_NONE;
-      uint8_t fastAdvCount = 0;
 
       ble_uuid128_t dfuServiceUuid {
         .u {.type = BLE_UUID_TYPE_128},
@@ -106,7 +101,5 @@ namespace Pinetime {
 
       ServiceDiscovery serviceDiscovery;
     };
-
-  static NimbleController* nptr;
   }
 }
