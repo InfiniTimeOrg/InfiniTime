@@ -36,9 +36,6 @@ namespace Pinetime {
       void Wakeup();
 
     private:
-      static constexpr uint8_t pinIrq = 28;
-      static constexpr uint8_t pinReset = 10;
-
       // Unused/Unavailable commented out
       static constexpr uint8_t gestureIndex = 1;
       static constexpr uint8_t touchPointNumIndex = 2;
