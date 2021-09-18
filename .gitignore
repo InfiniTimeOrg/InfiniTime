@@ -39,3 +39,7 @@ Testing/Temporary/
 
 # Windows
 **/thumbs.db
+
+#VSCODE
+.vscode/.cortex-debug.registers.state.json
+.vscode/.cortex-debug.peripherals.state.json

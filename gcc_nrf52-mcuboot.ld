@@ -6,12 +6,18 @@ GROUP(-lgcc -lc -lnosys)
 MEMORY
 {
   FLASH (rx) : ORIGIN = 0x08020, LENGTH = 0x78000
-  RAM (rwx) :  ORIGIN = 0x20000000, LENGTH = 0x10000
+  RAM (rwx) :  ORIGIN = 0x20000000, LENGTH = 64K
 }
 
 SECTIONS
 {
-}
+  .noinit(NOLOAD):
+  {
+    PROVIDE(__start_noinit_data = .);
+    *(.noinit)
+    PROVIDE(__stop_noinit_data = .);
+  } > RAM
+} INSERT AFTER .bss
 
 SECTIONS
 {
