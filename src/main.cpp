@@ -115,7 +115,6 @@ Pinetime::Controllers::FS fs {spiNorFlash};
 Pinetime::Controllers::Settings settingsController {fs};
 Pinetime::Controllers::MotorController motorController {settingsController};
 
-
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               lvgl,
                                               touchPanel,
@@ -155,6 +154,16 @@ Pinetime::System::SystemTask systemTask(spi,
                                         heartRateApp,
                                         fs,
                                         touchHandler);
+
+/* Variable Declarations for variables in noinit SRAM 
+   Increment NoInit_MagicValue upon adding variables to this area
+*/
+extern uint32_t __start_noinit_data;
+extern uint32_t __stop_noinit_data;
+static constexpr uint32_t NoInit_MagicValue = 0xDEAD0000;
+uint32_t NoInit_MagicWord __attribute__((section(".noinit")));
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime __attribute__((section(".noinit")));
+
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if (pin == Pinetime::PinMap::Cst816sIrq) {
@@ -315,6 +324,15 @@ int main(void) {
 
   // retrieve version stored by bootloader
   Pinetime::BootloaderVersion::SetVersion(NRF_TIMER2->CC[0]);
+
+  
+  if (NoInit_MagicWord == NoInit_MagicValue) {
+    dateTimeController.SetCurrentTime(NoInit_BackUpTime);
+  } else {
+    //Clear Memory to known state
+    memset(&__start_noinit_data,0,(uintptr_t)&__stop_noinit_data-(uintptr_t)&__start_noinit_data);
+    NoInit_MagicWord = NoInit_MagicValue;
+  }
 
   lvgl.Init();
 

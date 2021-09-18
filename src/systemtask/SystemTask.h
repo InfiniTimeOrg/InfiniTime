@@ -33,6 +33,7 @@
 #include "drivers/Watchdog.h"
 #include "Messages.h"
 
+extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
 namespace Pinetime {
   namespace Drivers {
     class Cst816S;
