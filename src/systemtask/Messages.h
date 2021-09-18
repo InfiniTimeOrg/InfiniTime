@@ -25,6 +25,8 @@ namespace Pinetime {
         OnNewDay,
         OnChargingEvent,
         ReloadIdleTimer,
+        SetOffAlarm,
+        StopRinging,
         MeasureBatteryTimerExpired,
         BatteryMeasurementDone,
       };
