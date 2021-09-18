@@ -32,6 +32,7 @@ namespace Pinetime {
     class TouchHandler;
     class MotorController;
     class TimerController;
+    class AlarmController;
   }
 
   namespace System {
@@ -54,6 +55,7 @@ namespace Pinetime {
                  Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::TimerController& timerController,
+                 Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::TouchHandler& touchHandler);
       void Start();
       void PushMessage(Pinetime::Applications::Display::Messages msg);

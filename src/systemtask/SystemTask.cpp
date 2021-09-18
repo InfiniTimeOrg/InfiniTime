@@ -65,6 +65,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,
                        Controllers::TimerController& timerController,
+                       Controllers::AlarmController& alarmController,
                        Drivers::Watchdog& watchdog,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::MotorController& motorController,
@@ -87,6 +88,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     bleController {bleController},
     dateTimeController {dateTimeController},
     timerController {timerController},
+    alarmController {alarmController},
     watchdog {watchdog},
     notificationManager {notificationManager},
     motorController {motorController},
@@ -144,6 +146,7 @@ void SystemTask::Work() {
   motionSensor.SoftReset();
   timerController.Register(this);
   timerController.Init();
+  alarmController.Init(this);
 
   // Reset the TWI device because the motion sensor chip most probably crashed it...
   twiMaster.Sleep();
@@ -283,6 +286,16 @@ void SystemTask::Work() {
           motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
+        case Messages::SetOffAlarm:
+          if (isSleeping && !isWakingUp) {
+            GoToRunning();
+          }
+          motorController.StartRinging();
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
+          break;
+        case Messages::StopRinging:
+          motorController.StopRinging();
+          break;
         case Messages::BleConnected:
           ReloadIdleTimer();
           isBleDiscoveryTimerRunning = true;
@@ -368,6 +381,7 @@ void SystemTask::Work() {
     monitor.Process();
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);
+    NoInit_BackUpTime = dateTimeController.CurrentDateTime();
     if (!nrf_gpio_pin_read(PinMap::Button))
       watchdog.Kick();
   }

@@ -422,6 +422,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
         displayapp/screens/Error.cpp
+        displayapp/screens/Alarm.cpp
         displayapp/Colors.cpp
 
         ## Settings
@@ -478,6 +479,7 @@ list(APPEND SOURCE_FILES
         components/motor/MotorController.cpp
         components/settings/Settings.cpp
         components/timer/TimerController.cpp
+        components/alarm/AlarmController.cpp
         components/fs/FS.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
@@ -544,6 +546,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/firmwarevalidator/FirmwareValidator.cpp
         components/settings/Settings.cpp
         components/timer/TimerController.cpp
+        components/alarm/AlarmController.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -616,6 +619,7 @@ set(INCLUDE_FILES
         displayapp/screens/Metronome.h
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
+        displayapp/screens/Alarm.h
         displayapp/Colors.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
@@ -648,6 +652,7 @@ set(INCLUDE_FILES
         components/ble/HeartRateService.h
         components/settings/Settings.h
         components/timer/TimerController.h
+        components/alarm/AlarmController.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h

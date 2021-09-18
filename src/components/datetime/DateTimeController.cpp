@@ -5,6 +5,10 @@
 
 using namespace Pinetime::Controllers;
 
+void DateTime::SetCurrentTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> t) {
+  this->currentDateTime = t;
+}
+
 void DateTime::SetTime(
   uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfWeek, uint8_t hour, uint8_t minute, uint8_t second, uint32_t systickCounter) {
   std::tm tm = {
@@ -67,7 +71,7 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   // Notify new day to SystemTask
   if (hour == 0 and not isMidnightAlreadyNotified) {
     isMidnightAlreadyNotified = true;
-    if(systemTask != nullptr)
+    if (systemTask != nullptr)
       systemTask->PushMessage(System::Messages::OnNewDay);
   } else if (hour != 0) {
     isMidnightAlreadyNotified = false;
