@@ -17,6 +17,7 @@
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
 #include "components/timer/TimerController.h"
+#include "components/alarm/AlarmController.h"
 #include "components/fs/FS.h"
 #include "touchhandler/TouchHandler.h"
 
@@ -32,6 +33,7 @@
 #include "drivers/Watchdog.h"
 #include "Messages.h"
 
+extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
 namespace Pinetime {
   namespace Drivers {
     class Cst816S;
@@ -57,6 +59,7 @@ namespace Pinetime {
                  Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
                  Controllers::TimerController& timerController,
+                 Controllers::AlarmController& alarmController,
                  Drivers::Watchdog& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::MotorController& motorController,
@@ -101,6 +104,7 @@ namespace Pinetime {
       Pinetime::Controllers::Ble& bleController;
       Pinetime::Controllers::DateTime& dateTimeController;
       Pinetime::Controllers::TimerController& timerController;
+      Pinetime::Controllers::AlarmController& alarmController;
       QueueHandle_t systemTasksMsgQueue;
       std::atomic<bool> isSleeping {false};
       std::atomic<bool> isGoingToSleep {false};

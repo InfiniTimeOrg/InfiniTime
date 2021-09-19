@@ -14,7 +14,8 @@ namespace Pinetime {
         BleFirmwareUpdateStarted,
         UpdateTimeOut,
         DimScreen,
-        RestoreBrightness
+        RestoreBrightness,
+        AlarmTriggered
       };
     }
   }
