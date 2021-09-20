@@ -40,39 +40,24 @@ SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
-  optionsTotal = 0;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], "  5 seconds");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetScreenTimeOut() == 5000) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
+  char buffer[12];
+  for (unsigned int i = 0; i < options.size(); i++) {
+    cbOption[i] = lv_checkbox_create(container1, nullptr);
+    sprintf(buffer, "%3d seconds",  options[i] / 1000);
+    lv_checkbox_set_text(cbOption[i], buffer);
+    cbOption[i]->user_data = this;
+    lv_obj_set_event_cb(cbOption[i], event_handler);
+
+    // radio button style
+    lv_obj_set_style_local_radius(cbOption[i], LV_CHECKBOX_PART_BULLET, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+    lv_obj_set_style_local_border_width(cbOption[i], LV_CHECKBOX_PART_BULLET, LV_STATE_CHECKED, 9);
+    lv_obj_set_style_local_border_color(cbOption[i], LV_CHECKBOX_PART_BULLET, LV_STATE_CHECKED, LV_COLOR_GREEN);
+    lv_obj_set_style_local_bg_color(cbOption[i], LV_CHECKBOX_PART_BULLET, LV_STATE_CHECKED, LV_COLOR_WHITE);
+
+    if (settingsController.GetScreenTimeOut() == options[i]) {
+      lv_checkbox_set_checked(cbOption[i], true);
+    }
   }
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " 15 seconds");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetScreenTimeOut() == 15000) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " 20 seconds");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetScreenTimeOut() == 20000) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " 30 seconds");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetScreenTimeOut() == 30000) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
-  optionsTotal++;
 }
 
 SettingDisplay::~SettingDisplay() {
@@ -82,25 +67,11 @@ SettingDisplay::~SettingDisplay() {
 
 void SettingDisplay::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    for (int i = 0; i < optionsTotal; i++) {
+    for (unsigned int i = 0; i < options.size(); i++) {
       if (object == cbOption[i]) {
         lv_checkbox_set_checked(cbOption[i], true);
-
-        if (i == 0) {
-          settingsController.SetScreenTimeOut(5000);
-        };
-        if (i == 1) {
-          settingsController.SetScreenTimeOut(15000);
-        };
-        if (i == 2) {
-          settingsController.SetScreenTimeOut(20000);
-        };
-        if (i == 3) {
-          settingsController.SetScreenTimeOut(30000);
-        };
-
+        settingsController.SetScreenTimeOut(options[i]);
         app->PushMessage(Applications::Display::Messages::UpdateTimeOut);
-
       } else {
         lv_checkbox_set_checked(cbOption[i], false);
       }

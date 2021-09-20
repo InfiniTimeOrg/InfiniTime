@@ -1,9 +1,10 @@
 #pragma once
 
-#include <cstdint>
-#include <lvgl/lvgl.h>
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
+#include <array>
+#include <cstdint>
+#include <lvgl/lvgl.h>
 
 namespace Pinetime {
 
@@ -18,8 +19,9 @@ namespace Pinetime {
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
       private:
+        const std::array<std::string, 3> options = {" Digital face", " Analog face", " PineTimeStyle"};
         Controllers::Settings& settingsController;
-        uint8_t optionsTotal;
+
         lv_obj_t* cbOption[2];
       };
     }
