@@ -421,7 +421,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::None);
       break;
     case Apps::Motion:
-      currentScreen = std::make_unique<Screens::Motion>(this, motionController);
+      currentScreen = std::make_unique<Screens::Motion>(this, motionController, *systemTask);
       break;
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);

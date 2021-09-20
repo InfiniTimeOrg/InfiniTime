@@ -4,8 +4,8 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Motion::Motion(Pinetime::Applications::DisplayApp* app, Controllers::MotionController& motionController)
-  : Screen(app), motionController {motionController} {
+Motion::Motion(Pinetime::Applications::DisplayApp* app, Controllers::MotionController& motionController, System::SystemTask& systemTask)
+  : Screen(app), motionController {motionController}, systemTask {systemTask} {
   chart = lv_chart_create(lv_scr_act(), NULL);
   lv_obj_set_size(chart, 240, 240);
   lv_obj_align(chart, NULL, LV_ALIGN_IN_TOP_MID, 0, 0);
@@ -37,12 +37,15 @@ Motion::Motion(Pinetime::Applications::DisplayApp* app, Controllers::MotionContr
   lv_obj_align(labelStep, chart, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   lv_label_set_text(labelStep, "Steps ---");
 
+  systemTask.PushMessage(System::Messages::DisableSleeping);
+
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Motion::~Motion() {
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
+  systemTask.PushMessage(System::Messages::EnableSleeping);
 }
 
 void Motion::Refresh() {

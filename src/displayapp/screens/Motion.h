@@ -7,6 +7,7 @@
 #include <libs/lvgl/src/lv_core/lv_style.h>
 #include <libs/lvgl/src/lv_core/lv_obj.h>
 #include <components/motion/MotionController.h>
+#include "systemtask/SystemTask.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -14,13 +15,14 @@ namespace Pinetime {
 
       class Motion : public Screen {
       public:
-        Motion(DisplayApp* app, Controllers::MotionController& motionController);
+        Motion(DisplayApp* app, Controllers::MotionController& motionController, System::SystemTask& systemTask);
         ~Motion() override;
 
         void Refresh() override;
 
       private:
         Controllers::MotionController& motionController;
+        System::SystemTask& systemTask;
         lv_obj_t* chart;
         lv_chart_series_t* ser1;
         lv_chart_series_t* ser2;
