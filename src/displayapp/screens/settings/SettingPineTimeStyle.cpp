@@ -1,22 +1,17 @@
 #include "SettingPineTimeStyle.h"
-#include <lvgl/lvgl.h>
 #include <displayapp/Colors.h>
-#include "displayapp/DisplayApp.h"
-#include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static void event_handler(lv_obj_t* obj, lv_event_t event) {
-    SettingPineTimeStyle* screen = static_cast<SettingPineTimeStyle*>(obj->user_data);
+  void event_handler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<SettingPineTimeStyle*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
 }
 
 SettingPineTimeStyle::SettingPineTimeStyle(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
-  : PineTimeStyleBase(app), settingsController {settingsController} {
-
-  CreateObjects(Convert(settingsController.GetPTSColorBG()), Convert(settingsController.GetPTSColorTime()), Convert(settingsController.GetPTSColorBar()));
+  : PineTimeStyleBase(app, Convert(settingsController.GetPTSColorBG()), Convert(settingsController.GetPTSColorTime()), Convert(settingsController.GetPTSColorBar())), settingsController {settingsController} {
 
   btnNextTime = lv_btn_create(lv_scr_act(), nullptr);
   btnNextTime->user_data = this;

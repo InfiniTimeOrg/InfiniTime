@@ -22,13 +22,10 @@
 #include "PineTimeStyleBase.h"
 #include "Symbols.h"
 #include "displayapp/Colors.h"
-#include <lvgl/lvgl.h>
 
 using namespace Pinetime::Applications::Screens;
 
-PineTimeStyleBase::PineTimeStyleBase(DisplayApp* app) : Screen(app) {};
-
-void PineTimeStyleBase::CreateObjects(lv_color_t bgColor, lv_color_t timeColor, lv_color_t barColor) {
+PineTimeStyleBase::PineTimeStyleBase(DisplayApp* app, lv_color_t bgColor, lv_color_t timeColor, lv_color_t barColor) : Screen(app) {
   //Create a 200px wide background rectangle
   timebar = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);

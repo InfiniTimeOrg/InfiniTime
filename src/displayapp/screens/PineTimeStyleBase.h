@@ -1,19 +1,16 @@
 #pragma once
 
-#include <lvgl/src/lv_core/lv_obj.h>
 #include "Screen.h"
-#include "settings/Settings.h"
+#include <lvgl/src/lv_core/lv_obj.h>
 
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class PineTimeStyleBase : public Screen {
       public:
-        PineTimeStyleBase(DisplayApp* app);
+        PineTimeStyleBase(DisplayApp* app, lv_color_t bgColor, lv_color_t timeColor, lv_color_t barColor);
 
       protected:
-        void CreateObjects(lv_color_t bgColor, lv_color_t timeColor, lv_color_t barColor);
-        void SetIconColors(Controllers::Settings::Colors color);
         lv_color_t needle_colors[1];
         lv_obj_t* backgroundLabel;
         lv_obj_t* batteryIcon;

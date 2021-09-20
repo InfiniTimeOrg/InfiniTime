@@ -20,19 +20,16 @@
  */
 
 #include "PineTimeStyle.h"
-#include <date/date.h>
-#include <lvgl/lvgl.h>
-#include <displayapp/Colors.h>
 #include "BatteryIcon.h"
 #include "BleIcon.h"
 #include "NotificationIcon.h"
 #include "Symbols.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
-#include "components/ble/NotificationManager.h"
-#include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
-#include "../DisplayApp.h"
+#include "displayapp/Colors.h"
+#include <date/date.h>
+#include <lvgl/lvgl.h>
 
 using namespace Pinetime::Applications::Screens;
 
@@ -43,7 +40,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
                              Controllers::NotificationManager& notificatioManager,
                              Controllers::Settings& settingsController,
                              Controllers::MotionController& motionController)
-  : PineTimeStyleBase(app),
+  : PineTimeStyleBase(app, Convert(settingsController.GetPTSColorBG()), Convert(settingsController.GetPTSColorTime()), Convert(settingsController.GetPTSColorBar())),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
     batteryController {batteryController},
@@ -54,8 +51,6 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
 
   // This sets the watchface number to return to after leaving the menu
   settingsController.SetClockFace(2);
-
-  CreateObjects(Convert(settingsController.GetPTSColorBG()), Convert(settingsController.GetPTSColorTime()), Convert(settingsController.GetPTSColorBar()));
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
