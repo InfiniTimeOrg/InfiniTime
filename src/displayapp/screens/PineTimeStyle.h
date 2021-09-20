@@ -7,6 +7,7 @@
 #include "Screen.h"
 #include "ScreenList.h"
 #include "components/datetime/DateTimeController.h"
+#include "displayapp/screens/PineTimeStyleBase.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -19,7 +20,7 @@ namespace Pinetime {
 
   namespace Applications {
     namespace Screens {
-      class PineTimeStyle : public Screen {
+      class PineTimeStyle : public PineTimeStyleBase {
       public:
         PineTimeStyle(DisplayApp* app,
                       Controllers::DateTime& dateTimeController,
@@ -33,7 +34,7 @@ namespace Pinetime {
         void Refresh() override;
 
       private:
-        char displayedChar[5];
+        char displayedChar[5] = {0};
 
         uint16_t currentYear = 1970;
         Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
@@ -46,28 +47,6 @@ namespace Pinetime {
         DirtyValue<bool> motionSensorOk {};
         DirtyValue<uint32_t> stepCount {};
         DirtyValue<bool> notificationState {};
-
-        lv_obj_t* timebar;
-        lv_obj_t* sidebar;
-        lv_obj_t* timeDD1;
-        lv_obj_t* timeDD2;
-        lv_obj_t* timeAMPM;
-        lv_obj_t* dateDayOfWeek;
-        lv_obj_t* dateDay;
-        lv_obj_t* dateMonth;
-        lv_obj_t* backgroundLabel;
-        lv_obj_t* batteryIcon;
-        lv_obj_t* bleIcon;
-        lv_obj_t* batteryPlug;
-        lv_obj_t* calendarOuter;
-        lv_obj_t* calendarInner;
-        lv_obj_t* calendarBar1;
-        lv_obj_t* calendarBar2;
-        lv_obj_t* calendarCrossBar1;
-        lv_obj_t* calendarCrossBar2;
-        lv_obj_t* notificationIcon;
-        lv_obj_t* stepGauge;
-        lv_color_t needle_colors[1];
 
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;
