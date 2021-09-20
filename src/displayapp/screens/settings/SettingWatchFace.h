@@ -22,7 +22,7 @@ namespace Pinetime {
         const std::array<std::string, 3> options = {" Digital face", " Analog face", " PineTimeStyle"};
         Controllers::Settings& settingsController;
 
-        lv_obj_t* cbOption[2];
+        lv_obj_t* cbOption[3];
       };
     }
   }
