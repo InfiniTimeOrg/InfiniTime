@@ -30,7 +30,7 @@ void WatchFaceFuzzy::Refresh() {
   uint8_t hours, minutes;
   std::string hoursStr, timeStr;
 
-  hours = dateTimeController.Hours() % 12;  // TODO: maybe that's not needed?
+  hours = dateTimeController.Hours() % 12; // TODO: maybe that's not needed?
   minutes = dateTimeController.Minutes();
   auto sector = (minutes / 5 + (minutes % 5 > 2)) % 12;
 
