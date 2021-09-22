@@ -43,7 +43,9 @@
 #include "drivers/St7789.h"
 #include "drivers/TwiMaster.h"
 #include "drivers/Cst816s.h"
+#include "drivers/PinMap.h"
 #include "systemtask/SystemTask.h"
+#include "drivers/PinMap.h"
 #include "touchhandler/TouchHandler.h"
 
 #if NRF_LOG_ENABLED
@@ -54,14 +56,6 @@ Pinetime::Logging::NrfLogger logger;
 Pinetime::Logging::DummyLogger logger;
 #endif
 
-static constexpr uint8_t pinSpiSck = 2;
-static constexpr uint8_t pinSpiMosi = 3;
-static constexpr uint8_t pinSpiMiso = 4;
-static constexpr uint8_t pinSpiFlashCsn = 5;
-static constexpr uint8_t pinLcdCsn = 25;
-static constexpr uint8_t pinLcdDataCommand = 18;
-static constexpr uint8_t pinTwiScl = 7;
-static constexpr uint8_t pinTwiSda = 6;
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
 static constexpr uint8_t motionSensorTwiAddress = 0x18;
 static constexpr uint8_t heartRateSensorTwiAddress = 0x44;
@@ -70,33 +64,30 @@ Pinetime::Drivers::SpiMaster spi {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,
                                   {Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
                                    Pinetime::Drivers::SpiMaster::Modes::Mode3,
                                    Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
-                                   pinSpiSck,
-                                   pinSpiMosi,
-                                   pinSpiMiso}};
+                                   Pinetime::PinMap::SpiSck,
+                                   Pinetime::PinMap::SpiMosi,
+                                   Pinetime::PinMap::SpiMiso}};
 
-Pinetime::Drivers::Spi lcdSpi {spi, pinLcdCsn};
-Pinetime::Drivers::St7789 lcd {lcdSpi, pinLcdDataCommand};
+Pinetime::Drivers::Spi lcdSpi {spi, Pinetime::PinMap::SpiLcdCsn};
+Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
 
-Pinetime::Drivers::Spi flashSpi {spi, pinSpiFlashCsn};
+Pinetime::Drivers::Spi flashSpi {spi, Pinetime::PinMap::SpiFlashCsn};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
 
 // The TWI device should work @ up to 400Khz but there is a HW bug which prevent it from
 // respecting correct timings. According to erratas heet, this magic value makes it run
 // at ~390Khz with correct timings.
 static constexpr uint32_t MaxTwiFrequencyWithoutHardwareBug {0x06200000};
-Pinetime::Drivers::TwiMaster twiMaster {NRF_TWIM1, MaxTwiFrequencyWithoutHardwareBug, pinTwiSda, pinTwiScl};
+Pinetime::Drivers::TwiMaster twiMaster {NRF_TWIM1, MaxTwiFrequencyWithoutHardwareBug, Pinetime::PinMap::TwiSda, Pinetime::PinMap::TwiScl};
 Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
 #ifdef PINETIME_IS_RECOVERY
-static constexpr bool isFactory = true;
   #include "displayapp/DummyLittleVgl.h"
   #include "displayapp/DisplayAppRecovery.h"
-Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 #else
-static constexpr bool isFactory = false;
   #include "displayapp/LittleVgl.h"
   #include "displayapp/DisplayApp.h"
-Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 #endif
+Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 
 Pinetime::Drivers::Bma421 motionSensor {twiMaster, motionSensorTwiAddress};
 Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
@@ -105,10 +96,8 @@ TimerHandle_t debounceTimer;
 TimerHandle_t debounceChargeTimer;
 Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
-void ble_manager_set_ble_connection_callback(void (*connection)());
-void ble_manager_set_ble_disconnection_callback(void (*disconnection)());
-static constexpr uint8_t pinTouchIrq = 28;
-static constexpr uint8_t pinPowerPresentIrq = 19;
+static constexpr uint8_t pinTouchIrq = Pinetime::PinMap::Cst816sIrq;
+static constexpr uint8_t pinPowerPresentIrq = Pinetime::PinMap::PowerPresent;
 
 Pinetime::Controllers::HeartRateController heartRateController;
 Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController);
@@ -119,12 +108,12 @@ Pinetime::Drivers::WatchdogView watchdogView(watchdog);
 Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::TimerController timerController;
+Pinetime::Controllers::AlarmController alarmController {dateTimeController};
 Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);
 
 Pinetime::Controllers::FS fs {spiNorFlash};
 Pinetime::Controllers::Settings settingsController {fs};
 Pinetime::Controllers::MotorController motorController {settingsController};
-
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               lvgl,
@@ -139,6 +128,7 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               motorController,
                                               motionController,
                                               timerController,
+                                              alarmController,
                                               touchHandler);
 
 Pinetime::System::SystemTask systemTask(spi,
@@ -151,6 +141,7 @@ Pinetime::System::SystemTask systemTask(spi,
                                         bleController,
                                         dateTimeController,
                                         timerController,
+                                        alarmController,
                                         watchdog,
                                         notificationManager,
                                         motorController,
@@ -164,15 +155,25 @@ Pinetime::System::SystemTask systemTask(spi,
                                         fs,
                                         touchHandler);
 
+/* Variable Declarations for variables in noinit SRAM 
+   Increment NoInit_MagicValue upon adding variables to this area
+*/
+extern uint32_t __start_noinit_data;
+extern uint32_t __stop_noinit_data;
+static constexpr uint32_t NoInit_MagicValue = 0xDEAD0000;
+uint32_t NoInit_MagicWord __attribute__((section(".noinit")));
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime __attribute__((section(".noinit")));
+
+
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
-  if (pin == pinTouchIrq) {
+  if (pin == Pinetime::PinMap::Cst816sIrq) {
     systemTask.OnTouchEvent();
     return;
   }
 
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-  if (pin == pinPowerPresentIrq and action == NRF_GPIOTE_POLARITY_TOGGLE) {
+  if (pin == Pinetime::PinMap::PowerPresent and action == NRF_GPIOTE_POLARITY_TOGGLE) {
     xTimerStartFromISR(debounceChargeTimer, &xHigherPriorityTaskWoken);
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     return;
@@ -305,24 +306,33 @@ int main(void) {
   nrf_drv_clock_init();
 
   // Unblock i2c?
-  nrf_gpio_cfg(pinTwiScl,
+  nrf_gpio_cfg(Pinetime::PinMap::TwiScl,
                NRF_GPIO_PIN_DIR_OUTPUT,
                NRF_GPIO_PIN_INPUT_DISCONNECT,
                NRF_GPIO_PIN_NOPULL,
                NRF_GPIO_PIN_S0D1,
                NRF_GPIO_PIN_NOSENSE);
-  nrf_gpio_pin_set(pinTwiScl);
+  nrf_gpio_pin_set(Pinetime::PinMap::TwiScl);
   for (uint8_t i = 0; i < 16; i++) {
-    nrf_gpio_pin_toggle(pinTwiScl);
+    nrf_gpio_pin_toggle(Pinetime::PinMap::TwiScl);
     nrf_delay_us(5);
   }
-  nrf_gpio_cfg_default(pinTwiScl);
+  nrf_gpio_cfg_default(Pinetime::PinMap::TwiScl);
 
   debounceTimer = xTimerCreate("debounceTimer", 200, pdFALSE, (void*) 0, DebounceTimerCallback);
   debounceChargeTimer = xTimerCreate("debounceTimerCharge", 200, pdFALSE, (void*) 0, DebounceTimerChargeCallback);
 
   // retrieve version stored by bootloader
   Pinetime::BootloaderVersion::SetVersion(NRF_TIMER2->CC[0]);
+
+  
+  if (NoInit_MagicWord == NoInit_MagicValue) {
+    dateTimeController.SetCurrentTime(NoInit_BackUpTime);
+  } else {
+    //Clear Memory to known state
+    memset(&__start_noinit_data,0,(uintptr_t)&__stop_noinit_data-(uintptr_t)&__start_noinit_data);
+    NoInit_MagicWord = NoInit_MagicValue;
+  }
 
   lvgl.Init();
 

@@ -98,7 +98,7 @@ The script makes use of the following tools:
 
 After setup you can use cmake as usual:
 
-1. Generate the actual build files (out-of-source builds are strongly recomended):
+1. Generate the actual build files (out-of-source builds are strongly recommended):
 
 	```commandline
 	cmake -H. -B"cmake-build" -G "Unix Makefiles"

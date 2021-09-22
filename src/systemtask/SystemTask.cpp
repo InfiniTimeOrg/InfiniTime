@@ -21,7 +21,9 @@
 #include "drivers/SpiNorFlash.h"
 #include "drivers/TwiMaster.h"
 #include "drivers/Hrs3300.h"
+#include "drivers/PinMap.h"
 #include "main.h"
+
 
 #include <memory>
 
@@ -47,6 +49,11 @@ void IdleTimerCallback(TimerHandle_t xTimer) {
   sysTask->OnIdle();
 }
 
+void MeasureBatteryTimerCallback(TimerHandle_t xTimer) {
+  auto* sysTask = static_cast<SystemTask*>(pvTimerGetTimerID(xTimer));
+  sysTask->PushMessage(Pinetime::System::Messages::MeasureBatteryTimerExpired);
+}
+
 SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Drivers::St7789& lcd,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
@@ -57,6 +64,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,
                        Controllers::TimerController& timerController,
+                       Controllers::AlarmController& alarmController,
                        Drivers::Watchdog& watchdog,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::MotorController& motorController,
@@ -79,6 +87,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     bleController {bleController},
     dateTimeController {dateTimeController},
     timerController {timerController},
+    alarmController {alarmController},
     watchdog {watchdog},
     notificationManager {notificationManager},
     motorController {motorController},
@@ -121,17 +130,18 @@ void SystemTask::Work() {
   fs.Init();
 
   nimbleController.Init();
-  nimbleController.StartAdvertising();
   lcd.Init();
 
   twiMaster.Init();
   touchPanel.Init();
   dateTimeController.Register(this);
-  batteryController.Init();
+  batteryController.Register(this);
+  batteryController.Update();
   motorController.Init();
   motionSensor.SoftReset();
   timerController.Register(this);
   timerController.Init();
+  alarmController.Init(this);
 
   // Reset the TWI device because the motion sensor chip most probably crashed it...
   twiMaster.Sleep();
@@ -144,13 +154,11 @@ void SystemTask::Work() {
   displayApp.Register(this);
   displayApp.Start();
 
-  displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
-
   heartRateSensor.Init();
   heartRateSensor.Disable();
   heartRateApp.Start();
 
-  nrf_gpio_cfg_sense_input(pinButton, (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pulldown, (nrf_gpio_pin_sense_t) GPIO_PIN_CNF_SENSE_High);
+  nrf_gpio_cfg_sense_input(PinMap::Button, (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pulldown, (nrf_gpio_pin_sense_t) GPIO_PIN_CNF_SENSE_High);
   nrf_gpio_cfg_output(15);
   nrf_gpio_pin_set(15);
 
@@ -161,9 +169,9 @@ void SystemTask::Work() {
   pinConfig.sense = (nrf_gpiote_polarity_t) NRF_GPIOTE_POLARITY_HITOLO;
   pinConfig.pull = (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pulldown;
 
-  nrfx_gpiote_in_init(pinButton, &pinConfig, nrfx_gpiote_evt_handler);
+  nrfx_gpiote_in_init(PinMap::Button, &pinConfig, nrfx_gpiote_evt_handler);
 
-  nrf_gpio_cfg_sense_input(pinTouchIrq, (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pullup, (nrf_gpio_pin_sense_t) GPIO_PIN_CNF_SENSE_Low);
+  nrf_gpio_cfg_sense_input(PinMap::Cst816sIrq, (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pullup, (nrf_gpio_pin_sense_t) GPIO_PIN_CNF_SENSE_Low);
 
   pinConfig.skip_gpio_setup = true;
   pinConfig.hi_accuracy = false;
@@ -171,24 +179,26 @@ void SystemTask::Work() {
   pinConfig.sense = (nrf_gpiote_polarity_t) NRF_GPIOTE_POLARITY_HITOLO;
   pinConfig.pull = (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pullup;
 
-  nrfx_gpiote_in_init(pinTouchIrq, &pinConfig, nrfx_gpiote_evt_handler);
+  nrfx_gpiote_in_init(PinMap::Cst816sIrq, &pinConfig, nrfx_gpiote_evt_handler);
 
   pinConfig.sense = NRF_GPIOTE_POLARITY_TOGGLE;
   pinConfig.pull = NRF_GPIO_PIN_NOPULL;
   pinConfig.is_watcher = false;
   pinConfig.hi_accuracy = false;
   pinConfig.skip_gpio_setup = true;
-  nrfx_gpiote_in_init(pinPowerPresentIrq, &pinConfig, nrfx_gpiote_evt_handler);
+  nrfx_gpiote_in_init(PinMap::PowerPresent, &pinConfig, nrfx_gpiote_evt_handler);
 
-  if (nrf_gpio_pin_read(pinPowerPresentIrq)) {
-    nrf_gpio_cfg_sense_input(pinPowerPresentIrq, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_LOW);
+  if (nrf_gpio_pin_read(PinMap::PowerPresent)) {
+    nrf_gpio_cfg_sense_input(PinMap::PowerPresent, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_LOW);
   } else {
-    nrf_gpio_cfg_sense_input(pinPowerPresentIrq, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_HIGH);
+    nrf_gpio_cfg_sense_input(PinMap::PowerPresent, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_HIGH);
   }
 
   idleTimer = xTimerCreate("idleTimer", pdMS_TO_TICKS(2000), pdFALSE, this, IdleTimerCallback);
   dimTimer = xTimerCreate("dimTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), pdFALSE, this, DimTimerCallback);
+  measureBatteryTimer = xTimerCreate("measureBattery", batteryMeasurementPeriod, pdTRUE, this, MeasureBatteryTimerCallback);
   xTimerStart(dimTimer, 0);
+  xTimerStart(measureBatteryTimer, portMAX_DELAY);
 
 // Suppress endless loop diagnostic
 #pragma clang diagnostic push
@@ -198,11 +208,6 @@ void SystemTask::Work() {
 
     uint8_t msg;
     if (xQueueReceive(systemTasksMsgQueue, &msg, 100)) {
-
-      batteryController.Update();
-      // the battery does not emit events when changing charge levels, so we piggyback
-      // on any system event to read and update the current values
-
       Messages message = static_cast<Messages>(msg);
       switch (message) {
         case Messages::EnableSleeping:
@@ -226,14 +231,15 @@ void SystemTask::Work() {
             touchPanel.Wakeup();
           }
 
-          nimbleController.StartAdvertising();
           xTimerStart(dimTimer, 0);
           spiNorFlash.Wakeup();
           lcd.Wakeup();
 
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateBatteryLevel);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
+
+          if (!bleController.IsConnected())
+            nimbleController.RestartFastAdv();
 
           isSleeping = false;
           isWakingUp = false;
@@ -274,6 +280,16 @@ void SystemTask::Work() {
           }
           motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
+          break;
+        case Messages::SetOffAlarm:
+          if (isSleeping && !isWakingUp) {
+            GoToRunning();
+          }
+          motorController.StartRinging();
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
+          break;
+        case Messages::StopRinging:
+          motorController.StopRinging();
           break;
         case Messages::BleConnected:
           ReloadIdleTimer();
@@ -327,8 +343,18 @@ void SystemTask::Work() {
           stepCounterMustBeReset = true;
           break;
         case Messages::OnChargingEvent:
+          batteryController.Update();
           motorController.RunForDuration(15);
-          // Battery level is updated on every message - there's no need to do anything
+          break;
+        case Messages::MeasureBatteryTimerExpired:
+          sendBatteryNotification = true;
+          batteryController.Update();
+          break;
+        case Messages::BatteryMeasurementDone:
+          if (sendBatteryNotification) {
+            sendBatteryNotification = false;
+            nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
+          }
           break;
 
         default:
@@ -340,22 +366,18 @@ void SystemTask::Work() {
       if (bleDiscoveryTimer == 0) {
         isBleDiscoveryTimerRunning = false;
         // Services discovery is deffered from 3 seconds to avoid the conflicts between the host communicating with the
-        // tharget and vice-versa. I'm not sure if this is the right way to handle this...
+        // target and vice-versa. I'm not sure if this is the right way to handle this...
         nimbleController.StartDiscovery();
       } else {
         bleDiscoveryTimer--;
       }
     }
 
-    if (xTaskGetTickCount() - batteryNotificationTick > batteryNotificationPeriod) {
-      nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
-      batteryNotificationTick = xTaskGetTickCount();
-    }
-
     monitor.Process();
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);
-    if (!nrf_gpio_pin_read(pinButton))
+    NoInit_BackUpTime = dateTimeController.CurrentDateTime();
+    if (!nrf_gpio_pin_read(PinMap::Button))
       watchdog.Kick();
   }
 // Clear diagnostic suppression

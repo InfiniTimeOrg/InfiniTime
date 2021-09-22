@@ -7,7 +7,6 @@ namespace Pinetime {
         GoToRunning,
         UpdateDateTime,
         UpdateBleConnection,
-        UpdateBatteryLevel,
         TouchEvent,
         ButtonPushed,
         NewNotification,
@@ -15,7 +14,8 @@ namespace Pinetime {
         BleFirmwareUpdateStarted,
         UpdateTimeOut,
         DimScreen,
-        RestoreBrightness
+        RestoreBrightness,
+        AlarmTriggered
       };
     }
   }

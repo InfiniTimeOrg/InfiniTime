@@ -15,6 +15,7 @@
 #include <components/brightness/BrightnessController.h>
 #include <algorithm>
 #include "recoveryImage.h"
+#include "drivers/PinMap.h"
 
 #include "displayapp/icons/infinitime/infinitime-nb.c"
 #include "components/rle/RleDecoder.h"
@@ -27,12 +28,6 @@ Pinetime::Logging::NrfLogger logger;
 Pinetime::Logging::DummyLogger logger;
 #endif
 
-static constexpr uint8_t pinSpiSck = 2;
-static constexpr uint8_t pinSpiMosi = 3;
-static constexpr uint8_t pinSpiMiso = 4;
-static constexpr uint8_t pinSpiFlashCsn = 5;
-static constexpr uint8_t pinLcdCsn = 25;
-static constexpr uint8_t pinLcdDataCommand = 18;
 
 static constexpr uint8_t displayWidth = 240;
 static constexpr uint8_t displayHeight = 240;
@@ -45,14 +40,14 @@ Pinetime::Drivers::SpiMaster spi {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,
                                   {Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
                                    Pinetime::Drivers::SpiMaster::Modes::Mode3,
                                    Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
-                                   pinSpiSck,
-                                   pinSpiMosi,
-                                   pinSpiMiso}};
-Pinetime::Drivers::Spi flashSpi {spi, pinSpiFlashCsn};
+                                   Pinetime::PinMap::SpiSck,
+                                   Pinetime::PinMap::SpiMosi,
+                                   Pinetime::PinMap::SpiMiso}};
+Pinetime::Drivers::Spi flashSpi {spi, Pinetime::PinMap::SpiFlashCsn};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
 
-Pinetime::Drivers::Spi lcdSpi {spi, pinLcdCsn};
-Pinetime::Drivers::St7789 lcd {lcdSpi, pinLcdDataCommand};
+Pinetime::Drivers::Spi lcdSpi {spi, Pinetime::PinMap::SpiLcdCsn};
+Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
 
 Pinetime::Components::Gfx gfx {lcd};
 Pinetime::Controllers::BrightnessController brightnessController;
