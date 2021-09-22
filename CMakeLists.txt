@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(pinetime VERSION 1.3.0 LANGUAGES C CXX ASM)
+project(pinetime VERSION 1.4.0 LANGUAGES C CXX ASM)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 14)
@@ -51,6 +51,14 @@ if(BUILD_DFU)
   set(BUILD_DFU true)
 endif()
 
+option(WATCH_COLMI_P8 "Build for the Colmi P8" OFF)
+set(TARGET_DEVICE "PineTime")
+
+if(WATCH_COLMI_P8)
+  set(TARGET_DEVICE "Colmi P8")
+  add_definitions(-DWATCH_P8)
+endif()
+
 set(PROJECT_GIT_COMMIT_HASH "")
 
 execute_process(COMMAND git rev-parse --short HEAD
@@ -68,6 +76,7 @@ message("    * Version : " ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${P
 message("    * Toolchain : " ${ARM_NONE_EABI_TOOLCHAIN_PATH})
 message("    * GitRef(S) : " ${PROJECT_GIT_COMMIT_HASH})
 message("    * NRF52 SDK : " ${NRF5_SDK_PATH})
+message("    * Target device : " ${TARGET_DEVICE})
 set(PROGRAMMER "???")
 if(USE_JLINK)
   message("    * Programmer/debugger : JLINK")

@@ -43,21 +43,13 @@ namespace Pinetime {
           void OnCallButtonEvent(lv_obj_t*, lv_event_t event);
 
         private:
-          uint8_t notifNr = 0;
-          uint8_t notifNb = 0;
-          char pageText[4];
-
           lv_obj_t* container1;
-          lv_obj_t* t1;
-          lv_obj_t* l1;
-          lv_obj_t* l2;
           lv_obj_t* bt_accept;
           lv_obj_t* bt_mute;
           lv_obj_t* bt_reject;
           lv_obj_t* label_accept;
           lv_obj_t* label_mute;
           lv_obj_t* label_reject;
-          lv_obj_t* bottomPlaceholder;
           Modes mode;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           bool running = true;

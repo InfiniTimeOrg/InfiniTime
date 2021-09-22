@@ -3,6 +3,7 @@
 #include <legacy/nrf_drv_gpiote.h>
 #include <nrfx_log.h>
 #include <task.h>
+#include "drivers/PinMap.h"
 
 using namespace Pinetime::Drivers;
 
@@ -18,12 +19,12 @@ Cst816S::Cst816S(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaste
 }
 
 void Cst816S::Init() {
-  nrf_gpio_cfg_output(pinReset);
-  nrf_gpio_pin_set(pinReset);
+  nrf_gpio_cfg_output(PinMap::Cst816sReset);
+  nrf_gpio_pin_set(PinMap::Cst816sReset);
   vTaskDelay(50);
-  nrf_gpio_pin_clear(pinReset);
+  nrf_gpio_pin_clear(PinMap::Cst816sReset);
   vTaskDelay(5);
-  nrf_gpio_pin_set(pinReset);
+  nrf_gpio_pin_set(PinMap::Cst816sReset);
   vTaskDelay(50);
 
   // Wake the touchpanel up
@@ -80,9 +81,9 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
 }
 
 void Cst816S::Sleep() {
-  nrf_gpio_pin_clear(pinReset);
+  nrf_gpio_pin_clear(PinMap::Cst816sReset);
   vTaskDelay(5);
-  nrf_gpio_pin_set(pinReset);
+  nrf_gpio_pin_set(PinMap::Cst816sReset);
   vTaskDelay(50);
   static constexpr uint8_t sleepValue = 0x03;
   twiMaster.Write(twiAddress, 0xA5, &sleepValue, 1);
