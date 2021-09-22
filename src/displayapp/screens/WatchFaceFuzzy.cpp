@@ -139,3 +139,34 @@ const char* WatchFaceFuzzy::hourNames[] = {
   "eleven",
 };
 
+/* Once i18n is implemented, new languages can be introduced like this:
+ *
+ * char* it-IT_sectors[] = {
+ *   "%0\nin punto",
+ *   "%0 e cinque",
+ *   "%0 e dieci",
+ *   "%0 e un quarto",
+ *   "%0 e venti",
+ *   "%0 e venti cinque",
+ *   "%0 e mezza",
+ *   "%0 e trenta cinque",
+ *   "%1 meno venti",
+ *   "%1 meno un quarto",
+ *   "%1 meno dieci",
+ *   "%1 meno cinque",
+ * };
+ * const char* it-IT_hourNames[] = {
+ *   "dodici",
+ *   "una",
+ *   "due",
+ *   "tre",
+ *   "quattro",
+ *   "cinque",
+ *   "sei",
+ *   "sette",
+ *   "otto",
+ *   "nove",
+ *   "dieci",
+ *   "undici",
+ * };
+ */
