@@ -434,6 +434,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
+        displayapp/screens/Styles.cpp
         displayapp/Colors.cpp
 
         ## Settings
