@@ -82,6 +82,64 @@ const char* WatchFaceFuzzy::hourNames[] = {
 
 /* Once i18n is implemented, new languages can be introduced like this:
  *
+ * const char* ca-ES_sectors[] = {
+ *   "%0\nen punt",
+ *   "%0\ni cinc",
+ *   "%0\ni deu",
+ *   "%0\ni quart",
+ *   "%0\ni vint",
+ *   "%0\ni vint\ni cinc",
+ *   "%0\ni mitja",
+ *   "%1\nmenys\nvint\ni-cinc",
+ *   "%1\nmenys\nvint",
+ *   "%1\nmenys\nquart",
+ *   "%1\nmenys deu",
+ *   "%1\nmenys\ncinc",
+ * };
+ * const char* ca-ES_hourNames[] = {
+ *   "les dotze",
+ *   "la una",
+ *   "les dues",
+ *   "les tres",
+ *   "les\nquatre",
+ *   "les cinc",
+ *   "les sis",
+ *   "les set",
+ *   "les vuit",
+ *   "les nou",
+ *   "les deu",
+ *   "les onze",
+ * };
+ *
+ * const char* es-ES_sectors[] = {
+ *   "%0\nen punto",
+ *   "%0\ny cinco",
+ *   "%0\ny diez",
+ *   "%0\ny cuarto",
+ *   "%0\ny veinte",
+ *   "%0\ny veinti\ncinco",
+ *   "%0\ny media",
+ *   "%1\nmenos\nveinti\ncinco",
+ *   "%1\nmenos\nveinte",
+ *   "%1\nmenos\ncuarto",
+ *   "%1\nmenos\ndiez",
+ *   "%1\nmenos\ncinco",
+ * };
+ * const char* es-ES_hourNames[] = {
+ *   "las doce",
+ *   "la una",
+ *   "las dos",
+ *   "las tres",
+ *   "las\ncuatro",
+ *   "las cinco",
+ *   "las seis",
+ *   "las siete",
+ *   "las ocho",
+ *   "las nueve",
+ *   "las diez",
+ *   "las once",
+ * };
+ *
  * char* it-IT_sectors[] = {
  *   "%0\nin punto",
  *   "%0 e cinque",
