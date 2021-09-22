@@ -1,6 +1,7 @@
 #include "displayapp/screens/settings/SettingTimeFormat.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
+#include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
 
@@ -46,12 +47,7 @@ SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pi
     lv_checkbox_set_text(cbOption[i], options[i]);
     cbOption[i]->user_data = this;
     lv_obj_set_event_cb(cbOption[i], event_handler);
-
-    // radio button style
-    lv_obj_set_style_local_radius(cbOption[i], LV_CHECKBOX_PART_BULLET, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-    lv_obj_set_style_local_border_width(cbOption[i], LV_CHECKBOX_PART_BULLET, LV_STATE_CHECKED, 9);
-    lv_obj_set_style_local_border_color(cbOption[i], LV_CHECKBOX_PART_BULLET, LV_STATE_CHECKED, LV_COLOR_GREEN);
-    lv_obj_set_style_local_bg_color(cbOption[i], LV_CHECKBOX_PART_BULLET, LV_STATE_CHECKED, LV_COLOR_WHITE);
+    SetRadioButtonStyle(cbOption[i]);
   }
 
   if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
