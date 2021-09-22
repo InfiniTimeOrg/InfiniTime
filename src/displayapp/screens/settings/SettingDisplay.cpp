@@ -14,6 +14,8 @@ namespace {
   }
 }
 
+constexpr std::array<uint16_t, 4> SettingDisplay::options;
+
 SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
 
