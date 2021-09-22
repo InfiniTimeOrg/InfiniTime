@@ -1,11 +1,7 @@
 #pragma once
 
 #include <lvgl/src/lv_core/lv_obj.h>
-/* #include <chrono> */
-/* #include <cstdint> */
-/* #include <memory> */
 #include "Screen.h"
-//#include "ScreenList.h"
 #include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
