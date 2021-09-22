@@ -112,9 +112,9 @@ void WatchFaceDigital::Refresh() {
     lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
 
     if (settingsController.GetBatteryColorStatus() == Controllers::Settings::BatteryColor::ON) {
-        lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetBatteryColor(batteryPercent));
+      lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetBatteryColor(batteryPercent));
     } else {
-        lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetDefaultBatteryColor());
+      lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetDefaultBatteryColor());
     }
     
     if (settingsController.GetBatteryPercentageStatus() == Controllers::Settings::BatteryPercentage::ON) {

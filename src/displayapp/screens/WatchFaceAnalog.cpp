@@ -69,6 +69,10 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_label_set_text(batteryIcon, Symbols::batteryHalf);
   lv_obj_align(batteryIcon, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
+  batteryValue = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text(batteryValue, "");
+  lv_obj_align(batteryValue, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+
   notificationIcon = lv_label_create(lv_scr_act(), NULL);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
@@ -181,6 +185,18 @@ void WatchFaceAnalog::Refresh() {
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
     lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+
+    if (settingsController.GetBatteryColorStatus() == Controllers::Settings::BatteryColor::ON) {
+      lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetBatteryColor(batteryPercent));
+    } else {
+      lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetDefaultBatteryColor());
+    }
+    
+    if (settingsController.GetBatteryPercentageStatus() == Controllers::Settings::BatteryPercentage::ON) {
+      lv_label_set_text_fmt(batteryValue, "%lu", batteryPercent);
+    } else {
+      lv_label_set_text(batteryValue, "");
+    }
   }
 
   notificationState = notificationManager.AreNewNotificationsAvailable();
