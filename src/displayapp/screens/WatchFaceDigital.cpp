@@ -102,9 +102,9 @@ WatchFaceDigital::~WatchFaceDigital() {
 }
 
 void WatchFaceDigital::Refresh() {
-  isCharging = batteryController.IsCharging();
-  if (isCharging.IsUpdated()) {
-    lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging.Get()));
+  powerPresent = batteryController.IsPowerPresent();
+  if (powerPresent.IsUpdated()) {
+    lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
   }
 
   batteryPercentRemaining = batteryController.PercentRemaining();

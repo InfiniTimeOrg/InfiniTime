@@ -74,7 +74,7 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     } else if (voltage < battery_min) {
       percentRemaining = 0;
     } else {
-      percentRemaining = std::min((voltage - battery_min) * 100 / (battery_max - battery_min), 99);
+      percentRemaining = std::min((voltage - battery_min) * 100 / (battery_max - battery_min), isCharging ? 99 : 100);
     }
 
     nrfx_saadc_uninit();
