@@ -1,8 +1,7 @@
 #include "WatchFaceFuzzy.h"
 
-//#include <date/date.h>
 #include <lvgl/lvgl.h>
-//#include <cstdio>
+#include <string>
 
 using namespace Pinetime::Applications::Screens;
 
@@ -22,21 +21,23 @@ WatchFaceFuzzy::WatchFaceFuzzy(DisplayApp* app, Controllers::DateTime& dateTimeC
    */
   label_time = lv_label_create(lv_scr_act(), nullptr);
 
-  /* Set size of the label to screen size */
-  lv_obj_set_size(label_time, LV_HOR_RES, LV_VER_RES);
-
   /* Set the behavior of the label when the text is longer than the
    * object size. In this case we want to break the text to keep the
    * width and extend the height of the obj.
    *
-   * Note: this doesn't work properly or it is someone dependent on when
-   * it is called. Avoiding it for now and specifying linebreaks
-   * directly in the string.
+   * Note: let's try to use linebreaks explicitly to avoid problems with
+   * the hour accent (which tends to break with this long break mode)
    */
-  //lv_label_set_long_mode(label_time, LV_LABEL_LONG_BREAK);
+  lv_label_set_long_mode(label_time, LV_LABEL_LONG_BREAK);
+  /* Set size of the label to screen size */
+  //lv_obj_set_size(label_time, LV_HOR_RES, LV_VER_RES);
+  lv_obj_set_width(label_time, LV_HOR_RES);
 
-  /* Set text alignment (left) in the label */
-  lv_label_set_align(label_time, LV_LABEL_ALIGN_LEFT);
+  /* Set text alignment in the label.
+   * NOTE: alignment is character-wise and not pixel-wise (the result is
+   * probably not what you would expect is un are centering text)
+   */
+  lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
 
   /* Set main color and font for the label
    * Note: color can be changed when setting the text as well allowing
@@ -59,6 +60,10 @@ WatchFaceFuzzy::WatchFaceFuzzy(DisplayApp* app, Controllers::DateTime& dateTimeC
    * period: how often the callback is triggered (every 60s == 60000ms)
    * priority: see LVGL for more info
    * userdata: accessible from the callback (see Screen.cpp)
+   *
+   * NOTE: Updating every minute is efficient but it means that you need
+   * to wait for up to one minute for the clock to update after
+   * bluetooth connection (e.g., when you hard reset the PineTime).
    */
   taskRefresh = lv_task_create(RefreshTaskCallback, 60000, LV_TASK_PRIO_MID, this);
 
@@ -74,36 +79,21 @@ WatchFaceFuzzy::~WatchFaceFuzzy() {
 }
 
 void WatchFaceFuzzy::Refresh() {
-  /* Possible wordings:
-   * - "<hours> o'clock"
-   * - "half past <hours>"
-   * - "quarter past/to <hours>"
-   * - "<min_tens> past/to <hours>"
-   * - "<min_units> past/to <hours>"
-   * - "<min_tens> <min_units> past/to <hours>"
-   */
-
   uint8_t hours, minutes;
-  char const* pastTo = "past";
-  char const* hoursAccent = "ffffff";
-  char const* hourStr[12] = { "twelve", "one", "two", "three", "four", "five",
-    "six", "seven", "eight", "nine", "ten", "eleven" };
-  char const* minuteStr[6] = {"five", "ten", "quarter", "twenty",
-    "twenty five", "half" };
-  hours = dateTimeController.Hours() % 12;
+  std::string hoursStr, timeStr;
+
+  hours = dateTimeController.Hours() % 12;  // TODO: maybe that's not needed?
   minutes = dateTimeController.Minutes();
-  if (minutes > 30) {
-    pastTo = "to";
+  auto sector = (minutes / 5 + (minutes % 5 > 2)) % 12;
+
+  timeStr = timeSectors[sector];
+  if (timeStr.find("%1") != std::string::npos)
     hours = (hours + 1) % 12;
-    minutes = 60 - minutes;
-  }
-  // Make it fuzzy
-  minutes = minutes / 5 + (minutes % 5 > 2);
-  if (minutes == 0) {
-    lv_label_set_text_fmt(label_time, "#%s %s#\no'clock", hoursAccent, hourStr[hours]);
-  } else {
-    lv_label_set_text_fmt(label_time, "%s %s #%s %s#", minuteStr[minutes - 1], pastTo, hoursAccent, hourStr[hours]);
-  } 
+  hoursStr = std::string("#") + timeAccent + " " + hourNames[hours] + "#";
+  timeStr.replace(timeStr.find("%"), 2, hoursStr);
+
+  lv_label_set_text_fmt(label_time, timeStr.c_str());
+
   /* Align the label w.r.t. another object (active screen in this case)
    * You can use the last two parameters to move the obj around 
    * *after the alignment*.
@@ -113,5 +103,39 @@ void WatchFaceFuzzy::Refresh() {
    * NOTE: you should set the alignment after determining the size
    * (and content) of the label to get a reliable result!
    */
-  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 10, -10);
+  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 }
+
+/* Consider something like this
+ *  https://salsa.debian.org/xfce-team/desktop/xfce4-panel/-/blob/debian/master/plugins/clock/clock-fuzzy.c
+ * to gradually implement internationalisation
+ */
+const char* WatchFaceFuzzy::timeSectors[] = {
+  "%0\no'clock",
+  "five past\n%0",
+  "ten past\n%0",
+  "quarter\npast\n%0",
+  "twenty\npast\n%0",
+  "twenty\nfive past\n%0",
+  "half past\n%0",
+  "twenty\nfive to\n%1",
+  "twenty\nto %1",
+  "quarter\nto %1",
+  "ten to\n%1",
+  "five to\n%1",
+};
+const char* WatchFaceFuzzy::hourNames[] = {
+  "twelve",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "ten",
+  "eleven",
+};
+

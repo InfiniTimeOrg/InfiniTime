@@ -18,9 +18,12 @@ namespace Pinetime {
                 void Refresh() override;
 
                 private:
-                lv_obj_t* label_time;
                 Controllers::DateTime& dateTimeController;
                 lv_task_t* taskRefresh;
+                lv_obj_t* label_time;
+                const char* timeAccent = "ffffff";
+                static const char* timeSectors[12];
+                static const char* hourNames[12];
             };
         }
     }
