@@ -168,4 +168,33 @@ const char* WatchFaceFuzzy::hourNames[] = {
  *   "dieci",
  *   "undici",
  * };
+ *
+ * const char* de_DE_sectors[] = {
+ *   "%0 Uhr",
+ *   "Fünf nach %0",
+ *   "Zehn nach %0",
+ *   "Viertel nach %0",
+ *   "Zwanzig nach %0",
+ *   "Fünf vor halb %1",
+ *   "Halb %1",
+ *   "Fünf nach halb %1",
+ *   "Zwanzig vor %1",
+ *   "Viertel vor %1",
+ *   "Zehn vor %1",
+ *   "Fünf vor %1",
+ * };
+ * const char* de_DE_hourNames[] = {
+ *   "Zwölf",
+ *   "Eins", // TODO: "Ein" in "Ein Uhr"
+ *   "Zwei",
+ *   "Drei",
+ *   "Vier",
+ *   "Fünf",
+ *   "Sechs",
+ *   "Sieben",
+ *   "Acht",
+ *   "Neun",
+ *   "Zehn",
+ *   "Elf",
+ * };
  */
