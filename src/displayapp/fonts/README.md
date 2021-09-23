@@ -15,9 +15,7 @@
   using [this site](http://www.ltg.ed.ac.uk/~richard/utf-8.cgi?input=f185&mode=hex)
 - Define the new symbols in `src/displayapp/screens/Symbols.h`:
 
-```
-static constexpr const char* newSymbol = "\xEF\x86\x85";
-```
+Fill the font converter fields as follows:
 
 ### the config file format:
 
