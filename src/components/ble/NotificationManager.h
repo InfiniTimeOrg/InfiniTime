@@ -44,8 +44,6 @@ namespace Pinetime {
       Notification GetPrevious(Notification::Id id);
       bool ClearNewNotificationFlag();
       bool AreNewNotificationsAvailable();
-      bool IsVibrationEnabled();
-      void ToggleVibrations();
 
       static constexpr size_t MaximumMessageSize() {
         return MessageSize;
@@ -60,7 +58,6 @@ namespace Pinetime {
       uint8_t writeIndex = 0;
       bool empty = true;
       std::atomic<bool> newNotification {false};
-      bool vibrationEnabled = true;
     };
   }
 }
