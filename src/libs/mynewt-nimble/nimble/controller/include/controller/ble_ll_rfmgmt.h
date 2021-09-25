@@ -51,7 +51,7 @@ static inline void ble_ll_rfmgmt_reset(void) { }
 static inline void ble_ll_rfmgmt_scan_changed(bool e, uint32_t n) { }
 static inline void ble_ll_rfmgmt_sched_changed(struct ble_ll_sched_item *f) { }
 static inline void ble_ll_rfmgmt_release(void) { }
-static inline uint32_t ble_ll_rfmgmt_enable_now(void) { return 0; }
+static inline uint32_t ble_ll_rfmgmt_enable_now(void) { return os_cputime_get32(); }
 static inline bool ble_ll_rfmgmt_is_enabled(void) { return true; }
 
 #endif
