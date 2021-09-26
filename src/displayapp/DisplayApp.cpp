@@ -3,6 +3,7 @@
 #include <displayapp/screens/HeartRate.h>
 #include <displayapp/screens/Motion.h>
 #include <displayapp/screens/Timer.h>
+#include <displayapp/screens/Alarm.h>
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
@@ -90,6 +91,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::TimerController& timerController,
+                       Pinetime::Controllers::AlarmController& alarmController,
                        Pinetime::Controllers::TouchHandler& touchHandler)
   : lcd {lcd},
     lvgl {lvgl},
@@ -104,6 +106,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     motorController {motorController},
     motionController {motionController},
     timerController {timerController},
+    alarmController {alarmController},
     touchHandler {touchHandler} {
 }
 
@@ -136,9 +139,6 @@ void DisplayApp::InitHw() {
   brightnessController.Set(settingsController.GetBrightness());
 }
 
-uint32_t acc = 0;
-uint32_t count = 0;
-bool toggle = true;
 void DisplayApp::Refresh() {
   TickType_t queueTimeout;
   TickType_t delta;
@@ -194,9 +194,6 @@ void DisplayApp::Refresh() {
         //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
         //        Screens::Clock::BleConnectionStates::NotConnected);
         break;
-      case Messages::UpdateBatteryLevel:
-        batteryController.Update();
-        break;
       case Messages::NewNotification:
         LoadApp(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
         break;
@@ -208,6 +205,13 @@ void DisplayApp::Refresh() {
           LoadApp(Apps::Timer, DisplayApp::FullRefreshDirections::Down);
         }
         break;
+      case Messages::AlarmTriggered:
+        if (currentApp == Apps::Alarm) {
+          auto* alarm = static_cast<Screens::Alarm*>(currentScreen.get());
+          alarm->SetAlerting();
+        } else {
+          LoadApp(Apps::Alarm, DisplayApp::FullRefreshDirections::None);
+        }
       case Messages::TouchEvent: {
         if (state != States::Running) {
           break;
@@ -339,6 +343,9 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Timer:
       currentScreen = std::make_unique<Screens::Timer>(this, timerController);
+      break;
+    case Apps::Alarm:
+      currentScreen = std::make_unique<Screens::Alarm>(this, alarmController);
       break;
 
     // Settings

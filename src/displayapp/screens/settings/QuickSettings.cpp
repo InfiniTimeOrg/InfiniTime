@@ -88,7 +88,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   btn3_lvl = lv_label_create(btn3, nullptr);
   lv_obj_set_style_local_text_font(btn3_lvl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_sys_48);
 
-  if (settingsController.GetVibrationStatus() == Controllers::Settings::Vibration::ON) {
+  if (settingsController.GetNotificationStatus() == Controllers::Settings::Notification::ON) {
     lv_obj_add_state(btn3, LV_STATE_CHECKED);
     lv_label_set_text_static(btn3_lvl, Symbols::notificationsOn);
   } else {
@@ -142,11 +142,11 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
   } else if (object == btn3 && event == LV_EVENT_VALUE_CHANGED) {
 
     if (lv_obj_get_state(btn3, LV_BTN_PART_MAIN) & LV_STATE_CHECKED) {
-      settingsController.SetVibrationStatus(Controllers::Settings::Vibration::ON);
+      settingsController.SetNotificationStatus(Controllers::Settings::Notification::ON);
       motorController.RunForDuration(35);
       lv_label_set_text_static(btn3_lvl, Symbols::notificationsOn);
     } else {
-      settingsController.SetVibrationStatus(Controllers::Settings::Vibration::OFF);
+      settingsController.SetNotificationStatus(Controllers::Settings::Notification::OFF);
       lv_label_set_text_static(btn3_lvl, Symbols::notificationsOff);
     }
 
