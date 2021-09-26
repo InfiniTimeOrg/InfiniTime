@@ -7,6 +7,7 @@ using namespace Pinetime::Controllers;
 
 void DateTime::SetCurrentTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> t) {
   this->currentDateTime = t;
+  UpdateTime(previousSystickCounter); // Update internal state without updating the time
 }
 
 void DateTime::SetTime(
