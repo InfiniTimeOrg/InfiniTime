@@ -36,7 +36,9 @@ namespace Pinetime {
       SettingSteps,
       SettingSetDate,
       SettingSetTime,
-      Error,
+      SettingShakeThreshold,
+      Error
+
     };
   }
 }

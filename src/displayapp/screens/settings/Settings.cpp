@@ -65,6 +65,8 @@ std::unique_ptr<Screen> Settings::CreateScreen3() {
     {Symbols::none, "None", Apps::None},
     {Symbols::none, "None", Apps::None}
   }};
-
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake)) {
+    applications[1] = {Symbols::list, "Shake Threshold", Apps::SettingShakeThreshold};
+  }
   return std::make_unique<Screens::List>(2, 3, app, settingsController, applications);
 }

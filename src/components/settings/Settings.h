@@ -109,9 +109,18 @@ namespace Pinetime {
         }
         settings.screenTimeOut = timeout;
       };
+
       uint32_t GetScreenTimeOut() const {
         return settings.screenTimeOut;
       };
+
+      void SetShakeThreshold(uint16_t thresh){
+        settings.shakeWakeThreshold = thresh;
+      }
+
+      int16_t GetShakeThreshold() const{
+        return settings.shakeWakeThreshold;
+      }
 
       void setWakeUpMode(WakeUpMode wakeUp, bool enabled) {
         if (enabled != isWakeUpModeOn(wakeUp)) {
@@ -164,7 +173,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0003;
+      static constexpr uint32_t settingsVersion = 0x0004;
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
@@ -178,7 +187,7 @@ namespace Pinetime {
         PineTimeStyle PTS;
 
         std::bitset<4> wakeUpMode {0};
-
+        uint16_t shakeWakeThreshold = 300;
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
       };
 

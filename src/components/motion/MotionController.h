@@ -35,7 +35,8 @@ namespace Pinetime {
       uint32_t GetTripSteps() const {
         return currentTripSteps;
       }
-      bool Should_ShakeWake();
+
+      bool Should_ShakeWake(uint16_t thresh);
       bool Should_RaiseWake(bool isSleeping);
 
       void IsSensorOk(bool isOk);

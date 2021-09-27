@@ -45,12 +45,12 @@ bool MotionController::Should_RaiseWake(bool isSleeping) {
   return false;
 }
 
-bool MotionController::Should_ShakeWake() {
+bool MotionController::Should_ShakeWake(uint16_t thresh) {
   bool wake = false;
   auto diff = xTaskGetTickCount() - lastShakeTime;
   lastShakeTime = xTaskGetTickCount();
   int32_t speed = std::abs(y + z - lastYForShake - lastZForShake) / diff * 10;
-  if (speed > 150) { // TODO move threshold to a setting
+  if (speed > thresh) { 
     wake = true;
   }
   lastXForShake = x;
