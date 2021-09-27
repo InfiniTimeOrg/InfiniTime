@@ -13,10 +13,6 @@ namespace Pinetime {
         BMA421,
         BMA425,
       };
-      enum class WakeUpMode : uint8_t {
-        RaiseWrist = 0,
-        Shake,
-      };
 
       void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps);
 
