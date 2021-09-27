@@ -12,6 +12,10 @@ namespace Pinetime {
         BMA421,
         BMA425,
       };
+      enum class WakeUpMode : uint8_t {
+        RaiseWrist = 0,
+        Shake,
+      };
 
       void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps);
 
@@ -27,7 +31,9 @@ namespace Pinetime {
       uint32_t NbSteps() const {
         return nbSteps;
       }
-      bool ShouldWakeUp(bool isSleeping);
+    
+      bool Should_ShakeWake();
+      bool Should_RaiseWake(bool isSleeping);
 
       void IsSensorOk(bool isOk);
       bool IsSensorOk() const {
@@ -48,6 +54,11 @@ namespace Pinetime {
       int16_t lastYForWakeUp = 0;
       bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
+
+      int16_t lastXForShake = 0;
+      int16_t lastYForShake = 0;
+      int16_t lastZForShake = 0;
+      uint32_t lastShakeTime = 0;
     };
   }
 }
