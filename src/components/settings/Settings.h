@@ -15,6 +15,7 @@ namespace Pinetime {
         SingleTap = 0,
         DoubleTap = 1,
         RaiseWrist = 2,
+        Shake = 3,
       };
       enum class Colors : uint8_t {
         White, Silver, Gray, Black, Red, Maroon, Yellow, Olive, Lime, Green, Cyan, Teal, Blue, Navy, Magenta, Purple, Orange
@@ -127,12 +128,13 @@ namespace Pinetime {
               settings.wakeUpMode.set(static_cast<size_t>(WakeUpMode::SingleTap), false);
               break;
             case WakeUpMode::RaiseWrist:
+            case WakeUpMode::Shake:
               break;
           }
         }
       };
 
-      std::bitset<3> getWakeUpModes() const {
+      std::bitset<4> getWakeUpModes() const {
         return settings.wakeUpMode;
       }
 
@@ -162,7 +164,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0002;
+      static constexpr uint32_t settingsVersion = 0x0003;
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
@@ -175,7 +177,7 @@ namespace Pinetime {
 
         PineTimeStyle PTS;
 
-        std::bitset<3> wakeUpMode {0};
+        std::bitset<4> wakeUpMode {0};
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
       };

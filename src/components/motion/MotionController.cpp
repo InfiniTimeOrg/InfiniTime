@@ -1,4 +1,5 @@
 #include "components/motion/MotionController.h"
+#include "os/os_cputime.h"
 
 using namespace Pinetime::Controllers;
 
@@ -7,7 +8,7 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
     service->OnNewStepCountValue(nbSteps);
   }
 
-  if(service != nullptr && (this->x != x || this->y != y || this->z != z)) {
+  if (service != nullptr && (this->x != x || this->y != y || this->z != z)) {
     service->OnNewMotionValues(x, y, z);
   }
 
@@ -21,7 +22,7 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   }
 }
 
-bool MotionController::ShouldWakeUp(bool isSleeping) {
+bool MotionController::Should_RaiseWake(bool isSleeping) {
   if ((x + 335) <= 670 && z < 0) {
     if (not isSleeping) {
       if (y <= 0) {
@@ -43,6 +44,21 @@ bool MotionController::ShouldWakeUp(bool isSleeping) {
   }
   return false;
 }
+
+bool MotionController::Should_ShakeWake() {
+  bool wake = false;
+  auto diff = xTaskGetTickCount() - lastShakeTime;
+  lastShakeTime = xTaskGetTickCount();
+  int32_t speed = std::abs(y + z - lastYForShake - lastZForShake) / diff * 10;
+  if (speed > 150) { // TODO move threshold to a setting
+    wake = true;
+  }
+  lastXForShake = x;
+  lastYForShake = y;
+  lastZForShake = z;
+  return wake;
+}
+
 void MotionController::IsSensorOk(bool isOk) {
   isSensorOk = isOk;
 }
