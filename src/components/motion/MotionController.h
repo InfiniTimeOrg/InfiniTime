@@ -65,6 +65,7 @@ namespace Pinetime {
       int16_t lastXForShake = 0;
       int16_t lastYForShake = 0;
       int16_t lastZForShake = 0;
+      int32_t accumulatedspeed = 0;
       uint32_t lastShakeTime = 0;
     };
   }

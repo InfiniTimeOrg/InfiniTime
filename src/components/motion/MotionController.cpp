@@ -50,7 +50,10 @@ bool MotionController::Should_ShakeWake(uint16_t thresh) {
   auto diff = xTaskGetTickCount() - lastShakeTime;
   lastShakeTime = xTaskGetTickCount();
   int32_t speed = std::abs(y + z - lastYForShake - lastZForShake) / diff * 10;
-  if (speed > thresh) { 
+  //(.2 * speed) + ((1 - .2) * accumulatedspeed);
+  //implemented without floats as .25Alpha
+  accumulatedspeed = (speed/4) + ((accumulatedspeed/4)*3); 
+  if (accumulatedspeed > thresh) { 
     wake = true;
   }
   lastXForShake = x;
