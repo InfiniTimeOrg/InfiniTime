@@ -57,10 +57,6 @@ SettingFavoriteApp::~SettingFavoriteApp() {
   settingsController.SaveSettings();
 }
 
-bool SettingFavoriteApp::Refresh() {
-  return running;
-}
-
 void SettingFavoriteApp::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
     for (int i = 0; i < optionsTotal; i++) {

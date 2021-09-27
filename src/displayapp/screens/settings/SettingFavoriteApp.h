@@ -15,8 +15,6 @@ namespace Pinetime {
       public:
         SettingFavoriteApp(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingFavoriteApp() override;
-
-        bool Refresh() override;
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
       private:
