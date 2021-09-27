@@ -5,6 +5,7 @@
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
 #include "drivers/Cst816s.h"
+#include "displayapp/Apps.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -30,6 +31,17 @@ namespace Pinetime {
 
       void Init();
       void SaveSettings();
+
+      void SetFavoriteApp(Applications::Apps app){
+        if (app != settings.favoriteApp) {
+          settingsChanged = true;
+        }
+        settings.favoriteApp = app;
+      }
+
+      Applications::Apps GetFavoriteApp(){
+        return settings.favoriteApp;
+      }
 
       void SetClockFace(uint8_t face) {
         if (face != settings.clockFace) {
@@ -179,6 +191,8 @@ namespace Pinetime {
         std::bitset<3> wakeUpMode {0};
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        Applications::Apps favoriteApp = Applications::Apps::None;
       };
 
       SettingsData settings;
