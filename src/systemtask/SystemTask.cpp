@@ -389,9 +389,9 @@ void SystemTask::UpdateMotion() {
     return;
 
   if (isSleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                     settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
+                      settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake)))
     return;
-  }
+ 
   if (stepCounterMustBeReset) {
     motionSensor.ResetStepCounter();
     stepCounterMustBeReset = false;
