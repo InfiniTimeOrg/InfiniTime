@@ -9,6 +9,7 @@
 #include "components/settings/Settings.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/battery/BatteryController.h"
+#include "components/motor/MotorController.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -31,11 +32,12 @@ namespace Pinetime {
         ~Tile() override;
 
         void UpdateScreen();
-        void OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId);
+        void OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId, lv_event_t event);
 
       private:
         Pinetime::Controllers::Battery& batteryController;
         Controllers::DateTime& dateTimeController;
+        Controllers::Settings& settingsController;
 
         lv_task_t* taskUpdate;
 
@@ -49,6 +51,7 @@ namespace Pinetime {
 
         const char* btnmMap[8];
         Pinetime::Applications::Apps apps[6];
+        Pinetime::Applications::Apps currentFavoriteApp = Pinetime::Applications::Apps::None;
       };
     }
   }
