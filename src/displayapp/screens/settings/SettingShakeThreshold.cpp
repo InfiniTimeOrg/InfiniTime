@@ -24,13 +24,14 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
     systemTask {systemTask} {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Shake Threshold");
+  lv_label_set_text_static(title, "Wake Sensitivity");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
 
+  taskCount = 0;
 
   positionArc = lv_arc_create(lv_scr_act(), nullptr);
-  // Why do this?
+  
   positionArc->user_data = this;
 
   lv_obj_set_event_cb(positionArc, event_handler);
@@ -59,6 +60,8 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
   }
 
 SettingShakeThreshold::~SettingShakeThreshold() {
+  settingsController.SetShakeThreshold(lv_arc_get_value(positionArc));
+  lv_task_del(refreshTask);
   lv_obj_clean(lv_scr_act());
   settingsController.SaveSettings();
 }
@@ -69,8 +72,9 @@ void SettingShakeThreshold::Refresh() {
   if((motionController.currentShakeSpeed()-200) > lv_arc_get_value(positionArc)){
     lv_arc_set_value(positionArc,(int16_t)motionController.currentShakeSpeed()-200);
   }
-  if(taskCount >= 100){
+  if(taskCount >= 50){
     lv_label_set_text(calLabel, "Calibrate");
+    taskCount=0;
     lv_task_del(refreshTask);
   }
 
@@ -80,11 +84,18 @@ void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
 
   switch (event) {
     case LV_EVENT_PRESSED: {
-        taskCount = 0;
-        refreshTask = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
-        lv_label_set_text(calLabel, "Shake!!!");
+        if(taskCount == 0){
+          refreshTask = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
+          lv_label_set_text(calLabel, "Shake!!!");
+        }else{
+          
+          lv_task_del(refreshTask);
+          taskCount=0;
+          lv_label_set_text(calLabel, "Calibrate");
+        }
       break;
     }
+
     case LV_EVENT_VALUE_CHANGED: {
       if (object == positionArc) {
         settingsController.SetShakeThreshold(lv_arc_get_value(positionArc));

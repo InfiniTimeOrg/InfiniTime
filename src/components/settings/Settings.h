@@ -116,7 +116,11 @@ namespace Pinetime {
       };
 
       void SetShakeThreshold(uint16_t thresh){
-        settings.shakeWakeThreshold = thresh;
+        if(settings.shakeWakeThreshold != thresh){
+            settings.shakeWakeThreshold = thresh;
+            settingsChanged = true;
+        }
+        
       }
 
       int16_t GetShakeThreshold() const{
