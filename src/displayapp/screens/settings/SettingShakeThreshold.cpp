@@ -40,10 +40,10 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
   lv_arc_set_bg_angles(positionArc, 180, 360);
 
   // lv_arc_set_rotation(positionArc, 135);
-  lv_arc_set_range(positionArc, 10, 4095);
+  lv_arc_set_range(positionArc, 0, 4095);
   lv_arc_set_value(positionArc, settingsController.GetShakeThreshold());
   lv_obj_set_size(positionArc, 240, 180);
-  lv_arc_set_adjustable(positionArc, false);
+  lv_arc_set_adjustable(positionArc, true);
   lv_obj_align(positionArc, title, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 10);
 
   calButton = lv_btn_create(lv_scr_act(), nullptr);
@@ -84,7 +84,9 @@ void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
 
   switch (event) {
     case LV_EVENT_PRESSED: {
+      if (object == calButton) {
         if(taskCount == 0){
+          lv_arc_set_value(positionArc,0);
           refreshTask = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
           lv_label_set_text(calLabel, "Shake!!!");
         }else{
@@ -93,6 +95,7 @@ void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
           taskCount=0;
           lv_label_set_text(calLabel, "Calibrate");
         }
+      }
       break;
     }
 
