@@ -174,6 +174,17 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
+bool Alarm::OnButtonPushed() {
+  if (txtMessage != nullptr && btnMessage != nullptr) {
+    lv_obj_del(txtMessage);
+    lv_obj_del(btnMessage);
+    txtMessage = nullptr;
+    btnMessage = nullptr;
+    return true;
+  }
+  return false;
+}
+
 void Alarm::UpdateAlarmTime() {
   lv_label_set_text_fmt(time, "%02d:%02d", alarmHours, alarmMinutes);
   alarmController.SetAlarmTime(alarmHours, alarmMinutes);

@@ -31,6 +31,7 @@ namespace Pinetime {
         ~Alarm() override;
         void SetAlerting();
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
+        bool OnButtonPushed() override;
 
       private:
         bool running;
