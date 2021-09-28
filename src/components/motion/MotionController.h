@@ -38,7 +38,7 @@ namespace Pinetime {
 
       bool Should_ShakeWake(uint16_t thresh);
       bool Should_RaiseWake(bool isSleeping);
-
+      int32_t currentShakeSpeed();
       void IsSensorOk(bool isOk);
       bool IsSensorOk() const {
         return isSensorOk;

@@ -1,6 +1,5 @@
 #include "components/motion/MotionController.h"
 #include "os/os_cputime.h"
-
 using namespace Pinetime::Controllers;
 
 void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps) {
@@ -49,17 +48,21 @@ bool MotionController::Should_ShakeWake(uint16_t thresh) {
   bool wake = false;
   auto diff = xTaskGetTickCount() - lastShakeTime;
   lastShakeTime = xTaskGetTickCount();
-  int32_t speed = std::abs(y + z - lastYForShake - lastZForShake) / diff * 10;
+  int32_t speed = std::abs(z + (y/2) + (x/4)- lastYForShake - lastZForShake) / diff * 100;
   //(.2 * speed) + ((1 - .2) * accumulatedspeed);
   //implemented without floats as .25Alpha
-  accumulatedspeed = (speed/4) + ((accumulatedspeed/4)*3); 
+  accumulatedspeed = (speed/5) + ((accumulatedspeed/5)*4); 
+
   if (accumulatedspeed > thresh) { 
     wake = true;
   }
-  lastXForShake = x;
-  lastYForShake = y;
+  lastXForShake = x/4;
+  lastYForShake = y/2;
   lastZForShake = z;
   return wake;
+}
+int32_t MotionController::currentShakeSpeed(){
+  return accumulatedspeed;
 }
 
 void MotionController::IsSensorOk(bool isOk) {

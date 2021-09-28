@@ -136,8 +136,7 @@ namespace Pinetime {
             case WakeUpMode::DoubleTap:
               settings.wakeUpMode.set(static_cast<size_t>(WakeUpMode::SingleTap), false);
               break;
-            case WakeUpMode::RaiseWrist:
-            case WakeUpMode::Shake:
+            default:
               break;
           }
         }
