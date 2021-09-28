@@ -20,6 +20,7 @@
 #include <cstdint>
 #include "app_timer.h"
 #include "components/datetime/DateTimeController.h"
+#include <chrono>
 
 namespace Pinetime {
   namespace System {
@@ -32,6 +33,7 @@ namespace Pinetime {
 
       void Init(System::SystemTask* systemTask);
       void SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin);
+      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> TimePoint();
       void ScheduleAlarm();
       void DisableAlarm();
       void SetOffAlarmNow();

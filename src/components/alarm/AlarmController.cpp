@@ -19,7 +19,6 @@
 #include "systemtask/SystemTask.h"
 #include "app_timer.h"
 #include "task.h"
-#include <chrono>
 
 using namespace Pinetime::Controllers;
 using namespace std::chrono_literals;
@@ -48,10 +47,7 @@ void AlarmController::SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin) {
   minutes = alarmMin;
 }
 
-void AlarmController::ScheduleAlarm() {
-  // Determine the next time the alarm needs to go off and set the app_timer
-  app_timer_stop(alarmAppTimer);
-
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> AlarmController::TimePoint() {
   auto now = dateTimeController.CurrentDateTime();
   alarmTime = now;
   time_t ttAlarmTime = std::chrono::system_clock::to_time_t(alarmTime);
@@ -79,15 +75,26 @@ void AlarmController::ScheduleAlarm() {
   tmAlarmTime->tm_isdst = -1; // use system timezone setting to determine DST
 
   // now can convert back to a time_point
-  alarmTime = std::chrono::system_clock::from_time_t(std::mktime(tmAlarmTime));
-  auto mSecToAlarm = std::chrono::duration_cast<std::chrono::milliseconds>(alarmTime - now).count();
+  return std::chrono::system_clock::from_time_t(std::mktime(tmAlarmTime));
+}
+
+void AlarmController::ScheduleAlarm() {
+  // Determine the next time the alarm needs to go off and set the app_timer
+  app_timer_stop(alarmAppTimer);
+
+  alarmTime = TimePoint();
+  auto mSecToAlarm = std::chrono::duration_cast<std::chrono::milliseconds>(alarmTime - dateTimeController.CurrentDateTime()).count();
   app_timer_start(alarmAppTimer, APP_TIMER_TICKS(mSecToAlarm), this);
 
   state = AlarmState::Set;
 }
 
 uint32_t AlarmController::SecondsToAlarm() {
-  return std::chrono::duration_cast<std::chrono::seconds>(alarmTime - dateTimeController.CurrentDateTime()).count();
+  if (state == AlarmState::Set) {
+    return std::chrono::duration_cast<std::chrono::seconds>(alarmTime - dateTimeController.CurrentDateTime()).count();
+  } else {
+    return std::chrono::duration_cast<std::chrono::seconds>(TimePoint() - dateTimeController.CurrentDateTime()).count();
+  }
 }
 
 void AlarmController::DisableAlarm() {

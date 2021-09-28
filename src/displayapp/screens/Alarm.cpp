@@ -209,19 +209,15 @@ void Alarm::ShowInfo() {
   txtMessage = lv_label_create(btnMessage, nullptr);
   lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
 
-  if (alarmController.State() == AlarmController::AlarmState::Set) {
-    auto timeToAlarm = alarmController.SecondsToAlarm();
+  auto timeToAlarm = alarmController.SecondsToAlarm();
 
-    auto daysToAlarm = timeToAlarm / 86400;
-    auto hrsToAlarm = (timeToAlarm % 86400) / 3600;
-    auto minToAlarm = (timeToAlarm % 3600) / 60;
-    auto secToAlarm = timeToAlarm % 60;
+  auto daysToAlarm = timeToAlarm / 86400;
+  auto hrsToAlarm = (timeToAlarm % 86400) / 3600;
+  auto minToAlarm = (timeToAlarm % 3600) / 60;
+  auto secToAlarm = timeToAlarm % 60;
 
-    lv_label_set_text_fmt(
-      txtMessage, "Time to\nalarm:\n%2d Days\n%2d Hours\n%2d Minutes\n%2d Seconds", daysToAlarm, hrsToAlarm, minToAlarm, secToAlarm);
-  } else {
-    lv_label_set_text(txtMessage, "Alarm\nis not\nset.");
-  }
+  lv_label_set_text_fmt(
+    txtMessage, "Time to\nalarm:\n%2d Days\n%2d Hours\n%2d Minutes\n%2d Seconds", daysToAlarm, hrsToAlarm, minToAlarm, secToAlarm);
 }
 
 void Alarm::SetRecurButtonState() {
