@@ -120,10 +120,7 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       return;
     }
     if (obj == btnMessage) {
-      lv_obj_del(txtMessage);
-      lv_obj_del(btnMessage);
-      txtMessage = nullptr;
-      btnMessage = nullptr;
+      HideInfo();
       return;
     }
     // If any other button was pressed, disable the alarm
@@ -176,10 +173,7 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 
 bool Alarm::OnButtonPushed() {
   if (txtMessage != nullptr && btnMessage != nullptr) {
-    lv_obj_del(txtMessage);
-    lv_obj_del(btnMessage);
-    txtMessage = nullptr;
-    btnMessage = nullptr;
+    HideInfo();
     return true;
   }
   return false;
@@ -233,6 +227,12 @@ void Alarm::ShowInfo() {
   } else {
     lv_label_set_text(txtMessage, "Alarm\nis not\nset.");
   }
+}
+
+void Alarm::HideInfo() {
+  lv_obj_del(btnMessage);
+  txtMessage = nullptr;
+  btnMessage = nullptr;
 }
 
 void Alarm::SetRecurButtonState() {

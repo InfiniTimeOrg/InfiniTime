@@ -47,6 +47,7 @@ namespace Pinetime {
         void SetRecurButtonState();
         void SetAlarm();
         void ShowInfo();
+        void HideInfo();
         void ToggleRecurrence();
         void UpdateAlarmTime();
       };
