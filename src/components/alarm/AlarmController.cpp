@@ -88,11 +88,7 @@ void AlarmController::ScheduleAlarm() {
 }
 
 uint32_t AlarmController::SecondsToAlarm() {
-  if (state == AlarmState::Set) {
-    return std::chrono::duration_cast<std::chrono::seconds>(CalculateAlarmTimePoint() - dateTimeController.CurrentDateTime()).count();
-  } else {
-    return std::chrono::duration_cast<std::chrono::seconds>(CalculateAlarmTimePoint() - dateTimeController.CurrentDateTime()).count();
-  }
+  return std::chrono::duration_cast<std::chrono::seconds>(CalculateAlarmTimePoint() - dateTimeController.CurrentDateTime()).count();
 }
 
 void AlarmController::DisableAlarm() {
