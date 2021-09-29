@@ -47,10 +47,9 @@ void AlarmController::SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin) {
   minutes = alarmMin;
 }
 
-std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> AlarmController::TimePoint() {
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> AlarmController::CalculateAlarmTimePoint() {
   auto now = dateTimeController.CurrentDateTime();
-  alarmTime = now;
-  time_t ttAlarmTime = std::chrono::system_clock::to_time_t(alarmTime);
+  time_t ttAlarmTime = std::chrono::system_clock::to_time_t(now);
   tm* tmAlarmTime = std::localtime(&ttAlarmTime);
 
   // If the time being set has already passed today,the alarm should be set for tomorrow
@@ -82,8 +81,7 @@ void AlarmController::ScheduleAlarm() {
   // Determine the next time the alarm needs to go off and set the app_timer
   app_timer_stop(alarmAppTimer);
 
-  alarmTime = TimePoint();
-  auto mSecToAlarm = std::chrono::duration_cast<std::chrono::milliseconds>(alarmTime - dateTimeController.CurrentDateTime()).count();
+  auto mSecToAlarm = std::chrono::duration_cast<std::chrono::milliseconds>(CalculateAlarmTimePoint() - dateTimeController.CurrentDateTime()).count();
   app_timer_start(alarmAppTimer, APP_TIMER_TICKS(mSecToAlarm), this);
 
   state = AlarmState::Set;
@@ -91,9 +89,9 @@ void AlarmController::ScheduleAlarm() {
 
 uint32_t AlarmController::SecondsToAlarm() {
   if (state == AlarmState::Set) {
-    return std::chrono::duration_cast<std::chrono::seconds>(alarmTime - dateTimeController.CurrentDateTime()).count();
+    return std::chrono::duration_cast<std::chrono::seconds>(CalculateAlarmTimePoint() - dateTimeController.CurrentDateTime()).count();
   } else {
-    return std::chrono::duration_cast<std::chrono::seconds>(TimePoint() - dateTimeController.CurrentDateTime()).count();
+    return std::chrono::duration_cast<std::chrono::seconds>(CalculateAlarmTimePoint() - dateTimeController.CurrentDateTime()).count();
   }
 }
 
