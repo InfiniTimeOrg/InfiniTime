@@ -36,20 +36,21 @@ bool MotionController::Should_ShakeWake(uint16_t thresh) {
   bool wake = false;
   auto diff = xTaskGetTickCount() - lastShakeTime;
   lastShakeTime = xTaskGetTickCount();
-  int32_t speed = std::abs(z + (y/2) + (x/4)- lastYForShake - lastZForShake) / diff * 100;
+  /* Currently Polling at 10hz, If this ever goes faster scalar and EMA might need adjusting */
+  int32_t speed = std::abs(z + (y / 2) + (x / 4) - lastYForShake - lastZForShake) / diff * 100;
   //(.2 * speed) + ((1 - .2) * accumulatedspeed);
-  //implemented without floats as .25Alpha
-  accumulatedspeed = (speed/5) + ((accumulatedspeed/5)*4); 
+  // implemented without floats as .25Alpha
+  accumulatedspeed = (speed / 5) + ((accumulatedspeed / 5) * 4);
 
-  if (accumulatedspeed > thresh) { 
+  if (accumulatedspeed > thresh) {
     wake = true;
   }
-  lastXForShake = x/4;
-  lastYForShake = y/2;
+  lastXForShake = x / 4;
+  lastYForShake = y / 2;
   lastZForShake = z;
   return wake;
 }
-int32_t MotionController::currentShakeSpeed(){
+int32_t MotionController::currentShakeSpeed() {
   return accumulatedspeed;
 }
 
@@ -57,9 +58,15 @@ void MotionController::IsSensorOk(bool isOk) {
   isSensorOk = isOk;
 }
 void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
-  switch(types){
-    case Drivers::Bma421::DeviceTypes::BMA421: this->deviceType = DeviceTypes::BMA421; break;
-    case Drivers::Bma421::DeviceTypes::BMA425: this->deviceType = DeviceTypes::BMA425; break;
-    default: this->deviceType = DeviceTypes::Unknown; break;
+  switch (types) {
+    case Drivers::Bma421::DeviceTypes::BMA421:
+      this->deviceType = DeviceTypes::BMA421;
+      break;
+    case Drivers::Bma421::DeviceTypes::BMA425:
+      this->deviceType = DeviceTypes::BMA425;
+      break;
+    default:
+      this->deviceType = DeviceTypes::Unknown;
+      break;
   }
 }
