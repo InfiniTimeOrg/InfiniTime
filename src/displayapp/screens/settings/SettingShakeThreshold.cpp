@@ -4,7 +4,6 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
 
-
 using namespace Pinetime::Applications::Screens;
 
 namespace {
@@ -16,12 +15,9 @@ namespace {
 
 SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
                                              Controllers::Settings& settingsController,
-                                             Controllers::MotionController& motionController, 
+                                             Controllers::MotionController& motionController,
                                              System::SystemTask& systemTask)
-  : Screen(app),
-    settingsController {settingsController},
-    motionController {motionController},
-    systemTask {systemTask} {
+  : Screen(app), settingsController {settingsController}, motionController {motionController}, systemTask {systemTask} {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Wake Sensitivity");
@@ -31,7 +27,7 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
   taskCount = 0;
 
   positionArc = lv_arc_create(lv_scr_act(), nullptr);
-  
+
   positionArc->user_data = this;
 
   lv_obj_set_event_cb(positionArc, event_handler);
@@ -56,28 +52,28 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
   lv_obj_align(calButton, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   calLabel = lv_label_create(calButton, NULL);
   lv_label_set_text(calLabel, "Calibrate");
-
-  }
+}
 
 SettingShakeThreshold::~SettingShakeThreshold() {
   settingsController.SetShakeThreshold(lv_arc_get_value(positionArc));
-  lv_task_del(refreshTask);
-  lv_obj_clean(lv_scr_act());
+  if (taskCount > 0) {
+    lv_task_del(refreshTask);
+  }
   settingsController.SaveSettings();
+  lv_obj_clean(lv_scr_act());
 }
 
 void SettingShakeThreshold::Refresh() {
-  
-  taskCount++; //100ms Update time so finish @100
-  if((motionController.currentShakeSpeed()-200) > lv_arc_get_value(positionArc)){
-    lv_arc_set_value(positionArc,(int16_t)motionController.currentShakeSpeed()-200);
+
+  taskCount++; // 100ms Update time so finish @100
+  if ((motionController.currentShakeSpeed() - 200) > lv_arc_get_value(positionArc)) {
+    lv_arc_set_value(positionArc, (int16_t) motionController.currentShakeSpeed() - 200);
   }
-  if(taskCount >= 50){
+  if (taskCount >= 50) {
     lv_label_set_text(calLabel, "Calibrate");
-    taskCount=0;
+    taskCount = 0;
     lv_task_del(refreshTask);
   }
-
 }
 
 void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
@@ -85,14 +81,14 @@ void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   switch (event) {
     case LV_EVENT_PRESSED: {
       if (object == calButton) {
-        if(taskCount == 0){
-          lv_arc_set_value(positionArc,0);
-          refreshTask = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
+        if (taskCount == 0) {
+          lv_arc_set_value(positionArc, 0);
+          refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
           lv_label_set_text(calLabel, "Shake!!!");
-        }else{
-          
+        } else {
+
           lv_task_del(refreshTask);
-          taskCount=0;
+          taskCount = 0;
           lv_label_set_text(calLabel, "Calibrate");
         }
       }

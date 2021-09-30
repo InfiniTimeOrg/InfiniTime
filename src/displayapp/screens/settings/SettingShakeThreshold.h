@@ -26,9 +26,6 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
         System::SystemTask& systemTask;
 
-
-         
-
         uint8_t taskCount;
         lv_obj_t* cbOption[2];
         lv_obj_t *positionArc, *calButton, *calLabel;
