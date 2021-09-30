@@ -46,6 +46,7 @@
 #include "displayapp/screens/settings/SettingPineTimeStyle.h"
 
 #include "libs/lv_conf.h"
+#include "displayapp/screens/settings/SettingFavoriteApp.h"
 
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
@@ -232,6 +233,13 @@ void DisplayApp::Refresh() {
               case TouchEvents::SwipeRight:
                 LoadApp(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
                 break;
+              case TouchEvents::SwipeLeft:
+                favoriteApp = settingsController.GetFavoriteApp();
+                if (favoriteApp == Apps::None)
+                  LoadApp(Apps::SettingFavoriteApp, DisplayApp::FullRefreshDirections::LeftAnim);
+                else
+                  LoadApp(favoriteApp, DisplayApp::FullRefreshDirections::LeftAnim);
+                break;                
               case TouchEvents::DoubleTap:
                 PushMessageToSystemTask(System::Messages::GoToSleep);
                 break;
@@ -380,6 +388,8 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::SettingPineTimeStyle:
       currentScreen = std::make_unique<Screens::SettingPineTimeStyle>(this, settingsController);
+    case Apps::SettingFavoriteApp:
+      currentScreen = std::make_unique<Screens::SettingFavoriteApp>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::BatteryInfo:

@@ -1,6 +1,7 @@
 #include "Tile.h"
 #include "../DisplayApp.h"
 #include "BatteryIcon.h"
+#include "Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -11,12 +12,15 @@ namespace {
   }
 
   static void event_handler(lv_obj_t* obj, lv_event_t event) {
-    if (event != LV_EVENT_VALUE_CHANGED) return;
-
-    Tile* screen = static_cast<Tile*>(obj->user_data);
-    auto* eventDataPtr = (uint32_t*) lv_event_get_data();
-    uint32_t eventData = *eventDataPtr;
-    screen->OnValueChangedEvent(obj, eventData);
+    switch(event){
+      case LV_EVENT_VALUE_CHANGED:
+      case LV_EVENT_LONG_PRESSED:
+        Tile* screen = static_cast<Tile*>(obj->user_data);
+        auto* eventDataPtr = (uint32_t*) lv_event_get_data();
+        uint32_t eventData = *eventDataPtr;
+        screen->OnValueChangedEvent(obj, eventData, event);      
+        break;
+    }
   }
 }
 
@@ -27,7 +31,7 @@ Tile::Tile(uint8_t screenID,
            Pinetime::Controllers::Battery& batteryController,
            Controllers::DateTime& dateTimeController,
            std::array<Applications, 6>& applications)
-  : Screen(app), batteryController {batteryController}, dateTimeController {dateTimeController} {
+  : Screen(app), batteryController {batteryController}, dateTimeController {dateTimeController}, settingsController {settingsController}, motorController {motorController} {
 
   settingsController.SetAppMenu(screenID);
 
@@ -74,7 +78,13 @@ Tile::Tile(uint8_t screenID,
     if (applications[i].application == Apps::None) {
       btnmMap[btIndex] = " ";
     } else {
-      btnmMap[btIndex] = applications[i].icon;
+      if (applications[i].application == settingsController.GetFavoriteApp()){
+        //applications[i].icon
+        btnmMap[btIndex] ="*";
+      }
+      else{
+        btnmMap[btIndex] = applications[i].icon;
+      }
     }
     btIndex++;
     apps[i] = applications[i].application;
@@ -123,9 +133,25 @@ void Tile::UpdateScreen() {
   lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
 }
 
-void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId) {
+void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId, lv_event_t event) {
   if(obj != btnm1) return;
+  switch(event){
+    case LV_EVENT_VALUE_CHANGED:
+        app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up);
+        running = false;    
+      break;
+    case LV_EVENT_LONG_PRESSED:
+      currentFavoriteApp = settingsController.GetFavoriteApp();
+      if(buttonId){
+        if(currentFavoriteApp == apps[buttonId]){
+          settingsController.SetFavoriteApp(Apps::None);
+        }
+        else{
+          settingsController.SetFavoriteApp(apps[buttonId]);
+        }    
+        motorController.RunForDuration(35);
+      }
+      break;  
+  }
 
-  app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up);
-  running = false;
 }
