@@ -1,0 +1,59 @@
+name: Bug Report
+description: File a bug report
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for taking the time to fill out this bug report!**
+        *Please, before opening a bug report, check if similar issues already exist. In that case, use those issues to provide your feedback instead.*
+  - type: checkboxes
+    attributes:
+      options:
+      - label: I searched for similar bug reports and found none was relevant.
+        required: true
+  - type: input
+    id: desc-brief
+    attributes:
+      label: What happened?
+      description: A one-line description of the bug.
+      placeholder: "Ex. I woke up as a Kafkian insect this morning."
+    validations:
+      required: true
+  - type: input
+    id: desc-expected
+    attributes:
+      label: What should happen instead?
+      description: The behaviour you were expecting to see.
+      placeholder: "Ex. I was expecting to wake up as a human."
+  - type: textarea
+    id: desc-steps
+    attributes:
+      label: Reproduction steps
+      description: "How do you trigger this bug? Please walk us through it step by step."
+    validations:
+      required: true
+  - type: textarea
+    id: desc-long
+    attributes:
+      label: More details?
+      description: Give us more details about the bug and any personal attempts you made to fix it.
+      placeholder: Tell us more!
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: |
+        What [version of the firmware](https://github.com/JF002/InfiniTime/blob/develop/doc/gettingStarted/gettingStarted-1.0.md#how-to-check-the-version-of-infinitime-and-the-bootloader) are you running?
+        If you are running an older version, please consider [updating to the latest firmware](https://github.com/JF002/InfiniTime/blob/develop/doc/gettingStarted/gettingStarted-1.0.md#how-to-update-your-pinetime).
+        If you are running directly from git, specify the branch or the commit hash directly.
+      placeholder: "Ex. v1.6.0 or develop or fc922b60"
+    validations:
+      required: true
+  - type: input
+    id: companion-app
+    attributes:
+      label: Companion app
+      description: Which companion app are you using (if relevant)?
+      placeholder: "Ex. Gadgetbridge v0.60.0, Siglo v0.9.4"
