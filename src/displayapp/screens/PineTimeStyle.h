@@ -30,7 +30,11 @@ namespace Pinetime {
                       Controllers::MotionController& motionController);
         ~PineTimeStyle() override;
 
+        bool OnTouchEvent(TouchEvents event) override;
+
         void Refresh() override;
+
+        void UpdateSelected(lv_obj_t *object, lv_event_t event);
 
       private:
         char displayedChar[5];
@@ -39,6 +43,7 @@ namespace Pinetime {
         Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
         Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
         uint8_t currentDay = 0;
+        uint32_t savedTick = 0;
 
         DirtyValue<uint8_t> batteryPercentRemaining {};
         DirtyValue<bool> isCharging {};
@@ -48,6 +53,18 @@ namespace Pinetime {
         DirtyValue<uint32_t> stepCount {};
         DirtyValue<bool> notificationState {};
 
+        Pinetime::Controllers::Settings::Colors GetNext(Controllers::Settings::Colors color);
+        Pinetime::Controllers::Settings::Colors GetPrevious(Controllers::Settings::Colors color);
+
+        lv_obj_t* btnNextTime;
+        lv_obj_t* btnPrevTime;
+        lv_obj_t* btnNextBar;
+        lv_obj_t* btnPrevBar;
+        lv_obj_t* btnNextBG;
+        lv_obj_t* btnPrevBG;
+        lv_obj_t* btnReset;
+        lv_obj_t* btnRandom;
+        lv_obj_t* btnClose;
         lv_obj_t* timebar;
         lv_obj_t* sidebar;
         lv_obj_t* timeDD1;
@@ -67,6 +84,8 @@ namespace Pinetime {
         lv_obj_t* calendarCrossBar2;
         lv_obj_t* notificationIcon;
         lv_obj_t* stepGauge;
+        lv_obj_t* btnSet;
+        lv_obj_t* lbl_btnSet;
         lv_color_t needle_colors[1];
 
         Controllers::DateTime& dateTimeController;
