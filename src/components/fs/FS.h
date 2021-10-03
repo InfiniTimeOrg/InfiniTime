@@ -53,7 +53,7 @@ namespace Pinetime {
       *
       */
       static constexpr size_t startAddress = 0x0B4000;
-      static constexpr size_t size = 0x3C0000;
+      static constexpr size_t size = 0x34C000;
       static constexpr size_t blockSize = 4096;
 
       bool resourcesValid = false;

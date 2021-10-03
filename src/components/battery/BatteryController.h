@@ -22,7 +22,9 @@ namespace Pinetime {
       }
 
       bool IsCharging() const {
-        return isCharging;
+        // isCharging will go up and down when fully charged
+        // isFull makes sure this returns false while fully charged.
+        return isCharging && !isFull;
       }
 
       bool IsPowerPresent() const {
@@ -37,6 +39,7 @@ namespace Pinetime {
       uint16_t voltage = 0;
       uint8_t percentRemaining = 0;
 
+      bool isFull = false;
       bool isCharging = false;
       bool isPowerPresent = false;
 
