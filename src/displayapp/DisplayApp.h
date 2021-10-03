@@ -102,6 +102,7 @@ namespace Pinetime {
       std::unique_ptr<Screens::Screen> currentScreen;
 
       Apps currentApp = Apps::None;
+      Apps previousApp = Apps::None;
       Apps returnToApp = Apps::None;
       Apps favoriteApp = Apps::None;
       bool favoriteAppActive = false;

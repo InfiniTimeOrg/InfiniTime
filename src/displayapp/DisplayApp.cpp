@@ -242,10 +242,14 @@ void DisplayApp::Refresh() {
               case TouchEvents::SwipeLeft:
                 favoriteApp = settingsController.GetFavoriteApp();
                 favoriteAppActive = true;
-                if (favoriteApp == Apps::None)
-                  LoadApp(Apps::SettingFavoriteApp, DisplayApp::FullRefreshDirections::LeftAnim);
-                else
+                if (favoriteApp == Apps::None){
+                   if (previousApp != Apps::None) {
+                     LoadApp(previousApp, DisplayApp::FullRefreshDirections::LeftAnim);
+                   }
+                }
+                else {
                   LoadApp(favoriteApp, DisplayApp::FullRefreshDirections::LeftAnim);
+                }
                 break;                
               case TouchEvents::DoubleTap:
                 PushMessageToSystemTask(System::Messages::GoToSleep);
@@ -449,6 +453,9 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
+  }
+  if (currentApp != Apps::Clock && currentApp != Apps::Launcher && currentApp != Apps::QuickSettings){
+    previousApp = currentApp;
   }
   currentApp = app;
 }
