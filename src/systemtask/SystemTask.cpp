@@ -349,14 +349,10 @@ void SystemTask::Work() {
           motorController.RunForDuration(15);
           break;
         case Messages::MeasureBatteryTimerExpired:
-          sendBatteryNotification = true;
           batteryController.Update();
           break;
-        case Messages::BatteryMeasurementDone:
-          if (sendBatteryNotification) {
-            sendBatteryNotification = false;
-            nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
-          }
+        case Messages::BatteryPercentageUpdated:
+          nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
           break;
 
         default:
