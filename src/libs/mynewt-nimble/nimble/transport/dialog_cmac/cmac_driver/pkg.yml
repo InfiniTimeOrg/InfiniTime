@@ -1,0 +1,39 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+pkg.name: nimble/transport/dialog_cmac/cmac_driver
+pkg.description: Driver for Dialog CMAC IPC
+pkg.author: "Apache Mynewt <dev@mynewt.apache.org>"
+pkg.homepage: "http://mynewt.apache.org/"
+pkg.keywords:
+    - dialog
+    - da1469x
+    - cmac
+
+pkg.req_apis.CMAC_DEBUG_DIAG_ENABLE:
+    - dialog_cmac_diag
+
+pkg.ign_files.BLE_CONTROLLER:
+    - cmac_host.c
+
+pkg.post_link_cmds.BLE_CONTROLLER:
+    scripts/create_cmac_bin.sh: 100
+
+pkg.pre_link_cmds.BLE_HOST:
+    scripts/build_libcmac.sh: 100

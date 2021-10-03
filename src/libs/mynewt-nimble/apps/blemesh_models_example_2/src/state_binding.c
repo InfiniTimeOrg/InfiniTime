@@ -32,14 +32,14 @@
 #include "transition.h"
 
 
-u16_t lightness, target_lightness;
-s16_t temperature, target_temperature;
+uint16_t lightness, target_lightness;
+int16_t temperature, target_temperature;
 
-static s32_t ceiling(float num)
+static int32_t ceiling(float num)
 {
-	s32_t inum;
+	int32_t inum;
 
-	inum = (s32_t) num;
+	inum = (int32_t) num;
 	if (num == (float) inum) {
 		return inum;
 	}
@@ -47,21 +47,21 @@ static s32_t ceiling(float num)
 	return inum + 1;
 }
 
-u16_t actual_to_linear(u16_t val)
+uint16_t actual_to_linear(uint16_t val)
 {
 	float tmp;
 
 	tmp = ((float) val / 65535);
 
-	return (u16_t) ceiling(65535 * tmp * tmp);
+	return (uint16_t) ceiling(65535 * tmp * tmp);
 }
 
-u16_t linear_to_actual(u16_t val)
+uint16_t linear_to_actual(uint16_t val)
 {
-	return (u16_t) (65535 * sqrt(((float) val / 65535)));
+	return (uint16_t) (65535 * sqrt(((float) val / 65535)));
 }
 
-static void constrain_lightness(u16_t var)
+static void constrain_lightness(uint16_t var)
 {
 	if (var > 0 && var < light_lightness_srv_user_data.light_range_min) {
 		var = light_lightness_srv_user_data.light_range_min;
@@ -72,7 +72,7 @@ static void constrain_lightness(u16_t var)
 	lightness = var;
 }
 
-static void constrain_lightness2(u16_t var)
+static void constrain_lightness2(uint16_t var)
 {
 	/* This is as per Mesh Model Specification 3.3.2.2.3 */
 	if (var > 0 && var < light_lightness_srv_user_data.light_range_min) {
@@ -88,7 +88,7 @@ static void constrain_lightness2(u16_t var)
 	lightness = var;
 }
 
-static void constrain_target_lightness(u16_t var)
+static void constrain_target_lightness(uint16_t var)
 {
 	if (var > 0 &&
 	    var < light_lightness_srv_user_data.light_range_min) {
@@ -100,7 +100,7 @@ static void constrain_target_lightness(u16_t var)
 	target_lightness = var;
 }
 
-static s16_t light_ctl_temp_to_level(u16_t temp)
+static int16_t light_ctl_temp_to_level(uint16_t temp)
 {
 	float tmp;
 
@@ -111,14 +111,14 @@ static s16_t light_ctl_temp_to_level(u16_t temp)
 	tmp = tmp / (light_ctl_srv_user_data.temp_range_max -
 		     light_ctl_srv_user_data.temp_range_min);
 
-	return (s16_t) (tmp - 32768);
+	return (int16_t) (tmp - 32768);
 
 	/* 6.1.3.1.1 2nd formula end */
 }
 
-static u16_t level_to_light_ctl_temp(s16_t level)
+static uint16_t level_to_light_ctl_temp(int16_t level)
 {
-	u16_t tmp;
+	uint16_t tmp;
 	float diff;
 
 	/* Mesh Model Specification 6.1.3.1.1 1st formula start */
@@ -126,14 +126,14 @@ static u16_t level_to_light_ctl_temp(s16_t level)
 			light_ctl_srv_user_data.temp_range_min) / 65535;
 
 
-	tmp = (u16_t) ((level + 32768) * diff);
+	tmp = (uint16_t) ((level + 32768) * diff);
 
 	return (light_ctl_srv_user_data.temp_range_min + tmp);
 
 	/* 6.1.3.1.1 1st formula end */
 }
 
-void state_binding(u8_t light, u8_t temp)
+void state_binding(uint8_t light, uint8_t temp)
 {
 	switch (temp) {
 	case ONOFF_TEMP:
@@ -211,10 +211,10 @@ jump:
 	light_ctl_srv_user_data.lightness = lightness;
 }
 
-void calculate_lightness_target_values(u8_t type)
+void calculate_lightness_target_values(uint8_t type)
 {
 	bool set_light_ctl_temp_target_value;
-	u16_t tmp;
+	uint16_t tmp;
 
 	set_light_ctl_temp_target_value = true;
 
@@ -274,7 +274,7 @@ void calculate_lightness_target_values(u8_t type)
 	}
 }
 
-void calculate_temp_target_values(u8_t type)
+void calculate_temp_target_values(uint8_t type)
 {
 	bool set_light_ctl_delta_uv_target_value;
 

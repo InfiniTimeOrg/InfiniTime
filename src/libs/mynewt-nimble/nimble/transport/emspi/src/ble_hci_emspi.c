@@ -295,15 +295,7 @@ done:
 static struct os_mbuf *
 ble_hci_trans_acl_buf_alloc(void)
 {
-    uint8_t usrhdr_len;
-
-#if MYNEWT_VAL(BLE_HS_FLOW_CTRL)
-    usrhdr_len = BLE_MBUF_HS_HDR_LEN;
-#else
-    usrhdr_len = 0;
-#endif
-
-    return os_mbuf_get_pkthdr(&ble_hci_emspi_acl_mbuf_pool, usrhdr_len);
+    return os_mbuf_get_pkthdr(&ble_hci_emspi_acl_mbuf_pool, 0);
 }
 
 /**

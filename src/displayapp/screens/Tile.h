@@ -1,38 +1,54 @@
 #pragma once
 
+#include <lvgl/lvgl.h>
 #include <cstdint>
+#include <memory>
 #include "Screen.h"
-#include <bits/unique_ptr.h>
-#include "Modal.h"
-#include <lvgl/src/lv_core/lv_style.h>
-#include <displayapp/Apps.h>
+#include "../Apps.h"
+#include "components/datetime/DateTimeController.h"
+#include "components/settings/Settings.h"
+#include "components/datetime/DateTimeController.h"
+#include "components/battery/BatteryController.h"
 
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class Tile : public Screen {
-        public:
-          struct Applications {
-            const char* icon;
-            Pinetime::Applications::Apps application;
-          };
+      public:
+        struct Applications {
+          const char* icon;
+          Pinetime::Applications::Apps application;
+        };
 
-          explicit Tile(DisplayApp* app, std::array<Applications, 6>& applications);
-          ~Tile() override;
+        explicit Tile(uint8_t screenID,
+                      uint8_t numScreens,
+                      DisplayApp* app,
+                      Controllers::Settings& settingsController,
+                      Pinetime::Controllers::Battery& batteryController,
+                      Controllers::DateTime& dateTimeController,
+                      std::array<Applications, 6>& applications);
 
-          bool Refresh() override;
-          bool OnButtonPushed() override;
+        ~Tile() override;
 
-          void OnObjectEvent(lv_obj_t* obj, lv_event_t event, uint32_t buttonId);
+        void UpdateScreen();
+        void OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId);
 
-        private:
-          lv_obj_t * btnm1;
-          bool running = true;
+      private:
+        Pinetime::Controllers::Battery& batteryController;
+        Controllers::DateTime& dateTimeController;
 
-          std::unique_ptr<Modal> modal;
+        lv_task_t* taskUpdate;
 
-          const char* btnm_map1[8];
-          Pinetime::Applications::Apps apps[6];
+        lv_obj_t* label_time;
+        lv_obj_t* batteryIcon;
+        lv_point_t pageIndicatorBasePoints[2];
+        lv_point_t pageIndicatorPoints[2];
+        lv_obj_t* pageIndicatorBase;
+        lv_obj_t* pageIndicator;
+        lv_obj_t* btnm1;
+
+        const char* btnmMap[8];
+        Pinetime::Applications::Apps apps[6];
       };
     }
   }

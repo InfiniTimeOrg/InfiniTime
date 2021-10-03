@@ -1,10 +1,16 @@
 .idea/
+# Python virtual environment for DFU images
+.venv/
+
 # CMake
-cmake-build-*/
-CMakeFiles/
+cmake-build-*
+cmake-*/
+CMakeFiles
 **/CMakeCache.txt
 cmake_install.cmake
 Makefile
+build
+tools
 
 # Resulting binary files
 *.a
@@ -37,3 +43,7 @@ Testing/Temporary/
 # Doxygen
 src/html/
 src/latex/
+
+#VSCODE
+.vscode/.cortex-debug.registers.state.json
+.vscode/.cortex-debug.peripherals.state.json

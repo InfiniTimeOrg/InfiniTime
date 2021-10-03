@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(pinetime-app C CXX ASM)
 
+
 # define some variables just for this example to determine file locations
 set(NRF_PROJECT_NAME pinetime-app)
 set(NRF_BOARD pca10040)
@@ -36,10 +37,12 @@ set(SDK_SOURCE_FILES
         # Base SDK
         "${NRF5_SDK_PATH}/components/boards/boards.c"
         "${NRF5_SDK_PATH}/integration/nrfx/legacy/nrf_drv_clock.c"
+        "${NRF5_SDK_PATH}/integration/nrfx/legacy/nrf_drv_clock.h"
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_clock.c"
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_gpiote.c"
         "${NRF5_SDK_PATH}/modules/nrfx/soc/nrfx_atomic.c"
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_saadc.c"
+        "${NRF5_SDK_PATH}/components/libraries/timer/app_timer.h"
 
         # FreeRTOS
         ${NRF5_SDK_PATH}/external/freertos/source/croutine.c
@@ -80,7 +83,7 @@ set(SDK_SOURCE_FILES
         "${NRF5_SDK_PATH}/external/fprintf/nrf_fprintf_format.c"
 
         # TWI
-        "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_twi.c"
+        "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_twim.c"
 
         # GPIOTE
         "${NRF5_SDK_PATH}/components/libraries/gpiote/app_gpiote.c"
@@ -89,6 +92,9 @@ set(SDK_SOURCE_FILES
 set(TINYCRYPT_SRC
         libs/mynewt-nimble/ext/tinycrypt/src/aes_encrypt.c
         libs/mynewt-nimble/ext/tinycrypt/src/utils.c
+        libs/mynewt-nimble/ext/tinycrypt/src/cmac_mode.c
+        libs/mynewt-nimble/ext/tinycrypt/src/ecc.c
+        libs/mynewt-nimble/ext/tinycrypt/src/ecc_dh.c
         )
 
 set(NIMBLE_SRC
@@ -101,6 +107,10 @@ set(NIMBLE_SRC
         libs/mynewt-nimble/nimble/host/src/ble_l2cap.c
         libs/mynewt-nimble/nimble/host/src/ble_hs_mbuf.c
         libs/mynewt-nimble/nimble/host/src/ble_sm.c
+        libs/mynewt-nimble/nimble/host/src/ble_sm_cmd.c
+        libs/mynewt-nimble/nimble/host/src/ble_sm_lgcy.c
+        libs/mynewt-nimble/nimble/host/src/ble_sm_alg.c
+        libs/mynewt-nimble/nimble/host/src/ble_sm_sc.c
         libs/mynewt-nimble/nimble/host/src/ble_gap.c
         libs/mynewt-nimble/nimble/host/src/ble_gatts.c
         libs/mynewt-nimble/nimble/host/src/ble_gattc.c
@@ -124,10 +134,6 @@ set(NIMBLE_SRC
         libs/mynewt-nimble/nimble/host/src/ble_hs_atomic.c
         libs/mynewt-nimble/nimble/host/src/ble_hs_adv.c
         libs/mynewt-nimble/nimble/host/src/ble_hs_flow.c
-        libs/mynewt-nimble/nimble/host/src/ble_sm.c
-        libs/mynewt-nimble/nimble/host/src/ble_sm_cmd.c
-        libs/mynewt-nimble/nimble/host/src/ble_sm_lgcy.c
-        libs/mynewt-nimble/nimble/host/src/ble_sm_alg.c
         libs/mynewt-nimble/nimble/host/src/ble_hs_mqueue.c
         libs/mynewt-nimble/nimble/host/src/ble_hs_stop.c
         libs/mynewt-nimble/nimble/host/src/ble_hs_startup.c
@@ -163,134 +169,192 @@ set(NIMBLE_SRC
         libs/mynewt-nimble/nimble/host/util/src/addr.c
         )
 
+set(LITTLEFS_SRC
+        libs/littlefs/lfs_util.h
+        libs/littlefs/lfs.h
+        libs/littlefs/lfs_util.c
+        libs/littlefs/lfs.c
+        )
+
 set(LVGL_SRC
         libs/lv_conf.h
         libs/lvgl/lvgl.h
-        libs/lvgl/src/lv_core/lv_obj.c
-        libs/lvgl/src/lv_core/lv_obj.h
-        libs/lvgl/src/lv_core/lv_group.c
-        libs/lvgl/src/lv_core/lv_group.h
-        libs/lvgl/src/lv_core/lv_disp.c
+
+        libs/lvgl/src/lvgl.h
+        libs/lvgl/src/lv_api_map.h
+        libs/lvgl/src/lv_conf_internal.h
         libs/lvgl/src/lv_core/lv_disp.h
-        libs/lvgl/src/lv_core/lv_debug.h
-        libs/lvgl/src/lv_core/lv_debug.c
-        libs/lvgl/src/lv_core/lv_indev.c
+        libs/lvgl/src/lv_core/lv_group.h
         libs/lvgl/src/lv_core/lv_indev.h
-        libs/lvgl/src/lv_core/lv_refr.c
+        libs/lvgl/src/lv_core/lv_obj.h
+        libs/lvgl/src/lv_core/lv_obj_style_dec.h
         libs/lvgl/src/lv_core/lv_refr.h
-        libs/lvgl/src/lv_core/lv_style.c
         libs/lvgl/src/lv_core/lv_style.h
-        libs/lvgl/src/lv_misc/lv_anim.c
-        libs/lvgl/src/lv_misc/lv_anim.h
-        libs/lvgl/src/lv_misc/lv_async.h
-        libs/lvgl/src/lv_misc/lv_async.c
-        libs/lvgl/src/lv_misc/lv_fs.c
-        libs/lvgl/src/lv_misc/lv_fs.h
-        libs/lvgl/src/lv_misc/lv_task.c
-        libs/lvgl/src/lv_misc/lv_task.h
-        libs/lvgl/src/lv_misc/lv_area.c
-        libs/lvgl/src/lv_misc/lv_area.h
-        libs/lvgl/src/lv_misc/lv_bidi.c
-        libs/lvgl/src/lv_misc/lv_bidi.h
-        libs/lvgl/src/lv_misc/lv_circ.c
-        libs/lvgl/src/lv_misc/lv_circ.h
-        libs/lvgl/src/lv_misc/lv_color.c
-        libs/lvgl/src/lv_misc/lv_color.h
-        libs/lvgl/src/lv_misc/lv_fs.c
-        libs/lvgl/src/lv_misc/lv_fs.h
-        libs/lvgl/src/lv_misc/lv_gc.c
-        libs/lvgl/src/lv_misc/lv_gc.h
-        libs/lvgl/src/lv_misc/lv_ll.c
-        libs/lvgl/src/lv_misc/lv_ll.h
-        libs/lvgl/src/lv_misc/lv_log.c
-        libs/lvgl/src/lv_misc/lv_log.h
-        libs/lvgl/src/lv_misc/lv_math.c
-        libs/lvgl/src/lv_misc/lv_math.h
-        libs/lvgl/src/lv_misc/lv_mem.c
-        libs/lvgl/src/lv_misc/lv_mem.h
-        libs/lvgl/src/lv_misc/lv_printf.c
-        libs/lvgl/src/lv_misc/lv_printf.h
-        libs/lvgl/src/lv_misc/lv_task.c
-        libs/lvgl/src/lv_misc/lv_task.h
-        libs/lvgl/src/lv_misc/lv_templ.c
-        libs/lvgl/src/lv_misc/lv_templ.h
-        libs/lvgl/src/lv_misc/lv_txt.c
-        libs/lvgl/src/lv_misc/lv_txt.h
-        libs/lvgl/src/lv_misc/lv_types.h
-        libs/lvgl/src/lv_misc/lv_utils.c
-        libs/lvgl/src/lv_misc/lv_utils.h
-        libs/lvgl/src/lv_draw/lv_draw.c
         libs/lvgl/src/lv_draw/lv_draw.h
-        libs/lvgl/src/lv_draw/lv_draw_arc.c
         libs/lvgl/src/lv_draw/lv_draw_arc.h
-        libs/lvgl/src/lv_draw/lv_draw_basic.c
-        libs/lvgl/src/lv_draw/lv_draw_basic.h
-        libs/lvgl/src/lv_draw/lv_draw_img.c
+        libs/lvgl/src/lv_draw/lv_draw_blend.h
         libs/lvgl/src/lv_draw/lv_draw_img.h
-        libs/lvgl/src/lv_draw/lv_draw_label.c
         libs/lvgl/src/lv_draw/lv_draw_label.h
-        libs/lvgl/src/lv_draw/lv_draw_line.c
         libs/lvgl/src/lv_draw/lv_draw_line.h
-        libs/lvgl/src/lv_draw/lv_draw_rect.c
+        libs/lvgl/src/lv_draw/lv_draw_mask.h
         libs/lvgl/src/lv_draw/lv_draw_rect.h
-        libs/lvgl/src/lv_draw/lv_draw_triangle.c
         libs/lvgl/src/lv_draw/lv_draw_triangle.h
-        libs/lvgl/src/lv_draw/lv_img_cache.c
+        libs/lvgl/src/lv_draw/lv_img_buf.h
         libs/lvgl/src/lv_draw/lv_img_cache.h
-        libs/lvgl/src/lv_draw/lv_img_decoder.c
         libs/lvgl/src/lv_draw/lv_img_decoder.h
-        libs/lvgl/src/lv_hal/lv_hal.h
-        libs/lvgl/src/lv_hal/lv_hal_disp.c
-        libs/lvgl/src/lv_hal/lv_hal_disp.h
-        libs/lvgl/src/lv_hal/lv_hal_indev.c
-        libs/lvgl/src/lv_hal/lv_hal_indev.h
-        libs/lvgl/src/lv_hal/lv_hal_tick.c
-        libs/lvgl/src/lv_hal/lv_hal_tick.h
-        libs/lvgl/src/lv_font/lv_font.c
         libs/lvgl/src/lv_font/lv_font.h
-        libs/lvgl/src/lv_font/lv_font_fmt_txt.c
         libs/lvgl/src/lv_font/lv_font_fmt_txt.h
+        libs/lvgl/src/lv_font/lv_font_loader.h
         libs/lvgl/src/lv_font/lv_symbol_def.h
-        libs/lvgl/src/lv_themes/lv_theme.c
+        libs/lvgl/src/lv_hal/lv_hal.h
+        libs/lvgl/src/lv_hal/lv_hal_disp.h
+        libs/lvgl/src/lv_hal/lv_hal_indev.h
+        libs/lvgl/src/lv_hal/lv_hal_tick.h
+        libs/lvgl/src/lv_misc/lv_anim.h
+        libs/lvgl/src/lv_misc/lv_area.h
+        libs/lvgl/src/lv_misc/lv_async.h
+        libs/lvgl/src/lv_misc/lv_bidi.h
+        libs/lvgl/src/lv_misc/lv_color.h
+        libs/lvgl/src/lv_misc/lv_debug.h
+        libs/lvgl/src/lv_misc/lv_fs.h
+        libs/lvgl/src/lv_misc/lv_gc.h
+        libs/lvgl/src/lv_misc/lv_ll.h
+        libs/lvgl/src/lv_misc/lv_log.h
+        libs/lvgl/src/lv_misc/lv_math.h
+        libs/lvgl/src/lv_misc/lv_mem.h
+        libs/lvgl/src/lv_misc/lv_printf.h
+        libs/lvgl/src/lv_misc/lv_task.h
+        libs/lvgl/src/lv_misc/lv_templ.h
+        libs/lvgl/src/lv_misc/lv_txt.h
+        libs/lvgl/src/lv_misc/lv_txt_ap.h
+        libs/lvgl/src/lv_misc/lv_types.h
+        libs/lvgl/src/lv_misc/lv_utils.h
         libs/lvgl/src/lv_themes/lv_theme.h
-        libs/lvgl/src/lv_objx/lv_btn.h
-        libs/lvgl/src/lv_objx/lv_btn.c
-        libs/lvgl/src/lv_objx/lv_cont.h
-        libs/lvgl/src/lv_objx/lv_cont.c
-        libs/lvgl/src/lv_objx/lv_label.h
-        libs/lvgl/src/lv_objx/lv_label.c
+        libs/lvgl/src/lv_themes/lv_theme_empty.h
+        libs/lvgl/src/lv_themes/lv_theme_material.h
+        #libs/lvgl/src/lv_themes/lv_theme_mono.h
+        #libs/lvgl/src/lv_themes/lv_theme_template.h
+        libs/lvgl/src/lv_widgets/lv_arc.h
+        libs/lvgl/src/lv_widgets/lv_bar.h
+        libs/lvgl/src/lv_widgets/lv_btn.h
+        libs/lvgl/src/lv_widgets/lv_btnmatrix.h
+        libs/lvgl/src/lv_widgets/lv_calendar.h
+        libs/lvgl/src/lv_widgets/lv_canvas.h
+        libs/lvgl/src/lv_widgets/lv_chart.h
+        libs/lvgl/src/lv_widgets/lv_checkbox.h
+        libs/lvgl/src/lv_widgets/lv_cont.h
+        libs/lvgl/src/lv_widgets/lv_cpicker.h
+        libs/lvgl/src/lv_widgets/lv_dropdown.h
+        libs/lvgl/src/lv_widgets/lv_gauge.h
+        libs/lvgl/src/lv_widgets/lv_img.h
+        libs/lvgl/src/lv_widgets/lv_imgbtn.h
+        libs/lvgl/src/lv_widgets/lv_keyboard.h
+        libs/lvgl/src/lv_widgets/lv_label.h
+        libs/lvgl/src/lv_widgets/lv_led.h
+        libs/lvgl/src/lv_widgets/lv_line.h
+        libs/lvgl/src/lv_widgets/lv_linemeter.h
+        libs/lvgl/src/lv_widgets/lv_list.h
+        libs/lvgl/src/lv_widgets/lv_msgbox.h
+        libs/lvgl/src/lv_widgets/lv_objmask.h
+        libs/lvgl/src/lv_widgets/lv_objx_templ.h
+        libs/lvgl/src/lv_widgets/lv_page.h
+        libs/lvgl/src/lv_widgets/lv_roller.h
+        libs/lvgl/src/lv_widgets/lv_slider.h
+        libs/lvgl/src/lv_widgets/lv_spinbox.h
+        libs/lvgl/src/lv_widgets/lv_spinner.h
+        libs/lvgl/src/lv_widgets/lv_switch.h
+        libs/lvgl/src/lv_widgets/lv_table.h
+        libs/lvgl/src/lv_widgets/lv_tabview.h
+        libs/lvgl/src/lv_widgets/lv_textarea.h
+        libs/lvgl/src/lv_widgets/lv_tileview.h
+        libs/lvgl/src/lv_widgets/lv_win.h
+        libs/lvgl/src/lv_core/lv_disp.c
+        libs/lvgl/src/lv_core/lv_group.c
+        libs/lvgl/src/lv_core/lv_indev.c
+        libs/lvgl/src/lv_core/lv_obj.c
+        libs/lvgl/src/lv_core/lv_refr.c
+        libs/lvgl/src/lv_core/lv_style.c
+        libs/lvgl/src/lv_draw/lv_draw_arc.c
+        libs/lvgl/src/lv_draw/lv_draw_blend.c
+        libs/lvgl/src/lv_draw/lv_draw_img.c
+        libs/lvgl/src/lv_draw/lv_draw_label.c
+        libs/lvgl/src/lv_draw/lv_draw_line.c
+        libs/lvgl/src/lv_draw/lv_draw_mask.c
+        libs/lvgl/src/lv_draw/lv_draw_rect.c
+        libs/lvgl/src/lv_draw/lv_draw_triangle.c
+        libs/lvgl/src/lv_draw/lv_img_buf.c
+        libs/lvgl/src/lv_draw/lv_img_cache.c
+        libs/lvgl/src/lv_draw/lv_img_decoder.c
+        libs/lvgl/src/lv_font/lv_font.c
+        #libs/lvgl/src/lv_font/lv_font_dejavu_16_persian_hebrew.c
+        libs/lvgl/src/lv_font/lv_font_fmt_txt.c
+        libs/lvgl/src/lv_font/lv_font_loader.c
+        # LVGL Fonts
+        libs/lvgl/src/lv_font/lv_font_montserrat_14.c
+        libs/lvgl/src/lv_font/lv_font_montserrat_18.c
+        libs/lvgl/src/lv_font/lv_font_montserrat_22.c
+        libs/lvgl/src/lv_font/lv_font_montserrat_28.c
+        #
+        libs/lvgl/src/lv_hal/lv_hal_disp.c
+        libs/lvgl/src/lv_hal/lv_hal_indev.c
+        libs/lvgl/src/lv_hal/lv_hal_tick.c
+        libs/lvgl/src/lv_misc/lv_anim.c
+        libs/lvgl/src/lv_misc/lv_area.c
+        libs/lvgl/src/lv_misc/lv_async.c
+        libs/lvgl/src/lv_misc/lv_bidi.c
+        libs/lvgl/src/lv_misc/lv_color.c
+        libs/lvgl/src/lv_misc/lv_debug.c
+        libs/lvgl/src/lv_misc/lv_fs.c
+        libs/lvgl/src/lv_misc/lv_gc.c
+        libs/lvgl/src/lv_misc/lv_ll.c
+        libs/lvgl/src/lv_misc/lv_log.c
+        libs/lvgl/src/lv_misc/lv_math.c
+        libs/lvgl/src/lv_misc/lv_mem.c
+        libs/lvgl/src/lv_misc/lv_printf.c
+        libs/lvgl/src/lv_misc/lv_task.c
+        libs/lvgl/src/lv_misc/lv_templ.c
+        libs/lvgl/src/lv_misc/lv_txt.c
+        libs/lvgl/src/lv_misc/lv_txt_ap.c
+        libs/lvgl/src/lv_misc/lv_utils.c
         libs/lvgl/src/lv_themes/lv_theme.c
-        libs/lvgl/src/lv_themes/lv_theme.h
-        libs/lvgl/src/lv_themes/lv_theme_night.h
-        libs/lvgl/src/lv_themes/lv_theme_night.c
-        libs/lvgl/src/lv_objx/lv_list.c
-        libs/lvgl/src/lv_objx/lv_list.h
-        libs/lvgl/src/lv_objx/lv_tileview.c
-        libs/lvgl/src/lv_objx/lv_tileview.h
-        libs/lvgl/src/lv_objx/lv_tabview.c
-        libs/lvgl/src/lv_objx/lv_tabview.h
-        libs/lvgl/src/lv_objx/lv_btnm.c
-        libs/lvgl/src/lv_objx/lv_btnm.h
-        libs/lvgl/src/lv_objx/lv_page.c
-        libs/lvgl/src/lv_objx/lv_page.h
-        libs/lvgl/src/lv_objx/lv_img.c
-        libs/lvgl/src/lv_objx/lv_img.h
-        libs/lvgl/src/lv_objx/lv_lmeter.c
-        libs/lvgl/src/lv_objx/lv_lmeter.h
-        libs/lvgl/src/lv_objx/lv_arc.c
-        libs/lvgl/src/lv_objx/lv_arc.h
-        libs/lvgl/src/lv_objx/lv_gauge.c
-        libs/lvgl/src/lv_objx/lv_gauge.h
-        libs/lvgl/src/lv_objx/lv_mbox.c
-        libs/lvgl/src/lv_objx/lv_mbox.h
-        libs/lvgl/src/lv_objx/lv_bar.c
-        libs/lvgl/src/lv_objx/lv_bar.h
-        libs/lvgl/src/lv_objx/lv_slider.h
-        libs/lvgl/src/lv_objx/lv_slider.c
-        libs/lvgl/src/lv_objx/lv_ddlist.c
-        libs/lvgl/src/lv_objx/lv_ddlist.h
-        libs/lvgl/src/lv_objx/lv_line.c
-        libs/lvgl/src/lv_objx/lv_line.h
+        libs/lvgl/src/lv_themes/lv_theme_empty.c
+        libs/lvgl/src/lv_themes/lv_theme_material.c
+        #libs/lvgl/src/lv_themes/lv_theme_mono.c
+        #libs/lvgl/src/lv_themes/lv_theme_template.c
+        libs/lvgl/src/lv_widgets/lv_arc.c
+        libs/lvgl/src/lv_widgets/lv_bar.c
+        libs/lvgl/src/lv_widgets/lv_btn.c
+        libs/lvgl/src/lv_widgets/lv_btnmatrix.c
+        libs/lvgl/src/lv_widgets/lv_calendar.c
+        libs/lvgl/src/lv_widgets/lv_canvas.c
+        libs/lvgl/src/lv_widgets/lv_chart.c
+        libs/lvgl/src/lv_widgets/lv_checkbox.c
+        libs/lvgl/src/lv_widgets/lv_cont.c
+        libs/lvgl/src/lv_widgets/lv_cpicker.c
+        libs/lvgl/src/lv_widgets/lv_dropdown.c
+        libs/lvgl/src/lv_widgets/lv_gauge.c
+        libs/lvgl/src/lv_widgets/lv_img.c
+        libs/lvgl/src/lv_widgets/lv_imgbtn.c
+        libs/lvgl/src/lv_widgets/lv_keyboard.c
+        libs/lvgl/src/lv_widgets/lv_label.c
+        libs/lvgl/src/lv_widgets/lv_led.c
+        libs/lvgl/src/lv_widgets/lv_line.c
+        libs/lvgl/src/lv_widgets/lv_linemeter.c
+        libs/lvgl/src/lv_widgets/lv_list.c
+        libs/lvgl/src/lv_widgets/lv_msgbox.c
+        libs/lvgl/src/lv_widgets/lv_objmask.c
+        libs/lvgl/src/lv_widgets/lv_objx_templ.c
+        libs/lvgl/src/lv_widgets/lv_page.c
+        libs/lvgl/src/lv_widgets/lv_roller.c
+        libs/lvgl/src/lv_widgets/lv_slider.c
+        libs/lvgl/src/lv_widgets/lv_spinbox.c
+        libs/lvgl/src/lv_widgets/lv_spinner.c
+        libs/lvgl/src/lv_widgets/lv_switch.c
+        libs/lvgl/src/lv_widgets/lv_table.c
+        libs/lvgl/src/lv_widgets/lv_tabview.c
+        libs/lvgl/src/lv_widgets/lv_textarea.c
+        libs/lvgl/src/lv_widgets/lv_tileview.c
+        libs/lvgl/src/lv_widgets/lv_win.c
         )
 
 list(APPEND IMAGE_FILES
@@ -321,6 +385,7 @@ list(APPEND IMAGE_FILES
 
         displayapp/icons/bluetooth/os_bt_connected.c
         displayapp/icons/bluetooth/os_bt_disconnected.c
+
         )
 
 list(APPEND SOURCE_FILES
@@ -331,10 +396,9 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Clock.cpp
         displayapp/screens/Tile.cpp
         displayapp/screens/Meter.cpp
-        displayapp/screens/Gauge.cpp
         displayapp/screens/InfiniPaint.cpp
-        displayapp/screens/DropDownDemo.cpp
-        displayapp/screens/Modal.cpp
+        displayapp/screens/Paddle.cpp
+        displayapp/screens/StopWatch.cpp
         displayapp/screens/BatteryIcon.cpp
         displayapp/screens/BleIcon.cpp
         displayapp/screens/NotificationIcon.cpp
@@ -343,9 +407,41 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Label.cpp
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
+        displayapp/screens/Navigation.cpp
+        displayapp/screens/Metronome.cpp
+        displayapp/screens/Motion.cpp
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
+        displayapp/screens/Twos.cpp
+        displayapp/screens/HeartRate.cpp
+        displayapp/screens/Motion.cpp
+        displayapp/screens/FlashLight.cpp
+        displayapp/screens/List.cpp
+        displayapp/screens/BatteryInfo.cpp
+        displayapp/screens/Steps.cpp
+        displayapp/screens/Timer.cpp
+        displayapp/screens/Alarm.cpp
+        displayapp/Colors.cpp
+
+        ## Settings
+        displayapp/screens/settings/QuickSettings.cpp
+        displayapp/screens/settings/Settings.cpp
+        displayapp/screens/settings/SettingWatchFace.cpp
+        displayapp/screens/settings/SettingTimeFormat.cpp
+        displayapp/screens/settings/SettingWakeUp.cpp
+        displayapp/screens/settings/SettingDisplay.cpp
+        displayapp/screens/settings/SettingSteps.cpp
+        displayapp/screens/settings/SettingPineTimeStyle.cpp
+
+        ## Watch faces
+        displayapp/icons/bg_clock.c
+        displayapp/screens/WatchFaceAnalog.cpp
+        displayapp/screens/WatchFaceDigital.cpp
+        displayapp/screens/PineTimeStyle.cpp
+
+        ##
+
         main.cpp
         drivers/St7789.cpp
         drivers/SpiNorFlash.cpp
@@ -354,11 +450,85 @@ list(APPEND SOURCE_FILES
         drivers/Watchdog.cpp
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
+        drivers/Hrs3300.cpp
+        drivers/Bma421.cpp
+        drivers/Bma421_C/bma4.c
+        drivers/Bma421_C/bma423.c
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
         components/ble/NotificationManager.cpp
         components/datetime/DateTimeController.cpp
         components/brightness/BrightnessController.cpp
+        components/motion/MotionController.cpp
+        components/ble/NimbleController.cpp
+        components/ble/DeviceInformationService.cpp
+        components/ble/CurrentTimeClient.cpp
+        components/ble/AlertNotificationClient.cpp
+        components/ble/DfuService.cpp
+        components/ble/CurrentTimeService.cpp
+        components/ble/AlertNotificationService.cpp
+        components/ble/MusicService.cpp
+        components/ble/NavigationService.cpp
+        displayapp/fonts/lv_font_navi_80.c
+        components/ble/BatteryInformationService.cpp
+        components/ble/ImmediateAlertService.cpp
+        components/ble/ServiceDiscovery.cpp
+        components/ble/HeartRateService.cpp
+        components/firmwarevalidator/FirmwareValidator.cpp
+        components/motor/MotorController.cpp
+        components/settings/Settings.cpp
+        components/timer/TimerController.cpp
+        components/alarm/AlarmController.cpp
+        components/fs/FS.cpp
+        drivers/Cst816s.cpp
+        FreeRTOS/port.c
+        FreeRTOS/port_cmsis_systick.c
+        FreeRTOS/port_cmsis.c
+
+        displayapp/LittleVgl.cpp
+        displayapp/fonts/jetbrains_mono_extrabold_compressed.c
+        displayapp/fonts/jetbrains_mono_bold_20.c
+        displayapp/fonts/jetbrains_mono_76.c
+        displayapp/fonts/jetbrains_mono_42.c
+        displayapp/fonts/lv_font_sys_48.c
+        displayapp/fonts/open_sans_light.c
+        displayapp/lv_pinetime_theme.c
+
+        systemtask/SystemTask.cpp
+        drivers/TwiMaster.cpp
+
+        heartratetask/HeartRateTask.cpp
+        components/heartrate/Ppg.cpp
+        components/heartrate/Biquad.cpp
+        components/heartrate/Ptagc.cpp
+        components/heartrate/HeartRateController.cpp
+
+        touchhandler/TouchHandler.cpp
+        )
+
+list(APPEND RECOVERY_SOURCE_FILES
+        BootloaderVersion.cpp
+        logging/NrfLogger.cpp
+        displayapp/DisplayAppRecovery.cpp
+
+        main.cpp
+        drivers/St7789.cpp
+        drivers/SpiNorFlash.cpp
+        drivers/SpiMaster.cpp
+        drivers/Spi.cpp
+        drivers/Watchdog.cpp
+        drivers/DebugPins.cpp
+        drivers/InternalFlash.cpp
+        drivers/Hrs3300.cpp
+        drivers/Bma421.cpp
+        drivers/Bma421_C/bma4.c
+        drivers/Bma421_C/bma423.c
+        components/battery/BatteryController.cpp
+        components/ble/BleController.cpp
+        components/ble/NotificationManager.cpp
+        components/datetime/DateTimeController.cpp
+        components/brightness/BrightnessController.cpp
+        components/motion/MotionController.cpp
         components/ble/NimbleController.cpp
         components/ble/DeviceInformationService.cpp
         components/ble/CurrentTimeClient.cpp
@@ -370,21 +540,32 @@ list(APPEND SOURCE_FILES
         components/ble/BatteryInformationService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/ServiceDiscovery.cpp
+        components/ble/NavigationService.cpp
+        components/ble/HeartRateService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
+        components/settings/Settings.cpp
+        components/timer/TimerController.cpp
+        components/alarm/AlarmController.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
         FreeRTOS/port_cmsis.c
 
-        displayapp/LittleVgl.cpp
-        displayapp/fonts/jetbrains_mono_extrabold_compressed.c
-        displayapp/fonts/jetbrains_mono_bold_20.c
-
         systemtask/SystemTask.cpp
         drivers/TwiMaster.cpp
+        components/gfx/Gfx.cpp
+        components/rle/RleDecoder.cpp
+        components/heartrate/HeartRateController.cpp
+        heartratetask/HeartRateTask.cpp
+        components/heartrate/Ppg.cpp
+        components/heartrate/Biquad.cpp
+        components/heartrate/Ptagc.cpp
+        components/motor/MotorController.cpp
+        components/fs/FS.cpp
+        touchhandler/TouchHandler.cpp
         )
 
-list(APPEND GRAPHICS_SOURCE_FILES
+list(APPEND RECOVERYLOADER_SOURCE_FILES
         # FreeRTOS
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -395,27 +576,32 @@ list(APPEND GRAPHICS_SOURCE_FILES
         drivers/Spi.cpp
         logging/NrfLogger.cpp
 
+        components/rle/RleDecoder.cpp
+
         components/gfx/Gfx.cpp
         drivers/St7789.cpp
         components/brightness/BrightnessController.cpp
 
-        graphics.cpp
+        recoveryLoader.cpp
         )
 
+
 set(INCLUDE_FILES
+
         BootloaderVersion.h
         logging/Logger.h
         logging/NrfLogger.h
         displayapp/DisplayApp.h
+        displayapp/Messages.h
         displayapp/TouchEvents.h
         displayapp/screens/Screen.h
         displayapp/screens/Clock.h
         displayapp/screens/Tile.h
         displayapp/screens/Meter.h
-        displayapp/screens/Gauge.h
         displayapp/screens/InfiniPaint.h
+        displayapp/screens/StopWatch.h
+        displayapp/screens/Paddle.h
         displayapp/screens/DropDownDemo.h
-        displayapp/screens/Modal.h
         displayapp/screens/BatteryIcon.h
         displayapp/screens/BleIcon.h
         displayapp/screens/NotificationIcon.h
@@ -428,6 +614,12 @@ set(INCLUDE_FILES
         displayapp/screens/ApplicationList.h
         displayapp/Apps.h
         displayapp/screens/Notifications.h
+        displayapp/screens/HeartRate.h
+        displayapp/screens/Metronome.h
+        displayapp/screens/Motion.h
+        displayapp/screens/Timer.h
+        displayapp/screens/Alarm.h
+        displayapp/Colors.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h
@@ -435,11 +627,17 @@ set(INCLUDE_FILES
         drivers/Watchdog.h
         drivers/DebugPins.h
         drivers/InternalFlash.h
+        drivers/Hrs3300.h
+        drivers/PinMap.h
+        drivers/Bma421.h
+        drivers/Bma421_C/bma4.c
+        drivers/Bma421_C/bma423.c
         components/battery/BatteryController.h
         components/ble/BleController.h
         components/ble/NotificationManager.h
         components/datetime/DateTimeController.h
         components/brightness/BrightnessController.h
+        components/motion/MotionController.h
         components/ble/NimbleController.h
         components/ble/DeviceInformationService.h
         components/ble/CurrentTimeClient.h
@@ -450,6 +648,10 @@ set(INCLUDE_FILES
         components/ble/ImmediateAlertService.h
         components/ble/ServiceDiscovery.h
         components/ble/BleClient.h
+        components/ble/HeartRateService.h
+        components/settings/Settings.h
+        components/timer/TimerController.h
+        components/alarm/AlarmController.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
@@ -462,10 +664,18 @@ set(INCLUDE_FILES
         libs/date/includes/date/ptz.h
         libs/date/includes/date/tz_private.h
         displayapp/LittleVgl.h
+        displayapp/lv_pinetime_theme.h
         systemtask/SystemTask.h
         systemtask/SystemMonitor.h
         displayapp/screens/Symbols.h
         drivers/TwiMaster.h
+        heartratetask/HeartRateTask.h
+        components/heartrate/Ppg.h
+        components/heartrate/Biquad.h
+        components/heartrate/Ptagc.h
+        components/heartrate/HeartRateController.h
+        components/motor/MotorController.h
+        touchhandler/TouchHandler.h
         )
 
 include_directories(
@@ -497,7 +707,7 @@ include_directories(
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/include"
         "${NRF5_SDK_PATH}/modules/nrfx/hal"
         "${NRF5_SDK_PATH}/modules/nrfx/mdk"
-        ${NRF5_SDK_PATH}/external/freertos/source/include
+        "${NRF5_SDK_PATH}/external/freertos/source/include"
         "${NRF5_SDK_PATH}/components/toolchain/cmsis/include"
         "${NRF5_SDK_PATH}/components/libraries/atomic"
         "${NRF5_SDK_PATH}/components/libraries/atomic_fifo"
@@ -563,16 +773,18 @@ link_directories(
 )
 
 
-set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -Wall -Wno-unknown-pragmas -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wreturn-type -Werror=return-type)
+set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -Wall -Wno-unknown-pragmas -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wreturn-type -Werror=return-type -fstack-usage -fno-exceptions -fno-non-call-exceptions)
 add_definitions(-DCONFIG_GPIO_AS_PINRESET)
-add_definitions(-DDEBUG)
 add_definitions(-DNIMBLE_CFG_CONTROLLER)
 add_definitions(-DOS_CPUTIME_FREQ)
 add_definitions(-DNRF52 -DNRF52832 -DNRF52832_XXAA -DNRF52_PAN_74 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040)
 add_definitions(-DFREERTOS)
-add_definitions(-DDEBUG_NRF_USER)
-add_definitions(-D__STACK_SIZE=8192)
-add_definitions(-D__HEAP_SIZE=8192)
+add_definitions(-D__STACK_SIZE=1024)
+add_definitions(-D__HEAP_SIZE=4096)
+
+# NOTE : Add the following defines to enable debug mode of the NRF SDK:
+#add_definitions(-DDEBUG)
+#add_definitions(-DDEBUG_NRF_USER)
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release")
@@ -583,11 +795,11 @@ add_library(nrf-sdk STATIC ${SDK_SOURCE_FILES})
 target_include_directories(nrf-sdk SYSTEM PUBLIC . ../)
 target_include_directories(nrf-sdk SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(nrf-sdk PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
 # NimBLE
@@ -595,11 +807,11 @@ add_library(nimble STATIC ${NIMBLE_SRC} ${TINYCRYPT_SRC})
 target_include_directories(nimble SYSTEM PUBLIC . ../)
 target_include_directories(nimble SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(nimble PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-rtti>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
 # lvgl
@@ -607,11 +819,23 @@ add_library(lvgl STATIC ${LVGL_SRC})
 target_include_directories(lvgl SYSTEM PUBLIC . ../)
 target_include_directories(lvgl SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(lvgl PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        )
+
+# LITTLEFS_SRC
+add_library(littlefs STATIC ${LITTLEFS_SRC})
+target_include_directories(littlefs SYSTEM PUBLIC . ../)
+target_include_directories(littlefs SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_compile_options(littlefs PRIVATE
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wno-unused-function -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wno-unused-function -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wno-unused-function -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wno-unused-function -Os -fno-rtti>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
 # Build autonomous binary (without support for bootloader)
@@ -620,20 +844,18 @@ set(EXECUTABLE_FILE_NAME ${EXECUTABLE_NAME}-${pinetime_VERSION_MAJOR}.${pinetime
 set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_FILE_NAME})
-target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl)
+target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs)
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
         SUFFIX ".out"
-        LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_FILE_NAME}.map"
-        CXX_STANDARD 11
-        C_STANDARD 99
+        LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_FILE_NAME}.map"
         )
 
 add_custom_command(TARGET ${EXECUTABLE_NAME}
@@ -647,25 +869,23 @@ add_custom_command(TARGET ${EXECUTABLE_NAME}
 # Build binary intended to be used by bootloader
 set(EXECUTABLE_MCUBOOT_NAME "pinetime-mcuboot-app")
 set(EXECUTABLE_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
-set(IMAGE_MCUBOOT_FILE_NAME image-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.bin)
-set(DFU_FILE_NAME dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
+set(IMAGE_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-image-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.bin)
+set(DFU_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 set(NRF5_LINKER_SCRIPT_MCUBOOT "${CMAKE_SOURCE_DIR}/gcc_nrf52-mcuboot.ld")
 add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl)
+target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs)
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES
         SUFFIX ".out"
-        LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_MCUBOOT_FILE_NAME}.map"
-        CXX_STANDARD 11
-        C_STANDARD 99
+        LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_MCUBOOT_FILE_NAME}.map"
         )
 
 add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
@@ -673,37 +893,160 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
         COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_MCUBOOT_FILE_NAME}.out
         COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_FILE_NAME}.bin"
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_FILE_NAME}.hex"
+        COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_FILE_NAME}.bin ${IMAGE_MCUBOOT_FILE_NAME}
         COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_FILE_NAME}"
         )
 
-# Build binary that writes the graphic assets for the bootloader
-set(EXECUTABLE_GRAPHICS_NAME "pinetime-graphics")
-set(EXECUTABLE_GRAPHICS_FILE_NAME ${EXECUTABLE_GRAPHICS_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
-add_executable(${EXECUTABLE_GRAPHICS_NAME} ${GRAPHICS_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_GRAPHICS_NAME} nrf-sdk)
-set_target_properties(${EXECUTABLE_GRAPHICS_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_GRAPHICS_FILE_NAME})
-target_compile_options(${EXECUTABLE_GRAPHICS_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+if(BUILD_DFU)
+    add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
+            POST_BUILD
+            COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_MCUBOOT_FILE_NAME} ${DFU_MCUBOOT_FILE_NAME}
+            COMMENT "post build (DFU) steps for ${EXECUTABLE_MCUBOOT_FILE_NAME}"
+            )
+endif()
+
+# InfiniTime recovery firmware (autonomous)
+set(EXECUTABLE_RECOVERY_NAME "pinetime-recovery")
+set(EXECUTABLE_RECOVERY_FILE_NAME ${EXECUTABLE_RECOVERY_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
+add_executable(${EXECUTABLE_RECOVERY_NAME} ${RECOVERY_SOURCE_FILES})
+target_link_libraries(${EXECUTABLE_RECOVERY_NAME} nimble nrf-sdk littlefs)
+set_target_properties(${EXECUTABLE_RECOVERY_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERY_FILE_NAME})
+target_compile_definitions(${EXECUTABLE_RECOVERY_NAME} PUBLIC "PINETIME_IS_RECOVERY")
+target_compile_options(${EXECUTABLE_RECOVERY_NAME} PUBLIC
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
-set_target_properties(${EXECUTABLE_GRAPHICS_NAME} PROPERTIES
+set_target_properties(${EXECUTABLE_RECOVERY_NAME} PROPERTIES
         SUFFIX ".out"
-        LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_GRAPHICS_FILE_NAME}.map"
-        CXX_STANDARD 11
-        C_STANDARD 99
+        LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_RECOVERY_FILE_NAME}.map"
         )
 
-add_custom_command(TARGET ${EXECUTABLE_GRAPHICS_NAME}
+add_custom_command(TARGET ${EXECUTABLE_RECOVERY_NAME}
         POST_BUILD
-        COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_GRAPHICS_FILE_NAME}.out
-        COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_GRAPHICS_FILE_NAME}.out "${EXECUTABLE_GRAPHICS_FILE_NAME}.bin"
-        COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_GRAPHICS_FILE_NAME}.out "${EXECUTABLE_GRAPHICS_FILE_NAME}.hex"
-        COMMENT "post build steps for ${EXECUTABLE_GRAPHICS_FILE_NAME}"
+        COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_RECOVERY_FILE_NAME}.out
+        COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_RECOVERY_FILE_NAME}.out "${EXECUTABLE_RECOVERY_FILE_NAME}.bin"
+        COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_RECOVERY_FILE_NAME}.out "${EXECUTABLE_RECOVERY_FILE_NAME}.hex"
+        COMMENT "post build steps for ${EXECUTABLE_RECOVERY_FILE_NAME}"
         )
+
+# InfiniTime recovery firmware (mcuboot)
+set(EXECUTABLE_RECOVERY_MCUBOOT_NAME "pinetime-mcuboot-recovery")
+set(EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
+set(IMAGE_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-image-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.bin)
+set(DFU_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
+add_executable(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} ${RECOVERY_SOURCE_FILES})
+target_link_libraries(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} nimble nrf-sdk littlefs)
+set_target_properties(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME})
+target_compile_definitions(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC "PINETIME_IS_RECOVERY")
+target_compile_options(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        )
+
+set_target_properties(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PROPERTIES
+        SUFFIX ".out"
+        LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_GRAPHICS_FILE_NAME}.map"
+        )
+
+add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.out
+        COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.bin"
+        COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_RECOVERYY_MCUBOOT_FILE_NAME}.hex"
+        COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.bin ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME}
+        COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME} recoveryImage > recoveryImage.h
+        COMMENT "post build steps for ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}"
+        )
+
+if(BUILD_DFU)
+    add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
+            POST_BUILD
+            COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME} ${DFU_RECOVERY_MCUBOOT_FILE_NAME}
+            COMMENT "post build (DFU) steps for ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}"
+            )
+endif()
+
+# Build binary that writes the recovery image into the SPI flash memory
+set(EXECUTABLE_RECOVERYLOADER_NAME "pinetime-recovery-loader")
+set(EXECUTABLE_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_RECOVERYLOADER_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
+add_executable(${EXECUTABLE_RECOVERYLOADER_NAME} ${RECOVERYLOADER_SOURCE_FILES})
+target_link_libraries(${EXECUTABLE_RECOVERYLOADER_NAME} nrf-sdk)
+set_target_properties(${EXECUTABLE_RECOVERYLOADER_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERYLOADER_FILE_NAME})
+target_compile_options(${EXECUTABLE_RECOVERYLOADER_NAME} PUBLIC
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        )
+target_include_directories(${EXECUTABLE_RECOVERYLOADER_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+        )
+add_dependencies(${EXECUTABLE_RECOVERYLOADER_NAME} ${EXECUTABLE_RECOVERY_MCUBOOT_NAME})
+
+set_target_properties(${EXECUTABLE_RECOVERYLOADER_NAME} PROPERTIES
+        SUFFIX ".out"
+        LINK_FLAGS "-mthumb -mabi=aapcs -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_RECOVERYLOADER_FILE_NAME}.map"
+        )
+
+add_custom_command(TARGET ${EXECUTABLE_RECOVERYLOADER_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_RECOVERYLOADER_FILE_NAME}.out
+        COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_RECOVERYLOADER_FILE_NAME}.out "${EXECUTABLE_RECOVERYLOADER_FILE_NAME}.bin"
+        COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_RECOVERYLOADER_FILE_NAME}.out "${EXECUTABLE_RECOVERYLOADER_FILE_NAME}.hex"
+        COMMENT "post build steps for ${EXECUTABLE_RECOVERYLOADER_FILE_NAME}"
+        )
+
+# Build binary that writes the recovery image (MCUBoot version)
+set(EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME "pinetime-mcuboot-recovery-loader")
+set(EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
+set(IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}-image-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.bin)
+set(DFU_MCUBOOT_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
+add_executable(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} ${RECOVERYLOADER_SOURCE_FILES})
+target_link_libraries(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} nrf-sdk)
+set_target_properties(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME})
+target_compile_options(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PUBLIC
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        )
+target_include_directories(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
+        )
+add_dependencies(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} ${EXECUTABLE_RECOVERY_MCUBOOT_NAME})
+
+set_target_properties(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PROPERTIES
+        SUFFIX ".out"
+        LINK_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/modules/nrfx/mdk -T${NRF5_LINKER_SCRIPT_MCUBOOT} -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wl,--gc-sections -Wl,--print-memory-usage --specs=nano.specs -lc -lnosys -lm -Wl,-Map=${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.map"
+        )
+
+add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
+        POST_BUILD
+        COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.out
+        COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.bin"
+        COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.hex"
+        COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.bin ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME}
+        COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME} recoveryLoaderImage > recoveryLoaderImage.h
+        COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}"
+        )
+
+if(BUILD_DFU)
+    add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
+            POST_BUILD
+            COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME} ${DFU_MCUBOOT_RECOVERYLOADER_FILE_NAME}
+            COMMENT "post build (DFU) steps for ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}"
+            )
+endif()
+
 
 # FLASH
 if (USE_JLINK)
@@ -716,7 +1059,7 @@ if (USE_JLINK)
             COMMAND ${NRFJPROG} --program ${EXECUTABLE_FILE_NAME}.hex -f ${NRF_TARGET} --sectorerase
             COMMAND sleep 0.5s
             COMMAND ${NRFJPROG} --reset -f ${NRF_TARGET}
-            COMMENT "flashing ${EXECUTABLE_NAME}.hex"
+            COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
             )
 
 elseif (USE_GDB_CLIENT)
@@ -726,8 +1069,8 @@ elseif (USE_GDB_CLIENT)
             )
     add_custom_target("FLASH_${EXECUTABLE_NAME}"
             DEPENDS ${EXECUTABLE_NAME}
-            COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill' ${EXECUTABLE_NAME}.hex
-            COMMENT "flashing ${EXECUTABLE_NAME}.hex"
+            COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill' ${EXECUTABLE_FILE_NAME}.hex
+            COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
             )
 elseif (USE_OPENOCD)
     if (USE_CMSIS_DAP)
@@ -752,10 +1095,10 @@ elseif (USE_OPENOCD)
                 -c 'transport select swd'
                 -c 'source [find target/nrf52.cfg]'
                 -c 'halt'
-                -c "program \"${EXECUTABLE_NAME}.hex\""
+                -c "program \"${EXECUTABLE_FILE_NAME}.hex\""
                 -c 'reset'
                 -c 'shutdown'
-                COMMENT "flashing ${EXECUTABLE_NAME}.hex"
+                COMMENT "flashing ${EXECUTABLE_BIN_NAME}.hex"
                 )
     else ()
         add_custom_target(FLASH_ERASE
@@ -764,8 +1107,8 @@ elseif (USE_OPENOCD)
                 )
         add_custom_target("FLASH_${EXECUTABLE_NAME}"
                 DEPENDS ${EXECUTABLE_NAME}
-                COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${EXECUTABLE_NAME}.hex\"" -c reset -c shutdown
-                COMMENT "flashing ${EXECUTABLE_NAME}.hex"
+                COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${EXECUTABLE_FILE_NAME}.hex\"" -c reset -c shutdown
+                COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
                 )
     endif ()
 endif ()

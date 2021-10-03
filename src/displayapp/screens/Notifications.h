@@ -1,60 +1,78 @@
 #pragma once
 
-#include <functional>
-#include <vector>
-
+#include <lvgl/lvgl.h>
+#include <cstdint>
+#include <memory>
 #include "Screen.h"
-#include "ScreenList.h"
-
+#include "components/ble/NotificationManager.h"
+#include "components/motor/MotorController.h"
 
 namespace Pinetime {
+  namespace Controllers {
+    class AlertNotificationService;
+  }
   namespace Applications {
     namespace Screens {
-      class Notifications : public Screen {
-        public:
-          enum class Modes {Normal, Preview};
-          explicit Notifications(DisplayApp* app, Pinetime::Controllers::NotificationManager& notificationManager, Modes mode);
-          ~Notifications() override;
 
-          bool Refresh() override;
-          bool OnButtonPushed() override;
-          bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
+      class Notifications : public Screen {
+      public:
+        enum class Modes { Normal, Preview };
+        explicit Notifications(DisplayApp* app,
+                               Pinetime::Controllers::NotificationManager& notificationManager,
+                               Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                               Pinetime::Controllers::MotorController& motorController,
+                               Modes mode);
+        ~Notifications() override;
+
+        void Refresh() override;
+        bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
+
+        class NotificationItem {
+        public:
+          NotificationItem(const char* title,
+                           const char* msg,
+                           uint8_t notifNr,
+                           Controllers::NotificationManager::Categories,
+                           uint8_t notifNb,
+                           Modes mode,
+                           Pinetime::Controllers::AlertNotificationService& alertNotificationService);
+          ~NotificationItem();
+          bool IsRunning() const {
+            return running;
+          }
+          void OnCallButtonEvent(lv_obj_t*, lv_event_t event);
 
         private:
+          lv_obj_t* container1;
+          lv_obj_t* bt_accept;
+          lv_obj_t* bt_mute;
+          lv_obj_t* bt_reject;
+          lv_obj_t* label_accept;
+          lv_obj_t* label_mute;
+          lv_obj_t* label_reject;
+          Modes mode;
+          Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           bool running = true;
+        };
 
-          class NotificationItem {
-            public:
-              NotificationItem(const char* title, const char* msg, uint8_t notifNr, uint8_t notifNb, Modes mode);
-              ~NotificationItem();
-              bool Refresh() {return false;}
+      private:
+        struct NotificationData {
+          const char* title;
+          const char* text;
+        };
+        Pinetime::Controllers::NotificationManager& notificationManager;
+        Pinetime::Controllers::AlertNotificationService& alertNotificationService;
+        Modes mode = Modes::Normal;
+        std::unique_ptr<NotificationItem> currentItem;
+        Controllers::NotificationManager::Notification::Id currentId;
+        bool validDisplay = false;
 
-            private:
-              uint8_t notifNr = 0;
-              uint8_t notifNb = 0;
-              char pageText[4];
+        lv_point_t timeoutLinePoints[2] {{0, 1}, {239, 1}};
+        lv_obj_t* timeoutLine = nullptr;
+        uint32_t timeoutTickCountStart;
+        uint32_t timeoutTickCountEnd;
 
-              lv_obj_t* container1;
-              lv_obj_t* t1;
-              lv_obj_t* l1;
-              lv_obj_t* bottomPlaceholder;
-              Modes mode;
-          };
-
-          struct NotificationData {
-            const char* title;
-            const char* text;
-          };
-          Pinetime::Controllers::NotificationManager& notificationManager;
-          Modes mode = Modes::Normal;
-          std::unique_ptr<NotificationItem> currentItem;
-          Controllers::NotificationManager::Notification::Id currentId;
-          bool validDisplay = false;
-
-          lv_point_t timeoutLinePoints[2]  { {0, 237}, {239, 237} };
-          lv_obj_t* timeoutLine;
-          uint32_t timeoutTickCountStart;
-          uint32_t timeoutTickCountEnd;
+        lv_task_t* taskRefresh;
       };
     }
   }

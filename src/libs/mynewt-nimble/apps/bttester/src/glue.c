@@ -33,8 +33,8 @@ const char *bt_hex(const void *buf, size_t len)
 {
 	static const char hex[] = "0123456789abcdef";
 	static char hexbufs[4][137];
-	static u8_t curbuf;
-	const u8_t *b = buf;
+	static uint8_t curbuf;
+	const uint8_t *b = buf;
 	char *str;
 	int i;
 

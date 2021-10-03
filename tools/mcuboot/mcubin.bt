@@ -1,0 +1,135 @@
+// Copyright (C) 2019, Linaro Ltd
+//
+// SPDX-License-Identifier: Apache-2.0
+//
+// Licensed under the Apache License, Version 2.0 (the "License"); you may
+// not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+// WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// This file is a Binary Template file for the 010 Editor
+// (http://www.sweetscape.com/010editor/) to allow it to show the
+// structure of an MCUboot image.
+
+LittleEndian();
+
+struct ENTRY {
+    uint32 id;
+    uint32 offset;
+    uint32 size;
+    uint32 pad;
+};
+
+// The simulator writes the partition table at the beginning of the
+// image, so that we can tell where the partitions are.  If you are
+// trying to view an image captured from a device, you can either
+// construct a synthetic partition table in the file, or change code
+// described below to hardcode one.
+struct PTABLE {
+    uchar pheader[8];
+    if (ptable.pheader != "mcuboot\0") {
+        // NOTE: Put code here to hard code a partition table, and
+        // continue.
+        Warning("Invalid magic on ptable header");
+        return -1;
+    } else {
+        uint32 count;
+        struct ENTRY entries[count];
+    }
+};
+
+struct PTABLE ptable;
+
+struct IMAGE_VERSION {
+    uchar major;
+    uchar minor;
+    uint16 revision;
+    uint32 build_num;
+};
+
+struct IHDR {
+    uint32 magic <format=hex>;
+    uint32 load_addr <format=hex>;
+    uint16 hdr_size <format=hex>;
+    uint16 protect_size <format=hex>;
+    uint32 img_size <format=hex>;
+    uint32 flags;
+    struct IMAGE_VERSION ver;
+    uint32 _pad1;
+};
+
+struct TLV_HDR {
+    uint16 magic;
+    uint16 tlv_tot;
+};
+
+struct TLV {
+    uchar type <format=hex>;
+    uchar pad;
+    uint16 len;
+
+    switch (type) {
+    case 0x01: // keyhash
+        uchar keyhash[len];
+        break;
+    case 0x40: // dependency
+        if (len != 12) {
+            Warning("Invalid dependency size");
+            return -1;
+        }
+        uchar image_id;
+        uchar pad1;
+        uint16 pad2;
+        struct IMAGE_VERSION version;
+        break;
+    default:
+        // Other, just consume the data.
+        uchar data[len];
+    }
+};
+
+local int i;
+local int epos;
+
+for (i = 0; i < ptable.count; i++) {
+    FSeek(ptable.entries[i].offset);
+    switch (ptable.entries[i].id) {
+    case 1:
+    case 2:
+    case 4:
+    case 5:
+        struct IMAGE {
+            struct IHDR ihdr;
+
+            if (ihdr.magic == 0x96f3b83d) {
+                uchar payload[ihdr.img_size];
+
+                epos = FTell();
+                struct TLV_HDR tlv_hdr;
+
+                if (tlv_hdr.magic == 0x6907) {
+                    epos += tlv_hdr.tlv_tot;
+                    while (FTell() < epos) {
+                        struct TLV tlv;
+                    }
+                }
+            }
+            // uchar block[ptable.entries[i].size];
+        } image;
+        break;
+    case 3:
+        struct SCRATCH {
+            uchar data[ptable.entries[i].size];
+        } scratch;
+        break;
+    default:
+        break;
+    }
+}

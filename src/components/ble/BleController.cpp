@@ -1,5 +1,3 @@
-#include <cstring>
-#include <cstdlib>
 #include "BleController.h"
 
 using namespace Pinetime::Controllers;
@@ -27,5 +25,3 @@ void Ble::FirmwareUpdateTotalBytes(uint32_t totalBytes) {
 void Ble::FirmwareUpdateCurrentBytes(uint32_t currentBytes) {
   firmwareUpdateCurrentBytes = currentBytes;
 }
-
-

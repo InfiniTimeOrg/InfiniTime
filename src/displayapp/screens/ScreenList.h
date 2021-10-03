@@ -1,37 +1,38 @@
 #pragma once
 
-#include <vector>
+#include <array>
 #include <functional>
-#include "components/ble/NimbleController.h"
+#include <memory>
 #include "Screen.h"
-#include "Label.h"
+#include "../DisplayApp.h"
 
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
-      template <size_t N>
-      class ScreenList : public Screen {
-        public:
-          ScreenList(DisplayApp* app, std::array<std::function<std::unique_ptr<Screen>()>, N>&& screens)
-          : Screen(app), screens{std::move(screens)}, current{this->screens[0]()} {
 
-          }
+      enum class ScreenListModes { UpDown, RightLeft, LongPress };
+      template <size_t N> class ScreenList : public Screen {
+      public:
+        ScreenList(DisplayApp* app,
+                   uint8_t initScreen,
+                   const std::array<std::function<std::unique_ptr<Screen>()>, N>&& screens,
+                   ScreenListModes mode)
+          : Screen(app), initScreen {initScreen}, screens {std::move(screens)}, mode {mode}, screenIndex{initScreen}, current {this->screens[initScreen]()} {
 
-          ~ScreenList() override {
+        }
 
-          }
+        ScreenList(const ScreenList&) = delete;
+        ScreenList& operator=(const ScreenList&) = delete;
+        ScreenList(ScreenList&&) = delete;
+        ScreenList& operator=(ScreenList&&) = delete;
 
-          bool Refresh() override {
-            running = current->Refresh();
-            return running;
-          }
+        ~ScreenList() override {
+          lv_obj_clean(lv_scr_act());
+        }
 
-          bool OnButtonPushed() override {
-            running = false;
-            return true;
-          }
+        bool OnTouchEvent(TouchEvents event) override {
 
-          bool OnTouchEvent(TouchEvents event) override {
+          if (mode == ScreenListModes::UpDown) {
             switch (event) {
               case TouchEvents::SwipeDown:
                 if (screenIndex > 0) {
@@ -39,8 +40,11 @@ namespace Pinetime {
                   app->SetFullRefresh(DisplayApp::FullRefreshDirections::Down);
                   screenIndex--;
                   current = screens[screenIndex]();
+                  return true;
+                } else {
+                  return false;
                 }
-                return true;
+
               case TouchEvents::SwipeUp:
                 if (screenIndex < screens.size() - 1) {
                   current.reset(nullptr);
@@ -52,14 +56,52 @@ namespace Pinetime {
               default:
                 return false;
             }
-            return false;
+          } else if (mode == ScreenListModes::RightLeft) {
+            switch (event) {
+              case TouchEvents::SwipeRight:
+                if (screenIndex > 0) {
+                  current.reset(nullptr);
+                  app->SetFullRefresh(DisplayApp::FullRefreshDirections::None);
+                  screenIndex--;
+                  current = screens[screenIndex]();
+                  return true;
+                } else {
+                  return false;
+                }
+
+              case TouchEvents::SwipeLeft:
+                if (screenIndex < screens.size() - 1) {
+                  current.reset(nullptr);
+                  app->SetFullRefresh(DisplayApp::FullRefreshDirections::None);
+                  screenIndex++;
+                  current = screens[screenIndex]();
+                }
+                return true;
+              default:
+                return false;
+            }
+          } else if (event == TouchEvents::LongTap) {
+            if (screenIndex < screens.size() - 1) {
+              screenIndex++;
+            } else {
+              screenIndex = 0;
+            }
+            current.reset(nullptr);
+            app->SetFullRefresh(DisplayApp::FullRefreshDirections::None);
+            current = screens[screenIndex]();
+            return true;
           }
 
-        private:
-          bool running = true;
-          uint8_t screenIndex = 0;
-          std::array<std::function<std::unique_ptr<Screen>()>, N> screens;
-          std::unique_ptr<Screen> current;
+          return false;
+        }
+
+      private:
+        uint8_t initScreen = 0;
+        const std::array<std::function<std::unique_ptr<Screen>()>, N> screens;
+        ScreenListModes mode = ScreenListModes::UpDown;
+
+        uint8_t screenIndex = 0;
+        std::unique_ptr<Screen> current;
       };
     }
   }

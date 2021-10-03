@@ -1,28 +1,30 @@
-#include <FreeRTOS.h>
-#include <task.h>
-#include <nrfx_log.h>
-#include <legacy/nrf_drv_gpiote.h>
 #include "Cst816s.h"
+#include <FreeRTOS.h>
+#include <legacy/nrf_drv_gpiote.h>
+#include <nrfx_log.h>
+#include <task.h>
+#include "drivers/PinMap.h"
+
 using namespace Pinetime::Drivers;
 
 /* References :
- * This implementation is based on this article : https://medium.com/@ly.lee/building-a-rust-driver-for-pinetimes-touch-controller-cbc1a5d5d3e9
- * Touch panel datasheet (weird chinese translation) : https://wiki.pine64.org/images/5/51/CST816S%E6%95%B0%E6%8D%AE%E6%89%8B%E5%86%8CV1.1.en.pdf
+ * This implementation is based on this article :
+ * https://medium.com/@ly.lee/building-a-rust-driver-for-pinetimes-touch-controller-cbc1a5d5d3e9 Touch panel datasheet (weird chinese
+ * translation) : https://wiki.pine64.org/images/5/51/CST816S%E6%95%B0%E6%8D%AE%E6%89%8B%E5%86%8CV1.1.en.pdf
  *
  * TODO : we need a complete datasheet and protocol reference!
  * */
 
-Cst816S::Cst816S(TwiMaster &twiMaster, uint8_t twiAddress) : twiMaster{twiMaster}, twiAddress{twiAddress} {
-
+Cst816S::Cst816S(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}, twiAddress {twiAddress} {
 }
 
 void Cst816S::Init() {
-  nrf_gpio_cfg_output(pinReset);
-  nrf_gpio_pin_set(pinReset);
+  nrf_gpio_cfg_output(PinMap::Cst816sReset);
+  nrf_gpio_pin_set(PinMap::Cst816sReset);
   vTaskDelay(50);
-  nrf_gpio_pin_clear(pinReset);
+  nrf_gpio_pin_clear(PinMap::Cst816sReset);
   vTaskDelay(5);
-  nrf_gpio_pin_set(pinReset);
+  nrf_gpio_pin_set(PinMap::Cst816sReset);
   vTaskDelay(50);
 
   // Wake the touchpanel up
@@ -30,76 +32,58 @@ void Cst816S::Init() {
   twiMaster.Read(twiAddress, 0x15, &dummy, 1);
   vTaskDelay(5);
   twiMaster.Read(twiAddress, 0xa7, &dummy, 1);
+  vTaskDelay(5);
 
+  /*
+  [2] EnConLR - Continuous operation can slide around
+  [1] EnConUD - Slide up and down to enable continuous operation
+  [0] EnDClick - Enable Double-click action
+  */
+  static constexpr uint8_t motionMask = 0b00000101;
+  twiMaster.Write(twiAddress, 0xEC, &motionMask, 1);
+
+  /*
+  [7] EnTest - Interrupt pin to test, enable automatic periodic issued after a low pulse.
+  [6] EnTouch - When a touch is detected, a periodic pulsed Low.
+  [5] EnChange - Upon detecting a touch state changes, pulsed Low.
+  [4] EnMotion - When the detected gesture is pulsed Low.
+  [0] OnceWLP - Press gesture only issue a pulse signal is low.
+  */
+  static constexpr uint8_t irqCtl = 0b01110000;
+  twiMaster.Write(twiAddress, 0xFA, &irqCtl, 1);
 }
-
 
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
 
-  auto ret = twiMaster.Read(twiAddress, 0, touchData, 63);
-  if(ret != TwiMaster::ErrorCodes::NoError) return {};
+  auto ret = twiMaster.Read(twiAddress, 0, touchData, sizeof(touchData));
+  if (ret != TwiMaster::ErrorCodes::NoError) {
+    info.isValid = false;
+    return info;
+  }
 
   auto nbTouchPoints = touchData[2] & 0x0f;
 
-//  uint8_t i = 0;
-//  NRF_LOG_INFO("#########################")
-  for(int i = 0; i < 1; i++) {
-    uint8_t pointId = (touchData[touchIdIndex + (touchStep * i)]) >> 4;
-    if(nbTouchPoints == 0 && pointId == lastTouchId) return info;
+  auto xHigh = touchData[touchXHighIndex] & 0x0f;
+  auto xLow = touchData[touchXLowIndex];
+  uint16_t x = (xHigh << 8) | xLow;
 
-    // We fetch only the first touch point (the controller seems to handle only one anyway...)
-    info.isTouch = true;
+  auto yHigh = touchData[touchYHighIndex] & 0x0f;
+  auto yLow = touchData[touchYLowIndex];
+  uint16_t y = (yHigh << 8) | yLow;
 
-
-    auto xHigh = touchData[touchXHighIndex + (touchStep * i)] & 0x0f;
-    auto xLow = touchData[touchXLowIndex + (touchStep * i)];
-    uint16_t x = (xHigh << 8) | xLow;
-
-    auto yHigh = touchData[touchYHighIndex + (touchStep * i)] & 0x0f;
-    auto yLow = touchData[touchYLowIndex + (touchStep * i)];
-    uint16_t y = (yHigh << 8) | yLow;
-
-    auto action = touchData[touchEventIndex + (touchStep * i)] >> 6; /* 0 = Down, 1 = Up, 2 = contact*/
-    //auto finger = touchData[touchIdIndex + (touchStep * i)] >> 4;
-    //auto pressure = touchData[touchXYIndex + (touchStep * i)];
-    //auto area = touchData[touchMiscIndex + (touchStep * i)] >> 4;
-
-    info.x = x;
-    info.y = y;
-    info.action = action;
-    info.gesture = static_cast<Gestures>(touchData[gestureIndex]);
-
-//    NRF_LOG_INFO("---------------")
-//    NRF_LOG_INFO("ID : %d", pointId);
-//    NRF_LOG_INFO("NB : %d", nbTouchPoints);
-//    NRF_LOG_INFO("X/Y :%d / %d", info.x, info.y);
-//    NRF_LOG_INFO("Action : %d", action);
-//    NRF_LOG_INFO("Finger : %d", finger);
-//    NRF_LOG_INFO("Pressure : %d", pressure);
-//    NRF_LOG_INFO("area : %d", area);
-//    NRF_LOG_INFO("Touch : %s", info.isTouch?"Yes" : "No");
-//    switch(info.gesture) {// gesture
-//      case Gestures::None: NRF_LOG_INFO("Gesture : None"); break;
-//      case Gestures::SlideDown: NRF_LOG_INFO("Gesture : Slide Down"); break;
-//      case Gestures::SlideUp: NRF_LOG_INFO("Gesture : Slide Up"); break;
-//      case Gestures::SlideLeft: NRF_LOG_INFO("Gesture : Slide Left"); break;
-//      case Gestures::SlideRight: NRF_LOG_INFO("Gesture : Slide Right"); break;
-//      case Gestures::SingleTap: NRF_LOG_INFO("Gesture : Single click"); break;
-//      case Gestures::DoubleTap: NRF_LOG_INFO("Gesture : Double click"); break;
-//      case Gestures::LongPress: NRF_LOG_INFO("Gesture : Long press"); break;
-//      default : NRF_LOG_INFO("Unknown"); break;
-//    }
-  }
-
+  info.x = x;
+  info.y = y;
+  info.touching = (nbTouchPoints > 0);
+  info.gesture = static_cast<Gestures>(touchData[gestureIndex]);
 
   return info;
 }
 
 void Cst816S::Sleep() {
-  nrf_gpio_pin_clear(pinReset);
+  nrf_gpio_pin_clear(PinMap::Cst816sReset);
   vTaskDelay(5);
-  nrf_gpio_pin_set(pinReset);
+  nrf_gpio_pin_set(PinMap::Cst816sReset);
   vTaskDelay(50);
   static constexpr uint8_t sleepValue = 0x03;
   twiMaster.Write(twiAddress, 0xA5, &sleepValue, 1);

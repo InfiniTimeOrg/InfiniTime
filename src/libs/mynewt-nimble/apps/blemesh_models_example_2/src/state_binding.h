@@ -43,11 +43,11 @@ enum state_binding {
 	IGNORE_TEMP
 };
 
-extern u16_t lightness, target_lightness;
-extern s16_t temperature, target_temperature;
+extern uint16_t lightness, target_lightness;
+extern int16_t temperature, target_temperature;
 
-void state_binding(u8_t lightness, u8_t temperature);
-void calculate_lightness_target_values(u8_t type);
-void calculate_temp_target_values(u8_t type);
+void state_binding(uint8_t lightness, uint8_t temperature);
+void calculate_lightness_target_values(uint8_t type);
+void calculate_temp_target_values(uint8_t type);
 
 #endif

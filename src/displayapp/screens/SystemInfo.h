@@ -1,47 +1,54 @@
 #pragma once
 
-#include <functional>
-#include <vector>
-
-#include "components/ble/NimbleController.h"
+#include <memory>
 #include "Screen.h"
-#include "Label.h"
 #include "ScreenList.h"
-#include "Gauge.h"
-#include "Meter.h"
 
 namespace Pinetime {
+  namespace Controllers {
+    class DateTime;
+    class Battery;
+    class BrightnessController;
+    class Ble;
+  }
+
+  namespace Drivers {
+    class WatchdogView;
+  }
+
   namespace Applications {
+    class DisplayApp;
+
     namespace Screens {
       class SystemInfo : public Screen {
-        public:
-          explicit SystemInfo(DisplayApp* app,
-                              Pinetime::Controllers::DateTime& dateTimeController,
-                              Pinetime::Controllers::Battery& batteryController,
-                              Pinetime::Controllers::BrightnessController& brightnessController,
-                              Pinetime::Controllers::Ble& bleController,
-                              Pinetime::Drivers::WatchdogView& watchdog);
-          ~SystemInfo() override;
-          bool Refresh() override;
-          bool OnButtonPushed() override;
-          bool OnTouchEvent(TouchEvents event) override;
-        private:
-          bool running = true;
+      public:
+        explicit SystemInfo(DisplayApp* app,
+                            Pinetime::Controllers::DateTime& dateTimeController,
+                            Pinetime::Controllers::Battery& batteryController,
+                            Pinetime::Controllers::BrightnessController& brightnessController,
+                            Pinetime::Controllers::Ble& bleController,
+                            Pinetime::Drivers::WatchdogView& watchdog,
+                            Pinetime::Controllers::MotionController& motionController);
+        ~SystemInfo() override;
+        bool OnTouchEvent(TouchEvents event) override;
 
-          Pinetime::Controllers::DateTime& dateTimeController;
-          Pinetime::Controllers::Battery& batteryController;
-          Pinetime::Controllers::BrightnessController& brightnessController;
-          Pinetime::Controllers::Ble& bleController;
-          Pinetime::Drivers::WatchdogView& watchdog;
+      private:
+        Pinetime::Controllers::DateTime& dateTimeController;
+        Pinetime::Controllers::Battery& batteryController;
+        Pinetime::Controllers::BrightnessController& brightnessController;
+        Pinetime::Controllers::Ble& bleController;
+        Pinetime::Drivers::WatchdogView& watchdog;
+        Pinetime::Controllers::MotionController& motionController;
 
-          char t1[200];
-          char t2[200];
-          char t3[30];
+        ScreenList<5> screens;
 
-          ScreenList<3> screens;
-          std::unique_ptr<Screen> CreateScreen1();
-          std::unique_ptr<Screen> CreateScreen2();
-          std::unique_ptr<Screen> CreateScreen3();
+        static bool sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs);
+
+        std::unique_ptr<Screen> CreateScreen1();
+        std::unique_ptr<Screen> CreateScreen2();
+        std::unique_ptr<Screen> CreateScreen3();
+        std::unique_ptr<Screen> CreateScreen4();
+        std::unique_ptr<Screen> CreateScreen5();
       };
     }
   }

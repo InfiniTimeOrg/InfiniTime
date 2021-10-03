@@ -53,19 +53,22 @@
 
 #if MYNEWT_VAL(BLE_SOCK_USE_LINUX_BLUE)
 #include <sys/errno.h>
-#define BTPROTO_HCI 1
-#define HCI_CHANNEL_RAW		0
-#define HCI_CHANNEL_USER	1
-#define HCIDEVUP	_IOW('H', 201, int)
-#define HCIDEVDOWN	_IOW('H', 202, int)
-#define HCIDEVRESET	_IOW('H', 203, int)
-#define HCIGETDEVLIST	_IOR('H', 210, int)
+#define BTPROTO_HCI       1
+#define HCI_CHANNEL_RAW	  0
+#define HCI_CHANNEL_USER  1
+#define HCIDEVUP          _IOW('H', 201, int)
+#define HCIDEVDOWN        _IOW('H', 202, int)
+#define HCIDEVRESET       _IOW('H', 203, int)
+#define HCIGETDEVLIST     _IOR('H', 210, int)
 
 struct sockaddr_hci {
-        sa_family_t    hci_family;
-        unsigned short hci_dev;
-        unsigned short hci_channel;
+    sa_family_t hci_family;
+    unsigned short hci_dev;
+    unsigned short hci_channel;
 };
+#elif MYNEWT_VAL(BLE_SOCK_USE_NUTTX)
+#include <errno.h>
+#include <netpacket/bluetooth.h>
 #endif
 
 #include <fcntl.h>
@@ -205,6 +208,8 @@ static struct ble_hci_sock_state {
 static int s_ble_hci_device = MYNEWT_VAL(BLE_SOCK_TCP_PORT);
 #elif MYNEWT_VAL(BLE_SOCK_USE_LINUX_BLUE)
 static int s_ble_hci_device = MYNEWT_VAL(BLE_SOCK_LINUX_DEV);
+#elif MYNEWT_VAL(BLE_SOCK_USE_NUTTX)
+static int s_ble_hci_device = 0;
 #endif
 
 /**
@@ -227,6 +232,7 @@ ble_hci_trans_acl_buf_alloc(void)
     return m;
 }
 
+#if MYNEWT_VAL(BLE_SOCK_USE_LINUX_BLUE)
 static int
 ble_hci_sock_acl_tx(struct os_mbuf *om)
 {
@@ -268,10 +274,66 @@ ble_hci_sock_acl_tx(struct os_mbuf *om)
     }
     return 0;
 }
+#elif MYNEWT_VAL(BLE_SOCK_USE_NUTTX)
+static int
+ble_hci_sock_acl_tx(struct os_mbuf *om)
+{
+    size_t len;
+    uint8_t *buf;
+    int i;
+    struct os_mbuf *m;
+    struct sockaddr_hci addr;
 
+    addr.hci_family = AF_BLUETOOTH;
+    addr.hci_channel = HCI_CHANNEL_RAW;
+    addr.hci_dev = 0;
+
+    memcpy(&addr, &addr, sizeof(struct sockaddr_hci));
+
+    len = 1;
+
+    for (m = om; m; m = SLIST_NEXT(m, om_next)) {
+        len += m->om_len;
+    }
+
+    buf = (uint8_t *)malloc(len);
+
+    buf[0] = BLE_HCI_UART_H4_ACL;
+
+    i = 1;
+    for (m = om; m; m = SLIST_NEXT(m, om_next)) {
+        memcpy(&buf[i], m->om_data, m->om_len);
+        i += m->om_len;
+    }
+
+    STATS_INC(hci_sock_stats, omsg);
+    STATS_INC(hci_sock_stats, oacl);
+    STATS_INCN(hci_sock_stats, obytes, OS_MBUF_PKTLEN(om) + 1);
+
+    i = sendto(ble_hci_sock_state.sock, buf, len, 0,
+               (struct sockaddr *)&addr, sizeof(struct sockaddr_hci));
+
+    free(buf);
+
+    os_mbuf_free_chain(om);
+    if (i != OS_MBUF_PKTLEN(om) + 1) {
+        if (i < 0) {
+            dprintf(1, "sendto() failed : %d\n", errno);
+        } else {
+            dprintf(1, "sendto() partial write: %d\n", i);
+        }
+        STATS_INC(hci_sock_stats, oerr);
+        return BLE_ERR_MEM_CAPACITY;
+    }
+    return 0;
+}
+#endif
+
+#if MYNEWT_VAL(BLE_SOCK_USE_LINUX_BLUE)
 static int
 ble_hci_sock_cmdevt_tx(uint8_t *hci_ev, uint8_t h4_type)
 {
+    uint8_t btaddr[6];
     struct msghdr msg;
     struct iovec iov[8];
     int len;
@@ -316,6 +378,57 @@ ble_hci_sock_cmdevt_tx(uint8_t *hci_ev, uint8_t h4_type)
 
     return 0;
 }
+#elif MYNEWT_VAL(BLE_SOCK_USE_NUTTX)
+static int
+ble_hci_sock_cmdevt_tx(uint8_t *hci_ev, uint8_t h4_type)
+{
+    uint8_t *buf;
+    size_t len;
+    struct sockaddr_hci addr;
+    int i;
+
+    addr.hci_family = AF_BLUETOOTH;
+    addr.hci_channel = HCI_CHANNEL_RAW;
+    addr.hci_dev = 0;
+
+    memcpy(&addr, &addr, sizeof(struct sockaddr_hci));
+
+    if (h4_type == BLE_HCI_UART_H4_CMD) {
+        len = sizeof(struct ble_hci_cmd) + hci_ev[2];
+        STATS_INC(hci_sock_stats, ocmd);
+    } else if (h4_type == BLE_HCI_UART_H4_EVT) {
+        len = sizeof(struct ble_hci_ev) + hci_ev[1];
+        STATS_INC(hci_sock_stats, oevt);
+    } else {
+        assert(0);
+    }
+
+    STATS_INC(hci_sock_stats, omsg);
+    STATS_INCN(hci_sock_stats, obytes, len + 1);
+
+    buf = (uint8_t *)malloc(len + 1);
+
+    buf[0] = h4_type;
+    memcpy(&buf[1], hci_ev, len);
+
+    i = sendto(ble_hci_sock_state.sock, buf, len + 1, 0,
+               (struct sockaddr *)&addr, sizeof(struct sockaddr_hci));
+
+    free(buf);
+    ble_hci_trans_buf_free(hci_ev);
+    if (i != len + 1) {
+        if (i < 0) {
+            dprintf(1, "sendto() failed : %d\n", errno);
+        } else {
+            dprintf(1, "sendto() partial write: %d\n", i);
+        }
+        STATS_INC(hci_sock_stats, oerr);
+        return BLE_ERR_MEM_CAPACITY;
+    }
+
+    return 0;
+}
+#endif
 
 static int
 ble_hci_sock_rx_msg(void)
@@ -427,6 +540,7 @@ ble_hci_sock_rx_msg(void)
             STATS_INC(hci_sock_stats, ierr);
             break;
         }
+
         memmove(bhss->rx_data, &bhss->rx_data[len], bhss->rx_off - len);
         bhss->rx_off -= len;
     }
@@ -540,7 +654,7 @@ ble_hci_sock_config(void)
 
     rc = bind(s, (struct sockaddr *)&shci, sizeof(shci));
     if (rc) {
-        dprintf(1, "bind() failed %d\n", errno);
+        dprintf(1, "bind() failed %d hci%d\n", errno, shci.hci_dev);
         goto err;
     }
 
@@ -565,7 +679,54 @@ err:
     }
     return BLE_ERR_HW_FAIL;
 }
+#elif MYNEWT_VAL(BLE_SOCK_USE_NUTTX)
+static int
+ble_hci_sock_config(void)
+{
+    struct sockaddr_hci shci;
+    int s;
+    int rc;
+    ble_npl_time_t timeout;
+
+    memset(&shci, 0, sizeof(shci));
+    shci.hci_family = AF_BLUETOOTH;
+    shci.hci_dev = 0;
+    shci.hci_channel = HCI_CHANNEL_RAW;
+
+    if (ble_hci_sock_state.sock >= 0) {
+        close(ble_hci_sock_state.sock);
+        ble_hci_sock_state.sock = -1;
+    }
+
+    s = socket(PF_BLUETOOTH, SOCK_RAW, BTPROTO_HCI);
+    if (s < 0) {
+        dprintf(1, "socket() failed %d\n", errno);
+        goto err;
+    }
+
+    rc = bind(s, (struct sockaddr *)&shci, sizeof(shci));
+    if (rc) {
+        dprintf(1, "bind() failed %d hci%d\n", errno, shci.hci_dev);
+        goto err;
+    }
+
+    ble_hci_sock_state.sock = s;
+
+    rc = ble_npl_time_ms_to_ticks(10, &timeout);
+    if (rc) {
+        goto err;
+    }
+    ble_npl_callout_reset(&ble_hci_sock_state.timer, timeout);
+
+    return 0;
+err:
+    if (s >= 0) {
+        close(s);
+    }
+    return BLE_ERR_HW_FAIL;
+}
 #endif
+
 /**
  * Sends an HCI event from the controller to the host.
  *

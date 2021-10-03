@@ -29,7 +29,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <inttypes.h>
-#include <libs/mynewt-nimble/porting/nimble/include/os/os_cputime.h>
 #include "os/os.h"
 #include "log/log.h"
 #if MYNEWT_VAL(BLE_MONITOR_UART)
@@ -162,7 +161,7 @@ update_drop_counters(struct ble_monitor_hdr *failed_hdr)
 
     if (*cnt < UINT8_MAX) {
         (*cnt)++;
-        ble_npl_callout_reset(&rtt_drops.tmo, OS_TICKS_PER_SEC);
+        ble_npl_callout_reset(&rtt_drops.tmo, portMAX_DELAY);
     }
 }
 

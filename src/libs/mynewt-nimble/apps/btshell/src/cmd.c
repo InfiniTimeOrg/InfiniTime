@@ -2691,15 +2691,28 @@ cmd_security_unpair(int argc, char **argv)
 {
     ble_addr_t peer;
     int rc;
+    int oldest;
 
     rc = parse_arg_all(argc - 1, argv + 1);
     if (rc != 0) {
         return rc;
     }
 
+    rc = parse_arg_bool_dflt("oldest", 0, &oldest);
+    if (rc != 0) {
+        console_printf("invalid 'oldest' parameter\n");
+        return rc;
+    }
+
+    if (oldest) {
+        rc = ble_gap_unpair_oldest_peer();
+        console_printf("Unpair oldest status: 0x%02x\n", rc);
+        return 0;
+    }
+
     rc = parse_dev_addr("peer_", cmd_peer_addr_types, &peer);
     if (rc != 0) {
-        console_printf("invalid 'peer_addr' parameter\n");
+        console_printf("invalid peer address\n");
         return rc;
     }
 
@@ -2714,6 +2727,7 @@ cmd_security_unpair(int argc, char **argv)
 
 #if MYNEWT_VAL(SHELL_CMD_HELP)
 static const struct shell_param security_unpair_params[] = {
+    {"oldest", "usage: =[true|false], default: false"},
     {"peer_addr_type", "usage: =[public|random|public_id|random_id], default: public"},
     {"peer_addr", "usage: =[XX:XX:XX:XX:XX:XX]"},
     {NULL, NULL}

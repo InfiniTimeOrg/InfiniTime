@@ -77,6 +77,19 @@ syscfg.defs:
             integer for easy comparison.
         range: 50, 51, 52
         value: 50
+    BLE_ISO:
+        description: >
+            This enables LE Isochronous Channels as per Bluetooth v5.2
+        value: 0
+        restrictions:
+            - '(BLE_VERSION >= 52) if 1'
+
+    BLE_ISO_TEST:
+        description: >
+            Enables BLE ISO Testing commands
+        value: 0
+        restrictions:
+            - 'BLE_ISO if 1'
 
 # Allow periodic sync transfer only if 5.1 or higher
 syscfg.restrictions:

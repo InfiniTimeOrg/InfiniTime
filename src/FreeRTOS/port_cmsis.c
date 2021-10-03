@@ -294,6 +294,25 @@ static void vPortEnableVFP( void )
 }
 /*-----------------------------------------------------------*/
 
+uint32_t ulSetInterruptMaskFromISR( void )
+{
+  __asm volatile (
+  " mrs r0, PRIMASK	\n"
+  " cpsid i			\n"
+  " bx lr				  "
+  ::: "memory"
+  );
+}
+
+void vClearInterruptMaskFromISR( __attribute__( ( unused ) ) uint32_t ulMask )
+{
+  __asm volatile (
+  " msr PRIMASK, r0	\n"
+  " bx lr				  "
+  ::: "memory"
+  );
+}
+
 #if ( configASSERT_DEFINED == 1 )
 
     void vPortValidateInterruptPriority( void )

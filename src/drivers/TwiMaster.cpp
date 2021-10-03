@@ -1,44 +1,46 @@
-#include <nrfx_log.h>
-#include <hal/nrf_gpio.h>
-#include <cstring>
 #include "TwiMaster.h"
+#include <cstring>
+#include <hal/nrf_gpio.h>
+#include <nrfx_log.h>
 
 using namespace Pinetime::Drivers;
 
 // TODO use shortcut to automatically send STOP when receive LastTX, for example
 // TODO use DMA/IRQ
 
-TwiMaster::TwiMaster(const Modules module, const Parameters& params) : module{module}, params{params} {
-  mutex = xSemaphoreCreateBinary();
+TwiMaster::TwiMaster(NRF_TWIM_Type* module, uint32_t frequency, uint8_t pinSda, uint8_t pinScl)
+  : module {module}, frequency {frequency}, pinSda {pinSda}, pinScl {pinScl} {
+}
+
+void TwiMaster::ConfigurePins() const {
+  NRF_GPIO->PIN_CNF[pinScl] =
+    (GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) |
+    (GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
+    (GPIO_PIN_CNF_PULL_Disabled << GPIO_PIN_CNF_PULL_Pos) |
+    (GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos) |
+    (GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
+
+  NRF_GPIO->PIN_CNF[pinSda] =
+    (GPIO_PIN_CNF_DIR_Input << GPIO_PIN_CNF_DIR_Pos) |
+    (GPIO_PIN_CNF_INPUT_Connect << GPIO_PIN_CNF_INPUT_Pos) |
+    (GPIO_PIN_CNF_PULL_Disabled << GPIO_PIN_CNF_PULL_Pos) |
+    (GPIO_PIN_CNF_DRIVE_S0D1 << GPIO_PIN_CNF_DRIVE_Pos) |
+    (GPIO_PIN_CNF_SENSE_Disabled << GPIO_PIN_CNF_SENSE_Pos);
 }
 
 void TwiMaster::Init() {
-  NRF_GPIO->PIN_CNF[params.pinScl] = ((uint32_t)GPIO_PIN_CNF_DIR_Input      << GPIO_PIN_CNF_DIR_Pos)
-                                     | ((uint32_t)GPIO_PIN_CNF_INPUT_Connect    << GPIO_PIN_CNF_INPUT_Pos)
-                                     | ((uint32_t)GPIO_PIN_CNF_PULL_Pullup      << GPIO_PIN_CNF_PULL_Pos)
-                                     | ((uint32_t)GPIO_PIN_CNF_DRIVE_S0D1       << GPIO_PIN_CNF_DRIVE_Pos)
-                                     | ((uint32_t)GPIO_PIN_CNF_SENSE_Disabled   << GPIO_PIN_CNF_SENSE_Pos);
-
-  NRF_GPIO->PIN_CNF[params.pinSda] = ((uint32_t)GPIO_PIN_CNF_DIR_Input        << GPIO_PIN_CNF_DIR_Pos)
-                                     | ((uint32_t)GPIO_PIN_CNF_INPUT_Connect    << GPIO_PIN_CNF_INPUT_Pos)
-                                     | ((uint32_t)GPIO_PIN_CNF_PULL_Pullup      << GPIO_PIN_CNF_PULL_Pos)
-                                     | ((uint32_t)GPIO_PIN_CNF_DRIVE_S0D1       << GPIO_PIN_CNF_DRIVE_Pos)
-                                     | ((uint32_t)GPIO_PIN_CNF_SENSE_Disabled   << GPIO_PIN_CNF_SENSE_Pos);
-
-  switch(module) {
-    case Modules::TWIM1: twiBaseAddress = NRF_TWIM1; break;
-    default:
-      return;
+  if (mutex == nullptr) {
+    mutex = xSemaphoreCreateBinary();
   }
 
-  switch(static_cast<Frequencies>(params.frequency)) {
-    case Frequencies::Khz100 : twiBaseAddress->FREQUENCY = TWIM_FREQUENCY_FREQUENCY_K100; break;
-    case Frequencies::Khz250 : twiBaseAddress->FREQUENCY = TWIM_FREQUENCY_FREQUENCY_K250; break;
-    case Frequencies::Khz400 : twiBaseAddress->FREQUENCY = TWIM_FREQUENCY_FREQUENCY_K400; break;
-  }
+  ConfigurePins();
 
-  twiBaseAddress->PSEL.SCL = params.pinScl;
-  twiBaseAddress->PSEL.SDA = params.pinSda;
+  twiBaseAddress = module;
+
+  twiBaseAddress->FREQUENCY = frequency;
+
+  twiBaseAddress->PSEL.SCL = pinScl;
+  twiBaseAddress->PSEL.SDA = pinSda;
   twiBaseAddress->EVENTS_LASTRX = 0;
   twiBaseAddress->EVENTS_STOPPED = 0;
   twiBaseAddress->EVENTS_LASTTX = 0;
@@ -49,79 +51,48 @@ void TwiMaster::Init() {
 
   twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 
-
-  /* // IRQ
-     NVIC_ClearPendingIRQ(_IRQn);
-     NVIC_SetPriority(_IRQn, 2);
-     NVIC_EnableIRQ(_IRQn);
-   */
-
   xSemaphoreGive(mutex);
-
 }
 
-TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t *data, size_t size) {
+TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t* data, size_t size) {
   xSemaphoreTake(mutex, portMAX_DELAY);
-  auto ret = ReadWithRetry(deviceAddress, registerAddress, data, size);
+  Wakeup();
+  auto ret = Write(deviceAddress, &registerAddress, 1, false);
+  ret = Read(deviceAddress, data, size, true);
+  Sleep();
   xSemaphoreGive(mutex);
-
   return ret;
 }
 
-TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t *data, size_t size) {
+TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t* data, size_t size) {
   ASSERT(size <= maxDataSize);
   xSemaphoreTake(mutex, portMAX_DELAY);
-
-  auto ret = WriteWithRetry(deviceAddress, registerAddress, data, size);
+  Wakeup();
+  internalBuffer[0] = registerAddress;
+  std::memcpy(internalBuffer + 1, data, size);
+  auto ret = Write(deviceAddress, internalBuffer, size + 1, true);
+  Sleep();
   xSemaphoreGive(mutex);
   return ret;
 }
 
-/* Execute a read transaction (composed of a write and a read operation). If one of these opeartion fails,
- * it's retried once. If it fails again, an error is returned */
-TwiMaster::ErrorCodes TwiMaster::ReadWithRetry(uint8_t deviceAddress, uint8_t registerAddress, uint8_t *data, size_t size) {
-  TwiMaster::ErrorCodes ret;
-  ret = Write(deviceAddress, &registerAddress, 1, false);
-  if(ret != ErrorCodes::NoError)
-    ret = Write(deviceAddress, &registerAddress, 1, false);
-
-  if(ret != ErrorCodes::NoError) return ret;
-
-  ret = Read(deviceAddress, data, size, true);
-  if(ret != ErrorCodes::NoError)
-    ret = Read(deviceAddress, data, size, true);
-
-  return ret;
-}
-
-/* Execute a write transaction. If it fails, it is retried once. If it fails again, an error is returned. */
-TwiMaster::ErrorCodes TwiMaster::WriteWithRetry(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t *data, size_t size) {
-  internalBuffer[0] = registerAddress;
-  std::memcpy(internalBuffer+1, data, size);
-  auto ret = Write(deviceAddress, internalBuffer, size+1, true);
-  if(ret != ErrorCodes::NoError)
-    ret = Write(deviceAddress, internalBuffer, size+1, true);
-
-  return ret;
-}
-
-
-TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t *buffer, size_t size, bool stop) {
+TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t* buffer, size_t size, bool stop) {
   twiBaseAddress->ADDRESS = deviceAddress;
   twiBaseAddress->TASKS_RESUME = 0x1UL;
-  twiBaseAddress->RXD.PTR = (uint32_t)buffer;
+  twiBaseAddress->RXD.PTR = (uint32_t) buffer;
   twiBaseAddress->RXD.MAXCNT = size;
 
   twiBaseAddress->TASKS_STARTRX = 1;
 
-  while(!twiBaseAddress->EVENTS_RXSTARTED && !twiBaseAddress->EVENTS_ERROR);
+  while (!twiBaseAddress->EVENTS_RXSTARTED && !twiBaseAddress->EVENTS_ERROR)
+    ;
   twiBaseAddress->EVENTS_RXSTARTED = 0x0UL;
 
   txStartedCycleCount = DWT->CYCCNT;
   uint32_t currentCycleCount;
-  while(!twiBaseAddress->EVENTS_LASTRX && !twiBaseAddress->EVENTS_ERROR) {
+  while (!twiBaseAddress->EVENTS_LASTRX && !twiBaseAddress->EVENTS_ERROR) {
     currentCycleCount = DWT->CYCCNT;
-    if ((currentCycleCount-txStartedCycleCount) > HwFreezedDelay) {
+    if ((currentCycleCount - txStartedCycleCount) > HwFreezedDelay) {
       FixHwFreezed();
       return ErrorCodes::TransactionFailed;
     }
@@ -130,12 +101,13 @@ TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t *buffer, si
 
   if (stop || twiBaseAddress->EVENTS_ERROR) {
     twiBaseAddress->TASKS_STOP = 0x1UL;
-    while(!twiBaseAddress->EVENTS_STOPPED);
+    while (!twiBaseAddress->EVENTS_STOPPED)
+      ;
     twiBaseAddress->EVENTS_STOPPED = 0x0UL;
-  }
-  else {
+  } else {
     twiBaseAddress->TASKS_SUSPEND = 0x1UL;
-    while(!twiBaseAddress->EVENTS_SUSPENDED);
+    while (!twiBaseAddress->EVENTS_SUSPENDED)
+      ;
     twiBaseAddress->EVENTS_SUSPENDED = 0x0UL;
   }
 
@@ -145,22 +117,23 @@ TwiMaster::ErrorCodes TwiMaster::Read(uint8_t deviceAddress, uint8_t *buffer, si
   return ErrorCodes::NoError;
 }
 
-TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, const uint8_t *data, size_t size, bool stop) {
+TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, const uint8_t* data, size_t size, bool stop) {
   twiBaseAddress->ADDRESS = deviceAddress;
   twiBaseAddress->TASKS_RESUME = 0x1UL;
-  twiBaseAddress->TXD.PTR = (uint32_t)data;
+  twiBaseAddress->TXD.PTR = (uint32_t) data;
   twiBaseAddress->TXD.MAXCNT = size;
 
   twiBaseAddress->TASKS_STARTTX = 1;
 
-  while(!twiBaseAddress->EVENTS_TXSTARTED && !twiBaseAddress->EVENTS_ERROR);
+  while (!twiBaseAddress->EVENTS_TXSTARTED && !twiBaseAddress->EVENTS_ERROR)
+    ;
   twiBaseAddress->EVENTS_TXSTARTED = 0x0UL;
 
   txStartedCycleCount = DWT->CYCCNT;
   uint32_t currentCycleCount;
-  while(!twiBaseAddress->EVENTS_LASTTX && !twiBaseAddress->EVENTS_ERROR) {
+  while (!twiBaseAddress->EVENTS_LASTTX && !twiBaseAddress->EVENTS_ERROR) {
     currentCycleCount = DWT->CYCCNT;
-    if ((currentCycleCount-txStartedCycleCount) > HwFreezedDelay) {
+    if ((currentCycleCount - txStartedCycleCount) > HwFreezedDelay) {
       FixHwFreezed();
       return ErrorCodes::TransactionFailed;
     }
@@ -169,12 +142,13 @@ TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, const uint8_t *dat
 
   if (stop || twiBaseAddress->EVENTS_ERROR) {
     twiBaseAddress->TASKS_STOP = 0x1UL;
-    while(!twiBaseAddress->EVENTS_STOPPED);
+    while (!twiBaseAddress->EVENTS_STOPPED)
+      ;
     twiBaseAddress->EVENTS_STOPPED = 0x0UL;
-  }
-  else {
+  } else {
     twiBaseAddress->TASKS_SUSPEND = 0x1UL;
-    while(!twiBaseAddress->EVENTS_SUSPENDED);
+    while (!twiBaseAddress->EVENTS_SUSPENDED)
+      ;
     twiBaseAddress->EVENTS_SUSPENDED = 0x0UL;
   }
 
@@ -188,17 +162,11 @@ TwiMaster::ErrorCodes TwiMaster::Write(uint8_t deviceAddress, const uint8_t *dat
 }
 
 void TwiMaster::Sleep() {
-  while(twiBaseAddress->ENABLE != 0) {
-    twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Disabled << TWIM_ENABLE_ENABLE_Pos);
-  }
-  nrf_gpio_cfg_default(6);
-  nrf_gpio_cfg_default(7);
-  NRF_LOG_INFO("[TWIMASTER] Sleep");
+  twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Disabled << TWIM_ENABLE_ENABLE_Pos);
 }
 
 void TwiMaster::Wakeup() {
-  Init();
-  NRF_LOG_INFO("[TWIMASTER] Wakeup");
+  twiBaseAddress->ENABLE = (TWIM_ENABLE_ENABLE_Enabled << TWIM_ENABLE_ENABLE_Pos);
 }
 
 /* Sometimes, the TWIM device just freeze and never set the event EVENTS_LASTTX.
@@ -208,22 +176,10 @@ void TwiMaster::Wakeup() {
  * */
 void TwiMaster::FixHwFreezed() {
   NRF_LOG_INFO("I2C device frozen, reinitializing it!");
-  // Disable I²C
+
   uint32_t twi_state = NRF_TWI1->ENABLE;
-  twiBaseAddress->ENABLE = TWIM_ENABLE_ENABLE_Disabled << TWI_ENABLE_ENABLE_Pos;
 
-  NRF_GPIO->PIN_CNF[params.pinScl] = ((uint32_t)GPIO_PIN_CNF_DIR_Input      << GPIO_PIN_CNF_DIR_Pos)
-                         | ((uint32_t)GPIO_PIN_CNF_INPUT_Connect    << GPIO_PIN_CNF_INPUT_Pos)
-                         | ((uint32_t)GPIO_PIN_CNF_PULL_Pullup      << GPIO_PIN_CNF_PULL_Pos)
-                         | ((uint32_t)GPIO_PIN_CNF_DRIVE_S0S1       << GPIO_PIN_CNF_DRIVE_Pos)
-                         | ((uint32_t)GPIO_PIN_CNF_SENSE_Disabled   << GPIO_PIN_CNF_SENSE_Pos);
+  Sleep();
 
-  NRF_GPIO->PIN_CNF[params.pinSda] = ((uint32_t)GPIO_PIN_CNF_DIR_Input        << GPIO_PIN_CNF_DIR_Pos)
-                         | ((uint32_t)GPIO_PIN_CNF_INPUT_Connect    << GPIO_PIN_CNF_INPUT_Pos)
-                         | ((uint32_t)GPIO_PIN_CNF_PULL_Pullup      << GPIO_PIN_CNF_PULL_Pos)
-                         | ((uint32_t)GPIO_PIN_CNF_DRIVE_S0S1       << GPIO_PIN_CNF_DRIVE_Pos)
-                         | ((uint32_t)GPIO_PIN_CNF_SENSE_Disabled   << GPIO_PIN_CNF_SENSE_Pos);
-
-  // Re-enable I²C
   twiBaseAddress->ENABLE = twi_state;
 }

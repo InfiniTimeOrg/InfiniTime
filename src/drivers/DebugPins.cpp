@@ -1,5 +1,5 @@
-#include <hal/nrf_gpio.h>
 #include "DebugPins.h"
+#include <hal/nrf_gpio.h>
 
 #ifdef USE_DEBUG_PINS
 void debugpins_init() {
@@ -19,31 +19,27 @@ void debugpins_init() {
   nrf_gpio_pin_clear(DebugPin4);
 }
 void debugpins_set(debugpins_pins pin) {
-  nrf_gpio_pin_set((uint32_t)(pin));
+  nrf_gpio_pin_set((uint32_t) (pin));
 }
 
 void debugpins_clear(debugpins_pins pin) {
-  nrf_gpio_pin_clear((uint32_t)(pin));
+  nrf_gpio_pin_clear((uint32_t) (pin));
 }
 
 void debugpins_pulse(debugpins_pins pin) {
-  nrf_gpio_pin_set((uint32_t)(pin));
-  nrf_gpio_pin_clear((uint32_t)(pin));
+  nrf_gpio_pin_set((uint32_t) (pin));
+  nrf_gpio_pin_clear((uint32_t) (pin));
 }
 #else
 void debugpins_init() {
-
 }
 void debugpins_set(debugpins_pins pin) {
-
 }
 
 void debugpins_clear(debugpins_pins pin) {
-
 }
 
 void debugpins_pulse(debugpins_pins pin) {
-
 }
 
 #endif

@@ -23,7 +23,6 @@
 #include "sysinit/sysinit.h"
 #include "syscfg/syscfg.h"
 #include "host/ble_hs.h"
-#include "config/config.h"
 #include "base64/base64.h"
 #include "store/config/ble_store_config.h"
 #include "ble_store_config_priv.h"

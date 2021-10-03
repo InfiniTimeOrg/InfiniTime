@@ -268,16 +268,12 @@ void
 npl_freertos_callout_init(struct ble_npl_callout *co, struct ble_npl_eventq *evq,
                      ble_npl_event_fn *ev_cb, void *ev_arg)
 {
-  // I added this 'if' because nimble seems to never delete the timers. I assume it wants to recycle them.
-  // This condition ensure that a new timer is created only if 'co' points to an uninitialized structure.
-  // If the struct contains an existing timer, no new timer is created, which prevent a significant memory leak.
-  // TODO Ensure that this workaround is valid and does not generate bad side-effect.
   if(co->handle == NULL) {
     memset(co, 0, sizeof(*co));
     co->handle = xTimerCreate("co", 1, pdFALSE, co, os_callout_timer_cb);
+  }
     co->evq = evq;
     ble_npl_event_init(&co->ev, ev_cb, ev_arg);
-  }
 }
 
 ble_npl_error_t

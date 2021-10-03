@@ -1,15 +1,13 @@
+#include "St7789.h"
 #include <hal/nrf_gpio.h>
 #include <libraries/delay/nrf_delay.h>
 #include <nrfx_log.h>
-#include "St7789.h"
 #include "Spi.h"
 
 using namespace Pinetime::Drivers;
 
-St7789::St7789(Spi &spi, uint8_t pinDataCommand) : spi{spi}, pinDataCommand{pinDataCommand} {
-
+St7789::St7789(Spi& spi, uint8_t pinDataCommand) : spi {spi}, pinDataCommand {pinDataCommand} {
 }
-
 
 void St7789::Init() {
   spi.Init();
@@ -38,9 +36,8 @@ void St7789::WriteData(uint8_t data) {
   WriteSpi(&data, 1);
 }
 
-
 void St7789::WriteSpi(const uint8_t* data, size_t size) {
-    spi.Write(data, size);
+  spi.Write(data, size);
 }
 
 void St7789::SoftwareReset() {
@@ -105,7 +102,7 @@ void St7789::SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
   WriteData(x1 & 0xff);
 
   WriteCommand(static_cast<uint8_t>(Commands::RowAddressSet));
-  WriteData(y0>>8);
+  WriteData(y0 >> 8);
   WriteData(y0 & 0xff);
   WriteData(y1 >> 8);
   WriteData(y1 & 0xff);
@@ -139,30 +136,23 @@ void St7789::VerticalScrollStartAddress(uint16_t line) {
   WriteData(line & 0x00ffu);
 }
 
-
 void St7789::Uninit() {
-
 }
 
 void St7789::DrawPixel(uint16_t x, uint16_t y, uint32_t color) {
-  if((x < 0) ||(x >= Width) || (y < 0) || (y >= Height)) return;
+  if (x >= Width || y >= Height) {
+    return;
+  }
 
-  SetAddrWindow(x, y, x+1, y+1);
+  SetAddrWindow(x, y, x + 1, y + 1);
 
   nrf_gpio_pin_set(pinDataCommand);
-  WriteSpi(reinterpret_cast<const uint8_t *>(&color), 2);
+  WriteSpi(reinterpret_cast<const uint8_t*>(&color), 2);
 }
 
-void St7789::BeginDrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height) {
-  if((x >= Width) || (y >= Height)) return;
-  if((x + width - 1) >= Width)  width = Width  - x;
-  if((y + height - 1) >= Height) height = Height - y;
-
-  SetAddrWindow(0+x, ST7789_ROW_OFFSET+y, x+width-1, y+height-1);
+void St7789::DrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t* data, size_t size) {
+  SetAddrWindow(x, y, x + width - 1, y + height - 1);
   nrf_gpio_pin_set(pinDataCommand);
-}
-
-void St7789::NextDrawBuffer(const uint8_t *data, size_t size) {
   WriteSpi(data, size);
 }
 

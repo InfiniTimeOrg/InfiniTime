@@ -1,32 +1,34 @@
 #pragma once
 
-#include <functional>
-#include <vector>
+#include <memory>
 
-#include "components/ble/NimbleController.h"
 #include "Screen.h"
-#include "Label.h"
 #include "ScreenList.h"
-#include "Gauge.h"
-#include "Meter.h"
+#include "components/datetime/DateTimeController.h"
+#include "components/settings/Settings.h"
+#include "components/battery/BatteryController.h"
 
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class ApplicationList : public Screen {
-        public:
-          explicit ApplicationList(DisplayApp* app);
-          ~ApplicationList() override;
-          bool Refresh() override;
-          bool OnButtonPushed() override;
-          bool OnTouchEvent(TouchEvents event) override;
-        private:
-          bool running = true;
+      public:
+        explicit ApplicationList(DisplayApp* app,
+                                 Pinetime::Controllers::Settings& settingsController,
+                                 Pinetime::Controllers::Battery& batteryController,
+                                 Controllers::DateTime& dateTimeController);
+        ~ApplicationList() override;
+        bool OnTouchEvent(TouchEvents event) override;
 
-          ScreenList<2> screens;
-          std::unique_ptr<Screen> CreateScreen1();
-          std::unique_ptr<Screen> CreateScreen2();
-          std::unique_ptr<Screen> CreateScreen3();
+      private:
+        Controllers::Settings& settingsController;
+        Pinetime::Controllers::Battery& batteryController;
+        Controllers::DateTime& dateTimeController;
+
+        ScreenList<2> screens;
+        std::unique_ptr<Screen> CreateScreen1();
+        std::unique_ptr<Screen> CreateScreen2();
+        // std::unique_ptr<Screen> CreateScreen3();
       };
     }
   }

@@ -1,41 +1,43 @@
 #pragma once
 
-#include <cstdint>
-#include <chrono>
-
 #include "Screen.h"
-#include <bits/unique_ptr.h>
-#include <libs/lvgl/src/lv_core/lv_style.h>
-#include <libs/lvgl/src/lv_core/lv_obj.h>
-#include "components/ble/BleController.h"
+#include <lvgl/src/lv_core/lv_obj.h>
+#include "FreeRTOS.h"
 
 namespace Pinetime {
+  namespace Controllers {
+    class Ble;
+  }
   namespace Applications {
     namespace Screens {
 
-      class FirmwareUpdate : public Screen{
-        public:
-          FirmwareUpdate(DisplayApp* app, Pinetime::Controllers::Ble& bleController);
-          ~FirmwareUpdate() override;
+      class FirmwareUpdate : public Screen {
+      public:
+        FirmwareUpdate(DisplayApp* app, Pinetime::Controllers::Ble& bleController);
+        ~FirmwareUpdate() override;
 
-          bool Refresh() override;
-          bool OnButtonPushed() override;
+        void Refresh() override;
 
-        private:
-          enum class States { Idle, Running, Validated, Error };
-          Pinetime::Controllers::Ble& bleController;
-          lv_obj_t* bar1;
-          lv_obj_t* percentLabel;
-          lv_obj_t* titleLabel;
-          mutable char percentStr[10];
-          bool running = true;
-          States state;
+      private:
+        enum class States { Idle, Running, Validated, Error };
+        Pinetime::Controllers::Ble& bleController;
+        lv_obj_t* bar1;
+        lv_obj_t* percentLabel;
+        lv_obj_t* titleLabel;
+        mutable char percentStr[10];
 
-          bool DisplayProgression() const;
+        States state = States::Idle;
 
-          void UpdateValidated();
+        void DisplayProgression() const;
 
-          void UpdateError();
+        bool OnButtonPushed() override;
+
+        void UpdateValidated();
+
+        void UpdateError();
+
+        lv_task_t* taskRefresh;
+        TickType_t startTime;
       };
     }
   }

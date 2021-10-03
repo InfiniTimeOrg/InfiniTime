@@ -68,8 +68,6 @@ ble_sm_alg_encrypt(const uint8_t *key, const uint8_t *plaintext,
 
     swap_buf(tmp, plaintext, 16);
 
-
-
     if (tc_aes_encrypt(enc_data, tmp, &s) == TC_CRYPTO_FAIL) {
         return BLE_HS_EUNKNOWN;
     }

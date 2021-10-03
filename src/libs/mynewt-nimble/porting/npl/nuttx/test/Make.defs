@@ -1,0 +1,58 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#  *  http://www.apache.org/licenses/LICENSE-2.0
+#  * Unless required by applicable law or agreed to in writing,
+#  software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+CFLAGS += \
+    -I.    \
+    -I$(NIMBLE_ROOT)/nimble/include             \
+    -I$(NIMBLE_ROOT)/porting/npl/nuttx/include  \
+    -I$(NIMBLE_ROOT)/porting/npl/nuttx/src      \
+    -I$(NIMBLE_ROOT)/porting/nimble/include
+
+OSAL_PATH = $(NIMBLE_ROOT)/porting/npl/nuttx/src
+
+CSRCS = $(wildcard $(OSAL_PATH)/*.c) \
+        $(wildcard $(OSAL_PATH)/*.cc) \
+        $(NIMBLE_ROOT)/porting/nimble/src/os_mempool.c
+
+CXXOBJS += $($(wildcard *.cxx):$(CXXEXT)=$(SUFFIX)$(OBJEXT))
+
+CFLAGS += -DNIMBLE_CFG_CONTROLLER=0 -DOS_CFG_ALIGN_4=4 -DOS_CFG_ALIGNMENT=4
+
+DEPPATH += --dep-path $(NIMBLE_ROOT)/porting/npl/nuttx/test
+VPATH += :$(NIMBLE_ROOT)/porting/npl/nuttx/test
+VPATH += :$(NIMBLE_ROOT)/porting/nimble/src
+VPATH += :$(OSAL_PATH)
+
+PROGNAME = test_npl_task test_npl_eventq test_npl_callout test_npl_sem
+MAINSRC = $(wildcard $(NIMBLE_ROOT)/porting/npl/nuttx/test/*.c)
+
+clean::
+	(cd $(NIMBLE_ROOT)/porting/npl/nuttx/test && rm -f *.o)
+	(cd $(NIMBLE_ROOT)/porting/nimble/src && rm -f *.o)
+	(cd $(OSAL_PATH) && rm -f *.o)
+
+test_npl_task.exe: test_npl_task.o $(OBJS)
+	$(LD) -o $@ $^ $(LDFLAGS) $(LIBS)
+
+test_npl_eventq.exe: test_npl_eventq.o $(OBJS)
+	$(LD) -o $@ $^ $(LDFLAGS) $(LIBS)
+
+test_npl_callout.exe: test_npl_callout.o $(OBJS)
+	$(LD) -o $@ $^ $(LDFLAGS) $(LIBS)
+
+test_npl_sem.exe: test_npl_sem.o $(OBJS)
+	$(LD) -o $@ $^ $(LDFLAGS) $(LIBS)

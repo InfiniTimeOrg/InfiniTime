@@ -85,30 +85,6 @@ static void gen_onoff_status(struct bt_mesh_model *model,
                              struct os_mbuf *buf);
 
 /*
- * Server Configuration Declaration
- */
-
-static struct bt_mesh_cfg_srv cfg_srv = {
-        .relay = BT_MESH_RELAY_DISABLED,
-        .beacon = BT_MESH_BEACON_ENABLED,
-#if defined(CONFIG_BT_MESH_FRIEND)
-        .frnd = BT_MESH_FRIEND_ENABLED,
-#else
-        .frnd = BT_MESH_FRIEND_NOT_SUPPORTED,
-#endif
-#if defined(CONFIG_BT_MESH_GATT_PROXY)
-        .gatt_proxy = BT_MESH_GATT_PROXY_ENABLED,
-#else
-        .gatt_proxy = BT_MESH_GATT_PROXY_NOT_SUPPORTED,
-#endif
-        .default_ttl = 7,
-
-        /* 3 transmissions with 20ms interval */
-        .net_transmit = BT_MESH_TRANSMIT(2, 20),
-        .relay_retransmit = BT_MESH_TRANSMIT(2, 20),
-};
-
-/*
  * Client Configuration Declaration
  */
 
@@ -213,9 +189,9 @@ static const struct bt_mesh_model_op gen_onoff_cli_op[] = {
 };
 
 struct onoff_state {
-    u8_t current;
-    u8_t previous;
-    u8_t led_gpio_pin;
+    uint8_t current;
+    uint8_t previous;
+    uint8_t led_gpio_pin;
 };
 
 /*
@@ -238,7 +214,7 @@ static struct onoff_state onoff_state_arr[] = {
  */
 
 static struct bt_mesh_model root_models[] = {
-        BT_MESH_MODEL_CFG_SRV(&cfg_srv),
+        BT_MESH_MODEL_CFG_SRV,
         BT_MESH_MODEL_CFG_CLI(&cfg_cli),
         BT_MESH_MODEL_HEALTH_SRV(&health_srv, &health_pub),
         BT_MESH_MODEL(BT_MESH_MODEL_ID_GEN_ONOFF_SRV, gen_onoff_srv_op,
@@ -320,20 +296,20 @@ static const struct bt_mesh_comp comp = {
 };
 
 struct sw {
-    u8_t sw_num;
-    u8_t onoff_state;
+    uint8_t sw_num;
+    uint8_t onoff_state;
     struct os_callout button_work;
     struct os_callout button_timer;
 };
 
 
-static u8_t button_press_cnt;
+static uint8_t button_press_cnt;
 static struct sw sw;
 
-static u8_t trans_id;
-static u32_t time, last_time;
-static u16_t primary_addr;
-static u16_t primary_net_idx;
+static uint8_t trans_id;
+static uint32_t time, last_time;
+static uint16_t primary_addr;
+static uint16_t primary_net_idx;
 
 /*
  * Generic OnOff Model Server Message Handlers
@@ -416,7 +392,7 @@ static void gen_onoff_status(struct bt_mesh_model *model,
                              struct bt_mesh_msg_ctx *ctx,
                              struct os_mbuf *buf)
 {
-    u8_t	state;
+    uint8_t	state;
 
     state = net_buf_simple_pull_u8(buf);
 
@@ -424,7 +400,7 @@ static void gen_onoff_status(struct bt_mesh_model *model,
                 bt_mesh_model_elem(model)->addr, ctx->addr, state);
 }
 
-static int output_number(bt_mesh_output_action_t action, u32_t number)
+static int output_number(bt_mesh_output_action_t action, uint32_t number)
 {
     BT_INFO("OOB Number %u", number);
     return 0;
@@ -436,7 +412,7 @@ static int output_string(const char *str)
     return 0;
 }
 
-static void prov_complete(u16_t net_idx, u16_t addr)
+static void prov_complete(uint16_t net_idx, uint16_t addr)
 {
     BT_INFO("provisioning complete for net_idx 0x%04x addr 0x%04x",
                 net_idx, addr);
@@ -449,7 +425,7 @@ static void prov_reset(void)
     bt_mesh_prov_enable(BT_MESH_PROV_ADV | BT_MESH_PROV_GATT);
 }
 
-static u8_t dev_uuid[16] = MYNEWT_VAL(BLE_MESH_DEV_UUID);
+static uint8_t dev_uuid[16] = MYNEWT_VAL(BLE_MESH_DEV_UUID);
 
 #define BUTTON_DEBOUNCE_DELAY_MS 250
 
@@ -528,7 +504,7 @@ static void button_pressed_worker(struct os_event *work)
     struct bt_mesh_model *mod_cli, *mod_srv;
     struct bt_mesh_model_pub *pub_cli, *pub_srv;
     struct sw *sw = work->ev_arg;
-    u8_t sw_idx = sw->sw_num;
+    uint8_t sw_idx = sw->sw_num;
     int err;
 
     mod_cli = mod_cli_sw[sw_idx];
@@ -599,7 +575,7 @@ static const struct bt_mesh_prov prov = {
         .reset = prov_reset,
 };
 
-void init_led(u8_t dev)
+void init_led(uint8_t dev)
 {
     hal_gpio_init_out(onoff_state_arr[dev].led_gpio_pin, 1);
 }
