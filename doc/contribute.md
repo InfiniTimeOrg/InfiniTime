@@ -18,18 +18,18 @@ You want to fix a bug, add a cool new functionality or improve the code? See *Ho
 
 The Pinetime is a cool open source project that deserves to be known. Talk about it around you, on social networks, on your blog,... and let people know that we are working on an open source firmware for a smartwatch!
 
-# How to submit a pull request ?
+# How to submit a pull request?
 
 ## TL;DR
 
- - Create a branch from develop;
- - Work on a single subject in this branch. Create multiple branches/pulls-requests if you want to work on multiple subjects (bugs, features,...);
- - Test your modifications on the actual hardware;
- - Check the code formatting against our coding conventions and [clang-format](../.clang-format) and [clang-tidy](../.clang-tidy);
- - Clean your code and remove files that are not needed;
- - Write documentation related to your new feature if applicable;
- - Create a pull request and write a great description about it : what does your PR do, why, how,... Add pictures and video if possible;
- - Wait for someone to review your PR and take part in the review process;
+ - Create a branch from develop
+ - Work on a single subject in this branch. Create multiple branches/pulls-requests if you want to work on multiple subjects (bugs, features,...)
+ - Test your modifications on the actual hardware
+ - Check the code formatting against our coding conventions and [clang-format](../.clang-format) and [clang-tidy](../.clang-tidy)
+ - Clean your code and remove files that are not needed
+ - Write documentation related to your new feature if applicable
+ - Create a pull request and write a great description about it: what does your PR do, why, how,... Add pictures and video if possible
+ - Wait for someone to review your PR and take part in the review process
  - Your PR will eventually be merged :)
 
 Your contributions are more than welcome!

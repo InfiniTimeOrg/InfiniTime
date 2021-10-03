@@ -21,7 +21,11 @@ namespace Pinetime {
         DisableSleeping,
         OnNewDay,
         OnChargingEvent,
-        ConsoleProcess
+        ConsoleProcess,
+        SetOffAlarm,
+        StopRinging,
+        MeasureBatteryTimerExpired,
+        BatteryMeasurementDone,
       };
     }
 }

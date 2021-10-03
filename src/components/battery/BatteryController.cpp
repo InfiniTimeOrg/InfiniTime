@@ -1,4 +1,5 @@
 #include "BatteryController.h"
+#include "drivers/PinMap.h"
 #include <hal/nrf_gpio.h>
 #include <nrfx_saadc.h>
 #include <algorithm>
@@ -9,15 +10,18 @@ Battery* Battery::instance = nullptr;
 
 Battery::Battery() {
   instance = this;
-}
-
-void Battery::Init() {
-  nrf_gpio_cfg_input(chargingPin, static_cast<nrf_gpio_pin_pull_t> GPIO_PIN_CNF_PULL_Pullup);
+  nrf_gpio_cfg_input(PinMap::Charging, static_cast<nrf_gpio_pin_pull_t> GPIO_PIN_CNF_PULL_Disabled);
 }
 
 void Battery::Update() {
-  isCharging = !nrf_gpio_pin_read(chargingPin);
-  isPowerPresent = !nrf_gpio_pin_read(powerPresentPin);
+  isCharging = !nrf_gpio_pin_read(PinMap::Charging);
+  isPowerPresent = !nrf_gpio_pin_read(PinMap::PowerPresent);
+
+  if (isPowerPresent && !isCharging) {
+    isFull = true;
+  } else if (!isPowerPresent) {
+    isFull = false;
+  }
 
   if (isReading) {
     return;
@@ -65,15 +69,21 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     // p_event->data.done.p_buffer[0] = (adc_voltage / reference_voltage) * 1024
     voltage = p_event->data.done.p_buffer[0] * (8 * 600) / 1024;
 
-    if (voltage > battery_max) {
+    if (isFull) {
       percentRemaining = 100;
     } else if (voltage < battery_min) {
       percentRemaining = 0;
     } else {
-      percentRemaining = (voltage - battery_min) * 100 / (battery_max - battery_min);
+      percentRemaining = std::min((voltage - battery_min) * 100 / (battery_max - battery_min), isCharging ? 99 : 100);
     }
 
     nrfx_saadc_uninit();
     isReading = false;
+
+    systemTask->PushMessage(System::Messages::BatteryMeasurementDone);
   }
+}
+
+void Battery::Register(Pinetime::System::SystemTask* systemTask) {
+  this->systemTask = systemTask;
 }

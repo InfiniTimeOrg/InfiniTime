@@ -6,32 +6,39 @@
 #include <bits/unique_ptr.h>
 #include <queue.h>
 #include "components/gfx/Gfx.h"
-#include "components/battery/BatteryController.h"
-#include "components/brightness/BrightnessController.h"
-#include "components/ble/BleController.h"
-#include "components/datetime/DateTimeController.h"
-#include "components/ble/NotificationManager.h"
-#include "components/firmwarevalidator/FirmwareValidator.h"
 #include "drivers/Cst816s.h"
 #include <date/date.h>
 #include <drivers/Watchdog.h>
-#include <components/heartrate/HeartRateController.h>
-#include <components/motion/MotionController.h>
 #include <components/motor/MotorController.h>
-#include <components/settings/Settings.h>
 #include "TouchEvents.h"
 #include "Apps.h"
 #include "Messages.h"
 #include "DummyLittleVgl.h"
-#include "components/timer/TimerController.h"
 
 namespace Pinetime {
+  namespace Drivers {
+    class St7789;
+    class Cst816S;
+    class WatchdogView;
+  }
+  namespace Controllers {
+    class Settings;
+    class Battery;
+    class Ble;
+    class DateTime;
+    class NotificationManager;
+    class HeartRateController;
+    class MotionController;
+    class TouchHandler;
+    class MotorController;
+    class TimerController;
+    class AlarmController;
+  }
+
   namespace System {
     class SystemTask;
   };
-  namespace Controllers {
-    class TouchHandler;
-  }
+
   namespace Applications {
     class DisplayApp {
     public:
@@ -48,6 +55,7 @@ namespace Pinetime {
                  Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::TimerController& timerController,
+                 Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::TouchHandler& touchHandler);
       void Start();
       void PushMessage(Pinetime::Applications::Display::Messages msg);

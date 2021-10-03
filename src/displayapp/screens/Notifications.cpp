@@ -73,7 +73,6 @@ void Notifications::Refresh() {
     timeoutLinePoints[1].x = pos;
     lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
   }
-  running = currentItem->IsRunning();
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
@@ -130,10 +129,6 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        alertNotificationService);
     }
       return true;
-    case Pinetime::Applications::TouchEvents::LongTap: {
-      // notificationManager.ToggleVibrations();
-      return true;
-    }
     default:
       return false;
   }
@@ -153,7 +148,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   uint8_t notifNb,
                                                   Modes mode,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService)
-  : notifNr {notifNr}, notifNb {notifNb}, mode {mode}, alertNotificationService {alertNotificationService} {
+  : mode {mode}, alertNotificationService {alertNotificationService} {
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), NULL);
 
   lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x222222));
