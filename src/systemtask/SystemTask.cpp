@@ -136,7 +136,6 @@ void SystemTask::Work() {
   touchPanel.Init();
   dateTimeController.Register(this);
   batteryController.Register(this);
-  batteryController.Update();
   motorController.Init();
   motionSensor.SoftReset();
   timerController.Register(this);
@@ -197,6 +196,9 @@ void SystemTask::Work() {
   // } else {
   //   nrf_gpio_cfg_sense_input(PinMap::PowerPresent, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_HIGH);
   // }
+  
+  // Update controller based on current gpio pin state, needs to be called after gpio config
+  batteryController.Update();
 
   idleTimer = xTimerCreate("idleTimer", pdMS_TO_TICKS(2000), pdFALSE, this, IdleTimerCallback);
   dimTimer = xTimerCreate("dimTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), pdFALSE, this, DimTimerCallback);
