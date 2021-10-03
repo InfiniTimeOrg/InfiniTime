@@ -50,6 +50,7 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
   // lv_obj_set_style_local_bg_opa(calButton, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
   lv_obj_set_height(calButton, 80);
   lv_obj_align(calButton, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_btn_set_checkable(calButton, true);
   calLabel = lv_label_create(calButton, NULL);
   lv_label_set_text(calLabel, "Calibrate");
 }
@@ -65,12 +66,13 @@ SettingShakeThreshold::~SettingShakeThreshold() {
 
 void SettingShakeThreshold::Refresh() {
 
-  taskCount++; // 100ms Update time so finish @100
-  if ((motionController.currentShakeSpeed() - 200) > lv_arc_get_value(positionArc)) {
+  taskCount++; // 100ms Per update
+  if ((motionController.currentShakeSpeed() - 300) > lv_arc_get_value(positionArc)) {
     lv_arc_set_value(positionArc, (int16_t) motionController.currentShakeSpeed() - 200);
   }
-  if (taskCount >= 50) {
-    lv_label_set_text(calLabel, "Calibrate");
+  if (taskCount >= 75) {
+    lv_btn_set_state(calButton,LV_STATE_DEFAULT);
+    lv_event_send(calButton,LV_EVENT_VALUE_CHANGED,NULL);
     taskCount = 0;
     lv_task_del(refreshTask);
   }
@@ -79,27 +81,25 @@ void SettingShakeThreshold::Refresh() {
 void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
 
   switch (event) {
-    case LV_EVENT_PRESSED: {
+    case LV_EVENT_VALUE_CHANGED: {
+      if (object == positionArc) {
+        settingsController.SetShakeThreshold(lv_arc_get_value(positionArc));
+        break;
+      }
       if (object == calButton) {
-        if (taskCount == 0) {
+        if (lv_btn_get_state(calButton) == LV_BTN_STATE_CHECKED_RELEASED) {
           lv_arc_set_value(positionArc, 0);
           refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
           lv_label_set_text(calLabel, "Shake!!!");
-        } else {
+
+        } else if (lv_btn_get_state(calButton) == LV_BTN_STATE_RELEASED) {
 
           lv_task_del(refreshTask);
           taskCount = 0;
           lv_label_set_text(calLabel, "Calibrate");
         }
+        break;
       }
-      break;
-    }
-
-    case LV_EVENT_VALUE_CHANGED: {
-      if (object == positionArc) {
-        settingsController.SetShakeThreshold(lv_arc_get_value(positionArc));
-      }
-      break;
     }
   }
 }
