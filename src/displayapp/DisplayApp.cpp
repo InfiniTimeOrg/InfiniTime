@@ -225,7 +225,13 @@ void DisplayApp::Refresh() {
           if (currentApp == Apps::Clock) {
             switch (gesture) {
               case TouchEvents::SwipeUp:
-                LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
+                if(favoriteAppActive){
+                  favoriteAppActive = false;
+                  LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::RightAnim);
+                }
+                else {
+                  LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
+                }
                 break;
               case TouchEvents::SwipeDown:
                 LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
@@ -235,6 +241,7 @@ void DisplayApp::Refresh() {
                 break;
               case TouchEvents::SwipeLeft:
                 favoriteApp = settingsController.GetFavoriteApp();
+                favoriteAppActive = true;
                 if (favoriteApp == Apps::None)
                   LoadApp(Apps::SettingFavoriteApp, DisplayApp::FullRefreshDirections::LeftAnim);
                 else
@@ -260,7 +267,13 @@ void DisplayApp::Refresh() {
           PushMessageToSystemTask(System::Messages::GoToSleep);
         } else {
           if (!currentScreen->OnButtonPushed()) {
-            LoadApp(returnToApp, returnDirection);
+            if(favoriteAppActive){
+              favoriteAppActive = false;
+              LoadApp(Apps::Clock,DisplayApp::FullRefreshDirections::RightAnim);
+            }
+            else{
+              LoadApp(returnToApp, returnDirection);
+            }
             brightnessController.Set(settingsController.GetBrightness());
             brightnessController.Backup();
           }

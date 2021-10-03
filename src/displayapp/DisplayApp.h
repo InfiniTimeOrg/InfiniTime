@@ -104,6 +104,8 @@ namespace Pinetime {
       Apps currentApp = Apps::None;
       Apps returnToApp = Apps::None;
       Apps favoriteApp = Apps::None;
+      bool favoriteAppActive = false;
+      
       FullRefreshDirections returnDirection = FullRefreshDirections::None;
       TouchEvents returnTouchEvent = TouchEvents::None;
 
