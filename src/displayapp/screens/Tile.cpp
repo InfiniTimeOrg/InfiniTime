@@ -79,8 +79,11 @@ Tile::Tile(uint8_t screenID,
       btnmMap[btIndex] = " ";
     } else {
       if (applications[i].application == settingsController.GetFavoriteApp()){
-        //applications[i].icon
-        btnmMap[btIndex] ="*";
+        char* result; 
+        result = (char*) calloc(strlen(applications[i].icon)+strlen("*")+1, sizeof(char));
+        strcpy(result,applications[i].icon);
+        strcat(result,"*");
+        btnmMap[btIndex] = result;
       }
       else{
         btnmMap[btIndex] = applications[i].icon;
