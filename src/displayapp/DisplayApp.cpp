@@ -44,6 +44,8 @@
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
 #include "displayapp/screens/settings/SettingPineTimeStyle.h"
+#include "displayapp/screens/settings/SettingPushButtonAction.h"
+
 
 #include "libs/lv_conf.h"
 
@@ -246,9 +248,19 @@ void DisplayApp::Refresh() {
           PushMessageToSystemTask(System::Messages::GoToSleep);
         } else {
           if (!currentScreen->OnButtonPushed()) {
-            LoadApp(returnToApp, returnDirection);
-            brightnessController.Set(settingsController.GetBrightness());
-            brightnessController.Backup();
+            switch (settingsController.GetSettingPushButtonAction())
+            {
+            case Pinetime::Controllers::Settings::SettingPushButtonAction::BACK:
+              LoadApp(returnToApp, returnDirection);
+              brightnessController.Set(settingsController.GetBrightness());
+              brightnessController.Backup();              
+              break;
+            case Pinetime::Controllers::Settings::SettingPushButtonAction::WATCHFACE:
+              LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
+              break;            
+            default:
+              break;
+            }            
           }
         }
         break;
@@ -369,6 +381,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::SettingPineTimeStyle>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
+    case Apps::SettingPushButtonAction:
+      currentScreen = std::make_unique<Screens::SettingPushButtonAction>(this, settingsController);     
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;       
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);

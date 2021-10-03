@@ -61,7 +61,7 @@ std::unique_ptr<Screen> Settings::CreateScreen3() {
 
   std::array<Screens::List::Applications, 4> applications {{
     {Symbols::list, "About", Apps::SysInfo},
-    {Symbols::none, "None", Apps::None},
+    {Symbols::list, "Button Action", Apps::SettingPushButtonAction},
     {Symbols::none, "None", Apps::None},
     {Symbols::none, "None", Apps::None},
   }};

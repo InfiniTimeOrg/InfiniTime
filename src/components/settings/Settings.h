@@ -25,6 +25,7 @@ namespace Pinetime {
         Colors ColorBar = Colors::Teal;
         Colors ColorBG = Colors::Black;
       };
+      enum class SettingPushButtonAction { BACK, WATCHFACE };
 
       Settings(Pinetime::Controllers::FS& fs);
 
@@ -151,6 +152,15 @@ namespace Pinetime {
         return settings.brightLevel;
       };
 
+      void SetSettingPushButtonAction(SettingPushButtonAction pushButtonAction) {
+        if (pushButtonAction != settings.pushButtonAction)
+          settingsChanged = true;
+        settings.pushButtonAction = pushButtonAction;
+      };
+      SettingPushButtonAction GetSettingPushButtonAction() const {
+        return settings.pushButtonAction;
+      };
+
       void SetStepsGoal( uint32_t goal ) { 
         if ( goal != settings.stepsGoal ) {
           settingsChanged = true;
@@ -179,6 +189,8 @@ namespace Pinetime {
         std::bitset<3> wakeUpMode {0};
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        SettingPushButtonAction pushButtonAction = SettingPushButtonAction::BACK;
       };
 
       SettingsData settings;
