@@ -191,12 +191,6 @@ void SystemTask::Work() {
   nrfx_gpiote_in_init(PinMap::PowerPresent, &pinConfig, nrfx_gpiote_evt_handler);
   nrfx_gpiote_in_event_enable(PinMap::PowerPresent, true);
 
-  // if (nrf_gpio_pin_read(PinMap::PowerPresent)) {
-  //   nrf_gpio_cfg_sense_input(PinMap::PowerPresent, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_LOW);
-  // } else {
-  //   nrf_gpio_cfg_sense_input(PinMap::PowerPresent, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_HIGH);
-  // }
-  
   // Update controller based on current gpio pin state, needs to be called after gpio config
   batteryController.Update();
 
