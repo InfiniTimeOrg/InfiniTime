@@ -7,7 +7,7 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static void event_handler(lv_obj_t* obj, lv_event_t event) {
+  void event_handler(lv_obj_t* obj, lv_event_t event) {
     SettingShakeThreshold* screen = static_cast<SettingShakeThreshold*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
@@ -41,10 +41,11 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
   lv_obj_set_height(animArc, lv_obj_get_height(positionArc));
   lv_obj_align_mid(animArc, positionArc, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_local_line_opa(animArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_line_opa(animArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_OPA_60);
+  lv_obj_set_style_local_line_opa(animArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_OPA_70);
   lv_obj_set_style_local_line_opa(animArc, LV_ARC_PART_KNOB, LV_STATE_DEFAULT, LV_OPA_0);
   lv_obj_set_style_local_line_color(animArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
   lv_obj_set_style_local_bg_color(animArc, LV_ARC_PART_BG, LV_STATE_CHECKED, LV_COLOR_TRANSP);
+
   animArc->user_data = this;
   lv_obj_set_click(animArc, false);
 
@@ -80,8 +81,8 @@ void SettingShakeThreshold::Refresh() {
     if (xTaskGetTickCount() - vCalTime > pdMS_TO_TICKS(2000)) {
       vCalTime = xTaskGetTickCount();
       calibrating = 2;
-      lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_BTN_STATE_CHECKED_RELEASED, LV_COLOR_RED);
-      lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_BTN_STATE_CHECKED_PRESSED, LV_COLOR_RED);
+      lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_RED);
+      lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_RED);
       lv_label_set_text(calLabel, "Shake!!");
     }
   }
@@ -108,17 +109,17 @@ void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   switch (event) {
     case LV_EVENT_VALUE_CHANGED: {
       if (object == calButton) {
-
         if (lv_btn_get_state(calButton) == LV_BTN_STATE_CHECKED_RELEASED && calibrating == 0) {
           lv_arc_set_value(positionArc, 0);
           calibrating = 1;
           vCalTime = xTaskGetTickCount();
           lv_label_set_text(calLabel, "Ready!");
-          lv_obj_set_click(calButton,false);
+          lv_obj_set_click(positionArc, false);
+          lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_GREEN);
+          lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_GREEN);
         } else if (lv_btn_get_state(calButton) == LV_BTN_STATE_RELEASED) {
-
           calibrating = 0;
-          lv_obj_set_click(calButton,true);
+          lv_obj_set_click(positionArc, true);
           lv_label_set_text(calLabel, "Calibrate");
         }
         break;
