@@ -13,7 +13,7 @@ namespace {
 
   static void event_handler(lv_obj_t* obj, lv_event_t event) {
     switch(event){
-      case LV_EVENT_VALUE_CHANGED:
+      case LV_EVENT_SHORT_CLICKED:
       case LV_EVENT_LONG_PRESSED:
         Tile* screen = static_cast<Tile*>(obj->user_data);
         auto* eventDataPtr = (uint32_t*) lv_event_get_data();
@@ -139,19 +139,21 @@ void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId, lv_event_t even
   if(obj != btnm1) return;
   uint8_t lastPressedButton = lv_btnmatrix_get_active_btn(obj);
   switch(event){
-    case LV_EVENT_VALUE_CHANGED:
+    case LV_EVENT_SHORT_CLICKED:{
         app->StartApp(apps[lastPressedButton], DisplayApp::FullRefreshDirections::Up);
         running = false;    
-      break;
-    case LV_EVENT_LONG_PRESSED:
+      break;}
+    case LV_EVENT_LONG_PRESSED:{
         if(settingsController.GetFavoriteApp() == apps[lastPressedButton]){
           settingsController.SetFavoriteApp(Apps::None);
         }
         else{
           settingsController.SetFavoriteApp(apps[lastPressedButton]);
-        }    
+        }
+        lv_btnmatrix_clear_btn_ctrl_all(btnm1, LV_BTNMATRIX_CTRL_CHECK_STATE);
+        lv_btnmatrix_set_btn_ctrl(btnm1, lastPressedButton, LV_BTNMATRIX_CTRL_CHECK_STATE);    
         motorController.RunForDuration(35);
-      break;  
+      break;  }
   }
 
 }
