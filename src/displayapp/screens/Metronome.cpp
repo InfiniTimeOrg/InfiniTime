@@ -122,6 +122,7 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
       if (obj == bpmTap) {
         allowExit = false;
       }
+      break;
     case LV_EVENT_CLICKED: {
       if (obj == playPause) {
         metronomeStarted = !metronomeStarted;
