@@ -137,22 +137,20 @@ void Tile::UpdateScreen() {
 
 void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId, lv_event_t event) {
   if(obj != btnm1) return;
+  uint8_t lastPressedButton = lv_btnmatrix_get_active_btn(obj);
   switch(event){
     case LV_EVENT_VALUE_CHANGED:
-        app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up);
+        app->StartApp(apps[lastPressedButton], DisplayApp::FullRefreshDirections::Up);
         running = false;    
       break;
     case LV_EVENT_LONG_PRESSED:
-      currentFavoriteApp = settingsController.GetFavoriteApp();
-      if(buttonId){
-        if(currentFavoriteApp == apps[buttonId]){
+        if(settingsController.GetFavoriteApp() == apps[lastPressedButton]){
           settingsController.SetFavoriteApp(Apps::None);
         }
         else{
-          settingsController.SetFavoriteApp(apps[buttonId]);
+          settingsController.SetFavoriteApp(apps[lastPressedButton]);
         }    
         motorController.RunForDuration(35);
-      }
       break;  
   }
 

@@ -46,7 +46,6 @@
 #include "displayapp/screens/settings/SettingPineTimeStyle.h"
 
 #include "libs/lv_conf.h"
-#include "displayapp/screens/settings/SettingFavoriteApp.h"
 
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
@@ -405,10 +404,6 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::SettingPineTimeStyle:
       currentScreen = std::make_unique<Screens::SettingPineTimeStyle>(this, settingsController);
-    case Apps::SettingFavoriteApp:
-      currentScreen = std::make_unique<Screens::SettingFavoriteApp>(this, settingsController);
-      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
-      break;
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);

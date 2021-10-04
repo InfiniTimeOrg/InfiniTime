@@ -60,8 +60,8 @@ std::unique_ptr<Screen> Settings::CreateScreen2() {
 std::unique_ptr<Screen> Settings::CreateScreen3() {
 
   std::array<Screens::List::Applications, 4> applications {{
-    {Symbols::shoe, "Favorite app", Apps::SettingFavoriteApp},
     {Symbols::list, "About", Apps::SysInfo},
+    {Symbols::batteryHalf, "", Apps::None},
     {Symbols::batteryHalf, "", Apps::None},
     {Symbols::batteryHalf, "", Apps::None},
   }};

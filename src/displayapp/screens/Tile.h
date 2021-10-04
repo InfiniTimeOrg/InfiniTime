@@ -52,7 +52,6 @@ namespace Pinetime {
 
         const char* btnmMap[8];
         Pinetime::Applications::Apps apps[6];
-        Pinetime::Applications::Apps currentFavoriteApp = Pinetime::Applications::Apps::None;
       };
     }
   }
