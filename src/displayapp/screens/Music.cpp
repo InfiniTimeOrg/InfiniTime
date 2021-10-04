@@ -277,12 +277,14 @@ bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       return true;
     }
     case TouchEvents::SwipeDown: {
-      lv_obj_set_hidden(btnNext, false);
-      lv_obj_set_hidden(btnPrev, false);
-
-      lv_obj_set_hidden(btnVolDown, true);
-      lv_obj_set_hidden(btnVolUp, true);
-      return true;
+      if (lv_obj_get_hidden(btnNext)) {
+        lv_obj_set_hidden(btnNext, false);
+        lv_obj_set_hidden(btnPrev, false);
+        lv_obj_set_hidden(btnVolDown, true);
+        lv_obj_set_hidden(btnVolUp, true);
+        return true;
+      }
+      return false;
     }
     case TouchEvents::SwipeLeft: {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_NEXT);
