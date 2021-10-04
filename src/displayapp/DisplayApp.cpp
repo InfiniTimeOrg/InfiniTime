@@ -227,6 +227,7 @@ void DisplayApp::Refresh() {
                 if(favoriteAppActive){
                   favoriteAppActive = false;
                   LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::RightAnim);
+                  ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
                 }
                 else {
                   LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
@@ -244,10 +245,12 @@ void DisplayApp::Refresh() {
                 if (favoriteApp == Apps::None){
                    if (previousApp != Apps::None) {
                      LoadApp(previousApp, DisplayApp::FullRefreshDirections::LeftAnim);
+                     ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
                    }
                 }
                 else {
                   LoadApp(favoriteApp, DisplayApp::FullRefreshDirections::LeftAnim);
+                  ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
                 }
                 break;                
               case TouchEvents::DoubleTap:
