@@ -144,14 +144,14 @@ void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId, lv_event_t even
         running = false;    
       break;}
     case LV_EVENT_LONG_PRESSED:{
+        lv_btnmatrix_clear_btn_ctrl_all(btnm1, LV_BTNMATRIX_CTRL_CHECK_STATE);
         if(settingsController.GetFavoriteApp() == apps[lastPressedButton]){
           settingsController.SetFavoriteApp(Apps::None);
         }
         else{
           settingsController.SetFavoriteApp(apps[lastPressedButton]);
+          lv_btnmatrix_set_btn_ctrl(btnm1, lastPressedButton, LV_BTNMATRIX_CTRL_CHECK_STATE);    
         }
-        lv_btnmatrix_clear_btn_ctrl_all(btnm1, LV_BTNMATRIX_CTRL_CHECK_STATE);
-        lv_btnmatrix_set_btn_ctrl(btnm1, lastPressedButton, LV_BTNMATRIX_CTRL_CHECK_STATE);    
         motorController.RunForDuration(35);
       break;  }
   }
