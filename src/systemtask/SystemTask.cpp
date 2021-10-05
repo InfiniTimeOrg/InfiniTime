@@ -274,10 +274,12 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateDateTime);
           break;
         case Messages::OnNewNotification:
-          if (isSleeping && !isWakingUp) {
-            GoToRunning();
+          if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::ON) {
+            if (isSleeping && !isWakingUp) {
+              GoToRunning();
+            }
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           }
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;
         case Messages::OnTimerDone:
           if (isSleeping && !isWakingUp) {

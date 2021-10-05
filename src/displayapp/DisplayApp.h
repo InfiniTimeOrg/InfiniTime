@@ -108,8 +108,6 @@ namespace Pinetime {
       TouchEvents returnTouchEvent = TouchEvents::None;
 
       TouchEvents GetGesture();
-      void RunningState();
-      void IdleState();
       static void Process(void* instance);
       void InitHw();
       void Refresh();
@@ -119,8 +117,6 @@ namespace Pinetime {
 
       Apps nextApp = Apps::None;
       DisplayApp::FullRefreshDirections nextDirection;
-      TickType_t lastWakeTime;
-
       System::BootErrors bootError;
     };
   }

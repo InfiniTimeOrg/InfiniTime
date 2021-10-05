@@ -147,19 +147,15 @@ void DisplayApp::InitHw() {
 
 void DisplayApp::Refresh() {
   TickType_t queueTimeout;
-  TickType_t delta;
   switch (state) {
     case States::Idle:
-      IdleState();
       queueTimeout = portMAX_DELAY;
       break;
     case States::Running:
-      RunningState();
-      delta = xTaskGetTickCount() - lastWakeTime;
-      if (delta > LV_DISP_DEF_REFR_PERIOD) {
-        delta = LV_DISP_DEF_REFR_PERIOD;
+      if (!currentScreen->IsRunning()) {
+        LoadApp(returnToApp, returnDirection);
       }
-      queueTimeout = LV_DISP_DEF_REFR_PERIOD - delta;
+      queueTimeout = lv_task_handler();
       break;
     default:
       queueTimeout = portMAX_DELAY;
@@ -167,9 +163,7 @@ void DisplayApp::Refresh() {
   }
 
   Messages msg;
-  bool messageReceived = xQueueReceive(msgQueue, &msg, queueTimeout);
-  lastWakeTime = xTaskGetTickCount();
-  if (messageReceived) {
+  if (xQueueReceive(msgQueue, &msg, queueTimeout)) {
     switch (msg) {
       case Messages::DimScreen:
         // Backup brightness is the brightness to return to after dimming or sleeping
@@ -283,13 +277,6 @@ void DisplayApp::Refresh() {
   if (touchHandler.IsTouching()) {
     currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
   }
-}
-
-void DisplayApp::RunningState() {
-  if (!currentScreen->IsRunning()) {
-    LoadApp(returnToApp, returnDirection);
-  }
-  lv_task_handler();
 }
 
 void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction) {
@@ -439,9 +426,6 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
   }
   currentApp = app;
-}
-
-void DisplayApp::IdleState() {
 }
 
 void DisplayApp::PushMessage(Messages msg) {

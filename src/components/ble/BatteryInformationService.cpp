@@ -43,7 +43,7 @@ int BatteryInformationService::OnBatteryServiceRequested(uint16_t connectionHand
                                                          ble_gatt_access_ctxt* context) {
   if (attributeHandle == batteryLevelHandle) {
     NRF_LOG_INFO("BATTERY : handle = %d", batteryLevelHandle);
-    static uint8_t batteryValue = batteryController.PercentRemaining();
+    uint8_t batteryValue = batteryController.PercentRemaining();
     int res = os_mbuf_append(context->om, &batteryValue, 1);
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
   }

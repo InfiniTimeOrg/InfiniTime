@@ -129,10 +129,6 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        alertNotificationService);
     }
       return true;
-    case Pinetime::Applications::TouchEvents::LongTap: {
-      // notificationManager.ToggleVibrations();
-      return true;
-    }
     default:
       return false;
   }
