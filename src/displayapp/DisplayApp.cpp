@@ -226,7 +226,7 @@ void DisplayApp::Refresh() {
               case TouchEvents::SwipeUp:
                 if(favoriteAppActive){
                   favoriteAppActive = false;
-                  LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::RightAnim);
+                  LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
                   ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
                 }
                 else {
