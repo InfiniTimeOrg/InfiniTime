@@ -319,21 +319,7 @@ void SystemTask::Work() {
             touchHandler.UpdateLvglTouchPoint();
           }
           ReloadIdleTimer();        
-          if(screenLocked){
-            if(touchHandler.GetNewTouchInfo()) {
-              auto gesture = touchHandler.GestureGet();
-              if (gesture == Pinetime::Drivers::Cst816S::Gestures::SlideUp) {
-                screenLocked = false;
-                displayApp.HideLockScreenDialog();
-              }
-              else{
-                displayApp.ShowLockScreenDialog();
-              }
-            }        
-          }
-          else {
-            displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
-          }
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
         case Messages::OnButtonEvent:
           screenLocked = false;
@@ -449,7 +435,22 @@ void SystemTask::OnTouchEvent() {
   if (isGoingToSleep)
     return;
   if (!isSleeping) {
-    PushMessage(Messages::OnTouchEvent);
+    ReloadIdleTimer();        
+    if(screenLocked){
+      if(touchHandler.GetNewTouchInfo()) {
+        auto gesture = touchHandler.GestureGet();
+        if (gesture == Pinetime::Drivers::Cst816S::Gestures::SlideUp) {
+          screenLocked = false;
+          displayApp.HideLockScreenDialog();
+        }
+        else{
+          displayApp.ShowLockScreenDialog();
+        }
+      }       
+    }
+    else {
+      PushMessage(Messages::OnTouchEvent);
+    }    
   } else if (!isWakingUp) {
     if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) or
         settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
