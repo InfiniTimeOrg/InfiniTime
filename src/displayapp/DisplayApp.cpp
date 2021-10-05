@@ -268,9 +268,30 @@ void DisplayApp::Refresh() {
     nextApp = Apps::None;
   }
 
-  if (touchHandler.IsTouching()) {
-    currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
+  if (touchHandler.IsTouching()) {    
+      currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
   }
+}
+
+void DisplayApp::HideLockScreenDialog(){
+  if(!lockscreenVisible) return;
+  lockscreenVisible = false;
+  lv_obj_del(btnMessage);
+  txtMessage = nullptr;
+  btnMessage = nullptr; 
+}
+
+void DisplayApp::ShowLockScreenDialog(){
+  if(lockscreenVisible) return;
+  lockscreenVisible = true;
+  btnMessage = lv_btn_create(lv_scr_act(), nullptr);
+  btnMessage->user_data = this;  
+  lv_obj_set_height(btnMessage, 50);
+  lv_obj_set_width(btnMessage, 240);  
+  lv_obj_align(btnMessage, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 20);
+  txtMessage = lv_label_create(btnMessage, nullptr);
+  lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);  
+  lv_label_set_text(txtMessage, "Swipe up\nto unlock");
 }
 
 void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction) {
