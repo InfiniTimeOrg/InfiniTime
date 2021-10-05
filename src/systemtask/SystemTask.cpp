@@ -252,11 +252,14 @@ void SystemTask::Work() {
                                 settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
                                 (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
                                 settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
+              screenLocked = false;                                  
               GoToRunning();
             }
           }
         } break;
         case Messages::GoToSleep:
+          displayApp.HideLockScreenDialog();
+          screenLocked = true;
           isGoingToSleep = true;
           NRF_LOG_INFO("[systemtask] Going to sleep");
           xTimerStop(idleTimer, 0);
@@ -315,10 +318,11 @@ void SystemTask::Work() {
           if (touchHandler.GetNewTouchInfo()) {
             touchHandler.UpdateLvglTouchPoint();
           }
-          ReloadIdleTimer();
+          ReloadIdleTimer();        
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
         case Messages::OnButtonEvent:
+          screenLocked = false;
           ReloadIdleTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
           break;
@@ -431,7 +435,22 @@ void SystemTask::OnTouchEvent() {
   if (isGoingToSleep)
     return;
   if (!isSleeping) {
-    PushMessage(Messages::OnTouchEvent);
+    ReloadIdleTimer();        
+    if(screenLocked){
+      if(touchHandler.GetNewTouchInfo()) {
+        auto gesture = touchHandler.GestureGet();
+        if (gesture == Pinetime::Drivers::Cst816S::Gestures::SlideUp) {
+          screenLocked = false;
+          displayApp.HideLockScreenDialog();
+        }
+        else{
+          displayApp.ShowLockScreenDialog();
+        }
+      }       
+    }
+    else {
+      PushMessage(Messages::OnTouchEvent);
+    }    
   } else if (!isWakingUp) {
     if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) or
         settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {

@@ -140,6 +140,7 @@ namespace Pinetime {
       void UpdateMotion();
       bool stepCounterMustBeReset = false;
       static constexpr TickType_t batteryMeasurementPeriod = pdMS_TO_TICKS(10 * 60 * 1000);
+      bool screenLocked = true;
       TickType_t lastBatteryNotificationTime = 0;
 
 #if configUSE_TRACE_FACILITY == 1

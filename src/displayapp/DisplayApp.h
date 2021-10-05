@@ -45,7 +45,6 @@ namespace Pinetime {
     public:
       enum class States { Idle, Running };
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
-
       DisplayApp(Drivers::St7789& lcd,
                  Components::LittleVgl& lvgl,
                  Drivers::Cst816S&,
@@ -69,6 +68,8 @@ namespace Pinetime {
       void SetFullRefresh(FullRefreshDirections direction);
 
       void Register(Pinetime::System::SystemTask* systemTask);
+      void ShowLockScreenDialog();
+      void HideLockScreenDialog();      
 
     private:
       Pinetime::Drivers::St7789& lcd;
@@ -116,6 +117,8 @@ namespace Pinetime {
 
       Apps nextApp = Apps::None;
       DisplayApp::FullRefreshDirections nextDirection;
+      lv_obj_t *btnMessage, *txtMessage;
+      bool lockscreenVisible = false;
     };
   }
 }
