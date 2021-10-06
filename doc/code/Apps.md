@@ -6,13 +6,13 @@ This page will teach you:
 ## Theory
 Apps are the things you can launch from the app selection you get by swiping up.
 At the moment, settings and even the app launcher itself or the clock are implemented very similarly, this might change in the future though.
-Every app in InfiniTime is it's own class. An object of the class is created when the app is launched and destroyed when the user exits the app. They run inside the "displayapp" task (briefly discussed [here](./Intro.md)). They are responsible for everything drawn on the screen when they are running. By default, apps only do something (as in a function is executed) when they are created or when a touch event is detected.
+Every app in InfiniTime is it's own class. An instance of the class is created when the app is launched and destroyed when the user exits the app. They run inside the "displayapp" task (briefly discussed [here](./Intro.md)). They are responsible for everything drawn on the screen when they are running. By default, apps only do something (as in a function is executed) when they are created or when a touch event is detected.
 
 ## Interface
 Every app class has to be inside the namespace `Pinetime::Applications::Screens` and inherit from `Screen`. The constructor should have at least one parameter `DisplayApp* app`, which it needs for the constructor of its parent class Screen. Other parameters should be references to controllers that the app needs. A deconstructor is needed to clean up LVGL and restore any changes (for example re-enable sleeping). App classes can override `bool OnButtonPushed()`, `bool OnTouchEvent(TouchEvents event)` and `bool OnTouchEvent(uint16_t x, uint16_t y)` to implement their own functionality for those events. If an app only needs to display some text and do something upon a touch screen button press, it does not need to override any of these functions, as LVGL can also handle touch events for you. If you have any doubts, you can always look at how the other apps are doing things.
 
 ### Continuous updating
-If your app needs to be updated continuously, yo can do so by adding a `Refresh()` function to your class and calling `lv_task_create` inside the constructor. An example call could look like this: <br>
+If your app needs to be updated continuously, yo can do so by overriding the `Refresh()` function in your class and calling `lv_task_create` inside the constructor. An example call could look like this: <br>
 `taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);` <br>
 With `taskRefresh` being a member variable of your class and of type `lv_task_t*`. Remember to delete the task again using `lv_task_del`. The function `RefreshTaskCallback` is inherited from screen and just calls your `Refresh` function.
 
@@ -50,8 +50,8 @@ MyApp.cpp:
 using namespace Pinetime::Applications::Screens;
 
 MyApp::MyApp(DisplayApp* app) : Screen(app) {
-  lv_obj_t * title = lv_label_create(lv_scr_act(), NULL);  
-  lv_label_set_text_static(title,"My test application");
+  lv_obj_t* title = lv_label_create(lv_scr_act(), NULL);  
+  lv_label_set_text_static(title, "My test application");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 }
@@ -70,3 +70,5 @@ If you want your app to be launched from the regular app launcher, go to [displa
 If your app is a setting, do the same procedure in [displayapp/screens/settings/Settings.cpp](/src/displayapp/screens/settings/Settings.cpp).
 
 You should now be able to [build](../buildAndProgram.md) the firmware and flash it to your PineTime. Yay!
+
+Please remember to pay attention to the [UI guidelines](../ui_guidelines.md) when designing an app that you want to include in mainstream InfiniTime.
