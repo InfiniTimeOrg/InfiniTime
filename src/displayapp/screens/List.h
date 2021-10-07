@@ -6,6 +6,7 @@
 #include "Screen.h"
 #include "../Apps.h"
 #include "components/settings/Settings.h"
+#include "components/motor/MotorController.h"
 
 #define MAXLISTITEMS 4
 
@@ -32,6 +33,7 @@ namespace Pinetime {
       private:
         Controllers::Settings& settingsController;
         Pinetime::Applications::Apps apps[MAXLISTITEMS];
+        Controllers::MotorController& motorController;
 
         lv_obj_t* itemApps[MAXLISTITEMS];
 

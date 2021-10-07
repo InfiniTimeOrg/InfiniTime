@@ -17,7 +17,7 @@ List::List(uint8_t screenID,
            DisplayApp* app,
            Controllers::Settings& settingsController,
            std::array<Applications, MAXLISTITEMS>& applications)
-  : Screen(app), settingsController {settingsController} {
+  : Screen(app), settingsController {settingsController}, motorController {motorController} {
 
   // Set the background to Black
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0, 0, 0));
@@ -117,7 +117,7 @@ void List::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
       break;
     case LV_EVENT_LONG_PRESSED:{
       for (int i = 0; i < MAXLISTITEMS; i++) {
-        lv_btn_set_state(object, LV_BTN_STATE_RELEASED);
+        lv_btn_set_state(itemApps[i], LV_BTN_STATE_RELEASED);
         if (apps[i] != Apps::None && object == itemApps[i]) {
           if(settingsController.GetFavoriteApp() == apps[i]){
             settingsController.SetFavoriteApp(Apps::None);
@@ -126,9 +126,9 @@ void List::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
             settingsController.SetFavoriteApp(apps[i]);
             lv_btn_set_state(object, LV_BTN_STATE_CHECKED_PRESSED);
           }    
-          return;
         }
       }
+      motorController.RunForDuration(35);
     }
       break;
     default:
