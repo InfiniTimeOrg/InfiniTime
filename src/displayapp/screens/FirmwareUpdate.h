@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Screen.h"
-#include <lvgl/src/lv_core/lv_obj.h>
+#include <lvgl/src/core/lv_obj.h>
 #include "FreeRTOS.h"
 
 namespace Pinetime {
@@ -36,7 +36,7 @@ namespace Pinetime {
 
         void UpdateError();
 
-        lv_task_t* taskRefresh;
+        lv_timer_t* taskRefresh;
         TickType_t startTime;
       };
     }

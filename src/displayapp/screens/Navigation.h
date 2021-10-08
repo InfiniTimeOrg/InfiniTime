@@ -18,7 +18,7 @@
 #pragma once
 
 #include <FreeRTOS.h>
-#include <lvgl/src/lv_core/lv_obj.h>
+#include <lvgl/src/core/lv_obj.h>
 #include <string>
 #include "Screen.h"
 #include <array>
@@ -50,7 +50,7 @@ namespace Pinetime {
         std::string manDist;
         int progress;
 
-        lv_task_t* taskRefresh;
+        lv_timer_t* taskRefresh;
       };
     }
   }

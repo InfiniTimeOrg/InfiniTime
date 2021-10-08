@@ -5,18 +5,17 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static void lv_update_task(struct _lv_task_t* task) {
+  static void lv_update_task(struct _lv_timer_t* task) {
     auto* user_data = static_cast<Tile*>(task->user_data);
     user_data->UpdateScreen();
   }
 
-  static void event_handler(lv_obj_t* obj, lv_event_t event) {
-    if (event != LV_EVENT_VALUE_CHANGED) return;
+  static void event_handler(lv_event_t* event) {
+    if (lv_event_get_code(event) != LV_EVENT_VALUE_CHANGED) return;
 
-    Tile* screen = static_cast<Tile*>(obj->user_data);
-    auto* eventDataPtr = (uint32_t*) lv_event_get_data();
-    uint32_t eventData = *eventDataPtr;
-    screen->OnValueChangedEvent(obj, eventData);
+    Tile* screen = static_cast<Tile*>(lv_event_get_user_data(event));
+    uint32_t btnId= reinterpret_cast<uint32_t>(lv_event_get_param(event));
+    screen->OnValueChangedEvent(lv_event_get_target(event), btnId);
   }
 }
 
@@ -32,15 +31,15 @@ Tile::Tile(uint8_t screenID,
   settingsController.SetAppMenu(screenID);
 
   // Time
-  label_time = lv_label_create(lv_scr_act(), nullptr);
+  label_time = lv_label_create(lv_scr_act());
   lv_label_set_text_fmt(label_time, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
-  lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+  lv_obj_set_align(label_time, LV_ALIGN_CENTER);
+  lv_obj_align(label_time, LV_ALIGN_TOP_LEFT, 0, 0);
 
   // Battery
-  batteryIcon = lv_label_create(lv_scr_act(), nullptr);
+  batteryIcon = lv_label_create(lv_scr_act());
   lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
-  lv_obj_align(batteryIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, -8, 0);
+  lv_obj_align(batteryIcon, LV_ALIGN_TOP_RIGHT, -8, 0);
 
   if (numScreens > 1) {
     pageIndicatorBasePoints[0].x = LV_HOR_RES - 1;
@@ -48,9 +47,9 @@ Tile::Tile(uint8_t screenID,
     pageIndicatorBasePoints[1].x = LV_HOR_RES - 1;
     pageIndicatorBasePoints[1].y = LV_VER_RES;
 
-    pageIndicatorBase = lv_line_create(lv_scr_act(), nullptr);
-    lv_obj_set_style_local_line_width(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-    lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
+    pageIndicatorBase = lv_line_create(lv_scr_act());
+    lv_obj_set_style_line_width(pageIndicatorBase, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_line_color(pageIndicatorBase, lv_color_hex(0x111111), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_line_set_points(pageIndicatorBase, pageIndicatorBasePoints, 2);
 
     const uint16_t indicatorSize = LV_VER_RES / numScreens;
@@ -61,9 +60,9 @@ Tile::Tile(uint8_t screenID,
     pageIndicatorPoints[1].x = LV_HOR_RES - 1;
     pageIndicatorPoints[1].y = indicatorPos + indicatorSize;
 
-    pageIndicator = lv_line_create(lv_scr_act(), nullptr);
-    lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-    lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+    pageIndicator = lv_line_create(lv_scr_act());
+    lv_obj_set_style_line_width(pageIndicator, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_line_color(pageIndicator, lv_palette_main(LV_PALETTE_GREY), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
   }
 
@@ -81,18 +80,19 @@ Tile::Tile(uint8_t screenID,
   }
   btnmMap[btIndex] = "";
 
-  btnm1 = lv_btnmatrix_create(lv_scr_act(), nullptr);
+  btnm1 = lv_btnmatrix_create(lv_scr_act());
   lv_btnmatrix_set_map(btnm1, btnmMap);
   lv_obj_set_size(btnm1, LV_HOR_RES - 16, LV_VER_RES - 60);
-  lv_obj_align(btnm1, NULL, LV_ALIGN_CENTER, 0, 10);
+  lv_obj_align(btnm1, LV_ALIGN_CENTER, 0, 10);
 
-  lv_obj_set_style_local_radius(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, 20);
-  lv_obj_set_style_local_bg_opa(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, LV_OPA_20);
-  lv_obj_set_style_local_bg_color(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
-  lv_obj_set_style_local_bg_opa(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DISABLED, LV_OPA_20);
-  lv_obj_set_style_local_bg_color(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DISABLED, lv_color_hex(0x111111));
-  lv_obj_set_style_local_pad_all(btnm1, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_pad_inner(btnm1, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 10);
+  lv_obj_set_style_radius(btnm1, 20, LV_PART_ITEMS | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_opa(btnm1, LV_OPA_20, LV_PART_ITEMS | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_color(btnm1, lv_color_hex(0x00FFFF), LV_PART_ITEMS | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_opa(btnm1, LV_OPA_20, LV_PART_ITEMS | LV_STATE_DISABLED);
+  lv_obj_set_style_bg_color(btnm1, lv_color_hex(0x111111), LV_PART_ITEMS | LV_STATE_DISABLED);
+  lv_obj_set_style_pad_all(btnm1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_pad_row(btnm1, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_pad_column(btnm1, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
 
   for (uint8_t i = 0; i < 6; i++) {
     lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_CLICK_TRIG);
@@ -102,19 +102,19 @@ Tile::Tile(uint8_t screenID,
   }
 
   btnm1->user_data = this;
-  lv_obj_set_event_cb(btnm1, event_handler);
+  lv_obj_add_event_cb(btnm1, event_handler, LV_EVENT_ALL, btnm1->user_data);
 
-  lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
+  lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act());
+  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CLIP);
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text_static(backgroundLabel, "");
 
-  taskUpdate = lv_task_create(lv_update_task, 5000, LV_TASK_PRIO_MID, this);
+  taskUpdate = lv_timer_create(lv_update_task, 5000, this);
 }
 
 Tile::~Tile() {
-  lv_task_del(taskUpdate);
+  lv_timer_del(taskUpdate);
   lv_obj_clean(lv_scr_act());
 }
 

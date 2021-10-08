@@ -34,7 +34,7 @@ namespace Pinetime {
       Pinetime::Drivers::St7789& lcd;
       Pinetime::Drivers::Cst816S& touchPanel;
 
-      lv_disp_buf_t disp_buf_2;
+      lv_disp_draw_buf_t disp_buf_2;
       lv_color_t buf2_1[LV_HOR_RES_MAX * 4];
       lv_color_t buf2_2[LV_HOR_RES_MAX * 4];
 

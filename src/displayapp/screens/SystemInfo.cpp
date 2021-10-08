@@ -70,7 +70,7 @@ bool SystemInfo::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
-  lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_t* label = lv_label_create(lv_scr_act());
   lv_label_set_recolor(label, true);
   lv_label_set_text_fmt(label,
                         "#FFFF00 InfiniTime#\n\n"
@@ -87,8 +87,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
                         __DATE__,
                         __TIME__,
                         BootloaderVersion::VersionString());
-  lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  lv_obj_center(label);
   return std::make_unique<Screens::Label>(0, 5, app, label);
 }
 
@@ -132,7 +131,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   uptimeSeconds = uptimeSeconds % secondsInAMinute;
   // TODO handle more than 100 days of uptime
 
-  lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_t* label = lv_label_create(lv_scr_act());
   lv_label_set_recolor(label, true);
   lv_label_set_text_fmt(label,
                         "#444444 Date# %02d/%02d/%04d\n"
@@ -157,7 +156,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         brightnessController.ToString(),
                         resetReason,
                         ToString(motionController.DeviceType()));
-  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(1, 5, app, label);
 }
 
@@ -165,7 +164,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
   lv_mem_monitor_t mon;
   lv_mem_monitor(&mon);
 
-  lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_t* label = lv_label_create(lv_scr_act());
   lv_label_set_recolor(label, true);
   auto& bleAddr = bleController.Address();
   lv_label_set_text_fmt(label,
@@ -191,7 +190,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         mon.frag_pct,
                         static_cast<int>(mon.free_biggest_size),
                         0);
-  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  lv_obj_align(label, LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(2, 5, app, label);
 }
 
@@ -201,7 +200,7 @@ bool SystemInfo::sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   TaskStatus_t tasksStatus[10];
-  lv_obj_t* infoTask = lv_table_create(lv_scr_act(), NULL);
+  lv_obj_t* infoTask = lv_table_create(lv_scr_act());
   lv_table_set_col_cnt(infoTask, 4);
   lv_table_set_row_cnt(infoTask, 8);
   lv_obj_set_pos(infoTask, 0, 10);
@@ -252,7 +251,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
-  lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_t* label = lv_label_create(lv_scr_act());
   lv_label_set_recolor(label, true);
   lv_label_set_text_static(label,
                            "Software Licensed\n"
@@ -262,7 +261,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
                            "#444444 Source code#\n"
                            "#FFFF00 https://github.com/#\n"
                            "#FFFF00 JF002/InfiniTime#");
-  lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_text_align(label, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_center(label);
   return std::make_unique<Screens::Label>(4, 5, app, label);
 }

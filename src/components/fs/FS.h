@@ -17,7 +17,7 @@ namespace Pinetime {
       int FileClose(lfs_file_t* file_p);
       int FileRead(lfs_file_t* file_p, uint8_t* buff, uint32_t size);
       int FileWrite(lfs_file_t* file_p, const uint8_t* buff, uint32_t size);
-      int FileSeek(lfs_file_t* file_p, uint32_t pos);
+      int FileSeek(lfs_file_t* file_p, uint32_t pos, lfs_whence_flags whence);
 
       int FileDelete(const char* fileName);
 

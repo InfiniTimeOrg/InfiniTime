@@ -27,7 +27,7 @@ namespace Pinetime {
                       std::array<Applications, MAXLISTITEMS>& applications);
         ~List() override;
 
-        void OnButtonEvent(lv_obj_t* object, lv_event_t event);
+        void OnButtonEvent(lv_obj_t* object, lv_event_t* event);
 
       private:
         Controllers::Settings& settingsController;

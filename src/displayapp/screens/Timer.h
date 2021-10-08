@@ -21,7 +21,7 @@ namespace Pinetime::Applications::Screens {
 
     void setDone();
 
-    void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
+    void OnButtonEvent(lv_obj_t* obj, lv_event_t* event);
 
   private:
     bool running;
@@ -34,6 +34,6 @@ namespace Pinetime::Applications::Screens {
     lv_obj_t *time, *msecTime, *btnPlayPause, *txtPlayPause, *btnMinutesUp, *btnMinutesDown, *btnSecondsUp, *btnSecondsDown, *txtMUp,
       *txtMDown, *txtSUp, *txtSDown;
 
-    lv_task_t* taskRefresh;
+    lv_timer_t* taskRefresh;
   };
 }

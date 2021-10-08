@@ -16,9 +16,10 @@ static void disp_flush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_
   lvgl->FlushDisplay(area, color_p);
 }
 
-bool touchpad_read(lv_indev_drv_t* indev_drv, lv_indev_data_t* data) {
+void touchpad_read(lv_indev_drv_t* indev_drv, lv_indev_data_t* data) {
   auto* lvgl = static_cast<LittleVgl*>(indev_drv->user_data);
-  return lvgl->GetTouchPadInfo(data);
+  lvgl->GetTouchPadInfo(data);
+  return;
 }
 
 LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel)
@@ -34,7 +35,7 @@ void LittleVgl::Init() {
 }
 
 void LittleVgl::InitDisplay() {
-  lv_disp_buf_init(&disp_buf_2, buf2_1, buf2_2, LV_HOR_RES_MAX * 4); /*Initialize the display buffer*/
+  lv_disp_draw_buf_init(&disp_buf_2, buf2_1, buf2_2, LV_HOR_RES_MAX * 4); /*Initialize the display buffer*/
   lv_disp_drv_init(&disp_drv);                                       /*Basic initialization*/
 
   /*Set up the functions to access to your display*/
@@ -46,7 +47,7 @@ void LittleVgl::InitDisplay() {
   /*Used to copy the buffer's content to the display*/
   disp_drv.flush_cb = disp_flush;
   /*Set a display buffer*/
-  disp_drv.buffer = &disp_buf_2;
+  disp_drv.draw_buf = &disp_buf_2;
   disp_drv.user_data = this;
 
   /*Finally register the driver*/
@@ -67,15 +68,15 @@ void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
   if (scrollDirection == FullRefreshDirections::None) {
     scrollDirection = direction;
     if (scrollDirection == FullRefreshDirections::Down) {
-      lv_disp_set_direction(lv_disp_get_default(), 1);
+      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(1));
     } else if (scrollDirection == FullRefreshDirections::Right) {
-      lv_disp_set_direction(lv_disp_get_default(), 2);
+      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(2));
     } else if (scrollDirection == FullRefreshDirections::Left) {
-      lv_disp_set_direction(lv_disp_get_default(), 3);
+      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(3));
     } else if (scrollDirection == FullRefreshDirections::RightAnim) {
-      lv_disp_set_direction(lv_disp_get_default(), 5);
+      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(5));
     } else if (scrollDirection == FullRefreshDirections::LeftAnim) {
-      lv_disp_set_direction(lv_disp_get_default(), 4);
+      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(4));
     }
   }
 }
@@ -106,7 +107,7 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
       if (area->y1 == 0) {
         toScroll = height * 2;
         scrollDirection = FullRefreshDirections::None;
-        lv_disp_set_direction(lv_disp_get_default(), 0);
+        lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(0));
       } else {
         toScroll = height;
       }
@@ -126,7 +127,7 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
       if (area->y2 == visibleNbLines - 1) {
         scrollOffset += (height * 2);
         scrollDirection = FullRefreshDirections::None;
-        lv_disp_set_direction(lv_disp_get_default(), 0);
+        lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(0));
       } else {
         scrollOffset += height;
       }
@@ -136,12 +137,12 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   } else if (scrollDirection == FullRefreshDirections::Left or scrollDirection == FullRefreshDirections::LeftAnim) {
     if (area->x2 == visibleNbLines - 1) {
       scrollDirection = FullRefreshDirections::None;
-      lv_disp_set_direction(lv_disp_get_default(), 0);
+      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(0));
     }
   } else if (scrollDirection == FullRefreshDirections::Right or scrollDirection == FullRefreshDirections::RightAnim) {
     if (area->x1 == 0) {
       scrollDirection = FullRefreshDirections::None;
-      lv_disp_set_direction(lv_disp_get_default(), 0);
+      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(0));
     }
   }
 
@@ -185,8 +186,14 @@ bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
 
 void LittleVgl::InitTheme() {
 
-  lv_theme_t* th = lv_pinetime_theme_init(
-    LV_COLOR_WHITE, LV_COLOR_SILVER, 0, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20);
-
-  lv_theme_set_act(th);
+//  lv_theme_t* th = lv_pinetime_theme_init(
+//    lv_color_white(), lv_color_hex(0xC0C0C0), 0, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20);
+  
+  lv_theme_t* th = lv_pinetime_theme_init(lv_disp_get_default(),
+                                        lv_color_white(),
+                                        lv_color_hex(0xC0C0C0),
+                                        0,
+                                        &jetbrains_mono_bold_20);
+  
+  lv_disp_set_theme(lv_disp_get_default(), th);
 }

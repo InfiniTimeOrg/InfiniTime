@@ -27,7 +27,7 @@ namespace Pinetime {
 
         ~QuickSettings() override;
 
-        void OnButtonEvent(lv_obj_t* object, lv_event_t event);
+        void OnButtonEvent(lv_obj_t* object, lv_event_t* event);
 
         void UpdateScreen();
 
@@ -38,7 +38,7 @@ namespace Pinetime {
         Controllers::MotorController& motorController;
         Controllers::Settings& settingsController;
 
-        lv_task_t* taskUpdate;
+        lv_timer_t* taskUpdate;
         lv_obj_t* batteryIcon;
         lv_obj_t* label_time;
 

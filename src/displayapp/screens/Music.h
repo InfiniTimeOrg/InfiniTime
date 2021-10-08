@@ -18,7 +18,7 @@
 #pragma once
 
 #include <FreeRTOS.h>
-#include <lvgl/src/lv_core/lv_obj.h>
+#include <lvgl/src/core/lv_obj.h>
 #include <string>
 #include "Screen.h"
 
@@ -37,7 +37,7 @@ namespace Pinetime {
 
         void Refresh() override;
 
-        void OnObjectEvent(lv_obj_t* obj, lv_event_t event);
+        void OnObjectEvent(lv_obj_t* obj, lv_event_t* event);
 
       private:
         bool OnTouchEvent(TouchEvents event);
@@ -79,7 +79,7 @@ namespace Pinetime {
 
         bool playing;
 
-        lv_task_t* taskRefresh;
+        lv_timer_t* taskRefresh;
 
         /** Watchapp */
       };

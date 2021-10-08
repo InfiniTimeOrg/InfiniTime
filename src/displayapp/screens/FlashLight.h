@@ -17,7 +17,7 @@ namespace Pinetime {
         ~FlashLight() override;
 
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
-        void OnClickEvent(lv_obj_t* obj, lv_event_t event);
+        void OnClickEvent(lv_obj_t* obj, lv_event_t* event);
 
       private:
         Pinetime::System::SystemTask& systemTask;

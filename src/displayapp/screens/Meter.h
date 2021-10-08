@@ -2,8 +2,8 @@
 
 #include <cstdint>
 #include "Screen.h"
-#include <lvgl/src/lv_core/lv_style.h>
-#include <lvgl/src/lv_core/lv_obj.h>
+#include <lvgl/src/misc/lv_style.h>
+#include <lvgl/src/core/lv_obj.h>
 
 namespace Pinetime {
   namespace Applications {
@@ -19,10 +19,12 @@ namespace Pinetime {
       private:
         lv_style_t style_lmeter;
         lv_obj_t* lmeter;
+        lv_meter_scale_t* lscale;
+        lv_meter_indicator_t* lindicator;
 
         uint32_t value = 0;
 
-        lv_task_t* taskRefresh;
+        lv_timer_t* taskRefresh;
       };
     }
   }

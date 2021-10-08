@@ -72,8 +72,8 @@ int FS::FileWrite(lfs_file_t* file_p, const uint8_t* buff, uint32_t size) {
   return lfs_file_write(&lfs, file_p, buff, size);
 }
 
-int FS::FileSeek(lfs_file_t* file_p, uint32_t pos) {
-  return lfs_file_seek(&lfs, file_p, pos, LFS_SEEK_SET);
+int FS::FileSeek(lfs_file_t* file_p, uint32_t pos, lfs_whence_flags whence) {
+  return lfs_file_seek(&lfs, file_p, pos, whence);
 }
 
 int FS::FileDelete(const char* fileName) {
@@ -140,18 +140,16 @@ int FS::SectorRead(const struct lfs_config* c, lfs_block_t block, lfs_off_t off,
 */
 
 namespace {
-  lv_fs_res_t lvglOpen(lv_fs_drv_t* drv, void* file_p, const char* path, lv_fs_mode_t mode) {
+  void * lvglOpen(lv_fs_drv_t* drv, const char* path, lv_fs_mode_t mode) {
 
-    lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
+    lfs_file_t* file = nullptr;
     FS* filesys = static_cast<FS*>(drv->user_data);
     filesys->FileOpen(file, path, LFS_O_RDONLY);
 
     if (file->type == 0) {
-      return LV_FS_RES_FS_ERR;
+      return nullptr;
     }
-    else {
-      return LV_FS_RES_OK;
-    }
+    return file;
   }
 
   lv_fs_res_t lvglClose(lv_fs_drv_t* drv, void* file_p) {
@@ -169,11 +167,10 @@ namespace {
     *br = btr;
     return LV_FS_RES_OK;
   }
-
-  lv_fs_res_t lvglSeek(lv_fs_drv_t* drv, void* file_p, uint32_t pos) {
+  lv_fs_res_t lvglSeek(lv_fs_drv_t* drv, void* file_p, uint32_t pos, lv_fs_whence_t whence) {
     FS* filesys = static_cast<FS*>(drv->user_data);
     lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
-    filesys->FileSeek(file, pos);
+    filesys->FileSeek(file, pos, static_cast<lfs_whence_flags>(whence));
     return LV_FS_RES_OK;
   }
 }
@@ -183,13 +180,19 @@ void FS::LVGLFileSystemInit() {
   lv_fs_drv_t fs_drv;
   lv_fs_drv_init(&fs_drv);
 
-  fs_drv.file_size = sizeof(lfs_file_t);
   fs_drv.letter = 'F';
+  fs_drv.ready_cb = nullptr;
   fs_drv.open_cb = lvglOpen;
   fs_drv.close_cb = lvglClose;
   fs_drv.read_cb = lvglRead;
+  fs_drv.write_cb = nullptr;
   fs_drv.seek_cb = lvglSeek;
-
+  fs_drv.tell_cb = nullptr;
+  
+  fs_drv.dir_open_cb = nullptr;
+  fs_drv.dir_read_cb = nullptr;
+  fs_drv.dir_close_cb = nullptr;
+  
   fs_drv.user_data = this;
 
   lv_fs_drv_register(&fs_drv);

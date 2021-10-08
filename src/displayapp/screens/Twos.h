@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lvgl/src/lv_core/lv_obj.h>
+#include <lvgl/src/core/lv_obj.h>
 #include "Screen.h"
 
 namespace Pinetime {
@@ -18,6 +18,7 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
+        lv_style_t style_cell_default;
         lv_style_t style_cell1;
         lv_style_t style_cell2;
         lv_style_t style_cell3;

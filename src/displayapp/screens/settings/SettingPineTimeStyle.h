@@ -15,7 +15,7 @@ namespace Pinetime {
           SettingPineTimeStyle(DisplayApp* app, Pinetime::Controllers::Settings &settingsController);
           ~SettingPineTimeStyle() override;
 
-          void UpdateSelected(lv_obj_t *object, lv_event_t event);
+          void UpdateSelected(lv_obj_t *object, lv_event_t *event);
          
         private:          
           Controllers::Settings& settingsController;
@@ -23,14 +23,14 @@ namespace Pinetime {
           Pinetime::Controllers::Settings::Colors GetNext(Controllers::Settings::Colors color);
           Pinetime::Controllers::Settings::Colors GetPrevious(Controllers::Settings::Colors color);
 
-          lv_obj_t * btnNextTime;
-          lv_obj_t * btnPrevTime;
-          lv_obj_t * btnNextBar;
-          lv_obj_t * btnPrevBar;
-          lv_obj_t * btnNextBG;
-          lv_obj_t * btnPrevBG;
-          lv_obj_t * btnReset;
-          lv_obj_t * btnRandom;
+          lv_obj_t * btnNextTime, * txtNextTime;
+          lv_obj_t * btnPrevTime, * txtPrevTime;
+          lv_obj_t * btnNextBar, * txtNextBar;
+          lv_obj_t * btnPrevBar, * txtPrevBar;
+          lv_obj_t * btnNextBG, * txtNextBG;
+          lv_obj_t * btnPrevBG, * txtPrevBG;
+          lv_obj_t * btnReset, * txtReset;
+          lv_obj_t * btnRandom, * txtRandom;
           lv_obj_t * timebar;
           lv_obj_t * sidebar;
           lv_obj_t * timeDD1;
@@ -48,8 +48,10 @@ namespace Pinetime {
           lv_obj_t * calendarBar2;
           lv_obj_t * calendarCrossBar1;
           lv_obj_t * calendarCrossBar2;
-          lv_obj_t * stepGauge;
-          lv_color_t needle_colors[1];
+          lv_obj_t * stepMeter;
+          lv_meter_scale_t * stepScale;
+          lv_meter_indicator_t * stepIndicator;
+          lv_color_t needle_color;
       };
     }
   }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lvgl/src/lv_core/lv_obj.h>
+#include <lvgl/src/core/lv_obj.h>
 #include <chrono>
 #include <cstdint>
 #include <memory>

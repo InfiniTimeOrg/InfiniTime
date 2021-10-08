@@ -22,78 +22,78 @@
 using namespace Pinetime::Applications::Screens;
 using Pinetime::Controllers::AlarmController;
 
-static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
-  Alarm* screen = static_cast<Alarm*>(obj->user_data);
-  screen->OnButtonEvent(obj, event);
+static void btnEventHandler(lv_event_t *event) {
+  Alarm* screen = static_cast<Alarm*>(lv_event_get_user_data(event));
+  screen->OnButtonEvent(lv_event_get_target(event), event);
 }
 
 Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   : Screen(app), running {true}, alarmController {alarmController} {
 
-  time = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  time = lv_label_create(lv_scr_act());
+  lv_obj_set_style_text_font(time, &jetbrains_mono_76, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_text_color(time, lv_palette_main(LV_PALETTE_GREY), LV_PART_MAIN | LV_STATE_DEFAULT);
 
   alarmHours = alarmController.Hours();
   alarmMinutes = alarmController.Minutes();
   lv_label_set_text_fmt(time, "%02lu:%02lu", alarmHours, alarmMinutes);
 
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -25);
+  lv_obj_align(time, LV_ALIGN_CENTER, 0, -25);
 
-  btnHoursUp = lv_btn_create(lv_scr_act(), nullptr);
+  btnHoursUp = lv_btn_create(lv_scr_act());
   btnHoursUp->user_data = this;
-  lv_obj_set_event_cb(btnHoursUp, btnEventHandler);
+  lv_obj_add_event_cb(btnHoursUp, btnEventHandler, LV_EVENT_ALL, btnHoursUp->user_data);
   lv_obj_set_size(btnHoursUp, 60, 40);
-  lv_obj_align(btnHoursUp, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, -85);
-  txtHrUp = lv_label_create(btnHoursUp, nullptr);
+  lv_obj_align(btnHoursUp, LV_ALIGN_LEFT_MID, 20, -85);
+  txtHrUp = lv_label_create(btnHoursUp);
   lv_label_set_text_static(txtHrUp, "+");
 
-  btnHoursDown = lv_btn_create(lv_scr_act(), nullptr);
+  btnHoursDown = lv_btn_create(lv_scr_act());
   btnHoursDown->user_data = this;
-  lv_obj_set_event_cb(btnHoursDown, btnEventHandler);
+  lv_obj_add_event_cb(btnHoursDown, btnEventHandler, LV_EVENT_ALL, btnHoursDown->user_data);
   lv_obj_set_size(btnHoursDown, 60, 40);
-  lv_obj_align(btnHoursDown, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, 35);
-  txtHrDown = lv_label_create(btnHoursDown, nullptr);
+  lv_obj_align(btnHoursDown, LV_ALIGN_LEFT_MID, 20, 35);
+  txtHrDown = lv_label_create(btnHoursDown);
   lv_label_set_text_static(txtHrDown, "-");
 
-  btnMinutesUp = lv_btn_create(lv_scr_act(), nullptr);
+  btnMinutesUp = lv_btn_create(lv_scr_act());
   btnMinutesUp->user_data = this;
-  lv_obj_set_event_cb(btnMinutesUp, btnEventHandler);
+  lv_obj_add_event_cb(btnMinutesUp, btnEventHandler, LV_EVENT_ALL, btnMinutesUp->user_data);
   lv_obj_set_size(btnMinutesUp, 60, 40);
-  lv_obj_align(btnMinutesUp, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, -85);
-  txtMinUp = lv_label_create(btnMinutesUp, nullptr);
+  lv_obj_align(btnMinutesUp, LV_ALIGN_RIGHT_MID, -20, -85);
+  txtMinUp = lv_label_create(btnMinutesUp);
   lv_label_set_text_static(txtMinUp, "+");
 
-  btnMinutesDown = lv_btn_create(lv_scr_act(), nullptr);
+  btnMinutesDown = lv_btn_create(lv_scr_act());
   btnMinutesDown->user_data = this;
-  lv_obj_set_event_cb(btnMinutesDown, btnEventHandler);
+  lv_obj_add_event_cb(btnMinutesDown, btnEventHandler, LV_EVENT_ALL, btnMinutesDown->user_data);
   lv_obj_set_size(btnMinutesDown, 60, 40);
-  lv_obj_align(btnMinutesDown, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, 35);
-  txtMinDown = lv_label_create(btnMinutesDown, nullptr);
+  lv_obj_align(btnMinutesDown, LV_ALIGN_RIGHT_MID, -20, 35);
+  txtMinDown = lv_label_create(btnMinutesDown);
   lv_label_set_text_static(txtMinDown, "-");
 
-  btnEnable = lv_btn_create(lv_scr_act(), nullptr);
+  btnEnable = lv_btn_create(lv_scr_act());
   btnEnable->user_data = this;
-  lv_obj_set_event_cb(btnEnable, btnEventHandler);
+  lv_obj_add_event_cb(btnEnable, btnEventHandler, LV_EVENT_ALL, btnEnable->user_data);
   lv_obj_set_size(btnEnable, 115, 50);
-  lv_obj_align(btnEnable, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
-  txtEnable = lv_label_create(btnEnable, nullptr);
+  lv_obj_align(btnEnable, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+  txtEnable = lv_label_create(btnEnable);
   SetEnableButtonState();
 
-  btnRecur = lv_btn_create(lv_scr_act(), nullptr);
+  btnRecur = lv_btn_create(lv_scr_act());
   btnRecur->user_data = this;
-  lv_obj_set_event_cb(btnRecur, btnEventHandler);
+  lv_obj_add_event_cb(btnRecur, btnEventHandler, LV_EVENT_ALL, btnRecur->user_data);
   lv_obj_set_size(btnRecur, 115, 50);
-  lv_obj_align(btnRecur, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  txtRecur = lv_label_create(btnRecur, nullptr);
+  lv_obj_align(btnRecur, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
+  txtRecur = lv_label_create(btnRecur);
   SetRecurButtonState();
 
-  btnInfo = lv_btn_create(lv_scr_act(), nullptr);
+  btnInfo = lv_btn_create(lv_scr_act());
   btnInfo->user_data = this;
-  lv_obj_set_event_cb(btnInfo, btnEventHandler);
+  lv_obj_add_event_cb(btnInfo, btnEventHandler, LV_EVENT_ALL, btnInfo->user_data);
   lv_obj_set_size(btnInfo, 50, 40);
-  lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_CENTER, 0, -85);
-  txtInfo = lv_label_create(btnInfo, nullptr);
+  lv_obj_align(btnInfo, LV_ALIGN_CENTER, 0, -85);
+  txtInfo = lv_label_create(btnInfo);
   lv_label_set_text_static(txtInfo, "i");
 }
 
@@ -101,9 +101,9 @@ Alarm::~Alarm() {
   lv_obj_clean(lv_scr_act());
 }
 
-void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
+void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t* event) {
   using Pinetime::Controllers::AlarmController;
-  if (event == LV_EVENT_CLICKED) {
+  if (lv_event_get_code(event) == LV_EVENT_CLICKED) {
     if (obj == btnEnable) {
       if (alarmController.State() == AlarmController::AlarmState::Alerting) {
         alarmController.StopAlerting();
@@ -187,27 +187,27 @@ void Alarm::SetEnableButtonState() {
   switch (alarmController.State()) {
     case AlarmController::AlarmState::Set:
       lv_label_set_text(txtEnable, "ON");
-      lv_obj_set_style_local_bg_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+      lv_obj_set_style_bg_color(btnEnable, lv_palette_main(LV_PALETTE_GREEN), LV_PART_MAIN | LV_STATE_DEFAULT);
       break;
     case AlarmController::AlarmState::Not_Set:
       lv_label_set_text(txtEnable, "OFF");
-      lv_obj_set_style_local_bg_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+      lv_obj_set_style_bg_color(btnEnable, lv_palette_main(LV_PALETTE_GREY), LV_PART_MAIN | LV_STATE_DEFAULT);
       break;
     case AlarmController::AlarmState::Alerting:
       lv_label_set_text(txtEnable, Symbols::stop);
-      lv_obj_set_style_local_bg_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+      lv_obj_set_style_bg_color(btnEnable, lv_palette_main(LV_PALETTE_RED), LV_PART_MAIN | LV_STATE_DEFAULT);
   }
 }
 
 void Alarm::ShowInfo() {
-  btnMessage = lv_btn_create(lv_scr_act(), nullptr);
+  btnMessage = lv_btn_create(lv_scr_act());
   btnMessage->user_data = this;
-  lv_obj_set_event_cb(btnMessage, btnEventHandler);
+  lv_obj_add_event_cb(btnMessage, btnEventHandler, LV_EVENT_ALL, btnMessage->user_data);
   lv_obj_set_height(btnMessage, 200);
   lv_obj_set_width(btnMessage, 150);
-  lv_obj_align(btnMessage, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  txtMessage = lv_label_create(btnMessage, nullptr);
-  lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
+  lv_obj_align(btnMessage, LV_ALIGN_CENTER, 0, 0);
+  txtMessage = lv_label_create(btnMessage);
+  lv_obj_set_style_bg_color(btnMessage, lv_color_hex(0x000080), LV_PART_MAIN | LV_STATE_DEFAULT);
 
   if (alarmController.State() == AlarmController::AlarmState::Set) {
     auto timeToAlarm = alarmController.SecondsToAlarm();

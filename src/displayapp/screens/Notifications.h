@@ -40,7 +40,7 @@ namespace Pinetime {
           bool IsRunning() const {
             return running;
           }
-          void OnCallButtonEvent(lv_obj_t*, lv_event_t event);
+          void OnCallButtonEvent(lv_obj_t* obj, lv_event_t* event);
 
         private:
           lv_obj_t* container1;
@@ -72,7 +72,7 @@ namespace Pinetime {
         uint32_t timeoutTickCountStart;
         uint32_t timeoutTickCountEnd;
 
-        lv_task_t* taskRefresh;
+        lv_timer_t* taskRefresh;
       };
     }
   }
