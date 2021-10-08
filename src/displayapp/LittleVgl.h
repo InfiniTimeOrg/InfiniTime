@@ -38,6 +38,7 @@ namespace Pinetime {
       lv_color_t buf2_1[LV_HOR_RES_MAX * 4];
       lv_color_t buf2_2[LV_HOR_RES_MAX * 4];
 
+      lv_indev_drv_t indev_drv;
       lv_disp_drv_t disp_drv;
       lv_point_t previousClick;
 
