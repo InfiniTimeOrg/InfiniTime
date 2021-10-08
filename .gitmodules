@@ -1,6 +1,7 @@
 [submodule "src/libs/lvgl"]
 	path = src/libs/lvgl
-	url = https://github.com/joaquimorg/lvgl.git
+	url = https://github.com/lvgl/lvgl.git
+	branch = release/v8.0
 [submodule "src/libs/littlefs"]
 	path = src/libs/littlefs
 	url = https://github.com/littlefs-project/littlefs.git
