@@ -61,10 +61,10 @@ std::unique_ptr<Screen> Settings::CreateScreen3() {
 
   std::array<Screens::List::Applications, 4> applications {{
     {Symbols::list, "About", Apps::SysInfo},
-    {Symbols::none, "None", Apps::None},
+    {Symbols::none, "Wake Sense", Apps::SettingShakeThreshold},
     {Symbols::none, "None", Apps::None},
     {Symbols::none, "None", Apps::None},
   }};
-
+  
   return std::make_unique<Screens::List>(2, 3, app, settingsController, applications);
 }
