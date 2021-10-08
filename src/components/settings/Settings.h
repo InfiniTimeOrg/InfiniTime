@@ -20,7 +20,6 @@ namespace Pinetime {
       };
 
       struct PineTimeStyle {
-//        Applications::Colors ColorTime = Applications::Colors::Black;
         Applications::Colors ColorTime = Applications::Colors::Teal;
         Applications::Colors ColorBar = Applications::Colors::Teal;
         Applications::Colors ColorBG = Applications::Colors::Black;
