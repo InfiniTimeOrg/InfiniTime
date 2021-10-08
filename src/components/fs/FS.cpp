@@ -179,8 +179,6 @@ namespace {
 }
 
 void FS::LVGLFileSystemInit() {
-
-  lv_fs_drv_t fs_drv;
   lv_fs_drv_init(&fs_drv);
 
   fs_drv.file_size = sizeof(lfs_file_t);

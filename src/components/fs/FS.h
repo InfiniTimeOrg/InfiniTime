@@ -3,6 +3,7 @@
 #include <cstdint>
 #include "drivers/SpiNorFlash.h"
 #include <littlefs/lfs.h>
+#include <lvgl/lvgl.h>
 
 namespace Pinetime {
   namespace Controllers {
@@ -55,7 +56,9 @@ namespace Pinetime {
       static constexpr size_t startAddress = 0x0B4000;
       static constexpr size_t size = 0x34C000;
       static constexpr size_t blockSize = 4096;
-
+  
+      lv_fs_drv_t fs_drv;
+      
       bool resourcesValid = false;
       const struct lfs_config lfsConfig;
 
