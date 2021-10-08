@@ -20,8 +20,8 @@ namespace Pinetime {
         private:          
           Controllers::Settings& settingsController;
 
-          Pinetime::Controllers::Settings::Colors GetNext(Controllers::Settings::Colors color);
-          Pinetime::Controllers::Settings::Colors GetPrevious(Controllers::Settings::Colors color);
+          Applications::Colors GetNext(Applications::Colors color);
+          Applications::Colors GetPrevious(Applications::Colors color);
 
           lv_obj_t * btnNextTime;
           lv_obj_t * btnPrevTime;

@@ -239,14 +239,14 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     }
     if (object == btnNextBar) {
       valueBar = GetNext(valueBar);
-      if(valueBar == Controllers::Settings::Colors::Black)
+      if(valueBar == Applications::Colors::Black)
         valueBar = GetNext(valueBar);
       settingsController.SetPTSColorBar(valueBar);
       lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBar));
     }
     if (object == btnPrevBar) {
       valueBar = GetPrevious(valueBar);
-      if(valueBar == Controllers::Settings::Colors::Black)
+      if(valueBar == Applications::Colors::Black)
         valueBar = GetPrevious(valueBar);
       settingsController.SetPTSColorBar(valueBar);
       lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBar));
@@ -262,14 +262,14 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBG));
     }
     if (object == btnReset) {
-      settingsController.SetPTSColorTime(Controllers::Settings::Colors::Teal);
-      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
-      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
-      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
-      settingsController.SetPTSColorBar(Controllers::Settings::Colors::Teal);
-      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
-      settingsController.SetPTSColorBG(Controllers::Settings::Colors::Black);
-      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Black));
+      settingsController.SetPTSColorTime(Applications::Colors::Teal);
+      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Applications::Colors::Teal));
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Applications::Colors::Teal));
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Applications::Colors::Teal));
+      settingsController.SetPTSColorBar(Applications::Colors::Teal);
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Applications::Colors::Teal));
+      settingsController.SetPTSColorBG(Applications::Colors::Black);
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Applications::Colors::Black));
     }
     if (object == btnRandom) {
       uint8_t randTime = rand() % 17;
@@ -282,37 +282,37 @@ void SettingPineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       if (randBar == 3) {
         randBar -= 1;
       }
-      settingsController.SetPTSColorTime(static_cast<Controllers::Settings::Colors>(randTime));
-      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(static_cast<Controllers::Settings::Colors>(randTime)));
-      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Controllers::Settings::Colors>(randTime)));
-      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Controllers::Settings::Colors>(randTime)));
-      settingsController.SetPTSColorBar(static_cast<Controllers::Settings::Colors>(randBar));
-      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Controllers::Settings::Colors>(randBar)));
-      settingsController.SetPTSColorBG(static_cast<Controllers::Settings::Colors>(randBG));
-      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Controllers::Settings::Colors>(randBG)));
+      settingsController.SetPTSColorTime(static_cast<Applications::Colors>(randTime));
+      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(static_cast<Applications::Colors>(randTime)));
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Applications::Colors>(randTime)));
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Applications::Colors>(randTime)));
+      settingsController.SetPTSColorBar(static_cast<Applications::Colors>(randBar));
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Applications::Colors>(randBar)));
+      settingsController.SetPTSColorBG(static_cast<Applications::Colors>(randBG));
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Applications::Colors>(randBG)));
     }
   }
 }
 
-Pinetime::Controllers::Settings::Colors SettingPineTimeStyle::GetNext(Pinetime::Controllers::Settings::Colors color) {
+Pinetime::Applications::Colors SettingPineTimeStyle::GetNext(Pinetime::Applications::Colors color) {
   auto colorAsInt = static_cast<uint8_t>(color);
-  Pinetime::Controllers::Settings::Colors nextColor;
+  Pinetime::Applications::Colors nextColor;
   if (colorAsInt < 16) {
-    nextColor = static_cast<Controllers::Settings::Colors>(colorAsInt + 1);
+    nextColor = static_cast<Applications::Colors>(colorAsInt + 1);
   } else {
-    nextColor = static_cast<Controllers::Settings::Colors>(0);
+    nextColor = static_cast<Applications::Colors>(0);
   }
   return nextColor;
 }
 
-Pinetime::Controllers::Settings::Colors SettingPineTimeStyle::GetPrevious(Pinetime::Controllers::Settings::Colors color) {
+Pinetime::Applications::Colors SettingPineTimeStyle::GetPrevious(Pinetime::Applications::Colors color) {
   auto colorAsInt = static_cast<uint8_t>(color);
-  Pinetime::Controllers::Settings::Colors prevColor;
+  Pinetime::Applications::Colors prevColor;
 
   if (colorAsInt > 0) {
-    prevColor = static_cast<Controllers::Settings::Colors>(colorAsInt - 1);
+    prevColor = static_cast<Applications::Colors>(colorAsInt - 1);
   } else {
-    prevColor = static_cast<Controllers::Settings::Colors>(16);
+    prevColor = static_cast<Applications::Colors>(16);
   }
   return prevColor;
 }

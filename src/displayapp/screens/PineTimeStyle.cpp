@@ -62,7 +62,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   displayedChar[3] = 0;
   displayedChar[4] = 0;
 
-  //Create a 200px wide background rectangle
+  // Create a 200px wide background rectangle
   timebar = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetPTSColorBG()));
   lv_obj_set_style_local_radius(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -257,7 +257,7 @@ void PineTimeStyle::Refresh() {
     char hoursChar[3];
     char ampmChar[5];
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        sprintf(hoursChar, "%02d", hour);
+      sprintf(hoursChar, "%02d", hour);
     } else {
       if (hour == 0 && hour != 12) {
         hour = 12;

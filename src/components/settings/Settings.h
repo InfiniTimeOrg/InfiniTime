@@ -5,7 +5,7 @@
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
 #include "drivers/Cst816s.h"
-
+#include <displayapp/Colors.h>
 namespace Pinetime {
   namespace Controllers {
     class Settings {
@@ -18,13 +18,12 @@ namespace Pinetime {
         RaiseWrist = 2,
         Shake = 3,
       };
-      enum class Colors : uint8_t {
-        White, Silver, Gray, Black, Red, Maroon, Yellow, Olive, Lime, Green, Cyan, Teal, Blue, Navy, Magenta, Purple, Orange
-      };
+
       struct PineTimeStyle {
-        Colors ColorTime = Colors::Teal;
-        Colors ColorBar = Colors::Teal;
-        Colors ColorBG = Colors::Black;
+//        Applications::Colors ColorTime = Applications::Colors::Black;
+        Applications::Colors ColorTime = Applications::Colors::Teal;
+        Applications::Colors ColorBar = Applications::Colors::Teal;
+        Applications::Colors ColorBG = Applications::Colors::Black;
       };
 
       Settings(Pinetime::Controllers::FS& fs);
@@ -42,30 +41,30 @@ namespace Pinetime {
         return settings.clockFace;
       };
 
-      void SetPTSColorTime(Colors colorTime) {
+      void SetPTSColorTime(Applications::Colors colorTime) {
         if (colorTime != settings.PTS.ColorTime)
           settingsChanged = true;
         settings.PTS.ColorTime = colorTime;
       };
-      Colors GetPTSColorTime() const {
+      Applications::Colors GetPTSColorTime() const {
         return settings.PTS.ColorTime;
       };
 
-      void SetPTSColorBar(Colors colorBar) {
+      void SetPTSColorBar(Applications::Colors colorBar) {
         if (colorBar != settings.PTS.ColorBar)
           settingsChanged = true;
         settings.PTS.ColorBar = colorBar;
       };
-      Colors GetPTSColorBar() const {
+      Applications::Colors GetPTSColorBar() const {
         return settings.PTS.ColorBar;
       };
 
-      void SetPTSColorBG(Colors colorBG) {
+      void SetPTSColorBG(Applications::Colors colorBG) {
         if (colorBG != settings.PTS.ColorBG)
           settingsChanged = true;
         settings.PTS.ColorBG = colorBG;
       };
-      Colors GetPTSColorBG() const {
+      Applications::Colors GetPTSColorBG() const {
         return settings.PTS.ColorBG;
       };
 
