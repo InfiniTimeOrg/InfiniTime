@@ -5,7 +5,7 @@
 #include <lvgl/lvgl.h>
 #include "systemtask/SystemTask.h"
 #include "components/brightness/BrightnessController.h"
-
+#include <displayapp/Colors.h>
 namespace Pinetime {
 
   namespace Applications {
@@ -17,15 +17,24 @@ namespace Pinetime {
         ~FlashLight() override;
 
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
-        void OnClickEvent(lv_obj_t* obj, lv_event_t event);
 
       private:
         Pinetime::System::SystemTask& systemTask;
         Controllers::BrightnessController& brightness;
 
-        lv_obj_t* flashLight;
         lv_obj_t* backgroundAction;
-        bool isOn = true;
+        Colors torchColors[11] = {Colors::Black,
+                                  Colors::White,
+                                  Colors::Gray,
+                                  Colors::Red,
+                                  Colors::Yellow,
+                                  Colors::Green,
+                                  Colors::Cyan,
+                                  Colors::Teal,
+                                  Colors::Navy,
+                                  Colors::Magenta,
+                                  Colors::Orange};
+        int8_t currentColorIndex = 0;
       };
     }
   }
