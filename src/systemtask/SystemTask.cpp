@@ -347,6 +347,9 @@ void SystemTask::Work() {
         case Messages::OnChargingEvent:
           batteryController.Update();
           motorController.RunForDuration(15);
+          if (isSleeping && !isWakingUp) {
+            GoToRunning();
+          }
           break;
         case Messages::MeasureBatteryTimerExpired:
           sendBatteryNotification = true;
