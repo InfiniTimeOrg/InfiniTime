@@ -16,7 +16,6 @@ namespace Pinetime {
         SingleTap = 0,
         DoubleTap = 1,
         RaiseWrist = 2,
-        Shake = 3,
       };
 
       struct PineTimeStyle {
@@ -118,21 +117,9 @@ namespace Pinetime {
         }
         settings.screenTimeOut = timeout;
       };
-
       uint32_t GetScreenTimeOut() const {
         return settings.screenTimeOut;
       };
-
-      void SetShakeThreshold(uint16_t thresh) {
-        if (settings.shakeWakeThreshold != thresh) {
-          settings.shakeWakeThreshold = thresh;
-          settingsChanged = true;
-        }
-      }
-
-      int16_t GetShakeThreshold() const {
-        return settings.shakeWakeThreshold;
-      }
 
       void setWakeUpMode(WakeUpMode wakeUp, bool enabled) {
         if (enabled != isWakeUpModeOn(wakeUp)) {
@@ -148,13 +135,13 @@ namespace Pinetime {
             case WakeUpMode::DoubleTap:
               settings.wakeUpMode.set(static_cast<size_t>(WakeUpMode::SingleTap), false);
               break;
-            default:
+            case WakeUpMode::RaiseWrist:
               break;
           }
         }
       };
 
-      std::bitset<4> getWakeUpModes() const {
+      std::bitset<3> getWakeUpModes() const {
         return settings.wakeUpMode;
       }
 
@@ -186,7 +173,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0003;
+      static constexpr uint32_t settingsVersion = 0x0002;
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
@@ -199,8 +186,8 @@ namespace Pinetime {
 
         PineTimeStyle PTS;
 
-        std::bitset<4> wakeUpMode {0};
-        uint16_t shakeWakeThreshold = 150;
+        std::bitset<3> wakeUpMode {0};
+
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
 
         u_int8_t lastTourchColorIndex = 0;

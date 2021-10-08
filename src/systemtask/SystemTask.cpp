@@ -24,6 +24,7 @@
 #include "drivers/PinMap.h"
 #include "main.h"
 
+
 #include <memory>
 
 using namespace Pinetime::System;
@@ -388,10 +389,9 @@ void SystemTask::UpdateMotion() {
   if (isGoingToSleep or isWakingUp)
     return;
 
-  if (isSleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                      settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake)))
+  if (isSleeping && !settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist))
     return;
- 
+
   if (stepCounterMustBeReset) {
     motionSensor.ResetStepCounter();
     stepCounterMustBeReset = false;
@@ -401,13 +401,7 @@ void SystemTask::UpdateMotion() {
 
   motionController.IsSensorOk(motionSensor.IsOk());
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
-
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) &&
-      motionController.Should_RaiseWake(isSleeping)) {
-    GoToRunning();
-  }
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) &&
-      motionController.Should_ShakeWake(settingsController.GetShakeThreshold())) {
+  if (motionController.ShouldWakeUp(isSleeping)) {
     GoToRunning();
   }
 }
