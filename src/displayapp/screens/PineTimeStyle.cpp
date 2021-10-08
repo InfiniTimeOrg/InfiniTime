@@ -100,10 +100,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
   lv_obj_align(batteryIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 2);
-
-  batteryPlug = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_obj_align(batteryPlug, sidebar, LV_ALIGN_IN_TOP_MID, 0, 2);
+  lv_obj_set_auto_realign(batteryIcon, true);
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
@@ -205,18 +202,24 @@ PineTimeStyle::~PineTimeStyle() {
   lv_obj_clean(lv_scr_act());
 }
 
+void PineTimeStyle::SetBatteryIcon() {
+  auto batteryPercent = batteryPercentRemaining.Get();
+  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+}
+
 void PineTimeStyle::Refresh() {
-  batteryPercentRemaining = batteryController.PercentRemaining();
-  if (batteryPercentRemaining.IsUpdated()) {
-    auto batteryPercent = batteryPercentRemaining.Get();
-    if (batteryController.IsCharging()) {
-      auto isCharging = batteryController.IsCharging() || batteryController.IsPowerPresent();
-      lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
-      lv_obj_realign(batteryPlug);
-      lv_label_set_text(batteryIcon, "");
+  isCharging = batteryController.IsCharging();
+  if (isCharging.IsUpdated()) {
+    if (isCharging.Get()) {
+      lv_label_set_text(batteryIcon, Symbols::plug);
     } else {
-      lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
-      lv_label_set_text(batteryPlug, "");
+      SetBatteryIcon();
+    }
+  }
+  if (!isCharging.Get()) {
+    batteryPercentRemaining = batteryController.PercentRemaining();
+    if (batteryPercentRemaining.IsUpdated()) {
+      SetBatteryIcon();
     }
   }
 

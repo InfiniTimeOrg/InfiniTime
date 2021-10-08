@@ -58,7 +58,7 @@ void BatteryInfo::Refresh() {
   batteryPercent = batteryController.PercentRemaining();
   batteryVoltage = batteryController.Voltage();
 
-  if (batteryController.IsCharging() and batteryPercent < 100) {
+  if (batteryController.IsCharging()) {
     lv_obj_set_style_local_bg_color(charging_bar, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
     lv_label_set_text_static(status, "Charging");
   } else if (batteryPercent == 100) {
