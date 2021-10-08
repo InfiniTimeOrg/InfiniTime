@@ -115,13 +115,15 @@ void List::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
       } break;
       case LV_EVENT_LONG_PRESSED: {
         for (int i = 0; i < MAXLISTITEMS; i++) {
-          lv_btn_set_state(itemApps[i], LV_BTN_STATE_RELEASED);
+          if (apps[i] != Apps::None) {
+            lv_btn_set_state(itemApps[i], LV_BTN_STATE_RELEASED);
+          }
           if (apps[i] != Apps::None && object == itemApps[i]) {
             if (settingsController.GetFavoriteApp() == apps[i]) {
               settingsController.SetFavoriteApp(Apps::None);
             } else {
               settingsController.SetFavoriteApp(apps[i]);
-              lv_btn_set_state(object, LV_BTN_STATE_CHECKED_PRESSED);
+              lv_btn_set_state(itemApps[i], LV_BTN_STATE_CHECKED_PRESSED);
             }
           }
         }
