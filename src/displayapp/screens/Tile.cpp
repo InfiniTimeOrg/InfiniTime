@@ -14,8 +14,9 @@ namespace {
     if (lv_event_get_code(event) != LV_EVENT_VALUE_CHANGED) return;
 
     Tile* screen = static_cast<Tile*>(lv_event_get_user_data(event));
-    uint32_t btnId= reinterpret_cast<uint32_t>(lv_event_get_param(event));
-    screen->OnValueChangedEvent(lv_event_get_target(event), btnId);
+    lv_obj_t *obj = lv_event_get_target(event);
+    uint32_t btnId= lv_btnmatrix_get_selected_btn(obj);
+    screen->OnValueChangedEvent(obj, btnId);
   }
 }
 

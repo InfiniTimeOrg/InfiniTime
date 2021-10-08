@@ -71,6 +71,7 @@ List::List(uint8_t screenID,
     if (applications[i].application != Apps::None) {
 
       itemApps[i] = lv_btn_create(container1);
+      itemApps[i]->user_data = this;
       lv_obj_set_style_bg_opa(itemApps[i], LV_OPA_20, LV_PART_MAIN | LV_STATE_DEFAULT);
       lv_obj_set_style_radius(itemApps[i], 57, LV_PART_MAIN | LV_STATE_DEFAULT);
       lv_obj_set_style_bg_color(itemApps[i], lv_color_hex(0x00FFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -81,7 +82,6 @@ List::List(uint8_t screenID,
       lv_obj_set_layout(itemApps[i], LV_LAYOUT_FLEX);
       lv_obj_set_flex_flow(itemApps[i], LV_FLEX_FLOW_ROW);
       lv_obj_set_flex_align(itemApps[i], LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
-      itemApps[i]->user_data = this;
 
       labelBtIco = lv_label_create(itemApps[i]);
       lv_obj_set_style_text_color(labelBtIco, lv_palette_main(LV_PALETTE_YELLOW), LV_PART_MAIN | LV_STATE_DEFAULT);
