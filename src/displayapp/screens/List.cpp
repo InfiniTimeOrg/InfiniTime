@@ -84,9 +84,9 @@ List::List(uint8_t screenID,
 
       labelBt = lv_label_create(itemApps[i], nullptr);
       lv_label_set_text_fmt(labelBt, " %s", applications[i].name);
-      if( applications[i].application == settingsController.GetFavoriteApp()){
+      if (applications[i].application == settingsController.GetFavoriteApp()) {
         lv_btn_set_state(itemApps[i], LV_BTN_STATE_CHECKED_PRESSED);
-      }          
+      }
     }
   }
 
@@ -102,40 +102,33 @@ List::~List() {
 }
 
 void List::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
-  if ( event == LV_EVENT_SHORT_CLICKED or event == LV_EVENT_LONG_PRESSED) {
-    switch (event)
-    {
-    case LV_EVENT_SHORT_CLICKED: {
-      for (int i = 0; i < MAXLISTITEMS; i++) {
-        if (apps[i] != Apps::None && object == itemApps[i]) {
-          app->StartApp(apps[i], DisplayApp::FullRefreshDirections::Up);
-          running = false;
-          return;
-        }
-      }    
-    }
-      break;
-    case LV_EVENT_LONG_PRESSED:{
-      for (int i = 0; i < MAXLISTITEMS; i++) {
-        lv_btn_set_state(itemApps[i], LV_BTN_STATE_RELEASED);
-        if (apps[i] != Apps::None && object == itemApps[i]) {
-          if(settingsController.GetFavoriteApp() == apps[i]){
-            settingsController.SetFavoriteApp(Apps::None);
+  if (event == LV_EVENT_SHORT_CLICKED or event == LV_EVENT_LONG_PRESSED) {
+    switch (event) {
+      case LV_EVENT_SHORT_CLICKED: {
+        for (int i = 0; i < MAXLISTITEMS; i++) {
+          if (apps[i] != Apps::None && object == itemApps[i]) {
+            app->StartApp(apps[i], DisplayApp::FullRefreshDirections::Up);
+            running = false;
+            return;
           }
-          else{
-            settingsController.SetFavoriteApp(apps[i]);
-            lv_btn_set_state(object, LV_BTN_STATE_CHECKED_PRESSED);
-          }    
         }
-      }
-      motorController.RunForDuration(35);
+      } break;
+      case LV_EVENT_LONG_PRESSED: {
+        for (int i = 0; i < MAXLISTITEMS; i++) {
+          lv_btn_set_state(itemApps[i], LV_BTN_STATE_RELEASED);
+          if (apps[i] != Apps::None && object == itemApps[i]) {
+            if (settingsController.GetFavoriteApp() == apps[i]) {
+              settingsController.SetFavoriteApp(Apps::None);
+            } else {
+              settingsController.SetFavoriteApp(apps[i]);
+              lv_btn_set_state(object, LV_BTN_STATE_CHECKED_PRESSED);
+            }
+          }
+        }
+        motorController.RunForDuration(35);
+      } break;
+      default:
+        break;
     }
-      break;
-    default:
-      break;
-    }
-  }
-  else{
-    
   }
 }

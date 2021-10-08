@@ -32,14 +32,14 @@ namespace Pinetime {
         ~Tile() override;
 
         void UpdateScreen();
-        void OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId, lv_event_t event);
+        void OnValueChangedEvent(lv_obj_t* obj, lv_event_t event);
 
       private:
         Pinetime::Controllers::Battery& batteryController;
         Controllers::DateTime& dateTimeController;
         Controllers::Settings& settingsController;
         Controllers::MotorController& motorController;
-        
+
         lv_task_t* taskUpdate;
 
         lv_obj_t* label_time;

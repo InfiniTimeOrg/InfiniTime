@@ -224,12 +224,11 @@ void DisplayApp::Refresh() {
           if (currentApp == Apps::Clock) {
             switch (gesture) {
               case TouchEvents::SwipeUp:
-                if(favoriteAppActive){
+                if (favoriteAppActive) {
                   favoriteAppActive = false;
                   LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
                   ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
-                }
-                else {
+                } else {
                   LoadApp(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
                 }
                 break;
@@ -242,17 +241,16 @@ void DisplayApp::Refresh() {
               case TouchEvents::SwipeLeft:
                 favoriteApp = settingsController.GetFavoriteApp();
                 favoriteAppActive = true;
-                if (favoriteApp == Apps::None){
-                   if (previousApp != Apps::None) {
-                     LoadApp(previousApp, DisplayApp::FullRefreshDirections::LeftAnim);
-                     ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
-                   }
-                }
-                else {
+                if (favoriteApp == Apps::None) {
+                  if (previousApp != Apps::None) {
+                    LoadApp(previousApp, DisplayApp::FullRefreshDirections::LeftAnim);
+                    ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+                  }
+                } else {
                   LoadApp(favoriteApp, DisplayApp::FullRefreshDirections::LeftAnim);
                   ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
                 }
-                break;                
+                break;
               case TouchEvents::DoubleTap:
                 PushMessageToSystemTask(System::Messages::GoToSleep);
                 break;
@@ -273,11 +271,10 @@ void DisplayApp::Refresh() {
           PushMessageToSystemTask(System::Messages::GoToSleep);
         } else {
           if (!currentScreen->OnButtonPushed()) {
-            if(favoriteAppActive){
+            if (favoriteAppActive) {
               favoriteAppActive = false;
-              LoadApp(Apps::Clock,DisplayApp::FullRefreshDirections::RightAnim);
-            }
-            else{
+              LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::RightAnim);
+            } else {
               LoadApp(returnToApp, returnDirection);
             }
             brightnessController.Set(settingsController.GetBrightness());
@@ -407,6 +404,8 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::SettingPineTimeStyle:
       currentScreen = std::make_unique<Screens::SettingPineTimeStyle>(this, settingsController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
@@ -452,7 +451,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
   }
-  if (currentApp != Apps::Clock && currentApp != Apps::Launcher && currentApp != Apps::QuickSettings){
+  if (currentApp != Apps::Clock && currentApp != Apps::Launcher && currentApp != Apps::QuickSettings) {
     previousApp = currentApp;
   }
   currentApp = app;

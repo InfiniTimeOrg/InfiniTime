@@ -12,15 +12,8 @@ namespace {
   }
 
   static void event_handler(lv_obj_t* obj, lv_event_t event) {
-    switch(event){
-      case LV_EVENT_SHORT_CLICKED:
-      case LV_EVENT_LONG_PRESSED:
-        Tile* screen = static_cast<Tile*>(obj->user_data);
-        auto* eventDataPtr = (uint32_t*) lv_event_get_data();
-        uint32_t eventData = *eventDataPtr;
-        screen->OnValueChangedEvent(obj, eventData, event);      
-        break;
-    }
+    Tile* screen = static_cast<Tile*>(obj->user_data);
+    screen->OnValueChangedEvent(obj, event);
   }
 }
 
@@ -31,7 +24,11 @@ Tile::Tile(uint8_t screenID,
            Pinetime::Controllers::Battery& batteryController,
            Controllers::DateTime& dateTimeController,
            std::array<Applications, 6>& applications)
-  : Screen(app), batteryController {batteryController}, dateTimeController {dateTimeController}, settingsController {settingsController}, motorController {motorController} {
+  : Screen(app),
+    batteryController {batteryController},
+    dateTimeController {dateTimeController},
+    settingsController {settingsController},
+    motorController {motorController} {
 
   settingsController.SetAppMenu(screenID);
 
@@ -79,10 +76,10 @@ Tile::Tile(uint8_t screenID,
     if (applications[i].application == Apps::None) {
       btnmMap[btIndex] = " ";
     } else {
-      if (applications[i].application == settingsController.GetFavoriteApp()){
+      if (applications[i].application == settingsController.GetFavoriteApp()) {
         favoriteIndex = i;
       }
-        btnmMap[btIndex] = applications[i].icon;
+      btnmMap[btIndex] = applications[i].icon;
     }
     btIndex++;
     apps[i] = applications[i].application;
@@ -101,11 +98,11 @@ Tile::Tile(uint8_t screenID,
   lv_obj_set_style_local_bg_color(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DISABLED, lv_color_hex(0x111111));
   lv_obj_set_style_local_pad_all(btnm1, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_pad_inner(btnm1, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 10);
-  
-  if (favoriteIndex != -1){
+
+  if (favoriteIndex != -1) {
     lv_btnmatrix_set_btn_ctrl(btnm1, favoriteIndex, LV_BTNMATRIX_CTRL_CHECK_STATE);
   }
-  
+
   for (uint8_t i = 0; i < 6; i++) {
     lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_CLICK_TRIG);
     if (applications[i].application == Apps::None) {
@@ -135,25 +132,26 @@ void Tile::UpdateScreen() {
   lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
 }
 
-void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId, lv_event_t event) {
-  if(obj != btnm1) return;
+void Tile::OnValueChangedEvent(lv_obj_t* obj, lv_event_t event) {
+  if (obj != btnm1)
+    return;
   uint8_t lastPressedButton = lv_btnmatrix_get_active_btn(obj);
-  switch(event){
-    case LV_EVENT_SHORT_CLICKED:{
-        app->StartApp(apps[lastPressedButton], DisplayApp::FullRefreshDirections::Up);
-        running = false;    
-      break;}
-    case LV_EVENT_LONG_PRESSED:{
-        lv_btnmatrix_clear_btn_ctrl_all(btnm1, LV_BTNMATRIX_CTRL_CHECK_STATE);
-        if(settingsController.GetFavoriteApp() == apps[lastPressedButton]){
-          settingsController.SetFavoriteApp(Apps::None);
-        }
-        else{
-          settingsController.SetFavoriteApp(apps[lastPressedButton]);
-          lv_btnmatrix_set_btn_ctrl(btnm1, lastPressedButton, LV_BTNMATRIX_CTRL_CHECK_STATE);    
-        }
-        motorController.RunForDuration(35);
-      break;  }
+  switch (event) {
+    case LV_EVENT_SHORT_CLICKED: {
+      app->StartApp(apps[lastPressedButton], DisplayApp::FullRefreshDirections::Up);
+      running = false;
+      break;
+    }
+    case LV_EVENT_LONG_PRESSED: {
+      lv_btnmatrix_clear_btn_ctrl_all(btnm1, LV_BTNMATRIX_CTRL_CHECK_STATE);
+      if (settingsController.GetFavoriteApp() == apps[lastPressedButton]) {
+        settingsController.SetFavoriteApp(Apps::None);
+      } else {
+        settingsController.SetFavoriteApp(apps[lastPressedButton]);
+        lv_btnmatrix_set_btn_ctrl(btnm1, lastPressedButton, LV_BTNMATRIX_CTRL_CHECK_STATE);
+      }
+      motorController.RunForDuration(35);
+      break;
+    }
   }
-
 }
