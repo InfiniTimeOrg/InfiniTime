@@ -13,7 +13,7 @@ namespace Pinetime {
 
       class FlashLight : public Screen {
       public:
-        FlashLight(DisplayApp* app, System::SystemTask& systemTask, Controllers::BrightnessController& brightness);
+        FlashLight(DisplayApp* app, System::SystemTask& systemTask, Controllers::BrightnessController& brightness, Controllers::Settings &settingsController);
         ~FlashLight() override;
 
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
@@ -21,10 +21,10 @@ namespace Pinetime {
       private:
         Pinetime::System::SystemTask& systemTask;
         Controllers::BrightnessController& brightness;
+        Controllers::Settings& settingsController;
 
         lv_obj_t* backgroundAction;
-        Colors torchColors[11] = {Colors::Black,
-                                  Colors::White,
+        Colors torchColors[11] = {Colors::White,                              
                                   Colors::Gray,
                                   Colors::Red,
                                   Colors::Yellow,
@@ -33,8 +33,9 @@ namespace Pinetime {
                                   Colors::Teal,
                                   Colors::Navy,
                                   Colors::Magenta,
-                                  Colors::Orange};
-        int8_t currentColorIndex = 0;
+                                  Colors::Orange,
+                                  Colors::Black};
+        int8_t currentColorIndex;
       };
     }
   }

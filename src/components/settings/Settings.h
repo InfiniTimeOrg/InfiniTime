@@ -40,6 +40,16 @@ namespace Pinetime {
         return settings.clockFace;
       };
 
+      void setLastTorchColorIndex(uint8_t lastTorchColorIndex) {
+        if (lastTorchColorIndex != settings.lastTourchColorIndex) {
+          settingsChanged = true;
+        }
+        settings.lastTourchColorIndex = lastTorchColorIndex;
+      };
+      uint8_t getLastTorchColorIndex() {
+        return settings.lastTourchColorIndex;
+      };
+
       void SetPTSColorTime(Applications::Colors colorTime) {
         if (colorTime != settings.PTS.ColorTime)
           settingsChanged = true;
@@ -113,15 +123,14 @@ namespace Pinetime {
         return settings.screenTimeOut;
       };
 
-      void SetShakeThreshold(uint16_t thresh){
-        if(settings.shakeWakeThreshold != thresh){
-            settings.shakeWakeThreshold = thresh;
-            settingsChanged = true;
+      void SetShakeThreshold(uint16_t thresh) {
+        if (settings.shakeWakeThreshold != thresh) {
+          settings.shakeWakeThreshold = thresh;
+          settingsChanged = true;
         }
-        
       }
 
-      int16_t GetShakeThreshold() const{
+      int16_t GetShakeThreshold() const {
         return settings.shakeWakeThreshold;
       }
 
@@ -163,14 +172,16 @@ namespace Pinetime {
         return settings.brightLevel;
       };
 
-      void SetStepsGoal( uint32_t goal ) { 
-        if ( goal != settings.stepsGoal ) {
+      void SetStepsGoal(uint32_t goal) {
+        if (goal != settings.stepsGoal) {
           settingsChanged = true;
         }
-        settings.stepsGoal = goal; 
+        settings.stepsGoal = goal;
       };
-      
-      uint32_t GetStepsGoal() const { return settings.stepsGoal; };
+
+      uint32_t GetStepsGoal() const {
+        return settings.stepsGoal;
+      };
 
     private:
       Pinetime::Controllers::FS& fs;
@@ -191,6 +202,8 @@ namespace Pinetime {
         std::bitset<4> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        u_int8_t lastTourchColorIndex = 0;
       };
 
       SettingsData settings;

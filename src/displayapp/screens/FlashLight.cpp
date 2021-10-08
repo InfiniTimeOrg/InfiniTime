@@ -6,16 +6,18 @@ using namespace Pinetime::Applications::Screens;
 
 FlashLight::FlashLight(Pinetime::Applications::DisplayApp* app,
                        System::SystemTask& systemTask,
-                       Controllers::BrightnessController& brightness)
+                       Controllers::BrightnessController& brightness,
+                       Pinetime::Controllers::Settings &settingsController)
   : Screen(app),
     systemTask {systemTask},
-    brightness {brightness}
+    brightness {brightness},
+    settingsController {settingsController}
 
 {
   brightness.Backup();
   brightness.Set(Controllers::BrightnessController::Levels::High);
+  currentColorIndex = settingsController.getLastTorchColorIndex();
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, Convert(torchColors[currentColorIndex]));
-
   backgroundAction = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(backgroundAction, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundAction, 240, 240);
@@ -28,6 +30,7 @@ FlashLight::FlashLight(Pinetime::Applications::DisplayApp* app,
 }
 
 FlashLight::~FlashLight() {
+  settingsController.setLastTorchColorIndex(currentColorIndex);
   lv_obj_clean(lv_scr_act());
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, Convert(Applications::Colors::Black));
   brightness.Restore();
@@ -63,6 +66,10 @@ bool FlashLight::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
         brightness.Set(Pinetime::Controllers::BrightnessController::Levels::Off);
       }
       break;
+    case TouchEvents::LongTap:
+      currentColorIndex = 0;
+      lv_obj_set_style_local_bg_color(lv_scr_act(), LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(torchColors[currentColorIndex]));
+      break;      
     default:
       break;
   }
