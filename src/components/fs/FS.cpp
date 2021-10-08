@@ -176,8 +176,6 @@ namespace {
 }
 
 void FS::LVGLFileSystemInit() {
-
-  lv_fs_drv_t fs_drv;
   lv_fs_drv_init(&fs_drv);
 
   fs_drv.letter = 'F';
