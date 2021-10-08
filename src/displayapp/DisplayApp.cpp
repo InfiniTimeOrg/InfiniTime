@@ -438,7 +438,8 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
   }
-  if (currentApp != Apps::Clock && currentApp != Apps::Launcher && currentApp != Apps::QuickSettings) {
+  Apps* NotBlacklistedReturnApp = std::find(std::begin(blackListReturnApps), std::end(blackListReturnApps), currentApp);
+  if (NotBlacklistedReturnApp == std::end(blackListReturnApps)) {
     previousApp = currentApp;
   }
   currentApp = app;

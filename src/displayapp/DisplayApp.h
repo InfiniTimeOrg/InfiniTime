@@ -119,6 +119,13 @@ namespace Pinetime {
       void PushMessageToSystemTask(Pinetime::System::Messages message);
 
       Apps nextApp = Apps::None;
+      Apps blackListReturnApps[7] = {Apps::Clock,
+                                     Apps::Launcher,
+                                     Apps::QuickSettings,
+                                     Apps::Notifications,
+                                     Apps::NotificationsPreview,
+                                     Apps::Settings,
+                                     Apps::QuickSettings};
       DisplayApp::FullRefreshDirections nextDirection;
     };
   }
