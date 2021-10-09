@@ -191,9 +191,6 @@ void SystemTask::Work() {
   nrfx_gpiote_in_init(PinMap::PowerPresent, &pinConfig, nrfx_gpiote_evt_handler);
   nrfx_gpiote_in_event_enable(PinMap::PowerPresent, true);
 
-  // Update controller based on current gpio pin state, needs to be called after gpio config
-  batteryController.Update();
-
   batteryController.MeasureVoltage();
 
   idleTimer = xTimerCreate("idleTimer", pdMS_TO_TICKS(2000), pdFALSE, this, IdleTimerCallback);
