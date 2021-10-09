@@ -136,7 +136,6 @@ void SystemTask::Work() {
   touchPanel.Init();
   dateTimeController.Register(this);
   batteryController.Register(this);
-  batteryController.Update();
   motorController.Init();
   motionSensor.SoftReset();
   timerController.Register(this);
@@ -193,6 +192,8 @@ void SystemTask::Work() {
   } else {
     nrf_gpio_cfg_sense_input(PinMap::PowerPresent, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_HIGH);
   }
+
+  batteryController.MeasureVoltage();
 
   idleTimer = xTimerCreate("idleTimer", pdMS_TO_TICKS(2000), pdFALSE, this, IdleTimerCallback);
   dimTimer = xTimerCreate("dimTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), pdFALSE, this, DimTimerCallback);
@@ -345,7 +346,7 @@ void SystemTask::Work() {
           stepCounterMustBeReset = true;
           break;
         case Messages::OnChargingEvent:
-          batteryController.Update();
+          batteryController.ReadPowerState();
           motorController.RunForDuration(15);
           ReloadIdleTimer();
           if (isSleeping && !isWakingUp) {
@@ -353,14 +354,10 @@ void SystemTask::Work() {
           }
           break;
         case Messages::MeasureBatteryTimerExpired:
-          sendBatteryNotification = true;
-          batteryController.Update();
+          batteryController.MeasureVoltage();
           break;
-        case Messages::BatteryMeasurementDone:
-          if (sendBatteryNotification) {
-            sendBatteryNotification = false;
-            nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
-          }
+        case Messages::BatteryPercentageUpdated:
+          nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
           break;
 
         default:
