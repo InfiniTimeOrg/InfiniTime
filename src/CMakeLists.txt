@@ -338,8 +338,7 @@ set(LVGL_SRC
         libs/lvgl/src/misc/lv_utils.c
         libs/lvgl/src/core/lv_theme.c
         libs/lvgl/src/extra/lv_extra.c
-        libs/lvgl/src/extra/themes/lv_themes.h
-        libs/lvgl/src/extra/themes/basic/lv_theme_basic.h
+        libs/lvgl/src/extra/themes/basic/lv_theme_basic.c
         #libs/lvgl/src/lv_themes/lv_theme_mono.c
         #libs/lvgl/src/lv_themes/lv_theme_template.c
         libs/lvgl/src/widgets/lv_arc.c
@@ -800,7 +799,7 @@ add_definitions(-DNIMBLE_CFG_CONTROLLER)
 add_definitions(-DOS_CPUTIME_FREQ)
 add_definitions(-DNRF52 -DNRF52832 -DNRF52832_XXAA -DNRF52_PAN_74 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040)
 add_definitions(-DFREERTOS)
-add_definitions(-D__STACK_SIZE=1024)
+add_definitions(-D__STACK_SIZE=2048)
 add_definitions(-D__HEAP_SIZE=4096)
 
 # NOTE : Add the following defines to enable debug mode of the NRF SDK:

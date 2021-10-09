@@ -480,7 +480,7 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
  * Themes
  *----------*/
 /*A simple, impressive and very complete theme*/
-#define LV_USE_THEME_DEFAULT    1
+#define LV_USE_THEME_DEFAULT    0
 #if LV_USE_THEME_DEFAULT
 
 /*0: Light mode; 1: Dark mode*/
@@ -492,6 +492,8 @@ e.g. "stm32f769xx.h" or "stm32f429xx.h"*/
 /*Default transition time in [ms]*/
 # define LV_THEME_DEFAULT_TRANSITON_TIME    80
 #endif /*LV_USE_THEME_DEFAULT*/
+
+#define LV_USE_THEME_PINETIME 1
 
 /*An very simple them that is a good starting point for a custom theme*/
  #define LV_USE_THEME_BASIC    0

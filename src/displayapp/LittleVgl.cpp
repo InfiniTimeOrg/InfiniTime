@@ -29,8 +29,8 @@ LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S&
 
 void LittleVgl::Init() {
   lv_init();
-  InitTheme();
   InitDisplay();
+  InitTheme();
   InitTouchpad();
 }
 
@@ -183,15 +183,8 @@ bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
 }
 
 void LittleVgl::InitTheme() {
-
-//  lv_theme_t* th = lv_pinetime_theme_init(
-//    lv_color_white(), lv_color_hex(0xC0C0C0), 0, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20);
-  
-  lv_theme_t* th = lv_pinetime_theme_init(lv_disp_get_default(),
-                                        lv_color_white(),
-                                        lv_color_hex(0xC0C0C0),
-                                        0,
-                                        &jetbrains_mono_bold_20);
-  
-  lv_disp_set_theme(lv_disp_get_default(), th);
+  if (!lv_pinetime_theme_is_inited()) {
+    lv_theme_t* th = lv_pinetime_theme_init(lv_disp_get_default(), lv_color_white(), lv_color_hex(0xC0C0C0), &jetbrains_mono_bold_20);
+    lv_disp_set_theme(lv_disp_get_default(), th);
+  }
 }

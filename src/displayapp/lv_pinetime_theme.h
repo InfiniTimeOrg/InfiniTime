@@ -45,10 +45,9 @@ extern "C" {
 lv_theme_t* lv_pinetime_theme_init(lv_disp_t* disp,
                                    lv_color_t color_primary,
                                    lv_color_t color_secondary,
-                                   bool dark,
                                    const lv_font_t* font);
 
-bool lv_theme_default_is_inited(void);
+bool lv_pinetime_theme_is_inited(void);
 
 /**********************
  *      MACROS
