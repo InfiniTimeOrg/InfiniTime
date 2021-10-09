@@ -36,7 +36,17 @@ Using the [Remote-Containers](https://marketplace.visualstudio.com/items?itemNam
 
 More documentation is available in the [readme in .devcontainer](.devcontainer/readme.md)	
 
+### DevContainer on Ubuntu
+To use the DevContainer configuration on Ubuntu based systems two changes need to be made: 
 
+1. Modify the file ``.devcontainer/devcontainer.json`` and add the argument ``"--net=host"`` to the ``"runArgs"`` parameter making the line look like this:
+`` "runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined", "--net=host"],
+``
+2. Modify the file ``.vscode/launch.json`` and change the argument of ``"gdbTarget"`` to ``"127.0.0.1:3333"``, making the line look like:
+``"gdbTarget": "127.0.0.1:3333",``
+3. To start debugging launch openocd on your host system with the appropriate configuration, for example with a stlink-v2 the  command is:
+``openocd -f interface/stlink.cfg -f target/nrf52.cfg``. This launches openocd with the default ports ``3333``, ``4444`` and ``6666``. 
+4. In VsCode go to the Debug pane on the left of the screen and select the configuration ``Debug - Openocd docker Remote`` and hit the play button on the left. 
 
 
 
