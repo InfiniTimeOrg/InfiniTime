@@ -13,7 +13,7 @@ Battery::Battery() {
   nrf_gpio_cfg_input(PinMap::Charging, static_cast<nrf_gpio_pin_pull_t> GPIO_PIN_CNF_PULL_Disabled);
 }
 
-void Battery::Update() {
+void Battery::ReadPowerState() {
   isCharging = !nrf_gpio_pin_read(PinMap::Charging);
   isPowerPresent = !nrf_gpio_pin_read(PinMap::PowerPresent);
 
@@ -22,6 +22,10 @@ void Battery::Update() {
   } else if (!isPowerPresent) {
     isFull = false;
   }
+}
+
+void Battery::MeasureVoltage() {
+  ReadPowerState();
 
   if (isReading) {
     return;

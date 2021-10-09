@@ -10,7 +10,8 @@ namespace Pinetime {
     public:
       Battery();
 
-      void Update();
+      void ReadPowerState();
+      void MeasureVoltage();
       void Register(System::SystemTask* systemTask);
 
       uint8_t PercentRemaining() const {
