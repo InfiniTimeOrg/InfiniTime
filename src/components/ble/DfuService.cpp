@@ -33,21 +33,21 @@ DfuService::DfuService(Pinetime::System::SystemTask& systemTask,
     bleController {bleController},
     dfuImage {spiNorFlash},
     characteristicDefinition {{
-                                .uuid = (ble_uuid_t*) &packetCharacteristicUuid,
+                                .uuid = &packetCharacteristicUuid.u,
                                 .access_cb = DfuServiceCallback,
                                 .arg = this,
                                 .flags = BLE_GATT_CHR_F_WRITE_NO_RSP,
                                 .val_handle = nullptr,
                               },
                               {
-                                .uuid = (ble_uuid_t*) &controlPointCharacteristicUuid,
+                                .uuid = &controlPointCharacteristicUuid.u,
                                 .access_cb = DfuServiceCallback,
                                 .arg = this,
                                 .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_NOTIFY,
                                 .val_handle = nullptr,
                               },
                               {
-                                .uuid = (ble_uuid_t*) &revisionCharacteristicUuid,
+                                .uuid = &revisionCharacteristicUuid.u,
                                 .access_cb = DfuServiceCallback,
                                 .arg = this,
                                 .flags = BLE_GATT_CHR_F_READ,
@@ -60,7 +60,7 @@ DfuService::DfuService(Pinetime::System::SystemTask& systemTask,
     serviceDefinition {
       {/* Device Information Service */
        .type = BLE_GATT_SVC_TYPE_PRIMARY,
-       .uuid = (ble_uuid_t*) &serviceUuid,
+       .uuid = &serviceUuid.u,
        .characteristics = characteristicDefinition},
       {0},
     } {
@@ -81,9 +81,9 @@ int DfuService::OnServiceData(uint16_t connectionHandle, uint16_t attributeHandl
     xTimerStart(timeoutTimer, 0);
   }
 
-  ble_gatts_find_chr((ble_uuid_t*) &serviceUuid, (ble_uuid_t*) &packetCharacteristicUuid, nullptr, &packetCharacteristicHandle);
-  ble_gatts_find_chr((ble_uuid_t*) &serviceUuid, (ble_uuid_t*) &controlPointCharacteristicUuid, nullptr, &controlPointCharacteristicHandle);
-  ble_gatts_find_chr((ble_uuid_t*) &serviceUuid, (ble_uuid_t*) &revisionCharacteristicUuid, nullptr, &revisionCharacteristicHandle);
+  ble_gatts_find_chr(&serviceUuid.u, &packetCharacteristicUuid.u, nullptr, &packetCharacteristicHandle);
+  ble_gatts_find_chr(&serviceUuid.u, &controlPointCharacteristicUuid.u, nullptr, &controlPointCharacteristicHandle);
+  ble_gatts_find_chr(&serviceUuid.u, &revisionCharacteristicUuid.u, nullptr, &revisionCharacteristicHandle);
 
   if (attributeHandle == packetCharacteristicHandle) {
     if (context->op == BLE_GATT_ACCESS_OP_WRITE_CHR)
@@ -164,10 +164,10 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
 
       if ((nbPacketReceived % nbPacketsToNotify) == 0 && bytesReceived != applicationSize) {
         uint8_t data[5] {static_cast<uint8_t>(Opcodes::PacketReceiptNotification),
-                         (uint8_t) (bytesReceived & 0x000000FFu),
-                         (uint8_t) (bytesReceived >> 8u),
-                         (uint8_t) (bytesReceived >> 16u),
-                         (uint8_t) (bytesReceived >> 24u)};
+                         (uint8_t)(bytesReceived & 0x000000FFu),
+                         (uint8_t)(bytesReceived >> 8u),
+                         (uint8_t)(bytesReceived >> 16u),
+                         (uint8_t)(bytesReceived >> 24u)};
         NRF_LOG_INFO("[DFU] -> Send packet notification: %d bytes received", bytesReceived);
         notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 5);
       }
@@ -422,9 +422,9 @@ uint16_t DfuService::DfuImage::ComputeCrc(uint8_t const* p_data, uint32_t size, 
   uint16_t crc = (p_crc == NULL) ? 0xFFFF : *p_crc;
 
   for (uint32_t i = 0; i < size; i++) {
-    crc = (uint8_t) (crc >> 8) | (crc << 8);
+    crc = (uint8_t)(crc >> 8) | (crc << 8);
     crc ^= p_data[i];
-    crc ^= (uint8_t) (crc & 0xFF) >> 4;
+    crc ^= (uint8_t)(crc & 0xFF) >> 4;
     crc ^= (crc << 8) << 4;
     crc ^= ((crc & 0xFF) << 4) << 1;
   }

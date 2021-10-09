@@ -50,24 +50,18 @@ Pinetime::Controllers::NavigationService::NavigationService(Pinetime::System::Sy
   navProgressCharUuid.value[15] = navId[1];
 
   characteristicDefinition[0] = {
-    .uuid = (ble_uuid_t*) (&navFlagCharUuid), .access_cb = NAVCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+    .uuid = &navFlagCharUuid.u, .access_cb = NAVCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
 
-  characteristicDefinition[1] = {.uuid = (ble_uuid_t*) (&navNarrativeCharUuid),
-                                 .access_cb = NAVCallback,
-                                 .arg = this,
-                                 .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
-  characteristicDefinition[2] = {.uuid = (ble_uuid_t*) (&navManDistCharUuid),
-                                 .access_cb = NAVCallback,
-                                 .arg = this,
-                                 .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
-  characteristicDefinition[3] = {.uuid = (ble_uuid_t*) (&navProgressCharUuid),
-                                 .access_cb = NAVCallback,
-                                 .arg = this,
-                                 .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[1] = {
+    .uuid = &navNarrativeCharUuid.u, .access_cb = NAVCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[2] = {
+    .uuid = &navManDistCharUuid.u, .access_cb = NAVCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
+  characteristicDefinition[3] = {
+    .uuid = &navProgressCharUuid.u, .access_cb = NAVCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
 
   characteristicDefinition[4] = {0};
 
-  serviceDefinition[0] = {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = (ble_uuid_t*) &navUuid, .characteristics = characteristicDefinition};
+  serviceDefinition[0] = {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = &navUuid.u, .characteristics = characteristicDefinition};
   serviceDefinition[1] = {0};
 
   m_progress = 0;
@@ -90,13 +84,13 @@ int Pinetime::Controllers::NavigationService::OnCommand(uint16_t conn_handle, ui
     data[notifSize] = '\0';
     os_mbuf_copydata(ctxt->om, 0, notifSize, data);
     char* s = (char*) &data[0];
-    if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &navFlagCharUuid) == 0) {
+    if (ble_uuid_cmp(ctxt->chr->uuid, &navFlagCharUuid.u) == 0) {
       m_flag = s;
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &navNarrativeCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, &navNarrativeCharUuid.u) == 0) {
       m_narrative = s;
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &navManDistCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, &navManDistCharUuid.u) == 0) {
       m_manDist = s;
-    } else if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &navProgressCharUuid) == 0) {
+    } else if (ble_uuid_cmp(ctxt->chr->uuid, &navProgressCharUuid.u) == 0) {
       m_progress = data[0];
     }
   }
