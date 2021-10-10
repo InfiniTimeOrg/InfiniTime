@@ -6,10 +6,8 @@
 #include "displayapp/screens/Screen.h"
 
 namespace Pinetime {
-
   namespace Applications {
     namespace Screens {
-
       class SettingSetDate : public Screen{
         public:
           SettingSetDate(DisplayApp* app, Pinetime::Controllers::DateTime &dateTimeController);
@@ -17,8 +15,7 @@ namespace Pinetime {
 
           void HandleButtonPress(lv_obj_t *object, lv_event_t event);
          
-        private:          
-
+        private:
           Controllers::DateTime& dateTimeController;
 
           int dayValue;
