@@ -5,6 +5,12 @@
 
 using namespace Pinetime::Controllers;
 
+namespace {
+  char const* DaysStringShort[] = {"--", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
+  char const* MonthsString[] = {"--", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+  char const* MonthsStringLow[] = {"--", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+}
+
 void DateTime::SetCurrentTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> t) {
   this->currentDateTime = t;
   UpdateTime(previousSystickCounter); // Update internal state without updating the time
@@ -80,48 +86,18 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
 }
 
 const char* DateTime::MonthShortToString() {
-  return DateTime::MonthsString[static_cast<uint8_t>(month)];
-}
-
-const char* DateTime::MonthShortToStringLow() {
-  return DateTime::MonthsStringLow[static_cast<uint8_t>(month)];
-}
-
-const char* DateTime::MonthsToStringLow() {
-  return DateTime::MonthsLow[static_cast<uint8_t>(month)];
-}
-
-const char* DateTime::DayOfWeekToString() {
-  return DateTime::DaysString[static_cast<uint8_t>(dayOfWeek)];
+  return MonthsString[static_cast<uint8_t>(month)];
 }
 
 const char* DateTime::DayOfWeekShortToString() {
-  return DateTime::DaysStringShort[static_cast<uint8_t>(dayOfWeek)];
+  return DaysStringShort[static_cast<uint8_t>(dayOfWeek)];
 }
 
-const char* DateTime::DayOfWeekToStringLow() {
-  return DateTime::DaysStringLow[static_cast<uint8_t>(dayOfWeek)];
-}
-
-const char* DateTime::DayOfWeekShortToStringLow() {
-  return DateTime::DaysStringShortLow[static_cast<uint8_t>(dayOfWeek)];
+const char* DateTime::MonthShortToStringLow(Months month) {
+  return MonthsStringLow[static_cast<uint8_t>(month)];
 }
 
 void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
 }
 
-char const* DateTime::DaysStringLow[] = {"--", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-
-char const* DateTime::DaysStringShortLow[] = {"--", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
-
-char const* DateTime::DaysStringShort[] = {"--", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
-
-char const* DateTime::DaysString[] = {"--", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"};
-
-char const* DateTime::MonthsString[] = {"--", "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
-
-char const* DateTime::MonthsStringLow[] = {"--", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
-
-char const* DateTime::MonthsLow[] = {
-  "--", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
