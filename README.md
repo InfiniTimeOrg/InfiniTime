@@ -103,7 +103,7 @@ The last 5 notifications are displayed, and swiping down again goes to the next
 notification (a number on the top right of the screen shows e.g. "1/5", "2/5").
 
 
-![Notifcations](images/doc/infinitime_watchface_notifications.jpg "Notifications screen")
+![Notifications](images/doc/infinitime_notifications.jpg "Notifications screen")
 
 #### Swipe Up: Applications
 
