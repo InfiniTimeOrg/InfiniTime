@@ -59,20 +59,8 @@ namespace Pinetime {
       }
 
       const char* MonthShortToString();
-      const char* MonthShortToStringLow();
-      const char* MonthsToStringLow();
-      const char* DayOfWeekToString();
       const char* DayOfWeekShortToString();
-      const char* DayOfWeekToStringLow();
-      const char* DayOfWeekShortToStringLow();
-
-      static const char* MonthShortToString(Months month);
       static const char* MonthShortToStringLow(Months month);
-      static const char* MonthsToStringLow(Months month);
-      static const char* DayOfWeekToString(Days dayOfWeek);
-      static const char* DayOfWeekShortToString(Days dayOfWeek);
-      static const char* DayOfWeekToStringLow(Days dayOfWeek);
-      static const char* DayOfWeekShortToStringLow(Days dayOfWeek);
 
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const {
         return currentDateTime;
@@ -99,14 +87,6 @@ namespace Pinetime {
 
       bool isMidnightAlreadyNotified = false;
       System::SystemTask* systemTask = nullptr;
-
-      static char const* DaysString[];
-      static char const* DaysStringShort[];
-      static char const* DaysStringLow[];
-      static char const* DaysStringShortLow[];
-      static char const* MonthsString[];
-      static char const* MonthsStringLow[];
-      static char const* MonthsLow[];
     };
   }
 }
