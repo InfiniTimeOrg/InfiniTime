@@ -71,6 +71,93 @@ As of now, here is the list of achievements of this project:
 
 ## Documentation
 
+### Using InfiniTime - User Interface details
+
+This guide applies to InfiniTime 1.6.0.   
+Please check in the `About` screen which version you're running.
+
+#### Main screen / watchface
+
+The default watchface is the "digital" one, which looks like below:
+
+![main screen](images/doc/infinitime_watchface_default.jpg "Default analog
+watchface")
+
+In addition to the time and date, you can see:
+- a green 'i' icon (top left) : indicates that you have notifications
+- a blue Bluetooth icon (top right): indicates that Bluetooth is connected
+- battery icon: indicates the battery level
+- heart icon (bottom left): shows the last measured heart rate
+- steps icon (bottomw right): displays how many steps you've walked so far today
+
+You can swipe from the watchface:
+
+- swipe down: shows the notifications
+- swipe up: shows the applications (currently 2 pages, so you can swipe up
+  twice)
+- swipe right: access the quick settings
+
+#### Swipe Down: Notifications
+
+The last 5 notifications are displayed, and swiping down again goes to the next
+notification (a number on the top right of the screen shows e.g. "1/5", "2/5").
+
+
+![Notifcations](images/doc/infinitime_watchface_notifications.jpg "Notifications screen")
+
+#### Swipe Up: Applications
+
+There are currently 12 applications - 2 pages of 6 applications each.
+
+Page 1: 
+
+![Applications page 1](images/doc/infinitime_apps_page1.jpg "Applications page 1")
+
+- Stopwatch
+- Music controller
+- Navigation (only works with SailfishOS/Pure Maps so far)
+- Steps
+- Hear-Rate monitor
+- Timer
+
+Page 2:
+
+![Applications page 2](images/doc/infinitime_apps_page2.jpg "Applications page 2")
+
+- Draw
+- Pong
+- 2048
+- Accelerometer
+- Metronome
+- Alarm
+
+#### Swipe Right: Quick settings
+
+You'll be presented with 4 big icons:
+
+![Quick settings](images/doc/infinitime_settings.jpg "Quick settings")
+
+From top left to bottom right:
+
+- Screen luminosity (low/medium/high)
+- Flashlight
+- "Do not disturb"
+- Settings
+
+The settings themselves have a lot more subcategories:
+
+- Display: chose display timeout in seconds
+- Wake up: how do you want to wake up the watch (single tap, double tap, raise
+  wrist)
+- Time format (12 or 24 hours)
+- Watchface: digital, analog or PineTimeStyle
+- Steps: modify the daily steps goal
+- Battery: shows the battery level, as well as current voltage
+- PTS Colors: configure the color scheme for the PineTimeStyle watchface
+- Firmware: allows validating the firmware after a DFU update
+- About: displays useful information about your PineTime/InfiniTime, suchs as
+  version, bootloader, uptime, last reset reason, etc.
+
 ### Develop
 
  - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
