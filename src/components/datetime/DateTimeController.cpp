@@ -107,6 +107,34 @@ const char* DateTime::DayOfWeekShortToStringLow() {
   return DateTime::DaysStringShortLow[static_cast<uint8_t>(dayOfWeek)];
 }
 
+const char* DateTime::MonthShortToString(Months month) {
+  return DateTime::MonthsString[static_cast<uint8_t>(month)];
+}
+
+const char* DateTime::MonthShortToStringLow(Months month) {
+  return DateTime::MonthsStringLow[static_cast<uint8_t>(month)];
+}
+
+const char* DateTime::MonthsToStringLow(Months month) {
+  return DateTime::MonthsLow[static_cast<uint8_t>(month)];
+}
+
+const char* DateTime::DayOfWeekToString(Days dayOfWeek) {
+  return DateTime::DaysString[static_cast<uint8_t>(dayOfWeek)];
+}
+
+const char* DateTime::DayOfWeekShortToString(Days dayOfWeek) {
+  return DateTime::DaysStringShort[static_cast<uint8_t>(dayOfWeek)];
+}
+
+const char* DateTime::DayOfWeekToStringLow(Days dayOfWeek) {
+  return DateTime::DaysStringLow[static_cast<uint8_t>(dayOfWeek)];
+}
+
+const char* DateTime::DayOfWeekShortToStringLow(Days dayOfWeek) {
+  return DateTime::DaysStringShortLow[static_cast<uint8_t>(dayOfWeek)];
+}
+
 void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
 }
