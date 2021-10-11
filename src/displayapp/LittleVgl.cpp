@@ -99,8 +99,8 @@ void LittleVgl::DisplayDownScroll(){
   for (y1 = 240 - height; y1 >= 0; y1 -= height) {
     y2 = y1 + height - 1;
     
-    // If the previous box has reached the end of the visible line on the lcd controller...
-    if (area.y2 == visibleNbLines - 1) {
+    // If the box has reached the end of the visible line on the lcd controller...
+    if (y2 == visibleNbLines - 1) {
       // move past the non visible lines
       writeOffset += (totalNbLines - visibleNbLines);
       // and wrap around to the start of address space
