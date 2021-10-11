@@ -105,6 +105,10 @@ void WatchFaceDigital::Refresh() {
   powerPresent = batteryController.IsPowerPresent();
   if (powerPresent.IsUpdated()) {
     lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
+  
+    // These alignments cause lvgl to refresh the screen even if nothing has technically changed. Only align if needed.
+    lv_obj_align(batteryIcon, LV_ALIGN_TOP_RIGHT, 0, 0);
+    lv_obj_align(batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
 
   batteryPercentRemaining = batteryController.PercentRemaining();
@@ -116,15 +120,19 @@ void WatchFaceDigital::Refresh() {
       lv_obj_set_style_text_color(batteryIcon, lv_color_white(), LV_PART_MAIN | LV_STATE_DEFAULT);
     }
     lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+    
+    // These alignments cause lvgl to refresh the screen even if nothing has technically changed. Only align if needed.
+    lv_obj_align(batteryIcon, LV_ALIGN_TOP_RIGHT, 0, 0);
+    lv_obj_align(batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
 
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
     lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
+    
+    // These alignments cause lvgl to refresh the screen even if nothing has technically changed. Only align if needed.
+    lv_obj_align(bleIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
-  lv_obj_align(batteryIcon, LV_ALIGN_TOP_RIGHT, 0, 0);
-  lv_obj_align(batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
-  lv_obj_align(bleIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
