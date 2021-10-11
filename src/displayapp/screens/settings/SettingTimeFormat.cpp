@@ -36,11 +36,11 @@ SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pi
   lv_obj_set_style_text_align(title, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_align(title, LV_ALIGN_TOP_MID, 15, 15);
 
-  lv_obj_t* icon = lv_label_create(title);
+  lv_obj_t* icon = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(icon, lv_palette_main(LV_PALETTE_ORANGE), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text_static(icon, Symbols::clock);
   lv_obj_set_style_text_align(icon, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_align(icon, LV_ALIGN_OUT_LEFT_MID, -10, 0);
+  lv_obj_align_to(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
   optionsTotal = 0;
   cbOption[optionsTotal] = lv_checkbox_create(container1);

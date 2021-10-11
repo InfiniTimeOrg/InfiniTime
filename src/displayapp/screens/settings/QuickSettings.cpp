@@ -53,58 +53,62 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_style_set_radius(&btn_style, buttonHeight / 4);
   lv_style_set_bg_color(&btn_style, lv_color_hex(0x111111));
 
-  btn1 = lv_btn_create(lv_scr_act());
-  btn1->user_data = this;
-  lv_obj_add_event_cb(btn1, ButtonEventHandler, LV_EVENT_ALL, btn1->user_data);
-  lv_obj_add_style(btn1, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_size(btn1, buttonWidth, buttonHeight);
-  lv_obj_align(btn1, LV_ALIGN_TOP_LEFT, buttonXOffset, barHeight);
+  brightnessButton = lv_btn_create(lv_scr_act());
+  brightnessButton->user_data = this;
+  lv_obj_add_event_cb(brightnessButton, ButtonEventHandler, LV_EVENT_ALL, brightnessButton->user_data);
+  lv_obj_add_style(brightnessButton, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_size(brightnessButton, buttonWidth, buttonHeight);
+  lv_obj_align(brightnessButton, LV_ALIGN_TOP_LEFT, buttonXOffset, barHeight);
 
-  btn1_lvl = lv_label_create(btn1);
-  lv_obj_set_style_text_font(btn1_lvl, &lv_font_sys_48, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_label_set_text_static(btn1_lvl, brightness.GetIcon());
+  brightnessLabel = lv_label_create(brightnessButton);
+  lv_obj_set_style_text_font(brightnessLabel, &lv_font_sys_48, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_label_set_text_static(brightnessLabel, brightness.GetIcon());
+  lv_obj_center(brightnessLabel);
 
-  btn2 = lv_btn_create(lv_scr_act());
-  btn2->user_data = this;
-  lv_obj_add_event_cb(btn2, ButtonEventHandler, LV_EVENT_ALL, btn2->user_data);
-  lv_obj_add_style(btn2, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_size(btn2, buttonWidth, buttonHeight);
-  lv_obj_align(btn2, LV_ALIGN_TOP_RIGHT, - buttonXOffset, barHeight);
+  flashlightButton = lv_btn_create(lv_scr_act());
+  flashlightButton->user_data = this;
+  lv_obj_add_event_cb(flashlightButton, ButtonEventHandler, LV_EVENT_ALL, flashlightButton->user_data);
+  lv_obj_add_style(flashlightButton, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_size(flashlightButton, buttonWidth, buttonHeight);
+  lv_obj_align(flashlightButton, LV_ALIGN_TOP_RIGHT, - buttonXOffset, barHeight);
 
-  lv_obj_t* lbl_btn;
-  lbl_btn = lv_label_create(btn2);
-  lv_obj_set_style_text_font(lbl_btn, &lv_font_sys_48, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_label_set_text_static(lbl_btn, Symbols::highlight);
+  lv_obj_t* flashlightLabel;
+  flashlightLabel = lv_label_create(flashlightButton);
+  lv_obj_set_style_text_font(flashlightLabel, &lv_font_sys_48, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_label_set_text_static(flashlightLabel, Symbols::highlight);
+  lv_obj_center(flashlightLabel);
 
-  btn3 = lv_btn_create(lv_scr_act());
-  btn3->user_data = this;
-  lv_obj_add_event_cb(btn3, ButtonEventHandler, LV_EVENT_ALL, btn3->user_data);
-  lv_obj_add_flag(btn3, LV_OBJ_FLAG_CHECKABLE);
-  lv_obj_add_style(btn3, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_bg_color(btn3, lv_palette_main(LV_PALETTE_GREEN), LV_PART_MAIN | LV_STATE_CHECKED);
-  lv_obj_set_size(btn3, buttonWidth, buttonHeight);
-  lv_obj_align(btn3, LV_ALIGN_BOTTOM_LEFT, buttonXOffset, 0);
+  notificationButton = lv_btn_create(lv_scr_act());
+  notificationButton->user_data = this;
+  lv_obj_add_event_cb(notificationButton, ButtonEventHandler, LV_EVENT_ALL, notificationButton->user_data);
+  lv_obj_add_flag(notificationButton, LV_OBJ_FLAG_CHECKABLE);
+  lv_obj_add_style(notificationButton, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_color(notificationButton, lv_palette_main(LV_PALETTE_GREEN), LV_PART_MAIN | LV_STATE_CHECKED);
+  lv_obj_set_size(notificationButton, buttonWidth, buttonHeight);
+  lv_obj_align(notificationButton, LV_ALIGN_BOTTOM_LEFT, buttonXOffset, 0);
 
-  btn3_lvl = lv_label_create(btn3);
-  lv_obj_set_style_text_font(btn3_lvl, &lv_font_sys_48, LV_PART_MAIN | LV_STATE_DEFAULT);
+  notificationLabel = lv_label_create(notificationButton);
+  lv_obj_set_style_text_font(notificationLabel, &lv_font_sys_48, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_center(notificationLabel);
 
   if (settingsController.GetNotificationStatus() == Controllers::Settings::Notification::ON) {
-    lv_obj_add_state(btn3, LV_STATE_CHECKED);
-    lv_label_set_text_static(btn3_lvl, Symbols::notificationsOn);
+    lv_obj_add_state(notificationButton, LV_STATE_CHECKED);
+    lv_label_set_text_static(notificationLabel, Symbols::notificationsOn);
   } else {
-    lv_label_set_text_static(btn3_lvl, Symbols::notificationsOff);
+    lv_label_set_text_static(notificationLabel, Symbols::notificationsOff);
   }
 
-  btn4 = lv_btn_create(lv_scr_act());
-  btn4->user_data = this;
-  lv_obj_add_event_cb(btn4, ButtonEventHandler, LV_EVENT_ALL, btn4->user_data);
-  lv_obj_add_style(btn4, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_size(btn4, buttonWidth, buttonHeight);
-  lv_obj_align(btn4, LV_ALIGN_BOTTOM_RIGHT, - buttonXOffset, 0);
+  settingsButton = lv_btn_create(lv_scr_act());
+  settingsButton->user_data = this;
+  lv_obj_add_event_cb(settingsButton, ButtonEventHandler, LV_EVENT_ALL, settingsButton->user_data);
+  lv_obj_add_style(settingsButton, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_size(settingsButton, buttonWidth, buttonHeight);
+  lv_obj_align(settingsButton, LV_ALIGN_BOTTOM_RIGHT, - buttonXOffset, 0);
 
-  lbl_btn = lv_label_create(btn4);
-  lv_obj_set_style_text_font(lbl_btn, &lv_font_sys_48, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_label_set_text_static(lbl_btn, Symbols::settings);
+  lv_obj_t *settingsLabel= lv_label_create(settingsButton);
+  lv_obj_set_style_text_font(settingsLabel, &lv_font_sys_48, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_label_set_text_static(settingsLabel, Symbols::settings);
+  lv_obj_center(settingsLabel);
 
   lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act());
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CLIP);
@@ -128,29 +132,29 @@ void QuickSettings::UpdateScreen() {
 }
 
 void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t* event) {
-  if (object == btn2 && lv_event_get_code(event) == LV_EVENT_CLICKED) {
+  if (object == flashlightButton && lv_event_get_code(event) == LV_EVENT_CLICKED) {
 
     running = false;
     app->StartApp(Apps::FlashLight, DisplayApp::FullRefreshDirections::None);
 
-  } else if (object == btn1 && lv_event_get_code(event) == LV_EVENT_CLICKED) {
+  } else if (object == brightnessButton && lv_event_get_code(event) == LV_EVENT_CLICKED) {
 
     brightness.Step();
-    lv_label_set_text_static(btn1_lvl, brightness.GetIcon());
+    lv_label_set_text_static(brightnessLabel, brightness.GetIcon());
     settingsController.SetBrightness(brightness.Level());
 
-  } else if (object == btn3 && lv_event_get_code(event) == LV_EVENT_VALUE_CHANGED) {
+  } else if (object == notificationButton && lv_event_get_code(event) == LV_EVENT_VALUE_CHANGED) {
 
-    if (lv_obj_get_state(btn3) & LV_STATE_CHECKED) {
+    if (lv_obj_get_state(notificationButton) & LV_STATE_CHECKED) {
       settingsController.SetNotificationStatus(Controllers::Settings::Notification::ON);
       motorController.RunForDuration(35);
-      lv_label_set_text_static(btn3_lvl, Symbols::notificationsOn);
+      lv_label_set_text_static(notificationLabel, Symbols::notificationsOn);
     } else {
       settingsController.SetNotificationStatus(Controllers::Settings::Notification::OFF);
-      lv_label_set_text_static(btn3_lvl, Symbols::notificationsOff);
+      lv_label_set_text_static(notificationLabel, Symbols::notificationsOff);
     }
 
-  } else if (object == btn4 && lv_event_get_code(event) == LV_EVENT_CLICKED) {
+  } else if (object == settingsButton && lv_event_get_code(event) == LV_EVENT_CLICKED) {
     running = false;
     settingsController.SetSettingsMenu(0);
     app->StartApp(Apps::Settings, DisplayApp::FullRefreshDirections::Up);

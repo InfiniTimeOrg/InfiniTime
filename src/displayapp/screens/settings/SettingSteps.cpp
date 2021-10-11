@@ -37,12 +37,12 @@ SettingSteps::SettingSteps(
   lv_obj_set_style_text_align(title, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_align(title, LV_ALIGN_TOP_MID, 15, 15);
 
-  lv_obj_t * icon = lv_label_create(title);
+  lv_obj_t * icon = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(icon, lv_palette_main(LV_PALETTE_ORANGE), LV_PART_MAIN | LV_STATE_DEFAULT);
   
   lv_label_set_text_static(icon, Symbols::shoe);
   lv_obj_set_style_text_align(icon, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_align(icon, LV_ALIGN_OUT_LEFT_MID, -10, 0);
+  lv_obj_align_to(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
 
   stepValue = lv_label_create(lv_scr_act());
@@ -57,6 +57,7 @@ SettingSteps::SettingSteps(
   lv_obj_align(btnPlus, LV_ALIGN_CENTER, 55, 80);
   txtBtnPlus = lv_label_create(btnPlus);
   lv_label_set_text(txtBtnPlus, "+");
+  lv_obj_center(txtBtnPlus);
   lv_obj_add_event_cb(btnPlus, event_handler, LV_EVENT_ALL, btnPlus->user_data);
 
   btnMinus = lv_btn_create(lv_scr_act());
@@ -65,6 +66,7 @@ SettingSteps::SettingSteps(
   lv_obj_align(btnMinus, LV_ALIGN_CENTER, -55, 80);
   txtBtnMinus = lv_label_create(btnMinus);
   lv_label_set_text(txtBtnMinus, "-");
+  lv_obj_center(txtBtnMinus);
   lv_obj_add_event_cb(btnMinus, event_handler, LV_EVENT_ALL, btnMinus->user_data);
 
 }
