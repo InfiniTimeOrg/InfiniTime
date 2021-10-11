@@ -14,7 +14,7 @@ namespace Pinetime {
 
         void ButtonEventHandler();
       private:
-        lv_obj_t* btnOk;
+        lv_obj_t *btnOk, *lblOk;
       };
     }
   }

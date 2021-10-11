@@ -13,7 +13,7 @@ namespace Pinetime {
           SettingSetDate(DisplayApp* app, Pinetime::Controllers::DateTime &dateTimeController);
           ~SettingSetDate() override;
 
-          void HandleButtonPress(lv_obj_t *object, lv_event_t event);
+          void HandleButtonPress(lv_obj_t *object, lv_event_t* event);
          
         private:
           Controllers::DateTime& dateTimeController;
@@ -31,6 +31,13 @@ namespace Pinetime {
           lv_obj_t * btnYearPlus;
           lv_obj_t * btnYearMinus;
           lv_obj_t * btnSetTime;
+          lv_obj_t * lblDayPlus;
+          lv_obj_t * lblDayMinus;
+          lv_obj_t * lblMonthPlus;
+          lv_obj_t * lblMonthMinus;
+          lv_obj_t * lblYearPlus;
+          lv_obj_t * lblYearMinus;
+          lv_obj_t * lblSetTime;
 
           int MaximumDayOfMonth() const;
           void CheckDay();
