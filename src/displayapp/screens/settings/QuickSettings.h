@@ -44,12 +44,12 @@ namespace Pinetime {
 
         lv_style_t btn_style;
 
-        lv_obj_t* btn1;
-        lv_obj_t* btn1_lvl;
-        lv_obj_t* btn2;
-        lv_obj_t* btn3;
-        lv_obj_t* btn3_lvl;
-        lv_obj_t* btn4;
+        lv_obj_t* brightnessButton;
+        lv_obj_t* brightnessLabel;
+        lv_obj_t* flashlightButton;
+        lv_obj_t* notificationButton;
+        lv_obj_t* notificationLabel;
+        lv_obj_t* settingsButton;
       };
     }
   }
