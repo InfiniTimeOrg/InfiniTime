@@ -92,8 +92,7 @@ Tile::Tile(uint8_t screenID,
   lv_obj_set_style_bg_opa(btnm1, LV_OPA_20, LV_PART_ITEMS | LV_STATE_DISABLED);
   lv_obj_set_style_bg_color(btnm1, lv_color_hex(0x111111), LV_PART_ITEMS | LV_STATE_DISABLED);
   lv_obj_set_style_pad_all(btnm1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_row(btnm1, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_column(btnm1, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_pad_gap(btnm1, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
 
   for (uint8_t i = 0; i < 6; i++) {
     lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_CLICK_TRIG);

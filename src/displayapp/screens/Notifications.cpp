@@ -153,8 +153,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
 
   lv_obj_set_style_bg_color(container1, lv_color_hex(0x222222), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_pad_all(container1, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_row(container1, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_column(container1, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_pad_gap(container1, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_border_width(container1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
   lv_obj_set_pos(container1, 0, 50);

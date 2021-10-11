@@ -22,8 +22,7 @@ SettingSteps::SettingSteps(
 
   lv_obj_set_style_bg_opa(container1, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_pad_all(container1, 10, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_row(container1, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_column(container1, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_pad_gap(container1, 5, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_border_width(container1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_pos(container1, 30, 60);
   lv_obj_set_width(container1, LV_HOR_RES - 50);

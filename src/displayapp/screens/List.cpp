@@ -52,8 +52,7 @@ List::List(uint8_t screenID,
   lv_obj_t* container1 = lv_obj_create(lv_scr_act());
 
   lv_obj_set_style_bg_opa(container1, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_row(container1, 4, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_column(container1, 4, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_pad_gap(container1, 4, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_border_width(container1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
   lv_obj_set_pos(container1, 0, 0);

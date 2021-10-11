@@ -134,8 +134,7 @@ SettingPineTimeStyle::SettingPineTimeStyle(Pinetime::Applications::DisplayApp* a
   lv_obj_set_style_line_width(stepMeter, 4, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_line_color(stepMeter, lv_color_black(), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_line_opa(stepMeter, LV_OPA_COVER, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_row(stepMeter, 4, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_column(stepMeter, 4, LV_PART_INDICATOR | LV_STATE_DEFAULT);;
+  lv_obj_set_style_pad_gap(stepMeter, 4, LV_PART_INDICATOR | LV_STATE_DEFAULT);;
 
   backgroundLabel = lv_label_create(lv_scr_act());
   lv_obj_add_flag(backgroundLabel, LV_OBJ_FLAG_CLICKABLE);
