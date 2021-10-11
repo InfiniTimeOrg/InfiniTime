@@ -320,6 +320,7 @@ static void style_init(void)
   lv_style_set_outline_color(&style_cb_bg, theme.color_primary);
   lv_style_set_outline_width(&style_cb_bg, LV_DPX(2));
   lv_style_set_outline_pad(&style_cb_bg, LV_DPX(20));
+  lv_style_set_outline_opa(&style_cb_bg, LV_OPA_0);
   
   lv_style_reset(&style_cb_bullet);
   lv_style_set_radius(&style_cb_bullet, LV_DPX(4));

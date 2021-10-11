@@ -62,6 +62,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_obj_align(btnVolDown, LV_ALIGN_BOTTOM_LEFT, 0, 0);
   lv_obj_add_style(btnVolDown, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
   label = lv_label_create(btnVolDown);
+  lv_obj_center(label);
   lv_label_set_text(label, Symbols::volumDown);
   lv_obj_add_flag(btnVolDown, LV_OBJ_FLAG_HIDDEN);
 
@@ -72,6 +73,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_obj_align(btnVolUp, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
   lv_obj_add_style(btnVolUp, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
   label = lv_label_create(btnVolUp);
+  lv_obj_center(label);
   lv_label_set_text(label, Symbols::volumUp);
   lv_obj_add_flag(btnVolUp, LV_OBJ_FLAG_HIDDEN);
 
@@ -82,6 +84,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_obj_align(btnPrev, LV_ALIGN_BOTTOM_LEFT, 0, 0);
   lv_obj_add_style(btnPrev, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
   label = lv_label_create(btnPrev);
+  lv_obj_center(label);
   lv_label_set_text(label, Symbols::stepBackward);
 
   btnNext = lv_btn_create(lv_scr_act());
@@ -91,6 +94,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_obj_align(btnNext, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
   lv_obj_add_style(btnNext, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
   label = lv_label_create(btnNext);
+  lv_obj_center(label);
   lv_label_set_text(label, Symbols::stepForward);
 
   btnPlayPause = lv_btn_create(lv_scr_act());
@@ -100,6 +104,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_obj_align(btnPlayPause, LV_ALIGN_BOTTOM_MID, 0, 0);
   lv_obj_add_style(btnPlayPause, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
   txtPlayPause = lv_label_create(btnPlayPause);
+  lv_obj_center(txtPlayPause);
   lv_label_set_text(txtPlayPause, Symbols::play);
 
   txtTrackDuration = lv_label_create(lv_scr_act());

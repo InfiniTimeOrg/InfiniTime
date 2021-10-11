@@ -37,15 +37,15 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
   lv_obj_align(batteryIcon, LV_ALIGN_TOP_RIGHT, 0, 0);
 
-  batteryPlug = lv_label_create(batteryIcon);
+  batteryPlug = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(batteryPlug, lv_color_hex(0xFF0000), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(batteryPlug, Symbols::plug);
-  lv_obj_align(batteryPlug,LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align_to(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
-  bleIcon = lv_label_create(batteryPlug);
+  bleIcon = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(bleIcon, lv_color_hex(0x0000FF), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align_to(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   notificationIcon = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(notificationIcon, lv_color_hex(0x00FF00), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -77,20 +77,20 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_set_style_text_color(heartbeatIcon, lv_color_hex(0xCE1B1B), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_align(heartbeatIcon, LV_ALIGN_BOTTOM_LEFT, 0, 0);
 
-  heartbeatValue = lv_label_create(heartbeatIcon);
+  heartbeatValue = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(heartbeatValue, lv_color_hex(0xCE1B1B), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(heartbeatValue, "");
-  lv_obj_align(heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
+  lv_obj_align_to(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
   stepValue = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(stepValue, lv_color_hex(0x00FFE7), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(stepValue, "0");
   lv_obj_align(stepValue, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
 
-  stepIcon = lv_label_create(stepValue);
+  stepIcon = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(stepIcon, lv_color_hex(0x00FFE7), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(stepIcon, Symbols::shoe);
-  lv_obj_align(stepIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align_to(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   taskRefresh = lv_timer_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, this);
   Refresh();
@@ -108,7 +108,7 @@ void WatchFaceDigital::Refresh() {
   
     // These alignments cause lvgl to refresh the screen even if nothing has technically changed. Only align if needed.
     lv_obj_align(batteryIcon, LV_ALIGN_TOP_RIGHT, 0, 0);
-    lv_obj_align(batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+    lv_obj_align_to(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
 
   batteryPercentRemaining = batteryController.PercentRemaining();
@@ -123,7 +123,7 @@ void WatchFaceDigital::Refresh() {
     
     // These alignments cause lvgl to refresh the screen even if nothing has technically changed. Only align if needed.
     lv_obj_align(batteryIcon, LV_ALIGN_TOP_RIGHT, 0, 0);
-    lv_obj_align(batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+    lv_obj_align_to(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
 
   bleState = bleController.IsConnected();
@@ -131,7 +131,7 @@ void WatchFaceDigital::Refresh() {
     lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
     
     // These alignments cause lvgl to refresh the screen even if nothing has technically changed. Only align if needed.
-    lv_obj_align(bleIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+    lv_obj_align_to(bleIcon, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
@@ -237,6 +237,6 @@ void WatchFaceDigital::Refresh() {
   if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
     lv_obj_align(stepValue, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
-    lv_obj_align(stepIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+    lv_obj_align_to(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
 }
