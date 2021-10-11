@@ -55,8 +55,6 @@ void LittleVgl::InitDisplay() {
 }
 
 void LittleVgl::InitTouchpad() {
-  lv_indev_drv_t indev_drv;
-
   lv_indev_drv_init(&indev_drv);
   indev_drv.type = LV_INDEV_TYPE_POINTER;
   indev_drv.read_cb = touchpad_read;
