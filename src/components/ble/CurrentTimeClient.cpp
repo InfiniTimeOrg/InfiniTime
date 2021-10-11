@@ -47,7 +47,7 @@ bool CurrentTimeClient::OnDiscoveryEvent(uint16_t connectionHandle, const ble_ga
     return true;
   }
 
-  if (service != nullptr && ble_uuid_cmp(((ble_uuid_t*) &ctsServiceUuid), &service->uuid.u) == 0) {
+  if (service != nullptr && ble_uuid_cmp(&ctsServiceUuid.u, &service->uuid.u) == 0) {
     NRF_LOG_INFO("CTS discovered : 0x%x - 0x%x", service->start_handle, service->end_handle);
     isDiscovered = true;
     ctsStartHandle = service->start_handle;
@@ -72,7 +72,7 @@ int CurrentTimeClient::OnCharacteristicDiscoveryEvent(uint16_t conn_handle,
     return 0;
   }
 
-  if (characteristic != nullptr && ble_uuid_cmp(((ble_uuid_t*) &currentTimeCharacteristicUuid), &characteristic->uuid.u) == 0) {
+  if (characteristic != nullptr && ble_uuid_cmp(&currentTimeCharacteristicUuid.u, &characteristic->uuid.u) == 0) {
     NRF_LOG_INFO("CTS Characteristic discovered : 0x%x", characteristic->val_handle);
     isCharacteristicDiscovered = true;
     currentTimeHandle = characteristic->val_handle;

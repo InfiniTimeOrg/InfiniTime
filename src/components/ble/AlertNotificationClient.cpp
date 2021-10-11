@@ -55,7 +55,7 @@ bool AlertNotificationClient::OnDiscoveryEvent(uint16_t connectionHandle, const 
     return true;
   }
 
-  if (service != nullptr && ble_uuid_cmp(((ble_uuid_t*) &ansServiceUuid), &service->uuid.u) == 0) {
+  if (service != nullptr && ble_uuid_cmp(&ansServiceUuid.u, &service->uuid.u) == 0) {
     NRF_LOG_INFO("ANS discovered : 0x%x - 0x%x", service->start_handle, service->end_handle);
     ansStartHandle = service->start_handle;
     ansEndHandle = service->end_handle;
@@ -80,21 +80,21 @@ int AlertNotificationClient::OnCharacteristicsDiscoveryEvent(uint16_t connection
     } else
       onServiceDiscovered(connectionHandle);
   } else {
-    if (characteristic != nullptr && ble_uuid_cmp(((ble_uuid_t*) &supportedNewAlertCategoryUuid), &characteristic->uuid.u) == 0) {
+    if (characteristic != nullptr && ble_uuid_cmp(&supportedNewAlertCategoryUuid.u, &characteristic->uuid.u) == 0) {
       NRF_LOG_INFO("ANS Characteristic discovered : supportedNewAlertCategoryUuid");
       supportedNewAlertCategoryHandle = characteristic->val_handle;
-    } else if (characteristic != nullptr && ble_uuid_cmp(((ble_uuid_t*) &supportedUnreadAlertCategoryUuid), &characteristic->uuid.u) == 0) {
+    } else if (characteristic != nullptr && ble_uuid_cmp(&supportedUnreadAlertCategoryUuid.u, &characteristic->uuid.u) == 0) {
       NRF_LOG_INFO("ANS Characteristic discovered : supportedUnreadAlertCategoryUuid");
       supportedUnreadAlertCategoryHandle = characteristic->val_handle;
-    } else if (characteristic != nullptr && ble_uuid_cmp(((ble_uuid_t*) &newAlertUuid), &characteristic->uuid.u) == 0) {
+    } else if (characteristic != nullptr && ble_uuid_cmp(&newAlertUuid.u, &characteristic->uuid.u) == 0) {
       NRF_LOG_INFO("ANS Characteristic discovered : newAlertUuid");
       newAlertHandle = characteristic->val_handle;
       newAlertDefHandle = characteristic->def_handle;
       isCharacteristicDiscovered = true;
-    } else if (characteristic != nullptr && ble_uuid_cmp(((ble_uuid_t*) &unreadAlertStatusUuid), &characteristic->uuid.u) == 0) {
+    } else if (characteristic != nullptr && ble_uuid_cmp(&unreadAlertStatusUuid.u, &characteristic->uuid.u) == 0) {
       NRF_LOG_INFO("ANS Characteristic discovered : unreadAlertStatusUuid");
       unreadAlertStatusHandle = characteristic->val_handle;
-    } else if (characteristic != nullptr && ble_uuid_cmp(((ble_uuid_t*) &controlPointUuid), &characteristic->uuid.u) == 0) {
+    } else if (characteristic != nullptr && ble_uuid_cmp(&controlPointUuid.u, &characteristic->uuid.u) == 0) {
       NRF_LOG_INFO("ANS Characteristic discovered : controlPointUuid");
       controlPointHandle = characteristic->val_handle;
     } else
@@ -119,7 +119,7 @@ int AlertNotificationClient::OnDescriptorDiscoveryEventCallback(uint16_t connect
                                                                 uint16_t characteristicValueHandle,
                                                                 const ble_gatt_dsc* descriptor) {
   if (error->status == 0) {
-    if (characteristicValueHandle == newAlertHandle && ble_uuid_cmp(((ble_uuid_t*) &newAlertUuid), &descriptor->uuid.u)) {
+    if (characteristicValueHandle == newAlertHandle && ble_uuid_cmp(&newAlertUuid.u, &descriptor->uuid.u)) {
       if (newAlertDescriptorHandle == 0) {
         NRF_LOG_INFO("ANS Descriptor discovered : %d", descriptor->handle);
         newAlertDescriptorHandle = descriptor->handle;

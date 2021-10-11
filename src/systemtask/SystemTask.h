@@ -133,14 +133,12 @@ namespace Pinetime {
       TimerHandle_t dimTimer;
       TimerHandle_t idleTimer;
       TimerHandle_t measureBatteryTimer;
-      bool sendBatteryNotification = false;
       bool doNotGoToSleep = false;
 
       void GoToRunning();
       void UpdateMotion();
       bool stepCounterMustBeReset = false;
       static constexpr TickType_t batteryMeasurementPeriod = pdMS_TO_TICKS(10 * 60 * 1000);
-      TickType_t lastBatteryNotificationTime = 0;
 
 #if configUSE_TRACE_FACILITY == 1
       SystemMonitor<FreeRtosMonitor> monitor;
