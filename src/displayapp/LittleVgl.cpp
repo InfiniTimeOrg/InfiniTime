@@ -65,17 +65,153 @@ void LittleVgl::InitTouchpad() {
 void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
   if (scrollDirection == FullRefreshDirections::None) {
     scrollDirection = direction;
-    if (scrollDirection == FullRefreshDirections::Down) {
-      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(1));
-    } else if (scrollDirection == FullRefreshDirections::Right) {
-      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(2));
-    } else if (scrollDirection == FullRefreshDirections::Left) {
-      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(3));
-    } else if (scrollDirection == FullRefreshDirections::RightAnim) {
-      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(5));
-    } else if (scrollDirection == FullRefreshDirections::LeftAnim) {
-      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(4));
+//    if (scrollDirection == FullRefreshDirections::Down) {
+//      lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
+//    } else if (scrollDirection == FullRefreshDirections::Right) {
+//      lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
+//    } else if (scrollDirection == FullRefreshDirections::Left) {
+//      lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
+//    } else if (scrollDirection == FullRefreshDirections::RightAnim) {
+//      lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
+//    } else if (scrollDirection == FullRefreshDirections::LeftAnim) {
+//      lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
+//    }
+  }
+}
+
+
+void LittleVgl::DisplayDownScroll(){
+  // We are controlling the drawing process, disable lvgl timers
+  lv_timer_enable(false);
+  
+  // For each segment, draw the full width, 4 lines at a time starting from the bottom
+  // TODO: Should probably calculate this from the size of the draw buffer
+  int16_t height = 4;
+  int16_t width = 240;
+  int16_t y2 = 240;
+  int16_t y1 = 240 - height;
+  
+  lv_area_t area;
+  area.x1 = 0;
+  area.x2 = width;
+  
+  // Start from the bottom and create a 4 line high box
+  for (y1 = 240 - height; y1 >= 0; y1 -= height) {
+    y2 = y1 + height - 1;
+    
+    // If the previous box has reached the end of the visible line on the lcd controller...
+    if (area.y2 == visibleNbLines - 1) {
+      // move past the non visible lines
+      writeOffset += (totalNbLines - visibleNbLines);
+      // and wrap around to the start of address space
+      writeOffset %= totalNbLines;
     }
+    // Set new box
+    area.y1 = y1;
+    area.y2 = y2;
+    
+    // Scroll as we draw
+    uint16_t toScroll = height;
+    if (scrollOffset >= toScroll)
+      scrollOffset -= toScroll;
+    else { // now we need to wrap the scroll address
+      toScroll -= scrollOffset;
+      scrollOffset = totalNbLines - toScroll;
+    }
+    lcd.VerticalScrollStartAddress(scrollOffset);
+  
+    lv_disp_t* disp = lv_disp_get_default();
+    // Clear invalid area list / tells lvgl that nothing on the screen needs to be updated
+    _lv_inv_area(disp, nullptr);
+    // invalidate only the segment we want to update in this portion of the animation
+    _lv_inv_area(disp, &area);
+    // cancel any current flushes in the display driver
+    // Since we've stopped timers, it will be waiting forever if there is currently a flush
+    lv_disp_flush_ready(disp->driver);
+    lv_refr_now(disp);
+  }
+  // Done! clear flags and enable timers
+  scrollDirection = FullRefreshDirections::None;
+  animating = false;
+  lv_timer_enable(true);
+}
+
+void LittleVgl::DisplayHorizAnim() {
+  lv_timer_enable(false);
+  
+  int16_t height, width, x1, x2;
+  lv_area_t area;
+  
+  height = 240;
+  width = 4;
+  int16_t (*NextStep)(int16_t, int16_t){};
+  bool (*CheckEnd)(int16_t){};
+  
+  area.y1=0;
+  area.y2=height;
+
+  if (scrollDirection == FullRefreshDirections::RightAnim) {
+    x1 = 0;
+
+    CheckEnd = [](int16_t x) -> bool {
+      return (x < LV_HOR_RES_MAX);
+    };
+    NextStep = [](int16_t x, int16_t width) -> int16_t {
+      auto newx = x + width * 2;
+      if (newx < 240) {return newx;};
+      return (newx < 240 + width) ? (newx - 240 + width) : newx;
+    };
+
+  } else if (scrollDirection == FullRefreshDirections::LeftAnim) {
+    x1 = 240 - width;
+
+    CheckEnd = [](int16_t x) -> bool {
+      return (x >= 0);
+    };
+    NextStep = [](int16_t x, int16_t width) -> int16_t {
+      auto newx = x - width * 2;
+      if (newx >= 0) {return newx;}
+      return (newx >= 0 - width) ? (newx + 240 - width) : newx;
+    };
+
+  } else {
+    // Not set for a horizontal animation!
+    lv_timer_enable(true);
+    return;
+  }
+
+  for (; CheckEnd(x1); x1 = NextStep(x1, width)) {
+      x2 = x1 + width-1;
+
+      if (area.y2 == visibleNbLines - 1) {
+        writeOffset += (totalNbLines - visibleNbLines);
+        writeOffset %= totalNbLines;
+      }
+      area.x1 = x1;
+      area.x2 = x2;
+  
+      lv_disp_t* disp = lv_disp_get_default();
+      _lv_inv_area(disp, nullptr);
+      _lv_inv_area(disp, &area);
+      lv_disp_flush_ready(disp->driver);
+      lv_refr_now(disp);
+    }
+  scrollDirection = FullRefreshDirections::None;
+  animating = false;
+  lv_timer_enable(true);
+}
+
+void LittleVgl::FlushDisplayManually() {
+  switch(scrollDirection){
+    case FullRefreshDirections::Down:
+      DisplayDownScroll();
+      break;
+    case FullRefreshDirections::RightAnim:
+    case FullRefreshDirections::LeftAnim:
+      DisplayHorizAnim();
+      break;
+    default:
+      break;
   }
 }
 
@@ -85,10 +221,16 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   ulTaskNotifyTake(pdTRUE, 200);
   // NOtification is still needed (even if there is a mutex on SPI) because of the DataCommand pin
   // which cannot be set/clear during a transfert.
+  
+  if (!animating && (scrollDirection == FullRefreshDirections::Down ||
+                     scrollDirection == FullRefreshDirections::RightAnim ||
+                     scrollDirection == FullRefreshDirections::LeftAnim)){
+    animating = true;
+    FlushDisplayManually();
+    return;
+  }
 
-  if ((scrollDirection == LittleVgl::FullRefreshDirections::Down) && (area->y2 == visibleNbLines - 1)) {
-    writeOffset = ((writeOffset + totalNbLines) - visibleNbLines) % totalNbLines;
-  } else if ((scrollDirection == FullRefreshDirections::Up) && (area->y1 == 0)) {
+  if ((scrollDirection == FullRefreshDirections::Up) && (area->y1 == 0)) {
     writeOffset = (writeOffset + visibleNbLines) % totalNbLines;
   }
 
@@ -98,34 +240,13 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   width = (area->x2 - area->x1) + 1;
   height = (area->y2 - area->y1) + 1;
 
-  if (scrollDirection == LittleVgl::FullRefreshDirections::Down) {
-
-    if (area->y2 < visibleNbLines - 1) {
-      uint16_t toScroll = 0;
-      if (area->y1 == 0) {
-        toScroll = height * 2;
-        scrollDirection = FullRefreshDirections::None;
-        lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(0));
-      } else {
-        toScroll = height;
-      }
-
-      if (scrollOffset >= toScroll)
-        scrollOffset -= toScroll;
-      else {
-        toScroll -= scrollOffset;
-        scrollOffset = (totalNbLines) -toScroll;
-      }
-      lcd.VerticalScrollStartAddress(scrollOffset);
-    }
-
-  } else if (scrollDirection == FullRefreshDirections::Up) {
+  if (scrollDirection == FullRefreshDirections::Up) {
 
     if (area->y1 > 0) {
       if (area->y2 == visibleNbLines - 1) {
         scrollOffset += (height * 2);
         scrollDirection = FullRefreshDirections::None;
-        lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(0));
+//        lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
       } else {
         scrollOffset += height;
       }
@@ -135,12 +256,12 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   } else if (scrollDirection == FullRefreshDirections::Left or scrollDirection == FullRefreshDirections::LeftAnim) {
     if (area->x2 == visibleNbLines - 1) {
       scrollDirection = FullRefreshDirections::None;
-      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(0));
+//      lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
     }
   } else if (scrollDirection == FullRefreshDirections::Right or scrollDirection == FullRefreshDirections::RightAnim) {
     if (area->x1 == 0) {
       scrollDirection = FullRefreshDirections::None;
-      lv_disp_set_rotation(lv_disp_get_default(), static_cast<lv_disp_rot_t>(0));
+//      lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
     }
   }
 
