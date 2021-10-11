@@ -63,7 +63,7 @@ void LittleVgl::InitTouchpad() {
 }
 
 void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
-  if (scrollDirection == FullRefreshDirections::None) {
+//  if (scrollDirection == FullRefreshDirections::None) {
     scrollDirection = direction;
 //    if (scrollDirection == FullRefreshDirections::Down) {
 //      lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
@@ -76,13 +76,14 @@ void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
 //    } else if (scrollDirection == FullRefreshDirections::LeftAnim) {
 //      lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
 //    }
-  }
+//  }
 }
 
 
 void LittleVgl::DisplayDownScroll(){
   // We are controlling the drawing process, disable lvgl timers
   lv_timer_enable(false);
+  vTaskSuspendAll();
   
   // For each segment, draw the full width, 4 lines at a time starting from the bottom
   // TODO: Should probably calculate this from the size of the draw buffer
@@ -133,11 +134,13 @@ void LittleVgl::DisplayDownScroll(){
   // Done! clear flags and enable timers
   scrollDirection = FullRefreshDirections::None;
   animating = false;
+  xTaskResumeAll();
   lv_timer_enable(true);
 }
 
 void LittleVgl::DisplayHorizAnim() {
   lv_timer_enable(false);
+  vTaskSuspendAll();
   
   int16_t height, width, x1, x2;
   lv_area_t area;
@@ -198,16 +201,19 @@ void LittleVgl::DisplayHorizAnim() {
     }
   scrollDirection = FullRefreshDirections::None;
   animating = false;
+  xTaskResumeAll();
   lv_timer_enable(true);
 }
 
-void LittleVgl::FlushDisplayManually() {
+void LittleVgl::StartTransitionAnimation() {
   switch(scrollDirection){
     case FullRefreshDirections::Down:
+      animating = true;
       DisplayDownScroll();
       break;
     case FullRefreshDirections::RightAnim:
     case FullRefreshDirections::LeftAnim:
+      animating = true;
       DisplayHorizAnim();
       break;
     default:
@@ -225,8 +231,7 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   if (!animating && (scrollDirection == FullRefreshDirections::Down ||
                      scrollDirection == FullRefreshDirections::RightAnim ||
                      scrollDirection == FullRefreshDirections::LeftAnim)){
-    animating = true;
-    FlushDisplayManually();
+    StartTransitionAnimation();
     return;
   }
 

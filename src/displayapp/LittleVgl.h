@@ -31,7 +31,7 @@ namespace Pinetime {
       void InitTouchpad();
       void InitTheme();
   
-      void FlushDisplayManually();
+      void StartTransitionAnimation();
       void DisplayDownScroll();
       void DisplayHorizAnim();
 
