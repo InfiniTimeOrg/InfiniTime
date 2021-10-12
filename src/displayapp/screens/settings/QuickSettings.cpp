@@ -32,89 +32,86 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
 
   // This is the distance (padding) between all objects on this screen.
   static constexpr uint8_t innerDistance = 10;
+  static constexpr uint8_t barHeight = 20;
+  static constexpr uint8_t buttonHeight = (LV_VER_RES_MAX - barHeight - innerDistance*3) / 2;
 
+  //=== Top bar
   // Time
   label_time = lv_label_create(lv_scr_act());
   lv_label_set_text_fmt(label_time, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
   lv_obj_set_style_text_align(label_time, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_align(label_time, LV_ALIGN_TOP_LEFT, 0, 0);
-
+  // Battery
   batteryIcon = lv_label_create(lv_scr_act());
   lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
   lv_obj_align(batteryIcon, LV_ALIGN_TOP_RIGHT, 0, 0);
-
-  static constexpr uint8_t barHeight = 20 + innerDistance;
-  static constexpr uint8_t buttonHeight = (LV_VER_RES_MAX - barHeight - innerDistance) / 2;
-  static constexpr uint8_t buttonWidth = (LV_HOR_RES_MAX - innerDistance) / 2; // wide buttons
-  //static constexpr uint8_t buttonWidth = buttonHeight; // square buttons
-  static constexpr uint8_t buttonXOffset = (LV_HOR_RES_MAX - buttonWidth * 2 - innerDistance) / 2;
-
+  
+  //=== Buttons
+  // Button Style
   lv_style_init(&btn_style);
   lv_style_set_radius(&btn_style, buttonHeight / 4);
   lv_style_set_bg_color(&btn_style, lv_color_hex(0x111111));
-
-  brightnessButton = lv_btn_create(lv_scr_act());
+  lv_style_set_flex_grow(&btn_style, 1);
+  lv_style_set_max_height(&btn_style, lv_pct(50)-innerDistance/2);
+  lv_style_set_height(&btn_style, lv_pct(100));
+  lv_style_set_text_font(&btn_style, &lv_font_sys_48);
+  
+  // Flex container
+  container1 = lv_obj_create(lv_scr_act());
+  lv_obj_set_flex_flow(container1, LV_FLEX_FLOW_ROW_WRAP);
+  lv_obj_set_flex_align(container1, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_SPACE_EVENLY);
+  lv_obj_set_size(container1, LV_HOR_RES, LV_VER_RES - barHeight);
+  lv_obj_align(container1, LV_ALIGN_BOTTOM_MID, 0, 0);
+  lv_obj_set_style_bg_opa(container1, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_pad_gap(container1, innerDistance, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_pad_all(container1, innerDistance, LV_PART_MAIN | LV_STATE_DEFAULT);
+  
+  // Buttons
+  brightnessButton = lv_btn_create(container1);
   brightnessButton->user_data = this;
   lv_obj_add_event_cb(brightnessButton, ButtonEventHandler, LV_EVENT_ALL, brightnessButton->user_data);
   lv_obj_add_style(brightnessButton, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_size(brightnessButton, buttonWidth, buttonHeight);
-  lv_obj_align(brightnessButton, LV_ALIGN_TOP_LEFT, buttonXOffset, barHeight);
-
+  
   brightnessLabel = lv_label_create(brightnessButton);
-  lv_obj_set_style_text_font(brightnessLabel, &lv_font_sys_48, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text_static(brightnessLabel, brightness.GetIcon());
   lv_obj_center(brightnessLabel);
 
-  flashlightButton = lv_btn_create(lv_scr_act());
+  
+  flashlightButton = lv_btn_create(container1);
   flashlightButton->user_data = this;
   lv_obj_add_event_cb(flashlightButton, ButtonEventHandler, LV_EVENT_ALL, flashlightButton->user_data);
   lv_obj_add_style(flashlightButton, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_size(flashlightButton, buttonWidth, buttonHeight);
-  lv_obj_align(flashlightButton, LV_ALIGN_TOP_RIGHT, - buttonXOffset, barHeight);
-
-  lv_obj_t* flashlightLabel;
+  
   flashlightLabel = lv_label_create(flashlightButton);
-  lv_obj_set_style_text_font(flashlightLabel, &lv_font_sys_48, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text_static(flashlightLabel, Symbols::highlight);
   lv_obj_center(flashlightLabel);
 
-  notificationButton = lv_btn_create(lv_scr_act());
+  
+  notificationButton = lv_btn_create(container1);
   notificationButton->user_data = this;
   lv_obj_add_event_cb(notificationButton, ButtonEventHandler, LV_EVENT_ALL, notificationButton->user_data);
-  lv_obj_add_flag(notificationButton, LV_OBJ_FLAG_CHECKABLE);
   lv_obj_add_style(notificationButton, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_add_flag(notificationButton, LV_OBJ_FLAG_CHECKABLE | LV_OBJ_FLAG_FLEX_IN_NEW_TRACK);
   lv_obj_set_style_bg_color(notificationButton, lv_palette_main(LV_PALETTE_GREEN), LV_PART_MAIN | LV_STATE_CHECKED);
-  lv_obj_set_size(notificationButton, buttonWidth, buttonHeight);
-  lv_obj_align(notificationButton, LV_ALIGN_BOTTOM_LEFT, buttonXOffset, 0);
-
+  
   notificationLabel = lv_label_create(notificationButton);
-  lv_obj_set_style_text_font(notificationLabel, &lv_font_sys_48, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_center(notificationLabel);
-
   if (settingsController.GetNotificationStatus() == Controllers::Settings::Notification::ON) {
     lv_obj_add_state(notificationButton, LV_STATE_CHECKED);
     lv_label_set_text_static(notificationLabel, Symbols::notificationsOn);
   } else {
     lv_label_set_text_static(notificationLabel, Symbols::notificationsOff);
   }
+  lv_obj_center(notificationLabel);
 
-  settingsButton = lv_btn_create(lv_scr_act());
+  
+  settingsButton = lv_btn_create(container1);
   settingsButton->user_data = this;
   lv_obj_add_event_cb(settingsButton, ButtonEventHandler, LV_EVENT_ALL, settingsButton->user_data);
   lv_obj_add_style(settingsButton, &btn_style, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_size(settingsButton, buttonWidth, buttonHeight);
-  lv_obj_align(settingsButton, LV_ALIGN_BOTTOM_RIGHT, - buttonXOffset, 0);
-
-  lv_obj_t *settingsLabel= lv_label_create(settingsButton);
-  lv_obj_set_style_text_font(settingsLabel, &lv_font_sys_48, LV_PART_MAIN | LV_STATE_DEFAULT);
+  
+  settingsLabel = lv_label_create(settingsButton);
   lv_label_set_text_static(settingsLabel, Symbols::settings);
   lv_obj_center(settingsLabel);
-
-  lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act());
-  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CLIP);
-  lv_obj_set_size(backgroundLabel, 240, 240);
-  lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text_static(backgroundLabel, "");
 
   taskUpdate = lv_timer_create(lv_update_task, 5000, this);
 }

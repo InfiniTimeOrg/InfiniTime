@@ -47,9 +47,13 @@ namespace Pinetime {
         lv_obj_t* brightnessButton;
         lv_obj_t* brightnessLabel;
         lv_obj_t* flashlightButton;
+        lv_obj_t* flashlightLabel;
         lv_obj_t* notificationButton;
         lv_obj_t* notificationLabel;
         lv_obj_t* settingsButton;
+        lv_obj_t* settingsLabel;
+        
+        lv_obj_t* container1;
       };
     }
   }

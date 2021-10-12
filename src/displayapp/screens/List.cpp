@@ -20,7 +20,7 @@ List::List(uint8_t screenID,
   : Screen(app), settingsController {settingsController} {
 
   // Set the background to Black
-  lv_obj_set_style_bg_color(lv_scr_act(), lv_color_make(0, 0, 0), LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_color(lv_scr_act(), lv_color_black(), LV_PART_MAIN | LV_STATE_DEFAULT);
 
   settingsController.SetSettingsMenu(screenID);
 
@@ -52,50 +52,43 @@ List::List(uint8_t screenID,
   lv_obj_t* container1 = lv_obj_create(lv_scr_act());
 
   lv_obj_set_style_bg_opa(container1, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_pad_all(container1, 2, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_pad_gap(container1, 4, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_border_width(container1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
 
   lv_obj_set_pos(container1, 0, 0);
-  lv_obj_set_width(container1, LV_HOR_RES - 8);
+  lv_obj_set_width(container1, LV_HOR_RES - 2);
   lv_obj_set_height(container1, LV_VER_RES);
   lv_obj_set_layout(container1, LV_LAYOUT_FLEX);
   lv_obj_set_flex_flow(container1, LV_FLEX_FLOW_COLUMN);
-  lv_obj_set_flex_align(container1, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_SPACE_EVENLY, LV_FLEX_ALIGN_START);
+  lv_obj_set_flex_align(container1, LV_FLEX_ALIGN_SPACE_AROUND, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
 
   lv_obj_t* labelBt;
   lv_obj_t* labelBtIco;
 
   for (int i = 0; i < MAXLISTITEMS; i++) {
     apps[i] = applications[i].application;
-    if (applications[i].application != Apps::None) {
-
-      itemApps[i] = lv_btn_create(container1);
-      itemApps[i]->user_data = this;
+    
+    itemApps[i] = lv_btn_create(container1);
+    itemApps[i]->user_data = this;
+    lv_obj_set_flex_grow(itemApps[i], 1);
+    lv_obj_set_width(itemApps[i], lv_pct(100));
+  
+    if (applications[i].application == Apps::None){
+      lv_obj_set_style_bg_opa(itemApps[i], LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
+    } else{
       lv_obj_set_style_bg_opa(itemApps[i], LV_OPA_20, LV_PART_MAIN | LV_STATE_DEFAULT);
-      lv_obj_set_style_radius(itemApps[i], 57, LV_PART_MAIN | LV_STATE_DEFAULT);
+      lv_obj_set_style_radius(itemApps[i], LV_RADIUS_CIRCLE, LV_PART_MAIN | LV_STATE_DEFAULT);
       lv_obj_set_style_bg_color(itemApps[i], lv_color_hex(0x00FFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
 
-      lv_obj_set_width(itemApps[i], LV_HOR_RES - 8);
-      lv_obj_set_height(itemApps[i], 57);
       lv_obj_add_event_cb(itemApps[i], ButtonEventHandler, LV_EVENT_ALL, itemApps[i]->user_data);
-      lv_obj_set_layout(itemApps[i], LV_LAYOUT_FLEX);
-      lv_obj_set_flex_flow(itemApps[i], LV_FLEX_FLOW_ROW);
-      lv_obj_set_flex_align(itemApps[i], LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START);
-
-      labelBtIco = lv_label_create(itemApps[i]);
-      lv_obj_set_style_text_color(labelBtIco, lv_palette_main(LV_PALETTE_YELLOW), LV_PART_MAIN | LV_STATE_DEFAULT);
-      lv_label_set_text_static(labelBtIco, applications[i].icon);
-
+      
       labelBt = lv_label_create(itemApps[i]);
-      lv_label_set_text_fmt(labelBt, " %s", applications[i].name);
+      lv_label_set_recolor(labelBt, true);
+      lv_label_set_text_fmt(labelBt, "#FFEB3B %s #%s", applications[i].icon, applications[i].name);
+      lv_obj_align(labelBt, LV_ALIGN_LEFT_MID, 10, 0);
     }
   }
-
-  lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act());
-  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CLIP);
-  lv_obj_set_size(backgroundLabel, LV_HOR_RES, LV_VER_RES);
-  lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text_static(backgroundLabel, "");
 }
 
 List::~List() {
