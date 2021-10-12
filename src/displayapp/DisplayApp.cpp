@@ -149,6 +149,9 @@ void DisplayApp::InitHw() {
 
 void DisplayApp::Refresh() {
   TickType_t queueTimeout;
+  if (currentScreen.get()->IsNew()){
+    doScreenTransition();
+  }
   switch (state) {
     case States::Idle:
       queueTimeout = portMAX_DELAY;

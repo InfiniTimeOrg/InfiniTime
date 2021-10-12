@@ -42,6 +42,7 @@ namespace Pinetime {
       private:
         virtual void Refresh() {
         }
+        bool newScreen {true};
 
       public:
         explicit Screen(DisplayApp* app) : app {app} {
@@ -52,6 +53,15 @@ namespace Pinetime {
 
         bool IsRunning() const {
           return running;
+        }
+        
+        virtual bool IsNew() {
+          if(!newScreen) {
+            return false;
+          } else{
+            newScreen = false;
+            return true;
+          }
         }
 
         /** @return false if the button hasn't been handled by the app, true if it has been handled */

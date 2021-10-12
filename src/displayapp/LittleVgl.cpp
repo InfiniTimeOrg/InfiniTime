@@ -81,10 +81,6 @@ void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
 
 
 void LittleVgl::DisplayDownScroll(){
-  // We are controlling the drawing process, disable lvgl timers
-  lv_timer_enable(false);
-  vTaskSuspendAll();
-  
   // For each segment, draw the full width, 4 lines at a time starting from the bottom
   // TODO: Should probably calculate this from the size of the draw buffer
   int16_t height = 4;
@@ -134,14 +130,9 @@ void LittleVgl::DisplayDownScroll(){
   // Done! clear flags and enable timers
   scrollDirection = FullRefreshDirections::None;
   animating = false;
-  xTaskResumeAll();
-  lv_timer_enable(true);
 }
 
 void LittleVgl::DisplayHorizAnim() {
-  lv_timer_enable(false);
-  vTaskSuspendAll();
-  
   int16_t height, width, x1, x2;
   lv_area_t area;
   
@@ -179,7 +170,6 @@ void LittleVgl::DisplayHorizAnim() {
 
   } else {
     // Not set for a horizontal animation!
-    lv_timer_enable(true);
     return;
   }
 
@@ -201,18 +191,21 @@ void LittleVgl::DisplayHorizAnim() {
     }
   scrollDirection = FullRefreshDirections::None;
   animating = false;
-  xTaskResumeAll();
-  lv_timer_enable(true);
 }
 
 void LittleVgl::StartTransitionAnimation() {
+  lv_disp_t* disp = lv_disp_get_default();
   switch(scrollDirection){
     case FullRefreshDirections::Down:
+      lv_obj_update_layout(disp->act_scr);
+      _lv_inv_area(disp, nullptr);
       animating = true;
       DisplayDownScroll();
       break;
     case FullRefreshDirections::RightAnim:
     case FullRefreshDirections::LeftAnim:
+      lv_obj_update_layout(disp->act_scr);
+      _lv_inv_area(disp, nullptr);
       animating = true;
       DisplayHorizAnim();
       break;
@@ -228,12 +221,12 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   // NOtification is still needed (even if there is a mutex on SPI) because of the DataCommand pin
   // which cannot be set/clear during a transfert.
   
-  if (!animating && (scrollDirection == FullRefreshDirections::Down ||
-                     scrollDirection == FullRefreshDirections::RightAnim ||
-                     scrollDirection == FullRefreshDirections::LeftAnim)){
-    StartTransitionAnimation();
-    return;
-  }
+//  if (!animating && (scrollDirection == FullRefreshDirections::Down ||
+//                     scrollDirection == FullRefreshDirections::RightAnim ||
+//                     scrollDirection == FullRefreshDirections::LeftAnim)){
+//    StartTransitionAnimation();
+//    return;
+//  }
 
   if ((scrollDirection == FullRefreshDirections::Up) && (area->y1 == 0)) {
     writeOffset = (writeOffset + visibleNbLines) % totalNbLines;

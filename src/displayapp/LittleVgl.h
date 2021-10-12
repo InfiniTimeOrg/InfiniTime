@@ -25,13 +25,13 @@ namespace Pinetime {
       bool GetTouchPadInfo(lv_indev_data_t* ptr);
       void SetFullRefresh(FullRefreshDirections direction);
       void SetNewTouchPoint(uint16_t x, uint16_t y, bool contact);
+      void StartTransitionAnimation();
 
     private:
       void InitDisplay();
       void InitTouchpad();
       void InitTheme();
   
-      void StartTransitionAnimation();
       void DisplayDownScroll();
       void DisplayHorizAnim();
 

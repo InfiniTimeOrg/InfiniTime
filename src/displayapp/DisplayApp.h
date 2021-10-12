@@ -70,6 +70,7 @@ namespace Pinetime {
       void SetFullRefresh(FullRefreshDirections direction);
 
       void Register(Pinetime::System::SystemTask* systemTask);
+      void doScreenTransition(){lvgl.StartTransitionAnimation();}
 
     private:
       Pinetime::Drivers::St7789& lcd;
