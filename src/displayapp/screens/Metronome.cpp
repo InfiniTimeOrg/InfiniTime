@@ -9,12 +9,12 @@ namespace {
     screen->OnEvent(lv_event_get_target(event), event);
   }
 
-  lv_obj_t* createLabel(const char* name, lv_obj_t* parent, lv_align_t align, const lv_font_t* font, uint8_t x, uint8_t y) {
-    lv_obj_t* label = lv_label_create(parent);
+  lv_obj_t* createLabel(const char* name, lv_obj_t* reference, lv_align_t align, const lv_font_t* font, uint8_t x, uint8_t y) {
+    lv_obj_t* label = lv_label_create(lv_scr_act());
     lv_obj_set_style_text_font(label, font, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_color(label, lv_palette_main(LV_PALETTE_GREY), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_label_set_text(label, name);
-    lv_obj_align(label, align, x, y);
+    lv_obj_align_to(label, reference, align, x, y);
 
     return label;
   }

@@ -22,27 +22,25 @@ SettingPineTimeStyle::SettingPineTimeStyle(Pinetime::Applications::DisplayApp* a
   lv_obj_align(timebar, LV_ALIGN_TOP_LEFT, 5, 0);
 
   // Display the time
-
-  timeDD1 = lv_label_create(timebar);
+  timeDD1 = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_font(timeDD1, &open_sans_light, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_text_color(timeDD1, Convert(settingsController.GetPTSColorTime()), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(timeDD1, "12");
-  lv_obj_align(timeDD1, LV_ALIGN_TOP_MID, 5, 5);
+  lv_obj_align_to(timeDD1, timebar, LV_ALIGN_TOP_MID, 5, 5);
 
-  timeDD2 = lv_label_create(timebar);
+  timeDD2 = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_font(timeDD2, &open_sans_light, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_text_color(timeDD2, Convert(settingsController.GetPTSColorTime()), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(timeDD2, "34");
-  lv_obj_align(timeDD2, LV_ALIGN_BOTTOM_MID, 5, -5);
+  lv_obj_align_to(timeDD2, timebar, LV_ALIGN_BOTTOM_MID, 5, -5);
 
-  timeAMPM = lv_label_create(timebar);
+  timeAMPM = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(timeAMPM, Convert(settingsController.GetPTSColorTime()), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_text_line_space(timeAMPM, -3, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(timeAMPM, "A\nM");
-  lv_obj_align(timeAMPM, LV_ALIGN_BOTTOM_LEFT, 2, -20);
+  lv_obj_align_to(timeAMPM, timebar, LV_ALIGN_BOTTOM_LEFT, 2, -20);
 
   // Create a 40px wide bar down the right side of the screen
-
   sidebar = lv_obj_create(lv_scr_act());
   lv_obj_set_style_bg_color(sidebar, Convert(settingsController.GetPTSColorBar()), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_radius(sidebar, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -50,83 +48,79 @@ SettingPineTimeStyle::SettingPineTimeStyle(Pinetime::Applications::DisplayApp* a
   lv_obj_align(sidebar, LV_ALIGN_TOP_RIGHT, 0, 0);
 
   // Display icons
-
-  batteryIcon = lv_label_create(sidebar);
+  batteryIcon = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(batteryIcon, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
-  lv_obj_align(batteryIcon, LV_ALIGN_TOP_MID, 0, 2);
+  lv_obj_align_to(batteryIcon, sidebar, LV_ALIGN_TOP_MID, 0, 2);
 
-  bleIcon = lv_label_create(sidebar);
+  bleIcon = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(bleIcon, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_label_set_text(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, LV_ALIGN_TOP_MID, 0, 25);
+  lv_obj_align_to(bleIcon, sidebar, LV_ALIGN_TOP_MID, 0, 25);
 
   // Calendar icon
-
-  calendarOuter = lv_obj_create(sidebar);
+  calendarOuter = lv_obj_create(lv_scr_act());
   lv_obj_set_style_bg_color(calendarOuter, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_radius(calendarOuter, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_size(calendarOuter, 34, 34);
-  lv_obj_align(calendarOuter, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_align_to(calendarOuter, sidebar, LV_ALIGN_CENTER, 0, 0);
 
-  calendarInner = lv_obj_create(calendarOuter);
+  calendarInner = lv_obj_create(lv_scr_act());
   lv_obj_set_style_bg_color(calendarInner, lv_color_hex(0xffffff), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_radius(calendarInner, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_size(calendarInner, 27, 27);
-  lv_obj_align(calendarInner, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_align_to(calendarInner, calendarOuter, LV_ALIGN_CENTER, 0, 0);
 
-  calendarBar1 = lv_obj_create(calendarOuter);
+  calendarBar1 = lv_obj_create(lv_scr_act());
   lv_obj_set_style_bg_color(calendarBar1, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_radius(calendarBar1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_size(calendarBar1, 3, 12);
-  lv_obj_align(calendarBar1, LV_ALIGN_TOP_MID, -6, -3);
+  lv_obj_align_to(calendarBar1, calendarOuter, LV_ALIGN_TOP_MID, -6, -3);
 
-  calendarBar2 = lv_obj_create(calendarOuter);
+  calendarBar2 = lv_obj_create(lv_scr_act());
   lv_obj_set_style_bg_color(calendarBar2, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_radius(calendarBar2, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_size(calendarBar2, 3, 12);
-  lv_obj_align(calendarBar2, LV_ALIGN_TOP_MID, 6, -3);
+  lv_obj_align_to(calendarBar2, calendarOuter, LV_ALIGN_TOP_MID, 6, -3);
 
-  calendarCrossBar1 = lv_obj_create(calendarBar1);
+  calendarCrossBar1 = lv_obj_create(lv_scr_act());
   lv_obj_set_style_bg_color(calendarCrossBar1, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_radius(calendarCrossBar1, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_size(calendarCrossBar1, 8, 3);
-  lv_obj_align(calendarCrossBar1, LV_ALIGN_BOTTOM_MID, 0, 0);
+  lv_obj_align_to(calendarCrossBar1, calendarBar1, LV_ALIGN_BOTTOM_MID, 0, 0);
 
-  calendarCrossBar2 = lv_obj_create(calendarBar2);
+  calendarCrossBar2 = lv_obj_create(lv_scr_act());
   lv_obj_set_style_bg_color(calendarCrossBar2, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_radius(calendarCrossBar2, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_size(calendarCrossBar2, 8, 3);
-  lv_obj_align(calendarCrossBar2, LV_ALIGN_BOTTOM_MID, 0, 0);
+  lv_obj_align_to(calendarCrossBar2, calendarBar2, LV_ALIGN_BOTTOM_MID, 0, 0);
 
   // Display date
-
-  dateDayOfWeek = lv_label_create(sidebar);
+  dateDayOfWeek = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(dateDayOfWeek, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(dateDayOfWeek, "THU");
-  lv_obj_align(dateDayOfWeek, LV_ALIGN_CENTER, 0, -34);
+  lv_obj_align_to(dateDayOfWeek, sidebar, LV_ALIGN_CENTER, 0, -34);
 
-  dateDay = lv_label_create(sidebar);
+  dateDay = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(dateDay, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(dateDay, "25");
-  lv_obj_align(dateDay, LV_ALIGN_CENTER, 0, 3);
+  lv_obj_align_to(dateDay, sidebar, LV_ALIGN_CENTER, 0, 3);
 
-  dateMonth = lv_label_create(sidebar);
+  dateMonth = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(dateMonth, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(dateMonth, "MAR");
-  lv_obj_align(dateMonth, LV_ALIGN_CENTER, 0, 32);
+  lv_obj_align_to(dateMonth, sidebar, LV_ALIGN_CENTER, 0, 32);
 
   // Step count gauge
   needle_color = lv_color_white();
-  stepMeter = lv_meter_create(sidebar);
+  stepMeter = lv_meter_create(lv_scr_act());
   stepScale = lv_meter_add_scale(stepMeter);
   stepIndicator = lv_meter_add_needle_line(stepMeter, stepScale, 3, needle_color, 0);
   lv_meter_set_scale_range(stepMeter, stepScale, 0, 100, 360, 180);
   lv_meter_set_scale_ticks(stepMeter, stepScale, 11, 4, 4, lv_color_black());
   lv_obj_set_size(stepMeter, 40, 40);
-  lv_obj_align(stepMeter, LV_ALIGN_BOTTOM_MID, 0, 0);
+  lv_obj_align_to(stepMeter, sidebar, LV_ALIGN_BOTTOM_MID, 0, 0);
   lv_meter_set_indicator_value(stepMeter, stepIndicator, 0);
-  
+
   lv_obj_set_style_pad_right(stepMeter, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_pad_left(stepMeter, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_pad_bottom(stepMeter, 3, LV_PART_MAIN | LV_STATE_DEFAULT);

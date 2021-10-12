@@ -20,9 +20,9 @@ Brightness::Brightness(Pinetime::Applications::DisplayApp* app, Controllers::Bri
   lv_slider_set_range(slider, 0, 2);
   lv_slider_set_value(slider, LevelToInt(brightness.Level()), LV_ANIM_OFF);
 
-  slider_label = lv_label_create(slider);
+  slider_label = lv_label_create(lv_scr_act());
   lv_label_set_text(slider_label, LevelToString(brightness.Level()));
-  lv_obj_align(slider_label, LV_ALIGN_OUT_BOTTOM_MID, 0, 30);
+  lv_obj_align_to(slider_label, slider, LV_ALIGN_OUT_BOTTOM_MID, 0, 30);
 }
 
 Brightness::~Brightness() {

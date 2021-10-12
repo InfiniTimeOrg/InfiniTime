@@ -135,22 +135,22 @@ Navigation::Navigation(Pinetime::Applications::DisplayApp* app, Pinetime::Contro
   lv_obj_set_style_text_font(imgFlag, &lv_font_navi_80, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_text_color(imgFlag, lv_color_hex(0x00FFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(imgFlag, iconForName("flag"));
-  lv_obj_align(imgFlag,  LV_ALIGN_CENTER, 0, -60);
+  lv_obj_align(imgFlag, LV_ALIGN_CENTER, 0, -60);
 
   txtNarrative = lv_label_create(lv_scr_act());
   lv_label_set_long_mode(txtNarrative, LV_LABEL_LONG_WRAP);
   lv_obj_set_width(txtNarrative, LV_HOR_RES);
   lv_label_set_text(txtNarrative, "Navigation");
-  lv_obj_center(txtNarrative);
-  lv_obj_align(txtNarrative,  LV_ALIGN_CENTER, 0, 10);
+  lv_obj_set_style_text_align(txtNarrative, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_align(txtNarrative, LV_ALIGN_CENTER, 0, 10);
 
   txtManDist = lv_label_create(lv_scr_act());
   lv_label_set_long_mode(txtManDist, LV_LABEL_LONG_WRAP);
   lv_obj_set_style_text_color(txtManDist, lv_palette_main(LV_PALETTE_GREEN), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_width(txtManDist, LV_HOR_RES);
   lv_label_set_text(txtManDist, "--M");
-  lv_obj_center(txtManDist);
-  lv_obj_align(txtManDist,  LV_ALIGN_CENTER, 0, 60);
+  lv_obj_set_style_text_align(txtManDist, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_align(txtManDist, LV_ALIGN_CENTER, 0, 60);
 
   // Route Progress
   barProgress = lv_bar_create(lv_scr_act());

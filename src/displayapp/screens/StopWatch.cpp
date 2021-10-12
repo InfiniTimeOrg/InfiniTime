@@ -70,20 +70,20 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
   btnPlayPause = lv_btn_create(lv_scr_act());
   btnPlayPause->user_data = this;
   lv_obj_add_event_cb(btnPlayPause, play_pause_event_handler, LV_EVENT_ALL, btnPlayPause->user_data);
-  lv_obj_set_height(btnPlayPause, 50);
-  lv_obj_set_width(btnPlayPause, 115);
+  lv_obj_set_size(btnPlayPause, 115, 50);
   lv_obj_align(btnPlayPause, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
   txtPlayPause = lv_label_create(btnPlayPause);
+  lv_obj_center(txtPlayPause);
   lv_label_set_text(txtPlayPause, Symbols::play);
 
   btnStopLap = lv_btn_create(lv_scr_act());
   btnStopLap->user_data = this;
   lv_obj_add_event_cb(btnStopLap, stop_lap_event_handler, LV_EVENT_ALL, btnStopLap->user_data);
-  lv_obj_set_height(btnStopLap, 50);
-  lv_obj_set_width(btnStopLap, 115);
+  lv_obj_set_size(btnStopLap, 115, 50);
   lv_obj_align(btnStopLap, LV_ALIGN_BOTTOM_LEFT, 0, 0);
   lv_obj_set_style_bg_color(btnStopLap, lv_color_hex(0x080808), LV_PART_MAIN | LV_STATE_DISABLED);
   txtStopLap = lv_label_create(btnStopLap);
+  lv_obj_center(txtStopLap);
   lv_obj_set_style_text_color(txtStopLap, lv_color_hex(0x888888), LV_PART_MAIN | LV_STATE_DISABLED);
   lv_label_set_text(txtStopLap, Symbols::stop);
   lv_obj_clear_state(btnStopLap, LV_STATE_ANY);

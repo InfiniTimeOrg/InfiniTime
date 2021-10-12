@@ -29,18 +29,18 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_style_text_color(lSteps, lv_color_hex(0x00FF00), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_style_text_font(lSteps, &jetbrains_mono_42, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
-  lv_obj_align(lSteps,  LV_ALIGN_CENTER, 0, -20);
+  lv_obj_align(lSteps, LV_ALIGN_CENTER, 0, -20);
 
-  lv_obj_t* lstepsL = lv_label_create(lSteps);
+  lv_obj_t* lstepsL = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(lstepsL, lv_color_hex(0x111111), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text_static(lstepsL, "Steps");
-  lv_obj_align(lstepsL, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+  lv_obj_align_to(lstepsL, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
 
-  lv_obj_t* lstepsGoal = lv_label_create(lSteps);
+  lv_obj_t* lstepsGoal = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(lstepsGoal, lv_color_hex(0x00FFFF), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text_fmt(lstepsGoal, "Goal\n%lu", settingsController.GetStepsGoal());
   lv_obj_set_style_text_align(lstepsGoal, LV_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_align(lstepsGoal, LV_ALIGN_OUT_BOTTOM_MID, 0, 60);
+  lv_obj_align_to(lstepsGoal, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 60);
 
   lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act());
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CLIP);
@@ -60,7 +60,7 @@ void Steps::Refresh() {
   stepsCount = motionController.NbSteps();
 
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
-  lv_obj_align(lSteps,  LV_ALIGN_CENTER, 0, -20);
+  lv_obj_align(lSteps, LV_ALIGN_CENTER, 0, -20);
 
   lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
 }

@@ -36,7 +36,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
 
   alarmHours = alarmController.Hours();
   alarmMinutes = alarmController.Minutes();
-  lv_label_set_text_fmt(time, "%02lu:%02lu", alarmHours, alarmMinutes);
+  lv_label_set_text_fmt(time, "%02u:%02u", alarmHours, alarmMinutes);
 
   lv_obj_align(time, LV_ALIGN_CENTER, 0, -25);
 
@@ -47,6 +47,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_align(btnHoursUp, LV_ALIGN_LEFT_MID, 20, -85);
   txtHrUp = lv_label_create(btnHoursUp);
   lv_label_set_text_static(txtHrUp, "+");
+  lv_obj_center(txtHrUp);
 
   btnHoursDown = lv_btn_create(lv_scr_act());
   btnHoursDown->user_data = this;
@@ -55,6 +56,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_align(btnHoursDown, LV_ALIGN_LEFT_MID, 20, 35);
   txtHrDown = lv_label_create(btnHoursDown);
   lv_label_set_text_static(txtHrDown, "-");
+  lv_obj_center(txtHrDown);
 
   btnMinutesUp = lv_btn_create(lv_scr_act());
   btnMinutesUp->user_data = this;
@@ -63,6 +65,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_align(btnMinutesUp, LV_ALIGN_RIGHT_MID, -20, -85);
   txtMinUp = lv_label_create(btnMinutesUp);
   lv_label_set_text_static(txtMinUp, "+");
+  lv_obj_center(txtMinUp);
 
   btnMinutesDown = lv_btn_create(lv_scr_act());
   btnMinutesDown->user_data = this;
@@ -71,6 +74,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_align(btnMinutesDown, LV_ALIGN_RIGHT_MID, -20, 35);
   txtMinDown = lv_label_create(btnMinutesDown);
   lv_label_set_text_static(txtMinDown, "-");
+  lv_obj_center(txtMinDown);
 
   btnEnable = lv_btn_create(lv_scr_act());
   btnEnable->user_data = this;
@@ -78,6 +82,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_set_size(btnEnable, 115, 50);
   lv_obj_align(btnEnable, LV_ALIGN_BOTTOM_LEFT, 0, 0);
   txtEnable = lv_label_create(btnEnable);
+  lv_obj_center(txtEnable);
   SetEnableButtonState();
 
   btnRecur = lv_btn_create(lv_scr_act());
@@ -86,6 +91,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_set_size(btnRecur, 115, 50);
   lv_obj_align(btnRecur, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
   txtRecur = lv_label_create(btnRecur);
+  lv_obj_center(txtRecur);
   SetRecurButtonState();
 
   btnInfo = lv_btn_create(lv_scr_act());
@@ -94,6 +100,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_set_size(btnInfo, 50, 40);
   lv_obj_align(btnInfo, LV_ALIGN_CENTER, 0, -85);
   txtInfo = lv_label_create(btnInfo);
+  lv_obj_center(txtInfo);
   lv_label_set_text_static(txtInfo, "i");
 }
 
@@ -208,8 +215,7 @@ void Alarm::ShowInfo() {
   btnMessage = lv_btn_create(lv_scr_act());
   btnMessage->user_data = this;
   lv_obj_add_event_cb(btnMessage, btnEventHandler, LV_EVENT_ALL, btnMessage->user_data);
-  lv_obj_set_height(btnMessage, 200);
-  lv_obj_set_width(btnMessage, 150);
+  lv_obj_set_size(btnMessage, 150, 200);
   lv_obj_align(btnMessage, LV_ALIGN_CENTER, 0, 0);
   txtMessage = lv_label_create(btnMessage);
   lv_obj_set_style_bg_color(btnMessage, lv_color_hex(0x000080), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -223,7 +229,7 @@ void Alarm::ShowInfo() {
     auto secToAlarm = timeToAlarm % 60;
 
     lv_label_set_text_fmt(
-      txtMessage, "Time to\nalarm:\n%2d Days\n%2d Hours\n%2d Minutes\n%2d Seconds", daysToAlarm, hrsToAlarm, minToAlarm, secToAlarm);
+      txtMessage, "Time to\nalarm:\n%2ld Days\n%2ld Hours\n%2ld Minutes\n%2ld Seconds", daysToAlarm, hrsToAlarm, minToAlarm, secToAlarm);
   } else {
     lv_label_set_text(txtMessage, "Alarm\nis not\nset.");
   }

@@ -18,7 +18,7 @@ FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, 
   : Screen {app}, validator {validator} {
   labelVersion = lv_label_create(lv_scr_act());
   lv_label_set_text_fmt(labelVersion,
-                        "Version : %u.%u.%u\n"
+                        "Version : %lu.%lu.%lu\n"
                         "ShortRef : %s",
                         Version::Major(),
                         Version::Minor(),
@@ -26,8 +26,8 @@ FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, 
                         Version::GitCommitHash());
   lv_obj_align(labelVersion, LV_ALIGN_TOP_LEFT, 0, 0);
 
-  labelIsValidated = lv_label_create(labelVersion);
-  lv_obj_align(labelIsValidated, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
+  labelIsValidated = lv_label_create(lv_scr_act());
+  lv_obj_align_to(labelIsValidated, labelVersion, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
   lv_label_set_recolor(labelIsValidated, true);
   lv_label_set_long_mode(labelIsValidated, LV_LABEL_LONG_WRAP);
   lv_obj_set_width(labelIsValidated, 240);

@@ -33,8 +33,8 @@ Motion::Motion(Pinetime::Applications::DisplayApp* app, Controllers::MotionContr
   lv_obj_align(label, LV_ALIGN_TOP_MID, 0, 10);
   lv_label_set_recolor(label, true);
 
-  labelStep = lv_label_create(chart);
-  lv_obj_align(labelStep, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+  labelStep = lv_label_create(lv_scr_act());
+  lv_obj_align_to(labelStep, chart, LV_ALIGN_BOTTOM_LEFT, 0, 0);
   lv_label_set_text(labelStep, "Steps ---");
 
   taskRefresh = lv_timer_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, this);
