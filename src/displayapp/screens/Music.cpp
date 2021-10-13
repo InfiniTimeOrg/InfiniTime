@@ -111,7 +111,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_label_set_long_mode(txtTrackDuration, LV_LABEL_LONG_SCROLL);
   lv_obj_align(txtTrackDuration, LV_ALIGN_TOP_LEFT, 12, 20);
   lv_label_set_text(txtTrackDuration, "--:--/--:--");
-  lv_obj_set_align(txtTrackDuration, LV_ALIGN_LEFT_MID);
+  lv_obj_set_style_text_align(txtTrackDuration, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
 
   constexpr uint8_t FONT_HEIGHT = 12;
@@ -120,7 +120,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   txtArtist = lv_label_create(lv_scr_act());
   lv_label_set_long_mode(txtArtist, LV_LABEL_LONG_SCROLL_CIRCULAR);
   lv_obj_align(txtArtist, LV_ALIGN_LEFT_MID, 12, MIDDLE_OFFSET + 1 * FONT_HEIGHT);
-  lv_obj_set_align(txtArtist, LV_ALIGN_LEFT_MID);
+  lv_obj_set_style_text_align(txtArtist, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_width(txtArtist, LV_HOR_RES - 12);
   lv_label_set_text(txtArtist, "Artist Name");
 
@@ -128,7 +128,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SCROLL_CIRCULAR);
   lv_obj_align(txtTrack, LV_ALIGN_LEFT_MID, 12, MIDDLE_OFFSET + 2 * FONT_HEIGHT + LINE_PAD);
 
-  lv_obj_set_align(txtTrack, LV_ALIGN_LEFT_MID);
+  lv_obj_set_style_text_align(txtTrack, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_width(txtTrack, LV_HOR_RES - 12);
   lv_label_set_text(txtTrack, "This is a very long getTrack name");
 

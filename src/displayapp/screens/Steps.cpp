@@ -20,6 +20,7 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_size(stepsArc, 220, 220);
   lv_arc_set_range(stepsArc, 0, 500);
   lv_obj_align(stepsArc,  LV_ALIGN_CENTER, 0, 0);
+  lv_obj_clear_flag(stepsArc, LV_OBJ_FLAG_CLICKABLE);
 
   stepsCount = motionController.NbSteps();
 
@@ -57,10 +58,12 @@ Steps::~Steps() {
 }
 
 void Steps::Refresh() {
-  stepsCount = motionController.NbSteps();
+  if (motionController.NbSteps() != stepsCount) {
+    stepsCount = motionController.NbSteps();
 
-  lv_label_set_text_fmt(lSteps, "%li", stepsCount);
-  lv_obj_align(lSteps, LV_ALIGN_CENTER, 0, -20);
+    lv_label_set_text_fmt(lSteps, "%li", stepsCount);
+    lv_obj_align(lSteps, LV_ALIGN_CENTER, 0, -20);
 
-  lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
+    lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
+  }
 }

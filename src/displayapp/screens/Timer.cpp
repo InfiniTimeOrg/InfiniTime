@@ -67,6 +67,7 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   lv_obj_align(btnPlayPause, LV_ALIGN_BOTTOM_MID, 0, -10);
   lv_obj_set_height(btnPlayPause, 40);
   txtPlayPause = lv_label_create(btnPlayPause);
+  lv_obj_center(txtPlayPause);
   if (timerController.IsRunning()) {
     lv_label_set_text(txtPlayPause, Symbols::pause);
   } else {

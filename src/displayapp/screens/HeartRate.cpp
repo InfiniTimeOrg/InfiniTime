@@ -77,18 +77,28 @@ HeartRate::~HeartRate() {
 void HeartRate::Refresh() {
 
   auto state = heartRateController.State();
+  
   switch (state) {
     case Controllers::HeartRateController::States::NoTouch:
     case Controllers::HeartRateController::States::NotEnoughData:
       // case Controllers::HeartRateController::States::Stopped:
-      lv_label_set_text(label_hr, "000");
+      if (state != prevState) {
+        lv_label_set_text(label_hr, "000");
+      }
       break;
     default:
-      lv_label_set_text_fmt(label_hr, "%03d", heartRateController.HeartRate());
+      uint8_t heartRate = heartRateController.HeartRate();
+      if (heartRate != prevHeartRate) {
+        lv_label_set_text_fmt(label_hr, "%03d", heartRate);
+        prevHeartRate = heartRate;
+      }
   }
 
-  lv_label_set_text(label_status, ToString(state));
-  lv_obj_align_to(label_status, label_hr, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+  if (state != prevState) {
+    lv_label_set_text(label_status, ToString(state));
+    lv_obj_align_to(label_status, label_hr, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+  }
+  prevState = state;
 }
 
 void HeartRate::OnStartStopEvent(lv_event_t* event) {

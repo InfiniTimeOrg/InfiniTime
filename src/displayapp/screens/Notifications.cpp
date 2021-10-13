@@ -212,6 +212,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_align(bt_accept, LV_ALIGN_BOTTOM_LEFT, 0, 0);
       label_accept = lv_label_create(bt_accept);
       lv_label_set_text(label_accept, Symbols::phone);
+      lv_obj_center(label_accept);
       lv_obj_set_style_bg_color(bt_accept, lv_palette_main(LV_PALETTE_GREEN), LV_PART_MAIN | LV_STATE_DEFAULT);
 
       bt_reject = lv_btn_create(lv_scr_act());
@@ -221,6 +222,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_align(bt_reject, LV_ALIGN_BOTTOM_MID, 0, 0);
       label_reject = lv_label_create(bt_reject);
       lv_label_set_text(label_reject, Symbols::phoneSlash);
+      lv_obj_center(label_reject);
       lv_obj_set_style_bg_color(bt_reject, lv_palette_main(LV_PALETTE_RED), LV_PART_MAIN | LV_STATE_DEFAULT);
 
       bt_mute = lv_btn_create(lv_scr_act());
@@ -230,6 +232,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_align(bt_mute, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
       label_mute = lv_label_create(bt_mute);
       lv_label_set_text(label_mute, Symbols::volumMute);
+      lv_obj_center(label_mute);
       lv_obj_set_style_bg_color(bt_mute, lv_palette_main(LV_PALETTE_GREY), LV_PART_MAIN | LV_STATE_DEFAULT);
     } break;
   }

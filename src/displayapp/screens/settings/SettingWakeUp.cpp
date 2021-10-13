@@ -29,7 +29,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::
   lv_obj_set_height(container1, LV_VER_RES - 50);
   lv_obj_set_layout(container1, LV_LAYOUT_FLEX);
   lv_obj_set_flex_flow(container1, LV_FLEX_FLOW_COLUMN);
-  lv_obj_set_flex_align(container1, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
+  lv_obj_set_flex_align(container1, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER);
 
 
   lv_obj_t* title = lv_label_create(lv_scr_act());

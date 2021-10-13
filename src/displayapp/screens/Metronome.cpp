@@ -53,9 +53,11 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   //  lv_obj_set_style_pad_left(bpbDropdown, 20, LV_DROPDOWN_PART_LIST | LV_STATE_DEFAULT);
   lv_obj_set_size(bpbDropdown, 115, 50);
   lv_obj_align(bpbDropdown, LV_ALIGN_BOTTOM_LEFT, 0, 0);
+  lv_obj_set_style_text_align(bpbDropdown, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_dropdown_set_options(bpbDropdown, "1\n2\n3\n4\n5\n6\n7\n8\n9");
   lv_dropdown_set_selected(bpbDropdown, bpb - 1);
   lv_dropdown_set_text(bpbDropdown, "");
+  lv_dropdown_set_symbol(bpbDropdown, nullptr);
 
   currentBpbText = lv_label_create(bpbDropdown);
   lv_label_set_text_fmt(currentBpbText, "%d bpb", bpb);

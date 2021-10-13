@@ -46,6 +46,7 @@ FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, 
 
     labelButtonValidate = lv_label_create(buttonValidate);
     lv_label_set_text_static(labelButtonValidate, "Validate");
+    lv_obj_center(labelButtonValidate);
 
     buttonReset = lv_btn_create(lv_scr_act());
     buttonReset->user_data = this;
@@ -56,6 +57,7 @@ FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, 
 
     labelButtonReset = lv_label_create(buttonReset);
     lv_label_set_text_static(labelButtonReset, "Reset");
+    lv_obj_center(labelButtonReset);
   }
 }
 

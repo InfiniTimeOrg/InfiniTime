@@ -66,6 +66,7 @@ namespace Pinetime {
         lv_obj_t* calendarCrossBar1;
         lv_obj_t* calendarCrossBar2;
         lv_obj_t* notificationIcon;
+        lv_obj_t* stepCont;
         lv_obj_t* stepMeter;
         lv_meter_scale_t* stepScale;
         lv_meter_indicator_t* stepIndicator;

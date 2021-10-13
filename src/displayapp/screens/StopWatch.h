@@ -81,6 +81,7 @@ namespace Pinetime::Applications::Screens {
     TickType_t startTime;
     TickType_t oldTimeElapsed;
     TimeSeparated_t currentTimeSeparated; // Holds Mins, Secs, millisecs
+    TimeSeparated_t prevTime;
     LapTextBuffer_t<2> lapBuffer;
     int lapNr = 0;
     lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;

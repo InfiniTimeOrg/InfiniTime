@@ -142,6 +142,7 @@ void StopWatch::start() {
   lv_label_set_text(txtStopLap, Symbols::lapsFlag);
   startTime = xTaskGetTickCount();
   currentState = States::Running;
+  prevTime = {0,0,0};
   systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
 }
 
@@ -162,8 +163,13 @@ void StopWatch::Refresh() {
     timeElapsed = calculateDelta(startTime, xTaskGetTickCount());
     currentTimeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
 
-    lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
-    lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
+    if (currentTimeSeparated.mins != prevTime.mins || currentTimeSeparated.secs != prevTime.secs) {
+      lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
+    }
+    if (currentTimeSeparated.hundredths != prevTime.hundredths) {
+      lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
+    }
+    prevTime = currentTimeSeparated;
   }
 }
 

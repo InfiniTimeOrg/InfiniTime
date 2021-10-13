@@ -256,14 +256,14 @@ static void style_init(void)
   lv_style_set_pad_right(&style_slider_knob_pressed, 14);
   
   style_init_reset(&style_arc_indic);
-  lv_style_set_line_color(&style_arc_indic, LV_PINETIME_BLUE);
-  lv_style_set_line_width(&style_arc_indic, LV_DPX(25));
-  lv_style_set_line_rounded(&style_arc_indic, true);
+  lv_style_set_arc_color(&style_arc_indic, LV_PINETIME_BLUE);
+  lv_style_set_arc_width(&style_arc_indic, LV_DPX(25));
+  lv_style_set_arc_rounded(&style_arc_indic, true);
   
   style_init_reset(&style_arc_bg);
-  lv_style_set_line_color(&style_arc_bg, LV_PINETIME_GRAY);
-  lv_style_set_line_width(&style_arc_bg, LV_DPX(25));
-  lv_style_set_line_rounded(&style_arc_bg, true);
+  lv_style_set_arc_color(&style_arc_bg, LV_PINETIME_GRAY);
+  lv_style_set_arc_width(&style_arc_bg, LV_DPX(25));
+  lv_style_set_arc_rounded(&style_arc_bg, true);
   lv_style_set_pad_all(&style_arc_bg, LV_DPX(5));
   
   lv_style_reset(&style_arc_knob);
@@ -381,6 +381,8 @@ static void theme_apply(lv_theme_t * th, lv_obj_t * obj)
   if (lv_obj_get_parent(obj) == NULL) {
     lv_obj_add_style(obj, &style_bg, 0);
     lv_obj_add_style(obj, &style_label_white, 0);
+    // Make screens not scrollable by default
+    lv_obj_clear_flag(obj, LV_OBJ_FLAG_SCROLLABLE);
     return;
   }
 
@@ -431,6 +433,7 @@ static void theme_apply(lv_theme_t * th, lv_obj_t * obj)
   #if LV_USE_CHECKBOX
   else if (lv_obj_check_type(obj, &lv_checkbox_class)) {
     lv_obj_add_style(obj, &style_cb_bg, 0);
+    lv_obj_add_style(obj, &style_label_white, 0);
     
     lv_obj_add_style(obj, &style_btn, LV_PART_INDICATOR);
     lv_obj_add_style(obj, &style_btn_checked, LV_PART_INDICATOR | LV_STATE_CHECKED);

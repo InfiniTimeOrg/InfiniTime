@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <chrono>
 #include "Screen.h"
+#include <components/heartrate/HeartRateController.h>
 #include <bits/unique_ptr.h>
 #include "systemtask/SystemTask.h"
 #include <libs/lvgl/src/misc/lv_style.h>
@@ -28,6 +29,9 @@ namespace Pinetime {
         Controllers::HeartRateController& heartRateController;
         Pinetime::System::SystemTask& systemTask;
         void UpdateStartStopButton(bool isRunning);
+        Controllers::HeartRateController::States prevState = Controllers::HeartRateController::States::Stopped;
+        uint8_t prevHeartRate = 0;
+        
         lv_obj_t* label_hr;
         lv_obj_t* label_bpm;
         lv_obj_t* label_status;
