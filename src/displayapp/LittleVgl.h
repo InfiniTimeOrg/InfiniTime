@@ -32,7 +32,7 @@ namespace Pinetime {
       void InitTouchpad();
       void InitTheme();
   
-      void DisplayDownScroll();
+      void DisplayVerScroll();
       void DisplayHorizAnim();
 
       Pinetime::Drivers::St7789& lcd;

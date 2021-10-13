@@ -130,7 +130,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
 
   lv_obj_set_style_text_align(txtTrack, LV_TEXT_ALIGN_LEFT, LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_obj_set_width(txtTrack, LV_HOR_RES - 12);
-  lv_label_set_text(txtTrack, "This is a very long getTrack name");
+  lv_label_set_text(txtTrack, "Track name");
 
   /** Init animation */
   imgDisc = lv_img_create(lv_scr_act());

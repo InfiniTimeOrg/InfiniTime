@@ -80,41 +80,67 @@ void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
 }
 
 
-void LittleVgl::DisplayDownScroll(){
+void LittleVgl::DisplayVerScroll(){
   // For each segment, draw the full width, 4 lines at a time starting from the bottom
   // TODO: Should probably calculate this from the size of the draw buffer
   int16_t height = 4;
   int16_t width = 240;
   int16_t y2 = 240;
   int16_t y1 = 240 - height;
+  int16_t stepSign = -1;
   
   lv_area_t area;
   area.x1 = 0;
   area.x2 = width;
   
-  // Start from the bottom and create a 4 line high box
-  for (y1 = 240 - height; y1 >= 0; y1 -= height) {
+  bool (*CheckEnd)(int16_t){};
+  
+  if (scrollDirection == FullRefreshDirections::Down){
+    y1 = 240 - height;
+    CheckEnd = [](int16_t y) -> bool {
+      return (y >= 0);
+    };
+    stepSign = -1;
+    // move past the non visible lines
+    writeOffset = scrollOffset;
+    writeOffset += (totalNbLines - visibleNbLines);
+    // and wrap around to the start of address space
+    writeOffset %= totalNbLines;
+    
+  
+  } else if (scrollDirection == FullRefreshDirections::Up){
+    y1 = 0;
+    CheckEnd = [](int16_t y) -> bool {
+      return (y < LV_VER_RES);
+    };
+    stepSign = 1;
+    // When scrolling up, we want to start writing at the line after the current screen
+    writeOffset = scrollOffset+visibleNbLines;
+    // Wrap if needed
+    writeOffset %= totalNbLines;
+  }
+  
+  // Loop over 4 px high boxes either up or down
+  for (; CheckEnd(y1); y1 += stepSign*height) {
     y2 = y1 + height - 1;
     
-    // If the box has reached the end of the visible line on the lcd controller...
-    if (y2 == visibleNbLines - 1) {
-      // move past the non visible lines
-      writeOffset += (totalNbLines - visibleNbLines);
-      // and wrap around to the start of address space
-      writeOffset %= totalNbLines;
-    }
     // Set new box
     area.y1 = y1;
     area.y2 = y2;
     
     // Scroll as we draw
-    uint16_t toScroll = height;
-    if (scrollOffset >= toScroll)
-      scrollOffset -= toScroll;
-    else { // now we need to wrap the scroll address
-      toScroll -= scrollOffset;
-      scrollOffset = totalNbLines - toScroll;
+    // The old logic works fine -- this looks more clear to me.
+    // The old logic can be ported back if wanted.
+    auto newScrollOffset = (int16_t)scrollOffset;
+    newScrollOffset += (stepSign*height);
+    // If the result is negative, wrap up
+    if (newScrollOffset < 0){
+      newScrollOffset += totalNbLines;
+    } else {
+      // else wrap down
+      newScrollOffset %= totalNbLines;
     }
+    scrollOffset = (uint16_t)newScrollOffset;
     lcd.VerticalScrollStartAddress(scrollOffset);
   
     lv_disp_t* disp = lv_disp_get_default();
@@ -124,7 +150,7 @@ void LittleVgl::DisplayDownScroll(){
     _lv_inv_area(disp, &area);
     // cancel any current flushes in the display driver
     // Since we've stopped timers, it will be waiting forever if there is currently a flush
-    lv_disp_flush_ready(disp->driver);
+//    lv_disp_flush_ready(disp->driver);
     lv_refr_now(disp);
   }
   // Done! clear flags and enable timers
@@ -186,7 +212,7 @@ void LittleVgl::DisplayHorizAnim() {
       lv_disp_t* disp = lv_disp_get_default();
       _lv_inv_area(disp, nullptr);
       _lv_inv_area(disp, &area);
-      lv_disp_flush_ready(disp->driver);
+//      lv_disp_flush_ready(disp->driver);
       lv_refr_now(disp);
     }
   scrollDirection = FullRefreshDirections::None;
@@ -196,11 +222,12 @@ void LittleVgl::DisplayHorizAnim() {
 void LittleVgl::StartTransitionAnimation() {
   lv_disp_t* disp = lv_disp_get_default();
   switch(scrollDirection){
+    case FullRefreshDirections::Up:
     case FullRefreshDirections::Down:
       lv_obj_update_layout(disp->act_scr);
       _lv_inv_area(disp, nullptr);
       animating = true;
-      DisplayDownScroll();
+      DisplayVerScroll();
       break;
     case FullRefreshDirections::RightAnim:
     case FullRefreshDirections::LeftAnim:
@@ -212,6 +239,7 @@ void LittleVgl::StartTransitionAnimation() {
     default:
       break;
   }
+//  lv_timer_resume(disp->refr_timer);
 }
 
 void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
@@ -220,48 +248,12 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   ulTaskNotifyTake(pdTRUE, 200);
   // NOtification is still needed (even if there is a mutex on SPI) because of the DataCommand pin
   // which cannot be set/clear during a transfert.
-  
-//  if (!animating && (scrollDirection == FullRefreshDirections::Down ||
-//                     scrollDirection == FullRefreshDirections::RightAnim ||
-//                     scrollDirection == FullRefreshDirections::LeftAnim)){
-//    StartTransitionAnimation();
-//    return;
-//  }
-
-  if ((scrollDirection == FullRefreshDirections::Up) && (area->y1 == 0)) {
-    writeOffset = (writeOffset + visibleNbLines) % totalNbLines;
-  }
 
   y1 = (area->y1 + writeOffset) % totalNbLines;
   y2 = (area->y2 + writeOffset) % totalNbLines;
 
   width = (area->x2 - area->x1) + 1;
   height = (area->y2 - area->y1) + 1;
-
-  if (scrollDirection == FullRefreshDirections::Up) {
-
-    if (area->y1 > 0) {
-      if (area->y2 == visibleNbLines - 1) {
-        scrollOffset += (height * 2);
-        scrollDirection = FullRefreshDirections::None;
-//        lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
-      } else {
-        scrollOffset += height;
-      }
-      scrollOffset = scrollOffset % totalNbLines;
-      lcd.VerticalScrollStartAddress(scrollOffset);
-    }
-  } else if (scrollDirection == FullRefreshDirections::Left or scrollDirection == FullRefreshDirections::LeftAnim) {
-    if (area->x2 == visibleNbLines - 1) {
-      scrollDirection = FullRefreshDirections::None;
-//      lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
-    }
-  } else if (scrollDirection == FullRefreshDirections::Right or scrollDirection == FullRefreshDirections::RightAnim) {
-    if (area->x1 == 0) {
-      scrollDirection = FullRefreshDirections::None;
-//      lv_disp_set_rotation(lv_disp_get_default(), LV_DISP_ROT_NONE);
-    }
-  }
 
   if (y2 < y1) {
     height = totalNbLines - y1;

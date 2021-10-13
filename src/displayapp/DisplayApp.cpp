@@ -149,7 +149,7 @@ void DisplayApp::InitHw() {
 
 void DisplayApp::Refresh() {
   TickType_t queueTimeout;
-  if (currentScreen.get()->IsNew()){
+  if (currentScreen->IsNew()){
     doScreenTransition();
   }
   switch (state) {
