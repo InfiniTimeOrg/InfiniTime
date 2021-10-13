@@ -78,7 +78,7 @@ Metronome::~Metronome() {
 
 void Metronome::Refresh() {
   if (metronomeStarted) {
-    if (xTaskGetTickCount() - startTime > 60 * configTICK_RATE_HZ / bpm) {
+    if (xTaskGetTickCount() - startTime > 60u * configTICK_RATE_HZ / static_cast<uint16_t>(bpm)) {
       startTime += 60 * configTICK_RATE_HZ / bpm;
       counter--;
       if (counter == 0) {

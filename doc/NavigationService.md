@@ -9,19 +9,19 @@ manDist (string) - Manouvre Distance, the distance to the upcoming change
 progress (uint8) - Percent complete of total route, value 0-100
 
 ## Service
-The service UUID is c7e60001-78fc-48fe-8e23-433b3a1942d0
+The service UUID is 00010000-78fc-48fe-8e23-433b3a1942d0
 
 ## Characteristics
-## Flags (UUID c7e60002-78fc-48fe-8e23-433b3a1942d0)
+## Flags (UUID 00010001-78fc-48fe-8e23-433b3a1942d0)
 All included icons are from pure-maps, which provides the actual routing from the client. The icon names ultimately come from the mapbox project "direction-icons", See https://github.com/rinigus/pure-maps/tree/master/qml/icons/navigation See the end of this document for the full lsit of supported icon names.
 
-## Narrative (UUID c7e60003-78fc-48fe-8e23-433b3a1942d0)
+## Narrative (UUID 00010002-78fc-48fe-8e23-433b3a1942d0)
 This is a client supplied string describing the upcoming instruction such as "At the roundabout take the first exit".
 
-## Man Dist (UUID c7e60004-78fc-48fe-8e23-433b3a1942d0)
+## Man Dist (UUID 00010003-78fc-48fe-8e23-433b3a1942d0)
 This is a short string describing the distance to the upcoming instruction such as "50 m".
 
-## Progress (UUID c7e60001=5-78fc-48fe-8e23-433b3a1942d0)
+## Progress (UUID 00010004-78fc-48fe-8e23-433b3a1942d0)
 The percent complete in a uint8.  The watch displays this as an overall progress in a progress bar.
 
 ## Full icon list

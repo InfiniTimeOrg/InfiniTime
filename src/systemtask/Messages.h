@@ -28,7 +28,7 @@ namespace Pinetime {
         SetOffAlarm,
         StopRinging,
         MeasureBatteryTimerExpired,
-        BatteryMeasurementDone,
+        BatteryPercentageUpdated,
       };
     }
 }

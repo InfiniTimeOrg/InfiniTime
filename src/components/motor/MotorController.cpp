@@ -9,9 +9,6 @@ APP_TIMER_DEF(longVibTimer);
 
 using namespace Pinetime::Controllers;
 
-MotorController::MotorController(Controllers::Settings& settingsController) : settingsController {settingsController} {
-}
-
 void MotorController::Init() {
   nrf_gpio_cfg_output(PinMap::Motor);
   nrf_gpio_pin_set(PinMap::Motor);
@@ -27,18 +24,11 @@ void MotorController::Ring(void* p_context) {
 }
 
 void MotorController::RunForDuration(uint8_t motorDuration) {
-  if (settingsController.GetVibrationStatus() == Controllers::Settings::Vibration::OFF) {
-    return;
-  }
-
   nrf_gpio_pin_clear(PinMap::Motor);
   app_timer_start(shortVibTimer, APP_TIMER_TICKS(motorDuration), nullptr);
 }
 
 void MotorController::StartRinging() {
-  if (settingsController.GetVibrationStatus() == Controllers::Settings::Vibration::OFF) {
-    return;
-  }
   Ring(this);
   app_timer_start(longVibTimer, APP_TIMER_TICKS(1000), this);
 }

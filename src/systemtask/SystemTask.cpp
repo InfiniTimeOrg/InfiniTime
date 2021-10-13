@@ -136,7 +136,6 @@ void SystemTask::Work() {
   touchPanel.Init();
   dateTimeController.Register(this);
   batteryController.Register(this);
-  batteryController.Update();
   motorController.Init();
   motionSensor.SoftReset();
   timerController.Register(this);
@@ -158,19 +157,21 @@ void SystemTask::Work() {
   heartRateSensor.Disable();
   heartRateApp.Start();
 
-  nrf_gpio_cfg_sense_input(PinMap::Button, (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pulldown, (nrf_gpio_pin_sense_t) GPIO_PIN_CNF_SENSE_High);
+  // Button
   nrf_gpio_cfg_output(15);
   nrf_gpio_pin_set(15);
 
   nrfx_gpiote_in_config_t pinConfig;
-  pinConfig.skip_gpio_setup = true;
+  pinConfig.skip_gpio_setup = false;
   pinConfig.hi_accuracy = false;
   pinConfig.is_watcher = false;
-  pinConfig.sense = NRF_GPIOTE_POLARITY_LOTOHI;
+  pinConfig.sense = (nrf_gpiote_polarity_t) NRF_GPIOTE_POLARITY_TOGGLE;
   pinConfig.pull = (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pulldown;
 
   nrfx_gpiote_in_init(PinMap::Button, &pinConfig, nrfx_gpiote_evt_handler);
+  nrfx_gpiote_in_event_enable(PinMap::Button, true);
 
+  // Touchscreen
   nrf_gpio_cfg_sense_input(PinMap::Cst816sIrq, (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pullup, (nrf_gpio_pin_sense_t) GPIO_PIN_CNF_SENSE_Low);
 
   pinConfig.skip_gpio_setup = true;
@@ -181,18 +182,16 @@ void SystemTask::Work() {
 
   nrfx_gpiote_in_init(PinMap::Cst816sIrq, &pinConfig, nrfx_gpiote_evt_handler);
 
+  // Power present
   pinConfig.sense = NRF_GPIOTE_POLARITY_TOGGLE;
   pinConfig.pull = NRF_GPIO_PIN_NOPULL;
   pinConfig.is_watcher = false;
   pinConfig.hi_accuracy = false;
-  pinConfig.skip_gpio_setup = true;
+  pinConfig.skip_gpio_setup = false;
   nrfx_gpiote_in_init(PinMap::PowerPresent, &pinConfig, nrfx_gpiote_evt_handler);
+  nrfx_gpiote_in_event_enable(PinMap::PowerPresent, true);
 
-  if (nrf_gpio_pin_read(PinMap::PowerPresent)) {
-    nrf_gpio_cfg_sense_input(PinMap::PowerPresent, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_LOW);
-  } else {
-    nrf_gpio_cfg_sense_input(PinMap::PowerPresent, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_HIGH);
-  }
+  batteryController.MeasureVoltage();
 
   idleTimer = xTimerCreate("idleTimer", pdMS_TO_TICKS(2000), pdFALSE, this, IdleTimerCallback);
   dimTimer = xTimerCreate("dimTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), pdFALSE, this, DimTimerCallback);
@@ -269,10 +268,12 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateDateTime);
           break;
         case Messages::OnNewNotification:
-          if (isSleeping && !isWakingUp) {
-            GoToRunning();
+          if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::ON) {
+            if (isSleeping && !isWakingUp) {
+              GoToRunning();
+            }
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           }
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;
         case Messages::OnTimerDone:
           if (isSleeping && !isWakingUp) {
@@ -359,18 +360,18 @@ void SystemTask::Work() {
           stepCounterMustBeReset = true;
           break;
         case Messages::OnChargingEvent:
-          batteryController.Update();
+          batteryController.ReadPowerState();
           motorController.RunForDuration(15);
+          ReloadIdleTimer();
+          if (isSleeping && !isWakingUp) {
+            GoToRunning();
+          }
           break;
         case Messages::MeasureBatteryTimerExpired:
-          sendBatteryNotification = true;
-          batteryController.Update();
+          batteryController.MeasureVoltage();
           break;
-        case Messages::BatteryMeasurementDone:
-          if (sendBatteryNotification) {
-            sendBatteryNotification = false;
-            nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
-          }
+        case Messages::BatteryPercentageUpdated:
+          nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
           break;
         case Messages::ReloadIdleTimer:
           ReloadIdleTimer();
