@@ -19,21 +19,21 @@
  * Style/layout copied from TimeStyle for Pebble by Dan Tilden (github.com/tilden)
  */
 
-#include "PineTimeStyle.h"
+#include "displayapp/screens/PineTimeStyle.h"
 #include <date/date.h>
 #include <lvgl/lvgl.h>
 #include <cstdio>
 #include <displayapp/Colors.h>
-#include "BatteryIcon.h"
-#include "BleIcon.h"
-#include "NotificationIcon.h"
-#include "Symbols.h"
+#include "displayapp/screens/BatteryIcon.h"
+#include "displayapp/screens/BleIcon.h"
+#include "displayapp/screens/NotificationIcon.h"
+#include "displayapp/screens/Symbols.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
-#include "../DisplayApp.h"
+#include "displayapp/DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
 

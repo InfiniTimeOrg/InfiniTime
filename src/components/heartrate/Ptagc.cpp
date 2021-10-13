@@ -5,7 +5,7 @@
 */
 
 #include <cmath>
-#include "Ptagc.h"
+#include "components/heartrate/Ptagc.h"
 
 using namespace Pinetime::Controllers;
 

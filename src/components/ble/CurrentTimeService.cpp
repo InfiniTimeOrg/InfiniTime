@@ -1,4 +1,4 @@
-#include "CurrentTimeService.h"
+#include "components/ble/CurrentTimeService.h"
 #include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 

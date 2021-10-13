@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TwiMaster.h"
+#include "drivers/TwiMaster.h"
 
 namespace Pinetime {
   namespace Drivers {

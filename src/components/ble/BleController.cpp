@@ -1,4 +1,4 @@
-#include "BleController.h"
+#include "components/ble/BleController.h"
 
 using namespace Pinetime::Controllers;
 

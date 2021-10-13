@@ -6,7 +6,7 @@
 
 #include <vector>
 #include <nrf_log.h>
-#include "Ppg.h"
+#include "components/heartrate/Ppg.h"
 using namespace Pinetime::Controllers;
 
 /** Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/ppg.py */

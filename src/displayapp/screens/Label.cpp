@@ -1,4 +1,4 @@
-#include "Label.h"
+#include "displayapp/screens/Label.h"
 
 using namespace Pinetime::Applications::Screens;
 

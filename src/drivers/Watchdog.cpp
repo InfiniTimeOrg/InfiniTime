@@ -1,4 +1,4 @@
-#include "Watchdog.h"
+#include "drivers/Watchdog.h"
 #include <mdk/nrf.h>
 using namespace Pinetime::Drivers;
 

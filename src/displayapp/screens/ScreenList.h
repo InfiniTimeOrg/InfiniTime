@@ -3,8 +3,8 @@
 #include <array>
 #include <functional>
 #include <memory>
-#include "Screen.h"
-#include "../DisplayApp.h"
+#include "displayapp/screens/Screen.h"
+#include "displayapp/DisplayApp.h"
 
 namespace Pinetime {
   namespace Applications {

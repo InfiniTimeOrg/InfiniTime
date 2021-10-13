@@ -3,7 +3,7 @@
 #include <lvgl/lvgl.h>
 #include <cstdint>
 #include <memory>
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
 

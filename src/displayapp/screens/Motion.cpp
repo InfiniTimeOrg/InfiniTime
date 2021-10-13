@@ -1,6 +1,6 @@
 #include <libs/lvgl/lvgl.h>
-#include "Motion.h"
-#include "../DisplayApp.h"
+#include "displayapp/screens/Motion.h"
+#include "displayapp/DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
 

@@ -2,8 +2,8 @@
 
 #include <memory>
 
-#include "Screen.h"
-#include "ScreenList.h"
+#include "displayapp/screens/Screen.h"
+#include "displayapp/screens/ScreenList.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/settings/Settings.h"
 #include "components/battery/BatteryController.h"

@@ -3,8 +3,8 @@
 #include <lvgl/lvgl.h>
 #include <cstdint>
 #include <memory>
-#include "Screen.h"
-#include "../Apps.h"
+#include "displayapp/screens/Screen.h"
+#include "displayapp/Apps.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/settings/Settings.h"
 #include "components/datetime/DateTimeController.h"

@@ -6,7 +6,7 @@
 
 #include <algorithm>
 #include <nrf_gpio.h>
-#include "Hrs3300.h"
+#include "drivers/Hrs3300.h"
 
 #include <FreeRTOS.h>
 #include <task.h>

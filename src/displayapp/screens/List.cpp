@@ -1,6 +1,6 @@
-#include "List.h"
-#include "../DisplayApp.h"
-#include "Symbols.h"
+#include "displayapp/screens/List.h"
+#include "displayapp/DisplayApp.h"
+#include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 

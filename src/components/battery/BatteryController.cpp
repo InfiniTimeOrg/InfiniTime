@@ -1,4 +1,4 @@
-#include "BatteryController.h"
+#include "components/battery/BatteryController.h"
 #include "drivers/PinMap.h"
 #include <hal/nrf_gpio.h>
 #include <nrfx_saadc.h>

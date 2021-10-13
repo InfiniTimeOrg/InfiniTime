@@ -1,8 +1,8 @@
-#include <libs/lvgl/lvgl.h>
-#include "HeartRate.h"
+#include <lvgl/lvgl.h>
+#include "displayapp/screens/HeartRate.h"
 #include <components/heartrate/HeartRateController.h>
 
-#include "../DisplayApp.h"
+#include "displayapp/DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
 

@@ -1,7 +1,7 @@
-#include "SystemInfo.h"
+#include "displayapp/screens/SystemInfo.h"
 #include <lvgl/lvgl.h>
-#include "../DisplayApp.h"
-#include "Label.h"
+#include "displayapp/DisplayApp.h"
+#include "displayapp/screens/Label.h"
 #include "Version.h"
 #include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"

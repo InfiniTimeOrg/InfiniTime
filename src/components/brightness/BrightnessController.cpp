@@ -1,4 +1,4 @@
-#include "BrightnessController.h"
+#include "components/brightness/BrightnessController.h"
 #include <hal/nrf_gpio.h>
 #include "displayapp/screens/Symbols.h"
 #include "drivers/PinMap.h"

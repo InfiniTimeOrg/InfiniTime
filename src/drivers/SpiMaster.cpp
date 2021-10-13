@@ -1,4 +1,4 @@
-#include "SpiMaster.h"
+#include "drivers/SpiMaster.h"
 #include <hal/nrf_gpio.h>
 #include <hal/nrf_spim.h>
 #include <nrfx_log.h>

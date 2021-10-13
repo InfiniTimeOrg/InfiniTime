@@ -1,4 +1,4 @@
-#include "NrfLogger.h"
+#include "logging/NrfLogger.h"
 
 #include <libraries/log/nrf_log.h>
 #include <libraries/log/nrf_log_ctrl.h>
