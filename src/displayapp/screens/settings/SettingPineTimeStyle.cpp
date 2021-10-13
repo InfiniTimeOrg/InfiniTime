@@ -48,14 +48,14 @@ SettingPineTimeStyle::SettingPineTimeStyle(Pinetime::Applications::DisplayApp* a
   lv_obj_align(sidebar, LV_ALIGN_TOP_RIGHT, 0, 0);
 
   // Display icons
-  batteryIcon = lv_label_create(lv_scr_act());
+  batteryIcon = lv_label_create(sidebar);
   lv_obj_set_style_text_color(batteryIcon, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
-  lv_obj_align_to(batteryIcon, sidebar, LV_ALIGN_TOP_MID, 0, 2);
+  lv_obj_align(batteryIcon, LV_ALIGN_TOP_MID, 0, 2);
 
-  bleIcon = lv_label_create(lv_scr_act());
+  bleIcon = lv_label_create(sidebar);
   lv_obj_set_style_text_color(bleIcon, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_align_to(bleIcon, sidebar, LV_ALIGN_TOP_MID, 0, 25);
+  lv_obj_align(bleIcon, LV_ALIGN_TOP_MID, 0, 25);
 
   // Calendar icon
   calendarOuter = lv_obj_create(lv_scr_act());
@@ -100,10 +100,10 @@ SettingPineTimeStyle::SettingPineTimeStyle(Pinetime::Applications::DisplayApp* a
   lv_label_set_text(dateDayOfWeek, "THU");
   lv_obj_align_to(dateDayOfWeek, sidebar, LV_ALIGN_CENTER, 0, -34);
 
-  dateDay = lv_label_create(lv_scr_act());
+  dateDay = lv_label_create(calendarInner);
   lv_obj_set_style_text_color(dateDay, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
   lv_label_set_text(dateDay, "25");
-  lv_obj_align_to(dateDay, sidebar, LV_ALIGN_CENTER, 0, 3);
+  lv_obj_center(dateDay);
 
   dateMonth = lv_label_create(lv_scr_act());
   lv_obj_set_style_text_color(dateMonth, lv_color_hex(0x000000), LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -111,24 +111,26 @@ SettingPineTimeStyle::SettingPineTimeStyle(Pinetime::Applications::DisplayApp* a
   lv_obj_align_to(dateMonth, sidebar, LV_ALIGN_CENTER, 0, 32);
 
   // Step count gauge
+  stepCont = lv_obj_create(lv_scr_act());
+  lv_obj_set_size(stepCont, 40, 40);
+  lv_obj_align(stepCont, LV_ALIGN_BOTTOM_RIGHT, 0, 0);
+  
   needle_color = lv_color_white();
-  stepMeter = lv_meter_create(lv_scr_act());
+  stepMeter = lv_meter_create(stepCont);
+  lv_obj_set_size(stepMeter, 37, 37);
+  lv_obj_center(stepMeter);
+
   stepScale = lv_meter_add_scale(stepMeter);
-  stepIndicator = lv_meter_add_needle_line(stepMeter, stepScale, 3, needle_color, 0);
+  stepIndicator = lv_meter_add_needle_line(stepMeter, stepScale, 2, needle_color, -6);
   lv_meter_set_scale_range(stepMeter, stepScale, 0, 100, 360, 180);
   lv_meter_set_scale_ticks(stepMeter, stepScale, 11, 4, 4, lv_color_black());
-  lv_obj_set_size(stepMeter, 40, 40);
-  lv_obj_align_to(stepMeter, sidebar, LV_ALIGN_BOTTOM_MID, 0, 0);
   lv_meter_set_indicator_value(stepMeter, stepIndicator, 0);
 
-  lv_obj_set_style_pad_right(stepMeter, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_left(stepMeter, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_bottom(stepMeter, 3, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_line_opa(stepMeter, LV_OPA_COVER, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_line_width(stepMeter, 4, LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_line_color(stepMeter, lv_color_black(), LV_PART_MAIN | LV_STATE_DEFAULT);
-  lv_obj_set_style_line_opa(stepMeter, LV_OPA_COVER, LV_PART_INDICATOR | LV_STATE_DEFAULT);
-  lv_obj_set_style_pad_gap(stepMeter, 4, LV_PART_INDICATOR | LV_STATE_DEFAULT);;
+  lv_obj_set_style_pad_all(stepMeter, 0, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_opa(stepMeter, LV_OPA_TRANSP, LV_PART_INDICATOR | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_opa(stepMeter, LV_OPA_TRANSP, LV_PART_MAIN | LV_STATE_DEFAULT);
+  lv_obj_set_style_line_color(stepMeter, lv_color_black(), LV_PART_TICKS | LV_STATE_DEFAULT);
+  lv_obj_set_style_bg_opa(stepCont, LV_OPA_TRANSP, 0);
 
   backgroundLabel = lv_label_create(lv_scr_act());
   lv_obj_add_flag(backgroundLabel, LV_OBJ_FLAG_CLICKABLE);
