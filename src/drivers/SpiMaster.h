@@ -30,7 +30,7 @@ namespace Pinetime {
       SpiMaster& operator=(SpiMaster&&) = delete;
 
       bool Init();
-      bool Write(uint8_t pinCsn, const uint8_t* data, size_t size);
+      bool Write(uint8_t pinCsn, const uint8_t* data, size_t size, uint8_t pinLcdCmd, bool isLcdData);
       bool Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize);
 
       bool WriteCmdAndBuffer(uint8_t pinCsn, const uint8_t* cmd, size_t cmdSize, const uint8_t* data, size_t dataSize);
