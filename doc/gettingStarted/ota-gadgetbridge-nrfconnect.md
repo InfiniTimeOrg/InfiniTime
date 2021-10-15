@@ -8,7 +8,7 @@ If you just want to flash or upgrade InfiniTime on your PineTime, this page is f
 - [How to flash InfiniTime using the SWD interface](#how-to-flash-infinitime-using-the-swd-interface)
 
 ## InfiniTime releases and versions
-All releases of InfiniTime are available on the [release page of the GitHub repo](https://github.com/JF002/InfiniTime/releases).
+All releases of InfiniTime are available on the [release page of the GitHub repo](https://github.com/InfiniTimeOrg/InfiniTime/releases).
 
 Versions that are tagged as **RELEASE CANDIDATE** are pre-release versions, that are available for testing before actually releasing a new stable version. If you want to help us debug the project and provide stable versions to other user, you can use them. If you want stable and tested version, you should not flash these release candidate version.
 
