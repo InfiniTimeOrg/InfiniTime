@@ -15,6 +15,7 @@ namespace Pinetime {
         ~Settings() override;
 
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
+        bool IsNew() { return screens.IsNew(); }
 
       private:
         Controllers::Settings& settingsController;

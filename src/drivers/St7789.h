@@ -62,7 +62,8 @@ namespace Pinetime {
         VerticalScrollStartAddress = 0x37,
         ColMod = 0x3a,
       };
-      void WriteData(uint8_t data);
+      void WriteData(const uint8_t* data, size_t s);
+      void WriteDataByte(uint8_t data);
       void ColumnAddressSet();
 
       static constexpr uint16_t Width = 240;

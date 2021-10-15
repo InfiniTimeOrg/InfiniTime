@@ -3,27 +3,26 @@
 
 using namespace Pinetime::Applications::Screens;
 
-void slider_event_cb(lv_obj_t* slider, lv_event_t event) {
-  if (event == LV_EVENT_VALUE_CHANGED) {
-    auto* brightnessSlider = static_cast<Brightness*>(slider->user_data);
+void slider_event_cb(lv_event_t* event) {
+  if (lv_event_get_code(event) == LV_EVENT_VALUE_CHANGED) {
+    auto* brightnessSlider = static_cast<Brightness*>(lv_event_get_user_data(event));
     brightnessSlider->OnValueChanged();
   }
 }
 
 Brightness::Brightness(Pinetime::Applications::DisplayApp* app, Controllers::BrightnessController& brightness)
   : Screen(app), brightness {brightness} {
-  slider = lv_slider_create(lv_scr_act(), nullptr);
+  slider = lv_slider_create(lv_scr_act());
   lv_obj_set_user_data(slider, this);
-  lv_obj_set_width(slider, LV_DPI * 2);
-  lv_obj_align(slider, nullptr, LV_ALIGN_CENTER, 0, 0);
-  lv_obj_set_event_cb(slider, slider_event_cb);
+  lv_obj_set_width(slider, LV_DPI_DEF * 2);
+  lv_obj_align(slider,  LV_ALIGN_CENTER, 0, 0);
+  lv_obj_add_event_cb(slider, slider_event_cb, LV_EVENT_ALL, slider->user_data);
   lv_slider_set_range(slider, 0, 2);
   lv_slider_set_value(slider, LevelToInt(brightness.Level()), LV_ANIM_OFF);
 
-  slider_label = lv_label_create(lv_scr_act(), nullptr);
+  slider_label = lv_label_create(lv_scr_act());
   lv_label_set_text(slider_label, LevelToString(brightness.Level()));
-  lv_obj_set_auto_realign(slider_label, true);
-  lv_obj_align(slider_label, slider, LV_ALIGN_OUT_BOTTOM_MID, 0, 30);
+  lv_obj_align_to(slider_label, slider, LV_ALIGN_OUT_BOTTOM_MID, 0, 30);
 }
 
 Brightness::~Brightness() {

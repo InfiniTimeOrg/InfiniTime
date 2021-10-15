@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Screen.h"
-#include <lvgl/src/lv_core/lv_obj.h>
+#include <lvgl/src/core/lv_obj.h>
 
 namespace Pinetime {
   namespace Controllers {
@@ -16,7 +16,7 @@ namespace Pinetime {
         FirmwareValidation(DisplayApp* app, Pinetime::Controllers::FirmwareValidator& validator);
         ~FirmwareValidation() override;
 
-        void OnButtonEvent(lv_obj_t* object, lv_event_t event);
+        void OnButtonEvent(lv_obj_t* object, lv_event_t* event);
 
       private:
         Pinetime::Controllers::FirmwareValidator& validator;

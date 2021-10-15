@@ -14,7 +14,7 @@ namespace Pinetime {
       Spi& operator=(Spi&&) = delete;
 
       bool Init();
-      bool Write(const uint8_t* data, size_t size);
+      bool Write(const uint8_t* data, size_t size, uint8_t pinLcdCmd = -1, bool isLcdData = true);
       bool Read(uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize);
       bool WriteCmdAndBuffer(const uint8_t* cmd, size_t cmdSize, const uint8_t* data, size_t dataSize);
       void Sleep();

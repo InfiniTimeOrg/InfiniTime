@@ -4,8 +4,8 @@
 #include <chrono>
 #include "Screen.h"
 #include <bits/unique_ptr.h>
-#include <libs/lvgl/src/lv_core/lv_style.h>
-#include <libs/lvgl/src/lv_core/lv_obj.h>
+#include <libs/lvgl/src/misc/lv_style.h>
+#include <libs/lvgl/src/core/lv_obj.h>
 #include <components/motion/MotionController.h>
 
 namespace Pinetime {
@@ -28,7 +28,7 @@ namespace Pinetime {
         lv_obj_t* label;
 
         lv_obj_t* labelStep;
-        lv_task_t* taskRefresh;
+        lv_timer_t* taskRefresh;
       };
     }
   }

@@ -19,6 +19,7 @@ void St7789::Init() {
   SleepOut();
   ColMod();
   MemoryDataAccessControl();
+  VerticalScrollDefinition(0,320,0);
   ColumnAddressSet();
   RowAddressSet();
   DisplayInversionOn();
@@ -27,17 +28,15 @@ void St7789::Init() {
 }
 
 void St7789::WriteCommand(uint8_t cmd) {
-  nrf_gpio_pin_clear(pinDataCommand);
-  WriteSpi(&cmd, 1);
+  spi.Write(&cmd, 1, pinDataCommand, false);
 }
 
-void St7789::WriteData(uint8_t data) {
-  nrf_gpio_pin_set(pinDataCommand);
-  WriteSpi(&data, 1);
+void St7789::WriteDataByte(uint8_t data) {
+  spi.Write(&data, 1, pinDataCommand, true);
 }
 
-void St7789::WriteSpi(const uint8_t* data, size_t size) {
-  spi.Write(data, size);
+void St7789::WriteData(const uint8_t* data, size_t size) {
+  spi.Write(data, size, pinDataCommand, true);
 }
 
 void St7789::SoftwareReset() {
@@ -55,29 +54,29 @@ void St7789::SleepIn() {
 
 void St7789::ColMod() {
   WriteCommand(static_cast<uint8_t>(Commands::ColMod));
-  WriteData(0x55);
+  WriteDataByte(0x55);
   nrf_delay_ms(10);
 }
 
 void St7789::MemoryDataAccessControl() {
   WriteCommand(static_cast<uint8_t>(Commands::MemoryDataAccessControl));
-  WriteData(0x00);
+  WriteDataByte(0x00);
 }
 
 void St7789::ColumnAddressSet() {
   WriteCommand(static_cast<uint8_t>(Commands::ColumnAddressSet));
-  WriteData(0x00);
-  WriteData(0x00);
-  WriteData(Width >> 8u);
-  WriteData(Width & 0xffu);
+  WriteDataByte(0x00);
+  WriteDataByte(0x00);
+  WriteDataByte(Width >> 8u);
+  WriteDataByte(Width & 0xffu);
 }
 
 void St7789::RowAddressSet() {
   WriteCommand(static_cast<uint8_t>(Commands::RowAddressSet));
-  WriteData(0x00);
-  WriteData(0x00);
-  WriteData(320u >> 8u);
-  WriteData(320u & 0xffu);
+  WriteDataByte(0x00);
+  WriteDataByte(0x00);
+  WriteDataByte(320u >> 8u);
+  WriteDataByte(320u & 0xffu);
 }
 
 void St7789::DisplayInversionOn() {
@@ -96,16 +95,16 @@ void St7789::DisplayOn() {
 
 void St7789::SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
   WriteCommand(static_cast<uint8_t>(Commands::ColumnAddressSet));
-  WriteData(x0 >> 8);
-  WriteData(x0 & 0xff);
-  WriteData(x1 >> 8);
-  WriteData(x1 & 0xff);
+  WriteDataByte(x0 >> 8);
+  WriteDataByte(x0 & 0xff);
+  WriteDataByte(x1 >> 8);
+  WriteDataByte(x1 & 0xff);
 
   WriteCommand(static_cast<uint8_t>(Commands::RowAddressSet));
-  WriteData(y0 >> 8);
-  WriteData(y0 & 0xff);
-  WriteData(y1 >> 8);
-  WriteData(y1 & 0xff);
+  WriteDataByte(y0 >> 8);
+  WriteDataByte(y0 & 0xff);
+  WriteDataByte(y1 >> 8);
+  WriteDataByte(y1 & 0xff);
 
   WriteToRam();
 }
@@ -121,19 +120,19 @@ void St7789::DisplayOff() {
 
 void St7789::VerticalScrollDefinition(uint16_t topFixedLines, uint16_t scrollLines, uint16_t bottomFixedLines) {
   WriteCommand(static_cast<uint8_t>(Commands::VerticalScrollDefinition));
-  WriteData(topFixedLines >> 8u);
-  WriteData(topFixedLines & 0x00ffu);
-  WriteData(scrollLines >> 8u);
-  WriteData(scrollLines & 0x00ffu);
-  WriteData(bottomFixedLines >> 8u);
-  WriteData(bottomFixedLines & 0x00ffu);
+  WriteDataByte(topFixedLines >> 8u);
+  WriteDataByte(topFixedLines & 0x00ffu);
+  WriteDataByte(scrollLines >> 8u);
+  WriteDataByte(scrollLines & 0x00ffu);
+  WriteDataByte(bottomFixedLines >> 8u);
+  WriteDataByte(bottomFixedLines & 0x00ffu);
 }
 
 void St7789::VerticalScrollStartAddress(uint16_t line) {
   verticalScrollingStartAddress = line;
   WriteCommand(static_cast<uint8_t>(Commands::VerticalScrollStartAddress));
-  WriteData(line >> 8u);
-  WriteData(line & 0x00ffu);
+  WriteDataByte(line >> 8u);
+  WriteDataByte(line & 0x00ffu);
 }
 
 void St7789::Uninit() {
@@ -146,14 +145,12 @@ void St7789::DrawPixel(uint16_t x, uint16_t y, uint32_t color) {
 
   SetAddrWindow(x, y, x + 1, y + 1);
 
-  nrf_gpio_pin_set(pinDataCommand);
-  WriteSpi(reinterpret_cast<const uint8_t*>(&color), 2);
+  WriteData(reinterpret_cast<const uint8_t*>(&color), 2);
 }
 
 void St7789::DrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t* data, size_t size) {
   SetAddrWindow(x, y, x + width - 1, y + height - 1);
-  nrf_gpio_pin_set(pinDataCommand);
-  WriteSpi(data, size);
+  WriteData(data, size);
 }
 
 void St7789::HardwareReset() {

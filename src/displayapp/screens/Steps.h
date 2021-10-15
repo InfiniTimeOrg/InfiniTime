@@ -31,7 +31,7 @@ namespace Pinetime {
 
         uint32_t stepsCount;
 
-        lv_task_t* taskRefresh;
+        lv_timer_t* taskRefresh;
       };
     }
   }

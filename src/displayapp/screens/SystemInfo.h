@@ -31,6 +31,7 @@ namespace Pinetime {
                             Pinetime::Controllers::MotionController& motionController,
                             Pinetime::Drivers::Cst816S& touchPanel);
         ~SystemInfo() override;
+        bool IsNew() { return screens.IsNew(); }
         bool OnTouchEvent(TouchEvents event) override;
 
       private:

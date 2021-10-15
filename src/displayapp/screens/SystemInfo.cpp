@@ -72,30 +72,24 @@ bool SystemInfo::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
-  lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_recolor(label, true);
-  lv_label_set_text_fmt(label,
-                        "#FFFF00 InfiniTime#\n\n"
-                        "#444444 Version# %ld.%ld.%ld\n"
-                        "#444444 Short Ref# %s\n"
-                        "#444444 Build date#\n"
-                        "%s\n"
-                        "%s\n\n"
-                        "#444444 Bootloader# %s",
-                        Version::Major(),
-                        Version::Minor(),
-                        Version::Patch(),
-                        Version::GitCommitHash(),
-                        __DATE__,
-                        __TIME__,
-                        BootloaderVersion::VersionString());
-  lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(0, 5, app, label);
+  
+  auto newScreen = std::make_unique<Screens::Label>(0, 5, app);
+
+  newScreen->addLineCenter("#FFFF00 InfiniTime#");
+  newScreen->addLine();
+  newScreen->addLineCenter("#444444 Version# %ld.%ld.%ld", Version::Major(), Version::Minor(), Version::Patch());
+  newScreen->addLineCenter("#444444 Short Ref# %s", Version::GitCommitHash());
+  newScreen->addLineCenter("#444444 Build date#");
+  newScreen->addLineCenter("%s", __TIME__);
+  newScreen->addLineCenter("%s", __DATE__);
+  newScreen->addLine();
+  newScreen->addLineCenter("#444444 Bootloader# %s", BootloaderVersion::VersionString());
+
+  return std::move(newScreen);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
-  auto batteryPercent = batteryController.PercentRemaining();
+  uint8_t batteryPercent = batteryController.PercentRemaining();
   auto resetReason = [this]() {
     switch (watchdog.ResetReason()) {
       case Drivers::Watchdog::ResetReasons::Watchdog:
@@ -134,71 +128,41 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   uptimeSeconds = uptimeSeconds % secondsInAMinute;
   // TODO handle more than 100 days of uptime
 
-  lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_recolor(label, true);
-  lv_label_set_text_fmt(label,
-                        "#444444 Date# %02d/%02d/%04d\n"
-                        "#444444 Time# %02d:%02d:%02d\n"
-                        "#444444 Uptime#\n %02lud %02lu:%02lu:%02lu\n"
-                        "#444444 Battery# %d%%/%03imV\n"
-                        "#444444 Backlight# %s\n"
-                        "#444444 Last reset# %s\n"
-                        "#444444 Accel.# %s\n"
-                        "#444444 Touch.# %x.%x.%x\n",
-                        dateTimeController.Day(),
-                        static_cast<uint8_t>(dateTimeController.Month()),
-                        dateTimeController.Year(),
-                        dateTimeController.Hours(),
-                        dateTimeController.Minutes(),
-                        dateTimeController.Seconds(),
-                        uptimeDays,
-                        uptimeHours,
-                        uptimeMinutes,
-                        uptimeSeconds,
-                        batteryPercent,
-                        batteryController.Voltage(),
-                        brightnessController.ToString(),
-                        resetReason,
-                        ToString(motionController.DeviceType()),
-                        touchPanel.GetChipId(),
-                        touchPanel.GetVendorId(),
-                        touchPanel.GetFwVersion());
-  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(1, 5, app, label);
+  auto newScreen = std::make_unique<Screens::Label>(1, 5, app);
+  newScreen->addLine("#444444 Date# %02hhu/%02hhu/%04hu",
+                     dateTimeController.Day(),
+                     static_cast<uint8_t>(dateTimeController.Month()),
+                     dateTimeController.Year());
+  newScreen->addLine(
+    "#444444 Time# %02hhu:%02hhu:%02hhu", dateTimeController.Hours(), dateTimeController.Minutes(), dateTimeController.Seconds());
+  newScreen->addLine("#444444 Uptime#");
+  newScreen->addLine(" %02lud %02lu:%02lu:%02lu", uptimeDays, uptimeHours, uptimeMinutes, uptimeSeconds);
+  newScreen->addLine("#444444 Battery# %hhu%%/%03humV", batteryPercent, batteryController.Voltage());
+  newScreen->addLine("#444444 Backlight# %s", brightnessController.ToString());
+  newScreen->addLine("#444444 Last reset# %s", resetReason);
+  newScreen->addLine("#444444 Accel.# %s", ToString(motionController.DeviceType()));
+  newScreen->addLine("#444444 Touch.# %hhx.%hhx.%hhx", touchPanel.GetChipId(), touchPanel.GetVendorId(), touchPanel.GetFwVersion());
+
+  return std::move(newScreen);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
   lv_mem_monitor_t mon;
   lv_mem_monitor(&mon);
 
-  lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_recolor(label, true);
+  auto newScreen = std::make_unique<Screens::Label>(2, 5, app);
   auto& bleAddr = bleController.Address();
-  lv_label_set_text_fmt(label,
-                        "#444444 BLE MAC#\n"
-                        " %02x:%02x:%02x:%02x:%02x:%02x"
-                        "\n"
-                        "#444444 LVGL Memory#\n"
-                        " #444444 used# %d (%d%%)\n"
-                        " #444444 max used# %lu\n"
-                        " #444444 frag# %d%%\n"
-                        " #444444 free# %d"
-                        "\n"
-                        "#444444 Steps# %i",
-                        bleAddr[5],
-                        bleAddr[4],
-                        bleAddr[3],
-                        bleAddr[2],
-                        bleAddr[1],
-                        bleAddr[0],
-                        static_cast<int>(mon.total_size - mon.free_size),
-                        mon.used_pct,
-                        mon.max_used,
-                        mon.frag_pct,
-                        static_cast<int>(mon.free_biggest_size),
-                        0);
-  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(2, 5, app, label);
+
+  newScreen->addLine("#444444 BLE MAC#");
+  newScreen->addLine(" %02x:%02x:%02x:%02x:%02x:%02x", bleAddr[5], bleAddr[4], bleAddr[3], bleAddr[2], bleAddr[1], bleAddr[0]);
+  newScreen->addLine("#444444 LVGL Memory#");
+  newScreen->addLine(" #444444 used# %d (%d%%)", static_cast<int>(mon.total_size - mon.free_size), mon.used_pct);
+  newScreen->addLine(" #444444 max used# %lu", mon.max_used);
+  newScreen->addLine(" #444444 frag# %d%%", mon.frag_pct);
+  newScreen->addLine(" #444444 free# %d", static_cast<int>(mon.free_biggest_size));
+  newScreen->addLine("#444444 Steps# %i", 0);
+  
+  return std::move(newScreen);
 }
 
 bool SystemInfo::sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
@@ -207,7 +171,7 @@ bool SystemInfo::sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   TaskStatus_t tasksStatus[10];
-  lv_obj_t* infoTask = lv_table_create(lv_scr_act(), NULL);
+  lv_obj_t* infoTask = lv_table_create(lv_scr_act());
   lv_table_set_col_cnt(infoTask, 4);
   lv_table_set_row_cnt(infoTask, 8);
   lv_obj_set_pos(infoTask, 0, 10);
@@ -258,17 +222,16 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
-  lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_recolor(label, true);
-  lv_label_set_text_static(label,
-                           "Software Licensed\n"
-                           "under the terms of\n"
-                           "the GNU General\n"
-                           "Public License v3\n"
-                           "#444444 Source code#\n"
-                           "#FFFF00 https://github.com/#\n"
-                           "#FFFF00 JF002/InfiniTime#");
-  lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(4, 5, app, label);
+  
+  auto newScreen = std::make_unique<Screens::Label>(4, 5, app);
+  
+  newScreen->addLineCenter("Software Licensed");
+  newScreen->addLineCenter("under the terms of");
+  newScreen->addLineCenter("the GNU General");
+  newScreen->addLineCenter("Public License v3");
+  newScreen->addLine();
+  newScreen->addLineCenter("#444444 Source code#");
+  newScreen->addLineCenter("#FFFF00 git.io/inftime");
+  
+  return std::move(newScreen);
 }

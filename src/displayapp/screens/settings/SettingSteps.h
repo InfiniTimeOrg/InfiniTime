@@ -15,14 +15,14 @@ namespace Pinetime {
         SettingSteps(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingSteps() override;
 
-        void UpdateSelected(lv_obj_t* object, lv_event_t event);
+        void UpdateSelected(lv_obj_t* object, lv_event_t* event);
 
       private:
         Controllers::Settings& settingsController;
 
         lv_obj_t* stepValue;
-        lv_obj_t* btnPlus;
-        lv_obj_t* btnMinus;
+        lv_obj_t* btnPlus, *txtBtnPlus;
+        lv_obj_t* btnMinus, *txtBtnMinus;
       };
     }
   }

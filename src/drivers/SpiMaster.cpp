@@ -176,7 +176,7 @@ void SpiMaster::PrepareRx(const volatile uint32_t cmdAddress,
   spiBaseAddress->EVENTS_END = 0;
 }
 
-bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
+bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, uint8_t pinLcdCmd=-1, bool isLcdData = true) {
   if (data == nullptr)
     return false;
   auto ok = xSemaphoreTake(mutex, portMAX_DELAY);
@@ -189,6 +189,14 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
     SetupWorkaroundForFtpan58(spiBaseAddress, 0, 0);
   } else {
     DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
+  }
+  
+  if (pinLcdCmd >= 0){
+    if (isLcdData) {
+      nrf_gpio_pin_set(pinLcdCmd);
+    } else{
+      nrf_gpio_pin_clear(pinLcdCmd);
+    }
   }
 
   nrf_gpio_pin_clear(this->pinCsn);

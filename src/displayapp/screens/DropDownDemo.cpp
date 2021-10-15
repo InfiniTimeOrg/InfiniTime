@@ -7,7 +7,7 @@ using namespace Pinetime::Applications::Screens;
 
 DropDownDemo::DropDownDemo(Pinetime::Applications::DisplayApp* app) : Screen(app) {
   // Create the dropdown object, with many item, and fix its height
-  ddlist = lv_ddlist_create(lv_scr_act(), nullptr);
+  ddlist = lv_ddlist_create(lv_scr_act());
   lv_ddlist_set_options(ddlist,
                         "Apple\n"
                         "Banana\n"
@@ -23,7 +23,7 @@ DropDownDemo::DropDownDemo(Pinetime::Applications::DisplayApp* app) : Screen(app
   lv_ddlist_set_fix_width(ddlist, 150);
   lv_ddlist_set_draw_arrow(ddlist, true);
   lv_ddlist_set_fix_height(ddlist, 150);
-  lv_obj_align(ddlist, nullptr, LV_ALIGN_IN_TOP_MID, 0, 20);
+  lv_obj_align(ddlist, LV_ALIGN_TOP_MID, 0, 20);
 }
 
 DropDownDemo::~DropDownDemo() {

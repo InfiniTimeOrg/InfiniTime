@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lvgl/src/lv_core/lv_obj.h>
+#include <lvgl/src/core/lv_obj.h>
 #include <chrono>
 #include <cstdint>
 #include <memory>
@@ -84,7 +84,7 @@ namespace Pinetime {
         void UpdateClock();
         void SetBatteryIcon();
 
-        lv_task_t* taskRefresh;
+        lv_timer_t* taskRefresh;
       };
     }
   }

@@ -30,7 +30,7 @@ namespace Pinetime {
         Alarm(DisplayApp* app, Controllers::AlarmController& alarmController);
         ~Alarm() override;
         void SetAlerting();
-        void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
+        void OnButtonEvent(lv_obj_t* obj, lv_event_t* event);
         bool OnButtonPushed() override;
 
       private:

@@ -13,7 +13,7 @@ namespace Pinetime {
           SettingSetTime(DisplayApp* app, Pinetime::Controllers::DateTime &dateTimeController);
           ~SettingSetTime() override;
 
-          void HandleButtonPress(lv_obj_t *object, lv_event_t event);
+          void HandleButtonPress(lv_obj_t *object, lv_event_t* event);
          
         private:
           Controllers::DateTime& dateTimeController;
@@ -27,6 +27,11 @@ namespace Pinetime {
           lv_obj_t * btnMinutesPlus;
           lv_obj_t * btnMinutesMinus;
           lv_obj_t * btnSetTime;
+          lv_obj_t * lblHoursPlus;
+          lv_obj_t * lblHoursMinus;
+          lv_obj_t * lblMinutesPlus;
+          lv_obj_t * lblMinutesMinus;
+          lv_obj_t * lblSetTime;
       };
     }
   }

@@ -41,7 +41,7 @@ namespace Pinetime {
         lv_obj_t* ball;
         lv_obj_t* background;
 
-        lv_task_t* taskRefresh;
+        lv_timer_t* taskRefresh;
       };
     }
   }

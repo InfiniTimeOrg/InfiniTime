@@ -66,8 +66,8 @@ namespace Pinetime::Applications::Screens {
     ~StopWatch() override;
     void Refresh() override;
 
-    void playPauseBtnEventHandler(lv_event_t event);
-    void stopLapBtnEventHandler(lv_event_t event);
+    void playPauseBtnEventHandler(lv_event_t* event);
+    void stopLapBtnEventHandler(lv_event_t* event);
     bool OnButtonPushed() override;
 
     void reset();
@@ -81,11 +81,12 @@ namespace Pinetime::Applications::Screens {
     TickType_t startTime;
     TickType_t oldTimeElapsed;
     TimeSeparated_t currentTimeSeparated; // Holds Mins, Secs, millisecs
+    TimeSeparated_t prevTime;
     LapTextBuffer_t<2> lapBuffer;
     int lapNr = 0;
     lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
     lv_obj_t *lapOneText, *lapTwoText;
 
-    lv_task_t* taskRefresh;
+    lv_timer_t* taskRefresh;
   };
 }

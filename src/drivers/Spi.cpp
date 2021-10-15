@@ -9,8 +9,8 @@ Spi::Spi(SpiMaster& spiMaster, uint8_t pinCsn) : spiMaster {spiMaster}, pinCsn {
   nrf_gpio_pin_set(pinCsn);
 }
 
-bool Spi::Write(const uint8_t* data, size_t size) {
-  return spiMaster.Write(pinCsn, data, size);
+bool Spi::Write(const uint8_t* data, size_t size, uint8_t pinLcdCmd, bool isData) {
+  return spiMaster.Write(pinCsn, data, size, pinLcdCmd, isData);
 }
 
 bool Spi::Read(uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize) {

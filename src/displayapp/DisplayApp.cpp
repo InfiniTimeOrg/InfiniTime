@@ -135,7 +135,7 @@ void DisplayApp::Process(void* instance) {
   app->InitHw();
 
   // Send a dummy notification to unlock the lvgl display driver for the first iteration
-  xTaskNotifyGive(xTaskGetCurrentTaskHandle());
+//  xTaskNotifyGive(xTaskGetCurrentTaskHandle());
 
   while (true) {
     app->Refresh();
@@ -149,6 +149,9 @@ void DisplayApp::InitHw() {
 
 void DisplayApp::Refresh() {
   TickType_t queueTimeout;
+  if (currentScreen->IsNew()){
+    doScreenTransition();
+  }
   switch (state) {
     case States::Idle:
       queueTimeout = portMAX_DELAY;
