@@ -6,6 +6,11 @@
 //#include <projdefs.h>
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
+#include <lvgl/src/core/lv_refr.h>
+
+extern void lv_refr_areas();
+extern void lv_refr_area(const lv_area_t * area_p);
+extern void lv_refr_area_part(const lv_area_t * area_p);
 
 using namespace Pinetime::Components;
 

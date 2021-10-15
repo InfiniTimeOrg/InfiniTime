@@ -9,8 +9,13 @@ namespace Pinetime {
 
       class Label : public Screen {
       public:
-        Label(uint8_t screenID, uint8_t numScreens, DisplayApp* app, lv_obj_t* labelText);
+        Label(uint8_t screenID, uint8_t numScreens, DisplayApp* app, lv_obj_t* container);
+        Label(uint8_t screenID, uint8_t numScreens, DisplayApp* app);
         ~Label() override;
+  
+        lv_obj_t* addLine();
+        lv_obj_t* addLine(const char* fmt, ...);
+        lv_obj_t* addLineCenter(const char* fmt, ...);
 
       private:
         lv_obj_t* labelText = nullptr;
