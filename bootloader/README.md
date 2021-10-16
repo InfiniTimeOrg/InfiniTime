@@ -1,5 +1,5 @@
 # About this bootloader
-The [bootloader](https://github.com/lupyuen/pinetime-rust-mynewt/tree/master/libs/pinetime_boot/src) is mostly developed by [Lup Yuen](https://github.com/lupyuen). It is based on [MCUBoot](https://juullabs-oss.github.io/mcuboot/) and [Mynewt](https://mynewt.apache.org/).
+The [bootloader](https://github.com/lupyuen/pinetime-rust-mynewt/tree/master/libs/pinetime_boot/src) is mostly developed by [Lup Yuen](https://github.com/lupyuen). It is based on [MCUBoot](https://www.mcuboot.com) and [Mynewt](https://mynewt.apache.org/).
 
 The goal of this project is to provide a common bootloader for multiple (all?) Pinetime projects. It allows to upgrade the current bootloader and even replace the current application by another one that supports the same bootloader.
 
@@ -86,7 +86,7 @@ make pinetime-mcuboot-app
 
 The binary is located in *<build directory>/src/pinetime-mcuboot-app.bin*.
 
-It must me converted into a MCUBoot image using *imgtool.py* from [MCUBoot](https://github.com/JuulLabs-OSS/mcuboot/tree/master/scripts). Simply checkout the project and run the script <mcuboot root>/scripts/imgtool.py with the following command line:
+It must me converted into a MCUBoot image using *imgtool.py* from [MCUBoot](https://github.com/mcu-tools/mcuboot/tree/master/scripts). Simply checkout the project and run the script <mcuboot root>/scripts/imgtool.py with the following command line:
 
 `
 imgtool.py  create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header <build directory>/src/pinetime-mcuboot-app.bin image.bin

@@ -43,7 +43,7 @@ GetGcc() {
 }
 
 GetMcuBoot() {
-  git clone https://github.com/JuulLabs-OSS/mcuboot.git "$TOOLS_DIR/mcuboot"
+  git clone https://github.com/mcu-tools/mcuboot.git "$TOOLS_DIR/mcuboot"
   pip3 install -r "$TOOLS_DIR/mcuboot/scripts/requirements.txt"
 }
 
