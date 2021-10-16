@@ -206,11 +206,14 @@ bool SystemInfo::sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
-  TaskStatus_t tasksStatus[10];
+  static constexpr uint8_t maxTaskCount = 9;
+  TaskStatus_t tasksStatus[maxTaskCount];
+
   lv_obj_t* infoTask = lv_table_create(lv_scr_act(), NULL);
   lv_table_set_col_cnt(infoTask, 4);
-  lv_table_set_row_cnt(infoTask, 8);
-  lv_obj_set_pos(infoTask, 0, 10);
+  lv_table_set_row_cnt(infoTask, maxTaskCount + 1);
+  lv_obj_set_style_local_pad_all(infoTask, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_border_color(infoTask, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 
   lv_table_set_cell_value(infoTask, 0, 0, "#");
   lv_table_set_col_width(infoTask, 0, 30);
@@ -221,9 +224,9 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   lv_table_set_cell_value(infoTask, 0, 3, "Free");
   lv_table_set_col_width(infoTask, 3, 90);
 
-  auto nb = uxTaskGetSystemState(tasksStatus, sizeof(tasksStatus) / sizeof(tasksStatus[0]), nullptr);
+  auto nb = uxTaskGetSystemState(tasksStatus, maxTaskCount, nullptr);
   std::sort(tasksStatus, tasksStatus + nb, sortById);
-  for (uint8_t i = 0; i < nb && i < 7; i++) {
+  for (uint8_t i = 0; i < nb && i < maxTaskCount; i++) {
 
     lv_table_set_cell_value(infoTask, i + 1, 0, std::to_string(tasksStatus[i].xTaskNumber).c_str());
     char state[2] = {0};
