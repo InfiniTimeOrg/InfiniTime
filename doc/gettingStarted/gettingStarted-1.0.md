@@ -8,15 +8,15 @@ You might have already seen these words by reading the announcement, release not
 
 Basically, a **firmware** is just a software running on the embedded hardware of a device, the PineTime in this case.
 **InfiniTime** is based on 3 distinct **firmwares**:
- - **[InfiniTime](https://github.com/JF002/InfiniTime)** itself, this is the *application firmware* running on the PineTime. This is the main firmware which provides most of the functionalities you'll use on a daily basis : bluetooth low-energy (BLE) connectivity, applications, watchfaces,...
+ - **[InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)** itself, this is the *application firmware* running on the PineTime. This is the main firmware which provides most of the functionalities you'll use on a daily basis : bluetooth low-energy (BLE) connectivity, applications, watchfaces,...
  - **[The bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader)** is responsible for safely applying **updates** of the *application firmware*, reverting them in case of issues and load the recovery firmware when requested.
- - **The recovery firmware** is a specific *application firmware* than can be loaded by the bootloader on user request. This firmware can be useful in case of serious issue, when the main application firmware cannot perform an OTA update correctly. Currently, this  recovery firmware is based on [InfiniTime 0.14.1](https://github.com/JF002/InfiniTime/releases/tag/0.14.1).
+ - **The recovery firmware** is a specific *application firmware* than can be loaded by the bootloader on user request. This firmware can be useful in case of serious issue, when the main application firmware cannot perform an OTA update correctly. Currently, this  recovery firmware is based on [InfiniTime 0.14.1](https://github.com/InfiniTimeOrg/InfiniTime/releases/tag/0.14.1).
 
 **OTA** and **DFU** refer to the update of the firmware over BLE (**B**luetooth **L**ow **E**nergy). **OTA** means **O**ver **T**he **A**ir, this is a functionality that allows the user to update the firmware how their device using a wireless communication like BLE. When we talk about **DFU** (**D**igital **F**irmware **U**pdate), we refer to the file format and protocol used to send the update of the firmware to the watch over-the-air. InfiniTime implement the (legacy) DFU protocol from Nordic Semiconductor (NRF).
 
 ## How to check the version of InfiniTime and the bootloader?
 
-Since September 2020, all PineTimes (devkits or sealed) are flashed using the **[first iteration of the bootloader](https://github.com/lupyuen/pinetime-rust-mynewt/releases/tag/v4.1.7)** and **[InfiniTime 0.7.1](https://github.com/JF002/InfiniTime/releases/tag/0.7.1)**. There was no recovery firmware at that time.
+Since September 2020, all PineTimes (devkits or sealed) are flashed using the **[first iteration of the bootloader](https://github.com/lupyuen/pinetime-rust-mynewt/releases/tag/v4.1.7)** and **[InfiniTime 0.7.1](https://github.com/InfiniTimeOrg/InfiniTime/releases/tag/0.7.1)**. There was no recovery firmware at that time.
 
 The bootloader only runs when the watch starts (from an empty battery, for example) or after a reset (after a successful OTA or a manual reset - long push on the button).
 
@@ -33,7 +33,7 @@ And for version >= 1.0 :
 
 ![InfiniTime 1.0 version](version-1.0.jpg)
 
-PineTime shipped from June 2021 (to be confirmed) will be flashed with the [new version of the bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader/releases/tag/1.0.0), the [recovery firmware](https://github.com/JF002/InfiniTime/releases/tag/0.14.1) and [InfiniTime 1.0](https://github.com/JF002/InfiniTime/releases/tag/1.0.0).
+PineTime shipped from June 2021 (to be confirmed) will be flashed with the [new version of the bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader/releases/tag/1.0.0), the [recovery firmware](https://github.com/InfiniTimeOrg/InfiniTime/releases/tag/0.14.1) and [InfiniTime 1.0](https://github.com/InfiniTimeOrg/InfiniTime/releases/tag/1.0.0).
 
 The bootloader is easily recognizable with it white pine cone that is progressively drawn in green. It also displays its own version on the bottom (1.0.0 as of now).
 
@@ -56,9 +56,9 @@ If your PineTime is currently running InfiniTime 0.7.1 and the old bootloader, w
 
 Using the companion app of your choice, you'll need to apply the OTA procedure for these 3 firmwares in this sequence (failing to follow this specific order might temporarily or permanently brick your device):
 
- 1. Flash the latest version of InfiniTime. The file to upload is named **pinetime-mcuboot-app-dfu-x.y.z.zip**. Here is the link to [InfiniTime 1.0](https://github.com/JF002/InfiniTime/releases/download/1.0.0/pinetime-mcuboot-app-dfu-1.0.0.zip).
+ 1. Flash the latest version of InfiniTime. The file to upload is named **pinetime-mcuboot-app-dfu-x.y.z.zip**. Here is the link to [InfiniTime 1.0](https://github.com/InfiniTimeOrg/InfiniTime/releases/download/1.0.0/pinetime-mcuboot-app-dfu-1.0.0.zip).
  2. Update the bootloader by applying the OTA procedure with the file named [**reloader-mcuboot.zip** from the repo of the bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader/releases/download/1.0.0/reloader-mcuboot.zip).
- 3. Install the recovery firmware by applying the OTA procedure with the file named [**pinetime-mcuboot-recovery-loader-dfu-0.14.1.zip** from the version 0.14.1 of InfiniTime](https://github.com/JF002/InfiniTime/releases/download/0.14.1/pinetime-mcuboot-recovery-loader-dfu-0.14.1.zip).
+ 3. Install the recovery firmware by applying the OTA procedure with the file named [**pinetime-mcuboot-recovery-loader-dfu-0.14.1.zip** from the version 0.14.1 of InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime/releases/download/0.14.1/pinetime-mcuboot-recovery-loader-dfu-0.14.1.zip).
 
 You'll find more info about this process in [this wiki page](https://wiki.pine64.org/wiki/Upgrade_PineTime_to_InfiniTime_1.0.0). You can also see the procedure in video [here](https://video.codingfield.com/videos/watch/831077c5-16f3-47b4-9b2b-c4bbfecc6529) and [here (from Amazfish)](https://video.codingfield.com/videos/watch/f7bffb3d-a6a1-43c4-8f01-f4aeff4adf9e)
 

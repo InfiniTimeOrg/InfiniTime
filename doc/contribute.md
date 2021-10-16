@@ -2,7 +2,7 @@
 
 ## Report bugs
 
-Have you found a bug in the firmware? [Create an issue on Github](https://github.com/JF002/InfiniTime/issues) explaining the bug, how to reproduce it, the version of the firmware you use...
+Have you found a bug in the firmware? [Create an issue on Github](https://github.com/InfiniTimeOrg/InfiniTime/issues) explaining the bug, how to reproduce it, the version of the firmware you use...
 
 ## Write and improve documentation
 
