@@ -63,64 +63,112 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
   NRF_LOG_INFO("[FS_S] -> FSCommandHandler");
 
   switch (command) {
+    case commands::DELETE: {
+      NRF_LOG_INFO("[FS_S] -> Delete");
+      auto* header = (DelHeader*)om->om_data;
+      uint16_t plen = header->pathlen;
+      char path[plen + 1] = {0};
+      struct lfs_info info = {};
+      DelResponse resp = {};
+      resp.command = commands::DELETE_STATUS;
+      int res = fs.Stat(path, &info);
+      // Get Info about path
+      // branch for DirDel of FileDelete
+      if (info.type == LFS_TYPE_DIR) {
+        res = fs.DirDelete(path);
+      } else {
+        res = fs.FileDelete(path);
+      }
+      switch (res) {
+        case LFS_ERR_OK:
+          resp.status = 0x01;
+          break;
+        default:
+          resp.status = 0x02;
+          break;
+      }
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(DelResponse));
+      ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+      break;
+    }
+    case commands::MKDIR: {
+      NRF_LOG_INFO("[FS_S] -> MKDir");
+      auto* header = (MKDirHeader*) om->om_data;
+      uint16_t plen = header->pathlen;
+      char path[plen + 1] = {0};
+      memcpy(path, header->pathstr, plen);
+      NRF_LOG_INFO("[FS_S] -> MKDIR %.10s", path);
+      MKDirResponse resp = {};
+      resp.command = commands::MKDIR_STATUS;
+      int res = fs.DirCreate(path);
+      switch (res) {
+        case LFS_ERR_OK:
+          resp.status = 0x01;
+          break;
+        default:
+          resp.status = 0x02;
+          break;
+      }
+      resp.modification_time = 0; // We should timestamp..but no
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(MKDirResponse));
+      ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+      break;
+    }
     case commands::LISTDIR: {
       NRF_LOG_INFO("[FS_S] -> ListDir");
-      ListDirHeader *header = (ListDirHeader *)&om->om_data[0];
+      ListDirHeader* header = (ListDirHeader*)om->om_data;
       uint16_t plen = header->pathlen;
-      char path[plen+1] = {0};
+      char path[plen + 1] = {0};
       memcpy(path, header->pathstr, plen);
       NRF_LOG_INFO("[FS_S] -> DIR %.10s", path);
       lfs_dir_t dir = {};
       struct lfs_info info = {};
 
       ListDirResponse resp = {};
-      resp.command = 0x51; // LISTDIR_ENTRY;
-      resp.status = 1;     // TODO actually use res above!
+      resp.command = commands::LISTDIR_ENTRY;
+      resp.status = 1; // TODO actually use res above!
       resp.totalentries = 0;
       resp.entry = 0;
 
       int res = fs.DirOpen(path, &dir);
-      
+
       NRF_LOG_INFO("[FS_S] ->diropen %d ", res);
       while (fs.DirRead(&dir, &info)) {
         resp.totalentries++;
-        
       }
       NRF_LOG_INFO("[FS_S] -> %d ", resp.totalentries);
-      
+
       fs.DirRewind(&dir);
-      
+
       while (fs.DirRead(&dir, &info)) {
-        switch(info.type){
-          case LFS_TYPE_REG:
-          {
+        switch (info.type) {
+          case LFS_TYPE_REG: {
             resp.flags = 0;
             resp.file_size = info.size;
             break;
-          } 
-          case LFS_TYPE_DIR:
-          {
-             resp.flags = 1; 
-             resp.file_size = 0;
-             break;
+          }
+          case LFS_TYPE_DIR: {
+            resp.flags = 1;
+            resp.file_size = 0;
+            break;
           }
         }
         resp.modification_time = 0; // TODO Does LFS actually support TS?
-        strcpy(resp.path,info.name);
+        strcpy(resp.path, info.name);
         resp.path_length = strlen(info.name);
         NRF_LOG_INFO("[FS_S] ->Path %s ,", info.name);
-        auto* om = ble_hs_mbuf_from_flat(&resp,sizeof(ListDirResponse));
-        ble_gattc_notify_custom(connectionHandle,transferCharacteristicHandle,om);
-        vTaskDelay(1);  //Allow stuff to actually go out over the BLE conn
+        auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse));
+        ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+        vTaskDelay(1); // Allow stuff to actually go out over the BLE conn
         resp.entry++;
       }
       fs.DirClose(&dir);
       resp.file_size = 0;
       resp.path_length = 0;
       resp.flags = 0;
-      //Todo this better
-      auto* om = ble_hs_mbuf_from_flat(&resp,sizeof(ListDirResponse)-70+resp.path_length);
-      ble_gattc_notify_custom(connectionHandle,transferCharacteristicHandle,om);
+      // TODO Handle Size of response better.
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse) - 70 + resp.path_length);
+      ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       NRF_LOG_INFO("[FS_S] -> done ");
       break;
     }

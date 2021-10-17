@@ -66,14 +66,14 @@ namespace Pinetime {
       };
 
       using ListDirHeader = struct __attribute__((packed)) {
-        uint8_t command;
+        commands command;
         uint8_t padding;
         uint16_t pathlen;
         char pathstr[70];
       };
 
       using ListDirResponse = struct __attribute__((packed)) {
-        uint8_t command;
+        commands command;
         uint8_t status;
         uint16_t path_length;
         uint32_t entry;
@@ -85,7 +85,7 @@ namespace Pinetime {
       };
 
       using MKDirHeader = struct __attribute__((packed)) {
-        uint8_t command;
+        commands command;
         uint8_t padding;
         uint16_t pathlen;
         uint32_t padding2;
@@ -94,11 +94,23 @@ namespace Pinetime {
       };
 
       using MKDirResponse = struct __attribute__((packed)) {
-        uint8_t command;
+        commands command;
         uint8_t status;
         uint32_t padding1;
         uint16_t padding2;
         uint64_t modification_time;
+      };
+      
+      using DelHeader = struct __attribute__((packed)) {
+        commands command;
+        uint8_t padding;
+        uint16_t pathlen;
+        char pathstr[70];
+      };
+
+      using DelResponse = struct __attribute__((packed)) {
+        commands command;
+        uint8_t status;
       };
       
     };

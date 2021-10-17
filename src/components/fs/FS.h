@@ -28,6 +28,7 @@ namespace Pinetime {
       int DirCreate(const char* path);
       int DirDelete(const char* path);
 
+      int Stat(const char* path, lfs_info* info);
       void VerifyResource();
 
     private:
