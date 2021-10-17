@@ -254,7 +254,7 @@ Enabling notifications on this characteristic gives you a single byte upon any e
 
 #### Status
 
-The status characteristic allows setting the playing status of music. Send `0x01` to the status characteristic for playing, and `0x01` for paused.
+The status characteristic allows setting the playing status of music. Send `0x01` to the status characteristic for playing, and `0x00` for paused.
 
 #### Artist, Track, and Album
 
