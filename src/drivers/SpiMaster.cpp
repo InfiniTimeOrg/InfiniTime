@@ -10,7 +10,7 @@ SpiMaster::SpiMaster(const SpiMaster::SpiModule spi, const SpiMaster::Parameters
 }
 
 bool SpiMaster::Init() {
-  if(mutex == nullptr) {
+  if (mutex == nullptr) {
     mutex = xSemaphoreCreateBinary();
     ASSERT(mutex != nullptr);
   }
@@ -179,6 +179,10 @@ void SpiMaster::PrepareRx(const volatile uint32_t cmdAddress,
 bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
   if (data == nullptr)
     return false;
+
+  if (!active) {
+    Wakeup();
+  }
   auto ok = xSemaphoreTake(mutex, portMAX_DELAY);
   ASSERT(ok == true);
   taskToNotify = xTaskGetCurrentTaskHandle();
@@ -215,7 +219,9 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
 
 bool SpiMaster::Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize) {
   xSemaphoreTake(mutex, portMAX_DELAY);
-
+  if (!active) {
+    Wakeup();
+  }
   taskToNotify = nullptr;
 
   this->pinCsn = pinCsn;
@@ -253,12 +259,16 @@ void SpiMaster::Sleep() {
   nrf_gpio_cfg_default(params.pinSCK);
   nrf_gpio_cfg_default(params.pinMOSI);
   nrf_gpio_cfg_default(params.pinMISO);
-
+  active = false;
   NRF_LOG_INFO("[SPIMASTER] sleep")
 }
 
 void SpiMaster::Wakeup() {
+  if (active) {
+    return;
+  }
   Init();
+  active = true;
   NRF_LOG_INFO("[SPIMASTER] Wakeup");
 }
 

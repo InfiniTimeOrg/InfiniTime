@@ -60,6 +60,8 @@ namespace Pinetime {
       volatile size_t currentBufferSize = 0;
       volatile TaskHandle_t taskToNotify;
       SemaphoreHandle_t mutex = nullptr;
+
+      bool active;
     };
   }
 }
