@@ -421,6 +421,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
+        displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
         displayapp/Colors.cpp
 

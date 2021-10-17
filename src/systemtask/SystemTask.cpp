@@ -23,6 +23,7 @@
 #include "drivers/Hrs3300.h"
 #include "drivers/PinMap.h"
 #include "main.h"
+#include "BootErrors.h"
 
 
 #include <memory>
@@ -116,6 +117,8 @@ void SystemTask::Process(void* instance) {
 }
 
 void SystemTask::Work() {
+  BootErrors bootError = BootErrors::None;
+
   watchdog.Setup(7);
   watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
@@ -133,7 +136,9 @@ void SystemTask::Work() {
   lcd.Init();
 
   twiMaster.Init();
-  touchPanel.Init();
+  if (!touchPanel.Init()) {
+    bootError = BootErrors::TouchController;
+  }
   dateTimeController.Register(this);
   batteryController.Register(this);
   motorController.Init();
@@ -151,7 +156,7 @@ void SystemTask::Work() {
   settingsController.Init();
 
   displayApp.Register(this);
-  displayApp.Start();
+  displayApp.Start(bootError);
 
   heartRateSensor.Init();
   heartRateSensor.Disable();
@@ -245,12 +250,13 @@ void SystemTask::Work() {
           isDimmed = false;
           break;
         case Messages::TouchWakeUp: {
-          if(touchHandler.GetNewTouchInfo()) {
+          if (touchHandler.GetNewTouchInfo()) {
             auto gesture = touchHandler.GestureGet();
-            if (gesture != Pinetime::Drivers::Cst816S::Gestures::None and ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
-                                settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
-                                (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
-                                settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
+            if (gesture != Pinetime::Drivers::Cst816S::Gestures::None and
+                ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
+                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
+                 (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
+                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
               GoToRunning();
             }
           }
@@ -271,6 +277,8 @@ void SystemTask::Work() {
           if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::ON) {
             if (isSleeping && !isWakingUp) {
               GoToRunning();
+            } else {
+              ReloadIdleTimer();
             }
             displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           }

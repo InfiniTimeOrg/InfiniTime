@@ -1,6 +1,6 @@
 # InfiniTime
 
-[![Build PineTime Firmware](https://github.com/JF002/InfiniTime/workflows/Build%20PineTime%20Firmware/badge.svg?branch=master)](https://github.com/JF002/InfiniTime/actions)
+[![Build PineTime Firmware](https://github.com/InfiniTimeOrg/InfiniTime/workflows/Build%20PineTime%20Firmware/badge.svg?branch=master)](https://github.com/InfiniTimeOrg/InfiniTime/actions)
 
 ![InfiniTime logo](images/infinitime-logo.jpg "InfiniTime Logo")
 
@@ -72,7 +72,8 @@ As of now, here is the list of achievements of this project:
 ## Documentation
 
 ### Develop
-
+ - [Rough structure of the code](doc/code/Intro.md)
+ - [How to implement an application](doc/code/Apps.md)
  - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
  - [Creating a stopwatch in Pinetime(article)](https://pankajraghav.com/2021/04/03/PINETIME-STOPCLOCK.html)
 

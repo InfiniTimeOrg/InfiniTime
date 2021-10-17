@@ -47,8 +47,8 @@ void Paddle::Refresh() {
     dy *= -1;
   }
 
-  // checks if it has touched the side (left side)
-  if (ballX >= LV_VER_RES - ballSize - 1) {
+  // checks if it has touched the side (right side)
+  if (ballX >= LV_HOR_RES - ballSize - 1) {
     dx *= -1;
   }
 
