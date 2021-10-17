@@ -5,29 +5,28 @@
 
 using namespace Pinetime::Controllers;
 
-FS::FS(Pinetime::Drivers::SpiNorFlash& driver) :
-  flashDriver{ driver },
-  lfsConfig{
-    .context = this,
-    .read = SectorRead,
-    .prog = SectorProg,
-    .erase = SectorErase,
-    .sync = SectorSync,
+FS::FS(Pinetime::Drivers::SpiNorFlash& driver)
+  : flashDriver {driver},
+    lfsConfig {
+      .context = this,
+      .read = SectorRead,
+      .prog = SectorProg,
+      .erase = SectorErase,
+      .sync = SectorSync,
 
-    .read_size = 16,
-    .prog_size = 8,
-    .block_size = blockSize,
-    .block_count = size / blockSize,
-    .block_cycles = 1000u,
+      .read_size = 16,
+      .prog_size = 8,
+      .block_size = blockSize,
+      .block_count = size / blockSize,
+      .block_cycles = 1000u,
 
-    .cache_size = 16,
-    .lookahead_size = 16,
+      .cache_size = 16,
+      .lookahead_size = 16,
 
-    .name_max = 50,
-    .attr_max = 50,
-  }
-{ }
-
+      .name_max = 50,
+      .attr_max = 50,
+    } {
+}
 
 void FS::Init() {
 
@@ -48,7 +47,6 @@ void FS::Init() {
   VerifyResource();
   LVGLFileSystemInit();
 #endif
-
 }
 
 void FS::VerifyResource() {
@@ -56,7 +54,7 @@ void FS::VerifyResource() {
   resourcesValid = true;
 }
 
-int  FS::FileOpen(lfs_file_t* file_p, const char* fileName, const int flags) {
+int FS::FileOpen(lfs_file_t* file_p, const char* fileName, const int flags) {
   return lfs_file_open(&lfs, file_p, fileName, flags);
 }
 
@@ -80,6 +78,17 @@ int FS::FileDelete(const char* fileName) {
   return lfs_remove(&lfs, fileName);
 }
 
+int FS::DirOpen(const char* path, lfs_dir_t* lfs_dir) {
+  return lfs_dir_open(&lfs, lfs_dir, path);
+}
+
+int FS::DirClose(lfs_dir_t* lfs_dir) {
+  return lfs_dir_close(&lfs, lfs_dir);
+}
+
+int FS::DirRead(lfs_dir_t* dir, lfs_info* info) {
+  return lfs_dir_read(&lfs, dir, info);
+}
 
 int FS::DirCreate(const char* path) {
   return lfs_mkdir(&lfs, path);
@@ -148,8 +157,7 @@ namespace {
 
     if (file->type == 0) {
       return LV_FS_RES_FS_ERR;
-    }
-    else {
+    } else {
       return LV_FS_RES_OK;
     }
   }
@@ -193,5 +201,4 @@ void FS::LVGLFileSystemInit() {
   fs_drv.user_data = this;
 
   lv_fs_drv_register(&fs_drv);
-
 }

@@ -4,6 +4,7 @@
 #include <host/ble_gap.h>
 #undef max
 #undef min
+
 #include "components/fs/FS.h"
 
 namespace Pinetime {
@@ -42,8 +43,26 @@ namespace Pinetime {
       struct ble_gatt_chr_def characteristicDefinition[3];
       struct ble_gatt_svc_def serviceDefinition[2];
       uint16_t versionCharacteristicHandle;
+      uint16_t transferCharacteristicHandle;
+      typedef struct __attribute__((packed)) {
+        uint8_t command;
+        uint8_t padding;
+        uint16_t pathlen;
+        char pathstr[70];
+      } ListDirHeader;
+      typedef struct __attribute__((packed)) {
+        uint8_t command;
+        uint8_t status;
+        uint16_t path_length;
+        uint32_t entry;
+        uint32_t totalentries;
+        uint32_t flags;
+        uint32_t modification_time;
+        uint32_t file_size;
+        char path[70];
+      } ListDirResponse;
 
-      enum class commands {
+      enum class commands : uint8_t {
         INVALID = 0x00,
         READ = 0x10,
         READ_DATA = 0x11,
@@ -58,8 +77,10 @@ namespace Pinetime {
         LISTDIR = 0x50,
         LISTDIR_ENTRY = 0x51,
         MOVE = 0x60,
-        MOVE_STATUS = 0x61,
-      }
+        MOVE_STATUS = 0x61
+      };
+
+      int FSCommandHandler(uint16_t connectionHandle, os_mbuf* om);
     };
   }
 }
