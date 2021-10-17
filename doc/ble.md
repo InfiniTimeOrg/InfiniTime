@@ -29,14 +29,15 @@ When the service does not exist in the BLE specification, InfiniTime implement c
 The following custom services are implemented in InfiniTime:
 
  - Since InfiniTime 0.8:
-   ```
-    * Music Service :             00000000-78fc-48fe-8e23-433b3a1942d0
-   ```
-   
+    * Music Service : 00000000-78fc-48fe-8e23-433b3a1942d0
+ 
+
  - Since InfiniTime 0.11:
-   ```
-     * Navigation Service :        00010000-78fc-48fe-8e23-433b3a1942d0
-   ```
+     * [Navigation Service](NavigationService.md) : 00010000-78fc-48fe-8e23-433b3a1942d0
+ 
+  
+ - Since InfiniTime 1.7:
+   * [Motion Service](MotionService.md) :        00020000-78fc-48fe-8e23-433b3a1942d0
 
 ## BLE services
 [List of standard BLE services](https://www.bluetooth.com/specifications/gatt/services/)
