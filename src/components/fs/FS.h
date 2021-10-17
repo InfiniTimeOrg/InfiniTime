@@ -24,6 +24,7 @@ namespace Pinetime {
       int DirOpen(const char* path, lfs_dir_t* lfs_dir);
       int DirClose(lfs_dir_t* lfs_dir);
       int DirRead(lfs_dir_t* dir, lfs_info* info);
+      int DirRewind(lfs_dir_t* dir);
       int DirCreate(const char* path);
       int DirDelete(const char* path);
 

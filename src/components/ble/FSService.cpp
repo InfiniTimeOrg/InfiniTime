@@ -70,21 +70,26 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       char path[plen+1] = {0};
       memcpy(path, header->pathstr, plen);
       NRF_LOG_INFO("[FS_S] -> DIR %.10s", path);
-      lfs_dir_t dir;
-      struct lfs_info info;
+      lfs_dir_t dir = {};
+      struct lfs_info info = {};
 
-      ListDirResponse resp;
+      ListDirResponse resp = {};
       resp.command = 0x51; // LISTDIR_ENTRY;
       resp.status = 1;     // TODO actually use res above!
       resp.totalentries = 0;
       resp.entry = 0;
+      int sr;
       int res = fs.DirOpen(path, &dir);
+      
+      NRF_LOG_INFO("[FS_S] ->diropen %d ", res);
       while (fs.DirRead(&dir, &info)) {
         resp.totalentries++;
+        
       }
       NRF_LOG_INFO("[FS_S] -> %d ", resp.totalentries);
-      fs.DirClose(&dir);
-      fs.DirOpen(path, &dir);
+      
+      fs.DirRewind(&dir);
+      
       while (fs.DirRead(&dir, &info)) {
         switch(info.type){
           case LFS_TYPE_REG:
@@ -106,8 +111,10 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         NRF_LOG_INFO("[FS_S] ->Path %s ,", info.name);
         auto* om = ble_hs_mbuf_from_flat(&resp,sizeof(ListDirResponse));
         ble_gattc_notify_custom(connectionHandle,transferCharacteristicHandle,om);
+        vTaskDelay(1);  //Allow stuff to actually go out over the BLE conn
         resp.entry++;
       }
+      fs.DirClose(&dir);
       resp.entry++;
       resp.file_size = 0;
       resp.path_length = 0;
