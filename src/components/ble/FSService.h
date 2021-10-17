@@ -44,23 +44,8 @@ namespace Pinetime {
       struct ble_gatt_svc_def serviceDefinition[2];
       uint16_t versionCharacteristicHandle;
       uint16_t transferCharacteristicHandle;
-      typedef struct __attribute__((packed)) {
-        uint8_t command;
-        uint8_t padding;
-        uint16_t pathlen;
-        char pathstr[70];
-      } ListDirHeader;
-      typedef struct __attribute__((packed)) {
-        uint8_t command;
-        uint8_t status;
-        uint16_t path_length;
-        uint32_t entry;
-        uint32_t totalentries;
-        uint32_t flags;
-        uint32_t modification_time;
-        uint32_t file_size;
-        char path[70];
-      } ListDirResponse;
+
+      int FSCommandHandler(uint16_t connectionHandle, os_mbuf* om);
 
       enum class commands : uint8_t {
         INVALID = 0x00,
@@ -80,7 +65,42 @@ namespace Pinetime {
         MOVE_STATUS = 0x61
       };
 
-      int FSCommandHandler(uint16_t connectionHandle, os_mbuf* om);
+      using ListDirHeader = struct __attribute__((packed)) {
+        uint8_t command;
+        uint8_t padding;
+        uint16_t pathlen;
+        char pathstr[70];
+      };
+
+      using ListDirResponse = struct __attribute__((packed)) {
+        uint8_t command;
+        uint8_t status;
+        uint16_t path_length;
+        uint32_t entry;
+        uint32_t totalentries;
+        uint32_t flags;
+        uint32_t modification_time;
+        uint32_t file_size;
+        char path[70];
+      };
+
+      using MKDirHeader = struct __attribute__((packed)) {
+        uint8_t command;
+        uint8_t padding;
+        uint16_t pathlen;
+        uint32_t padding2;
+        uint64_t time;
+        char pathstr[70];
+      };
+
+      using MKDirResponse = struct __attribute__((packed)) {
+        uint8_t command;
+        uint8_t status;
+        uint32_t padding1;
+        uint16_t padding2;
+        uint64_t modification_time;
+      };
+      
     };
   }
 }

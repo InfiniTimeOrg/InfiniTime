@@ -78,7 +78,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.status = 1;     // TODO actually use res above!
       resp.totalentries = 0;
       resp.entry = 0;
-      int sr;
+
       int res = fs.DirOpen(path, &dir);
       
       NRF_LOG_INFO("[FS_S] ->diropen %d ", res);
@@ -115,7 +115,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         resp.entry++;
       }
       fs.DirClose(&dir);
-      resp.entry++;
       resp.file_size = 0;
       resp.path_length = 0;
       resp.flags = 0;
@@ -123,6 +122,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       auto* om = ble_hs_mbuf_from_flat(&resp,sizeof(ListDirResponse)-70+resp.path_length);
       ble_gattc_notify_custom(connectionHandle,transferCharacteristicHandle,om);
       NRF_LOG_INFO("[FS_S] -> done ");
+      break;
     }
   }
   return 0;
