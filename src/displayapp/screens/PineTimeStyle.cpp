@@ -419,8 +419,8 @@ void PineTimeStyle::Refresh() {
       lv_obj_set_style_local_scale_grad_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
     }
   }
-  if (lv_obj_is_visible(btnSet) == true) {
-    if ((savedTick > 0) && (lv_tick_get() - savedTick > 5000)) {
+  if (lv_obj_get_hidden(btnSet) == false) {
+    if ((savedTick > 0) && (lv_tick_get() - savedTick > 3000)) {
       lv_obj_set_hidden(btnSet, true);
       savedTick = 0;
     }
@@ -435,7 +435,8 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     if (object == btnNextTime) {
       valueTime = GetNext(valueTime);
-
+      if(valueTime == valueBG)
+        valueTime = GetNext(valueTime);
       settingsController.SetPTSColorTime(valueTime);
       lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
       lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
@@ -443,6 +444,8 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     }
     if (object == btnPrevTime) {
       valueTime = GetPrevious(valueTime);
+      if(valueTime == valueBG)
+        valueTime = GetPrevious(valueTime);
       settingsController.SetPTSColorTime(valueTime);
       lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
       lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
@@ -464,11 +467,15 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     }
     if (object == btnNextBG) {
       valueBG = GetNext(valueBG);
+      if(valueBG == valueTime)
+        valueBG = GetNext(valueBG);
       settingsController.SetPTSColorBG(valueBG);
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBG));
     }
     if (object == btnPrevBG) {
       valueBG = GetPrevious(valueBG);
+      if(valueBG == valueTime)
+        valueBG = GetPrevious(valueBG);
       settingsController.SetPTSColorBG(valueBG);
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBG));
     }
