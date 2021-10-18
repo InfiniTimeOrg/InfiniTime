@@ -58,7 +58,7 @@ namespace Pinetime {
       public:
         MyApp(DisplayApp* app);
         ~MyApp() override;
-      }
+      };
     }
   }
 }
