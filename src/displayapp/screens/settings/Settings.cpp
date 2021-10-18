@@ -18,6 +18,9 @@ Settings::Settings(Pinetime::Applications::DisplayApp* app, Pinetime::Controller
               },
               [this]() -> std::unique_ptr<Screen> {
                 return CreateScreen2();
+              },
+              [this]() -> std::unique_ptr<Screen> {
+                return CreateScreen3();
               }},
              Screens::ScreenListModes::UpDown} {
 }
@@ -39,7 +42,7 @@ std::unique_ptr<Screen> Settings::CreateScreen1() {
     {Symbols::home, "Watch face", Apps::SettingWatchFace},
   }};
 
-  return std::make_unique<Screens::List>(0, 2, app, settingsController, applications);
+  return std::make_unique<Screens::List>(0, 3, app, settingsController, applications);
 }
 
 std::unique_ptr<Screen> Settings::CreateScreen2() {
@@ -63,5 +66,5 @@ std::unique_ptr<Screen> Settings::CreateScreen3() {
     {Symbols::none, "None", Apps::None}
   }};
 
-  return std::make_unique<Screens::List>(1, 2, app, settingsController, applications);
+  return std::make_unique<Screens::List>(2, 3, app, settingsController, applications);
 }
