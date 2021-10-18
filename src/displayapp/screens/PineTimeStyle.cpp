@@ -168,7 +168,11 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   lv_obj_align(dateMonth, sidebar, LV_ALIGN_CENTER, 0, 32);
 
   // Step count gauge
-  needle_colors[0] = LV_COLOR_WHITE;
+  if (settingsController.GetPTSColorBar() == Pinetime::Controllers::Settings::Colors::White) {
+    needle_colors[0] = LV_COLOR_BLACK; 
+    } else {
+    needle_colors[0] = LV_COLOR_WHITE;
+  }
   stepGauge = lv_gauge_create(lv_scr_act(), nullptr);
   lv_gauge_set_needle_count(stepGauge, 1, needle_colors);
   lv_obj_set_size(stepGauge, 40, 40);
@@ -458,6 +462,11 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       valueBar = GetNext(valueBar);
       if(valueBar == Controllers::Settings::Colors::Black)
         valueBar = GetNext(valueBar);
+      if(valueBar == Controllers::Settings::Colors::White) {
+        needle_colors[0] = LV_COLOR_BLACK; 
+        } else {
+        needle_colors[0] = LV_COLOR_WHITE;
+      }
       settingsController.SetPTSColorBar(valueBar);
       lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBar));
     }
@@ -465,6 +474,11 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       valueBar = GetPrevious(valueBar);
       if(valueBar == Controllers::Settings::Colors::Black)
         valueBar = GetPrevious(valueBar);
+      if(valueBar == Controllers::Settings::Colors::White) {
+        needle_colors[0] = LV_COLOR_BLACK; 
+        } else {
+        needle_colors[0] = LV_COLOR_WHITE;
+      }
       settingsController.SetPTSColorBar(valueBar);
       lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBar));
     }
