@@ -10,14 +10,24 @@ Spi::Spi(SpiMaster& spiMaster, uint8_t pinCsn) : spiMaster {spiMaster}, pinCsn {
 }
 
 bool Spi::Write(const uint8_t* data, size_t size) {
+  if(!active){
+    Wakeup();
+  }
   return spiMaster.Write(pinCsn, data, size);
 }
 
 bool Spi::Read(uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize) {
+  if(!active){
+    Wakeup();
+  }
   return spiMaster.Read(pinCsn, cmd, cmdSize, data, dataSize);
 }
 
 void Spi::Sleep() {
+  if(!active){
+    return;
+  }
+  active = false;
   nrf_gpio_cfg_default(pinCsn);
   NRF_LOG_INFO("[SPI] Sleep")
 }
@@ -32,7 +42,11 @@ bool Spi::Init() {
 }
 
 void Spi::Wakeup() {
+  if(active){
+    return;
+  }
   nrf_gpio_cfg_output(pinCsn);
   nrf_gpio_pin_set(pinCsn);
+  active=true;
   NRF_LOG_INFO("[SPI] Wakeup")
 }
