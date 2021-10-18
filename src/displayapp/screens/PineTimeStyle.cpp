@@ -306,6 +306,9 @@ bool PineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
     savedTick = lv_tick_get();
     return true;
   }
+  if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && (lv_obj_get_hidden(btnRandom) == false)) {
+    return true;
+  }
   return false;
 }
 
