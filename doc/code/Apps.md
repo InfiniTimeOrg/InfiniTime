@@ -51,7 +51,7 @@ MyApp.h:
 #include "displayapp/screens/Screen.h"
 #include <lvgl/lvgl.h>
 
-namespace PineTime {
+namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class MyApp : public Screen {
