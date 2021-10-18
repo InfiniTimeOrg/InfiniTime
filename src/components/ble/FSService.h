@@ -27,10 +27,10 @@ namespace Pinetime {
       static constexpr uint16_t fsVersionId {0x0100};
       static constexpr uint16_t fsTransferId {0x0200};
       uint16_t fsVersion = {0x0004};
-
-      static constexpr ble_uuid128_t fsServiceUuid {
-        .u {.type = BLE_UUID_TYPE_128},
-        .value = {0x72, 0x65, 0x66, 0x73, 0x6e, 0x61, 0x72, 0x54, 0x65, 0x6c, 0x69, 0x46, 0xBB, 0xFE, 0xAF, 0xAD}};
+      static constexpr uint8_t maxpathlen = 100;
+      static constexpr ble_uuid16_t fsServiceUuid {
+        .u {.type = BLE_UUID_TYPE_16},
+        .value = {0xFEBB}};// {0x72, 0x65, 0x66, 0x73, 0x6e, 0x61, 0x72, 0x54, 0x65, 0x6c, 0x69, 0x46, 0xBB, 0xFE, 0xAF, 0xAD}};
 
       static constexpr ble_uuid128_t fsVersionUuid {
         .u {.type = BLE_UUID_TYPE_128},
@@ -44,8 +44,6 @@ namespace Pinetime {
       struct ble_gatt_svc_def serviceDefinition[2];
       uint16_t versionCharacteristicHandle;
       uint16_t transferCharacteristicHandle;
-
-      int FSCommandHandler(uint16_t connectionHandle, os_mbuf* om);
 
       enum class commands : uint8_t {
         INVALID = 0x00,
@@ -64,12 +62,44 @@ namespace Pinetime {
         MOVE = 0x60,
         MOVE_STATUS = 0x61
       };
+      enum class FSState : uint8_t {
+        IDLE = 0x00,
+        READ = 0x01,
+        WRITE = 0x02,
+      };
+      FSState state;
+      char filepath[maxpathlen]; // TODO ..ugh fixed filepath len
+      using ReadHeader = struct __attribute__((packed)) {
+        commands command;
+        uint8_t padding;
+        uint16_t pathlen;
+        uint32_t chunkoff;
+        uint32_t chunksize;
+        char pathstr[];
+      };
+
+      using ReadResponse = struct __attribute__((packed)) {
+        commands command;
+        uint8_t status;
+        uint16_t padding;
+        uint32_t chunkoff;
+        uint32_t totallen;
+        uint32_t chunklen;
+        uint8_t chunk[];
+      };
+      using ReadPacing = struct __attribute__((packed)) {
+        commands command;
+        uint8_t status;
+        uint16_t padding;
+        uint32_t chunkoff;
+        uint32_t chunksize;
+      };
 
       using ListDirHeader = struct __attribute__((packed)) {
         commands command;
         uint8_t padding;
         uint16_t pathlen;
-        char pathstr[70];
+        char pathstr[];
       };
 
       using ListDirResponse = struct __attribute__((packed)) {
@@ -81,7 +111,7 @@ namespace Pinetime {
         uint32_t flags;
         uint32_t modification_time;
         uint32_t file_size;
-        char path[70];
+        char path[];
       };
 
       using MKDirHeader = struct __attribute__((packed)) {
@@ -90,7 +120,7 @@ namespace Pinetime {
         uint16_t pathlen;
         uint32_t padding2;
         uint64_t time;
-        char pathstr[70];
+        char pathstr[];
       };
 
       using MKDirResponse = struct __attribute__((packed)) {
@@ -100,19 +130,21 @@ namespace Pinetime {
         uint16_t padding2;
         uint64_t modification_time;
       };
-      
+
       using DelHeader = struct __attribute__((packed)) {
         commands command;
         uint8_t padding;
         uint16_t pathlen;
-        char pathstr[70];
+        char pathstr[];
       };
 
       using DelResponse = struct __attribute__((packed)) {
         commands command;
         uint8_t status;
       };
-      
+
+      int FSCommandHandler(uint16_t connectionHandle, os_mbuf* om);
+      void prepareReadDataResp(ReadHeader *header, ReadResponse *resp);
     };
   }
 }

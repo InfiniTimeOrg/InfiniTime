@@ -4,7 +4,7 @@
 
 using namespace Pinetime::Controllers;
 
-constexpr ble_uuid128_t FSService::fsServiceUuid;
+constexpr ble_uuid16_t FSService::fsServiceUuid;
 constexpr ble_uuid128_t FSService::fsVersionUuid;
 constexpr ble_uuid128_t FSService::fsTransferUuid;
 
@@ -63,9 +63,90 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
   NRF_LOG_INFO("[FS_S] -> FSCommandHandler");
 
   switch (command) {
+    case commands::READ: {
+      NRF_LOG_INFO("[FS_S] -> Read");
+      if (state != FSState::IDLE) {
+        return -1;
+      }
+      state = FSState::READ;
+      auto* header = (ReadHeader*) om->om_data;
+      uint16_t plen = header->pathlen;
+      if (plen > maxpathlen - 1) {
+        return -1;
+      }
+      memcpy(filepath, header->pathstr, plen);
+      filepath[plen + 1] = 0; // Copy and null teminate string
+      ReadResponse resp;
+      resp.command = commands::READ_DATA;
+      resp.chunkoff = header->chunkoff;
+      resp.status = 0x01;
+      struct lfs_info info = {};
+      int res = fs.Stat(filepath, &info);
+      if (res == LFS_ERR_NOENT && info.type != LFS_TYPE_DIR) {
+        resp.status = 0x03;
+        resp.chunklen = 0;
+        resp.totallen = 0;
+      } else {
+        lfs_file f;
+        resp.chunklen = std::min(header->chunksize, info.size);
+        resp.totallen = info.size;
+        fs.FileOpen(&f, filepath, LFS_O_RDONLY);
+        fs.FileSeek(&f, header->chunkoff);
+        resp.chunklen = fs.FileRead(&f, resp.chunk, resp.chunklen);
+        fs.FileClose(&f);
+      }
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
+      ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+      if (header->chunksize >= resp.totallen) { // probably removeable...but then usafe
+        state = FSState::IDLE;
+      }
+    }
+    case commands::READ_PACING: {
+      NRF_LOG_INFO("[FS_S] -> ReadPacing");
+      if (state != FSState::READ) {
+        return -1;
+      }
+      auto* header = (ReadPacing*) om->om_data;
+      ReadResponse resp = {};
+
+      resp.command = commands::READ_DATA;
+      resp.chunkoff = header->chunkoff;
+      resp.status = 0x01;
+      struct lfs_info info = {};
+      int res = fs.Stat(filepath, &info);
+      if (res == LFS_ERR_NOENT && info.type != LFS_TYPE_DIR) {
+        resp.status = 0x03;
+        resp.chunklen = 0;
+        resp.totallen = 0;
+      } else {
+        lfs_file f;
+        resp.chunklen = std::min(header->chunksize, info.size);
+        resp.totallen = info.size;
+        fs.FileOpen(&f, filepath, LFS_O_RDONLY);
+        fs.FileSeek(&f, header->chunkoff);
+        resp.chunklen = fs.FileRead(&f, resp.chunk, resp.chunklen);
+        fs.FileClose(&f);
+      }
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
+      ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+      if (resp.chunklen >= header->chunksize) { // is this right?
+        state = FSState::IDLE;
+      }
+    }
+    case commands::WRITE: {
+      if (state != FSState::IDLE) {
+        return -1;
+      }
+    }
+    case commands::WRITE_PACING: {
+      if (state != FSState::WRITE) {
+        return -1;
+      }
+    }
+
     case commands::DELETE: {
       NRF_LOG_INFO("[FS_S] -> Delete");
-      auto* header = (DelHeader*)om->om_data;
+      auto* header = (DelHeader*) om->om_data;
       uint16_t plen = header->pathlen;
       char path[plen + 1] = {0};
       struct lfs_info info = {};
@@ -116,7 +197,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
     }
     case commands::LISTDIR: {
       NRF_LOG_INFO("[FS_S] -> ListDir");
-      ListDirHeader* header = (ListDirHeader*)om->om_data;
+      ListDirHeader* header = (ListDirHeader*) om->om_data;
       uint16_t plen = header->pathlen;
       char path[plen + 1] = {0};
       memcpy(path, header->pathstr, plen);
@@ -140,7 +221,11 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
 
       fs.DirRewind(&dir);
 
-      while (fs.DirRead(&dir, &info)) {
+      while (true) {
+        int res = fs.DirRead(&dir, &info);
+        if(res <= 0){
+          break;
+        }
         switch (info.type) {
           case LFS_TYPE_REG: {
             resp.flags = 0;
@@ -157,9 +242,9 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         strcpy(resp.path, info.name);
         resp.path_length = strlen(info.name);
         NRF_LOG_INFO("[FS_S] ->Path %s ,", info.name);
-        auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse));
+        auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse)+resp.path_length);
         ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
-        vTaskDelay(1); // Allow stuff to actually go out over the BLE conn
+        vTaskDelay(5); // Allow stuff to actually go out over the BLE conn
         resp.entry++;
       }
       fs.DirClose(&dir);
@@ -167,11 +252,33 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.path_length = 0;
       resp.flags = 0;
       // TODO Handle Size of response better.
-      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse) - 70 + resp.path_length);
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse)+resp.path_length);
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       NRF_LOG_INFO("[FS_S] -> done ");
       break;
     }
   }
   return 0;
+}
+// Loads resp with file data given a valid filepath header and resp
+void FSService::prepareReadDataResp(ReadHeader* header, ReadResponse* resp) {
+  uint16_t plen = header->pathlen;
+  resp->command = commands::READ_DATA;
+  resp->chunkoff = header->chunkoff;
+  resp->status = 0x01;
+  struct lfs_info info = {};
+  int res = fs.Stat(filepath, &info);
+  if (res == LFS_ERR_NOENT && info.type != LFS_TYPE_DIR) {
+    resp->status = 0x03;
+    resp->chunklen = 0;
+    resp->totallen = 0;
+  } else {
+    lfs_file f;
+    resp->chunklen = std::min(header->chunksize, info.size);
+    resp->totallen = info.size;
+    fs.FileOpen(&f, filepath, LFS_O_RDONLY);
+    fs.FileSeek(&f, header->chunkoff);
+    resp->chunklen = fs.FileRead(&f, resp->chunk, resp->chunklen);
+    fs.FileClose(&f);
+  }
 }
