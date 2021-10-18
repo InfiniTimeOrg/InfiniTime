@@ -1,5 +1,5 @@
 /*
- * This file is part of the Infinitime distribution (https://github.com/JF002/Infinitime).
+ * This file is part of the Infinitime distribution (https://github.com/InfiniTimeOrg/Infinitime).
  * Copyright (c) 2021 Kieran Cawthray.
  *
  * This program is free software: you can redistribute it and/or modify

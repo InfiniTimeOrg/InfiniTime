@@ -29,6 +29,7 @@
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
 #include "displayapp/screens/Steps.h"
+#include "displayapp/screens/Error.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -43,6 +44,8 @@
 #include "displayapp/screens/settings/SettingWakeUp.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
+#include "displayapp/screens/settings/SettingSetDate.h"
+#include "displayapp/screens/settings/SettingSetTime.h"
 
 #include "libs/lv_conf.h"
 
@@ -109,11 +112,16 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     touchHandler {touchHandler} {
 }
 
-void DisplayApp::Start() {
+void DisplayApp::Start(System::BootErrors error) {
   msgQueue = xQueueCreate(queueSize, itemSize);
 
-  // Start clock when smartwatch boots
-  LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+  bootError = error;
+
+  if (error == System::BootErrors::TouchController) {
+    LoadApp(Apps::Error, DisplayApp::FullRefreshDirections::None);
+  } else {
+    LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+  }
 
   if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 800, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
@@ -308,6 +316,11 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
                                                        motionController);
       break;
 
+    case Apps::Error:
+      currentScreen = std::make_unique<Screens::Error>(this, bootError);
+      ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
+      break;
+
     case Apps::FirmwareValidation:
       currentScreen = std::make_unique<Screens::FirmwareValidation>(this, validator);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
@@ -364,13 +377,21 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::SettingSteps>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
+    case Apps::SettingSetDate:
+      currentScreen = std::make_unique<Screens::SettingSetDate>(this, dateTimeController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingSetTime:
+      currentScreen = std::make_unique<Screens::SettingSetTime>(this, dateTimeController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SysInfo:
       currentScreen = std::make_unique<Screens::SystemInfo>(
-        this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController);
+        this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController, touchPanel);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::FlashLight:
