@@ -153,6 +153,14 @@ jobs:
           name: pinetime-app.out
           path: build/src/pinetime-app*.out
 
+        #########################################################################################
+        # Make but don't Upload the Recovery Firmware to be sure it builds correctly
+
+      - name: Make pinetime-recovery
+        run:  |
+          cd build
+          make pinetime-recovery
+
       #########################################################################################
       # Finish
 
