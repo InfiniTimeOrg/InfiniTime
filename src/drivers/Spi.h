@@ -23,7 +23,6 @@ namespace Pinetime {
     private:
       SpiMaster& spiMaster;
       uint8_t pinCsn;
-      bool active;
     };
   }
 }
