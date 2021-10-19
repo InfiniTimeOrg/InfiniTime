@@ -22,7 +22,7 @@ jobs:
   build:
 
     # Run these steps on Ubuntu
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
 
