@@ -113,7 +113,7 @@ jobs:
         run:  |
           mkdir -p build
           cd build
-          cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=/home/alarm/nrf52/gcc-arm-none-eabi-9-2020-q2-update/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 -DBUILD_DFU=1 ../
+          cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=/home/alarm/nrf52/gcc-arm-none-eabi-9-2020-q2-update/ -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 -DBUILD_DFU=1 ../
 
         #########################################################################################
         # Make and Upload DFU Package
