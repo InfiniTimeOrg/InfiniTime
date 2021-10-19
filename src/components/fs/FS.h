@@ -13,6 +13,9 @@ namespace Pinetime {
       void Init();
       void LVGLFileSystemInit();
 
+      void Mount();
+      void UnMount();
+
       int FileOpen(lfs_file_t* file_p, const char* fileName, const int flags);
       int FileClose(lfs_file_t* file_p);
       int FileRead(lfs_file_t* file_p, uint8_t* buff, uint32_t size);
@@ -32,31 +35,30 @@ namespace Pinetime {
       void VerifyResource();
 
     private:
-
       Pinetime::Drivers::SpiNorFlash& flashDriver;
 
       /*
-      * External Flash MAP (4 MBytes)
-      *
-      * 0x000000 +---------------------------------------+
-      *          |  Bootloader Assets                    |
-      *          |  256 KBytes                           |
-      *          |                                       |
-      * 0x040000 +---------------------------------------+
-      *          |  OTA                                  |
-      *          |  464 KBytes                           |
-      *          |                                       |
-      *          |                                       |
-      *          |                                       |
-      * 0x0B4000 +---------------------------------------+
-      *          |  File System                          |
-      *          |                                       |
-      *          |                                       |
-      *          |                                       |
-      *          |                                       |
-      * 0x400000 +---------------------------------------+
-      *
-      */
+       * External Flash MAP (4 MBytes)
+       *
+       * 0x000000 +---------------------------------------+
+       *          |  Bootloader Assets                    |
+       *          |  256 KBytes                           |
+       *          |                                       |
+       * 0x040000 +---------------------------------------+
+       *          |  OTA                                  |
+       *          |  464 KBytes                           |
+       *          |                                       |
+       *          |                                       |
+       *          |                                       |
+       * 0x0B4000 +---------------------------------------+
+       *          |  File System                          |
+       *          |                                       |
+       *          |                                       |
+       *          |                                       |
+       *          |                                       |
+       * 0x400000 +---------------------------------------+
+       *
+       */
       static constexpr size_t startAddress = 0x0B4000;
       static constexpr size_t size = 0x34C000;
       static constexpr size_t blockSize = 4096;
@@ -70,7 +72,6 @@ namespace Pinetime {
       static int SectorErase(const struct lfs_config* c, lfs_block_t block);
       static int SectorProg(const struct lfs_config* c, lfs_block_t block, lfs_off_t off, const void* buffer, lfs_size_t size);
       static int SectorRead(const struct lfs_config* c, lfs_block_t block, lfs_off_t off, void* buffer, lfs_size_t size);
-
     };
   }
 }

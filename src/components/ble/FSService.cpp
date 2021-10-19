@@ -60,9 +60,10 @@ int FSService::OnFSServiceRequested(uint16_t connectionHandle, uint16_t attribut
 
 int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
   auto command = static_cast<commands>(om->om_data[0]);
-  NRF_LOG_INFO("[FS_S] -> FSCommandHandler");
-
+  NRF_LOG_INFO("[FS_S] -> FSCommandHandler %d",command);
+  fs.Mount();
   switch (command) {
+    /*
     case commands::READ: {
       NRF_LOG_INFO("[FS_S] -> Read");
       if (state != FSState::IDLE) {
@@ -194,7 +195,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(MKDirResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       break;
-    }
+    }*/
     case commands::LISTDIR: {
       NRF_LOG_INFO("[FS_S] -> ListDir");
       ListDirHeader* header = (ListDirHeader*) om->om_data;
@@ -244,7 +245,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         NRF_LOG_INFO("[FS_S] ->Path %s ,", info.name);
         auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse)+resp.path_length);
         ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
-        vTaskDelay(5); // Allow stuff to actually go out over the BLE conn
+        vTaskDelay(10); // Allow stuff to actually go out over the BLE conn
         resp.entry++;
       }
       fs.DirClose(&dir);
@@ -258,6 +259,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
     }
   }
+  fs.UnMount();
   return 0;
 }
 // Loads resp with file data given a valid filepath header and resp

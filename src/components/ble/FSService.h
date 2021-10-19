@@ -109,7 +109,7 @@ namespace Pinetime {
         uint32_t entry;
         uint32_t totalentries;
         uint32_t flags;
-        uint32_t modification_time;
+        uint64_t modification_time;
         uint32_t file_size;
         char path[];
       };
