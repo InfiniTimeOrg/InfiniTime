@@ -20,6 +20,7 @@ namespace Pinetime {
       enum class Colors : uint8_t {
         White, Silver, Gray, Black, Red, Maroon, Yellow, Olive, Lime, Green, Cyan, Teal, Blue, Navy, Magenta, Purple, Orange
       };
+      enum class StopWatchSleepMode : uint8_t { Enable, Disable };
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
         Colors ColorBar = Colors::Teal;
@@ -160,6 +161,15 @@ namespace Pinetime {
       
       uint32_t GetStepsGoal() const { return settings.stepsGoal; };
 
+      void SetStopWatchSleepMode(StopWatchSleepMode mode) { 
+        if ( mode != settings.stopWatchSleepMode ) {
+          settingsChanged = true;
+        }
+        settings.stopWatchSleepMode = mode; 
+      };
+
+      StopWatchSleepMode GetStopWatchSleepMode() const { return settings.stopWatchSleepMode; };
+
     private:
       Pinetime::Controllers::FS& fs;
 
@@ -179,6 +189,8 @@ namespace Pinetime {
         std::bitset<3> wakeUpMode {0};
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        StopWatchSleepMode stopWatchSleepMode = StopWatchSleepMode::Disable;
       };
 
       SettingsData settings;

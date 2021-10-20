@@ -10,82 +10,90 @@
 #include <array>
 #include "systemtask/SystemTask.h"
 
-namespace Pinetime::Applications::Screens {
+namespace Pinetime {
 
-  enum class States { Init, Running, Halted };
+  namespace Controllers {
+    class Settings;
+  }
 
-  struct TimeSeparated_t {
-    int mins;
-    int secs;
-    int hundredths;
-  };
+  namespace Applications::Screens {
 
-  // A simple buffer to hold the latest two laps
-  template <int N> struct LapTextBuffer_t {
-    LapTextBuffer_t() : buffer {}, currentSize {}, capacity {N}, head {-1} {
-    }
+    enum class States { Init, Running, Halted };
 
-    void addLaps(const TimeSeparated_t& timeVal) {
-      head++;
-      head %= capacity;
-      buffer[head] = timeVal;
+    struct TimeSeparated_t {
+      int mins;
+      int secs;
+      int hundredths;
+    };
 
-      if (currentSize < capacity) {
-        currentSize++;
+    // A simple buffer to hold the latest two laps
+    template <int N> struct LapTextBuffer_t {
+      LapTextBuffer_t() : buffer {}, currentSize {}, capacity {N}, head {-1} {
       }
-    }
 
-    void clearBuffer() {
-      buffer = {};
-      currentSize = 0;
-      head = -1;
-    }
+      void addLaps(const TimeSeparated_t& timeVal) {
+        head++;
+        head %= capacity;
+        buffer[head] = timeVal;
 
-    TimeSeparated_t* operator[](std::size_t idx) {
-      // Sanity check for out-of-bounds
-      if (idx >= 0 && idx < capacity) {
-        if (idx < currentSize) {
-          // This transformation is to ensure that head is always pointing to index 0.
-          const auto transformed_idx = (head - idx) % capacity;
-          return (&buffer[transformed_idx]);
+        if (currentSize < capacity) {
+          currentSize++;
         }
       }
-      return nullptr;
-    }
 
-  private:
-    std::array<TimeSeparated_t, N> buffer;
-    uint8_t currentSize;
-    uint8_t capacity;
-    int8_t head;
-  };
+      void clearBuffer() {
+        buffer = {};
+        currentSize = 0;
+        head = -1;
+      }
 
-  class StopWatch : public Screen {
-  public:
-    StopWatch(DisplayApp* app, System::SystemTask& systemTask);
-    ~StopWatch() override;
-    void Refresh() override;
+      TimeSeparated_t* operator[](std::size_t idx) {
+        // Sanity check for out-of-bounds
+        if (idx >= 0 && idx < capacity) {
+          if (idx < currentSize) {
+            // This transformation is to ensure that head is always pointing to index 0.
+            const auto transformed_idx = (head - idx) % capacity;
+            return (&buffer[transformed_idx]);
+          }
+        }
+        return nullptr;
+      }
 
-    void playPauseBtnEventHandler(lv_event_t event);
-    void stopLapBtnEventHandler(lv_event_t event);
-    bool OnButtonPushed() override;
+    private:
+      std::array<TimeSeparated_t, N> buffer;
+      uint8_t currentSize;
+      uint8_t capacity;
+      int8_t head;
+    };
 
-    void reset();
-    void start();
-    void pause();
+    class StopWatch : public Screen {
+    public:
+      StopWatch(DisplayApp* app, System::SystemTask& systemTask, Controllers::Settings& settingsController);
+      ~StopWatch() override;
+      void Refresh() override;
 
-  private:
-    Pinetime::System::SystemTask& systemTask;
-    TickType_t timeElapsed;
-    States currentState;
-    TickType_t startTime;
-    TickType_t oldTimeElapsed;
-    TimeSeparated_t currentTimeSeparated; // Holds Mins, Secs, millisecs
-    LapTextBuffer_t<2> lapBuffer;
-    int lapNr = 0;
-    lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
-    lv_obj_t *lapOneText, *lapTwoText;
+      void playPauseBtnEventHandler(lv_event_t event);
+      void stopLapBtnEventHandler(lv_event_t event);
+      bool OnButtonPushed() override;
 
-    lv_task_t* taskRefresh;
-  };
+      void reset();
+      void start();
+      void pause();
+
+    private:
+      Pinetime::System::SystemTask& systemTask;
+      Controllers::Settings& settingsController;
+      TickType_t timeElapsed;
+      States currentState;
+      TickType_t startTime;
+      TickType_t oldTimeElapsed;
+      TimeSeparated_t currentTimeSeparated; // Holds Mins, Secs, millisecs
+      LapTextBuffer_t<2> lapBuffer;
+      int lapNr = 0;
+      lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
+      lv_obj_t *lapOneText, *lapTwoText;
+
+      lv_task_t* taskRefresh;
+    };
+  }
 }

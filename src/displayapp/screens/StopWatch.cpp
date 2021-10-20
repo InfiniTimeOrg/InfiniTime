@@ -6,10 +6,12 @@
 #include "projdefs.h"
 #include "FreeRTOSConfig.h"
 #include "task.h"
+#include "components/settings/Settings.h"
 
 #include <tuple>
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Controllers;
 
 // Anonymous namespace for local functions
 namespace {
@@ -45,9 +47,10 @@ static void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
   stopWatch->stopLapBtnEventHandler(event);
 }
 
-StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
+StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask, Controllers::Settings& settingsController)
   : Screen(app),
     systemTask {systemTask},
+    settingsController {settingsController},
     currentState {States::Init},
     startTime {},
     oldTimeElapsed {},
@@ -136,7 +139,9 @@ void StopWatch::start() {
   lv_label_set_text(txtStopLap, Symbols::lapsFlag);
   startTime = xTaskGetTickCount();
   currentState = States::Running;
-  systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
+  if (settingsController.GetStopWatchSleepMode() == Settings::StopWatchSleepMode::Disable) {
+    systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
+  }
 }
 
 void StopWatch::pause() {
@@ -195,7 +200,7 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
 }
 
 bool StopWatch::OnButtonPushed() {
-  if (currentState == States::Running) {
+  if (currentState == States::Running && settingsController.GetStopWatchSleepMode() == Settings::StopWatchSleepMode::Disable) {
     pause();
     return true;
   }

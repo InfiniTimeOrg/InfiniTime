@@ -47,6 +47,7 @@
 #include "displayapp/screens/settings/SettingPineTimeStyle.h"
 #include "displayapp/screens/settings/SettingSetDate.h"
 #include "displayapp/screens/settings/SettingSetTime.h"
+#include "displayapp/screens/settings/SettingStopWatch.h"
 
 #include "libs/lv_conf.h"
 
@@ -378,6 +379,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::SettingSteps>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
+    case Apps::SettingStopWatch:
+      currentScreen = std::make_unique<Screens::SettingStopWatch>(this, settingsController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
     case Apps::SettingSetDate:
       currentScreen = std::make_unique<Screens::SettingSetDate>(this, dateTimeController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
@@ -404,7 +409,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
       break;
     case Apps::StopWatch:
-      currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask);
+      currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask, settingsController);
       break;
     case Apps::Twos:
       currentScreen = std::make_unique<Screens::Twos>(this);
