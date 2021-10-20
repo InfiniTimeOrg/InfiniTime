@@ -497,6 +497,7 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBG));
     }
     if (object == btnReset) {
+      needle_colors[0] = LV_COLOR_WHITE;
       settingsController.SetPTSColorTime(Controllers::Settings::Colors::Teal);
       lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
       lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Teal));
@@ -516,6 +517,11 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       }
       if (randBar == 3) {
         randBar -= 1;
+      }
+      if (randBar == 0) {
+        needle_colors[0] = LV_COLOR_BLACK;
+      } else {
+        needle_colors[0] = LV_COLOR_WHITE;
       }
       settingsController.SetPTSColorTime(static_cast<Controllers::Settings::Colors>(randTime));
       lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(static_cast<Controllers::Settings::Colors>(randTime)));
