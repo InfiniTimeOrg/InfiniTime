@@ -305,7 +305,7 @@ PineTimeStyle::~PineTimeStyle() {
 }
 
 bool PineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  if (event == Pinetime::Applications::TouchEvents::LongTap) {
+  if ((event == Pinetime::Applications::TouchEvents::LongTap) && (lv_obj_get_hidden(btnRandom) == true)) {
     lv_obj_set_hidden(btnSet, false);
     savedTick = lv_tick_get();
     return true;
@@ -508,29 +508,28 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Black));
     }
     if (object == btnRandom) {
-      uint8_t randTime = rand() % 17;
-      uint8_t randBar = rand() % 17;
-      uint8_t randBG = rand() % 17;
-      // Check if the time color is the same as its background, or if the sidebar is black. If so, change them to more useful values.
-      if (randTime == randBG) {
-        randBG += 1;
+      valueTime = static_cast<Controllers::Settings::Colors>(rand() % 17);
+      valueBar = static_cast<Controllers::Settings::Colors>(rand() % 17);
+      valueBG = static_cast<Controllers::Settings::Colors>(rand() % 17);
+      if (valueTime == valueBG) {
+        valueBG = GetNext(valueBG);
       }
-      if (randBar == 3) {
-        randBar -= 1;
+      if (valueBar == Controllers::Settings::Colors::Black) {
+        valueBar = GetPrevious(valueBar);
       }
-      if (randBar == 0) {
+      if (valueBar == Controllers::Settings::Colors::White) {
         needle_colors[0] = LV_COLOR_BLACK;
       } else {
         needle_colors[0] = LV_COLOR_WHITE;
       }
-      settingsController.SetPTSColorTime(static_cast<Controllers::Settings::Colors>(randTime));
-      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(static_cast<Controllers::Settings::Colors>(randTime)));
-      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Controllers::Settings::Colors>(randTime)));
-      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Controllers::Settings::Colors>(randTime)));
-      settingsController.SetPTSColorBar(static_cast<Controllers::Settings::Colors>(randBar));
-      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Controllers::Settings::Colors>(randBar)));
-      settingsController.SetPTSColorBG(static_cast<Controllers::Settings::Colors>(randBG));
-      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(static_cast<Controllers::Settings::Colors>(randBG)));
+      settingsController.SetPTSColorTime(static_cast<Controllers::Settings::Colors>(valueTime));
+      lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT,  Convert(valueTime));
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT,  Convert(valueTime));
+      settingsController.SetPTSColorBar(static_cast<Controllers::Settings::Colors>(valueBar));
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(valueBar));
+      settingsController.SetPTSColorBG(static_cast<Controllers::Settings::Colors>(valueBG));
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(valueBG));
     }
     if (object == btnClose) {
       settingsController.SaveSettings();
