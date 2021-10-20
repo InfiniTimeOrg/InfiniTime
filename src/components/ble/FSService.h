@@ -15,13 +15,15 @@ namespace Pinetime {
     class Ble;
     class FSService {
     public:
-      FSService(Pinetime::Controllers::FS& fs);
+      FSService(Pinetime::System::SystemTask& systemTask,
+                Pinetime::Controllers::FS& fs);
       void Init();
 
       int OnFSServiceRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context);
       void NotifyFSRaw(uint16_t connectionHandle);
 
     private:
+      Pinetime::System::SystemTask& systemTask;
       Pinetime::Controllers::FS& fs;
       static constexpr uint16_t FSServiceId {0xFEBB};
       static constexpr uint16_t fsVersionId {0x0100};
@@ -30,7 +32,7 @@ namespace Pinetime {
       static constexpr uint8_t maxpathlen = 100;
       static constexpr ble_uuid16_t fsServiceUuid {
         .u {.type = BLE_UUID_TYPE_16},
-        .value = {0xFEBB}};// {0x72, 0x65, 0x66, 0x73, 0x6e, 0x61, 0x72, 0x54, 0x65, 0x6c, 0x69, 0x46, 0xBB, 0xFE, 0xAF, 0xAD}};
+        .value = {0xFEBB}}; // {0x72, 0x65, 0x66, 0x73, 0x6e, 0x61, 0x72, 0x54, 0x65, 0x6c, 0x69, 0x46, 0xBB, 0xFE, 0xAF, 0xAD}};
 
       static constexpr ble_uuid128_t fsVersionUuid {
         .u {.type = BLE_UUID_TYPE_128},
@@ -144,7 +146,7 @@ namespace Pinetime {
       };
 
       int FSCommandHandler(uint16_t connectionHandle, os_mbuf* om);
-      void prepareReadDataResp(ReadHeader *header, ReadResponse *resp);
+      void prepareReadDataResp(ReadHeader* header, ReadResponse* resp);
     };
   }
 }

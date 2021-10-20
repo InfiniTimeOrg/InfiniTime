@@ -1,6 +1,7 @@
 #include <nrf_log.h>
 #include "FSService.h"
 #include "components/ble/BleController.h"
+#include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
 
@@ -13,8 +14,9 @@ int FSServiceCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gat
   return fsService->OnFSServiceRequested(conn_handle, attr_handle, ctxt);
 }
 
-FSService::FSService(Pinetime::Controllers::FS& fs)
-  : fs {fs},
+FSService::FSService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::FS& fs)
+  : systemTask {systemTask},
+    fs {fs},
     characteristicDefinition {{.uuid = &fsVersionUuid.u,
                                .access_cb = FSServiceCallback,
                                .arg = this,
@@ -60,8 +62,13 @@ int FSService::OnFSServiceRequested(uint16_t connectionHandle, uint16_t attribut
 
 int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
   auto command = static_cast<commands>(om->om_data[0]);
-  NRF_LOG_INFO("[FS_S] -> FSCommandHandler %d",command);
-  fs.Mount();
+  NRF_LOG_INFO("[FS_S] -> FSCommandHandler Command %d", command);
+  // Just always make sure we are awake...
+  systemTask.PushMessage(Pinetime::System::Messages::StartFileTransfer);
+  vTaskDelay(10);
+  while (systemTask.IsSleeping()) {
+    vTaskDelay(100); // 50ms
+  }
   switch (command) {
     /*
     case commands::READ: {
@@ -203,6 +210,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       char path[plen + 1] = {0};
       memcpy(path, header->pathstr, plen);
       NRF_LOG_INFO("[FS_S] -> DIR %.10s", path);
+
       lfs_dir_t dir = {};
       struct lfs_info info = {};
 
@@ -212,9 +220,11 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.totalentries = 0;
       resp.entry = 0;
 
-      int res = fs.DirOpen(path, &dir);
+      if (fs.DirOpen(path, &dir)) {
+        return 0;
+      }
 
-      NRF_LOG_INFO("[FS_S] ->diropen %d ", res);
+      // NRF_LOG_INFO("[FS_S] ->diropen %d ", res);
       while (fs.DirRead(&dir, &info)) {
         resp.totalentries++;
       }
@@ -222,9 +232,11 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
 
       fs.DirRewind(&dir);
 
-      while (true) {
+      // NRF_LOG_INFO("[FS_S] ->diropen %d ", res);
+
+      while (resp.entry < resp.totalentries) {
         int res = fs.DirRead(&dir, &info);
-        if(res <= 0){
+        if (res <= 0) {
           break;
         }
         switch (info.type) {
@@ -243,23 +255,26 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         strcpy(resp.path, info.name);
         resp.path_length = strlen(info.name);
         NRF_LOG_INFO("[FS_S] ->Path %s ,", info.name);
-        auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse)+resp.path_length);
+        auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse) + resp.path_length);
         ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
-        vTaskDelay(10); // Allow stuff to actually go out over the BLE conn
+        vTaskDelay(100); // Allow stuff to actually go out over the BLE conn
         resp.entry++;
       }
-      fs.DirClose(&dir);
+
+      if (fs.DirClose(&dir)) {
+        return 0;
+      }
       resp.file_size = 0;
       resp.path_length = 0;
       resp.flags = 0;
       // TODO Handle Size of response better.
-      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse)+resp.path_length);
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse) + resp.path_length);
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       NRF_LOG_INFO("[FS_S] -> done ");
       break;
     }
   }
-  fs.UnMount();
+  systemTask.PushMessage(Pinetime::System::Messages::StopFileTransfer);
   return 0;
 }
 // Loads resp with file data given a valid filepath header and resp

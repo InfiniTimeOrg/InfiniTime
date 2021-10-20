@@ -342,6 +342,19 @@ void SystemTask::Work() {
           doNotGoToSleep = false;
           xTimerStart(dimTimer, 0);
           break;
+        case Messages::StartFileTransfer:
+          NRF_LOG_INFO("[systemtask] FS Started"); 
+          doNotGoToSleep = true;
+          if (isSleeping && !isWakingUp)
+            GoToRunning();
+          //TODO add intent of fs access icon or something
+          break;
+        case Messages::StopFileTransfer:
+          NRF_LOG_INFO("[systemtask] FS Stopped");
+          doNotGoToSleep = false;
+          xTimerStart(dimTimer, 0);
+           //TODO add intent of fs access icon or something
+           break;
         case Messages::OnTouchEvent:
           if (touchHandler.GetNewTouchInfo()) {
             touchHandler.UpdateLvglTouchPoint();
