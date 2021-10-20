@@ -34,10 +34,14 @@ The following custom services are implemented in InfiniTime:
 
  - Since InfiniTime 0.11:
      * [Navigation Service](NavigationService.md) : 00010000-78fc-48fe-8e23-433b3a1942d0
+
+
+ - Since InfiniTime 0.13
+     * Call characteristic (extension to the Alert Notification Service): 00020001-78fc-48fe-8e23-433b3a1942d0
  
   
  - Since InfiniTime 1.7:
-   * [Motion Service](MotionService.md) :        00020000-78fc-48fe-8e23-433b3a1942d0
+   * [Motion Service](MotionService.md) :        00030000-78fc-48fe-8e23-433b3a1942d0
 
 ## BLE services
 [List of standard BLE services](https://www.bluetooth.com/specifications/gatt/services/)
