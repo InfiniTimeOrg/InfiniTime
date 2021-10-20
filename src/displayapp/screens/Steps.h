@@ -20,14 +20,20 @@ namespace Pinetime {
         ~Steps() override;
 
         void Refresh() override;
+        void lapBtnEventHandler(lv_event_t event);
 
       private:
         Controllers::MotionController& motionController;
         Controllers::Settings& settingsController;
 
+        uint32_t currentLapSteps = 0;
+
         lv_obj_t* lSteps;
         lv_obj_t* lStepsIcon;
         lv_obj_t* stepsArc;
+        lv_obj_t* btnLap;
+        lv_obj_t* txtLap;
+        lv_obj_t* totalStepsText;
 
         uint32_t stepsCount;
 
