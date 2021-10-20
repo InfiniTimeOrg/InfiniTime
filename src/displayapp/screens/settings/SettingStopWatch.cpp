@@ -48,7 +48,7 @@ SettingStopWatch::SettingStopWatch(Pinetime::Applications::DisplayApp* app, Pine
                         "#444444 the stopwatch#\n" 
                         "#444444 is running.#");
   lv_label_set_align(description, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(description, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 40);
+  lv_obj_align(description, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 30);
 
   optionsTotal = 0;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
