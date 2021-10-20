@@ -26,14 +26,14 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
         Controllers::Settings& settingsController;
 
-        uint32_t currentLapSteps = 0;
+        uint32_t currentTripSteps = 0;
 
         lv_obj_t* lSteps;
         lv_obj_t* lStepsIcon;
         lv_obj_t* stepsArc;
-        lv_obj_t* btnLap;
-        lv_obj_t* txtLap;
-        lv_obj_t* totalStepsText;
+        lv_obj_t* btnTrip;
+        lv_obj_t* txtTrip;
+        lv_obj_t* tripText;
 
         uint32_t stepsCount;
 

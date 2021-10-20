@@ -28,11 +28,11 @@ namespace Pinetime {
       uint32_t NbSteps() const {
         return nbSteps;
       }
-      void SetPrevTotalSteps(uint32_t steps) {
-        stepsAtLastLap = steps;
+      void SetTripSteps(uint32_t steps) {
+        stepsAtLastTrip = steps;
       }
-      uint32_t GetPrevTotalSteps() const {
-        return stepsAtLastLap;
+      uint32_t GetTripSteps() const {
+        return stepsAtLastTrip;
       }
       bool ShouldWakeUp(bool isSleeping);
 
@@ -50,7 +50,7 @@ namespace Pinetime {
 
     private:
       uint32_t nbSteps;
-      uint32_t stepsAtLastLap = 0;
+      uint32_t stepsAtLastTrip = 0;
       int16_t x;
       int16_t y;
       int16_t z;
