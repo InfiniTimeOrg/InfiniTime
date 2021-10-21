@@ -69,8 +69,9 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
   while (systemTask.IsSleeping()) {
     vTaskDelay(100); // 50ms
   }
+  lfs_dir_t dir;
+  lfs_info info;
   switch (command) {
-    /*
     case commands::READ: {
       NRF_LOG_INFO("[FS_S] -> Read");
       if (state != FSState::IDLE) {
@@ -151,31 +152,15 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         return -1;
       }
     }
-
     case commands::DELETE: {
       NRF_LOG_INFO("[FS_S] -> Delete");
       auto* header = (DelHeader*) om->om_data;
       uint16_t plen = header->pathlen;
-      char path[plen + 1] = {0};
-      struct lfs_info info = {};
-      DelResponse resp = {};
+      char path[plen + 1] {0};
+      memcpy(path, header->pathstr, plen);
+      DelResponse resp {};
       resp.command = commands::DELETE_STATUS;
-      int res = fs.Stat(path, &info);
-      // Get Info about path
-      // branch for DirDel of FileDelete
-      if (info.type == LFS_TYPE_DIR) {
-        res = fs.DirDelete(path);
-      } else {
-        res = fs.FileDelete(path);
-      }
-      switch (res) {
-        case LFS_ERR_OK:
-          resp.status = 0x01;
-          break;
-        default:
-          resp.status = 0x02;
-          break;
-      }
+      resp.status = fs.FileDelete(path) ? 0x02 : 0x01;
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(DelResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       break;
@@ -184,57 +169,43 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       NRF_LOG_INFO("[FS_S] -> MKDir");
       auto* header = (MKDirHeader*) om->om_data;
       uint16_t plen = header->pathlen;
-      char path[plen + 1] = {0};
+      char path[plen + 1] {0};
       memcpy(path, header->pathstr, plen);
-      NRF_LOG_INFO("[FS_S] -> MKDIR %.10s", path);
-      MKDirResponse resp = {};
+      MKDirResponse resp {};
       resp.command = commands::MKDIR_STATUS;
-      int res = fs.DirCreate(path);
-      switch (res) {
-        case LFS_ERR_OK:
-          resp.status = 0x01;
-          break;
-        default:
-          resp.status = 0x02;
-          break;
-      }
-      resp.modification_time = 0; // We should timestamp..but no
+      resp.modification_time = 0;
+      resp.status = fs.DirCreate(path) ? 0x02 : 0x01;
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(MKDirResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       break;
-    }*/
+    }
     case commands::LISTDIR: {
       NRF_LOG_INFO("[FS_S] -> ListDir");
       ListDirHeader* header = (ListDirHeader*) om->om_data;
       uint16_t plen = header->pathlen;
-      char path[plen + 1] = {0};
+      char path[plen + 1] {0};
       memcpy(path, header->pathstr, plen);
       NRF_LOG_INFO("[FS_S] -> DIR %.10s", path);
 
-      lfs_dir_t dir = {};
-      struct lfs_info info = {};
+      ListDirResponse resp {};
 
-      ListDirResponse resp = {};
       resp.command = commands::LISTDIR_ENTRY;
-      resp.status = 1; // TODO actually use res above!
+      resp.status = 1;
       resp.totalentries = 0;
       resp.entry = 0;
-
-      if (fs.DirOpen(path, &dir)) {
-        return 0;
-      }
-
-      // NRF_LOG_INFO("[FS_S] ->diropen %d ", res);
+      resp.modification_time = 0; // TODO Does LFS actually support TS?
+      if (fs.DirOpen(path, &dir) != 0) {
+        resp.status = 0x02;
+        auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse));
+        ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+        break;
+      };
+      // Count Total files in directory.
       while (fs.DirRead(&dir, &info)) {
         resp.totalentries++;
       }
-      NRF_LOG_INFO("[FS_S] -> %d ", resp.totalentries);
-
       fs.DirRewind(&dir);
-
-      // NRF_LOG_INFO("[FS_S] ->diropen %d ", res);
-
-      while (resp.entry < resp.totalentries) {
+      while (true) {
         int res = fs.DirRead(&dir, &info);
         if (res <= 0) {
           break;
@@ -251,35 +222,39 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
             break;
           }
         }
-        resp.modification_time = 0; // TODO Does LFS actually support TS?
-        strcpy(resp.path, info.name);
+
+        //strcpy(resp.path, info.name);
         resp.path_length = strlen(info.name);
-        NRF_LOG_INFO("[FS_S] ->Path %s ,", info.name);
-        auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse) + resp.path_length);
+        NRF_LOG_INFO("[FS_S] -> DIR %.10s", path);
+        auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse));
+        os_mbuf_append(om,info.name,resp.path_length);
         ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+        /*
+        * Todo Figure out how to know when the previous Notify was TX'd
+        * For now just delay 100ms to make sure that the data went out...
+        */
         vTaskDelay(100); // Allow stuff to actually go out over the BLE conn
         resp.entry++;
       }
-
-      if (fs.DirClose(&dir)) {
-        return 0;
-      }
+      assert(fs.DirClose(&dir) == 0);
       resp.file_size = 0;
       resp.path_length = 0;
       resp.flags = 0;
-      // TODO Handle Size of response better.
-      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse) + resp.path_length);
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
-      NRF_LOG_INFO("[FS_S] -> done ");
       break;
     }
+    default:
+      break;
   }
+  NRF_LOG_INFO("[FS_S] -> done ");
   systemTask.PushMessage(Pinetime::System::Messages::StopFileTransfer);
   return 0;
 }
+
 // Loads resp with file data given a valid filepath header and resp
 void FSService::prepareReadDataResp(ReadHeader* header, ReadResponse* resp) {
-  uint16_t plen = header->pathlen;
+  // uint16_t plen = header->pathlen;
   resp->command = commands::READ_DATA;
   resp->chunkoff = header->chunkoff;
   resp->status = 0x01;

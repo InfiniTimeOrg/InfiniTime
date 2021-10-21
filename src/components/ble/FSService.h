@@ -29,7 +29,7 @@ namespace Pinetime {
       static constexpr uint16_t fsVersionId {0x0100};
       static constexpr uint16_t fsTransferId {0x0200};
       uint16_t fsVersion = {0x0004};
-      static constexpr uint8_t maxpathlen = 100;
+      static constexpr uint16_t maxpathlen = 256;
       static constexpr ble_uuid16_t fsServiceUuid {
         .u {.type = BLE_UUID_TYPE_16},
         .value = {0xFEBB}}; // {0x72, 0x65, 0x66, 0x73, 0x6e, 0x61, 0x72, 0x54, 0x65, 0x6c, 0x69, 0x46, 0xBB, 0xFE, 0xAF, 0xAD}};
@@ -46,6 +46,9 @@ namespace Pinetime {
       struct ble_gatt_svc_def serviceDefinition[2];
       uint16_t versionCharacteristicHandle;
       uint16_t transferCharacteristicHandle;
+
+      // lfs_dir_t dir;
+      // lfs_info info;
 
       enum class commands : uint8_t {
         INVALID = 0x00,
