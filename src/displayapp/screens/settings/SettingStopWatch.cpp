@@ -23,7 +23,7 @@ SettingStopWatch::SettingStopWatch(Pinetime::Applications::DisplayApp* app, Pine
   lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
   lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
-  lv_obj_set_pos(container1, 10, 150);
+  lv_obj_set_pos(container1, 10, 140);
   lv_obj_set_width(container1, LV_HOR_RES - 20);
   lv_obj_set_height(container1, LV_VER_RES - 50);
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
@@ -48,12 +48,11 @@ SettingStopWatch::SettingStopWatch(Pinetime::Applications::DisplayApp* app, Pine
                         "#444444 the stopwatch#\n" 
                         "#444444 is running.#");
   lv_label_set_align(description, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(description, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 30);
+  lv_obj_align(description, lv_scr_act(), LV_ALIGN_CENTER, 0, -20);
 
   optionsTotal = 0;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Disable");
-  lv_obj_align(description, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
   if (settingsController.GetStopWatchSleepMode() == Controllers::Settings::StopWatchSleepMode::Disable) {
