@@ -49,7 +49,7 @@ std::unique_ptr<Screen> Settings::CreateScreen2() {
 
   std::array<Screens::List::Applications, 4> applications {{
     {Symbols::shoe, "Steps", Apps::SettingSteps},
-    {Symbols::clock, "Stopwatch", Apps::SettingStopWatch},
+    {Symbols::stopWatch, "Stopwatch", Apps::SettingStopWatch},
     {Symbols::clock, "Set date", Apps::SettingSetDate},
     {Symbols::clock, "Set time", Apps::SettingSetTime},
   }};
