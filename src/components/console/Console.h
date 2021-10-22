@@ -10,60 +10,56 @@ namespace Pinetime {
     class SystemTask;
   }
 
-  namespace Controllers
-  {
+  namespace Controllers {
     class NimbleController;
     class FS;
     class MotorController;
     class MotionController;
   }
 
-  namespace Drivers
-  {
+  namespace Drivers {
     class Cst816S;
     class SpiNorFlash;
     class TwiMaster;
   }
-  
-  namespace Components
-  {
+
+  namespace Components {
     class LittleVgl;
 
     class Console {
-      public:
-        Console(Pinetime::System::SystemTask& systemTask,
-                Pinetime::Controllers::NimbleController& nimbleController,
-                Pinetime::Controllers::FS& fs,
-                Pinetime::Components::LittleVgl& lvgl,
-                Pinetime::Controllers::MotorController& motorController,
-                Pinetime::Drivers::Cst816S& touchPanel,
-                Pinetime::Drivers::SpiNorFlash& spiNorFlash,
-                Pinetime::Drivers::TwiMaster& twiMaster,
-                Pinetime::Controllers::MotionController& motionController);
+    public:
+      Console(Pinetime::System::SystemTask& systemTask,
+              Pinetime::Controllers::NimbleController& nimbleController,
+              Pinetime::Controllers::FS& fs,
+              Pinetime::Components::LittleVgl& lvgl,
+              Pinetime::Controllers::MotorController& motorController,
+              Pinetime::Drivers::Cst816S& touchPanel,
+              Pinetime::Drivers::SpiNorFlash& spiNorFlash,
+              Pinetime::Drivers::TwiMaster& twiMaster,
+              Pinetime::Controllers::MotionController& motionController);
 
-        void Init();
-        void Process();
-        void Print(std::string str);
-        void Received(char* str, int length);
+      void Init();
+      void Process();
+      void Print(std::string str);
+      void Received(char* str, int length);
 
-      private:
-          Pinetime::System::SystemTask& systemTask;
-          Pinetime::Controllers::NimbleController& nimbleController;
-          Pinetime::Controllers::FS& fs;
-          Pinetime::Components::LittleVgl& lvgl;
-          Pinetime::Controllers::MotorController& motorController;
-          Pinetime::Drivers::Cst816S& touchPanel;
-          Pinetime::Drivers::SpiNorFlash& spiNorFlash;
-          Pinetime::Drivers::TwiMaster& twiMaster;
-          Pinetime::Controllers::MotionController& motionController;
+    private:
+      Pinetime::System::SystemTask& systemTask;
+      Pinetime::Controllers::NimbleController& nimbleController;
+      Pinetime::Controllers::FS& fs;
+      Pinetime::Components::LittleVgl& lvgl;
+      Pinetime::Controllers::MotorController& motorController;
+      Pinetime::Drivers::Cst816S& touchPanel;
+      Pinetime::Drivers::SpiNorFlash& spiNorFlash;
+      Pinetime::Drivers::TwiMaster& twiMaster;
+      Pinetime::Controllers::MotionController& motionController;
 
-          static constexpr int bufferSize = 32;
-          char rxBuffer[bufferSize];
-          uint16_t rxPos;
+      static constexpr int bufferSize = 32;
+      char rxBuffer[bufferSize];
+      uint16_t rxPos;
 
-          void CommandLvgl(const char *args[], uint16_t argc);
-          void AccelerometerDebug();
-
-      };
+      void CommandLvgl(const char* args[], uint16_t argc);
+      void AccelerometerDebug();
+    };
   }
 }
