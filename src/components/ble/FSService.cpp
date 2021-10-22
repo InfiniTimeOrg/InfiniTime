@@ -73,74 +73,76 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
   lfs_info info;
   switch (command) {
     case commands::READ: {
+      lfs_file f;
       NRF_LOG_INFO("[FS_S] -> Read");
-      if (state != FSState::IDLE) {
-        return -1;
-      }
-      state = FSState::READ;
       auto* header = (ReadHeader*) om->om_data;
       uint16_t plen = header->pathlen;
-      if (plen > maxpathlen - 1) {
+      if (plen > maxpathlen) { //> counts for null term
         return -1;
       }
       memcpy(filepath, header->pathstr, plen);
       filepath[plen + 1] = 0; // Copy and null teminate string
       ReadResponse resp;
       resp.command = commands::READ_DATA;
-      resp.chunkoff = header->chunkoff;
       resp.status = 0x01;
-      struct lfs_info info = {};
+      resp.chunkoff = header->chunkoff;
       int res = fs.Stat(filepath, &info);
       if (res == LFS_ERR_NOENT && info.type != LFS_TYPE_DIR) {
         resp.status = 0x03;
         resp.chunklen = 0;
         resp.totallen = 0;
       } else {
-        lfs_file f;
-        resp.chunklen = std::min(header->chunksize, info.size);
+        resp.chunklen = std::min(header->chunksize, info.size); // TODO add mtu somehow
         resp.totallen = info.size;
         fs.FileOpen(&f, filepath, LFS_O_RDONLY);
         fs.FileSeek(&f, header->chunkoff);
-        resp.chunklen = fs.FileRead(&f, resp.chunk, resp.chunklen);
-        fs.FileClose(&f);
       }
-      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
+      os_mbuf* om;
+      if (resp.chunklen > 0) {
+        uint8_t fileData[resp.chunklen] {0};
+        resp.chunklen = fs.FileRead(&f, fileData, resp.chunklen);
+        om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
+        os_mbuf_append(om, fileData, resp.chunklen);
+      } else {
+        resp.chunklen = 0;
+        om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
+      }
+      fs.FileClose(&f);
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
-      if (header->chunksize >= resp.totallen) { // probably removeable...but then usafe
-        state = FSState::IDLE;
-      }
+      break;
     }
     case commands::READ_PACING: {
-      NRF_LOG_INFO("[FS_S] -> ReadPacing");
-      if (state != FSState::READ) {
-        return -1;
-      }
-      auto* header = (ReadPacing*) om->om_data;
-      ReadResponse resp = {};
-
+      lfs_file f;
+      NRF_LOG_INFO("[FS_S] -> Readpacing");
+      auto* header = (ReadHeader*) om->om_data;
+      ReadResponse resp;
       resp.command = commands::READ_DATA;
-      resp.chunkoff = header->chunkoff;
       resp.status = 0x01;
-      struct lfs_info info = {};
+      resp.chunkoff = header->chunkoff;
       int res = fs.Stat(filepath, &info);
       if (res == LFS_ERR_NOENT && info.type != LFS_TYPE_DIR) {
         resp.status = 0x03;
         resp.chunklen = 0;
         resp.totallen = 0;
       } else {
-        lfs_file f;
-        resp.chunklen = std::min(header->chunksize, info.size);
+        resp.chunklen = std::min(header->chunksize, info.size); // TODO add mtu somehow
         resp.totallen = info.size;
         fs.FileOpen(&f, filepath, LFS_O_RDONLY);
         fs.FileSeek(&f, header->chunkoff);
-        resp.chunklen = fs.FileRead(&f, resp.chunk, resp.chunklen);
-        fs.FileClose(&f);
       }
-      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
+      os_mbuf* om;
+      if (resp.chunklen > 0) {
+        uint8_t fileData[resp.chunklen] {0};
+        resp.chunklen = fs.FileRead(&f, fileData, resp.chunklen);
+        om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
+        os_mbuf_append(om, fileData, resp.chunklen);
+      } else {
+        resp.chunklen = 0;
+        om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
+      }
+      fs.FileClose(&f);
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
-      if (resp.chunklen >= header->chunksize) { // is this right?
-        state = FSState::IDLE;
-      }
+      break;
     }
     case commands::WRITE: {
       if (state != FSState::IDLE) {
@@ -185,7 +187,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       uint16_t plen = header->pathlen;
       char path[plen + 1] {0};
       memcpy(path, header->pathstr, plen);
-      NRF_LOG_INFO("[FS_S] -> DIR %.10s", path);
 
       ListDirResponse resp {};
 
@@ -223,16 +224,15 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
           }
         }
 
-        //strcpy(resp.path, info.name);
+        // strcpy(resp.path, info.name);
         resp.path_length = strlen(info.name);
-        NRF_LOG_INFO("[FS_S] -> DIR %.10s", path);
         auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse));
-        os_mbuf_append(om,info.name,resp.path_length);
+        os_mbuf_append(om, info.name, resp.path_length);
         ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
         /*
-        * Todo Figure out how to know when the previous Notify was TX'd
-        * For now just delay 100ms to make sure that the data went out...
-        */
+         * Todo Figure out how to know when the previous Notify was TX'd
+         * For now just delay 100ms to make sure that the data went out...
+         */
         vTaskDelay(100); // Allow stuff to actually go out over the BLE conn
         resp.entry++;
       }
