@@ -18,7 +18,7 @@ namespace {
 HeartRateService::HeartRateService(Pinetime::System::SystemTask& system, Controllers::HeartRateController& heartRateController)
   : system {system},
     heartRateController {heartRateController},
-    characteristicDefinition {{.uuid = (ble_uuid_t*) &heartRateMeasurementUuid,
+    characteristicDefinition {{.uuid = &heartRateMeasurementUuid.u,
                                .access_cb = HeartRateServiceServiceCallback,
                                .arg = this,
                                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
@@ -27,7 +27,7 @@ HeartRateService::HeartRateService(Pinetime::System::SystemTask& system, Control
     serviceDefinition {
       {/* Device Information Service */
        .type = BLE_GATT_SVC_TYPE_PRIMARY,
-       .uuid = (ble_uuid_t*) &heartRateServiceUuid,
+       .uuid = &heartRateServiceUuid.u,
        .characteristics = characteristicDefinition},
       {0},
     } {

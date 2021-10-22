@@ -1,9 +1,9 @@
 # Using the releases
-For each new *stable* version of IniniTime, a [release note](https://github.com/JF002/InfiniTime/releases) is created. It contains a description of the main changes in the release and some files you can use to flash the firmware to your Pinetime.
+For each new *stable* version of IniniTime, a [release note](https://github.com/InfiniTimeOrg/InfiniTime/releases) is created. It contains a description of the main changes in the release and some files you can use to flash the firmware to your Pinetime.
 
 This page describes the files from the release notes and how to use them.
 
-**NOTE :** the files included in different Releases could be different. This page describes the release notes of [version 0.7.1](https://github.com/JF002/InfiniTime/releases/tag/0.7.1), which is the version that is pre-programmed for the last batches of pinetimes but will be replaced with [1.0.0](https://github.com/jF002/infiniTime/releases/tag/1.0.0) around june 2021.
+**NOTE :** the files included in different Releases could be different. This page describes the release notes of [version 0.7.1](https://github.com/InfiniTimeOrg/InfiniTime/releases/tag/0.7.1), which is the version that is pre-programmed for the last batches of pinetimes but will be replaced with [1.0.0](https://github.com/jF002/infiniTime/releases/tag/1.0.0) around june 2021.
 
 ## Files included in the release notes
 

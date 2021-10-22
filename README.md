@@ -1,6 +1,6 @@
 # InfiniTime
 
-[![Build PineTime Firmware](https://github.com/JF002/InfiniTime/workflows/Build%20PineTime%20Firmware/badge.svg?branch=master)](https://github.com/JF002/InfiniTime/actions)
+[![Build PineTime Firmware](https://github.com/InfiniTimeOrg/InfiniTime/workflows/Build%20PineTime%20Firmware/badge.svg?branch=master)](https://github.com/InfiniTimeOrg/InfiniTime/actions)
 
 ![InfiniTime logo](images/infinitime-logo.jpg "InfiniTime Logo")
 
@@ -65,14 +65,15 @@ As of now, here is the list of achievements of this project:
     * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)
     * [Siglo](https://github.com/alexr4535/siglo) (on Linux)
     * **[Experimental]** [WebBLEWatch](https://hubmartin.github.io/WebBLEWatch/) Synchronize time directly from your web browser. [video](https://youtu.be/IakiuhVDdrY)
-    * **[Experimental]** [Infini-iOS](https://github.com/xan-m/Infini-iOS) (on iOS)
+    * **[Experimental]** [InfiniLink](https://github.com/xan-m/InfiniLink) (on iOS)
  - OTA (Over-the-air) update via BLE
  - [Bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader) based on [MCUBoot](https://www.mcuboot.com)
 
 ## Documentation
 
 ### Develop
-
+ - [Rough structure of the code](doc/code/Intro.md)
+ - [How to implement an application](doc/code/Apps.md)
  - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
  - [Creating a stopwatch in Pinetime(article)](https://pankajraghav.com/2021/04/03/PINETIME-STOPCLOCK.html)
 

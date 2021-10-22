@@ -55,7 +55,7 @@ RUN unzip -q /tmp/nRF5_SDK_15.3.0_59ac345 -d /opt
 RUN rm /tmp/nRF5_SDK_15.3.0_59ac345
 # McuBoot
 # RUN bash -c "source /opt/build.sh; GetMcuBoot;"
-RUN git clone https://github.com/JuulLabs-OSS/mcuboot.git
+RUN git clone https://github.com/mcu-tools/mcuboot.git
 RUN pip3 install -r ./mcuboot/scripts/requirements.txt
 
 RUN adduser infinitime
