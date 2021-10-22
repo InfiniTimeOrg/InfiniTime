@@ -44,9 +44,9 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
 
   lv_obj_t* lstepsGoal = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lstepsGoal, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
-  lv_label_set_text_fmt(lstepsGoal, "Goal: %lu", settingsController.GetStepsGoal());
+  lv_label_set_text_fmt(lstepsGoal, "Goal: %5lu", settingsController.GetStepsGoal());
   lv_label_set_align(lstepsGoal, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(lstepsGoal, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 30);
+  lv_obj_align(lstepsGoal, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 40);
 
   lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
@@ -69,8 +69,8 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
 
   tripText = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(tripText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-  lv_label_set_text_fmt(tripText, "Trip: %li", currentTripSteps);
-  lv_obj_align(tripText, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 50);
+  lv_label_set_text_fmt(tripText, "Trip: %5li", currentTripSteps);
+  lv_obj_align(tripText, lstepsGoal, LV_ALIGN_IN_LEFT_MID, 0, 20);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
 }
@@ -87,9 +87,11 @@ void Steps::Refresh() {
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
 
-  lv_label_set_text_fmt(tripText, "Trip: %li", currentTripSteps);
-  lv_obj_align(tripText, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 50);
-
+  if (currentTripSteps < 100000){
+    lv_label_set_text_fmt(tripText, "Trip: %5li", currentTripSteps);
+  } else {
+    lv_label_set_text_fmt(tripText, "Trip: 99999+");
+  }
   lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
 }
 
