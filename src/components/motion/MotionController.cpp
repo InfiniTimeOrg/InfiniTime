@@ -14,7 +14,11 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   this->x = x;
   this->y = y;
   this->z = z;
+  deltaSteps = nbSteps - this->nbSteps;
   this->nbSteps = nbSteps;
+  if(deltaSteps > 0){
+    currentTripSteps += deltaSteps;
+  }
 }
 
 bool MotionController::ShouldWakeUp(bool isSleeping) {

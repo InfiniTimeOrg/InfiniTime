@@ -65,11 +65,7 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_style_local_text_color(btnTrip, LV_BTN_PART_MAIN, LV_STATE_DISABLED, lv_color_hex(0x888888));
   lv_label_set_text(txtTrip, "Reset");
 
-  if(stepsCount >= motionController.GetTripSteps()){
-    currentTripSteps = stepsCount - motionController.GetTripSteps();
-  } else {
-    currentTripSteps = stepsCount + motionController.GetTripSteps();
-  }
+  currentTripSteps = motionController.GetTripSteps();
 
   tripText = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(tripText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
@@ -86,11 +82,7 @@ Steps::~Steps() {
 
 void Steps::Refresh() {
   stepsCount = motionController.NbSteps();
-  if(stepsCount >= motionController.GetTripSteps()){
-    currentTripSteps = stepsCount - motionController.GetTripSteps();
-  } else {
-    currentTripSteps = stepsCount + motionController.GetTripSteps();
-  }
+  currentTripSteps = motionController.GetTripSteps();
 
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
@@ -106,7 +98,7 @@ void Steps::lapBtnEventHandler(lv_event_t event) {
     return;
   }
   stepsCount = motionController.NbSteps();
-  motionController.SetTripSteps(stepsCount);
+  motionController.ResetTrip();
   Refresh();
 }
 
