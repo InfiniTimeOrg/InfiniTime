@@ -1,12 +1,8 @@
 #pragma once
 
-
 #include <cstdint>
 #include <cstddef>
 #include <string>
-
-
-//#include "systemtask/SystemTask.h"
 
 namespace Pinetime {
 
@@ -29,7 +25,6 @@ namespace Pinetime {
     class TwiMaster;
   }
   
-
   namespace Components
   {
     class LittleVgl;
@@ -62,7 +57,7 @@ namespace Pinetime {
           Pinetime::Drivers::TwiMaster& twiMaster;
           Pinetime::Controllers::MotionController& motionController;
 
-          static constexpr int bufferSize = 256;
+          static constexpr int bufferSize = 32;
           char rxBuffer[bufferSize];
           uint16_t rxPos;
 
