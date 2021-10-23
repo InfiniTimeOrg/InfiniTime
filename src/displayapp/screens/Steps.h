@@ -31,9 +31,9 @@ namespace Pinetime {
         lv_obj_t* lSteps;
         lv_obj_t* lStepsIcon;
         lv_obj_t* stepsArc;
-        lv_obj_t* btnTrip;
-        lv_obj_t* txtTrip;
-        lv_obj_t* tripText;
+        lv_obj_t* resetBtn;
+        lv_obj_t* resetButtonLabel;
+        lv_obj_t* tripLabel;
 
         uint32_t stepsCount;
 
