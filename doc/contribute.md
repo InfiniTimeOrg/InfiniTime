@@ -94,3 +94,10 @@ If there are no preconfigured rules for your IDE, you can use one of the existin
  - **Includes** :
     - files from the project : `#include "relative/path/to/the/file.h"`
     - external files and std : `#include <file.h>`
+ - Only use [primary spellings for operators and tokens](https://en.cppreference.com/w/cpp/language/operator_alternative)
+ - Use auto sparingly. Don't use auto for [fundamental/built-in types](https://en.cppreference.com/w/cpp/language/types) and [fixed width integer types](https://en.cppreference.com/w/cpp/types/integer), except when initializing with a cast to avoid duplicating the type name.
+ - Examples:
+   - `auto* app = static_cast<DisplayApp*>(instance);`
+   - `auto number = static_cast<uint8_t>(variable);`
+   - `uint8_t returnValue = MyFunction();`
+ - Use nullptr instead of NULL
