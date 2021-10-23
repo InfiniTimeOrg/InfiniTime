@@ -561,13 +561,22 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
 Pinetime::Controllers::Settings::Colors PineTimeStyle::GetNext(Pinetime::Controllers::Settings::Colors color) {
   auto colorAsInt = static_cast<uint8_t>(color);
   Pinetime::Controllers::Settings::Colors nextColor;
-  nextColor = static_cast<Controllers::Settings::Colors>((colorAsInt + 1) % 17);
+  if (colorAsInt < 16) {
+    nextColor = static_cast<Controllers::Settings::Colors>(colorAsInt + 1);
+  } else {
+    nextColor = static_cast<Controllers::Settings::Colors>(0);
+  }
   return nextColor;
 }
 
 Pinetime::Controllers::Settings::Colors PineTimeStyle::GetPrevious(Pinetime::Controllers::Settings::Colors color) {
   auto colorAsInt = static_cast<uint8_t>(color);
   Pinetime::Controllers::Settings::Colors prevColor;
-  prevColor = static_cast<Controllers::Settings::Colors>((colorAsInt - 1) % 17);
+
+  if (colorAsInt > 0) {
+    prevColor = static_cast<Controllers::Settings::Colors>(colorAsInt - 1);
+  } else {
+    prevColor = static_cast<Controllers::Settings::Colors>(16);
+  }
   return prevColor;
 }
