@@ -51,7 +51,6 @@ namespace Pinetime {
 
     private:
       uint32_t nbSteps;
-      int32_t deltaSteps = 0;
       uint32_t currentTripSteps = 0;
       int16_t x;
       int16_t y;

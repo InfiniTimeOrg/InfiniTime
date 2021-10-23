@@ -54,23 +54,21 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text_static(backgroundLabel, "");
 
-  btnTrip = lv_btn_create(lv_scr_act(), nullptr);
-  btnTrip->user_data = this;
-  lv_obj_set_event_cb(btnTrip, lap_event_handler);
-  lv_obj_set_height(btnTrip, 50);
-  lv_obj_set_width(btnTrip, 115);
-  lv_obj_align(btnTrip, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_obj_set_style_local_bg_color(btnTrip, LV_BTN_PART_MAIN, LV_STATE_DISABLED, lv_color_hex(0x080808));
-  txtTrip = lv_label_create(btnTrip, nullptr);
-  lv_obj_set_style_local_text_color(btnTrip, LV_BTN_PART_MAIN, LV_STATE_DISABLED, lv_color_hex(0x888888));
-  lv_label_set_text(txtTrip, "Reset");
+  resetBtn = lv_btn_create(lv_scr_act(), nullptr);
+  resetBtn->user_data = this;
+  lv_obj_set_event_cb(resetBtn, lap_event_handler);
+  lv_obj_set_height(resetBtn, 50);
+  lv_obj_set_width(resetBtn, 115);
+  lv_obj_align(resetBtn, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  resetButtonLabel = lv_label_create(resetBtn, nullptr);
+  lv_label_set_text(resetButtonLabel, "Reset");
 
   currentTripSteps = motionController.GetTripSteps();
 
-  tripText = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(tripText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-  lv_label_set_text_fmt(tripText, "Trip: %5li", currentTripSteps);
-  lv_obj_align(tripText, lstepsGoal, LV_ALIGN_IN_LEFT_MID, 0, 20);
+  tripLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(tripLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+  lv_label_set_text_fmt(tripLabel, "Trip: %5li", currentTripSteps);
+  lv_obj_align(tripLabel, lstepsGoal, LV_ALIGN_IN_LEFT_MID, 0, 20);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
 }
@@ -88,9 +86,9 @@ void Steps::Refresh() {
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   if (currentTripSteps < 100000){
-    lv_label_set_text_fmt(tripText, "Trip: %5li", currentTripSteps);
+    lv_label_set_text_fmt(tripLabel, "Trip: %5li", currentTripSteps);
   } else {
-    lv_label_set_text_fmt(tripText, "Trip: 99999+");
+    lv_label_set_text_fmt(tripLabel, "Trip: 99999+");
   }
   lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
 }
