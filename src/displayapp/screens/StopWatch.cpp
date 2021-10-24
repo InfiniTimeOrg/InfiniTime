@@ -45,9 +45,10 @@ static void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
   stopWatch->stopLapBtnEventHandler(event);
 }
 
-StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
+StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask, Controllers::DateTime& dateTimeController)
   : Screen(app),
     systemTask {systemTask},
+    dateTimeController {dateTimeController},
     currentState {States::Init},
     startTime {},
     oldTimeElapsed {},
@@ -55,6 +56,7 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
     lapBuffer {},
     lapNr {} {
 
+  // Running time
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
@@ -100,6 +102,13 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
   lv_obj_set_style_local_text_color(lapTwoText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   lv_obj_align(lapTwoText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 55);
   lv_label_set_text(lapTwoText, "");
+
+  // Date time
+  dateTime = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_fmt(dateTime, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
+  lv_label_set_align(dateTime, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(dateTime, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+  lv_obj_set_style_local_text_color(dateTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
@@ -152,6 +161,7 @@ void StopWatch::pause() {
 }
 
 void StopWatch::Refresh() {
+  lv_label_set_text_fmt(dateTime, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
   if (currentState == States::Running) {
     timeElapsed = calculateDelta(startTime, xTaskGetTickCount());
     currentTimeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));

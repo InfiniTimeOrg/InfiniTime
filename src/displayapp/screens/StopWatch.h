@@ -62,7 +62,9 @@ namespace Pinetime::Applications::Screens {
 
   class StopWatch : public Screen {
   public:
-    StopWatch(DisplayApp* app, System::SystemTask& systemTask);
+    StopWatch(DisplayApp* app,
+              System::SystemTask& systemTask,
+              Controllers::DateTime& dateTimeController);
     ~StopWatch() override;
     void Refresh() override;
 
@@ -76,6 +78,8 @@ namespace Pinetime::Applications::Screens {
 
   private:
     Pinetime::System::SystemTask& systemTask;
+    Controllers::DateTime& dateTimeController;
+
     TickType_t timeElapsed;
     States currentState;
     TickType_t startTime;
@@ -85,6 +89,7 @@ namespace Pinetime::Applications::Screens {
     int lapNr = 0;
     lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
     lv_obj_t *lapOneText, *lapTwoText;
+    lv_obj_t *dateTime;
 
     lv_task_t* taskRefresh;
   };
