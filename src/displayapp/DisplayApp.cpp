@@ -10,6 +10,7 @@
 #include "components/ble/NotificationManager.h"
 #include "components/motion/MotionController.h"
 #include "components/motor/MotorController.h"
+#include "components/stopwatch/StopWatchController.h"
 #include "displayapp/screens/ApplicationList.h"
 #include "displayapp/screens/Brightness.h"
 #include "displayapp/screens/Clock.h"
@@ -95,6 +96,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::TimerController& timerController,
                        Pinetime::Controllers::AlarmController& alarmController,
+                       Pinetime::Controllers::StopWatchController& stopWatchController,
                        Pinetime::Controllers::TouchHandler& touchHandler)
   : lcd {lcd},
     lvgl {lvgl},
@@ -110,6 +112,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     motionController {motionController},
     timerController {timerController},
     alarmController {alarmController},
+    stopWatchController {stopWatchController},
     touchHandler {touchHandler} {
 }
 
@@ -424,7 +427,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::QuickSettings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::StopWatch:
-      currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask, dateTimeController);
+      currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask, dateTimeController, stopWatchController);
       break;
     case Apps::Twos:
       currentScreen = std::make_unique<Screens::Twos>(this);

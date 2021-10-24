@@ -16,6 +16,7 @@
 #include "components/timer/TimerController.h"
 #include "components/alarm/AlarmController.h"
 #include "touchhandler/TouchHandler.h"
+#include "components/stopwatch/StopWatchController.h"
 
 #include "displayapp/Messages.h"
 #include "BootErrors.h"
@@ -36,6 +37,7 @@ namespace Pinetime {
     class HeartRateController;
     class MotionController;
     class TouchHandler;
+    class StopWatchController;
   }
 
   namespace System {
@@ -61,6 +63,7 @@ namespace Pinetime {
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::TimerController& timerController,
                  Pinetime::Controllers::AlarmController& alarmController,
+                 Pinetime::Controllers::StopWatch& stopWatchController,
                  Pinetime::Controllers::TouchHandler& touchHandler);
       void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
@@ -88,6 +91,7 @@ namespace Pinetime {
       Pinetime::Controllers::TimerController& timerController;
       Pinetime::Controllers::AlarmController& alarmController;
       Pinetime::Controllers::TouchHandler& touchHandler;
+      Pinetime::Controllers::StopWatchController& stopWatchController;
 
       Pinetime::Controllers::FirmwareValidator validator;
       Controllers::BrightnessController brightnessController;

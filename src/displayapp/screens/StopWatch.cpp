@@ -45,13 +45,12 @@ static void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
   stopWatch->stopLapBtnEventHandler(event);
 }
 
-StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask, Controllers::DateTime& dateTimeController)
+StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask, Controllers::DateTime& dateTimeController, Controllers::StopWatch& stopWatchController)
   : Screen(app),
     systemTask {systemTask},
     dateTimeController {dateTimeController},
-    currentState {States::Init},
-    startTime {},
-    oldTimeElapsed {},
+    stopWatchController {stopWatchController},
+    timeElapsed {},
     currentTimeSeparated {},
     lapBuffer {},
     lapNr {} {
@@ -120,8 +119,8 @@ StopWatch::~StopWatch() {
 }
 
 void StopWatch::reset() {
-  currentState = States::Init;
-  oldTimeElapsed = 0;
+  stopWatchController.clear();
+
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 
@@ -137,34 +136,34 @@ void StopWatch::reset() {
 }
 
 void StopWatch::start() {
+  stopWatchController.start(xTaskGetTickCount());
+
   lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
   lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
   lv_label_set_text(txtPlayPause, Symbols::pause);
   lv_label_set_text(txtStopLap, Symbols::lapsFlag);
-  startTime = xTaskGetTickCount();
-  currentState = States::Running;
+
   systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
 }
 
 void StopWatch::pause() {
-  startTime = 0;
-  // Store the current time elapsed in cache
-  oldTimeElapsed += timeElapsed;
-  currentState = States::Halted;
+  stopWatchController.pause(xTaskGetTickCount());
+
   lv_label_set_text(txtPlayPause, Symbols::play);
   lv_label_set_text(txtStopLap, Symbols::stop);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
 void StopWatch::Refresh() {
   lv_label_set_text_fmt(dateTime, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
-  if (currentState == States::Running) {
-    timeElapsed = calculateDelta(startTime, xTaskGetTickCount());
-    currentTimeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
+  if (stopWatchController.isRunning()) {
+    timeElapsed = calculateDelta(stopWatchController.getStart(), xTaskGetTickCount());
+    currentTimeSeparated = convertTicksToTimeSegments((stopWatchController.getElapsedPreviously() + timeElapsed));
 
     lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
     lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
@@ -175,12 +174,10 @@ void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
   if (event != LV_EVENT_CLICKED) {
     return;
   }
-  if (currentState == States::Init) {
-    start();
-  } else if (currentState == States::Running) {
-    pause();
-  } else if (currentState == States::Halted) {
-    start();
+  if (stopWatchController.isCleared() || stopWatchController.isPaused()) {
+    stopWatchController.start(xTaskGetTickCount());
+  } else if (stopWatchController.isRunning()) {
+    stopWatchController.pause(xTaskGetTickCount());
   }
 }
 
@@ -189,7 +186,7 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
     return;
   }
   // If running, then this button is used to save laps
-  if (currentState == States::Running) {
+  if (stopWatchController.isRunning()) {
     lapBuffer.addLaps(currentTimeSeparated);
     lapNr++;
     if (lapBuffer[1]) {
@@ -199,14 +196,14 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
     if (lapBuffer[0]) {
       lv_label_set_text_fmt(lapTwoText, "#%2d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
     }
-  } else if (currentState == States::Halted) {
+  } else if (stopWatchController.isPaused()) {
     reset();
   }
 }
 
 bool StopWatch::OnButtonPushed() {
-  if (currentState == States::Running) {
-    pause();
+  if (stopWatchController.isRunning()) {
+    stopWatchController.pause(xTaskGetTickCount());
     return true;
   }
   return false;
