@@ -96,7 +96,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::TimerController& timerController,
                        Pinetime::Controllers::AlarmController& alarmController,
-                       Pinetime::Controllers::StopWatchController& stopWatchController,
+                       Pinetime::Controllers::StopWatch& stopWatchController,
                        Pinetime::Controllers::TouchHandler& touchHandler)
   : lcd {lcd},
     lvgl {lvgl},

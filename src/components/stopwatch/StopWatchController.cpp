@@ -4,7 +4,7 @@
 
 using namespace Pinetime::Controllers;
 
-StopWatch::StopWatch() {}
+// StopWatch::StopWatch() {}
 
 // StopWatch::init() {}
 
@@ -37,7 +37,7 @@ bool StopWatch::isRunning() {
   return currentState == StopWatchStates::Running;
 }
 
-bool StopWatch::isClear() {
+bool StopWatch::isCleared() {
   return currentState == StopWatchStates::Cleared;
 }
 

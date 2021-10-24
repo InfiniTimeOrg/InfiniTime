@@ -1,7 +1,8 @@
 #pragma once
 
 #include <cstdint>
-#include "portmacro_cmsis.h"
+// #include "portmacro_cmsis.h"
+#include "FreeRTOS.h"
 
 namespace Pinetime {
   namespace System {

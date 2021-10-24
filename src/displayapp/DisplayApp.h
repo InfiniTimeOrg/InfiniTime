@@ -37,7 +37,7 @@ namespace Pinetime {
     class HeartRateController;
     class MotionController;
     class TouchHandler;
-    class StopWatchController;
+    class StopWatch;
   }
 
   namespace System {
@@ -91,7 +91,7 @@ namespace Pinetime {
       Pinetime::Controllers::TimerController& timerController;
       Pinetime::Controllers::AlarmController& alarmController;
       Pinetime::Controllers::TouchHandler& touchHandler;
-      Pinetime::Controllers::StopWatchController& stopWatchController;
+      Pinetime::Controllers::StopWatch& stopWatchController;
 
       Pinetime::Controllers::FirmwareValidator validator;
       Controllers::BrightnessController brightnessController;
