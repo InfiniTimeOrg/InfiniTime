@@ -110,6 +110,18 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask, Controller
   lv_obj_set_style_local_text_color(dateTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+
+  if (stopWatchController.isRunning()) {
+    start();
+  } else if (stopWatchController.isPaused()) {
+    pause();
+    currentTimeSeparated = convertTicksToTimeSegments(stopWatchController.getElapsedPreviously());
+
+    lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
+    lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
+    lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
+    lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
+  }
 }
 
 StopWatch::~StopWatch() {
@@ -119,8 +131,6 @@ StopWatch::~StopWatch() {
 }
 
 void StopWatch::reset() {
-  stopWatchController.clear();
-
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 
@@ -136,8 +146,6 @@ void StopWatch::reset() {
 }
 
 void StopWatch::start() {
-  stopWatchController.start(xTaskGetTickCount());
-
   lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
   lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
@@ -149,12 +157,13 @@ void StopWatch::start() {
 }
 
 void StopWatch::pause() {
-  stopWatchController.pause(xTaskGetTickCount());
+  lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
+
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
 
   lv_label_set_text(txtPlayPause, Symbols::play);
   lv_label_set_text(txtStopLap, Symbols::stop);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
 
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
@@ -176,8 +185,10 @@ void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
   }
   if (stopWatchController.isCleared() || stopWatchController.isPaused()) {
     stopWatchController.start(xTaskGetTickCount());
+    start();
   } else if (stopWatchController.isRunning()) {
     stopWatchController.pause(xTaskGetTickCount());
+    pause();
   }
 }
 
@@ -197,6 +208,7 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
       lv_label_set_text_fmt(lapTwoText, "#%2d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
     }
   } else if (stopWatchController.isPaused()) {
+    stopWatchController.clear();
     reset();
   }
 }
@@ -204,6 +216,7 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
 bool StopWatch::OnButtonPushed() {
   if (stopWatchController.isRunning()) {
     stopWatchController.pause(xTaskGetTickCount());
+    pause();
     return true;
   }
   return false;
