@@ -47,9 +47,6 @@ namespace Pinetime {
       uint16_t versionCharacteristicHandle;
       uint16_t transferCharacteristicHandle;
 
-      // lfs_dir_t dir;
-      // lfs_info info;
-
       enum class commands : uint8_t {
         INVALID = 0x00,
         READ = 0x10,
@@ -74,6 +71,7 @@ namespace Pinetime {
       };
       FSState state;
       char filepath[maxpathlen]; // TODO ..ugh fixed filepath len
+      int fileSize;
       using ReadHeader = struct __attribute__((packed)) {
         commands command;
         uint8_t padding;
@@ -100,6 +98,33 @@ namespace Pinetime {
         uint32_t chunksize;
       };
 
+      using WriteHeader = struct __attribute__((packed)) {
+        commands command;
+        uint8_t padding;
+        uint16_t pathlen;
+        uint32_t offset;
+        uint64_t modTime;
+        uint32_t totalSize;
+        char pathstr[];
+      };
+
+      using WriteResponse = struct __attribute__((packed)) {
+        commands command;
+        uint8_t status;
+        uint16_t padding;
+        uint32_t offset;
+        uint64_t modTime;
+        uint32_t freespace;
+      };
+      
+      using WritePacing = struct __attribute__((packed)) {
+        commands command;
+        uint8_t status;
+        uint16_t padding;
+        uint32_t offset;
+        uint32_t dataSize;
+        uint8_t data[];
+      };
       using ListDirHeader = struct __attribute__((packed)) {
         commands command;
         uint8_t padding;

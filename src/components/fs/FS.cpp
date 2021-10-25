@@ -107,7 +107,9 @@ int FS::DirCreate(const char* path) {
 int FS::Stat(const char* path, lfs_info* info) {
   return lfs_stat(&lfs, path, info);
 }
-
+lfs_ssize_t FS::GetFSSize(){
+  return lfs_fs_size(&lfs);
+}
 // Delete directory and all files inside
 int FS::DirDelete(const char* path) {
 

@@ -83,6 +83,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       memcpy(filepath, header->pathstr, plen);
       filepath[plen + 1] = 0; // Copy and null teminate string
       ReadResponse resp;
+      os_mbuf* om;
       resp.command = commands::READ_DATA;
       resp.status = 0x01;
       resp.chunkoff = header->chunkoff;
@@ -91,23 +92,19 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         resp.status = 0x03;
         resp.chunklen = 0;
         resp.totallen = 0;
+        om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
       } else {
         resp.chunklen = std::min(header->chunksize, info.size); // TODO add mtu somehow
         resp.totallen = info.size;
         fs.FileOpen(&f, filepath, LFS_O_RDONLY);
         fs.FileSeek(&f, header->chunkoff);
-      }
-      os_mbuf* om;
-      if (resp.chunklen > 0) {
         uint8_t fileData[resp.chunklen] {0};
         resp.chunklen = fs.FileRead(&f, fileData, resp.chunklen);
         om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
         os_mbuf_append(om, fileData, resp.chunklen);
-      } else {
-        resp.chunklen = 0;
-        om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
+        fs.FileClose(&f);
       }
-      fs.FileClose(&f);
+
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       break;
     }
@@ -145,14 +142,45 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
     }
     case commands::WRITE: {
-      if (state != FSState::IDLE) {
+      lfs_file f;
+      NRF_LOG_INFO("[FS_S] -> Write");
+      auto* header = (WriteHeader*) om->om_data;
+      uint16_t plen = header->pathlen;
+      if (plen > maxpathlen) { //> counts for null term
         return -1;
       }
+      memcpy(filepath, header->pathstr, plen);
+      filepath[plen + 1] = 0; // Copy and null teminate string
+      fileSize = header->totalSize;
+      WriteResponse resp;
+      resp.command = commands::WRITE_PACING;
+      resp.offset = header->offset;
+      resp.modTime = 0;
+      int res = fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT);
+      resp.status = res ? 0x02 : 0x01;
+      fs.FileClose(&f);
+      resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
+      ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+      break;
     }
-    case commands::WRITE_PACING: {
-      if (state != FSState::WRITE) {
-        return -1;
-      }
+    case commands::WRITE_DATA: {
+      lfs_file f;
+      NRF_LOG_INFO("[FS_S] -> WriteData");
+      auto* header = (WritePacing*) om->om_data;
+      WriteResponse resp;
+      resp.command = commands::WRITE_PACING;
+      resp.offset = header->offset;
+      int res = fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT);
+      resp.status = res ? 0x02 : 0x01;
+      fs.FileSeek(&f, header->offset);
+      fs.FileWrite(&f, header->data, header->dataSize);
+      fs.FileClose(&f);
+      resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
+      // NRF_LOG_INFO('[FS_S] Used Blocks -> %u',resp.freespace);
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
+      ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+      break;
     }
     case commands::DELETE: {
       NRF_LOG_INFO("[FS_S] -> Delete");
