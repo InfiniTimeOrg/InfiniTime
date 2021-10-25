@@ -110,9 +110,9 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask, Controller
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 
   if (stopWatchController.isRunning()) {
-    start();
+    displayRunning();
   } else if (stopWatchController.isPaused()) {
-    pause();
+    displayPaused();
     currentTimeSeparated = convertTicksToTimeSegments(stopWatchController.getElapsedPreviously());
 
     lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
@@ -120,11 +120,11 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask, Controller
     lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
     lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
   } else {
-    reset();
+    displayCleared();
   }
 
   if (stopWatchController.getLapCount() > 0) {
-    refreshLaps();
+    updateLaps();
   }
 }
 
@@ -134,7 +134,7 @@ StopWatch::~StopWatch() {
   lv_obj_clean(lv_scr_act());
 }
 
-void StopWatch::reset() {
+void StopWatch::displayCleared() {
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 
@@ -148,7 +148,7 @@ void StopWatch::reset() {
   lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
 }
 
-void StopWatch::start() {
+void StopWatch::displayRunning() {
   lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
   lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
@@ -159,7 +159,7 @@ void StopWatch::start() {
   systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
 }
 
-void StopWatch::pause() {
+void StopWatch::displayPaused() {
   lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
 
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
@@ -171,18 +171,7 @@ void StopWatch::pause() {
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
-void StopWatch::Refresh() {
-  lv_label_set_text_fmt(dateTime, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
-  if (stopWatchController.isRunning()) {
-    timeElapsed = calculateDelta(stopWatchController.getStart(), xTaskGetTickCount());
-    currentTimeSeparated = convertTicksToTimeSegments((stopWatchController.getElapsedPreviously() + timeElapsed));
-
-    lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
-    lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
-  }
-}
-
-void StopWatch::refreshLaps() {
+void StopWatch::updateLaps() {
   Pinetime::Controllers::LapInfo_t *lap1 = stopWatchController.lastLap();
   Pinetime::Controllers::LapInfo_t *lap2 = stopWatchController.lastLap(1);
 
@@ -208,16 +197,27 @@ void StopWatch::refreshLaps() {
   }
 }
 
+void StopWatch::Refresh() {
+  lv_label_set_text_fmt(dateTime, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
+  if (stopWatchController.isRunning()) {
+    timeElapsed = calculateDelta(stopWatchController.getStart(), xTaskGetTickCount());
+    currentTimeSeparated = convertTicksToTimeSegments((stopWatchController.getElapsedPreviously() + timeElapsed));
+
+    lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
+    lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
+  }
+}
+
 void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
   if (event != LV_EVENT_CLICKED) {
     return;
   }
   if (stopWatchController.isCleared() || stopWatchController.isPaused()) {
     stopWatchController.start(xTaskGetTickCount());
-    start();
+    displayRunning();
   } else if (stopWatchController.isRunning()) {
     stopWatchController.pause(xTaskGetTickCount());
-    pause();
+    displayPaused();
   }
 }
 
@@ -227,30 +227,12 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
   }
   // If running, then this button is used to save laps
   if (stopWatchController.isRunning()) {
-    // lapBuffer.addLaps(currentTimeSeparated);
-    // lapNr++;
-    // if (lapBuffer[1]) {
-    //   lv_label_set_text_fmt(
-    //     lapOneText, "#%2d   %2d:%02d.%02d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->hundredths);
-    // }
-    // if (lapBuffer[0]) {
-    //   lv_label_set_text_fmt(lapTwoText, "#%2d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
-    // }
     TickType_t currentTime = stopWatchController.getElapsedPreviously() + calculateDelta(stopWatchController.getStart(), xTaskGetTickCount());
     stopWatchController.pushLap(currentTime);
 
-    refreshLaps();
+    updateLaps();
   } else if (stopWatchController.isPaused()) {
     stopWatchController.clear();
-    reset();
+    displayCleared();
   }
-}
-
-bool StopWatch::OnButtonPushed() {
-  if (stopWatchController.isRunning()) {
-    stopWatchController.pause(xTaskGetTickCount());
-    pause();
-    return true;
-  }
-  return false;
 }
