@@ -55,34 +55,38 @@ void StopWatch::pushLap(TickType_t lapEnd) {
   lapHead = lapCount % LAP_CAPACITY;
 }
 
-uint32_t StopWatch::getLapNum() {
+int StopWatch::getLapNum() {
   if (lapCount < LAP_CAPACITY)
     return lapCount;
   else
     return LAP_CAPACITY;
 }
 
-uint32_t StopWatch::getLapCount() {
+int StopWatch::getLapCount() {
   return lapCount;
 }
 
-LapInfo_t *StopWatch::lastLap(uint32_t lap) {
-  if (lap >= LAP_CAPACITY || lap >= lapCount || lapCount == 0) {
+int wrap(int index) {
+  return ((index % LAP_CAPACITY) + LAP_CAPACITY) % LAP_CAPACITY;
+}
+
+LapInfo_t *StopWatch::lastLap(int lap) {
+  if (lap >= LAP_CAPACITY || lap > lapCount || lapCount == 0) {
     // Return "empty" LapInfo_t
     return &emptyLapInfo;
   }
   // Index backwards
-  uint32_t index = ((lapHead + LAP_CAPACITY) - lap) % LAP_CAPACITY;
+  int index = wrap(lapHead - lap);
   return &laps[index];
 }
 
 // Data acess
 
-uint32_t StopWatch::getStart() {
+TickType_t StopWatch::getStart() {
   return startTime;
 }
 
-uint32_t StopWatch::getElapsedPreviously() {
+TickType_t StopWatch::getElapsedPreviously() {
   return timeElapsedPreviously;
 }
 

@@ -183,11 +183,8 @@ void StopWatch::Refresh() {
 }
 
 void StopWatch::refreshLaps() {
-  Pinetime::Controllers::LapInfo_t
-    // Latest lap
-    *lap1 = stopWatchController.lastLap(),
-    // Second latest lap
-    *lap2 = stopWatchController.lastLap(1);
+  Pinetime::Controllers::LapInfo_t *lap1 = stopWatchController.lastLap();
+  Pinetime::Controllers::LapInfo_t *lap2 = stopWatchController.lastLap(1);
 
   if (lap1->count != 0) {
     TimeSeparated_t laptime = convertTicksToTimeSegments(lap1->time);
