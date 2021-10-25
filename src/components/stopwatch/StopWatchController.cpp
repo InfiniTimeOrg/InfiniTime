@@ -70,7 +70,7 @@ int wrap(int index) {
   return ((index % LAP_CAPACITY) + LAP_CAPACITY) % LAP_CAPACITY;
 }
 
-LapInfo_t *StopWatch::lastLap(int lap) {
+LapInfo_t* StopWatch::lastLap(int lap) {
   if (lap >= LAP_CAPACITY || lap > lapCount || lapCount == 0) {
     // Return "empty" LapInfo_t
     return &emptyLapInfo;

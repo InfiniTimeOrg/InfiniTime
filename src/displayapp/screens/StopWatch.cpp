@@ -45,7 +45,10 @@ static void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
   stopWatch->stopLapBtnEventHandler(event);
 }
 
-StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask, Controllers::DateTime& dateTimeController, Controllers::StopWatch& stopWatchController)
+StopWatch::StopWatch(DisplayApp* app,
+                     System::SystemTask& systemTask,
+                     Controllers::DateTime& dateTimeController,
+                     Controllers::StopWatch& stopWatchController)
   : Screen(app),
     systemTask {systemTask},
     dateTimeController {dateTimeController},
@@ -172,28 +175,16 @@ void StopWatch::displayPaused() {
 }
 
 void StopWatch::updateLaps() {
-  Pinetime::Controllers::LapInfo_t *lap1 = stopWatchController.lastLap();
-  Pinetime::Controllers::LapInfo_t *lap2 = stopWatchController.lastLap(1);
+  Pinetime::Controllers::LapInfo_t* lap1 = stopWatchController.lastLap();
+  Pinetime::Controllers::LapInfo_t* lap2 = stopWatchController.lastLap(1);
 
   if (lap1->count != 0) {
     TimeSeparated_t laptime = convertTicksToTimeSegments(lap1->time);
-    lv_label_set_text_fmt(
-      lapOneText,
-      "#%2d   %2d:%02d.%02d",
-      lap1->count,
-      laptime.mins,
-      laptime.secs,
-      laptime.hundredths);
+    lv_label_set_text_fmt(lapOneText, "#%2d   %2d:%02d.%02d", lap1->count, laptime.mins, laptime.secs, laptime.hundredths);
   }
   if (lap2->count != 0) {
     TimeSeparated_t laptime = convertTicksToTimeSegments(lap2->time);
-    lv_label_set_text_fmt(
-      lapTwoText,
-      "#%2d   %2d:%02d.%02d",
-      lap2->count,
-      laptime.mins,
-      laptime.secs,
-      laptime.hundredths);
+    lv_label_set_text_fmt(lapTwoText, "#%2d   %2d:%02d.%02d", lap2->count, laptime.mins, laptime.secs, laptime.hundredths);
   }
 }
 
@@ -227,7 +218,8 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
   }
   // If running, then this button is used to save laps
   if (stopWatchController.isRunning()) {
-    TickType_t currentTime = stopWatchController.getElapsedPreviously() + calculateDelta(stopWatchController.getStart(), xTaskGetTickCount());
+    TickType_t currentTime =
+      stopWatchController.getElapsedPreviously() + calculateDelta(stopWatchController.getStart(), xTaskGetTickCount());
     stopWatchController.pushLap(currentTime);
 
     updateLaps();
