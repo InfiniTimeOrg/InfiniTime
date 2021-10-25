@@ -357,9 +357,9 @@ void SystemTask::Work() {
           break;
         case Messages::HandleButtonEvent:
           if (nrf_gpio_pin_read(Pinetime::PinMap::Button) == 0) {
-            buttonHandler.HandleEvent(Pinetime::Controllers::ButtonHandler::Release);
+            buttonHandler.HandleEvent(Pinetime::Controllers::ButtonHandler::Events::Release);
           } else {
-            buttonHandler.HandleEvent(Pinetime::Controllers::ButtonHandler::Press);
+            buttonHandler.HandleEvent(Pinetime::Controllers::ButtonHandler::Events::Press);
           }
           break;
         case Messages::OnDisplayTaskSleeping:

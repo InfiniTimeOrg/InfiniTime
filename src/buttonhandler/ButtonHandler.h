@@ -8,17 +8,17 @@ namespace Pinetime {
   namespace Controllers {
     class ButtonHandler {
     public:
-      enum events { Press, Release, Timer };
+      enum class Events : uint8_t { Press, Release, Timer };
       void Init(Pinetime::System::SystemTask* systemTask);
-      void HandleEvent(events event);
+      void HandleEvent(Events event);
 
     private:
+      enum class States : uint8_t { Idle, Pressed, Holding, LongHeld };
       Pinetime::System::SystemTask* systemTask = nullptr;
       TickType_t releaseTime = 0;
       TimerHandle_t buttonTimer;
       bool buttonPressed = false;
-      enum states { Idle, Pressed, Holding, LongHeld };
-      states state = Idle;
+      States state = States::Idle;
     };
   }
 }
