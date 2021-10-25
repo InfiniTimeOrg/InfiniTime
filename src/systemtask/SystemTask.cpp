@@ -25,7 +25,6 @@
 #include "main.h"
 #include "BootErrors.h"
 
-
 #include <memory>
 
 using namespace Pinetime::System;
@@ -77,7 +76,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Pinetime::Applications::DisplayApp& displayApp,
                        Pinetime::Applications::HeartRateTask& heartRateApp,
                        Pinetime::Controllers::FS& fs,
-                       Pinetime::Controllers::TouchHandler& touchHandler)
+                       Pinetime::Controllers::TouchHandler& touchHandler,
+                       Pinetime::Controllers::ButtonHandler& buttonHandler)
   : spi {spi},
     lcd {lcd},
     spiNorFlash {spiNorFlash},
@@ -101,8 +101,15 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     heartRateApp(heartRateApp),
     fs {fs},
     touchHandler {touchHandler},
-    nimbleController(*this, bleController, dateTimeController, notificationManager,
-                     batteryController, spiNorFlash, heartRateController, motionController) {
+    buttonHandler {buttonHandler},
+    nimbleController(*this,
+                     bleController,
+                     dateTimeController,
+                     notificationManager,
+                     batteryController,
+                     spiNorFlash,
+                     heartRateController,
+                     motionController) {
 }
 
 void SystemTask::Start() {
@@ -162,6 +169,8 @@ void SystemTask::Work() {
   heartRateSensor.Init();
   heartRateSensor.Disable();
   heartRateApp.Start();
+
+  buttonHandler.Init(this);
 
   // Button
   nrf_gpio_cfg_output(15);
@@ -326,9 +335,32 @@ void SystemTask::Work() {
           ReloadIdleTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
-        case Messages::OnButtonEvent:
-          ReloadIdleTimer();
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
+        case Messages::OnButtonPushed:
+          if (!isSleeping && !isGoingToSleep) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
+          }
+          break;
+        case Messages::OnButtonLongPressed:
+          if (!isSleeping) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonLongPressed);
+          }
+          break;
+        case Messages::OnButtonLongerPressed:
+          if (!isSleeping) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonLongerPressed);
+          }
+          break;
+        case Messages::OnButtonDoubleClicked:
+          if (!isSleeping) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonDoubleClicked);
+          }
+          break;
+        case Messages::HandleButtonEvent:
+          if (nrf_gpio_pin_read(Pinetime::PinMap::Button) == 0) {
+            buttonHandler.HandleEvent(Pinetime::Controllers::ButtonHandler::Release);
+          } else {
+            buttonHandler.HandleEvent(Pinetime::Controllers::ButtonHandler::Press);
+          }
           break;
         case Messages::OnDisplayTaskSleeping:
           if (BootloaderVersion::IsValid()) {
@@ -365,6 +397,9 @@ void SystemTask::Work() {
           break;
         case Messages::BatteryPercentageUpdated:
           nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
+          break;
+        case Messages::ReloadIdleTimer:
+          ReloadIdleTimer();
           break;
 
         default:
@@ -411,20 +446,6 @@ void SystemTask::UpdateMotion() {
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
   if (motionController.ShouldWakeUp(isSleeping)) {
     GoToRunning();
-  }
-}
-
-void SystemTask::OnButtonPushed() {
-  if (isGoingToSleep)
-    return;
-  if (!isSleeping) {
-    NRF_LOG_INFO("[systemtask] Button pushed");
-    PushMessage(Messages::OnButtonEvent);
-  } else {
-    if (!isWakingUp) {
-      NRF_LOG_INFO("[systemtask] Button pushed, waking up");
-      GoToRunning();
-    }
   }
 }
 

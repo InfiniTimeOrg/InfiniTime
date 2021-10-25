@@ -20,6 +20,7 @@
 #include "components/alarm/AlarmController.h"
 #include "components/fs/FS.h"
 #include "touchhandler/TouchHandler.h"
+#include "buttonhandler/ButtonHandler.h"
 
 #ifdef PINETIME_IS_RECOVERY
   #include "displayapp/DisplayAppRecovery.h"
@@ -45,6 +46,7 @@ namespace Pinetime {
   }
   namespace Controllers {
     class TouchHandler;
+    class ButtonHandler;
   }
   namespace System {
     class SystemTask {
@@ -71,12 +73,12 @@ namespace Pinetime {
                  Pinetime::Applications::DisplayApp& displayApp,
                  Pinetime::Applications::HeartRateTask& heartRateApp,
                  Pinetime::Controllers::FS& fs,
-                 Pinetime::Controllers::TouchHandler& touchHandler);
+                 Pinetime::Controllers::TouchHandler& touchHandler,
+                 Pinetime::Controllers::ButtonHandler& buttonHandler);
 
       void Start();
       void PushMessage(Messages msg);
 
-      void OnButtonPushed();
       void OnTouchEvent();
 
       void OnIdle();
@@ -123,6 +125,7 @@ namespace Pinetime {
       Pinetime::Applications::HeartRateTask& heartRateApp;
       Pinetime::Controllers::FS& fs;
       Pinetime::Controllers::TouchHandler& touchHandler;
+      Pinetime::Controllers::ButtonHandler& buttonHandler;
       Pinetime::Controllers::NimbleController nimbleController;
 
       static void Process(void* instance);

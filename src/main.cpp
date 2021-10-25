@@ -47,6 +47,7 @@
 #include "systemtask/SystemTask.h"
 #include "drivers/PinMap.h"
 #include "touchhandler/TouchHandler.h"
+#include "buttonhandler/ButtonHandler.h"
 
 #if NRF_LOG_ENABLED
   #include "logging/NrfLogger.h"
@@ -96,8 +97,6 @@ TimerHandle_t debounceTimer;
 TimerHandle_t debounceChargeTimer;
 Pinetime::Controllers::Battery batteryController;
 Pinetime::Controllers::Ble bleController;
-static constexpr uint8_t pinTouchIrq = Pinetime::PinMap::Cst816sIrq;
-static constexpr uint8_t pinPowerPresentIrq = Pinetime::PinMap::PowerPresent;
 
 Pinetime::Controllers::HeartRateController heartRateController;
 Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController);
@@ -110,6 +109,7 @@ Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::TimerController timerController;
 Pinetime::Controllers::AlarmController alarmController {dateTimeController};
 Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);
+Pinetime::Controllers::ButtonHandler buttonHandler;
 
 Pinetime::Controllers::FS fs {spiNorFlash};
 Pinetime::Controllers::Settings settingsController {fs};
@@ -153,7 +153,8 @@ Pinetime::System::SystemTask systemTask(spi,
                                         displayApp,
                                         heartRateApp,
                                         fs,
-                                        touchHandler);
+                                        touchHandler,
+                                        buttonHandler);
 
 /* Variable Declarations for variables in noinit SRAM 
    Increment NoInit_MagicValue upon adding variables to this area
@@ -176,11 +177,11 @@ void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action
   if (pin == Pinetime::PinMap::PowerPresent and action == NRF_GPIOTE_POLARITY_TOGGLE) {
     xTimerStartFromISR(debounceChargeTimer, &xHigherPriorityTaskWoken);
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    return;
+  } else if (pin == Pinetime::PinMap::Button) {
+    // This activates on button release as well due to bouncing
+    xTimerStartFromISR(debounceTimer, &xHigherPriorityTaskWoken);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
-
-  xTimerStartFromISR(debounceTimer, &xHigherPriorityTaskWoken);
-  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 void DebounceTimerChargeCallback(TimerHandle_t xTimer) {
@@ -188,9 +189,8 @@ void DebounceTimerChargeCallback(TimerHandle_t xTimer) {
   systemTask.PushMessage(Pinetime::System::Messages::OnChargingEvent);
 }
 
-void DebounceTimerCallback(TimerHandle_t xTimer) {
-  xTimerStop(xTimer, 0);
-  systemTask.OnButtonPushed();
+void DebounceTimerCallback(TimerHandle_t /*unused*/) {
+  systemTask.PushMessage(Pinetime::System::Messages::HandleButtonEvent);
 }
 
 void SPIM0_SPIS0_TWIM0_TWIS0_SPI0_TWI0_IRQHandler(void) {
@@ -319,8 +319,8 @@ int main(void) {
   }
   nrf_gpio_cfg_default(Pinetime::PinMap::TwiScl);
 
-  debounceTimer = xTimerCreate("debounceTimer", 200, pdFALSE, (void*) 0, DebounceTimerCallback);
-  debounceChargeTimer = xTimerCreate("debounceTimerCharge", 200, pdFALSE, (void*) 0, DebounceTimerChargeCallback);
+  debounceTimer = xTimerCreate("debounceTimer", 10, pdFALSE, nullptr, DebounceTimerCallback);
+  debounceChargeTimer = xTimerCreate("debounceTimerCharge", 200, pdFALSE, nullptr, DebounceTimerChargeCallback);
 
   // retrieve version stored by bootloader
   Pinetime::BootloaderVersion::SetVersion(NRF_TIMER2->CC[0]);
