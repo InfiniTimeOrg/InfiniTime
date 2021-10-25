@@ -336,16 +336,17 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
         case Messages::HandleButtonEvent: {
-          // This is for faster wakeup, sacrificing special longpress and doubleclick handling while sleeping
           Controllers::ButtonActions action;
           if (nrf_gpio_pin_read(Pinetime::PinMap::Button) == 0) {
             action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Release);
           } else {
+            action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Press);
+            // This is for faster wakeup, sacrificing special longpress and doubleclick handling while sleeping
             if (IsSleeping()) {
+              fastWakeUpDone = true;
               GoToRunning();
               break;
             }
-            action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Press);
           }
           HandleButtonAction(action);
         } break;
@@ -448,7 +449,8 @@ void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
 
   switch (action) {
     case Actions::Click:
-      if (!isGoingToSleep) {
+      // If the first action after fast wakeup is a click, it should be ignored.
+      if (!fastWakeUpDone && !isGoingToSleep) {
         displayApp.PushMessage(Applications::Display::Messages::ButtonPushed);
       }
       break;
@@ -462,8 +464,10 @@ void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
       displayApp.PushMessage(Applications::Display::Messages::ButtonLongerPressed);
       break;
     default:
-      break;
+      return;
   }
+
+  fastWakeUpDone = false;
 }
 
 void SystemTask::GoToRunning() {

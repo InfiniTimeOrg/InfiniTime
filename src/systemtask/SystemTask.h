@@ -140,6 +140,8 @@ namespace Pinetime {
       bool doNotGoToSleep = false;
 
       void HandleButtonAction(Controllers::ButtonActions action);
+      bool fastWakeUpDone = false;
+
       void GoToRunning();
       void UpdateMotion();
       bool stepCounterMustBeReset = false;
