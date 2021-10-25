@@ -335,33 +335,25 @@ void SystemTask::Work() {
           ReloadIdleTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
-        case Messages::OnButtonPushed:
-          if (!isSleeping && !isGoingToSleep) {
-            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
+        case Messages::HandleButtonEvent: {
+          // This is for faster wakeup, sacrificing special longpress and doubleclick handling while sleeping
+          if (IsSleeping()) {
+            GoToRunning();
+            break;
           }
-          break;
-        case Messages::OnButtonLongPressed:
-          if (!isSleeping) {
-            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonLongPressed);
-          }
-          break;
-        case Messages::OnButtonLongerPressed:
-          if (!isSleeping) {
-            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonLongerPressed);
-          }
-          break;
-        case Messages::OnButtonDoubleClicked:
-          if (!isSleeping) {
-            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonDoubleClicked);
-          }
-          break;
-        case Messages::HandleButtonEvent:
+
+          Controllers::ButtonActions action;
           if (nrf_gpio_pin_read(Pinetime::PinMap::Button) == 0) {
-            buttonHandler.HandleEvent(Pinetime::Controllers::ButtonHandler::Events::Release);
+            action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Release);
           } else {
-            buttonHandler.HandleEvent(Pinetime::Controllers::ButtonHandler::Events::Press);
+            action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Press);
           }
-          break;
+          HandleButtonAction(action);
+        } break;
+        case Messages::HandleButtonTimerEvent: {
+          auto action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Timer);
+          HandleButtonAction(action);
+        } break;
         case Messages::OnDisplayTaskSleeping:
           if (BootloaderVersion::IsValid()) {
             // First versions of the bootloader do not expose their version and cannot initialize the SPI NOR FLASH
@@ -397,9 +389,6 @@ void SystemTask::Work() {
           break;
         case Messages::BatteryPercentageUpdated:
           nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
-          break;
-        case Messages::ReloadIdleTimer:
-          ReloadIdleTimer();
           break;
 
         default:
@@ -446,6 +435,35 @@ void SystemTask::UpdateMotion() {
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
   if (motionController.ShouldWakeUp(isSleeping)) {
     GoToRunning();
+  }
+}
+
+void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
+  if (IsSleeping()) {
+    return;
+  }
+
+  ReloadIdleTimer();
+
+  using Actions = Controllers::ButtonActions;
+
+  switch (action) {
+    case Actions::Click:
+      if (!isGoingToSleep) {
+        displayApp.PushMessage(Applications::Display::Messages::ButtonPushed);
+      }
+      break;
+    case Actions::DoubleClick:
+      displayApp.PushMessage(Applications::Display::Messages::ButtonDoubleClicked);
+      break;
+    case Actions::LongPress:
+      displayApp.PushMessage(Applications::Display::Messages::ButtonLongPressed);
+      break;
+    case Actions::LongerPress:
+      displayApp.PushMessage(Applications::Display::Messages::ButtonLongerPressed);
+      break;
+    default:
+      break;
   }
 }
 

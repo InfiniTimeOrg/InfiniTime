@@ -21,6 +21,7 @@
 #include "components/fs/FS.h"
 #include "touchhandler/TouchHandler.h"
 #include "buttonhandler/ButtonHandler.h"
+#include "buttonhandler/ButtonActions.h"
 
 #ifdef PINETIME_IS_RECOVERY
   #include "displayapp/DisplayAppRecovery.h"
@@ -138,6 +139,7 @@ namespace Pinetime {
       TimerHandle_t measureBatteryTimer;
       bool doNotGoToSleep = false;
 
+      void HandleButtonAction(Controllers::ButtonActions action);
       void GoToRunning();
       void UpdateMotion();
       bool stepCounterMustBeReset = false;

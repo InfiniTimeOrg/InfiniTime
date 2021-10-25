@@ -3,26 +3,18 @@
 using namespace Pinetime::Controllers;
 
 void ButtonTimerCallback(TimerHandle_t xTimer) {
-  auto* buttonHandler = static_cast<ButtonHandler*>(pvTimerGetTimerID(xTimer));
-  buttonHandler->HandleEvent(ButtonHandler::Events::Timer);
+  auto* sysTask = static_cast<Pinetime::System::SystemTask*>(pvTimerGetTimerID(xTimer));
+  sysTask->PushMessage(Pinetime::System::Messages::HandleButtonTimerEvent);
 }
 
 void ButtonHandler::Init(Pinetime::System::SystemTask* systemTask) {
-  this->systemTask = systemTask;
-  buttonTimer = xTimerCreate("buttonTimer", 0, pdFALSE, this, ButtonTimerCallback);
+  buttonTimer = xTimerCreate("buttonTimer", 0, pdFALSE, systemTask, ButtonTimerCallback);
 }
 
-void ButtonHandler::HandleEvent(Events event) {
+ButtonActions ButtonHandler::HandleEvent(Events event) {
   static constexpr TickType_t doubleClickTime = pdMS_TO_TICKS(200);
   static constexpr TickType_t longPressTime = pdMS_TO_TICKS(400);
   static constexpr TickType_t longerPressTime = pdMS_TO_TICKS(2000);
-
-  if (systemTask->IsSleeping()) {
-    // This is for faster wakeup, sacrificing special longpress and doubleclick handling while sleeping
-    systemTask->PushMessage(System::Messages::GoToRunning);
-  } else {
-    systemTask->PushMessage(System::Messages::ReloadIdleTimer);
-  }
 
   if (event == Events::Press) {
     buttonPressed = true;
@@ -42,9 +34,9 @@ void ButtonHandler::HandleEvent(Events event) {
     case States::Pressed:
       if (event == Events::Press) {
         if (xTaskGetTickCount() - releaseTime < doubleClickTime) {
-          systemTask->PushMessage(System::Messages::OnButtonDoubleClicked);
           xTimerStop(buttonTimer, 0);
           state = States::Idle;
+          return ButtonActions::DoubleClick;
         }
       } else if (event == Events::Release) {
         xTimerChangePeriod(buttonTimer, doubleClickTime, 0);
@@ -55,21 +47,21 @@ void ButtonHandler::HandleEvent(Events event) {
           xTimerStart(buttonTimer, 0);
           state = States::Holding;
         } else {
-          systemTask->PushMessage(System::Messages::OnButtonPushed);
           state = States::Idle;
+          return ButtonActions::Click;
         }
       }
       break;
     case States::Holding:
       if (event == Events::Release) {
-        systemTask->PushMessage(System::Messages::OnButtonPushed);
         xTimerStop(buttonTimer, 0);
         state = States::Idle;
+        return ButtonActions::Click;
       } else if (event == Events::Timer) {
         xTimerChangePeriod(buttonTimer, longerPressTime - longPressTime - doubleClickTime, 0);
         xTimerStart(buttonTimer, 0);
-        systemTask->PushMessage(System::Messages::OnButtonLongPressed);
         state = States::LongHeld;
+        return ButtonActions::LongPress;
       }
       break;
     case States::LongHeld:
@@ -77,9 +69,10 @@ void ButtonHandler::HandleEvent(Events event) {
         xTimerStop(buttonTimer, 0);
         state = States::Idle;
       } else if (event == Events::Timer) {
-        systemTask->PushMessage(System::Messages::OnButtonLongerPressed);
         state = States::Idle;
+        return ButtonActions::LongerPress;
       }
       break;
   }
+  return ButtonActions::None;
 }
