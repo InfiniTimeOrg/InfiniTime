@@ -337,15 +337,14 @@ void SystemTask::Work() {
           break;
         case Messages::HandleButtonEvent: {
           // This is for faster wakeup, sacrificing special longpress and doubleclick handling while sleeping
-          if (IsSleeping()) {
-            GoToRunning();
-            break;
-          }
-
           Controllers::ButtonActions action;
           if (nrf_gpio_pin_read(Pinetime::PinMap::Button) == 0) {
             action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Release);
           } else {
+            if (IsSleeping()) {
+              GoToRunning();
+              break;
+            }
             action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Press);
           }
           HandleButtonAction(action);
