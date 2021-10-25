@@ -3,6 +3,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "displayapp/LittleVgl.h"
+#include "components/stopwatch/StopWatchController.h"
 
 #include "FreeRTOS.h"
 #include "portmacro_cmsis.h"
@@ -12,52 +13,10 @@
 
 namespace Pinetime::Applications::Screens {
 
-  enum class States { Init, Running, Halted };
-
   struct TimeSeparated_t {
     int mins;
     int secs;
     int hundredths;
-  };
-
-  // A simple buffer to hold the latest two laps
-  template <int N> struct LapTextBuffer_t {
-    LapTextBuffer_t() : buffer {}, currentSize {}, capacity {N}, head {-1} {
-    }
-
-    void addLaps(const TimeSeparated_t& timeVal) {
-      head++;
-      head %= capacity;
-      buffer[head] = timeVal;
-
-      if (currentSize < capacity) {
-        currentSize++;
-      }
-    }
-
-    void clearBuffer() {
-      buffer = {};
-      currentSize = 0;
-      head = -1;
-    }
-
-    TimeSeparated_t* operator[](std::size_t idx) {
-      // Sanity check for out-of-bounds
-      if (idx >= 0 && idx < capacity) {
-        if (idx < currentSize) {
-          // This transformation is to ensure that head is always pointing to index 0.
-          const auto transformed_idx = (head - idx) % capacity;
-          return (&buffer[transformed_idx]);
-        }
-      }
-      return nullptr;
-    }
-
-  private:
-    std::array<TimeSeparated_t, N> buffer;
-    uint8_t currentSize;
-    uint8_t capacity;
-    int8_t head;
   };
 
   class StopWatch : public Screen {
@@ -76,6 +35,7 @@ namespace Pinetime::Applications::Screens {
     void reset();
     void start();
     void pause();
+    void refreshLaps() ;
 
   private:
     Pinetime::System::SystemTask& systemTask;
@@ -84,8 +44,7 @@ namespace Pinetime::Applications::Screens {
 
     TickType_t timeElapsed;
     TimeSeparated_t currentTimeSeparated; // Holds Mins, Secs, millisecs
-    LapTextBuffer_t<2> lapBuffer;
-    int lapNr = 0;
+
     lv_obj_t *dateTime, *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
     lv_obj_t *lapOneText, *lapTwoText;
 
