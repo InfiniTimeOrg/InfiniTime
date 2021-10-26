@@ -10,13 +10,8 @@ namespace Pinetime {
     public:
       FS(Pinetime::Drivers::SpiNorFlash&);
 
-
-
       void Init();
       void LVGLFileSystemInit();
-
-      void Mount();
-      void UnMount();
 
       int FileOpen(lfs_file_t* file_p, const char* fileName, const int flags);
       int FileClose(lfs_file_t* file_p);
@@ -35,8 +30,13 @@ namespace Pinetime {
       lfs_ssize_t GetFSSize();
       int Stat(const char* path, lfs_info* info);
       void VerifyResource();
-      static size_t getSize(){return size;}
-      static size_t getBlockSize(){return blockSize;}
+      static size_t getSize() {
+        return size;
+      }
+      static size_t getBlockSize() {
+        return blockSize;
+      }
+
     private:
       Pinetime::Drivers::SpiNorFlash& flashDriver;
 
@@ -65,7 +65,6 @@ namespace Pinetime {
       static constexpr size_t startAddress = 0x0B4000;
       static constexpr size_t size = 0x34C000;
       static constexpr size_t blockSize = 4096;
-      
 
       bool resourcesValid = false;
       const struct lfs_config lfsConfig;

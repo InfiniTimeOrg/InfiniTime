@@ -54,14 +54,6 @@ void FS::VerifyResource() {
   resourcesValid = true;
 }
 
-void FS::Mount() {
-  flashDriver.Wakeup();
-}
-
-void FS::UnMount() {
-  flashDriver.Sleep();
-}
-
 int FS::FileOpen(lfs_file_t* file_p, const char* fileName, const int flags) {
   return lfs_file_open(&lfs, file_p, fileName, flags);
 }
@@ -107,7 +99,7 @@ int FS::DirCreate(const char* path) {
 int FS::Stat(const char* path, lfs_info* info) {
   return lfs_stat(&lfs, path, info);
 }
-lfs_ssize_t FS::GetFSSize(){
+lfs_ssize_t FS::GetFSSize() {
   return lfs_fs_size(&lfs);
 }
 // Delete directory and all files inside
