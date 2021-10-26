@@ -156,7 +156,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.command = commands::WRITE_PACING;
       resp.offset = header->offset;
       resp.modTime = 0;
-      int res = fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT);
+      int res = fs.FileOpen(&f, filepath, LFS_O_WRONLY | LFS_O_CREAT);
       resp.status = res ? 0x02 : 0x01;
       fs.FileClose(&f);
       resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
@@ -177,7 +177,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       fs.FileWrite(&f, header->data, header->dataSize);
       fs.FileClose(&f);
       resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
-      // NRF_LOG_INFO('[FS_S] Used Blocks -> %u',resp.freespace);
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       break;
@@ -222,14 +221,13 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.status = 1;
       resp.totalentries = 0;
       resp.entry = 0;
-      resp.modification_time = 0; // TODO Does LFS actually support TS?
+      resp.modification_time = 0;
       if (fs.DirOpen(path, &dir) != 0) {
         resp.status = 0x02;
         auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse));
         ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
         break;
       };
-      // Count Total files in directory.
       while (fs.DirRead(&dir, &info)) {
         resp.totalentries++;
       }

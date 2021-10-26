@@ -141,16 +141,17 @@ int FS::SectorRead(const struct lfs_config* c, lfs_block_t block, lfs_off_t off,
 
 namespace {
   lv_fs_res_t lvglOpen(lv_fs_drv_t* drv, void* file_p, const char* path, lv_fs_mode_t mode) {
-
     lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
     FS* filesys = static_cast<FS*>(drv->user_data);
-    filesys->FileOpen(file, path, LFS_O_RDONLY);
-
-    if (file->type == 0) {
-      return LV_FS_RES_FS_ERR;
-    } else {
-      return LV_FS_RES_OK;
+    int res = filesys->FileOpen(file, path, LFS_O_RDONLY);
+    if (res == 0) {
+      if (file->type == 0) {
+        return LV_FS_RES_FS_ERR;
+      } else {
+        return LV_FS_RES_OK;
+      }
     }
+    return LV_FS_RES_NOT_EX;
   }
 
   lv_fs_res_t lvglClose(lv_fs_drv_t* drv, void* file_p) {
