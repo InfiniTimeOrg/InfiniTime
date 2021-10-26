@@ -56,37 +56,37 @@ int DeviceInformationService::OnDeviceInfoRequested(uint16_t conn_handle, uint16
 
 DeviceInformationService::DeviceInformationService()
   : characteristicDefinition {{
-                                .uuid = (ble_uuid_t*) &manufacturerNameUuid,
+                                .uuid = &manufacturerNameUuid.u,
                                 .access_cb = DeviceInformationCallback,
                                 .arg = this,
                                 .flags = BLE_GATT_CHR_F_READ,
                               },
                               {
-                                .uuid = (ble_uuid_t*) &modelNumberUuid,
+                                .uuid = &modelNumberUuid.u,
                                 .access_cb = DeviceInformationCallback,
                                 .arg = this,
                                 .flags = BLE_GATT_CHR_F_READ,
                               },
                               {
-                                .uuid = (ble_uuid_t*) &serialNumberUuid,
+                                .uuid = &serialNumberUuid.u,
                                 .access_cb = DeviceInformationCallback,
                                 .arg = this,
                                 .flags = BLE_GATT_CHR_F_READ,
                               },
                               {
-                                .uuid = (ble_uuid_t*) &fwRevisionUuid,
+                                .uuid = &fwRevisionUuid.u,
                                 .access_cb = DeviceInformationCallback,
                                 .arg = this,
                                 .flags = BLE_GATT_CHR_F_READ,
                               },
                               {
-                                .uuid = (ble_uuid_t*) &hwRevisionUuid,
+                                .uuid = &hwRevisionUuid.u,
                                 .access_cb = DeviceInformationCallback,
                                 .arg = this,
                                 .flags = BLE_GATT_CHR_F_READ,
                               },
                               {
-                                .uuid = (ble_uuid_t*) &swRevisionUuid,
+                                .uuid = &swRevisionUuid.u,
                                 .access_cb = DeviceInformationCallback,
                                 .arg = this,
                                 .flags = BLE_GATT_CHR_F_READ,
@@ -95,7 +95,7 @@ DeviceInformationService::DeviceInformationService()
     serviceDefinition {
       {/* Device Information Service */
        .type = BLE_GATT_SVC_TYPE_PRIMARY,
-       .uuid = (ble_uuid_t*) &deviceInfoUuid,
+       .uuid = &deviceInfoUuid.u,
        .characteristics = characteristicDefinition},
       {0},
     } {

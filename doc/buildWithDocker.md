@@ -11,7 +11,9 @@ Based on Ubuntu 18.04 with the following build dependencies:
 
 ## Run a container to build the project
 
-The `infinitime-build` image contains all the dependencies you need. The default `CMD` will compile sources found in `/sources`, so you need only mount your code. 
+The `infinitime-build` image contains all the dependencies you need. The default `CMD` will compile sources found in `/sources`, so you need only mount your code.
+
+Before continuing, make sure you first build the image as indicated in the [Build the image](#build-the-image) section, or check the [Using the image from Docker Hub](#using-the-image-from-docker-hub) section if you prefer to use a pre-made image.
 
 This example will build the firmware, generate the MCUBoot image and generate the DFU file. For cloning the repo, see [these instructions](../doc/buildAndProgram.md#clone-the-repo). Outputs will be written to **<project_root>/build/output**:
 
@@ -28,10 +30,10 @@ docker run --rm -it -v $(pwd):/sources infinitime-build /opt/build.sh pinetime-a
 
 The image is built using 1000:1000 for the user id and group id. If this is different to your user or group ids (run `id -u` and `id -g` to find out what your id values are if you are unsure), you will need to override them via the `--user` parameter in order to prevent permission errors with the output files (and the cmake build cache).
 
-Running with this image is the same as above, you just specify the ids to `docker run`
+Running with this image is the same as above, you just specify the ids to `docker run`:
 
 ```bash
-docker run --rm -it -v $(pwd):/sources --user $(id -u):$(id -g) pfeerick/infinitime-build
+docker run --rm -it -v $(pwd):/sources --user $(id -u):$(id -g) infinitime-build
 ```
 
 Or you can specify your user id and group id (by number, not by name) directly:
@@ -42,7 +44,7 @@ docker run --rm -it -v $(pwd):/sources --user 1234:1234 infinitime-build
 
 ## Using the image from Docker Hub
 
-The image is avaiable via Docker Hub for both the amd64 and arm64v8 architectures at [pfeerick/infinitime-build](https://hub.docker.com/repository/docker/pfeerick/infinitime-build).
+The image is available via Docker Hub for both the amd64 and arm64v8 architectures at [pfeerick/infinitime-build](https://hub.docker.com/r/pfeerick/infinitime-build).
 
 It can be pulled (downloaded) using the following command:
 

@@ -14,7 +14,7 @@ int BatteryInformationServiceCallback(uint16_t conn_handle, uint16_t attr_handle
 
 BatteryInformationService::BatteryInformationService(Controllers::Battery& batteryController)
   : batteryController {batteryController},
-    characteristicDefinition {{.uuid = (ble_uuid_t*) &batteryLevelUuid,
+    characteristicDefinition {{.uuid = &batteryLevelUuid.u,
                                .access_cb = BatteryInformationServiceCallback,
                                .arg = this,
                                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
@@ -23,7 +23,7 @@ BatteryInformationService::BatteryInformationService(Controllers::Battery& batte
     serviceDefinition {
       {/* Device Information Service */
        .type = BLE_GATT_SVC_TYPE_PRIMARY,
-       .uuid = (ble_uuid_t*) &batteryInformationServiceUuid,
+       .uuid = &batteryInformationServiceUuid.u,
        .characteristics = characteristicDefinition},
       {0},
     } {
@@ -43,7 +43,7 @@ int BatteryInformationService::OnBatteryServiceRequested(uint16_t connectionHand
                                                          ble_gatt_access_ctxt* context) {
   if (attributeHandle == batteryLevelHandle) {
     NRF_LOG_INFO("BATTERY : handle = %d", batteryLevelHandle);
-    static uint8_t batteryValue = batteryController.PercentRemaining();
+    uint8_t batteryValue = batteryController.PercentRemaining();
     int res = os_mbuf_append(context->om, &batteryValue, 1);
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
   }

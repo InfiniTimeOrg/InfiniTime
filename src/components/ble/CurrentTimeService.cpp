@@ -53,7 +53,7 @@ int CurrentTimeService::OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handl
 }
 
 CurrentTimeService::CurrentTimeService(DateTime& dateTimeController)
-  : characteristicDefinition {{.uuid = (ble_uuid_t*) &ctChrUuid,
+  : characteristicDefinition {{.uuid = &ctChrUuid.u,
                                .access_cb = CTSCallback,
 
                                .arg = this,
@@ -62,7 +62,7 @@ CurrentTimeService::CurrentTimeService(DateTime& dateTimeController)
     serviceDefinition {
       {/* Device Information Service */
        .type = BLE_GATT_SVC_TYPE_PRIMARY,
-       .uuid = (ble_uuid_t*) &ctsUuid,
+       .uuid = &ctsUuid.u,
        .characteristics = characteristicDefinition},
       {0},
     },

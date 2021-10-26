@@ -23,7 +23,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
                                    Pinetime::Controllers::NotificationManager& notificationManager,
                                    Controllers::Battery& batteryController,
                                    Pinetime::Drivers::SpiNorFlash& spiNorFlash,
-                                   Controllers::HeartRateController& heartRateController)
+                                   Controllers::HeartRateController& heartRateController,
+                                   Controllers::MotionController& motionController)
   : systemTask {systemTask},
     bleController {bleController},
     dateTimeController {dateTimeController},
@@ -39,6 +40,7 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     batteryInformationService {batteryController},
     immediateAlertService {systemTask, notificationManager},
     heartRateService {systemTask, heartRateController},
+    motionService{systemTask, motionController},
     serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
 }
 
@@ -81,6 +83,7 @@ void NimbleController::Init() {
   batteryInformationService.Init();
   immediateAlertService.Init();
   heartRateService.Init();
+  motionService.Init();
 
   int rc;
   rc = ble_hs_util_ensure_addr(0);
@@ -215,6 +218,19 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
                    event->subscribe.prev_notify,
                    event->subscribe.cur_notify,
                    event->subscribe.prev_indicate);
+
+      if(event->subscribe.reason == BLE_GAP_SUBSCRIBE_REASON_TERM) {
+        heartRateService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+        motionService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+      }
+      else if(event->subscribe.prev_notify == 0 && event->subscribe.cur_notify == 1) {
+        heartRateService.SubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+        motionService.SubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+      }
+      else if(event->subscribe.prev_notify == 1 && event->subscribe.cur_notify == 0) {
+        heartRateService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+        motionService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+      }
       break;
 
     case BLE_GAP_EVENT_MTU:

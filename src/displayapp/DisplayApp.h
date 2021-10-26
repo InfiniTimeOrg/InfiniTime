@@ -18,6 +18,7 @@
 #include "touchhandler/TouchHandler.h"
 
 #include "Messages.h"
+#include "BootErrors.h"
 
 namespace Pinetime {
 
@@ -61,7 +62,7 @@ namespace Pinetime {
                  Pinetime::Controllers::TimerController& timerController,
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::TouchHandler& touchHandler);
-      void Start();
+      void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
 
       void StartApp(Apps app, DisplayApp::FullRefreshDirections direction);
@@ -116,8 +117,6 @@ namespace Pinetime {
       TouchEvents returnTouchEvent = TouchEvents::None;
 
       TouchEvents GetGesture();
-      void RunningState();
-      void IdleState();
       static void Process(void* instance);
       void InitHw();
       void Refresh();
@@ -127,7 +126,7 @@ namespace Pinetime {
 
       Apps nextApp = Apps::None;
       DisplayApp::FullRefreshDirections nextDirection;
-      TickType_t lastWakeTime;
+      System::BootErrors bootError;
     };
   }
 }

@@ -3,6 +3,14 @@
 using namespace Pinetime::Controllers;
 
 void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps) {
+  if (this->nbSteps != nbSteps && service != nullptr) {
+    service->OnNewStepCountValue(nbSteps);
+  }
+
+  if(service != nullptr && (this->x != x || this->y != y || this->z != z)) {
+    service->OnNewMotionValues(x, y, z);
+  }
+
   this->x = x;
   this->y = y;
   this->z = z;
@@ -40,4 +48,7 @@ void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
     case Drivers::Bma421::DeviceTypes::BMA425: this->deviceType = DeviceTypes::BMA425; break;
     default: this->deviceType = DeviceTypes::Unknown; break;
   }
+}
+void MotionController::SetService(Pinetime::Controllers::MotionService* service) {
+  this->service = service;
 }

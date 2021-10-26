@@ -3,13 +3,20 @@
 To build this project, you'll need:
  - A cross-compiler : [ARM-GCC (9-2020-q2-update)](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads/9-2020-q2-update)
  - The NRF52 SDK 15.3.0 : [nRF-SDK v15.3.0](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip)
- - The `cbor` and `intelhex` modules for Python 3
+ - The Python 3 modules `cbor`, `intelhex`, `click` and `cryptography` modules for the `mcuboot` tool (see [requirements.txt](../tools/mcuboot/requirements.txt))
+   - To to keep the system clean a python virtual environment (`venv`) can be used to install the python modules into
+     ```sh
+	 python -m venv .venv
+	 source .venv/bin/activate
+	 python -m pip install wheel
+	 python -m pip install -r tools/mcuboot/requirements.txt
+	 ```
  - A reasonably recent version of CMake (I use 3.16.5)
 
 ## Build steps 
 ### Clone the repo
 ```
-git clone https://github.com/JF002/InfiniTime.git
+git clone https://github.com/InfiniTimeOrg/InfiniTime.git
 cd InfiniTime
 git submodule update --init
 mkdir build
@@ -31,9 +38,9 @@ CMake configures the project according to variables you specify the command line
 **WATCH_COLMI_P8**|Use pin configuration for Colmi P8 watch|`-DWATCH_COLMI_P8=1`
 
 ####(**) Note about **CMAKE_BUILD_TYPE**:
-By default, this variable is set to *Release*. It compiles the code with size and speed optimizations. We use this value for all the binaries we publish when we [release](https://github.com/JF002/InfiniTime/releases) new versions of InfiniTime.
+By default, this variable is set to *Release*. It compiles the code with size and speed optimizations. We use this value for all the binaries we publish when we [release](https://github.com/InfiniTimeOrg/InfiniTime/releases) new versions of InfiniTime.
 
-The *Debug* mode disables all optimizations, which makes the code easier to debug. However, the binary size will likely be too big to fit in the internal flash memory. If you want to build and debug a *Debug* binary, you'll need to disable some parts of the code. For example, the icons for the **Navigation** app use a lot of memory space. You can comment the content of `m_iconMap` in the [Navigation](https://github.com/JF002/InfiniTime/blob/develop/src/displayapp/screens/Navigation.h#L148) application to free some memory.
+The *Debug* mode disables all optimizations, which makes the code easier to debug. However, the binary size will likely be too big to fit in the internal flash memory. If you want to build and debug a *Debug* binary, you'll need to disable some parts of the code. For example, the icons for the **Navigation** app use a lot of memory space. You can comment the content of `m_iconMap` in the [Navigation](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/displayapp/screens/Navigation.h#L148) application to free some memory.
 
 ####(**) Note about **BUILD_DFU**:
 DFU files are the files you'll need to install your build of InfiniTime using OTA (over-the-air) mecanism. To generate the DFU file, the Python tool [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil) is needed on your system. Check that this tool is properly installed before enabling this option.
