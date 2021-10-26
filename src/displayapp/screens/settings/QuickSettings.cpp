@@ -1,7 +1,6 @@
 #include "QuickSettings.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
-#include "displayapp/screens/BatteryIcon.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -18,14 +17,10 @@ namespace {
 }
 
 QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
-                             Pinetime::Controllers::Battery& batteryController,
-                             Controllers::DateTime& dateTimeController,
                              Controllers::BrightnessController& brightness,
                              Controllers::MotorController& motorController,
                              Pinetime::Controllers::Settings& settingsController)
   : Screen(app),
-    batteryController {batteryController},
-    dateTimeController {dateTimeController},
     brightness {brightness},
     motorController {motorController},
     settingsController {settingsController} {
@@ -33,15 +28,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   // This is the distance (padding) between all objects on this screen.
   static constexpr uint8_t innerDistance = 10;
 
-  // Time
-  label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(label_time, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
-  lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
-
-  batteryIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
-  lv_obj_align(batteryIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  app->MakeStatusBar(&statusBar, lv_scr_act());
 
   static constexpr uint8_t barHeight = 20 + innerDistance;
   static constexpr uint8_t buttonHeight = (LV_VER_RES_MAX - barHeight - innerDistance) / 2;
@@ -123,8 +110,7 @@ QuickSettings::~QuickSettings() {
 }
 
 void QuickSettings::UpdateScreen() {
-  lv_label_set_text_fmt(label_time, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
-  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
+  app->UpdateStatusBar(&statusBar);
 }
 
 void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {

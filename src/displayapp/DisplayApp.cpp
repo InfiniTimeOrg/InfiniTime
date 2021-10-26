@@ -11,6 +11,7 @@
 #include "components/motion/MotionController.h"
 #include "components/motor/MotorController.h"
 #include "displayapp/screens/ApplicationList.h"
+#include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/Brightness.h"
 #include "displayapp/screens/Clock.h"
 #include "displayapp/screens/FirmwareUpdate.h"
@@ -36,6 +37,7 @@
 #include "systemtask/SystemTask.h"
 #include "systemtask/Messages.h"
 
+#include "displayapp/screens/FormatTime.h"
 #include "displayapp/screens/settings/QuickSettings.h"
 #include "displayapp/screens/settings/Settings.h"
 #include "displayapp/screens/settings/SettingWatchFace.h"
@@ -351,7 +353,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
     // Settings
     case Apps::QuickSettings:
       currentScreen = std::make_unique<Screens::QuickSettings>(
-        this, batteryController, dateTimeController, brightnessController, motorController, settingsController);
+        this, brightnessController, motorController, settingsController);
       ReturnApp(Apps::Clock, FullRefreshDirections::LeftAnim, TouchEvents::SwipeLeft);
       break;
     case Apps::Settings:
@@ -478,4 +480,30 @@ void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
 
 void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
+}
+
+void DisplayApp::MakeStatusBar(StatusBar * statusBar, lv_obj_t * parent) {
+  statusBar->barContainer = lv_cont_create(parent, nullptr);
+  lv_obj_set_size(statusBar->barContainer, LV_HOR_RES_MAX, 20);
+  lv_obj_align(statusBar->barContainer, parent, LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_obj_set_style_local_bg_color(statusBar->barContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+
+  statusBar->timeLabel = lv_label_create(statusBar->barContainer, nullptr);
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+    std::string timeStr = Screens::FormatTime::TwelveHourString(dateTimeController.Hours(), dateTimeController.Minutes());
+    lv_label_set_text_fmt(statusBar->timeLabel, timeStr.c_str());
+  } else {
+    lv_label_set_text_fmt(statusBar->timeLabel, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
+  }
+  lv_label_set_align(statusBar->timeLabel, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(statusBar->timeLabel, statusBar->barContainer, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+
+  statusBar->batteryIcon = lv_label_create(statusBar->barContainer, nullptr);
+  lv_label_set_text(statusBar->batteryIcon, Screens::BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
+  lv_obj_align(statusBar->batteryIcon, statusBar->barContainer, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+}
+
+void DisplayApp::UpdateStatusBar(StatusBar * statusBar) {
+  lv_label_set_text_fmt(statusBar->timeLabel, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
+  lv_label_set_text(statusBar->batteryIcon, Screens::BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
 }

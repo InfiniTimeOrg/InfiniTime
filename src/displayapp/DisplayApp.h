@@ -70,6 +70,15 @@ namespace Pinetime {
 
       void Register(Pinetime::System::SystemTask* systemTask);
 
+      struct StatusBar {
+        lv_obj_t * barContainer;
+        lv_obj_t * timeLabel;
+        lv_obj_t * batteryIcon;
+      };
+
+      void MakeStatusBar(StatusBar * statusBar, lv_obj_t * parent);
+      void UpdateStatusBar(StatusBar * statusBar);
+
     private:
       Pinetime::Drivers::St7789& lcd;
       Pinetime::Components::LittleVgl& lvgl;
