@@ -422,6 +422,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
         displayapp/screens/Alarm.cpp
+        displayapp/screens/FormatTime.cpp
         displayapp/Colors.cpp
 
         ## Settings
@@ -619,6 +620,7 @@ set(INCLUDE_FILES
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
         displayapp/screens/Alarm.h
+        displayapp/screens/FormatTime.h
         displayapp/Colors.h
         drivers/St7789.h
         drivers/SpiNorFlash.h

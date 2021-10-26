@@ -20,10 +20,9 @@ namespace Pinetime {
     namespace Screens {
       class FormatTime {
       public:
-
         struct TwelveHour {
-            uint8_t Hour = 0;
-            bool IsPm = false;
+          uint8_t Hour = 0;
+          bool IsPm = false;
         };
 
         static TwelveHour ToTwelveHour(uint8_t hour);
