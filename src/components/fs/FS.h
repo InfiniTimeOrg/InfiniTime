@@ -26,10 +26,11 @@ namespace Pinetime {
       int DirRead(lfs_dir_t* dir, lfs_info* info);
       int DirRewind(lfs_dir_t* dir);
       int DirCreate(const char* path);
-      int DirDelete(const char* path);
+ 
       lfs_ssize_t GetFSSize();
       int Stat(const char* path, lfs_info* info);
       void VerifyResource();
+
       static size_t getSize() {
         return size;
       }

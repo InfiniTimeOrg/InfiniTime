@@ -102,23 +102,6 @@ int FS::Stat(const char* path, lfs_info* info) {
 lfs_ssize_t FS::GetFSSize() {
   return lfs_fs_size(&lfs);
 }
-// Delete directory and all files inside
-int FS::DirDelete(const char* path) {
-
-  lfs_dir_t lfs_dir;
-  lfs_info entryInfo;
-
-  int err;
-  err = lfs_dir_open(&lfs, &lfs_dir, path);
-  if (err) {
-    return err;
-  }
-  while (lfs_dir_read(&lfs, &lfs_dir, &entryInfo)) {
-    lfs_remove(&lfs, entryInfo.name);
-  }
-  lfs_dir_close(&lfs, &lfs_dir);
-  return LFS_ERR_OK;
-}
 
 /*
 
