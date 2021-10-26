@@ -80,7 +80,7 @@ int MotionService::OnStepCountRequested(uint16_t connectionHandle, uint16_t attr
   return 0;
 }
 
-void MotionService::OnNewStepCountValue(uint8_t stepCount) {
+void MotionService::OnNewStepCountValue(uint32_t stepCount) {
   if(!stepCountNoficationEnabled) return;
 
   uint32_t buffer = stepCount;
