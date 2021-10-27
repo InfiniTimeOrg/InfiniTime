@@ -110,6 +110,7 @@ namespace Pinetime {
       Pinetime::Controllers::DateTime& dateTimeController;
       Pinetime::Controllers::TimerController& timerController;
       Pinetime::Controllers::AlarmController& alarmController;
+      Pinetime::Controllers::StopWatch& stopWatchController;
       QueueHandle_t systemTasksMsgQueue;
       std::atomic<bool> isSleeping {false};
       std::atomic<bool> isGoingToSleep {false};
@@ -123,7 +124,6 @@ namespace Pinetime {
       Pinetime::Controllers::Settings& settingsController;
       Pinetime::Controllers::HeartRateController& heartRateController;
       Pinetime::Controllers::MotionController& motionController;
-      Pinetime::Controllers::StopWatch& stopWatchController;
 
       Pinetime::Applications::DisplayApp& displayApp;
       Pinetime::Applications::HeartRateTask& heartRateApp;
