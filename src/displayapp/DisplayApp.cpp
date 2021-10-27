@@ -427,7 +427,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::QuickSettings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::StopWatch:
-      currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask, dateTimeController, stopWatchController);
+      currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask, dateTimeController, stopWatchController, batteryController);
       break;
     case Apps::Twos:
       currentScreen = std::make_unique<Screens::Twos>(this);

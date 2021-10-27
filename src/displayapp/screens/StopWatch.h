@@ -4,6 +4,8 @@
 #include "components/datetime/DateTimeController.h"
 #include "displayapp/LittleVgl.h"
 #include "components/stopwatch/StopWatchController.h"
+#include "components/battery/BatteryController.h"
+#include "displayapp/LittleVgl.h"
 
 #include "FreeRTOS.h"
 #include "portmacro_cmsis.h"
@@ -24,7 +26,8 @@ namespace Pinetime::Applications::Screens {
     StopWatch(DisplayApp* app,
               System::SystemTask& systemTask,
               Controllers::DateTime& dateTimeController,
-              Controllers::StopWatch& stopWatchController);
+              Controllers::StopWatch& stopWatchController,
+              Controllers::Battery& batteryController);
     ~StopWatch() override;
     void Refresh() override;
 
@@ -40,11 +43,12 @@ namespace Pinetime::Applications::Screens {
     Pinetime::System::SystemTask& systemTask;
     Controllers::DateTime& dateTimeController;
     Controllers::StopWatch& stopWatchController;
+    Controllers::Battery& batteryController;
 
     TickType_t timeElapsed;
     TimeSeparated_t currentTimeSeparated; // Holds Mins, Secs, millisecs
 
-    lv_obj_t *dateTime, *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
+    lv_obj_t *dateTime, *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap, *batteryIcon;
     lv_obj_t *lapOneText, *lapTwoText;
 
     lv_task_t* taskRefresh;

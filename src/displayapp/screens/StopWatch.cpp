@@ -6,6 +6,7 @@
 #include "projdefs.h"
 #include "FreeRTOSConfig.h"
 #include "task.h"
+#include "BatteryIcon.h"
 
 #include <tuple>
 
@@ -48,11 +49,13 @@ static void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
 StopWatch::StopWatch(DisplayApp* app,
                      System::SystemTask& systemTask,
                      Controllers::DateTime& dateTimeController,
-                     Controllers::StopWatch& stopWatchController)
+                     Controllers::StopWatch& stopWatchController,
+                     Controllers::Battery& batteryController)
   : Screen(app),
     systemTask {systemTask},
     dateTimeController {dateTimeController},
     stopWatchController {stopWatchController},
+    batteryController {batteryController},
     timeElapsed {},
     currentTimeSeparated {} {
 
@@ -111,6 +114,11 @@ StopWatch::StopWatch(DisplayApp* app,
   lv_label_set_align(dateTime, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(dateTime, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   lv_obj_set_style_local_text_color(dateTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+
+  // Battery
+  batteryIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
+  lv_obj_align(batteryIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, -8, 0);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 
@@ -196,6 +204,7 @@ void StopWatch::updateLaps() {
 
 void StopWatch::Refresh() {
   lv_label_set_text_fmt(dateTime, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
+  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
   if (stopWatchController.isRunning()) {
     timeElapsed = calculateDelta(stopWatchController.getStart(), xTaskGetTickCount());
     currentTimeSeparated = convertTicksToTimeSegments((stopWatchController.getElapsedPreviously() + timeElapsed));
