@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <drivers/Bma421.h>
+#include <components/ble/MotionService.h>
 
 namespace Pinetime {
   namespace Controllers {
@@ -39,6 +40,7 @@ namespace Pinetime {
       }
 
       void Init(Pinetime::Drivers::Bma421::DeviceTypes types);
+      void SetService(Pinetime::Controllers::MotionService* service);
 
     private:
       uint32_t nbSteps;
@@ -48,6 +50,7 @@ namespace Pinetime {
       int16_t lastYForWakeUp = 0;
       bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
+      Pinetime::Controllers::MotionService* service = nullptr;
     };
   }
 }

@@ -8,7 +8,7 @@ constexpr ble_uuid16_t HeartRateService::heartRateServiceUuid;
 constexpr ble_uuid16_t HeartRateService::heartRateMeasurementUuid;
 
 namespace {
-  int HeartRateServiceServiceCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+  int HeartRateServiceCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
     auto* heartRateService = static_cast<HeartRateService*>(arg);
     return heartRateService->OnHeartRateRequested(conn_handle, attr_handle, ctxt);
   }
@@ -19,7 +19,7 @@ HeartRateService::HeartRateService(Pinetime::System::SystemTask& system, Control
   : system {system},
     heartRateController {heartRateController},
     characteristicDefinition {{.uuid = &heartRateMeasurementUuid.u,
-                               .access_cb = HeartRateServiceServiceCallback,
+                               .access_cb = HeartRateServiceCallback,
                                .arg = this,
                                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
                                .val_handle = &heartRateMeasurementHandle},
@@ -56,6 +56,8 @@ int HeartRateService::OnHeartRateRequested(uint16_t connectionHandle, uint16_t a
 }
 
 void HeartRateService::OnNewHeartRateValue(uint8_t heartRateValue) {
+  if(!heartRateMeasurementNotificationEnable) return;
+
   uint8_t buffer[2] = {0, heartRateController.HeartRate()}; // [0] = flags, [1] = hr value
   auto* om = ble_hs_mbuf_from_flat(buffer, 2);
 
@@ -66,4 +68,14 @@ void HeartRateService::OnNewHeartRateValue(uint8_t heartRateValue) {
   }
 
   ble_gattc_notify_custom(connectionHandle, heartRateMeasurementHandle, om);
+}
+
+void HeartRateService::SubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) {
+  if(attributeHandle == heartRateMeasurementHandle)
+    heartRateMeasurementNotificationEnable = true;
+}
+
+void HeartRateService::UnsubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) {
+  if(attributeHandle == heartRateMeasurementHandle)
+    heartRateMeasurementNotificationEnable = false;
 }
