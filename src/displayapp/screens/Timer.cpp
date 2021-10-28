@@ -54,9 +54,17 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 
-  uint32_t seconds = timerController.GetTimeRemaining() / 1000;
+  int32_t seconds = timerController.GetSecondsRemaining();
+  bool overtime = timerController.IsOvertime();
+
+  if (overtime) {
+    seconds = -seconds + 1; // "+ 1" is to not show -00:00 again after +00:00
+    lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  } else {
+    lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  }
+
   lv_label_set_text_fmt(time, "%02lu:%02lu", seconds / 60, seconds % 60);
 
   lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
@@ -68,23 +76,39 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   lv_obj_set_height(btnPlayPause, 40);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   if (timerController.IsRunning()) {
-    lv_label_set_text(txtPlayPause, Symbols::pause);
+    lv_label_set_text(txtPlayPause, overtime ? Symbols::stop : Symbols::pause);
   } else {
     lv_label_set_text(txtPlayPause, Symbols::play);
     createButtons();
   }
-
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Timer::~Timer() {
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
+  if (timerController.IsRunning() and timerController.IsOvertime()) {
+    timerController.StopTimer();
+  }
 }
 
 void Timer::Refresh() {
   if (timerController.IsRunning()) {
-    uint32_t seconds = timerController.GetTimeRemaining() / 1000;
+    int32_t seconds = timerController.GetSecondsRemaining();
+    if (timerController.IsOvertime()) {
+      seconds = -seconds + 1; // "+ 1" is to not show -00:00 again after +00:00
+
+      // safety measures, lets not overflow counter as it will display badly
+      if (seconds >= 100 * 60) {
+        minutesToSet = 0;
+        secondsToSet = 0;
+        lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+        lv_label_set_text_static(time, "00:00");
+        lv_label_set_text(txtPlayPause, Symbols::play);
+        timerController.StopTimer();
+        createButtons();
+      }
+    }
     lv_label_set_text_fmt(time, "%02lu:%02lu", seconds / 60, seconds % 60);
   }
 }
@@ -94,9 +118,16 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     if (obj == btnPlayPause) {
       if (timerController.IsRunning()) {
         lv_label_set_text(txtPlayPause, Symbols::play);
-        uint32_t seconds = timerController.GetTimeRemaining() / 1000;
-        minutesToSet = seconds / 60;
-        secondsToSet = seconds % 60;
+        int32_t secondsRemaining = timerController.GetSecondsRemaining();
+        if (timerController.IsOvertime()) {
+          minutesToSet = 0;
+          secondsToSet = 0;
+          lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+          lv_label_set_text_static(time, "00:00");
+        } else {
+          minutesToSet = secondsRemaining / 60;
+          secondsToSet = secondsRemaining % 60;
+        }
         timerController.StopTimer();
         createButtons();
 
@@ -104,6 +135,7 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         lv_label_set_text(txtPlayPause, Symbols::pause);
         timerController.StartTimer((secondsToSet + minutesToSet * 60) * 1000);
 
+        // inlined destroyButtons()
         lv_obj_del(btnSecondsDown);
         btnSecondsDown = nullptr;
         lv_obj_del(btnSecondsUp);
@@ -153,9 +185,6 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 void Timer::setDone() {
-  lv_label_set_text(time, "00:00");
-  lv_label_set_text(txtPlayPause, Symbols::play);
-  secondsToSet = 0;
-  minutesToSet = 0;
-  createButtons();
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  lv_label_set_text(txtPlayPause, Symbols::stop);
 }
