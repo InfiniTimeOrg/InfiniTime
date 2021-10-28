@@ -9,7 +9,7 @@ constexpr ble_uuid128_t BleNus::txCharacteristicUuid;
 uint16_t BleNus::attributeReadHandle;
 
 int BleNusCallback(uint16_t connectionHandle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
-  auto deviceInformationService = static_cast<BleNus*>(arg);
+  auto *deviceInformationService = static_cast<BleNus*>(arg);
   return deviceInformationService->OnDeviceInfoRequested(connectionHandle, attr_handle, ctxt);
 }
 
@@ -40,6 +40,8 @@ void BleNus::RegisterRxCallback(std::function<void(char*, int)> f) {
 }
 
 int BleNus::OnDeviceInfoRequested(uint16_t connectionHandle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+  (void) connectionHandle;
+  (void) attr_handle;
 
   os_mbuf* om = ctxt->om;
 

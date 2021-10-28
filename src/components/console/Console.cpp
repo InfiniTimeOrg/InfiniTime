@@ -1,7 +1,7 @@
 #include "Console.h"
-#include "systemtask/SystemTask.h"
-#include "components/ble/NimbleController.h"
 #include "components/ble/BleNus.h"
+#include "components/ble/NimbleController.h"
+#include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Components;
 
@@ -57,7 +57,7 @@ void Console::Process() {
 
   uint16_t param_len = strlen(rxBuffer);
 
-  for (uint8_t i = 0; i < param_len; i++) {
+  for (uint16_t i = 0; i < param_len; i++) {
     if (rxBuffer[i] == ' ' && param_len > (i + 1)) {
       arg_buffer[i] = '\0';
       args[argc++] = &arg_buffer[i + 1];
