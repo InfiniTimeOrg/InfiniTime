@@ -26,6 +26,11 @@ namespace Pinetime {
         Colors ColorBG = Colors::Black;
       };
 
+      enum class CallNotificationDesign : uint8_t {
+        MODERN,
+        CLASSIC,
+      };
+
       Settings(Pinetime::Controllers::FS& fs);
 
       void Init();
@@ -91,6 +96,16 @@ namespace Pinetime {
       };
       ClockType GetClockType() const {
         return settings.clockType;
+      };
+
+      void SetCallNotificationDesign(CallNotificationDesign callNotificationDesign) {
+        if (callNotificationDesign != settings.callNotificationDesign) {
+          settingsChanged = true;
+        }
+        settings.callNotificationDesign = callNotificationDesign;
+      };
+      CallNotificationDesign GetCallNotificationDesign() const {
+        return settings.callNotificationDesign;
       };
 
       void SetNotificationStatus(Notification status) {
@@ -179,6 +194,8 @@ namespace Pinetime {
         std::bitset<3> wakeUpMode {0};
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        CallNotificationDesign callNotificationDesign = CallNotificationDesign::MODERN;
       };
 
       SettingsData settings;

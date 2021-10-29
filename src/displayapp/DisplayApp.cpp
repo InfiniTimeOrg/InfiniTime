@@ -47,6 +47,7 @@
 #include "displayapp/screens/settings/SettingPineTimeStyle.h"
 #include "displayapp/screens/settings/SettingSetDate.h"
 #include "displayapp/screens/settings/SettingSetTime.h"
+#include "displayapp/screens/settings/SettingIncomingCalls.h"
 
 #include "libs/lv_conf.h"
 
@@ -384,6 +385,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::SettingSetTime:
       currentScreen = std::make_unique<Screens::SettingSetTime>(this, dateTimeController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingIncomingCalls:
+      currentScreen = std::make_unique<Screens::SettingIncomingCalls>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SettingPineTimeStyle:
