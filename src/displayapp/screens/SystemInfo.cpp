@@ -209,7 +209,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   static constexpr uint8_t maxTaskCount = 9;
   TaskStatus_t tasksStatus[maxTaskCount];
 
-  lv_obj_t* infoTask = lv_table_create(lv_scr_act(), NULL);
+  lv_obj_t* infoTask = lv_table_create(lv_scr_act(), nullptr);
   lv_table_set_col_cnt(infoTask, 4);
   lv_table_set_row_cnt(infoTask, maxTaskCount + 1);
   lv_obj_set_style_local_pad_all(infoTask, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 0);
@@ -227,35 +227,37 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   auto nb = uxTaskGetSystemState(tasksStatus, maxTaskCount, nullptr);
   std::sort(tasksStatus, tasksStatus + nb, sortById);
   for (uint8_t i = 0; i < nb && i < maxTaskCount; i++) {
+    char buffer[7] = {0};
 
-    lv_table_set_cell_value(infoTask, i + 1, 0, std::to_string(tasksStatus[i].xTaskNumber).c_str());
-    char state[2] = {0};
+    sprintf(buffer, "%lu", tasksStatus[i].xTaskNumber);
+    lv_table_set_cell_value(infoTask, i + 1, 0, buffer);
     switch (tasksStatus[i].eCurrentState) {
       case eReady:
       case eRunning:
-        state[0] = 'R';
+        buffer[0] = 'R';
         break;
       case eBlocked:
-        state[0] = 'B';
+        buffer[0] = 'B';
         break;
       case eSuspended:
-        state[0] = 'S';
+        buffer[0] = 'S';
         break;
       case eDeleted:
-        state[0] = 'D';
+        buffer[0] = 'D';
         break;
       default:
-        state[0] = 'I'; // Invalid
+        buffer[0] = 'I'; // Invalid
         break;
     }
-    lv_table_set_cell_value(infoTask, i + 1, 1, state);
+    buffer[1] = '\0';
+    lv_table_set_cell_value(infoTask, i + 1, 1, buffer);
     lv_table_set_cell_value(infoTask, i + 1, 2, tasksStatus[i].pcTaskName);
     if (tasksStatus[i].usStackHighWaterMark < 20) {
-      std::string str1 = std::to_string(tasksStatus[i].usStackHighWaterMark) + " low";
-      lv_table_set_cell_value(infoTask, i + 1, 3, str1.c_str());
+      sprintf(buffer, "%d low", tasksStatus[i].usStackHighWaterMark);
     } else {
-      lv_table_set_cell_value(infoTask, i + 1, 3, std::to_string(tasksStatus[i].usStackHighWaterMark).c_str());
+      sprintf(buffer, "%d", tasksStatus[i].usStackHighWaterMark);
     }
+    lv_table_set_cell_value(infoTask, i + 1, 3, buffer);
   }
   return std::make_unique<Screens::Label>(3, 5, app, infoTask);
 }
