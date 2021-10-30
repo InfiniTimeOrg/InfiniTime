@@ -396,6 +396,13 @@ void SystemTask::Work() {
         case Messages::BatteryPercentageUpdated:
           nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
           break;
+        case Messages::OnPairing:
+          if (isSleeping && !isWakingUp) {
+            GoToRunning();
+          }
+          motorController.RunForDuration(35);
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
+          break;
 
         default:
           break;

@@ -154,6 +154,7 @@ set(NIMBLE_SRC
         libs/mynewt-nimble/nimble/controller/src/ble_ll_supp_cmd.c
         libs/mynewt-nimble/nimble/controller/src/ble_ll_hci_ev.c
         libs/mynewt-nimble/nimble/controller/src/ble_ll_rfmgmt.c
+        libs/mynewt-nimble/nimble/controller/src/ble_ll_resolv.c
         libs/mynewt-nimble/porting/nimble/src/os_cputime.c
         libs/mynewt-nimble/porting/nimble/src/os_cputime_pwr2.c
         libs/mynewt-nimble/porting/nimble/src/os_mbuf.c
@@ -421,6 +422,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
+        displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
         displayapp/Colors.cpp
