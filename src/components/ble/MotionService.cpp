@@ -1,5 +1,5 @@
 #include "MotionService.h"
-#include "components/motion//MotionController.h"
+#include "components/motion/MotionController.h"
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
