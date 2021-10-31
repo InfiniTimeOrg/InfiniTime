@@ -85,7 +85,7 @@ void Steps::Refresh() {
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
 
-  if (currentTripSteps < 100000){
+  if (currentTripSteps < 100000) {
     lv_label_set_text_fmt(tripLabel, "Trip: %5li", currentTripSteps);
   } else {
     lv_label_set_text_fmt(tripLabel, "Trip: 99999+");
@@ -101,4 +101,3 @@ void Steps::lapBtnEventHandler(lv_event_t event) {
   motionController.ResetTrip();
   Refresh();
 }
-

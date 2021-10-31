@@ -16,7 +16,7 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   this->z = z;
   int32_t deltaSteps = nbSteps - this->nbSteps;
   this->nbSteps = nbSteps;
-  if(deltaSteps > 0){
+  if (deltaSteps > 0) {
     currentTripSteps += deltaSteps;
   }
 }
@@ -47,10 +47,16 @@ void MotionController::IsSensorOk(bool isOk) {
   isSensorOk = isOk;
 }
 void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
-  switch(types){
-    case Drivers::Bma421::DeviceTypes::BMA421: this->deviceType = DeviceTypes::BMA421; break;
-    case Drivers::Bma421::DeviceTypes::BMA425: this->deviceType = DeviceTypes::BMA425; break;
-    default: this->deviceType = DeviceTypes::Unknown; break;
+  switch (types) {
+    case Drivers::Bma421::DeviceTypes::BMA421:
+      this->deviceType = DeviceTypes::BMA421;
+      break;
+    case Drivers::Bma421::DeviceTypes::BMA425:
+      this->deviceType = DeviceTypes::BMA425;
+      break;
+    default:
+      this->deviceType = DeviceTypes::Unknown;
+      break;
   }
 }
 void MotionController::SetService(Pinetime::Controllers::MotionService* service) {

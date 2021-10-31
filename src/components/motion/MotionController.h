@@ -8,7 +8,7 @@ namespace Pinetime {
   namespace Controllers {
     class MotionController {
     public:
-      enum class DeviceTypes{
+      enum class DeviceTypes {
         Unknown,
         BMA421,
         BMA425,
@@ -28,7 +28,7 @@ namespace Pinetime {
       uint32_t NbSteps() const {
         return nbSteps;
       }
-    
+
       void ResetTrip() {
         currentTripSteps = 0;
       }
