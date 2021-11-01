@@ -1,9 +1,9 @@
 #pragma once
 
-#include <lvgl/lvgl.h>
-#include <cstdint>
 #include "Screen.h"
 #include "components/motor/MotorController.h"
+#include <cstdint>
+#include <lvgl/lvgl.h>
 
 namespace Pinetime {
   namespace Components {
@@ -30,7 +30,7 @@ namespace Pinetime {
         static constexpr uint16_t bufferSize = width * height;
         lv_color_t b[bufferSize];
         lv_color_t selectColor = LV_COLOR_WHITE;
-        uint8_t color = 3;
+        uint8_t color = 2;
       };
     }
   }
