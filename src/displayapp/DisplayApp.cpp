@@ -215,6 +215,9 @@ void DisplayApp::Refresh() {
         } else {
           LoadApp(Apps::Alarm, DisplayApp::FullRefreshDirections::None);
         }
+      case Messages::ShowPairingKey:
+        LoadApp(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
+        break;
       case Messages::TouchEvent: {
         if (state != States::Running) {
           break;
@@ -288,9 +291,6 @@ void DisplayApp::Refresh() {
       case Messages::UpdateDateTime:
         // Added to remove warning
         // What should happen here?
-        break;
-      case Messages::ShowPairingKey:
-        LoadApp(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
         break;
     }
   }
