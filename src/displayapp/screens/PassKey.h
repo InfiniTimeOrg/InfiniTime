@@ -13,7 +13,8 @@ namespace Pinetime {
         ~PassKey() override;
 
       private:
-        lv_obj_t* lpasskey;
+        lv_obj_t* passkeyLabel;
+        lv_obj_t* backgroundLabel;
       };
     }
   }
