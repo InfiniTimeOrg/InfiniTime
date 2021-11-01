@@ -51,7 +51,7 @@ bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       }
 
       std::fill(b, b + bufferSize, selectColor);
-      motor.RunForDuration(50);
+      motor.RunForDuration(35);
       return true;
     default:
       return true;
