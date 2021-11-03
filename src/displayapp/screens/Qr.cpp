@@ -19,19 +19,19 @@ Qr::Qr(Pinetime::Applications::DisplayApp* app,
         Pinetime::Controllers::QrService& qrService) :
           Screen(app), lvgl{lvgl}, qrService(qrService) {  
   drawQrList();
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Qr::~Qr() {
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-bool Qr::Refresh() {
+void Qr::Refresh() {
   if(qrList != qrService.getQrList()) {
     qrList = qrService.getQrList();
-    lv_obj_clean(lv_scr_act());
     drawQrList();
   }
-  return running;
 }
 
 bool Qr::OnButtonPushed() {
@@ -39,7 +39,7 @@ bool Qr::OnButtonPushed() {
     drawQrList();
     showingQrCode = false;
   } else {
-    running = false;
+    return false;
   }
   return true;
 }
@@ -53,6 +53,7 @@ bool Qr::OnTouchEvent(uint16_t x, uint16_t y) {
 }
 
 void Qr::drawQrList() {
+  lv_obj_clean(lv_scr_act());
   // Set the background to Black
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0, 0, 0));
 

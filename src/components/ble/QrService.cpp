@@ -61,7 +61,7 @@ int QrService::OnCommand(uint16_t conn_handle, uint16_t attr_handle,
     char* qrText = strtok(NULL, d);
     
     if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t *) &qrsTextCharUuid) == 0) {
-      if (std::stoi(qrId) < MAXLISTITEMS && qrId > 0 && qrName != NULL && qrText != NULL) {
+      if (std::stoi(qrId) < MAXLISTITEMS && std::stoi(qrId) > 0 && qrName != NULL && qrText != NULL) {
         qrList[std::stoi(qrId)].name = qrName;
         qrList[std::stoi(qrId)].text = qrText;
       }

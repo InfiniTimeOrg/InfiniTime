@@ -23,7 +23,7 @@ namespace Pinetime {
 
         ~Qr() override;
 
-        bool Refresh() override;
+        void Refresh() override;
 
         bool OnButtonPushed() override;
 
@@ -42,13 +42,12 @@ namespace Pinetime {
         
       private:
 
+        lv_task_t* taskRefresh;
         std::array<Pinetime::Controllers::QrService::QrInfo, 4> qrList;
         lv_obj_t * itemApps[MAXLISTITEMS];
         
         Pinetime::Components::LittleVgl& lvgl;
         Pinetime::Controllers::QrService& qrService;
-
-        bool running = true;
 
         uint8_t qrSize;
         uint8_t qrModuleSize;

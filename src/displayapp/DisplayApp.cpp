@@ -449,7 +449,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
     case Apps::Qr:
-      currentScreen = std::make_unique<Screens::Qr>(this, lvgl, systemTask.nimble().qr());
+      currentScreen = std::make_unique<Screens::Qr>(this, lvgl, systemTask->nimble().qr());
       break;
   }
   currentApp = app;
