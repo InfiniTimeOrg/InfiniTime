@@ -1,4 +1,4 @@
-#include <libs/lvgl/lvgl.h>
+#include <lvgl/lvgl.h>
 #include "displayapp/screens/Motion.h"
 #include "displayapp/DisplayApp.h"
 

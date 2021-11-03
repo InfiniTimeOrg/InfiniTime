@@ -1,4 +1,4 @@
-#include <libs/lvgl/lvgl.h>
+#include <lvgl/lvgl.h>
 #include "displayapp/screens/WatchFaceAnalog.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/BleIcon.h"

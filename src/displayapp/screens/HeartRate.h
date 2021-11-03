@@ -5,8 +5,8 @@
 #include "displayapp/screens/Screen.h"
 #include <bits/unique_ptr.h>
 #include "systemtask/SystemTask.h"
-#include <libs/lvgl/src/lv_core/lv_style.h>
-#include <libs/lvgl/src/lv_core/lv_obj.h>
+#include <lvgl/src/lv_core/lv_style.h>
+#include <lvgl/src/lv_core/lv_obj.h>
 
 namespace Pinetime {
   namespace Controllers {
