@@ -49,6 +49,12 @@ void TimerController::StopTimer() {
   overtime = false;
 }
 
+void TimerController::StopAlerting() {
+  if (systemTask != nullptr) {
+    systemTask->PushMessage(System::Messages::StopRinging);
+  }
+}
+
 void TimerController::OnTimerEnd() {
   overtime = true;
   if (systemTask != nullptr) {

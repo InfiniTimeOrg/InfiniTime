@@ -60,6 +60,7 @@ void Timer::stop() {
     secondsToSet = secondsRemaining % 60;
   }
   timerController.StopTimer();
+  timerController.StopAlerting();
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_label_set_text_fmt(time, "%02lu:%02lu", secondsRemaining / 60, secondsRemaining % 60);
   lv_label_set_text(txtPlayPause, Symbols::play);
@@ -106,6 +107,7 @@ Timer::~Timer() {
   lv_obj_clean(lv_scr_act());
   if (timerController.IsRunning() && timerController.IsOvertime()) {
     timerController.StopTimer();
+    timerController.StopAlerting();
   }
 }
 

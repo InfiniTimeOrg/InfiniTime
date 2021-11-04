@@ -15,17 +15,13 @@ namespace Pinetime {
       TimerController() = default;
 
       void Init();
-
       void StartTimer(uint32_t duration);
-
       void StopTimer();
-
+      void StopAlerting();
       int32_t GetSecondsRemaining();
-
       bool IsOvertime() {
         return overtime;
       }
-
       bool IsRunning() {
         return timerRunning;
       }
