@@ -30,6 +30,7 @@ namespace Pinetime::Applications::Screens {
     Controllers::TimerController& timerController;
 
     void createButtons();
+    void stop();
 
     lv_task_t* taskRefresh;
     lv_obj_t *time, *btnPlayPause, *txtPlayPause, *btnMinutesUp, *btnMinutesDown, *btnSecondsUp, *btnSecondsDown, *txtMUp,

@@ -49,6 +49,23 @@ void Timer::createButtons() {
   lv_label_set_text(txtSDown, "-");
 }
 
+void Timer::stop() {
+  int32_t secondsRemaining = timerController.GetSecondsRemaining();
+  if (timerController.IsOvertime()) {
+    minutesToSet = 0;
+    secondsToSet = 0;
+    secondsRemaining = 0;
+  } else {
+    minutesToSet = secondsRemaining / 60;
+    secondsToSet = secondsRemaining % 60;
+  }
+  timerController.StopTimer();
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  lv_label_set_text_fmt(time, "%02lu:%02lu", secondsRemaining / 60, secondsRemaining % 60);
+  lv_label_set_text(txtPlayPause, Symbols::play);
+  createButtons();
+}
+
 Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   : Screen(app), running {true}, timerController {timerController} {
 
@@ -87,7 +104,7 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
 Timer::~Timer() {
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
-  if (timerController.IsRunning() and timerController.IsOvertime()) {
+  if (timerController.IsRunning() && timerController.IsOvertime()) {
     timerController.StopTimer();
   }
 }
@@ -100,13 +117,8 @@ void Timer::Refresh() {
 
       // safety measures, lets not overflow counter as it will display badly
       if (seconds >= 100 * 60) {
-        minutesToSet = 0;
-        secondsToSet = 0;
-        lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-        lv_label_set_text_static(time, "00:00");
-        lv_label_set_text(txtPlayPause, Symbols::play);
-        timerController.StopTimer();
-        createButtons();
+        stop();
+        return;
       }
     }
     lv_label_set_text_fmt(time, "%02lu:%02lu", seconds / 60, seconds % 60);
@@ -117,20 +129,7 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     if (obj == btnPlayPause) {
       if (timerController.IsRunning()) {
-        lv_label_set_text(txtPlayPause, Symbols::play);
-        int32_t secondsRemaining = timerController.GetSecondsRemaining();
-        if (timerController.IsOvertime()) {
-          minutesToSet = 0;
-          secondsToSet = 0;
-          lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-          lv_label_set_text_static(time, "00:00");
-        } else {
-          minutesToSet = secondsRemaining / 60;
-          secondsToSet = secondsRemaining % 60;
-        }
-        timerController.StopTimer();
-        createButtons();
-
+        stop();
       } else if (secondsToSet + minutesToSet > 0) {
         lv_label_set_text(txtPlayPause, Symbols::pause);
         timerController.StartTimer((secondsToSet + minutesToSet * 60) * 1000);
