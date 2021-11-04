@@ -47,7 +47,6 @@ namespace Pinetime {
         enum class EnableButtonState { On, Off, Alerting };
         void SetEnableButtonState();
         void SetRecurButtonState();
-        void SetAlarm();
         void ShowInfo();
         void HideInfo();
         void ToggleRecurrence();
