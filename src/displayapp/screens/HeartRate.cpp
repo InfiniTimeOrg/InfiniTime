@@ -1,5 +1,5 @@
-#include <lvgl/lvgl.h>
 #include "displayapp/screens/HeartRate.h"
+#include <lvgl/lvgl.h>
 #include <components/heartrate/HeartRateController.h>
 
 #include "displayapp/DisplayApp.h"

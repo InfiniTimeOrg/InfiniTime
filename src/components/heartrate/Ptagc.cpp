@@ -4,8 +4,8 @@
   C++ port Copyright (C) 2021 Jean-François Milants
 */
 
-#include <cmath>
 #include "components/heartrate/Ptagc.h"
+#include <cmath>
 
 using namespace Pinetime::Controllers;
 

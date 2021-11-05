@@ -1,5 +1,5 @@
-#include <nrf_log.h>
 #include "components/ble/BatteryInformationService.h"
+#include <nrf_log.h>
 #include "components/battery/BatteryController.h"
 
 using namespace Pinetime::Controllers;

@@ -1,5 +1,5 @@
-#include <cstdint>
 #include "displayapp/screens/BatteryIcon.h"
+#include <cstdint>
 #include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;

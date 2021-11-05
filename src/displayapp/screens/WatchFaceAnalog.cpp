@@ -1,5 +1,5 @@
-#include <lvgl/lvgl.h>
 #include "displayapp/screens/WatchFaceAnalog.h"
+#include <lvgl/lvgl.h>
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/Symbols.h"
