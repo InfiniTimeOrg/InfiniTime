@@ -13,11 +13,12 @@ By default, InfiniTime starts on the digital watchface. It'll probably display t
 You can sync the time using companion apps.
 
  - Gadgetbridge automatically synchronizes the time when you connect it to your watch. More information on Gadgetbridge [here](/doc/gettingStarted/ota-gadgetbridge.md)
- - You can use NRFConnect to [sync the time](/doc/gettingStarted/time-nrfconnect.md)
+ - [Sync the time with NRFConnect](/doc/gettingStarted/time-nrfconnect.md)
  - Sync the time with your browser https://hubmartin.github.io/WebBLEWatch/
- - Since InfiniTime 1.7.0, you can set the time in the settings without needing to use a companion app
 
-## Navigation in the menu
+Since InfiniTime 1.7.0, you can set the time in the settings without needing to use a companion app
+
+### Navigation in the menu
 
 ![Quick actions](quickactions.jpg)
 ![Settings](settings.jpg)
@@ -31,14 +32,3 @@ You can sync the time using companion apps.
     - Enable/disable vibrations on notifications (Do Not Disturb mode)
     - Enter the **settings** menu
        - Swipe up and down to see all options
-
-### Bootloader
-
-Most of the time, the bootloader just runs without your intervention (update and load the firmware).
-
-However, you can enable 2 functionalities using the push button:
-
- - Push the button until the pine cone is drawn in **blue** to force the rollback of the previous version of the firmware, even if you've already validated the updated one
- - Push the button until the pine cone is drawn in **red** to load the recovery firmware. This recovery firmware only provides BLE connectivity and OTA functionality.
-
-More info about the bootloader in [its project page](https://github.com/JF002/pinetime-mcuboot-bootloader/blob/master/README.md).

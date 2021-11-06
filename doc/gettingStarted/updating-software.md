@@ -48,3 +48,14 @@ You can validate your updated firmware on InfiniTime >= 1.0 by following this si
  - Open settings by tapping the cogwheel on the bottom right
  - Swipe up until you find an entry named **Firmware** and tap on it
  - This app shows the version that is currently running. If the firmware is not validated yet, you can either validate the running firmware, or reset and revert to the previous firmware version
+
+## Bootloader
+
+Most of the time, the bootloader just runs without your intervention (update and load the firmware).
+
+However, you can enable 2 functionalities using the push button:
+
+ - Push the button until the pine cone is drawn in **blue** to force the rollback of the previous version of the firmware, even if you've already validated the updated one
+ - Push the button until the pine cone is drawn in **red** to load the recovery firmware. This recovery firmware only provides BLE connectivity and OTA functionality.
+
+More info about the bootloader in [its project page](https://github.com/JF002/pinetime-mcuboot-bootloader/blob/master/README.md).
