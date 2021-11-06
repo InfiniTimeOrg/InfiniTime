@@ -1,73 +1,18 @@
-# InfiniTime
+# [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
 
 [![Build PineTime Firmware](https://github.com/InfiniTimeOrg/InfiniTime/workflows/Build%20PineTime%20Firmware/badge.svg?branch=master)](https://github.com/InfiniTimeOrg/InfiniTime/actions)
 
-![InfiniTime logo](images/infinitime-logo.jpg "InfiniTime Logo")
+![InfiniTime logo](images/infinitime-logo-small.jpg "InfiniTime Logo")
 
-The goal of this project is to design an open-source firmware for the [Pinetime smartwatch](https://www.pine64.org/pinetime/) :
-
- - Code written in **modern C++**;
- - Build system based on **CMake**;
- - Based on **[FreeRTOS 10.0.0](https://freertos.org)** real-time OS.
- - Using **[LittleVGL/LVGL 7](https://lvgl.io/)** as UI library...
- - ... and **[NimBLE 1.3.0](https://github.com/apache/mynewt-nimble)** as BLE stack.
+InfiniTime is an open-source firmware for the [Pinetime smartwatch](https://www.pine64.org/pinetime/)
 
 ## New to InfiniTime?
 
- - [Getting started with InfiniTime 1.0 (quick user guide, update bootloader and InfiniTime,...)](doc/gettingStarted/gettingStarted-1.0.md)
- - [Flash, upgrade (OTA), time synchronization,...](doc/gettingStarted/ota-gadgetbridge-nrfconnect.md)
-
-## Overview
-
-![Pinetime screens](images/1.0.0/collage.png "PinetimeScreens")
-
-As of now, here is the list of achievements of this project:
-
- - Fast and optimized LCD driver
- - BLE communication
- - Rich user interface via display, touchscreen and pushbutton
- - Time synchronization via BLE
- - Notification via BLE
- - Heart rate measurements
- - Step counting
- - Wake-up on wrist rotation
- - Quick actions
-    * Disable vibration on notification
-    * Brightness settings
-    * Flashlight
-    * Settings
- - 3 watch faces:
-    * Digital
-    * Analog
-    * [PineTimeStyle](https://wiki.pine64.org/wiki/PineTimeStyle)
- - Multiple 'apps' :
-    * Music (control the playback of music on your phone)
-    * Heart rate (measure your heart rate)
-    * Navigation (displays navigation instructions coming from the companion app)
-    * Notification (displays the last notification received)
-    * Paddle (single player pong-like game)
-    * Twos (2048 clone game)
-    * Stopwatch
-    * Steps (displays the number of steps taken)
-    * Timer (set a countdown timer that will notify you when it expires)
-    * Metronome (vibrates to a given bpm with a customizable beats per bar)
- - User settings:
-    * Display timeout
-    * Wake-up condition
-    * Time format (12/24h)
-    * Default watch face
-    * Daily step goal
-    * Battery status
-    * Firmware validation
-    * System information
- - Supported by 3 companion apps (development is in progress):
-    * [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android via F-Droid)
-    * [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)
-    * [Siglo](https://github.com/alexr4535/siglo) (on Linux)
-    * **[Experimental]** [WebBLEWatch](https://hubmartin.github.io/WebBLEWatch/) Synchronize time directly from your web browser. [video](https://youtu.be/IakiuhVDdrY)
-    * **[Experimental]** [InfiniLink](https://github.com/xan-m/InfiniLink) (on iOS)
- - OTA (Over-the-air) update via BLE
- - [Bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader) based on [MCUBoot](https://www.mcuboot.com)
+ - [Getting started with InfiniTime](doc/gettingStarted/gettingStarted-1.0.md)
+ - [About the software and updating](doc/gettingStarted/updating-software.md)
+ - Companion apps:
+   - [Gadgetbridge](doc/companionapps/Gadgetbridge.md)
+   - [AmazFish](doc/companionapps/Amazfish.md)
 
 ## Documentation
 
@@ -84,16 +29,11 @@ As of now, here is the list of achievements of this project:
  - [Files included in the release notes](doc/filesInReleaseNotes.md)
  - [Build the project](doc/buildAndProgram.md)
  - [Flash the firmware using OpenOCD and STLinkV2](doc/openOCD.md)
+ - [Flash the firmware using SWD interface](doc/SWD.md)
  - [Build the project with Docker](doc/buildWithDocker.md)
  - [Build the project with VSCode](doc/buildWithVScode.md)
  - [Bootloader, OTA and DFU](./bootloader/README.md)
  - [Stub using NRF52-DK](./doc/PinetimeStubWithNrf52DK.md)
- - Logging with JLink RTT.
- - Using files from the releases
-
-### Contribute
-
- - [How to contribute ?](doc/contribute.md)
 
 ### API
 
@@ -103,29 +43,13 @@ As of now, here is the list of achievements of this project:
 
  - [Memory analysis](./doc/MemoryAnalysis.md)
 
-### Using the firmware
-
- - [Integration with Gadgetbridge](doc/companionapps/Gadgetbridge.md)
- - [Integration with AmazFish](doc/companionapps/Amazfish.md)
- - [Firmware update, OTA](doc/companionapps/NrfconnectOTA.md)
-
-## TODO - contribute
+## Contributing
 
 This project is far from being finished, and there are still a lot of things to do for this project to become a firmware usable by the general public.
 
-Here a quick list out of my head of things to do for this project:
+Do not hesitate to fork the code, hack it and create pull-requests!
 
- - Improve BLE communication stability and reliability
- - Improve OTA and MCUBoot bootloader
- - Add more functionalities : Alarm, chronometer, configuration, activities, heart rate logging, games,...
- - Add more BLE functionalities : call notifications, agenda, configuration, data logging,...
- - Measure power consumption and improve battery life
- - Improve documentation, take better pictures and video than mine
- - Improve the UI
- - Create companion app for multiple OSes (Linux, Android, iOS) and platforms (desktop, ARM, mobile). Do not forget the other devices from Pine64 like [the Pinephone](https://www.pine64.org/pinephone/) and the [Pinebook Pro](https://www.pine64.org/pinebook-pro/).
- - Design a simple CI (preferably self-hosted and easy to reproduce).
-
-Do not hesitate to clone/fork the code, hack it and create pull-requests. I'll do my best to review and merge them :)
+Read this page for more information on how you can help: [How to contribute?](doc/contribute.md)
 
 ## Licenses
 
