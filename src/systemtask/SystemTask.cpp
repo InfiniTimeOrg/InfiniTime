@@ -25,7 +25,6 @@
 #include "main.h"
 #include "BootErrors.h"
 
-
 #include <memory>
 
 using namespace Pinetime::System;
@@ -77,7 +76,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Pinetime::Applications::DisplayApp& displayApp,
                        Pinetime::Applications::HeartRateTask& heartRateApp,
                        Pinetime::Controllers::FS& fs,
-                       Pinetime::Controllers::TouchHandler& touchHandler)
+                       Pinetime::Controllers::TouchHandler& touchHandler,
+                       Pinetime::Controllers::ButtonHandler& buttonHandler)
   : spi {spi},
     lcd {lcd},
     spiNorFlash {spiNorFlash},
@@ -101,8 +101,15 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     heartRateApp(heartRateApp),
     fs {fs},
     touchHandler {touchHandler},
-    nimbleController(*this, bleController, dateTimeController, notificationManager,
-                     batteryController, spiNorFlash, heartRateController, motionController) {
+    buttonHandler {buttonHandler},
+    nimbleController(*this,
+                     bleController,
+                     dateTimeController,
+                     notificationManager,
+                     batteryController,
+                     spiNorFlash,
+                     heartRateController,
+                     motionController) {
 }
 
 void SystemTask::Start() {
@@ -162,6 +169,8 @@ void SystemTask::Work() {
   heartRateSensor.Init();
   heartRateSensor.Disable();
   heartRateApp.Start();
+
+  buttonHandler.Init(this);
 
   // Button
   nrf_gpio_cfg_output(15);
@@ -326,10 +335,25 @@ void SystemTask::Work() {
           ReloadIdleTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
-        case Messages::OnButtonEvent:
-          ReloadIdleTimer();
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
-          break;
+        case Messages::HandleButtonEvent: {
+          Controllers::ButtonActions action;
+          if (nrf_gpio_pin_read(Pinetime::PinMap::Button) == 0) {
+            action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Release);
+          } else {
+            action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Press);
+            // This is for faster wakeup, sacrificing special longpress and doubleclick handling while sleeping
+            if (IsSleeping()) {
+              fastWakeUpDone = true;
+              GoToRunning();
+              break;
+            }
+          }
+          HandleButtonAction(action);
+        } break;
+        case Messages::HandleButtonTimerEvent: {
+          auto action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Timer);
+          HandleButtonAction(action);
+        } break;
         case Messages::OnDisplayTaskSleeping:
           if (BootloaderVersion::IsValid()) {
             // First versions of the bootloader do not expose their version and cannot initialize the SPI NOR FLASH
@@ -414,18 +438,36 @@ void SystemTask::UpdateMotion() {
   }
 }
 
-void SystemTask::OnButtonPushed() {
-  if (isGoingToSleep)
+void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
+  if (IsSleeping()) {
     return;
-  if (!isSleeping) {
-    NRF_LOG_INFO("[systemtask] Button pushed");
-    PushMessage(Messages::OnButtonEvent);
-  } else {
-    if (!isWakingUp) {
-      NRF_LOG_INFO("[systemtask] Button pushed, waking up");
-      GoToRunning();
-    }
   }
+
+  ReloadIdleTimer();
+
+  using Actions = Controllers::ButtonActions;
+
+  switch (action) {
+    case Actions::Click:
+      // If the first action after fast wakeup is a click, it should be ignored.
+      if (!fastWakeUpDone && !isGoingToSleep) {
+        displayApp.PushMessage(Applications::Display::Messages::ButtonPushed);
+      }
+      break;
+    case Actions::DoubleClick:
+      displayApp.PushMessage(Applications::Display::Messages::ButtonDoubleClicked);
+      break;
+    case Actions::LongPress:
+      displayApp.PushMessage(Applications::Display::Messages::ButtonLongPressed);
+      break;
+    case Actions::LongerPress:
+      displayApp.PushMessage(Applications::Display::Messages::ButtonLongerPressed);
+      break;
+    default:
+      return;
+  }
+
+  fastWakeUpDone = false;
 }
 
 void SystemTask::GoToRunning() {

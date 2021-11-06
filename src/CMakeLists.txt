@@ -508,6 +508,7 @@ list(APPEND SOURCE_FILES
         components/heartrate/Ptagc.cpp
         components/heartrate/HeartRateController.cpp
 
+        buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
         )
 
@@ -568,6 +569,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/heartrate/Ptagc.cpp
         components/motor/MotorController.cpp
         components/fs/FS.cpp
+        buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
         )
 
@@ -682,6 +684,7 @@ set(INCLUDE_FILES
         components/heartrate/Ptagc.h
         components/heartrate/HeartRateController.h
         components/motor/MotorController.h
+        buttonhandler/ButtonHandler.h
         touchhandler/TouchHandler.h
         )
 
