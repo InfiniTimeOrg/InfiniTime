@@ -21,6 +21,7 @@ InfiniTime is an open-source firmware for the [Pinetime smartwatch](https://www.
  - [How to implement an application](doc/code/Apps.md)
  - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
  - [Creating a stopwatch in Pinetime(article)](https://pankajraghav.com/2021/04/03/PINETIME-STOPCLOCK.html)
+ - [Tips on designing an app UI](doc/ui_guidelines.md)
 
 ### Build, flash and debug
 
