@@ -41,6 +41,16 @@ namespace Pinetime {
         return settings.clockFace;
       };
 
+      void SetChimesState(uint8_t state) {
+        if (state != settings.chimesState) {
+          settingsChanged = true;
+        }
+        settings.chimesState = state;
+      };
+      uint8_t GetChimesState() const {
+        return settings.chimesState;
+      };
+
       void SetPTSColorTime(Colors colorTime) {
         if (colorTime != settings.PTS.ColorTime)
           settingsChanged = true;
@@ -173,6 +183,7 @@ namespace Pinetime {
         Notification notificationStatus = Notification::ON;
 
         uint8_t clockFace = 0;
+        uint8_t chimesState = 0;
 
         PineTimeStyle PTS;
 

@@ -86,6 +86,8 @@ namespace Pinetime {
       std::chrono::seconds uptime {0};
 
       bool isMidnightAlreadyNotified = false;
+      bool isHourAlreadyNotified = true;
+      bool isHalfHourAlreadyNotified = true;
       System::SystemTask* systemTask = nullptr;
     };
   }

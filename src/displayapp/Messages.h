@@ -15,7 +15,8 @@ namespace Pinetime {
         UpdateTimeOut,
         DimScreen,
         RestoreBrightness,
-        AlarmTriggered
+        AlarmTriggered,
+        Clock
       };
     }
   }

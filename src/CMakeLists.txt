@@ -436,6 +436,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingPineTimeStyle.cpp
         displayapp/screens/settings/SettingSetDate.cpp
         displayapp/screens/settings/SettingSetTime.cpp
+        displayapp/screens/settings/SettingChimes.cpp
 
         ## Watch faces
         displayapp/icons/bg_clock.c

@@ -75,6 +75,22 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   minute = time.minutes().count();
   second = time.seconds().count();
 
+  if(minute == 0 and not isHourAlreadyNotified) {
+    isHourAlreadyNotified = true;
+    if(systemTask != nullptr)
+      systemTask->PushMessage(System::Messages::OnNewHour);
+  } else if (minute != 0) {
+    isHourAlreadyNotified = false;
+  }
+
+  if((minute == 0 or minute == 30) and not isHalfHourAlreadyNotified) {
+    isHalfHourAlreadyNotified = true;
+    if(systemTask != nullptr)
+      systemTask->PushMessage(System::Messages::OnNewHalfHour);
+  } else if (minute != 0 and minute != 30) {
+    isHalfHourAlreadyNotified = false;
+  }
+
   // Notify new day to SystemTask
   if (hour == 0 and not isMidnightAlreadyNotified) {
     isMidnightAlreadyNotified = true;
