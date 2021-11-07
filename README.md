@@ -17,6 +17,7 @@ InfiniTime is an open-source firmware for the [Pinetime smartwatch](https://www.
 ## Documentation
 
 ### Develop
+ - [Coding conventions](/doc/coding-convention.md)
  - [Rough structure of the code](doc/code/Intro.md)
  - [How to implement an application](doc/code/Apps.md)
  - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
@@ -48,9 +49,9 @@ InfiniTime is an open-source firmware for the [Pinetime smartwatch](https://www.
 
 This project is far from being finished, and there are still a lot of things to do for this project to become a firmware usable by the general public.
 
-Do not hesitate to fork the code, hack it and create pull-requests!
+Do not hesitate to fork the code, hack it and create pull-requests! Make sure to read the [coding conventions](/doc/coding-convention.md)
 
-Read this page for more information on how you can help: [How to contribute?](doc/contribute.md)
+You don't need to be a programmer to contribute. Read this page for more information on how you can help: [How to contribute?](doc/contribute.md)
 
 ## Licenses
 
