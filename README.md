@@ -11,8 +11,10 @@ InfiniTime is an open-source firmware for the [Pinetime smartwatch](https://www.
  - [Getting started with InfiniTime](doc/gettingStarted/gettingStarted-1.0.md)
  - [About the software and updating](doc/gettingStarted/updating-software.md)
  - Companion apps:
-   - [Gadgetbridge](doc/companionapps/Gadgetbridge.md)
-   - [AmazFish](doc/companionapps/Amazfish.md)
+   - [Gadgetbridge](https://gadgetbridge.org/) (Android)
+   - [AmazFish](https://openrepos.net/content/piggz/amazfish/) (SailfishOS)
+   - [Siglo](https://github.com/alexr4535/siglo) (Linux)
+   - [InfiniLink](https://github.com/xan-m/InfiniLink) **[Experimental]** (iOS)
 
 ## Documentation
 
