@@ -152,6 +152,7 @@ void SystemTask::Work() {
     bootError = BootErrors::TouchController;
   }
    */
+  touchPanel.Init();
   dateTimeController.Register(this);
   batteryController.Register(this);
   motorController.Init();
