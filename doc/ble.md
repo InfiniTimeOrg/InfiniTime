@@ -65,14 +65,19 @@ When the service does not exist in the BLE specification, InfiniTime implements 
 The following custom services are implemented in InfiniTime:
 
  - Since InfiniTime 0.8:
-   ```
-    * Music Service :             00000000-78fc-48fe-8e23-433b3a1942d0
-   ```
-   
+    * Music Service : 00000000-78fc-48fe-8e23-433b3a1942d0
+ 
+
  - Since InfiniTime 0.11:
-   ```
-     * Navigation Service :        00010000-78fc-48fe-8e23-433b3a1942d0
-   ```
+     * [Navigation Service](NavigationService.md) : 00010000-78fc-48fe-8e23-433b3a1942d0
+
+
+ - Since InfiniTime 0.13
+     * Call characteristic (extension to the Alert Notification Service): 00020001-78fc-48fe-8e23-433b3a1942d0
+ 
+  
+ - Since InfiniTime 1.7:
+   * [Motion Service](MotionService.md) :        00030000-78fc-48fe-8e23-433b3a1942d0
 
 ---
 
