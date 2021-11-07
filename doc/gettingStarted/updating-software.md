@@ -26,14 +26,17 @@ The bootloader is easily recognizable with its white pine cone that is progressi
 
 ## How to update your PineTime?
 
-To update your PineTime, you can use one of the compatible companion applications. Here are the main ones:
+To update your PineTime, you can use one of the compatible companion applications.
 
- - **[Amazfish](https://github.com/piggz/harbour-amazfish)** (Desktop Linux, mobile Linux, SailfishOS, runs on the PinebookPro and the Pinephone)
- - **[Gadgetbridge](https://www.gadgetbridge.org/)** (Android)
- - **[Siglo](https://github.com/alexr4535/siglo)** (Linux, GTK based)
- - **NRFConnect** (closed source, Android & iOS)
+The updating process differs slightly on every companion app, so you'll need to familiarize yourself with the companion app of your choice.
 
-We have instructions for updating the software with Gadgetbridge and NRFConnect.
+All releases of InfiniTime are available on the [release page of the GitHub repo](https://github.com/InfiniTimeOrg/InfiniTime/releases).
+
+Release files are available under the *Assets* button.
+
+To update the firmware, you need to download the DFU of the firmware version that you'd like to install, for example `pinetime-mcuboot-app-dfu-1.6.0.zip`, and flash it with your companion app.
+
+We have prepared instructions for flashing InfiniTime with Gadgetbridge and NRFConnect.
 
  - [Updating with Gadgetbridge](/doc/gettingStarted/ota-gadgetbridge.md)
  - [Updating with NRFConnect](/doc/gettingStarted/ota-nrfconnect.md)

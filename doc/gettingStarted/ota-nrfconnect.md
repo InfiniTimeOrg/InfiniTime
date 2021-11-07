@@ -1,15 +1,5 @@
 # Updating with NRFConnect
 
-## Preparation
-
-All releases of InfiniTime are available on the [release page of the GitHub repo](https://github.com/InfiniTimeOrg/InfiniTime/releases).
-
-Release files are available under the *Assets* button.
-
-You need to download the DFU of the firmware version that you'd like to install, for example `pinetime-mcuboot-app-dfu-1.6.0.zip`
-
-## NRFConnect
-
 Open NRFConnect. Swipe down in the *Scanner* tab and wait for your device to appear:
 
 ![NRFConnect 0](nrfconnect0.jpg)
@@ -22,7 +12,7 @@ Select **Distribution packet (ZIP)**:
 
 ![NRFConnect 2](nrfconnect2.jpg)
 
-Browse to the DFU file you downloaded previously, the DFU transfer will start automatically. When the transfer is finished, your PineTime will reset and restart on the new version of InfiniTime!
+Find the DFU file (`pinetime-mcuboot-app-dfu-x.x.x.zip`) you downloaded previously, the DFU transfer will start automatically. When the transfer is finished, your PineTime will reset and restart on the new version of InfiniTime!
 
 Don't forget to **validate** your firmware. In the InfiniTime go to the settings (swipe right, select gear icon) and Firmware option and click **validate**. Otherwise after reboot the previous firmware will be used.
 
