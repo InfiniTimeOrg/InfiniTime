@@ -74,7 +74,6 @@ namespace Pinetime {
       Pinetime::Controllers::QrService& qr() {
         return qrService;
       };
-      
 
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);

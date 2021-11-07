@@ -18,8 +18,7 @@ namespace Pinetime {
 
       class Qr : public Screen {
       public:
-        Qr(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl,
-                            Pinetime::Controllers::QrService& qrService);
+        Qr(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl, Pinetime::Controllers::QrService& qrService);
 
         ~Qr() override;
 
@@ -33,19 +32,18 @@ namespace Pinetime {
 
         void drawQrList();
         void drawQr(std::string qrText);
-        
+
         void resetScreen();
 
-        void OnButtonEvent(lv_obj_t * object, lv_event_t event);
-        
-        bool showingQrCode = false;
-        
-      private:
+        void OnButtonEvent(lv_obj_t* object, lv_event_t event);
 
+        bool showingQrCode = false;
+
+      private:
         lv_task_t* taskRefresh;
         std::array<Pinetime::Controllers::QrService::QrInfo, 4> qrList;
-        lv_obj_t * itemApps[MAXLISTITEMS];
-        
+        lv_obj_t* itemApps[MAXLISTITEMS];
+
         Pinetime::Components::LittleVgl& lvgl;
         Pinetime::Controllers::QrService& qrService;
 

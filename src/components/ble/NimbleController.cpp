@@ -41,7 +41,7 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     immediateAlertService {systemTask, notificationManager},
     qrService(systemTask),
     heartRateService {systemTask, heartRateController},
-    motionService{systemTask, motionController},
+    motionService {systemTask, motionController},
     serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
 }
 
