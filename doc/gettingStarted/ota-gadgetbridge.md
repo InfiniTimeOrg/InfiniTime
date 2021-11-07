@@ -14,17 +14,7 @@ Tap on it. Gadgdetbridge will pair and connect to your device:
 
 # Updating with Gadgetbridge
 
-## Preparation
-
-All releases of InfiniTime are available on the [release page of the GitHub repo](https://github.com/InfiniTimeOrg/InfiniTime/releases).
-
-Release files are available under the *Assets* button.
-
-You need to download the DFU of the firmware version that you'd like to install, for example `pinetime-mcuboot-app-dfu-1.6.0.zip`
-
-## Gadgetbridge
-
-Now that Gadgetbridge is connected to your PineTime, use a file browser application (I'm using Seafile to browse my NAS) and browse to the DFU file (image-xxx.zip) you downloaded previously. Tap on it and open it using the Gadgetbridge application/firmware installer:
+Now that Gadgetbridge is connected to your PineTime, use a file browser application and find the DFU file (`pinetime-mcuboot-app-dfu-x.x.x.zip`) you downloaded previously. Tap on it and open it using the Gadgetbridge application/firmware installer:
 
 ![Gadgetbridge 3](gadgetbridge3.jpg)
 
