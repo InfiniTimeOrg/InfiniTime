@@ -33,14 +33,14 @@ bool Cst816S::Init() {
   vTaskDelay(5);
 
   static constexpr uint8_t maxRetries = 3;
-  bool isDeviceOk = false;
+  bool isDeviceOk;
   uint8_t retries = 0;
   do {
     isDeviceOk = CheckDeviceIds();
     retries++;
-  } while(!isDeviceOk && retries < maxRetries);
+  } while (!isDeviceOk && retries < maxRetries);
 
-  if(!isDeviceOk) {
+  if (!isDeviceOk) {
     return false;
   }
 
