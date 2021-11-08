@@ -1,11 +1,12 @@
 # Apps
 This page will teach you:
-- what apps in InfiniTime are
+- what screens and apps are in InfiniTime
 - how to implement your own app
 
 ## Theory
-Apps are the things you can launch from the app selection you get by swiping up.
-At the moment, settings and even the app launcher itself or the clock are implemented very similarly, this might change in the future though.
+
+The user interface of InfiniTime is made up of **screens**
+Screens that are opened from the app launcher are considered **apps**
 Every app in InfiniTime is it's own class.
 An instance of the class is created when the app is launched and destroyed when the user exits the app.
 They run inside the "displayapp" task (briefly discussed [here](./Intro.md)).
@@ -23,27 +24,21 @@ it does not need to override any of these functions, as LVGL can also handle tou
 If you have any doubts, you can always look at how the other apps are doing things.
 
 ### Continuous updating
-If your app needs to be updated continuously, yo can do so by overriding the `Refresh()` function in your class
+If your app needs to be updated continuously, you can do so by overriding the `Refresh()` function in your class
 and calling `lv_task_create` inside the constructor.
-An example call could look like this: <br>
-`taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);` <br>
+
+An example call could look like this:
+```cpp
+taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+```
+
 With `taskRefresh` being a member variable of your class and of type `lv_task_t*`.
 Remember to delete the task again using `lv_task_del`.
-The function `RefreshTaskCallback` is inherited from screen and just calls your `Refresh` function.
-
-### Apps with multiple screens
-InfiniTime provides a mini-library in [displayapp/screens/ScreenList.h](/src/displayapp/screens/ScreenList.h)
-which makes it relatively  easy to add multiple screens to your app.
-To use it, #include it in the header file of your app and add a ScreenList member to your class.
-The template argument should be the number of screens you need.
-You will also need to add `CreateScreen` functions that return `std::unique_ptr<Screen>`
-to your class, one for every screen you have.
-There are still some things left to to that I won't cover here.
-To figure them out, have a look at the "apps" ApplicationList, Settings and SystemInfo.
-
+The function `RefreshTaskCallback` is inherited from `Screen` and just calls your `Refresh` function.
 
 ## Creating your own app
-A minimal app could look like this: <br>
+A minimal app could look like this:
+
 MyApp.h:
 ```cpp
 #pragma once
@@ -66,13 +61,13 @@ namespace Pinetime {
 
 MyApp.cpp:
 ```cpp
-#include "MyApp.h"
+#include "displayapp/screens/MyApp.h"
 #include "displayapp/DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
 
 MyApp::MyApp(DisplayApp* app) : Screen(app) {
-  lv_obj_t* title = lv_label_create(lv_scr_act(), NULL);  
+  lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "My test application");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
@@ -95,12 +90,10 @@ Now, go to the function `DisplayApp::LoadApp` and add another case to the switch
 The case will be the id you gave your app earlier.
 If your app needs any additional arguments, this is the place to pass them.
 
-If you want your app to be launched from the regular app launcher, go to [displayapp/screens/ApplicationList.cpp](/src/displayapp/screens/ApplicationList.cpp).
-Add your app to one of the `CreateScreen` functions, or add another `CreateScreen` function if there are no empty spaces for your app. <br>
-If your app is a setting, do the same procedure in [displayapp/screens/settings/Settings.cpp](/src/displayapp/screens/settings/Settings.cpp).
+If you want to add your app in the app launcher, add your app in [displayapp/screens/ApplicationList.cpp](/src/displayapp/screens/ApplicationList.cpp) to one of the `CreateScreen` functions, or add another `CreateScreen` function if there are no empty spaces for your app. If your app is a setting, do the same procedure in [displayapp/screens/settings/Settings.cpp](/src/displayapp/screens/settings/Settings.cpp).
 
 You should now be able to [build](../buildAndProgram.md) the firmware
 and flash it to your PineTime. Yay!
 
 Please remember to pay attention to the [UI guidelines](../ui_guidelines.md)
-when designing an app that you want to include in mainstream InfiniTime.
+when designing an app that you want to be included in InfiniTime.
