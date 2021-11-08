@@ -30,7 +30,7 @@ The bootloader is easily recognizable with its white pine cone that is progressi
 
 ## How to update your PineTime?
 
-To update your PineTime, you can use one of the compatible companion applications.
+To update your PineTime, you can use one of the [compatible companion applications](/README.md#companion-apps).
 
 The updating process differs slightly on every companion app, so you'll need to familiarize yourself with the companion app of your choice.
 
