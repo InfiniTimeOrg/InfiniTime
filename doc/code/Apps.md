@@ -5,8 +5,8 @@ This page will teach you:
 
 ## Theory
 
-The user interface of InfiniTime is made up of **screens**
-Screens that are opened from the app launcher are considered **apps**
+The user interface of InfiniTime is made up of **screens**.
+Screens that are opened from the app launcher are considered **apps**.
 Every app in InfiniTime is it's own class.
 An instance of the class is created when the app is launched and destroyed when the user exits the app.
 They run inside the "displayapp" task (briefly discussed [here](./Intro.md)).
