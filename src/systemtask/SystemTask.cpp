@@ -144,9 +144,15 @@ void SystemTask::Work() {
   lcd.Init();
 
   twiMaster.Init();
+  /*
+   * TODO We disable this warning message until we ensure it won't be displayed
+   * on legitimate PineTime equipped with a compatible touch controller.
+   * (some users reported false positive). See https://github.com/InfiniTimeOrg/InfiniTime/issues/763
   if (!touchPanel.Init()) {
     bootError = BootErrors::TouchController;
   }
+   */
+  touchPanel.Init();
   dateTimeController.Register(this);
   batteryController.Register(this);
   motorController.Init();
