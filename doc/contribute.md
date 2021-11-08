@@ -36,7 +36,7 @@ When your feature branch is ready, **make sure it actually works** and **do not 
 
 **Creating a pull request containing modifications that haven't been tested is strongly discouraged.** If for any reason you cannot test your modifications, but want to publish them anyway, **please mention it in the description**. This way, other contributors might be willing to test it and provide feedback about your code.
 
-Before submitting a PR, check your code against our [coding conventions](/doc/coding-convention.md). This project also provides [clang-format](../.clang-format) and [clang-tidy](../.clang-tidy) configuration files. You should use them to ensure correct formatting of your code.
+Before submitting a PR, check your code against the [coding conventions](/doc/coding-convention.md). This project also provides [clang-format](../.clang-format) and [clang-tidy](../.clang-tidy) configuration files. You should use them to ensure correct formatting of your code.
 
 Don't forget to check the files you are going to commit and remove those which aren't necessary (config files from your IDE, for example). Remove old comments, commented code,...
 
@@ -54,8 +54,8 @@ Reviewers will first look at the **description**. If it's easy to understand wha
 
 Reviewing **a few files that were modified for a single purpose** is a lot easier than reviewing 30 files modified for many reasons (bug fix, UI improvements, typos in doc,...), even if all the changes make sense. Also, it's possible that we agree on some modification but not on another, so we won't be able to merge the PR because of the changes that are not accepted.
 
-We do our best to keep the code as consistent as possible. If the formatting of your code is not consistent with our code base, we'll ask you to review it.
+The code base should be kept as consistent as possible. If the formatting of your code is not consistent with the rest of the code base, we'll ask you to review it.
 
-Lastly the changes are tested. If it doesn't work out of the box, we'll ask your to review your code and to ensure that it works as expected.
+Lastly the changes are tested. If it doesn't work out of the box, we'll ask you to review your code and to ensure that it works as expected.
 
 It's totally normal for a PR to need some more work even after it was created, that's why we review them. But every round trip takes time, so it's good practice to try to reduce them as much as possible by following those simple rules.
