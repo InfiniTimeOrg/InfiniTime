@@ -1,7 +1,7 @@
 #include "Clock.h"
 
-#include <date/date.h>
-#include <lvgl/lvgl.h>
+#include <libs/date/includes/date/date.h>
+#include <libs/lvgl/lvgl.h>
 #include "components/battery/BatteryController.h"
 #include "components/motion/MotionController.h"
 #include "components/ble/BleController.h"
