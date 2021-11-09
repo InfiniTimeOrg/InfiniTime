@@ -17,7 +17,7 @@ static void buttonEventHandler(lv_obj_t* obj, lv_event_t event) {
 Qr::Qr(Pinetime::Applications::DisplayApp* app, Pinetime::Components::LittleVgl& lvgl, Pinetime::Controllers::QrService& qrService)
   : Screen(app), lvgl {lvgl}, qrService(qrService) {
   drawQrList();
-  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+  taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
 }
 
 Qr::~Qr() {
@@ -29,6 +29,7 @@ void Qr::Refresh() {
   if (qrList != qrService.getQrList()) {
     qrList = qrService.getQrList();
     drawQrList();
+    showingQrCode = false;
   }
 }
 
@@ -69,7 +70,7 @@ void Qr::drawQrList() {
 
   lv_obj_t* labelBt;
 
-  for (int i = 0; i < MAXLISTITEMS; i++) {
+  for (uint8_t i = 0; i < MAXLISTITEMS; i++) {
     if (qrList[i].text != "") {
 
       itemApps[i] = lv_btn_create(container1, nullptr);
@@ -108,11 +109,11 @@ void Qr::drawQr(std::string qrText) {
 
     offset = (LV_HOR_RES_MAX - (qrSize + 2 * border) * qrModuleSize) / 2;
 
-    lv_color_t* b = new lv_color_t[bufferSize];
+    lv_color_t b[bufferSize];
     std::fill(b, b + bufferSize, LV_COLOR_WHITE);
 
-    for (int y = -border; y < qrSize + border; y++) {
-      for (int x = -border; x < qrSize + border; x++) {
+    for (int16_t y = -border; y < qrSize + border; y++) {
+      for (int16_t x = -border; x < qrSize + border; x++) {
         if (!qrcodegen_getModule(qrcode, x, y)) {
           area.x1 = qrModuleSize * (x + border) + offset;
           area.y1 = qrModuleSize * (y + border) + offset;
@@ -123,16 +124,15 @@ void Qr::drawQr(std::string qrText) {
         }
       }
     }
-    delete[] b;
   }
 }
 
 void Qr::resetScreen() {
 
-  lv_color_t* b = new lv_color_t[100];
+  lv_color_t b[100];
   std::fill(b, b + 100, LV_COLOR_BLACK);
-  for (int y = 0; y < (LV_VER_RES_MAX / 10); y++) {
-    for (int x = 0; x < (LV_HOR_RES_MAX / 10); x++) {
+  for (uint8_t y = 0; y < (LV_VER_RES_MAX / 10); y++) {
+    for (uint8_t x = 0; x < (LV_HOR_RES_MAX / 10); x++) {
       area.x1 = 10 * x;
       area.y1 = 10 * y;
       area.x2 = 10 * (x + 1) - 1;
@@ -141,7 +141,6 @@ void Qr::resetScreen() {
       lvgl.FlushDisplay(&area, b);
     }
   }
-  delete[] b;
 }
 
 void Qr::OnButtonEvent(lv_obj_t* object, lv_event_t event) {

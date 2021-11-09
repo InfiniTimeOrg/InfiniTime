@@ -3,24 +3,37 @@
 
 using namespace Pinetime::Controllers;
 
-int QRCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
-  auto qrService = static_cast<QrService*>(arg);
-  return qrService->OnCommand(conn_handle, attr_handle, ctxt);
+namespace {
+  // 0004yyxx-78fc-48fe-8e23-433b3a1942d0
+  constexpr ble_uuid128_t CharUuid(uint8_t x, uint8_t y) {
+    return ble_uuid128_t {.u = {.type = BLE_UUID_TYPE_128},
+                          .value = {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, x, y, 0x04, 0x00}};
+  }
+
+  // 00040000-78fc-48fe-8e23-433b3a1942d0
+  constexpr ble_uuid128_t BaseUuid() {
+    return CharUuid(0x00, 0x00);
+  }
+
+  constexpr ble_uuid128_t qrServiceUuid {BaseUuid()};
+  constexpr ble_uuid128_t qrCharUuid {CharUuid(0x01, 0x00)};
+
+  int QrCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+    auto qrService = static_cast<QrService*>(arg);
+    return qrService->OnCommand(conn_handle, attr_handle, ctxt);
+  }
 }
 
-QrService::QrService(Pinetime::System::SystemTask& system) : m_system(system) {
-  qrsTextCharUuid.value[11] = qrsTextCharId[0];
-  qrsTextCharUuid.value[12] = qrsTextCharId[1];
-
-  characteristicDefinition[0] = {
-    .uuid = (ble_uuid_t*) (&qrsTextCharUuid), .access_cb = QRCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
-  characteristicDefinition[1] = {0};
-
-  serviceDefinition[0] = {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = (ble_uuid_t*) &qrsUuid, .characteristics = characteristicDefinition};
-  serviceDefinition[1] = {0};
-
+QrService::QrService(Pinetime::System::SystemTask& system)
+  : system {system},
+    characteristicDefinition {
+      {.uuid = &qrCharUuid.u, .access_cb = QrCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ}, {0}},
+    serviceDefinition {
+      {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = &qrServiceUuid.u, .characteristics = characteristicDefinition},
+      {0},
+    } {
   qrList[0].name = "Github";
-  qrList[0].text = "https://github.com/JF002/InfiniTime";
+  qrList[0].text = "https://github.com/InfiniTimeOrg/InfiniTime";
   qrList[1].name = "Twitter";
   qrList[1].text = "https://twitter.com/codingfield";
   qrList[2].name = "Mastodon";
@@ -47,15 +60,20 @@ int QrService::OnCommand(uint16_t conn_handle, uint16_t attr_handle, struct ble_
     char* s = (char*) &data[0];
     NRF_LOG_INFO("DATA : %s", s);
 
-    const char d[2] = "|";
-    char* qrId = strtok(s, d);
-    char* qrName = strtok(NULL, d);
-    char* qrText = strtok(NULL, d);
+    const char* d = "|";
+    const char* qrId = strtok(s, d);
+    const char* qrName = strtok(NULL, d);
+    const char* qrText = strtok(NULL, d);
 
-    if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &qrsTextCharUuid) == 0) {
-      if (std::stoi(qrId) < MAXLISTITEMS && std::stoi(qrId) > 0 && qrName != NULL && qrText != NULL) {
-        qrList[std::stoi(qrId)].name = qrName;
-        qrList[std::stoi(qrId)].text = qrText;
+    if (ble_uuid_cmp(ctxt->chr->uuid, (ble_uuid_t*) &qrCharUuid) == 0) {
+      if (qrId != NULL) {
+        if (atoi(qrId) == 0 || qrName == NULL || qrText == NULL) {
+          qrList[0].name = "Wrong format";
+          qrList[0].text = qrId;
+        } else if (atoi(qrId) > 0 && atoi(qrId) < MAXLISTITEMS + 1) {
+          qrList[atoi(qrId) - 1].name = qrName;
+          qrList[atoi(qrId) - 1].text = qrText;
+        }
       }
     }
   }
