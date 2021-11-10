@@ -262,7 +262,13 @@ void DisplayApp::Refresh() {
         break;
       case Messages::ButtonLongPressed:
         if (currentApp != Apps::Clock) {
-          LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
+          if (currentApp == Apps::Notifications) {
+            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Up);
+          } else if (currentApp == Apps::QuickSettings) {
+            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
+          } else {
+            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
+          }
         }
         break;
       case Messages::ButtonLongerPressed:
