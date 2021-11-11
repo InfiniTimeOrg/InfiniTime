@@ -40,7 +40,9 @@ namespace Pinetime {
         Controllers::AlarmController& alarmController;
 
         lv_obj_t *time, *btnEnable, *txtEnable, *btnMinutesUp, *btnMinutesDown, *btnHoursUp, *btnHoursDown, *txtMinUp, *txtMinDown,
-          *txtHrUp, *txtHrDown, *btnRecur, *txtRecur, *btnMessage, *txtMessage, *btnInfo, *txtInfo;
+          *txtHrUp, *txtHrDown, *btnRecur, *txtRecur, *btnInfo, *txtInfo;
+        lv_obj_t* txtMessage = nullptr;
+        lv_obj_t* btnMessage = nullptr;
 
         enum class EnableButtonState { On, Off, Alerting };
         void SetEnableButtonState();
