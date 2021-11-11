@@ -46,6 +46,7 @@ namespace Pinetime {
 
       bool ShouldShakeWake(uint16_t thresh);
       bool ShouldRaiseWake() const;
+      bool ShouldLowerSleep() const;
 
       int32_t CurrentShakeSpeed() const {
         return accumulatedSpeed;

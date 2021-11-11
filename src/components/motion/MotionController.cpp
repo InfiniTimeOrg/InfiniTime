@@ -115,6 +115,20 @@ bool MotionController::ShouldShakeWake(uint16_t thresh) {
   return accumulatedSpeed > thresh;
 }
 
+bool MotionController::ShouldLowerSleep() const {
+  if (stats.yMean < 724 || DegreesRolled(stats.yMean, stats.zMean, stats.prevYMean, stats.prevZMean) < 30) {
+    return false;
+  }
+
+  for (uint8_t i = AccelStats::numHistory + 1; i < yHistory.Size(); i++) {
+    if (yHistory[i] < 265) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
   switch (types) {
     case Drivers::Bma421::DeviceTypes::BMA421:
