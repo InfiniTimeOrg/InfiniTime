@@ -2,7 +2,7 @@
 
 ## Report bugs
 
-Have you found a bug in the firmware? [Create an issue on Github](https://github.com/JF002/InfiniTime/issues) explaining the bug, how to reproduce it, the version of the firmware you use...
+Have you found a bug in the firmware? [Create an issue on Github](https://github.com/InfiniTimeOrg/InfiniTime/issues) explaining the bug, how to reproduce it, the version of the firmware you use...
 
 ## Write and improve documentation
 
@@ -18,18 +18,18 @@ You want to fix a bug, add a cool new functionality or improve the code? See *Ho
 
 The Pinetime is a cool open source project that deserves to be known. Talk about it around you, on social networks, on your blog,... and let people know that we are working on an open source firmware for a smartwatch!
 
-# How to submit a pull request ?
+# How to submit a pull request?
 
 ## TL;DR
 
- - Create a branch from develop;
- - Work on a single subject in this branch. Create multiple branches/pulls-requests if you want to work on multiple subjects (bugs, features,...);
- - Test your modifications on the actual hardware;
- - Check the code formatting against our coding conventions and [clang-format](../.clang-format) and [clang-tidy](../.clang-tidy);
- - Clean your code and remove files that are not needed;
- - Write documentation related to your new feature if applicable;
- - Create a pull request and write a great description about it : what does your PR do, why, how,... Add pictures and video if possible;
- - Wait for someone to review your PR and take part in the review process;
+ - Create a branch from develop
+ - Work on a single subject in this branch. Create multiple branches/pulls-requests if you want to work on multiple subjects (bugs, features,...)
+ - Test your modifications on the actual hardware
+ - Check the code formatting against our coding conventions and [clang-format](../.clang-format) and [clang-tidy](../.clang-tidy)
+ - Clean your code and remove files that are not needed
+ - Write documentation related to your new feature if applicable
+ - Create a pull request and write a great description about it: what does your PR do, why, how,... Add pictures and video if possible
+ - Wait for someone to review your PR and take part in the review process
  - Your PR will eventually be merged :)
 
 Your contributions are more than welcome!
@@ -94,3 +94,10 @@ If there are no preconfigured rules for your IDE, you can use one of the existin
  - **Includes** :
     - files from the project : `#include "relative/path/to/the/file.h"`
     - external files and std : `#include <file.h>`
+ - Only use [primary spellings for operators and tokens](https://en.cppreference.com/w/cpp/language/operator_alternative)
+ - Use auto sparingly. Don't use auto for [fundamental/built-in types](https://en.cppreference.com/w/cpp/language/types) and [fixed width integer types](https://en.cppreference.com/w/cpp/types/integer), except when initializing with a cast to avoid duplicating the type name.
+ - Examples:
+   - `auto* app = static_cast<DisplayApp*>(instance);`
+   - `auto number = static_cast<uint8_t>(variable);`
+   - `uint8_t returnValue = MyFunction();`
+ - Use nullptr instead of NULL

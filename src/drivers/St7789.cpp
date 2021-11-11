@@ -170,16 +170,7 @@ void St7789::Sleep() {
 
 void St7789::Wakeup() {
   nrf_gpio_cfg_output(pinDataCommand);
-  // TODO why do we need to reset the controller?
-  HardwareReset();
-  SoftwareReset();
   SleepOut();
-  ColMod();
-  MemoryDataAccessControl();
-  ColumnAddressSet();
-  RowAddressSet();
-  DisplayInversionOn();
-  NormalModeOn();
   VerticalScrollStartAddress(verticalScrollingStartAddress);
   DisplayOn();
   NRF_LOG_INFO("[LCD] Wakeup")

@@ -15,7 +15,8 @@ namespace Pinetime {
         BleFirmwareUpdateStarted,
         BleFirmwareUpdateFinished,
         OnTouchEvent,
-        OnButtonEvent,
+        HandleButtonEvent,
+        HandleButtonTimerEvent,
         OnDisplayTaskSleeping,
         EnableSleeping,
         DisableSleeping,
@@ -24,7 +25,7 @@ namespace Pinetime {
         SetOffAlarm,
         StopRinging,
         MeasureBatteryTimerExpired,
-        BatteryMeasurementDone,
+        BatteryPercentageUpdated,
       };
     }
 }

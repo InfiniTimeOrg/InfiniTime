@@ -18,10 +18,8 @@ using namespace Pinetime::Drivers;
 Cst816S::Cst816S(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}, twiAddress {twiAddress} {
 }
 
-void Cst816S::Init() {
+bool Cst816S::Init() {
   nrf_gpio_cfg_output(PinMap::Cst816sReset);
-  nrf_gpio_pin_set(PinMap::Cst816sReset);
-  vTaskDelay(50);
   nrf_gpio_pin_clear(PinMap::Cst816sReset);
   vTaskDelay(5);
   nrf_gpio_pin_set(PinMap::Cst816sReset);
@@ -33,6 +31,18 @@ void Cst816S::Init() {
   vTaskDelay(5);
   twiMaster.Read(twiAddress, 0xa7, &dummy, 1);
   vTaskDelay(5);
+
+  static constexpr uint8_t maxRetries = 3;
+  bool isDeviceOk;
+  uint8_t retries = 0;
+  do {
+    isDeviceOk = CheckDeviceIds();
+    retries++;
+  } while (!isDeviceOk && retries < maxRetries);
+
+  if (!isDeviceOk) {
+    return false;
+  }
 
   /*
   [2] EnConLR - Continuous operation can slide around
@@ -51,10 +61,13 @@ void Cst816S::Init() {
   */
   static constexpr uint8_t irqCtl = 0b01110000;
   twiMaster.Write(twiAddress, 0xFA, &irqCtl, 1);
+
+  return true;
 }
 
 Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Cst816S::TouchInfos info;
+  uint8_t touchData[7];
 
   auto ret = twiMaster.Read(twiAddress, 0, touchData, sizeof(touchData));
   if (ret != TwiMaster::ErrorCodes::NoError) {
@@ -62,21 +75,35 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
     return info;
   }
 
-  auto nbTouchPoints = touchData[2] & 0x0f;
-
-  auto xHigh = touchData[touchXHighIndex] & 0x0f;
-  auto xLow = touchData[touchXLowIndex];
+  // This can only be 0 or 1
+  uint8_t nbTouchPoints = touchData[touchPointNumIndex] & 0x0f;
+  uint8_t xHigh = touchData[touchXHighIndex] & 0x0f;
+  uint8_t xLow = touchData[touchXLowIndex];
   uint16_t x = (xHigh << 8) | xLow;
-
-  auto yHigh = touchData[touchYHighIndex] & 0x0f;
-  auto yLow = touchData[touchYLowIndex];
+  uint8_t yHigh = touchData[touchYHighIndex] & 0x0f;
+  uint8_t yLow = touchData[touchYLowIndex];
   uint16_t y = (yHigh << 8) | yLow;
+  Gestures gesture = static_cast<Gestures>(touchData[gestureIndex]);
+
+  // Validity check
+  if(x >= maxX || y >= maxY ||
+      (gesture != Gestures::None &&
+       gesture != Gestures::SlideDown &&
+       gesture != Gestures::SlideUp &&
+       gesture != Gestures::SlideLeft &&
+       gesture != Gestures::SlideRight &&
+       gesture != Gestures::SingleTap &&
+       gesture != Gestures::DoubleTap &&
+       gesture != Gestures::LongPress)) {
+    info.isValid = false;
+    return info;
+  }
 
   info.x = x;
   info.y = y;
   info.touching = (nbTouchPoints > 0);
-  info.gesture = static_cast<Gestures>(touchData[gestureIndex]);
-
+  info.gesture = gesture;
+  info.isValid = true;
   return info;
 }
 
@@ -93,4 +120,22 @@ void Cst816S::Sleep() {
 void Cst816S::Wakeup() {
   Init();
   NRF_LOG_INFO("[TOUCHPANEL] Wakeup");
+}
+
+bool Cst816S::CheckDeviceIds() {
+  // There's mixed information about which register contains which information
+  if (twiMaster.Read(twiAddress, 0xA7, &chipId, 1) == TwiMaster::ErrorCodes::TransactionFailed) {
+    chipId = 0xFF;
+    return false;
+  }
+  if (twiMaster.Read(twiAddress, 0xA8, &vendorId, 1) == TwiMaster::ErrorCodes::TransactionFailed) {
+    vendorId = 0xFF;
+    return false;
+  }
+  if (twiMaster.Read(twiAddress, 0xA9, &fwVersion, 1) == TwiMaster::ErrorCodes::TransactionFailed) {
+    fwVersion = 0xFF;
+    return false;
+  }
+
+  return chipId == 0xb4 && vendorId == 0 && fwVersion == 1;
 }

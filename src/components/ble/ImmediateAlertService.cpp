@@ -32,7 +32,7 @@ ImmediateAlertService::ImmediateAlertService(Pinetime::System::SystemTask& syste
                                              Pinetime::Controllers::NotificationManager& notificationManager)
   : systemTask {systemTask},
     notificationManager {notificationManager},
-    characteristicDefinition {{.uuid = (ble_uuid_t*) &alertLevelUuid,
+    characteristicDefinition {{.uuid = &alertLevelUuid.u,
                                .access_cb = AlertLevelCallback,
                                .arg = this,
                                .flags = BLE_GATT_CHR_F_WRITE_NO_RSP,
@@ -41,7 +41,7 @@ ImmediateAlertService::ImmediateAlertService(Pinetime::System::SystemTask& syste
     serviceDefinition {
       {/* Device Information Service */
        .type = BLE_GATT_SVC_TYPE_PRIMARY,
-       .uuid = (ble_uuid_t*) &immediateAlertServiceUuid,
+       .uuid = &immediateAlertServiceUuid.u,
        .characteristics = characteristicDefinition},
       {0},
     } {

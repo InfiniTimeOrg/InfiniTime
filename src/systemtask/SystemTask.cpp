@@ -23,7 +23,7 @@
 #include "drivers/Hrs3300.h"
 #include "drivers/PinMap.h"
 #include "main.h"
-
+#include "BootErrors.h"
 
 #include <memory>
 
@@ -76,7 +76,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Pinetime::Applications::DisplayApp& displayApp,
                        Pinetime::Applications::HeartRateTask& heartRateApp,
                        Pinetime::Controllers::FS& fs,
-                       Pinetime::Controllers::TouchHandler& touchHandler)
+                       Pinetime::Controllers::TouchHandler& touchHandler,
+                       Pinetime::Controllers::ButtonHandler& buttonHandler)
   : spi {spi},
     lcd {lcd},
     spiNorFlash {spiNorFlash},
@@ -100,7 +101,15 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     heartRateApp(heartRateApp),
     fs {fs},
     touchHandler {touchHandler},
-    nimbleController(*this, bleController, dateTimeController, notificationManager, batteryController, spiNorFlash, heartRateController) {
+    buttonHandler {buttonHandler},
+    nimbleController(*this,
+                     bleController,
+                     dateTimeController,
+                     notificationManager,
+                     batteryController,
+                     spiNorFlash,
+                     heartRateController,
+                     motionController) {
 }
 
 void SystemTask::Start() {
@@ -116,6 +125,8 @@ void SystemTask::Process(void* instance) {
 }
 
 void SystemTask::Work() {
+  BootErrors bootError = BootErrors::None;
+
   watchdog.Setup(7);
   watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
@@ -133,10 +144,17 @@ void SystemTask::Work() {
   lcd.Init();
 
   twiMaster.Init();
+  /*
+   * TODO We disable this warning message until we ensure it won't be displayed
+   * on legitimate PineTime equipped with a compatible touch controller.
+   * (some users reported false positive). See https://github.com/InfiniTimeOrg/InfiniTime/issues/763
+  if (!touchPanel.Init()) {
+    bootError = BootErrors::TouchController;
+  }
+   */
   touchPanel.Init();
   dateTimeController.Register(this);
   batteryController.Register(this);
-  batteryController.Update();
   motorController.Init();
   motionSensor.SoftReset();
   timerController.Register(this);
@@ -152,25 +170,29 @@ void SystemTask::Work() {
   settingsController.Init();
 
   displayApp.Register(this);
-  displayApp.Start();
+  displayApp.Start(bootError);
 
   heartRateSensor.Init();
   heartRateSensor.Disable();
   heartRateApp.Start();
 
-  nrf_gpio_cfg_sense_input(PinMap::Button, (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pulldown, (nrf_gpio_pin_sense_t) GPIO_PIN_CNF_SENSE_High);
+  buttonHandler.Init(this);
+
+  // Button
   nrf_gpio_cfg_output(15);
   nrf_gpio_pin_set(15);
 
   nrfx_gpiote_in_config_t pinConfig;
-  pinConfig.skip_gpio_setup = true;
+  pinConfig.skip_gpio_setup = false;
   pinConfig.hi_accuracy = false;
   pinConfig.is_watcher = false;
-  pinConfig.sense = (nrf_gpiote_polarity_t) NRF_GPIOTE_POLARITY_HITOLO;
+  pinConfig.sense = (nrf_gpiote_polarity_t) NRF_GPIOTE_POLARITY_TOGGLE;
   pinConfig.pull = (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pulldown;
 
   nrfx_gpiote_in_init(PinMap::Button, &pinConfig, nrfx_gpiote_evt_handler);
+  nrfx_gpiote_in_event_enable(PinMap::Button, true);
 
+  // Touchscreen
   nrf_gpio_cfg_sense_input(PinMap::Cst816sIrq, (nrf_gpio_pin_pull_t) GPIO_PIN_CNF_PULL_Pullup, (nrf_gpio_pin_sense_t) GPIO_PIN_CNF_SENSE_Low);
 
   pinConfig.skip_gpio_setup = true;
@@ -181,18 +203,16 @@ void SystemTask::Work() {
 
   nrfx_gpiote_in_init(PinMap::Cst816sIrq, &pinConfig, nrfx_gpiote_evt_handler);
 
+  // Power present
   pinConfig.sense = NRF_GPIOTE_POLARITY_TOGGLE;
   pinConfig.pull = NRF_GPIO_PIN_NOPULL;
   pinConfig.is_watcher = false;
   pinConfig.hi_accuracy = false;
-  pinConfig.skip_gpio_setup = true;
+  pinConfig.skip_gpio_setup = false;
   nrfx_gpiote_in_init(PinMap::PowerPresent, &pinConfig, nrfx_gpiote_evt_handler);
+  nrfx_gpiote_in_event_enable(PinMap::PowerPresent, true);
 
-  if (nrf_gpio_pin_read(PinMap::PowerPresent)) {
-    nrf_gpio_cfg_sense_input(PinMap::PowerPresent, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_LOW);
-  } else {
-    nrf_gpio_cfg_sense_input(PinMap::PowerPresent, NRF_GPIO_PIN_NOPULL, NRF_GPIO_PIN_SENSE_HIGH);
-  }
+  batteryController.MeasureVoltage();
 
   idleTimer = xTimerCreate("idleTimer", pdMS_TO_TICKS(2000), pdFALSE, this, IdleTimerCallback);
   dimTimer = xTimerCreate("dimTimer", pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000), pdFALSE, this, DimTimerCallback);
@@ -246,12 +266,13 @@ void SystemTask::Work() {
           isDimmed = false;
           break;
         case Messages::TouchWakeUp: {
-          if(touchHandler.GetNewTouchInfo()) {
+          if (touchHandler.GetNewTouchInfo()) {
             auto gesture = touchHandler.GestureGet();
-            if (gesture != Pinetime::Drivers::Cst816S::Gestures::None and ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
-                                settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
-                                (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
-                                settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
+            if (gesture != Pinetime::Drivers::Cst816S::Gestures::None and
+                ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
+                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
+                 (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
+                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
               GoToRunning();
             }
           }
@@ -272,6 +293,8 @@ void SystemTask::Work() {
           if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::ON) {
             if (isSleeping && !isWakingUp) {
               GoToRunning();
+            } else {
+              ReloadIdleTimer();
             }
             displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           }
@@ -318,10 +341,25 @@ void SystemTask::Work() {
           ReloadIdleTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
-        case Messages::OnButtonEvent:
-          ReloadIdleTimer();
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::ButtonPushed);
-          break;
+        case Messages::HandleButtonEvent: {
+          Controllers::ButtonActions action;
+          if (nrf_gpio_pin_read(Pinetime::PinMap::Button) == 0) {
+            action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Release);
+          } else {
+            action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Press);
+            // This is for faster wakeup, sacrificing special longpress and doubleclick handling while sleeping
+            if (IsSleeping()) {
+              fastWakeUpDone = true;
+              GoToRunning();
+              break;
+            }
+          }
+          HandleButtonAction(action);
+        } break;
+        case Messages::HandleButtonTimerEvent: {
+          auto action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Timer);
+          HandleButtonAction(action);
+        } break;
         case Messages::OnDisplayTaskSleeping:
           if (BootloaderVersion::IsValid()) {
             // First versions of the bootloader do not expose their version and cannot initialize the SPI NOR FLASH
@@ -345,18 +383,18 @@ void SystemTask::Work() {
           stepCounterMustBeReset = true;
           break;
         case Messages::OnChargingEvent:
-          batteryController.Update();
+          batteryController.ReadPowerState();
           motorController.RunForDuration(15);
+          ReloadIdleTimer();
+          if (isSleeping && !isWakingUp) {
+            GoToRunning();
+          }
           break;
         case Messages::MeasureBatteryTimerExpired:
-          sendBatteryNotification = true;
-          batteryController.Update();
+          batteryController.MeasureVoltage();
           break;
-        case Messages::BatteryMeasurementDone:
-          if (sendBatteryNotification) {
-            sendBatteryNotification = false;
-            nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
-          }
+        case Messages::BatteryPercentageUpdated:
+          nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
           break;
 
         default:
@@ -406,18 +444,36 @@ void SystemTask::UpdateMotion() {
   }
 }
 
-void SystemTask::OnButtonPushed() {
-  if (isGoingToSleep)
+void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
+  if (IsSleeping()) {
     return;
-  if (!isSleeping) {
-    NRF_LOG_INFO("[systemtask] Button pushed");
-    PushMessage(Messages::OnButtonEvent);
-  } else {
-    if (!isWakingUp) {
-      NRF_LOG_INFO("[systemtask] Button pushed, waking up");
-      GoToRunning();
-    }
   }
+
+  ReloadIdleTimer();
+
+  using Actions = Controllers::ButtonActions;
+
+  switch (action) {
+    case Actions::Click:
+      // If the first action after fast wakeup is a click, it should be ignored.
+      if (!fastWakeUpDone && !isGoingToSleep) {
+        displayApp.PushMessage(Applications::Display::Messages::ButtonPushed);
+      }
+      break;
+    case Actions::DoubleClick:
+      displayApp.PushMessage(Applications::Display::Messages::ButtonDoubleClicked);
+      break;
+    case Actions::LongPress:
+      displayApp.PushMessage(Applications::Display::Messages::ButtonLongPressed);
+      break;
+    case Actions::LongerPress:
+      displayApp.PushMessage(Applications::Display::Messages::ButtonLongerPressed);
+      break;
+    default:
+      return;
+  }
+
+  fastWakeUpDone = false;
 }
 
 void SystemTask::GoToRunning() {

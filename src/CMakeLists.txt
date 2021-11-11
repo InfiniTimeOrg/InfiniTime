@@ -421,6 +421,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
+        displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
         displayapp/Colors.cpp
 
@@ -433,6 +434,8 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingDisplay.cpp
         displayapp/screens/settings/SettingSteps.cpp
         displayapp/screens/settings/SettingPineTimeStyle.cpp
+        displayapp/screens/settings/SettingSetDate.cpp
+        displayapp/screens/settings/SettingSetTime.cpp
 
         ## Watch faces
         displayapp/icons/bg_clock.c
@@ -474,6 +477,7 @@ list(APPEND SOURCE_FILES
         components/ble/ImmediateAlertService.cpp
         components/ble/ServiceDiscovery.cpp
         components/ble/HeartRateService.cpp
+        components/ble/MotionService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
         components/motor/MotorController.cpp
         components/settings/Settings.cpp
@@ -503,6 +507,7 @@ list(APPEND SOURCE_FILES
         components/heartrate/Ptagc.cpp
         components/heartrate/HeartRateController.cpp
 
+        buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
         )
 
@@ -542,6 +547,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/ServiceDiscovery.cpp
         components/ble/NavigationService.cpp
         components/ble/HeartRateService.cpp
+        components/ble/MotionService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
         components/settings/Settings.cpp
         components/timer/TimerController.cpp
@@ -562,6 +568,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/heartrate/Ptagc.cpp
         components/motor/MotorController.cpp
         components/fs/FS.cpp
+        buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
         )
 
@@ -649,6 +656,7 @@ set(INCLUDE_FILES
         components/ble/ServiceDiscovery.h
         components/ble/BleClient.h
         components/ble/HeartRateService.h
+        components/ble/MotionService.h
         components/settings/Settings.h
         components/timer/TimerController.h
         components/alarm/AlarmController.h
@@ -675,6 +683,7 @@ set(INCLUDE_FILES
         components/heartrate/Ptagc.h
         components/heartrate/HeartRateController.h
         components/motor/MotorController.h
+        buttonhandler/ButtonHandler.h
         touchhandler/TouchHandler.h
         )
 

@@ -31,6 +31,7 @@ namespace Pinetime {
         ~Alarm() override;
         void SetAlerting();
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
+        bool OnButtonPushed() override;
 
       private:
         bool running;
@@ -39,13 +40,16 @@ namespace Pinetime {
         Controllers::AlarmController& alarmController;
 
         lv_obj_t *time, *btnEnable, *txtEnable, *btnMinutesUp, *btnMinutesDown, *btnHoursUp, *btnHoursDown, *txtMinUp, *txtMinDown,
-          *txtHrUp, *txtHrDown, *btnRecur, *txtRecur, *btnMessage, *txtMessage, *btnInfo, *txtInfo;
+          *txtHrUp, *txtHrDown, *btnRecur, *txtRecur, *btnInfo, *txtInfo;
+        lv_obj_t* txtMessage = nullptr;
+        lv_obj_t* btnMessage = nullptr;
 
         enum class EnableButtonState { On, Off, Alerting };
         void SetEnableButtonState();
         void SetRecurButtonState();
         void SetAlarm();
         void ShowInfo();
+        void HideInfo();
         void ToggleRecurrence();
         void UpdateAlarmTime();
       };

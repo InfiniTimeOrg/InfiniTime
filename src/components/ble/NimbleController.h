@@ -19,6 +19,7 @@
 #include "NavigationService.h"
 #include "ServiceDiscovery.h"
 #include "HeartRateService.h"
+#include "MotionService.h"
 
 namespace Pinetime {
   namespace Drivers {
@@ -43,7 +44,8 @@ namespace Pinetime {
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Controllers::Battery& batteryController,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
-                       Controllers::HeartRateController& heartRateController);
+                       Controllers::HeartRateController& heartRateController,
+                       Controllers::MotionController& motionController);
       void Init();
       void StartAdvertising();
       int OnGAPEvent(ble_gap_event* event);
@@ -95,6 +97,7 @@ namespace Pinetime {
       BatteryInformationService batteryInformationService;
       ImmediateAlertService immediateAlertService;
       HeartRateService heartRateService;
+      MotionService motionService;
 
       uint8_t addrType; // 1 = Random, 0 = PUBLIC
       uint16_t connectionHandle = BLE_HS_CONN_HANDLE_NONE;

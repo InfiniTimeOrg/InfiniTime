@@ -33,7 +33,8 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::Ble& bleController,
                        Pinetime::Drivers::WatchdogView& watchdog,
-                       Pinetime::Controllers::MotionController& motionController)
+                       Pinetime::Controllers::MotionController& motionController,
+                       Pinetime::Drivers::Cst816S& touchPanel)
   : Screen(app),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
@@ -41,6 +42,7 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
     bleController {bleController},
     watchdog {watchdog},
     motionController{motionController},
+    touchPanel{touchPanel},
     screens {app,
              0,
              {[this]() -> std::unique_ptr<Screen> {
@@ -141,7 +143,8 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         "#444444 Battery# %d%%/%03imV\n"
                         "#444444 Backlight# %s\n"
                         "#444444 Last reset# %s\n"
-                        "#444444 Accel.# %s\n",
+                        "#444444 Accel.# %s\n"
+                        "#444444 Touch.# %x.%x.%x\n",
                         dateTimeController.Day(),
                         static_cast<uint8_t>(dateTimeController.Month()),
                         dateTimeController.Year(),
@@ -156,7 +159,10 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         batteryController.Voltage(),
                         brightnessController.ToString(),
                         resetReason,
-                        ToString(motionController.DeviceType()));
+                        ToString(motionController.DeviceType()),
+                        touchPanel.GetChipId(),
+                        touchPanel.GetVendorId(),
+                        touchPanel.GetFwVersion());
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(1, 5, app, label);
 }
@@ -200,11 +206,14 @@ bool SystemInfo::sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
-  TaskStatus_t tasksStatus[10];
-  lv_obj_t* infoTask = lv_table_create(lv_scr_act(), NULL);
+  static constexpr uint8_t maxTaskCount = 9;
+  TaskStatus_t tasksStatus[maxTaskCount];
+
+  lv_obj_t* infoTask = lv_table_create(lv_scr_act(), nullptr);
   lv_table_set_col_cnt(infoTask, 4);
-  lv_table_set_row_cnt(infoTask, 8);
-  lv_obj_set_pos(infoTask, 0, 10);
+  lv_table_set_row_cnt(infoTask, maxTaskCount + 1);
+  lv_obj_set_style_local_pad_all(infoTask, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_border_color(infoTask, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 
   lv_table_set_cell_value(infoTask, 0, 0, "#");
   lv_table_set_col_width(infoTask, 0, 30);
@@ -215,38 +224,40 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   lv_table_set_cell_value(infoTask, 0, 3, "Free");
   lv_table_set_col_width(infoTask, 3, 90);
 
-  auto nb = uxTaskGetSystemState(tasksStatus, sizeof(tasksStatus) / sizeof(tasksStatus[0]), nullptr);
+  auto nb = uxTaskGetSystemState(tasksStatus, maxTaskCount, nullptr);
   std::sort(tasksStatus, tasksStatus + nb, sortById);
-  for (uint8_t i = 0; i < nb && i < 7; i++) {
+  for (uint8_t i = 0; i < nb && i < maxTaskCount; i++) {
+    char buffer[7] = {0};
 
-    lv_table_set_cell_value(infoTask, i + 1, 0, std::to_string(tasksStatus[i].xTaskNumber).c_str());
-    char state[2] = {0};
+    sprintf(buffer, "%lu", tasksStatus[i].xTaskNumber);
+    lv_table_set_cell_value(infoTask, i + 1, 0, buffer);
     switch (tasksStatus[i].eCurrentState) {
       case eReady:
       case eRunning:
-        state[0] = 'R';
+        buffer[0] = 'R';
         break;
       case eBlocked:
-        state[0] = 'B';
+        buffer[0] = 'B';
         break;
       case eSuspended:
-        state[0] = 'S';
+        buffer[0] = 'S';
         break;
       case eDeleted:
-        state[0] = 'D';
+        buffer[0] = 'D';
         break;
       default:
-        state[0] = 'I'; // Invalid
+        buffer[0] = 'I'; // Invalid
         break;
     }
-    lv_table_set_cell_value(infoTask, i + 1, 1, state);
+    buffer[1] = '\0';
+    lv_table_set_cell_value(infoTask, i + 1, 1, buffer);
     lv_table_set_cell_value(infoTask, i + 1, 2, tasksStatus[i].pcTaskName);
     if (tasksStatus[i].usStackHighWaterMark < 20) {
-      std::string str1 = std::to_string(tasksStatus[i].usStackHighWaterMark) + " low";
-      lv_table_set_cell_value(infoTask, i + 1, 3, str1.c_str());
+      sprintf(buffer, "%d low", tasksStatus[i].usStackHighWaterMark);
     } else {
-      lv_table_set_cell_value(infoTask, i + 1, 3, std::to_string(tasksStatus[i].usStackHighWaterMark).c_str());
+      sprintf(buffer, "%d", tasksStatus[i].usStackHighWaterMark);
     }
+    lv_table_set_cell_value(infoTask, i + 1, 3, buffer);
   }
   return std::make_unique<Screens::Label>(3, 5, app, infoTask);
 }
@@ -261,7 +272,8 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
                            "Public License v3\n"
                            "#444444 Source code#\n"
                            "#FFFF00 https://github.com/#\n"
-                           "#FFFF00 JF002/InfiniTime#");
+                           "#FFFF00 InfiniTimeOrg/#\n"
+                           "#FFFF00 InfiniTime#");
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(4, 5, app, label);
