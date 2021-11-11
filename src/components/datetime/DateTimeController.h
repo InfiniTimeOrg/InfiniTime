@@ -2,6 +2,8 @@
 
 #include <cstdint>
 #include <chrono>
+#include <string>
+#include "components/settings/Settings.h"
 
 namespace Pinetime {
   namespace System {
@@ -10,6 +12,7 @@ namespace Pinetime {
   namespace Controllers {
     class DateTime {
     public:
+      DateTime(Controllers::Settings& settingsController);
       enum class Days : uint8_t { Unknown, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday };
       enum class Months : uint8_t {
         Unknown,
@@ -71,6 +74,7 @@ namespace Pinetime {
 
       void Register(System::SystemTask* systemTask);
       void SetCurrentTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> t);
+      std::string FormattedTime();
 
     private:
       uint16_t year = 0;
@@ -87,6 +91,7 @@ namespace Pinetime {
 
       bool isMidnightAlreadyNotified = false;
       System::SystemTask* systemTask = nullptr;
+      Controllers::Settings& settingsController;
     };
   }
 }

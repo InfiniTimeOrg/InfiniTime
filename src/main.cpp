@@ -101,7 +101,11 @@ Pinetime::Controllers::Ble bleController;
 Pinetime::Controllers::HeartRateController heartRateController;
 Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController);
 
-Pinetime::Controllers::DateTime dateTimeController;
+Pinetime::Controllers::FS fs {spiNorFlash};
+Pinetime::Controllers::Settings settingsController {fs};
+Pinetime::Controllers::MotorController motorController {};
+
+Pinetime::Controllers::DateTime dateTimeController {settingsController};
 Pinetime::Drivers::Watchdog watchdog;
 Pinetime::Drivers::WatchdogView watchdogView(watchdog);
 Pinetime::Controllers::NotificationManager notificationManager;
@@ -110,10 +114,6 @@ Pinetime::Controllers::TimerController timerController;
 Pinetime::Controllers::AlarmController alarmController {dateTimeController};
 Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);
 Pinetime::Controllers::ButtonHandler buttonHandler;
-
-Pinetime::Controllers::FS fs {spiNorFlash};
-Pinetime::Controllers::Settings settingsController {fs};
-Pinetime::Controllers::MotorController motorController {};
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               lvgl,
