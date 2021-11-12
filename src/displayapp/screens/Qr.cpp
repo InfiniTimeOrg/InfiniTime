@@ -101,7 +101,7 @@ void Qr::drawQr(std::string qrText) {
   showingQrCode = true;
 
   bool ok = qrcodegen_encodeText(
-    qrText.c_str(), tempBuffer, qrcode, qrcodegen_Ecc_LOW, qrcodegen_VERSION_MIN, qrcodegen_VERSION_MAX, qrcodegen_Mask_AUTO, true);
+    qrText.c_str(), tempBuffer, qrcode, qrcodegen_Ecc_MEDIUM, qrcodegen_VERSION_MIN, qrcodegen_VERSION_MAX, qrcodegen_Mask_AUTO, true);
   if (ok) {
     qrSize = qrcodegen_getSize(qrcode);
     qrModuleSize = LV_HOR_RES_MAX / (qrSize + 2 * border);
