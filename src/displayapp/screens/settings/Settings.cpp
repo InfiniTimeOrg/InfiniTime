@@ -57,10 +57,10 @@ std::unique_ptr<Screen> Settings::CreateScreen2() {
 
 std::unique_ptr<Screen> Settings::CreateScreen3() {
 
-  std::array<Screens::List::Applications, 4> applications {{{Symbols::paintbrush, "PTS Colors", Apps::SettingPineTimeStyle},
-                                                            {Symbols::none, "Wake Sense", Apps::SettingShakeThreshold},
+  std::array<Screens::List::Applications, 4> applications {{{Symbols::none, "Wake Sense", Apps::SettingShakeThreshold},
                                                             {Symbols::check, "Firmware", Apps::FirmwareValidation},
-                                                            {Symbols::list, "About", Apps::SysInfo}
+                                                            {Symbols::list, "About", Apps::SysInfo},
+                                                            {Symbols::none, "None", Apps::None}
 
   }};
 

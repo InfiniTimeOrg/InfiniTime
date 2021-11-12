@@ -63,6 +63,7 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
 
   vDecay = xTaskGetTickCount();
   calibrating = false;
+  EnableForCal = false;
   if(!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake)){
     EnableForCal = true;
     settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake,true);
