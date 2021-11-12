@@ -37,7 +37,8 @@ namespace Pinetime {
                            Controllers::NotificationManager::Categories,
                            uint8_t notifNb,
                            Modes mode,
-                           Pinetime::Controllers::AlertNotificationService& alertNotificationService);
+                           Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                           Pinetime::Controllers::Settings& settingsController);
           ~NotificationItem();
           bool IsRunning() const {
             return running;
@@ -55,6 +56,7 @@ namespace Pinetime {
           Modes mode;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           bool running = true;
+          Pinetime::Controllers::Settings& settingsController;
         };
 
       private:

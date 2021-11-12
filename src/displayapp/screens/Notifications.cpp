@@ -25,7 +25,8 @@ Notifications::Notifications(DisplayApp* app,
                                                      notification.category,
                                                      notificationManager.NbNotifications(),
                                                      mode,
-                                                     alertNotificationService);
+                                                     alertNotificationService,
+                                                     settingsController);
     validDisplay = true;
   } else {
     currentItem = std::make_unique<NotificationItem>("Notification",
@@ -34,7 +35,8 @@ Notifications::Notifications(DisplayApp* app,
                                                      notification.category,
                                                      notificationManager.NbNotifications(),
                                                      Modes::Preview,
-                                                     alertNotificationService);
+                                                     alertNotificationService,
+                                                     settingsController);
   }
 
   if (mode == Modes::Preview) {
@@ -102,7 +104,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        previousNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        mode,
-                                                       alertNotificationService);
+                                                       alertNotificationService,
+                                                       settingsController);
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeUp: {
@@ -127,7 +130,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        nextNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        mode,
-                                                       alertNotificationService);
+                                                       alertNotificationService,
+                                                       settingsController);
     }
       return true;
     default:
@@ -148,8 +152,9 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Controllers::NotificationManager::Categories category,
                                                   uint8_t notifNb,
                                                   Modes mode,
-                                                  Pinetime::Controllers::AlertNotificationService& alertNotificationService)
-  : mode {mode}, alertNotificationService {alertNotificationService} {
+                                                  Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                                                  Pinetime::Controllers::Settings& settingsController)
+  : mode {mode}, alertNotificationService {alertNotificationService}, settingsController {settingsController} {
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), NULL);
 
   lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x222222));
