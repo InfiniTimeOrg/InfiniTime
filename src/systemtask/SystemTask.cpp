@@ -280,6 +280,9 @@ void SystemTask::Work() {
           }
         } break;
         case Messages::GoToSleep:
+          if (doNotGoToSleep) {
+            return;
+          }
           isGoingToSleep = true;
           NRF_LOG_INFO("[systemtask] Going to sleep");
           xTimerStop(idleTimer, 0);
@@ -506,7 +509,7 @@ void SystemTask::OnTouchEvent() {
 }
 
 void SystemTask::PushMessage(System::Messages msg) {
-  if (msg == Messages::GoToSleep) {
+  if (msg == Messages::GoToSleep && !doNotGoToSleep) {
     isGoingToSleep = true;
   }
 
