@@ -5,7 +5,7 @@
 #include <lvgl/lvgl.h>
 #include "Screen.h"
 #include "components/ble/QrService.h"
-#include "qrcodegen.h"
+#include "libs/QR-Code-generator/c/qrcodegen.h"
 
 #define MAXLISTITEMS 4
 
@@ -57,10 +57,11 @@ namespace Pinetime {
 
         static constexpr uint8_t colorBufferSize = maxPixelsPerQrModuleSide * maxPixelsPerQrModuleSide;
         lv_color_t colorBuffer[colorBufferSize];
-        // lv_color_t b[100];
 
-        uint8_t qrcode[qrcodegen_BUFFER_LEN_MAX];
-        uint8_t tempBuffer[qrcodegen_BUFFER_LEN_MAX];
+        static constexpr uint8_t qrVersionMin = 1;
+        static constexpr uint8_t qrVersionMax = 25;
+        uint8_t qrcode[qrcodegen_BUFFER_LEN_FOR_VERSION(qrVersionMax)];
+        uint8_t tempBuffer[qrcodegen_BUFFER_LEN_FOR_VERSION(qrVersionMax)];
       };
     }
   }

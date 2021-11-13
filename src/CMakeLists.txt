@@ -358,7 +358,8 @@ set(LVGL_SRC
         )
 
 set(QRCODE_SRC
-        libs/qrcodegenerator/qrcodegen.c
+        libs/QR-Code-generator/c/qrcodegen.c
+        libs/QR-Code-generator/c/qrcodegen.h
         )
 
 list(APPEND IMAGE_FILES
@@ -679,7 +680,6 @@ set(INCLUDE_FILES
         libs/date/includes/date/julian.h
         libs/date/includes/date/ptz.h
         libs/date/includes/date/tz_private.h
-        libs/qrcodegenerator/qrcodegen.h
         displayapp/LittleVgl.h
         displayapp/lv_pinetime_theme.h
         systemtask/SystemTask.h
@@ -702,7 +702,6 @@ include_directories(
         libs/
         FreeRTOS/
         libs/date/includes
-        libs/qrcodegenerator
         libs/mynewt-nimble/porting/npl/freertos/include
         libs/mynewt-nimble/nimble/include
         libs/mynewt-nimble/porting/nimble/include

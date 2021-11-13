@@ -1,7 +1,7 @@
 #include <string>
 #include "../DisplayApp.h"
 #include "../LittleVgl.h"
-#include "qrcodegen.h"
+#include "libs/QR-Code-generator/c/qrcodegen.h"
 #include "components/ble/QrService.h"
 #include "Qr.h"
 
@@ -100,8 +100,8 @@ void Qr::drawQr(std::string qrText) {
   resetScreen();
   showingQrCode = true;
 
-  bool ok = qrcodegen_encodeText(
-    qrText.c_str(), tempBuffer, qrcode, qrcodegen_Ecc_MEDIUM, qrcodegen_VERSION_MIN, qrcodegen_VERSION_MAX, qrcodegen_Mask_AUTO, true);
+  bool ok =
+    qrcodegen_encodeText(qrText.c_str(), tempBuffer, qrcode, qrcodegen_Ecc_HIGH, qrVersionMin, qrVersionMax, qrcodegen_Mask_AUTO, true);
   if (ok) {
     qrSize = qrcodegen_getSize(qrcode);
     qrModuleSize = LV_HOR_RES_MAX / (qrSize + 2 * border);
