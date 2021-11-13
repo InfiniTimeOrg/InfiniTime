@@ -31,6 +31,7 @@ namespace Pinetime {
         ~PineTimeStyle() override;
 
         bool OnTouchEvent(TouchEvents event) override;
+        bool OnButtonPushed() override;
 
         void Refresh() override;
 
@@ -96,6 +97,7 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
 
         void SetBatteryIcon();
+        void CloseMenu();
 
         lv_task_t* taskRefresh;
       };

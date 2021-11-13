@@ -316,6 +316,27 @@ bool PineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return false;
 }
 
+void PineTimeStyle::CloseMenu() {
+  settingsController.SaveSettings();
+  lv_obj_set_hidden(btnNextTime, true);
+  lv_obj_set_hidden(btnPrevTime, true);
+  lv_obj_set_hidden(btnNextBar, true);
+  lv_obj_set_hidden(btnPrevBar, true);
+  lv_obj_set_hidden(btnNextBG, true);
+  lv_obj_set_hidden(btnPrevBG, true);
+  lv_obj_set_hidden(btnReset, true);
+  lv_obj_set_hidden(btnRandom, true);
+  lv_obj_set_hidden(btnClose, true);
+}
+
+bool PineTimeStyle::OnButtonPushed() {
+  if (!lv_obj_get_hidden(btnClose)) {
+    CloseMenu();
+    return true;
+  }
+  return false;
+}
+
 void PineTimeStyle::SetBatteryIcon() {
   auto batteryPercent = batteryPercentRemaining.Get();
   lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
@@ -532,16 +553,7 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(valueBG));
     }
     if (object == btnClose) {
-      settingsController.SaveSettings();
-      lv_obj_set_hidden(btnNextTime, true);
-      lv_obj_set_hidden(btnPrevTime, true);
-      lv_obj_set_hidden(btnNextBar, true);
-      lv_obj_set_hidden(btnPrevBar, true);
-      lv_obj_set_hidden(btnNextBG, true);
-      lv_obj_set_hidden(btnPrevBG, true);
-      lv_obj_set_hidden(btnReset, true);
-      lv_obj_set_hidden(btnRandom, true);
-      lv_obj_set_hidden(btnClose, true);
+      CloseMenu();
     }
     if (object == btnSet) {
       lv_obj_set_hidden(btnSet, true);
