@@ -105,22 +105,19 @@ void Qr::drawQr(std::string qrText) {
   if (ok) {
     qrSize = qrcodegen_getSize(qrcode);
     qrModuleSize = LV_HOR_RES_MAX / (qrSize + 2 * border);
-    bufferSize = qrModuleSize * qrModuleSize;
-
     offset = (LV_HOR_RES_MAX - (qrSize + 2 * border) * qrModuleSize) / 2;
 
-    lv_color_t b[bufferSize];
-    std::fill(b, b + bufferSize, LV_COLOR_WHITE);
+    std::fill(colorBuffer, colorBuffer + colorBufferSize, LV_COLOR_WHITE);
 
-    for (int16_t y = -border; y < qrSize + border; y++) {
-      for (int16_t x = -border; x < qrSize + border; x++) {
-        if (!qrcodegen_getModule(qrcode, x, y)) {
-          area.x1 = qrModuleSize * (x + border) + offset;
-          area.y1 = qrModuleSize * (y + border) + offset;
-          area.x2 = qrModuleSize * (x + border + 1) + offset - 1;
-          area.y2 = qrModuleSize * (y + border + 1) + offset - 1;
+    for (int16_t y = 0; y < qrSize + border * 2; y++) {
+      for (int16_t x = 0; x < (qrSize + border * 2); x++) {
+        if (!qrcodegen_getModule(qrcode, x - border, y - border)) {
+          area.x1 = qrModuleSize * x + offset;
+          area.y1 = qrModuleSize * y + offset;
+          area.x2 = qrModuleSize * (x + 1) + offset - 1;
+          area.y2 = qrModuleSize * (y + 1) + offset - 1;
           lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-          lvgl.FlushDisplay(&area, b);
+          lvgl.FlushDisplay(&area, colorBuffer);
         }
       }
     }
@@ -128,17 +125,15 @@ void Qr::drawQr(std::string qrText) {
 }
 
 void Qr::resetScreen() {
-
-  lv_color_t b[100];
-  std::fill(b, b + 100, LV_COLOR_BLACK);
-  for (uint8_t y = 0; y < (LV_VER_RES_MAX / 10); y++) {
-    for (uint8_t x = 0; x < (LV_HOR_RES_MAX / 10); x++) {
-      area.x1 = 10 * x;
-      area.y1 = 10 * y;
-      area.x2 = 10 * (x + 1) - 1;
-      area.y2 = 10 * (y + 1) - 1;
+  std::fill(colorBuffer, colorBuffer + colorBufferSize, LV_COLOR_BLACK);
+  for (uint8_t y = 0; y < (LV_VER_RES_MAX / maxPixelsPerQrModuleSide); y++) {
+    for (uint8_t x = 0; x < (LV_HOR_RES_MAX / maxPixelsPerQrModuleSide); x++) {
+      area.x1 = maxPixelsPerQrModuleSide * x;
+      area.y1 = maxPixelsPerQrModuleSide * y;
+      area.x2 = maxPixelsPerQrModuleSide * (x + 1) - 1;
+      area.y2 = maxPixelsPerQrModuleSide * (y + 1) - 1;
       lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-      lvgl.FlushDisplay(&area, b);
+      lvgl.FlushDisplay(&area, colorBuffer);
     }
   }
 }

@@ -49,11 +49,15 @@ namespace Pinetime {
 
         uint8_t qrSize;
         uint8_t qrModuleSize;
-        uint8_t bufferSize;
         uint8_t offset;
         lv_area_t area;
 
         static constexpr uint16_t border = 1;
+        static constexpr uint16_t maxPixelsPerQrModuleSide = LV_HOR_RES_MAX / (21 + 2);
+
+        static constexpr uint8_t colorBufferSize = maxPixelsPerQrModuleSide * maxPixelsPerQrModuleSide;
+        lv_color_t colorBuffer[colorBufferSize];
+        // lv_color_t b[100];
 
         uint8_t qrcode[qrcodegen_BUFFER_LEN_MAX];
         uint8_t tempBuffer[qrcodegen_BUFFER_LEN_MAX];
