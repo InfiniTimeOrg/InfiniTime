@@ -4,27 +4,30 @@
 
 ![InfiniTime logo](images/infinitime-logo-small.jpg "InfiniTime Logo")
 
-InfiniTime is an open-source firmware for the [Pinetime smartwatch](https://www.pine64.org/pinetime/)
+Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/pinetime/) with many features, written in modern C++.
 
 ## New to InfiniTime?
 
  - [Getting started with InfiniTime](doc/gettingStarted/gettingStarted-1.0.md)
- - [About the software and updating](doc/gettingStarted/updating-software.md)
+ - [Updating the software](doc/gettingStarted/updating-software.md)
+ - [About the firmware and bootloader](doc/gettingStarted/about-software.md)
 ### Companion apps
  - [Gadgetbridge](https://gadgetbridge.org/) (Android)
  - [AmazFish](https://openrepos.net/content/piggz/amazfish/) (SailfishOS)
  - [Siglo](https://github.com/alexr4535/siglo) (Linux)
  - [InfiniLink](https://github.com/xan-m/InfiniLink) **[Experimental]** (iOS)
 
-## Documentation
+## Development
 
-### Develop
- - [Coding conventions](/doc/coding-convention.md)
  - [Rough structure of the code](doc/code/Intro.md)
  - [How to implement an application](doc/code/Apps.md)
  - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
  - [Creating a stopwatch in Pinetime(article)](https://pankajraghav.com/2021/04/03/PINETIME-STOPCLOCK.html)
  - [Tips on designing an app UI](doc/ui_guidelines.md)
+
+### Contributing
+ - [How to contribute?](/doc/contribute.md)
+ - [Coding conventions](/doc/coding-convention.md)
 
 ### Build, flash and debug
 
@@ -46,14 +49,6 @@ InfiniTime is an open-source firmware for the [Pinetime smartwatch](https://www.
 ### Architecture and technical topics
 
  - [Memory analysis](./doc/MemoryAnalysis.md)
-
-## Contributing
-
-This project is far from being finished, and there are still a lot of things to do for this project to become a firmware usable by the general public.
-
-Do not hesitate to fork the code, hack it and create pull-requests! Make sure to read the [coding conventions](/doc/coding-convention.md)
-
-You don't need to be a programmer to contribute. Read this page for more information on how you can help: [How to contribute?](doc/contribute.md)
 
 ## Licenses
 
