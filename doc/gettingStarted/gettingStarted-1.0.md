@@ -1,10 +1,10 @@
-# Getting started with InfiniTime 1.0.0
+# Getting started with InfiniTime
 
-On April 22 2021, InfiniTime and Pine64 [announced the release of InfiniTime 1.0.0](https://www.pine64.org/2021/04/22/its-time-infinitime-1-0/) and the availability of PineTime smartwatches as *enthusiast grade end-user product*. This page aims to guide you with your first step with your new PineTime.
+On April 22 2021, InfiniTime and Pine64 [announced the release of InfiniTime 1.0.0](https://www.pine64.org/2021/04/22/its-time-infinitime-1-0/) and the availability of PineTime smartwatches as an *enthusiast grade end-user product*. This page aims to guide you with your first step with your new PineTime.
 
 It is highly recommended to update the firmware to the latest version when you receive your watch and when a new InfiniTime version is released. More information on updating the firmware [here](/doc/gettingStarted/updating-software.md).
 
-## InfiniTime 1.0.0 quick user guide
+## InfiniTime quick user guide
 
 ### Setting the time
 
