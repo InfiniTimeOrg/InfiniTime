@@ -108,11 +108,11 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
+  lv_label_set_text(bleIcon, "");
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 40);
+  lv_label_set_text(notificationIcon, "");
 
   // Calendar icon
   calendarOuter = lv_obj_create(lv_scr_act(), nullptr);
@@ -305,12 +305,12 @@ PineTimeStyle::~PineTimeStyle() {
 }
 
 bool PineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnRandom)) {
+  if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnClose)) {
     lv_obj_set_hidden(btnSet, false);
     savedTick = lv_tick_get();
     return true;
   }
-  if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && (lv_obj_get_hidden(btnRandom) == false)) {
+  if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && !lv_obj_get_hidden(btnClose)) {
     return true;
   }
   return false;
@@ -359,15 +359,20 @@ void PineTimeStyle::Refresh() {
   }
 
   bleState = bleController.IsConnected();
-  if (bleState.IsUpdated()) {
+  if (bleState.Get()) {
     lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
-    lv_obj_realign(bleIcon);
+  } else {
+    lv_label_set_text(bleIcon, "");
   }
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
-  if (notificationState.IsUpdated()) {
+  if (notificationState.Get()) {
     lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
-    lv_obj_realign(notificationIcon);
+    lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 8, 25);
+    lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, -8, 25);
+  } else {
+    lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
+    lv_label_set_text(notificationIcon, "");
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();
