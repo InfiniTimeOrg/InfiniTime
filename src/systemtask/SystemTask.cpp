@@ -281,7 +281,7 @@ void SystemTask::Work() {
         } break;
         case Messages::GoToSleep:
           if (doNotGoToSleep) {
-            return;
+            break;
           }
           isGoingToSleep = true;
           NRF_LOG_INFO("[systemtask] Going to sleep");
