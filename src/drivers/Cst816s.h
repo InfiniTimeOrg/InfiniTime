@@ -21,7 +21,7 @@ namespace Pinetime {
         uint16_t y = 0;
         Gestures gesture = Gestures::None;
         bool touching = false;
-        bool isValid = true;
+        bool isValid = false;
       };
 
       Cst816S(TwiMaster& twiMaster, uint8_t twiAddress);
@@ -45,6 +45,8 @@ namespace Pinetime {
         return fwVersion;
       }
     private:
+      bool CheckDeviceIds();
+
       // Unused/Unavailable commented out
       static constexpr uint8_t gestureIndex = 1;
       static constexpr uint8_t touchPointNumIndex = 2;
@@ -57,6 +59,9 @@ namespace Pinetime {
       //static constexpr uint8_t touchStep = 6;
       //static constexpr uint8_t touchXYIndex = 7;
       //static constexpr uint8_t touchMiscIndex = 8;
+
+      static constexpr uint8_t maxX = 240;
+      static constexpr uint8_t maxY = 240;
 
       TwiMaster& twiMaster;
       uint8_t twiAddress;
