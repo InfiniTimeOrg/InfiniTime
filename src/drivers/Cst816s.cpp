@@ -32,17 +32,11 @@ bool Cst816S::Init() {
   twiMaster.Read(twiAddress, 0xa7, &dummy, 1);
   vTaskDelay(5);
 
-  static constexpr uint8_t maxRetries = 3;
-  bool isDeviceOk;
-  uint8_t retries = 0;
-  do {
-    isDeviceOk = CheckDeviceIds();
-    retries++;
-  } while (!isDeviceOk && retries < maxRetries);
-
-  if (!isDeviceOk) {
-    return false;
-  }
+  // TODO This function check that the device IDs from the controller are equal to the ones
+  // we expect. However, it seems to return false positive (probably in case of communication issue).
+  // Also, it seems that some users have pinetimes that works correctly but that report different device IDs
+  // Until we know more about this, we'll just read the IDs but not take any action in case they are not 'valid'
+  CheckDeviceIds();
 
   /*
   [2] EnConLR - Continuous operation can slide around
