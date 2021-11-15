@@ -249,10 +249,10 @@ void DisplayApp::Refresh() {
         }
       } break;
       case Messages::ButtonPushed:
-        if (currentApp == Apps::Clock) {
-          PushMessageToSystemTask(System::Messages::GoToSleep);
-        } else {
-          if (!currentScreen->OnButtonPushed()) {
+        if (!currentScreen->OnButtonPushed()) {
+          if (currentApp == Apps::Clock) {
+            PushMessageToSystemTask(System::Messages::GoToSleep);
+          } else {
             LoadApp(returnToApp, returnDirection);
             brightnessController.Set(settingsController.GetBrightness());
             brightnessController.Backup();

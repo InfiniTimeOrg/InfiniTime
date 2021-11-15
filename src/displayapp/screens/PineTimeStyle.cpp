@@ -38,8 +38,8 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static void event_handler(lv_obj_t* obj, lv_event_t event) {
-    PineTimeStyle* screen = static_cast<PineTimeStyle*>(obj->user_data);
+  void event_handler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<PineTimeStyle*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
 }
@@ -169,8 +169,8 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
 
   // Step count gauge
   if (settingsController.GetPTSColorBar() == Pinetime::Controllers::Settings::Colors::White) {
-    needle_colors[0] = LV_COLOR_BLACK; 
-    } else {
+    needle_colors[0] = LV_COLOR_BLACK;
+  } else {
     needle_colors[0] = LV_COLOR_WHITE;
   }
   stepGauge = lv_gauge_create(lv_scr_act(), nullptr);
@@ -305,12 +305,33 @@ PineTimeStyle::~PineTimeStyle() {
 }
 
 bool PineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  if ((event == Pinetime::Applications::TouchEvents::LongTap) && (lv_obj_get_hidden(btnRandom) == true)) {
+  if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnRandom)) {
     lv_obj_set_hidden(btnSet, false);
     savedTick = lv_tick_get();
     return true;
   }
   if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && (lv_obj_get_hidden(btnRandom) == false)) {
+    return true;
+  }
+  return false;
+}
+
+void PineTimeStyle::CloseMenu() {
+  settingsController.SaveSettings();
+  lv_obj_set_hidden(btnNextTime, true);
+  lv_obj_set_hidden(btnPrevTime, true);
+  lv_obj_set_hidden(btnNextBar, true);
+  lv_obj_set_hidden(btnPrevBar, true);
+  lv_obj_set_hidden(btnNextBG, true);
+  lv_obj_set_hidden(btnPrevBG, true);
+  lv_obj_set_hidden(btnReset, true);
+  lv_obj_set_hidden(btnRandom, true);
+  lv_obj_set_hidden(btnClose, true);
+}
+
+bool PineTimeStyle::OnButtonPushed() {
+  if (!lv_obj_get_hidden(btnClose)) {
+    CloseMenu();
     return true;
   }
   return false;
@@ -371,7 +392,7 @@ void PineTimeStyle::Refresh() {
     char hoursChar[3];
     char ampmChar[5];
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        sprintf(hoursChar, "%02d", hour);
+      sprintf(hoursChar, "%02d", hour);
     } else {
       if (hour == 0 && hour != 12) {
         hour = 12;
@@ -426,7 +447,7 @@ void PineTimeStyle::Refresh() {
       lv_obj_set_style_local_scale_grad_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
     }
   }
-  if (lv_obj_get_hidden(btnSet) == false) {
+  if (!lv_obj_get_hidden(btnSet)) {
     if ((savedTick > 0) && (lv_tick_get() - savedTick > 3000)) {
       lv_obj_set_hidden(btnSet, true);
       savedTick = 0;
@@ -442,8 +463,9 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     if (object == btnNextTime) {
       valueTime = GetNext(valueTime);
-      if(valueTime == valueBG)
+      if (valueTime == valueBG) {
         valueTime = GetNext(valueTime);
+      }
       settingsController.SetPTSColorTime(valueTime);
       lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
       lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
@@ -451,8 +473,9 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     }
     if (object == btnPrevTime) {
       valueTime = GetPrevious(valueTime);
-      if(valueTime == valueBG)
+      if (valueTime == valueBG) {
         valueTime = GetPrevious(valueTime);
+      }
       settingsController.SetPTSColorTime(valueTime);
       lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
       lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
@@ -460,11 +483,12 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     }
     if (object == btnNextBar) {
       valueBar = GetNext(valueBar);
-      if(valueBar == Controllers::Settings::Colors::Black)
+      if (valueBar == Controllers::Settings::Colors::Black) {
         valueBar = GetNext(valueBar);
-      if(valueBar == Controllers::Settings::Colors::White) {
-        needle_colors[0] = LV_COLOR_BLACK; 
-        } else {
+      }
+      if (valueBar == Controllers::Settings::Colors::White) {
+        needle_colors[0] = LV_COLOR_BLACK;
+      } else {
         needle_colors[0] = LV_COLOR_WHITE;
       }
       settingsController.SetPTSColorBar(valueBar);
@@ -472,11 +496,12 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     }
     if (object == btnPrevBar) {
       valueBar = GetPrevious(valueBar);
-      if(valueBar == Controllers::Settings::Colors::Black)
+      if (valueBar == Controllers::Settings::Colors::Black) {
         valueBar = GetPrevious(valueBar);
-      if(valueBar == Controllers::Settings::Colors::White) {
-        needle_colors[0] = LV_COLOR_BLACK; 
-        } else {
+      }
+      if (valueBar == Controllers::Settings::Colors::White) {
+        needle_colors[0] = LV_COLOR_BLACK;
+      } else {
         needle_colors[0] = LV_COLOR_WHITE;
       }
       settingsController.SetPTSColorBar(valueBar);
@@ -484,15 +509,17 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     }
     if (object == btnNextBG) {
       valueBG = GetNext(valueBG);
-      if(valueBG == valueTime)
+      if (valueBG == valueTime) {
         valueBG = GetNext(valueBG);
+      }
       settingsController.SetPTSColorBG(valueBG);
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBG));
     }
     if (object == btnPrevBG) {
       valueBG = GetPrevious(valueBG);
-      if(valueBG == valueTime)
+      if (valueBG == valueTime) {
         valueBG = GetPrevious(valueBG);
+      }
       settingsController.SetPTSColorBG(valueBG);
       lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBG));
     }
@@ -524,24 +551,15 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       }
       settingsController.SetPTSColorTime(static_cast<Controllers::Settings::Colors>(valueTime));
       lv_obj_set_style_local_text_color(timeDD1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
-      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT,  Convert(valueTime));
-      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT,  Convert(valueTime));
+      lv_obj_set_style_local_text_color(timeDD2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
+      lv_obj_set_style_local_text_color(timeAMPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTime));
       settingsController.SetPTSColorBar(static_cast<Controllers::Settings::Colors>(valueBar));
-      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(valueBar));
+      lv_obj_set_style_local_bg_color(sidebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBar));
       settingsController.SetPTSColorBG(static_cast<Controllers::Settings::Colors>(valueBG));
-      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,  Convert(valueBG));
+      lv_obj_set_style_local_bg_color(timebar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueBG));
     }
     if (object == btnClose) {
-      settingsController.SaveSettings();
-      lv_obj_set_hidden(btnNextTime, true);
-      lv_obj_set_hidden(btnPrevTime, true);
-      lv_obj_set_hidden(btnNextBar, true);
-      lv_obj_set_hidden(btnPrevBar, true);
-      lv_obj_set_hidden(btnNextBG, true);
-      lv_obj_set_hidden(btnPrevBG, true);
-      lv_obj_set_hidden(btnReset, true);
-      lv_obj_set_hidden(btnRandom, true);
-      lv_obj_set_hidden(btnClose, true);
+      CloseMenu();
     }
     if (object == btnSet) {
       lv_obj_set_hidden(btnSet, true);

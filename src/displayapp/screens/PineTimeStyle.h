@@ -31,6 +31,7 @@ namespace Pinetime {
         ~PineTimeStyle() override;
 
         bool OnTouchEvent(TouchEvents event) override;
+        bool OnButtonPushed() override;
 
         void Refresh() override;
 
@@ -53,8 +54,8 @@ namespace Pinetime {
         DirtyValue<uint32_t> stepCount {};
         DirtyValue<bool> notificationState {};
 
-        Pinetime::Controllers::Settings::Colors GetNext(Controllers::Settings::Colors color);
-        Pinetime::Controllers::Settings::Colors GetPrevious(Controllers::Settings::Colors color);
+        static Pinetime::Controllers::Settings::Colors GetNext(Controllers::Settings::Colors color);
+        static Pinetime::Controllers::Settings::Colors GetPrevious(Controllers::Settings::Colors color);
 
         lv_obj_t* btnNextTime;
         lv_obj_t* btnPrevTime;
@@ -96,6 +97,7 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
 
         void SetBatteryIcon();
+        void CloseMenu();
 
         lv_task_t* taskRefresh;
       };
