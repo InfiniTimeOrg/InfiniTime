@@ -28,6 +28,7 @@ namespace Pinetime {
       int DirCreate(const char* path);
  
       lfs_ssize_t GetFSSize();
+      int Rename(const char* oldPath, const char* newPath);
       int Stat(const char* path, lfs_info* info);
       void VerifyResource();
 

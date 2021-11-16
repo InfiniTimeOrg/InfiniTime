@@ -15,8 +15,7 @@ namespace Pinetime {
     class Ble;
     class FSService {
     public:
-      FSService(Pinetime::System::SystemTask& systemTask,
-                Pinetime::Controllers::FS& fs);
+      FSService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::FS& fs);
       void Init();
 
       int OnFSServiceRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context);
@@ -116,7 +115,7 @@ namespace Pinetime {
         uint64_t modTime;
         uint32_t freespace;
       };
-      
+
       using WritePacing = struct __attribute__((packed)) {
         commands command;
         uint8_t status;
@@ -169,6 +168,18 @@ namespace Pinetime {
       };
 
       using DelResponse = struct __attribute__((packed)) {
+        commands command;
+        uint8_t status;
+      };
+      using MoveHeader = struct __attribute__((packed)) {
+        commands command;
+        uint8_t padding;
+        uint16_t OldPathLength;
+        uint16_t NewPathLength;
+        char pathstr[];
+      };
+
+      using MoveResponse = struct __attribute__((packed)) {
         commands command;
         uint8_t status;
       };

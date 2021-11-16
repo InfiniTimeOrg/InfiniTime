@@ -270,6 +270,21 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       break;
     }
+    case commands::MOVE: {
+      NRF_LOG_INFO("[FS_S] -> Move");
+      MoveHeader* header = (MoveHeader*) om->om_data;
+      uint16_t plen = header->OldPathLength;
+      // Null Terminate string
+      header->pathstr[plen] = 0;
+      char path[header->NewPathLength + 1] {0};
+      memcpy(path, &header->pathstr[plen + 1], header->NewPathLength);
+      MoveResponse resp {};
+      resp.command = commands::MOVE_STATUS;
+      int res = fs.Rename(header->pathstr, path);
+      resp.status = (res == 0) ? 1 : 2;
+      auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(MoveResponse));
+      ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
+    }
     default:
       break;
   }
