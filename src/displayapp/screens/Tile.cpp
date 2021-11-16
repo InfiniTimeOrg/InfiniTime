@@ -1,6 +1,5 @@
 #include "Tile.h"
 #include "../DisplayApp.h"
-#include "BatteryIcon.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -24,23 +23,11 @@ Tile::Tile(uint8_t screenID,
            uint8_t numScreens,
            DisplayApp* app,
            Controllers::Settings& settingsController,
-           Pinetime::Controllers::Battery& batteryController,
-           Controllers::DateTime& dateTimeController,
            std::array<Applications, 6>& applications)
-  : Screen(app), batteryController {batteryController}, dateTimeController {dateTimeController} {
+  : Screen(app) {
 
   settingsController.SetAppMenu(screenID);
-
-  // Time
-  label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(label_time, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
-  lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
-
-  // Battery
-  batteryIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
-  lv_obj_align(batteryIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, -8, 0);
+  app->MakeStatusBar(&statusBar, lv_scr_act());
 
   if (numScreens > 1) {
     pageIndicatorBasePoints[0].x = LV_HOR_RES - 1;
@@ -119,8 +106,7 @@ Tile::~Tile() {
 }
 
 void Tile::UpdateScreen() {
-  lv_label_set_text_fmt(label_time, "%02i:%02i", dateTimeController.Hours(), dateTimeController.Minutes());
-  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
+  app->UpdateStatusBar(&statusBar);
 }
 
 void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId) {

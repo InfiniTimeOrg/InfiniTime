@@ -9,13 +9,9 @@
 using namespace Pinetime::Applications::Screens;
 
 ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp* app,
-                                 Pinetime::Controllers::Settings& settingsController,
-                                 Pinetime::Controllers::Battery& batteryController,
-                                 Controllers::DateTime& dateTimeController)
+                                 Pinetime::Controllers::Settings& settingsController)
   : Screen(app),
     settingsController {settingsController},
-    batteryController {batteryController},
-    dateTimeController {dateTimeController},
     screens {app,
              settingsController.GetAppMenu(),
              {
@@ -48,7 +44,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
     {Symbols::hourGlass, Apps::Timer},
   }};
 
-  return std::make_unique<Screens::Tile>(0, 2, app, settingsController, batteryController, dateTimeController, applications);
+  return std::make_unique<Screens::Tile>(0, 2, app, settingsController, applications);
 }
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
@@ -61,7 +57,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
     {Symbols::clock, Apps::Alarm},
   }};
 
-  return std::make_unique<Screens::Tile>(1, 2, app, settingsController, batteryController, dateTimeController, applications);
+  return std::make_unique<Screens::Tile>(1, 2, app, settingsController, applications);
 }
 
 /*std::unique_ptr<Screen> ApplicationList::CreateScreen3() {

@@ -5,10 +5,8 @@
 #include <memory>
 #include "Screen.h"
 #include "../Apps.h"
-#include "components/datetime/DateTimeController.h"
+#include "../DisplayApp.h"
 #include "components/settings/Settings.h"
-#include "components/datetime/DateTimeController.h"
-#include "components/battery/BatteryController.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -24,8 +22,6 @@ namespace Pinetime {
                       uint8_t numScreens,
                       DisplayApp* app,
                       Controllers::Settings& settingsController,
-                      Pinetime::Controllers::Battery& batteryController,
-                      Controllers::DateTime& dateTimeController,
                       std::array<Applications, 6>& applications);
 
         ~Tile() override;
@@ -34,13 +30,9 @@ namespace Pinetime {
         void OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId);
 
       private:
-        Pinetime::Controllers::Battery& batteryController;
-        Controllers::DateTime& dateTimeController;
-
         lv_task_t* taskUpdate;
 
-        lv_obj_t* label_time;
-        lv_obj_t* batteryIcon;
+        DisplayApp::StatusBar statusBar;
         lv_point_t pageIndicatorBasePoints[2];
         lv_point_t pageIndicatorPoints[2];
         lv_obj_t* pageIndicatorBase;
