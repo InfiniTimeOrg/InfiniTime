@@ -104,7 +104,7 @@ Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateCon
 Pinetime::Controllers::DateTime dateTimeController;
 Pinetime::Drivers::Watchdog watchdog;
 Pinetime::Drivers::WatchdogView watchdogView(watchdog);
-Pinetime::Controllers::NotificationManager notificationManager;
+Pinetime::Controllers::NotificationManager notificationManager {dateTimeController};
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::TimerController timerController;
 Pinetime::Controllers::AlarmController alarmController {dateTimeController};
@@ -156,7 +156,7 @@ Pinetime::System::SystemTask systemTask(spi,
                                         touchHandler,
                                         buttonHandler);
 
-/* Variable Declarations for variables in noinit SRAM 
+/* Variable Declarations for variables in noinit SRAM
    Increment NoInit_MagicValue upon adding variables to this area
 */
 extern uint32_t __start_noinit_data;
@@ -324,7 +324,7 @@ int main(void) {
   // retrieve version stored by bootloader
   Pinetime::BootloaderVersion::SetVersion(NRF_TIMER2->CC[0]);
 
-  
+
   if (NoInit_MagicWord == NoInit_MagicValue) {
     dateTimeController.SetCurrentTime(NoInit_BackUpTime);
   } else {

@@ -9,6 +9,7 @@ constexpr uint8_t NotificationManager::MessageSize;
 void NotificationManager::Push(NotificationManager::Notification&& notif) {
   notif.id = GetNextId();
   notif.valid = true;
+  notif.timeArrived = std::chrono::system_clock::to_time_t(dateTimeController.CurrentDateTime());
   notifications[writeIndex] = std::move(notif);
   writeIndex = (writeIndex + 1 < TotalNbNotifications) ? writeIndex + 1 : 0;
   if (!empty)

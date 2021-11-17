@@ -3,9 +3,11 @@
 #include <lvgl/lvgl.h>
 #include <cstdint>
 #include <memory>
+#include <chrono>
 #include "Screen.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
+#include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -21,6 +23,7 @@ namespace Pinetime {
                                Pinetime::Controllers::NotificationManager& notificationManager,
                                Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                Pinetime::Controllers::MotorController& motorController,
+                               Pinetime::Controllers::DateTime& dateTimeController,
                                Modes mode);
         ~Notifications() override;
 
@@ -33,6 +36,8 @@ namespace Pinetime {
                            const char* msg,
                            uint8_t notifNr,
                            Controllers::NotificationManager::Categories,
+                           std::time_t timeArrived,
+                           std::time_t timeNow,
                            uint8_t notifNb,
                            Modes mode,
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService);
@@ -62,6 +67,7 @@ namespace Pinetime {
         };
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::AlertNotificationService& alertNotificationService;
+        Pinetime::Controllers::DateTime& dateTimeController;
         Modes mode = Modes::Normal;
         std::unique_ptr<NotificationItem> currentItem;
         Controllers::NotificationManager::Notification::Id currentId;
