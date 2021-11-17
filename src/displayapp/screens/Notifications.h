@@ -2,10 +2,12 @@
 
 #include <lvgl/lvgl.h>
 #include <FreeRTOS.h>
+#include <chrono>
 #include <cstdint>
 #include <memory>
 #include "displayapp/screens/Screen.h"
 #include "components/ble/NotificationManager.h"
+#include "components/datetime/DateTimeController.h"
 #include "components/motor/MotorController.h"
 #include "systemtask/SystemTask.h"
 #include "systemtask/WakeLock.h"
@@ -25,6 +27,7 @@ namespace Pinetime {
                                Pinetime::Controllers::NotificationManager& notificationManager,
                                Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                Pinetime::Controllers::MotorController& motorController,
+                               Pinetime::Controllers::DateTime& dateTimeController,
                                System::SystemTask& systemTask,
                                Modes mode);
         ~Notifications() override;
@@ -43,6 +46,8 @@ namespace Pinetime {
                            const char* msg,
                            uint8_t notifNr,
                            Controllers::NotificationManager::Categories,
+                           std::time_t timeArrived,
+                           std::time_t timeNow,
                            uint8_t notifNb,
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                            Pinetime::Controllers::MotorController& motorController);
@@ -74,6 +79,7 @@ namespace Pinetime {
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::AlertNotificationService& alertNotificationService;
         Pinetime::Controllers::MotorController& motorController;
+        Pinetime::Controllers::DateTime& dateTimeController;
         System::WakeLock wakeLock;
         Modes mode = Modes::Normal;
         std::unique_ptr<NotificationItem> currentItem;

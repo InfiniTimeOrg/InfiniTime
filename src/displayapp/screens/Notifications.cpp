@@ -14,12 +14,14 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Pinetime::Controllers::MotorController& motorController,
+                             Pinetime::Controllers::DateTime& dateTimeController,
                              System::SystemTask& systemTask,
                              Modes mode)
   : app {app},
     notificationManager {notificationManager},
     alertNotificationService {alertNotificationService},
     motorController {motorController},
+    dateTimeController {dateTimeController},
     wakeLock(systemTask),
     mode {mode} {
 
@@ -31,6 +33,8 @@ Notifications::Notifications(DisplayApp* app,
                                                      notification.Message(),
                                                      1,
                                                      notification.category,
+                                                     notification.timeArrived,
+                                                     std::chrono::system_clock::to_time_t(this->dateTimeController.CurrentDateTime()),
                                                      notificationManager.NbNotifications(),
                                                      alertNotificationService,
                                                      motorController);
@@ -200,6 +204,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        previousNotification.Message(),
                                                        currentIdx + 1,
                                                        previousNotification.category,
+                                                       previousNotification.timeArrived,
+                                                       std::chrono::system_clock::to_time_t(dateTimeController.CurrentDateTime()),
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
                                                        motorController);
@@ -227,6 +233,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        nextNotification.Message(),
                                                        currentIdx + 1,
                                                        nextNotification.category,
+                                                       nextNotification.timeArrived,
+                                                       std::chrono::system_clock::to_time_t(dateTimeController.CurrentDateTime()),
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
                                                        motorController);
@@ -251,6 +259,8 @@ Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNo
                      0,
                      Controllers::NotificationManager::Categories::Unknown,
                      0,
+                     0,
+                     0,
                      alertNotificationService,
                      motorController) {
 }
@@ -259,6 +269,8 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   const char* msg,
                                                   uint8_t notifNr,
                                                   Controllers::NotificationManager::Categories category,
+                                                  std::time_t timeArrived,
+                                                  std::time_t timeNow,
                                                   uint8_t notifNb,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                                   Pinetime::Controllers::MotorController& motorController)
@@ -290,6 +302,21 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   if (title == nullptr) {
     lv_label_set_text_static(alert_type, "Notification");
   } else {
+    auto diff = std::chrono::system_clock::from_time_t(timeNow) - std::chrono::system_clock::from_time_t(timeArrived);
+    std::chrono::minutes age = std::chrono::duration_cast<std::chrono::minutes>(diff);
+    std::string ageString;
+    ageString.reserve(10);
+    if ((age.count() / (60 * 24)) >= 1) {
+      ageString = std::to_string(static_cast<uint16_t>(age.count() / (60 * 24))) + "d ago";
+    } else if ((age.count() / 60) >= 1) {
+      ageString = std::to_string(static_cast<uint8_t>(age.count() / 60)) + "h ago";
+    } else {
+      ageString = std::to_string(static_cast<uint8_t>(age.count())) + "m ago";
+    }
+    lv_obj_t* alert_age = lv_label_create(lv_scr_act(), nullptr);
+    lv_label_set_text(alert_age, ageString.c_str());
+    lv_obj_align(alert_age, container1, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+
     // copy title to label and replace newlines with spaces
     lv_label_set_text(alert_type, title);
     char* pchar = strchr(lv_label_get_text(alert_type), '\n');

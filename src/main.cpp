@@ -102,7 +102,7 @@ Pinetime::Controllers::MotorController motorController {};
 
 Pinetime::Controllers::DateTime dateTimeController {settingsController};
 Pinetime::Drivers::Watchdog watchdog;
-Pinetime::Controllers::NotificationManager notificationManager;
+Pinetime::Controllers::NotificationManager notificationManager {dateTimeController};
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::AlarmController alarmController {dateTimeController, fs};
 Pinetime::Controllers::TouchHandler touchHandler;
