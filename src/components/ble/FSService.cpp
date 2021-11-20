@@ -89,7 +89,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.chunkoff = header->chunkoff;
       int res = fs.Stat(filepath, &info);
       if (res == LFS_ERR_NOENT && info.type != LFS_TYPE_DIR) {
-        resp.status = 0x03;
+        resp.status = (int8_t) res;
         resp.chunklen = 0;
         resp.totallen = 0;
         om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
@@ -118,7 +118,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.chunkoff = header->chunkoff;
       int res = fs.Stat(filepath, &info);
       if (res == LFS_ERR_NOENT && info.type != LFS_TYPE_DIR) {
-        resp.status = 0x03;
+        resp.status = (int8_t) res;
         resp.chunklen = 0;
         resp.totallen = 0;
       } else {
@@ -157,7 +157,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.offset = header->offset;
       resp.modTime = 0;
       int res = fs.FileOpen(&f, filepath, LFS_O_WRONLY | LFS_O_CREAT);
-      resp.status = (res==0) ? 0x01: (int8_t)res;
+      resp.status = (res == 0) ? 0x01 : (int8_t) res;
       fs.FileClose(&f);
       resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
@@ -171,13 +171,13 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       WriteResponse resp;
       resp.command = commands::WRITE_PACING;
       resp.offset = header->offset;
-      resp.status = 1;
+      resp.status = 0x01;
       fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT);
       fs.FileSeek(&f, header->offset);
-      int res = fs.FileWrite(&f, header->data, header->dataSize);    
+      int res = fs.FileWrite(&f, header->data, header->dataSize);
       fs.FileClose(&f);
-      if(res < 0 ){
-        resp.status = (int8_t)res;
+      if (res < 0) {
+        resp.status = (int8_t) res;
       }
       resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
@@ -194,7 +194,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       DelResponse resp {};
       resp.command = commands::DELETE_STATUS;
       int res = fs.FileDelete(path);
-      resp.status = (res==0) ? 0x01 : (int8_t)res;
+      resp.status = (res == 0) ? 0x01 : (int8_t) res;
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(DelResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       break;
@@ -210,7 +210,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.command = commands::MKDIR_STATUS;
       resp.modification_time = 0;
       int res = fs.DirCreate(path);
-      resp.status = (res==0) ? 0x01 : (int8_t)res;
+      resp.status = (res == 0) ? 0x01 : (int8_t) res;
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(MKDirResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       break;
@@ -226,13 +226,13 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       ListDirResponse resp {};
 
       resp.command = commands::LISTDIR_ENTRY;
-      resp.status = 1;
+      resp.status = 0x01;
       resp.totalentries = 0;
       resp.entry = 0;
       resp.modification_time = 0;
       int res = fs.DirOpen(path, &dir);
       if (res != 0) {
-        resp.status = (int8_t)res;
+        resp.status = (int8_t) res;
         auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse));
         ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
         break;
@@ -290,7 +290,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       path[header->NewPathLength] = 0; // Copy and null teminate string
       MoveResponse resp {};
       resp.command = commands::MOVE_STATUS;
-      int8_t res = (int8_t)fs.Rename(header->pathstr, path);
+      int8_t res = (int8_t) fs.Rename(header->pathstr, path);
       resp.status = (res == 0) ? 1 : res;
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(MoveResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
