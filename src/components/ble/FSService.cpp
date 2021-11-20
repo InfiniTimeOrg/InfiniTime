@@ -81,7 +81,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         return -1;
       }
       memcpy(filepath, header->pathstr, plen);
-      filepath[plen + 1] = 0; // Copy and null teminate string
+      filepath[plen] = 0; // Copy and null teminate string
       ReadResponse resp;
       os_mbuf* om;
       resp.command = commands::READ_DATA;
@@ -150,14 +150,14 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         return -1;
       }
       memcpy(filepath, header->pathstr, plen);
-      filepath[plen + 1] = 0; // Copy and null teminate string
+      filepath[plen] = 0; // Copy and null teminate string
       fileSize = header->totalSize;
       WriteResponse resp;
       resp.command = commands::WRITE_PACING;
       resp.offset = header->offset;
       resp.modTime = 0;
       int res = fs.FileOpen(&f, filepath, LFS_O_WRONLY | LFS_O_CREAT);
-      resp.status = res ? 0x02 : 0x01;
+      resp.status = (res==0) ? 0x01: (int8_t)res;
       fs.FileClose(&f);
       resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
@@ -171,11 +171,14 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       WriteResponse resp;
       resp.command = commands::WRITE_PACING;
       resp.offset = header->offset;
-      int res = fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT);
-      resp.status = res ? 0x02 : 0x01;
+      resp.status = 1;
+      fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT);
       fs.FileSeek(&f, header->offset);
-      fs.FileWrite(&f, header->data, header->dataSize);
+      int res = fs.FileWrite(&f, header->data, header->dataSize);    
       fs.FileClose(&f);
+      if(res < 0 ){
+        resp.status = (int8_t)res;
+      }
       resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
@@ -187,9 +190,11 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       uint16_t plen = header->pathlen;
       char path[plen + 1] {0};
       memcpy(path, header->pathstr, plen);
+      path[plen] = 0; // Copy and null teminate string
       DelResponse resp {};
       resp.command = commands::DELETE_STATUS;
-      resp.status = fs.FileDelete(path) ? 0x02 : 0x01;
+      int res = fs.FileDelete(path);
+      resp.status = (res==0) ? 0x01 : (int8_t)res;
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(DelResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       break;
@@ -200,10 +205,12 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       uint16_t plen = header->pathlen;
       char path[plen + 1] {0};
       memcpy(path, header->pathstr, plen);
+      path[plen] = 0; // Copy and null teminate string
       MKDirResponse resp {};
       resp.command = commands::MKDIR_STATUS;
       resp.modification_time = 0;
-      resp.status = fs.DirCreate(path) ? 0x02 : 0x01;
+      int res = fs.DirCreate(path);
+      resp.status = (res==0) ? 0x01 : (int8_t)res;
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(MKDirResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
       break;
@@ -213,6 +220,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       ListDirHeader* header = (ListDirHeader*) om->om_data;
       uint16_t plen = header->pathlen;
       char path[plen + 1] {0};
+      path[plen] = 0; // Copy and null teminate string
       memcpy(path, header->pathstr, plen);
 
       ListDirResponse resp {};
@@ -222,8 +230,9 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.totalentries = 0;
       resp.entry = 0;
       resp.modification_time = 0;
-      if (fs.DirOpen(path, &dir) != 0) {
-        resp.status = 0x02;
+      int res = fs.DirOpen(path, &dir);
+      if (res != 0) {
+        resp.status = (int8_t)res;
         auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(ListDirResponse));
         ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
         break;
@@ -233,7 +242,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       }
       fs.DirRewind(&dir);
       while (true) {
-        int res = fs.DirRead(&dir, &info);
+        res = fs.DirRead(&dir, &info);
         if (res <= 0) {
           break;
         }
@@ -278,10 +287,11 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       header->pathstr[plen] = 0;
       char path[header->NewPathLength + 1] {0};
       memcpy(path, &header->pathstr[plen + 1], header->NewPathLength);
+      path[header->NewPathLength] = 0; // Copy and null teminate string
       MoveResponse resp {};
       resp.command = commands::MOVE_STATUS;
-      int res = fs.Rename(header->pathstr, path);
-      resp.status = (res == 0) ? 1 : 2;
+      int8_t res = (int8_t)fs.Rename(header->pathstr, path);
+      resp.status = (res == 0) ? 1 : res;
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(MoveResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
     }
