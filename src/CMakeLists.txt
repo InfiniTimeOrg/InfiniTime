@@ -627,6 +627,7 @@ set(INCLUDE_FILES
         displayapp/screens/FirmwareUpdate.h
         displayapp/screens/FirmwareValidation.h
         displayapp/screens/ApplicationList.h
+        displayapp/screens/Qr.h
         displayapp/Apps.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
