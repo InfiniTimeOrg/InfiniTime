@@ -147,7 +147,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       auto* header = (WriteHeader*) om->om_data;
       uint16_t plen = header->pathlen;
       if (plen > maxpathlen) { //> counts for null term
-        return -1;
+        return -1;             // TODO make this actually return a BLE notif
       }
       memcpy(filepath, header->pathstr, plen);
       filepath[plen] = 0; // Copy and null teminate string
@@ -156,9 +156,12 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.command = commands::WRITE_PACING;
       resp.offset = header->offset;
       resp.modTime = 0;
+
       int res = fs.FileOpen(&f, filepath, LFS_O_WRONLY | LFS_O_CREAT);
-      resp.status = (res == 0) ? 0x01 : (int8_t) res;
-      fs.FileClose(&f);
+      if(res == 0){
+        fs.FileClose(&f);
+        resp.status = (res == 0) ? 0x01 : (int8_t) res;
+      }
       resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
@@ -171,14 +174,18 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       WriteResponse resp;
       resp.command = commands::WRITE_PACING;
       resp.offset = header->offset;
-      resp.status = 0x01;
-      fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT);
-      fs.FileSeek(&f, header->offset);
-      int res = fs.FileWrite(&f, header->data, header->dataSize);
-      fs.FileClose(&f);
+      int res = 0;
+
+      if (!(res = fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT))) {
+        if (!(res = fs.FileSeek(&f, header->offset))) {
+          res = fs.FileWrite(&f, header->data, header->dataSize);
+        }
+        fs.FileClose(&f);
+      }
       if (res < 0) {
         resp.status = (int8_t) res;
       }
+
       resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
