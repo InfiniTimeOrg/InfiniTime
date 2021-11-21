@@ -69,11 +69,9 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
   while (systemTask.IsSleeping()) {
     vTaskDelay(100); // 50ms
   }
-  lfs_dir_t dir;
-  lfs_info info;
-  lfs_file f;
-  memset(&f, 0, sizeof(lfs_file_t));
-  memset(&dir, 0, sizeof(lfs_dir_t));
+  lfs_dir_t dir = {0};
+  lfs_info info = {0};
+  lfs_file f = {0};
   switch (command) {
     case commands::READ: {
       NRF_LOG_INFO("[FS_S] -> Read");
@@ -100,7 +98,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         resp.totallen = info.size;
         fs.FileOpen(&f, filepath, LFS_O_RDONLY);
         fs.FileSeek(&f, header->chunkoff);
-        uint8_t fileData[resp.chunklen] {0};
+        uint8_t fileData[resp.chunklen] = {0};
         resp.chunklen = fs.FileRead(&f, fileData, resp.chunklen);
         om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
         os_mbuf_append(om, fileData, resp.chunklen);
@@ -130,7 +128,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       }
       os_mbuf* om;
       if (resp.chunklen > 0) {
-        uint8_t fileData[resp.chunklen] {0};
+        uint8_t fileData[resp.chunklen] = {0};
         resp.chunklen = fs.FileRead(&f, fileData, resp.chunklen);
         om = ble_hs_mbuf_from_flat(&resp, sizeof(ReadResponse));
         os_mbuf_append(om, fileData, resp.chunklen);
@@ -176,7 +174,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       int res = 0;
 
       if (!(res = fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT))) {
-        if ((res = fs.FileSeek(&f, header->offset) ) >= 0) {
+        if ((res = fs.FileSeek(&f, header->offset)) >= 0) {
           res = fs.FileWrite(&f, header->data, header->dataSize);
         }
         fs.FileClose(&f);
@@ -193,7 +191,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       NRF_LOG_INFO("[FS_S] -> Delete");
       auto* header = (DelHeader*) om->om_data;
       uint16_t plen = header->pathlen;
-      char path[plen + 1] {0};
+      char path[plen + 1] = {0};
       memcpy(path, header->pathstr, plen);
       path[plen] = 0; // Copy and null teminate string
       DelResponse resp {};
@@ -208,7 +206,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       NRF_LOG_INFO("[FS_S] -> MKDir");
       auto* header = (MKDirHeader*) om->om_data;
       uint16_t plen = header->pathlen;
-      char path[plen + 1] {0};
+      char path[plen + 1] = {0};
       memcpy(path, header->pathstr, plen);
       path[plen] = 0; // Copy and null teminate string
       MKDirResponse resp {};
@@ -224,7 +222,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       NRF_LOG_INFO("[FS_S] -> ListDir");
       ListDirHeader* header = (ListDirHeader*) om->om_data;
       uint16_t plen = header->pathlen;
-      char path[plen + 1] {0};
+      char path[plen + 1] = {0};
       path[plen] = 0; // Copy and null teminate string
       memcpy(path, header->pathstr, plen);
 
@@ -290,7 +288,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       uint16_t plen = header->OldPathLength;
       // Null Terminate string
       header->pathstr[plen] = 0;
-      char path[header->NewPathLength + 1] {0};
+      char path[header->NewPathLength + 1] = {0};
       memcpy(path, &header->pathstr[plen + 1], header->NewPathLength);
       path[header->NewPathLength] = 0; // Copy and null teminate string
       MoveResponse resp {};
