@@ -71,9 +71,11 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
   }
   lfs_dir_t dir;
   lfs_info info;
+  lfs_file f;
+  memset(&f, 0, sizeof(lfs_file_t));
+  memset(&dir, 0, sizeof(lfs_dir_t));
   switch (command) {
     case commands::READ: {
-      lfs_file f;
       NRF_LOG_INFO("[FS_S] -> Read");
       auto* header = (ReadHeader*) om->om_data;
       uint16_t plen = header->pathlen;
@@ -109,7 +111,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
     }
     case commands::READ_PACING: {
-      lfs_file f;
       NRF_LOG_INFO("[FS_S] -> Readpacing");
       auto* header = (ReadHeader*) om->om_data;
       ReadResponse resp;
@@ -142,7 +143,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
     }
     case commands::WRITE: {
-      lfs_file f;
       NRF_LOG_INFO("[FS_S] -> Write");
       auto* header = (WriteHeader*) om->om_data;
       uint16_t plen = header->pathlen;
@@ -157,8 +157,8 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       resp.offset = header->offset;
       resp.modTime = 0;
 
-      int res = fs.FileOpen(&f, filepath, LFS_O_WRONLY | LFS_O_CREAT);
-      if(res == 0){
+      int res = fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT);
+      if (res == 0) {
         fs.FileClose(&f);
         resp.status = (res == 0) ? 0x01 : (int8_t) res;
       }
@@ -168,7 +168,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
     }
     case commands::WRITE_DATA: {
-      lfs_file f;
       NRF_LOG_INFO("[FS_S] -> WriteData");
       auto* header = (WritePacing*) om->om_data;
       WriteResponse resp;
@@ -185,7 +184,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       if (res < 0) {
         resp.status = (int8_t) res;
       }
-
       resp.freespace = std::min(fs.getSize() - (fs.GetFSSize() * fs.getBlockSize()), fileSize - header->offset);
       auto* om = ble_hs_mbuf_from_flat(&resp, sizeof(WriteResponse));
       ble_gattc_notify_custom(connectionHandle, transferCharacteristicHandle, om);
