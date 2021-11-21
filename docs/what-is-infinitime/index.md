@@ -6,16 +6,14 @@ PineTime is an open source smartwatch produced by
 
 From Pine64's website:
 
-```
-The PineTime is a free and open source smartwatch capable of running
+"The PineTime is a free and open source smartwatch capable of running
 custom-built open operating systems. Some of the notable features include a
 heart rate monitor, a week-long battery, and a capacitive touch IPS display that
 is legible in direct sunlight. It is a fully community driven side-project which
-anyone can contribute to, allowing you to keep control of your device.
-```
+anyone can contribute to, allowing you to keep control of your device."
 
 More details can be found on the [PineTime page of the Pine64
-website](https://www.pine64.org/pinetime/)
+website](https://www.pine64.org/pinetime/).
 
 ## InfiniTime goals
 
