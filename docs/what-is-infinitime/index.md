@@ -5,5 +5,3 @@
 ## InfiniTime history
 ### Project history
 ### Firmwares history and changelog
-
-Test Nico
