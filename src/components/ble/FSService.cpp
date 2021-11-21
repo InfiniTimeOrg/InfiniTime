@@ -176,7 +176,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       int res = 0;
 
       if (!(res = fs.FileOpen(&f, filepath, LFS_O_RDWR | LFS_O_CREAT))) {
-        if (!(res = fs.FileSeek(&f, header->offset))) {
+        if ((res = fs.FileSeek(&f, header->offset) ) >= 0) {
           res = fs.FileWrite(&f, header->data, header->dataSize);
         }
         fs.FileClose(&f);
