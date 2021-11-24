@@ -1,7 +1,7 @@
 # User documentation
 
 This part of the documentation is meant for end users.   
-For developer documentation, please refer to [this page](developer-documentation/index.html)
+For developer documentation, please refer to [this page](/developer-documentation/index.html)
 
 ## Getting started with InfiniTime
 
