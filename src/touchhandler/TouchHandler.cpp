@@ -1,4 +1,4 @@
-#include "TouchHandler.h"
+#include "touchhandler/TouchHandler.h"
 
 using namespace Pinetime::Controllers;
 

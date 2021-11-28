@@ -6,7 +6,7 @@
 /*********************
  *      INCLUDES
  *********************/
-#include "lv_pinetime_theme.h"
+#include "displayapp/lv_pinetime_theme.h"
 
 /*********************
  *      DEFINES

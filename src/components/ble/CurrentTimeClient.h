@@ -5,7 +5,7 @@
 #undef max
 #undef min
 #include <cstdint>
-#include "BleClient.h"
+#include "components/ble/BleClient.h"
 
 namespace Pinetime {
   namespace Controllers {

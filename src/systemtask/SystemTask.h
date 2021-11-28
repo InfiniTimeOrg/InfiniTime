@@ -11,7 +11,7 @@
 #include <drivers/PinMap.h>
 #include <components/motion/MotionController.h>
 
-#include "SystemMonitor.h"
+#include "systemtask/SystemMonitor.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/NimbleController.h"
 #include "components/ble/NotificationManager.h"
@@ -20,6 +20,8 @@
 #include "components/alarm/AlarmController.h"
 #include "components/fs/FS.h"
 #include "touchhandler/TouchHandler.h"
+#include "buttonhandler/ButtonHandler.h"
+#include "buttonhandler/ButtonActions.h"
 
 #ifdef PINETIME_IS_RECOVERY
   #include "displayapp/DisplayAppRecovery.h"
@@ -31,7 +33,7 @@
 #endif
 
 #include "drivers/Watchdog.h"
-#include "Messages.h"
+#include "systemtask/Messages.h"
 
 extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
 namespace Pinetime {
@@ -45,6 +47,7 @@ namespace Pinetime {
   }
   namespace Controllers {
     class TouchHandler;
+    class ButtonHandler;
   }
   namespace System {
     class SystemTask {
@@ -71,12 +74,12 @@ namespace Pinetime {
                  Pinetime::Applications::DisplayApp& displayApp,
                  Pinetime::Applications::HeartRateTask& heartRateApp,
                  Pinetime::Controllers::FS& fs,
-                 Pinetime::Controllers::TouchHandler& touchHandler);
+                 Pinetime::Controllers::TouchHandler& touchHandler,
+                 Pinetime::Controllers::ButtonHandler& buttonHandler);
 
       void Start();
       void PushMessage(Messages msg);
 
-      void OnButtonPushed();
       void OnTouchEvent();
 
       void OnIdle();
@@ -123,6 +126,7 @@ namespace Pinetime {
       Pinetime::Applications::HeartRateTask& heartRateApp;
       Pinetime::Controllers::FS& fs;
       Pinetime::Controllers::TouchHandler& touchHandler;
+      Pinetime::Controllers::ButtonHandler& buttonHandler;
       Pinetime::Controllers::NimbleController nimbleController;
 
       static void Process(void* instance);
@@ -134,6 +138,9 @@ namespace Pinetime {
       TimerHandle_t idleTimer;
       TimerHandle_t measureBatteryTimer;
       bool doNotGoToSleep = false;
+
+      void HandleButtonAction(Controllers::ButtonActions action);
+      bool fastWakeUpDone = false;
 
       void GoToRunning();
       void UpdateMotion();

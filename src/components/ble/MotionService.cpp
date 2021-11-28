@@ -1,11 +1,11 @@
-#include "MotionService.h"
+#include "components/ble/MotionService.h"
 #include "components/motion/MotionController.h"
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
 
 namespace {
-  // 0002yyxx-78fc-48fe-8e23-433b3a1942d0
+  // 0003yyxx-78fc-48fe-8e23-433b3a1942d0
   constexpr ble_uuid128_t CharUuid(uint8_t x, uint8_t y) {
     return ble_uuid128_t{
       .u = {.type = BLE_UUID_TYPE_128},
@@ -13,7 +13,7 @@ namespace {
     };
   }
 
-  // 00020000-78fc-48fe-8e23-433b3a1942d0
+  // 00030000-78fc-48fe-8e23-433b3a1942d0
   constexpr ble_uuid128_t BaseUuid() {
     return CharUuid(0x00, 0x00);
   }

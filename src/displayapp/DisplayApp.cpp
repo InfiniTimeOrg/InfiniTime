@@ -1,9 +1,9 @@
-#include "DisplayApp.h"
+#include "displayapp/DisplayApp.h"
 #include <libraries/log/nrf_log.h>
-#include <displayapp/screens/HeartRate.h>
-#include <displayapp/screens/Motion.h>
-#include <displayapp/screens/Timer.h>
-#include <displayapp/screens/Alarm.h>
+#include "displayapp/screens/HeartRate.h"
+#include "displayapp/screens/Motion.h"
+#include "displayapp/screens/Timer.h"
+#include "displayapp/screens/Alarm.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
@@ -258,6 +258,26 @@ void DisplayApp::Refresh() {
             brightnessController.Set(settingsController.GetBrightness());
             brightnessController.Backup();
           }
+        }
+        break;
+      case Messages::ButtonLongPressed:
+        if (currentApp != Apps::Clock) {
+          if (currentApp == Apps::Notifications) {
+            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Up);
+          } else if (currentApp == Apps::QuickSettings) {
+            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
+          } else {
+            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
+          }
+        }
+        break;
+      case Messages::ButtonLongerPressed:
+        // Create reboot app and open it instead
+        LoadApp(Apps::SysInfo, DisplayApp::FullRefreshDirections::Up);
+        break;
+      case Messages::ButtonDoubleClicked:
+        if (currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
+          LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
         }
         break;
 

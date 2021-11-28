@@ -2,7 +2,8 @@
 
 #include <lvgl/lvgl.h>
 #include <cstdint>
-#include "Screen.h"
+#include <algorithm> // std::fill
+#include "displayapp/screens/Screen.h"
 
 namespace Pinetime {
   namespace Components {

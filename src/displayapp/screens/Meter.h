@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include <lvgl/src/lv_core/lv_style.h>
 #include <lvgl/src/lv_core/lv_obj.h>
 

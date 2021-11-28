@@ -1,10 +1,10 @@
-#include "Twos.h"
-#include <lvgl/lvgl.h>
-#include <string>
-#include <charconv>
+#include "displayapp/screens/Twos.h"
 #include <array>
-#include <vector>
+#include <cstdio>
+#include <cstdlib>
+#include <lvgl/lvgl.h>
 #include <utility>
+#include <vector>
 
 using namespace Pinetime::Applications::Screens;
 
@@ -265,7 +265,9 @@ void Twos::updateGridDisplay(Tile grid[][4]) {
   for (int row = 0; row < 4; row++) {
     for (int col = 0; col < 4; col++) {
       if (grid[row][col].value) {
-        lv_table_set_cell_value(gridDisplay, row, col, (std::to_string(grid[row][col].value)).c_str());
+        char buffer[7];
+        sprintf(buffer, "%d", grid[row][col].value);
+        lv_table_set_cell_value(gridDisplay, row, col, buffer);
       } else {
         lv_table_set_cell_value(gridDisplay, row, col, "");
       }

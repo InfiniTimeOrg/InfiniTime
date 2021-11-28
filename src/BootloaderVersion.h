@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <cstddef>
+
 namespace Pinetime {
   class BootloaderVersion {
   public:

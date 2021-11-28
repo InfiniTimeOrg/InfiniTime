@@ -1,4 +1,4 @@
-#include "Spi.h"
+#include "drivers/Spi.h"
 #include <hal/nrf_gpio.h>
 #include <nrfx_log.h>
 
