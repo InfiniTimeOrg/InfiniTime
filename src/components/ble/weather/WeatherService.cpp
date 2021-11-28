@@ -48,18 +48,11 @@ namespace Pinetime {
         }
         // Decode
         QCBORDecodeContext decodeContext;
-        UsefulBufC encodedCbor;
-        // TODO: Check, uninit fine?
+        UsefulBufC encodedCbor = {ctxt->om, OS_MBUF_PKTLEN(ctxt->om)};
 
         QCBORDecode_Init(&decodeContext, encodedCbor, QCBOR_DECODE_MODE_NORMAL);
         QCBORDecode_EnterMap(&decodeContext, nullptr);
         // Always encodes to the smallest number of bytes based on the value
-        int64_t tmpVersion = 0;
-        QCBORDecode_GetInt64InMapSZ(&decodeContext, "Version", &tmpVersion);
-        if (tmpVersion != 1) {
-          // TODO: Return better error?
-          return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-        }
         int64_t tmpTimestamp = 0;
         QCBORDecode_GetInt64InMapSZ(&decodeContext, "Timestamp", &tmpTimestamp);
         int64_t tmpExpires = 0;
