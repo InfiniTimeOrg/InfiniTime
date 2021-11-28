@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <chrono>
 #include "displayapp/screens/Screen.h"
+#include "components/heartrate/HeartRateController.h"
 #include <bits/unique_ptr.h>
 #include "systemtask/SystemTask.h"
 #include <lvgl/src/lv_core/lv_style.h>
