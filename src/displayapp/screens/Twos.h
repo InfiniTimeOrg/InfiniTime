@@ -1,7 +1,7 @@
 #pragma once
 
 #include <lvgl/src/lv_core/lv_obj.h>
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 
 namespace Pinetime {
   namespace Applications {

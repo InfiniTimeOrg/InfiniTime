@@ -1,5 +1,5 @@
-#include "BatteryInfo.h"
-#include "../DisplayApp.h"
+#include "displayapp/screens/BatteryInfo.h"
+#include "displayapp/DisplayApp.h"
 #include "components/battery/BatteryController.h"
 
 using namespace Pinetime::Applications::Screens;

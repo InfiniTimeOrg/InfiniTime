@@ -20,7 +20,7 @@
 #include <FreeRTOS.h>
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <string>
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 
 namespace Pinetime {
   namespace Controllers {

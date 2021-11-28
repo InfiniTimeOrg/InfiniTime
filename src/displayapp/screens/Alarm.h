@@ -17,9 +17,9 @@
 */
 #pragma once
 
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include "systemtask/SystemTask.h"
-#include "../LittleVgl.h"
+#include "displayapp/LittleVgl.h"
 #include "components/alarm/AlarmController.h"
 
 namespace Pinetime {

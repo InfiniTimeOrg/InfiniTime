@@ -1,6 +1,6 @@
-#include "AlertNotificationClient.h"
+#include "components/ble/AlertNotificationClient.h"
 #include <algorithm>
-#include "NotificationManager.h"
+#include "components/ble/NotificationManager.h"
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;

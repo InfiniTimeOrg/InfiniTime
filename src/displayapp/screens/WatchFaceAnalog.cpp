@@ -1,9 +1,9 @@
-#include <libs/lvgl/lvgl.h>
-#include "WatchFaceAnalog.h"
-#include "BatteryIcon.h"
-#include "BleIcon.h"
-#include "Symbols.h"
-#include "NotificationIcon.h"
+#include "displayapp/screens/WatchFaceAnalog.h"
+#include <lvgl/lvgl.h>
+#include "displayapp/screens/BatteryIcon.h"
+#include "displayapp/screens/BleIcon.h"
+#include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/NotificationIcon.h"
 
 LV_IMG_DECLARE(bg_clock);
 

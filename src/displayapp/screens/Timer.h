@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "systemtask/SystemTask.h"
-#include "../LittleVgl.h"
+#include "displayapp/LittleVgl.h"
 
 #include "components/timer/TimerController.h"
 

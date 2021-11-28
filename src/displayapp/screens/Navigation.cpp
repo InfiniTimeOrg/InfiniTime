@@ -15,9 +15,9 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#include "Navigation.h"
+#include "displayapp/screens/Navigation.h"
 #include <cstdint>
-#include "../DisplayApp.h"
+#include "displayapp/DisplayApp.h"
 #include "components/ble/NavigationService.h"
 
 using namespace Pinetime::Applications::Screens;

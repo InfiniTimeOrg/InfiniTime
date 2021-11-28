@@ -31,6 +31,7 @@ If there are no preconfigured rules for your IDE, you can use one of the existin
  - **Includes** :
     - files from the project : `#include "relative/path/to/the/file.h"`
     - external files and std : `#include <file.h>`
+    - use includes relative to included directories like `src`, not relative to the current file. Don't do: `#include "../file.h"`
  - Only use [primary spellings for operators and tokens](https://en.cppreference.com/w/cpp/language/operator_alternative)
  - Use auto sparingly. Don't use auto for [fundamental/built-in types](https://en.cppreference.com/w/cpp/language/types) and [fixed width integer types](https://en.cppreference.com/w/cpp/types/integer), except when initializing with a cast to avoid duplicating the type name.
  - Examples:
