@@ -80,15 +80,15 @@ namespace Pinetime {
       bool HasTimelineEventOfType(WeatherData::eventtype type) const;
 
     private:
-      // 00030000-78fc-48fe-8e23-433b3a1942d0
+      // 00040000-78fc-48fe-8e23-433b3a1942d0
       static constexpr ble_uuid128_t BaseUuid() {
         return CharUuid(0x00, 0x00);
       }
 
-      // 0003yyxx-78fc-48fe-8e23-433b3a1942d0
+      // 0004yyxx-78fc-48fe-8e23-433b3a1942d0
       static constexpr ble_uuid128_t CharUuid(uint8_t x, uint8_t y) {
         return ble_uuid128_t {.u = {.type = BLE_UUID_TYPE_128},
-                              .value = {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, y, x, 0x03, 0x00}};
+                              .value = {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, y, x, 0x04, 0x00}};
       }
 
       ble_uuid128_t weatherUuid {BaseUuid()};
