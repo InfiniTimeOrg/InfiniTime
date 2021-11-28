@@ -48,13 +48,17 @@ namespace Pinetime {
         }
         // Decode
         QCBORDecodeContext decodeContext;
-        UsefulBufC encodedCbor = {ctxt->om, OS_MBUF_PKTLEN(ctxt->om)};
+        UsefulBufC encodedCbor = {ctxt->om->om_data, OS_MBUF_PKTLEN(ctxt->om)};
 
         QCBORDecode_Init(&decodeContext, encodedCbor, QCBOR_DECODE_MODE_NORMAL);
+        // KINDLY provide us a fixed-length map
         QCBORDecode_EnterMap(&decodeContext, nullptr);
         // Always encodes to the smallest number of bytes based on the value
         int64_t tmpTimestamp = 0;
         QCBORDecode_GetInt64InMapSZ(&decodeContext, "Timestamp", &tmpTimestamp);
+        if (QCBORDecode_GetError(&decodeContext) != QCBOR_SUCCESS) {
+          return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+        }
         int64_t tmpExpires = 0;
         QCBORDecode_GetInt64InMapSZ(&decodeContext, "Expires", &tmpExpires);
         if (tmpExpires < 0 || tmpExpires > 4294967295) {
@@ -173,8 +177,7 @@ namespace Pinetime {
         GetTimelineLength();
         QCBORDecode_ExitMap(&decodeContext);
 
-        auto uErr = QCBORDecode_Finish(&decodeContext);
-        if (uErr != 0) {
+        if (QCBORDecode_Finish(&decodeContext) != QCBOR_SUCCESS) {
           return BLE_ATT_ERR_INSUFFICIENT_RES;
         }
       } else if (ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR) {
