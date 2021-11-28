@@ -87,7 +87,7 @@ namespace Pinetime {
             if (UsefulBuf_IsNULLOrEmptyC(String) != 0) {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            airquality->polluter = std::make_unique<std::string>(static_cast<const char*>(String.ptr), String.len);
+            airquality->polluter = std::string(static_cast<const char*>(String.ptr), String.len);
             int64_t tmpAmount = 0;
             QCBORDecode_GetInt64InMapSZ(&decodeContext, "Amount", &tmpAmount);
             if (tmpAmount < 0) {

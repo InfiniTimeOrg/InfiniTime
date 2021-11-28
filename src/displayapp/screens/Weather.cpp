@@ -1,14 +1,26 @@
+/*  Copyright (C) 2021 Avamander
+
+    This file is part of InfiniTime.
+
+    InfiniTime is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    InfiniTime is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
 #include "Weather.h"
 #include <lvgl/lvgl.h>
 #include <components/ble/weather/WeatherService.h>
-#include "../DisplayApp.h"
 #include "Label.h"
-#include "Version.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
-#include "components/brightness/BrightnessController.h"
-#include "components/datetime/DateTimeController.h"
-#include "drivers/Watchdog.h"
 #include "components/ble/weather/WeatherData.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -41,11 +53,10 @@ Weather::~Weather() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool Weather::Refresh() {
+void Weather::Refresh() {
   if (running) {
-    screens.Refresh();
+    // screens.Refresh();
   }
-  return running;
 }
 
 bool Weather::OnButtonPushed() {

@@ -16,7 +16,7 @@ namespace Pinetime {
 
         ~Weather() override;
 
-        bool Refresh() override;
+        void Refresh() override;
 
         bool OnButtonPushed() override;
 
