@@ -1,4 +1,4 @@
-#include "Brightness.h"
+#include "displayapp/screens/Brightness.h"
 #include <lvgl/lvgl.h>
 
 using namespace Pinetime::Applications::Screens;

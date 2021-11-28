@@ -1,6 +1,6 @@
-#include "Paddle.h"
-#include "../DisplayApp.h"
-#include "../LittleVgl.h"
+#include "displayapp/screens/Paddle.h"
+#include "displayapp/DisplayApp.h"
+#include "displayapp/LittleVgl.h"
 
 using namespace Pinetime::Applications::Screens;
 

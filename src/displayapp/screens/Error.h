@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include "BootErrors.h"
 #include <lvgl/lvgl.h>
 

@@ -1,6 +1,6 @@
-#include "Tile.h"
-#include "../DisplayApp.h"
-#include "BatteryIcon.h"
+#include "displayapp/screens/Tile.h"
+#include "displayapp/DisplayApp.h"
+#include "displayapp/screens/BatteryIcon.h"
 
 using namespace Pinetime::Applications::Screens;
 

@@ -1,6 +1,6 @@
-#include "InfiniPaint.h"
-#include "../DisplayApp.h"
-#include "../LittleVgl.h"
+#include "displayapp/screens/InfiniPaint.h"
+#include "displayapp/DisplayApp.h"
+#include "displayapp/LittleVgl.h"
 
 using namespace Pinetime::Applications::Screens;
 

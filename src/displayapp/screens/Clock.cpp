@@ -1,4 +1,4 @@
-#include "Clock.h"
+#include "displayapp/screens/Clock.h"
 
 #include <date/date.h>
 #include <lvgl/lvgl.h>
@@ -6,10 +6,10 @@
 #include "components/motion/MotionController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
-#include "../DisplayApp.h"
-#include "WatchFaceDigital.h"
-#include "WatchFaceAnalog.h"
-#include "PineTimeStyle.h"
+#include "displayapp/DisplayApp.h"
+#include "displayapp/screens/WatchFaceDigital.h"
+#include "displayapp/screens/WatchFaceAnalog.h"
+#include "displayapp/screens/PineTimeStyle.h"
 
 using namespace Pinetime::Applications::Screens;
 

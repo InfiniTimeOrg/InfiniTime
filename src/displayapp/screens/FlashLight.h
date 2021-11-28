@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include "components/brightness/BrightnessController.h"
 #include "systemtask/SystemTask.h"
 #include <cstdint>

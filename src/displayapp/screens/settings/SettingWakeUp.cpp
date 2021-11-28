@@ -1,4 +1,4 @@
-#include "SettingWakeUp.h"
+#include "displayapp/screens/settings/SettingWakeUp.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Screen.h"

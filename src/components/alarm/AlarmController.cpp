@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#include "AlarmController.h"
+#include "components/alarm/AlarmController.h"
 #include "systemtask/SystemTask.h"
 #include "app_timer.h"
 #include "task.h"

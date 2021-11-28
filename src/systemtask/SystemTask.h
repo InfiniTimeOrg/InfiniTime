@@ -11,7 +11,7 @@
 #include <drivers/PinMap.h>
 #include <components/motion/MotionController.h>
 
-#include "SystemMonitor.h"
+#include "systemtask/SystemMonitor.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/NimbleController.h"
 #include "components/ble/NotificationManager.h"
@@ -33,7 +33,7 @@
 #endif
 
 #include "drivers/Watchdog.h"
-#include "Messages.h"
+#include "systemtask/Messages.h"
 
 extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
 namespace Pinetime {

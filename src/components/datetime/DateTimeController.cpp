@@ -1,4 +1,4 @@
-#include "DateTimeController.h"
+#include "components/datetime/DateTimeController.h"
 #include <date/date.h>
 #include <libraries/log/nrf_log.h>
 #include <systemtask/SystemTask.h>

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <array>
-#include "Biquad.h"
-#include "Ptagc.h"
+#include "components/heartrate/Biquad.h"
+#include "components/heartrate/Ptagc.h"
 
 namespace Pinetime {
   namespace Controllers {

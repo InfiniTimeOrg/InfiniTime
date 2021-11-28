@@ -1,4 +1,4 @@
-#include "SettingDisplay.h"
+#include "displayapp/screens/settings/SettingDisplay.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/Messages.h"

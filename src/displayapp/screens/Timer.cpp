@@ -1,8 +1,8 @@
-#include "Timer.h"
+#include "displayapp/screens/Timer.h"
 
-#include "Screen.h"
-#include "Symbols.h"
-#include "lvgl/lvgl.h"
+#include "displayapp/screens/Screen.h"
+#include "displayapp/screens/Symbols.h"
+#include <lvgl/lvgl.h>
 
 using namespace Pinetime::Applications::Screens;
 

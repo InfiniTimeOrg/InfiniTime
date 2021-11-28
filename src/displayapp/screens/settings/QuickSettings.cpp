@@ -1,4 +1,4 @@
-#include "QuickSettings.h"
+#include "displayapp/screens/settings/QuickSettings.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/BatteryIcon.h"

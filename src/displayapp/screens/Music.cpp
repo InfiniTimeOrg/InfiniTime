@@ -15,10 +15,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#include "Music.h"
-#include "Symbols.h"
+#include "displayapp/screens/Music.h"
+#include "displayapp/screens/Symbols.h"
 #include <cstdint>
-#include "../DisplayApp.h"
+#include "displayapp/DisplayApp.h"
 #include "components/ble/MusicService.h"
 #include "displayapp/icons/music/disc.cpp"
 #include "displayapp/icons/music/disc_f_1.cpp"

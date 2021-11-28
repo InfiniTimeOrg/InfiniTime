@@ -1,4 +1,4 @@
-#include "Colors.h"
+#include "displayapp/Colors.h"
 
 using namespace Pinetime::Applications;
 using namespace Pinetime::Controllers;

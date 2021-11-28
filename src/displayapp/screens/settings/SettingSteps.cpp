@@ -1,4 +1,4 @@
-#include "SettingSteps.h"
+#include "displayapp/screens/settings/SettingSteps.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
