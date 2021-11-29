@@ -42,6 +42,7 @@ namespace Pinetime {
       Notification GetLastNotification();
       Notification GetNext(Notification::Id id);
       Notification GetPrevious(Notification::Id id);
+      void RemoveNotification(Notification& notif);
       bool ClearNewNotificationFlag();
       bool AreNewNotificationsAvailable();
 
@@ -52,7 +53,7 @@ namespace Pinetime {
 
     private:
       Notification::Id GetNextId();
-      static constexpr uint8_t TotalNbNotifications = 5;
+      static constexpr uint8_t TotalNbNotifications = 20;
       std::array<Notification, TotalNbNotifications> notifications;
       uint8_t readIndex = 0;
       uint8_t writeIndex = 0;

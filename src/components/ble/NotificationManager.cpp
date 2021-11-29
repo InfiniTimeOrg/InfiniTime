@@ -75,6 +75,10 @@ NotificationManager::Notification NotificationManager::GetPrevious(NotificationM
   return result;
 }
 
+void RemoveNotification(Notification& notif) {
+  notif.valid = false;
+}
+
 bool NotificationManager::AreNewNotificationsAvailable() {
   return newNotification;
 }

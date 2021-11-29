@@ -104,6 +104,11 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        alertNotificationService);
     }
       return true;
+    case Pinetime::Applications::TouchEvents::SwipeLeft: {
+      auto notification = notificationManager.GetLastNotification();
+      notificationManager.RemoveNotification(notification);
+    }
+    [[fallthrough]];
     case Pinetime::Applications::TouchEvents::SwipeUp: {
       Controllers::NotificationManager::Notification nextNotification;
       if (validDisplay)
