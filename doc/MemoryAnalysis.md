@@ -60,7 +60,7 @@ Puncover is really easy to install:
  - Launch a browser at http://localhost:5000/
 
 ### Analysis
-Using the MAP file and tools, we can easily see what symbols are using most of the flash memory. In this case, with no surprise, fonts and graphics are the largest use of flash memory.
+Using the MAP file and tools, we can easily see what symbols are using most of the flash memory. In this case, unsuprisingly, fonts and graphics are the largest use of flash memory.
 
 ![Puncover](./memoryAnalysis/puncover-all-symbols.png)
 
@@ -245,7 +245,7 @@ Using this technique, I was able to trace all malloc calls at boot (boot -> digi
  - https://www.embedded.com/mastering-stack-and-heap-for-system-reliability-part-3-avoiding-heap-errors/
 
 ## LVGL
-I did a deep analysis of the usage of the buffer dedicated for lvgl (managed by lv_mem).
+I did a deep analysis of the usage of the buffer dedicated to lvgl (managed by lv_mem).
 This buffer is used by lvgl to allocated memory for drivers (display/touch), screens, themes, and all widgets created by the apps.
 
 The usage of this buffer can be monitored using this code :
@@ -256,7 +256,7 @@ lv_mem_monitor(&mon);
 NRF_LOG_INFO("\t Free %d / %d -- max %d", mon.free_size, mon.total_size, mon.max_used);
 ```
 
-The most interesting metric is `mon.max_used` which specifies the maximum number of bytes that were used from this buffer since the initialization of lvgl.
+The most interesting metric is `mon.max_used` which specifies the maximum number of bytes used from this buffer since the initialization of lvgl.
 According to my measurements, initializing the theme, display/touch driver and screens cost **4752** bytes!
 Then, initializing the digital clock face costs **1541 bytes**.
 For example a simple lv_label needs **~140 bytes** of memory.
