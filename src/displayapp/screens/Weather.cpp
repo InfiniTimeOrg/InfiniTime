@@ -74,6 +74,16 @@ std::unique_ptr<Screen> Weather::CreateScreenTemperature() {
   std::unique_ptr<Controllers::WeatherData::Temperature>& current = weatherService.GetCurrentTemperature();
   if (current->timestamp == 0) {
     // Do not use the data, it's invalid
+    lv_label_set_text_fmt(label,
+                          "#FFFF00 Temperature#\n\n"
+                          "#444444 %d#\n\n"
+                          "#444444 %d#\n\n"
+                          "%d\n"
+                          "%d\n",
+                          0,
+                          0,
+                          0,
+                          0);
   } else {
     lv_label_set_text_fmt(label,
                           "#FFFF00 Temperature#\n\n"
@@ -97,6 +107,16 @@ std::unique_ptr<Screen> Weather::CreateScreenAir() {
   std::unique_ptr<Controllers::WeatherData::AirQuality>& current = weatherService.GetCurrentQuality();
   if (current->timestamp == 0) {
     // Do not use the data, it's invalid
+    lv_label_set_text_fmt(label,
+                          "#FFFF00 Air quality#\n\n"
+                          "#444444 %s#\n"
+                          "#444444 %d#\n\n"
+                          "%d\n"
+                          "%d\n",
+                          "",
+                          0,
+                          0,
+                          0);
   } else {
     lv_label_set_text_fmt(label,
                           "#FFFF00 Air quality#\n\n"

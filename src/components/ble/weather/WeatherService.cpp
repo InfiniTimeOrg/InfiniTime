@@ -29,6 +29,7 @@ namespace Pinetime {
     WeatherService::WeatherService(System::SystemTask& system, DateTime& dateTimeController)
       : system(system), dateTimeController(dateTimeController) {
       nullHeader = &nullTimelineheader;
+      nullTimelineheader->timestamp = 0;
     }
 
     void WeatherService::Init() {
@@ -211,7 +212,7 @@ namespace Pinetime {
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Clouds>&>(this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Clouds>&>(*this->nullHeader);
     }
 
     std::unique_ptr<WeatherData::Obscuration>& WeatherService::GetCurrentObscuration() {
@@ -222,7 +223,7 @@ namespace Pinetime {
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Obscuration>&>(this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Obscuration>&>(*this->nullHeader);
     }
 
     std::unique_ptr<WeatherData::Precipitation>& WeatherService::GetCurrentPrecipitation() {
@@ -233,7 +234,7 @@ namespace Pinetime {
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Precipitation>&>(this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Precipitation>&>(*this->nullHeader);
     }
 
     std::unique_ptr<WeatherData::Wind>& WeatherService::GetCurrentWind() {
@@ -244,7 +245,7 @@ namespace Pinetime {
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Wind>&>(this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Wind>&>(*this->nullHeader);
     }
 
     std::unique_ptr<WeatherData::Temperature>& WeatherService::GetCurrentTemperature() {
@@ -255,7 +256,7 @@ namespace Pinetime {
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Temperature>&>(this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Temperature>&>(*this->nullHeader);
     }
 
     std::unique_ptr<WeatherData::Humidity>& WeatherService::GetCurrentHumidity() {
@@ -266,7 +267,7 @@ namespace Pinetime {
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Humidity>&>(this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Humidity>&>(*this->nullHeader);
     }
 
     std::unique_ptr<WeatherData::Pressure>& WeatherService::GetCurrentPressure() {
@@ -277,7 +278,7 @@ namespace Pinetime {
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Pressure>&>(this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Pressure>&>(*this->nullHeader);
     }
 
     std::unique_ptr<WeatherData::Location>& WeatherService::GetCurrentLocation() {
@@ -288,7 +289,7 @@ namespace Pinetime {
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Location>&>(this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Location>&>(*this->nullHeader);
     }
 
     std::unique_ptr<WeatherData::AirQuality>& WeatherService::GetCurrentQuality() {
@@ -299,7 +300,7 @@ namespace Pinetime {
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::AirQuality>&>(this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::AirQuality>&>(*this->nullHeader);
     }
 
     size_t WeatherService::GetTimelineLength() const {
@@ -330,7 +331,7 @@ namespace Pinetime {
       timeline.erase(std::remove_if(std::begin(timeline),
                                     std::end(timeline),
                                     [&](std::unique_ptr<WeatherData::TimelineHeader> const& header) {
-                                      return isEventStillValid(header, timeCurrent);
+                                      return !isEventStillValid(header, timeCurrent);
                                     }),
                      std::end(timeline));
 
