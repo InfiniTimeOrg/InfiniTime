@@ -32,13 +32,13 @@ namespace Pinetime {
 
         std::unique_ptr<Screen> CreateScreenTemperature();
 
-        std::unique_ptr<Screen> CreateScreen2();
+        std::unique_ptr<Screen> CreateScreenAir();
 
-        std::unique_ptr<Screen> CreateScreen3();
+        std::unique_ptr<Screen> CreateScreenClouds();
 
-        std::unique_ptr<Screen> CreateScreen4();
+        std::unique_ptr<Screen> CreateScreenPrecipitation();
 
-        std::unique_ptr<Screen> CreateScreen5();
+        std::unique_ptr<Screen> CreateScreenHumidity();
       };
     }
   }

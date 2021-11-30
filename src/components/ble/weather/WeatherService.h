@@ -51,15 +51,15 @@ namespace Pinetime {
       /*
        * Helper functions for quick access to currently valid data
        */
-      WeatherData::Location GetCurrentLocation() const;
-      WeatherData::Clouds GetCurrentClouds() const;
-      WeatherData::Obscuration GetCurrentObscuration() const;
-      WeatherData::Precipitation GetCurrentPrecipitation() const;
-      WeatherData::Wind GetCurrentWind() const;
-      WeatherData::Temperature GetCurrentTemperature() const;
-      WeatherData::Humidity GetCurrentHumidity() const;
-      WeatherData::Pressure GetCurrentPressure() const;
-      WeatherData::AirQuality GetCurrentQuality() const;
+      std::unique_ptr<WeatherData::Location>& GetCurrentLocation();
+      std::unique_ptr<WeatherData::Clouds>& GetCurrentClouds();
+      std::unique_ptr<WeatherData::Obscuration>& GetCurrentObscuration();
+      std::unique_ptr<WeatherData::Precipitation>& GetCurrentPrecipitation();
+      std::unique_ptr<WeatherData::Wind>& GetCurrentWind();
+      std::unique_ptr<WeatherData::Temperature>& GetCurrentTemperature();
+      std::unique_ptr<WeatherData::Humidity>& GetCurrentHumidity();
+      std::unique_ptr<WeatherData::Pressure>& GetCurrentPressure();
+      std::unique_ptr<WeatherData::AirQuality>& GetCurrentQuality();
 
       /*
        * Management functions
@@ -123,7 +123,6 @@ namespace Pinetime {
 
       /**
        * Cleans up the timeline of expired events
-       * @return result code
        */
       void TidyTimeline();
 
@@ -137,6 +136,18 @@ namespace Pinetime {
        * Returns current UNIX timestamp
        */
       uint64_t GetCurrentUnixTimestamp() const;
+
+      /**
+       * Checks if the event hasn't gone past and expired
+       *
+       * @param header timeline event to check
+       * @param currentTimestamp what's the time right now
+       * @return if the event is valid
+       */
+      static bool isEventStillValid(const std::unique_ptr<WeatherData::TimelineHeader>& uniquePtr, const uint64_t timestamp);
+
+      std::unique_ptr<WeatherData::TimelineHeader> nullTimelineheader = std::make_unique<WeatherData::TimelineHeader>();
+      std::unique_ptr<WeatherData::TimelineHeader>* nullHeader;
     };
   }
 }
