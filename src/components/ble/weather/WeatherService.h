@@ -94,12 +94,16 @@ namespace Pinetime {
       ble_uuid128_t weatherUuid {BaseUuid()};
 
       /**
-       * Just write timeline data here
+       * Just write timeline data here.
+       *
+       * See {@link WeatherData.h} for more information.
        */
       ble_uuid128_t weatherDataCharUuid {CharUuid(0x00, 0x01)};
       /**
-       * This doesn't take timeline data,
-       * provides some control over it
+       * This doesn't take timeline data, provides some control over it.
+       *
+       * NOTE: Currently not supported. Companion app implementer feedback required.
+       * There's very little point in solidifying an API before we know the needs.
        */
       ble_uuid128_t weatherControlCharUuid {CharUuid(0x00, 0x02)};
 
