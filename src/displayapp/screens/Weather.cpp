@@ -140,6 +140,14 @@ std::unique_ptr<Screen> Weather::CreateScreenClouds() {
   std::unique_ptr<Controllers::WeatherData::Clouds>& current = weatherService.GetCurrentClouds();
   if (current->timestamp == 0) {
     // Do not use the data, it's invalid
+    lv_label_set_text_fmt(label,
+                          "#FFFF00 Clouds#\n\n"
+                          "#444444 %d%%#\n\n"
+                          "%d\n"
+                          "%d\n",
+                          0,
+                          0,
+                          0);
   } else {
     lv_label_set_text_fmt(label,
                           "#FFFF00 Clouds#\n\n"
@@ -161,6 +169,14 @@ std::unique_ptr<Screen> Weather::CreateScreenPrecipitation() {
   std::unique_ptr<Controllers::WeatherData::Precipitation>& current = weatherService.GetCurrentPrecipitation();
   if (current->timestamp == 0) {
     // Do not use the data, it's invalid
+    lv_label_set_text_fmt(label,
+                          "#FFFF00 Precipitation#\n\n"
+                          "#444444 %d%%#\n\n"
+                          "%d\n"
+                          "%d\n",
+                          0,
+                          0,
+                          0);
   } else {
     lv_label_set_text_fmt(label,
                           "#FFFF00 Precipitation#\n\n"
@@ -182,6 +198,14 @@ std::unique_ptr<Screen> Weather::CreateScreenHumidity() {
   std::unique_ptr<Controllers::WeatherData::Humidity>& current = weatherService.GetCurrentHumidity();
   if (current->timestamp == 0) {
     // Do not use the data, it's invalid
+    lv_label_set_text_fmt(label,
+                          "#FFFF00 Humidity#\n\n"
+                          "#444444 %d%%#\n\n"
+                          "%d\n"
+                          "%d\n",
+                          0,
+                          0,
+                          0);
   } else {
     lv_label_set_text_fmt(label,
                           "#FFFF00 Humidity#\n\n"
