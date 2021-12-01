@@ -51,6 +51,8 @@ namespace Pinetime {
         Sand = 6,
         /** Water particles suspended in the air; low-ish visibility; temperature is near dewpoint */
         Mist = 7,
+        /** This is SPECIAL in the sense that the thing raining down is doing the obscuration */
+        Precipitation = 8,
         Length
       };
 
@@ -84,6 +86,8 @@ namespace Pinetime {
         SnowGrains = 8,
         /** Needles; columns or plates of ice. Sometimes described as "diamond dust". In very cold regions */
         IceCrystals = 9,
+        /** It's raining down ash, e.g. from a volcano */
+        Ash = 10,
         Length
       };
 
@@ -230,9 +234,15 @@ namespace Pinetime {
        */
       class Temperature : public TimelineHeader {
       public:
-        /** Temperature °C but multiplied by 100 (e.g. -12.50°C becomes -1250) */
+        /**
+         * Temperature °C but multiplied by 100 (e.g. -12.50°C becomes -1250)
+         * -32768 is reserved for "no data"
+         */
         int16_t temperature;
-        /** Dewpoint °C but multiplied by 100 (e.g. -12.50°C becomes -1250) */
+        /**
+         * Dewpoint °C but multiplied by 100 (e.g. -12.50°C becomes -1250)
+         * -32768 is reserved for "no data"
+         */
         int16_t dewPoint;
       };
 
