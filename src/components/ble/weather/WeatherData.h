@@ -20,6 +20,24 @@
 /**
  * Different weather events, weather data structures used by {@link WeatherService.h}
  *
+ * How to upload events to the timeline?
+ *
+ * All timeline write payloads are simply CBOR-encoded payloads of the structs described below.
+ *
+ * All payloads have a mandatory header part and the dynamic part that
+ * depends on the event type specified in the header. If you don't,
+ * you'll get an error returned. Data is relatively well-validated,
+ * so keep in the bounds of the data types given.
+ *
+ * Write all struct members into a single finite-sized map, and write it to the characteristic.
+ * Mind the MTU.
+ *
+ * How to debug?
+ *
+ * There's a Screen that you can compile into your firmware that shows currently valid events.
+ * You can adapt that to display something else. That part right now is very much work in progress
+ * because the exact requirements are not yet known.
+ *
  *
  * Implemented based on and other material:
  * https://en.wikipedia.org/wiki/METAR
@@ -152,6 +170,8 @@ namespace Pinetime {
 
       /**
        * Valid event query
+       *
+       * NOTE: Not currently available, until needs are better known
        */
       class ValidEventQuery {
       public:
