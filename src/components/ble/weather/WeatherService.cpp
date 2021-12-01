@@ -312,7 +312,7 @@ namespace Pinetime {
             humidity->expires = tmpExpires;
 
             int64_t tmpType = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "DewPoint", &tmpType);
+            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Humidity", &tmpType);
             if (tmpType < 0 || tmpType >= 255) {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
