@@ -1,8 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <FreeRTOS.h>
-#include <timers.h>
 #include "displayapp/screens/Screen.h"
 #include <lvgl/lvgl.h>
 #include "components/datetime/DateTimeController.h"
