@@ -190,7 +190,10 @@ namespace Pinetime {
       public:
         /** Type */
         obscurationtype type;
-        /** Visibility distance in meters */
+        /**
+         * Visibility distance in meters
+         * 65535 is reserved for unspecified
+         */
         uint16_t amount;
       };
 
@@ -199,7 +202,9 @@ namespace Pinetime {
       public:
         /** Type */
         precipitationtype type;
-        /** How much is it going to rain? In millimeters */
+        /** How much is it going to rain? In millimeters
+         * 255 is reserved for unspecified
+         **/
         uint8_t amount;
       };
 
