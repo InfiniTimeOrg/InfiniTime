@@ -188,7 +188,7 @@ namespace Pinetime {
       /** Specifies how obscuration is stored */
       class Obscuration : public TimelineHeader {
       public:
-        /** Type */
+        /** Type of precipitation */
         obscurationtype type;
         /**
          * Visibility distance in meters
@@ -200,9 +200,10 @@ namespace Pinetime {
       /** Specifies how precipitation is stored */
       class Precipitation : public TimelineHeader {
       public:
-        /** Type */
+        /** Type of precipitation */
         precipitationtype type;
-        /** How much is it going to rain? In millimeters
+        /**
+         * How much is it going to rain? In millimeters
          * 255 is reserved for unspecified
          **/
         uint8_t amount;
@@ -235,7 +236,7 @@ namespace Pinetime {
        * As it's annoying to figure out the dewpoint on the watch,
        * please send it from the companion
        *
-       * We don't do floats, microdegrees are not useful. Make sure to multiply.
+       * We don't do floats, picodegrees are not useful. Make sure to multiply.
        */
       class Temperature : public TimelineHeader {
       public:
@@ -344,7 +345,7 @@ namespace Pinetime {
          * ng/m³ for heavy metals
          *
          * List is not comprehensive, should be improved.
-         * The current ones are what watchapps assume.
+         * The current ones are what watchapps assume!
          *
          * Note: ppb and ppm to concentration should be calculated on the companion, using
          * the correct formula (taking into account temperature and air pressure)
