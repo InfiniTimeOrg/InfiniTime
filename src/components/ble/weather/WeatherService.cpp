@@ -520,7 +520,7 @@ namespace Pinetime {
                                ((60 - dateTimeController.Minutes()) * 60) - (60 - dateTimeController.Seconds());
       int16_t result = -32768;
       for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::AirQuality && isEventStillValid(header, currentTimestamp) &&
+        if (header->eventType == WeatherData::eventtype::Temperature && isEventStillValid(header, currentTimestamp) &&
             header->timestamp < currentDayEnd &&
             reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature != -32768) {
           int16_t temperature = reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature;
@@ -543,7 +543,7 @@ namespace Pinetime {
                                ((60 - dateTimeController.Minutes()) * 60) - (60 - dateTimeController.Seconds());
       int16_t result = -32768;
       for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::AirQuality && isEventStillValid(header, currentTimestamp) &&
+        if (header->eventType == WeatherData::eventtype::Temperature && isEventStillValid(header, currentTimestamp) &&
             header->timestamp < currentDayEnd &&
             reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature != -32768) {
           int16_t temperature = reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature;
