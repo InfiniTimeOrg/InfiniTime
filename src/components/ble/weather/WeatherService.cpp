@@ -513,5 +513,51 @@ namespace Pinetime {
     uint64_t WeatherService::GetCurrentUnixTimestamp() const {
       return std::chrono::duration_cast<std::chrono::seconds>(dateTimeController.CurrentDateTime().time_since_epoch()).count();
     }
+
+    int16_t WeatherService::getTodayMinTemp() const {
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      uint64_t currentDayEnd = currentTimestamp - ((24 - dateTimeController.Hours()) * 60 * 60) -
+                               ((60 - dateTimeController.Minutes()) * 60) - (60 - dateTimeController.Seconds());
+      int16_t result = -32768;
+      for (auto&& header : this->timeline) {
+        if (header->eventType == WeatherData::eventtype::AirQuality && isEventStillValid(header, currentTimestamp) &&
+            header->timestamp < currentDayEnd &&
+            reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature != -32768) {
+          int16_t temperature = reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature;
+          if (result == -32768) {
+            result = temperature;
+          } else if (result > temperature) {
+            result = temperature;
+          } else {
+            // The temperature in this item is higher than the lowest we've found
+          }
+        }
+      }
+
+      return result;
+    }
+
+    int16_t WeatherService::getTodayMaxTemp() const {
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      uint64_t currentDayEnd = currentTimestamp - ((24 - dateTimeController.Hours()) * 60 * 60) -
+                               ((60 - dateTimeController.Minutes()) * 60) - (60 - dateTimeController.Seconds());
+      int16_t result = -32768;
+      for (auto&& header : this->timeline) {
+        if (header->eventType == WeatherData::eventtype::AirQuality && isEventStillValid(header, currentTimestamp) &&
+            header->timestamp < currentDayEnd &&
+            reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature != -32768) {
+          int16_t temperature = reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature;
+          if (result == -32768) {
+            result = temperature;
+          } else if (result < temperature) {
+            result = temperature;
+          } else {
+            // The temperature in this item is lower than the highest we've found
+          }
+        }
+      }
+
+      return result;
+    }
   }
 }

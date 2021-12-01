@@ -61,6 +61,17 @@ namespace Pinetime {
       std::unique_ptr<WeatherData::Pressure>& GetCurrentPressure();
       std::unique_ptr<WeatherData::AirQuality>& GetCurrentQuality();
 
+      /**
+       * Searches for the current day's maximum temperature
+       * @return -32768 if there's no data, degrees celcius times 100 otherwise
+       */
+      int16_t getTodayMaxTemp() const;
+      /**
+       * Searches for the current day's minimum temperature
+       * @return -32768 if there's no data, degrees celcius times 100 otherwise
+       */
+      int16_t getTodayMinTemp() const;
+
       /*
        * Management functions
        */
@@ -75,7 +86,6 @@ namespace Pinetime {
       size_t GetTimelineLength() const;
       /**
        * Checks if an event of a certain type exists in the timeline
-       * @return
        */
       bool HasTimelineEventOfType(WeatherData::eventtype type) const;
 
@@ -124,6 +134,8 @@ namespace Pinetime {
       Pinetime::Controllers::DateTime& dateTimeController;
 
       std::vector<std::unique_ptr<WeatherData::TimelineHeader>> timeline;
+      std::unique_ptr<WeatherData::TimelineHeader> nullTimelineheader = std::make_unique<WeatherData::TimelineHeader>();
+      std::unique_ptr<WeatherData::TimelineHeader>* nullHeader;
 
       /**
        * Cleans up the timeline of expired events
@@ -149,9 +161,6 @@ namespace Pinetime {
        * @return if the event is valid
        */
       static bool isEventStillValid(const std::unique_ptr<WeatherData::TimelineHeader>& uniquePtr, const uint64_t timestamp);
-
-      std::unique_ptr<WeatherData::TimelineHeader> nullTimelineheader = std::make_unique<WeatherData::TimelineHeader>();
-      std::unique_ptr<WeatherData::TimelineHeader>* nullHeader;
     };
   }
 }
