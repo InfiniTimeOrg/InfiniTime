@@ -1,6 +1,6 @@
 # Navigation Service
 ## Introduction
-The navigation ble service provides 4 characteristics to allow the the watch to display navigation instructions from a companion application.  The intended purpose is when performing some outdoor activities, for example running or cycling.
+The navigation ble service provides 4 characteristics to allow the the watch to display navigation instructions from a companion application. This service is intended to be used when performing some outdoor activities, for example running or cycling.
 
 The 4 characteristics are:
 flag (string) - Upcoming icon name
@@ -22,7 +22,7 @@ This is a client supplied string describing the upcoming instruction such as "At
 This is a short string describing the distance to the upcoming instruction such as "50 m".
 
 ## Progress (UUID 00010004-78fc-48fe-8e23-433b3a1942d0)
-The percent complete in a uint8.  The watch displays this as an overall progress in a progress bar.
+The percent complete in a uint8. The watch displays this as an overall progress in a progress bar.
 
 ## Full icon list
 * arrive

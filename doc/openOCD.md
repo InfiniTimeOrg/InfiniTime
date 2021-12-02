@@ -1,12 +1,12 @@
 # OpenOCD and STLink
 OpenOCD (**Open O**n **C**hip **D**ebugger) is an open source tool that interfaces with many SWD/JTAG debugger to provide debugging and *in-system* programming for embedded target devices.
 
-It supports the **NRF52** (the CPU of the PineTime) and the **STLinkV2**, a cheap SWD debugger.
+OpenOCD supports the **NRF52** (the CPU of the PineTime) and the **STLinkV2**, a cheap SWD debugger.
 
-It works on X86 computers, as well as ARM/ARM64 computers and SBC (like the RaspberryPi and Pine64 Pinebook Pro) !
+OpenOCD works on X86 computers, ARM/ARM64 computers, and SBCs (like the RaspberryPi and Pine64 Pinebook Pro)!
 
 ## Installation
-We will build OpenOCD from sources, as packages from Linux distributions are most of the time outdated and do not support the NRF52 correctly. 
+We will build OpenOCD from sources, as packages from Linux distributions are often outdated and do not support the NRF52 correctly. 
 
  - Fetch the sources from GIT, and build and install it:
 
@@ -27,7 +27,7 @@ sudo cp contrib/60-openocd.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules
 ```
 
- - You can now plug your STLinkV2 in a USB port and run OpenOCD to see if it's working correctly:
+ - You can now plug your STLinkV2 into a USB port and run OpenOCD to see if it's working correctly:
 
 ```
 $ openocd -f interface/stlink.cfg -f target/nrf52.cfg
@@ -63,7 +63,7 @@ gdb_breakpoint_override hard
 
 source [find target/nrf52.cfg]
 ```
-This file specifies to OpenOCD which debugger and target it will be connected to..
+This file specifies to OpenOCD which debugger and target it will be connected to.
 
 Then, we use various *user files* to use OpenOCD to flash InfiniTime binary files.
 
