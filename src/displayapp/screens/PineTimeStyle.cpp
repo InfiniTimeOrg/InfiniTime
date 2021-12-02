@@ -108,7 +108,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 40);
+  lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 51);
 
   // Calendar icon
   calendarOuter = lv_obj_create(lv_scr_act(), nullptr);
