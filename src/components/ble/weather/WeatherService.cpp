@@ -195,7 +195,7 @@ namespace Pinetime {
 
             int64_t tmpTemperature = 0;
             QCBORDecode_GetInt64InMapSZ(&decodeContext, "Temperature", &tmpTemperature);
-            if (tmpTemperature < 0 || tmpTemperature > 65535) {
+            if (tmpTemperature < -32768 || tmpTemperature > 32767) {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
             temperature->temperature = tmpTemperature; // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
