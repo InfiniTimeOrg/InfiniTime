@@ -1,10 +1,11 @@
 #pragma once
 
-#include "components/settings/Settings.h"
-#include "displayapp/screens/Screen.h"
 #include <array>
 #include <cstdint>
 #include <lvgl/lvgl.h>
+
+#include "components/settings/Settings.h"
+#include "displayapp/screens/Screen.h"
 
 namespace Pinetime {
 
