@@ -182,7 +182,11 @@ namespace Pinetime {
       /** The header used for further parsing */
       class TimelineHeader {
       public:
-        /** UNIX timestamp */
+        /**
+         * UNIX timestamp
+         * TODO: This is currently WITH A TIMEZONE OFFSET!
+         * Please send events with the timestamp offset by the timezone.
+         **/
         uint64_t timestamp;
         /**
          * Time in seconds until the event expires
