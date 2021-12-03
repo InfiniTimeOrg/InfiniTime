@@ -76,22 +76,22 @@ std::unique_ptr<Screen> Weather::CreateScreenTemperature() {
     // Do not use the data, it's invalid
     lv_label_set_text_fmt(label,
                           "#FFFF00 Temperature#\n\n"
-                          "#444444 %d#\n\n"
+                          "#444444 %.2f#°C \n\n"
                           "#444444 %d#\n\n"
                           "%d\n"
                           "%d\n",
-                          0,
+                          0.0f,
                           0,
                           0,
                           0);
   } else {
     lv_label_set_text_fmt(label,
                           "#FFFF00 Temperature#\n\n"
-                          "#444444 %hd%%#°C \n\n"
+                          "#444444 %.2f#°C \n\n"
                           "#444444 %hd#\n\n"
                           "%llu\n"
                           "%lu\n",
-                          current->temperature,
+                          current->temperature / 100.0f,
                           current->dewPoint,
                           current->timestamp,
                           current->expires);

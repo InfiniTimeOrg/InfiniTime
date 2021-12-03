@@ -30,7 +30,8 @@
 #undef min
 
 #include "WeatherData.h"
-#include <components/datetime/DateTimeController.h>
+#include "libs/QCBOR/inc/qcbor/qcbor.h"
+#include "components/datetime/DateTimeController.h"
 
 int WeatherCallback(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_access_ctxt* ctxt, void* arg);
 
@@ -160,7 +161,9 @@ namespace Pinetime {
        * @param currentTimestamp what's the time right now
        * @return if the event is valid
        */
-      static bool isEventStillValid(const std::unique_ptr<WeatherData::TimelineHeader>& uniquePtr, const uint64_t timestamp);
+      static bool IsEventStillValid(const std::unique_ptr<WeatherData::TimelineHeader>& uniquePtr, const uint64_t timestamp);
+
+      void CleanUpQcbor(QCBORDecodeContext* decodeContext);
     };
   }
 }
