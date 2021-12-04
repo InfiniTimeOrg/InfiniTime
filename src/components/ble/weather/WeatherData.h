@@ -29,7 +29,7 @@
  * you'll get an error returned. Data is relatively well-validated,
  * so keep in the bounds of the data types given.
  *
- * Write all struct members into a single finite-sized map, and write it to the characteristic.
+ * Write all struct members (CamelCase keys) into a single finite-sized map, and write it to the characteristic.
  * Mind the MTU.
  *
  * How to debug?
