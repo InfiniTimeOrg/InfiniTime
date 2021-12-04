@@ -125,7 +125,7 @@ std::unique_ptr<Screen> Weather::CreateScreenAir() {
                           "%llu\n"
                           "%lu\n",
                           current->polluter.c_str(),
-                          current->amount,
+                          (current->amount / 100),
                           current->timestamp,
                           current->expires);
   }
