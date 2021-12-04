@@ -550,7 +550,7 @@ namespace Pinetime {
       return std::chrono::duration_cast<std::chrono::seconds>(dateTimeController.CurrentDateTime().time_since_epoch()).count();
     }
 
-    int16_t WeatherService::getTodayMinTemp() const {
+    int16_t WeatherService::GetTodayMinTemp() const {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
       uint64_t currentDayEnd = currentTimestamp - ((24 - dateTimeController.Hours()) * 60 * 60) -
                                ((60 - dateTimeController.Minutes()) * 60) - (60 - dateTimeController.Seconds());
@@ -573,7 +573,7 @@ namespace Pinetime {
       return result;
     }
 
-    int16_t WeatherService::getTodayMaxTemp() const {
+    int16_t WeatherService::GetTodayMaxTemp() const {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
       uint64_t currentDayEnd = currentTimestamp - ((24 - dateTimeController.Hours()) * 60 * 60) -
                                ((60 - dateTimeController.Minutes()) * 60) - (60 - dateTimeController.Seconds());

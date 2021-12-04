@@ -64,14 +64,14 @@ namespace Pinetime {
 
       /**
        * Searches for the current day's maximum temperature
-       * @return -32768 if there's no data, degrees celcius times 100 otherwise
+       * @return -32768 if there's no data, degrees Celsius times 100 otherwise
        */
-      int16_t getTodayMaxTemp() const;
+      int16_t GetTodayMaxTemp() const;
       /**
        * Searches for the current day's minimum temperature
-       * @return -32768 if there's no data, degrees celcius times 100 otherwise
+       * @return -32768 if there's no data, degrees Celsius times 100 otherwise
        */
-      int16_t getTodayMinTemp() const;
+      int16_t GetTodayMinTemp() const;
 
       /*
        * Management functions
@@ -163,6 +163,9 @@ namespace Pinetime {
        */
       static bool IsEventStillValid(const std::unique_ptr<WeatherData::TimelineHeader>& uniquePtr, const uint64_t timestamp);
 
+      /**
+       * This is a helper function that closes a QCBOR map and decoding context cleanly
+       */
       void CleanUpQcbor(QCBORDecodeContext* decodeContext);
     };
   }
