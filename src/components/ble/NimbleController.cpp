@@ -9,6 +9,7 @@
 #include <host/ble_hs_id.h>
 #include <host/util/util.h>
 #include <controller/ble_ll.h>
+#include <controller/ble_hw.h>
 #undef max
 #undef min
 #include <services/gap/ble_svc_gap.h>
@@ -16,6 +17,7 @@
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/datetime/DateTimeController.h"
+#include "components/fs/FS.h"
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
@@ -27,7 +29,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
                                    Controllers::Battery& batteryController,
                                    Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                                    Controllers::HeartRateController& heartRateController,
-                                   Controllers::MotionController& motionController)
+                                   Controllers::MotionController& motionController,
+                                   Pinetime::Controllers::FS& fs)
   : systemTask {systemTask},
     bleController {bleController},
     dateTimeController {dateTimeController},
@@ -43,7 +46,8 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     batteryInformationService {batteryController},
     immediateAlertService {systemTask, notificationManager},
     heartRateService {systemTask, heartRateController},
-    motionService{systemTask, motionController},
+    fs {fs},
+    motionService {systemTask, motionController},
     serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
 }
 
@@ -122,6 +126,8 @@ void NimbleController::Init() {
 
   rc = ble_gatts_start();
   ASSERT(rc == 0);
+
+  RestoreBond();
 
   if (!ble_gap_adv_active() && !bleController.IsConnected())
     StartAdvertising();
@@ -202,6 +208,10 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       /* Connection terminated; resume advertising. */
       NRF_LOG_INFO("Disconnect event : BLE_GAP_EVENT_DISCONNECT");
       NRF_LOG_INFO("disconnect reason=%d", event->disconnect.reason);
+
+      if (event->disconnect.conn.sec_state.bonded)
+        PersistBond(event->disconnect.conn);
+
       currentTimeClient.Reset();
       alertNotificationClient.Reset();
       connectionHandle = BLE_HS_CONN_HANDLE_NONE;
@@ -230,6 +240,19 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       /* Encryption has been enabled or disabled for this connection. */
       NRF_LOG_INFO("Security event : BLE_GAP_EVENT_ENC_CHANGE");
       NRF_LOG_INFO("encryption change event; status=%0X ", event->enc_change.status);
+
+      if (event->enc_change.status == 0) {
+        struct ble_gap_conn_desc desc;
+        ble_gap_conn_find(event->enc_change.conn_handle, &desc);
+        if (desc.sec_state.bonded)
+          PersistBond(desc);
+
+        NRF_LOG_INFO("new state: encrypted=%d authenticated=%d bonded=%d key_size=%d",
+                     desc.sec_state.encrypted,
+                     desc.sec_state.authenticated,
+                     desc.sec_state.bonded,
+                     desc.sec_state.key_size);
+      }
       break;
 
     case BLE_GAP_EVENT_PASSKEY_ACTION:
@@ -258,15 +281,13 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
                    event->subscribe.cur_notify,
                    event->subscribe.prev_indicate);
 
-      if(event->subscribe.reason == BLE_GAP_SUBSCRIBE_REASON_TERM) {
+      if (event->subscribe.reason == BLE_GAP_SUBSCRIBE_REASON_TERM) {
         heartRateService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
         motionService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
-      }
-      else if(event->subscribe.prev_notify == 0 && event->subscribe.cur_notify == 1) {
+      } else if (event->subscribe.prev_notify == 0 && event->subscribe.cur_notify == 1) {
         heartRateService.SubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
         motionService.SubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
-      }
-      else if(event->subscribe.prev_notify == 1 && event->subscribe.cur_notify == 0) {
+      } else if (event->subscribe.prev_notify == 1 && event->subscribe.cur_notify == 0) {
         heartRateService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
         motionService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
       }
@@ -338,5 +359,83 @@ uint16_t NimbleController::connHandle() {
 void NimbleController::NotifyBatteryLevel(uint8_t level) {
   if (connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
     batteryInformationService.NotifyBatteryLevel(connectionHandle, level);
+  }
+}
+
+void NimbleController::PersistBond(struct ble_gap_conn_desc& desc) {
+  union ble_store_key key;
+  union ble_store_value our_sec, peer_sec, peer_cccd_set[MYNEWT_VAL(BLE_STORE_MAX_CCCDS)] = {0};
+  int rc;
+
+  memset(&key, 0, sizeof key);
+  memset(&our_sec, 0, sizeof our_sec);
+  key.sec.peer_addr = desc.peer_id_addr;
+  rc = ble_store_read_our_sec(&key.sec, &our_sec.sec);
+
+  if (memcmp(&our_sec.sec, &bondId, sizeof bondId) == 0)
+    return;
+
+  memcpy(&bondId, &our_sec.sec, sizeof bondId);
+
+  memset(&key, 0, sizeof key);
+  memset(&peer_sec, 0, sizeof peer_sec);
+  key.sec.peer_addr = desc.peer_id_addr;
+  rc += ble_store_read_peer_sec(&key.sec, &peer_sec.sec);
+
+  if (rc == 0) {
+    memset(&key, 0, sizeof key);
+    key.cccd.peer_addr = desc.peer_id_addr;
+    int peer_count = 0;
+    ble_store_util_count(BLE_STORE_OBJ_TYPE_CCCD, &peer_count);
+    for (int i = 0; i < peer_count; i++) {
+      key.cccd.idx = peer_count;
+      ble_store_read_cccd(&key.cccd, &peer_cccd_set[i].cccd);
+    }
+
+    /* Wakeup Spi and SpiNorFlash before accessing the file system
+     * This should be fixed in the FS driver
+     */
+    systemTask.PushMessage(Pinetime::System::Messages::GoToRunning);
+    systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
+    vTaskDelay(10);
+
+    lfs_file_t file_p;
+
+    rc = fs.FileOpen(&file_p, "/bond.dat", LFS_O_WRONLY | LFS_O_CREAT);
+    if (rc == 0) {
+      fs.FileWrite(&file_p, reinterpret_cast<uint8_t*>(&our_sec.sec), sizeof our_sec);
+      fs.FileWrite(&file_p, reinterpret_cast<uint8_t*>(&peer_sec.sec), sizeof peer_sec);
+      fs.FileWrite(&file_p, reinterpret_cast<const uint8_t*>(&peer_count), 1);
+      for (int i = 0; i < peer_count; i++) {
+        fs.FileWrite(&file_p, reinterpret_cast<uint8_t*>(&peer_cccd_set[i].cccd), sizeof(struct ble_store_value_cccd));
+      }
+      fs.FileClose(&file_p);
+    }
+    systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
+  }
+}
+
+void NimbleController::RestoreBond() {
+  lfs_file_t file_p;
+  union ble_store_value sec, cccd;
+  uint8_t peer_count = 0;
+
+  if (fs.FileOpen(&file_p, "/bond.dat", LFS_O_RDONLY) == 0) {
+    memset(&sec, 0, sizeof sec);
+    fs.FileRead(&file_p, reinterpret_cast<uint8_t*>(&sec.sec), sizeof sec);
+    ble_store_write_our_sec(&sec.sec);
+
+    memset(&sec, 0, sizeof sec);
+    fs.FileRead(&file_p, reinterpret_cast<uint8_t*>(&sec.sec), sizeof sec);
+    ble_store_write_peer_sec(&sec.sec);
+
+    fs.FileRead(&file_p, &peer_count, 1);
+    for (int i = 0; i < peer_count; i++) {
+      fs.FileRead(&file_p, reinterpret_cast<uint8_t*>(&cccd.cccd), sizeof(struct ble_store_value_cccd));
+      ble_store_write_cccd(&cccd.cccd);
+    }
+
+    fs.FileClose(&file_p);
+    fs.FileDelete("/bond.dat");
   }
 }

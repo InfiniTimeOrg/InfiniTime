@@ -109,7 +109,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                      batteryController,
                      spiNorFlash,
                      heartRateController,
-                     motionController) {
+                     motionController,
+                     fs) {
 }
 
 void SystemTask::Start() {
