@@ -53,8 +53,9 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
 
     // Ignore notifications with empty message
     const auto packetLen = OS_MBUF_PKTLEN(ctxt->om);
-    if (packetLen <= headerSize)
+    if (packetLen <= headerSize) {
       return 0;
+    }
 
     size_t bufferSize = std::min(packetLen + stringTerminatorSize, maxBufferSize);
     auto messageSize = std::min(maxMessageSize, (bufferSize - headerSize));

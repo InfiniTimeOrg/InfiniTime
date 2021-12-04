@@ -497,8 +497,9 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
 }
 
 void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
-  if (systemTask != nullptr)
+  if (systemTask != nullptr) {
     systemTask->PushMessage(message);
+  }
 }
 
 void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
