@@ -25,7 +25,6 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::AlarmController& alarmController,
                        Pinetime::Controllers::TouchHandler& touchHandler)
   : lcd {lcd}, bleController {bleController} {
-
 }
 
 void DisplayApp::Start() {
@@ -34,7 +33,7 @@ void DisplayApp::Start() {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }
 
-void DisplayApp::Process(void* instance) {
+[[noreturn]] void DisplayApp::Process(void* instance) {
   auto* app = static_cast<DisplayApp*>(instance);
   NRF_LOG_INFO("displayapp task started!");
 
@@ -120,5 +119,4 @@ void DisplayApp::PushMessage(Display::Messages msg) {
 }
 
 void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
-
 }

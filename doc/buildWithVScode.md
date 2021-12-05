@@ -6,9 +6,9 @@ The .VS Code folder contains configuration files for developing InfiniTime with 
 
 To support as many setups as possible the VS Code configuration files expect there to be certain environment variables to be set.
 
- Variable | Description | Example
+Variable | Description | Example
 ----------|-------------|--------
-**ARM_NONE_EABI_TOOLCHAIN_PATH**|path to the toolchain directory|`export ARM_NONE_EABI_TOOLCHAIN_PATH=/opt/gcc-arm-none-eabi-9-2020-q2-update`
+**ARM_NONE_EABI_TOOLCHAIN_PATH**|path to the toolchain directory|`export ARM_NONE_EABI_TOOLCHAIN_PATH=/opt/gcc-arm-none-eabi-10.3-2021.10`
 **NRF5_SDK_PATH**|path to the NRF52 SDK|`export NRF5_SDK_PATH=/opt/nRF5_SDK_15.3.0_59ac345`
 
 ## VS Code Extensions
@@ -47,6 +47,3 @@ To use the DevContainer configuration on Ubuntu based systems two changes need t
 3. To start debugging launch openocd on your host system with the appropriate configuration, for example with a stlink-v2 the  command is:
 ``openocd -f interface/stlink.cfg -f target/nrf52.cfg``. This launches openocd with the default ports ``3333``, ``4444`` and ``6666``. 
 4. In VsCode go to the Debug pane on the left of the screen and select the configuration ``Debug - Openocd docker Remote`` and hit the play button on the left. 
-
-
-

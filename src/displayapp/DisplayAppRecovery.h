@@ -59,13 +59,15 @@ namespace Pinetime {
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::TouchHandler& touchHandler);
       void Start();
-      void Start(Pinetime::System::BootErrors){ Start(); };
+      void Start(Pinetime::System::BootErrors) {
+        Start();
+      };
       void PushMessage(Pinetime::Applications::Display::Messages msg);
       void Register(Pinetime::System::SystemTask* systemTask);
 
     private:
       TaskHandle_t taskHandle;
-      static void Process(void* instance);
+      [[noreturn]] static void Process(void* instance);
       void DisplayLogo(uint16_t color);
       void DisplayOtaProgress(uint8_t percent, uint16_t color);
       void InitHw();

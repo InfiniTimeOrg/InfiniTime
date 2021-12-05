@@ -13,7 +13,7 @@ RUN apt-get update -qq \
       python3-pip \
       tar \
       unzip \
-      wget \ 
+      wget \
       curl \
       dos2unix \
       clang-format-12 \
@@ -23,15 +23,15 @@ RUN apt-get update -qq \
 # aarch64 packages
       libffi-dev \
       libssl-dev \
-      python3-dev \ 
+      python3-dev \
       rustc \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
-    
-#SET LOCALE 
+
+#SET LOCALE
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8 
+ENV LC_ALL en_US.UTF-8
 
 RUN pip3 install adafruit-nrfutil
 # required for McuBoot
@@ -47,7 +47,7 @@ RUN chmod +x create_build_openocd.sh
 # Lets get each in a separate docker layer for better downloads
 # GCC
 # RUN bash -c "source /opt/build.sh; GetGcc;"
-RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-9-2020-q2-update-x86_64-linux.tar.bz2 -O - | tar -xj -C /opt
+RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2 -O - | tar -xj -C /opt
 # NrfSdk
 # RUN bash -c "source /opt/build.sh; GetNrfSdk;"
 RUN wget -q "https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip" -O /tmp/nRF5_SDK_15.3.0_59ac345
@@ -61,5 +61,5 @@ RUN pip3 install -r ./mcuboot/scripts/requirements.txt
 RUN adduser infinitime
 
 ENV NRF5_SDK_PATH /opt/nRF5_SDK_15.3.0_59ac345
-ENV ARM_NONE_EABI_TOOLCHAIN_PATH /opt/gcc-arm-none-eabi-9-2020-q2-update
+ENV ARM_NONE_EABI_TOOLCHAIN_PATH /opt/gcc-arm-none-eabi-10.3-2021.10
 ENV SOURCES_DIR /workspaces/InfiniTime

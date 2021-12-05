@@ -108,7 +108,7 @@ namespace Pinetime {
       TouchEvents returnTouchEvent = TouchEvents::None;
 
       TouchEvents GetGesture();
-      static void Process(void* instance);
+      [[noreturn]] static void Process(void* instance);
       void InitHw();
       void Refresh();
       void ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction, TouchEvents touchEvent);
