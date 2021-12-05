@@ -1,7 +1,7 @@
 # Branches
 The branching model of this project is based on the workflow named [Git flow](https://nvie.com/posts/a-successful-git-branching-model/).
 
-It is based on 2 main branches:
+The project is based on 2 main branches:
  - **master** : this branch is always ready to be deployed. It means that at any time, we should be able to build the branch and release a new version of the application.
  - **develop** : this branch contains the latest development that will be integrated in the next release once it's considered as stable.
 

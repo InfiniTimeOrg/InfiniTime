@@ -12,15 +12,15 @@ InfiniTime has three distinct firmwares:
 
 **OTA** (**O**ver **T**he **A**ir) refers to updating of the firmware over BLE (**B**luetooth **L**ow **E**nergy). This is a functionality that allows the user to update the firmware on their device wirelessly.
 
-**DFU** (**D**evice **F**irmware **U**pdate) is the file format and protocol used to send the update of the firmware to the watch over-the-air. InfiniTime implement the (legacy) DFU protocol from Nordic Semiconductor (NRF).
+**DFU** (**D**evice **F**irmware **U**pdate) is the file format and protocol used to send the update of the firmware to the watch over-the-air. InfiniTime implements the (legacy) DFU protocol from Nordic Semiconductor (NRF).
 
 ## Bootloader
 
-Most of the time, the bootloader just runs without your intervention (update and load the firmware).
+Most of the time, the bootloader just runs without your intervention (updating and loading the firmware).
 
-However, you can enable 2 functionalities using the push button:
+However, you can use the bootloader to rollback to the previous firmware, or load the recovery firmware using the push button:
 
- - Push the button until the pine cone is drawn in **blue** to force the rollback of the previous version of the firmware, even if you've already validated the updated one
- - Push the button until the pine cone is drawn in **red** to load the recovery firmware. This recovery firmware only provides BLE connectivity and OTA functionality.
+ - Press and hold the button until the pine cone is drawn in **blue** to force the rollback of the previous version of the firmware, even if you've already validated the current one.
+ - Press and hold the button until the pine cone is drawn in **red** to load the recovery firmware. This recovery firmware only provides BLE connectivity and OTA functionality.
 
 More info about the bootloader in [its project page](https://github.com/JF002/pinetime-mcuboot-bootloader/blob/master/README.md).
