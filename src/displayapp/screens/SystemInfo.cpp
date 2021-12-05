@@ -1,3 +1,5 @@
+#include <FreeRTOS.h>
+#include <task.h>
 #include "displayapp/screens/SystemInfo.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
@@ -41,8 +43,8 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
     brightnessController {brightnessController},
     bleController {bleController},
     watchdog {watchdog},
-    motionController{motionController},
-    touchPanel{touchPanel},
+    motionController {motionController},
+    touchPanel {touchPanel},
     screens {app,
              0,
              {[this]() -> std::unique_ptr<Screen> {
@@ -182,7 +184,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         " #444444 used# %d (%d%%)\n"
                         " #444444 max used# %lu\n"
                         " #444444 frag# %d%%\n"
-                        " #444444 free# %d", 
+                        " #444444 free# %d",
                         bleAddr[5],
                         bleAddr[4],
                         bleAddr[3],
