@@ -1,7 +1,7 @@
-#include "SystemInfo.h"
+#include "displayapp/screens/SystemInfo.h"
 #include <lvgl/lvgl.h>
-#include "../DisplayApp.h"
-#include "Label.h"
+#include "displayapp/DisplayApp.h"
+#include "displayapp/screens/Label.h"
 #include "Version.h"
 #include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
@@ -182,9 +182,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         " #444444 used# %d (%d%%)\n"
                         " #444444 max used# %lu\n"
                         " #444444 frag# %d%%\n"
-                        " #444444 free# %d"
-                        "\n"
-                        "#444444 Steps# %i",
+                        " #444444 free# %d", 
                         bleAddr[5],
                         bleAddr[4],
                         bleAddr[3],
@@ -195,8 +193,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         mon.used_pct,
                         mon.max_used,
                         mon.frag_pct,
-                        static_cast<int>(mon.free_biggest_size),
-                        0);
+                        static_cast<int>(mon.free_biggest_size));
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(2, 5, app, label);
 }

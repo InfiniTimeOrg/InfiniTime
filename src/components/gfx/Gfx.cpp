@@ -1,4 +1,4 @@
-#include "Gfx.h"
+#include "components/gfx/Gfx.h"
 #include "drivers/St7789.h"
 using namespace Pinetime::Components;
 

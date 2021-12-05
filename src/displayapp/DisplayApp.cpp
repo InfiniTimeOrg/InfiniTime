@@ -1,9 +1,9 @@
-#include "DisplayApp.h"
+#include "displayapp/DisplayApp.h"
 #include <libraries/log/nrf_log.h>
-#include <displayapp/screens/HeartRate.h>
-#include <displayapp/screens/Motion.h>
-#include <displayapp/screens/Timer.h>
-#include <displayapp/screens/Alarm.h>
+#include "displayapp/screens/HeartRate.h"
+#include "displayapp/screens/Motion.h"
+#include "displayapp/screens/Timer.h"
+#include "displayapp/screens/Alarm.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
@@ -261,7 +261,13 @@ void DisplayApp::Refresh() {
         break;
       case Messages::ButtonLongPressed:
         if (currentApp != Apps::Clock) {
-          LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
+          if (currentApp == Apps::Notifications) {
+            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Up);
+          } else if (currentApp == Apps::QuickSettings) {
+            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
+          } else {
+            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
+          }
         }
         break;
       case Messages::ButtonLongerPressed:
@@ -419,7 +425,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Twos>(this);
       break;
     case Apps::Paint:
-      currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl);
+      currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl, motorController);
       break;
     case Apps::Paddle:
       currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);

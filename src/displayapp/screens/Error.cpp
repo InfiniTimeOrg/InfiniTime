@@ -1,4 +1,4 @@
-#include "Error.h"
+#include "displayapp/screens/Error.h"
 
 using namespace Pinetime::Applications::Screens;
 

@@ -2,7 +2,7 @@
 
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <cstdint>
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include "components/brightness/BrightnessController.h"
 
 namespace Pinetime {

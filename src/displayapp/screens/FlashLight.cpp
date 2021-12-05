@@ -1,6 +1,6 @@
-#include "FlashLight.h"
-#include "../DisplayApp.h"
-#include "Symbols.h"
+#include "displayapp/screens/FlashLight.h"
+#include "displayapp/DisplayApp.h"
+#include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 

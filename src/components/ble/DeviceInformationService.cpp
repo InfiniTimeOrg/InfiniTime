@@ -1,4 +1,4 @@
-#include "DeviceInformationService.h"
+#include "components/ble/DeviceInformationService.h"
 
 using namespace Pinetime::Controllers;
 

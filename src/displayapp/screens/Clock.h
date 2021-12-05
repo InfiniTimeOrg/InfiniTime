@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <components/heartrate/HeartRateController.h>
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {

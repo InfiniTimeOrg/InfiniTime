@@ -7,19 +7,19 @@
 #include <host/ble_gap.h>
 #undef max
 #undef min
-#include "AlertNotificationClient.h"
-#include "AlertNotificationService.h"
-#include "BatteryInformationService.h"
-#include "CurrentTimeClient.h"
-#include "CurrentTimeService.h"
-#include "DeviceInformationService.h"
-#include "DfuService.h"
-#include "ImmediateAlertService.h"
-#include "MusicService.h"
-#include "NavigationService.h"
-#include "ServiceDiscovery.h"
-#include "HeartRateService.h"
-#include "MotionService.h"
+#include "components/ble/AlertNotificationClient.h"
+#include "components/ble/AlertNotificationService.h"
+#include "components/ble/BatteryInformationService.h"
+#include "components/ble/CurrentTimeClient.h"
+#include "components/ble/CurrentTimeService.h"
+#include "components/ble/DeviceInformationService.h"
+#include "components/ble/DfuService.h"
+#include "components/ble/ImmediateAlertService.h"
+#include "components/ble/MusicService.h"
+#include "components/ble/NavigationService.h"
+#include "components/ble/ServiceDiscovery.h"
+#include "components/ble/HeartRateService.h"
+#include "components/ble/MotionService.h"
 
 namespace Pinetime {
   namespace Drivers {

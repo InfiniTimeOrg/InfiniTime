@@ -1,4 +1,4 @@
-#include "Settings.h"
+#include "displayapp/screens/settings/Settings.h"
 #include <lvgl/lvgl.h>
 #include <array>
 #include "displayapp/screens/List.h"

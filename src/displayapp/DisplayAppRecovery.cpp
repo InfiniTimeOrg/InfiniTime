@@ -1,9 +1,9 @@
-#include "DisplayAppRecovery.h"
+#include "displayapp/DisplayAppRecovery.h"
 #include <FreeRTOS.h>
 #include <task.h>
 #include <libraries/log/nrf_log.h>
-#include <components/rle/RleDecoder.h>
-#include <touchhandler/TouchHandler.h>
+#include "components/rle/RleDecoder.h"
+#include "touchhandler/TouchHandler.h"
 #include "displayapp/icons/infinitime/infinitime-nb.c"
 #include "components/ble/BleController.h"
 

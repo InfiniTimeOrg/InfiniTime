@@ -2,10 +2,10 @@
 
 #include <cstdint>
 #include <chrono>
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include <bits/unique_ptr.h>
-#include <libs/lvgl/src/lv_core/lv_style.h>
-#include <libs/lvgl/src/lv_core/lv_obj.h>
+#include <lvgl/src/lv_core/lv_style.h>
+#include <lvgl/src/lv_core/lv_obj.h>
 #include <components/motion/MotionController.h>
 
 namespace Pinetime {

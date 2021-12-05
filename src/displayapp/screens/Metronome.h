@@ -2,6 +2,7 @@
 
 #include "systemtask/SystemTask.h"
 #include "components/motor/MotorController.h"
+#include "displayapp/screens/Screen.h"
 
 namespace Pinetime {
   namespace Applications {
