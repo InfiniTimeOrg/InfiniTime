@@ -1,6 +1,6 @@
 # Navigation Service
 ## Introduction
-The navigation ble service provides 4 characteristics to allow the the watch to display navigation instructions from a companion application. This service is intended to be used when performing some outdoor activities, for example running or cycling.
+The navigation ble service provides 4 characteristics to allow the watch to display navigation instructions from a companion application. This service is intended to be used when performing some outdoor activities, for example running or cycling.
 
 The 4 characteristics are:
 flag (string) - Upcoming icon name

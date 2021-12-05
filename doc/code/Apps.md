@@ -21,7 +21,7 @@ A destructor is needed to clean up LVGL and restore any changes (for example re-
 App classes can override `bool OnButtonPushed()`, `bool OnTouchEvent(TouchEvents event)` and `bool OnTouchEvent(uint16_t x, uint16_t y)` to implement their own functionality for those events.
 If an app only needs to display some text and do something upon a touch screen button press,
 it does not need to override any of these functions, as LVGL can also handle touch events for you.
-If you have any doubts, you can always look at how the other apps function for examples.
+If you have any doubts, you can always look at how the other apps function for reference.
 
 ### Continuous updating
 If your app needs to be updated continuously, you can do so by overriding the `Refresh()` function in your class
