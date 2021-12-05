@@ -18,7 +18,6 @@
 #pragma once
 
 #include <cstdint>
-#include "app_timer.h"
 #include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
