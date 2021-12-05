@@ -5,7 +5,7 @@ This development kit can be very useful for PineTime development:
  * You can use its embedded JLink SWD programmer/debugger to program and debug your code on the PineTime
  * As it's based on the same SoC than the PineTime, you can program it to actually run the same code as the PineTime. 
  
-This page is about the 2nd point : we will build a stub that will allow us to run the same code you can run on the PineTime. This will allow you to work more easily if you don't have a PineTime dev kit around, if you don't want to modify your dev kit for SWD programming, or if you want to use some feature from the NRF52-DK (like power measurement).
+This page is about the 2nd point. We will build a stub that will allow us to run the same code you can run on the PineTime. This will allow you to work more easily if you don't have a PineTime dev kit around, if you don't want to modify your dev kit for SWD programming, or if you want to use some feature from the NRF52-DK (like power measurement).
 
 This stub only implements the display, the button and the BLE radio. The other features from the pintime are missing: 
  * heart rate sensor
