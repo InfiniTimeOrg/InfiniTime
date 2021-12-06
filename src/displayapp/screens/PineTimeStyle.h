@@ -77,6 +77,7 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
 
         void SetBatteryIcon();
+        void AlignIcons();
 
         lv_task_t* taskRefresh;
       };
