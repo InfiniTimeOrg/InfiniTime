@@ -223,7 +223,6 @@ void SystemTask::Work() {
   xTimerStart(dimTimer, 0);
   xTimerStart(measureBatteryTimer, portMAX_DELAY);
 
-// Suppress endless loop diagnostic
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
   while (true) {
@@ -426,6 +425,7 @@ void SystemTask::Work() {
       watchdog.Kick();
     }
   }
+#pragma clang diagnostic pop
 }
 
 void SystemTask::UpdateMotion() {
