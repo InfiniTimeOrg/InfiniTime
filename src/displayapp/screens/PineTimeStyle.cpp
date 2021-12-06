@@ -104,9 +104,11 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
+  lv_label_set_text(bleIcon, "");
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
+  lv_label_set_text(notificationIcon, "");
 
   // Calendar icon
   calendarOuter = lv_obj_create(lv_scr_act(), nullptr);
@@ -205,6 +207,17 @@ void PineTimeStyle::SetBatteryIcon() {
   lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
 }
 
+void PineTimeStyle::AlignIcons() {
+  if (notificationState.Get() && bleState.Get()) {
+    lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 8, 25);
+    lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, -8, 25);
+  } else if (notificationState.Get() && !bleState.Get()) {
+    lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
+  } else {
+    lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
+  }
+}
+
 void PineTimeStyle::Refresh() {
   isCharging = batteryController.IsCharging();
   if (isCharging.IsUpdated()) {
@@ -224,22 +237,15 @@ void PineTimeStyle::Refresh() {
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
     lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
-    lv_obj_realign(bleIcon);
+    //lv_obj_realign(bleIcon);
+    AlignIcons();
   }
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
-    lv_obj_realign(notificationIcon);
-  }
-
-  if (notificationState.Get() && bleState.Get()) {
-    lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 8, 25);
-    lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, -8, 25);
-  } else if (notificationState.Get() && !bleState.Get()) {
-    lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
-  } else {
-    lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
+    //lv_obj_realign(notificationIcon);
+    AlignIcons();
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();
