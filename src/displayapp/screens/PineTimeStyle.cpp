@@ -237,14 +237,12 @@ void PineTimeStyle::Refresh() {
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
     lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
-    //lv_obj_realign(bleIcon);
     AlignIcons();
   }
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
-    //lv_obj_realign(notificationIcon);
     AlignIcons();
   }
 
