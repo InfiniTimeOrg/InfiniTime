@@ -125,8 +125,7 @@ jobs:
 
       - name: Make pinetime-mcuboot-app
         run:  |
-          cd build
-          ninja pinetime-mcuboot-app
+          cmake --build build --target pinetime-mcuboot-app
 
       - name: Unzip DFU package
         run:  |
@@ -144,8 +143,7 @@ jobs:
 
       - name: Make pinetime-app
         run:  |
-          cd build
-          ninja pinetime-app
+          cmake --build build --target pinetime-app
 
       - name: Upload standalone firmware
         uses: actions/upload-artifact@v2
@@ -158,8 +156,7 @@ jobs:
 
       - name: Make pinetime-recovery
         run:  |
-          cd build
-          ninja pinetime-recovery
+          cmake --build build --target pinetime-recovery
 
       #########################################################################################
       # Finish
