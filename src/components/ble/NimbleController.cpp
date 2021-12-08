@@ -10,10 +10,10 @@
 #include <host/util/util.h>
 #include <controller/ble_ll.h>
 #include <controller/ble_hw.h>
-#undef max
-#undef min
 #include <services/gap/ble_svc_gap.h>
 #include <services/gatt/ble_svc_gatt.h>
+#undef max
+#undef min
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/datetime/DateTimeController.h"
@@ -36,7 +36,9 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
     spiNorFlash {spiNorFlash},
+    fs {fs},
     dfuService {systemTask, bleController, spiNorFlash},
+
     currentTimeClient {dateTimeController},
     anService {systemTask, notificationManager},
     alertNotificationClient {systemTask, notificationManager},
@@ -46,7 +48,6 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     batteryInformationService {batteryController},
     immediateAlertService {systemTask, notificationManager},
     heartRateService {systemTask, heartRateController},
-    fs {fs},
     motionService {systemTask, motionController},
     serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
 }
@@ -129,8 +130,9 @@ void NimbleController::Init() {
 
   RestoreBond();
 
-  if (!ble_gap_adv_active() && !bleController.IsConnected())
+  if (!ble_gap_adv_active() && !bleController.IsConnected()) {
     StartAdvertising();
+  }
 }
 
 void NimbleController::StartAdvertising() {
@@ -209,8 +211,9 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       NRF_LOG_INFO("Disconnect event : BLE_GAP_EVENT_DISCONNECT");
       NRF_LOG_INFO("disconnect reason=%d", event->disconnect.reason);
 
-      if (event->disconnect.conn.sec_state.bonded)
+      if (event->disconnect.conn.sec_state.bonded) {
         PersistBond(event->disconnect.conn);
+      }
 
       currentTimeClient.Reset();
       alertNotificationClient.Reset();
@@ -244,8 +247,9 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       if (event->enc_change.status == 0) {
         struct ble_gap_conn_desc desc;
         ble_gap_conn_find(event->enc_change.conn_handle, &desc);
-        if (desc.sec_state.bonded)
+        if (desc.sec_state.bonded) {
           PersistBond(desc);
+        }
 
         NRF_LOG_INFO("new state: encrypted=%d authenticated=%d bonded=%d key_size=%d",
                      desc.sec_state.encrypted,
@@ -257,8 +261,16 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
 
     case BLE_GAP_EVENT_PASSKEY_ACTION:
       /* Authentication has been requested for this connection.
+       *
+       * BLE authentication is determined by the combination of I/O capabilities
+       * on the central and peripheral. When the peripheral is display only and
+       * the central has a keyboard and display then passkey auth is selected.
+       * When both the central and peripheral have displays and support yes/no
+       * buttons then numeric comparison is selected. We currently advertise
+       * display capability only so we only handle the "display" action here.
+       *
        * Standards insist that the rand() PRNG be deterministic.
-       * Use the nimble TRNG since rand() is predictable.
+       * Use the nimble TRNG here since rand() is predictable.
        */
       NRF_LOG_INFO("Security event : BLE_GAP_EVENT_PASSKEY_ACTION");
       if (event->passkey.params.action == BLE_SM_IOACT_DISP) {
@@ -372,8 +384,9 @@ void NimbleController::PersistBond(struct ble_gap_conn_desc& desc) {
   key.sec.peer_addr = desc.peer_id_addr;
   rc = ble_store_read_our_sec(&key.sec, &our_sec.sec);
 
-  if (memcmp(&our_sec.sec, &bondId, sizeof bondId) == 0)
+  if (memcmp(&our_sec.sec, &bondId, sizeof bondId) == 0) {
     return;
+  }
 
   memcpy(&bondId, &our_sec.sec, sizeof bondId);
 
