@@ -8,7 +8,7 @@ void ButtonTimerCallback(TimerHandle_t xTimer) {
 }
 
 void ButtonHandler::Init(Pinetime::System::SystemTask* systemTask) {
-  buttonTimer = xTimerCreate("buttonTimer", 0, pdFALSE, systemTask, ButtonTimerCallback);
+  buttonTimer = xTimerCreate("buttonTimer", pdMS_TO_TICKS(200), pdFALSE, systemTask, ButtonTimerCallback);
 }
 
 ButtonActions ButtonHandler::HandleEvent(Events event) {

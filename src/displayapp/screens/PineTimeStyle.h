@@ -99,6 +99,7 @@ namespace Pinetime {
 
         void SetBatteryIcon();
         void CloseMenu();
+        void AlignIcons();
 
         lv_task_t* taskRefresh;
       };
