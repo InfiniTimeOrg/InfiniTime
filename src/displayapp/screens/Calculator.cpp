@@ -117,7 +117,7 @@ Calculator::Calculator(DisplayApp* app, Controllers::MotorController& motorContr
   
   returnButton = lv_btn_create(lv_scr_act(), nullptr);
   lv_obj_set_size(returnButton, 52, 52);
-  lv_obj_set_pos(returnButton, 180, 8);
+  lv_obj_set_pos(returnButton, 186, 0);
   lv_obj_t* returnLabel;
   returnLabel = lv_label_create(returnButton, nullptr);
   lv_label_set_text(returnLabel, "<=");
@@ -129,6 +129,7 @@ Calculator::Calculator(DisplayApp* app, Controllers::MotorController& motorContr
   lv_btnmatrix_set_map(buttonMatrix, buttonMap1);
   lv_obj_set_size(buttonMatrix, 240, 180);
   lv_obj_set_pos(buttonMatrix, 0, 60);
+  lv_obj_set_style_local_pad_all(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 0);
   buttonMatrix->user_data = this;
   lv_obj_set_event_cb(buttonMatrix, eventHandler);
   running = true;
