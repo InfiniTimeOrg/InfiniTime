@@ -18,8 +18,6 @@ namespace Pinetime {
         
         Calculator(DisplayApp* app, Controllers::MotorController& motorController);
         
-        bool Refresh() override;
-        
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
         
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;

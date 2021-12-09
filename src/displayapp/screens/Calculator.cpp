@@ -154,7 +154,7 @@ void Calculator::eval() {
       while (!input.empty() && (isdigit(input.top()) || input.top() == '.')) {
         if (input.top() == '.') {
           if (pointpos != 0) {
-            motorController.SetDuration(10);
+            motorController.RunForDuration(10);
             return;
           }
           pointpos = strln;
@@ -214,7 +214,7 @@ void Calculator::eval() {
                )) {
           //need two elements on the output stack to add a binary operator
           if (output.size() < 2 ) {
-            motorController.SetDuration(10);
+            motorController.RunForDuration(10);
             return;
           }
           auto node = std::make_shared<BinOp>();
@@ -238,7 +238,7 @@ void Calculator::eval() {
         while (operators.top() != '(') {
           //need two elements on the output stack to add a binary operator
           if (output.size() < 2 ) {
-            motorController.SetDuration(10);
+            motorController.RunForDuration(10);
             return;
           }
           auto node = std::make_shared<BinOp>();
@@ -250,7 +250,7 @@ void Calculator::eval() {
           operators.pop();
           output.push(node);
           if (operators.empty()) {
-            motorController.SetDuration(10);
+            motorController.RunForDuration(10);
             return;
           }
         }
@@ -261,12 +261,12 @@ void Calculator::eval() {
   while (!operators.empty()) {
     char op = operators.top();
     if (op == ')' || op == '(') {
-      motorController.SetDuration(10);
+      motorController.RunForDuration(10);
       return;
     }
     //need two elements on the output stack to add a binary operator
     if (output.size() < 2 ) {
-      motorController.SetDuration(10);
+      motorController.RunForDuration(10);
       return;
     }
     auto node = std::make_shared<BinOp>();
@@ -283,7 +283,7 @@ void Calculator::eval() {
   errno = 0;
   double resultFloat = output.top()->calculate();
   if (errno != 0) {
-    motorController.SetDuration(10);
+    motorController.RunForDuration(10);
     return;
   }
   //weird workaround because sprintf crashes when trying to use a float
@@ -319,7 +319,7 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         eval();
       } else {
         if (position >= 30) {
-          motorController.SetDuration(10);
+          motorController.RunForDuration(10);
           return;
         }
         text[position] = *buttonstr;
@@ -361,8 +361,5 @@ bool Calculator::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return false;
 }
 
-bool Calculator::Refresh() {
-  return running;
-}
 
 #pragma GCC pop_options
