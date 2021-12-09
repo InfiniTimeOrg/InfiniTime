@@ -109,7 +109,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                      batteryController,
                      spiNorFlash,
                      heartRateController,
-                     motionController) {
+                     motionController,
+                     fs) {
 }
 
 void SystemTask::Start() {
@@ -258,8 +259,9 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
 
-          if (!bleController.IsConnected())
+          if (!bleController.IsConnected()) {
             nimbleController.RestartFastAdv();
+          }
 
           isSleeping = false;
           isWakingUp = false;
@@ -278,6 +280,9 @@ void SystemTask::Work() {
           }
         } break;
         case Messages::GoToSleep:
+          if (doNotGoToSleep) {
+            break;
+          }
           isGoingToSleep = true;
           NRF_LOG_INFO("[systemtask] Going to sleep");
           xTimerStop(idleTimer, 0);
@@ -396,6 +401,13 @@ void SystemTask::Work() {
         case Messages::BatteryPercentageUpdated:
           nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
           break;
+        case Messages::OnPairing:
+          if (isSleeping && !isWakingUp) {
+            GoToRunning();
+          }
+          motorController.RunForDuration(35);
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
+          break;
 
         default:
           break;
@@ -497,7 +509,7 @@ void SystemTask::OnTouchEvent() {
 }
 
 void SystemTask::PushMessage(System::Messages msg) {
-  if (msg == Messages::GoToSleep) {
+  if (msg == Messages::GoToSleep && !doNotGoToSleep) {
     isGoingToSleep = true;
   }
 
