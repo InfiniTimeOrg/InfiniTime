@@ -63,7 +63,7 @@ std::unique_ptr<Screen> Settings::CreateScreen3() {
     {Symbols::paintbrush, "PTS Colors", Apps::SettingPineTimeStyle},
     {Symbols::check, "Firmware", Apps::FirmwareValidation},
     {Symbols::list, "About", Apps::SysInfo},
-    {Symbols::none, "None", Apps::None},
+    {Symbols::chartLine, "Motion", Apps::Motion},
   }};
 
   return std::make_unique<Screens::List>(2, 3, app, settingsController, applications);

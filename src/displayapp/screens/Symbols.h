@@ -44,6 +44,7 @@ namespace Pinetime {
         static constexpr const char* chartLine = "\xEF\x88\x81";
         static constexpr const char* eye = "\xEF\x81\xAE";
         static constexpr const char* home = "\xEF\x80\x95";
+        static constexpr const char* calculator = "\xEF\x87\xAC";
 
         // lv_font_sys_48.c
         static constexpr const char* settings = "\xEE\xA4\x82"; // e902
