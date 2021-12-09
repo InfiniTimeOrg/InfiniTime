@@ -194,6 +194,9 @@ void Calculator::eval() {
       input.pop();
       continue;
     }
+    
+    
+    
     char next = input.top();
     input.pop();
     
@@ -231,6 +234,11 @@ void Calculator::eval() {
         expectingNumber = true;
         break;
       case '(':
+        //we expect there to be a binary operator here but found a left parenthesis. this occurs in terms like this: a+b(c). This should be
+        //interpreted as a+b*(c)
+        if (!expectingNumber) {
+          operators.push('x');
+        }
         operators.push(next);
         expectingNumber = true;
         break;
