@@ -10,6 +10,7 @@
 #include <date/date.h>
 #include <drivers/Watchdog.h>
 #include <components/motor/MotorController.h>
+#include "components/brightness/BrightnessController.h"
 #include "BootErrors.h"
 #include "displayapp/TouchEvents.h"
 #include "displayapp/Apps.h"
@@ -72,6 +73,7 @@ namespace Pinetime {
       void Refresh();
       Pinetime::Drivers::St7789& lcd;
       Controllers::Ble& bleController;
+      Controllers::BrightnessController brightnessController;
 
       static constexpr uint8_t queueSize = 10;
       static constexpr uint8_t itemSize = 1;
