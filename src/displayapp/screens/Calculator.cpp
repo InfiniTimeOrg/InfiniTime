@@ -5,6 +5,7 @@
 #include <stack>
 #include <deque>
 #include <math.h>
+#include <float.h>
 #include <cmath>
 #include <map>
 #include <memory>
@@ -34,22 +35,54 @@ namespace {
     char op;
     
     double calculate() override {
+      //make sure we have actual numbers
+      if (!right || !left ) {
+        errno = EINVAL;
+        return 0.0;
+      }
+      
       double rightVal = right->calculate();
       double leftVal = left->calculate();
       switch (op) {
         case '^':
+          //detect overflow
+          if (log2(leftVal) + rightVal > 31 ) {
+            errno = ERANGE;
+            return 0.0;
+          }
           return pow(leftVal, rightVal);
         case 'x':
+          //detect over/underflowflow
+          if ((DBL_MAX / abs(rightVal)) < abs(leftVal)) {
+            errno = ERANGE;
+            return 0.0;
+          }
           return leftVal * rightVal;
         case '/':
+          //detect under/overflow
+          if ((DBL_MAX * abs(rightVal)) < abs(leftVal)) {
+            errno = ERANGE;
+            return 0.0;
+          }
+          //detect divison by zero
           if (rightVal == 0.0) {
             errno = EDOM;
             return 0.0;
           }
           return leftVal / rightVal;
         case '+':
+          //detect overflow
+          if ((DBL_MAX - rightVal) < leftVal) {
+            errno = ERANGE;
+            return 0.0;
+          }
           return leftVal + rightVal;
         case '-':
+          //detect underflow
+          if ((DBL_MIN + rightVal) > leftVal) {
+            errno = ERANGE;
+            return 0.0;
+          }
           return leftVal - rightVal;
       }
       errno = EINVAL;
@@ -292,6 +325,11 @@ void Calculator::eval() {
   errno = 0;
   double resultFloat = output.top()->calculate();
   if (errno != 0) {
+    motorController.RunForDuration(10);
+    return;
+  }
+  //make sure the result fits in a 32 bit int
+  if (INT32_MAX < resultFloat || INT32_MIN > resultFloat) {
     motorController.RunForDuration(10);
     return;
   }
