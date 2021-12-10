@@ -1,84 +1,78 @@
-#pragma GCC push_options
-#pragma GCC optimize ("Os")
 #include "Calculator.h"
 #include <string>
 #include <stack>
-#include <deque>
-#include <math.h>
-#include <float.h>
+#include <cfloat>
 #include <cmath>
 #include <map>
 #include <memory>
 
 using namespace Pinetime::Applications::Screens;
 
-
-//Anonymous Namespace for all the structs
+// Anonymous Namespace for all the structs
 namespace {
   struct CalcTreeNode {
     virtual double calculate() = 0;
   };
-  
+
   struct NumNode : CalcTreeNode {
     double value;
-    
+
     double calculate() override {
       return value;
     };
   };
-  
-  
+
   struct BinOp : CalcTreeNode {
     std::shared_ptr<CalcTreeNode> left;
     std::shared_ptr<CalcTreeNode> right;
-    
+
     char op;
-    
+
     double calculate() override {
-      //make sure we have actual numbers
-      if (!right || !left ) {
+      // make sure we have actual numbers
+      if (!right || !left) {
         errno = EINVAL;
         return 0.0;
       }
-      
+
       double rightVal = right->calculate();
       double leftVal = left->calculate();
       switch (op) {
         case '^':
-          //detect overflow
-          if (log2(leftVal) + rightVal > 31 ) {
+          // detect overflow
+          if (log2(leftVal) + rightVal > 31) {
             errno = ERANGE;
             return 0.0;
           }
           return pow(leftVal, rightVal);
         case 'x':
-          //detect over/underflowflow
+          // detect over/underflowflow
           if ((DBL_MAX / abs(rightVal)) < abs(leftVal)) {
             errno = ERANGE;
             return 0.0;
           }
           return leftVal * rightVal;
         case '/':
-          //detect under/overflow
+          // detect under/overflow
           if ((DBL_MAX * abs(rightVal)) < abs(leftVal)) {
             errno = ERANGE;
             return 0.0;
           }
-          //detect divison by zero
+          // detect divison by zero
           if (rightVal == 0.0) {
             errno = EDOM;
             return 0.0;
           }
           return leftVal / rightVal;
         case '+':
-          //detect overflow
+          // detect overflow
           if ((DBL_MAX - rightVal) < leftVal) {
             errno = ERANGE;
             return 0.0;
           }
           return leftVal + rightVal;
         case '-':
-          //detect underflow
+          // detect underflow
           if ((DBL_MIN + rightVal) > leftVal) {
             errno = ERANGE;
             return 0.0;
@@ -88,9 +82,8 @@ namespace {
       errno = EINVAL;
       return 0.0;
     };
-    
   };
-  
+
   uint8_t getPrecedence(char op) {
     switch (op) {
       case '^':
@@ -104,7 +97,7 @@ namespace {
     }
     return 0;
   }
-  
+
   bool leftAssociative(char op) {
     switch (op) {
       case '^':
@@ -117,9 +110,8 @@ namespace {
     }
     return false;
   }
-  
-}
 
+}
 
 static void eventHandler(lv_obj_t* obj, lv_event_t event) {
   auto calc = static_cast<Calculator*>(obj->user_data);
@@ -130,24 +122,21 @@ Calculator::~Calculator() {
   lv_obj_clean(lv_scr_act());
 }
 
-static const char* buttonMap1[] = {"7", "8", "9", "/", "\n",
-                                   "4", "5", "6", "x", "\n",
-                                   "1", "2", "3", "-", "\n",
-                                   ".", "0", "=", "+", "",};
+static const char* buttonMap1[] = {
+  "7", "8", "9", "/", "\n", "4", "5", "6", "x", "\n", "1", "2", "3", "-", "\n", ".", "0", "=", "+", "",
+};
 
-static const char* buttonMap2[] = {"7", "8", "9", "(", "\n",
-                                   "4", "5", "6", ")", "\n",
-                                   "1", "2", "3", "^", "\n",
-                                   ".", "0", "=", "+", "",};
+static const char* buttonMap2[] = {
+  "7", "8", "9", "(", "\n", "4", "5", "6", ")", "\n", "1", "2", "3", "^", "\n", ".", "0", "=", "+", "",
+};
 
-Calculator::Calculator(DisplayApp* app, Controllers::MotorController& motorController)
-    : Screen(app), motorController{motorController} {
+Calculator::Calculator(DisplayApp* app, Controllers::MotorController& motorController) : Screen(app), motorController {motorController} {
   result = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(result, LV_LABEL_LONG_BREAK);
   lv_label_set_text(result, "0");
   lv_obj_set_size(result, 180, 60);
   lv_obj_set_pos(result, 0, 0);
-  
+
   returnButton = lv_btn_create(lv_scr_act(), nullptr);
   lv_obj_set_size(returnButton, 52, 52);
   lv_obj_set_pos(returnButton, 186, 0);
@@ -157,7 +146,7 @@ Calculator::Calculator(DisplayApp* app, Controllers::MotorController& motorContr
   lv_obj_align(returnLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
   returnButton->user_data = this;
   lv_obj_set_event_cb(returnButton, eventHandler);
-  
+
   buttonMatrix = lv_btnmatrix_create(lv_scr_act(), nullptr);
   lv_btnmatrix_set_map(buttonMatrix, buttonMap1);
   lv_obj_set_size(buttonMatrix, 240, 180);
@@ -198,27 +187,27 @@ void Calculator::eval() {
         }
         input.pop();
       }
-      //replacement for strtod() since using that increased .txt by 76858 bzt
+      // replacement for strtod() since using that increased .txt by 76858 bzt
       if (pointpos == 0) {
         pointpos = strln;
       }
       double num = 0;
-      for (uint8_t i = 0; i <  pointpos; i++) {
-        num += (numberStr[i] - '0') * pow(10,   pointpos - i - 1 );
+      for (uint8_t i = 0; i < pointpos; i++) {
+        num += (numberStr[i] - '0') * pow(10, pointpos - i - 1);
       }
       for (uint8_t i = 0; i < strln - pointpos; i++) {
-        num += (numberStr[i + pointpos] - '0') / pow(10,i+1);
+        num += (numberStr[i + pointpos] - '0') / pow(10, i + 1);
       }
-      
+
       auto number = std::make_shared<NumNode>();
       number->value = sign * num;
       output.push(number);
-      
+
       sign = +1;
       expectingNumber = false;
       continue;
     }
-    
+
     if (expectingNumber && input.top() == '+') {
       input.pop();
       continue;
@@ -228,29 +217,26 @@ void Calculator::eval() {
       input.pop();
       continue;
     }
-    
-    
-    
+
     char next = input.top();
     input.pop();
-    
+
     switch (next) {
       case '+':
       case '-':
       case '/':
       case 'x':
       case '^':
-        //while ((there is an operator at the top of the operator stack)
+        // while ((there is an operator at the top of the operator stack)
         while (!operators.empty()
-               //and (the operator at the top of the operator stack is not a left parenthesis))
+               // and (the operator at the top of the operator stack is not a left parenthesis))
                && operators.top() != '('
-               //and ((the operator at the top of the operator stack has greater precedence)
+               // and ((the operator at the top of the operator stack has greater precedence)
                && (getPrecedence(operators.top()) > getPrecedence(next)
-                   //or (the operator at the top of the operator stack has equal precedence and the token is left associative))
-                   || (getPrecedence(operators.top()) == getPrecedence(next) && leftAssociative(next))
-               )) {
-          //need two elements on the output stack to add a binary operator
-          if (output.size() < 2 ) {
+                   // or (the operator at the top of the operator stack has equal precedence and the token is left associative))
+                   || (getPrecedence(operators.top()) == getPrecedence(next) && leftAssociative(next)))) {
+          // need two elements on the output stack to add a binary operator
+          if (output.size() < 2) {
             motorController.RunForDuration(10);
             return;
           }
@@ -262,14 +248,13 @@ void Calculator::eval() {
           node->op = operators.top();
           operators.pop();
           output.push(node);
-          
         }
         operators.push(next);
         expectingNumber = true;
         break;
       case '(':
-        //we expect there to be a binary operator here but found a left parenthesis. this occurs in terms like this: a+b(c). This should be
-        //interpreted as a+b*(c)
+        // we expect there to be a binary operator here but found a left parenthesis. this occurs in terms like this: a+b(c). This should be
+        // interpreted as a+b*(c)
         if (!expectingNumber) {
           operators.push('x');
         }
@@ -278,8 +263,8 @@ void Calculator::eval() {
         break;
       case ')':
         while (operators.top() != '(') {
-          //need two elements on the output stack to add a binary operator
-          if (output.size() < 2 ) {
+          // need two elements on the output stack to add a binary operator
+          if (output.size() < 2) {
             motorController.RunForDuration(10);
             return;
           }
@@ -296,7 +281,7 @@ void Calculator::eval() {
             return;
           }
         }
-        //discard the left parentheses
+        // discard the left parentheses
         operators.pop();
     }
   }
@@ -306,8 +291,8 @@ void Calculator::eval() {
       motorController.RunForDuration(10);
       return;
     }
-    //need two elements on the output stack to add a binary operator
-    if (output.size() < 2 ) {
+    // need two elements on the output stack to add a binary operator
+    if (output.size() < 2) {
       motorController.RunForDuration(10);
       return;
     }
@@ -319,43 +304,41 @@ void Calculator::eval() {
     node->op = op;
     operators.pop();
     output.push(node);
-    
   }
-  //perform the calculation
+  // perform the calculation
   errno = 0;
   double resultFloat = output.top()->calculate();
   if (errno != 0) {
     motorController.RunForDuration(10);
     return;
   }
-  //make sure the result fits in a 32 bit int
+  // make sure the result fits in a 32 bit int
   if (INT32_MAX < resultFloat || INT32_MIN > resultFloat) {
     motorController.RunForDuration(10);
     return;
   }
-  //weird workaround because sprintf crashes when trying to use a float
+  // weird workaround because sprintf crashes when trying to use a float
   int32_t upper = resultFloat;
   int32_t lower = round(std::abs(resultFloat - upper) * 10000);
-  //round up to the next int value
+  // round up to the next int value
   if (lower >= 10000) {
     lower = 0;
     upper++;
   }
-  //see if decimal places have to be printed
+  // see if decimal places have to be printed
   if (lower != 0) {
     if (upper == 0 && resultFloat < 0) {
-      position = sprintf(text, "-%d.%d", upper, lower);
+      position = sprintf(text, "-%ld.%ld", upper, lower);
     } else {
-      position = sprintf(text, "%d.%d", upper, lower);
+      position = sprintf(text, "%ld.%ld", upper, lower);
     }
-    //remove extra zeros
-    while (text[position -1] == '0') {
+    // remove extra zeros
+    while (text[position - 1] == '0') {
       position--;
     }
   } else {
-    position = sprintf(text, "%d", upper);
+    position = sprintf(text, "%ld", upper);
   }
-  
 }
 
 void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
@@ -371,11 +354,10 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         }
         text[position] = *buttonstr;
         position++;
-        
       }
     } else if (obj == returnButton) {
       if (position > 1) {
-        
+
         position--;
       } else {
         position = 0;
@@ -383,12 +365,10 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         return;
       }
     }
-    
-    
+
     text[position] = '\0';
     lv_label_set_text(result, text);
   }
-  
 }
 
 bool Calculator::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
@@ -407,6 +387,3 @@ bool Calculator::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   }
   return false;
 }
-
-
-#pragma GCC pop_options
