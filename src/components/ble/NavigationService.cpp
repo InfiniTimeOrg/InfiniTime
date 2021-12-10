@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "NavigationService.h"
+#include "components/ble/NavigationService.h"
 
 #include "systemtask/SystemTask.h"
 

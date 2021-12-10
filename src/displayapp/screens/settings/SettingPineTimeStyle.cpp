@@ -1,4 +1,4 @@
-#include "SettingPineTimeStyle.h"
+#include "displayapp/screens/settings/SettingPineTimeStyle.h"
 #include <lvgl/lvgl.h>
 #include <displayapp/Colors.h>
 #include "displayapp/DisplayApp.h"

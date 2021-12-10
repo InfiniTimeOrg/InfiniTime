@@ -1,8 +1,8 @@
-#include "Notifications.h"
-#include <displayapp/DisplayApp.h>
+#include "displayapp/screens/Notifications.h"
+#include "displayapp/DisplayApp.h"
 #include "components/ble/MusicService.h"
 #include "components/ble/AlertNotificationService.h"
-#include "Symbols.h"
+#include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;

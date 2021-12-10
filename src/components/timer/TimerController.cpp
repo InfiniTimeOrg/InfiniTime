@@ -2,7 +2,7 @@
 // Created by florian on 16.05.21.
 //
 
-#include "TimerController.h"
+#include "components/timer/TimerController.h"
 #include "systemtask/SystemTask.h"
 #include "app_timer.h"
 #include "task.h"

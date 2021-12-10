@@ -1,4 +1,4 @@
-#include "InternalFlash.h"
+#include "drivers/InternalFlash.h"
 #include <mdk/nrf.h>
 using namespace Pinetime::Drivers;
 

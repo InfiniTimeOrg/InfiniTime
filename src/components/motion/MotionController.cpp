@@ -1,4 +1,4 @@
-#include "MotionController.h"
+#include "components/motion/MotionController.h"
 
 using namespace Pinetime::Controllers;
 

@@ -4,7 +4,6 @@
 #include "components/datetime/DateTimeController.h"
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
-#include "drivers/Cst816s.h"
 
 namespace Pinetime {
   namespace Controllers {

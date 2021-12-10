@@ -1,9 +1,11 @@
-#include <libs/lvgl/lvgl.h>
-#include "WatchFaceAnalog.h"
-#include "BatteryIcon.h"
-#include "BleIcon.h"
-#include "Symbols.h"
-#include "NotificationIcon.h"
+#include "displayapp/screens/WatchFaceAnalog.h"
+#include <cmath>
+#include <lvgl/lvgl.h>
+#include "displayapp/screens/BatteryIcon.h"
+#include "displayapp/screens/BleIcon.h"
+#include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/NotificationIcon.h"
+#include "components/settings/Settings.h"
 
 LV_IMG_DECLARE(bg_clock);
 
@@ -73,7 +75,7 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   notificationIcon = lv_label_create(lv_scr_act(), NULL);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
-  lv_obj_align(notificationIcon, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_align(notificationIcon, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   // Date - Day / Week day
 

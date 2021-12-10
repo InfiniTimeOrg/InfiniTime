@@ -1,5 +1,5 @@
 #pragma once
-#include "Logger.h"
+#include "logging/Logger.h"
 
 #include <FreeRTOS.h>
 #include <task.h>
