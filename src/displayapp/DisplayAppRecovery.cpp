@@ -49,7 +49,7 @@ void DisplayApp::Process(void* instance) {
 
 void DisplayApp::InitHw() {
   brightnessController.Init();
-  brightnessController.Set(Controllers::BrightnessController::Levels::High); // Controllers::BrightnessController::Levels.
+  brightnessController.Set(Controllers::BrightnessController::Levels::High);
   DisplayLogo(colorWhite);
 }
 
