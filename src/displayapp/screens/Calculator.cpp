@@ -160,7 +160,6 @@ Calculator::Calculator(DisplayApp* app, Controllers::MotorController& motorContr
   lv_obj_set_style_local_pad_all(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 0);
   buttonMatrix->user_data = this;
   lv_obj_set_event_cb(buttonMatrix, eventHandler);
-  running = true;
 }
 
 void Calculator::eval() {
