@@ -111,7 +111,6 @@ namespace Pinetime {
       HeartRateService heartRateService;
       MotionService motionService;
       ServiceDiscovery serviceDiscovery;
-      FS fs;
       FSService fsService;
 
       uint8_t addrType;
