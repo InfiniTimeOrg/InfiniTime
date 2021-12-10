@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "../LittleVgl.h"
+
 #include "Screen.h"
 #include "components/motor/MotorController.h"
 #include <array>
@@ -22,8 +22,7 @@ namespace Pinetime {
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
       private:
-        bool running;
-        lv_obj_t *result, *resultContainer, *returnButton, *buttonMatrix;
+        lv_obj_t *result, *returnButton, *buttonMatrix;
 
         char text[31];
         uint8_t position = 0;

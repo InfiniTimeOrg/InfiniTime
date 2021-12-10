@@ -123,11 +123,17 @@ Calculator::~Calculator() {
 }
 
 static const char* buttonMap1[] = {
-  "7", "8", "9", "/", "\n", "4", "5", "6", "x", "\n", "1", "2", "3", "-", "\n", ".", "0", "=", "+", "",
+  "7", "8", "9", "/", "\n",
+  "4", "5", "6", "x", "\n",
+  "1", "2", "3", "-", "\n",
+  ".", "0", "=", "+", "",
 };
 
 static const char* buttonMap2[] = {
-  "7", "8", "9", "(", "\n", "4", "5", "6", ")", "\n", "1", "2", "3", "^", "\n", ".", "0", "=", "+", "",
+  "7", "8", "9", "(", "\n",
+  "4", "5", "6", ")", "\n",
+  "1", "2", "3", "^", "\n",
+  ".", "0", "=", "+", "",
 };
 
 Calculator::Calculator(DisplayApp* app, Controllers::MotorController& motorController) : Screen(app), motorController {motorController} {
