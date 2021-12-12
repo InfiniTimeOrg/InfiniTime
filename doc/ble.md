@@ -2,7 +2,7 @@
 ## Introduction
 This page describes the BLE implementation and API built in this firmware.
 
-**Note** : I'm a beginner in BLE related technologies and the information in this document reflects my current knowledge and understanding of the BLE stack. This information might be erroneous or incomplete. Feel free to submit a PR if you think you can improve it.
+**Note**: I'm a beginner in BLE related technologies and the information in this document reflects my current knowledge and understanding of the BLE stack. This information might be erroneous or incomplete. Feel free to submit a PR if you think you can improve it.
 
 ---
 
@@ -72,12 +72,16 @@ The following custom services are implemented in InfiniTime:
      * [Navigation Service](NavigationService.md) : 00010000-78fc-48fe-8e23-433b3a1942d0
 
 
- - Since InfiniTime 0.13
-     * Call characteristic (extension to the Alert Notification Service): 00020001-78fc-48fe-8e23-433b3a1942d0
- 
-  
- - Since InfiniTime 1.7:
-   * [Motion Service](MotionService.md) :        00030000-78fc-48fe-8e23-433b3a1942d0
+- Since InfiniTime 0.13
+    * Call characteristic (extension to the Alert Notification Service): 00020001-78fc-48fe-8e23-433b3a1942d0
+
+
+- Since InfiniTime 1.7:
+    * [Motion Service](MotionService.md): 00030000-78fc-48fe-8e23-433b3a1942d0
+
+
+- Since InfiniTime 1.8:
+    * [Weather Service](/src/components/ble/weather/WeatherService.h): 00040000-78fc-48fe-8e23-433b3a1942d0
 
 ---
 
