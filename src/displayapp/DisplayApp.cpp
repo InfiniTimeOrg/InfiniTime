@@ -215,6 +215,7 @@ void DisplayApp::Refresh() {
         } else {
           LoadApp(Apps::Alarm, DisplayApp::FullRefreshDirections::None);
         }
+        break;
       case Messages::ShowPairingKey:
         LoadApp(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
         break;
