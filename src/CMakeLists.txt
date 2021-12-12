@@ -802,7 +802,7 @@ link_directories(
         ../
 )
 
-set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -flto -Wl,-flto -fuse-linker-plugin -Wl,-fuse-linker-plugin -fno-fat-lto-objects -fstack-usage -fno-exceptions -fno-non-call-exceptions -fstrict-aliasing -fno-builtin -fshort-enums -Wall -Wno-unknown-pragmas -Wreturn-type -Werror=return-type -g3)
+set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -flto -Wl,-flto -fuse-linker-plugin -Wl,-fuse-linker-plugin -fstack-usage -ftree-vrp -fstrict-aliasing -fshort-enums -fno-fat-lto-objects -fno-exceptions -fno-non-call-exceptions -fno-builtin -Wall -Wextra -Warray-bounds=2 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-nonliteral -Wreturn-type -Wno-unknown-pragmas -Werror=return-type -Os -g3)
 add_definitions(-DCONFIG_GPIO_AS_PINRESET)
 add_definitions(-DNIMBLE_CFG_CONTROLLER)
 add_definitions(-DOS_CPUTIME_FREQ)
