@@ -58,14 +58,14 @@ uint16_t Hrs3300::ReadHrs() {
   auto m = ReadRegister(static_cast<uint8_t>(Registers::C0DataM));
   auto h = ReadRegister(static_cast<uint8_t>(Registers::C0DataH));
   auto l = ReadRegister(static_cast<uint8_t>(Registers::C0dataL));
-  return (m << 8) | ((h & 0x0f) << 4) | (l & 0x0f) | ((l & 0x30) << 12);
+  return ((l & 0x30) << 12) | (m << 8) | ((h & 0x0f) << 4) | (l & 0x0f);
 }
 
 uint16_t Hrs3300::ReadAls() {
   auto m = ReadRegister(static_cast<uint8_t>(Registers::C1dataM));
   auto h = ReadRegister(static_cast<uint8_t>(Registers::C1dataH));
   auto l = ReadRegister(static_cast<uint8_t>(Registers::C1dataL));
-  return (m << 3) | ((h & 0x3f) << 11) | (l & 0x07);
+  return ((h & 0x3f) << 11) | (m << 3) | (l & 0x07);
 }
 
 void Hrs3300::SetGain(uint8_t gain) {
