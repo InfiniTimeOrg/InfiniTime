@@ -30,8 +30,8 @@ namespace Pinetime {
       void Init();
       void Enable();
       void Disable();
-      uint16_t ReadHrs();
-      uint16_t ReadAls();
+      uint32_t ReadHrs();
+      uint32_t ReadAls();
       void SetGain(uint8_t gain);
       void SetDrive(uint8_t drive);
 
