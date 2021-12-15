@@ -119,7 +119,6 @@ static void basic_init(void) {
   lv_style_set_bg_color(&style_btn, LV_STATE_DISABLED | LV_STATE_CHECKED, lv_color_hex3(0x888));
   lv_style_set_border_color(&style_btn, LV_STATE_DEFAULT, theme.color_primary);
   lv_style_set_border_width(&style_btn, LV_STATE_DEFAULT, 0);
-  lv_style_set_border_opa(&style_btn, LV_STATE_CHECKED, LV_OPA_TRANSP);
 
   lv_style_set_text_color(&style_btn, LV_STATE_DEFAULT, lv_color_hex(0xffffff));
   lv_style_set_text_color(&style_btn, LV_STATE_CHECKED, lv_color_hex(0xffffff));

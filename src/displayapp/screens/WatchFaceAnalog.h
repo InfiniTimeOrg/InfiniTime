@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <memory>
 #include "displayapp/screens/Screen.h"
-#include "displayapp/screens/ScreenList.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"

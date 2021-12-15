@@ -29,6 +29,7 @@
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
 #include "displayapp/screens/Steps.h"
+#include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
 
 #include "drivers/Cst816s.h"
@@ -214,6 +215,10 @@ void DisplayApp::Refresh() {
         } else {
           LoadApp(Apps::Alarm, DisplayApp::FullRefreshDirections::None);
         }
+        break;
+      case Messages::ShowPairingKey:
+        LoadApp(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
+        break;
       case Messages::TouchEvent: {
         if (state != States::Running) {
           break;
@@ -351,6 +356,11 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
       break;
 
+    case Apps::PassKey:
+      currentScreen = std::make_unique<Screens::PassKey>(this, bleController.GetPairingKey());
+      ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+
     case Apps::Notifications:
       currentScreen = std::make_unique<Screens::Notifications>(
         this, notificationManager, systemTask->nimble().alertService(), motorController, Screens::Notifications::Modes::Normal);
@@ -430,7 +440,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Twos>(this);
       break;
     case Apps::Paint:
-      currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl);
+      currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl, motorController);
       break;
     case Apps::Paddle:
       currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
@@ -497,8 +507,9 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
 }
 
 void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
-  if (systemTask != nullptr)
+  if (systemTask != nullptr) {
     systemTask->PushMessage(message);
+  }
 }
 
 void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {

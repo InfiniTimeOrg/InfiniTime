@@ -36,7 +36,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
 
   alarmHours = alarmController.Hours();
   alarmMinutes = alarmController.Minutes();
-  lv_label_set_text_fmt(time, "%02lu:%02lu", alarmHours, alarmMinutes);
+  lv_label_set_text_fmt(time, "%02hhu:%02hhu", alarmHours, alarmMinutes);
 
   lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -25);
 
@@ -223,7 +223,7 @@ void Alarm::ShowInfo() {
     auto secToAlarm = timeToAlarm % 60;
 
     lv_label_set_text_fmt(
-      txtMessage, "Time to\nalarm:\n%2d Days\n%2d Hours\n%2d Minutes\n%2d Seconds", daysToAlarm, hrsToAlarm, minToAlarm, secToAlarm);
+      txtMessage, "Time to\nalarm:\n%2lu Days\n%2lu Hours\n%2lu Minutes\n%2lu Seconds", daysToAlarm, hrsToAlarm, minToAlarm, secToAlarm);
   } else {
     lv_label_set_text(txtMessage, "Alarm\nis not\nset.");
   }

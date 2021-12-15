@@ -6,6 +6,7 @@
 #include "components/motion/MotionController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
+#include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/WatchFaceDigital.h"
 #include "displayapp/screens/WatchFaceAnalog.h"

@@ -129,7 +129,7 @@ bool Twos::placeNewTile() {
   return true;
 }
 
-bool Twos::tryMerge(Tile grid[][4], int& newRow, int& newCol, int oldRow, int oldCol) {
+bool Twos::tryMerge(TwosTile grid[][4], int& newRow, int& newCol, int oldRow, int oldCol) {
   if ((grid[newRow][newCol].value == grid[oldRow][oldCol].value)) {
     if ((newCol != oldCol) || (newRow != oldRow)) {
       if (!grid[newRow][newCol].merged) {
@@ -146,7 +146,7 @@ bool Twos::tryMerge(Tile grid[][4], int& newRow, int& newCol, int oldRow, int ol
   return false;
 }
 
-bool Twos::tryMove(Tile grid[][4], int newRow, int newCol, int oldRow, int oldCol) {
+bool Twos::tryMove(TwosTile grid[][4], int newRow, int newCol, int oldRow, int oldCol) {
   if (((newCol >= 0) && (newCol != oldCol)) || ((newRow >= 0) && (newRow != oldRow))) {
     grid[newRow][newCol].value = grid[oldRow][oldCol].value;
     grid[oldRow][oldCol].value = 0;
@@ -261,7 +261,7 @@ bool Twos::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return false;
 }
 
-void Twos::updateGridDisplay(Tile grid[][4]) {
+void Twos::updateGridDisplay(TwosTile grid[][4]) {
   for (int row = 0; row < 4; row++) {
     for (int col = 0; col < 4; col++) {
       if (grid[row][col].value) {
