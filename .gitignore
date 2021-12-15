@@ -43,3 +43,7 @@ Testing/Temporary/
 #VSCODE
 .vscode/.cortex-debug.registers.state.json
 .vscode/.cortex-debug.peripherals.state.json
+
+#build files
+src/nRF5_SDK_15.3.0_59ac345
+src/arm-none-eabi
