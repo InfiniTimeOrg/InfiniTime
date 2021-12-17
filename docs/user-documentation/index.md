@@ -102,7 +102,6 @@ There are multiple Companion apps available:
 ### The InfiniTime UI
 
 The UI is composed of 4 different areas:
-
 - the main watchface
 - the notification screen (swipe down)
 - apps drawer (swipe up)
@@ -140,7 +139,6 @@ When swiping up, the apps drawer allows launching applications.
 There are 2 pages with each 6 applications (2 rows of 3 apps):
 
 Page 1:
-
 - Stopwatch
 - Music control
 - Navigation (only works with PureMaps/Sailfish OS)
@@ -149,7 +147,6 @@ Page 1:
 - Countdown 
 
 Page 2:
-
 - Draw
 - Pong game
 - 2048 game
@@ -195,7 +192,49 @@ When swiping right, you get access to 4 icons - from top left to bottom right:
 - About: displays information about InfiniTime, the Bootloader, uptime, etc
 
 ## Flash And Upgrade
-### Firmware, bootloader, recovery firmware
+
+### Bootloader, Firmware and recovery firmware
+
+You can check the InfiniTime version by first swiping right on the watchface to
+open quick settings, tapping the cogwheel to open settings, swipe up until you
+find an entry named "About" and tap on it.
+
+(add link to
+https://github.com/InfiniTimeOrg/InfiniTime/raw/develop/doc/gettingStarted/version-1.0.jpg)
+
+#### Bootloader
+
+The
+[bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader/releases/tag/1.0.0)
+is run right before booting into InfiniTime.   
+It is easily recognizable with its white pine cone that is progressively drawn
+in green. It also displays its own version on the bottom (1.0.0 as of now).
+
+(add link to
+https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/doc/gettingStarted/bootloader-1.0.jpg)
+
+#### The firmware
+
+Well, it's InfiniTime :) 
+
+#### Recovery firmware
+
+The *recovery functionality* allows to load a [recovery
+firmware](https://github.com/InfiniTimeOrg/InfiniTime/releases/tag/0.14.1) from
+the external flash memory to recover the PineTime when the current firmware
+cannot boot anymore. 
+
+This recovery firmware is a slightly modified version of InfiniTime that only
+provides a basic UI and the OTA functionality. You'll be able to use this
+firmware to load a new firmware over-the-air using BLE connectivity.
+
+[This
+article](https://www.ncartron.org/pinetimes-infinitime-new-bootloader-and-a-recovery-firmware.html)
+describes how to upgrade your PineTime to benefit from this feature.
+
+PineTime units shipped after (confirm date with JF) come with the recovery
+firmware already installed, so there's no need to follow this procedure.
+
 ### Upgrading your PineTime
 #### Over-The-Air (OTA)
 #### Using Gadgetbridge
