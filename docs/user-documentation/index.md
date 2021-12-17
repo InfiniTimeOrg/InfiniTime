@@ -31,6 +31,14 @@ The PineTime has a single button, located on the left hand side.
 
 ### Setting up date and time
 
+By default, InfiniTime starts on the digital watchface. It'll probably display
+the epoch time (1 Jan 1970, 00:00).
+
+You can set the time (and date) manually, or have a companion app do it for you.
+
+InfiniTime doesn't handle daylight savings automatically, so make sure to set
+the correct time or sync with a companion app.
+
 #### Using companion apps
 
 Date and time are set by the companion app once the PineTime is connected over
@@ -70,7 +78,122 @@ the connection is established!
 https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/doc/gettingStarted/ota-gadgetbridge-nrfconnect.md#using-nrfconnect-1)
 
 ### Companion apps
+
+PineTime can be used as a standalone watch, displaying date and time (which can
+be configured from the watch itself since InfiniTime 1.7.0), as well as
+heart-rate, number of steps, used as a torchlight, or just to play the included
+games (2048, Pong, and Draw).   
+
+To get more features, Companion apps, which are applications running on a
+smartphone or a computer, and are paired to the PineTime, are required.   
+
+There are multiple Companion apps available:
+
+- Smartphones:
+  - Android: [GadgetBridge](https://gadgetbridge.org/)
+  - SailfishOS: [Amazfish](https://openrepos.net/content/piggz/amazfish/)
+  - iOS: [InfiniLink](https://github.com/xan-m/InfiniLink)
+  - PinePhone (Linux phone): [Siglo](https://github.com/alexr4535/siglo)
+- Linux Computer:
+  - [Amazfish](https://openrepos.net/content/piggz/amazfish/) and
+    [Siglo](https://github.com/alexr4535/siglo) will also work, but may require
+    some manual installation.
+
 ### The InfiniTime UI
+
+The UI is composed of 4 different areas:
+
+- the main watchface
+- the notification screen (swipe down)
+- apps drawer (swipe up)
+- quick settings (swipe right)
+
+#### Watchfaces
+
+The default watchface is the "digital one", which displays date and time, as
+well as the number of steps, heart-rate, bluetooth icon (when connected),
+battery status, and possibly missed notifications.
+
+There are 2 other watchfaces:
+
+- Analog 
+- PineTimeStyle
+
+(Add pics from the watchfaces)
+
+#### Notification screen
+
+When swiping down, the last notification is displayed.   
+Up to 5 notifications can be displayed: simply swipe up again the display the
+next notification.   
+To come back to the watchface, press the left button.
+
+It is currently not possible to discard notifications, unless you restart
+InfiniTime (long press on the button for ~8 seconds).
+
+(Insert notification pics)
+
+#### Apps drawer
+
+When swiping up, the apps drawer allows launching applications.
+
+There are 2 pages with each 6 applications (2 rows of 3 apps):
+
+Page 1:
+
+- Stopwatch
+- Music control
+- Navigation (only works with PureMaps/Sailfish OS)
+- Steps counter
+- Heart-rate
+- Countdown 
+
+Page 2:
+
+- Draw
+- Pong game
+- 2048 game
+- Accelerometer
+- Metronome
+- Alarm
+
+(Add pics of the 2 pages of apps)
+
+**(Note to JF: does it make sense to have a subsection for each app, with
+screenshots and more details?)**
+
+#### Quick settings
+
+When swiping right, you get access to 4 icons - from top left to bottom right:
+
+- brightness level: pressing it will cycle between 3 levels (low/medium/high)
+- torch: 
+  - a tap launches it, 
+  - another tap switches it on, 
+  - another one switches it off,
+  - swiping to the right or left changes the brightness level of the torch
+- silent mode:
+  - a green bell symbol means silent mode is off (so the watch will vibrate when
+    receiving a notification),
+  - taping it enables it: the icon becomes grey, and the watch will not vibrate
+    when receiving notifications)
+- settings: access to InfiniTime settings
+  - Display timeout (in seconds)
+  - Wake up: how to wake up the watch
+    - nothing selected means only the left button wakes up the watch
+    - single tap: tap one time on the screen to wake up the watch
+    - double tap: tap two times to wake it up
+    - raise wrist: screen will wake up when you raise your wrist
+- Time format: 12h or 24h
+- Watch face: choose between digital, analog and PineTimeStyle
+- Steps: define your daily goal
+- Set date: allows manually setting date
+- Set time: allows manually setting time
+- Battery: displays battery level and voltage
+- PTS Colors: allows changing colors for the PineTimeStyle watchface
+- Firmware: displays information about the InfiniTime version
+- About: displays information about InfiniTime, the Bootloader, uptime, etc
+
 ## Flash And Upgrade
 ### Firmware, bootloader, recovery firmware
 ### Upgrading your PineTime
