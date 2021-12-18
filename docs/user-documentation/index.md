@@ -236,9 +236,127 @@ PineTime units shipped after (confirm date with JF) come with the recovery
 firmware already installed, so there's no need to follow this procedure.
 
 ### Upgrading your PineTime
+
+There are 2 ways to upgrade your PineTime:
+- "Over-The-Air", i.e. using the Bluetooth connectivity to send firmware from a
+  companion app: this is recommended for sealed devices
+- using the SWD interface: only possible for dev / non-sealed units, as it
+  requires access to the internals of the watch.
+
 #### Over-The-Air (OTA)
-#### Using Gadgetbridge
-#### Using Amazfish
-#### Using NRFConnect
-### Using the SWD interface
-## Firmware validation
+
+To update your PineTime, you can use one of the compatible companion
+applications.
+
+The updating process differs slightly on every companion app, so you'll need to
+familiarize yourself with the companion app of your choice.
+
+All releases of InfiniTime are available on [the release page of the GitHub
+repo](https://github.com/InfiniTimeOrg/InfiniTime/releases)
+under assets.
+
+To update the firmware, you need to download the DFU of the firmware version
+that you'd like to install, for example `pinetime-mcuboot-app-dfu-1.6.0.zip`, and
+flash it with your companion app.
+
+##### Using Gadgetbridge
+
+(Pics from [the original
+article](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/doc/gettingStarted/ota-gadgetbridge.md)
+will be added soon).
+
+###### Connecting to Gadgetbridge
+
+- Launch Gadgetbridge and tap on the "+" button on the bottom right to add a new device:
+(add pic)
+
+- Wait for the scan to complete, your PineTime should be detected:
+(add pic)
+
+- Tap on it. Gadgdetbridge will pair and connect to your device:
+(add pic)
+
+###### Updating with Gadgetbridge
+
+Now that Gadgetbridge is connected to your PineTime, use a file browser
+application and find the DFU file (`pinetime-mcuboot-app-dfu-x.x.x.zip`) you
+downloaded previously.    
+Tap on it and open it using the Gadgetbridge application/firmware installer:   
+(add pic)
+
+Read carefully the warning and tap Install:   
+(add pic)
+
+Wait for the transfer to finish. Your PineTime should reset and reboot with the
+new version of InfiniTime!
+
+Don't forget to validate your firmware. In the InfiniTime go to the settings
+(swipe right, select gear icon) and Firmware option and click validate.
+Otherwise after reboot the previous firmware will be used.
+
+(add pic)
+
+
+##### Using Amazfish
+
+Please see [this
+article](https://www.ncartron.org/upgrading-pinetimes-infinitime-firmware.html)
+which describes how to use Amazfish on Sailfish OS to upgrade your PineTime.   
+Instructions also apply if you're running Amazfish on Linux.
+
+##### Using NRFConnect
+
+- Open NRFConnect. Swipe down in the Scanner tab and wait for your device to appear:   
+(add pic)
+
+- Tap on the *Connect* button on the right of your device. NRFConnect will connect
+  to your PineTime and discover its characteristics. Tap on the DFU button on
+  the top right:   
+  (add pic)
+
+- Select Distribution packet (ZIP):  
+  (add pic)
+
+- Find the DFU file (`pinetime-mcuboot-app-dfu-x.x.x.zip`) you downloaded
+  previously, the DFU transfer will start automatically. When the transfer is
+  finished, your PineTime will reset and restart on the new version of
+  InfiniTime!
+  Don't forget to validate your firmware. In the InfiniTime go to the settings
+  (swipe right, select gear icon) and Firmware option and click validate.
+  Otherwise after reboot the previous firmware will be used.
+
+#### Using the SWD interface
+
+Download the files bootloader.bin, image-x.y.z.bin and
+pinetime-graphics-x.y.z.bin from the [releases
+page](https://github.com/InfiniTimeOrg/InfiniTime/releases).
+
+The bootloader reads a boot logo from the external SPI flash memory. The first
+step consists of flashing a tool in the MCU that will flash the boot logo into
+this SPI flash memory. This first step is optional but recommended (the
+bootloader will display garbage on screen for a few second if you don't do it).
+Using your SWD tool, flash pinetime-graphics-x.y.z.bin at offset 0x0000. Reset
+the MCU and wait for a few second, until the logo is completely drawn on the
+display.
+
+Then, using your SWD tool, flash those file at specific offset:
+
+- bootloader.bin : **0x0000**
+- image-x.y.z.bin : **0x8000**
+
+Reset and voilà, you're running InfiniTime on your PineTime!
+
+### Firmware validation
+
+Firmware updates must be manually validated. If the firmware isn't validated and
+the watch resets, the watch will revert to the previous firmware. This is a
+safety feature to prevent bricking your device with faulty firmware.
+
+You can validate your updated firmware on InfiniTime >= 1.0 by following this
+simple procedure:
+
+- From the watchface, swipe right to display the quick settings menu
+- Open settings by tapping the cogwheel on the bottom right
+- Swipe up until you find an entry named Firmware and tap on it
+- If the firmware is not validated yet, you can either validate the running
+  firmware, or reset and revert to the previous firmware version
