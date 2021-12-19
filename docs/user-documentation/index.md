@@ -98,6 +98,7 @@ There are multiple Companion apps available:
   - [Amazfish](https://openrepos.net/content/piggz/amazfish/) and
     [Siglo](https://github.com/alexr4535/siglo) will also work, but may require
     some manual installation.
+  - [ITD](https://gitea.arsenm.dev/Arsen6331/itd/) 
 
 ### The InfiniTime UI
 
@@ -303,6 +304,14 @@ Please see [this
 article](https://www.ncartron.org/upgrading-pinetimes-infinitime-firmware.html)
 which describes how to use Amazfish on Sailfish OS to upgrade your PineTime.   
 Instructions also apply if you're running Amazfish on Linux.
+
+##### Using ITD
+
+ITD comes with a graphical user interface, called `itgui`, which allows
+upgrading InfiniTime.
+
+Please see [ITD's README](https://gitea.arsenm.dev/Arsen6331/itd/#itgui) for
+more details.
 
 ##### Using NRFConnect
 
