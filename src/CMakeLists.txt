@@ -840,10 +840,10 @@ add_library(nimble STATIC ${NIMBLE_SRC} ${TINYCRYPT_SRC})
 target_include_directories(nimble SYSTEM PUBLIC . ../)
 target_include_directories(nimble SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(nimble PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -Wno-unused-parameter -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-rtti>
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
