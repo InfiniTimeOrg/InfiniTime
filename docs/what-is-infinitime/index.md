@@ -71,6 +71,7 @@ InfiniTime implements the following features:
   - [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android via F-Droid)
   - [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)
   - [Siglo](https://github.com/alexr4535/siglo) (on Linux)
+  - [ITD](https://gitea.arsenm.dev/Arsen6331/itd/) (on Linux)
   - [Experimental] [WebBLEWatch](https://hubmartin.github.io/WebBLEWatch/) Synchronize time directly from your web browser. [video](https://youtu.be/IakiuhVDdrY)
   - [Experimental] [InfiniLink](https://github.com/xan-m/InfiniLink) (on iOS)
   - OTA (Over-the-air) update via BLE
