@@ -278,7 +278,28 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       if (event->passkey.params.action == BLE_SM_IOACT_DISP) {
         struct ble_sm_io pkey = {0};
         pkey.action = event->passkey.params.action;
-        pkey.passkey = ble_ll_rand() % 1000000;
+
+        /*
+         * Passkey is a 6 digits code (1'000'000 possibilities).
+         * It is important every possible value has an equal probability
+         * of getting generated. Simply applying a modulo creates a bias
+         * since 2^32 is not a multiple of 1'000'000.
+         * To prevent that, we can reject values greater than 999'999.
+         *
+         * Rejecting values would happen a lot since 2^32-1 is way greater
+         * than 1'000'000. An optimisation is to use a multiple of 1'000'000.
+         * The greatest multiple of 1'000'000 lesser than 2^32-1 is
+         * 4'294'000'000.
+         *
+         * Great explanation at:
+         * https://research.kudelskisecurity.com/2020/07/28/the-definitive-guide-to-modulo-bias-and-how-to-avoid-it/
+         */
+        uint32_t passkey_rand;
+        do {
+          passkey_rand = ble_ll_rand();
+        } while (passkey_rand > 4293999999);
+        pkey.passkey = passkey_rand % 1000000;
+
         bleController.SetPairingKey(pkey.passkey);
         systemTask.PushMessage(Pinetime::System::Messages::OnPairing);
         ble_sm_inject_io(event->passkey.conn_handle, &pkey);
