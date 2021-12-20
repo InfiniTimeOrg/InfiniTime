@@ -196,12 +196,30 @@ When swiping right, you get access to 4 icons - from top left to bottom right:
 
 ### Bootloader, Firmware and recovery firmware
 
-You can check the InfiniTime version by first swiping right on the watchface to
-open quick settings, tapping the cogwheel to open settings, swipe up until you
-find an entry named "About" and tap on it.
+#### Firmware, InfiniTime, Bootloader, Recovery firmware, OTA, DFU... What is it?
 
-(add link to
-https://github.com/InfiniTimeOrg/InfiniTime/raw/develop/doc/gettingStarted/version-1.0.jpg)
+You may have already encountered these words by reading the announcement,
+release notes, or [the wiki
+guide](https://wiki.pine64.org/wiki/Upgrade_PineTime_to_InfiniTime_1.0.0) and
+you may find them confusing if you're not familiar with the project.
+
+A **firmware** is software running on the embedded hardware of a device.
+
+InfiniTime has three distinct firmwares:
+- [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime) is the operating system.
+- [The bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader) is responsible for safely applying firmware updates and runs before booting into InfiniTime.
+- **The recovery firmware** is a special *application firmware* than can be
+  loaded by the bootloader on user request. This firmware can be useful in case
+  of serious issue, when the main application firmware cannot perform an OTA
+  update correctly.
+
+**OTA** (**O**ver **T**he **A**ir) refers to updating of the firmware over BLE
+(Bluetooth Low Energy). This is a functionality that allows the user to update
+the firmware on their device wirelessly.
+
+**DFU** (**D**evice **F**irmware **U**pdate) is the file format and protocol
+used to send the update of the firmware to the watch over-the-air. InfiniTime
+implements the (legacy) DFU protocol from Nordic Semiconductor (NRF).
 
 #### Bootloader
 
@@ -209,14 +227,35 @@ The
 [bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader/releases/tag/1.0.0)
 is run right before booting into InfiniTime.   
 It is easily recognizable with its white pine cone that is progressively drawn
-in green. It also displays its own version on the bottom (1.0.0 as of now).
+in green. It also displays its own version at the bottom (1.0.0 as of now).
 
 (add link to
 https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/doc/gettingStarted/bootloader-1.0.jpg)
 
+Most of the time, the bootloader just runs without your intervention (update and load the firmware).
+
+However, you can enable 2 functionalities using the push button:
+
+- Push the button until the pine cone is drawn in blue to force the rollback of
+  the previous version of the firmware, even if you've already validated the
+  updated one
+- Push the button until the pine cone is drawn in red to load the recovery
+  firmware. This recovery firmware only provides BLE connectivity and OTA
+  functionality.
+
+More info about the bootloader on [its project
+page](https://github.com/JF002/pinetime-mcuboot-bootloader/blob/master/README.md).
+
 #### The firmware
 
-Well, it's InfiniTime :) 
+Well, it's InfiniTime :)   
+
+You can check the InfiniTime version by first swiping right on the watchface to
+open quick settings, tapping the cogwheel to open settings, swipe up until you
+find an entry named "About" and tap on it.
+
+(add link to
+https://github.com/InfiniTimeOrg/InfiniTime/raw/develop/doc/gettingStarted/version-1.0.jpg)
 
 #### Recovery firmware
 
@@ -308,8 +347,7 @@ Instructions also apply if you're running Amazfish on Linux.
 ##### Using ITD
 
 ITD comes with a graphical user interface, called `itgui`, which allows
-upgrading InfiniTime.
-
+upgrading InfiniTime.    
 Please see [ITD's README](https://gitea.arsenm.dev/Arsen6331/itd/#itgui) for
 more details.
 
