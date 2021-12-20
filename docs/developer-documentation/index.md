@@ -7,10 +7,10 @@ relevant files for what you're working on.
 
 ### FreeRTOS
 
-Infinitime is based on FreeRTOS, a real-time operating system. FreeRTOS provides
-several quality of life abstractions (for example easy software timers) and most
-importantly supports multiple tasks. If you want to read up on real-time
-operating systems, you can look
+Infinitime is based on [FreeRTOS]https://www.freertos.org), a real-time
+operating system. FreeRTOS provides several quality of life abstractions (for
+example easy software timers) and most importantly supports multiple tasks. If
+you want to read up on real-time operating systems, you can look
 [here](https://www.freertos.org/implementation/a00002.html) and
 [here](https://www.freertos.org/features.html). The main "process" creates at
 least one task and then starts the FreeRTOS task scheduler. This main "process"
@@ -63,7 +63,8 @@ Some controllers can be passed by reference to apps that need access to the
 resource (for example vibration motor).
 They reside in [components/](/src/components/) inside their own subfolder.
 
-For more detail see the [Apps page](./Apps.md)
+For more detail, please see the [How to implement an
+app](./index.html#how-to-implement-an-app) section below.
 
 ### Bluetooth
 
@@ -196,6 +197,8 @@ when designing an app that you want to be included in InfiniTime.
 
 ## Generating the fonts and symbols
 
+You can download fonts using the links below:
+
 * [Jetbrains Mono](https://www.jetbrains.com/fr-fr/lp/mono/)
 * [Awesome font from LVGL](https://lvgl.io/assets/others/FontAwesome5-Solid+Brands+Regular.woff)
 * [Open Sans Light from Google](https://fonts.google.com/specimen/Open+Sans)
@@ -229,23 +232,30 @@ static constexpr const char* newSymbol = "\xEF\x86\x85";
 
 ### Simple method to generate a font
 
-If you want to generate a basic font containing only numbers and letters, you can use the above settings but instead of specifying a range, simply list the characters you need in the Symbols field and leave the range blank. This is the approach used for the PineTimeStyle watchface.
-This works well for fonts which will only be used to display numbers, but will fail if you try to add a colon or other punctuation.
+If you want to generate a basic font containing only numbers and letters, you
+can use the above settings but instead of specifying a range, simply list the
+characters you need in the Symbols field and leave the range blank. This is the
+approach used for the PineTimeStyle watchface.
+This works well for fonts which will only be used to display numbers, but will
+fail if you try to add a colon or other punctuation.
 
 * Open the [LVGL font converter](https://lvgl.io/tools/fontconverter)
 * Name : open_sans_light
 * Size : 150
 * Bpp : 1 bit-per-pixel
 * Do not enable font compression and horizontal subpixel hinting
-* Load the file `open_sans_light.tff` (use the file in this repo to ensure the version matches) and specify the following symbols : `0123456789`
-* Click on Convert, and download the file `open_sans_light.c` and copy it in `src/DisplayApp/Fonts`
-* Add the font .c file path to src/CMakeLists.txt (search for jetbrains to find the appropriate location/format)
+* Load the file `open_sans_light.tff` (use the file in this repo to ensure the
+  version matches) and specify the following symbols : `0123456789`
+* Click on Convert, and download the file `open_sans_light.c` and copy it in
+  `src/DisplayApp/Fonts`
+* Add the font .c file path to src/CMakeLists.txt (search for jetbrains to find
+  the appropriate location/format)
 * Add an LV_FONT_DECLARE line in src/libs/lv_conf.h (as above)
 
 #### Navigation font
 
-To create the navigtion.ttf I use the web app [icomoon](https://icomoon.io/app)
-this app can import the svg files from the folder
+To create the navigtion.ttf I use the web app [icomoon](https://icomoon.io/app).
+This app can import the svg files from the folder
 *src/displayapp/icons/navigation/unique* and create a ttf file the
 project for the site is *lv_font_navi_80.json* you can import it to add or
 remove icons
@@ -280,5 +290,3 @@ Pankaj Raghav describes in details how to create a stopwatch app in InfiniTime.
 (add link to ![example layouts](./ui/example.png))
 
 ## BLE implementation and API
-
-
