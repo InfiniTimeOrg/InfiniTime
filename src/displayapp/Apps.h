@@ -37,7 +37,7 @@ namespace Pinetime {
       SettingPineTimeStyle,
       SettingSetDate,
       SettingSetTime,
-      Error,
+      Error
     };
   }
 }

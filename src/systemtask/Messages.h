@@ -28,7 +28,7 @@ namespace Pinetime {
         MeasureBatteryTimerExpired,
         BatteryPercentageUpdated,
         StartFileTransfer,
-        StopFileTransfer,
+        StopFileTransfer
       };
     }
 }

@@ -23,14 +23,14 @@
 using namespace Pinetime::Controllers;
 
 NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
-                                   Pinetime::Controllers::Ble& bleController,
+                                   Ble& bleController,
                                    DateTime& dateTimeController,
-                                   Pinetime::Controllers::NotificationManager& notificationManager,
-                                   Controllers::Battery& batteryController,
+                                   NotificationManager& notificationManager,
+                                   Battery& batteryController,
                                    Pinetime::Drivers::SpiNorFlash& spiNorFlash,
-                                   Controllers::HeartRateController& heartRateController,
-                                   Controllers::MotionController& motionController,
-                                   Controllers::FS& fs)
+                                   HeartRateController& heartRateController,
+                                   MotionController& motionController,
+                                   FS& fs)
   : systemTask {systemTask},
     bleController {bleController},
     dateTimeController {dateTimeController},
@@ -134,9 +134,7 @@ void NimbleController::Init() {
 
   RestoreBond();
 
-  if (!ble_gap_adv_active() && !bleController.IsConnected()) {
-    StartAdvertising();
-  }
+  StartAdvertising();
 }
 
 void NimbleController::StartAdvertising() {
