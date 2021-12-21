@@ -451,9 +451,11 @@ list(APPEND SOURCE_FILES
 
         ## Watch faces
         displayapp/icons/bg_clock.c
+		displayapp/icons/bg_circuit.c
         displayapp/screens/WatchFaceAnalog.cpp
         displayapp/screens/WatchFaceDigital.cpp
         displayapp/screens/PineTimeStyle.cpp
+		displayapp/screens/WatchFaceCircuit.cpp
 
         ##
 
