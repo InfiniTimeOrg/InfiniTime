@@ -10,7 +10,7 @@ Here are some people we would like to highlight:
 
  - [Atc1441](https://github.com/atc1441/) : He works on an Arduino based
    firmware for the Pinetime and many other smartwatches based on similar
-   hardware. He was of great help when I was implementing support for the BMA421
+   hardware. He was of great help when JF was implementing support for the BMA421
    motion sensor and I²C driver.
  - [Koen](https://github.com/bosmoment) : He’s working on a firmware based on
    RiotOS. He integrated similar libs as me : NimBLE, LittleVGL,… His help was
