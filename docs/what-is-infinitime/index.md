@@ -67,7 +67,7 @@ InfiniTime implements the following features:
   - Battery status
   - Firmware validation
   - System information
-- Supported by 3 companion apps (development is in progress):
+- Supported by multiple companion apps (development is in progress):
   - [Gadgetbridge](https://codeberg.org/Freeyourgadget/Gadgetbridge/) (on Android via F-Droid)
   - [Amazfish](https://openrepos.net/content/piggz/amazfish) (on SailfishOS and Linux)
   - [Siglo](https://github.com/alexr4535/siglo) (on Linux)
