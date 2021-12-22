@@ -134,9 +134,7 @@ void NimbleController::Init() {
 
   RestoreBond();
 
-  if (!ble_gap_adv_active() && !bleController.IsConnected()) {
-    StartAdvertising();
-  }
+  StartAdvertising();
 }
 
 void NimbleController::StartAdvertising() {
@@ -274,7 +272,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
        * display capability only so we only handle the "display" action here.
        *
        * Standards insist that the rand() PRNG be deterministic.
-       * Use the nimble TRNG here since rand() is predictable.
+       * Use the tinycrypt prng here since rand() is predictable.
        */
       NRF_LOG_INFO("Security event : BLE_GAP_EVENT_PASSKEY_ACTION");
       if (event->passkey.params.action == BLE_SM_IOACT_DISP) {

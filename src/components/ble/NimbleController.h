@@ -110,8 +110,8 @@ namespace Pinetime {
       ImmediateAlertService immediateAlertService;
       HeartRateService heartRateService;
       MotionService motionService;
-      ServiceDiscovery serviceDiscovery;
       FSService fsService;
+      ServiceDiscovery serviceDiscovery;
 
       uint8_t addrType;
       uint16_t connectionHandle = BLE_HS_CONN_HANDLE_NONE;
