@@ -208,10 +208,10 @@ void PineTimeStyle::SetBatteryIcon() {
 }
 
 void PineTimeStyle::AlignIcons() {
-  if (notificationState.Get() && bleState.Get()) {
+  if (notificationState.Get() && bleState.Get() != Pinetime::Controllers::Ble::ConnectStates::Disconnected) {
     lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 8, 25);
     lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, -8, 25);
-  } else if (notificationState.Get() && !bleState.Get()) {
+  } else if (notificationState.Get() && bleState.Get() == Pinetime::Controllers::Ble::ConnectStates::Disconnected) {
     lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
   } else {
     lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
@@ -234,7 +234,7 @@ void PineTimeStyle::Refresh() {
     }
   }
 
-  bleState = bleController.IsConnected();
+  bleState = bleController.GetConnectState();
   if (bleState.IsUpdated()) {
     lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
     AlignIcons();

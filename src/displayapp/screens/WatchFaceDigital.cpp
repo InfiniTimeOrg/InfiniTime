@@ -119,7 +119,7 @@ void WatchFaceDigital::Refresh() {
     lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
   }
 
-  bleState = bleController.IsConnected();
+  bleState = bleController.GetConnectState();
   if (bleState.IsUpdated()) {
     lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
   }

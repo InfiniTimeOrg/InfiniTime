@@ -2,12 +2,12 @@
 
 using namespace Pinetime::Controllers;
 
-void Ble::Connect() {
-  isConnected = true;
+void Ble::SetConnectState(Ble::ConnectStates newState) {
+  connectionState = newState;
 }
 
-void Ble::Disconnect() {
-  isConnected = false;
+Ble::ConnectStates Ble::GetConnectState() const {
+  return connectionState;
 }
 
 void Ble::StartFirmwareUpdate() {

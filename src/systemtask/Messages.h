@@ -29,6 +29,7 @@ namespace Pinetime {
         BatteryPercentageUpdated,
         StartFileTransfer,
         StopFileTransfer,
+        AirplaneModeToggle
       };
     }
 }
