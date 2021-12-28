@@ -180,21 +180,26 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_t* alert_count = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
   lv_obj_align(alert_count, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
-
-  auto diff = std::chrono::system_clock::from_time_t(timeNow) - std::chrono::system_clock::from_time_t(timeArrived);
-  std::chrono::minutes age = std::chrono::duration_cast<std::chrono::minutes>(diff);
-  std::string ageString;
-  ageString.reserve(10);
-  if ((age.count() / (60 * 24)) >= 1) {
-    ageString = std::to_string(static_cast<uint16_t>(age.count() / (60 * 24))) + "d ago";
-  } else if ((age.count() / 60) >= 1) {
-    ageString = std::to_string(static_cast<uint8_t>(age.count() / 60)) + "h ago";
-  } else {
-    ageString = std::to_string(static_cast<uint8_t>(age.count())) + "m ago";
+  // almost impossible to receive a real notification at time 0, so skip because it is the "no notifications" notification
+  if(timeNow != 0) {
+      auto diff = std::chrono::system_clock::from_time_t(timeNow) - std::chrono::system_clock::from_time_t(timeArrived);
+      std::chrono::minutes age = std::chrono::duration_cast<std::chrono::minutes>(diff);
+      uint32_t ageInt = static_cast<uint32_t>(age.count());
+      char timeUnit;
+      if ((ageInt / (60 * 24)) >= 1) {
+          ageInt /= (60*24);
+          timeUnit = 'd';
+      } else if ((ageInt / 60) >= 1) {
+          ageInt /= 60;
+          timeUnit = 'h';
+      } else {
+          timeUnit = 'm';
+      }
+      lv_obj_t* alert_age = lv_label_create(container1, nullptr);
+      lv_label_set_text_fmt(alert_age, "%d%c ago",ageInt, timeUnit);
+      // same format as alert_count
+      lv_obj_align(alert_age, container1, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -16);
   }
-  lv_obj_t* alert_age = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(alert_age, ageString.c_str());
-  lv_obj_align(alert_age, container1, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
 
   lv_obj_t* alert_type = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x888888));
