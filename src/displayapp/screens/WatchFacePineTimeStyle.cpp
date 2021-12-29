@@ -172,11 +172,10 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   }
   stepGauge = lv_gauge_create(lv_scr_act(), nullptr);
   lv_gauge_set_needle_count(stepGauge, 1, needle_colors);
-  lv_obj_set_size(stepGauge, 40, 40);
-  lv_obj_align(stepGauge, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_gauge_set_scale(stepGauge, 360, 11, 0);
-  lv_gauge_set_angle_offset(stepGauge, 180);
-  lv_gauge_set_critical_value(stepGauge, 100);
+  lv_obj_set_size(stepGauge, 37, 37);
+  lv_obj_align(stepGauge, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
+  lv_gauge_set_scale(stepGauge, 180, 5, 0);
+  lv_gauge_set_critical_value(stepGauge, 120);
   lv_gauge_set_range(stepGauge, 0, 100);
   lv_gauge_set_value(stepGauge, 0, 0);
 
@@ -190,6 +189,12 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_obj_set_style_local_line_opa(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_obj_set_style_local_line_width(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 3);
   lv_obj_set_style_local_pad_inner(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 4);
+
+  // Display seconds
+  timeDD3 = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(timeDD3, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
+  lv_label_set_text_static(timeDD3, ":00");
+  lv_obj_align(timeDD3, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   btnNextTime = lv_btn_create(lv_scr_act(), nullptr);
   btnNextTime->user_data = this;
@@ -390,6 +395,7 @@ void WatchFacePineTimeStyle::Refresh() {
 
     uint8_t hour = time.hours().count();
     uint8_t minute = time.minutes().count();
+    uint8_t second = time.seconds().count();
 
     if (displayedHour != hour || displayedMinute != minute) {
       displayedHour = hour;
@@ -413,6 +419,12 @@ void WatchFacePineTimeStyle::Refresh() {
         lv_label_set_text_fmt(timeDD1, "%02d", hour);
         lv_label_set_text_fmt(timeDD2, "%02d", minute);
       }
+    }
+
+    if (displayedSecond != second) {
+      displayedSecond = second;
+
+      lv_label_set_text_fmt(timeDD3, ":%02d", second);
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
