@@ -1,3 +1,6 @@
+#include <FreeRTOS.h>
+#include <task.h>
+
 #include "displayapp/DisplayApp.h"
 #include <libraries/log/nrf_log.h>
 #include "displayapp/screens/HeartRate.h"
@@ -129,7 +132,7 @@ void DisplayApp::Start(System::BootErrors error) {
   }
 }
 
-void DisplayApp::Process(void* instance) {
+[[noreturn]] void DisplayApp::Process(void* instance) {
   auto* app = static_cast<DisplayApp*>(instance);
   NRF_LOG_INFO("displayapp task started!");
   app->InitHw();

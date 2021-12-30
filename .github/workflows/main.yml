@@ -32,24 +32,24 @@ jobs:
       - name: Install cmake
         uses: lukka/get-cmake@v3.18.3
 
-      - name: Check cache for Embedded Arm Toolchain arm-none-eabi-gcc
-        id:   cache-toolchain
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-toolchain-9-2020-q2
-        with:
-          path: ${{ runner.temp }}/arm-none-eabi
-          key:  ${{ runner.os }}-build-${{ env.cache-name }}
-          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+      #- name: Check cache for Embedded Arm Toolchain arm-none-eabi-gcc
+      #  id: cache-toolchain
+      #  uses: actions/cache@v2
+      #  env:
+      #    cache-name: cache-toolchain-10.3-2021.10
+      #  with:
+      #    path: ${{ runner.temp }}/arm-none-eabi
+      #    key: ${{ runner.os }}-build-${{ env.cache-name }}
+      #    restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
 
-      - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
-        if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
-        uses: fiam/arm-none-eabi-gcc@v1.0.4
+      - name: Install Embedded ARM Toolchain arm-none-eabi-gcc
+        if: steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
+        uses: carlosperate/arm-none-eabi-gcc-action@v1.3.0
         with:
-          # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
-          release: 9-2020-q2
-          # Directory to unpack GCC to. Defaults to a temporary directory.
-          directory: ${{ runner.temp }}/arm-none-eabi
+          # GNU Embedded Toolchain for ARM release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
+          release: 10.3-2021.10
+          # Enviroment variable where to store the toolchain's path
+          path-env-var: ARM_NONE_EABI_GCC_PATH
 
       - name: Check cache for nRF5 SDK
         id:   cache-nrf5sdk
@@ -113,7 +113,7 @@ jobs:
         run:  |
           mkdir -p build
           cd build
-          cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 -DBUILD_DFU=1 ../
+          cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=$(dirname "$ARM_NONE_EABI_GCC_PATH") -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 -DBUILD_DFU=1 ../
 
         #########################################################################################
         # Make and Upload DFU Package

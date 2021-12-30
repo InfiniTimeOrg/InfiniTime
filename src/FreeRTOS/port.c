@@ -73,26 +73,25 @@ void vPortStartFirstTask( void )
 #ifdef SOFTDEVICE_PRESENT
                     ::"i"(configKERNEL_INTERRUPT_PRIORITY  << (8 - configPRIO_BITS))
 #endif
-                );
+      " .ltorg                \n");
 }
 
 /*-----------------------------------------------------------*/
 
-void vPortSVCHandler( void )
-{
-    __asm volatile (
-                    "   ldr r3, =pxCurrentTCB           \n" /* Restore the context. */
-                    "   ldr r1, [r3]                    \n" /* Use pxCurrentTCBConst to get the pxCurrentTCB address. */
-                    "   ldr r0, [r1]                    \n" /* The first item in pxCurrentTCB is the task top of stack. */
-                    "   ldmia r0!, {r4-r11, r14}        \n" /* Pop the registers that are not automatically saved on exception entry and the critical nesting count. */
-                    "   msr psp, r0                     \n" /* Restore the task stack pointer. */
-                    "   isb                             \n"
-                    "   mov r0, #0                      \n"
-                    "   msr basepri, r0                 \n"
-                    "   bx r14                          \n"
-                    "                                   \n"
-                    "   .align 2                        \n"
-                );
+void __attribute__((used)) vPortSVCHandler(void) {
+  __asm volatile("   ldr r3, =pxCurrentTCB           \n" /* Restore the context. */
+                 "   ldr r1, [r3]                    \n" /* Use pxCurrentTCBConst to get the pxCurrentTCB address. */
+                 "   ldr r0, [r1]                    \n" /* The first item in pxCurrentTCB is the task top of stack. */
+                 "   ldmia r0!, {r4-r11, r14}        \n" /* Pop the registers that are not automatically saved on exception entry and the
+                                                            critical nesting count. */
+                 "   msr psp, r0                     \n" /* Restore the task stack pointer. */
+                 "   isb                             \n"
+                 "   mov r0, #0                      \n"
+                 "   msr basepri, r0                 \n"
+                 "   bx r14                          \n"
+                 "                                   \n"
+                 "   .align 2                        \n"
+                 "   .ltorg                          \n");
 }
 
 /*-----------------------------------------------------------*/
@@ -132,17 +131,16 @@ void xPortPendSVHandler( void )
     "                                       \n"
     "   ldmia r0!, {r4-r11, r14}            \n" /* Pop the core registers. */
     "                                       \n"
-    "   tst r14, #0x10                      \n" /* Is the task using the FPU context?  If so, pop the high vfp registers too. */
-    "   it eq                               \n"
-    "   vldmiaeq r0!, {s16-s31}             \n"
-    "                                       \n"
-    "   msr psp, r0                         \n"
-    "   isb                                 \n"
-    "                                       \n"
-    "                                       \n"
-    "   bx r14                              \n"
-    "                                       \n"
-    "   .align 2                            \n"
-    ::"i"(configMAX_SYSCALL_INTERRUPT_PRIORITY  << (8 - configPRIO_BITS))
-    );
+      "   tst r14, #0x10                      \n" /* Is the task using the FPU context?  If so, pop the high vfp registers too. */
+      "   it eq                               \n"
+      "   vldmiaeq r0!, {s16-s31}             \n"
+      "                                       \n"
+      "   msr psp, r0                         \n"
+      "   isb                                 \n"
+      "                                       \n"
+      "                                       \n"
+      "   bx r14                              \n"
+      "                                       \n"
+      "   .align 2                            \n"
+      "   .ltorg                              \n" ::"i"(configMAX_SYSCALL_INTERRUPT_PRIORITY << (8 - configPRIO_BITS)));
 }

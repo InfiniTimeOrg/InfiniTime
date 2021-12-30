@@ -1,7 +1,7 @@
 #include "components/motor/MotorController.h"
 #include <hal/nrf_gpio.h>
 #include "systemtask/SystemTask.h"
-#include "app_timer.h"
+#include <app_timer.h>
 #include "drivers/PinMap.h"
 
 APP_TIMER_DEF(shortVibTimer);
