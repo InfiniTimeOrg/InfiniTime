@@ -1,7 +1,7 @@
 #pragma once
 
-#include <systemtask/SystemTask.h>
 #include "components/settings/Settings.h"
+#include <systemtask/SystemTask.h>
 
 namespace Pinetime {
   namespace Controllers {

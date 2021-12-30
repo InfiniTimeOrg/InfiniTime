@@ -5,7 +5,7 @@ using namespace Pinetime::Controllers;
 
 ShowerController* ShowerController::instance = nullptr;
 
-ShowerController::ShowerController() {
+ShowerController::ShowerController() : lastWakeUpMode() {
   instance = this;
 }
 
