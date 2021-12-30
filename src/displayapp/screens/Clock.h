@@ -32,6 +32,7 @@ namespace Pinetime {
         ~Clock() override;
 
         bool OnTouchEvent(TouchEvents event) override;
+        bool OnButtonPushed() override;
 
       private:
         Controllers::DateTime& dateTimeController;

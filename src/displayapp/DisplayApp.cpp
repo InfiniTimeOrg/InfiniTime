@@ -45,7 +45,6 @@
 #include "displayapp/screens/settings/SettingWakeUp.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
-#include "displayapp/screens/settings/SettingPineTimeStyle.h"
 #include "displayapp/screens/settings/SettingSetDate.h"
 #include "displayapp/screens/settings/SettingSetTime.h"
 
@@ -255,10 +254,10 @@ void DisplayApp::Refresh() {
         }
       } break;
       case Messages::ButtonPushed:
-        if (currentApp == Apps::Clock) {
-          PushMessageToSystemTask(System::Messages::GoToSleep);
-        } else {
-          if (!currentScreen->OnButtonPushed()) {
+        if (!currentScreen->OnButtonPushed()) {
+          if (currentApp == Apps::Clock) {
+            PushMessageToSystemTask(System::Messages::GoToSleep);
+          } else {
             LoadApp(returnToApp, returnDirection);
             brightnessController.Set(settingsController.GetBrightness());
             brightnessController.Backup();
@@ -414,10 +413,6 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::SettingSetTime:
       currentScreen = std::make_unique<Screens::SettingSetTime>(this, dateTimeController);
-      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
-      break;
-    case Apps::SettingPineTimeStyle:
-      currentScreen = std::make_unique<Screens::SettingPineTimeStyle>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::BatteryInfo:
