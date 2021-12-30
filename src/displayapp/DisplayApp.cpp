@@ -10,6 +10,7 @@
 #include "components/ble/NotificationManager.h"
 #include "components/motion/MotionController.h"
 #include "components/motor/MotorController.h"
+#include "components/shower/ShowerController.h"
 #include "displayapp/screens/ApplicationList.h"
 #include "displayapp/screens/Brightness.h"
 #include "displayapp/screens/Clock.h"
@@ -96,6 +97,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::TimerController& timerController,
                        Pinetime::Controllers::AlarmController& alarmController,
+                       Pinetime::Controllers::ShowerController& showerController,
                        Pinetime::Controllers::TouchHandler& touchHandler)
   : lcd {lcd},
     lvgl {lvgl},
@@ -111,6 +113,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     motionController {motionController},
     timerController {timerController},
     alarmController {alarmController},
+    showerController {showerController},
     touchHandler {touchHandler} {
 }
 

@@ -73,6 +73,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Pinetime::Drivers::Bma421& motionSensor,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::HeartRateController& heartRateController,
+                       Pinetime::Controllers::ShowerController& showerController,
                        Pinetime::Applications::DisplayApp& displayApp,
                        Pinetime::Applications::HeartRateTask& heartRateApp,
                        Pinetime::Controllers::FS& fs,
@@ -96,6 +97,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     motionSensor {motionSensor},
     settingsController {settingsController},
     heartRateController {heartRateController},
+    showerController {showerController},
     motionController {motionController},
     displayApp {displayApp},
     heartRateApp(heartRateApp),
@@ -162,6 +164,7 @@ void SystemTask::Work() {
   timerController.Register(this);
   timerController.Init();
   alarmController.Init(this);
+  showerController.Register(this);
 
   // Reset the TWI device because the motion sensor chip most probably crashed it...
   twiMaster.Sleep();

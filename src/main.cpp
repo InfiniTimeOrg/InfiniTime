@@ -37,6 +37,7 @@
 #include "components/datetime/DateTimeController.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/fs/FS.h"
+#include "components/shower/ShowerController.h"
 #include "drivers/Spi.h"
 #include "drivers/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
@@ -114,6 +115,7 @@ Pinetime::Controllers::ButtonHandler buttonHandler;
 Pinetime::Controllers::FS fs {spiNorFlash};
 Pinetime::Controllers::Settings settingsController {fs};
 Pinetime::Controllers::MotorController motorController {};
+Pinetime::Controllers::ShowerController showerController;
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               lvgl,
@@ -129,6 +131,7 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               motionController,
                                               timerController,
                                               alarmController,
+                                              showerController,
                                               touchHandler);
 
 Pinetime::System::SystemTask systemTask(spi,
@@ -150,6 +153,7 @@ Pinetime::System::SystemTask systemTask(spi,
                                         motionSensor,
                                         settingsController,
                                         heartRateController,
+                                        showerController,
                                         displayApp,
                                         heartRateApp,
                                         fs,

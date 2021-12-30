@@ -35,6 +35,7 @@ namespace Pinetime {
     class NotificationManager;
     class HeartRateController;
     class MotionController;
+    class ShowerController;
     class TouchHandler;
   }
 
@@ -61,6 +62,7 @@ namespace Pinetime {
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::TimerController& timerController,
                  Pinetime::Controllers::AlarmController& alarmController,
+                 Pinetime::Controllers::ShowerController& showerController,
                  Pinetime::Controllers::TouchHandler& touchHandler);
       void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
@@ -87,6 +89,7 @@ namespace Pinetime {
       Pinetime::Controllers::MotionController& motionController;
       Pinetime::Controllers::TimerController& timerController;
       Pinetime::Controllers::AlarmController& alarmController;
+      Pinetime::Controllers::ShowerController& showerController;
       Pinetime::Controllers::TouchHandler& touchHandler;
 
       Pinetime::Controllers::FirmwareValidator validator;
