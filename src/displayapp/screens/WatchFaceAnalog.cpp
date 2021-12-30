@@ -5,6 +5,7 @@
 #include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/NotificationIcon.h"
+#include "displayapp/screens/ShowerIcon.h"
 #include "components/settings/Settings.h"
 
 LV_IMG_DECLARE(bg_clock);
@@ -49,6 +50,7 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
                                  Controllers::Battery& batteryController,
                                  Controllers::Ble& bleController,
                                  Controllers::NotificationManager& notificationManager,
+                                 Controllers::ShowerController& showerController,
                                  Controllers::Settings& settingsController)
   : Screen(app),
     currentDateTime {{}},
@@ -56,6 +58,7 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
     batteryController {batteryController},
     bleController {bleController},
     notificationManager {notificationManager},
+    showerController {showerController},
     settingsController {settingsController} {
   settingsController.SetClockFace(1);
 
@@ -76,6 +79,11 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+
+  showerIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(showerIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
+  lv_label_set_text(showerIcon, Symbols::none);
+  lv_obj_align(showerIcon, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 15, 0);
 
   // Date - Day / Week day
 
@@ -212,6 +220,8 @@ void WatchFaceAnalog::Refresh() {
     lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
 
+  lv_label_set_text(showerIcon, ShowerIcon::GetShowerIcon(showerController.IsShowerModeOn()));
+
   currentDateTime = dateTimeController.CurrentDateTime();
 
   if (currentDateTime.IsUpdated()) {
@@ -230,3 +240,14 @@ void WatchFaceAnalog::Refresh() {
     }
   }
 }
+
+bool WatchFaceAnalog::OnTouchEvent(TouchEvents event) {
+  if (event == TouchEvents::LongTap) {
+    showerController.SetSettingController(&settingsController);
+    showerController.ToggleShowerMode();
+    lv_label_set_text(showerIcon, ShowerIcon::GetShowerIcon(showerController.IsShowerModeOn()));
+    return true;
+  }
+  return false;
+}
+

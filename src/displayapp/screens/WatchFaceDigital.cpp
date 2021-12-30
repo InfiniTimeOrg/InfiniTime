@@ -6,6 +6,7 @@
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/NotificationIcon.h"
+#include "displayapp/screens/ShowerIcon.h"
 #include "displayapp/screens/Symbols.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
@@ -22,6 +23,7 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
                                    Controllers::NotificationManager& notificatioManager,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
+                                   Controllers::ShowerController& showerController,
                                    Controllers::MotionController& motionController)
   : Screen(app),
     currentDateTime {{}},
@@ -31,6 +33,7 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
     notificatioManager {notificatioManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
+    showerController {showerController},
     motionController {motionController} {
   settingsController.SetClockFace(0);
 
@@ -52,6 +55,11 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+
+  showerIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(showerIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
+  lv_label_set_text(showerIcon, Symbols::none);
+  lv_obj_align(showerIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 15, 0);
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
@@ -131,6 +139,8 @@ void WatchFaceDigital::Refresh() {
   if (notificationState.IsUpdated()) {
     lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
+
+  lv_label_set_text(showerIcon, ShowerIcon::GetShowerIcon(showerController.IsShowerModeOn()));
 
   currentDateTime = dateTimeController.CurrentDateTime();
 
@@ -232,4 +242,13 @@ void WatchFaceDigital::Refresh() {
     lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
     lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
+}
+bool WatchFaceDigital::OnTouchEvent(TouchEvents event) {
+  if (event == TouchEvents::LongTap) {
+    showerController.SetSettingController(&settingsController);
+    showerController.ToggleShowerMode();
+    lv_label_set_text(showerIcon, ShowerIcon::GetShowerIcon(showerController.IsShowerModeOn()));
+    return true;
+  }
+  return false;
 }

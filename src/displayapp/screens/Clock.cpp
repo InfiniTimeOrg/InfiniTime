@@ -7,6 +7,7 @@
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/settings/Settings.h"
+#include "components/shower/ShowerController.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/WatchFaceDigital.h"
 #include "displayapp/screens/WatchFaceAnalog.h"
@@ -21,7 +22,8 @@ Clock::Clock(DisplayApp* app,
              Controllers::NotificationManager& notificatioManager,
              Controllers::Settings& settingsController,
              Controllers::HeartRateController& heartRateController,
-             Controllers::MotionController& motionController)
+             Controllers::MotionController& motionController,
+             Controllers::ShowerController& showerController)
   : Screen(app),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
@@ -30,6 +32,7 @@ Clock::Clock(DisplayApp* app,
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
+    showerController {showerController},
     screen {[this, &settingsController]() {
       switch (settingsController.GetClockFace()) {
         case 0:
@@ -63,12 +66,18 @@ std::unique_ptr<Screen> Clock::WatchFaceDigitalScreen() {
                                                      notificatioManager,
                                                      settingsController,
                                                      heartRateController,
+                                                     showerController,
                                                      motionController);
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceAnalogScreen() {
-  return std::make_unique<Screens::WatchFaceAnalog>(
-    app, dateTimeController, batteryController, bleController, notificatioManager, settingsController);
+  return std::make_unique<Screens::WatchFaceAnalog>(app, 
+                                                      dateTimeController, 
+                                                      batteryController, 
+                                                      bleController, 
+                                                      notificatioManager,
+                                                      showerController, 
+                                                      settingsController);
 }
 
 std::unique_ptr<Screen> Clock::PineTimeStyleScreen() {

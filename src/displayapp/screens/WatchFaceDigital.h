@@ -6,6 +6,7 @@
 #include <memory>
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
+#include "components/shower/ShowerController.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -15,6 +16,7 @@ namespace Pinetime {
     class NotificationManager;
     class HeartRateController;
     class MotionController;
+    class ShowerController;
   }
 
   namespace Applications {
@@ -29,10 +31,12 @@ namespace Pinetime {
                          Controllers::NotificationManager& notificatioManager,
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
+                         Controllers::ShowerController& showerController,
                          Controllers::MotionController& motionController);
         ~WatchFaceDigital() override;
 
         void Refresh() override;
+        bool OnTouchEvent(TouchEvents event) override;
 
       private:
         char displayedChar[5] {};
@@ -52,6 +56,8 @@ namespace Pinetime {
         DirtyValue<bool> heartbeatRunning {};
         DirtyValue<bool> notificationState {};
 
+        Pinetime::Controllers::Settings::WakeUpMode lastWakeUpMode;
+
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;
         lv_obj_t* label_date;
@@ -64,6 +70,7 @@ namespace Pinetime {
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
+        lv_obj_t* showerIcon;
 
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;
@@ -71,6 +78,7 @@ namespace Pinetime {
         Controllers::NotificationManager& notificatioManager;
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
+        Controllers::ShowerController& showerController;
         Controllers::MotionController& motionController;
 
         lv_task_t* taskRefresh;

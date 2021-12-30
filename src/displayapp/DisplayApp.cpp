@@ -342,7 +342,8 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
                                                        notificationManager,
                                                        settingsController,
                                                        heartRateController,
-                                                       motionController);
+                                                       motionController,
+                                                       showerController);
       break;
 
     case Apps::Error:
