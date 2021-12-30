@@ -435,6 +435,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
         displayapp/screens/Styles.cpp
+        displayapp/screens/ShowerIcon.cpp
         displayapp/Colors.cpp
 
         ## Settings
@@ -642,6 +643,7 @@ set(INCLUDE_FILES
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
         displayapp/screens/Alarm.h
+        displayapp/screens/ShowerIcon.h
         displayapp/Colors.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
