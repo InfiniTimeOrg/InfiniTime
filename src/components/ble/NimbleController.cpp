@@ -158,9 +158,11 @@ void NimbleController::StartAdvertising() {
     adv_params.itvl_max = 1651;
   }
 
+  ble_uuid128_t serviceUUIDs[] = {dfuServiceUuid, heartRateServiceUuid};
+
   fields.flags = BLE_HS_ADV_F_DISC_GEN | BLE_HS_ADV_F_BREDR_UNSUP;
-  fields.uuids128 = &dfuServiceUuid;
-  fields.num_uuids128 = 1;
+  fields.uuids128 = &serviceUUIDs;
+  fields.num_uuids128 = 2;
   fields.uuids128_is_complete = 1;
   fields.tx_pwr_lvl = BLE_HS_ADV_TX_PWR_LVL_AUTO;
 
