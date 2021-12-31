@@ -71,16 +71,22 @@ std::unique_ptr<Screen> Clock::WatchFaceDigitalScreen() {
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceAnalogScreen() {
-  return std::make_unique<Screens::WatchFaceAnalog>(
-    app, dateTimeController, batteryController, bleController, notificatioManager, settingsController);
-}
-
-std::unique_ptr<Screen> Clock::PineTimeStyleScreen() {
-  return std::make_unique<Screens::PineTimeStyle>(app,
+  return std::make_unique<Screens::WatchFaceDigital>(app,
                                                      dateTimeController,
                                                      batteryController,
                                                      bleController,
                                                      notificatioManager,
                                                      settingsController,
+                                                     heartRateController,
+                                                     motionController);
+}
+std::unique_ptr<Screen> Clock::PineTimeStyleScreen() {
+  return std::make_unique<Screens::WatchFaceDigital>(app,
+                                                     dateTimeController,
+                                                     batteryController,
+                                                     bleController,
+                                                     notificatioManager,
+                                                     settingsController,
+                                                     heartRateController,
                                                      motionController);
 }
