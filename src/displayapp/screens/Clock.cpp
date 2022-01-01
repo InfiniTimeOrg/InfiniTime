@@ -58,6 +58,11 @@ bool Clock::OnButtonPushed() {
   return screen->OnButtonPushed();
 }
 
+std::unique_ptr<Screen> Clock::NonBinaryFaceScreen() {
+  return std::make_unique<Screens::NonBinaryFace>(app,
+
+}
+
 std::unique_ptr<Screen> Clock::WatchFaceAnalogScreen() {
   return std::make_unique<Screens::WatchFaceAnalog>(
     app, dateTimeController, batteryController, bleController, notificatioManager, settingsController);

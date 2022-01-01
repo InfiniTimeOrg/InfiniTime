@@ -44,6 +44,7 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
 
         std::unique_ptr<Screen> screen;
+        std::unique_ptr<Screen> NonBinaryFaceScreen();
         std::unique_ptr<Screen> WatchFaceAnalogScreen();
         std::unique_ptr<Screen> PineTimeStyleScreen();
       };
