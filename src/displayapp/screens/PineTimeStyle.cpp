@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  * PineTimeStyle watchface for Infinitime created by Kieran Cawthray
- * Based on WatchFaceDigital
+ * Based on NonBinaryFace
  * Style/layout copied from TimeStyle for Pebble by Dan Tilden (github.com/tilden)
  */
 

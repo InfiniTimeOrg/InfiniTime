@@ -8,7 +8,7 @@
 #include "components/ble/NotificationManager.h"
 #include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
-#include "displayapp/screens/WatchFaceDigital.h"
+#include "displayapp/screens/NonBinaryFace.h"
 #include "displayapp/screens/WatchFaceAnalog.h"
 #include "displayapp/screens/PineTimeStyle.h"
 
@@ -33,7 +33,7 @@ Clock::Clock(DisplayApp* app,
     screen {[this, &settingsController]() {
       switch (settingsController.GetClockFace()) {
         case 0:
-          return WatchFaceDigitalScreen();
+          return NonBinaryFaceScreen();
           break;
         case 1:
           return WatchFaceAnalogScreen();
@@ -42,7 +42,7 @@ Clock::Clock(DisplayApp* app,
           return PineTimeStyleScreen();
           break;
       }
-      return WatchFaceDigitalScreen();
+      return NonBinaryFaceScreen();
     }()} {
   settingsController.SetAppMenu(0);
 }
@@ -59,8 +59,8 @@ bool Clock::OnButtonPushed() {
   return screen->OnButtonPushed();
 }
 
-std::unique_ptr<Screen> Clock::WatchFaceDigitalScreen() {
-  return std::make_unique<Screens::WatchFaceDigital>(app,
+std::unique_ptr<Screen> Clock::NonBinaryFaceScreen() {
+  return std::make_unique<Screens::NonBinaryFace>(app,
                                                      dateTimeController,
                                                      batteryController,
                                                      bleController,
