@@ -398,7 +398,6 @@ list(APPEND IMAGE_FILES
         )
 
 list(APPEND SOURCE_FILES
-        BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
         displayapp/screens/Screen.cpp
@@ -525,7 +524,6 @@ list(APPEND SOURCE_FILES
         )
 
 list(APPEND RECOVERY_SOURCE_FILES
-        BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayAppRecovery.cpp
 
@@ -610,7 +608,6 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
 
 set(INCLUDE_FILES
 
-        BootloaderVersion.h
         logging/Logger.h
         logging/NrfLogger.h
         displayapp/DisplayApp.h
