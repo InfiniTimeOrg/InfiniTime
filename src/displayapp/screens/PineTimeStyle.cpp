@@ -209,3 +209,4 @@ void PineTimeStyle::Refresh() {
       currentDay = day;
     }
   }
+}
