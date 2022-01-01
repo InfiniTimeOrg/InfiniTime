@@ -1,4 +1,4 @@
-#include "displayapp/screens/WatchfaceAnalog.h"
+#include "displayapp/screens/WatchFaceAnalog.h"
 
 #include <date/date.h>
 #include <lvgl/lvgl.h>
@@ -15,7 +15,7 @@
 #include "components/settings/Settings.h"
 using namespace Pinetime::Applications::Screens;
 
-WatchfaceAnalog::WatchfaceAnalog(DisplayApp* app,
+WatchFaceAnalog::WatchFaceAnalog(DisplayApp* app,
                                    Controllers::DateTime& dateTimeController,
                                    Controllers::Battery& batteryController,
                                    Controllers::Ble& bleController,
@@ -97,12 +97,12 @@ WatchfaceAnalog::WatchfaceAnalog(DisplayApp* app,
   Refresh();
 }
 
-WatchfaceAnalog::~WatchfaceAnalog() {
+WatchFaceAnalog::~WatchFaceAnalog() {
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-void WatchfaceAnalog::Refresh() {
+void WatchFaceAnalog::Refresh() {
   powerPresent = batteryController.IsPowerPresent();
   if (powerPresent.IsUpdated()) {
     lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
