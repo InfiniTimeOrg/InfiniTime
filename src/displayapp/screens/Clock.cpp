@@ -8,7 +8,6 @@
 #include "components/ble/NotificationManager.h"
 #include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
-#include "displayapp/screens/NonBinaryFace.h"
 #include "displayapp/screens/WatchFaceAnalog.h"
 #include "displayapp/screens/PineTimeStyle.h"
 
