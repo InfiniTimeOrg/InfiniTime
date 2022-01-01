@@ -2,6 +2,8 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/LittleVgl.h"
 
+#include <algorithm> // std::fill
+
 using namespace Pinetime::Applications::Screens;
 
 InfiniPaint::InfiniPaint(Pinetime::Applications::DisplayApp* app,
