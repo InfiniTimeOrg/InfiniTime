@@ -20,9 +20,9 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class PineTimeStyle : public Screen {
+      class WatchFaceDigital : public Screen {
       public:
-        PineTimeStyle(DisplayApp* app,
+        WatchFaceDigital(DisplayApp* app,
                          Controllers::DateTime& dateTimeController,
                          Controllers::Battery& batteryController,
                          Controllers::Ble& bleController,
@@ -30,7 +30,7 @@ namespace Pinetime {
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
                          Controllers::MotionController& motionController);
-        ~PineTimeStyle() override;
+        ~WatchFaceDigital() override;
 
         void Refresh() override;
 
