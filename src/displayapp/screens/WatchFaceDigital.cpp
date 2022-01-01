@@ -209,3 +209,4 @@ void WatchFaceDigital::Refresh() {
       currentDay = day;
     }
   }
+}
