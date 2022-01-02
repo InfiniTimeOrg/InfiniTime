@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include <components/heartrate/HeartRateController.h>
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
@@ -32,6 +32,7 @@ namespace Pinetime {
         ~Clock() override;
 
         bool OnTouchEvent(TouchEvents event) override;
+        bool OnButtonPushed() override;
 
       private:
         Controllers::DateTime& dateTimeController;

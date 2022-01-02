@@ -1,6 +1,8 @@
-#include "Paddle.h"
-#include "../DisplayApp.h"
-#include "../LittleVgl.h"
+#include "displayapp/screens/Paddle.h"
+#include "displayapp/DisplayApp.h"
+#include "displayapp/LittleVgl.h"
+
+#include <cstdlib> // for rand()
 
 using namespace Pinetime::Applications::Screens;
 
@@ -50,6 +52,13 @@ void Paddle::Refresh() {
   // checks if it has touched the side (right side)
   if (ballX >= LV_HOR_RES - ballSize - 1) {
     dx *= -1;
+    dy += rand() % 3 - 1; // add a little randomization in wall bounce direction, one of [-1, 0, 1]
+    if (dy > 5) { // limit dy to be in range [-5 to 5]
+      dy = 5;
+    }
+    if (dy < -5) {
+      dy = -5;
+    }
   }
 
   // checks if it is in the position of the paddle

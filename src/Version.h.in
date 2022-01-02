@@ -2,6 +2,8 @@
 
 @VERSION_EDIT_WARNING@
 
+#include <cstdint>
+
 namespace Pinetime {
   class Version {
     public:

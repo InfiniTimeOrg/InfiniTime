@@ -154,6 +154,7 @@ set(NIMBLE_SRC
         libs/mynewt-nimble/nimble/controller/src/ble_ll_supp_cmd.c
         libs/mynewt-nimble/nimble/controller/src/ble_ll_hci_ev.c
         libs/mynewt-nimble/nimble/controller/src/ble_ll_rfmgmt.c
+        libs/mynewt-nimble/nimble/controller/src/ble_ll_resolv.c
         libs/mynewt-nimble/porting/nimble/src/os_cputime.c
         libs/mynewt-nimble/porting/nimble/src/os_cputime_pwr2.c
         libs/mynewt-nimble/porting/nimble/src/os_mbuf.c
@@ -357,6 +358,14 @@ set(LVGL_SRC
         libs/lvgl/src/lv_widgets/lv_win.c
         )
 
+set(QCBOR_SRC
+        libs/QCBOR/src/ieee754.c
+        libs/QCBOR/src/qcbor_decode.c
+        libs/QCBOR/src/qcbor_encode.c
+        libs/QCBOR/src/qcbor_err_to_str.c
+        libs/QCBOR/src/UsefulBuf.c
+        )
+
 list(APPEND IMAGE_FILES
         displayapp/icons/battery/os_battery_error.c
         displayapp/icons/battery/os_battery_100.c
@@ -407,6 +416,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Label.cpp
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
+        displayapp/screens/Weather.cpp
         displayapp/screens/Navigation.cpp
         displayapp/screens/Metronome.cpp
         displayapp/screens/Motion.cpp
@@ -421,8 +431,10 @@ list(APPEND SOURCE_FILES
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
+        displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
+        displayapp/screens/Styles.cpp
         displayapp/Colors.cpp
 
         ## Settings
@@ -433,7 +445,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingWakeUp.cpp
         displayapp/screens/settings/SettingDisplay.cpp
         displayapp/screens/settings/SettingSteps.cpp
-        displayapp/screens/settings/SettingPineTimeStyle.cpp
         displayapp/screens/settings/SettingSetDate.cpp
         displayapp/screens/settings/SettingSetTime.cpp
         displayapp/screens/settings/SettingChimes.cpp
@@ -472,9 +483,11 @@ list(APPEND SOURCE_FILES
         components/ble/CurrentTimeService.cpp
         components/ble/AlertNotificationService.cpp
         components/ble/MusicService.cpp
+        components/ble/weather/WeatherService.cpp
         components/ble/NavigationService.cpp
         displayapp/fonts/lv_font_navi_80.c
         components/ble/BatteryInformationService.cpp
+        components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/ServiceDiscovery.cpp
         components/ble/HeartRateService.cpp
@@ -508,6 +521,7 @@ list(APPEND SOURCE_FILES
         components/heartrate/Ptagc.cpp
         components/heartrate/HeartRateController.cpp
 
+        buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
         )
 
@@ -542,7 +556,9 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/CurrentTimeService.cpp
         components/ble/AlertNotificationService.cpp
         components/ble/MusicService.cpp
+        components/ble/weather/WeatherService.cpp
         components/ble/BatteryInformationService.cpp
+        components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/ServiceDiscovery.cpp
         components/ble/NavigationService.cpp
@@ -568,6 +584,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/heartrate/Ptagc.cpp
         components/motor/MotorController.cpp
         components/fs/FS.cpp
+        buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
         )
 
@@ -644,6 +661,9 @@ set(INCLUDE_FILES
         components/datetime/DateTimeController.h
         components/brightness/BrightnessController.h
         components/motion/MotionController.h
+        components/firmwarevalidator/FirmwareValidator.h
+        components/ble/BleController.h
+        components/ble/NotificationManager.h
         components/ble/NimbleController.h
         components/ble/DeviceInformationService.h
         components/ble/CurrentTimeClient.h
@@ -651,11 +671,13 @@ set(INCLUDE_FILES
         components/ble/DfuService.h
         components/firmwarevalidator/FirmwareValidator.h
         components/ble/BatteryInformationService.h
+        components/ble/FSService.h
         components/ble/ImmediateAlertService.h
         components/ble/ServiceDiscovery.h
         components/ble/BleClient.h
         components/ble/HeartRateService.h
         components/ble/MotionService.h
+        components/ble/weather/WeatherService.h
         components/settings/Settings.h
         components/timer/TimerController.h
         components/alarm/AlarmController.h
@@ -682,6 +704,7 @@ set(INCLUDE_FILES
         components/heartrate/Ptagc.h
         components/heartrate/HeartRateController.h
         components/motor/MotorController.h
+        buttonhandler/ButtonHandler.h
         touchhandler/TouchHandler.h
         )
 
@@ -780,7 +803,7 @@ link_directories(
 )
 
 
-set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -Wall -Wno-unknown-pragmas -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wreturn-type -Werror=return-type -fstack-usage -fno-exceptions -fno-non-call-exceptions)
+set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -Wall -Wextra -Warray-bounds=2 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-nonliteral -ftree-vrp -Wno-unused-parameter -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-expansion-to-defined -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wreturn-type -Werror=return-type -fstack-usage -fno-exceptions -fno-non-call-exceptions)
 add_definitions(-DCONFIG_GPIO_AS_PINRESET)
 add_definitions(-DNIMBLE_CFG_CONTROLLER)
 add_definitions(-DOS_CPUTIME_FREQ)
@@ -802,10 +825,10 @@ add_library(nrf-sdk STATIC ${SDK_SOURCE_FILES})
 target_include_directories(nrf-sdk SYSTEM PUBLIC . ../)
 target_include_directories(nrf-sdk SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(nrf-sdk PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wno-expansion-to-defined -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wno-expansion-to-defined -O3>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wno-expansion-to-defined -Og -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wno-expansion-to-defined -O3 -fno-rtti>
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
@@ -833,6 +856,25 @@ target_compile_options(lvgl PRIVATE
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
+# QCBOR
+add_library(QCBOR STATIC ${QCBOR_SRC})
+target_include_directories(QCBOR SYSTEM PUBLIC libs/QCBOR/inc)
+# This is required with the current configuration
+target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_FLOAT_HW_USE)
+# These are for space-saving
+target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_PREFERRED_FLOAT)
+target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_EXP_AND_MANTISSA)
+target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_INDEFINITE_LENGTH_STRINGS)
+#target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_INDEFINITE_LENGTH_ARRAYS)
+target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_UNCOMMON_TAGS)
+target_compile_definitions(QCBOR PUBLIC USEFULBUF_CONFIG_LITTLE_ENDIAN)
+set_target_properties(QCBOR PROPERTIES LINKER_LANGUAGE C)
+target_compile_options(QCBOR PRIVATE
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        )
+
 # LITTLEFS_SRC
 add_library(littlefs STATIC ${LITTLEFS_SRC})
 target_include_directories(littlefs SYSTEM PUBLIC . ../)
@@ -851,12 +893,12 @@ set(EXECUTABLE_FILE_NAME ${EXECUTABLE_NAME}-${pinetime_VERSION_MAJOR}.${pinetime
 set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_FILE_NAME})
-target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs)
+target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs QCBOR)
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wextra -Wformat -Wno-missing-field-initializers -Wno-unused-parameter -Og -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wextra -Wformat -Wno-missing-field-initializers -Wno-unused-parameter -Os>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wextra -Wformat -Wno-missing-field-initializers -Wno-unused-parameter -Og -g3 -fno-rtti>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wextra -Wformat -Wno-missing-field-initializers -Wno-unused-parameter -Os -fno-rtti>
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
@@ -880,7 +922,7 @@ set(IMAGE_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-image-${pinetime_VERSION_
 set(DFU_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 set(NRF5_LINKER_SCRIPT_MCUBOOT "${CMAKE_SOURCE_DIR}/gcc_nrf52-mcuboot.ld")
 add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs)
+target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs QCBOR)
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
@@ -916,7 +958,7 @@ endif()
 set(EXECUTABLE_RECOVERY_NAME "pinetime-recovery")
 set(EXECUTABLE_RECOVERY_FILE_NAME ${EXECUTABLE_RECOVERY_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 add_executable(${EXECUTABLE_RECOVERY_NAME} ${RECOVERY_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_RECOVERY_NAME} nimble nrf-sdk littlefs)
+target_link_libraries(${EXECUTABLE_RECOVERY_NAME} nimble nrf-sdk littlefs QCBOR)
 set_target_properties(${EXECUTABLE_RECOVERY_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERY_FILE_NAME})
 target_compile_definitions(${EXECUTABLE_RECOVERY_NAME} PUBLIC "PINETIME_IS_RECOVERY")
 target_compile_options(${EXECUTABLE_RECOVERY_NAME} PUBLIC
@@ -946,7 +988,7 @@ set(EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-${
 set(IMAGE_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-image-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.bin)
 set(DFU_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 add_executable(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} ${RECOVERY_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} nimble nrf-sdk littlefs)
+target_link_libraries(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} nimble nrf-sdk littlefs QCBOR)
 set_target_properties(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME})
 target_compile_definitions(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC "PINETIME_IS_RECOVERY")
 target_compile_options(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC
@@ -984,7 +1026,7 @@ endif()
 set(EXECUTABLE_RECOVERYLOADER_NAME "pinetime-recovery-loader")
 set(EXECUTABLE_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_RECOVERYLOADER_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 add_executable(${EXECUTABLE_RECOVERYLOADER_NAME} ${RECOVERYLOADER_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_RECOVERYLOADER_NAME} nrf-sdk)
+target_link_libraries(${EXECUTABLE_RECOVERYLOADER_NAME} nrf-sdk QCBOR)
 set_target_properties(${EXECUTABLE_RECOVERYLOADER_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERYLOADER_FILE_NAME})
 target_compile_options(${EXECUTABLE_RECOVERYLOADER_NAME} PUBLIC
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
@@ -1017,7 +1059,7 @@ set(EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOA
 set(IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}-image-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.bin)
 set(DFU_MCUBOOT_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 add_executable(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} ${RECOVERYLOADER_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} nrf-sdk)
+target_link_libraries(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} nrf-sdk QCBOR)
 set_target_properties(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PUBLIC
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>

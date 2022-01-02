@@ -1,4 +1,4 @@
-#include "RleDecoder.h"
+#include "components/rle/RleDecoder.h"
 
 using namespace Pinetime::Tools;
 

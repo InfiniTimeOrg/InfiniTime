@@ -1,9 +1,9 @@
-#include "DisplayApp.h"
+#include "displayapp/DisplayApp.h"
 #include <libraries/log/nrf_log.h>
-#include <displayapp/screens/HeartRate.h>
-#include <displayapp/screens/Motion.h>
-#include <displayapp/screens/Timer.h>
-#include <displayapp/screens/Alarm.h>
+#include "displayapp/screens/HeartRate.h"
+#include "displayapp/screens/Motion.h"
+#include "displayapp/screens/Timer.h"
+#include "displayapp/screens/Alarm.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
@@ -29,6 +29,7 @@
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
 #include "displayapp/screens/Steps.h"
+#include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
 
 #include "drivers/Cst816s.h"
@@ -214,6 +215,10 @@ void DisplayApp::Refresh() {
         } else {
           LoadApp(Apps::Alarm, DisplayApp::FullRefreshDirections::None);
         }
+        break;
+      case Messages::ShowPairingKey:
+        LoadApp(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
+        break;
       case Messages::TouchEvent: {
         if (state != States::Running) {
           break;
@@ -250,14 +255,34 @@ void DisplayApp::Refresh() {
         }
       } break;
       case Messages::ButtonPushed:
-        if (currentApp == Apps::Clock) {
-          PushMessageToSystemTask(System::Messages::GoToSleep);
-        } else {
-          if (!currentScreen->OnButtonPushed()) {
+        if (!currentScreen->OnButtonPushed()) {
+          if (currentApp == Apps::Clock) {
+            PushMessageToSystemTask(System::Messages::GoToSleep);
+          } else {
             LoadApp(returnToApp, returnDirection);
             brightnessController.Set(settingsController.GetBrightness());
             brightnessController.Backup();
           }
+        }
+        break;
+      case Messages::ButtonLongPressed:
+        if (currentApp != Apps::Clock) {
+          if (currentApp == Apps::Notifications) {
+            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Up);
+          } else if (currentApp == Apps::QuickSettings) {
+            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
+          } else {
+            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
+          }
+        }
+        break;
+      case Messages::ButtonLongerPressed:
+        // Create reboot app and open it instead
+        LoadApp(Apps::SysInfo, DisplayApp::FullRefreshDirections::Up);
+        break;
+      case Messages::ButtonDoubleClicked:
+        if (currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
+          LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
         }
         break;
 
@@ -334,6 +359,11 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::None);
       break;
 
+    case Apps::PassKey:
+      currentScreen = std::make_unique<Screens::PassKey>(this, bleController.GetPairingKey());
+      ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+
     case Apps::Notifications:
       currentScreen = std::make_unique<Screens::Notifications>(
         this, notificationManager, systemTask->nimble().alertService(), motorController, Screens::Notifications::Modes::Normal);
@@ -389,10 +419,13 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::SettingSetTime>(this, dateTimeController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
+<<<<<<< HEAD
     case Apps::SettingChimes:
       currentScreen = std::make_unique<Screens::SettingChimes>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
+=======
+>>>>>>> develop
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
@@ -413,7 +446,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Twos>(this);
       break;
     case Apps::Paint:
-      currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl);
+      currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl, motorController);
       break;
     case Apps::Paddle:
       currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
@@ -480,8 +513,9 @@ void DisplayApp::SetFullRefresh(DisplayApp::FullRefreshDirections direction) {
 }
 
 void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
-  if (systemTask != nullptr)
+  if (systemTask != nullptr) {
     systemTask->PushMessage(message);
+  }
 }
 
 void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {

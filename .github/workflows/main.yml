@@ -113,7 +113,7 @@ jobs:
         run:  |
           mkdir -p build
           cd build
-          cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 -DBUILD_DFU=1 ../
+          cmake -G Ninja -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 -DBUILD_DFU=1 ../
 
         #########################################################################################
         # Make and Upload DFU Package
@@ -125,8 +125,7 @@ jobs:
 
       - name: Make pinetime-mcuboot-app
         run:  |
-          cd build
-          make pinetime-mcuboot-app
+          cmake --build build --target pinetime-mcuboot-app
 
       - name: Unzip DFU package
         run:  |
@@ -144,8 +143,7 @@ jobs:
 
       - name: Make pinetime-app
         run:  |
-          cd build
-          make pinetime-app
+          cmake --build build --target pinetime-app
 
       - name: Upload standalone firmware
         uses: actions/upload-artifact@v2
@@ -158,8 +156,7 @@ jobs:
 
       - name: Make pinetime-recovery
         run:  |
-          cd build
-          make pinetime-recovery
+          cmake --build build --target pinetime-recovery
 
       #########################################################################################
       # Finish

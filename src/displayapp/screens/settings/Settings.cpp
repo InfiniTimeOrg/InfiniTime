@@ -1,4 +1,4 @@
-#include "Settings.h"
+#include "displayapp/screens/settings/Settings.h"
 #include <lvgl/lvgl.h>
 #include <array>
 #include "displayapp/screens/List.h"
@@ -60,6 +60,7 @@ std::unique_ptr<Screen> Settings::CreateScreen2() {
 std::unique_ptr<Screen> Settings::CreateScreen3() {
 
   std::array<Screens::List::Applications, 4> applications {{
+
     {Symbols::clock, "Chimes", Apps::SettingChimes},
     {Symbols::check, "Firmware", Apps::FirmwareValidation},
     {Symbols::list, "About", Apps::SysInfo},

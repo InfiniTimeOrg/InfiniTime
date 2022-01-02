@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include "Screen.h"
-#include "ScreenList.h"
+#include "displayapp/screens/Screen.h"
+#include "displayapp/screens/ScreenList.h"
 
 namespace Pinetime {
   namespace Controllers {

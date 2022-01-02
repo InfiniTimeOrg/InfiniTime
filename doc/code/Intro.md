@@ -21,11 +21,12 @@ Both functions are located inside [systemtask/SystemTask.cpp](/src/systemtask/Sy
 It also starts the **task "displayapp"**, which is responsible for launching and running apps, controlling the screen and handling touch events (or forwarding them to the active app).
 You can find the "displayapp" task inside [displayapp/DisplayApp.cpp](/src/displayapp/DisplayApp.cpp).
 There are also other tasks that are responsible for Bluetooth ("ll" and "ble" inside [libs/mynewt-nimble/porting/npl/freertos/src/nimble_port_freertos.c](/src/libs/mynewt-nimble/porting/npl/freertos/src/nimble_port_freertos.c))
-and periodic tasks like heartrate measurements ([heartratetask/HeartRateTask.cpp](/src/heartratetask/HeartRateTask.cpp)). <br>
+and periodic tasks like heartrate measurements ([heartratetask/HeartRateTask.cpp](/src/heartratetask/HeartRateTask.cpp)).
+
 While it is possible for you to create your own task when you need it, it is recommended to just add functionality to `SystemTask::Work()` if possible.
-If you absolutely need to create another task, try to guess how much [stack space](https://www.freertos.org/FAQMem.html#StackSize) (in words/4-byte packets)
+If you absolutely need to create another task, try to estimate how much [stack space](https://www.freertos.org/FAQMem.html#StackSize) (in words/4-byte packets)
 it will need instead of just typing in a large-ish number.
-You can use the define `configMINIMAL_STACK_SIZE` which is currently set to 120 words.
+You can use `configMINIMAL_STACK_SIZE` which is currently set to 120 words.
 
 ## Controllers
 Controllers in InfiniTime are singleton objects that can provide access to certain resources to apps.

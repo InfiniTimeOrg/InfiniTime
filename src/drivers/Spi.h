@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <cstddef>
-#include "SpiMaster.h"
+#include "drivers/SpiMaster.h"
 
 namespace Pinetime {
   namespace Drivers {

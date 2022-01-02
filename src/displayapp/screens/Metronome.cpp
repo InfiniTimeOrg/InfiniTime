@@ -1,5 +1,5 @@
-#include "Metronome.h"
-#include "Symbols.h"
+#include "displayapp/screens/Metronome.h"
+#include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -113,9 +113,16 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
           lv_label_set_text_fmt(bpmValue, "%03d", bpm);
         }
         tappedTime = xTaskGetTickCount();
+        allowExit = true;
       }
       break;
     }
+    case LV_EVENT_RELEASED:
+    case LV_EVENT_PRESS_LOST:
+      if (obj == bpmTap) {
+        allowExit = false;
+      }
+      break;
     case LV_EVENT_CLICKED: {
       if (obj == playPause) {
         metronomeStarted = !metronomeStarted;
@@ -134,4 +141,12 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
     default:
       break;
   }
+}
+
+bool Metronome::OnTouchEvent(TouchEvents event) {
+  if (event == TouchEvents::SwipeDown && allowExit) {
+    running = false;
+    return true;
+  }
+  return false;
 }

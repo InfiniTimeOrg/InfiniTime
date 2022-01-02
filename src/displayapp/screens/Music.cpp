@@ -15,10 +15,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-#include "Music.h"
-#include "Symbols.h"
+#include "displayapp/screens/Music.h"
+#include "displayapp/screens/Symbols.h"
 #include <cstdint>
-#include "../DisplayApp.h"
+#include "displayapp/DisplayApp.h"
 #include "components/ble/MusicService.h"
 #include "displayapp/icons/music/disc.cpp"
 #include "displayapp/icons/music/disc_f_1.cpp"
@@ -277,12 +277,14 @@ bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       return true;
     }
     case TouchEvents::SwipeDown: {
-      lv_obj_set_hidden(btnNext, false);
-      lv_obj_set_hidden(btnPrev, false);
-
-      lv_obj_set_hidden(btnVolDown, true);
-      lv_obj_set_hidden(btnVolUp, true);
-      return true;
+      if (lv_obj_get_hidden(btnNext)) {
+        lv_obj_set_hidden(btnNext, false);
+        lv_obj_set_hidden(btnPrev, false);
+        lv_obj_set_hidden(btnVolDown, true);
+        lv_obj_set_hidden(btnVolUp, true);
+        return true;
+      }
+      return false;
     }
     case TouchEvents::SwipeLeft: {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_NEXT);
