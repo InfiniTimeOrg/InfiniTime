@@ -417,7 +417,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SettingSetTime:
-      currentScreen = std::make_unique<Screens::SettingSetTime>(this, dateTimeController);
+      currentScreen = std::make_unique<Screens::SettingSetTime>(this, dateTimeController, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SettingChimes:
