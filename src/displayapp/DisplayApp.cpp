@@ -419,13 +419,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::SettingSetTime>(this, dateTimeController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
-<<<<<<< HEAD
     case Apps::SettingChimes:
       currentScreen = std::make_unique<Screens::SettingChimes>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
-=======
->>>>>>> develop
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
