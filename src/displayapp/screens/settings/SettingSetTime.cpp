@@ -4,6 +4,7 @@
 #include <nrf_log.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
+#include "components/settings/Settings.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -22,9 +23,13 @@ namespace {
   }
 }
 
-SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp *app, Pinetime::Controllers::DateTime &dateTimeController) :
-  Screen(app),
-  dateTimeController {dateTimeController} {
+SettingSetTime::SettingSetTime(
+	Pinetime::Applications::DisplayApp *app,
+	Pinetime::Controllers::DateTime& dateTimeController,
+	Pinetime::Controllers::Settings& settingsController)
+  : Screen(app),
+  dateTimeController {dateTimeController},
+  settingsController {settingsController} {
   lv_obj_t * title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Set current time");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
@@ -71,6 +76,24 @@ SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp *app, Pinetime
   lv_label_set_align(lblSeconds, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lblSeconds, lv_scr_act(), LV_ALIGN_CENTER, POS_X_SECONDS, POS_Y_TEXT);
 
+  lblampm = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, POS_X_SECONDS, POS_Y_TEXT - 40);
+  lv_label_set_text_fmt(lblampm, "%02c", ampmValue);
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24)
+	lv_label_set_text(lblampm, "  ");
+  else {
+	if (hoursValue > 11)
+      lv_label_set_text(lblampm, "PM");
+    else
+	  lv_label_set_text(lblampm, "AM");
+	if (hoursValue > 12)
+	  lv_label_set_text_fmt(lblHours, "%02d", hoursValue-12);
+	else if (hoursValue == 0)
+	  lv_label_set_text_fmt(lblHours, "%02d", hoursValue+1);
+  }
+
   btnHoursPlus = lv_btn_create(lv_scr_act(), nullptr);
   btnHoursPlus->user_data = this;
   lv_obj_set_size(btnHoursPlus, 50, 40);
@@ -111,21 +134,63 @@ SettingSetTime::~SettingSetTime() {
   lv_obj_clean(lv_scr_act());
 }
 
+int timeConvert(int time24H) {
+	switch (time24H) {
+		case 0:
+		  return 12;
+		  break;
+		case 1 ... 12:
+		  return time24H;
+		  break;
+		case 13 ... 23:
+		  return time24H - 12;
+		  break;
+		default:
+		  return 99;
+		  break;
+	}
+}
+
 void SettingSetTime::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
   if (event != LV_EVENT_CLICKED)
     return;
+
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+	is24H = true;
+  }
+  else {
+	is24H = false;
+  }
 
   if (object == btnHoursPlus) {
     hoursValue++;
     if (hoursValue > 23)
       hoursValue = 0;
-    lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
+	if (!is24H) {
+	  if (hoursValue < 12)
+	    lv_label_set_text(lblampm, "AM");
+	  else
+	    lv_label_set_text(lblampm, "PM");
+	}
+	if (!is24H)
+      lv_label_set_text_fmt(lblHours, "%02d", timeConvert(hoursValue));
+	else
+	  lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   } else if (object == btnHoursMinus) {
     hoursValue--;
     if (hoursValue < 0)
       hoursValue = 23;
-    lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
+	if (!is24H) {
+	  if (hoursValue < 12)
+	    lv_label_set_text(lblampm, "AM");
+	  else
+	    lv_label_set_text(lblampm, "PM");
+	}
+	if (!is24H)
+      lv_label_set_text_fmt(lblHours, "%02d", timeConvert(hoursValue));
+	else
+	  lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   } else if (object == btnMinutesPlus) {
     minutesValue++;
