@@ -1,4 +1,4 @@
-#include "SettingChimes.h"
+#include "displayapp/screens/settings/SettingChimes.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Screen.h"
