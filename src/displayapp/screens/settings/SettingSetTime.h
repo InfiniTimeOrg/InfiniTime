@@ -12,8 +12,8 @@ namespace Pinetime {
       class SettingSetTime : public Screen{
         public:
           SettingSetTime(DisplayApp* app,
-		  	Pinetime::Controllers::DateTime& dateTimeController,
-			Pinetime::Controllers::Settings& settingsController);
+            Pinetime::Controllers::DateTime& dateTimeController,
+            Pinetime::Controllers::Settings& settingsController);
           ~SettingSetTime() override;
 
           void HandleButtonPress(lv_obj_t *object, lv_event_t event);
