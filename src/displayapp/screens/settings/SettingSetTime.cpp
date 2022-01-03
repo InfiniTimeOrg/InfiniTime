@@ -155,12 +155,11 @@ void SettingSetTime::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
   if (event != LV_EVENT_CLICKED)
     return;
 
-  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24)
     is24H = true;
-  }
-  else {
+  else
     is24H = false;
-  }
+
   if (object == btnHoursPlus) {
     hoursValue++;
     if (hoursValue > 23)
@@ -211,5 +210,4 @@ void SettingSetTime::HandleButtonPress(lv_obj_t *object, lv_event_t event) {
                                nrf_rtc_counter_get(portNRF_RTC_REG));
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_DISABLED);
   }
-}
 }
