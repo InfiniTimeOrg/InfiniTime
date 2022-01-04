@@ -11,6 +11,7 @@ namespace Pinetime {
     public:
       enum class ClockType : uint8_t { H24, H12 };
       enum class Notification : uint8_t { ON, OFF };
+      enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t {
         SingleTap = 0,
         DoubleTap = 1,
@@ -40,14 +41,14 @@ namespace Pinetime {
         return settings.clockFace;
       };
 
-      void SetChimesState(uint8_t state) {
-        if (state != settings.chimesState) {
+      void SetChimeOption(ChimesOption chimeOption) {
+        if (chimeOption != settings.chimesOption) {
           settingsChanged = true;
         }
-        settings.chimesState = state;
+        settings.chimesOption = chimeOption;
       };
-      uint8_t GetChimesState() const {
-        return settings.chimesState;
+      ChimesOption GetChimeOption() const {
+        return settings.chimesOption;
       };
 
       void SetPTSColorTime(Colors colorTime) {
@@ -182,7 +183,7 @@ namespace Pinetime {
         Notification notificationStatus = Notification::ON;
 
         uint8_t clockFace = 0;
-        uint8_t chimesState = 0;
+        ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
 

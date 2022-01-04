@@ -44,7 +44,7 @@ SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Off");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetChimesState() == 0) {
+  if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::None) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
 
@@ -53,7 +53,7 @@ SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Every hour");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetChimesState() == 1) {
+  if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
 
@@ -62,7 +62,7 @@ SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Every 30 mins");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetChimesState() == 2) {
+  if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
 
@@ -79,7 +79,15 @@ void SettingChimes::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     for (uint8_t i = 0; i < optionsTotal; i++) {
       if (object == cbOption[i]) {
         lv_checkbox_set_checked(cbOption[i], true);
-        settingsController.SetChimesState(i);
+        if (i == 0) {
+          settingsController.SetChimeOption(Controllers::Settings::ChimesOption::None);
+        }
+        if (i == 1) {
+          settingsController.SetChimeOption(Controllers::Settings::ChimesOption::Hours);
+        }
+        if (i == 2) {
+          settingsController.SetChimeOption(Controllers::Settings::ChimesOption::HalfHours);
+        }
       } else {
         lv_checkbox_set_checked(cbOption[i], false);
       }
