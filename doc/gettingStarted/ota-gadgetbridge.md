@@ -18,7 +18,7 @@ Now that Gadgetbridge is connected to your PineTime, use a file browser applicat
 
 ![Gadgetbridge 3](gadgetbridge3.jpg)
 
-Read carefully the warning and tap **Install**:
+Read the warning carefully and tap **Install**:
 
 ![Gadgetbridge 4](gadgetbridge4.jpg)
 

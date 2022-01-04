@@ -55,6 +55,10 @@ bool Clock::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return screen->OnTouchEvent(event);
 }
 
+bool Clock::OnButtonPushed() {
+  return screen->OnButtonPushed();
+}
+
 std::unique_ptr<Screen> Clock::WatchFaceDigitalScreen() {
   return std::make_unique<Screens::WatchFaceDigital>(app,
                                                      dateTimeController,

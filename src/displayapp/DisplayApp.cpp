@@ -45,9 +45,10 @@
 #include "displayapp/screens/settings/SettingWakeUp.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
-#include "displayapp/screens/settings/SettingPineTimeStyle.h"
 #include "displayapp/screens/settings/SettingSetDate.h"
 #include "displayapp/screens/settings/SettingSetTime.h"
+#include "displayapp/screens/settings/SettingChimes.h"
+#include "displayapp/screens/settings/SettingShakeThreshold.h"
 
 #include "libs/lv_conf.h"
 
@@ -255,10 +256,10 @@ void DisplayApp::Refresh() {
         }
       } break;
       case Messages::ButtonPushed:
-        if (currentApp == Apps::Clock) {
-          PushMessageToSystemTask(System::Messages::GoToSleep);
-        } else {
-          if (!currentScreen->OnButtonPushed()) {
+        if (!currentScreen->OnButtonPushed()) {
+          if (currentApp == Apps::Clock) {
+            PushMessageToSystemTask(System::Messages::GoToSleep);
+          } else {
             LoadApp(returnToApp, returnDirection);
             brightnessController.Set(settingsController.GetBrightness());
             brightnessController.Backup();
@@ -292,6 +293,9 @@ void DisplayApp::Refresh() {
       case Messages::UpdateDateTime:
         // Added to remove warning
         // What should happen here?
+        break;
+      case Messages::Clock:
+        LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         break;
     }
   }
@@ -416,8 +420,12 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::SettingSetTime>(this, dateTimeController, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
-    case Apps::SettingPineTimeStyle:
-      currentScreen = std::make_unique<Screens::SettingPineTimeStyle>(this, settingsController);
+    case Apps::SettingChimes:
+      currentScreen = std::make_unique<Screens::SettingChimes>(this, settingsController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingShakeThreshold:
+      currentScreen = std::make_unique<Screens::SettingShakeThreshold>(this, settingsController,motionController,*systemTask);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::BatteryInfo:

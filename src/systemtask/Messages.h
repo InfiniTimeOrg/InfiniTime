@@ -21,6 +21,8 @@ namespace Pinetime {
         EnableSleeping,
         DisableSleeping,
         OnNewDay,
+        OnNewHour,
+        OnNewHalfHour,
         OnChargingEvent,
         OnPairing,
         SetOffAlarm,

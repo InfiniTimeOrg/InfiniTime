@@ -20,7 +20,8 @@ namespace Pinetime {
         DimScreen,
         RestoreBrightness,
         ShowPairingKey,
-        AlarmTriggered
+        AlarmTriggered,
+        Clock
       };
     }
   }

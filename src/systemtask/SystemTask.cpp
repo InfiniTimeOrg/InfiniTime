@@ -343,18 +343,18 @@ void SystemTask::Work() {
           xTimerStart(dimTimer, 0);
           break;
         case Messages::StartFileTransfer:
-          NRF_LOG_INFO("[systemtask] FS Started"); 
+          NRF_LOG_INFO("[systemtask] FS Started");
           doNotGoToSleep = true;
           if (isSleeping && !isWakingUp)
             GoToRunning();
-          //TODO add intent of fs access icon or something
+          // TODO add intent of fs access icon or something
           break;
         case Messages::StopFileTransfer:
           NRF_LOG_INFO("[systemtask] FS Stopped");
           doNotGoToSleep = false;
           xTimerStart(dimTimer, 0);
-           //TODO add intent of fs access icon or something
-           break;
+          // TODO add intent of fs access icon or something
+          break;
         case Messages::OnTouchEvent:
           if (touchHandler.GetNewTouchInfo()) {
             touchHandler.UpdateLvglTouchPoint();
@@ -402,6 +402,26 @@ void SystemTask::Work() {
           // We might be sleeping (with TWI device disabled.
           // Remember we'll have to reset the counter next time we're awake
           stepCounterMustBeReset = true;
+          break;
+        case Messages::OnNewHour:
+          using Pinetime::Controllers::AlarmController;
+          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours && alarmController.State() != AlarmController::AlarmState::Alerting) {
+            if (isSleeping && !isWakingUp) {
+              GoToRunning();
+              displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
+            }
+            motorController.RunForDuration(35);
+          }
+          break;
+        case Messages::OnNewHalfHour:
+          using Pinetime::Controllers::AlarmController;
+          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours && alarmController.State() != AlarmController::AlarmState::Alerting) {
+            if (isSleeping && !isWakingUp) {
+              GoToRunning();
+              displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
+            }
+            motorController.RunForDuration(35);
+          }
           break;
         case Messages::OnChargingEvent:
           batteryController.ReadPowerState();
@@ -457,10 +477,10 @@ void SystemTask::UpdateMotion() {
     return;
   }
 
-  if (isSleeping && !settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist)) {
+  if (isSleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
+                      settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
     return;
   }
-
   if (stepCounterMustBeReset) {
     motionSensor.ResetStepCounter();
     stepCounterMustBeReset = false;
@@ -470,7 +490,13 @@ void SystemTask::UpdateMotion() {
 
   motionController.IsSensorOk(motionSensor.IsOk());
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
-  if (motionController.ShouldWakeUp(isSleeping)) {
+
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) &&
+      motionController.Should_RaiseWake(isSleeping)) {
+    GoToRunning();
+  }
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) &&
+      motionController.Should_ShakeWake(settingsController.GetShakeThreshold())) {
     GoToRunning();
   }
 }
