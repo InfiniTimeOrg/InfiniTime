@@ -809,7 +809,7 @@ add_definitions(-DOS_CPUTIME_FREQ)
 add_definitions(-DNRF52 -DNRF52832 -DNRF52832_XXAA -DNRF52_PAN_74 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040)
 add_definitions(-DFREERTOS)
 add_definitions(-D__STACK_SIZE=1024)
-add_definitions(-D__HEAP_SIZE=4096)
+add_definitions(-D__HEAP_SIZE=3072)
 
 # NOTE : Add the following defines to enable debug mode of the NRF SDK:
 #add_definitions(-DDEBUG)
