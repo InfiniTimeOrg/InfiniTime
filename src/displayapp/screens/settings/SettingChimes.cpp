@@ -1,6 +1,7 @@
 #include "displayapp/screens/settings/SettingChimes.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
+#include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
 
@@ -44,6 +45,7 @@ SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Off");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+  SetRadioButtonStyle(cbOption[optionsTotal]);
   if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::None) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
@@ -53,6 +55,7 @@ SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Every hour");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+  SetRadioButtonStyle(cbOption[optionsTotal]);
   if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
@@ -62,6 +65,7 @@ SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Every 30 mins");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+  SetRadioButtonStyle(cbOption[optionsTotal]);
   if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
