@@ -59,7 +59,7 @@ std::unique_ptr<Screen> Settings::CreateScreen3() {
 
   std::array<Screens::List::Applications, 4> applications {{
     {Symbols::clock, "Chimes", Apps::SettingChimes},
-    {Symbols::none, "Wake Sense", Apps::SettingShakeThreshold},
+    {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
     {Symbols::check, "Firmware", Apps::FirmwareValidation},
     {Symbols::list, "About", Apps::SysInfo}
   }};
