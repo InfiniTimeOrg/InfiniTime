@@ -39,8 +39,9 @@ void WatchFaceFuzzy::Refresh() {
   }
 
   timeStr = timeSectors[sector];
-  if (timeStr.find("%1") != std::string::npos)
+  if (timeStr.find("%1") != std::string::npos) {
     hours = (hours + 1) % 12;
+  }
   hoursStr = std::string("#") + timeAccent + " " + hourNames[hours] + "#";
   timeStr.replace(timeStr.find("%"), 2, hoursStr);
 
