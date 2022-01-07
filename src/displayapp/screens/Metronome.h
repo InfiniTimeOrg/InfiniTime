@@ -2,6 +2,7 @@
 
 #include "systemtask/SystemTask.h"
 #include "components/motor/MotorController.h"
+#include "displayapp/screens/Screen.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -13,6 +14,7 @@ namespace Pinetime {
         ~Metronome() override;
         void Refresh() override;
         void OnEvent(lv_obj_t* obj, lv_event_t event);
+        bool OnTouchEvent(TouchEvents event) override;
 
       private:
         TickType_t startTime = 0;
@@ -24,6 +26,7 @@ namespace Pinetime {
         uint8_t counter = 1;
 
         bool metronomeStarted = false;
+        bool allowExit = false;
 
         lv_obj_t *bpmArc, *bpmTap, *bpmValue;
         lv_obj_t *bpbDropdown, *currentBpbText;

@@ -1,8 +1,6 @@
 #pragma once
 #include "drivers/Cst816s.h"
 #include "systemtask/SystemTask.h"
-#include <FreeRTOS.h>
-#include <task.h>
 
 namespace Pinetime {
   namespace Components {
@@ -10,9 +8,6 @@ namespace Pinetime {
   }
   namespace Drivers {
     class Cst816S;
-  }
-  namespace System {
-    class SystemTask;
   }
   namespace Controllers {
     class TouchHandler {

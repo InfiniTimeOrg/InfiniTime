@@ -21,11 +21,16 @@ namespace Pinetime {
         EnableSleeping,
         DisableSleeping,
         OnNewDay,
+        OnNewHour,
+        OnNewHalfHour,
         OnChargingEvent,
+        OnPairing,
         SetOffAlarm,
         StopRinging,
         MeasureBatteryTimerExpired,
         BatteryPercentageUpdated,
+        StartFileTransfer,
+        StopFileTransfer,
       };
     }
 }

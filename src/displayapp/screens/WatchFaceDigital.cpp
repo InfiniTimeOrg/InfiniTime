@@ -1,17 +1,18 @@
-#include "WatchFaceDigital.h"
+#include "displayapp/screens/WatchFaceDigital.h"
 
 #include <date/date.h>
 #include <lvgl/lvgl.h>
 #include <cstdio>
-#include "BatteryIcon.h"
-#include "BleIcon.h"
-#include "NotificationIcon.h"
-#include "Symbols.h"
+#include "displayapp/screens/BatteryIcon.h"
+#include "displayapp/screens/BleIcon.h"
+#include "displayapp/screens/NotificationIcon.h"
+#include "displayapp/screens/Symbols.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
+#include "components/settings/Settings.h"
 using namespace Pinetime::Applications::Screens;
 
 WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
@@ -43,7 +44,7 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0000FF));
+  lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0082FC));
   lv_label_set_text(bleIcon, Symbols::bluetooth);
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 

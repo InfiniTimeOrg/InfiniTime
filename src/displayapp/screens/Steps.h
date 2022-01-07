@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <lvgl/lvgl.h>
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include <components/motion/MotionController.h>
 
 namespace Pinetime {
@@ -20,14 +20,20 @@ namespace Pinetime {
         ~Steps() override;
 
         void Refresh() override;
+        void lapBtnEventHandler(lv_event_t event);
 
       private:
         Controllers::MotionController& motionController;
         Controllers::Settings& settingsController;
 
+        uint32_t currentTripSteps = 0;
+
         lv_obj_t* lSteps;
         lv_obj_t* lStepsIcon;
         lv_obj_t* stepsArc;
+        lv_obj_t* resetBtn;
+        lv_obj_t* resetButtonLabel;
+        lv_obj_t* tripLabel;
 
         uint32_t stepsCount;
 

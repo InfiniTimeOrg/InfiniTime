@@ -9,6 +9,7 @@ body:
         *Please, before opening a feature request, check if similar issues already exist. In that case, use those issues to provide your feedback instead.*
   - type: checkboxes
     attributes:
+      label: Verification
       options:
       - label: I searched for similar feature request and found none was relevant.
         required: true

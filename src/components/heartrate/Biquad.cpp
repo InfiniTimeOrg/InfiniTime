@@ -4,7 +4,7 @@
   C++ port Copyright (C) 2021 Jean-François Milants
 */
 
-#include "Biquad.h"
+#include "components/heartrate/Biquad.h"
 
 using namespace Pinetime::Controllers;
 

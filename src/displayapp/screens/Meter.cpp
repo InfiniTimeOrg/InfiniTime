@@ -1,6 +1,6 @@
-#include "Meter.h"
+#include "displayapp/screens/Meter.h"
 #include <lvgl/lvgl.h>
-#include "../DisplayApp.h"
+#include "displayapp/DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
 

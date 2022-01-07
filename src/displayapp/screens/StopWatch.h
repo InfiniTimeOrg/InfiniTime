@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
-#include "../LittleVgl.h"
+#include "displayapp/LittleVgl.h"
 
 #include "FreeRTOS.h"
 #include "portmacro_cmsis.h"

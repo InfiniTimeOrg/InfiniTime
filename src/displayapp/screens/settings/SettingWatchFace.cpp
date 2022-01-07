@@ -1,7 +1,8 @@
-#include "SettingWatchFace.h"
+#include "displayapp/screens/settings/SettingWatchFace.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Screen.h"
+#include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -12,6 +13,8 @@ namespace {
     screen->UpdateSelected(obj, event);
   }
 }
+
+constexpr std::array<const char*, 3> SettingWatchFace::options;
 
 SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
@@ -40,34 +43,17 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pine
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
-  optionsTotal = 0;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Digital face");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetClockFace() == 0) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
+  for (unsigned int i = 0; i < options.size(); i++) {
+    cbOption[i] = lv_checkbox_create(container1, nullptr);
+    lv_checkbox_set_text(cbOption[i], options[i]);
+    cbOption[i]->user_data = this;
+    lv_obj_set_event_cb(cbOption[i], event_handler);
+    SetRadioButtonStyle(cbOption[i]);
 
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Analog face");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetClockFace() == 1) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
+    if (settingsController.GetClockFace() == i) {
+      lv_checkbox_set_checked(cbOption[i], true);
+    }
   }
-
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " PineTimeStyle");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetClockFace() == 2) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
-
-  optionsTotal++;
 }
 
 SettingWatchFace::~SettingWatchFace() {
@@ -77,7 +63,7 @@ SettingWatchFace::~SettingWatchFace() {
 
 void SettingWatchFace::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
-    for (uint8_t i = 0; i < optionsTotal; i++) {
+    for (unsigned int i = 0; i < options.size(); i++) {
       if (object == cbOption[i]) {
         lv_checkbox_set_checked(cbOption[i], true);
         settingsController.SetClockFace(i);

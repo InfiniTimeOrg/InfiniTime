@@ -1,5 +1,5 @@
-#include "NotificationIcon.h"
-#include "Symbols.h"
+#include "displayapp/screens/NotificationIcon.h"
+#include "displayapp/screens/Symbols.h"
 using namespace Pinetime::Applications::Screens;
 
 const char* NotificationIcon::GetIcon(bool newNotificationAvailable) {

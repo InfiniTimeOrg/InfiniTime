@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "../TouchEvents.h"
+#include "displayapp/TouchEvents.h"
 #include <lvgl/lvgl.h>
 
 namespace Pinetime {

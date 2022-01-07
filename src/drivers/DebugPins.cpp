@@ -1,4 +1,4 @@
-#include "DebugPins.h"
+#include "drivers/DebugPins.h"
 #include <hal/nrf_gpio.h>
 
 #ifdef USE_DEBUG_PINS
