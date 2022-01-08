@@ -21,6 +21,7 @@
 #include "displayapp/screens/Meter.h"
 #include "displayapp/screens/Metronome.h"
 #include "displayapp/screens/Music.h"
+#include "displayapp/screens/Calendar.h"
 #include "displayapp/screens/Navigation.h"
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/screens/SystemInfo.h"
@@ -237,6 +238,9 @@ void DisplayApp::Refresh() {
               case TouchEvents::SwipeDown:
                 LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
                 break;
+              case TouchEvents::SwipeLeft:
+                LoadApp(Apps::Calendar, DisplayApp::FullRefreshDirections::LeftAnim);
+                break;
               case TouchEvents::SwipeRight:
                 LoadApp(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
                 break;
@@ -446,6 +450,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Twos:
       currentScreen = std::make_unique<Screens::Twos>(this);
+      break;
+    case Apps::Calendar:
+      currentScreen = std::make_unique<Screens::Calendar>(this, dateTimeController);
+      ReturnApp(Apps::Clock, FullRefreshDirections::RightAnim, TouchEvents::SwipeRight);
       break;
     case Apps::Paint:
       currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl, motorController);
