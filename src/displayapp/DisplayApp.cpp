@@ -452,7 +452,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Twos>(this);
       break;
     case Apps::Calendar:
-      currentScreen = std::make_unique<Screens::Calendar>(this, dateTimeController);
+      currentScreen = std::make_unique<Screens::Calendar>(this, batteryController,dateTimeController);
       ReturnApp(Apps::Clock, FullRefreshDirections::RightAnim, TouchEvents::SwipeRight);
       break;
     case Apps::Paint:
