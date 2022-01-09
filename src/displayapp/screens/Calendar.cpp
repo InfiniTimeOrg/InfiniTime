@@ -22,6 +22,8 @@ Calendar::Calendar(DisplayApp* app, Pinetime::Controllers::Battery& batteryContr
     lv_obj_set_size(calendar, 240, 200);
     // Set alignment
     lv_obj_align(calendar, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+    // Disable clicks
+    lv_obj_set_click(calendar, false);
 
     // Set style of today's date
     lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_FOCUSED, LV_COLOR_RED);
