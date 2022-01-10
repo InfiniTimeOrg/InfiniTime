@@ -27,8 +27,10 @@ Calendar::Calendar(DisplayApp* app, Pinetime::Controllers::Battery& batteryContr
 
     // Set style of today's date
     lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_FOCUSED, LV_COLOR_RED);
+    // Set style of inactive month's days
+    lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_DISABLED, lv_color_hex(0x505050));
     // Set style of days of week
-    lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DAY_NAMES, LV_STATE_DEFAULT, lv_color_hex(0x505050));
+    //lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DAY_NAMES, LV_STATE_DEFAULT, lv_color_hex(0x505050));
 
     // Get today's date
     lv_calendar_date_t today;
