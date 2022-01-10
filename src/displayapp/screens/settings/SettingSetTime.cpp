@@ -2,7 +2,6 @@
 #include <lvgl/lvgl.h>
 #include <hal/nrf_rtc.h>
 #include <nrf_log.h>
-#include <string.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
 #include "components/settings/Settings.h"
@@ -24,12 +23,7 @@ namespace {
   }
 }
 
-struct Time12H {
-  std::string ampm;
-  int hours;
-};
-
-Time12H timeConvert(int time24H);
+void set12HourLabels(int time24H, lv_obj_t* lblampm, lv_obj_t* lblHours);
 
 SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
                                Pinetime::Controllers::DateTime& dateTimeController,
@@ -123,13 +117,7 @@ SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_event_cb(btnSetTime, event_handler);
 
   if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-    struct Time12H convertedTime = timeConvert(hoursValue);
-    if (hoursValue < 12) {
-      lv_label_set_text_static(lblampm, "AM");
-    } else {
-      lv_label_set_text_static(lblampm, "PM");
-    }
-    lv_label_set_text_fmt(lblHours, "%02d", convertedTime.hours);
+    set12HourLabels(hoursValue, lblampm, lblHours);
   }
 }
 
@@ -137,45 +125,38 @@ SettingSetTime::~SettingSetTime() {
   lv_obj_clean(lv_scr_act());
 }
 
-Time12H timeConvert(int time24H) {
-  struct Time12H time12H;
+void set12HourLabels(int time24H, lv_obj_t* lblampm, lv_obj_t* lblHours) {
   switch (time24H) {
     case 0:
-      time12H.hours = 12;
-      time12H.ampm = "AM";
+      lv_label_set_text_fmt(lblHours, "%02d", 12);
+      lv_label_set_text_static(lblampm, "AM");
       break;
     case 1 ... 11:
-      time12H.hours = time24H;
-      time12H.ampm = "AM";
+      lv_label_set_text_fmt(lblHours, "%02d", time24H);
+      lv_label_set_text_static(lblampm, "AM");
       break;
     case 12:
-      time12H.hours = 12;
-      time12H.ampm = "PM";
+      lv_label_set_text_fmt(lblHours, "%02d", 12);
+      lv_label_set_text_static(lblampm, "PM");
       break;
     case 13 ... 23:
-      time12H.hours = time24H - 12;
-      time12H.ampm = "PM";
+      lv_label_set_text_fmt(lblHours, "%02d", time24H - 12);
+      lv_label_set_text_static(lblampm, "PM");
       break;
   }
-  return time12H;
 }
 
 void SettingSetTime::HandleButtonPress(lv_obj_t* object, lv_event_t event) {
-  bool is24H;
   if (event != LV_EVENT_CLICKED)
     return;
-
-  is24H = (settingsController.GetClockType() == Controllers::Settings::ClockType::H24);
 
   if (object == btnHoursPlus) {
     hoursValue++;
     if (hoursValue > 23) {
       hoursValue = 0;
     }
-    struct Time12H convertedTime = timeConvert(hoursValue);
-    if (!is24H) {
-      lv_label_set_text_static(lblampm, convertedTime.ampm.c_str());
-      lv_label_set_text_fmt(lblHours, "%02d", convertedTime.hours);
+    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+      set12HourLabels(hoursValue, lblampm, lblHours);
     } else {
       lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
     }
@@ -185,10 +166,8 @@ void SettingSetTime::HandleButtonPress(lv_obj_t* object, lv_event_t event) {
     if (hoursValue < 0) {
       hoursValue = 23;
     }
-    struct Time12H convertedTime = timeConvert(hoursValue);
-    if (!is24H) {
-      lv_label_set_text_static(lblampm, convertedTime.ampm.c_str());
-      lv_label_set_text_fmt(lblHours, "%02d", convertedTime.hours);
+    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+      set12HourLabels(hoursValue, lblampm, lblHours);
     } else {
       lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
     }
