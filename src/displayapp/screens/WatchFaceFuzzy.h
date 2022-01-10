@@ -16,6 +16,7 @@ namespace Pinetime {
       private:
         Controllers::DateTime& dateTimeController;
         lv_task_t* taskRefresh;
+        lv_obj_t* backgroundLabel;
         lv_obj_t* timeLabel;
         const char* timeAccent = "ffffff";
         static const char* timeSectors[12];

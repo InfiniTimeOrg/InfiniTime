@@ -8,7 +8,14 @@ using namespace Pinetime::Applications::Screens;
 WatchFaceFuzzy::WatchFaceFuzzy(DisplayApp* app, Controllers::DateTime& dateTimeController)
   : Screen(app), dateTimeController {dateTimeController} {
 
-  timeLabel = lv_label_create(lv_scr_act(), nullptr);
+  backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_click(backgroundLabel, true);
+  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
+  lv_obj_set_size(backgroundLabel, LV_HOR_RES, LV_VER_RES);
+  lv_obj_set_pos(backgroundLabel, 0, 0);
+  lv_label_set_text(backgroundLabel, "");
+
+  timeLabel = lv_label_create(backgroundLabel, nullptr);
   lv_label_set_long_mode(timeLabel, LV_LABEL_LONG_BREAK);
   lv_obj_set_width(timeLabel, LV_HOR_RES);
   lv_label_set_align(timeLabel, LV_LABEL_ALIGN_CENTER);
