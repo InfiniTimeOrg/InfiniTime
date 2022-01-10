@@ -25,6 +25,7 @@ namespace Pinetime::Applications::Screens {
 
   private:
     bool running;
+    bool repeating = false;
     uint8_t secondsToSet = 0;
     uint8_t minutesToSet = 0;
     Controllers::TimerController& timerController;
@@ -32,7 +33,7 @@ namespace Pinetime::Applications::Screens {
     void createButtons();
 
     lv_obj_t *time, *msecTime, *btnPlayPause, *txtPlayPause, *btnMinutesUp, *btnMinutesDown, *btnSecondsUp, *btnSecondsDown, *txtMUp,
-      *txtMDown, *txtSUp, *txtSDown;
+      *txtMDown, *txtSUp, *txtSDown, *btnRepeat, *txtRepeat;
 
     lv_task_t* taskRefresh;
   };

@@ -64,7 +64,7 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
   lv_obj_set_event_cb(btnPlayPause, btnEventHandler);
-  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -10);
+  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, -10);
   lv_obj_set_height(btnPlayPause, 40);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   if (timerController.IsRunning()) {
@@ -73,6 +73,15 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
     lv_label_set_text(txtPlayPause, Symbols::play);
     createButtons();
   }
+
+  btnRepeat = lv_btn_create(lv_scr_act(), nullptr);
+  btnRepeat->user_data = this;
+  lv_obj_set_event_cb(btnRepeat, btnEventHandler);
+  lv_obj_align(btnRepeat, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, -10);
+  lv_obj_set_height(btnRepeat, 40);
+  txtRepeat = lv_label_create(btnRepeat, nullptr);
+  lv_label_set_text(txtRepeat, "Repeat");
+  // Always starts off not repeating so color is already what it should be.
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
@@ -113,6 +122,13 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         lv_obj_del(btnMinutesUp);
         btnMinutesUp = nullptr;
       }
+    } else if (obj == btnRepeat) {
+        repeating = !repeating;
+        if (repeating) {
+          lv_obj_set_style_local_bg_color(btnRepeat, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+        } else {
+          lv_theme_apply(btnRepeat, LV_THEME_BTN);
+        }
     } else {
       if (!timerController.IsRunning()) {
         if (obj == btnMinutesUp) {
@@ -153,9 +169,13 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 void Timer::setDone() {
-  lv_label_set_text(time, "00:00");
-  lv_label_set_text(txtPlayPause, Symbols::play);
-  secondsToSet = 0;
-  minutesToSet = 0;
-  createButtons();
+  if (repeating) {
+    timerController.StartTimer((secondsToSet + minutesToSet * 60) * 1000);
+  } else {
+    lv_label_set_text(time, "00:00");
+    lv_label_set_text(txtPlayPause, Symbols::play);
+    secondsToSet = 0;
+    minutesToSet = 0;
+    createButtons();
+  }
 }
