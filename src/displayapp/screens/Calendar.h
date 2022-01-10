@@ -19,10 +19,14 @@ namespace Pinetime {
             Controllers::DateTime& dateTimeController);
         ~Calendar() override;
       private:
+        bool OnTouchEvent(TouchEvents event);
         Pinetime::Controllers::Battery& batteryController;
         Controllers::DateTime& dateTimeController;
         lv_obj_t* batteryIcon;
         lv_obj_t* label_time;
+        lv_obj_t  * calendar;
+        lv_calendar_date_t today;
+        lv_calendar_date_t current;
       };
     }
   }
