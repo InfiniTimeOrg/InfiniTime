@@ -114,11 +114,36 @@ SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_style_local_value_str(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Set");
   lv_obj_set_event_cb(btnSetTime, event_handler);
 
-  setHourLabels(hoursValue);
+  setHourLabels();
 }
 
 SettingSetTime::~SettingSetTime() {
   lv_obj_clean(lv_scr_act());
+}
+
+void SettingSetTime::setHourLabels() {
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+    switch (hoursValue) {
+      case 0:
+        lv_label_set_text_static(lblHours, "12");
+        lv_label_set_text_static(lblampm, "AM");
+        break;
+      case 1 ... 11:
+        lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
+        lv_label_set_text_static(lblampm, "AM");
+        break;
+      case 12:
+        lv_label_set_text_static(lblHours, "12");
+        lv_label_set_text_static(lblampm, "PM");
+        break;
+      case 13 ... 23:
+        lv_label_set_text_fmt(lblHours, "%02d", hoursValue - 12);
+        lv_label_set_text_static(lblampm, "PM");
+        break;
+    }
+  } else {
+    lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
+  }
 }
 
 void SettingSetTime::HandleButtonPress(lv_obj_t* object, lv_event_t event) {
@@ -130,14 +155,14 @@ void SettingSetTime::HandleButtonPress(lv_obj_t* object, lv_event_t event) {
     if (hoursValue > 23) {
       hoursValue = 0;
     }
-    setHourLabels(hoursValue);
+    setHourLabels();
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   } else if (object == btnHoursMinus) {
     hoursValue--;
     if (hoursValue < 0) {
       hoursValue = 23;
     }
-    setHourLabels(hoursValue);
+    setHourLabels();
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   } else if (object == btnMinutesPlus) {
     minutesValue++;
