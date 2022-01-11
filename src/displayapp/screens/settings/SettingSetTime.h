@@ -22,7 +22,7 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
         Controllers::Settings& settingsController;
 
-        void setHourLabels();
+        void SetHourLabels();
 
         int hoursValue;
         int minutesValue;
