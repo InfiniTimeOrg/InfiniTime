@@ -23,8 +23,6 @@ namespace {
   }
 }
 
-void set12HourLabels(int time24H, lv_obj_t* lblampm, lv_obj_t* lblHours);
-
 SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
                                Pinetime::Controllers::DateTime& dateTimeController,
                                Pinetime::Controllers::Settings& settingsController)
@@ -116,34 +114,11 @@ SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_style_local_value_str(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Set");
   lv_obj_set_event_cb(btnSetTime, event_handler);
 
-  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-    set12HourLabels(hoursValue, lblampm, lblHours);
-  }
+  setHourLabels(hoursValue);
 }
 
 SettingSetTime::~SettingSetTime() {
   lv_obj_clean(lv_scr_act());
-}
-
-void set12HourLabels(int time24H, lv_obj_t* lblampm, lv_obj_t* lblHours) {
-  switch (time24H) {
-    case 0:
-      lv_label_set_text_fmt(lblHours, "%02d", 12);
-      lv_label_set_text_static(lblampm, "AM");
-      break;
-    case 1 ... 11:
-      lv_label_set_text_fmt(lblHours, "%02d", time24H);
-      lv_label_set_text_static(lblampm, "AM");
-      break;
-    case 12:
-      lv_label_set_text_fmt(lblHours, "%02d", 12);
-      lv_label_set_text_static(lblampm, "PM");
-      break;
-    case 13 ... 23:
-      lv_label_set_text_fmt(lblHours, "%02d", time24H - 12);
-      lv_label_set_text_static(lblampm, "PM");
-      break;
-  }
 }
 
 void SettingSetTime::HandleButtonPress(lv_obj_t* object, lv_event_t event) {
@@ -155,22 +130,14 @@ void SettingSetTime::HandleButtonPress(lv_obj_t* object, lv_event_t event) {
     if (hoursValue > 23) {
       hoursValue = 0;
     }
-    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-      set12HourLabels(hoursValue, lblampm, lblHours);
-    } else {
-      lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
-    }
+    setHourLabels(hoursValue);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   } else if (object == btnHoursMinus) {
     hoursValue--;
     if (hoursValue < 0) {
       hoursValue = 23;
     }
-    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-      set12HourLabels(hoursValue, lblampm, lblHours);
-    } else {
-      lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
-    }
+    setHourLabels(hoursValue);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   } else if (object == btnMinutesPlus) {
     minutesValue++;
