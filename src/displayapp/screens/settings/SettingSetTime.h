@@ -32,6 +32,31 @@ namespace Pinetime {
         lv_obj_t* btnMinutesPlus;
         lv_obj_t* btnMinutesMinus;
         lv_obj_t* btnSetTime;
+
+        void setHourLabels(int time24H) {
+          switch (time24H) {
+            if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+              case 0:
+                lv_label_set_text_static(lblHours, "12");
+                lv_label_set_text_static(lblampm, "AM");
+                break;
+              case 1 ... 11:
+                lv_label_set_text_fmt(lblHours, "%02d", time24H);
+                lv_label_set_text_static(lblampm, "AM");
+                break;
+              case 12:
+                lv_label_set_text_static(lblHours, "12");
+                lv_label_set_text_static(lblampm, "PM");
+                break;
+              case 13 ... 23:
+                lv_label_set_text_fmt(lblHours, "%02d", time24H - 12);
+                lv_label_set_text_static(lblampm, "PM");
+                break;
+            } else {
+              lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
+            }
+          }
+        }
       };
     }
   }
