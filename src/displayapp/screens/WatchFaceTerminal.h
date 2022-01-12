@@ -33,7 +33,8 @@ namespace Pinetime {
                          Controllers::MotionController& motionController);
         ~WatchFaceTerminal() override;
 
-        bool Refresh() override;
+        /*bool Refresh() override;*/
+	void Refresh() override;
 
         void OnObjectEvent(lv_obj_t *pObj, lv_event_t i);
 

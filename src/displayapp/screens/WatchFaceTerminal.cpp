@@ -100,7 +100,8 @@ WatchFaceTerminal::~WatchFaceTerminal() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool WatchFaceTerminal::Refresh() {
+/*bool WatchFaceTerminal::Refresh() {*/
+void WatchFaceTerminal::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
@@ -248,5 +249,5 @@ bool WatchFaceTerminal::Refresh() {
     sprintf(stepString, "[STEP]#ee3377 %lu steps#", stepCount.Get());
     lv_label_set_text(stepValue, stepString);
   }
-  return running;
+  /*return running;*/
 }
