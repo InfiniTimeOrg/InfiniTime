@@ -69,11 +69,11 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
   label_prompt_1 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_prompt_1, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -80);
   lv_label_set_text(label_prompt_1, "user@watch:~ $ now");
-  
+
   label_prompt_2 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_prompt_2, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 40);
   lv_label_set_text(label_prompt_2, "user@watch:~ $");
-  
+
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label_time, true);
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -60);
@@ -89,7 +89,7 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
   lv_label_set_recolor(heartbeatValue, true);
   lv_label_set_text(heartbeatValue, "[L_HR]#ee3311 0 bpm#");
   lv_obj_align(heartbeatValue, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 20);
-  
+
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(stepValue, true);
   lv_label_set_text(stepValue, "[STEP]#ee3377 0 steps#");
@@ -196,8 +196,7 @@ bool WatchFaceTerminal::Refresh() {
     char battStr[24];
     sprintf(battStr, "[BATT]#387b54 %d%\%#", batteryValue);
     lv_label_set_text(batteryPercent, battStr);
-	
-	
+
     if(hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] || minutesChar[1] != displayedChar[3]) {
       displayedChar[0] = hoursChar[0];
       displayedChar[1] = hoursChar[1];
