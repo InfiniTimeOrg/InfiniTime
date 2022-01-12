@@ -21,9 +21,9 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class WatchFaceDigital : public Screen {
+      class WatchFaceTerminal : public Screen {
       public:
-        WatchFaceDigital(DisplayApp* app,
+        WatchFaceTerminal(DisplayApp* app,
                          Controllers::DateTime& dateTimeController,
                          Controllers::Battery& batteryController,
                          Controllers::Ble& bleController,
@@ -31,7 +31,7 @@ namespace Pinetime {
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
                          Controllers::MotionController& motionController);
-        ~WatchFaceDigital() override;
+        ~WatchFaceTerminal() override;
 
         bool Refresh() override;
 
