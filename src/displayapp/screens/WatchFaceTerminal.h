@@ -33,7 +33,6 @@ namespace Pinetime {
                          Controllers::MotionController& motionController);
         ~WatchFaceTerminal() override;
 
-        /*bool Refresh() override;*/
 	void Refresh() override;
 
         void OnObjectEvent(lv_obj_t *pObj, lv_event_t i);
@@ -77,6 +76,8 @@ namespace Pinetime {
           Controllers::Settings& settingsController;
           Controllers::HeartRateController& heartRateController;
           Controllers::MotionController& motionController;
+
+          lv_task_t* taskRefresh;
       };
     }
   }

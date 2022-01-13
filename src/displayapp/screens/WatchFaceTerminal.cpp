@@ -34,13 +34,14 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController} {
-  settingsController.SetClockFace(0);
+  settingsController.SetClockFace(3);
 
   displayedChar[0] = 0;
   displayedChar[1] = 0;
   displayedChar[2] = 0;
   displayedChar[3] = 0;
   displayedChar[4] = 0;
+  displayedChar[5] = 0;
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
@@ -94,13 +95,16 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
   lv_label_set_recolor(stepValue, true);
   lv_label_set_text(stepValue, "[STEP]#ee3377 0 steps#");
   lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+  Refresh();
 }
 
 WatchFaceTerminal::~WatchFaceTerminal() {
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-/*bool WatchFaceTerminal::Refresh() {*/
 void WatchFaceTerminal::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
@@ -198,11 +202,19 @@ void WatchFaceTerminal::Refresh() {
     sprintf(battStr, "[BATT]#387b54 %d%\%#", batteryValue);
     lv_label_set_text(batteryPercent, battStr);
 
-    if(hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] || minutesChar[1] != displayedChar[3]) {
+    if(hoursChar[0] != displayedChar[0] ||
+       hoursChar[1] != displayedChar[1] ||
+       minutesChar[0] != displayedChar[2] ||
+       minutesChar[1] != displayedChar[3] ||
+       secondsChar[0] != displayedChar[4] ||
+       secondsChar[1] != displayedChar[5])
+       {
       displayedChar[0] = hoursChar[0];
       displayedChar[1] = hoursChar[1];
       displayedChar[2] = minutesChar[0];
       displayedChar[3] = minutesChar[1];
+      displayedChar[4] = secondsChar[0];
+      displayedChar[5] = secondsChar[1];
 
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         if (hoursChar[0] == '0') {
@@ -249,5 +261,4 @@ void WatchFaceTerminal::Refresh() {
     sprintf(stepString, "[STEP]#ee3377 %lu steps#", stepCount.Get());
     lv_label_set_text(stepValue, stepString);
   }
-  /*return running;*/
 }
