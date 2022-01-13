@@ -44,7 +44,9 @@ namespace Pinetime {
         }
 
       public:
-        explicit Screen(DisplayApp* app) : app {app} {
+        enum class Modes { Normal, Preview };
+        explicit Screen(DisplayApp* app, Modes mode = Modes::Normal)
+          : app {app}, mode {mode} {
         }
         virtual ~Screen() = default;
 
@@ -71,6 +73,7 @@ namespace Pinetime {
       protected:
         DisplayApp* app;
         bool running = true;
+        Modes mode = Modes::Normal;
       };
     }
   }

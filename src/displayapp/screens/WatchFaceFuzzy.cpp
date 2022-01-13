@@ -1,12 +1,20 @@
 #include "WatchFaceFuzzy.h"
 
-#include <lvgl/lvgl.h>
 #include <string>
+#include <lvgl/lvgl.h>
 
 using namespace Pinetime::Applications::Screens;
 
-WatchFaceFuzzy::WatchFaceFuzzy(DisplayApp* app, Controllers::DateTime& dateTimeController)
-  : Screen(app), dateTimeController {dateTimeController} {
+WatchFaceFuzzy::WatchFaceFuzzy(DisplayApp* app,
+                               Controllers::DateTime& dateTimeController,
+                               Controllers::Settings& settingsController,
+                               Controllers::MotorController& motorController,
+                               Controllers::MotionController& motionController)
+  : Screen(app),
+    dateTimeController {dateTimeController},
+    settingsController {settingsController},
+    motorController {motorController},
+    motionController {motionController} {
 
   backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_click(backgroundLabel, true);
@@ -23,7 +31,7 @@ WatchFaceFuzzy::WatchFaceFuzzy(DisplayApp* app, Controllers::DateTime& dateTimeC
   lv_obj_set_style_local_text_color(timeLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_obj_set_style_local_text_font(timeLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
 
-  taskRefresh = lv_task_create(RefreshTaskCallback, 60000, LV_TASK_PRIO_MID, this);
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 
   Refresh();
 }
@@ -34,10 +42,20 @@ WatchFaceFuzzy::~WatchFaceFuzzy() {
 }
 
 void WatchFaceFuzzy::Refresh() {
+  // Triggered once, on shaking state change (off -> on)
+  should_digital = motionController.Should_ShakeWake(settingsController.GetShakeThreshold());
+  if (!shaking && should_digital) {
+    motorController.RunForDuration(35);
+    app->StartApp(Apps::WatchFaceDigitalPreview, DisplayApp::FullRefreshDirections::Right);
+  }
+  shaking = should_digital;
+
+  // TODO: while the refresh rate is high enough to detect interaction,
+  // we only need to run the rest of the code every 60 seconds.
   uint8_t hours, minutes;
   std::string hoursStr, timeStr;
 
-  hours = dateTimeController.Hours() % 12; // TODO: maybe that's not needed?
+  hours = dateTimeController.Hours() % 12;
   minutes = dateTimeController.Minutes();
   auto sector = minutes / 5 + (minutes % 5 > 2);
   if (sector == 12) {

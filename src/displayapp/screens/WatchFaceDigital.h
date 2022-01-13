@@ -31,7 +31,8 @@ namespace Pinetime {
                          Controllers::NotificationManager& notificationManager,
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
-                         Controllers::MotionController& motionController);
+                         Controllers::MotionController& motionController,
+                         Screen::Modes mode = Screen::Modes::Normal);
         ~WatchFaceDigital() override;
 
         void Refresh() override;
@@ -70,6 +71,8 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
+
+        uint32_t timeoutTickCount;
 
         lv_task_t* taskRefresh;
         Widgets::StatusIcons statusIcons;
