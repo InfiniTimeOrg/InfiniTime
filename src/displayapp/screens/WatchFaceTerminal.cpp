@@ -150,7 +150,7 @@ void WatchFaceTerminal::Refresh() {
 
     auto hour = time.hours().count();
     auto minute = time.minutes().count();
-	  auto second = time.seconds().count();
+    auto second = time.seconds().count();
 
     char minutesChar[6];
     sprintf(minutesChar, "%02d", static_cast<int>(minute));
@@ -176,28 +176,11 @@ void WatchFaceTerminal::Refresh() {
         sprintf(hoursChar, "%02d", hour);
     }
 
-	char secondsChar[5];
+    char secondsChar[5];
     sprintf(secondsChar, "%02d", static_cast<int>(second));
 
-	auto batteryValue = static_cast<uint8_t>(batteryController.PercentRemaining());
-/*
-	char batteryGauge[12];
-    if (batteryValue > 75){
-      sprintf(batteryGauge, "[++++]");  //100-75
-    }
-    else if (batteryValue > 50){
-      sprintf(batteryGauge, "[+++.]");  //75-50
-    }
-    else if (batteryValue > 25){
-      sprintf(batteryGauge, "[++..]");  //50-25
-    }
-    else if (batteryValue > 10){
-      sprintf(batteryGauge, "[+....]"); //25-10
-    }
-    else if (batteryValue > 0){
-      sprintf(batteryGauge, "[!!!!!]"); //10-0
-    }
-*/
+    auto batteryValue = static_cast<uint8_t>(batteryController.PercentRemaining());
+
     char battStr[24];
     sprintf(battStr, "[BATT]#387b54 %d%\%#", batteryValue);
     lv_label_set_text(batteryPercent, battStr);
@@ -207,8 +190,7 @@ void WatchFaceTerminal::Refresh() {
        minutesChar[0] != displayedChar[2] ||
        minutesChar[1] != displayedChar[3] ||
        secondsChar[0] != displayedChar[4] ||
-       secondsChar[1] != displayedChar[5])
-       {
+       secondsChar[1] != displayedChar[5]) {
       displayedChar[0] = hoursChar[0];
       displayedChar[1] = hoursChar[1];
       displayedChar[2] = minutesChar[0];
@@ -230,7 +212,7 @@ void WatchFaceTerminal::Refresh() {
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
 
-	    char dateStr[38];
+      char dateStr[38];
       sprintf(dateStr, "[DATE]#007fff %04d.%02d.%02d#", short(year), char(month), char(day));
       lv_label_set_text(label_date, dateStr);
 
