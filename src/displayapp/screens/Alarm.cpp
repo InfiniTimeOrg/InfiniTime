@@ -27,8 +27,8 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   screen->OnButtonEvent(obj, event);
 }
 
-Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
-  : Screen(app), running {true}, alarmController {alarmController} {
+Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController, Pinetime::Controllers::Settings& settingsController)
+  : Screen(app), running {true}, alarmController {alarmController}, settingsController {settingsController} {
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -39,6 +39,13 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_label_set_text_fmt(time, "%02hhu:%02hhu", alarmHours, alarmMinutes);
 
   lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -25);
+
+  lblampm = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_set_style_local_text_color(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  lv_label_set_text_static(lblampm, "  ");
+  lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
 
   btnHoursUp = lv_btn_create(lv_scr_act(), nullptr);
   btnHoursUp->user_data = this;
@@ -95,6 +102,8 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_CENTER, 0, -85);
   txtInfo = lv_label_create(btnInfo, nullptr);
   lv_label_set_text_static(txtInfo, "i");
+
+  UpdateAlarmTime();
 }
 
 Alarm::~Alarm() {
@@ -180,7 +189,28 @@ bool Alarm::OnButtonPushed() {
 }
 
 void Alarm::UpdateAlarmTime() {
-  lv_label_set_text_fmt(time, "%02d:%02d", alarmHours, alarmMinutes);
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+    switch (alarmHours) {
+      case 0:
+        lv_label_set_text_static(lblampm, "AM");
+        lv_label_set_text_fmt(time, "%02d:%02d", 12, alarmMinutes);
+        break;
+      case 1 ... 11:
+        lv_label_set_text_static(lblampm, "AM");
+        lv_label_set_text_fmt(time, "%02d:%02d", alarmHours, alarmMinutes);
+        break;
+      case 12:
+        lv_label_set_text_static(lblampm, "PM");
+        lv_label_set_text_fmt(time, "%02d:%02d", 12, alarmMinutes);
+        break;
+      case 13 ... 23:
+        lv_label_set_text_static(lblampm, "PM");
+        lv_label_set_text_fmt(time, "%02d:%02d", alarmHours - 12, alarmMinutes);
+        break;
+    }
+  } else {
+    lv_label_set_text_fmt(time, "%02d:%02d", alarmHours, alarmMinutes);
+  }
   alarmController.SetAlarmTime(alarmHours, alarmMinutes);
 }
 

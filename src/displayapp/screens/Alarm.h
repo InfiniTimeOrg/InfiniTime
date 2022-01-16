@@ -27,7 +27,7 @@ namespace Pinetime {
     namespace Screens {
       class Alarm : public Screen {
       public:
-        Alarm(DisplayApp* app, Controllers::AlarmController& alarmController);
+        Alarm(DisplayApp* app, Controllers::AlarmController& alarmController, Pinetime::Controllers::Settings& settingsController);
         ~Alarm() override;
         void SetAlerting();
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
@@ -38,9 +38,10 @@ namespace Pinetime {
         uint8_t alarmHours;
         uint8_t alarmMinutes;
         Controllers::AlarmController& alarmController;
+        Controllers::Settings& settingsController;
 
-        lv_obj_t *time, *btnEnable, *txtEnable, *btnMinutesUp, *btnMinutesDown, *btnHoursUp, *btnHoursDown, *txtMinUp, *txtMinDown,
-          *txtHrUp, *txtHrDown, *btnRecur, *txtRecur, *btnInfo, *txtInfo;
+        lv_obj_t *time, *lblampm, *btnEnable, *txtEnable, *btnMinutesUp, *btnMinutesDown, *btnHoursUp, *btnHoursDown, *txtMinUp,
+          *txtMinDown, *txtHrUp, *txtHrDown, *btnRecur, *txtRecur, *btnInfo, *txtInfo;
         lv_obj_t* txtMessage = nullptr;
         lv_obj_t* btnMessage = nullptr;
 
