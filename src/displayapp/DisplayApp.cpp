@@ -60,28 +60,6 @@ namespace {
   static inline bool in_isr(void) {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
   }
-
-  TouchEvents ConvertGesture(Pinetime::Drivers::Cst816S::Gestures gesture) {
-    switch (gesture) {
-      case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
-        return TouchEvents::Tap;
-      case Pinetime::Drivers::Cst816S::Gestures::LongPress:
-        return TouchEvents::LongTap;
-      case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
-        return TouchEvents::DoubleTap;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
-        return TouchEvents::SwipeRight;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
-        return TouchEvents::SwipeLeft;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
-        return TouchEvents::SwipeDown;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
-        return TouchEvents::SwipeUp;
-      case Pinetime::Drivers::Cst816S::Gestures::None:
-      default:
-        return TouchEvents::None;
-    }
-  }
 }
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
@@ -227,7 +205,7 @@ void DisplayApp::Refresh() {
         if (state != States::Running) {
           break;
         }
-        auto gesture = ConvertGesture(touchHandler.GestureGet());
+        auto gesture = touchHandler.GestureGet();
         if (gesture == TouchEvents::None) {
           break;
         }
