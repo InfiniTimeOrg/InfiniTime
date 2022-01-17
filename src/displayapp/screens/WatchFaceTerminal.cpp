@@ -13,7 +13,6 @@
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
-#include "../DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
 
