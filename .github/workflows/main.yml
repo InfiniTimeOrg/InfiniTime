@@ -11,7 +11,7 @@ on:
 
   # Run this Workflow when files are updated (Pushed) in the "master" and "develop" Branch
   push:
-    branches: [ master, develop ]
+    branches: []
 
   # Also run this Workflow when a Pull Request is created or updated in the "master" and "develop" Branch
   pull_request:
