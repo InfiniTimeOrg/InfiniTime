@@ -1,0 +1,6 @@
+#include "BuildTime.h"
+
+@VERSION_EDIT_WARNING@
+
+const char* Pinetime::Version::GitCommitDate() {return "@PROJECT_GIT_TIMESTAMP_DATE@";}
+const char* Pinetime::Version::GitCommitTime() {return "@PROJECT_GIT_TIMESTAMP_TIME@";}

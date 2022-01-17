@@ -398,6 +398,9 @@ list(APPEND IMAGE_FILES
         )
 
 list(APPEND SOURCE_FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/Version.h
+        BuildTime.h
+        ${CMAKE_CURRENT_BINARY_DIR}/BuildTime.cpp
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
@@ -612,7 +615,6 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
 
 set(INCLUDE_FILES
 
-        ${CMAKE_CURRENT_BINARY_DIR}/src/Version.h
         BootloaderVersion.h
         logging/Logger.h
         logging/NrfLogger.h
