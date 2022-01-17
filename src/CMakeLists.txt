@@ -612,6 +612,7 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
 
 set(INCLUDE_FILES
 
+        ${CMAKE_CURRENT_BINARY_DIR}/src/Version.h
         BootloaderVersion.h
         logging/Logger.h
         logging/NrfLogger.h
@@ -710,6 +711,7 @@ set(INCLUDE_FILES
         )
 
 include_directories(
+        ${CMAKE_BINARY_DIR}/src # include generated files like Version.h
         .
         ../
         libs/
