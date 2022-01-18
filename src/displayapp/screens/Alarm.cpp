@@ -23,12 +23,20 @@ using namespace Pinetime::Applications::Screens;
 using Pinetime::Controllers::AlarmController;
 
 static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
-  Alarm* screen = static_cast<Alarm*>(obj->user_data);
+  auto* screen = static_cast<Alarm*>(obj->user_data);
   screen->OnButtonEvent(obj, event);
 }
 
-Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController, Pinetime::Controllers::Settings& settingsController)
-  : Screen(app), alarmController {alarmController}, settingsController {settingsController} {
+static void StopAlarmTaskCallback(lv_task_t* task) {
+  auto* screen = static_cast<Alarm*>(task->user_data);
+  screen->StopAlerting();
+}
+
+Alarm::Alarm(DisplayApp* app,
+             Controllers::AlarmController& alarmController,
+             Pinetime::Controllers::Settings& settingsController,
+             System::SystemTask& systemTask)
+  : Screen(app), alarmController {alarmController}, settingsController {settingsController}, systemTask {systemTask} {
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -122,6 +130,9 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController, Pin
 }
 
 Alarm::~Alarm() {
+  if (alarmController.State() == AlarmController::AlarmState::Alerting) {
+    StopAlerting();
+  }
   lv_obj_clean(lv_scr_act());
 }
 
@@ -129,10 +140,6 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   using Pinetime::Controllers::AlarmController;
   if (event == LV_EVENT_CLICKED) {
     if (obj == btnStop) {
-      if (alarmController.State() == AlarmController::AlarmState::Alerting) {
-        alarmController.StopAlerting();
-      }
-      SetSwitchState(LV_ANIM_OFF);
       StopAlerting();
       return;
     }
@@ -205,7 +212,16 @@ bool Alarm::OnButtonPushed() {
     HideInfo();
     return true;
   }
+  if (alarmController.State() == AlarmController::AlarmState::Alerting) {
+    StopAlerting();
+    return true;
+  }
   return false;
+}
+
+bool Alarm::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  // Don't allow closing the screen by swiping while the alarm is alerting
+  return alarmController.State() == AlarmController::AlarmState::Alerting && event == TouchEvents::SwipeDown;
 }
 
 void Alarm::UpdateAlarmTime() {
@@ -237,9 +253,18 @@ void Alarm::UpdateAlarmTime() {
 void Alarm::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
   lv_obj_set_hidden(btnStop, false);
+  taskStopAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(60 * 1000), LV_TASK_PRIO_MID, this);
+  systemTask.PushMessage(System::Messages::DisableSleeping);
 }
 
 void Alarm::StopAlerting() {
+  alarmController.StopAlerting();
+  SetSwitchState(LV_ANIM_OFF);
+  if (taskStopAlarm != nullptr) {
+    lv_task_del(taskStopAlarm);
+    taskStopAlarm = nullptr;
+  }
+  systemTask.PushMessage(System::Messages::EnableSleeping);
   lv_obj_set_hidden(enableSwitch, false);
   lv_obj_set_hidden(btnStop, true);
 }

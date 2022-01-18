@@ -379,7 +379,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Timer>(this, timerController);
       break;
     case Apps::Alarm:
-      currentScreen = std::make_unique<Screens::Alarm>(this, alarmController, settingsController);
+      currentScreen = std::make_unique<Screens::Alarm>(this, alarmController, settingsController, *systemTask);
       break;
 
     // Settings
