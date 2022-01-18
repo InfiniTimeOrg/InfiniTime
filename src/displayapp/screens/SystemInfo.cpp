@@ -6,6 +6,7 @@
 #include "displayapp/screens/Label.h"
 #include "Version.h"
 #include "BootloaderVersion.h"
+#include "BuildTime.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/brightness/BrightnessController.h"
@@ -88,8 +89,8 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
                         Version::Minor(),
                         Version::Patch(),
                         Version::GitCommitHash(),
-                        __DATE__,
-                        __TIME__,
+                        Version::GitCommitDate(),
+                        Version::GitCommitTime(),
                         BootloaderVersion::VersionString());
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);

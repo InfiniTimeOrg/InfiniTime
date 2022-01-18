@@ -398,6 +398,9 @@ list(APPEND IMAGE_FILES
         )
 
 list(APPEND SOURCE_FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/Version.h
+        BuildTime.h
+        ${CMAKE_CURRENT_BINARY_DIR}/BuildTime.cpp
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
@@ -710,6 +713,7 @@ set(INCLUDE_FILES
         )
 
 include_directories(
+        ${CMAKE_BINARY_DIR}/src # include generated files like Version.h
         .
         ../
         libs/
