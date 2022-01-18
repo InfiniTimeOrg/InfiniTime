@@ -147,7 +147,7 @@ void WatchFaceTerminal::Refresh() {
     auto day = (unsigned)yearMonthDay.day();
     auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
-    auto hour = time.hours().count();
+    int hour = time.hours().count();
     auto minute = time.minutes().count();
     auto second = time.seconds().count();
 
