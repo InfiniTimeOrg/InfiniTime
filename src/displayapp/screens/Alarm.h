@@ -27,28 +27,34 @@ namespace Pinetime {
     namespace Screens {
       class Alarm : public Screen {
       public:
-        Alarm(DisplayApp* app, Controllers::AlarmController& alarmController, Pinetime::Controllers::Settings& settingsController);
+        Alarm(DisplayApp* app,
+              Controllers::AlarmController& alarmController,
+              Pinetime::Controllers::Settings& settingsController,
+              System::SystemTask& systemTask);
         ~Alarm() override;
         void SetAlerting();
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
         bool OnButtonPushed() override;
+        bool OnTouchEvent(TouchEvents event) override;
+        void StopAlerting();
 
       private:
         uint8_t alarmHours;
         uint8_t alarmMinutes;
         Controllers::AlarmController& alarmController;
         Controllers::Settings& settingsController;
+        System::SystemTask& systemTask;
 
         lv_obj_t *time, *lblampm, *btnStop, *txtStop, *btnMinutesUp, *btnMinutesDown, *btnHoursUp, *btnHoursDown, *txtMinUp,
           *txtMinDown, *txtHrUp, *txtHrDown, *btnRecur, *txtRecur, *btnInfo, *txtInfo, *enableSwitch;
         lv_obj_t* txtMessage = nullptr;
         lv_obj_t* btnMessage = nullptr;
+        lv_task_t* taskStopAlarm = nullptr;
 
         enum class EnableButtonState { On, Off, Alerting };
         void SetRecurButtonState();
         void SetSwitchState(lv_anim_enable_t anim);
         void SetAlarm();
-        void StopAlerting();
         void ShowInfo();
         void HideInfo();
         void ToggleRecurrence();
