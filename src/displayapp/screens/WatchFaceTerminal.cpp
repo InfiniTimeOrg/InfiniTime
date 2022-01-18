@@ -157,7 +157,7 @@ void WatchFaceTerminal::Refresh() {
     char hoursChar[8];
 
     char ampmChar[3];
-	    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
         sprintf(hoursChar, "%02d", hour);
       } else {
         if (hour == 0 && hour != 12) {
