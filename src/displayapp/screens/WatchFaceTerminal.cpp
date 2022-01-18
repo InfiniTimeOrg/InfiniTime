@@ -17,13 +17,13 @@
 using namespace Pinetime::Applications::Screens;
 
 WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
-                                   Controllers::DateTime& dateTimeController,
-                                   Controllers::Battery& batteryController,
-                                   Controllers::Ble& bleController,
-                                   Controllers::NotificationManager& notificatioManager,
-                                   Controllers::Settings& settingsController,
-                                   Controllers::HeartRateController& heartRateController,
-                                   Controllers::MotionController& motionController)
+                                     Controllers::DateTime& dateTimeController,
+                                     Controllers::Battery& batteryController,
+                                     Controllers::Ble& bleController,
+                                     Controllers::NotificationManager& notificatioManager,
+                                     Controllers::Settings& settingsController,
+                                     Controllers::HeartRateController& heartRateController,
+                                     Controllers::MotionController& motionController)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -115,7 +115,7 @@ void WatchFaceTerminal::Refresh() {
 
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
-    if(bleState.Get() == true) {
+    if (bleState.Get() == true) {
       lv_label_set_text(bleIcon, BleIcon::GetIcon(true));
     } else {
       lv_label_set_text(bleIcon, BleIcon::GetIcon(false));
@@ -126,8 +126,8 @@ void WatchFaceTerminal::Refresh() {
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
-  if(notificationState.IsUpdated()) {
-    if(notificationState.Get() == true)
+  if (notificationState.IsUpdated()) {
+    if (notificationState.Get() == true)
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(true));
     else
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
@@ -135,16 +135,16 @@ void WatchFaceTerminal::Refresh() {
 
   currentDateTime = dateTimeController.CurrentDateTime();
 
-  if(currentDateTime.IsUpdated()) {
+  if (currentDateTime.IsUpdated()) {
     auto newDateTime = currentDateTime.Get();
 
     auto dp = date::floor<date::days>(newDateTime);
-    auto time = date::make_time(newDateTime-dp);
+    auto time = date::make_time(newDateTime - dp);
     auto yearMonthDay = date::year_month_day(dp);
 
-    auto year = (int)yearMonthDay.year();
-    auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned)yearMonthDay.month());
-    auto day = (unsigned)yearMonthDay.day();
+    auto year = (int) yearMonthDay.year();
+    auto month = static_cast<Pinetime::Controllers::DateTime::Months>((unsigned) yearMonthDay.month());
+    auto day = (unsigned) yearMonthDay.day();
     auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
     int hour = time.hours().count();
@@ -158,21 +158,21 @@ void WatchFaceTerminal::Refresh() {
 
     char ampmChar[3];
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        sprintf(hoursChar, "%02d", hour);
-      } else {
-        if (hour == 0 && hour != 12) {
-          hour = 12;
-          sprintf(ampmChar, "AM");
-        } else if (hour == 12 && hour != 0) {
-          hour = 12;
-          sprintf(ampmChar, "PM");
-        } else if (hour < 12 && hour != 0) {
-          sprintf(ampmChar, "AM");
-        } else if (hour > 12 && hour != 0) {
-          hour = hour - 12;
-          sprintf(ampmChar, "PM");
-        }
-        sprintf(hoursChar, "%02d", hour);
+      sprintf(hoursChar, "%02d", hour);
+    } else {
+      if (hour == 0 && hour != 12) {
+        hour = 12;
+        sprintf(ampmChar, "AM");
+      } else if (hour == 12 && hour != 0) {
+        hour = 12;
+        sprintf(ampmChar, "PM");
+      } else if (hour < 12 && hour != 0) {
+        sprintf(ampmChar, "AM");
+      } else if (hour > 12 && hour != 0) {
+        hour = hour - 12;
+        sprintf(ampmChar, "PM");
+      }
+      sprintf(hoursChar, "%02d", hour);
     }
 
     char secondsChar[5];
@@ -184,12 +184,8 @@ void WatchFaceTerminal::Refresh() {
     sprintf(battStr, "[BATT]#387b54 %d%\%#", batteryValue);
     lv_label_set_text(batteryPercent, battStr);
 
-    if(hoursChar[0] != displayedChar[0] ||
-       hoursChar[1] != displayedChar[1] ||
-       minutesChar[0] != displayedChar[2] ||
-       minutesChar[1] != displayedChar[3] ||
-       secondsChar[0] != displayedChar[4] ||
-       secondsChar[1] != displayedChar[5]) {
+    if (hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] ||
+        minutesChar[1] != displayedChar[3] || secondsChar[0] != displayedChar[4] || secondsChar[1] != displayedChar[5]) {
       displayedChar[0] = hoursChar[0];
       displayedChar[1] = hoursChar[1];
       displayedChar[2] = minutesChar[0];
@@ -204,7 +200,15 @@ void WatchFaceTerminal::Refresh() {
       }
 
       char timeStr[42];
-      sprintf(timeStr, "[TIME]#11cc55 %c%c:%c%c:%c%c %s#", hoursChar[0],hoursChar[1],minutesChar[0], minutesChar[1], secondsChar[0], secondsChar[1], ampmChar);
+      sprintf(timeStr,
+              "[TIME]#11cc55 %c%c:%c%c:%c%c %s#",
+              hoursChar[0],
+              hoursChar[1],
+              minutesChar[0],
+              minutesChar[1],
+              secondsChar[0],
+              secondsChar[1],
+              ampmChar);
 
       lv_label_set_text(label_time, timeStr);
     }
@@ -215,7 +219,6 @@ void WatchFaceTerminal::Refresh() {
       sprintf(dateStr, "[DATE]#007fff %04d.%02d.%02d#", short(year), char(month), char(day));
       lv_label_set_text(label_date, dateStr);
 
-
       currentYear = year;
       currentMonth = month;
       currentDayOfWeek = dayOfWeek;
@@ -225,9 +228,9 @@ void WatchFaceTerminal::Refresh() {
 
   heartbeat = heartRateController.HeartRate();
   heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
-  if(heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
+  if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
     char heartbeatBuffer[28];
-    if(heartbeatRunning.Get())
+    if (heartbeatRunning.Get())
       sprintf(heartbeatBuffer, "[L_HR]#ee3311 %d bpm#", heartbeat.Get());
     else
       sprintf(heartbeatBuffer, "[L_HR]#ee3311 ---#");
