@@ -67,6 +67,7 @@ namespace Pinetime {
         lv_obj_t* heartbeatBpm;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
+        lv_obj_t* connectState;
 
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;
