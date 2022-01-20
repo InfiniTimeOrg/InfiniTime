@@ -55,7 +55,7 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
   lv_obj_align(batteryPercent, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
 
   connectState = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_recolor(connectState, true);
+  lv_label_set_text(bleValue, "Connected");
   lv_obj_align(connectState, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 40);
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
@@ -115,17 +115,18 @@ void WatchFaceTerminal::Refresh() {
     lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
     auto isCharging = batteryController.IsCharging() || batteryController.IsPowerPresent();
     lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
+
   }
 
-  char* bleValue;
+  /*char* bleValue;*/
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
     if (bleState.Get() == true) {
       lv_label_set_text(bleIcon, BleIcon::GetIcon(true));
-      bleValue = "Connected";
+      lv_label_set_text(bleValue, "Connected#");
     } else {
       lv_label_set_text(bleIcon, BleIcon::GetIcon(false));
-      bleValue = "Disconnected";
+      lv_label_set_text(bleValue, "Disonnected#");
     }
   }
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 5);
@@ -134,10 +135,11 @@ void WatchFaceTerminal::Refresh() {
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
-    if (notificationState.Get() == true)
+    if (notificationState.Get() == true) {
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(true));
-    else
+    } else {
       lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
+    }
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();
@@ -163,14 +165,33 @@ void WatchFaceTerminal::Refresh() {
 
     char hoursChar[8];
 
-    char secondsChar[5];
-    sprintf(secondsChar, "%02d", static_cast<int>(second));
+    char ampmChar[3];
+    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+      sprintf(hoursChar, "%02d", hour);
+    } else {
+      if (hour == 0 && hour != 12) {
+        hour = 12;
+        sprintf(ampmChar, "AM");
+      } else if (hour == 12 && hour != 0) {
+        hour = 12;
+        sprintf(ampmChar, "PM");
+      } else if (hour < 12 && hour != 0) {
+        sprintf(ampmChar, "AM");
+      } else if (hour > 12 && hour != 0) {
+        hour = hour - 12;
+        sprintf(ampmChar, "PM");
+      }
+      sprintf(hoursChar, "%02d", hour);
+    }
 
     auto batteryValue = static_cast<uint8_t>(batteryController.PercentRemaining());
 
     char battStr[24];
     sprintf(battStr, "[BATT]#387b54 %d%\%#", batteryValue);
     lv_label_set_text(batteryPercent, battStr);
+    
+    char secondsChar[5];
+    sprintf(secondsChar, "%02d", static_cast<int>(second));
 
     char bleStr[24];
     sprintf(bleStr, "[STAT]#387b54 %s#", bleValue);
@@ -193,13 +214,14 @@ void WatchFaceTerminal::Refresh() {
 
       char timeStr[42];
       sprintf(timeStr,
-              "[TIME]#11cc55 %c%c:%c%c:%c%c#",
+              "[TIME]#11cc55 %c%c:%c%c:%c%c %s#",
               hoursChar[0],
               hoursChar[1],
               minutesChar[0],
               minutesChar[1],
               secondsChar[0],
-              secondsChar[1]);
+              secondsChar[1],
+              ampmChar);
 
       lv_label_set_text(label_time, timeStr);
     }
