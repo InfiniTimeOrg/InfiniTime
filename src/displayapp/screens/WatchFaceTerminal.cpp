@@ -173,7 +173,7 @@ void WatchFaceTerminal::Refresh() {
     lv_label_set_text(batteryPercent, battStr);
 
     char bleStr[24];
-    sprintf(bleStr, "[BLE]#387b54 %s#", bleValue);
+    sprintf(bleStr, "[STAT]#387b54 %s#", bleValue);
     lv_label_set_text(connectState, bleStr);
 
     if (hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] ||
