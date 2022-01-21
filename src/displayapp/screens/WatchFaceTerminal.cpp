@@ -108,14 +108,13 @@ WatchFaceTerminal::~WatchFaceTerminal() {
   lv_obj_clean(lv_scr_act());
 }
 
-void WatchFaceTerminal::Refresh() {
+  void WatchFaceTerminal::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
     lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
     auto isCharging = batteryController.IsCharging() || batteryController.IsPowerPresent();
     lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
-
   }
 
   /*char* bleValue;*/
@@ -184,17 +183,16 @@ void WatchFaceTerminal::Refresh() {
       sprintf(hoursChar, "%02d", hour);
     }
 
-    auto batteryValue = static_cast<uint8_t>(batteryController.PercentRemaining());
-
-    char battStr[24];
-    sprintf(battStr, "[BATT]#387b54 %d%\%#", batteryValue);
-    lv_label_set_text(batteryPercent, battStr);
-    
     char secondsChar[5];
     sprintf(secondsChar, "%02d", static_cast<int>(second));
 
+    auto batteryValue = static_cast<uint8_t>(batteryController.PercentRemaining());
+    char battStr[24];
+    sprintf(battStr, "[BATT]#387b54 %d%\%#", batteryValue);
+    lv_label_set_text(batteryPercent, battStr);
+
     char bleStr[24];
-    sprintf(bleStr, "[STAT]#387b54 %s#", bleValue);
+    sprintf(bleStr, "[STAT]#387b54 %d#", bleValue);
     lv_label_set_text(connectState, bleStr);
 
     if (hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] ||
