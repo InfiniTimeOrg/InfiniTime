@@ -36,6 +36,8 @@ void DateTime::SetTime(
   UpdateTime(systickCounter);
   NRF_LOG_INFO("* %d %d %d ", this->hour, this->minute, this->second);
   NRF_LOG_INFO("* %d %d %d ", this->day, this->month, this->year);
+
+  systemTask->PushMessage(System::Messages::OnNewTime);
 }
 
 void DateTime::UpdateTime(uint32_t systickCounter) {
