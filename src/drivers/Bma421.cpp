@@ -1,7 +1,7 @@
+#include "drivers/Bma421.h"
 #include <libraries/delay/nrf_delay.h>
 #include <libraries/log/nrf_log.h>
-#include "Bma421.h"
-#include "TwiMaster.h"
+#include "drivers/TwiMaster.h"
 #include <drivers/Bma421_C/bma423.h>
 
 using namespace Pinetime::Drivers;
@@ -42,10 +42,16 @@ void Bma421::Init() {
   if (ret != BMA4_OK)
     return;
 
-  switch(bma.chip_id) {
-    case BMA423_CHIP_ID: deviceType = DeviceTypes::BMA421; break;
-    case BMA425_CHIP_ID: deviceType = DeviceTypes::BMA425; break;
-    default: deviceType = DeviceTypes::Unknown; break;
+  switch (bma.chip_id) {
+    case BMA423_CHIP_ID:
+      deviceType = DeviceTypes::BMA421;
+      break;
+    case BMA425_CHIP_ID:
+      deviceType = DeviceTypes::BMA425;
+      break;
+    default:
+      deviceType = DeviceTypes::Unknown;
+      break;
   }
 
   ret = bma423_write_config_file(&bma);

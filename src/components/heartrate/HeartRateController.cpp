@@ -1,4 +1,4 @@
-#include "HeartRateController.h"
+#include "components/heartrate/HeartRateController.h"
 #include <heartratetask/HeartRateTask.h>
 #include <systemtask/SystemTask.h>
 

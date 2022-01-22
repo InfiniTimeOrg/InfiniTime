@@ -1,4 +1,4 @@
-#include "Cst816s.h"
+#include "drivers/Cst816s.h"
 #include <FreeRTOS.h>
 #include <legacy/nrf_drv_gpiote.h>
 #include <nrfx_log.h>
@@ -32,17 +32,11 @@ bool Cst816S::Init() {
   twiMaster.Read(twiAddress, 0xa7, &dummy, 1);
   vTaskDelay(5);
 
-  static constexpr uint8_t maxRetries = 3;
-  bool isDeviceOk;
-  uint8_t retries = 0;
-  do {
-    isDeviceOk = CheckDeviceIds();
-    retries++;
-  } while (!isDeviceOk && retries < maxRetries);
-
-  if (!isDeviceOk) {
-    return false;
-  }
+  // TODO This function check that the device IDs from the controller are equal to the ones
+  // we expect. However, it seems to return false positive (probably in case of communication issue).
+  // Also, it seems that some users have pinetimes that works correctly but that report different device IDs
+  // Until we know more about this, we'll just read the IDs but not take any action in case they are not 'valid'
+  CheckDeviceIds();
 
   /*
   [2] EnConLR - Continuous operation can slide around
@@ -86,14 +80,9 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   Gestures gesture = static_cast<Gestures>(touchData[gestureIndex]);
 
   // Validity check
-  if(x >= maxX || y >= maxY ||
-      (gesture != Gestures::None &&
-       gesture != Gestures::SlideDown &&
-       gesture != Gestures::SlideUp &&
-       gesture != Gestures::SlideLeft &&
-       gesture != Gestures::SlideRight &&
-       gesture != Gestures::SingleTap &&
-       gesture != Gestures::DoubleTap &&
+  if (x >= maxX || y >= maxY ||
+      (gesture != Gestures::None && gesture != Gestures::SlideDown && gesture != Gestures::SlideUp && gesture != Gestures::SlideLeft &&
+       gesture != Gestures::SlideRight && gesture != Gestures::SingleTap && gesture != Gestures::DoubleTap &&
        gesture != Gestures::LongPress)) {
     info.isValid = false;
     return info;

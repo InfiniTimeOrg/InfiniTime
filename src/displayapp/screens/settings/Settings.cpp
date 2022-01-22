@@ -1,4 +1,4 @@
-#include "Settings.h"
+#include "displayapp/screens/settings/Settings.h"
 #include <lvgl/lvgl.h>
 #include <array>
 #include "displayapp/screens/List.h"
@@ -47,24 +47,20 @@ std::unique_ptr<Screen> Settings::CreateScreen1() {
 
 std::unique_ptr<Screen> Settings::CreateScreen2() {
 
-  std::array<Screens::List::Applications, 4> applications {{
-    {Symbols::shoe, "Steps", Apps::SettingSteps},
-    {Symbols::clock, "Set date", Apps::SettingSetDate},
-    {Symbols::clock, "Set time", Apps::SettingSetTime},
-    {Symbols::batteryHalf, "Battery", Apps::BatteryInfo}
-  }};
+  std::array<Screens::List::Applications, 4> applications {{{Symbols::shoe, "Steps", Apps::SettingSteps},
+                                                            {Symbols::clock, "Set date", Apps::SettingSetDate},
+                                                            {Symbols::clock, "Set time", Apps::SettingSetTime},
+                                                            {Symbols::batteryHalf, "Battery", Apps::BatteryInfo}}};
 
   return std::make_unique<Screens::List>(1, 3, app, settingsController, applications);
 }
 
 std::unique_ptr<Screen> Settings::CreateScreen3() {
 
-  std::array<Screens::List::Applications, 4> applications {{
-    {Symbols::paintbrush, "PTS Colors", Apps::SettingPineTimeStyle},
-    {Symbols::check, "Firmware", Apps::FirmwareValidation},
-    {Symbols::list, "About", Apps::SysInfo},
-    {Symbols::none, "None", Apps::None},
-  }};
+  std::array<Screens::List::Applications, 4> applications {{{Symbols::clock, "Chimes", Apps::SettingChimes},
+                                                            {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
+                                                            {Symbols::check, "Firmware", Apps::FirmwareValidation},
+                                                            {Symbols::list, "About", Apps::SysInfo}}};
 
   return std::make_unique<Screens::List>(2, 3, app, settingsController, applications);
 }

@@ -1,4 +1,4 @@
-#include "DfuService.h"
+#include "components/ble/DfuService.h"
 #include <cstring>
 #include "components/ble/BleController.h"
 #include "drivers/SpiNorFlash.h"
@@ -164,10 +164,10 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
 
       if ((nbPacketReceived % nbPacketsToNotify) == 0 && bytesReceived != applicationSize) {
         uint8_t data[5] {static_cast<uint8_t>(Opcodes::PacketReceiptNotification),
-                         (uint8_t)(bytesReceived & 0x000000FFu),
-                         (uint8_t)(bytesReceived >> 8u),
-                         (uint8_t)(bytesReceived >> 16u),
-                         (uint8_t)(bytesReceived >> 24u)};
+                         (uint8_t) (bytesReceived & 0x000000FFu),
+                         (uint8_t) (bytesReceived >> 8u),
+                         (uint8_t) (bytesReceived >> 16u),
+                         (uint8_t) (bytesReceived >> 24u)};
         NRF_LOG_INFO("[DFU] -> Send packet notification: %d bytes received", bytesReceived);
         notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 5);
       }
@@ -422,9 +422,9 @@ uint16_t DfuService::DfuImage::ComputeCrc(uint8_t const* p_data, uint32_t size, 
   uint16_t crc = (p_crc == NULL) ? 0xFFFF : *p_crc;
 
   for (uint32_t i = 0; i < size; i++) {
-    crc = (uint8_t)(crc >> 8) | (crc << 8);
+    crc = (uint8_t) (crc >> 8) | (crc << 8);
     crc ^= p_data[i];
-    crc ^= (uint8_t)(crc & 0xFF) >> 4;
+    crc ^= (uint8_t) (crc & 0xFF) >> 4;
     crc ^= (crc << 8) << 4;
     crc ^= ((crc & 0xFF) << 4) << 1;
   }

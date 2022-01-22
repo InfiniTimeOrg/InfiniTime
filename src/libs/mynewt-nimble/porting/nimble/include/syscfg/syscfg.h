@@ -699,11 +699,11 @@
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_BONDING
-#define MYNEWT_VAL_BLE_SM_BONDING (0)
+#define MYNEWT_VAL_BLE_SM_BONDING (1)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_IO_CAP
-#define MYNEWT_VAL_BLE_SM_IO_CAP (BLE_HS_IO_NO_INPUT_OUTPUT)
+#define MYNEWT_VAL_BLE_SM_IO_CAP (BLE_HS_IO_DISPLAY_ONLY)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_KEYPRESS
@@ -711,7 +711,7 @@
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_LEGACY
-#define MYNEWT_VAL_BLE_SM_LEGACY (1)
+#define MYNEWT_VAL_BLE_SM_LEGACY (0)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_MAX_PROCS
@@ -719,7 +719,7 @@
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_MITM
-#define MYNEWT_VAL_BLE_SM_MITM (0)
+#define MYNEWT_VAL_BLE_SM_MITM (1)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_OOB_DATA_FLAG
@@ -727,11 +727,11 @@
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_OUR_KEY_DIST
-#define MYNEWT_VAL_BLE_SM_OUR_KEY_DIST (0)
+#define MYNEWT_VAL_BLE_SM_OUR_KEY_DIST (7)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_SC
-#define MYNEWT_VAL_BLE_SM_SC (0)
+#define MYNEWT_VAL_BLE_SM_SC (1)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_SC_DEBUG_KEYS
@@ -739,7 +739,7 @@
 #endif
 
 #ifndef MYNEWT_VAL_BLE_SM_THEIR_KEY_DIST
-#define MYNEWT_VAL_BLE_SM_THEIR_KEY_DIST (0)
+#define MYNEWT_VAL_BLE_SM_THEIR_KEY_DIST (3)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_STORE_MAX_BONDS
@@ -1089,7 +1089,7 @@
 
 /* Overridden by @apache-mynewt-nimble/targets/riot (defined by @apache-mynewt-nimble/nimble/controller) */
 #ifndef MYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY
-#define MYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY (0)
+#define MYNEWT_VAL_BLE_LL_CFG_FEAT_LL_PRIVACY (1)
 #endif
 
 #ifndef MYNEWT_VAL_BLE_LL_CFG_FEAT_SLAVE_INIT_FEAT_XCHG

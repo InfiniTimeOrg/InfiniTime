@@ -1,9 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include <FreeRTOS.h>
-#include <timers.h>
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include <lvgl/lvgl.h>
 
 namespace Pinetime {

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <cstddef>
+
 namespace Pinetime {
   class BootloaderVersion {
   public:
@@ -9,6 +12,7 @@ namespace Pinetime {
     static const char* VersionString();
     static const bool IsValid();
     static void SetVersion(uint32_t v);
+
   private:
     static uint32_t version;
     static constexpr size_t VERSION_STR_LEN = 12;

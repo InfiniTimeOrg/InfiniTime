@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include <lvgl/src/lv_core/lv_obj.h>
 
 namespace Pinetime {

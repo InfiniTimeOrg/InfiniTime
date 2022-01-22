@@ -1,5 +1,5 @@
-#include "LittleVgl.h"
-#include "lv_pinetime_theme.h"
+#include "displayapp/LittleVgl.h"
+#include "displayapp/lv_pinetime_theme.h"
 
 #include <FreeRTOS.h>
 #include <task.h>
@@ -23,7 +23,6 @@ bool touchpad_read(lv_indev_drv_t* indev_drv, lv_indev_data_t* data) {
 
 LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel)
   : lcd {lcd}, touchPanel {touchPanel}, previousClick {0, 0} {
-
 }
 
 void LittleVgl::Init() {

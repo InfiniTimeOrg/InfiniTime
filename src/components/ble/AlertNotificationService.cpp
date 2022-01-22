@@ -1,8 +1,8 @@
-#include "AlertNotificationService.h"
+#include "components/ble/AlertNotificationService.h"
 #include <hal/nrf_rtc.h>
 #include <cstring>
 #include <algorithm>
-#include "NotificationManager.h"
+#include "components/ble/NotificationManager.h"
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
@@ -53,8 +53,9 @@ int AlertNotificationService::OnAlert(uint16_t conn_handle, uint16_t attr_handle
 
     // Ignore notifications with empty message
     const auto packetLen = OS_MBUF_PKTLEN(ctxt->om);
-    if (packetLen <= headerSize)
+    if (packetLen <= headerSize) {
       return 0;
+    }
 
     size_t bufferSize = std::min(packetLen + stringTerminatorSize, maxBufferSize);
     auto messageSize = std::min(maxMessageSize, (bufferSize - headerSize));
