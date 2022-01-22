@@ -55,12 +55,13 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
   lv_obj_align(batteryPercent, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
 
   connectState = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(bleValue, "Connected");
+  lv_label_set_recolor(connectState, true);
+  lv_label_set_text(connectState, "[STAT]#387b54 Disconnected#");
   lv_obj_align(connectState, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 40);
 
-  bleIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  //bleIcon = lv_label_create(lv_scr_act(), nullptr);
+  //lv_label_set_text(bleIcon, Symbols::bluetooth);
+  //lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   notificationIcon = lv_label_create(lv_scr_act(), NULL);
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
@@ -118,19 +119,15 @@ WatchFaceTerminal::~WatchFaceTerminal() {
   }
 
   /*char* bleValue;*/
-  bleState = bleController.IsConnected();
-  if (bleState.IsUpdated()) {
-    if (bleState.Get() == true) {
-      lv_label_set_text(bleIcon, BleIcon::GetIcon(true));
-      lv_label_set_text(bleValue, "Connected#");
-    } else {
-      lv_label_set_text(bleIcon, BleIcon::GetIcon(false));
-      lv_label_set_text(bleValue, "Disonnected#");
-    }
-  }
+  //if (bleState.IsUpdated()) {
+    char bleStr[24];
+    sprintf(bleStr, "[STAT]#387b54 %s#",bleController.IsConnected() ? "Connected" : "Disconnected");
+    lv_label_set_text(connectState, bleStr);
+  //}
+
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 5);
   lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
-  lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  //lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
@@ -190,10 +187,6 @@ WatchFaceTerminal::~WatchFaceTerminal() {
     char battStr[24];
     sprintf(battStr, "[BATT]#387b54 %d%\%#", batteryValue);
     lv_label_set_text(batteryPercent, battStr);
-
-    char bleStr[24];
-    sprintf(bleStr, "[STAT]#387b54 %d#", bleValue);
-    lv_label_set_text(connectState, bleStr);
 
     if (hoursChar[0] != displayedChar[0] || hoursChar[1] != displayedChar[1] || minutesChar[0] != displayedChar[2] ||
         minutesChar[1] != displayedChar[3] || secondsChar[0] != displayedChar[4] || secondsChar[1] != displayedChar[5]) {
