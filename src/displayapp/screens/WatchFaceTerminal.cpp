@@ -59,9 +59,9 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
   lv_label_set_text(connectState, "[STAT]#387b54 Disconnected#");
   lv_obj_align(connectState, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 40);
 
-  //bleIcon = lv_label_create(lv_scr_act(), nullptr);
-  //lv_label_set_text(bleIcon, Symbols::bluetooth);
-  //lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  // bleIcon = lv_label_create(lv_scr_act(), nullptr);
+  // lv_label_set_text(bleIcon, Symbols::bluetooth);
+  // lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   notificationIcon = lv_label_create(lv_scr_act(), NULL);
   lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
@@ -119,11 +119,11 @@ WatchFaceTerminal::~WatchFaceTerminal() {
   }
 
   /*char* bleValue;*/
-  //if (bleState.IsUpdated()) {
+  if (bleState.IsUpdated()) {
     char bleStr[24];
     sprintf(bleStr, "[STAT]#387b54 %s#",bleController.IsConnected() ? "Connected" : "Disconnected");
     lv_label_set_text(connectState, bleStr);
-  //}
+  }
 
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 5);
   lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
