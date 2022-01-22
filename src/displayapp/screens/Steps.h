@@ -21,6 +21,8 @@ namespace Pinetime {
 
         void Refresh() override;
         void lapBtnEventHandler(lv_event_t event);
+        void UpdateSelected(lv_obj_t *object, lv_event_t event);
+
 
       private:
         Controllers::MotionController& motionController;
@@ -30,9 +32,16 @@ namespace Pinetime {
 
         lv_obj_t* lSteps;
         lv_obj_t* lStepsIcon;
+        lv_obj_t* lstepsL;
+        lv_obj_t* lstepsGoal;
         lv_obj_t* stepsArc;
-        lv_obj_t* resetBtn;
-        lv_obj_t* resetButtonLabel;
+        lv_obj_t* btnReset;
+        lv_obj_t* btnResetLabel;
+        lv_obj_t* btnSet;
+        lv_obj_t* btnSetLabel;
+        lv_obj_t* btnPlus;
+        lv_obj_t* btnMinus;
+        lv_obj_t* btnClose;
         lv_obj_t* tripLabel;
 
         uint32_t stepsCount;

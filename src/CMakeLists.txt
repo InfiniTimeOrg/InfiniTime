@@ -444,7 +444,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingTimeFormat.cpp
         displayapp/screens/settings/SettingWakeUp.cpp
         displayapp/screens/settings/SettingDisplay.cpp
-        displayapp/screens/settings/SettingSteps.cpp
         displayapp/screens/settings/SettingSetDate.cpp
         displayapp/screens/settings/SettingSetTime.cpp
         displayapp/screens/settings/SettingChimes.cpp
