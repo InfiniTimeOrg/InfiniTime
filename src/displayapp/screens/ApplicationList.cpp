@@ -57,7 +57,7 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
     {Symbols::paddle, Apps::Paddle},
     {"2", Apps::Twos},
     {Symbols::chartLine, Apps::Motion},
-    {Symbols::drum, Apps::Metronome},
+    {Symbols::qrcode, Apps::Qr},
     {Symbols::clock, Apps::Alarm},
   }};
 

@@ -11,7 +11,8 @@ namespace {
   }
 
   static void event_handler(lv_obj_t* obj, lv_event_t event) {
-    if (event != LV_EVENT_VALUE_CHANGED) return;
+    if (event != LV_EVENT_VALUE_CHANGED)
+      return;
 
     Tile* screen = static_cast<Tile*>(obj->user_data);
     auto* eventDataPtr = (uint32_t*) lv_event_get_data();
@@ -124,7 +125,8 @@ void Tile::UpdateScreen() {
 }
 
 void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId) {
-  if(obj != btnm1) return;
+  if (obj != btnm1)
+    return;
 
   app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up);
   running = false;

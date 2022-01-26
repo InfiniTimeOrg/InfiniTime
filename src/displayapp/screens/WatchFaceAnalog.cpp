@@ -12,35 +12,33 @@ LV_IMG_DECLARE(bg_clock);
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-constexpr int16_t HourLength = 70;
-constexpr int16_t MinuteLength = 90;
-constexpr int16_t SecondLength = 110;
+  constexpr int16_t HourLength = 70;
+  constexpr int16_t MinuteLength = 90;
+  constexpr int16_t SecondLength = 110;
 
-// sin(90) = 1 so the value of _lv_trigo_sin(90) is the scaling factor
-const auto LV_TRIG_SCALE = _lv_trigo_sin(90);
+  // sin(90) = 1 so the value of _lv_trigo_sin(90) is the scaling factor
+  const auto LV_TRIG_SCALE = _lv_trigo_sin(90);
 
-int16_t Cosine(int16_t angle) {
-  return _lv_trigo_sin(angle + 90);
-}
+  int16_t Cosine(int16_t angle) {
+    return _lv_trigo_sin(angle + 90);
+  }
 
-int16_t Sine(int16_t angle) {
-  return _lv_trigo_sin(angle);
-}
+  int16_t Sine(int16_t angle) {
+    return _lv_trigo_sin(angle);
+  }
 
-int16_t CoordinateXRelocate(int16_t x) {
-  return (x + LV_HOR_RES / 2);
-}
+  int16_t CoordinateXRelocate(int16_t x) {
+    return (x + LV_HOR_RES / 2);
+  }
 
-int16_t CoordinateYRelocate(int16_t y) {
-  return std::abs(y - LV_HOR_RES / 2);
-}
+  int16_t CoordinateYRelocate(int16_t y) {
+    return std::abs(y - LV_HOR_RES / 2);
+  }
 
-lv_point_t CoordinateRelocate(int16_t radius, int16_t angle) {
-  return lv_point_t{
-    .x = CoordinateXRelocate(radius * static_cast<int32_t>(Sine(angle)) / LV_TRIG_SCALE),
-    .y = CoordinateYRelocate(radius * static_cast<int32_t>(Cosine(angle)) / LV_TRIG_SCALE)
-  };
-}
+  lv_point_t CoordinateRelocate(int16_t radius, int16_t angle) {
+    return lv_point_t {.x = CoordinateXRelocate(radius * static_cast<int32_t>(Sine(angle)) / LV_TRIG_SCALE),
+                       .y = CoordinateYRelocate(radius * static_cast<int32_t>(Cosine(angle)) / LV_TRIG_SCALE)};
+  }
 
 }
 

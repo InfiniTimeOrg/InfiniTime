@@ -23,6 +23,7 @@
 #include "components/ble/weather/WeatherService.h"
 #include "components/fs/FS.h"
 #include "components/ble/FSService.h"
+#include "components/ble/QrService.h"
 
 namespace Pinetime {
   namespace Drivers {
@@ -77,6 +78,9 @@ namespace Pinetime {
       Pinetime::Controllers::WeatherService& weather() {
         return weatherService;
       };
+      Pinetime::Controllers::QrService& qr() {
+        return qrService;
+      };
 
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);
@@ -108,6 +112,7 @@ namespace Pinetime {
       NavigationService navService;
       BatteryInformationService batteryInformationService;
       ImmediateAlertService immediateAlertService;
+      QrService qrService;
       HeartRateService heartRateService;
       MotionService motionService;
       FSService fsService;

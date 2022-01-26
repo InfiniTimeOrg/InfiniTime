@@ -21,4 +21,3 @@ PassKey::PassKey(Pinetime::Applications::DisplayApp* app, uint32_t key) : Screen
 PassKey::~PassKey() {
   lv_obj_clean(lv_scr_act());
 }
-

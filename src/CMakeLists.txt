@@ -365,6 +365,10 @@ set(QCBOR_SRC
         libs/QCBOR/src/qcbor_err_to_str.c
         libs/QCBOR/src/UsefulBuf.c
         )
+set(QRCODE_SRC
+        libs/QR-Code-generator/c/qrcodegen.c
+        libs/QR-Code-generator/c/qrcodegen.h
+        )
 
 list(APPEND IMAGE_FILES
         displayapp/icons/battery/os_battery_error.c
@@ -424,6 +428,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
         displayapp/screens/Twos.cpp
+        displayapp/screens/Qr.cpp
         displayapp/screens/HeartRate.cpp
         displayapp/screens/Motion.cpp
         displayapp/screens/FlashLight.cpp
@@ -491,6 +496,7 @@ list(APPEND SOURCE_FILES
         components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
         components/ble/ServiceDiscovery.cpp
+        components/ble/QrService.cpp
         components/ble/HeartRateService.cpp
         components/ble/MotionService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
@@ -565,6 +571,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/NavigationService.cpp
         components/ble/HeartRateService.cpp
         components/ble/MotionService.cpp
+        components/ble/QrService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
         components/settings/Settings.cpp
         components/timer/TimerController.cpp
@@ -637,6 +644,7 @@ set(INCLUDE_FILES
         displayapp/screens/FirmwareUpdate.h
         displayapp/screens/FirmwareValidation.h
         displayapp/screens/ApplicationList.h
+        displayapp/screens/Qr.h
         displayapp/Apps.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
@@ -683,6 +691,7 @@ set(INCLUDE_FILES
         components/settings/Settings.h
         components/timer/TimerController.h
         components/alarm/AlarmController.h
+        components/ble/QrService.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
@@ -890,13 +899,25 @@ target_compile_options(littlefs PRIVATE
         $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
         )
 
+# qrcode
+add_library(qrcode STATIC ${QRCODE_SRC})
+target_include_directories(qrcode SYSTEM PUBLIC . ../)
+target_include_directories(qrcode SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_compile_options(qrcode PRIVATE
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
+        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
+        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -std=c99 -x assembler-with-cpp>
+        )
+
 # Build autonomous binary (without support for bootloader)
 set(EXECUTABLE_NAME "pinetime-app")
 set(EXECUTABLE_FILE_NAME ${EXECUTABLE_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_FILE_NAME})
-target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs QCBOR)
+target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs QCBOR qrcode)
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wextra -Wformat -Wno-missing-field-initializers -Wno-unused-parameter -Og -g3>
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wextra -Wformat -Wno-missing-field-initializers -Wno-unused-parameter -Os>
@@ -925,7 +946,7 @@ set(IMAGE_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-image-${pinetime_VERSION_
 set(DFU_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 set(NRF5_LINKER_SCRIPT_MCUBOOT "${CMAKE_SOURCE_DIR}/gcc_nrf52-mcuboot.ld")
 add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs QCBOR)
+target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs QCBOR qrcode)
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
         $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>

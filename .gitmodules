@@ -7,3 +7,6 @@
 [submodule "src/libs/QCBOR"]
 	path = src/libs/QCBOR
 	url = https://github.com/laurencelundblade/QCBOR.git
+[submodule "src/libs/QR-Code-generator"]
+	path = src/libs/QR-Code-generator
+	url = https://github.com/nayuki/QR-Code-generator

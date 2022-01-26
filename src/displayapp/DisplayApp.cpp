@@ -31,7 +31,7 @@
 #include "displayapp/screens/Steps.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
-
+#include "displayapp/screens/Qr.h"
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 #include "drivers/Watchdog.h"
@@ -425,7 +425,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SettingShakeThreshold:
-      currentScreen = std::make_unique<Screens::SettingShakeThreshold>(this, settingsController,motionController,*systemTask);
+      currentScreen = std::make_unique<Screens::SettingShakeThreshold>(this, settingsController, motionController, *systemTask);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::BatteryInfo:
@@ -471,6 +471,9 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
+      break;
+    case Apps::Qr:
+      currentScreen = std::make_unique<Screens::Qr>(this, lvgl, systemTask->nimble().qr());
       break;
   }
   currentApp = app;

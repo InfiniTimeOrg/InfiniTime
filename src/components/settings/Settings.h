@@ -19,7 +19,23 @@ namespace Pinetime {
         Shake = 3,
       };
       enum class Colors : uint8_t {
-        White, Silver, Gray, Black, Red, Maroon, Yellow, Olive, Lime, Green, Cyan, Teal, Blue, Navy, Magenta, Purple, Orange
+        White,
+        Silver,
+        Gray,
+        Black,
+        Red,
+        Maroon,
+        Yellow,
+        Olive,
+        Lime,
+        Green,
+        Cyan,
+        Teal,
+        Blue,
+        Navy,
+        Magenta,
+        Purple,
+        Orange
       };
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
@@ -125,15 +141,14 @@ namespace Pinetime {
         return settings.screenTimeOut;
       };
 
-      void SetShakeThreshold(uint16_t thresh){
-        if(settings.shakeWakeThreshold != thresh){
-            settings.shakeWakeThreshold = thresh;
-            settingsChanged = true;
+      void SetShakeThreshold(uint16_t thresh) {
+        if (settings.shakeWakeThreshold != thresh) {
+          settings.shakeWakeThreshold = thresh;
+          settingsChanged = true;
         }
-        
       }
 
-      int16_t GetShakeThreshold() const{
+      int16_t GetShakeThreshold() const {
         return settings.shakeWakeThreshold;
       }
 
@@ -175,14 +190,16 @@ namespace Pinetime {
         return settings.brightLevel;
       };
 
-      void SetStepsGoal( uint32_t goal ) { 
-        if ( goal != settings.stepsGoal ) {
+      void SetStepsGoal(uint32_t goal) {
+        if (goal != settings.stepsGoal) {
           settingsChanged = true;
         }
-        settings.stepsGoal = goal; 
+        settings.stepsGoal = goal;
       };
-      
-      uint32_t GetStepsGoal() const { return settings.stepsGoal; };
+
+      uint32_t GetStepsGoal() const {
+        return settings.stepsGoal;
+      };
 
     private:
       Pinetime::Controllers::FS& fs;

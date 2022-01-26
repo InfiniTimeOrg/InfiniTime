@@ -13,6 +13,7 @@ namespace Pinetime {
         ~Error() override;
 
         void ButtonEventHandler();
+
       private:
         lv_obj_t* btnOk;
       };

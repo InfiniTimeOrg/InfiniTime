@@ -57,12 +57,10 @@ std::unique_ptr<Screen> Settings::CreateScreen2() {
 
 std::unique_ptr<Screen> Settings::CreateScreen3() {
 
-  std::array<Screens::List::Applications, 4> applications {{
-    {Symbols::clock, "Chimes", Apps::SettingChimes},
-    {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
-    {Symbols::check, "Firmware", Apps::FirmwareValidation},
-    {Symbols::list, "About", Apps::SysInfo}
-  }};
+  std::array<Screens::List::Applications, 4> applications {{{Symbols::clock, "Chimes", Apps::SettingChimes},
+                                                            {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
+                                                            {Symbols::check, "Firmware", Apps::FirmwareValidation},
+                                                            {Symbols::list, "About", Apps::SysInfo}}};
 
   return std::make_unique<Screens::List>(2, 3, app, settingsController, applications);
 }

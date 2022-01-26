@@ -36,7 +36,7 @@ namespace Pinetime {
 
         void Refresh() override;
 
-        void UpdateSelected(lv_obj_t *object, lv_event_t event);
+        void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
       private:
         uint8_t displayedHour = -1;

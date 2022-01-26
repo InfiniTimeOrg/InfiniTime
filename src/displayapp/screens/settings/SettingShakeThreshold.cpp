@@ -64,9 +64,9 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
   vDecay = xTaskGetTickCount();
   calibrating = false;
   EnableForCal = false;
-  if(!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake)){
+  if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake)) {
     EnableForCal = true;
-    settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake,true);
+    settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, true);
   }
   refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
@@ -74,8 +74,8 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
 SettingShakeThreshold::~SettingShakeThreshold() {
   settingsController.SetShakeThreshold(lv_arc_get_value(positionArc));
 
-  if(EnableForCal){
-    settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake,false);
+  if (EnableForCal) {
+    settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, false);
     EnableForCal = false;
   }
   lv_task_del(refreshTask);

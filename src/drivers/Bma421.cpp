@@ -42,10 +42,16 @@ void Bma421::Init() {
   if (ret != BMA4_OK)
     return;
 
-  switch(bma.chip_id) {
-    case BMA423_CHIP_ID: deviceType = DeviceTypes::BMA421; break;
-    case BMA425_CHIP_ID: deviceType = DeviceTypes::BMA425; break;
-    default: deviceType = DeviceTypes::Unknown; break;
+  switch (bma.chip_id) {
+    case BMA423_CHIP_ID:
+      deviceType = DeviceTypes::BMA421;
+      break;
+    case BMA425_CHIP_ID:
+      deviceType = DeviceTypes::BMA425;
+      break;
+    default:
+      deviceType = DeviceTypes::Unknown;
+      break;
   }
 
   ret = bma423_write_config_file(&bma);
