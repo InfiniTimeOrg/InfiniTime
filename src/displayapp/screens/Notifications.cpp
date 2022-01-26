@@ -12,8 +12,13 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Pinetime::Controllers::MotorController& motorController,
+                             System::SystemTask& systemTask,
                              Modes mode)
-  : Screen(app), notificationManager {notificationManager}, alertNotificationService {alertNotificationService}, mode {mode} {
+  : Screen(app),
+    notificationManager {notificationManager},
+    alertNotificationService {alertNotificationService},
+    systemTask {systemTask},
+    mode {mode} {
   notificationManager.ClearNewNotificationFlag();
   auto notification = notificationManager.GetLastNotification();
   if (notification.valid) {
@@ -37,20 +42,22 @@ Notifications::Notifications(DisplayApp* app,
   }
 
   if (mode == Modes::Preview) {
+    systemTask.PushMessage(System::Messages::DisableSleeping);
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
       motorController.StartRinging();
     } else {
       motorController.RunForDuration(35);
-      timeoutLine = lv_line_create(lv_scr_act(), nullptr);
-
-      lv_obj_set_style_local_line_width(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-      lv_obj_set_style_local_line_color(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-      lv_obj_set_style_local_line_rounded(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
-
-      lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
-      timeoutTickCountStart = xTaskGetTickCount();
-      timeoutTickCountEnd = timeoutTickCountStart + (5 * 1024);
     }
+
+    timeoutLine = lv_line_create(lv_scr_act(), nullptr);
+
+    lv_obj_set_style_local_line_width(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
+    lv_obj_set_style_local_line_color(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_obj_set_style_local_line_rounded(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
+
+    lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
+    timeoutTickCountStart = xTaskGetTickCount();
+    interacted = false;
   }
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
@@ -60,23 +67,40 @@ Notifications::~Notifications() {
   lv_task_del(taskRefresh);
   // make sure we stop any vibrations before exiting
   Controllers::MotorController::StopRinging();
+  systemTask.PushMessage(System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }
 
 void Notifications::Refresh() {
   if (mode == Modes::Preview && timeoutLine != nullptr) {
-    auto tick = xTaskGetTickCount();
-    int32_t pos = 240 - ((tick - timeoutTickCountStart) / ((timeoutTickCountEnd - timeoutTickCountStart) / 240));
-    if (pos < 0)
+    TickType_t tick = xTaskGetTickCount();
+    int32_t pos = 240 - ((tick - timeoutTickCountStart) / (timeoutLength / 240));
+    if (pos <= 0) {
       running = false;
+    } else {
+      timeoutLinePoints[1].x = pos;
+      lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
+    }
+  }
+  running = currentItem->IsRunning() && running;
+}
 
-    timeoutLinePoints[1].x = pos;
-    lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
+void Notifications::OnPreviewInteraction() {
+  systemTask.PushMessage(System::Messages::EnableSleeping);
+  Controllers::MotorController::StopRinging();
+  if (timeoutLine != nullptr) {
+    lv_obj_del(timeoutLine);
+    timeoutLine = nullptr;
   }
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   if (mode != Modes::Normal) {
+    if (!interacted && event == TouchEvents::Tap) {
+      interacted = true;
+      OnPreviewInteraction();
+      return true;
+    }
     return false;
   }
 
