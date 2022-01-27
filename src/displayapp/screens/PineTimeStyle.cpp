@@ -59,6 +59,7 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
     notificatioManager {notificatioManager},
     settingsController {settingsController},
     motionController {motionController} {
+  settingsController.SetClockFace(2);
 
   // Create a 200px wide background rectangle
   timebar = lv_obj_create(lv_scr_act(), nullptr);
