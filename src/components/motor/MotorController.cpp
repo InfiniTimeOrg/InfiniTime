@@ -21,6 +21,9 @@ void MotorController::Init() {
 void MotorController::Ring(void* p_context) {
   auto* motorController = static_cast<MotorController*>(p_context);
   motorController->RunForDuration(50);
+  if (motorController->shouldStopRinging()) {
+    motorController->StopRinging();
+  }
 }
 
 void MotorController::RunForDuration(uint8_t motorDuration) {
@@ -29,6 +32,13 @@ void MotorController::RunForDuration(uint8_t motorDuration) {
 }
 
 void MotorController::StartRinging() {
+  timesToRing = -1;
+  Ring(this);
+  app_timer_start(longVibTimer, APP_TIMER_TICKS(1000), this);
+}
+
+void MotorController::StartRingingCoupleTimes(int8_t times) {
+  timesToRing = times;
   Ring(this);
   app_timer_start(longVibTimer, APP_TIMER_TICKS(1000), this);
 }
@@ -40,4 +50,17 @@ void MotorController::StopRinging() {
 
 void MotorController::StopMotor(void* p_context) {
   nrf_gpio_pin_set(PinMap::Motor);
+}
+
+bool MotorController::shouldStopRinging(){
+  // repeat forever if timesToRing is negative
+  if (timesToRing < 0) {
+    return false;
+  }
+  
+  if (timesToRing == 0) {
+    return true;
+  }
+  timesToRing--;
+  return false;
 }
