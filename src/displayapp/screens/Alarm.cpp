@@ -77,6 +77,7 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController)
   lv_obj_set_event_cb(btnEnable, btnEventHandler);
   lv_obj_set_size(btnEnable, 115, 50);
   lv_obj_align(btnEnable, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_set_style_local_border_width(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 3);
   txtEnable = lv_label_create(btnEnable, nullptr);
   SetEnableButtonState();
 
@@ -193,14 +194,17 @@ void Alarm::SetEnableButtonState() {
     case AlarmController::AlarmState::Set:
       lv_label_set_text(txtEnable, "ON");
       lv_obj_set_style_local_bg_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+      lv_obj_set_style_local_border_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
       break;
     case AlarmController::AlarmState::Not_Set:
       lv_label_set_text(txtEnable, "OFF");
-      lv_obj_set_style_local_bg_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+      lv_obj_set_style_local_bg_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x2f, 0x35, 0x40));
+      lv_obj_set_style_local_border_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
       break;
     case AlarmController::AlarmState::Alerting:
       lv_label_set_text(txtEnable, Symbols::stop);
       lv_obj_set_style_local_bg_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+      lv_obj_set_style_local_border_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   }
 }
 
