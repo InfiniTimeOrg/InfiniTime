@@ -8,16 +8,6 @@ namespace {
     auto* screen = static_cast<Metronome*>(obj->user_data);
     screen->OnEvent(obj, event);
   }
-
-  lv_obj_t* createLabel(const char* name, lv_obj_t* reference, lv_align_t align, lv_font_t* font, uint8_t x, uint8_t y) {
-    lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
-    lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font);
-    lv_obj_set_style_local_text_color(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-    lv_label_set_text(label, name);
-    lv_obj_align(label, reference, align, x, y);
-
-    return label;
-  }
 }
 
 Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorController, System::SystemTask& systemTask)
@@ -34,8 +24,16 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   lv_arc_set_adjustable(bpmArc, true);
   lv_obj_align(bpmArc, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
 
-  bpmValue = createLabel("120", bpmArc, LV_ALIGN_IN_TOP_MID, &jetbrains_mono_76, 0, 55);
-  createLabel("bpm", bpmValue, LV_ALIGN_OUT_BOTTOM_MID, &jetbrains_mono_bold_20, 0, 0);
+  bpmValue = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(bpmValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_label_set_text_static(bpmValue, "120");
+  lv_obj_set_style_local_text_color(bpmValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_SILVER);
+  lv_obj_align(bpmValue, bpmArc, LV_ALIGN_IN_TOP_MID, 0, 55);
+
+  lv_obj_t* labelBpm = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(labelBpm, "bpm");
+  lv_obj_set_style_local_text_color(labelBpm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_SILVER);
+  lv_obj_align(labelBpm, bpmValue, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
   bpmTap = lv_btn_create(lv_scr_act(), nullptr);
   bpmTap->user_data = this;

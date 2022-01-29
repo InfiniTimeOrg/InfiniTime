@@ -30,7 +30,7 @@ SettingSetDate::SettingSetDate(Pinetime::Applications::DisplayApp *app, Pinetime
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 
   lv_obj_t * icon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+  lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xff, 0xc0, 0x00));
   
   lv_label_set_text_static(icon, Symbols::clock);
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);

@@ -40,7 +40,7 @@ Alarm::Alarm(DisplayApp* app,
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_SILVER);
 
   alarmHours = alarmController.Hours();
   alarmMinutes = alarmController.Minutes();
@@ -290,7 +290,7 @@ void Alarm::ShowInfo() {
   lv_obj_set_width(btnMessage, 150);
   lv_obj_align(btnMessage, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   txtMessage = lv_label_create(btnMessage, nullptr);
-  lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
+  lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x00, 0x00, 0xb0));
 
   if (alarmController.State() == AlarmController::AlarmState::Set) {
     auto timeToAlarm = alarmController.SecondsToAlarm();
