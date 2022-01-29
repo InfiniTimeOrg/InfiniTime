@@ -39,7 +39,8 @@ namespace Pinetime {
                            Controllers::NotificationManager::Categories,
                            uint8_t notifNb,
                            Modes mode,
-                           Pinetime::Controllers::AlertNotificationService& alertNotificationService);
+                           Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                           Pinetime::Controllers::MotorController& motorController);
           ~NotificationItem();
           bool IsRunning() const {
             return running;
@@ -56,6 +57,7 @@ namespace Pinetime {
           lv_obj_t* label_reject;
           Modes mode;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
+          Pinetime::Controllers::MotorController& motorController;
           bool running = true;
         };
 
@@ -66,6 +68,7 @@ namespace Pinetime {
         };
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::AlertNotificationService& alertNotificationService;
+        Pinetime::Controllers::MotorController& motorController;
         System::SystemTask& systemTask;
         Modes mode = Modes::Normal;
         std::unique_ptr<NotificationItem> currentItem;
