@@ -19,13 +19,11 @@ extern "C" {
  *      DEFINES
  *********************/
 /*Colors*/
-#define LV_PINETIME_WHITE      lv_color_hex(0xffffff)
-#define LV_PINETIME_LIGHT      lv_color_hex(0xf3f8fe)
-#define LV_PINETIME_GRAY       lv_color_hex(0x8a8a8a)
-#define LV_PINETIME_LIGHT_GRAY lv_color_hex(0xc4c4c4)
-#define LV_PINETIME_BLUE       lv_color_hex(0x2f3243) // 006fb6
-#define LV_PINETIME_GREEN      lv_color_hex(0x4cb242)
-#define LV_PINETIME_RED        lv_color_hex(0xd51732)
+#define LV_PINETIME_LIGHT      LV_COLOR_MAKE(0xf3, 0xf8, 0xfe)
+#define LV_PINETIME_GRAY       LV_COLOR_MAKE(0x8a, 0x8a, 0x8a)
+#define LV_PINETIME_LIGHT_GRAY LV_COLOR_MAKE(0xc4, 0xc4, 0xc4)
+#define LV_PINETIME_BLUE       LV_COLOR_MAKE(0x2f, 0x35, 0x40)
+#define LV_PINETIME_GREEN      LV_COLOR_MAKE(0x4c, 0xb2, 0x42)
 
 /**********************
  *      TYPEDEFS
