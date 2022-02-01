@@ -9,20 +9,22 @@ namespace Pinetime {
     class SystemTask;
   }
   namespace Controllers {
-    
+
     class TimerController {
     public:
       TimerController() = default;
-      
+
       void Init();
-      
       void StartTimer(uint32_t duration);
-      
       void StopTimer();
-      
-      uint32_t GetTimeRemaining();
-      
-      bool IsRunning();
+      void StopAlerting();
+      int32_t GetSecondsRemaining();
+      bool IsOvertime() {
+        return overtime;
+      }
+      bool IsRunning() {
+        return timerRunning;
+      }
 
       void OnTimerEnd();
 
@@ -32,6 +34,7 @@ namespace Pinetime {
       System::SystemTask* systemTask = nullptr;
       TickType_t endTicks;
       bool timerRunning = false;
+      bool overtime = false;
     };
   }
 }
