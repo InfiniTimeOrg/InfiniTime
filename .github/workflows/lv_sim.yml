@@ -1,0 +1,74 @@
+# GitHub Actions Workflow to build Simulator for PineTime Smart Watch LVGL Interface
+
+# Name of this Workflow
+name: Build PineTime LVGL Simulator
+
+# When to run this Workflow...
+on:
+
+  # Run on all branches
+  push:
+    branches: []
+
+  # Also run this Workflow when a Pull Request is created or updated in the "master" and "develop" Branch
+  pull_request:
+    branches: [ master, develop ]
+
+# Steps to run for the Workflow
+jobs:
+  build:
+
+    # Run these steps on Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+
+      #########################################################################################
+      # Download and Install Dependencies
+
+      - name: Install cmake
+        uses: lukka/get-cmake@v3.18.3
+
+      - name: Install SDL2 development package
+        run:  |
+          sudo apt-get update
+          sudo apt-get -y install libsdl2-dev
+
+      #########################################################################################
+      # Checkout
+
+      - name: Checkout source files
+        uses: actions/checkout@v2
+        with:
+          submodules: recursive
+
+      #########################################################################################
+      # get InfiniSim repo
+
+      - name: Get InfiniSim repo
+        run:  |
+          git clone https://github.com/InfiniTimeOrg/InfiniSim.git --depth 1 --branch main
+          git -C InfiniSim submodule update --init lv_drivers
+
+      #########################################################################################
+      # CMake
+
+      - name: CMake
+        run:  |
+          cmake -G Ninja -S InfiniSim -B build_lv_sim -DInfiniTime_DIR="${PWD}"
+
+      #########################################################################################
+      # Build and Upload simulator
+
+      # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
+      # For Faster Builds: Add "make" option "-j"
+
+      - name: Build simulator executable
+        run:  |
+          cmake --build build_lv_sim
+
+      - name: Upload simulator executable
+        uses: actions/upload-artifact@v2
+        with:
+          name: infinisim
+          path: build_lv_sim/infinisim
