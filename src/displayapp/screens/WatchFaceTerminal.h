@@ -63,7 +63,7 @@ namespace Pinetime {
         lv_obj_t* batteryIcon;
         lv_obj_t* bleIcon;
         lv_obj_t* batteryPlug;
-        lv_obj_t* batteryPercent;
+        lv_obj_t* batteryValue;
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
         lv_obj_t* heartbeatBpm;
