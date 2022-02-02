@@ -35,13 +35,6 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
     motionController {motionController} {
   settingsController.SetClockFace(3);
 
-  displayedChar[0] = 0;
-  displayedChar[1] = 0;
-  displayedChar[2] = 0;
-  displayedChar[3] = 0;
-  displayedChar[4] = 0;
-  displayedChar[5] = 0;
-
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text(batteryIcon, Symbols::batteryFull);
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, 2);
