@@ -125,9 +125,11 @@ void WatchFaceTerminal::Refresh() {
 
   bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
-    char bleStr[24];
-    sprintf(bleStr, "[STAT]#387b54 %s#",bleController.IsConnected() ? "Connected" : "Disconnected");
-    lv_label_set_text(connectState, bleStr);
+    if (bleState.Get()) {
+      lv_label_set_text_static(connectState, "[STAT]#387b54 Connected#");
+    } else {
+      lv_label_set_text_static(connectState, "[STAT]#387b54 Disconnected#");
+    }
   }
 
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 5);
