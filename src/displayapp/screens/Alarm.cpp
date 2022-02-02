@@ -28,7 +28,7 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
 }
 
 Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController, Pinetime::Controllers::Settings& settingsController)
-  : Screen(app), running {true}, alarmController {alarmController}, settingsController {settingsController} {
+  : Screen(app), alarmController {alarmController}, settingsController {settingsController} {
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -79,13 +79,15 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController, Pin
   txtMinDown = lv_label_create(btnMinutesDown, nullptr);
   lv_label_set_text_static(txtMinDown, "-");
 
-  btnEnable = lv_btn_create(lv_scr_act(), nullptr);
-  btnEnable->user_data = this;
-  lv_obj_set_event_cb(btnEnable, btnEventHandler);
-  lv_obj_set_size(btnEnable, 115, 50);
-  lv_obj_align(btnEnable, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
-  txtEnable = lv_label_create(btnEnable, nullptr);
-  SetEnableButtonState();
+  btnStop = lv_btn_create(lv_scr_act(), nullptr);
+  btnStop->user_data = this;
+  lv_obj_set_event_cb(btnStop, btnEventHandler);
+  lv_obj_set_size(btnStop, 120, 50);
+  lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_obj_set_style_local_bg_color(btnStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  txtStop = lv_label_create(btnStop, nullptr);
+  lv_label_set_text_static(txtStop, Symbols::stop);
+  lv_obj_set_hidden(btnStop, true);
 
   btnRecur = lv_btn_create(lv_scr_act(), nullptr);
   btnRecur->user_data = this;
@@ -103,6 +105,13 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController, Pin
   txtInfo = lv_label_create(btnInfo, nullptr);
   lv_label_set_text_static(txtInfo, "i");
 
+  enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
+  enableSwitch->user_data = this;
+  lv_obj_set_event_cb(enableSwitch, btnEventHandler);
+  lv_obj_set_size(enableSwitch, 100, 50);
+  // Align to the center of 115px from edge
+  lv_obj_align(enableSwitch, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 7, 0);
+
   UpdateAlarmTime();
 }
 
@@ -113,15 +122,12 @@ Alarm::~Alarm() {
 void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   using Pinetime::Controllers::AlarmController;
   if (event == LV_EVENT_CLICKED) {
-    if (obj == btnEnable) {
+    if (obj == btnStop) {
       if (alarmController.State() == AlarmController::AlarmState::Alerting) {
         alarmController.StopAlerting();
-      } else if (alarmController.State() == AlarmController::AlarmState::Set) {
-        alarmController.DisableAlarm();
-      } else {
-        alarmController.ScheduleAlarm();
       }
-      SetEnableButtonState();
+      SetSwitchState(LV_ANIM_OFF);
+      StopAlerting();
       return;
     }
     if (obj == btnInfo) {
@@ -132,11 +138,19 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       HideInfo();
       return;
     }
+    if (obj == enableSwitch) {
+      if (lv_switch_get_state(enableSwitch)) {
+        alarmController.ScheduleAlarm();
+      } else {
+        alarmController.DisableAlarm();
+      }
+      return;
+    }
     // If any other button was pressed, disable the alarm
     // this is to make it clear that the alarm won't be set until it is turned back on
     if (alarmController.State() == AlarmController::AlarmState::Set) {
       alarmController.DisableAlarm();
-      SetEnableButtonState();
+      lv_switch_off(enableSwitch, LV_ANIM_ON);
     }
     if (obj == btnMinutesUp) {
       if (alarmMinutes >= 59) {
@@ -215,22 +229,27 @@ void Alarm::UpdateAlarmTime() {
 }
 
 void Alarm::SetAlerting() {
-  SetEnableButtonState();
+  lv_obj_set_hidden(enableSwitch, true);
+  lv_obj_set_hidden(btnRecur, true);
+  lv_obj_set_hidden(btnStop, false);
 }
 
-void Alarm::SetEnableButtonState() {
+void Alarm::StopAlerting() {
+  lv_obj_set_hidden(enableSwitch, false);
+  lv_obj_set_hidden(btnRecur, false);
+  lv_obj_set_hidden(btnStop, true);
+}
+
+void Alarm::SetSwitchState(lv_anim_enable_t anim) {
   switch (alarmController.State()) {
     case AlarmController::AlarmState::Set:
-      lv_label_set_text(txtEnable, "ON");
-      lv_obj_set_style_local_bg_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+      lv_switch_on(enableSwitch, anim);
       break;
     case AlarmController::AlarmState::Not_Set:
-      lv_label_set_text(txtEnable, "OFF");
-      lv_obj_set_style_local_bg_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+      lv_switch_off(enableSwitch, anim);
       break;
-    case AlarmController::AlarmState::Alerting:
-      lv_label_set_text(txtEnable, Symbols::stop);
-      lv_obj_set_style_local_bg_color(btnEnable, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+    default:
+      break;
   }
 }
 
