@@ -82,8 +82,8 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController, Pin
   btnStop = lv_btn_create(lv_scr_act(), nullptr);
   btnStop->user_data = this;
   lv_obj_set_event_cb(btnStop, btnEventHandler);
-  lv_obj_set_size(btnStop, 120, 50);
-  lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_obj_set_size(btnStop, 115, 50);
+  lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   lv_obj_set_style_local_bg_color(btnStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   txtStop = lv_label_create(btnStop, nullptr);
   lv_label_set_text_static(txtStop, Symbols::stop);
@@ -113,6 +113,10 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController, Pin
   lv_obj_align(enableSwitch, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 7, 0);
 
   UpdateAlarmTime();
+
+  if (alarmController.State() == Controllers::AlarmController::AlarmState::Alerting) {
+    SetAlerting();
+  }
 }
 
 Alarm::~Alarm() {
@@ -230,13 +234,11 @@ void Alarm::UpdateAlarmTime() {
 
 void Alarm::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
-  lv_obj_set_hidden(btnRecur, true);
   lv_obj_set_hidden(btnStop, false);
 }
 
 void Alarm::StopAlerting() {
   lv_obj_set_hidden(enableSwitch, false);
-  lv_obj_set_hidden(btnRecur, false);
   lv_obj_set_hidden(btnStop, true);
 }
 
