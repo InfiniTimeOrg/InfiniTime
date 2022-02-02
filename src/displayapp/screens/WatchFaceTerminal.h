@@ -47,6 +47,7 @@ namespace Pinetime {
         uint8_t currentDay = 0;
 
         DirtyValue<int> batteryPercentRemaining {};
+        DirtyValue<bool> powerPresent {};
         DirtyValue<bool> bleState {};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
         DirtyValue<bool> motionSensorOk {};
