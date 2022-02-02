@@ -123,7 +123,7 @@ void WatchFaceTerminal::Refresh() {
     lv_label_set_text(batteryPlug, BatteryIcon::GetPlugIcon(isCharging));
   }
 
-  /*char* bleValue;*/
+  bleState = bleController.IsConnected();
   if (bleState.IsUpdated()) {
     char bleStr[24];
     sprintf(bleStr, "[STAT]#387b54 %s#",bleController.IsConnected() ? "Connected" : "Disconnected");
