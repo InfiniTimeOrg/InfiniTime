@@ -178,10 +178,7 @@ void WatchFaceTerminal::Refresh() {
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-
-      char dateStr[38];
-      sprintf(dateStr, "[DATE]#007fff %04d.%02d.%02d#", short(year), char(month), char(day));
-      lv_label_set_text(label_date, dateStr);
+      lv_label_set_text_fmt(label_date, "[DATE]#007fff %04d.%02d.%02d#", short(year), char(month), char(day));
 
       currentYear = year;
       currentMonth = month;
