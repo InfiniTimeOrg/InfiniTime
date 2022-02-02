@@ -199,9 +199,7 @@ void WatchFaceTerminal::Refresh() {
 
   stepCount = motionController.NbSteps();
   motionSensorOk = motionController.IsSensorOk();
-  char stepString[34];
   if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
-    sprintf(stepString, "[STEP]#ee3377 %lu steps#", stepCount.Get());
-    lv_label_set_text(stepValue, stepString);
+    lv_label_set_text_fmt(stepValue, "[STEP]#ee3377 %lu steps#", stepCount.Get());
   }
 }
