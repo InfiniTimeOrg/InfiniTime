@@ -109,7 +109,12 @@ WatchFaceTerminal::~WatchFaceTerminal() {
   lv_obj_clean(lv_scr_act());
 }
 
-  void WatchFaceTerminal::Refresh() {
+void WatchFaceTerminal::Refresh() {
+  powerPresent = batteryController.IsPowerPresent();
+  if (powerPresent.IsUpdated()) {
+    lv_label_set_text_static(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
+  }
+
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
