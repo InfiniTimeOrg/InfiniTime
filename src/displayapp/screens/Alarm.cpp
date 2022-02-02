@@ -116,6 +116,8 @@ Alarm::Alarm(DisplayApp* app, Controllers::AlarmController& alarmController, Pin
 
   if (alarmController.State() == Controllers::AlarmController::AlarmState::Alerting) {
     SetAlerting();
+  } else {
+    SetSwitchState(LV_ANIM_OFF);
   }
 }
 
