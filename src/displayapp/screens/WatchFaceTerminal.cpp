@@ -43,9 +43,9 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
   lv_label_set_text(batteryPlug, Symbols::plug);
   lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
-  batteryPercent = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_recolor(batteryPercent, true);
-  lv_obj_align(batteryPercent, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
+  batteryValue = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_recolor(batteryValue, true);
+  lv_obj_align(batteryValue, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
 
   connectState = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(connectState, true);
