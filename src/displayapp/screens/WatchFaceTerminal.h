@@ -37,7 +37,9 @@ namespace Pinetime {
         void OnObjectEvent(lv_obj_t* pObj, lv_event_t i);
 
       private:
-        char displayedChar[8];
+        uint8_t displayedHour = -1;
+        uint8_t displayedMinute = -1;
+        uint8_t displayedSecond = -1;
 
         uint16_t currentYear = 1970;
         Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
