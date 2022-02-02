@@ -159,9 +159,9 @@ void WatchFaceTerminal::Refresh() {
     auto day = static_cast<unsigned>(yearMonthDay.day());
     auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
 
-    int hour = time.hours().count();
-    auto minute = time.minutes().count();
-    auto second = time.seconds().count();
+    uint8_t hour = time.hours().count();
+    uint8_t minute = time.minutes().count();
+    uint8_t second = time.seconds().count();
 
     char minutesChar[6];
     sprintf(minutesChar, "%02d", static_cast<int>(minute));
