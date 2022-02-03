@@ -208,7 +208,8 @@ static void basic_init(void) {
 
   style_init_reset(&style_sw_knob);
   lv_style_set_bg_opa(&style_sw_knob, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_sw_knob, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_style_set_bg_color(&style_sw_knob, LV_STATE_DEFAULT, LV_COLOR_SILVER);
+  lv_style_set_bg_color(&style_sw_knob, LV_STATE_CHECKED, LV_COLOR_WHITE);
   lv_style_set_radius(&style_sw_knob, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_style_set_pad_top(&style_sw_knob, LV_STATE_DEFAULT, -4);
   lv_style_set_pad_bottom(&style_sw_knob, LV_STATE_DEFAULT, -4);
