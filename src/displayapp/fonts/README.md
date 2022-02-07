@@ -31,8 +31,7 @@ Add new symbols:
 static constexpr const char* newSymbol = "\xEF\x86\x85";
 ```
 
-#### Fix the zero symbol
-If you don't wish the inner dot of the 0 (zero) symbol to stick to the boundary, edit `src/displayapp/fonts/jetbrains_mono_bold_20.c` and replace:
+Then fix an error that happens during the font conversion (the inner dot of the 'zero' symbol sticks to the boundary): edit `src/displayapp/fonts/jetbrains_mono_bold_20.c` and replace:
 
     /* U+0030 "0" */
     0x3f, 0x1f, 0xef, 0x3f, 0x87, 0xe1, 0xf8, 0x7f,
