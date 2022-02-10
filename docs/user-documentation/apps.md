@@ -102,3 +102,7 @@ The right button is labeled either "ONCE", "DAILY" or "MON-FRI". Tapping it cycl
 
 At the top, in the middle is a button labeled "i".
 Tapping it informs you, how many time is left before the next alarm.
+
+When the alarm rings, the watch vibrates repeatedly and shows the alarm app.
+The bottom left buttun is then red and labeled with a stop sign.
+Press it, to end the ringing.
