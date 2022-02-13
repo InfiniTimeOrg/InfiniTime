@@ -25,7 +25,6 @@ namespace Pinetime::Applications::Screens {
 
   private:
     bool running;
-    bool repeating = false;
     uint8_t secondsToSet = 0;
     uint8_t minutesToSet = 0;
     Controllers::TimerController& timerController;

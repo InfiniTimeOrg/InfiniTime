@@ -81,7 +81,7 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   lv_obj_set_height(btnRepeat, 40);
   txtRepeat = lv_label_create(btnRepeat, nullptr);
   lv_label_set_text(txtRepeat, "Repeat");
-  // Always starts off not repeating so color is already what it should be.
+  lv_btn_set_checkable(btnRepeat, true);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
@@ -122,13 +122,6 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         lv_obj_del(btnMinutesUp);
         btnMinutesUp = nullptr;
       }
-    } else if (obj == btnRepeat) {
-        repeating = !repeating;
-        if (repeating) {
-          lv_obj_set_style_local_bg_color(btnRepeat, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, LV_COLOR_GREEN);
-        } else {
-          lv_theme_apply(btnRepeat, LV_THEME_BTN);
-        }
     } else {
       if (!timerController.IsRunning()) {
         if (obj == btnMinutesUp) {
@@ -169,7 +162,7 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 void Timer::setDone() {
-  if (repeating) {
+  if (lv_obj_get_state(btnRepeat, LV_BTN_PART_MAIN) & LV_STATE_CHECKED) {
     timerController.StartTimer((secondsToSet + minutesToSet * 60) * 1000);
   } else {
     lv_label_set_text(time, "00:00");
