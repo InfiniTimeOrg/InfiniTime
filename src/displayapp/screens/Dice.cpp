@@ -110,11 +110,17 @@ void Dice::createScreen() {
 void Dice::rollDice() {
   uint8_t roll = 0;
   uint16_t result = 0;
+  uint32_t rand = 0;
+  uint32_t threshold = -(uint32_t)diceSizes[diceSizeIndex] % (uint32_t)diceSizes[diceSizeIndex];
 
   lv_label_set_text(resultIndRollsLabel, "");
 
   for (int i = 0; i < numDice; i++) {
-    roll = ble_ll_rand() % diceSizes[diceSizeIndex] + 1;
+    /* Make sure we get a random number greater than the threshold to avoid modulo bias */
+    do {
+      rand = ble_ll_rand();
+    } while (rand < threshold);
+    roll = (rand % diceSizes[diceSizeIndex]) + 1;
     result += roll;
 
     if (numDice > 1) {
@@ -132,7 +138,7 @@ void Dice::rollDice() {
     }
   }
 
-  lv_label_set_text_fmt(resultTotalLabel, "%d", result);
+  lv_label_set_text_fmt(resultTotalLabel, "%u", result);
 }
 
 Dice::Dice(DisplayApp* app,
