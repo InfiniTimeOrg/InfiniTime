@@ -1,7 +1,7 @@
 # How to use InfiniTime apps
 
 ## Stopwatch
-The stopwatch measures passed time in minutes, seconds and hundrets of seconds.
+The stopwatch measures passed time in minutes, seconds and hundredths of seconds.
 
 When the stop watch is not running, the left button shows a stop symbol and resets the current time to zero. It is not clickable when the time is already zero.
 The right button shows a start symbol and starts the stop watch.
