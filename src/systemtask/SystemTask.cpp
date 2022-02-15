@@ -4,6 +4,7 @@
 #include <libraries/log/nrf_log.h>
 
 #include "BootloaderVersion.h"
+#include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
