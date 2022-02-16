@@ -93,7 +93,6 @@ namespace Pinetime {
       Pinetime::System::SystemTask& systemTask;
       Pinetime::Controllers::Ble& bleController;
       DateTime& dateTimeController;
-      Pinetime::Controllers::NotificationManager& notificationManager;
       Pinetime::Drivers::SpiNorFlash& spiNorFlash;
       Pinetime::Controllers::FS& fs;
       Pinetime::Controllers::DfuService dfuService;
