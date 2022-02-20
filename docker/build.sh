@@ -43,8 +43,10 @@ GetGcc() {
 }
 
 GetMcuBoot() {
-  git clone https://github.com/mcu-tools/mcuboot.git "$TOOLS_DIR/mcuboot"
-  pip3 install -r "$TOOLS_DIR/mcuboot/scripts/requirements.txt"
+  mkdir -p "$TOOLS_DIR/mcuboot"
+  wget -q https://raw.githubusercontent.com/mcu-tools/mcuboot/71b8f981df4f4e65df1757c6ba14ce8d2b7e7696/scripts/requirements.txt \
+    -O "$TOOLS_DIR/mcuboot/requirements.txt"
+  pip3 install -r "$TOOLS_DIR/mcuboot/requirements.txt"
 }
 
 GetNrfSdk() {
