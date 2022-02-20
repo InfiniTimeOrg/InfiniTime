@@ -49,6 +49,7 @@
 #include "displayapp/screens/settings/SettingSetTime.h"
 #include "displayapp/screens/settings/SettingChimes.h"
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
+#include "displayapp/screens/settings/SettingAirplaneMode.h"
 
 #include "libs/lv_conf.h"
 
@@ -292,6 +293,9 @@ void DisplayApp::Refresh() {
       case Messages::BleFirmwareUpdateStarted:
         LoadApp(Apps::FirmwareUpdate, DisplayApp::FullRefreshDirections::Down);
         break;
+      case Messages::AirplaneModeToggle:
+        PushMessageToSystemTask(System::Messages::AirplaneModeToggle);
+        break;
       case Messages::UpdateDateTime:
         // Added to remove warning
         // What should happen here?
@@ -428,6 +432,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::SettingShakeThreshold:
       currentScreen = std::make_unique<Screens::SettingShakeThreshold>(this, settingsController, motionController, *systemTask);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingAirplaneMode:
+      currentScreen = std::make_unique<Screens::SettingAirplaneMode>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::BatteryInfo:

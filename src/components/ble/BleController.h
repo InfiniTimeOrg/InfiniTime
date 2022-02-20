@@ -10,13 +10,14 @@ namespace Pinetime {
       using BleAddress = std::array<uint8_t, 6>;
       enum class FirmwareUpdateStates { Idle, Running, Validated, Error };
       enum class AddressTypes { Public, Random, RPA_Public, RPA_Random };
+      enum class ConnectStates { Disconnected, Connected, Airplane };
 
       Ble() = default;
       bool IsConnected() const {
-        return isConnected;
+        return (connectionState == ConnectStates::Connected);
       }
-      void Connect();
-      void Disconnect();
+      void SetConnectState(ConnectStates newState);
+      ConnectStates GetConnectState() const;
 
       void StartFirmwareUpdate();
       void StopFirmwareUpdate();
@@ -56,7 +57,7 @@ namespace Pinetime {
       }
 
     private:
-      bool isConnected = false;
+      ConnectStates connectionState = ConnectStates::Disconnected;
       bool isFirmwareUpdating = false;
       uint32_t firmwareUpdateTotalBytes = 0;
       uint32_t firmwareUpdateCurrentBytes = 0;
