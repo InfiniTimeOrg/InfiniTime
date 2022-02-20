@@ -18,7 +18,23 @@ namespace Pinetime {
         Shake = 3,
       };
       enum class Colors : uint8_t {
-        White, Silver, Gray, Black, Red, Maroon, Yellow, Olive, Lime, Green, Cyan, Teal, Blue, Navy, Magenta, Purple, Orange
+        White,
+        Silver,
+        Gray,
+        Black,
+        Red,
+        Maroon,
+        Yellow,
+        Olive,
+        Lime,
+        Green,
+        Cyan,
+        Teal,
+        Blue,
+        Navy,
+        Magenta,
+        Purple,
+        Orange
       };
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
@@ -170,18 +186,29 @@ namespace Pinetime {
         }
         settings.brightLevel = level;
       };
+
       Controllers::BrightnessController::Levels GetBrightness() const {
         return settings.brightLevel;
       };
 
-      void SetStepsGoal( uint32_t goal ) { 
-        if ( goal != settings.stepsGoal ) {
+      void SetStepsGoal(uint32_t goal) {
+        if (goal != settings.stepsGoal) {
           settingsChanged = true;
         }
         settings.stepsGoal = goal; 
       };
       
-      uint32_t GetStepsGoal() const { return settings.stepsGoal; };
+      uint32_t GetStepsGoal() const {
+        return settings.stepsGoal;
+      };
+
+     void SetBleRadioEnabled(bool enabled) {
+       bleRadioEnabled = enabled;
+     };
+
+     bool GetBleRadioEnabled() const {
+       return bleRadioEnabled;
+     };
 
     private:
       Pinetime::Controllers::FS& fs;
@@ -210,6 +237,10 @@ namespace Pinetime {
 
       uint8_t appMenu = 0;
       uint8_t settingsMenu = 0;
+      /* airplaneMode is intentionally not saved with the other watch settings and initialized
+       * to off (false) on every boot because we always want ble to be enabled on startup
+       */
+      bool bleRadioEnabled = true;
 
       void LoadSettingsFromFile();
       void SaveSettingsToFile();

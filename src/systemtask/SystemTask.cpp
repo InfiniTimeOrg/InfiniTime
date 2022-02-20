@@ -254,7 +254,7 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
 
-          if (!bleController.IsConnected()) {
+          if (bleController.IsRadioEnabled() && !bleController.IsConnected()) {
             nimbleController.RestartFastAdv();
           }
 
@@ -440,7 +440,13 @@ void SystemTask::Work() {
           motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
           break;
-
+        case Messages::BleRadioEnableToggle:
+          if(settingsController.GetBleRadioEnabled()) {
+            nimbleController.EnableRadio();
+          } else {
+            nimbleController.DisableRadio();
+          }
+          break;
         default:
           break;
       }
