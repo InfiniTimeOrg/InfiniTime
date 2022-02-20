@@ -293,8 +293,8 @@ void DisplayApp::Refresh() {
       case Messages::BleFirmwareUpdateStarted:
         LoadApp(Apps::FirmwareUpdate, DisplayApp::FullRefreshDirections::Down);
         break;
-      case Messages::AirplaneModeToggle:
-        PushMessageToSystemTask(System::Messages::AirplaneModeToggle);
+      case Messages::BleRadioEnableToggle:
+        PushMessageToSystemTask(System::Messages::BleRadioEnableToggle);
         break;
       case Messages::UpdateDateTime:
         // Added to remove warning

@@ -202,12 +202,12 @@ namespace Pinetime {
         return settings.stepsGoal;
       };
 
-     void SetAirplaneMode(bool mode) {
-       airplaneMode = mode;
+     void SetBleRadioEnabled(bool enabled) {
+       bleRadioEnabled = enabled;
      };
 
-     bool GetAirplaneMode() const {
-       return airplaneMode;
+     bool GetBleRadioEnabled() const {
+       return bleRadioEnabled;
      };
 
     private:
@@ -240,7 +240,7 @@ namespace Pinetime {
       /* airplaneMode is intentionally not saved with the other watch settings and initialized
        * to off (false) on every boot because we always want ble to be enabled on startup
        */
-      bool airplaneMode = false;
+      bool bleRadioEnabled = true;
 
       void LoadSettingsFromFile();
       void SaveSettingsToFile();

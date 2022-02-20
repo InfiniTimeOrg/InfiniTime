@@ -2,12 +2,28 @@
 
 using namespace Pinetime::Controllers;
 
-void Ble::SetConnectState(Ble::ConnectStates newState) {
-  connectionState = newState;
+bool Ble::IsConnected() const {
+  return isConnected;
 }
 
-Ble::ConnectStates Ble::GetConnectState() const {
-  return connectionState;
+void Ble::Connect() {
+  isConnected = true;
+}
+
+void Ble::Disconnect() {
+  isConnected = false;
+}
+
+bool Ble::IsRadioEnabled() const {
+  return isRadioEnabled;
+}
+
+void Ble::EnableRadio() {
+  isRadioEnabled = true;
+}
+
+void Ble::DisableRadio() {
+  isRadioEnabled = false;
 }
 
 void Ble::StartFirmwareUpdate() {

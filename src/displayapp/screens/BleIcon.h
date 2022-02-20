@@ -7,7 +7,7 @@ namespace Pinetime {
     namespace Screens {
       class BleIcon {
       public:
-        static const char* GetIcon(Pinetime::Controllers::Ble::ConnectStates state);
+        static const char* GetIcon(bool isRadioEnabled, bool isConnected);
       };
     }
   }

@@ -22,7 +22,7 @@ namespace Pinetime {
         ShowPairingKey,
         AlarmTriggered,
         Clock,
-        AirplaneModeToggle
+        BleRadioEnableToggle
       };
     }
   }

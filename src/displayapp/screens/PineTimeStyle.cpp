@@ -42,6 +42,13 @@ namespace {
     auto* screen = static_cast<PineTimeStyle*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
+
+  bool IsBleIconVisible(bool isRadioEnabled, bool isConnected) {
+    if(!isRadioEnabled) {
+      return true;
+    }
+    return isConnected;
+  }
 }
 
 PineTimeStyle::PineTimeStyle(DisplayApp* app,
@@ -336,11 +343,13 @@ void PineTimeStyle::SetBatteryIcon() {
   lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
 }
 
+
 void PineTimeStyle::AlignIcons() {
-  if (notificationState.Get() && bleState.Get() != Pinetime::Controllers::Ble::ConnectStates::Disconnected) {
+  bool isBleIconVisible = IsBleIconVisible(bleRadioEnabled.Get(), bleState.Get());
+  if (notificationState.Get() && isBleIconVisible) {
     lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 8, 25);
     lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, -8, 25);
-  } else if (notificationState.Get() && bleState.Get() == Pinetime::Controllers::Ble::ConnectStates::Disconnected) {
+  } else if (notificationState.Get() && !isBleIconVisible) {
     lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
   } else {
     lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
@@ -363,9 +372,10 @@ void PineTimeStyle::Refresh() {
     }
   }
 
-  bleState = bleController.GetConnectState();
-  if (bleState.IsUpdated()) {
-    lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
+  bleState = bleController.IsConnected();
+  bleRadioEnabled = bleController.IsRadioEnabled();
+  if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
+    lv_label_set_text(bleIcon, BleIcon::GetIcon(bleRadioEnabled.Get(), bleState.Get()));
     AlignIcons();
   }
 

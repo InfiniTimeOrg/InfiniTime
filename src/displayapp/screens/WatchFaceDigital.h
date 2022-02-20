@@ -46,7 +46,8 @@ namespace Pinetime {
 
         DirtyValue<uint8_t> batteryPercentRemaining {};
         DirtyValue<bool> powerPresent {};
-        DirtyValue<Controllers::Ble::ConnectStates> bleState {};
+        DirtyValue<bool> bleState {};
+        DirtyValue<bool> bleRadioEnabled {};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
         DirtyValue<bool> motionSensorOk {};
         DirtyValue<uint32_t> stepCount {};

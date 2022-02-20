@@ -53,18 +53,6 @@ namespace Pinetime {
       void Init();
       void StartAdvertising();
       int OnGAPEvent(ble_gap_event* event);
-
-      /* these are not implemented yet
-      int OnDiscoveryEvent(uint16_t i, const ble_gatt_error* pError, const ble_gatt_svc* pSvc);
-      int OnCTSCharacteristicDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_chr* characteristic);
-      int OnANSCharacteristicDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_chr* characteristic);
-      int OnCurrentTimeReadResult(uint16_t connectionHandle, const ble_gatt_error* error, ble_gatt_attr* attribute);
-      int OnANSDescriptorDiscoveryEventCallback(uint16_t connectionHandle,
-                                                const ble_gatt_error* error,
-                                                uint16_t characteristicValueHandle,
-                                                const ble_gatt_dsc* descriptor);
-      */
-
       void StartDiscovery();
 
       Pinetime::Controllers::MusicService& music() {
@@ -87,7 +75,8 @@ namespace Pinetime {
         fastAdvCount = 0;
       };
 
-      void SwitchAirplaneMode(bool enabled);
+      void EnableRadio();
+      void DisableRadio();
 
     private:
       void PersistBond(struct ble_gap_conn_desc& desc);

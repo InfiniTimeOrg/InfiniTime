@@ -114,11 +114,16 @@ void WatchFaceTerminal::Refresh() {
   }
 
   bleState = bleController.IsConnected();
-  if (bleState.IsUpdated()) {
-    if (bleState.Get()) {
-      lv_label_set_text_static(connectState, "[STAT]#387b54 Connected#");
+  bleRadioEnabled = bleController.IsRadioEnabled();
+  if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
+    if(!bleRadioEnabled.Get()) {
+      lv_label_set_text_static(connectState, "[STAT]#387b54 Disabled#");
     } else {
-      lv_label_set_text_static(connectState, "[STAT]#387b54 Disconnected#");
+      if (bleState.Get()) {
+        lv_label_set_text_static(connectState, "[STAT]#387b54 Connected#");
+      } else {
+        lv_label_set_text_static(connectState, "[STAT]#387b54 Disconnected#");
+      }
     }
   }
 

@@ -9,13 +9,16 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static void event_handler(lv_obj_t* obj, lv_event_t event) {
-    SettingAirplaneMode* screen = static_cast<SettingAirplaneMode*>(obj->user_data);
-    screen->UpdateSelected(obj, event);
+  static void OnAirplaneModeEnabledEvent(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<SettingAirplaneMode*>(obj->user_data);
+    screen->OnAirplaneModeEnabled(obj, event);
+  }
+
+  static void OnAirplaneModeDisabledEvent(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<SettingAirplaneMode*>(obj->user_data);
+    screen->OnAirplaneModeDisabled(obj, event);
   }
 }
-
-constexpr std::array<const char*, 2> SettingAirplaneMode::options;
 
 SettingAirplaneMode::SettingAirplaneMode(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
@@ -43,47 +46,48 @@ SettingAirplaneMode::SettingAirplaneMode(Pinetime::Applications::DisplayApp* app
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
-  for (unsigned int i = 0; i < options.size(); i++) {
-    cbOption[i] = lv_checkbox_create(container1, nullptr);
-    lv_checkbox_set_text(cbOption[i], options[i]);
-    cbOption[i]->user_data = this;
-    lv_obj_set_event_cb(cbOption[i], event_handler);
-    SetRadioButtonStyle(cbOption[i]);
-  }
+  cbEnabled = lv_checkbox_create(container1, nullptr);
+  lv_checkbox_set_text(cbEnabled, " Enable");
+  cbEnabled->user_data = this;
+  lv_obj_set_event_cb(cbEnabled, OnAirplaneModeEnabledEvent);
+  SetRadioButtonStyle(cbEnabled);
 
-  if (settingsController.GetAirplaneMode() == false) {
-    lv_checkbox_set_checked(cbOption[0], true);
-    priorMode = false;
-  } else {
-    lv_checkbox_set_checked(cbOption[1], true);
+  cbDisabled = lv_checkbox_create(container1, nullptr);
+  lv_checkbox_set_text(cbDisabled, " Disable");
+  cbDisabled->user_data = this;
+  lv_obj_set_event_cb(cbDisabled, OnAirplaneModeDisabledEvent);
+  SetRadioButtonStyle(cbDisabled);
+
+  if (settingsController.GetBleRadioEnabled()) {
+    lv_checkbox_set_checked(cbDisabled, true);
     priorMode = true;
+  } else {
+    lv_checkbox_set_checked(cbEnabled, true);
+    priorMode = false;
   }
 }
 
 SettingAirplaneMode::~SettingAirplaneMode() {
   lv_obj_clean(lv_scr_act());
   // Do not call SaveSettings - see src/components/settings/Settings.h
-  if (priorMode != settingsController.GetAirplaneMode()) {
-    app->PushMessage(Pinetime::Applications::Display::Messages::AirplaneModeToggle);
+  if (priorMode != settingsController.GetBleRadioEnabled()) {
+    app->PushMessage(Pinetime::Applications::Display::Messages::BleRadioEnableToggle);
   }
 }
 
-void SettingAirplaneMode::UpdateSelected(lv_obj_t* object, lv_event_t event) {
+void SettingAirplaneMode::OnAirplaneModeEnabled(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
-    for (unsigned int i = 0; i < options.size(); i++) {
-      if (object == cbOption[i]) {
-        lv_checkbox_set_checked(cbOption[i], true);
-
-        if (i == 0) {
-          settingsController.SetAirplaneMode(false);
-        };
-        if (i == 1) {
-          settingsController.SetAirplaneMode(true);
-        };
-
-      } else {
-        lv_checkbox_set_checked(cbOption[i], false);
-      }
-    }
+    lv_checkbox_set_checked(cbEnabled, true);
+    lv_checkbox_set_checked(cbDisabled, false);
+    settingsController.SetBleRadioEnabled(false);
   }
 }
+
+void SettingAirplaneMode::OnAirplaneModeDisabled(lv_obj_t* object, lv_event_t event) {
+  if (event == LV_EVENT_VALUE_CHANGED) {
+    lv_checkbox_set_checked(cbEnabled, false);
+    lv_checkbox_set_checked(cbDisabled, true);
+    settingsController.SetBleRadioEnabled(true);
+  }
+}
+

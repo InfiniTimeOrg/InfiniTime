@@ -119,9 +119,10 @@ void WatchFaceDigital::Refresh() {
     lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
   }
 
-  bleState = bleController.GetConnectState();
-  if (bleState.IsUpdated()) {
-    lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
+  bleState = bleController.IsConnected();
+  bleRadioEnabled = bleController.IsRadioEnabled();
+  if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
+    lv_label_set_text(bleIcon, BleIcon::GetIcon(bleRadioEnabled.Get(), bleState.Get()));
   }
   lv_obj_realign(batteryIcon);
   lv_obj_realign(batteryPlug);

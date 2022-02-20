@@ -17,12 +17,13 @@ namespace Pinetime {
         SettingAirplaneMode(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingAirplaneMode() override;
 
-        void UpdateSelected(lv_obj_t* object, lv_event_t event);
+        void OnAirplaneModeEnabled(lv_obj_t* object, lv_event_t event);
+        void OnAirplaneModeDisabled(lv_obj_t* object, lv_event_t event);
 
       private:
-        static constexpr std::array<const char*, 2> options = {" No", " Yes"};
         Controllers::Settings& settingsController;
-        lv_obj_t* cbOption[options.size()];
+        lv_obj_t* cbEnabled;
+        lv_obj_t* cbDisabled;
         bool priorMode;
       };
     }

@@ -184,7 +184,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
     case BLE_GAP_EVENT_ADV_COMPLETE:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_ADV_COMPLETE");
       NRF_LOG_INFO("reason=%d; status=%0X", event->adv_complete.reason, event->connect.status);
-      if (bleController.GetConnectState() == Ble::ConnectStates::Disconnected) {
+      if (bleController.IsRadioEnabled() && !bleController.IsConnected()) {
         StartAdvertising();
       }
       break;
@@ -199,12 +199,12 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
         currentTimeClient.Reset();
         alertNotificationClient.Reset();
         connectionHandle = BLE_HS_CONN_HANDLE_NONE;
-        bleController.SetConnectState(Ble::ConnectStates::Disconnected);
+        bleController.Disconnect();
         fastAdvCount = 0;
         StartAdvertising();
       } else {
         connectionHandle = event->connect.conn_handle;
-        bleController.SetConnectState(Ble::ConnectStates::Connected);
+        bleController.Connect();
         systemTask.PushMessage(Pinetime::System::Messages::BleConnected);
         // Service discovery is deferred via systemtask
       }
@@ -222,8 +222,8 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       currentTimeClient.Reset();
       alertNotificationClient.Reset();
       connectionHandle = BLE_HS_CONN_HANDLE_NONE;
-      if (bleController.GetConnectState() == Ble::ConnectStates::Connected) {
-        bleController.SetConnectState(Ble::ConnectStates::Disconnected);
+      if(bleController.IsConnected()) {
+        bleController.Disconnect();
         fastAdvCount = 0;
         StartAdvertising();
       }
@@ -401,19 +401,20 @@ void NimbleController::NotifyBatteryLevel(uint8_t level) {
   }
 }
 
-void NimbleController::SwitchAirplaneMode(bool enabled) {
-  if (enabled) {
-    if (bleController.IsConnected()) {
-      bleController.SetConnectState(Ble::ConnectStates::Airplane);
-      ble_gap_terminate(connectionHandle, BLE_ERR_REM_USER_CONN_TERM);
-    } else {
-      bleController.SetConnectState(Ble::ConnectStates::Airplane);
-      ble_gap_adv_stop();
-    }
+void NimbleController::EnableRadio() {
+  bleController.EnableRadio();
+  bleController.Disconnect();
+  fastAdvCount = 0;
+  StartAdvertising();
+}
+
+void NimbleController::DisableRadio() {
+  bleController.DisableRadio();
+  if (bleController.IsConnected()) {
+    ble_gap_terminate(connectionHandle, BLE_ERR_REM_USER_CONN_TERM);
+    bleController.Disconnect();
   } else {
-    bleController.SetConnectState(Ble::ConnectStates::Disconnected);
-    fastAdvCount = 0;
-    StartAdvertising();
+    ble_gap_adv_stop();
   }
 }
 
