@@ -64,7 +64,7 @@ std::unique_ptr<Screen> Settings::CreateScreen3() {
     {Symbols::clock, "Chimes", Apps::SettingChimes},
     {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
     {Symbols::check, "Firmware", Apps::FirmwareValidation},
-    {Symbols::list, "Airplane mode", Apps::SettingAirplaneMode}
+    {Symbols::airplane, "Airplane mode", Apps::SettingAirplaneMode}
   }};
 
   return std::make_unique<Screens::List>(2, 4, app, settingsController, applications);
