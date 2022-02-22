@@ -16,9 +16,9 @@ Workout::Workout(DisplayApp* app,
                  Controllers::HeartRateController& hrController,
                  Pinetime::System::SystemTask& systemTask)
   : Screen(app),
-    fsController {fsController}, 
+    fsController {fsController},
     dateTimeController {dateTimeController},
-    timerController {timerController}, 
+    timerController {timerController},
     motorController {motorController},
     hrController {hrController},
     systemTask {systemTask} {
@@ -31,7 +31,7 @@ Workout::Workout(DisplayApp* app,
 
   InitButtonStyleMode(buttonStyleMode);
   InitButton(&btnMain, &txtMain, "", LV_ALIGN_IN_BOTTOM_LEFT, 0, -20);
-  
+
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 
   ReadSettings();
@@ -117,7 +117,7 @@ void Workout::OnScreenStateUpdated() {
         mainButtonText = "Start";
       }
       break;
-    
+
     case Mode::Timer2:
       if (settings.timer2Running) {
         mainButtonText = "Pause";
@@ -138,7 +138,7 @@ void Workout::OnScreenStateUpdated() {
     case Mode::Timer2Editing:
       mainButtonText = "Set";
       break;
-  
+
     default:
       mainButtonText = "";
       break;
@@ -155,7 +155,7 @@ void Workout::OnWorkoutStateUpdated() {
     if (txtWorkoutTime == nullptr) {
       txtWorkoutTime = lv_label_create(lv_scr_act(), nullptr);
       lv_obj_align(txtWorkoutTime, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -15, 0);
-    } 
+    }
   } else {
     hrController.Stop();
     systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
@@ -167,12 +167,7 @@ void Workout::OnWorkoutStateUpdated() {
   }
 }
 
-void Workout::InitButton(lv_obj_t** button, 
-                         lv_obj_t** label, 
-                         const char* text, 
-                         lv_align_t align, 
-                         lv_coord_t x_ofs, 
-                         lv_coord_t y_ofs) {
+void Workout::InitButton(lv_obj_t** button, lv_obj_t** label, const char* text, lv_align_t align, lv_coord_t x_ofs, lv_coord_t y_ofs) {
   *button = lv_btn_create(lv_scr_act(), nullptr);
   (*button)->user_data = this;
 
@@ -317,7 +312,7 @@ void Workout::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           restMinutes = 0;
 
           break;
-      
+
         default:
           break;
       }
@@ -453,9 +448,11 @@ void Workout::RemoveHrText() {
 }
 
 void Workout::OnWorkoutTimeUpdated() {
-  if (txtWorkoutTime == nullptr) return;
+  if (txtWorkoutTime == nullptr) {
+    return;
+  }
 
-  TickType_t currentTime  = xTaskGetTickCount();
+  TickType_t currentTime = xTaskGetTickCount();
   TickType_t delta = 0;
 
   // Take care of overflow
@@ -465,7 +462,7 @@ void Workout::OnWorkoutTimeUpdated() {
   } else {
     delta = currentTime - settings.workoutStartTick;
   }
-    
+
   const int timeElapsedMillis = static_cast<float>(delta) / static_cast<float>(configTICK_RATE_HZ);
 
   const int secs = timeElapsedMillis % 60;

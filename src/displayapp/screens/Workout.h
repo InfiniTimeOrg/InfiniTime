@@ -11,7 +11,7 @@
 #include "components/heartrate/HeartRateController.h"
 
 namespace Pinetime::Applications::Screens {
-  
+
   class Workout : public Screen {
   public:
     Workout(DisplayApp* app,
@@ -76,14 +76,14 @@ namespace Pinetime::Applications::Screens {
 
     uint8_t restSeconds = 0;
     uint8_t restMinutes = 0;
-    
-    lv_obj_t *txtRestTime = nullptr;
-    lv_obj_t *txtGlobalTime = nullptr;
-    lv_obj_t *txtWorkoutTime = nullptr;
 
-    lv_obj_t *txtHrMax = nullptr;
-    lv_obj_t *txtHrMin = nullptr;
-    lv_obj_t *txtHrCurr = nullptr;
+    lv_obj_t* txtRestTime = nullptr;
+    lv_obj_t* txtGlobalTime = nullptr;
+    lv_obj_t* txtWorkoutTime = nullptr;
+
+    lv_obj_t* txtHrMax = nullptr;
+    lv_obj_t* txtHrMin = nullptr;
+    lv_obj_t* txtHrCurr = nullptr;
 
     lv_obj_t *btnRestTimeMinUp = nullptr, *txtRestTimeMinUp = nullptr;
     lv_obj_t *btnRestTimeMinDown = nullptr, *txtRestTimeMinDown = nullptr;
@@ -99,18 +99,13 @@ namespace Pinetime::Applications::Screens {
 
     lv_style_t buttonStyleMode;
 
-    lv_task_t *taskRefresh;
+    lv_task_t* taskRefresh;
 
     void ReadSettings();
 
     void WriteSettings();
 
-    void InitButton(lv_obj_t** button, 
-                    lv_obj_t** label, 
-                    const char* text, 
-                    lv_align_t align, 
-                    lv_coord_t x_ofs, 
-                    lv_coord_t y_ofs);
+    void InitButton(lv_obj_t** button, lv_obj_t** label, const char* text, lv_align_t align, lv_coord_t x_ofs, lv_coord_t y_ofs);
 
     void InitButtonStyleMode(lv_style_t style);
 
@@ -123,13 +118,13 @@ namespace Pinetime::Applications::Screens {
     void RemoveModeSelectionButtons();
 
     void AddHrText();
-    
+
     void RemoveHrText();
 
     void SetTimeToLabel(lv_obj_t* label, uint8_t higherUnit, uint8_t smallerUnit);
 
     void SetMode(Mode mode);
-    
+
     void OnRestTimeUpdated();
 
     void OnWorkoutTimeUpdated();
