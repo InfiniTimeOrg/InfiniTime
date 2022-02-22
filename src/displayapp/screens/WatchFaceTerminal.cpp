@@ -50,8 +50,9 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
   lv_obj_align(connectState, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 40);
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
-  lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 10, 0);
+  lv_label_set_recolor(notificationIcon, true);
+  lv_label_set_text(notificationIcon, "[NOTI]#387b54 ---");
+  lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_LEFT_MID, 0, 60);
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label_date, true);
@@ -62,7 +63,7 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
   lv_label_set_text(label_prompt_1, "user@watch:~ $ now");
 
   label_prompt_2 = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_prompt_2, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
+  lv_obj_align(label_prompt_2, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 80);
   lv_label_set_text(label_prompt_2, "user@watch:~ $");
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
@@ -130,9 +131,9 @@ void WatchFaceTerminal::Refresh() {
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     if (notificationState.Get()) {
-      lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(true));
+      lv_label_set_text_static(notificationIcon, "[NOTI]#387b54 Unread");
     } else {
-      lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
+      lv_label_set_text_static(notificationIcon, "[NOTI]#387b54 ---");
     }
   }
 
