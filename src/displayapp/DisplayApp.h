@@ -61,7 +61,8 @@ namespace Pinetime {
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::TimerController& timerController,
                  Pinetime::Controllers::AlarmController& alarmController,
-                 Pinetime::Controllers::TouchHandler& touchHandler);
+                 Pinetime::Controllers::TouchHandler& touchHandler,
+                 Pinetime::Controllers::FS& fs);
       void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
 
@@ -88,6 +89,7 @@ namespace Pinetime {
       Pinetime::Controllers::TimerController& timerController;
       Pinetime::Controllers::AlarmController& alarmController;
       Pinetime::Controllers::TouchHandler& touchHandler;
+      Pinetime::Controllers::FS& fs;
 
       Pinetime::Controllers::FirmwareValidator validator;
       Controllers::BrightnessController brightnessController;

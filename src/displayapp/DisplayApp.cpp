@@ -31,6 +31,7 @@
 #include "displayapp/screens/Steps.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
+#include "displayapp/screens/Workout.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -97,7 +98,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::TimerController& timerController,
                        Pinetime::Controllers::AlarmController& alarmController,
-                       Pinetime::Controllers::TouchHandler& touchHandler)
+                       Pinetime::Controllers::TouchHandler& touchHandler,
+                       Pinetime::Controllers::FS& fs)
   : lcd {lcd},
     lvgl {lvgl},
     touchPanel {touchPanel},
@@ -112,7 +114,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     motionController {motionController},
     timerController {timerController},
     alarmController {alarmController},
-    touchHandler {touchHandler} {
+    touchHandler {touchHandler},
+    fs {fs} {
 }
 
 void DisplayApp::Start(System::BootErrors error) {
@@ -205,8 +208,9 @@ void DisplayApp::Refresh() {
         if (currentApp == Apps::Timer) {
           auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
           timer->setDone();
-        } else {
-          LoadApp(Apps::Timer, DisplayApp::FullRefreshDirections::Down);
+        } else if (currentApp == Apps::Workout) {
+          auto* workout = static_cast<Screens::Workout*>(currentScreen.get());
+          workout->OnTimerDone();
         }
         break;
       case Messages::AlarmTriggered:
@@ -471,6 +475,9 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
+      break;
+    case Apps::Workout:
+      currentScreen = std::make_unique<Screens::Workout>(this, fs, dateTimeController, timerController, motorController, heartRateController, *systemTask);
       break;
   }
   currentApp = app;

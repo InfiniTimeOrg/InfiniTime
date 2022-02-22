@@ -435,6 +435,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
         displayapp/screens/Styles.cpp
+        displayapp/screens/Workout.cpp
         displayapp/Colors.cpp
 
         ## Settings
