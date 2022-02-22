@@ -14,7 +14,7 @@ namespace {
   }
 }
 
-constexpr std::array<const char*, 3> SettingWatchFace::options;
+constexpr std::array<const char*, 4> SettingWatchFace::options;
 
 SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {

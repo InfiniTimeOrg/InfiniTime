@@ -23,14 +23,14 @@
 using namespace Pinetime::Controllers;
 
 NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
-                                   Pinetime::Controllers::Ble& bleController,
+                                   Ble& bleController,
                                    DateTime& dateTimeController,
-                                   Pinetime::Controllers::NotificationManager& notificationManager,
-                                   Controllers::Battery& batteryController,
+                                   NotificationManager& notificationManager,
+                                   Battery& batteryController,
                                    Pinetime::Drivers::SpiNorFlash& spiNorFlash,
-                                   Controllers::HeartRateController& heartRateController,
-                                   Controllers::MotionController& motionController,
-                                   Controllers::FS& fs)
+                                   HeartRateController& heartRateController,
+                                   MotionController& motionController,
+                                   FS& fs)
   : systemTask {systemTask},
     bleController {bleController},
     dateTimeController {dateTimeController},
@@ -184,7 +184,9 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
     case BLE_GAP_EVENT_ADV_COMPLETE:
       NRF_LOG_INFO("Advertising event : BLE_GAP_EVENT_ADV_COMPLETE");
       NRF_LOG_INFO("reason=%d; status=%0X", event->adv_complete.reason, event->connect.status);
-      StartAdvertising();
+      if (bleController.IsRadioEnabled() && !bleController.IsConnected()) {
+        StartAdvertising();
+      }
       break;
 
     case BLE_GAP_EVENT_CONNECT:
@@ -220,9 +222,11 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       currentTimeClient.Reset();
       alertNotificationClient.Reset();
       connectionHandle = BLE_HS_CONN_HANDLE_NONE;
-      bleController.Disconnect();
-      fastAdvCount = 0;
-      StartAdvertising();
+      if(bleController.IsConnected()) {
+        bleController.Disconnect();
+        fastAdvCount = 0;
+        StartAdvertising();
+      }
       break;
 
     case BLE_GAP_EVENT_CONN_UPDATE:
@@ -278,7 +282,28 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       if (event->passkey.params.action == BLE_SM_IOACT_DISP) {
         struct ble_sm_io pkey = {0};
         pkey.action = event->passkey.params.action;
-        pkey.passkey = ble_ll_rand() % 1000000;
+
+        /*
+         * Passkey is a 6 digits code (1'000'000 possibilities).
+         * It is important every possible value has an equal probability
+         * of getting generated. Simply applying a modulo creates a bias
+         * since 2^32 is not a multiple of 1'000'000.
+         * To prevent that, we can reject values greater than 999'999.
+         *
+         * Rejecting values would happen a lot since 2^32-1 is way greater
+         * than 1'000'000. An optimisation is to use a multiple of 1'000'000.
+         * The greatest multiple of 1'000'000 lesser than 2^32-1 is
+         * 4'294'000'000.
+         *
+         * Great explanation at:
+         * https://research.kudelskisecurity.com/2020/07/28/the-definitive-guide-to-modulo-bias-and-how-to-avoid-it/
+         */
+        uint32_t passkey_rand;
+        do {
+          passkey_rand = ble_ll_rand();
+        } while (passkey_rand > 4293999999);
+        pkey.passkey = passkey_rand % 1000000;
+
         bleController.SetPairingKey(pkey.passkey);
         systemTask.PushMessage(Pinetime::System::Messages::OnPairing);
         ble_sm_inject_io(event->passkey.conn_handle, &pkey);
@@ -373,6 +398,23 @@ uint16_t NimbleController::connHandle() {
 void NimbleController::NotifyBatteryLevel(uint8_t level) {
   if (connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
     batteryInformationService.NotifyBatteryLevel(connectionHandle, level);
+  }
+}
+
+void NimbleController::EnableRadio() {
+  bleController.EnableRadio();
+  bleController.Disconnect();
+  fastAdvCount = 0;
+  StartAdvertising();
+}
+
+void NimbleController::DisableRadio() {
+  bleController.DisableRadio();
+  if (bleController.IsConnected()) {
+    ble_gap_terminate(connectionHandle, BLE_ERR_REM_USER_CONN_TERM);
+    bleController.Disconnect();
+  } else {
+    ble_gap_adv_stop();
   }
 }
 
