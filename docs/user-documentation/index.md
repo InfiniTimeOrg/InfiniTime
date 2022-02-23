@@ -407,3 +407,15 @@ simple procedure:
 - Swipe up until you find an entry named Firmware and tap on it
 - If the firmware is not validated yet, you can either validate the running
   firmware, or reset and revert to the previous firmware version
+
+## Troubleshooting
+
+### Bluetooth connectivity
+
+InfiniTime versions prior to 1.6.0 "Ice Apple" had a known BLE bug, which caused
+lost of Bluetooth connectivity after a few hours.   
+The only way to fix this was to restart the watch (by holding the button for ~8
+seconds).
+
+This bug has been fixed, and with 1.6 and onwards, BLE connectivity is a lot
+more reliable.
