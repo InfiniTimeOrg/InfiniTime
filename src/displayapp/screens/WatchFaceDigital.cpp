@@ -118,7 +118,7 @@ void WatchFaceDigital::Refresh() {
     }
     
     if (settingsController.GetBatteryPercentageStatus() == Controllers::Settings::BatteryPercentage::ON) {
-      lv_label_set_text_fmt(batteryValue, "%lu", batteryPercent);
+      lv_label_set_text_fmt(batteryValue, "%lu%%", batteryPercent);
     } else {
       lv_label_set_text(batteryValue, "");
     }
