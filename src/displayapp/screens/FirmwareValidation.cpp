@@ -18,7 +18,7 @@ FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, 
   : Screen {app}, validator {validator} {
   labelVersion = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(labelVersion,
-                        "Version : %d.%d.%d\n"
+                        "Version : %lu.%lu.%lu\n"
                         "ShortRef : %s",
                         Version::Major(),
                         Version::Minor(),

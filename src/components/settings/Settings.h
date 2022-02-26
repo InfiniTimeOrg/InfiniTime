@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
 #include <bitset>
-#include "components/datetime/DateTimeController.h"
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
 
@@ -11,13 +10,31 @@ namespace Pinetime {
     public:
       enum class ClockType : uint8_t { H24, H12 };
       enum class Notification : uint8_t { ON, OFF };
+      enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t {
         SingleTap = 0,
         DoubleTap = 1,
         RaiseWrist = 2,
+        Shake = 3,
       };
       enum class Colors : uint8_t {
-        White, Silver, Gray, Black, Red, Maroon, Yellow, Olive, Lime, Green, Cyan, Teal, Blue, Navy, Magenta, Purple, Orange
+        White,
+        Silver,
+        Gray,
+        Black,
+        Red,
+        Maroon,
+        Yellow,
+        Olive,
+        Lime,
+        Green,
+        Cyan,
+        Teal,
+        Blue,
+        Navy,
+        Magenta,
+        Purple,
+        Orange
       };
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
@@ -38,6 +55,16 @@ namespace Pinetime {
       };
       uint8_t GetClockFace() const {
         return settings.clockFace;
+      };
+
+      void SetChimeOption(ChimesOption chimeOption) {
+        if (chimeOption != settings.chimesOption) {
+          settingsChanged = true;
+        }
+        settings.chimesOption = chimeOption;
+      };
+      ChimesOption GetChimeOption() const {
+        return settings.chimesOption;
       };
 
       void SetPTSColorTime(Colors colorTime) {
@@ -108,9 +135,22 @@ namespace Pinetime {
         }
         settings.screenTimeOut = timeout;
       };
+
       uint32_t GetScreenTimeOut() const {
         return settings.screenTimeOut;
       };
+
+      void SetShakeThreshold(uint16_t thresh){
+        if(settings.shakeWakeThreshold != thresh){
+            settings.shakeWakeThreshold = thresh;
+            settingsChanged = true;
+        }
+        
+      }
+
+      int16_t GetShakeThreshold() const{
+        return settings.shakeWakeThreshold;
+      }
 
       void setWakeUpMode(WakeUpMode wakeUp, bool enabled) {
         if (enabled != isWakeUpModeOn(wakeUp)) {
@@ -126,13 +166,13 @@ namespace Pinetime {
             case WakeUpMode::DoubleTap:
               settings.wakeUpMode.set(static_cast<size_t>(WakeUpMode::SingleTap), false);
               break;
-            case WakeUpMode::RaiseWrist:
+            default:
               break;
           }
         }
       };
 
-      std::bitset<3> getWakeUpModes() const {
+      std::bitset<4> getWakeUpModes() const {
         return settings.wakeUpMode;
       }
 
@@ -146,23 +186,34 @@ namespace Pinetime {
         }
         settings.brightLevel = level;
       };
+
       Controllers::BrightnessController::Levels GetBrightness() const {
         return settings.brightLevel;
       };
 
-      void SetStepsGoal( uint32_t goal ) { 
-        if ( goal != settings.stepsGoal ) {
+      void SetStepsGoal(uint32_t goal) {
+        if (goal != settings.stepsGoal) {
           settingsChanged = true;
         }
         settings.stepsGoal = goal; 
       };
       
-      uint32_t GetStepsGoal() const { return settings.stepsGoal; };
+      uint32_t GetStepsGoal() const {
+        return settings.stepsGoal;
+      };
+
+     void SetBleRadioEnabled(bool enabled) {
+       bleRadioEnabled = enabled;
+     };
+
+     bool GetBleRadioEnabled() const {
+       return bleRadioEnabled;
+     };
 
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0002;
+      static constexpr uint32_t settingsVersion = 0x0003;
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
@@ -172,11 +223,12 @@ namespace Pinetime {
         Notification notificationStatus = Notification::ON;
 
         uint8_t clockFace = 0;
+        ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
 
-        std::bitset<3> wakeUpMode {0};
-
+        std::bitset<4> wakeUpMode {0};
+        uint16_t shakeWakeThreshold = 150;
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
       };
 
@@ -185,6 +237,10 @@ namespace Pinetime {
 
       uint8_t appMenu = 0;
       uint8_t settingsMenu = 0;
+      /* airplaneMode is intentionally not saved with the other watch settings and initialized
+       * to off (false) on every boot because we always want ble to be enabled on startup
+       */
+      bool bleRadioEnabled = true;
 
       void LoadSettingsFromFile();
       void SaveSettingsToFile();

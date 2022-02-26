@@ -5,7 +5,7 @@
 
 namespace Pinetime {
   namespace Applications {
-    struct Tile {
+    struct TwosTile {
       bool merged = false;
       unsigned int value = 0;
     };
@@ -26,11 +26,11 @@ namespace Pinetime {
 
         lv_obj_t* scoreText;
         lv_obj_t* gridDisplay;
-        Tile grid[4][4];
+        TwosTile grid[4][4];
         unsigned int score = 0;
-        void updateGridDisplay(Tile grid[][4]);
-        bool tryMerge(Tile grid[][4], int& newRow, int& newCol, int oldRow, int oldCol);
-        bool tryMove(Tile grid[][4], int newRow, int newCol, int oldRow, int oldCol);
+        void updateGridDisplay(TwosTile grid[][4]);
+        bool tryMerge(TwosTile grid[][4], int& newRow, int& newCol, int oldRow, int oldCol);
+        bool tryMove(TwosTile grid[][4], int newRow, int newCol, int oldRow, int oldCol);
         bool placeNewTile();
       };
     }

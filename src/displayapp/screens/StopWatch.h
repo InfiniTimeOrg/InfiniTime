@@ -4,7 +4,7 @@
 #include "components/datetime/DateTimeController.h"
 #include "displayapp/LittleVgl.h"
 
-#include "FreeRTOS.h"
+#include <FreeRTOS.h>
 #include "portmacro_cmsis.h"
 
 #include <array>

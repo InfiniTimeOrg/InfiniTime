@@ -19,7 +19,10 @@ namespace Pinetime {
         UpdateTimeOut,
         DimScreen,
         RestoreBrightness,
-        AlarmTriggered
+        ShowPairingKey,
+        AlarmTriggered,
+        Clock,
+        BleRadioEnableToggle
       };
     }
   }

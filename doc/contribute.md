@@ -46,7 +46,7 @@ Other contributors can post comments about the pull request, maybe ask for more 
 
 Once the pull request is reviewed and accepted, it'll be merged into **develop** and will be released in the next version of the firmware.
 
-## Why  all these rules?
+## Why all these rules?
 
 Reviewing pull requests is a **very time consuming task**. Everything you do to make reviewing easier will **get your PR merged faster**.
 

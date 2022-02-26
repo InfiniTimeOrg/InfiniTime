@@ -69,7 +69,7 @@ namespace Pinetime {
         std::string track;
 
         /** Total length in seconds */
-        int totalLength;
+        int totalLength = 0;
         /** Current length in seconds */
         int currentLength;
         /** Last length */

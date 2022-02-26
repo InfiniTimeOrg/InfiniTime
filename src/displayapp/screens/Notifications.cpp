@@ -12,8 +12,14 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Pinetime::Controllers::MotorController& motorController,
+                             System::SystemTask& systemTask,
                              Modes mode)
-  : Screen(app), notificationManager {notificationManager}, alertNotificationService {alertNotificationService}, mode {mode} {
+  : Screen(app),
+    notificationManager {notificationManager},
+    alertNotificationService {alertNotificationService},
+    motorController {motorController},
+    systemTask {systemTask},
+    mode {mode} {
   notificationManager.ClearNewNotificationFlag();
   auto notification = notificationManager.GetLastNotification();
   if (notification.valid) {
@@ -24,7 +30,8 @@ Notifications::Notifications(DisplayApp* app,
                                                      notification.category,
                                                      notificationManager.NbNotifications(),
                                                      mode,
-                                                     alertNotificationService);
+                                                     alertNotificationService,
+                                                     motorController);
     validDisplay = true;
   } else {
     currentItem = std::make_unique<NotificationItem>("Notification",
@@ -33,24 +40,27 @@ Notifications::Notifications(DisplayApp* app,
                                                      notification.category,
                                                      notificationManager.NbNotifications(),
                                                      Modes::Preview,
-                                                     alertNotificationService);
+                                                     alertNotificationService,
+                                                     motorController);
   }
 
   if (mode == Modes::Preview) {
+    systemTask.PushMessage(System::Messages::DisableSleeping);
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
       motorController.StartRinging();
     } else {
       motorController.RunForDuration(35);
-      timeoutLine = lv_line_create(lv_scr_act(), nullptr);
-
-      lv_obj_set_style_local_line_width(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-      lv_obj_set_style_local_line_color(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-      lv_obj_set_style_local_line_rounded(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
-
-      lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
-      timeoutTickCountStart = xTaskGetTickCount();
-      timeoutTickCountEnd = timeoutTickCountStart + (5 * 1024);
     }
+
+    timeoutLine = lv_line_create(lv_scr_act(), nullptr);
+
+    lv_obj_set_style_local_line_width(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
+    lv_obj_set_style_local_line_color(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_obj_set_style_local_line_rounded(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
+
+    lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
+    timeoutTickCountStart = xTaskGetTickCount();
+    interacted = false;
   }
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
@@ -59,24 +69,41 @@ Notifications::Notifications(DisplayApp* app,
 Notifications::~Notifications() {
   lv_task_del(taskRefresh);
   // make sure we stop any vibrations before exiting
-  Controllers::MotorController::StopRinging();
+  motorController.StopRinging();
+  systemTask.PushMessage(System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }
 
 void Notifications::Refresh() {
   if (mode == Modes::Preview && timeoutLine != nullptr) {
-    auto tick = xTaskGetTickCount();
-    int32_t pos = 240 - ((tick - timeoutTickCountStart) / ((timeoutTickCountEnd - timeoutTickCountStart) / 240));
-    if (pos < 0)
+    TickType_t tick = xTaskGetTickCount();
+    int32_t pos = 240 - ((tick - timeoutTickCountStart) / (timeoutLength / 240));
+    if (pos <= 0) {
       running = false;
+    } else {
+      timeoutLinePoints[1].x = pos;
+      lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
+    }
+  }
+  running = currentItem->IsRunning() && running;
+}
 
-    timeoutLinePoints[1].x = pos;
-    lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
+void Notifications::OnPreviewInteraction() {
+  systemTask.PushMessage(System::Messages::EnableSleeping);
+  motorController.StopRinging();
+  if (timeoutLine != nullptr) {
+    lv_obj_del(timeoutLine);
+    timeoutLine = nullptr;
   }
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   if (mode != Modes::Normal) {
+    if (!interacted && event == TouchEvents::Tap) {
+      interacted = true;
+      OnPreviewInteraction();
+      return true;
+    }
     return false;
   }
 
@@ -101,7 +128,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        previousNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        mode,
-                                                       alertNotificationService);
+                                                       alertNotificationService,
+                                                       motorController);
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeUp: {
@@ -126,7 +154,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        nextNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        mode,
-                                                       alertNotificationService);
+                                                       alertNotificationService,
+                                                       motorController);
     }
       return true;
     default:
@@ -147,8 +176,9 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Controllers::NotificationManager::Categories category,
                                                   uint8_t notifNb,
                                                   Modes mode,
-                                                  Pinetime::Controllers::AlertNotificationService& alertNotificationService)
-  : mode {mode}, alertNotificationService {alertNotificationService} {
+                                                  Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                                                  Pinetime::Controllers::MotorController& motorController)
+  : mode {mode}, alertNotificationService {alertNotificationService}, motorController {motorController} {
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), NULL);
 
   lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x222222));
@@ -245,7 +275,7 @@ void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_
     return;
   }
 
-  Controllers::MotorController::StopRinging();
+  motorController.StopRinging();
 
   if (obj == bt_accept) {
     alertNotificationService.AcceptIncomingCall();

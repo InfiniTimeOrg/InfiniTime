@@ -119,7 +119,6 @@ static void basic_init(void) {
   lv_style_set_bg_color(&style_btn, LV_STATE_DISABLED | LV_STATE_CHECKED, lv_color_hex3(0x888));
   lv_style_set_border_color(&style_btn, LV_STATE_DEFAULT, theme.color_primary);
   lv_style_set_border_width(&style_btn, LV_STATE_DEFAULT, 0);
-  lv_style_set_border_opa(&style_btn, LV_STATE_CHECKED, LV_OPA_TRANSP);
 
   lv_style_set_text_color(&style_btn, LV_STATE_DEFAULT, lv_color_hex(0xffffff));
   lv_style_set_text_color(&style_btn, LV_STATE_CHECKED, lv_color_hex(0xffffff));
@@ -200,17 +199,17 @@ static void basic_init(void) {
 
   style_init_reset(&style_sw_bg);
   lv_style_set_bg_opa(&style_sw_bg, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_sw_bg, LV_STATE_DEFAULT, LV_PINETIME_LIGHT_GRAY);
+  lv_style_set_bg_color(&style_sw_bg, LV_STATE_DEFAULT, LV_PINETIME_BLUE);
   lv_style_set_radius(&style_sw_bg, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_style_set_value_color(&style_sw_bg, LV_STATE_DEFAULT, LV_PINETIME_BLUE);
 
   style_init_reset(&style_sw_indic);
   lv_style_set_bg_opa(&style_sw_indic, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_sw_indic, LV_STATE_DEFAULT, LV_PINETIME_GREEN);
+  lv_style_set_bg_color(&style_sw_indic, LV_STATE_DEFAULT, LV_COLOR_GREEN);
 
   style_init_reset(&style_sw_knob);
   lv_style_set_bg_opa(&style_sw_knob, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_sw_knob, LV_STATE_DEFAULT, LV_PINETIME_WHITE);
+  lv_style_set_bg_color(&style_sw_knob, LV_STATE_DEFAULT, LV_COLOR_SILVER);
+  lv_style_set_bg_color(&style_sw_knob, LV_STATE_CHECKED, LV_COLOR_WHITE);
   lv_style_set_radius(&style_sw_knob, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_style_set_pad_top(&style_sw_knob, LV_STATE_DEFAULT, -4);
   lv_style_set_pad_bottom(&style_sw_knob, LV_STATE_DEFAULT, -4);
