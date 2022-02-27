@@ -1,72 +1,50 @@
 # Developer documentation
 
-This page is meant to guide you through the source code, so you can find the
-relevant files for what you're working on.
+## Global architecture
 
-## Rough structure of the code
+![Project structure](architecture.png)
 
-### FreeRTOS
+The project is composed of multiple layers:
 
-Infinitime is based on [FreeRTOS]https://www.freertos.org), a real-time
-operating system. FreeRTOS provides several quality of life abstractions (for
-example easy software timers) and most importantly supports multiple tasks. If
-you want to read up on real-time operating systems, you can look
-[here](https://www.freertos.org/implementation/a00002.html) and
-[here](https://www.freertos.org/features.html). The main "process" creates at
-least one task and then starts the FreeRTOS task scheduler. This main "process"
-is the standard main() function inside
-[main.cpp](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/main.cpp).
-The task scheduler is responsible for giving every task enough cpu time. As
-there is only one core on the SoC of the PineTime, real concurrency is
-impossible and the scheduler has to swap tasks in and out to emulate it.
+### The low level layer
+The low level layer is composed of mostly hardware dependent software modules : startup code, low level drivers for clocks, busses, peripherals,... 
+Most of these modules are provided by the NRF SDK, but some drivers (I2C and SPI, for example) were reimplemented to better fit the needs of the project. 
+ 
+### The abtraction layer
+The abstraction layer is composed of components and controllers that abtracts the hardware from the upper layers while providing higher level APIs and services for these layers. 
+
+Those [controllers](https://github.com/InfiniTimeOrg/InfiniTime/tree/develop/src/components) are, among others:
+ - The [**battery controller**](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/components/battery/BatteryController.h) that handles the battery level measurements and conversion
+ - The [**file system**](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/components/fs/FS.h) that allows the application to easily read and write data to the flash memory
+ - The [**motion controller**](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/components/motion/MotionController.h) that provides motion and step information from the motion sensor
+ - and many others...
+
+### The system layer
+The system layer is composed of the RTOS (FreeRTOS) and the tasks needed for the firmware to run properly. These tasks are mainly the System task and the display task. This layer also implements a message passing mecanism (based on message queues) that allows tasks to exchange messages and events.
+
+#### FreeRTOS
+InfiniTime is based on [FreeRTOS](https://www.freertos.org), a real-time operating system. FreeRTOS provides several quality of life abstractions (for example easy software timers) and most importantly supports multiple tasks. If you want to read up on real-time operating systems, you can look
+[here](https://www.freertos.org/implementation/a00002.html) and [here](https://www.freertos.org/features.html). The main "process" (the function `main()`)creates at least one task and then starts the FreeRTOS task scheduler. The task scheduler is responsible for giving every task enough cpu time. As
+there is only one core on the SoC of the PineTime, real concurrency is impossible and the scheduler has to swap tasks in and out to emulate it.
 
 #### Tasks
+Tasks are created by calling `xTaskCreate()` and passing a function with the signature `void functionName(void*)`. For more info on task creation see the [FreeRTOS Documentation](https://www.freertos.org/a00125.html).
 
-Tasks are created by calling `xTaskCreate` and passing a function with the
-signature `void functionName(void*)`.
-For more info on task creation see the [FreeRTOS
-Documentation](https://www.freertos.org/a00125.html).
-In our case, main calls `systemTask.Start()`, which creates the **"MAIN" task**.
-The function running inside that task is `SystemTask::Work()`.
-You may also see this task being referred to as the **work task**.
-Both functions are located inside
-[systemtask/SystemTask.cpp](/src/systemtask/SystemTask.cpp).
-`SystemTask::Work()` initializes all the driver and controller objects.
-It also starts the **task "displayapp"**, which is responsible for launching and
-running apps, controlling the screen and handling touch events (or forwarding
-them to the active app).
-You can find the "displayapp" task inside
-[displayapp/DisplayApp.cpp](/src/displayapp/DisplayApp.cpp).
-There are also other tasks that are responsible for Bluetooth ("ll" and "ble"
-inside
-[libs/mynewt-nimble/porting/npl/freertos/src/nimble_port_freertos.c](/src/libs/mynewt-nimble/porting/npl/freertos/src/nimble_port_freertos.c))
-and periodic tasks like heartrate measurements
-([heartratetask/HeartRateTask.cpp](/src/heartratetask/HeartRateTask.cpp)).
+**System task**  is the main task of the project. It's responsible for initializing all devices and peripheral at startup, for managing and routing events between the tasks and the controllers, for managing the wake and sleep mode, for responding to external events (button press, touch even),...
+It's implement in the class [`PineTime::System::SystemTask`](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/systemtask/SystemTask.h). It provides 2 main methods: `SystemTask::Start()` that starts the task, and `SystemTask::Work()` which is the method the task executes. It starts by initializing all device and peripherals and then enters into its main loop.
 
-While it is possible for you to create your own task when you need it, it is
-recommended to just add functionality to `SystemTask::Work()` if possible.
-If you absolutely need to create another task, try to guess how much [stack
-space](https://www.freertos.org/FAQMem.html#StackSize) (in words/4-byte packets)
-it will need instead of just typing in a large-ish number.
-You can use the define `configMINIMAL_STACK_SIZE` which is currently set to 120
-words.
+**Display task** is implemented in the class [`PineTime::Applications::DisplayApp`](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/displayapp/DisplayApp.h). Similarly to **System task**, it provides the methods `Start()` and `Work()`. Display task handles the whole UI : it responds to touch and button events, it switches between apps, refresh the UI according to user interactions,...
 
-### Controllers
+The [BLE stack (NimBLE)](https://github.com/apache/mynewt-nimble) creates [2 other tasks (**ll** and **ble**)](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/libs/mynewt-nimble/porting/npl/freertos/src/nimble_port_freertos.c) to handle the whole BLE processing.
 
-Controllers in InfiniTime are singleton objects that can provide access to
-certain resources to apps.
-Some of them interface with drivers, others are the driver for the resource.
-The resources provided don't have to be hardware-based.
-They are declared in main.cpp and initialized in
-[systemtask/SystemTask.cpp](/src/systemtask/SystemTask.cpp).
-Some controllers can be passed by reference to apps that need access to the
-resource (for example vibration motor).
-They reside in [components/](/src/components/) inside their own subfolder.
+An additional task handles the signal processing for the heart rate monitor : [`PineTime::Applications::HeartRateTask`](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/heartratetask/HeartRateTask.h).
 
-For more detail, please see the [How to implement an
-app](./index.html#how-to-implement-an-app) section below.
+### The application layer
+The **application layer** implements the applications visible to the user (watch faces, settings, music application, games,...). 
 
-### Bluetooth
+The UI is based on the [*Light and versatile graphics library (LVGL)*](https://lvgl.io/).
+ 
+## Bluetooth
 
 Header files with short documentation for the functions are inside
 [libs/mynewt-nimble/nimble/host/include/host/](/src/libs/mynewt-nimble/nimble/host/include/host/).
