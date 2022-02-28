@@ -59,6 +59,7 @@ with
 * Load the file `JetBrainsMono-Regular.tff` (use the file in this repo to ensure the version matches) and specify the following range: `0x25, 0x30-0x3a`
 
 ### Large font
+
 * Name: jetbrains_mono_76
 * Size: 76
 * Bpp: 1 bit-per-pixel
@@ -87,17 +88,12 @@ with
 * Size: 48
 * Bpp: 1 bit-per-pixel
 * Do not enable font compression or horizontal subpixel rendering
-* Load the file `icons_sys_48.tff` (use the file in this repo to ensure the version matches) and specify the following range: `0xe902, 0xe904-0xe907, 0xe90b-0xe90c`
+* Load the file `icons_sys_48.tff` and specify the following range: `0xe902, 0xe904-0xe907, 0xe90b-0xe90c`
 
-#### Navigation font
+### Navigation font
 
-To create the navigtion.ttf I use the web app [icomoon](https://icomoon.io/app)
-this app can import the svg files from the folder *src/displayapp/icons/navigation/unique* and create a ttf file the
-project for the site is *lv_font_navi_80.json* you can import it to add or remove icons
+`navigtion.ttf` is created with the web app [icomoon](https://icomoon.io/app) by importing the svg files from `src/displayapp/icons/navigation/unique` and generating the font. `lv_font_navi_80.json` is a project file for the site, which you can import to add or remove icons.
 
-You can also use the online LVGL tool to create the .c
+This font must be generated with the `lv_font_conv` tool, which has additional options not available in the online converter.
 
-ttf file : navigation.ttf name : lv_font_navi_80 size : 80px Bpp : 2 bit-per-pixel range : 0xe900-0xe929
-
-$lv_font_conv --font navigation.ttf -r '0xe900-0xe929' --size 80 --format lvgl --bpp 2 --no-prefilter -o
-lv_font_navi_80.c
+`lv_font_conv --font navigation.ttf -r '0xe900-0xe929' --size 80 --format lvgl --bpp 2 -o lv_font_navi_80.c`
