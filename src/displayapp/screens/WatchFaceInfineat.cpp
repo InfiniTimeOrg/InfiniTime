@@ -428,8 +428,9 @@ void WatchFaceInfineat::Refresh() {
   }
 
   bleState = bleController.IsConnected();
+  bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated()) {
-    lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
+    lv_label_set_text(bleIcon, BleIcon::GetIcon(bleRadioEnabled.Get(), bleState.Get()));
     lv_obj_align(bleIcon, labelDate, LV_ALIGN_OUT_BOTTOM_MID, 0, 3);
   }
 
