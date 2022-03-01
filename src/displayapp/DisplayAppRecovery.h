@@ -10,6 +10,7 @@
 #include <date/date.h>
 #include <drivers/Watchdog.h>
 #include <components/motor/MotorController.h>
+#include <components/fs/FS.h>
 #include "BootErrors.h"
 #include "displayapp/TouchEvents.h"
 #include "displayapp/Apps.h"
