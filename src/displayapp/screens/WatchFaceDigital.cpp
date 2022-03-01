@@ -15,6 +15,13 @@
 #include "components/settings/Settings.h"
 using namespace Pinetime::Applications::Screens;
 
+namespace {
+  void event_handler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<WatchFaceDigital*>(obj->user_data);
+    screen->UpdateSelected(obj, event);
+  }
+}
+
 WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
                                    Controllers::DateTime& dateTimeController,
                                    Controllers::Battery& batteryController,
@@ -92,6 +99,28 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  btnSet = lv_btn_create(lv_scr_act(), nullptr);
+  btnSet->user_data = this;
+  lv_obj_set_height(btnSet, 150);
+  lv_obj_set_width(btnSet, 150);
+  lv_obj_align(btnSet, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_radius(btnSet, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 30);
+  lv_obj_set_style_local_bg_opa(btnSet, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_obj_set_event_cb(btnSet, event_handler);
+  lbl_btnSet = lv_label_create(btnSet, nullptr);
+  lv_obj_set_style_local_text_font(lbl_btnSet, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_sys_48);
+  lv_label_set_text_static(lbl_btnSet, Symbols::settings);
+  lv_obj_set_hidden(btnSet, true);
+
+  btnClose = lv_btn_create(lv_scr_act(), nullptr);
+  btnClose->user_data = this;
+  lv_obj_set_size(btnClose, 60, 60);
+  lv_obj_align(btnClose, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_obj_set_style_local_bg_opa(btnClose, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_obj_set_style_local_value_str(btnClose, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "X");
+  lv_obj_set_event_cb(btnClose, event_handler);
+  lv_obj_set_hidden(btnClose, true);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -211,5 +240,42 @@ void WatchFaceDigital::Refresh() {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
     lv_obj_realign(stepValue);
     lv_obj_realign(stepIcon);
+  }
+
+  if (!lv_obj_get_hidden(btnSet)) {
+    if ((savedTick > 0) && (lv_tick_get() - savedTick > 3000)) {
+      lv_obj_set_hidden(btnSet, true);
+      savedTick = 0;
+    }
+  }
+}
+
+bool WatchFaceDigital::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnClose)) {
+    lv_obj_set_hidden(btnSet, false);
+    savedTick = lv_tick_get();
+    return true;
+  }
+  return false;
+}
+
+void WatchFaceDigital::CloseMenu() {
+  settingsController.SaveSettings();
+  lv_obj_set_hidden(btnClose, true);
+}
+
+void WatchFaceDigital::UpdateSelected(lv_obj_t* object, lv_event_t event) {
+  auto valueTime = settingsController.GetPTSColorTime();
+  auto valueBar = settingsController.GetPTSColorBar();
+  auto valueBG = settingsController.GetPTSColorBG();
+
+  if (event == LV_EVENT_CLICKED) {
+    if (object == btnClose) {
+      CloseMenu();
+    }
+    if (object == btnSet) {
+      lv_obj_set_hidden(btnSet, true);
+      lv_obj_set_hidden(btnClose, false);
+    }
   }
 }
