@@ -220,7 +220,7 @@ To use the DevContainer configuration on Ubuntu based systems two changes need t
 
 ## Build the documentation
 ### Setup
-The documentation is written in Makrdown (.md) files and generated using the Sphinx documentation generator.
+The documentation is written in Markdown (.md) files and generated using the Sphinx documentation generator.
 
 First, we need to install Sphinx and its dependencies:
  - `myst-parser` : add support for markdown files
