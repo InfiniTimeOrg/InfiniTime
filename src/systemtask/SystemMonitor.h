@@ -2,6 +2,8 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <nrf_log.h>
+#include <lvgl/lvgl.h>
+#include <malloc.h>
 
 namespace Pinetime {
   namespace System {
@@ -32,6 +34,24 @@ namespace Pinetime {
                            tasksStatus[i].pcTaskName,
                            tasksStatus[i].usStackHighWaterMark * 4);
           }
+
+          lv_mem_monitor_t mon;
+          lv_mem_monitor(&mon);
+          NRF_LOG_INFO("#LVGL Memory#\n"
+                       " used# %d (%d%%) / free %d\n"
+                       " max used# %lu\n"
+                       " frag# %d%%\n"
+                       " free# %d",
+                       static_cast<int>(mon.total_size - mon.free_size),
+                       mon.used_pct,
+                       mon.free_size,
+                       mon.max_used,
+                       mon.frag_pct,
+                       static_cast<int>(mon.free_biggest_size));
+
+          auto m = mallinfo();
+          NRF_LOG_INFO("heap : %d", m.uordblks);
+
           lastTick = xTaskGetTickCount();
         }
       }

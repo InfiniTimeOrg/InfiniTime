@@ -129,7 +129,7 @@ void DisplayApp::Start(System::BootErrors error) {
     LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::None);
   }
 
-  if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 800, this, 0, &taskHandle)) {
+  if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 600, this, 0, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }
 }
