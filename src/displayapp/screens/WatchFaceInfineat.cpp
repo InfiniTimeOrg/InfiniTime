@@ -61,6 +61,7 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   line0Points[1] = {68, -8};
   lv_line_set_points(line0, line0Points, 2);
 
+  lv_style_init(&line1Style);
   lv_style_set_line_width(&line1Style, LV_STATE_DEFAULT, 15);
   lv_style_set_line_color(&line1Style, LV_STATE_DEFAULT,
                           lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 1]));
@@ -294,51 +295,65 @@ bool WatchFaceInfineat::OnButtonPushed() {
 
 void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
+    bool showSideCover = settingsController.GetInfineatShowSideCover();
+    int colorIndex = settingsController.GetInfineatColorIndex();
+
     if (object == btnSettings) {
       lv_obj_set_hidden(btnSettings, true);
       lv_obj_set_hidden(btnClose, false);
-      lv_obj_set_hidden(btnNextColor, settingsController.GetInfineatShowSideCover());
-      lv_obj_set_hidden(btnPrevColor, settingsController.GetInfineatShowSideCover());
+      lv_obj_set_hidden(btnNextColor, !showSideCover);
+      lv_obj_set_hidden(btnPrevColor, !showSideCover);
       lv_obj_set_hidden(btnToggleCover, false);
     }
     if (object == btnClose) {
       CloseMenu();
     }
     if (object == btnToggleCover) {
-      bool hidden = ToggleShowSideCover();
-      lv_obj_set_hidden(btnNextColor, hidden);
-      lv_obj_set_hidden(btnPrevColor, hidden);
-      const char* labelToggle = hidden ? "OFF" : "ON";
+      settingsController.SetInfineatShowSideCover(!showSideCover);
+      lv_obj_set_hidden(logoPine, showSideCover);
+      lv_obj_set_hidden(line0, showSideCover);
+      lv_obj_set_hidden(line1, showSideCover);
+      lv_obj_set_hidden(line2, showSideCover);
+      lv_obj_set_hidden(line3, showSideCover);
+      lv_obj_set_hidden(line4, showSideCover);
+      lv_obj_set_hidden(line5, showSideCover);
+      lv_obj_set_hidden(line6, showSideCover);
+      lv_obj_set_hidden(line7, showSideCover);
+      lv_obj_set_hidden(line8, showSideCover);
+      lv_obj_set_hidden(btnNextColor, showSideCover);
+      lv_obj_set_hidden(btnPrevColor, showSideCover);
+      const char* labelToggle = showSideCover ? "OFF" : "ON";
       lv_obj_set_style_local_value_str(btnToggleCover, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, labelToggle);
     }
     if (object == btnNextColor) {
-      settingsController.SetInfineatColorIndex((settingsController.GetInfineatColorIndex() + 1) % nColors);
+      colorIndex = (colorIndex + 1) % nColors;
+      settingsController.SetInfineatColorIndex(colorIndex);
     }
     if (object == btnPrevColor) {
-      int colorIndex = settingsController.GetInfineatColorIndex() - 1;
+      colorIndex -= 1;
       if (colorIndex < 0)
         colorIndex = nColors - 1;
       settingsController.SetInfineatColorIndex(colorIndex);
     }
     if (object == btnNextColor || object == btnPrevColor) {
       lv_style_set_line_color(&line0Style, LV_STATE_DEFAULT,
-                              lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines]));
+                              lv_color_hex(infineatColors.orange[colorIndex*nLines]));
       lv_style_set_line_color(&line1Style, LV_STATE_DEFAULT,
-                              lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 1]));
+                              lv_color_hex(infineatColors.orange[colorIndex*nLines + 1]));
       lv_style_set_line_color(&line2Style, LV_STATE_DEFAULT,
-                              lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 2]));
+                              lv_color_hex(infineatColors.orange[colorIndex*nLines + 2]));
       lv_style_set_line_color(&line3Style, LV_STATE_DEFAULT,
-                              lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 3]));
+                              lv_color_hex(infineatColors.orange[colorIndex*nLines + 3]));
       lv_style_set_line_color(&line4Style, LV_STATE_DEFAULT,
-                              lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 4]));
+                              lv_color_hex(infineatColors.orange[colorIndex*nLines + 4]));
       lv_style_set_line_color(&line5Style, LV_STATE_DEFAULT,
-                              lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 5]));
+                              lv_color_hex(infineatColors.orange[colorIndex*nLines + 5]));
       lv_style_set_line_color(&line6Style, LV_STATE_DEFAULT,
-                              lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 6]));
+                              lv_color_hex(infineatColors.orange[colorIndex*nLines + 6]));
       lv_style_set_line_color(&line7Style, LV_STATE_DEFAULT,
-                              lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 7]));
+                              lv_color_hex(infineatColors.orange[colorIndex*nLines + 7]));
       lv_style_set_line_color(&line8Style, LV_STATE_DEFAULT,
-                              lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 8]));
+                              lv_color_hex(infineatColors.orange[colorIndex*nLines + 8]));
       lv_obj_add_style(line0, LV_LINE_PART_MAIN, &line0Style);
       lv_obj_add_style(line1, LV_LINE_PART_MAIN, &line1Style);
       lv_obj_add_style(line2, LV_LINE_PART_MAIN, &line2Style);
@@ -349,7 +364,7 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       lv_obj_add_style(line7, LV_LINE_PART_MAIN, &line7Style);
       lv_obj_add_style(line8, LV_LINE_PART_MAIN, &line8Style);
       lv_obj_set_style_local_bg_color(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,
-                                      lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 7]));
+                                      lv_color_hex(infineatColors.orange[colorIndex*nLines + 7]));
     }
   }
 }
@@ -448,20 +463,4 @@ void WatchFaceInfineat::Refresh() {
       savedTick = 0;
     }
   }
-}
-
-bool WatchFaceInfineat::ToggleShowSideCover() {
-  bool visible = !settingsController.GetInfineatShowSideCover();
-  settingsController.SetInfineatShowSideCover(visible);
-  lv_obj_set_hidden(logoPine, visible);
-  lv_obj_set_hidden(line0, visible);
-  lv_obj_set_hidden(line1, visible);
-  lv_obj_set_hidden(line2, visible);
-  lv_obj_set_hidden(line3, visible);
-  lv_obj_set_hidden(line4, visible);
-  lv_obj_set_hidden(line5, visible);
-  lv_obj_set_hidden(line6, visible);
-  lv_obj_set_hidden(line7, visible);
-  lv_obj_set_hidden(line8, visible);
-  return visible;
 }

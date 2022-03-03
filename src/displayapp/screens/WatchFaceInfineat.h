@@ -123,8 +123,6 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
 
         lv_task_t* taskRefresh;
-
-        bool ToggleShowSideCover();
       };
     }
   }

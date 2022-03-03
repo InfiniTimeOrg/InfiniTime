@@ -99,18 +99,20 @@ namespace Pinetime {
       };
 
       void SetInfineatShowSideCover(bool show) {
-        if (show != settings.watchFaceInfineat.showSideCover)
+        if (show != settings.watchFaceInfineat.showSideCover) {
+          settings.watchFaceInfineat.showSideCover = show;
           settingsChanged = true;
-        settings.watchFaceInfineat.showSideCover = show;
+        }
       };
       bool GetInfineatShowSideCover() const {
         return settings.watchFaceInfineat.showSideCover;
       };
 
       void SetInfineatColorIndex(int index) {
-        if (index != settings.watchFaceInfineat.colorIndex)
+        if (index != settings.watchFaceInfineat.colorIndex) {
+          settings.watchFaceInfineat.colorIndex = index;
           settingsChanged = true;
-        settings.watchFaceInfineat.colorIndex = index;
+        }
       };
       int GetInfineatColorIndex() const {
         return settings.watchFaceInfineat.colorIndex;
