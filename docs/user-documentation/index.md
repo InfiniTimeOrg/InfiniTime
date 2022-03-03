@@ -52,7 +52,8 @@ time directly from the watch.
 This can be done from the Settings menu, then "Set date" and "Set time"
 respectively:
 
-(insert here pics of IT)
+![Set date manually](./pictures/set_date.png)
+![Set time manually](./pictures/set_time.png)
 
 #### Using any Chromium-based web-browser
 
@@ -119,7 +120,9 @@ There are 2 other watchfaces:
 - Analog 
 - PineTimeStyle
 
-(Add pics from the watchfaces)
+![Digital watchface](./pictures/watchface_digital.png)
+![Analog watchface](./pictures/watchface_analog.png)
+![PTS watchface](./pictures/watchface_pts.png)
 
 #### Notification screen
 
@@ -131,7 +134,7 @@ To come back to the watchface, press the left button.
 It is currently not possible to discard notifications, unless you restart
 InfiniTime (long press on the button for ~8 seconds).
 
-(Insert notification pics)
+![Notification](./pictures/notifications.png)
 
 #### Apps drawer
 
@@ -155,14 +158,14 @@ Page 2:
 - Metronome
 - Alarm
 
-(Add pics of the 2 pages of apps)
-
-**(Note to JF: does it make sense to have a subsection for each app, with
-screenshots and more details?)**
+![App menu 1](./pictures/app_menu_1.png)
+![App menu 2](./pictures/app_menu_2.png)
 
 #### Quick settings
 
-When swiping right, you get access to 4 icons - from top left to bottom right:
+When swiping right, you get access to 4 icons :
+
+![Quick settings](./pictures/quick_settings.png)
 
 - brightness level: pressing it will cycle between 3 levels (low/medium/high)
 - torch: 
@@ -176,8 +179,15 @@ When swiping right, you get access to 4 icons - from top left to bottom right:
   - taping it enables it: the icon becomes grey, and the watch will not vibrate
     when receiving notifications)
 - settings: access to InfiniTime settings
-  - Display timeout (in seconds)
-  - Wake up: how to wake up the watch
+
+The following settings are available:
+
+![Settings 1](./pictures/settings_menu_1.png)
+![Settings 2](./pictures/settings_menu_2.png)
+![Settings 3](./pictures/settings_menu_3.png)
+
+- Display timeout (in seconds)
+- Wake up: how to wake up the watch
     - nothing selected means only the left button wakes up the watch
     - single tap: tap one time on the screen to wake up the watch
     - double tap: tap two times to wake it up
@@ -188,7 +198,8 @@ When swiping right, you get access to 4 icons - from top left to bottom right:
 - Set date: allows manually setting date
 - Set time: allows manually setting time
 - Battery: displays battery level and voltage
-- PTS Colors: allows changing colors for the PineTimeStyle watchface
+- Chimes: Emit a small vibration every hour or half-hour
+- Shake calibration: calibration the sensitivity of the "shake to wake" functionality
 - Firmware: displays information about the InfiniTime version
 - About: displays information about InfiniTime, the Bootloader, uptime, etc
 
