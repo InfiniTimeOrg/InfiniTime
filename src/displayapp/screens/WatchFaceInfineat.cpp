@@ -157,15 +157,20 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_obj_set_size(notificationIcon, 13, 13);
   lv_obj_set_hidden(notificationIcon, true);
 
+  timeContainer = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_opa(timeContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_size(timeContainer, 185, 185);
+  lv_obj_align(timeContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
+
   labelHour = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &bebas_neue_120);
   lv_label_set_text(labelHour, "01");
-  lv_obj_align(labelHour, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 5);
+  lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
 
   labelMinutes = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(labelMinutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &bebas_neue_120);
   lv_label_set_text(labelMinutes, "00");
-  lv_obj_align(labelMinutes, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -15);
+  lv_obj_align(labelMinutes, timeContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   labelTimeAmPm = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(labelTimeAmPm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &teko_28);
@@ -427,7 +432,7 @@ void WatchFaceInfineat::Refresh() {
 
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
       lv_label_set_text(labelTimeAmPm, ampmChar);
-      lv_obj_align(labelTimeAmPm, labelHour, LV_ALIGN_OUT_RIGHT_TOP, 5, 28);
+      lv_obj_align(labelTimeAmPm, labelHour, LV_ALIGN_OUT_RIGHT_TOP, 5, 20);
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {

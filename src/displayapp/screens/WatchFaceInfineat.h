@@ -89,6 +89,7 @@ namespace Pinetime {
 
         lv_obj_t* logoPine;
 
+        lv_obj_t* timeContainer;
         lv_obj_t* labelHour;
         lv_obj_t* labelMinutes;
         lv_obj_t* labelTimeAmPm;
