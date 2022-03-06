@@ -487,7 +487,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
       
     case Apps::Timeline:
-      currentScreen = std::make_unique<Screens::Timeline>(this, dateTimeController, calendarManager);
+      currentScreen = std::make_unique<Screens::Timeline>(this, dateTimeController, calendarManager, lvgl);
       break;
   }
   currentApp = app;
