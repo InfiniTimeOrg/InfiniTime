@@ -60,8 +60,6 @@ namespace Pinetime {
         lv_obj_t* label_prompt_1;
         lv_obj_t* label_prompt_2;
         lv_obj_t* backgroundLabel;
-        lv_obj_t* batteryIcon;
-        lv_obj_t* batteryPlug;
         lv_obj_t* batteryValue;
         lv_obj_t* heartbeatValue;
         lv_obj_t* stepValue;

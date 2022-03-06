@@ -57,7 +57,6 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
     bleController {bleController},
     notificationManager {notificationManager},
     settingsController {settingsController} {
-  settingsController.SetClockFace(1);
 
   sHour = 99;
   sMinute = 99;

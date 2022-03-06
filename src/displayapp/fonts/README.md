@@ -31,6 +31,22 @@ Add new symbols:
 static constexpr const char* newSymbol = "\xEF\x86\x85";
 ```
 
+Then fix an error that happens during the font conversion (the inner dot of the 'zero' symbol sticks to the boundary): edit `src/displayapp/fonts/jetbrains_mono_bold_20.c` and replace:
+
+    /* U+0030 "0" */
+    0x3f, 0x1f, 0xef, 0x3f, 0x87, 0xe1, 0xf8, 0x7f,
+    0xdf, 0xf7, 0xe1, 0xf8, 0x7e, 0x1f, 0xcf, 0x7f,
+    0x8f, 0xc0,
+
+with
+
+    /* U+0030 "0" */
+    0x3f, 0x1f, 0xef, 0x3f, 0x87, 0xe1, 0xf8, 0x7e,
+    0xdf, 0xb7, 0xe1, 0xf8, 0x7e, 0x1f, 0xcf, 0x7f,
+    0x8f, 0xc0,
+
+(there are two changes: 7f -> 7e and f7 -> b7)
+
 ## Simple method to generate a font
 
 If you want to generate a basic font containing only numbers and letters, you can use the above settings but instead of specifying a range, simply list the characters you need in the Symbols field and leave the range blank. This is the approach used for the PineTimeStyle watchface.
