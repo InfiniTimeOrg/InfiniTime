@@ -26,6 +26,7 @@ namespace Pinetime {
     class Settings;
     class Battery;
     class Ble;
+    class CalendarManager;
     class DateTime;
     class NotificationManager;
     class HeartRateController;
@@ -49,6 +50,7 @@ namespace Pinetime {
                  Drivers::Cst816S&,
                  Controllers::Battery& batteryController,
                  Controllers::Ble& bleController,
+                 Controllers::CalendarManager& calendarManager,
                  Controllers::DateTime& dateTimeController,
                  Drivers::WatchdogView& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
