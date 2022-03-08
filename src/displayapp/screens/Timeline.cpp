@@ -192,13 +192,13 @@ void Timeline::displayWeek() {
     time_t timestamp = it.timestamp;
     tm *it_time = localtime(&timestamp);
     uint8_t day_index = it_time->tm_wday-1;
+    if (day_index < today_index) {
+      day_index += 7;
+    }
+    
     uint8_t column_index = day_index - today_index;
     if (column_index == 0 && timestamp > currentDateTime.time_since_epoch().count()) {
       continue; // Do not show events matching the current day of the week but occurring next week
-    }
-
-    if (column_index < 0) {
-      column_index += 7;
     }
 
     draw_event(column_index, it_time->tm_hour*60 + it_time->tm_min, it.duration/60);
