@@ -34,7 +34,10 @@ const lv_color_t BatteryIcon::GetBatteryColor(uint8_t batteryPercent) {
   return LV_COLOR_RED;
 }
 
-const lv_color_t BatteryIcon::GetDefaultBatteryColor() {
+const lv_color_t BatteryIcon::GetDefaultBatteryColor(uint8_t batteryPercent) {
+  if (batteryPercent == 100) {
+    return LV_COLOR_GREEN;
+  }
   return LV_COLOR_WHITE;
 }
 

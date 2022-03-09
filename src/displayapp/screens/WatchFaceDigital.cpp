@@ -45,10 +45,14 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_label_set_text_static(batteryIcon, Symbols::batteryFull);
   lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
+  batteryValue = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(batteryValue, "");
+  lv_obj_align(batteryValue, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
   batteryPlug = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFF0000));
   lv_label_set_text_static(batteryPlug, Symbols::plug);
-  lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align(batteryPlug, batteryValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0082FC));
@@ -140,11 +144,19 @@ void WatchFaceDigital::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
-    if (batteryPercent == 100) {
-      lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+
+    if (settingsController.GetDWSBatteryColorStatus() == Controllers::Settings::BatteryColor::ON) {
+        lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetBatteryColor(batteryPercent));
     } else {
-      lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+        lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetDefaultBatteryColor(batteryPercent));
     }
+    
+    if (settingsController.GetDWSBatteryPercentageStatus() == Controllers::Settings::BatteryPercentage::ON) {
+      lv_label_set_text_fmt(batteryValue, "%lu%%", batteryPercent);
+    } else {
+      lv_label_set_text_static(batteryValue, "");
+    }
+
     lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
   }
 
@@ -154,6 +166,7 @@ void WatchFaceDigital::Refresh() {
     lv_label_set_text(bleIcon, BleIcon::GetIcon(bleRadioEnabled.Get(), bleState.Get()));
   }
   lv_obj_realign(batteryIcon);
+  lv_obj_realign(batteryValue);
   lv_obj_realign(batteryPlug);
   lv_obj_realign(bleIcon);
 
