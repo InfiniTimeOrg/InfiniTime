@@ -36,6 +36,7 @@ namespace Pinetime {
         void Refresh() override;
 
         bool OnTouchEvent(TouchEvents event) override;
+        bool OnButtonPushed() override;
         void UpdateSelected(lv_obj_t *object, lv_event_t event);
 
       private:
@@ -73,6 +74,9 @@ namespace Pinetime {
         lv_obj_t* notificationIcon;
 
         uint32_t savedTick = 0;
+        uint8_t optionsTotal;
+        lv_obj_t* settingsTitle;
+        lv_obj_t* cbOption[1];
         lv_obj_t* btnSet;
         lv_obj_t* lbl_btnSet;
         lv_obj_t* btnClose;
@@ -86,6 +90,7 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
 
         void CloseMenu();
+        void HideSettingsMenuItems(bool visible);
 
         lv_task_t* taskRefresh;
       };

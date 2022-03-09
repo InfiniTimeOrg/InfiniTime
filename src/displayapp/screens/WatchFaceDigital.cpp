@@ -117,6 +117,23 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_label_set_text_static(lbl_btnSet, Symbols::settings);
   lv_obj_set_hidden(btnSet, true);
 
+  settingsTitle = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(settingsTitle, "Display Settings");
+  lv_label_set_align(settingsTitle, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(settingsTitle, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
+  lv_obj_set_hidden(settingsTitle, true);
+
+  optionsTotal = 0;
+  cbOption[optionsTotal] = lv_checkbox_create(lv_scr_act(), nullptr);
+  lv_checkbox_set_text_static(cbOption[optionsTotal], " Show Percent");
+  cbOption[optionsTotal]->user_data = this;
+  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+  if (settingsController.GetDWSBatteryPercentageStatus() == Controllers::Settings::BatteryPercentage::ON) {
+    lv_checkbox_set_checked(cbOption[optionsTotal], true);
+  }
+  lv_obj_set_hidden(cbOption[optionsTotal], true);
+  optionsTotal++;
+
   btnClose = lv_btn_create(lv_scr_act(), nullptr);
   btnClose->user_data = this;
   lv_obj_set_size(btnClose, 60, 60);
@@ -124,7 +141,7 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_set_style_local_bg_opa(btnClose, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
   lv_obj_set_style_local_value_str(btnClose, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "X");
   lv_obj_set_event_cb(btnClose, event_handler);
-  lv_obj_set_hidden(btnClose, true);
+  lv_obj_set_hidden(settingsTitle, true);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -272,15 +289,55 @@ bool WatchFaceDigital::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return false;
 }
 
+bool WatchFaceDigital::OnButtonPushed() {
+  if (!lv_obj_get_hidden(btnClose)) {
+    CloseMenu();
+    return true;
+  }
+  return false;
+}
+
 void WatchFaceDigital::CloseMenu() {
   settingsController.SaveSettings();
-  lv_obj_set_hidden(btnClose, true);
+  HideSettingsMenuItems(true);
+}
+
+void WatchFaceDigital::HideSettingsMenuItems(bool visible) {
+  lv_obj_set_hidden(btnClose, visible);
+  lv_obj_set_hidden(settingsTitle, visible);
+  for (int index = 0; index < optionsTotal; ++index) {
+    lv_obj_set_hidden(cbOption[index], visible);
+  }
 }
 
 void WatchFaceDigital::UpdateSelected(lv_obj_t* object, lv_event_t event) {
-  auto valueTime = settingsController.GetPTSColorTime();
-  auto valueBar = settingsController.GetPTSColorBar();
-  auto valueBG = settingsController.GetPTSColorBG();
+  if (event == LV_EVENT_VALUE_CHANGED) {
+    int index = 0;
+    for (; index < optionsTotal; ++index) {
+      if (cbOption[index] == object) {
+        break;
+      }
+    }
+
+    if (index == 0) {
+      if (settingsController.GetDWSBatteryPercentageStatus() == Controllers::Settings::BatteryPercentage::ON) {
+        settingsController.SetDWSBatteryPercentageStatus(Controllers::Settings::BatteryPercentage::OFF);
+        lv_checkbox_set_checked(cbOption[index], false);
+      } else {
+        settingsController.SetDWSBatteryPercentageStatus(Controllers::Settings::BatteryPercentage::ON);
+        lv_checkbox_set_checked(cbOption[index], true);
+      }
+    };
+    if (index == 1) {
+      if (settingsController.GetDWSBatteryColorStatus() == Controllers::Settings::BatteryColor::ON) {
+        settingsController.SetDWSBatteryColorStatus(Controllers::Settings::BatteryColor::OFF);
+        lv_checkbox_set_checked(cbOption[index], false);
+      } else {
+        settingsController.SetDWSBatteryColorStatus(Controllers::Settings::BatteryColor::ON);
+        lv_checkbox_set_checked(cbOption[index], true);
+      }
+    };
+  }
 
   if (event == LV_EVENT_CLICKED) {
     if (object == btnClose) {
@@ -288,7 +345,7 @@ void WatchFaceDigital::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     }
     if (object == btnSet) {
       lv_obj_set_hidden(btnSet, true);
-      lv_obj_set_hidden(btnClose, false);
+      HideSettingsMenuItems(false);
     }
   }
 }
