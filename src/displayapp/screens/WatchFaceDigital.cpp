@@ -104,11 +104,21 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
-  btnSet = lv_btn_create(lv_scr_act(), nullptr);
+  container1 = lv_cont_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_color(container1, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_style_local_pad_all(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
+  lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
+  lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_pos(container1, 10, 10);
+  lv_obj_set_width(container1, LV_HOR_RES - 20);
+  lv_obj_set_height(container1, LV_VER_RES - 20);
+
+  btnSet = lv_btn_create(container1, nullptr);
   btnSet->user_data = this;
   lv_obj_set_height(btnSet, 150);
   lv_obj_set_width(btnSet, 150);
-  lv_obj_align(btnSet, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  lv_obj_align(btnSet, container1, LV_ALIGN_CENTER, 0, 15);
   lv_obj_set_style_local_radius(btnSet, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 30);
   lv_obj_set_style_local_bg_opa(btnSet, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
   lv_obj_set_event_cb(btnSet, event_handler);
@@ -117,31 +127,42 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_label_set_text_static(lbl_btnSet, Symbols::settings);
   lv_obj_set_hidden(btnSet, true);
 
-  settingsTitle = lv_label_create(lv_scr_act(), nullptr);
+  settingsTitle = lv_label_create(container1, nullptr);
   lv_label_set_text_static(settingsTitle, "Display Settings");
   lv_label_set_align(settingsTitle, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(settingsTitle, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
+  lv_obj_align(settingsTitle, container1, LV_ALIGN_IN_TOP_MID, 0, 15);
   lv_obj_set_hidden(settingsTitle, true);
 
   optionsTotal = 0;
-  cbOption[optionsTotal] = lv_checkbox_create(lv_scr_act(), nullptr);
+  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
   lv_checkbox_set_text_static(cbOption[optionsTotal], " Show Percent");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
   if (settingsController.GetDWSBatteryPercentageStatus() == Controllers::Settings::BatteryPercentage::ON) {
     lv_checkbox_set_checked(cbOption[optionsTotal], true);
   }
+  lv_obj_align(cbOption[optionsTotal], settingsTitle, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 5);
   lv_obj_set_hidden(cbOption[optionsTotal], true);
   optionsTotal++;
 
-  btnClose = lv_btn_create(lv_scr_act(), nullptr);
+  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
+  lv_checkbox_set_text_static(cbOption[optionsTotal], " Color Icon");
+  cbOption[optionsTotal]->user_data = this;
+  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
+  if (settingsController.GetDWSBatteryColorStatus() == Controllers::Settings::BatteryColor::ON) {
+    lv_checkbox_set_checked(cbOption[optionsTotal], true);
+  }
+  lv_obj_align(cbOption[optionsTotal], cbOption[optionsTotal-1], LV_ALIGN_OUT_BOTTOM_LEFT, 0, 5);
+  lv_obj_set_hidden(cbOption[optionsTotal], true);
+  optionsTotal++;
+
+  btnClose = lv_btn_create(container1, nullptr);
   btnClose->user_data = this;
   lv_obj_set_size(btnClose, 60, 60);
-  lv_obj_align(btnClose, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_obj_set_style_local_bg_opa(btnClose, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_obj_align(btnClose, container1, LV_ALIGN_IN_BOTTOM_MID, 0, -5);
   lv_obj_set_style_local_value_str(btnClose, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "X");
   lv_obj_set_event_cb(btnClose, event_handler);
-  lv_obj_set_hidden(settingsTitle, true);
+  lv_obj_set_hidden(btnClose, true);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -308,6 +329,7 @@ void WatchFaceDigital::HideSettingsMenuItems(bool visible) {
   for (int index = 0; index < optionsTotal; ++index) {
     lv_obj_set_hidden(cbOption[index], visible);
   }
+  lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
 }
 
 void WatchFaceDigital::UpdateSelected(lv_obj_t* object, lv_event_t event) {
@@ -319,22 +341,29 @@ void WatchFaceDigital::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       }
     }
 
+    batteryPercentRemaining = batteryController.PercentRemaining();
+    auto batteryPercent = batteryPercentRemaining.Get();
+
     if (index == 0) {
       if (settingsController.GetDWSBatteryPercentageStatus() == Controllers::Settings::BatteryPercentage::ON) {
         settingsController.SetDWSBatteryPercentageStatus(Controllers::Settings::BatteryPercentage::OFF);
         lv_checkbox_set_checked(cbOption[index], false);
+        lv_label_set_text_static(batteryValue, "");
       } else {
         settingsController.SetDWSBatteryPercentageStatus(Controllers::Settings::BatteryPercentage::ON);
         lv_checkbox_set_checked(cbOption[index], true);
+        lv_label_set_text_fmt(batteryValue, "%lu%%", batteryPercent);
       }
     };
     if (index == 1) {
       if (settingsController.GetDWSBatteryColorStatus() == Controllers::Settings::BatteryColor::ON) {
         settingsController.SetDWSBatteryColorStatus(Controllers::Settings::BatteryColor::OFF);
         lv_checkbox_set_checked(cbOption[index], false);
+        lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetDefaultBatteryColor(batteryPercent));
       } else {
         settingsController.SetDWSBatteryColorStatus(Controllers::Settings::BatteryColor::ON);
         lv_checkbox_set_checked(cbOption[index], true);
+        lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetBatteryColor(batteryPercent));
       }
     };
   }
@@ -346,6 +375,7 @@ void WatchFaceDigital::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     if (object == btnSet) {
       lv_obj_set_hidden(btnSet, true);
       HideSettingsMenuItems(false);
+      lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
     }
   }
 }

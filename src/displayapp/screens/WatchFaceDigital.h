@@ -75,8 +75,9 @@ namespace Pinetime {
 
         uint32_t savedTick = 0;
         uint8_t optionsTotal;
+        lv_obj_t* container1;
         lv_obj_t* settingsTitle;
-        lv_obj_t* cbOption[1];
+        lv_obj_t* cbOption[2];
         lv_obj_t* btnSet;
         lv_obj_t* lbl_btnSet;
         lv_obj_t* btnClose;
