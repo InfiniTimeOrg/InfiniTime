@@ -62,10 +62,6 @@ namespace Pinetime {
         };
 
       private:
-        struct NotificationData {
-          const char* title;
-          const char* text;
-        };
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::AlertNotificationService& alertNotificationService;
         Pinetime::Controllers::MotorController& motorController;
