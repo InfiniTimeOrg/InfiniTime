@@ -39,6 +39,23 @@
 				"create openocd build"
 			],
 			"problemMatcher": []
+		},
+		{
+			"label": "Run Simulator",
+			"type": "shell",
+			"command": "cmake -S . -B build -DInfiniTime_DIR=../InfiniTime && cmake --build build -j4 && ./build/infinisim",
+			"options": {
+				"cwd": "${workspaceFolder}/../InfiniSim"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "shared"
+			},
+			"problemMatcher": []
 		}
 	]
 }
