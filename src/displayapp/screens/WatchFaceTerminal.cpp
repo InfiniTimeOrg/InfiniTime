@@ -41,7 +41,7 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
   lv_obj_align(connectState, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 40);
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 10, 0);
+  lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_LEFT_MID, 0, -100);
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label_date, true);
@@ -97,12 +97,12 @@ void WatchFaceTerminal::Refresh() {
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     if(!bleRadioEnabled.Get()) {
-      lv_label_set_text_static(connectState, "[STAT]#387b54 Disabled#");
+      lv_label_set_text_static(connectState, "[STAT]#0082fc Disabled#");
     } else {
       if (bleState.Get()) {
-        lv_label_set_text_static(connectState, "[STAT]#387b54 Connected#");
+        lv_label_set_text_static(connectState, "[STAT]#0082fc Connected#");
       } else {
-        lv_label_set_text_static(connectState, "[STAT]#387b54 Disconnected#");
+        lv_label_set_text_static(connectState, "[STAT]#0082fc Disconnected#");
       }
     }
   }
@@ -110,9 +110,9 @@ void WatchFaceTerminal::Refresh() {
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     if (notificationState.Get()) {
-      lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(true));
+      lv_label_set_text_static(notificationIcon, "You have mail.");
     } else {
-      lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
+      lv_label_set_text_static(notificationIcon, "");
     }
   }
 
