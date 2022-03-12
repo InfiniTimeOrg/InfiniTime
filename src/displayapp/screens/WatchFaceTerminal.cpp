@@ -49,11 +49,11 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
 
   label_prompt_1 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_prompt_1, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -80);
-  lv_label_set_text_static(label_prompt_1, "user@watch:~ $ now");
+  lv_label_set_text_static(label_prompt_1, "siick@watch:~ $ now");
 
   label_prompt_2 = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_prompt_2, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
-  lv_label_set_text_static(label_prompt_2, "user@watch:~ $");
+  lv_label_set_text_static(label_prompt_2, "siick@watch:~ $");
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label_time, true);
@@ -110,7 +110,7 @@ void WatchFaceTerminal::Refresh() {
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     if (notificationState.Get()) {
-      lv_label_set_text_static(notificationIcon, "You have mail.");
+      lv_label_set_text_static(notificationIcon, "#ee3311 Swipe down to see me#");
     } else {
       lv_label_set_text_static(notificationIcon, "");
     }
