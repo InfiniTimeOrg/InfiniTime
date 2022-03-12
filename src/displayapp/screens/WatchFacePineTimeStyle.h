@@ -21,16 +21,16 @@ namespace Pinetime {
 
   namespace Applications {
     namespace Screens {
-      class PineTimeStyle : public Screen {
+      class WatchFacePineTimeStyle : public Screen {
       public:
-        PineTimeStyle(DisplayApp* app,
+        WatchFacePineTimeStyle(DisplayApp* app,
                       Controllers::DateTime& dateTimeController,
                       Controllers::Battery& batteryController,
                       Controllers::Ble& bleController,
                       Controllers::NotificationManager& notificatioManager,
                       Controllers::Settings& settingsController,
                       Controllers::MotionController& motionController);
-        ~PineTimeStyle() override;
+        ~WatchFacePineTimeStyle() override;
 
         bool OnTouchEvent(TouchEvents event) override;
         bool OnButtonPushed() override;
