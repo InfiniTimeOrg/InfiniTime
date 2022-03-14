@@ -47,6 +47,8 @@ namespace {
   constexpr ble_uuid128_t msRepeatCharUuid {CharUuid(0x0b, 0x00)};
   constexpr ble_uuid128_t msShuffleCharUuid {CharUuid(0x0c, 0x00)};
 
+  constexpr uint8_t MaxStringSize {40};
+
   int MusicCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
     return static_cast<Pinetime::Controllers::MusicService*>(arg)->OnCommand(conn_handle, attr_handle, ctxt);
   }
@@ -125,6 +127,11 @@ void Pinetime::Controllers::MusicService::Init() {
 int Pinetime::Controllers::MusicService::OnCommand(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     size_t notifSize = OS_MBUF_PKTLEN(ctxt->om);
+
+    if(notifSize > MaxStringSize) {
+      notifSize = MaxStringSize;
+    }
+
     char data[notifSize + 1];
     data[notifSize] = '\0';
     os_mbuf_copydata(ctxt->om, 0, notifSize, data);
