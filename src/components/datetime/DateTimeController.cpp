@@ -108,11 +108,11 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   }
 }
 
-const char* DateTime::MonthShortToString() {
+const char* DateTime::MonthShortToString() const {
   return MonthsString[static_cast<uint8_t>(month)];
 }
 
-const char* DateTime::DayOfWeekShortToString() {
+const char* DateTime::DayOfWeekShortToString() const {
   return DaysStringShort[static_cast<uint8_t>(dayOfWeek)];
 }
 
