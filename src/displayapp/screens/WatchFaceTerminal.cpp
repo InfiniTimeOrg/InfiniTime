@@ -110,7 +110,7 @@ void WatchFaceTerminal::Refresh() {
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     if (notificationState.Get()) {
-      lv_label_set_text_static(notificationIcon, "#ee3311 Swipe down to see me#");
+      lv_label_set_text_static(notificationIcon, "Swipe down to see me");
     } else {
       lv_label_set_text_static(notificationIcon, "");
     }
