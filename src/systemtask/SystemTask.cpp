@@ -107,7 +107,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
 
 void SystemTask::Start() {
   systemTasksMsgQueue = xQueueCreate(10, 1);
-  if (pdPASS != xTaskCreate(SystemTask::Process, "MAIN", 350, this, 0, &taskHandle)) {
+  if (pdPASS != xTaskCreate(SystemTask::Process, "MAIN", 350, this, 1, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }
 }
