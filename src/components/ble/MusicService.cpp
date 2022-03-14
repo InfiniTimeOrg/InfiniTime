@@ -128,7 +128,7 @@ int Pinetime::Controllers::MusicService::OnCommand(uint16_t conn_handle, uint16_
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     size_t notifSize = OS_MBUF_PKTLEN(ctxt->om);
 
-    if(notifSize > MaxStringSize) {
+    if (notifSize > MaxStringSize) {
       notifSize = MaxStringSize;
     }
 
