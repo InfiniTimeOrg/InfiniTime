@@ -74,7 +74,7 @@ namespace Pinetime {
         lv_obj_t* batteryIcon;
         lv_obj_t* notificationIcon;
 
-        Controllers::DateTime& dateTimeController;
+        const Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
