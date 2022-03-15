@@ -42,6 +42,11 @@ namespace Pinetime {
         Colors ColorBG = Colors::Black;
       };
 
+      struct GlobalColors {
+        Colors ColorList = Colors::Cyan;
+        Colors ColorTile = Colors::Cyan;
+      };
+
       Settings(Pinetime::Controllers::FS& fs);
 
       void Init();
@@ -92,6 +97,24 @@ namespace Pinetime {
       };
       Colors GetPTSColorBG() const {
         return settings.PTS.ColorBG;
+      };
+
+      void SetColorList(Colors colorList) {
+        if (colorList != settings.GC.ColorList)
+          settingsChanged = true;
+        settings.GC.ColorList = colorList;
+      };
+      Colors GetColorList() const {
+        return settings.GC.ColorList;
+      };
+
+      void SetColorTile(Colors colorTile) {
+        if (colorTile != settings.GC.ColorTile)
+          settingsChanged = true;
+        settings.GC.ColorTile = colorTile;
+      };
+      Colors GetColorTile() const {
+        return settings.GC.ColorTile;
       };
 
       void SetAppMenu(uint8_t menu) {
@@ -213,7 +236,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0003;
+      static constexpr uint32_t settingsVersion = 0x0004;
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
@@ -226,6 +249,8 @@ namespace Pinetime {
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
+
+        GlobalColors GC;
 
         std::bitset<4> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;

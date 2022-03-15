@@ -450,6 +450,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingChimes.cpp
         displayapp/screens/settings/SettingShakeThreshold.cpp
         displayapp/screens/settings/SettingAirplaneMode.cpp
+        displayapp/screens/settings/SettingColor.cpp
 
         ## Watch faces
         displayapp/icons/bg_clock.c
