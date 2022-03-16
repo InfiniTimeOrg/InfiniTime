@@ -40,7 +40,7 @@ namespace Pinetime {
         void OnObjectEvent(lv_obj_t* obj, lv_event_t event);
 
       private:
-        bool OnTouchEvent(TouchEvents event);
+        bool OnTouchEvent(TouchEvents event) override;
 
         void UpdateLength();
 
