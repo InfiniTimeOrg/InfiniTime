@@ -117,7 +117,7 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   btnSet->user_data = this;
   lv_obj_set_height(btnSet, 150);
   lv_obj_set_width(btnSet, 150);
-  lv_obj_align(btnSet, container1, LV_ALIGN_CENTER, 0, 15);
+  lv_obj_align(btnSet, container1, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_local_radius(btnSet, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 30);
   lv_obj_set_style_local_bg_opa(btnSet, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
   lv_obj_set_event_cb(btnSet, event_handler);
@@ -183,9 +183,9 @@ void WatchFaceDigital::Refresh() {
     auto batteryPercent = batteryPercentRemaining.Get();
 
     if (settingsController.GetDWSBatteryColorStatus() == Controllers::Settings::BatteryColor::ON) {
-        lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetBatteryColor(batteryPercent));
+      lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetBatteryColor(batteryPercent));
     } else {
-        lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetDefaultBatteryColor(batteryPercent));
+      lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BatteryIcon::GetDefaultBatteryColor(batteryPercent));
     }
     
     if (settingsController.GetDWSBatteryPercentageStatus() == Controllers::Settings::BatteryPercentage::ON) {
