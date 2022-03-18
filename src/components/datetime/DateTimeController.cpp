@@ -127,7 +127,7 @@ const char* DateTime::MonthShortToStringLow(Months month) {
   return MonthsStringLow[static_cast<uint8_t>(month)];
 }
 
-const char* DateTime::DayOfWeekShortToStringLow() {
+const char* DateTime::DayOfWeekShortToStringLow() const {
   return DaysStringShortLow[static_cast<uint8_t>(dayOfWeek)];
 }
 
