@@ -194,16 +194,6 @@ void DisplayApp::Refresh() {
         brightnessController.Restore();
         state = States::Running;
         break;
-      case Messages::UpdateTimeOut:
-        PushMessageToSystemTask(System::Messages::UpdateTimeOut);
-        break;
-      case Messages::UpdateBleConnection:
-        //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
-        //        Screens::Clock::BleConnectionStates::NotConnected);
-        break;
-      case Messages::NewNotification:
-        LoadApp(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
-        break;
       case Messages::TimerDone:
         if (currentApp == Apps::Timer) {
           auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
@@ -219,9 +209,6 @@ void DisplayApp::Refresh() {
         } else {
           LoadApp(Apps::Alarm, DisplayApp::FullRefreshDirections::None);
         }
-        break;
-      case Messages::ShowPairingKey:
-        LoadApp(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
         break;
       case Messages::TouchEvent: {
         if (state != States::Running) {
@@ -269,40 +256,6 @@ void DisplayApp::Refresh() {
           }
         }
         break;
-      case Messages::ButtonLongPressed:
-        if (currentApp != Apps::Clock) {
-          if (currentApp == Apps::Notifications) {
-            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Up);
-          } else if (currentApp == Apps::QuickSettings) {
-            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
-          } else {
-            LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
-          }
-        }
-        break;
-      case Messages::ButtonLongerPressed:
-        // Create reboot app and open it instead
-        LoadApp(Apps::SysInfo, DisplayApp::FullRefreshDirections::Up);
-        break;
-      case Messages::ButtonDoubleClicked:
-        if (currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
-          LoadApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
-        }
-        break;
-
-      case Messages::BleFirmwareUpdateStarted:
-        LoadApp(Apps::FirmwareUpdate, DisplayApp::FullRefreshDirections::Down);
-        break;
-      case Messages::BleRadioEnableToggle:
-        PushMessageToSystemTask(System::Messages::BleRadioEnableToggle);
-        break;
-      case Messages::UpdateDateTime:
-        // Added to remove warning
-        // What should happen here?
-        break;
-      case Messages::Clock:
-        LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::None);
-        break;
     }
   }
 
@@ -313,6 +266,32 @@ void DisplayApp::Refresh() {
 
   if (touchHandler.IsTouching()) {
     currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
+  }
+}
+
+void DisplayApp::OnTimeOutUpdated() {
+  PushMessageToSystemTask(System::Messages::UpdateTimeOut);
+}
+
+void DisplayApp::OnBleRadioEnableToggle() {
+  PushMessageToSystemTask(System::Messages::BleRadioEnableToggle);
+}
+
+void DisplayApp::ReturnToWatchface() {
+  if (currentApp != Apps::Clock) {
+    if (currentApp == Apps::Notifications) {
+      StartApp(Apps::Clock, DisplayApp::FullRefreshDirections::Up);
+    } else if (currentApp == Apps::QuickSettings) {
+      StartApp(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
+    } else {
+      StartApp(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
+    }
+  }
+}
+
+void DisplayApp::OpenNotifications() {
+  if (currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
+    StartApp(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
   }
 }
 
@@ -327,6 +306,7 @@ void DisplayApp::ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction
   returnTouchEvent = touchEvent;
 }
 
+// Only use LoadApp() in the DisplayApp task
 void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) {
   touchHandler.CancelTap();
   currentScreen.reset(nullptr);

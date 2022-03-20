@@ -287,7 +287,6 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewTime:
           ReloadIdleTimer();
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateDateTime);
           if (alarmController.State() == Controllers::AlarmController::AlarmState::Set) {
             alarmController.ScheduleAlarm();
           }
@@ -299,7 +298,7 @@ void SystemTask::Work() {
             } else {
               ReloadIdleTimer();
             }
-            displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
+            displayApp.StartApp(Applications::Apps::NotificationsPreview, Applications::DisplayApp::FullRefreshDirections::Down);
           }
           break;
         case Messages::OnTimerDone:
@@ -329,7 +328,7 @@ void SystemTask::Work() {
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::BleFirmwareUpdateStarted);
+          displayApp.StartApp(Applications::Apps::FirmwareUpdate, Applications::DisplayApp::FullRefreshDirections::Down);
           break;
         case Messages::BleFirmwareUpdateFinished:
           if (bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated) {
@@ -401,20 +400,22 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewHour:
           using Pinetime::Controllers::AlarmController;
-          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours && alarmController.State() != AlarmController::AlarmState::Alerting) {
+          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours &&
+              alarmController.State() != AlarmController::AlarmState::Alerting) {
             if (isSleeping && !isWakingUp) {
               GoToRunning();
-              displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
+              displayApp.ReturnToWatchface();
             }
             motorController.RunForDuration(35);
           }
           break;
         case Messages::OnNewHalfHour:
           using Pinetime::Controllers::AlarmController;
-          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours && alarmController.State() != AlarmController::AlarmState::Alerting) {
+          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours &&
+              alarmController.State() != AlarmController::AlarmState::Alerting) {
             if (isSleeping && !isWakingUp) {
               GoToRunning();
-              displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
+              displayApp.ReturnToWatchface();
             }
             motorController.RunForDuration(35);
           }
@@ -438,10 +439,10 @@ void SystemTask::Work() {
             GoToRunning();
           }
           motorController.RunForDuration(35);
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
+          displayApp.StartApp(Applications::Apps::PassKey, Applications::DisplayApp::FullRefreshDirections::Up);
           break;
         case Messages::BleRadioEnableToggle:
-          if(settingsController.GetBleRadioEnabled()) {
+          if (settingsController.GetBleRadioEnabled()) {
             nimbleController.EnableRadio();
           } else {
             nimbleController.DisableRadio();
@@ -520,13 +521,13 @@ void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
       }
       break;
     case Actions::DoubleClick:
-      displayApp.PushMessage(Applications::Display::Messages::ButtonDoubleClicked);
+      displayApp.OpenNotifications();
       break;
     case Actions::LongPress:
-      displayApp.PushMessage(Applications::Display::Messages::ButtonLongPressed);
+      displayApp.ReturnToWatchface();
       break;
     case Actions::LongerPress:
-      displayApp.PushMessage(Applications::Display::Messages::ButtonLongerPressed);
+      displayApp.StartApp(Applications::Apps::SysInfo, Applications::DisplayApp::FullRefreshDirections::Up);
       break;
     default:
       return;

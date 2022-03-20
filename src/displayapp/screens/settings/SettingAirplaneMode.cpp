@@ -71,7 +71,7 @@ SettingAirplaneMode::~SettingAirplaneMode() {
   lv_obj_clean(lv_scr_act());
   // Do not call SaveSettings - see src/components/settings/Settings.h
   if (priorMode != settingsController.GetBleRadioEnabled()) {
-    app->PushMessage(Pinetime::Applications::Display::Messages::BleRadioEnableToggle);
+    app->OnBleRadioEnableToggle();
   }
 }
 

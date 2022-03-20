@@ -72,6 +72,12 @@ namespace Pinetime {
 
       void Register(Pinetime::System::SystemTask* systemTask);
 
+      void ReturnToWatchface();
+      void OpenNotifications();
+      void OnButtonPushed();
+      void OnTimeOutUpdated();
+      void OnBleRadioEnableToggle();
+
     private:
       Pinetime::Drivers::St7789& lcd;
       Pinetime::Components::LittleVgl& lvgl;
