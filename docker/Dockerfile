@@ -26,7 +26,9 @@ RUN apt-get update -qq \
 
 RUN pip3 install adafruit-nrfutil
 RUN pip3 install -Iv cryptography==3.3
-RUN pip3 install cbor
+
+# Install dependences of mcuboot/imgtool.py
+RUN pip3 install intelhex click cbor>=1.0.0
 
 # build.sh knows how to compile
 COPY build.sh /opt/
@@ -36,8 +38,6 @@ COPY build.sh /opt/
 RUN bash -c "source /opt/build.sh; GetGcc;"
 # NrfSdk
 RUN bash -c "source /opt/build.sh; GetNrfSdk;"
-# McuBoot
-RUN bash -c "source /opt/build.sh; GetMcuBoot;"
 
 ARG PUID=1000
 ARG PGID=1000

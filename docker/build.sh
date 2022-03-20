@@ -25,7 +25,6 @@ main() {
   
   [[ ! -d "$TOOLS_DIR/$GCC_ARM_VER" ]] && GetGcc
   [[ ! -d "$TOOLS_DIR/$NRF_SDK_VER" ]] && GetNrfSdk
-  [[ ! -d "$TOOLS_DIR/mcuboot" ]] && GetMcuBoot
 
   mkdir -p "$BUILD_DIR"
 
@@ -40,11 +39,6 @@ main() {
 GetGcc() {
   GCC_SRC="$GCC_ARM_VER-$MACHINE-linux.tar.bz"
   wget -q https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/$GCC_SRC -O - | tar -xj -C $TOOLS_DIR/
-}
-
-GetMcuBoot() {
-  git clone https://github.com/mcu-tools/mcuboot.git "$TOOLS_DIR/mcuboot"
-  pip3 install -r "$TOOLS_DIR/mcuboot/scripts/requirements.txt"
 }
 
 GetNrfSdk() {
