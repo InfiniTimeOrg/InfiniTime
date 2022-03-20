@@ -59,13 +59,13 @@ CmakeGenerate() {
   cd "$BUILD_DIR"
 
   cmake -G "Unix Makefiles" \
+    -S "$SOURCES_DIR" \
+    -B "$BUILD_DIR" \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DUSE_OPENOCD=1 \
     -DARM_NONE_EABI_TOOLCHAIN_PATH="$TOOLS_DIR/$GCC_ARM_VER" \
     -DNRF5_SDK_PATH="$TOOLS_DIR/$NRF_SDK_VER" \
-    -DBUILD_DFU=1 \
-    "$SOURCES_DIR"
-  cmake -L -N .
+    -DBUILD_DFU=1
 }
 
 CmakeBuild() {

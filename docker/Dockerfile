@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq \
@@ -26,6 +26,7 @@ RUN apt-get update -qq \
 
 RUN pip3 install adafruit-nrfutil
 RUN pip3 install -Iv cryptography==3.3
+RUN pip3 install cbor
 
 # build.sh knows how to compile
 COPY build.sh /opt/
@@ -38,10 +39,5 @@ RUN bash -c "source /opt/build.sh; GetNrfSdk;"
 # McuBoot
 RUN bash -c "source /opt/build.sh; GetMcuBoot;"
 
-ARG PUID=1000
-ARG PGID=1000
-RUN groupadd --system --gid $PGID infinitime && useradd --system --uid $PUID --gid $PGID infinitime
-
-USER infinitime:infinitime
 ENV SOURCES_DIR /sources
 CMD ["/opt/build.sh"]
