@@ -39,5 +39,5 @@ jobs:
         with:
           name: InfiniTime artifacts
           path: |
-            build/output/pinetime-mcuboot-app-dfu-*-.zip
-            build/output/pinetime-mcuboot-app-image-*-.zip
+            build/output/pinetime-mcuboot-app-dfu-*.zip
+            build/output/pinetime-mcuboot-app-image-*.zip
