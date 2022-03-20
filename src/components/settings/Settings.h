@@ -45,6 +45,8 @@ namespace Pinetime {
       struct GlobalColors {
         Colors ColorList = Colors::Cyan;
         Colors ColorTile = Colors::Cyan;
+        int Opacity = 51;
+        //const int Opacity = {51, 102, 153, 204, 255};
       };
 
       Settings(Pinetime::Controllers::FS& fs);
@@ -115,6 +117,16 @@ namespace Pinetime {
       };
       Colors GetColorTile() const {
         return settings.GC.ColorTile;
+      };
+
+      void SetOpacity(int opacity) {
+        if (opacity != settings.GC.Opacity) {
+          settings.GC.Opacity = opacity;
+          settingsChanged = true;
+        }
+      };
+      int GetOpacity() const {
+        return settings.GC.Opacity;
       };
 
       void SetAppMenu(uint8_t menu) {

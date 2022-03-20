@@ -27,9 +27,12 @@ namespace Pinetime {
           lv_obj_t * btnPrevList;
           lv_obj_t * btnNextTile;
           lv_obj_t * btnPrevTile;
+          lv_obj_t * btnOpacity;
           lv_obj_t * btnReset;
           lv_obj_t * listColor;
           lv_obj_t * tileColor;
+          lv_obj_t * labelList;
+          lv_obj_t * labelTile;
           lv_obj_t * backgroundLabel;
       };
     }

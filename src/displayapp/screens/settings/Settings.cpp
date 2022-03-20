@@ -73,7 +73,7 @@ std::unique_ptr<Screen> Settings::CreateScreen3() {
 std::unique_ptr<Screen> Settings::CreateScreen4() {
 
   std::array<Screens::List::Applications, 4> applications {{
-    {Symbols::paintbrush, "Colors", Apps::SettingColor},
+    {Symbols::paintbrush, "UI Colors", Apps::SettingColor},
     {Symbols::list, "About", Apps::SysInfo},
     {Symbols::none, "None", Apps::None},
     {Symbols::none, "None", Apps::None}
