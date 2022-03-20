@@ -45,7 +45,7 @@ FlashLight::FlashLight(Pinetime::Applications::DisplayApp* app,
   lv_label_set_long_mode(backgroundAction, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundAction, 240, 240);
   lv_obj_set_pos(backgroundAction, 0, 0);
-  lv_label_set_text(backgroundAction, "");
+  lv_label_set_text_static(backgroundAction, "");
   lv_obj_set_click(backgroundAction, true);
   backgroundAction->user_data = this;
   lv_obj_set_event_cb(backgroundAction, event_handler);

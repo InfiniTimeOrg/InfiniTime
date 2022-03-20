@@ -61,7 +61,7 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_width(resetBtn, 115);
   lv_obj_align(resetBtn, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   resetButtonLabel = lv_label_create(resetBtn, nullptr);
-  lv_label_set_text(resetButtonLabel, "Reset");
+  lv_label_set_text_static(resetButtonLabel, "Reset");
 
   currentTripSteps = motionController.GetTripSteps();
 

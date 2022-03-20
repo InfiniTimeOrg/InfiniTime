@@ -24,7 +24,6 @@ namespace Pinetime {
         lv_obj_t* bar1;
         lv_obj_t* percentLabel;
         lv_obj_t* titleLabel;
-        mutable char percentStr[10];
 
         States state = States::Idle;
 

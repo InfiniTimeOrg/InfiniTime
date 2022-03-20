@@ -40,7 +40,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
+  lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
   lv_obj_align(batteryIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   static constexpr uint8_t barHeight = 20 + innerDistance;
@@ -124,7 +124,7 @@ QuickSettings::~QuickSettings() {
 
 void QuickSettings::UpdateScreen() {
   lv_label_set_text(label_time, dateTimeController.FormattedTime().c_str());
-  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
+  lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
 }
 
 void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {

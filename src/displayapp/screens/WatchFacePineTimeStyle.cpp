@@ -373,7 +373,7 @@ void WatchFacePineTimeStyle::Refresh() {
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
-    lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
+    lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
     AlignIcons();
   }
 
@@ -424,10 +424,10 @@ void WatchFacePineTimeStyle::Refresh() {
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      lv_label_set_text_fmt(dateDayOfWeek, "%s", dateTimeController.DayOfWeekShortToString());
+      lv_label_set_text_static(dateDayOfWeek, dateTimeController.DayOfWeekShortToString());
       lv_label_set_text_fmt(dateDay, "%d", day);
       lv_obj_realign(dateDay);
-      lv_label_set_text_fmt(dateMonth, "%s", dateTimeController.MonthShortToString());
+      lv_label_set_text_static(dateMonth, dateTimeController.MonthShortToString());
 
       currentYear = year;
       currentMonth = month;
