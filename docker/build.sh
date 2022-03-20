@@ -54,10 +54,6 @@ GetNrfSdk() {
 }
 
 CmakeGenerate() {
-  # We can swap the CD and trailing SOURCES_DIR for -B and -S respectively
-  # once we go to newer CMake (Ubuntu 18.10 gives us CMake 3.10)
-  cd "$BUILD_DIR"
-
   cmake -G "Unix Makefiles" \
     -S "$SOURCES_DIR" \
     -B "$BUILD_DIR" \
