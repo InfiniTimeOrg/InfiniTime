@@ -9,7 +9,7 @@ set -e
 export TOOLS_DIR="${TOOLS_DIR:=/opt}"
 export SOURCES_DIR="${SOURCES_DIR:=/sources}"
 export BUILD_DIR="${BUILD_DIR:=$SOURCES_DIR/build}"
-export OUTPUT_DIR="${OUTPUT_DIR:=$BUILD_DIR/output}"
+export OUTPUT_DIR="${OUTPUT_DIR:=$SOURCES_DIR/build/output}"
 
 export BUILD_TYPE=${BUILD_TYPE:=Release}
 export GCC_ARM_VER=${GCC_ARM_VER:="gcc-arm-none-eabi-9-2020-q2-update"}
