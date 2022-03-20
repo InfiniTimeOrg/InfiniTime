@@ -1,6 +1,6 @@
-#include "SettingColor.h"
+#include "displayapp/screens/settings/SettingColor.h"
 #include <lvgl/lvgl.h>
-#include <displayapp/Colors.h>
+#include "displayapp/Colors.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
 
@@ -40,9 +40,7 @@ SettingColor::SettingColor(Pinetime::Applications::DisplayApp* app, Pinetime::Co
   btnNextList->user_data = this;
   lv_obj_set_size(btnNextList, 110, 60);
   lv_obj_align(btnNextList, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -10, -80);
-  //lv_obj_set_style_local_bg_color(btnNextList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorList()));
   lv_obj_set_style_local_bg_opa(btnNextList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-  //lv_obj_set_style_local_radius(btnNextList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_value_str(btnNextList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "    >");
   lv_obj_set_event_cb(btnNextList, event_handler);
 
@@ -50,9 +48,7 @@ SettingColor::SettingColor(Pinetime::Applications::DisplayApp* app, Pinetime::Co
   btnPrevList->user_data = this;
   lv_obj_set_size(btnPrevList, 110, 60);
   lv_obj_align(btnPrevList, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 10, -80);
-  //lv_obj_set_style_local_bg_color(btnPrevList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorList()));
   lv_obj_set_style_local_bg_opa(btnPrevList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-  //lv_obj_set_style_local_radius(btnPrevList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_value_str(btnPrevList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<    ");
   lv_obj_set_event_cb(btnPrevList, event_handler);
 
@@ -64,9 +60,7 @@ SettingColor::SettingColor(Pinetime::Applications::DisplayApp* app, Pinetime::Co
   btnNextTile->user_data = this;
   lv_obj_set_size(btnNextTile, 110, 60);
   lv_obj_align(btnNextTile, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -10, 0);
-  //lv_obj_set_style_local_bg_color(btnNextTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorTile()));
   lv_obj_set_style_local_bg_opa(btnNextTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-  //lv_obj_set_style_local_radius(btnNextTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_value_str(btnNextTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "    >");
   lv_obj_set_event_cb(btnNextTile, event_handler);
 
@@ -74,9 +68,7 @@ SettingColor::SettingColor(Pinetime::Applications::DisplayApp* app, Pinetime::Co
   btnPrevTile->user_data = this;
   lv_obj_set_size(btnPrevTile, 110, 60);
   lv_obj_align(btnPrevTile, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 10, 0);
-  //lv_obj_set_style_local_bg_color(btnPrevTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorTile()));
   lv_obj_set_style_local_bg_opa(btnPrevTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-  //lv_obj_set_style_local_radius(btnPrevTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_value_str(btnPrevTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<    ");
   lv_obj_set_event_cb(btnPrevTile, event_handler);
 
@@ -121,8 +113,6 @@ void SettingColor::UpdateSelected(lv_obj_t* object, lv_event_t event) {
         valueList = GetNext(valueList);
       settingsController.SetColorList(valueList);
       lv_obj_set_style_local_bg_color(listColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
-      //lv_obj_set_style_local_bg_color(btnNextList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
-      //lv_obj_set_style_local_bg_color(btnPrevList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
     }
     if (object == btnPrevList) {
       valueList = GetPrevious(valueList);
@@ -132,8 +122,6 @@ void SettingColor::UpdateSelected(lv_obj_t* object, lv_event_t event) {
         valueList = GetPrevious(valueList);
       settingsController.SetColorList(valueList);
       lv_obj_set_style_local_bg_color(listColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
-      //lv_obj_set_style_local_bg_color(btnNextList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
-      //lv_obj_set_style_local_bg_color(btnPrevList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
     }
     if (object == btnNextTile) {
       valueTile = GetNext(valueTile);
@@ -143,8 +131,6 @@ void SettingColor::UpdateSelected(lv_obj_t* object, lv_event_t event) {
         valueTile = GetNext(valueTile);
       settingsController.SetColorTile(valueTile);
       lv_obj_set_style_local_bg_color(tileColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
-      //lv_obj_set_style_local_bg_color(btnNextTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
-      //lv_obj_set_style_local_bg_color(btnPrevTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
     }
     if (object == btnPrevTile) {
       valueTile = GetPrevious(valueTile);
@@ -154,8 +140,6 @@ void SettingColor::UpdateSelected(lv_obj_t* object, lv_event_t event) {
         valueTile = GetPrevious(valueTile);
       settingsController.SetColorTile(valueTile);
       lv_obj_set_style_local_bg_color(tileColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
-      //lv_obj_set_style_local_bg_color(btnNextTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
-      //lv_obj_set_style_local_bg_color(btnPrevTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
     }
     if (object == btnOpacity) {
       valueOpacity = valueOpacity + 51; 

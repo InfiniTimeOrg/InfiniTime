@@ -23,7 +23,7 @@
 #include "displayapp/icons/music/disc.cpp"
 #include "displayapp/icons/music/disc_f_1.cpp"
 #include "displayapp/icons/music/disc_f_2.cpp"
-#include <displayapp/Colors.h>
+#include "displayapp/Colors.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -52,8 +52,8 @@ Music::Music(Pinetime::Applications::DisplayApp* app,
              Pinetime::Controllers::MusicService& music, 
              Pinetime::Controllers::Settings& settingsController) 
 : Screen(app), 
-musicService(music), 
-settingsController {settingsController} 
+  musicService(music), 
+  settingsController {settingsController} 
 {
   lv_obj_t* label;
 
