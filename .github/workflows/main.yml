@@ -34,10 +34,15 @@ jobs:
           SOURCES_DIR: .
         run: |
           /opt/build.sh all
-      - name: Upload artifacts
+      - name: Upload DFU artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: InfiniTime artifacts
+          name: InfiniTime DFU artifact
           path: |
             build/output/pinetime-mcuboot-app-dfu-*.zip
+      - name: Upload MCUBoot image artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: InfiniTime MCUBoot image artifact
+          path: |
             build/output/pinetime-mcuboot-app-image-*.zip
