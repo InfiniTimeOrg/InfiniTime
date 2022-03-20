@@ -469,7 +469,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
       break;
     case Apps::Music:
-      currentScreen = std::make_unique<Screens::Music>(this, systemTask->nimble().music());
+      currentScreen = std::make_unique<Screens::Music>(this, systemTask->nimble().music(), settingsController);
       break;
     case Apps::Navigation:
       currentScreen = std::make_unique<Screens::Navigation>(this, systemTask->nimble().navigation());

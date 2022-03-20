@@ -23,6 +23,7 @@
 #include "displayapp/icons/music/disc.cpp"
 #include "displayapp/icons/music/disc_f_1.cpp"
 #include "displayapp/icons/music/disc_f_2.cpp"
+#include <displayapp/Colors.h>
 
 using namespace Pinetime::Applications::Screens;
 
@@ -47,13 +48,19 @@ inline void lv_img_set_src_arr(lv_obj_t* img, const lv_img_dsc_t* src_img) {
  *
  * TODO: Investigate Apple Media Service and AVRCPv1.6 support for seamless integration
  */
-Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::MusicService& music) : Screen(app), musicService(music) {
+Music::Music(Pinetime::Applications::DisplayApp* app, 
+             Pinetime::Controllers::MusicService& music, 
+             Pinetime::Controllers::Settings& settingsController) 
+: Screen(app), 
+musicService(music), 
+settingsController {settingsController} 
+{
   lv_obj_t* label;
 
   lv_style_init(&btn_style);
   lv_style_set_radius(&btn_style, LV_STATE_DEFAULT, 20);
-  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, LV_COLOR_AQUA);
-  lv_style_set_bg_opa(&btn_style, LV_STATE_DEFAULT, LV_OPA_20);
+  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, Convert(settingsController.GetColorTile()));
+  lv_style_set_bg_opa(&btn_style, LV_STATE_DEFAULT, settingsController.GetOpacity());
 
   btnVolDown = lv_btn_create(lv_scr_act(), nullptr);
   btnVolDown->user_data = this;

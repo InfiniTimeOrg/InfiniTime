@@ -21,6 +21,7 @@
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <string>
 #include "displayapp/screens/Screen.h"
+#include "components/settings/Settings.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -31,7 +32,7 @@ namespace Pinetime {
     namespace Screens {
       class Music : public Screen {
       public:
-        Music(DisplayApp* app, Pinetime::Controllers::MusicService& music);
+        Music(DisplayApp* app, Pinetime::Controllers::MusicService& music, Pinetime::Controllers::Settings& settingsController);
 
         ~Music() override;
 
@@ -63,6 +64,7 @@ namespace Pinetime {
         bool frameB;
 
         Pinetime::Controllers::MusicService& musicService;
+        Pinetime::Controllers::Settings& settingsController;
 
         std::string artist;
         std::string album;
