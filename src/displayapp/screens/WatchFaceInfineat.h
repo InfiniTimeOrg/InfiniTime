@@ -93,7 +93,9 @@ namespace Pinetime {
         lv_obj_t* labelHour;
         lv_obj_t* labelMinutes;
         lv_obj_t* labelTimeAmPm;
-        lv_obj_t* labelDate;
+        lv_obj_t* dateContainer;
+        lv_obj_t* labelDateDay;
+        lv_obj_t* labelDateNum;
         lv_obj_t* bleIcon;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;

@@ -159,37 +159,49 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   timeContainer = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_opa(timeContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_size(timeContainer, 185, 185);
-  lv_obj_align(timeContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
+  lv_obj_set_size(timeContainer, 110, 145);
+  lv_obj_align(timeContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 
   labelHour = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &bebas_neue_120);
+  lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
   lv_label_set_text(labelHour, "01");
-  lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 5);
 
   labelMinutes = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(labelMinutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &bebas_neue_120);
+  lv_obj_set_style_local_text_font(labelMinutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
   lv_label_set_text(labelMinutes, "00");
   lv_obj_align(labelMinutes, timeContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   labelTimeAmPm = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(labelTimeAmPm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &teko_28);
+  lv_obj_set_style_local_text_font(labelTimeAmPm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   lv_label_set_text(labelTimeAmPm, "");
+  lv_obj_align(labelTimeAmPm, timeContainer, LV_ALIGN_OUT_RIGHT_TOP, 0, 15);
 
-  labelDate = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  lv_obj_set_style_local_text_font(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &teko_28);
-  lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -1, 0);
-  lv_label_set_text(labelDate, "Mon 01");
+  dateContainer = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_opa(dateContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_size(dateContainer, 40, 50);
+  lv_obj_align(dateContainer, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 5);
+
+  labelDateDay = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(labelDateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  lv_obj_set_style_local_text_font(labelDateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_align(labelDateDay, dateContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_label_set_text(labelDateDay, "Mon");
+
+  labelDateNum = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(labelDateNum, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  lv_obj_set_style_local_text_font(labelDateNum, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_align(labelDateNum, dateContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_label_set_text(labelDateNum, "01");
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
   lv_label_set_text(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, labelDate, LV_ALIGN_OUT_BOTTOM_MID, 0, 3);
+  lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 7);
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &teko_28);
+  lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 10, 0);
   lv_label_set_text(stepValue, "0");
 
@@ -432,13 +444,16 @@ void WatchFaceInfineat::Refresh() {
 
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
       lv_label_set_text(labelTimeAmPm, ampmChar);
-      lv_obj_align(labelTimeAmPm, labelHour, LV_ALIGN_OUT_RIGHT_TOP, 5, 20);
+      lv_obj_align(labelTimeAmPm, timeContainer, LV_ALIGN_OUT_RIGHT_TOP, 0, 10);
+      lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 5);
+      lv_obj_align(labelMinutes, timeContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      lv_label_set_text_fmt(labelDate, "%s %02d", dateTimeController.DayOfWeekShortToStringLow(), day);
-      lv_obj_align(labelDate, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
-      lv_obj_set_size(labelDate, 5, 5);
+      lv_label_set_text_fmt(labelDateDay, "%s", dateTimeController.DayOfWeekShortToStringLow());
+      lv_label_set_text_fmt(labelDateNum, "%02d", day);
+      lv_obj_align(labelDateDay, dateContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
+      lv_obj_align(labelDateNum, dateContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
       currentYear = year;
       currentMonth = month;

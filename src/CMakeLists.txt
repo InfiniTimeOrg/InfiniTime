@@ -479,8 +479,6 @@ list(APPEND SOURCE_FILES
 
         displayapp/LittleVgl.cpp
         displayapp/lv_pinetime_theme.c
-        displayapp/fonts/bebas_neue_120.c
-        displayapp/fonts/teko_28.c
 
         systemtask/SystemTask.cpp
         systemtask/SystemMonitor.cpp
