@@ -1,6 +1,7 @@
 #include "components/ble/HeartRateService.h"
 #include "components/heartrate/HeartRateController.h"
 #include "systemtask/SystemTask.h"
+#include <nrf_log.h>
 
 using namespace Pinetime::Controllers;
 

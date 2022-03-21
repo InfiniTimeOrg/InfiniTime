@@ -37,6 +37,7 @@ namespace Pinetime {
       SettingSetTime,
       SettingChimes,
       SettingShakeThreshold,
+      SettingAirplaneMode,
       Error
     };
   }

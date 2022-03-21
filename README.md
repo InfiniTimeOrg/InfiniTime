@@ -16,6 +16,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
  - [AmazFish](https://openrepos.net/content/piggz/amazfish/) (SailfishOS)
  - [Siglo](https://github.com/alexr4535/siglo) (Linux)
  - [InfiniLink](https://github.com/xan-m/InfiniLink) **[Experimental]** (iOS)
+ - [ITD](https://gitea.arsenm.dev/Arsen6331/itd) (Linux)
 
 ## Development
 
@@ -24,6 +25,10 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
  - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
  - [Creating a stopwatch in Pinetime(article)](https://pankajraghav.com/2021/04/03/PINETIME-STOPCLOCK.html)
  - [Tips on designing an app UI](doc/ui_guidelines.md)
+
+### InfiniSim Simulator
+Use the [InfiniSim Simulator](https://github.com/InfiniTimeOrg/InfiniSim) to experience the `InfiniTime` user interface directly on your PC, to shorten the time until you get your hands on a real [PineTime smartwatch](https://www.pine64.org/pinetime/).
+Or use it to develop new Watchfaces, new Screens, or quickly iterate on the user interface.
 
 ### Contributing
  - [How to contribute?](/doc/contribute.md)

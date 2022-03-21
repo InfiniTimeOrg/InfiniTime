@@ -21,7 +21,11 @@ Settings::Settings(Pinetime::Applications::DisplayApp* app, Pinetime::Controller
               },
               [this]() -> std::unique_ptr<Screen> {
                 return CreateScreen3();
-              }},
+              },
+              [this]() -> std::unique_ptr<Screen> {
+               return CreateScreen4();
+              },
+             },
              Screens::ScreenListModes::UpDown} {
 }
 
@@ -34,7 +38,6 @@ bool Settings::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 std::unique_ptr<Screen> Settings::CreateScreen1() {
-
   std::array<Screens::List::Applications, 4> applications {{
     {Symbols::sun, "Display", Apps::SettingDisplay},
     {Symbols::eye, "Wake Up", Apps::SettingWakeUp},
@@ -42,19 +45,17 @@ std::unique_ptr<Screen> Settings::CreateScreen1() {
     {Symbols::home, "Watch face", Apps::SettingWatchFace},
   }};
 
-  return std::make_unique<Screens::List>(0, 3, app, settingsController, applications);
+  return std::make_unique<Screens::List>(0, 4, app, settingsController, applications);
 }
 
 std::unique_ptr<Screen> Settings::CreateScreen2() {
-
   std::array<Screens::List::Applications, 4> applications {{
+    {Symbols::none, "None", Apps::None},
     {Symbols::clock, "Set date", Apps::SettingSetDate},
     {Symbols::clock, "Set time", Apps::SettingSetTime},
-    {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
-    {Symbols::clock, "Chimes", Apps::SettingChimes},
-  }};
+    {Symbols::batteryHalf, "Battery", Apps::BatteryInfo}}};
 
-  return std::make_unique<Screens::List>(1, 3, app, settingsController, applications);
+  return std::make_unique<Screens::List>(1, 4, app, settingsController, applications);
 }
 
 std::unique_ptr<Screen> Settings::CreateScreen3() {
@@ -63,8 +64,9 @@ std::unique_ptr<Screen> Settings::CreateScreen3() {
     {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
     {Symbols::check, "Firmware", Apps::FirmwareValidation},
     {Symbols::list, "About", Apps::SysInfo},
-    {Symbols::none, "None", Apps::None}
+    {Symbols::airplane, "Airplane mode", Apps::SettingAirplaneMode}
   }};
 
-  return std::make_unique<Screens::List>(2, 3, app, settingsController, applications);
+  return std::make_unique<Screens::List>(2, 4, app, settingsController, applications);
 }
+

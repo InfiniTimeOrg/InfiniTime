@@ -48,6 +48,7 @@
 #include "displayapp/screens/settings/SettingSetTime.h"
 #include "displayapp/screens/settings/SettingChimes.h"
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
+#include "displayapp/screens/settings/SettingAirplaneMode.h"
 
 #include "libs/lv_conf.h"
 
@@ -96,6 +97,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::TimerController& timerController,
                        Pinetime::Controllers::AlarmController& alarmController,
+                       Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler)
   : lcd {lcd},
     lvgl {lvgl},
@@ -111,6 +113,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     motionController {motionController},
     timerController {timerController},
     alarmController {alarmController},
+    brightnessController {brightnessController},
     touchHandler {touchHandler} {
 }
 
@@ -289,6 +292,9 @@ void DisplayApp::Refresh() {
       case Messages::BleFirmwareUpdateStarted:
         LoadApp(Apps::FirmwareUpdate, DisplayApp::FullRefreshDirections::Down);
         break;
+      case Messages::BleRadioEnableToggle:
+        PushMessageToSystemTask(System::Messages::BleRadioEnableToggle);
+        break;
       case Messages::UpdateDateTime:
         // Added to remove warning
         // What should happen here?
@@ -366,19 +372,19 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
 
     case Apps::Notifications:
       currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask->nimble().alertService(), motorController, Screens::Notifications::Modes::Normal);
+        this, notificationManager, systemTask->nimble().alertService(), motorController, *systemTask, Screens::Notifications::Modes::Normal);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::NotificationsPreview:
       currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask->nimble().alertService(), motorController, Screens::Notifications::Modes::Preview);
+        this, notificationManager, systemTask->nimble().alertService(), motorController, *systemTask, Screens::Notifications::Modes::Preview);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::Timer:
       currentScreen = std::make_unique<Screens::Timer>(this, timerController);
       break;
     case Apps::Alarm:
-      currentScreen = std::make_unique<Screens::Alarm>(this, alarmController);
+      currentScreen = std::make_unique<Screens::Alarm>(this, alarmController, settingsController, *systemTask);
       break;
 
     // Settings
@@ -412,7 +418,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SettingSetTime:
-      currentScreen = std::make_unique<Screens::SettingSetTime>(this, dateTimeController);
+      currentScreen = std::make_unique<Screens::SettingSetTime>(this, dateTimeController, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SettingChimes:
@@ -420,7 +426,11 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SettingShakeThreshold:
-      currentScreen = std::make_unique<Screens::SettingShakeThreshold>(this, settingsController,motionController,*systemTask);
+      currentScreen = std::make_unique<Screens::SettingShakeThreshold>(this, settingsController, motionController, *systemTask);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingAirplaneMode:
+      currentScreen = std::make_unique<Screens::SettingAirplaneMode>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::BatteryInfo:

@@ -57,7 +57,6 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
     bleController {bleController},
     notificationManager {notificationManager},
     settingsController {settingsController} {
-  settingsController.SetClockFace(1);
 
   sHour = 99;
   sMinute = 99;
@@ -138,9 +137,9 @@ WatchFaceAnalog::~WatchFaceAnalog() {
 }
 
 void WatchFaceAnalog::UpdateClock() {
-  hour = dateTimeController.Hours();
-  minute = dateTimeController.Minutes();
-  second = dateTimeController.Seconds();
+  uint8_t hour = dateTimeController.Hours();
+  uint8_t minute = dateTimeController.Minutes();
+  uint8_t second = dateTimeController.Seconds();
 
   if (sMinute != minute) {
     auto const angle = minute * 6;
@@ -215,9 +214,9 @@ void WatchFaceAnalog::Refresh() {
   currentDateTime = dateTimeController.CurrentDateTime();
 
   if (currentDateTime.IsUpdated()) {
-    month = dateTimeController.Month();
-    day = dateTimeController.Day();
-    dayOfWeek = dateTimeController.DayOfWeek();
+    Pinetime::Controllers::DateTime::Months month = dateTimeController.Month();
+    uint8_t day = dateTimeController.Day();
+    Pinetime::Controllers::DateTime::Days dayOfWeek = dateTimeController.DayOfWeek();
 
     UpdateClock();
 
