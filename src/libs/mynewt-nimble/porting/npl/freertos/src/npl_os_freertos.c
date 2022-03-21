@@ -22,6 +22,8 @@
 #include <string.h>
 #include "nimble/nimble_npl.h"
 
+volatile int ble_npl_in_critical = 0;
+
 static inline bool
 in_isr(void)
 {
