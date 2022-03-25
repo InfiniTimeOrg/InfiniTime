@@ -48,6 +48,7 @@ namespace Pinetime {
 
         lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap;
         lv_obj_t* lapText;
+        lv_task_t* taskRefresh;
       };
     }
   }
