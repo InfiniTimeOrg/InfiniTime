@@ -27,6 +27,10 @@ extern "C" {
 #define LV_PINETIME_GREEN      lv_color_hex(0x4cb242)
 #define LV_PINETIME_RED        lv_color_hex(0xd51732)
 
+// States
+#define PT_STATE_PRIMARY 0x08
+#define PT_STATE_SECONDARY 0x04
+
 /**********************
  *      TYPEDEFS
  **********************/
@@ -53,6 +57,11 @@ lv_theme_t* lv_pinetime_theme_init(lv_color_t color_primary,
                                    const lv_font_t* font_normal,
                                    const lv_font_t* font_subtitle,
                                    const lv_font_t* font_title);
+
+static void update_theme(lv_color_t color_primary, lv_color_t color_secondary, lv_color_t color_btn, lv_color_t color_bg);
+static void basic_init(void);
+
+
 /**********************
  *      MACROS
  **********************/
