@@ -3,6 +3,7 @@
 #include "components/ble/MusicService.h"
 #include "components/ble/AlertNotificationService.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/lv_pinetime_theme.h"
 
 using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
@@ -55,7 +56,7 @@ Notifications::Notifications(DisplayApp* app,
     timeoutLine = lv_line_create(lv_scr_act(), nullptr);
 
     lv_obj_set_style_local_line_width(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-    lv_obj_set_style_local_line_color(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    // lv_obj_set_style_local_line_color(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
     lv_obj_set_style_local_line_rounded(timeoutLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, true);
 
     lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
@@ -181,7 +182,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   : mode {mode}, alertNotificationService {alertNotificationService}, motorController {motorController} {
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), NULL);
 
-  lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x222222));
+  // lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x222222));
   lv_obj_set_style_local_pad_all(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
   lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
   lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
@@ -197,7 +198,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_align(alert_count, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
 
   lv_obj_t* alert_type = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x888888));
+  lv_obj_set_state(alert_type, PT_STATE_PRIMARY);
   if(title == nullptr) {
     lv_label_set_text_static(alert_type, "Notification");
   } else {
@@ -218,7 +219,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   switch (category) {
     default: {
       lv_obj_t* alert_subject = lv_label_create(container1, nullptr);
-      lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+      // lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
       lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
       lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
       lv_label_set_text(alert_subject, msg);
@@ -226,7 +227,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
     case Controllers::NotificationManager::Categories::IncomingCall: {
       lv_obj_set_height(container1, 108);
       lv_obj_t* alert_subject = lv_label_create(container1, nullptr);
-      lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+      // lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
       lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
       lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
       lv_label_set_text(alert_subject, "Incoming call from");

@@ -20,7 +20,7 @@ List::List(uint8_t screenID,
   : Screen(app), settingsController {settingsController} {
 
   // Set the background to Black
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0, 0, 0));
+  // lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0, 0, 0));
 
   settingsController.SetSettingsMenu(screenID);
 
@@ -31,8 +31,9 @@ List::List(uint8_t screenID,
     pageIndicatorBasePoints[1].y = LV_VER_RES;
 
     pageIndicatorBase = lv_line_create(lv_scr_act(), NULL);
-    lv_obj_set_style_local_line_width(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-    lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
+    // lv_obj_set_style_local_line_width(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
+    // lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
+    lv_obj_set_state(pageIndicatorBase, LV_STATE_DISABLED);
     lv_line_set_points(pageIndicatorBase, pageIndicatorBasePoints, 2);
 
     const uint16_t indicatorSize = LV_VER_RES / numScreens;
@@ -44,8 +45,8 @@ List::List(uint8_t screenID,
     pageIndicatorPoints[1].y = indicatorPos + indicatorSize;
 
     pageIndicator = lv_line_create(lv_scr_act(), NULL);
-    lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-    lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+    // lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
+    // lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
     lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
   }
 
