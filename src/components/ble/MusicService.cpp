@@ -152,12 +152,20 @@ int Pinetime::Controllers::MusicService::OnCommand(uint16_t conn_handle, uint16_
       albumName = s;
     } else if (ble_uuid_cmp(ctxt->chr->uuid, &msStatusCharUuid.u) == 0) {
       playing = s[0];
+      // These variables need to be updated, because the progress may not be updated immediately,
+      // leading to getProgress() returning an incorrect position.
+      if (playing) {
+        trackProgressUpdateTime = xTaskGetTickCount();
+      } else {
+        trackProgress += static_cast<int>((static_cast<float>(xTaskGetTickCount() - trackProgressUpdateTime) / 1024.0f) * getPlaybackSpeed());
+      }
     } else if (ble_uuid_cmp(ctxt->chr->uuid, &msRepeatCharUuid.u) == 0) {
       repeat = s[0];
     } else if (ble_uuid_cmp(ctxt->chr->uuid, &msShuffleCharUuid.u) == 0) {
       shuffle = s[0];
     } else if (ble_uuid_cmp(ctxt->chr->uuid, &msPositionCharUuid.u) == 0) {
       trackProgress = (s[0] << 24) | (s[1] << 16) | (s[2] << 8) | s[3];
+      trackProgressUpdateTime = xTaskGetTickCount();
     } else if (ble_uuid_cmp(ctxt->chr->uuid, &msTotalLengthCharUuid.u) == 0) {
       trackLength = (s[0] << 24) | (s[1] << 16) | (s[2] << 8) | s[3];
     } else if (ble_uuid_cmp(ctxt->chr->uuid, &msTrackNumberCharUuid.u) == 0) {
@@ -191,7 +199,10 @@ float Pinetime::Controllers::MusicService::getPlaybackSpeed() const {
   return playbackSpeed;
 }
 
-int Pinetime::Controllers::MusicService::getProgress() const {
+int Pinetime::Controllers::MusicService::getProgress() {
+  if (isPlaying()) {
+    return trackProgress + static_cast<int>((static_cast<float>(xTaskGetTickCount() - trackProgressUpdateTime) / 1024.0f) * getPlaybackSpeed());
+  }
   return trackProgress;
 }
 

@@ -47,7 +47,7 @@ namespace Pinetime {
 
       std::string getAlbum() const;
 
-      int getProgress() const;
+      int getProgress();
 
       int getTrackLength() const;
 
@@ -81,6 +81,7 @@ namespace Pinetime {
       int trackLength {0};
       int trackNumber {};
       int tracksTotal {};
+      TickType_t trackProgressUpdateTime {0};
 
       float playbackSpeed {1.0f};
 
