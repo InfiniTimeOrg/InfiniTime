@@ -23,17 +23,17 @@ namespace Pinetime {
           Pinetime::Controllers::Settings::Colors GetNext(Controllers::Settings::Colors color);
           Pinetime::Controllers::Settings::Colors GetPrevious(Controllers::Settings::Colors color);
 
-          lv_obj_t * btnNextList;
-          lv_obj_t * btnPrevList;
-          lv_obj_t * btnNextTile;
-          lv_obj_t * btnPrevTile;
+          lv_obj_t * btnNextPrimary;
+          lv_obj_t * btnPrevPrimary;
+          lv_obj_t * btnNextSecondary;
+          lv_obj_t * btnPrevSecondary;
           lv_obj_t * btnOpacity;
           lv_obj_t * btnReset;
-          lv_obj_t * listColor;
-          lv_obj_t * tileColor;
-          lv_obj_t * labelList;
-          lv_obj_t * labelTile;
-          lv_obj_t * backgroundLabel;
+          lv_obj_t * primaryColor;
+          lv_obj_t * secondaryColor;
+          lv_obj_t * labelPrimary;
+          lv_obj_t * labelSecondary;
+          // lv_obj_t * backgroundLabel;
       };
     }
   }

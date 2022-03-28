@@ -3,6 +3,7 @@
 #include <displayapp/Colors.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/lv_pinetime_theme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -15,74 +16,75 @@ namespace {
 
 SettingColor::SettingColor(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
-  listColor = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(listColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorList()));
-  lv_obj_set_style_local_bg_opa(listColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, settingsController.GetOpacity());
-  lv_obj_set_style_local_radius(listColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 15);
-  lv_obj_set_size(listColor, 220, 60);
-  lv_obj_align(listColor, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
+  primaryColor = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_color(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorList()));
+  lv_obj_set_style_local_bg_opa(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, settingsController.GetOpacity());
+  lv_obj_set_style_local_radius(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 15);
+  lv_obj_set_size(primaryColor, 220, 60);
+  lv_obj_align(primaryColor, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
 
-  tileColor = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(tileColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorTile()));
-  lv_obj_set_style_local_bg_opa(tileColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, settingsController.GetOpacity());
-  lv_obj_set_style_local_radius(tileColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 15);
-  lv_obj_set_size(tileColor, 220, 60);
-  lv_obj_align(tileColor, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  secondaryColor = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_color(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorTile()));
+  lv_obj_set_style_local_bg_opa(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, settingsController.GetOpacity());
+  lv_obj_set_style_local_radius(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 15);
+  lv_obj_set_size(secondaryColor, 220, 60);
+  lv_obj_align(secondaryColor, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 
-  backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_click(backgroundLabel, true);
-  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
-  lv_obj_set_size(backgroundLabel, 240, 240);
-  lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text(backgroundLabel, "");
+  // backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
+  // lv_obj_set_click(backgroundLabel, true);
+  // lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
+  // lv_obj_set_size(backgroundLabel, 240, 240);
+  // lv_obj_set_pos(backgroundLabel, 0, 0);
+  // lv_label_set_text(backgroundLabel, "");
 
-  btnNextList = lv_btn_create(lv_scr_act(), nullptr);
-  btnNextList->user_data = this;
-  lv_obj_set_size(btnNextList, 110, 60);
-  lv_obj_align(btnNextList, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -10, -80);
-  //lv_obj_set_style_local_bg_color(btnNextList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorList()));
-  lv_obj_set_style_local_bg_opa(btnNextList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-  //lv_obj_set_style_local_radius(btnNextList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_value_str(btnNextList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "    >");
-  lv_obj_set_event_cb(btnNextList, event_handler);
+  btnNextPrimary = lv_btn_create(lv_scr_act(), nullptr);
+  btnNextPrimary->user_data = this;
+  lv_obj_set_size(btnNextPrimary, 110, 60);
+  lv_obj_align(btnNextPrimary, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -10, -80);
+  //lv_obj_set_style_local_bg_color(btnNextPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorList()));
+  lv_obj_set_style_local_bg_opa(btnNextPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+  //lv_obj_set_style_local_radius(btnNextPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_value_str(btnNextPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "    >");
+  lv_obj_set_event_cb(btnNextPrimary, event_handler);
 
-  btnPrevList = lv_btn_create(lv_scr_act(), nullptr);
-  btnPrevList->user_data = this;
-  lv_obj_set_size(btnPrevList, 110, 60);
-  lv_obj_align(btnPrevList, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 10, -80);
-  //lv_obj_set_style_local_bg_color(btnPrevList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorList()));
-  lv_obj_set_style_local_bg_opa(btnPrevList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-  //lv_obj_set_style_local_radius(btnPrevList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_value_str(btnPrevList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<    ");
-  lv_obj_set_event_cb(btnPrevList, event_handler);
+  btnPrevPrimary = lv_btn_create(lv_scr_act(), nullptr);
+  btnPrevPrimary->user_data = this;
+  lv_obj_set_size(btnPrevPrimary, 110, 60);
+  lv_obj_align(btnPrevPrimary, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 10, -80);
+  //lv_obj_set_style_local_bg_color(btnPrevPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorList()));
+  lv_obj_set_style_local_bg_opa(btnPrevPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+  //lv_obj_set_style_local_radius(btnPrevPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_value_str(btnPrevPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<    ");
+  lv_obj_set_event_cb(btnPrevPrimary, event_handler);
 
-  labelList = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(labelList, "Settings");
-  lv_obj_align(labelList, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
+  labelPrimary = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(labelPrimary, "Primary");
+  lv_obj_align(labelPrimary, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
 
-  btnNextTile = lv_btn_create(lv_scr_act(), nullptr);
-  btnNextTile->user_data = this;
-  lv_obj_set_size(btnNextTile, 110, 60);
-  lv_obj_align(btnNextTile, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -10, 0);
-  //lv_obj_set_style_local_bg_color(btnNextTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorTile()));
-  lv_obj_set_style_local_bg_opa(btnNextTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-  //lv_obj_set_style_local_radius(btnNextTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_value_str(btnNextTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "    >");
-  lv_obj_set_event_cb(btnNextTile, event_handler);
 
-  btnPrevTile = lv_btn_create(lv_scr_act(), nullptr);
-  btnPrevTile->user_data = this;
-  lv_obj_set_size(btnPrevTile, 110, 60);
-  lv_obj_align(btnPrevTile, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 10, 0);
-  //lv_obj_set_style_local_bg_color(btnPrevTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorTile()));
-  lv_obj_set_style_local_bg_opa(btnPrevTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-  //lv_obj_set_style_local_radius(btnPrevTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_value_str(btnPrevTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<    ");
-  lv_obj_set_event_cb(btnPrevTile, event_handler);
+  btnNextSecondary = lv_btn_create(lv_scr_act(), nullptr);
+  btnNextSecondary->user_data = this;
+  lv_obj_set_size(btnNextSecondary, 110, 60);
+  lv_obj_align(btnNextSecondary, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -10, 0);
+  //lv_obj_set_style_local_bg_color(btnNextSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorTile()));
+  lv_obj_set_style_local_bg_opa(btnNextSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+  //lv_obj_set_style_local_radius(btnNextSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_value_str(btnNextSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "    >");
+  lv_obj_set_event_cb(btnNextSecondary, event_handler);
 
-  labelTile = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(labelTile, "Apps");
-  lv_obj_align(labelTile, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  btnPrevSecondary = lv_btn_create(lv_scr_act(), nullptr);
+  btnPrevSecondary->user_data = this;
+  lv_obj_set_size(btnPrevSecondary, 110, 60);
+  lv_obj_align(btnPrevSecondary, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 10, 0);
+  //lv_obj_set_style_local_bg_color(btnPrevSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorTile()));
+  lv_obj_set_style_local_bg_opa(btnPrevSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+  //lv_obj_set_style_local_radius(btnPrevSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_value_str(btnPrevSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<    ");
+  lv_obj_set_event_cb(btnPrevSecondary, event_handler);
+
+  labelSecondary = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(labelSecondary, "Secondary");
+  lv_obj_align(labelSecondary, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 
   btnOpacity = lv_btn_create(lv_scr_act(), nullptr);
   btnOpacity->user_data = this;
@@ -103,6 +105,7 @@ SettingColor::SettingColor(Pinetime::Applications::DisplayApp* app, Pinetime::Co
 }
 
 SettingColor::~SettingColor() {
+  pt_update_theme(settingsController.getPrimaryColor(), settingsController.getSecondaryColor(), settingsController.getSurfaceColor(), settingsController.getBackgroundColor());
   lv_obj_clean(lv_scr_act());
   settingsController.SaveSettings();
 }
@@ -113,66 +116,72 @@ void SettingColor::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   auto valueOpacity = settingsController.GetOpacity();
 
   if (event == LV_EVENT_CLICKED) {
-    if (object == btnNextList) {
+    if (object == btnNextPrimary) {
       valueList = GetNext(valueList);
       if(valueList == Controllers::Settings::Colors::White)
         valueList = GetNext(valueList);
       if(valueList == Controllers::Settings::Colors::Black)
         valueList = GetNext(valueList);
       settingsController.SetColorList(valueList);
-      lv_obj_set_style_local_bg_color(listColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
-      //lv_obj_set_style_local_bg_color(btnNextList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
-      //lv_obj_set_style_local_bg_color(btnPrevList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
+      lv_obj_set_style_local_bg_color(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
+      settingsController.setPrimaryColor(Convert(valueList));
+      //lv_obj_set_style_local_bg_color(btnNextPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
+      //lv_obj_set_style_local_bg_color(btnPrevPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
     }
-    if (object == btnPrevList) {
+    if (object == btnPrevPrimary) {
       valueList = GetPrevious(valueList);
       if(valueList == Controllers::Settings::Colors::White)
         valueList = GetPrevious(valueList);
       if(valueList == Controllers::Settings::Colors::Black)
         valueList = GetPrevious(valueList);
       settingsController.SetColorList(valueList);
-      lv_obj_set_style_local_bg_color(listColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
-      //lv_obj_set_style_local_bg_color(btnNextList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
-      //lv_obj_set_style_local_bg_color(btnPrevList, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
+      lv_obj_set_style_local_bg_color(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
+      settingsController.setPrimaryColor(Convert(valueList));
+      //lv_obj_set_style_local_bg_color(btnNextPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
+      //lv_obj_set_style_local_bg_color(btnPrevPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
     }
-    if (object == btnNextTile) {
+    if (object == btnNextSecondary) {
       valueTile = GetNext(valueTile);
       if(valueTile == Controllers::Settings::Colors::White)
         valueTile = GetNext(valueTile);
       if(valueTile == Controllers::Settings::Colors::Black)
         valueTile = GetNext(valueTile);
       settingsController.SetColorTile(valueTile);
-      lv_obj_set_style_local_bg_color(tileColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
-      //lv_obj_set_style_local_bg_color(btnNextTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
-      //lv_obj_set_style_local_bg_color(btnPrevTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
+      lv_obj_set_style_local_bg_color(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
+      settingsController.setSecondaryColor(Convert(valueTile));
+      //lv_obj_set_style_local_bg_color(btnNextSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
+      //lv_obj_set_style_local_bg_color(btnPrevSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
     }
-    if (object == btnPrevTile) {
+    if (object == btnPrevSecondary) {
       valueTile = GetPrevious(valueTile);
       if(valueTile == Controllers::Settings::Colors::White)
         valueTile = GetPrevious(valueTile);
       if(valueTile == Controllers::Settings::Colors::Black)
         valueTile = GetPrevious(valueTile);
       settingsController.SetColorTile(valueTile);
-      lv_obj_set_style_local_bg_color(tileColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
-      //lv_obj_set_style_local_bg_color(btnNextTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
-      //lv_obj_set_style_local_bg_color(btnPrevTile, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
+      lv_obj_set_style_local_bg_color(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
+      settingsController.setSecondaryColor(Convert(valueTile));
+      //lv_obj_set_style_local_bg_color(btnNextSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
+      //lv_obj_set_style_local_bg_color(btnPrevSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
     }
     if (object == btnOpacity) {
       valueOpacity = valueOpacity + 51; 
       if (valueOpacity > 255)
         valueOpacity = 51;
       settingsController.SetOpacity(valueOpacity);
-      lv_obj_set_style_local_bg_opa(tileColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, valueOpacity);
-      lv_obj_set_style_local_bg_opa(listColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, valueOpacity);
+      lv_obj_set_style_local_bg_opa(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, valueOpacity);
+      lv_obj_set_style_local_bg_opa(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, valueOpacity);
     }
      if (object == btnReset) {
-      settingsController.SetColorList(Controllers::Settings::Colors::Cyan);
-      lv_obj_set_style_local_bg_color(listColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Cyan));
+      settingsController.SetColorList(Controllers::Settings::Colors::Orange);
+      lv_obj_set_style_local_bg_color(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Orange));
       settingsController.SetColorTile(Controllers::Settings::Colors::Cyan);
-      lv_obj_set_style_local_bg_color(tileColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Cyan));
-      settingsController.SetOpacity(51);
-      lv_obj_set_style_local_bg_opa(tileColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 51);
-      lv_obj_set_style_local_bg_opa(listColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 51);
+      lv_obj_set_style_local_bg_color(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Cyan));
+      settingsController.SetOpacity(255);
+      lv_obj_set_style_local_bg_opa(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 255);
+      lv_obj_set_style_local_bg_opa(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 255);
+      settingsController.setPrimaryColor(Convert(Controllers::Settings::Colors::Orange));
+      settingsController.setSecondaryColor(Convert(Controllers::Settings::Colors::Cyan));
     }
   }
 }
