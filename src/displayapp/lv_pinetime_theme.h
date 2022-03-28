@@ -58,7 +58,7 @@ lv_theme_t* lv_pinetime_theme_init(lv_color_t color_primary,
                                    const lv_font_t* font_subtitle,
                                    const lv_font_t* font_title);
 
-static void update_theme(lv_color_t color_primary, lv_color_t color_secondary, lv_color_t color_btn, lv_color_t color_bg);
+void pt_update_theme(lv_color_t color_primary, lv_color_t color_secondary, lv_color_t color_btn, lv_color_t color_bg);
 static void basic_init(void);
 
 

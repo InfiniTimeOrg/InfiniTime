@@ -1,6 +1,7 @@
 #include "components/settings/Settings.h"
 #include <cstdlib>
 #include <cstring>
+#include "displayapp/lv_pinetime_theme.h"
 
 using namespace Pinetime::Controllers;
 
@@ -11,6 +12,9 @@ void Settings::Init() {
 
   // Load default settings from Flash
   LoadSettingsFromFile();
+
+  pt_update_theme(settings.colorScheme.primary, settings.colorScheme.secondary, settings.colorScheme.surface, settings.colorScheme.background);
+
 }
 
 void Settings::SaveSettings() {

@@ -78,11 +78,11 @@ static void style_init_reset(lv_style_t* style) {
 
 static void basic_init(void) {
 
-  update_theme(LV_COLOR_ORANGE, LV_COLOR_AQUA, lv_color_hex(0x111111), LV_COLOR_BLACK);
+  pt_update_theme(LV_COLOR_ORANGE, LV_COLOR_AQUA, lv_color_hex(0x111111), LV_COLOR_BLACK);
 
 }
 
-static void update_theme(lv_color_t color_primary, lv_color_t color_secondary, lv_color_t color_btn, lv_color_t color_bg) {
+void pt_update_theme(lv_color_t color_primary, lv_color_t color_secondary, lv_color_t color_btn, lv_color_t color_bg) {
 
 // TODO: determine these colors programmatically
   lv_color_t color_on_btn = LV_COLOR_WHITE;

@@ -42,16 +42,9 @@ namespace Pinetime {
         lv_color_t background = lv_color_hex(0x000000);
         lv_color_t surface = lv_color_hex(0x111111);
         lv_color_t primary = lv_color_hex(0xFF9800);
-        lv_color_t primaryVariant = lv_color_hex(0xEF6C00);
         lv_color_t secondary = lv_color_hex(0x00FFE7);
-        lv_color_t secondaryVariant = lv_color_hex(0x00FFA7);
-        lv_color_t error = lv_color_hex(0xFF0000);
-        lv_color_t onPrimary = lv_color_hex(0xFFFFFF);
-        lv_color_t onSecondary = lv_color_hex(0xFFFFFF);
-        lv_color_t onBackground = lv_color_hex(0xFFFFFF);
-        lv_color_t onSurface = lv_color_hex(0xFFFFFF);
-        lv_color_t onError = lv_color_hex(0xFFFFFF);
       };
+
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
         Colors ColorBar = Colors::Teal;
@@ -119,52 +112,28 @@ namespace Pinetime {
       };
 
       lv_color_t getBackgroundColor() const {
-        return colorScheme.background;
+        return settings.colorScheme.background;
       };
 
       lv_color_t getSurfaceColor() const {
-        return colorScheme.surface;
+        return settings.colorScheme.surface;
       };
 
       lv_color_t getPrimaryColor() const {
-        return colorScheme.primary;
+        return settings.colorScheme.primary;
       };
 
-      lv_color_t getPrimaryVariantColor() const {
-        return colorScheme.primaryVariant;
-      };
+      void setPrimaryColor(lv_color_t newColor) {
+        settings.colorScheme.primary = newColor;
+      }
 
       lv_color_t getSecondaryColor() const {
-        return colorScheme.secondary;
+        return settings.colorScheme.secondary;
       };
 
-      lv_color_t getSecondaryVariantColor() const {
-        return colorScheme.secondaryVariant;
-      };
-
-      lv_color_t getErrorColor() const {
-        return colorScheme.error;
-      };
-
-      lv_color_t getOnPrimaryColor() const {
-        return colorScheme.onPrimary;
-      };
-
-      lv_color_t getOnSecondaryColor() const {
-        return colorScheme.onSecondary;
-      };
-
-      lv_color_t getOnBackgroundColor() const {
-        return colorScheme.onBackground;
-      };
-
-      lv_color_t getOnSurfaceColor() const {
-        return colorScheme.onSurface;
-      };
-
-      lv_color_t getOnErrorColor() const {
-        return colorScheme.onError;
-      };
+      void setSecondaryColor(lv_color_t newColor) {
+        settings.colorScheme.secondary = newColor;
+      }
       
       void SetColorList(Colors colorList) {
         if (colorList != settings.GC.ColorList)
@@ -334,13 +303,12 @@ namespace Pinetime {
         // FROM GLOBAL COLORS
         GlobalColors GC;
 
+        ColorScheme colorScheme;
+
         std::bitset<4> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
-      };
-
-      // TODO: WHEN DONE WITH TESTING, MOVE COLORSCHEME STRUCT INTO SETTINGSDATA
-      ColorScheme colorScheme;
+      };     
 
       SettingsData settings;
       bool settingsChanged = false;
