@@ -58,6 +58,14 @@ namespace Pinetime {
         Colors ColorBG = Colors::Black;
       };
 
+      // TODO: remove all references to global colors
+      struct GlobalColors {
+        Colors ColorList = Colors::Cyan;
+        Colors ColorTile = Colors::Cyan;
+        int Opacity = 51;
+        //const int Opacity = {51, 102, 153, 204, 255};
+      };
+
       Settings(Pinetime::Controllers::FS& fs);
 
       void Init();
@@ -157,6 +165,38 @@ namespace Pinetime {
       lv_color_t getOnErrorColor() const {
         return colorScheme.onError;
       };
+      
+      void SetColorList(Colors colorList) {
+        if (colorList != settings.GC.ColorList)
+          settingsChanged = true;
+        settings.GC.ColorList = colorList;
+      };
+
+      // START GLOBAL COLORS BRANCH
+      Colors GetColorList() const {
+        return settings.GC.ColorList;
+      };
+
+      void SetColorTile(Colors colorTile) {
+        if (colorTile != settings.GC.ColorTile)
+          settingsChanged = true;
+        settings.GC.ColorTile = colorTile;
+      };
+      Colors GetColorTile() const {
+        return settings.GC.ColorTile;
+      };
+
+      void SetOpacity(int opacity) {
+        if (opacity != settings.GC.Opacity) {
+          settings.GC.Opacity = opacity;
+          settingsChanged = true;
+        }
+      };
+      int GetOpacity() const {
+        return settings.GC.Opacity;
+      };
+
+      // END GLOBAL COLORS BRANCH
 
       void SetAppMenu(uint8_t menu) {
         appMenu = menu;
@@ -277,7 +317,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0003;
+      static constexpr uint32_t settingsVersion = 0x0004;
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
@@ -290,6 +330,9 @@ namespace Pinetime {
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
+
+        // FROM GLOBAL COLORS
+        GlobalColors GC;
 
         std::bitset<4> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;

@@ -50,6 +50,7 @@
 #include "displayapp/screens/settings/SettingChimes.h"
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include "displayapp/screens/settings/SettingAirplaneMode.h"
+#include "displayapp/screens/settings/SettingColor.h"
 
 #include "libs/lv_conf.h"
 
@@ -436,6 +437,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::SettingAirplaneMode:
       currentScreen = std::make_unique<Screens::SettingAirplaneMode>(this, settingsController);
+      ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      break;
+    case Apps::SettingColor:
+      currentScreen = std::make_unique<Screens::SettingColor>(this, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::BatteryInfo:
