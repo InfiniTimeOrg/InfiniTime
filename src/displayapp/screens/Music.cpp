@@ -152,19 +152,16 @@ Music::~Music() {
 void Music::Refresh() {
   if (artist != musicService.getArtist()) {
     artist = musicService.getArtist();
-    currentPosition = 0;
     lv_label_set_text(txtArtist, artist.data());
   }
 
   if (track != musicService.getTrack()) {
     track = musicService.getTrack();
-    currentPosition = 0;
     lv_label_set_text(txtTrack, track.data());
   }
 
   if (album != musicService.getAlbum()) {
     album = musicService.getAlbum();
-    currentPosition = 0;
   }
 
   if (playing != musicService.isPlaying()) {
