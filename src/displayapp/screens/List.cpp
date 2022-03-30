@@ -1,6 +1,7 @@
 #include "displayapp/screens/List.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/lv_pinetime_theme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -31,8 +32,6 @@ List::List(uint8_t screenID,
     pageIndicatorBasePoints[1].y = LV_VER_RES;
 
     pageIndicatorBase = lv_line_create(lv_scr_act(), NULL);
-    // lv_obj_set_style_local_line_width(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-    // lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
     lv_obj_set_state(pageIndicatorBase, LV_STATE_DISABLED);
     lv_line_set_points(pageIndicatorBase, pageIndicatorBasePoints, 2);
 
@@ -45,8 +44,6 @@ List::List(uint8_t screenID,
     pageIndicatorPoints[1].y = indicatorPos + indicatorSize;
 
     pageIndicator = lv_line_create(lv_scr_act(), NULL);
-    // lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-    // lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
     lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
   }
 
@@ -71,7 +68,6 @@ List::List(uint8_t screenID,
       itemApps[i] = lv_btn_create(container1, nullptr);
       lv_obj_set_style_local_bg_opa(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
       lv_obj_set_style_local_radius(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 57);
-      lv_obj_set_style_local_bg_color(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
 
       lv_obj_set_width(itemApps[i], LV_HOR_RES - 8);
       lv_obj_set_height(itemApps[i], 57);
@@ -80,7 +76,7 @@ List::List(uint8_t screenID,
       itemApps[i]->user_data = this;
 
       labelBtIco = lv_label_create(itemApps[i], nullptr);
-      lv_obj_set_style_local_text_color(labelBtIco, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+      lv_obj_set_state(labelBtIco, PT_STATE_PRIMARY);
       lv_label_set_text_static(labelBtIco, applications[i].icon);
 
       labelBt = lv_label_create(itemApps[i], nullptr);
