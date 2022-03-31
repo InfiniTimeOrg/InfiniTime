@@ -16,19 +16,22 @@ namespace {
 
 SettingColor::SettingColor(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
-  primaryColor = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorList()));
-  lv_obj_set_style_local_bg_opa(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, settingsController.GetOpacity());
-  lv_obj_set_style_local_radius(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 15);
-  lv_obj_set_size(primaryColor, 220, 60);
-  lv_obj_align(primaryColor, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
 
-  secondaryColor = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorTile()));
-  lv_obj_set_style_local_bg_opa(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, settingsController.GetOpacity());
-  lv_obj_set_style_local_radius(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 15);
-  lv_obj_set_size(secondaryColor, 220, 60);
-  lv_obj_align(secondaryColor, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  colorScheme = settingsController.getColorScheme();
+
+  elementColor = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_state(elementColor, PT_STATE_PRIMARY);
+  lv_obj_set_style_local_radius(elementColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 15);
+  lv_obj_set_size(elementColor, 220, 60);
+  lv_obj_align(elementColor, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
+
+  elementTint = lv_bar_create(lv_scr_act(), nullptr);
+  lv_bar_set_range(elementTint, 0, 9);
+  lv_bar_set_value(elementTint, getCurrentTint(), LV_ANIM_OFF);
+  lv_obj_set_state(elementTint, PT_STATE_PRIMARY);
+  lv_obj_set_style_local_radius(elementTint, LV_BAR_PART_BG, LV_STATE_DEFAULT, 15);
+  lv_obj_set_size(elementTint, 220, 60);
+  lv_obj_align(elementTint, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 
   // backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   // lv_obj_set_click(backgroundLabel, true);
@@ -37,174 +40,292 @@ SettingColor::SettingColor(Pinetime::Applications::DisplayApp* app, Pinetime::Co
   // lv_obj_set_pos(backgroundLabel, 0, 0);
   // lv_label_set_text(backgroundLabel, "");
 
-  btnNextPrimary = lv_btn_create(lv_scr_act(), nullptr);
-  btnNextPrimary->user_data = this;
-  lv_obj_set_size(btnNextPrimary, 110, 60);
-  lv_obj_align(btnNextPrimary, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -10, -80);
-  //lv_obj_set_style_local_bg_color(btnNextPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorList()));
-  lv_obj_set_style_local_bg_opa(btnNextPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-  //lv_obj_set_style_local_radius(btnNextPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_value_str(btnNextPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "    >");
-  lv_obj_set_event_cb(btnNextPrimary, event_handler);
+  btnNextColor = lv_btn_create(lv_scr_act(), nullptr);
+  btnNextColor->user_data = this;
+  lv_obj_set_size(btnNextColor, 110, 60);
+  lv_obj_align(btnNextColor, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -10, -80);
+  lv_obj_set_style_local_bg_opa(btnNextColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+  lv_obj_set_style_local_value_str(btnNextColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "    >");
+  lv_obj_set_event_cb(btnNextColor, event_handler);
 
-  btnPrevPrimary = lv_btn_create(lv_scr_act(), nullptr);
-  btnPrevPrimary->user_data = this;
-  lv_obj_set_size(btnPrevPrimary, 110, 60);
-  lv_obj_align(btnPrevPrimary, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 10, -80);
-  //lv_obj_set_style_local_bg_color(btnPrevPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorList()));
-  lv_obj_set_style_local_bg_opa(btnPrevPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-  //lv_obj_set_style_local_radius(btnPrevPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_value_str(btnPrevPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<    ");
-  lv_obj_set_event_cb(btnPrevPrimary, event_handler);
+  btnPrevColor = lv_btn_create(lv_scr_act(), nullptr);
+  btnPrevColor->user_data = this;
+  lv_obj_set_size(btnPrevColor, 110, 60);
+  lv_obj_align(btnPrevColor, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 10, -80);
+  lv_obj_set_style_local_bg_opa(btnPrevColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+  lv_obj_set_style_local_value_str(btnPrevColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<    ");
+  lv_obj_set_event_cb(btnPrevColor, event_handler);
 
-  labelPrimary = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(labelPrimary, "Primary");
-  lv_obj_align(labelPrimary, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
+  labelColor = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(labelColor, "Primary");
+  lv_obj_align(labelColor, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
+  lv_label_set_align(labelColor, LV_LABEL_ALIGN_CENTER);
 
 
-  btnNextSecondary = lv_btn_create(lv_scr_act(), nullptr);
-  btnNextSecondary->user_data = this;
-  lv_obj_set_size(btnNextSecondary, 110, 60);
-  lv_obj_align(btnNextSecondary, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -10, 0);
-  //lv_obj_set_style_local_bg_color(btnNextSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorTile()));
-  lv_obj_set_style_local_bg_opa(btnNextSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-  //lv_obj_set_style_local_radius(btnNextSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_value_str(btnNextSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "    >");
-  lv_obj_set_event_cb(btnNextSecondary, event_handler);
+  btnNextTint = lv_btn_create(lv_scr_act(), nullptr);
+  btnNextTint->user_data = this;
+  lv_obj_set_size(btnNextTint, 110, 60);
+  lv_obj_align(btnNextTint, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -10, 0);
+  lv_obj_set_style_local_bg_opa(btnNextTint, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+  lv_obj_set_style_local_value_str(btnNextTint, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "    >");
+  lv_obj_set_event_cb(btnNextTint, event_handler);
 
-  btnPrevSecondary = lv_btn_create(lv_scr_act(), nullptr);
-  btnPrevSecondary->user_data = this;
-  lv_obj_set_size(btnPrevSecondary, 110, 60);
-  lv_obj_align(btnPrevSecondary, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 10, 0);
-  //lv_obj_set_style_local_bg_color(btnPrevSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(settingsController.GetColorTile()));
-  lv_obj_set_style_local_bg_opa(btnPrevSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-  //lv_obj_set_style_local_radius(btnPrevSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_value_str(btnPrevSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<    ");
-  lv_obj_set_event_cb(btnPrevSecondary, event_handler);
+  btnPrevTint = lv_btn_create(lv_scr_act(), nullptr);
+  btnPrevTint->user_data = this;
+  lv_obj_set_size(btnPrevTint, 110, 60);
+  lv_obj_align(btnPrevTint, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 10, 0);
+  lv_obj_set_style_local_bg_opa(btnPrevTint, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+  lv_obj_set_style_local_value_str(btnPrevTint, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<    ");
+  lv_obj_set_event_cb(btnPrevTint, event_handler);
 
-  labelSecondary = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(labelSecondary, "Secondary");
-  lv_obj_align(labelSecondary, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-
-  btnOpacity = lv_btn_create(lv_scr_act(), nullptr);
-  btnOpacity->user_data = this;
-  lv_obj_set_size(btnOpacity, 150, 60);
-  lv_obj_align(btnOpacity, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 10, 80);
-  lv_obj_set_style_local_bg_opa(btnOpacity, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_value_str(btnOpacity, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Opacity");
-  lv_obj_set_event_cb(btnOpacity, event_handler);
+  labelTint = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(labelTint, "Tint");
+  lv_obj_align(labelTint, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  lv_label_set_align(labelTint, LV_LABEL_ALIGN_CENTER);
 
   btnReset = lv_btn_create(lv_scr_act(), nullptr);
   btnReset->user_data = this;
   lv_obj_set_size(btnReset, 60, 60);
-  lv_obj_align(btnReset, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -10, 80);
-  lv_obj_set_style_local_bg_opa(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_obj_align(btnReset, lv_scr_act(), LV_ALIGN_CENTER, 0, 80);
   lv_obj_set_style_local_value_str(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Rst");
   lv_obj_set_event_cb(btnReset, event_handler);
+
+  btnNextPage = lv_btn_create(lv_scr_act(), nullptr);
+  btnNextPage->user_data = this;
+  lv_obj_set_size(btnNextPage, 70, 60);
+  lv_obj_align(btnNextPage, lv_scr_act(), LV_ALIGN_CENTER, 70, 80);
+  lv_obj_set_style_local_value_str(btnNextPage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "NXT");
+  lv_obj_set_event_cb(btnNextPage, event_handler);
+  
+  btnPrevPage = lv_btn_create(lv_scr_act(), nullptr);
+  btnPrevPage->user_data = this;
+  lv_obj_set_size(btnPrevPage, 70, 60);
+  lv_obj_align(btnPrevPage, lv_scr_act(), LV_ALIGN_CENTER, -70, 80);
+  lv_obj_set_style_local_value_str(btnPrevPage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "PRV");
+  lv_obj_set_event_cb(btnPrevPage, event_handler);
 
 }
 
 SettingColor::~SettingColor() {
-  pt_update_theme(settingsController.getPrimaryColor(), settingsController.getSecondaryColor(), settingsController.getSurfaceColor(), settingsController.getBackgroundColor());
+  settingsController.setColorScheme(colorScheme);
   lv_obj_clean(lv_scr_act());
   settingsController.SaveSettings();
 }
 
+
+void SettingColor::updateUI() {
+  lv_obj_set_style_local_bg_color(elementColor, LV_LABEL_PART_MAIN, PT_STATE_PRIMARY, Convert(colorScheme.primary, colorScheme.primaryTint));
+  lv_obj_set_style_local_bg_color(elementColor, LV_LABEL_PART_MAIN, PT_STATE_SECONDARY, Convert(colorScheme.secondary, colorScheme.secondaryTint));
+  lv_obj_set_style_local_bg_color(elementColor, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Convert(colorScheme.surface, colorScheme.surfaceTint));
+
+  lv_obj_set_style_local_bg_color(elementTint, LV_BAR_PART_INDIC, PT_STATE_PRIMARY, Convert(colorScheme.primary, colorScheme.primaryTint));
+  lv_obj_set_style_local_bg_color(elementTint, LV_BAR_PART_INDIC, PT_STATE_SECONDARY, Convert(colorScheme.secondary, colorScheme.secondaryTint));
+  lv_obj_set_style_local_bg_color(elementTint, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, Convert(colorScheme.surface, colorScheme.surfaceTint));
+
+  lv_bar_set_value(elementTint, getCurrentTint(), LV_ANIM_OFF);
+
+  lv_obj_set_style_local_bg_color(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(colorScheme.surface, colorScheme.surfaceTint));
+  lv_obj_set_style_local_bg_color(btnNextPage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(colorScheme.surface, colorScheme.surfaceTint));
+  lv_obj_set_style_local_bg_color(btnPrevPage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(colorScheme.surface, colorScheme.surfaceTint));
+
+}
+
+void SettingColor::setPage(Page newPage) {
+  switch (newPage) {
+    case Page::Primary:
+      lv_obj_set_state(elementColor, PT_STATE_PRIMARY);
+      lv_obj_set_state(elementTint, PT_STATE_PRIMARY);
+      lv_label_set_text_static(labelColor, "Primary");
+      break;
+    case Page::Secondary:
+      lv_obj_set_state(elementColor, PT_STATE_SECONDARY);
+      lv_obj_set_state(elementTint, PT_STATE_SECONDARY);
+      lv_label_set_text_static(labelColor, "Secondary");
+      break;
+    case Page::Surface:
+      lv_obj_set_state(elementColor, LV_STATE_DEFAULT);
+      lv_obj_set_state(elementTint, LV_STATE_DEFAULT);
+      lv_label_set_text_static(labelColor, "Button");
+      break;
+    case Page::Background:
+      lv_obj_set_state(elementColor, LV_STATE_DEFAULT);
+      lv_obj_set_state(elementTint, LV_STATE_DEFAULT);
+      lv_label_set_text_static(labelColor, "Background");
+      break;
+    
+  }
+
+    lv_obj_realign(labelColor);
+
+}
+
 void SettingColor::UpdateSelected(lv_obj_t* object, lv_event_t event) {
-  auto valueList = settingsController.GetColorList();
-  auto valueTile = settingsController.GetColorTile();
-  auto valueOpacity = settingsController.GetOpacity();
 
   if (event == LV_EVENT_CLICKED) {
-    if (object == btnNextPrimary) {
-      valueList = GetNext(valueList);
-      if(valueList == Controllers::Settings::Colors::White)
-        valueList = GetNext(valueList);
-      if(valueList == Controllers::Settings::Colors::Black)
-        valueList = GetNext(valueList);
-      settingsController.SetColorList(valueList);
-      lv_obj_set_style_local_bg_color(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
-      settingsController.setPrimaryColor(Convert(valueList));
-      //lv_obj_set_style_local_bg_color(btnNextPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
-      //lv_obj_set_style_local_bg_color(btnPrevPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
+    if (object == btnNextColor) {
+      nextColor();
     }
-    if (object == btnPrevPrimary) {
-      valueList = GetPrevious(valueList);
-      if(valueList == Controllers::Settings::Colors::White)
-        valueList = GetPrevious(valueList);
-      if(valueList == Controllers::Settings::Colors::Black)
-        valueList = GetPrevious(valueList);
-      settingsController.SetColorList(valueList);
-      lv_obj_set_style_local_bg_color(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
-      settingsController.setPrimaryColor(Convert(valueList));
-      //lv_obj_set_style_local_bg_color(btnNextPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
-      //lv_obj_set_style_local_bg_color(btnPrevPrimary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueList));
+    if (object == btnPrevColor) {
+      prevColor();
     }
-    if (object == btnNextSecondary) {
-      valueTile = GetNext(valueTile);
-      if(valueTile == Controllers::Settings::Colors::White)
-        valueTile = GetNext(valueTile);
-      if(valueTile == Controllers::Settings::Colors::Black)
-        valueTile = GetNext(valueTile);
-      settingsController.SetColorTile(valueTile);
-      lv_obj_set_style_local_bg_color(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
-      settingsController.setSecondaryColor(Convert(valueTile));
-      //lv_obj_set_style_local_bg_color(btnNextSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
-      //lv_obj_set_style_local_bg_color(btnPrevSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
+    if (object == btnNextTint) {
+      nextTint();
     }
-    if (object == btnPrevSecondary) {
-      valueTile = GetPrevious(valueTile);
-      if(valueTile == Controllers::Settings::Colors::White)
-        valueTile = GetPrevious(valueTile);
-      if(valueTile == Controllers::Settings::Colors::Black)
-        valueTile = GetPrevious(valueTile);
-      settingsController.SetColorTile(valueTile);
-      lv_obj_set_style_local_bg_color(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
-      settingsController.setSecondaryColor(Convert(valueTile));
-      //lv_obj_set_style_local_bg_color(btnNextSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
-      //lv_obj_set_style_local_bg_color(btnPrevSecondary, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(valueTile));
+    if (object == btnPrevTint) {
+      prevTint();
     }
-    if (object == btnOpacity) {
-      valueOpacity = valueOpacity + 51; 
-      if (valueOpacity > 255)
-        valueOpacity = 51;
-      settingsController.SetOpacity(valueOpacity);
-      lv_obj_set_style_local_bg_opa(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, valueOpacity);
-      lv_obj_set_style_local_bg_opa(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, valueOpacity);
+    if (object == btnNextPage) {
+      switch(currentPage) {
+        case Page::Primary:
+          currentPage = Page::Secondary;
+          break;
+        case Page::Secondary:
+          currentPage = Page::Surface;
+          break;
+        case Page::Surface:
+          currentPage = Page::Background;
+          break;
+        case Page::Background:
+          currentPage = Page::Primary;
+      }
+
+      setPage(currentPage);
+    }
+    if (object == btnPrevPage) {
+      switch(currentPage) {
+        case Page::Primary:
+          currentPage = Page::Background;
+          break;
+        case Page::Secondary:
+          currentPage = Page::Primary;
+          break;
+        case Page::Surface:
+          currentPage = Page::Secondary;
+          break;
+        case Page::Background:
+          currentPage = Page::Surface;
+      }
+
+      setPage(currentPage);
     }
      if (object == btnReset) {
-      settingsController.SetColorList(Controllers::Settings::Colors::Orange);
-      lv_obj_set_style_local_bg_color(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Orange));
-      settingsController.SetColorTile(Controllers::Settings::Colors::Cyan);
-      lv_obj_set_style_local_bg_color(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Convert(Controllers::Settings::Colors::Cyan));
-      settingsController.SetOpacity(255);
-      lv_obj_set_style_local_bg_opa(secondaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 255);
-      lv_obj_set_style_local_bg_opa(primaryColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 255);
-      settingsController.setPrimaryColor(Convert(Controllers::Settings::Colors::Orange));
-      settingsController.setSecondaryColor(Convert(Controllers::Settings::Colors::Cyan));
+      colorScheme.primary = Controllers::Settings::Colors::Orange;
+      colorScheme.primaryTint = 4;
+      colorScheme.secondary = Controllers::Settings::Colors::Cyan;
+      colorScheme.secondaryTint = 7;
+      colorScheme.surface = Controllers::Settings::Colors::Grey;
+      colorScheme.surfaceTint = 0;
+      colorScheme.background = Controllers::Settings::Colors::Black;
+      colorScheme.backgroundTint = 0;
     }
+
+    updateUI();
   }
 }
 
-Pinetime::Controllers::Settings::Colors SettingColor::GetNext(Pinetime::Controllers::Settings::Colors color) {
-  auto colorAsInt = static_cast<uint8_t>(color);
-  Pinetime::Controllers::Settings::Colors nextColor;
-  if (colorAsInt < 16) {
-    nextColor = static_cast<Controllers::Settings::Colors>(colorAsInt + 1);
+Pinetime::Controllers::Settings::Colors Pinetime::Applications::Screens::SettingColor::getCurrentColor() {
+  switch (currentPage) {
+  case Page::Primary:
+    return colorScheme.primary;
+    break;
+  case Page::Secondary:
+    return colorScheme.secondary;
+    break;
+  case Page::Surface:
+    return colorScheme.surface;
+    break;
+  case Page::Background:
+    return colorScheme.background;
+    break;
+  default:
+    return colorScheme.background;
+  }
+}
+
+void Pinetime::Applications::Screens::SettingColor::setCurrentColor(Pinetime::Controllers::Settings::Colors color) {
+  switch (currentPage) {
+  case Page::Primary:
+    colorScheme.primary = color;
+    break;
+  case Page::Secondary:
+    colorScheme.secondary = color;
+    break;
+  case Page::Surface:
+    colorScheme.surface = color;
+    break;
+  case Page::Background:
+    colorScheme.background = color;
+    break;
+  }
+}
+
+void Pinetime::Applications::Screens::SettingColor::nextColor() {
+  auto colorAsInt = static_cast<uint8_t>(getCurrentColor());
+  setCurrentColor(static_cast<Controllers::Settings::Colors>((colorAsInt + 1) % 21));
+  setCurrentTint(4);
+}
+
+void Pinetime::Applications::Screens::SettingColor::prevColor() {
+  auto colorAsInt = static_cast<uint8_t>(getCurrentColor());
+  if (colorAsInt == 0) {
+    setCurrentColor(Pinetime::Controllers::Settings::Colors::White);
   } else {
-    nextColor = static_cast<Controllers::Settings::Colors>(0);
+    setCurrentColor(static_cast<Controllers::Settings::Colors>((colorAsInt - 1) % 21));
   }
-  return nextColor;
+  setCurrentTint(4);
 }
 
-Pinetime::Controllers::Settings::Colors SettingColor::GetPrevious(Pinetime::Controllers::Settings::Colors color) {
-  auto colorAsInt = static_cast<uint8_t>(color);
-  Pinetime::Controllers::Settings::Colors prevColor;
-
-  if (colorAsInt > 0) {
-    prevColor = static_cast<Controllers::Settings::Colors>(colorAsInt - 1);
-  } else {
-    prevColor = static_cast<Controllers::Settings::Colors>(16);
+uint8_t Pinetime::Applications::Screens::SettingColor::getCurrentTint() {
+  switch (currentPage) {
+  case Page::Primary:
+    return colorScheme.primaryTint;
+    break;
+  case Page::Secondary:
+    return colorScheme.secondaryTint;
+    break;
+  case Page::Surface:
+    return colorScheme.surfaceTint;
+    break;
+  case Page::Background:
+    return colorScheme.backgroundTint;
+    break;
+  default:
+    return colorScheme.backgroundTint;
   }
-  return prevColor;
 }
+
+void Pinetime::Applications::Screens::SettingColor::setCurrentTint(uint8_t tint) {
+  if (tint > 9) {
+    return;
+  }
+  
+  switch (currentPage) {
+  case Page::Primary:
+    colorScheme.primaryTint = tint;
+    break;
+  case Page::Secondary:
+    colorScheme.secondaryTint = tint;
+    break;
+  case Page::Surface:
+    colorScheme.surfaceTint = tint;
+    break;
+  case Page::Background:
+    colorScheme.backgroundTint = tint;
+    break;
+  }
+}
+
+void Pinetime::Applications::Screens::SettingColor::nextTint() {
+  uint8_t currentTint = getCurrentTint();
+  if (currentTint < 9) {
+    setCurrentTint(currentTint + 1);
+  }
+}
+
+void Pinetime::Applications::Screens::SettingColor::prevTint() {
+  uint8_t currentTint = getCurrentTint();
+  if (currentTint > 0) {
+    setCurrentTint(currentTint - 1);
+  }
+}
+

@@ -6,5 +6,6 @@
 namespace Pinetime {
   namespace Applications {
     lv_color_t Convert(Controllers::Settings::Colors color);
+    lv_color_t Convert(Controllers::Settings::Colors color, uint8_t tint);
   }
 }

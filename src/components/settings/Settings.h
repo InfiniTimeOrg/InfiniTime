@@ -19,44 +19,44 @@ namespace Pinetime {
         Shake = 3,
       };
       enum class Colors : uint8_t {
-        White,
-        Silver,
-        Gray,
-        Black,
-        Red,
-        Maroon,
-        Yellow,
-        Olive,
-        Lime,
-        Green,
-        Cyan,
-        Teal,
-        Blue,
-        Navy,
-        Magenta,
-        Purple,
-        Orange
+        Red = 0,
+        Pink = 1,
+        Purple = 2,
+        DeepPurple = 3,
+        Indigo = 4,
+        Blue = 5,
+        LightBlue = 6,
+        Cyan = 7,
+        Teal = 8,
+        Green = 9,
+        LightGreen = 10,
+        Lime = 11,
+        Yellow = 12,
+        Amber = 13,
+        Orange = 14,
+        DeepOrange = 15,
+        Brown = 16,
+        BlueGrey = 17,
+        Grey = 18,
+        Black = 19,
+        White = 20
       };
 
       struct ColorScheme {
-        lv_color_t background = lv_color_hex(0x000000);
-        lv_color_t surface = lv_color_hex(0x111111);
-        lv_color_t primary = lv_color_hex(0xFF9800);
-        lv_color_t secondary = lv_color_hex(0x00FFE7);
+        Colors background = Colors::Black;
+        int8_t backgroundTint = 0;
+        Colors surface = Colors::Grey;
+        int8_t surfaceTint = 0;
+        Colors primary = Colors::Orange;
+        int8_t primaryTint = 4;
+        Colors secondary = Colors::Cyan;
+        int8_t secondaryTint = 7;
       };
 
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
         Colors ColorBar = Colors::Teal;
         Colors ColorBG = Colors::Black;
-      };
-
-      // TODO: remove all references to global colors
-      struct GlobalColors {
-        Colors ColorList = Colors::Cyan;
-        Colors ColorTile = Colors::Cyan;
-        int Opacity = 51;
-        //const int Opacity = {51, 102, 153, 204, 255};
       };
 
       Settings(Pinetime::Controllers::FS& fs);
@@ -111,61 +111,9 @@ namespace Pinetime {
         return settings.PTS.ColorBG;
       };
 
-      lv_color_t getBackgroundColor() const {
-        return settings.colorScheme.background;
-      };
+      ColorScheme getColorScheme() const;
 
-      lv_color_t getSurfaceColor() const {
-        return settings.colorScheme.surface;
-      };
-
-      lv_color_t getPrimaryColor() const {
-        return settings.colorScheme.primary;
-      };
-
-      void setPrimaryColor(lv_color_t newColor) {
-        settings.colorScheme.primary = newColor;
-      }
-
-      lv_color_t getSecondaryColor() const {
-        return settings.colorScheme.secondary;
-      };
-
-      void setSecondaryColor(lv_color_t newColor) {
-        settings.colorScheme.secondary = newColor;
-      }
-      
-      void SetColorList(Colors colorList) {
-        if (colorList != settings.GC.ColorList)
-          settingsChanged = true;
-        settings.GC.ColorList = colorList;
-      };
-
-      // START GLOBAL COLORS BRANCH
-      Colors GetColorList() const {
-        return settings.GC.ColorList;
-      };
-
-      void SetColorTile(Colors colorTile) {
-        if (colorTile != settings.GC.ColorTile)
-          settingsChanged = true;
-        settings.GC.ColorTile = colorTile;
-      };
-      Colors GetColorTile() const {
-        return settings.GC.ColorTile;
-      };
-
-      void SetOpacity(int opacity) {
-        if (opacity != settings.GC.Opacity) {
-          settings.GC.Opacity = opacity;
-          settingsChanged = true;
-        }
-      };
-      int GetOpacity() const {
-        return settings.GC.Opacity;
-      };
-
-      // END GLOBAL COLORS BRANCH
+      void setColorScheme(ColorScheme newScheme);
 
       void SetAppMenu(uint8_t menu) {
         appMenu = menu;
@@ -299,9 +247,6 @@ namespace Pinetime {
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
-
-        // FROM GLOBAL COLORS
-        GlobalColors GC;
 
         ColorScheme colorScheme;
 

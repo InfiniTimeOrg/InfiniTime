@@ -20,19 +20,43 @@ namespace Pinetime {
         private:          
           Controllers::Settings& settingsController;
 
-          Pinetime::Controllers::Settings::Colors GetNext(Controllers::Settings::Colors color);
-          Pinetime::Controllers::Settings::Colors GetPrevious(Controllers::Settings::Colors color);
+          enum class Page: uint8_t {
+            Primary = 0,
+            Secondary = 1,
+            Surface = 2,
+            Background = 3
+          };
 
-          lv_obj_t * btnNextPrimary;
-          lv_obj_t * btnPrevPrimary;
-          lv_obj_t * btnNextSecondary;
-          lv_obj_t * btnPrevSecondary;
+          void setPage(Page newPage);
+
+          Page currentPage = Page::Primary;
+        
+          Pinetime::Controllers::Settings::Colors getCurrentColor();
+          void setCurrentColor(Pinetime::Controllers::Settings::Colors color);
+          void nextColor();
+          void prevColor();
+
+          uint8_t getCurrentTint();
+          void setCurrentTint(uint8_t tint);
+          void nextTint();
+          void prevTint();
+
+          Pinetime::Controllers::Settings::ColorScheme colorScheme;
+
+          void updateUI();
+
+          lv_obj_t * btnNextColor;
+          lv_obj_t * btnPrevColor;
+          lv_obj_t * btnNextTint;
+          lv_obj_t * btnPrevTint;
           lv_obj_t * btnOpacity;
           lv_obj_t * btnReset;
-          lv_obj_t * primaryColor;
-          lv_obj_t * secondaryColor;
-          lv_obj_t * labelPrimary;
-          lv_obj_t * labelSecondary;
+          lv_obj_t * elementColor;
+          lv_obj_t * elementTint;
+          lv_obj_t * labelColor;
+          lv_obj_t * labelTint;
+          lv_obj_t * btnNextPage;
+          lv_obj_t * btnPrevPage;
           // lv_obj_t * backgroundLabel;
       };
     }

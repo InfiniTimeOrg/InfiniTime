@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <cstring>
 #include "displayapp/lv_pinetime_theme.h"
+#include "displayapp/Colors.h"
 
 using namespace Pinetime::Controllers;
 
@@ -13,8 +14,26 @@ void Settings::Init() {
   // Load default settings from Flash
   LoadSettingsFromFile();
 
-  pt_update_theme(settings.colorScheme.primary, settings.colorScheme.secondary, settings.colorScheme.surface, settings.colorScheme.background);
+  pt_update_theme(Pinetime::Applications::Convert(settings.colorScheme.primary, settings.colorScheme.primaryTint), 
+                  Pinetime::Applications::Convert(settings.colorScheme.secondary, settings.colorScheme.secondaryTint),
+                  Pinetime::Applications::Convert(settings.colorScheme.surface, settings.colorScheme.surfaceTint),
+                  Pinetime::Applications::Convert(settings.colorScheme.background, settings.colorScheme.backgroundTint));
 
+}
+
+Settings::ColorScheme Settings::getColorScheme() const{
+  return settings.colorScheme;
+}
+
+void Settings::setColorScheme(ColorScheme newScheme)
+{
+  settings.colorScheme = newScheme;
+  settingsChanged = true;
+  
+  pt_update_theme(Pinetime::Applications::Convert(settings.colorScheme.primary, settings.colorScheme.primaryTint), 
+                  Pinetime::Applications::Convert(settings.colorScheme.secondary, settings.colorScheme.secondaryTint),
+                  Pinetime::Applications::Convert(settings.colorScheme.surface, settings.colorScheme.surfaceTint),
+                  Pinetime::Applications::Convert(settings.colorScheme.background, settings.colorScheme.backgroundTint));
 }
 
 void Settings::SaveSettings() {
