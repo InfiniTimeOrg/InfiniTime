@@ -10,6 +10,7 @@
 namespace Pinetime {
   namespace Controllers {
     class Settings;
+    class Battery;
     class Ble;
     class NotificationManager;
     class MotionController;
@@ -22,6 +23,7 @@ namespace Pinetime {
       public:
         WatchFaceInfineat(DisplayApp* app,
                           Controllers::DateTime& dateTimeController,
+                          Controllers::Battery& batteryController,
                           Controllers::Ble& bleController,
                           Controllers::NotificationManager& notificationManager,
                           Controllers::Settings& settingsController,
@@ -66,6 +68,7 @@ namespace Pinetime {
         lv_obj_t* line6;
         lv_obj_t* line7;
         lv_obj_t* line8;
+        lv_obj_t* lineBattery;
 
         lv_style_t line0Style;
         lv_style_t line1Style;
@@ -76,6 +79,7 @@ namespace Pinetime {
         lv_style_t line6Style;
         lv_style_t line7Style;
         lv_style_t line8Style;
+        lv_style_t lineBatteryStyle;
 
         lv_point_t line0Points[2];
         lv_point_t line1Points[2];
@@ -86,6 +90,7 @@ namespace Pinetime {
         lv_point_t line6Points[2];
         lv_point_t line7Points[2];
         lv_point_t line8Points[2];
+        lv_point_t lineBatteryPoints[2];
 
         lv_obj_t* logoPine;
 
@@ -120,10 +125,13 @@ namespace Pinetime {
         } infineatColors;
 
         Controllers::DateTime& dateTimeController;
+        Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;
+
+        void SetBatteryLevel(uint8_t batteryPercent);
 
         lv_task_t* taskRefresh;
       };

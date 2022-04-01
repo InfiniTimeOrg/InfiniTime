@@ -6,8 +6,9 @@
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/BleIcon.h"
 #include "components/settings/Settings.h"
-#include "components/ble/NotificationManager.h"
+#include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
+#include "components/ble/NotificationManager.h"
 #include "components/motion/MotionController.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -23,6 +24,7 @@ LV_IMG_DECLARE(logo_pine);
 
 WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
                                      Controllers::DateTime& dateTimeController,
+                                     Controllers::Battery& batteryController,
                                      Controllers::Ble& bleController,
                                      Controllers::NotificationManager& notificationManager,
                                      Controllers::Settings& settingsController,
@@ -30,6 +32,7 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
+    batteryController {batteryController},
     bleController {bleController},
     notificationManager {notificationManager},
     settingsController {settingsController},
@@ -51,6 +54,7 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   line6 = lv_line_create(lv_scr_act(), nullptr);
   line7 = lv_line_create(lv_scr_act(), nullptr);
   line8 = lv_line_create(lv_scr_act(), nullptr);
+  lineBattery = lv_line_create(lv_scr_act(), nullptr);
 
   lv_style_init(&line0Style);
   lv_style_set_line_width(&line0Style, LV_STATE_DEFAULT, 18);
@@ -137,6 +141,17 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_img_set_src(logoPine, &logo_pine);
   lv_obj_set_pos(logoPine, 15, 106);
 
+  lv_style_init(&lineBatteryStyle);
+  lv_style_set_line_width(&lineBatteryStyle, LV_STATE_DEFAULT, 24);
+  lv_style_set_line_color(&lineBatteryStyle, LV_STATE_DEFAULT,
+                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 4]));
+  lv_style_set_line_opa(&lineBatteryStyle, LV_STATE_DEFAULT, LV_OPA_80);
+  lv_obj_add_style(lineBattery, LV_LINE_PART_MAIN, &lineBatteryStyle);
+  lineBatteryPoints[0] = {27, 105};
+  lineBatteryPoints[1] = {27, 106};
+  lv_line_set_points(lineBattery, lineBatteryPoints, 2);
+  lv_obj_move_foreground(lineBattery);
+
   if(!settingsController.GetInfineatShowSideCover()) {
     lv_obj_set_hidden(logoPine, true);
     lv_obj_set_hidden(line0, true);
@@ -148,6 +163,7 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
     lv_obj_set_hidden(line6, true);
     lv_obj_set_hidden(line7, true);
     lv_obj_set_hidden(line8, true);
+    lv_obj_set_hidden(lineBattery, true);
   }
 
   notificationIcon = lv_obj_create(lv_scr_act(), nullptr);
@@ -277,6 +293,7 @@ WatchFaceInfineat::~WatchFaceInfineat() {
   lv_style_reset(&line6Style);
   lv_style_reset(&line7Style);
   lv_style_reset(&line8Style);
+  lv_style_reset(&lineBatteryStyle);
 
   lv_obj_clean(lv_scr_act());
 }
@@ -337,6 +354,7 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       lv_obj_set_hidden(line6, showSideCover);
       lv_obj_set_hidden(line7, showSideCover);
       lv_obj_set_hidden(line8, showSideCover);
+      lv_obj_set_hidden(lineBattery, showSideCover);
       lv_obj_set_hidden(btnNextColor, showSideCover);
       lv_obj_set_hidden(btnPrevColor, showSideCover);
       const char* labelToggle = showSideCover ? "OFF" : "ON";
@@ -371,6 +389,8 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
                               lv_color_hex(infineatColors.orange[colorIndex*nLines + 7]));
       lv_style_set_line_color(&line8Style, LV_STATE_DEFAULT,
                               lv_color_hex(infineatColors.orange[colorIndex*nLines + 8]));
+      lv_style_set_line_color(&lineBatteryStyle, LV_STATE_DEFAULT,
+                              lv_color_hex(infineatColors.orange[colorIndex*nLines + 4]));
       lv_obj_add_style(line0, LV_LINE_PART_MAIN, &line0Style);
       lv_obj_add_style(line1, LV_LINE_PART_MAIN, &line1Style);
       lv_obj_add_style(line2, LV_LINE_PART_MAIN, &line2Style);
@@ -380,6 +400,7 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       lv_obj_add_style(line6, LV_LINE_PART_MAIN, &line6Style);
       lv_obj_add_style(line7, LV_LINE_PART_MAIN, &line7Style);
       lv_obj_add_style(line8, LV_LINE_PART_MAIN, &line8Style);
+      lv_obj_add_style(lineBattery, LV_LINE_PART_MAIN, &lineBatteryStyle);
       lv_obj_set_style_local_bg_color(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,
                                       lv_color_hex(infineatColors.orange[colorIndex*nLines + 7]));
     }
@@ -462,6 +483,12 @@ void WatchFaceInfineat::Refresh() {
     }
   }
 
+  batteryPercentRemaining = batteryController.PercentRemaining();
+  if (batteryPercentRemaining.IsUpdated()) {
+    auto batteryPercent = batteryPercentRemaining.Get();
+    SetBatteryLevel(batteryPercent);
+  }
+
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated()) {
@@ -483,4 +510,10 @@ void WatchFaceInfineat::Refresh() {
       savedTick = 0;
     }
   }
+}
+
+void WatchFaceInfineat::SetBatteryLevel(uint8_t batteryPercent) {
+  // starting point (y) + Pine64 logo height * (100 - batteryPercent) / 100
+  lineBatteryPoints[1] = {27, static_cast<lv_coord_t>(105 + 32*(100-batteryPercent)/100)};
+  lv_line_set_points(lineBattery, lineBatteryPoints, 2);
 }

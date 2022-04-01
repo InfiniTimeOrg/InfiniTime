@@ -111,6 +111,7 @@ std::unique_ptr<Screen> Clock::WatchFaceTerminalScreen() {
 std::unique_ptr<Screen> Clock::WatchFaceInfineatScreen() {
   return std::make_unique<Screens::WatchFaceInfineat>(app,
                                                       dateTimeController,
+                                                      batteryController,
                                                       bleController,
                                                       notificatioManager,
                                                       settingsController,
