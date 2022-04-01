@@ -57,7 +57,7 @@ SettingColor::SettingColor(Pinetime::Applications::DisplayApp* app, Pinetime::Co
   lv_obj_set_event_cb(btnPrevColor, event_handler);
 
   labelColor = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(labelColor, "Primary");
+  lv_label_set_text_static(labelColor, "Prim Color");
   lv_obj_align(labelColor, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
   lv_label_set_align(labelColor, LV_LABEL_ALIGN_CENTER);
 
@@ -94,14 +94,14 @@ SettingColor::SettingColor(Pinetime::Applications::DisplayApp* app, Pinetime::Co
   btnNextPage->user_data = this;
   lv_obj_set_size(btnNextPage, 70, 60);
   lv_obj_align(btnNextPage, lv_scr_act(), LV_ALIGN_CENTER, 70, 80);
-  lv_obj_set_style_local_value_str(btnNextPage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "NXT");
+  lv_obj_set_style_local_value_str(btnNextPage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Next");
   lv_obj_set_event_cb(btnNextPage, event_handler);
   
   btnPrevPage = lv_btn_create(lv_scr_act(), nullptr);
   btnPrevPage->user_data = this;
   lv_obj_set_size(btnPrevPage, 70, 60);
   lv_obj_align(btnPrevPage, lv_scr_act(), LV_ALIGN_CENTER, -70, 80);
-  lv_obj_set_style_local_value_str(btnPrevPage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "PRV");
+  lv_obj_set_style_local_value_str(btnPrevPage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Prev");
   lv_obj_set_event_cb(btnPrevPage, event_handler);
 
 }
@@ -135,24 +135,23 @@ void SettingColor::setPage(Page newPage) {
     case Page::Primary:
       lv_obj_set_state(elementColor, PT_STATE_PRIMARY);
       lv_obj_set_state(elementTint, PT_STATE_PRIMARY);
-      lv_label_set_text_static(labelColor, "Primary");
+      lv_label_set_text_static(labelColor, "Prim Color");
       break;
     case Page::Secondary:
       lv_obj_set_state(elementColor, PT_STATE_SECONDARY);
       lv_obj_set_state(elementTint, PT_STATE_SECONDARY);
-      lv_label_set_text_static(labelColor, "Secondary");
+      lv_label_set_text_static(labelColor, "Sec Color");
       break;
     case Page::Surface:
       lv_obj_set_state(elementColor, LV_STATE_DEFAULT);
       lv_obj_set_state(elementTint, LV_STATE_DEFAULT);
-      lv_label_set_text_static(labelColor, "Button");
+      lv_label_set_text_static(labelColor, "Btn Color");
       break;
     case Page::Background:
       lv_obj_set_state(elementColor, LV_STATE_DEFAULT);
       lv_obj_set_state(elementTint, LV_STATE_DEFAULT);
-      lv_label_set_text_static(labelColor, "Background");
-      break;
-    
+      lv_label_set_text_static(labelColor, "BG Color");
+      break;    
   }
 
     lv_obj_realign(labelColor);
