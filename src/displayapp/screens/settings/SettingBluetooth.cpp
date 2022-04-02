@@ -1,4 +1,4 @@
-#include "displayapp/screens/settings/SettingAirplaneMode.h"
+#include "displayapp/screens/settings/SettingBluetooth.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/Messages.h"
@@ -9,18 +9,18 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static void OnAirplaneModeEnabledEvent(lv_obj_t* obj, lv_event_t event) {
-    auto* screen = static_cast<SettingAirplaneMode*>(obj->user_data);
-    screen->OnAirplaneModeEnabled(obj, event);
+  static void OnBluetoothDisabledEvent(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<SettingBluetooth*>(obj->user_data);
+    screen->OnBluetoothDisabled(obj, event);
   }
 
-  static void OnAirplaneModeDisabledEvent(lv_obj_t* obj, lv_event_t event) {
-    auto* screen = static_cast<SettingAirplaneMode*>(obj->user_data);
-    screen->OnAirplaneModeDisabled(obj, event);
+  static void OnBluetoothEnabledEvent(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<SettingBluetooth*>(obj->user_data);
+    screen->OnBluetoothEnabled(obj, event);
   }
 }
 
-SettingAirplaneMode::SettingAirplaneMode(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
+SettingBluetooth::SettingBluetooth(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
 
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
@@ -36,38 +36,38 @@ SettingAirplaneMode::SettingAirplaneMode(Pinetime::Applications::DisplayApp* app
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Airplane mode");
+  lv_label_set_text_static(title, "Bluetooth");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 
   lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
-  lv_label_set_text_static(icon, Symbols::airplane);
+  lv_label_set_text_static(icon, Symbols::bluetooth);
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
   cbEnabled = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text(cbEnabled, " Enable");
+  lv_checkbox_set_text(cbEnabled, " Enabled");
   cbEnabled->user_data = this;
-  lv_obj_set_event_cb(cbEnabled, OnAirplaneModeEnabledEvent);
+  lv_obj_set_event_cb(cbEnabled, OnBluetoothEnabledEvent);
   SetRadioButtonStyle(cbEnabled);
 
   cbDisabled = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text(cbDisabled, " Disable");
+  lv_checkbox_set_text(cbDisabled, " Disabled");
   cbDisabled->user_data = this;
-  lv_obj_set_event_cb(cbDisabled, OnAirplaneModeDisabledEvent);
+  lv_obj_set_event_cb(cbDisabled, OnBluetoothDisabledEvent);
   SetRadioButtonStyle(cbDisabled);
 
   if (settingsController.GetBleRadioEnabled()) {
-    lv_checkbox_set_checked(cbDisabled, true);
+    lv_checkbox_set_checked(cbEnabled, true);
     priorMode = true;
   } else {
-    lv_checkbox_set_checked(cbEnabled, true);
+    lv_checkbox_set_checked(cbDisabled, true);
     priorMode = false;
   }
 }
 
-SettingAirplaneMode::~SettingAirplaneMode() {
+SettingBluetooth::~SettingBluetooth() {
   lv_obj_clean(lv_scr_act());
   // Do not call SaveSettings - see src/components/settings/Settings.h
   if (priorMode != settingsController.GetBleRadioEnabled()) {
@@ -75,18 +75,18 @@ SettingAirplaneMode::~SettingAirplaneMode() {
   }
 }
 
-void SettingAirplaneMode::OnAirplaneModeEnabled(lv_obj_t* object, lv_event_t event) {
+void SettingBluetooth::OnBluetoothDisabled(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
-    lv_checkbox_set_checked(cbEnabled, true);
-    lv_checkbox_set_checked(cbDisabled, false);
+    lv_checkbox_set_checked(cbEnabled, false);
+    lv_checkbox_set_checked(cbDisabled, true);
     settingsController.SetBleRadioEnabled(false);
   }
 }
 
-void SettingAirplaneMode::OnAirplaneModeDisabled(lv_obj_t* object, lv_event_t event) {
+void SettingBluetooth::OnBluetoothEnabled(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
-    lv_checkbox_set_checked(cbEnabled, false);
-    lv_checkbox_set_checked(cbDisabled, true);
+    lv_checkbox_set_checked(cbEnabled, true);
+    lv_checkbox_set_checked(cbDisabled, false);
     settingsController.SetBleRadioEnabled(true);
   }
 }
