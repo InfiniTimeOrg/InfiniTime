@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <chrono>
 #include "displayapp/screens/Screen.h"
-#include <bits/unique_ptr.h>
 #include "systemtask/SystemTask.h"
 #include <lvgl/src/lv_core/lv_style.h>
 #include <lvgl/src/lv_core/lv_obj.h>
