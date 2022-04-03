@@ -46,9 +46,11 @@ namespace Pinetime {
         Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
         uint8_t currentDay = 0;
         uint32_t savedTick = 0;
+        uint8_t chargingBatteryPercent = 101;  // not a mistake ;)
+
 
         DirtyValue<uint8_t> batteryPercentRemaining {};
-        DirtyValue<bool> powerPresent {};
+        DirtyValue<bool> isCharging {};
         DirtyValue<bool> bleState {};
         DirtyValue<bool> bleRadioEnabled {};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};

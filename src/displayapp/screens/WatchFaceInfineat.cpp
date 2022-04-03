@@ -145,7 +145,7 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_style_set_line_width(&lineBatteryStyle, LV_STATE_DEFAULT, 24);
   lv_style_set_line_color(&lineBatteryStyle, LV_STATE_DEFAULT,
                           lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 4]));
-  lv_style_set_line_opa(&lineBatteryStyle, LV_STATE_DEFAULT, LV_OPA_80);
+  lv_style_set_line_opa(&lineBatteryStyle, LV_STATE_DEFAULT, 190);
   lv_obj_add_style(lineBattery, LV_LINE_PART_MAIN, &lineBatteryStyle);
   lineBatteryPoints[0] = {27, 105};
   lineBatteryPoints[1] = {27, 106};
@@ -484,9 +484,20 @@ void WatchFaceInfineat::Refresh() {
   }
 
   batteryPercentRemaining = batteryController.PercentRemaining();
-  if (batteryPercentRemaining.IsUpdated()) {
-    auto batteryPercent = batteryPercentRemaining.Get();
-    SetBatteryLevel(batteryPercent);
+  isCharging = batteryController.IsCharging();
+  // We store if battery and charging are updated before calling Get(),
+  // since Get() sets isUpdated to false.
+  bool isBatteryUpdated = batteryPercentRemaining.IsUpdated();
+  bool isChargingUpdated = isCharging.IsUpdated();
+  if (isCharging.Get()) {  // Charging battery animation
+    chargingBatteryPercent += 1;
+    if (chargingBatteryPercent > 100) {
+      chargingBatteryPercent = batteryPercentRemaining.Get();
+    }
+    SetBatteryLevel(chargingBatteryPercent);
+  } else if (isChargingUpdated || isBatteryUpdated) {
+    chargingBatteryPercent = batteryPercentRemaining.Get();
+    SetBatteryLevel(chargingBatteryPercent);
   }
 
   bleState = bleController.IsConnected();
