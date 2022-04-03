@@ -85,7 +85,14 @@ bool Paddle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
 bool Paddle::OnTouchEvent(uint16_t x, uint16_t y) {
   // sets the center paddle pos. (30px offset) with the the y_coordinate of the finger
-  lv_obj_set_pos(paddle, 0, y - 30);
+  // but clamp it such that the paddle never clips off screen
+  if (y < 31) {
+    lv_obj_set_pos(paddle, 0, 1);
+  } else if (y > LV_VER_RES - 31) {
+    lv_obj_set_pos(paddle, 0, LV_VER_RES - 61);
+  } else {
+    lv_obj_set_pos(paddle, 0, y - 30);
+  }
   paddlePos = y;
   return true;
 }
