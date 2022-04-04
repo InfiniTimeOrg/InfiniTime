@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <bitset>
 #include "components/brightness/BrightnessController.h"
+#include "libs/QCBOR/inc/qcbor/qcbor.h"
 #include "components/fs/FS.h"
 
 namespace Pinetime {
@@ -244,6 +245,7 @@ namespace Pinetime {
 
       void LoadSettingsFromFile();
       void SaveSettingsToFile();
+      UsefulBufC Encode(UsefulBuf buffer);
     };
   }
 }
