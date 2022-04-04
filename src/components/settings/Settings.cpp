@@ -32,6 +32,8 @@ void Settings::SaveSettings() {
 }
 
 void Settings::LoadSettingsFromFile() {
+  MigrateSettingsToCBOR();
+
   lfs_info cborFileInfo;
   if (fs.Stat("/settings.cbor", &cborFileInfo) != LFS_ERR_OK) {
     return;
@@ -232,4 +234,26 @@ UsefulBufC Settings::Encode(UsefulBuf buffer) {
   QCBOREncode_Finish(&encodeCtx, &encodedCbor);
 
   return encodedCbor;
+}
+
+void Settings::MigrateSettingsToCBOR() {
+  lfs_info oldSettingsInfo;
+  if (fs.Stat("/settings.dat", &oldSettingsInfo) != LFS_ERR_OK) {
+    return;
+  }
+
+  SettingsData bufferSettings;
+  lfs_file_t settingsFile;
+
+  if (fs.FileOpen(&settingsFile, "/settings.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
+    return;
+  }
+  fs.FileRead(&settingsFile, reinterpret_cast<uint8_t*>(&bufferSettings), sizeof(settings));
+  fs.FileClose(&settingsFile);
+
+  settings = bufferSettings;
+
+  SaveSettingsToFile();
+
+  fs.FileDelete("/settings.dat");
 }
