@@ -52,13 +52,13 @@ int8_t Ppg::Preprocess(float spl) {
 
   auto spl_int = static_cast<int8_t>(spl);
 
-  if (dataIndex < 200)
+  if (dataIndex < DATA_SIZE)
     data[dataIndex++] = spl_int;
   return spl_int;
 }
 
 float Ppg::HeartRate() {
-  if (dataIndex < 200)
+  if (dataIndex < DATA_SIZE)
     return 0;
 
   NRF_LOG_INFO("PREPROCESS, offset = %d", offset);
@@ -67,22 +67,22 @@ float Ppg::HeartRate() {
   return hr;
 }
 float Ppg::ProcessHeartRate() {
-  auto t0 = Trough(data.data(), dataIndex, 7, 48);
+  auto t0 = Trough(data.data(), DATA_SIZE, 7, 48);
   if (t0 < 0)
     return 0;
 
   float t1 = t0 * 2;
-  t1 = Trough(data.data(), dataIndex, t1 - 5, t1 + 5);
+  t1 = Trough(data.data(), DATA_SIZE, t1 - 5, t1 + 5);
   if (t1 < 0)
     return 0;
 
   float t2 = static_cast<int>(t1 * 3) / 2;
-  t2 = Trough(data.data(), dataIndex, t2 - 5, t2 + 5);
+  t2 = Trough(data.data(), DATA_SIZE, t2 - 5, t2 + 5);
   if (t2 < 0)
     return 0;
 
   float t3 = static_cast<int>(t2 * 4) / 3;
-  t3 = Trough(data.data(), dataIndex, t3 - 4, t3 + 4);
+  t3 = Trough(data.data(), DATA_SIZE, t3 - 4, t3 + 4);
   if (t3 < 0)
     return static_cast<int>(60 * 24 * 3) / static_cast<int>(t2);
 

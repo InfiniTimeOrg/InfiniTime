@@ -18,7 +18,8 @@ namespace Pinetime {
       void Reset();
 
     private:
-      std::array<int8_t, 200> data;
+      static const uint8_t DATA_SIZE = 200;
+      std::array<int8_t, DATA_SIZE> data;
       size_t dataIndex = 0;
       float offset;
       Biquad hpf;
