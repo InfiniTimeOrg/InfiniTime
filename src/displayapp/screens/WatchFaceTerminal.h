@@ -32,17 +32,21 @@ namespace Pinetime {
                           Controllers::MotionController& motionController);
         ~WatchFaceTerminal() override;
 
+        bool OnTouchEvent(TouchEvents event) override;
+
         void Refresh() override;
 
       private:
         uint8_t displayedHour = -1;
         uint8_t displayedMinute = -1;
         uint8_t displayedSecond = -1;
+        uint8_t displayedBigTime = -1;
 
         uint16_t currentYear = 1970;
         Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
         Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
         uint8_t currentDay = 0;
+        bool bigTime = false;
 
         DirtyValue<int> batteryPercentRemaining {};
         DirtyValue<bool> powerPresent {};

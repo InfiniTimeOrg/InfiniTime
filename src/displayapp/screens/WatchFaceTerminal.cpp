@@ -13,6 +13,62 @@
 
 using namespace Pinetime::Applications::Screens;
 
+namespace {
+    constexpr const char* const BIG_DIGITS[10][3] = {
+        {
+            " _ ",
+            "| |",
+            "|_|",
+        },
+        {
+            "   ",
+            "  |",
+            "  |",
+        },
+        {
+            " _ ",
+            " _|",
+            "|_ ",
+        },
+        {
+            " _ ",
+            " _|",
+            " _|",
+        },
+        {
+            "   ",
+            "|_|",
+            "  |",
+        },
+        {
+            " _ ",
+            "|_ ",
+            " _|",
+        },
+        {
+            " _ ",
+            "|_ ",
+            "|_|",
+        },
+        {
+            " _ ",
+            "  |",
+            "  |",
+        },
+        {
+            " _ ",
+            "|_|",
+            "|_|",
+        },
+        {
+            " _ ",
+            "|_|",
+            " _|",
+        },
+    };
+
+}
+
 WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
                                      Controllers::DateTime& dateTimeController,
                                      Controllers::Battery& batteryController,
@@ -86,7 +142,15 @@ WatchFaceTerminal::~WatchFaceTerminal() {
 void WatchFaceTerminal::Refresh() {
   powerPresent = batteryController.IsPowerPresent();
   batteryPercentRemaining = batteryController.PercentRemaining();
-  if (batteryPercentRemaining.IsUpdated() || powerPresent.IsUpdated()) {
+
+  // Update the battery display if we don't want to show the big clock and:
+  //   The info has changed or last time we didn't show it.
+  bool battDisplayUpdated = !bigTime && 
+      ((bigTime != displayedBigTime) ||
+        batteryPercentRemaining.IsUpdated() ||
+        powerPresent.IsUpdated());
+
+  if (battDisplayUpdated) {
     lv_label_set_text_fmt(batteryValue, "[BATT]#387b54 %d%%", batteryPercentRemaining.Get());
     if (batteryController.IsPowerPresent()) {
       lv_label_ins_text(batteryValue, LV_LABEL_POS_LAST, " Charging");
@@ -118,7 +182,7 @@ void WatchFaceTerminal::Refresh() {
 
   currentDateTime = dateTimeController.CurrentDateTime();
 
-  if (currentDateTime.IsUpdated()) {
+  if (displayedBigTime != bigTime || currentDateTime.IsUpdated()) {
     auto newDateTime = currentDateTime.Get();
 
     auto dp = date::floor<date::days>(newDateTime);
@@ -134,7 +198,12 @@ void WatchFaceTerminal::Refresh() {
     uint8_t minute = time.minutes().count();
     uint8_t second = time.seconds().count();
 
-    if (displayedHour != hour || displayedMinute != minute || displayedSecond != second) {
+    const auto time_display_changed = displayedBigTime != bigTime ||
+        displayedHour != hour ||
+        displayedMinute != minute ||
+        displayedSecond != second;
+
+    if (!bigTime && time_display_changed) {
       displayedHour = hour;
       displayedMinute = minute;
       displayedSecond = second;
@@ -155,13 +224,43 @@ void WatchFaceTerminal::Refresh() {
       }
     }
 
-    if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
+    const auto date_display_changed = displayedBigTime != bigTime ||
+        (year != currentYear) ||
+        (month != currentMonth) ||
+        (dayOfWeek != currentDayOfWeek) ||
+        (day != currentDay);
+
+    if (!bigTime && date_display_changed) {
       lv_label_set_text_fmt(label_date, "[DATE]#007fff %04d.%02d.%02d#", short(year), char(month), char(day));
 
       currentYear = year;
       currentMonth = month;
       currentDayOfWeek = dayOfWeek;
       currentDay = day;
+    }
+    if (bigTime && time_display_changed) {
+      lv_label_set_text_fmt(label_time, "#11cc55 %s%s %s%s %s%s#",
+              BIG_DIGITS[hour/10][0],
+              BIG_DIGITS[hour%10][0],
+              BIG_DIGITS[minute/10][0],
+              BIG_DIGITS[minute%10][0],
+              BIG_DIGITS[second/10][0],
+              BIG_DIGITS[second%10][0]);
+      lv_label_set_text_fmt(label_date, "#11cc55 %s%so%s%so%s%s#",
+              BIG_DIGITS[hour/10][1],
+              BIG_DIGITS[hour%10][1],
+              BIG_DIGITS[minute/10][1],
+              BIG_DIGITS[minute%10][1],
+              BIG_DIGITS[second/10][1],
+              BIG_DIGITS[second%10][1]);
+      lv_label_set_text_fmt(batteryValue, "#11cc55 %s%so%s%so%s%s#",
+              BIG_DIGITS[hour/10][2],
+              BIG_DIGITS[hour%10][2],
+              BIG_DIGITS[minute/10][2],
+              BIG_DIGITS[minute%10][2],
+              BIG_DIGITS[second/10][2],
+              BIG_DIGITS[second%10][2]);
+      lv_label_set_text_fmt(stepValue, "");
     }
   }
 
@@ -177,7 +276,17 @@ void WatchFaceTerminal::Refresh() {
 
   stepCount = motionController.NbSteps();
   motionSensorOk = motionController.IsSensorOk();
-  if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
+  if (!bigTime && (displayedBigTime != bigTime || (stepCount.IsUpdated() || motionSensorOk.IsUpdated()))) {
     lv_label_set_text_fmt(stepValue, "[STEP]#ee3377 %lu steps#", stepCount.Get());
   }
+  displayedBigTime = static_cast<uint8_t>(bigTime);
+}
+
+bool WatchFaceTerminal::OnTouchEvent(TouchEvents event) {
+  if (event == TouchEvents::Tap) {
+      bigTime = !bigTime;
+      Refresh();
+      return true;
+  }
+  return false;
 }
