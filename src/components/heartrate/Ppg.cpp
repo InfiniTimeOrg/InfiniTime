@@ -11,23 +11,34 @@ using namespace Pinetime::Controllers;
 
 /** Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/ppg.py */
 namespace {
-  int Compare(int8_t* d1, int8_t* d2, size_t count) {
+  
+}
+
+Ppg::Ppg()
+  : hpf {0.87033078, -1.74066156, 0.87033078, -1.72377617, 0.75754694},
+    agc {20, 0.971, 2},
+    lpf {0.11595249, 0.23190498, 0.11595249, -0.72168143, 0.18549138} {
+}
+
+  int Ppg::Compare(int8_t* d1,int shift, size_t count) {
     int e = 0;
     for (size_t i = 0; i < count; i++) {
-      auto d = d1[i] - d2[i];
+      auto d = d1[getRingIndex(i+shift)] - d1[getRingIndex(i)];
       e += d * d;
     }
     return e;
   }
 
-  int CompareShift(int8_t* d, int shift, size_t count) {
-    return Compare(d + shift, d, count - shift);
+  int Ppg::CompareShift(int8_t* d, int shift, size_t count) {
+    return Compare(d ,shift, count - shift);
   }
-
-  int Trough(int8_t* d, size_t size, uint8_t mn, uint8_t mx) {
+  //Find Peak from mn to mx (wraps around)
+  int Ppg::Trough(int8_t* d, size_t size, uint8_t mn, uint8_t mx) {
+    mn = getRingIndex(mn);
+    mx = getRingIndex(mx);
     auto z2 = CompareShift(d, mn - 2, size);
     auto z1 = CompareShift(d, mn - 1, size);
-    for (int i = mn; i < mx + 1; i++) {
+    for (int i = mn; i != mx + 1; i=((i+1)%Ppg::DATA_SIZE)) {
       auto z = CompareShift(d, i, size);
       if (z2 > z1 && z1 < z)
         return i;
@@ -36,13 +47,6 @@ namespace {
     }
     return -1;
   }
-}
-
-Ppg::Ppg()
-  : hpf {0.87033078, -1.74066156, 0.87033078, -1.72377617, 0.75754694},
-    agc {20, 0.971, 2},
-    lpf {0.11595249, 0.23190498, 0.11595249, -0.72168143, 0.18549138} {
-}
 
 int8_t Ppg::Preprocess(float spl) {
   spl -= offset;
@@ -52,18 +56,18 @@ int8_t Ppg::Preprocess(float spl) {
 
   auto spl_int = static_cast<int8_t>(spl);
 
-  if (dataIndex < DATA_SIZE)
-    data[dataIndex++] = spl_int;
+  dataIndex = (dataIndex+1)%DATA_SIZE;
+  data[dataIndex] = spl_int;
   return spl_int;
 }
 
 float Ppg::HeartRate() {
-  if (dataIndex < DATA_SIZE)
+  if(data[DATA_SIZE-1] == 0){
     return 0;
+  }
 
   NRF_LOG_INFO("PREPROCESS, offset = %d", offset);
   auto hr = ProcessHeartRate();
-  dataIndex = 0;
   return hr;
 }
 float Ppg::ProcessHeartRate() {
@@ -89,6 +93,12 @@ float Ppg::ProcessHeartRate() {
   return static_cast<int>(60 * 24 * 4) / static_cast<int>(t3);
 }
 
+//Gets the Index in the Ring Buffer which corresponds to the index, if it was a 0-based Array
+//DataIndex is where there was last data written to, so if the arrray was full once, it marks the end of the array
+//The next Index is the start then.
+int Ppg::getRingIndex(int8_t index){
+  return (index+dataIndex+1)%Ppg::DATA_SIZE;
+}
 void Ppg::SetOffset(uint16_t offset) {
   this->offset = offset;
   dataIndex = 0;
