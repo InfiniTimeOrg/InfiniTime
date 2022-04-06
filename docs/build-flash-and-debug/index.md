@@ -172,7 +172,9 @@ docker image build -t infinitime-build --build-arg PUID=$(id -u) --build-arg PGI
 
 The .VS Code folder contains configuration files for developing InfiniTime with VS Code. Effort was made to have these rely on Environment variables instead of hardcoded paths.
 
+At the moment building using VSCode on Windows is not supported. Use the [devcontainer](#vs-codedocker-devcontainer)
 #### Environment Setup
+
 
 To support as many setups as possible the VS Code configuration files expect there to be certain environment variables to be set.
 
@@ -217,6 +219,20 @@ To use the DevContainer configuration on Ubuntu based systems two changes need t
 3. To start debugging launch openocd on your host system with the appropriate configuration, for example with a stlink-v2 the  command is:
 ``openocd -f interface/stlink.cfg -f target/nrf52.cfg``. This launches openocd with the default ports ``3333``, ``4444`` and ``6666``. 
 4. In VsCode go to the Debug pane on the left of the screen and select the configuration ``Debug - Openocd docker Remote`` and hit the play button on the left. 
+
+##### Dev Container on Windows
+
+To use the DevContainer configuration on Windows a few files need their line endings changed, e.g. by using [notepad++](https://notepad-plus-plus.org/)
+
+```
+\InfiniTime\tools\mcuboot\imgtool.py
+\InfiniTime\tools\mcuboot\imgtool_init_.py
+\InfiniTime\tools\mcuboot\imgtool\boot_record.py
+\InfiniTime\tools\mcuboot\imgtool\image.py
+\InfiniTime\tools\mcuboot\imgtool\version.py
+```
+
+You also need to install ```cbor``` with ```pip install cbor``` or by running ```pip install -r requirements.txt``` in ```\Infitime\tools\mcuboot```.
 
 ## Build the documentation
 ### Setup
