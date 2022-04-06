@@ -172,7 +172,7 @@ docker image build -t infinitime-build --build-arg PUID=$(id -u) --build-arg PGI
 
 The .VS Code folder contains configuration files for developing InfiniTime with VS Code. Effort was made to have these rely on Environment variables instead of hardcoded paths.
 
-At the moment building using VSCode on Windows is not supported. Use the [devcontainer](#vs-codedocker-devcontainer)
+At the moment building using VSCode on Windows has not been done yet. Using the [devcontainer](#vs-codedocker-devcontainer) is probably the easiest way.
 #### Environment Setup
 
 
