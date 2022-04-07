@@ -367,30 +367,7 @@ set(QCBOR_SRC
         )
 
 list(APPEND IMAGE_FILES
-        displayapp/icons/battery/os_battery_error.c
-        displayapp/icons/battery/os_battery_100.c
-        displayapp/icons/battery/os_battery_090.c
-        displayapp/icons/battery/os_battery_080.c
-        displayapp/icons/battery/os_battery_070.c
-        displayapp/icons/battery/os_battery_060.c
-        displayapp/icons/battery/os_battery_050.c
-        displayapp/icons/battery/os_battery_040.c
-        displayapp/icons/battery/os_battery_030.c
-        displayapp/icons/battery/os_battery_020.c
-        displayapp/icons/battery/os_battery_010.c
-        displayapp/icons/battery/os_battery_005.c
-
-        displayapp/icons/battery/os_batterycharging_100.c
-        displayapp/icons/battery/os_batterycharging_090.c
-        displayapp/icons/battery/os_batterycharging_080.c
-        displayapp/icons/battery/os_batterycharging_070.c
-        displayapp/icons/battery/os_batterycharging_060.c
-        displayapp/icons/battery/os_batterycharging_050.c
-        displayapp/icons/battery/os_batterycharging_040.c
-        displayapp/icons/battery/os_batterycharging_030.c
-        displayapp/icons/battery/os_batterycharging_020.c
-        displayapp/icons/battery/os_batterycharging_010.c
-        displayapp/icons/battery/os_batterycharging_005.c
+        displayapp/icons/battery/batteryicon.c
 
         displayapp/icons/bluetooth/os_bt_connected.c
         displayapp/icons/bluetooth/os_bt_disconnected.c
