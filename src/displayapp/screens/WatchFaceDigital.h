@@ -1,5 +1,6 @@
 #pragma once
 
+#include <displayapp/screens/BatteryIcon.h>
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <chrono>
 #include <cstdint>
@@ -59,7 +60,6 @@ namespace Pinetime {
         lv_obj_t* label_time_ampm;
         lv_obj_t* label_date;
         lv_obj_t* backgroundLabel;
-        lv_obj_t* batteryIcon;
         lv_obj_t* bleIcon;
         lv_obj_t* batteryPlug;
         lv_obj_t* heartbeatIcon;
@@ -67,6 +67,8 @@ namespace Pinetime {
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
+
+        BatteryIcon batteryIcon;
 
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;

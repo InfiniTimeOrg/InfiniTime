@@ -101,11 +101,14 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_obj_align(sidebar, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   // Display icons
-  batteryIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_label_set_text_static(batteryIcon, Symbols::batteryFull);
-  lv_obj_align(batteryIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 2);
-  lv_obj_set_auto_realign(batteryIcon, true);
+  batteryIcon.Create(sidebar);
+  batteryIcon.SetColor(LV_COLOR_BLACK);
+  lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_MID, 0, 2);
+
+  plugIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(plugIcon, Symbols::plug);
+  lv_obj_set_style_local_text_color(plugIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_align(plugIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 2);
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
@@ -340,7 +343,7 @@ bool WatchFacePineTimeStyle::OnButtonPushed() {
 
 void WatchFacePineTimeStyle::SetBatteryIcon() {
   auto batteryPercent = batteryPercentRemaining.Get();
-  lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+  batteryIcon.SetBatteryPercentage(batteryPercent);
 }
 
 void WatchFacePineTimeStyle::AlignIcons() {
@@ -358,8 +361,11 @@ void WatchFacePineTimeStyle::Refresh() {
   isCharging = batteryController.IsCharging();
   if (isCharging.IsUpdated()) {
     if (isCharging.Get()) {
-      lv_label_set_text_static(batteryIcon, Symbols::plug);
+      lv_obj_set_hidden(batteryIcon.GetObject(), true);
+      lv_obj_set_hidden(plugIcon, false);
     } else {
+      lv_obj_set_hidden(batteryIcon.GetObject(), false);
+      lv_obj_set_hidden(plugIcon, true);
       SetBatteryIcon();
     }
   }
