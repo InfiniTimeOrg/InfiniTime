@@ -82,7 +82,10 @@ void Settings::LoadSettingsFromFile() {
     delete[] cborBuf;
     return;
   }
-  bufferSettings.clockType = static_cast<ClockType>(tmpClockType);
+  // There are only two possible clock types, ensure the value is within bounds.
+  if (tmpClockType < 2) {
+    bufferSettings.clockType = static_cast<ClockType>(tmpClockType);
+  }
 
   uint64_t tmpNotifStatus = 0;
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "NotificationStatus", &tmpNotifStatus);
@@ -91,7 +94,10 @@ void Settings::LoadSettingsFromFile() {
     delete[] cborBuf;
     return;
   }
-  bufferSettings.notificationStatus = static_cast<Notification>(tmpNotifStatus);
+  // There are only two possible notification statuses, ensure the value is within bounds.
+  if (tmpNotifStatus < 2) {
+    bufferSettings.notificationStatus = static_cast<Notification>(tmpNotifStatus);
+  }
 
   uint64_t tmpClockFace = 0;
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "ClockFace", &tmpClockFace);
@@ -100,7 +106,10 @@ void Settings::LoadSettingsFromFile() {
     delete[] cborBuf;
     return;
   }
-  bufferSettings.clockFace = tmpClockFace;
+  // There are only four possible clock faces, ensure the value is within bounds.
+  if (tmpClockFace < 4) {
+    bufferSettings.clockFace = tmpClockFace;
+  }
 
   uint64_t tmpChimesOption = 0;
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "ChimesOption", &tmpChimesOption);
@@ -109,7 +118,10 @@ void Settings::LoadSettingsFromFile() {
     delete[] cborBuf;
     return;
   }
-  bufferSettings.chimesOption = static_cast<ChimesOption>(tmpChimesOption);
+  // There are only three possible chimes options, ensure the value is within bounds.
+  if (tmpChimesOption < 3) {
+    bufferSettings.chimesOption = static_cast<ChimesOption>(tmpChimesOption);
+  }
 
 
   // Enter PTS colors map
@@ -127,7 +139,10 @@ void Settings::LoadSettingsFromFile() {
     delete[] cborBuf;
     return;
   }
-  bufferSettings.PTS.ColorTime = static_cast<Colors>(tmpColorTime);
+  // There are sixteen possible colors, ensure the value is within bounds.
+  if (tmpColorTime < 16) {
+    bufferSettings.PTS.ColorTime = static_cast<Colors>(tmpColorTime);
+  }
 
   uint64_t tmpColorBar = 0;
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "ColorBar", &tmpColorBar);
@@ -136,7 +151,10 @@ void Settings::LoadSettingsFromFile() {
     delete[] cborBuf;
     return;
   }
-  bufferSettings.PTS.ColorBar = static_cast<Colors>(tmpColorBar);
+  // There are sixteen possible colors, ensure the value is within bounds.
+  if (tmpColorBar < 16) {
+    bufferSettings.PTS.ColorBar = static_cast<Colors>(tmpColorBar);
+  }
 
   uint64_t tmpColorBG = 0;
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "ColorBG", &tmpColorBG);
@@ -145,8 +163,12 @@ void Settings::LoadSettingsFromFile() {
     delete[] cborBuf;
     return;
   }
-  bufferSettings.PTS.ColorBG = static_cast<Colors>(tmpColorBG);
+  // There are sixteen possible colors, ensure the value is within bounds.
+  if (tmpColorBG < 16) {
+    bufferSettings.PTS.ColorBG = static_cast<Colors>(tmpColorBG);
+  }
 
+  // Exit PTS colors map
   QCBORDecode_ExitMap(&decodeCtx);
 
   uint64_t tmpWakeUpMode = 0;
@@ -174,7 +196,10 @@ void Settings::LoadSettingsFromFile() {
     delete[] cborBuf;
     return;
   }
-  bufferSettings.brightLevel = static_cast<Pinetime::Controllers::BrightnessController::Levels>(tmpBrightLevel);
+  // There are three possible brightness levels, ensure the value is within bounds.
+  if (tmpBrightLevel < 3) {
+    bufferSettings.brightLevel = static_cast<Pinetime::Controllers::BrightnessController::Levels>(tmpBrightLevel);
+  }
 
   settings = bufferSettings;
   CleanUpQcbor(&decodeCtx);
