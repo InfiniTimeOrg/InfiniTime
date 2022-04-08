@@ -84,7 +84,7 @@ namespace {
   }
 }
 
-DisplayApp::DisplayApp(Drivers::St7789& lcd,
+DisplayApp::DisplayApp(Drivers::St7789& lcd,#
                        Components::LittleVgl& lvgl,
                        Drivers::Cst816S& touchPanel,
                        Controllers::Battery& batteryController,
