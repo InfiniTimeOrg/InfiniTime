@@ -45,7 +45,7 @@ HeartRate::HeartRate(Pinetime::Applications::DisplayApp* app,
   lv_obj_align(label_hr, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   label_bpm = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(label_bpm, "Heart rate BPM");
+  lv_label_set_text(label_bpm, "Dobby Levell:");
   lv_obj_align(label_bpm, label_hr, LV_ALIGN_OUT_TOP_MID, 0, -20);
 
   label_status = lv_label_create(lv_scr_act(), nullptr);
