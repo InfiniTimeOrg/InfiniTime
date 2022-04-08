@@ -12,7 +12,7 @@
 #include "displayapp/screens/WatchFaceTerminal.h"
 #include "displayapp/screens/WatchFaceAnalog.h"
 #include "displayapp/screens/PineTimeStyle.h"
-
+//
 using namespace Pinetime::Applications::Screens;
 
 Clock::Clock(DisplayApp* app,
