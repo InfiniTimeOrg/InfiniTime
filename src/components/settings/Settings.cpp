@@ -5,6 +5,7 @@
 #include <qcbor/UsefulBuf.h>
 #include <cstdlib>
 #include <cstring>
+#include <vector>
 
 using namespace Pinetime::Controllers;
 
@@ -39,19 +40,19 @@ void Settings::LoadSettingsFromFile() {
     return;
   }
 
-  uint8_t* cborBuf = new uint8_t[cborFileInfo.size]();
+  std::vector<uint8_t> cborBuf(cborFileInfo.size);
 
   lfs_file_t settingsFile;
 
   if (fs.FileOpen(&settingsFile, "/settings.cbor", LFS_O_RDONLY) != LFS_ERR_OK) {
     return;
   }
-  fs.FileRead(&settingsFile, cborBuf, cborFileInfo.size);
+  fs.FileRead(&settingsFile, cborBuf.data(), cborFileInfo.size);
   fs.FileClose(&settingsFile);
 
   SettingsData bufferSettings;
   QCBORDecodeContext decodeCtx;
-  UsefulBufC encodedCbor = {cborBuf, cborFileInfo.size};
+  UsefulBufC encodedCbor = {cborBuf.data(), cborFileInfo.size};
 
   QCBORDecode_Init(&decodeCtx, encodedCbor, QCBOR_DECODE_MODE_NORMAL);
 
@@ -61,7 +62,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "StepsGoal", &tmpStepsGoal);
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
   bufferSettings.stepsGoal = tmpStepsGoal;
@@ -70,7 +70,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "ScreenTimeout", &tmpScreenTimeout);
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
   bufferSettings.screenTimeOut = tmpScreenTimeout;
@@ -79,7 +78,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "ClockType", &tmpClockType);
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
   // There are only two possible clock types, ensure the value is within bounds.
@@ -91,7 +89,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "NotificationStatus", &tmpNotifStatus);
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
   // There are only two possible notification statuses, ensure the value is within bounds.
@@ -103,7 +100,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "ClockFace", &tmpClockFace);
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
   // There are only four possible clock faces, ensure the value is within bounds.
@@ -115,7 +111,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "ChimesOption", &tmpChimesOption);
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
   // There are only three possible chimes options, ensure the value is within bounds.
@@ -128,7 +123,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_EnterMapFromMapSZ(&decodeCtx, "PTS");
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
 
@@ -136,7 +130,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "ColorTime", &tmpColorTime);
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
   // There are sixteen possible colors, ensure the value is within bounds.
@@ -148,7 +141,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "ColorBar", &tmpColorBar);
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
   // There are sixteen possible colors, ensure the value is within bounds.
@@ -160,7 +152,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "ColorBG", &tmpColorBG);
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
   // There are sixteen possible colors, ensure the value is within bounds.
@@ -175,7 +166,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "WakeupMode", &tmpWakeUpMode);
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
   bufferSettings.wakeUpMode = std::bitset<4>(tmpWakeUpMode);
@@ -184,7 +174,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "ShakeWakeThreshold", &tmpShakeWakeThreshold);
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
   bufferSettings.shakeWakeThreshold = tmpShakeWakeThreshold;
@@ -193,7 +182,6 @@ void Settings::LoadSettingsFromFile() {
   QCBORDecode_GetUInt64InMapSZ(&decodeCtx, "BrightLevel", &tmpBrightLevel);
   if (QCBORDecode_GetError(&decodeCtx) != QCBOR_SUCCESS) {
     CleanUpQcbor(&decodeCtx);
-    delete[] cborBuf;
     return;
   }
   // There are three possible brightness levels, ensure the value is within bounds.
@@ -203,7 +191,6 @@ void Settings::LoadSettingsFromFile() {
 
   settings = bufferSettings;
   CleanUpQcbor(&decodeCtx);
-  delete[] cborBuf;
 }
 
 void Settings::SaveSettingsToFile() {
@@ -216,16 +203,16 @@ void Settings::SaveSettingsToFile() {
   UsefulBufC encodedSize;
   encodedSize = Encode({NULL, SIZE_MAX});
 
+  std::vector<uint8_t> cborBuf(encodedSize.len);
+
   UsefulBuf encodedCborBuf;
   encodedCborBuf.len = encodedSize.len;
-  encodedCborBuf.ptr = new uint8_t[encodedSize.len]();
+  encodedCborBuf.ptr = cborBuf.data();
 
   UsefulBufC encodedCbor = Encode(encodedCborBuf);
 
-  fs.FileWrite(&settingsFile, (uint8_t*)(encodedCbor.ptr), encodedCbor.len);
+  fs.FileWrite(&settingsFile, cborBuf.data(), encodedSize.len);
   fs.FileClose(&settingsFile);
-
-  delete[] (uint8_t*)(encodedCbor.ptr);
 }
 
 UsefulBufC Settings::Encode(UsefulBuf buffer) {
