@@ -250,8 +250,9 @@ void Settings::MigrateSettingsToCBOR() {
   }
   fs.FileRead(&settingsFile, reinterpret_cast<uint8_t*>(&bufferSettings), sizeof(settings));
   fs.FileClose(&settingsFile);
-
-  settings = bufferSettings;
+  if ( bufferSettings.version == settingsVersion ) {
+    settings = bufferSettings;
+  }
 
   SaveSettingsToFile();
 
