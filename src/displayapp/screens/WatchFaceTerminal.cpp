@@ -198,12 +198,12 @@ void WatchFaceTerminal::Refresh() {
     uint8_t minute = time.minutes().count();
     uint8_t second = time.seconds().count();
 
-    const auto time_display_changed = displayedBigTime != bigTime ||
+    const bool timeDisplayChanged = displayedBigTime != bigTime ||
         displayedHour != hour ||
         displayedMinute != minute ||
         displayedSecond != second;
 
-    if (!bigTime && time_display_changed) {
+    if (!bigTime && timeDisplayChanged) {
       displayedHour = hour;
       displayedMinute = minute;
       displayedSecond = second;
@@ -224,13 +224,13 @@ void WatchFaceTerminal::Refresh() {
       }
     }
 
-    const auto date_display_changed = displayedBigTime != bigTime ||
+    const bool dateDisplayChanged = displayedBigTime != bigTime ||
         (year != currentYear) ||
         (month != currentMonth) ||
         (dayOfWeek != currentDayOfWeek) ||
         (day != currentDay);
 
-    if (!bigTime && date_display_changed) {
+    if (!bigTime && dateDisplayChanged) {
       lv_label_set_text_fmt(label_date, "[DATE]#007fff %04d.%02d.%02d#", short(year), char(month), char(day));
 
       currentYear = year;
@@ -238,7 +238,7 @@ void WatchFaceTerminal::Refresh() {
       currentDayOfWeek = dayOfWeek;
       currentDay = day;
     }
-    if (bigTime && time_display_changed) {
+    if (bigTime && timeDisplayChanged) {
       lv_label_set_text_fmt(label_time, "#11cc55 %s%s %s%s %s%s#",
               BIG_DIGITS[hour/10][0],
               BIG_DIGITS[hour%10][0],
