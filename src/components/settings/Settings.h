@@ -247,6 +247,7 @@ namespace Pinetime {
       void SaveSettingsToFile();
       void MigrateSettingsToCBOR();
       UsefulBufC Encode(UsefulBuf buffer);
+      void CleanUpQcbor(QCBORDecodeContext* decodeCtx);
     };
   }
 }

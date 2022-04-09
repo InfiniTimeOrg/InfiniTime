@@ -12,11 +12,6 @@ using namespace Pinetime::Controllers;
 Settings::Settings(Pinetime::Controllers::FS& fs) : fs {fs} {
 }
 
-void CleanUpQcbor(QCBORDecodeContext* decodeCtx) {
-  QCBORDecode_ExitMap(decodeCtx);
-  QCBORDecode_Finish(decodeCtx);
-}
-
 void Settings::Init() {
 
   // Load default settings from Flash
@@ -269,4 +264,9 @@ void Settings::MigrateSettingsToCBOR() {
   SaveSettingsToFile();
 
   fs.FileDelete("/settings.dat");
+}
+
+void Settings::CleanUpQcbor(QCBORDecodeContext* decodeCtx) {
+  QCBORDecode_ExitMap(decodeCtx);
+  QCBORDecode_Finish(decodeCtx);
 }
