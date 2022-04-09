@@ -10,11 +10,12 @@ using namespace Pinetime::Applications::Screens;
 
 namespace {
   TimeSeparated_t convertTicksToTimeSegments(const TickType_t timeElapsed) {
-    const int timeElapsedMillis = timeElapsed * 1000 / configTICK_RATE_HZ;
+    // Centiseconds
+    const int timeElapsedCentis = timeElapsed * 100 / configTICK_RATE_HZ;
 
-    const int hundredths = (timeElapsedMillis % 1000) / 10; // Get only the first two digits and ignore the last
-    const int secs = (timeElapsedMillis / 1000) % 60;
-    const int mins = (timeElapsedMillis / 1000) / 60;
+    const int hundredths = (timeElapsedCentis % 100);
+    const int secs = (timeElapsedCentis / 100) % 60;
+    const int mins = (timeElapsedCentis / 100) / 60;
     return TimeSeparated_t {mins, secs, hundredths};
   }
 
