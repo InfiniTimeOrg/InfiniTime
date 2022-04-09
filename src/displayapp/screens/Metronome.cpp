@@ -55,10 +55,11 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   lv_dropdown_set_selected(bpbDropdown, bpb - 1);
   lv_dropdown_set_show_selected(bpbDropdown, false);
   lv_dropdown_set_text(bpbDropdown, "");
+  lv_dropdown_set_symbol(bpbDropdown, LV_SYMBOL_UP);
 
   currentBpbText = lv_label_create(bpbDropdown, nullptr);
   lv_label_set_text_fmt(currentBpbText, "%d bpb", bpb);
-  lv_obj_align(currentBpbText, bpbDropdown, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_align(currentBpbText, bpbDropdown, LV_ALIGN_IN_LEFT_MID, 12, 0);
 
   playPause = lv_btn_create(lv_scr_act(), nullptr);
   playPause->user_data = this;
