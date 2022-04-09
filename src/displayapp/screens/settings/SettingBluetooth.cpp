@@ -9,12 +9,12 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static void OnBluetoothDisabledEvent(lv_obj_t* obj, lv_event_t event) {
+  void OnBluetoothDisabledEvent(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingBluetooth*>(obj->user_data);
     screen->OnBluetoothDisabled(obj, event);
   }
 
-  static void OnBluetoothEnabledEvent(lv_obj_t* obj, lv_event_t event) {
+  void OnBluetoothEnabledEvent(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingBluetooth*>(obj->user_data);
     screen->OnBluetoothEnabled(obj, event);
   }

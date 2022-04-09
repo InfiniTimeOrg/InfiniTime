@@ -21,8 +21,8 @@ namespace {
     return "";
   }
 
-  static void btnStartStopEventHandler(lv_obj_t* obj, lv_event_t event) {
-    HeartRate* screen = static_cast<HeartRate*>(obj->user_data);
+  void btnStartStopEventHandler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<HeartRate*>(obj->user_data);
     screen->OnStartStopEvent(event);
   }
 }
