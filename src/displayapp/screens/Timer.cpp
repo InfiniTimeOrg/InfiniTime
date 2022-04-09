@@ -14,36 +14,32 @@ void Timer::CreateButtons() {
   btnMinutesUp = lv_btn_create(lv_scr_act(), nullptr);
   btnMinutesUp->user_data = this;
   lv_obj_set_event_cb(btnMinutesUp, btnEventHandler);
-  lv_obj_align(btnMinutesUp, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, -80);
-  lv_obj_set_height(btnMinutesUp, 40);
-  lv_obj_set_width(btnMinutesUp, 60);
+  lv_obj_set_size(btnMinutesUp, 60, 40);
+  lv_obj_align(btnMinutesUp, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, -85);
   txtMUp = lv_label_create(btnMinutesUp, nullptr);
   lv_label_set_text_static(txtMUp, "+");
 
   btnMinutesDown = lv_btn_create(lv_scr_act(), nullptr);
   btnMinutesDown->user_data = this;
   lv_obj_set_event_cb(btnMinutesDown, btnEventHandler);
-  lv_obj_align(btnMinutesDown, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, +40);
-  lv_obj_set_height(btnMinutesDown, 40);
-  lv_obj_set_width(btnMinutesDown, 60);
+  lv_obj_set_size(btnMinutesDown, 60, 40);
+  lv_obj_align(btnMinutesDown, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, 35);
   txtMDown = lv_label_create(btnMinutesDown, nullptr);
   lv_label_set_text_static(txtMDown, "-");
 
   btnSecondsUp = lv_btn_create(lv_scr_act(), nullptr);
   btnSecondsUp->user_data = this;
   lv_obj_set_event_cb(btnSecondsUp, btnEventHandler);
-  lv_obj_align(btnSecondsUp, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 10, -80);
-  lv_obj_set_height(btnSecondsUp, 40);
-  lv_obj_set_width(btnSecondsUp, 60);
+  lv_obj_set_size(btnSecondsUp, 60, 40);
+  lv_obj_align(btnSecondsUp, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, -85);
   txtSUp = lv_label_create(btnSecondsUp, nullptr);
   lv_label_set_text_static(txtSUp, "+");
 
   btnSecondsDown = lv_btn_create(lv_scr_act(), nullptr);
   btnSecondsDown->user_data = this;
   lv_obj_set_event_cb(btnSecondsDown, btnEventHandler);
-  lv_obj_align(btnSecondsDown, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 10, +40);
-  lv_obj_set_height(btnSecondsDown, 40);
-  lv_obj_set_width(btnSecondsDown, 60);
+  lv_obj_set_size(btnSecondsDown, 60, 40);
+  lv_obj_align(btnSecondsDown, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, 35);
   txtSDown = lv_label_create(btnSecondsDown, nullptr);
   lv_label_set_text_static(txtSDown, "-");
 }
@@ -63,14 +59,13 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
 
   uint32_t seconds = timerController.GetTimeRemaining() / 1000;
   lv_label_set_text_fmt(time, "%02lu:%02lu", seconds / 60, seconds % 60);
-
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
+  lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -25);
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
   lv_obj_set_event_cb(btnPlayPause, btnEventHandler);
-  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -10);
-  lv_obj_set_height(btnPlayPause, 40);
+  lv_obj_set_size(btnPlayPause, 120, 50);
+  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
   if (timerController.IsRunning()) {
     lv_label_set_text_static(txtPlayPause, Symbols::pause);
