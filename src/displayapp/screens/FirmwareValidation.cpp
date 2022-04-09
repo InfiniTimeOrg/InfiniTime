@@ -7,11 +7,10 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static void ButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
-    FirmwareValidation* screen = static_cast<FirmwareValidation*>(obj->user_data);
+  void ButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<FirmwareValidation*>(obj->user_data);
     screen->OnButtonEvent(obj, event);
   }
-
 }
 
 FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::FirmwareValidator& validator)

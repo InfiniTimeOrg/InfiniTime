@@ -8,8 +8,8 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static void event_handler(lv_obj_t* obj, lv_event_t event) {
-    SettingTimeFormat* screen = static_cast<SettingTimeFormat*>(obj->user_data);
+  void event_handler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<SettingTimeFormat*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
 }
