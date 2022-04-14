@@ -17,21 +17,19 @@ namespace Pinetime {
         ~FlashLight() override;
 
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
-        void OnClickEvent(lv_obj_t* obj, lv_event_t event);
 
       private:
-        void SetIndicators();
         void SetColors();
+        void SetBrightness();
 
         Pinetime::System::SystemTask& systemTask;
         Controllers::BrightnessController& brightnessController;
 
-        Controllers::BrightnessController::Levels brightnessLevel;
-
         lv_obj_t* flashLight;
-        lv_obj_t* backgroundAction;
-        lv_obj_t* indicators[3];
+        lv_obj_t* backgroundLabel;
         bool isOn = false;
+        bool highBrightness = true;
+        bool firstTapDone = false;
       };
     }
   }
