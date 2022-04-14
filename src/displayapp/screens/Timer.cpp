@@ -9,8 +9,19 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<Timer*>(obj->user_data);
   screen->OnButtonEvent(obj, event);
 }
-
+// Create (or recreate) all the buttons.
 void Timer::CreateButtons() {
+  // Reset button
+  resetButton = lv_btn_create(lv_scr_act(), nullptr);
+  resetButton->user_data = this;
+  lv_obj_set_event_cb(resetButton, btnEventHandler);
+  lv_obj_align(resetButton, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 15, -7);
+  lv_obj_set_height(resetButton, 30);
+  lv_obj_set_width(resetButton, 30);
+  txtReset = lv_label_create(resetButton, nullptr);
+  // lv_label_set_text(txtReset, Symbols::reset);
+  lv_label_set_text(txtReset, "0");
+  
   btnMinutesUp = lv_btn_create(lv_scr_act(), nullptr);
   btnMinutesUp->user_data = this;
   lv_obj_set_event_cb(btnMinutesUp, btnEventHandler);
@@ -47,16 +58,17 @@ void Timer::CreateButtons() {
   txtSDown = lv_label_create(btnSecondsDown, nullptr);
   lv_label_set_text(txtSDown, "-");
 }
-
+// Timer construction.
 Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   : Screen(app), running {true}, timerController {timerController} {
+  // Set up the background (of the Timer app; not some background process).
   backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_click(backgroundLabel, true);
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
   lv_label_set_text(backgroundLabel, "");
-
+  // Time display
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
@@ -65,7 +77,7 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   lv_label_set_text_fmt(time, "%02lu:%02lu", seconds / 60, seconds % 60);
 
   lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
-
+  // Pause/Play button
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
   lv_obj_set_event_cb(btnPlayPause, btnEventHandler);
@@ -81,12 +93,12 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
-
+// Timer destruction.
 Timer::~Timer() {
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
-
+// Update the time remaining.
 void Timer::Refresh() {
   if (timerController.IsRunning()) {
     uint32_t seconds = timerController.GetTimeRemaining() / 1000;
@@ -97,6 +109,7 @@ void Timer::Refresh() {
 void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     if (obj == btnPlayPause) {
+      // Pause the timer.
       if (timerController.IsRunning()) {
         lv_label_set_text(txtPlayPause, Symbols::play);
         uint32_t seconds = timerController.GetTimeRemaining() / 1000;
@@ -104,11 +117,11 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         secondsToSet = seconds % 60;
         timerController.StopTimer();
         CreateButtons();
-
+        // Resume the timer.
       } else if (secondsToSet + minutesToSet > 0) {
         lv_label_set_text(txtPlayPause, Symbols::pause);
         timerController.StartTimer((secondsToSet + minutesToSet * 60) * 1000);
-
+        // Disable the number buttons.
         lv_obj_del(btnSecondsDown);
         btnSecondsDown = nullptr;
         lv_obj_del(btnSecondsUp);
@@ -118,7 +131,28 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         lv_obj_del(btnMinutesUp);
         btnMinutesUp = nullptr;
       }
+    } 
+    // Reset all the things.
+    else if (obj == resetButton) {
+        if (timerController.IsRunning()) {
+            timerController.StopTimer();
+            timerController.Reset();
+            lv_label_set_text(time, "00:00");
+            lv_label_set_text(txtPlayPause, Symbols::play);
+            secondsToSet = 0;
+            minutesToSet = 0;
+            CreateButtons();
+        } else {
+            timerController.StopTimer();
+            timerController.Reset();
+            lv_label_set_text(time, "00:00");
+            lv_label_set_text(txtPlayPause, Symbols::play);
+            secondsToSet = 0;
+            minutesToSet = 0;
+            // CreateButtons();
+            }
     } else {
+      // The timer isn't running; set-up some buttons and text.
       if (!timerController.IsRunning()) {
         if (obj == btnMinutesUp) {
           if (minutesToSet >= 59) {
@@ -156,7 +190,7 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     }
   }
 }
-
+// When the timer finishes, vibrate once, and reset everything.
 void Timer::SetDone() {
   lv_label_set_text(time, "00:00");
   lv_label_set_text(txtPlayPause, Symbols::play);

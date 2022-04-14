@@ -50,6 +50,11 @@ uint32_t TimerController::GetTimeRemaining() {
   return (static_cast<TickType_t>(deltaTicks) / static_cast<TickType_t>(configTICK_RATE_HZ)) * 1000;
 }
 
+void TimerController::Reset() {
+    // Reset the "endTicks" for now.
+    endTicks = 0;
+    }
+
 void TimerController::StopTimer() {
   app_timer_stop(timerAppTimer);
   timerRunning = false;

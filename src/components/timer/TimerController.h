@@ -18,6 +18,8 @@ namespace Pinetime {
       
       void StartTimer(uint32_t duration);
       
+      void Reset();
+      
       void StopTimer();
       
       uint32_t GetTimeRemaining();

@@ -21,22 +21,27 @@ namespace Pinetime::Applications::Screens {
   private:
     void CreateButtons();
     bool running;
+    // Handle the minutes and seconds here.
     uint8_t secondsToSet = 0;
     uint8_t minutesToSet = 0;
     Controllers::TimerController& timerController;
     lv_obj_t* backgroundLabel;
     lv_obj_t* time;
     lv_obj_t* msecTime;
+    // The buttons go here.
     lv_obj_t* btnPlayPause;
     lv_obj_t* txtPlayPause;
     lv_obj_t* btnMinutesUp;
     lv_obj_t* btnMinutesDown;
     lv_obj_t* btnSecondsUp;
     lv_obj_t* btnSecondsDown;
+    lv_obj_t* resetButton;
+    // The text for the buttons go here.
     lv_obj_t* txtMUp;
     lv_obj_t* txtMDown;
     lv_obj_t* txtSUp;
     lv_obj_t* txtSDown;
+    lv_obj_t* txtReset;
     lv_task_t* taskRefresh;
   };
 }
