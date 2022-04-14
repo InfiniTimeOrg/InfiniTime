@@ -20,8 +20,7 @@ namespace Pinetime {
         void OnClickEvent(lv_obj_t* obj, lv_event_t event);
 
       private:
-        void SetIndicators();
-        void SetColors();
+        void Update(bool on, Pinetime::Controllers::BrightnessController::Levels level);
 
         Pinetime::System::SystemTask& systemTask;
         Controllers::BrightnessController& brightnessController;
