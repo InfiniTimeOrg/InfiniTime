@@ -51,9 +51,9 @@ uint32_t TimerController::GetTimeRemaining() {
 }
 
 void TimerController::Reset() {
-    // Reset the "endTicks" for now.
-    endTicks = 0;
-    }
+  // Reset the "endTicks" for now.
+  endTicks = 0;
+}
 
 void TimerController::StopTimer() {
   app_timer_stop(timerAppTimer);

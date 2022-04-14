@@ -15,12 +15,11 @@ void Timer::CreateButtons() {
   resetButton = lv_btn_create(lv_scr_act(), nullptr);
   resetButton->user_data = this;
   lv_obj_set_event_cb(resetButton, btnEventHandler);
-  lv_obj_align(resetButton, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 15, -7);
-  lv_obj_set_height(resetButton, 30);
-  lv_obj_set_width(resetButton, 30);
+  lv_obj_align(resetButton, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 175, -10);
+  lv_obj_set_height(resetButton, 40);
+  lv_obj_set_width(resetButton, 50);
   txtReset = lv_label_create(resetButton, nullptr);
-  // lv_label_set_text(txtReset, Symbols::reset);
-  lv_label_set_text(txtReset, "0");
+  lv_label_set_text(txtReset, Symbols::reset);
   
   btnMinutesUp = lv_btn_create(lv_scr_act(), nullptr);
   btnMinutesUp->user_data = this;
@@ -131,26 +130,24 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         lv_obj_del(btnMinutesUp);
         btnMinutesUp = nullptr;
       }
-    } 
-    // Reset all the things.
+    }
     else if (obj == resetButton) {
-        if (timerController.IsRunning()) {
-            timerController.StopTimer();
-            timerController.Reset();
-            lv_label_set_text(time, "00:00");
-            lv_label_set_text(txtPlayPause, Symbols::play);
-            secondsToSet = 0;
-            minutesToSet = 0;
-            CreateButtons();
-        } else {
-            timerController.StopTimer();
-            timerController.Reset();
-            lv_label_set_text(time, "00:00");
-            lv_label_set_text(txtPlayPause, Symbols::play);
-            secondsToSet = 0;
-            minutesToSet = 0;
-            // CreateButtons();
-            }
+      if (timerController.IsRunning()) {
+        timerController.StopTimer();
+        timerController.Reset();
+        lv_label_set_text(time, "00:00");
+        lv_label_set_text(txtPlayPause, Symbols::play);
+        secondsToSet = 0;
+        minutesToSet = 0;
+        CreateButtons();
+      } else {
+        timerController.StopTimer();
+        timerController.Reset();
+        lv_label_set_text(time, "00:00");
+        lv_label_set_text(txtPlayPause, Symbols::play);
+        secondsToSet = 0;
+        minutesToSet = 0;
+      }
     } else {
       // The timer isn't running; set-up some buttons and text.
       if (!timerController.IsRunning()) {
