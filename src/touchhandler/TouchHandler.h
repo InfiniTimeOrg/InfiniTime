@@ -1,6 +1,6 @@
 #pragma once
 #include "drivers/Cst816s.h"
-#include "systemtask/SystemTask.h"
+#include "displayapp/TouchEvents.h"
 
 namespace Pinetime {
   namespace Components {
@@ -26,13 +26,13 @@ namespace Pinetime {
         uint8_t GetY() const {
           return info.y;
         }
-        Drivers::Cst816S::Gestures GestureGet();
+        Pinetime::Applications::TouchEvents GestureGet();
       private:
 
         Pinetime::Drivers::Cst816S::TouchInfos info;
         Pinetime::Drivers::Cst816S& touchPanel;
         Pinetime::Components::LittleVgl& lvgl;
-        Pinetime::Drivers::Cst816S::Gestures gesture;
+        Pinetime::Applications::TouchEvents gesture;
         bool isCancelled = false;
         bool gestureReleased = true;
     };
