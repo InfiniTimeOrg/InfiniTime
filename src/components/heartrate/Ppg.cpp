@@ -55,7 +55,7 @@ int8_t Ppg::Preprocess(float spl) {
 }
 
 float Ppg::HeartRate() {
-  if(data[DATA_SIZE-1] == 0){
+  if(data[DATA_SIZE-1] == 0 || dataIndex% Ppg::UPDATE_HEARTRATE_AFTER != 0){
     return 0;
   }
 
@@ -94,9 +94,11 @@ int Ppg::getRingIndex(int8_t index){
 }
 void Ppg::SetOffset(uint16_t offset) {
   this->offset = offset;
-  dataIndex = 0;
+  this->Reset();
 }
 
 void Ppg::Reset() {
   dataIndex = 0;
+  //invalidates the current array
+  data[DATA_SIZE-1] = 0;
 }

@@ -23,6 +23,7 @@ namespace Pinetime {
       int getRingIndex(int8_t index);
 
     private:
+    static const uint8_t UPDATE_HEARTRATE_AFTER = 200;
       std::array<int8_t, DATA_SIZE> data;
       size_t dataIndex = 0;
       float offset;
