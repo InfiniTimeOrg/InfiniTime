@@ -21,6 +21,7 @@
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <string>
 #include "displayapp/screens/Screen.h"
+#include "components/motor/MotorController.h"
 #include <array>
 
 namespace Pinetime {
@@ -32,7 +33,7 @@ namespace Pinetime {
     namespace Screens {
       class Navigation : public Screen {
       public:
-        Navigation(DisplayApp* app, Pinetime::Controllers::NavigationService& nav);
+        Navigation(DisplayApp* app, Pinetime::Controllers::NavigationService& nav, Controllers::MotorController& motorController);
         ~Navigation() override;
 
         void Refresh() override;
@@ -43,6 +44,7 @@ namespace Pinetime {
         lv_obj_t* txtManDist;
         lv_obj_t* barProgress;
 
+        Controllers::MotorController& motorController;
         Pinetime::Controllers::NavigationService& navService;
 
         std::string flag;
