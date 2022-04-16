@@ -1,19 +1,12 @@
 #include "systemtask/SystemTask.h"
-#define min // workaround: nimble's min/max macros conflict with libstdc++
-#define max
-#include <host/ble_gap.h>
-#include <host/ble_gatt.h>
-#include <host/ble_hs_adv.h>
-#include <host/util/util.h>
-#include <nimble/hci_common.h>
-#undef max
-#undef min
 #include <hal/nrf_rtc.h>
 #include <libraries/gpiote/app_gpiote.h>
 #include <libraries/log/nrf_log.h>
 
 #include "BootloaderVersion.h"
+#include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
+#include "displayapp/TouchEvents.h"
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 #include "drivers/InternalFlash.h"
@@ -115,7 +108,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
 
 void SystemTask::Start() {
   systemTasksMsgQueue = xQueueCreate(10, 1);
-  if (pdPASS != xTaskCreate(SystemTask::Process, "MAIN", 350, this, 0, &taskHandle)) {
+  if (pdPASS != xTaskCreate(SystemTask::Process, "MAIN", 350, this, 1, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }
 }
@@ -197,13 +190,13 @@ void SystemTask::Work() {
   // Touchscreen
   nrf_gpio_cfg_sense_input(PinMap::Cst816sIrq,
                            static_cast<nrf_gpio_pin_pull_t>(GPIO_PIN_CNF_PULL_Pullup),
-                           static_cast<nrf_gpio_pin_sense_t> GPIO_PIN_CNF_SENSE_Low);
+                           static_cast<nrf_gpio_pin_sense_t>(GPIO_PIN_CNF_SENSE_Low));
 
   pinConfig.skip_gpio_setup = true;
   pinConfig.hi_accuracy = false;
   pinConfig.is_watcher = false;
   pinConfig.sense = static_cast<nrf_gpiote_polarity_t>(NRF_GPIOTE_POLARITY_HITOLO);
-  pinConfig.pull = static_cast<nrf_gpio_pin_pull_t> GPIO_PIN_CNF_PULL_Pullup;
+  pinConfig.pull = static_cast<nrf_gpio_pin_pull_t>(GPIO_PIN_CNF_PULL_Pullup);
 
   nrfx_gpiote_in_init(PinMap::Cst816sIrq, &pinConfig, nrfx_gpiote_evt_handler);
 
@@ -239,6 +232,7 @@ void SystemTask::Work() {
           if (!bleController.IsFirmwareUpdating()) {
             doNotGoToSleep = false;
           }
+          ReloadIdleTimer();
           break;
         case Messages::DisableSleeping:
           doNotGoToSleep = true;
@@ -261,7 +255,7 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
 
-          if (!bleController.IsConnected()) {
+          if (bleController.IsRadioEnabled() && !bleController.IsConnected()) {
             nimbleController.RestartFastAdv();
           }
 
@@ -272,10 +266,10 @@ void SystemTask::Work() {
         case Messages::TouchWakeUp: {
           if (touchHandler.GetNewTouchInfo()) {
             auto gesture = touchHandler.GestureGet();
-            if (gesture != Pinetime::Drivers::Cst816S::Gestures::None and
-                ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
+            if (gesture != Pinetime::Applications::TouchEvents::None and
+                ((gesture == Pinetime::Applications::TouchEvents::DoubleTap and
                   settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
-                 (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
+                 (gesture == Pinetime::Applications::TouchEvents::Tap and
                   settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
               GoToRunning();
             }
@@ -295,6 +289,9 @@ void SystemTask::Work() {
         case Messages::OnNewTime:
           ReloadIdleTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateDateTime);
+          if (alarmController.State() == Controllers::AlarmController::AlarmState::Set) {
+            alarmController.ScheduleAlarm();
+          }
           break;
         case Messages::OnNewNotification:
           if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::ON) {
@@ -444,7 +441,13 @@ void SystemTask::Work() {
           motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
           break;
-
+        case Messages::BleRadioEnableToggle:
+          if(settingsController.GetBleRadioEnabled()) {
+            nimbleController.EnableRadio();
+          } else {
+            nimbleController.DisableRadio();
+          }
+          break;
         default:
           break;
       }

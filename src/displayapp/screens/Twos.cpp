@@ -130,7 +130,7 @@ bool Twos::placeNewTile() {
 }
 
 bool Twos::tryMerge(TwosTile grid[][4], int& newRow, int& newCol, int oldRow, int oldCol) {
-  if ((grid[newRow][newCol].value == grid[oldRow][oldCol].value)) {
+  if (grid[newRow][newCol].value == grid[oldRow][oldCol].value) {
     if ((newCol != oldCol) || (newRow != oldRow)) {
       if (!grid[newRow][newCol].merged) {
         unsigned int newVal = grid[oldRow][oldCol].value *= 2;

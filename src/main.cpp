@@ -33,6 +33,7 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
+#include "components/brightness/BrightnessController.h"
 #include "components/motor/MotorController.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/heartrate/HeartRateController.h"
@@ -101,7 +102,11 @@ Pinetime::Controllers::Ble bleController;
 Pinetime::Controllers::HeartRateController heartRateController;
 Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController);
 
-Pinetime::Controllers::DateTime dateTimeController;
+Pinetime::Controllers::FS fs {spiNorFlash};
+Pinetime::Controllers::Settings settingsController {fs};
+Pinetime::Controllers::MotorController motorController {};
+
+Pinetime::Controllers::DateTime dateTimeController {settingsController};
 Pinetime::Drivers::Watchdog watchdog;
 Pinetime::Drivers::WatchdogView watchdogView(watchdog);
 Pinetime::Controllers::NotificationManager notificationManager;
@@ -110,10 +115,7 @@ Pinetime::Controllers::TimerController timerController;
 Pinetime::Controllers::AlarmController alarmController {dateTimeController};
 Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);
 Pinetime::Controllers::ButtonHandler buttonHandler;
-
-Pinetime::Controllers::FS fs {spiNorFlash};
-Pinetime::Controllers::Settings settingsController {fs};
-Pinetime::Controllers::MotorController motorController {};
+Pinetime::Controllers::BrightnessController brightnessController {};
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               lvgl,
@@ -129,6 +131,7 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               motionController,
                                               timerController,
                                               alarmController,
+                                              brightnessController,
                                               touchHandler);
 
 Pinetime::System::SystemTask systemTask(spi,

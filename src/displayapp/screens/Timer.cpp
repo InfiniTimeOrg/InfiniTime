@@ -1,5 +1,4 @@
 #include "displayapp/screens/Timer.h"
-
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
 #include <lvgl/lvgl.h>
@@ -7,11 +6,11 @@
 using namespace Pinetime::Applications::Screens;
 
 static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
-  Timer* screen = static_cast<Timer*>(obj->user_data);
+  auto* screen = static_cast<Timer*>(obj->user_data);
   screen->OnButtonEvent(obj, event);
 }
 
-void Timer::createButtons() {
+void Timer::CreateButtons() {
   btnMinutesUp = lv_btn_create(lv_scr_act(), nullptr);
   btnMinutesUp->user_data = this;
   lv_obj_set_event_cb(btnMinutesUp, btnEventHandler);
@@ -51,6 +50,12 @@ void Timer::createButtons() {
 
 Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   : Screen(app), running {true}, timerController {timerController} {
+  backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_click(backgroundLabel, true);
+  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
+  lv_obj_set_size(backgroundLabel, 240, 240);
+  lv_obj_set_pos(backgroundLabel, 0, 0);
+  lv_label_set_text(backgroundLabel, "");
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -71,7 +76,7 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
     lv_label_set_text(txtPlayPause, Symbols::pause);
   } else {
     lv_label_set_text(txtPlayPause, Symbols::play);
-    createButtons();
+    CreateButtons();
   }
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
@@ -98,7 +103,7 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         minutesToSet = seconds / 60;
         secondsToSet = seconds % 60;
         timerController.StopTimer();
-        createButtons();
+        CreateButtons();
 
       } else if (secondsToSet + minutesToSet > 0) {
         lv_label_set_text(txtPlayPause, Symbols::pause);
@@ -152,10 +157,10 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
-void Timer::setDone() {
+void Timer::SetDone() {
   lv_label_set_text(time, "00:00");
   lv_label_set_text(txtPlayPause, Symbols::play);
   secondsToSet = 0;
   minutesToSet = 0;
-  createButtons();
+  CreateButtons();
 }
