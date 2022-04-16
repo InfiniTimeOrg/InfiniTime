@@ -121,7 +121,7 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     } else {
       if (!timerController.IsRunning()) {
         if (obj == btnMinutesUp) {
-          if (minutesToSet >= 59) {
+          if (minutesToSet >= 99) {
             minutesToSet = 0;
           } else {
             minutesToSet++;
@@ -130,7 +130,7 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 
         } else if (obj == btnMinutesDown) {
           if (minutesToSet == 0) {
-            minutesToSet = 59;
+            minutesToSet = 99;
           } else {
             minutesToSet--;
           }
