@@ -33,7 +33,16 @@ namespace Pinetime {
       Drivers::Hrs3300& heartRateSensor;
       Controllers::HeartRateController& controller;
       Controllers::Ppg ppg;
+      // did the user manually start a measurement?
+      bool userStartedMeasurement = false;
+      // is there any measurement started?
       bool measurementStarted = false;
+      // is there a regular measurement running atm?
+      bool regularMeasurementStarted = false;
+      // last time a measurement was done (in tickks)
+      uint32_t lastRegularMeasurementTick;
+      // time to wait between measurements (in seconds)
+      const uint8_t regularMeasurmentWait = 60;
     };
 
   }
