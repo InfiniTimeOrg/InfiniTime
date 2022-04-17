@@ -240,8 +240,7 @@ is run right before booting into InfiniTime.
 It is easily recognizable with its white pine cone that is progressively drawn
 in green. It also displays its own version at the bottom (1.0.0 as of now).
 
-(add link to
-https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/doc/gettingStarted/bootloader-1.0.jpg)
+![Bootloader](./pictures/bootloader-1.0.jpg)
 
 Most of the time, the bootloader just runs without your intervention (update and load the firmware).
 
@@ -265,8 +264,7 @@ You can check the InfiniTime version by first swiping right on the watchface to
 open quick settings, tapping the cogwheel to open settings, swipe up until you
 find an entry named "About" and tap on it.
 
-(add link to
-https://github.com/InfiniTimeOrg/InfiniTime/raw/develop/doc/gettingStarted/version-1.0.jpg)
+![Firmware_v1.0](./pictures/firmware-v1.0.jpg)
 
 #### Recovery firmware
 
