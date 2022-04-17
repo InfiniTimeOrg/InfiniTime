@@ -53,7 +53,6 @@ set(SDK_SOURCE_FILES
         ${NRF5_SDK_PATH}/external/freertos/source/stream_buffer.c
         ${NRF5_SDK_PATH}/external/freertos/source/tasks.c
         ${NRF5_SDK_PATH}/external/freertos/source/timers.c
-        ${NRF5_SDK_PATH}/components/libraries/timer/app_timer_freertos.c
 
         # Libs
         "${NRF5_SDK_PATH}/components/libraries/atomic/nrf_atomic.c"

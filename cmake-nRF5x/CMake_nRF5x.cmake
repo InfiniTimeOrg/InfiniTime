@@ -106,7 +106,6 @@ macro(nRF5x_setup)
       ${NRF5_SDK_PATH}/external/freertos/source/stream_buffer.c
       ${NRF5_SDK_PATH}/external/freertos/source/tasks.c
       ${NRF5_SDK_PATH}/external/freertos/source/timers.c
-      ${NRF5_SDK_PATH}/components/libraries/timer/app_timer_freertos.c
       )
 
     # freertos include
@@ -335,7 +334,6 @@ endmacro(nRF5x_addAppFIFO)
 # adds app-level Timer libraries
 macro(nRF5x_addAppTimer)
     list(APPEND SDK_SOURCE_FILES
-            "${NRF5_SDK_PATH}/components/libraries/timer/app_timer.c"
             )
 endmacro(nRF5x_addAppTimer)
 

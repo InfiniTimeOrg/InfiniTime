@@ -127,8 +127,6 @@ void SystemTask::Work() {
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
 
-  app_timer_init();
-
   spi.Init();
   spiNorFlash.Init();
   spiNorFlash.Wakeup();
