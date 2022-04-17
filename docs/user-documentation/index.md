@@ -240,7 +240,7 @@ is run right before booting into InfiniTime.
 It is easily recognizable with its white pine cone that is progressively drawn
 in green. It also displays its own version at the bottom (1.0.0 as of now).
 
-![Bootloader](./pictures/bootloader-1.0.jpg)
+![Bootloader_v1](./pictures/bootloader-1.0.jpg)
 
 Most of the time, the bootloader just runs without your intervention (update and load the firmware).
 
