@@ -317,6 +317,7 @@ void SystemTask::Work() {
           break;
         case Messages::StopRinging:
           motorController.StopRinging();
+          alarmController.OnStopRinging();
           break;
         case Messages::BleConnected:
           ReloadIdleTimer();

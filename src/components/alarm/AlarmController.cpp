@@ -27,20 +27,16 @@ using namespace std::chrono_literals;
 AlarmController::AlarmController(Controllers::DateTime& dateTimeController) : dateTimeController {dateTimeController} {
 }
 
-APP_TIMER_DEF(alarmAppTimer);
-
 namespace {
-  void SetOffAlarm(void* p_context) {
-    auto* controller = static_cast<Pinetime::Controllers::AlarmController*>(p_context);
-    if (controller != nullptr) {
-      controller->SetOffAlarmNow();
-    }
+  void SetOffAlarm(TimerHandle_t xTimer) {
+    auto controller = static_cast<Pinetime::Controllers::AlarmController*>(pvTimerGetTimerID(xTimer));
+    controller->SetOffAlarmNow();
   }
 }
 
 void AlarmController::Init(System::SystemTask* systemTask) {
-  app_timer_create(&alarmAppTimer, APP_TIMER_MODE_SINGLE_SHOT, SetOffAlarm);
   this->systemTask = systemTask;
+  alarmAppTimer = xTimerCreate("alarmAppTm", 1, pdFALSE, this, SetOffAlarm);
 }
 
 void AlarmController::SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin) {
@@ -49,8 +45,8 @@ void AlarmController::SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin) {
 }
 
 void AlarmController::ScheduleAlarm() {
-  // Determine the next time the alarm needs to go off and set the app_timer
-  app_timer_stop(alarmAppTimer);
+  // Determine the next time the alarm needs to go off and set the timer
+  xTimerStop(alarmAppTimer, 0);
 
   auto now = dateTimeController.CurrentDateTime();
   alarmTime = now;
@@ -82,7 +78,8 @@ void AlarmController::ScheduleAlarm() {
   // now can convert back to a time_point
   alarmTime = std::chrono::system_clock::from_time_t(std::mktime(tmAlarmTime));
   auto mSecToAlarm = std::chrono::duration_cast<std::chrono::milliseconds>(alarmTime - now).count();
-  app_timer_start(alarmAppTimer, APP_TIMER_TICKS(mSecToAlarm), this);
+  xTimerChangePeriod(alarmAppTimer, APP_TIMER_TICKS(mSecToAlarm), 0);
+  xTimerStart(alarmAppTimer, 0);
 
   state = AlarmState::Set;
 }
@@ -92,7 +89,7 @@ uint32_t AlarmController::SecondsToAlarm() {
 }
 
 void AlarmController::DisableAlarm() {
-  app_timer_stop(alarmAppTimer);
+  xTimerStop(alarmAppTimer, 0);
   state = AlarmState::Not_Set;
 }
 
@@ -103,6 +100,12 @@ void AlarmController::SetOffAlarmNow() {
 
 void AlarmController::StopAlerting() {
   systemTask->PushMessage(System::Messages::StopRinging);
+}
+
+void AlarmController::OnStopRinging() {
+  if (state != AlarmState::Alerting) {
+    return;
+  }
 
   // Alarm state is off unless this is a recurring alarm
   if (recurrence == RecurType::None) {
