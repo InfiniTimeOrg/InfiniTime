@@ -15,7 +15,7 @@ PassKey::PassKey(Pinetime::Applications::DisplayApp* app, uint32_t key) : Screen
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text(backgroundLabel, "");
+  lv_label_set_text_static(backgroundLabel, "");
 }
 
 PassKey::~PassKey() {

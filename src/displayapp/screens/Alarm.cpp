@@ -303,7 +303,7 @@ void Alarm::ShowInfo() {
     lv_label_set_text_fmt(
       txtMessage, "Time to\nalarm:\n%2lu Days\n%2lu Hours\n%2lu Minutes\n%2lu Seconds", daysToAlarm, hrsToAlarm, minToAlarm, secToAlarm);
   } else {
-    lv_label_set_text(txtMessage, "Alarm\nis not\nset.");
+    lv_label_set_text_static(txtMessage, "Alarm\nis not\nset.");
   }
 }
 
@@ -317,13 +317,13 @@ void Alarm::SetRecurButtonState() {
   using Pinetime::Controllers::AlarmController;
   switch (alarmController.Recurrence()) {
     case AlarmController::RecurType::None:
-      lv_label_set_text(txtRecur, "ONCE");
+      lv_label_set_text_static(txtRecur, "ONCE");
       break;
     case AlarmController::RecurType::Daily:
-      lv_label_set_text(txtRecur, "DAILY");
+      lv_label_set_text_static(txtRecur, "DAILY");
       break;
     case AlarmController::RecurType::Weekdays:
-      lv_label_set_text(txtRecur, "MON-FRI");
+      lv_label_set_text_static(txtRecur, "MON-FRI");
   }
 }
 

@@ -67,13 +67,13 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_obj_align(bg_clock_img, NULL, LV_ALIGN_CENTER, 0, 0);
 
   batteryIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(batteryIcon, Symbols::batteryHalf);
+  lv_label_set_text_static(batteryIcon, Symbols::batteryHalf);
   lv_obj_align(batteryIcon, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
   lv_obj_set_auto_realign(batteryIcon, true);
 
   notificationIcon = lv_label_create(lv_scr_act(), NULL);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
-  lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(false));
+  lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   // Date - Day / Week day
@@ -185,7 +185,7 @@ void WatchFaceAnalog::SetBatteryIcon() {
   } else {
     lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   }
-  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+  lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
 }
 
 void WatchFaceAnalog::Refresh() {
@@ -193,7 +193,7 @@ void WatchFaceAnalog::Refresh() {
   if (isCharging.IsUpdated()) {
     if (isCharging.Get()) {
       lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
-      lv_label_set_text(batteryIcon, Symbols::plug);
+      lv_label_set_text_static(batteryIcon, Symbols::plug);
     } else {
       SetBatteryIcon();
     }
@@ -208,7 +208,7 @@ void WatchFaceAnalog::Refresh() {
   notificationState = notificationManager.AreNewNotificationsAvailable();
 
   if (notificationState.IsUpdated()) {
-    lv_label_set_text(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
+    lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();
