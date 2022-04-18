@@ -343,13 +343,11 @@ void WatchFacePineTimeStyle::SetBatteryIcon() {
   lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
 }
 
-
 void WatchFacePineTimeStyle::AlignIcons() {
-  bool isBleIconVisible = IsBleIconVisible(bleRadioEnabled.Get(), bleState.Get());
-  if (notificationState.Get() && isBleIconVisible) {
+  if (notificationState.Get() && bleState.Get()) {
     lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 8, 25);
     lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, -8, 25);
-  } else if (notificationState.Get() && !isBleIconVisible) {
+  } else if (notificationState.Get() && !bleState.Get()) {
     lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
   } else {
     lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
@@ -375,7 +373,7 @@ void WatchFacePineTimeStyle::Refresh() {
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
-    lv_label_set_text(bleIcon, BleIcon::GetIcon(bleRadioEnabled.Get(), bleState.Get()));
+    lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
     AlignIcons();
   }
 

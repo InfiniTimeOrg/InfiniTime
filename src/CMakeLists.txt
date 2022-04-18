@@ -449,7 +449,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingSetTime.cpp
         displayapp/screens/settings/SettingChimes.cpp
         displayapp/screens/settings/SettingShakeThreshold.cpp
-        displayapp/screens/settings/SettingAirplaneMode.cpp
+        displayapp/screens/settings/SettingBluetooth.cpp
 
         ## Watch faces
         displayapp/icons/bg_clock.c

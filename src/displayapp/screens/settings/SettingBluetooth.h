@@ -12,13 +12,13 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class SettingAirplaneMode : public Screen {
+      class SettingBluetooth : public Screen {
       public:
-        SettingAirplaneMode(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
-        ~SettingAirplaneMode() override;
+        SettingBluetooth(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
+        ~SettingBluetooth() override;
 
-        void OnAirplaneModeEnabled(lv_obj_t* object, lv_event_t event);
-        void OnAirplaneModeDisabled(lv_obj_t* object, lv_event_t event);
+        void OnBluetoothEnabled(lv_obj_t* object, lv_event_t event);
+        void OnBluetoothDisabled(lv_obj_t* object, lv_event_t event);
 
       private:
         Controllers::Settings& settingsController;
