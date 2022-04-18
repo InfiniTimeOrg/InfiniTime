@@ -62,7 +62,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_obj_align(btnVolDown, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   lv_obj_add_style(btnVolDown, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnVolDown, nullptr);
-  lv_label_set_text(label, Symbols::volumDown);
+  lv_label_set_text_static(label, Symbols::volumDown);
   lv_obj_set_hidden(btnVolDown, true);
 
   btnVolUp = lv_btn_create(lv_scr_act(), nullptr);
@@ -72,7 +72,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_obj_align(btnVolUp, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   lv_obj_add_style(btnVolUp, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnVolUp, nullptr);
-  lv_label_set_text(label, Symbols::volumUp);
+  lv_label_set_text_static(label, Symbols::volumUp);
   lv_obj_set_hidden(btnVolUp, true);
 
   btnPrev = lv_btn_create(lv_scr_act(), nullptr);
@@ -82,7 +82,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_obj_align(btnPrev, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   lv_obj_add_style(btnPrev, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnPrev, nullptr);
-  lv_label_set_text(label, Symbols::stepBackward);
+  lv_label_set_text_static(label, Symbols::stepBackward);
 
   btnNext = lv_btn_create(lv_scr_act(), nullptr);
   btnNext->user_data = this;
@@ -91,7 +91,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_obj_align(btnNext, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   lv_obj_add_style(btnNext, LV_STATE_DEFAULT, &btn_style);
   label = lv_label_create(btnNext, nullptr);
-  lv_label_set_text(label, Symbols::stepForward);
+  lv_label_set_text_static(label, Symbols::stepForward);
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
@@ -100,12 +100,12 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_obj_align(btnPlayPause, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   lv_obj_add_style(btnPlayPause, LV_STATE_DEFAULT, &btn_style);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
-  lv_label_set_text(txtPlayPause, Symbols::play);
+  lv_label_set_text_static(txtPlayPause, Symbols::play);
 
   txtTrackDuration = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrackDuration, LV_LABEL_LONG_SROLL);
   lv_obj_align(txtTrackDuration, nullptr, LV_ALIGN_IN_TOP_LEFT, 12, 20);
-  lv_label_set_text(txtTrackDuration, "--:--/--:--");
+  lv_label_set_text_static(txtTrackDuration, "--:--/--:--");
   lv_label_set_align(txtTrackDuration, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
 
@@ -117,7 +117,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_obj_align(txtArtist, nullptr, LV_ALIGN_IN_LEFT_MID, 12, MIDDLE_OFFSET + 1 * FONT_HEIGHT);
   lv_label_set_align(txtArtist, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtArtist, LV_HOR_RES - 12);
-  lv_label_set_text(txtArtist, "Artist Name");
+  lv_label_set_text_static(txtArtist, "Artist Name");
 
   txtTrack = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtTrack, LV_LABEL_LONG_SROLL_CIRC);
@@ -125,7 +125,7 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
 
   lv_label_set_align(txtTrack, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtTrack, LV_HOR_RES - 12);
-  lv_label_set_text(txtTrack, "This is a very long getTrack name");
+  lv_label_set_text_static(txtTrack, "This is a very long getTrack name");
 
   /** Init animation */
   imgDisc = lv_img_create(lv_scr_act(), nullptr);
@@ -187,7 +187,7 @@ void Music::Refresh() {
   }
 
   if (playing == Pinetime::Controllers::MusicService::MusicStatus::Playing) {
-    lv_label_set_text(txtPlayPause, Symbols::pause);
+    lv_label_set_text_static(txtPlayPause, Symbols::pause);
     if (xTaskGetTickCount() - 1024 >= lastIncrement) {
 
       if (frameB) {
@@ -211,31 +211,27 @@ void Music::Refresh() {
       UpdateLength();
     }
   } else {
-    lv_label_set_text(txtPlayPause, Symbols::play);
+    lv_label_set_text_static(txtPlayPause, Symbols::play);
   }
 }
 
 void Music::UpdateLength() {
   if (totalLength > (99 * 60 * 60)) {
-    lv_label_set_text(txtTrackDuration, "Inf/Inf");
+    lv_label_set_text_static(txtTrackDuration, "Inf/Inf");
   } else if (totalLength > (99 * 60)) {
-    char timer[12];
-    sprintf(timer,
-            "%02d:%02d/%02d:%02d",
-            (currentLength / (60 * 60)) % 100,
-            ((currentLength % (60 * 60)) / 60) % 100,
-            (totalLength / (60 * 60)) % 100,
-            ((totalLength % (60 * 60)) / 60) % 100);
-    lv_label_set_text(txtTrackDuration, timer);
+    lv_label_set_text_fmt(txtTrackDuration,
+                          "%02d:%02d/%02d:%02d",
+                          (currentLength / (60 * 60)) % 100,
+                          ((currentLength % (60 * 60)) / 60) % 100,
+                          (totalLength / (60 * 60)) % 100,
+                          ((totalLength % (60 * 60)) / 60) % 100);
   } else {
-    char timer[12];
-    sprintf(timer,
-            "%02d:%02d/%02d:%02d",
-            (currentLength / 60) % 100,
-            (currentLength % 60) % 100,
-            (totalLength / 60) % 100,
-            (totalLength % 60) % 100);
-    lv_label_set_text(txtTrackDuration, timer);
+    lv_label_set_text_fmt(txtTrackDuration,
+                          "%02d:%02d/%02d:%02d",
+                          (currentLength / 60) % 100,
+                          (currentLength % 60) % 100,
+                          (totalLength / 60) % 100,
+                          (totalLength % 60) % 100);
   }
 }
 

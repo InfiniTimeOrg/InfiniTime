@@ -90,7 +90,7 @@ Twos::Twos(Pinetime::Applications::DisplayApp* app) : Screen(app) {
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text(backgroundLabel, "");
+  lv_label_set_text_static(backgroundLabel, "");
 }
 
 Twos::~Twos() {
@@ -130,7 +130,7 @@ bool Twos::placeNewTile() {
 }
 
 bool Twos::tryMerge(TwosTile grid[][4], int& newRow, int& newCol, int oldRow, int oldCol) {
-  if ((grid[newRow][newCol].value == grid[oldRow][oldCol].value)) {
+  if (grid[newRow][newCol].value == grid[oldRow][oldCol].value) {
     if ((newCol != oldCol) || (newRow != oldRow)) {
       if (!grid[newRow][newCol].merged) {
         unsigned int newVal = grid[oldRow][oldCol].value *= 2;

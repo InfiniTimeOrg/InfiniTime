@@ -15,7 +15,7 @@ FirmwareUpdate::FirmwareUpdate(Pinetime::Applications::DisplayApp* app, Pinetime
   lv_label_set_text_static(backgroundLabel, "");
 
   titleLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(titleLabel, "Firmware update");
+  lv_label_set_text_static(titleLabel, "Firmware update");
   lv_obj_set_auto_realign(titleLabel, true);
   lv_obj_align(titleLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 50);
 
@@ -27,7 +27,7 @@ FirmwareUpdate::FirmwareUpdate(Pinetime::Applications::DisplayApp* app, Pinetime
   lv_bar_set_value(bar1, 0, LV_ANIM_OFF);
 
   percentLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(percentLabel, "Waiting...");
+  lv_label_set_text_static(percentLabel, "Waiting...");
   lv_obj_set_auto_realign(percentLabel, true);
   lv_obj_align(percentLabel, bar1, LV_ALIGN_OUT_TOP_MID, 0, 60);
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
@@ -81,20 +81,19 @@ void FirmwareUpdate::DisplayProgression() const {
   float current = bleController.FirmwareUpdateCurrentBytes() / 1024.0f;
   float total = bleController.FirmwareUpdateTotalBytes() / 1024.0f;
   int16_t pc = (current / total) * 100.0f;
-  sprintf(percentStr, "%d %%", pc);
-  lv_label_set_text(percentLabel, percentStr);
+  lv_label_set_text_fmt(percentLabel, "%d %%", pc);
 
   lv_bar_set_value(bar1, pc, LV_ANIM_OFF);
 }
 
 void FirmwareUpdate::UpdateValidated() {
   lv_label_set_recolor(percentLabel, true);
-  lv_label_set_text(percentLabel, "#00ff00 Image Ok!#");
+  lv_label_set_text_static(percentLabel, "#00ff00 Image Ok!#");
 }
 
 void FirmwareUpdate::UpdateError() {
   lv_label_set_recolor(percentLabel, true);
-  lv_label_set_text(percentLabel, "#ff0000 Error!#");
+  lv_label_set_text_static(percentLabel, "#ff0000 Error!#");
   startTime = xTaskGetTickCount();
 }
 

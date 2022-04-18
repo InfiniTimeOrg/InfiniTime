@@ -1,19 +1,12 @@
 #include "systemtask/SystemTask.h"
-#define min // workaround: nimble's min/max macros conflict with libstdc++
-#define max
-#include <host/ble_gap.h>
-#include <host/ble_gatt.h>
-#include <host/ble_hs_adv.h>
-#include <host/util/util.h>
-#include <nimble/hci_common.h>
-#undef max
-#undef min
 #include <hal/nrf_rtc.h>
 #include <libraries/gpiote/app_gpiote.h>
 #include <libraries/log/nrf_log.h>
 
 #include "BootloaderVersion.h"
+#include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
+#include "displayapp/TouchEvents.h"
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 #include "drivers/InternalFlash.h"
@@ -115,7 +108,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
 
 void SystemTask::Start() {
   systemTasksMsgQueue = xQueueCreate(10, 1);
-  if (pdPASS != xTaskCreate(SystemTask::Process, "MAIN", 350, this, 0, &taskHandle)) {
+  if (pdPASS != xTaskCreate(SystemTask::Process, "MAIN", 350, this, 1, &taskHandle)) {
     APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
   }
 }
@@ -262,7 +255,7 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
 
-          if (!bleController.IsConnected()) {
+          if (bleController.IsRadioEnabled() && !bleController.IsConnected()) {
             nimbleController.RestartFastAdv();
           }
 
@@ -273,10 +266,10 @@ void SystemTask::Work() {
         case Messages::TouchWakeUp: {
           if (touchHandler.GetNewTouchInfo()) {
             auto gesture = touchHandler.GestureGet();
-            if (gesture != Pinetime::Drivers::Cst816S::Gestures::None and
-                ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
+            if (gesture != Pinetime::Applications::TouchEvents::None and
+                ((gesture == Pinetime::Applications::TouchEvents::DoubleTap and
                   settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
-                 (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
+                 (gesture == Pinetime::Applications::TouchEvents::Tap and
                   settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
               GoToRunning();
             }
@@ -448,7 +441,13 @@ void SystemTask::Work() {
           motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
           break;
-
+        case Messages::BleRadioEnableToggle:
+          if(settingsController.GetBleRadioEnabled()) {
+            nimbleController.EnableRadio();
+          } else {
+            nimbleController.DisableRadio();
+          }
+          break;
         default:
           break;
       }
