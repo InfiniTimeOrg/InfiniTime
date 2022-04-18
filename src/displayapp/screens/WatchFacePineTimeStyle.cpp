@@ -19,7 +19,7 @@
  * Style/layout copied from TimeStyle for Pebble by Dan Tilden (github.com/tilden)
  */
 
-#include "displayapp/screens/PineTimeStyle.h"
+#include "displayapp/screens/WatchFacePineTimeStyle.h"
 #include <date/date.h>
 #include <lvgl/lvgl.h>
 #include <cstdio>
@@ -39,7 +39,7 @@ using namespace Pinetime::Applications::Screens;
 
 namespace {
   void event_handler(lv_obj_t* obj, lv_event_t event) {
-    auto* screen = static_cast<PineTimeStyle*>(obj->user_data);
+    auto* screen = static_cast<WatchFacePineTimeStyle*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
 
@@ -51,7 +51,7 @@ namespace {
   }
 }
 
-PineTimeStyle::PineTimeStyle(DisplayApp* app,
+WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
                              Controllers::DateTime& dateTimeController,
                              Controllers::Battery& batteryController,
                              Controllers::Ble& bleController,
@@ -300,12 +300,12 @@ PineTimeStyle::PineTimeStyle(DisplayApp* app,
   Refresh();
 }
 
-PineTimeStyle::~PineTimeStyle() {
+WatchFacePineTimeStyle::~WatchFacePineTimeStyle() {
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-bool PineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+bool WatchFacePineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnRandom)) {
     lv_obj_set_hidden(btnSet, false);
     savedTick = lv_tick_get();
@@ -317,7 +317,7 @@ bool PineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return false;
 }
 
-void PineTimeStyle::CloseMenu() {
+void WatchFacePineTimeStyle::CloseMenu() {
   settingsController.SaveSettings();
   lv_obj_set_hidden(btnNextTime, true);
   lv_obj_set_hidden(btnPrevTime, true);
@@ -330,7 +330,7 @@ void PineTimeStyle::CloseMenu() {
   lv_obj_set_hidden(btnClose, true);
 }
 
-bool PineTimeStyle::OnButtonPushed() {
+bool WatchFacePineTimeStyle::OnButtonPushed() {
   if (!lv_obj_get_hidden(btnClose)) {
     CloseMenu();
     return true;
@@ -338,13 +338,12 @@ bool PineTimeStyle::OnButtonPushed() {
   return false;
 }
 
-void PineTimeStyle::SetBatteryIcon() {
+void WatchFacePineTimeStyle::SetBatteryIcon() {
   auto batteryPercent = batteryPercentRemaining.Get();
   lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
 }
 
-
-void PineTimeStyle::AlignIcons() {
+void WatchFacePineTimeStyle::AlignIcons() {
   if (notificationState.Get() && bleState.Get()) {
     lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 8, 25);
     lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, -8, 25);
@@ -355,7 +354,7 @@ void PineTimeStyle::AlignIcons() {
   }
 }
 
-void PineTimeStyle::Refresh() {
+void WatchFacePineTimeStyle::Refresh() {
   isCharging = batteryController.IsCharging();
   if (isCharging.IsUpdated()) {
     if (isCharging.Get()) {
@@ -455,7 +454,7 @@ void PineTimeStyle::Refresh() {
   }
 }
 
-void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
+void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   auto valueTime = settingsController.GetPTSColorTime();
   auto valueBar = settingsController.GetPTSColorBar();
   auto valueBG = settingsController.GetPTSColorBG();
@@ -576,7 +575,7 @@ void PineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   }
 }
 
-Pinetime::Controllers::Settings::Colors PineTimeStyle::GetNext(Pinetime::Controllers::Settings::Colors color) {
+Pinetime::Controllers::Settings::Colors WatchFacePineTimeStyle::GetNext(Pinetime::Controllers::Settings::Colors color) {
   auto colorAsInt = static_cast<uint8_t>(color);
   Pinetime::Controllers::Settings::Colors nextColor;
   if (colorAsInt < 16) {
@@ -587,7 +586,7 @@ Pinetime::Controllers::Settings::Colors PineTimeStyle::GetNext(Pinetime::Control
   return nextColor;
 }
 
-Pinetime::Controllers::Settings::Colors PineTimeStyle::GetPrevious(Pinetime::Controllers::Settings::Colors color) {
+Pinetime::Controllers::Settings::Colors WatchFacePineTimeStyle::GetPrevious(Pinetime::Controllers::Settings::Colors color) {
   auto colorAsInt = static_cast<uint8_t>(color);
   Pinetime::Controllers::Settings::Colors prevColor;
 
