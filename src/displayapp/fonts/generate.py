@@ -33,6 +33,7 @@ def main():
     ap.add_argument('config', type=str, help='config file to use')
     ap.add_argument('-e', '--enable', type=str, action='append', help='optional feature to enable in font generation', default=[], metavar='features', dest='features')
     ap.add_argument('-f', '--font', type=str, action='append', help='Choose specific fonts to generate (default: all)', default=[])
+    ap.add_argument('-c', '--removec', action='store_true', help='remove .c extension from font names (given in -f options)', default=False)
     args = ap.parse_args()
 
     if not os.path.exists(args.config):
@@ -46,8 +47,17 @@ def main():
         if enabled_feature not in data['features']:
             sys.exit(f'Error: the requested feature {enabled_feature} does not exist in {args.config}.')
 
+    fonts_to_run = args.font
+    if args.removec and args.font:
+        fonts_to_run = []
+        for font in args.font:
+            if font.endswith('.c'):
+                fonts_to_run.append(font[:-2])
+            else:
+                sys.exit(f'requested to remove .c extension, but {font} does not have it.')
+
     for (name,font) in data['fonts'].items():
-        if args.font and name not in args.font:
+        if fonts_to_run and name not in fonts_to_run:
             continue
         sources = font.pop('sources')
         if 'patches' in font:
