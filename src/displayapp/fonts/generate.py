@@ -42,17 +42,16 @@ def main():
     with open(args.config, 'r') as fd:
         data = json.load(fd)
 
-    fonts_to_run = args.font
+    fonts_to_run = set(data['fonts'].keys())
 
-    if fonts_to_run:
-        d = set(fonts_to_run).difference(data['fonts'].keys())
+    if args.font:
+        d = set(args.font).difference(fonts_to_run)
         if d:
             print(f'Warning: requested font{"s" if len(d)>1 else ""} missing: {" ".join(d)}')
-            fonts_to_run = list(set(fonts_to_run).intersection(data['fonts'].keys()))
+        fonts_to_run = fonts_to_run.intersection(set(args.font))
 
-    for (name,font) in data['fonts'].items():
-        if fonts_to_run and name not in fonts_to_run:
-            continue
+    for name in fonts_to_run:
+        font = data['fonts'][name]
         sources = font.pop('sources')
         patches = font.pop('patches') if 'patches' in font else  []
         features = font.pop('features') if 'features' in font else []
