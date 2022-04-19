@@ -56,6 +56,12 @@ def main():
             else:
                 sys.exit(f'requested to remove .c extension, but {font} does not have it.')
 
+    if fonts_to_run:
+        d = set(fonts_to_run).difference(data['fonts'].keys())
+        if d:
+            print(f'Warning: requested font{"s" if len(d)>1 else ""} missing: {" ".join(d)}')
+            fonts_to_run = list(set(fonts_to_run).intersection(data['fonts'].keys()))
+
     for (name,font) in data['fonts'].items():
         if fonts_to_run and name not in fonts_to_run:
             continue
