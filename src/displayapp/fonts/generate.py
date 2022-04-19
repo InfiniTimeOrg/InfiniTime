@@ -33,7 +33,6 @@ def main():
     ap.add_argument('config', type=str, help='config file to use')
     ap.add_argument('-e', '--enable', type=str, action='append', help='optional feature to enable in font generation', default=[], metavar='features', dest='features')
     ap.add_argument('-f', '--font', type=str, action='append', help='Choose specific fonts to generate (default: all)', default=[])
-    ap.add_argument('-c', '--removec', action='store_true', help='remove .c extension from font names (given in -f options)', default=False)
     args = ap.parse_args()
 
     if not os.path.exists(args.config):
@@ -44,13 +43,6 @@ def main():
         data = json.load(fd)
 
     fonts_to_run = args.font
-    if args.removec and args.font:
-        fonts_to_run = []
-        for font in args.font:
-            if font.endswith('.c'):
-                fonts_to_run.append(font[:-2])
-            else:
-                sys.exit(f'requested to remove .c extension, but {font} does not have it.')
 
     if fonts_to_run:
         d = set(fonts_to_run).difference(data['fonts'].keys())
