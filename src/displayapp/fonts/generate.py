@@ -45,10 +45,13 @@ def main():
     fonts_to_run = set(data['fonts'].keys())
 
     if args.font:
-        d = set(args.font).difference(fonts_to_run)
+        enabled_fonts = set()
+        for font in args.font:
+            enabled_fonts.add(font[:-2] if font.endswith('.c') else font)
+        d = enabled_fonts.difference(fonts_to_run)
         if d:
             print(f'Warning: requested font{"s" if len(d)>1 else ""} missing: {" ".join(d)}')
-        fonts_to_run = fonts_to_run.intersection(set(args.font))
+        fonts_to_run = fonts_to_run.intersection(enabled_fonts)
 
     for name in fonts_to_run:
         font = data['fonts'][name]
