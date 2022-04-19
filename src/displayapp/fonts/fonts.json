@@ -13,7 +13,15 @@
          ],
          "bpp": 1,
          "size": 20,
-         "patches": ["./fix_jetbrains_mono_bold_20_zero.py"]
+         "patches": ["./fix_jetbrains_mono_bold_20_zero.py"],
+         "features": {
+            "hebrew": [
+               {
+                  "font": "SimpleCLM-Medium.ttf",
+                  "range": "0x05D0-0x05EA,0x05F3,0x05F4"
+               }
+            ]
+         }
       },
       "jetbrains_mono_42": {
          "sources": [
@@ -75,16 +83,6 @@
          "bpp": 2,
          "size": 80,
          "compress": true
-      }
-   },
-   "features": {
-      "hebrew": {
-         "jetbrains_mono_bold_20": [
-            {
-               "font": "SimpleCLM-Medium.ttf",
-               "range": "0x05D0-0x05EA,0x05F3,0x05F4"
-            }
-         ]
       }
    }
 }
