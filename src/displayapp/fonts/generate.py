@@ -43,10 +43,6 @@ def main():
     with open(args.config, 'r') as fd:
         data = json.load(fd)
 
-    for enabled_feature in args.features:
-        if enabled_feature not in data['features']:
-            sys.exit(f'Error: the requested feature {enabled_feature} does not exist in {args.config}.')
-
     fonts_to_run = args.font
     if args.removec and args.font:
         fonts_to_run = []
@@ -66,13 +62,11 @@ def main():
         if fonts_to_run and name not in fonts_to_run:
             continue
         sources = font.pop('sources')
-        if 'patches' in font:
-            patches = font.pop('patches')
-        else:
-            patches = None
+        patches = font.pop('patches') if 'patches' in font else  []
+        features = font.pop('features') if 'features' in font else []
         for enabled_feature in args.features:
-            if name in data['features'][enabled_feature]:
-                sources.extend(data['features'][enabled_feature][name])
+            if enabled_feature in features:
+                sources.extend(features[enabled_feature])
         font['fonts'] = [FontArg(thing) for thing in sources]
         line = gen_lvconv_line(f'{name}.c', **font)
         subprocess.check_call(line)
