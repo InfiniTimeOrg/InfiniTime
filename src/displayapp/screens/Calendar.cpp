@@ -9,7 +9,7 @@ Calendar::Calendar(DisplayApp* app, Pinetime::Controllers::Battery& batteryContr
 
     // Status bar clock and battery
     label_time = lv_label_create(lv_scr_act(), nullptr);
-    lv_label_set_text_fmt(label_time, dateTimeController.FormattedTime().c_str());
+    lv_label_set_text(label_time, dateTimeController.FormattedTime().c_str());
     lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
     lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
     batteryIcon = lv_label_create(lv_scr_act(), nullptr);
