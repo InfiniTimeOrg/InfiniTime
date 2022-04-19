@@ -29,9 +29,9 @@ def gen_lvconv_line(dest: str, size: int, bpp: int, fonts: typing.List[FontArg],
     return args
 
 def main():
-    ap = argparse.ArgumentParser(description='auto generate lvGL font files from fonts')
+    ap = argparse.ArgumentParser(description='auto generate LVGL font files from fonts')
     ap.add_argument('config', type=str, help='config file to use')
-    ap.add_argument('-e', '--enable', type=str, action='append', help='optional feature to enable in font generation', default=[], metavar='features', dest='features')
+    ap.add_argument('-e', '--enable', type=str, action='append', help='optional feature to enable in font generation', default=[], metavar='FEATURE', dest='features')
     ap.add_argument('-f', '--font', type=str, action='append', help='Choose specific fonts to generate (default: all)', default=[])
     args = ap.parse_args()
 
