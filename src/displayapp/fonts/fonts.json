@@ -13,7 +13,7 @@
          ],
          "bpp": 1,
          "size": 20,
-         "patches": ["./fix_jetbrains_mono_bold_20_zero.py"],
+         "patches": [["patch", "jetbrains_mono_bold_20.c", "jetbrains_mono_bold_20.c_zero.patch"]],
          "features": {
             "hebrew": [
                {
