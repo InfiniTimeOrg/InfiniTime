@@ -8,23 +8,23 @@ import os.path
 import argparse
 import subprocess
 
-class FontArg(object):
+class Source(object):
     def __init__(self, d):
-        self.font = d['font']
+        self.file = d['file']
         self.range = d.get('range')
         self.symbols = d.get('symbols')
 
 
-def gen_lvconv_line(dest: str, size: int, bpp: int, fonts: typing.List[FontArg], compress:bool=False):
+def gen_lvconv_line(dest: str, size: int, bpp: int, sources: typing.List[Source], compress:bool=False):
     args = ['lv_font_conv', '--size', str(size), '--output', dest, '--bpp', str(bpp), '--format', 'lvgl']
     if not compress:
         args.append('--no-compress')
-    for font in fonts:
-        args.extend(['--font', font.font])
-        if font.range:
-            args.extend(['--range', font.range])
-        if font.symbols:
-            args.extend(['--symbols', font.symbols])
+    for source in sources:
+        args.extend(['--font', source.file])
+        if source.range:
+            args.extend(['--range', source.range])
+        if source.symbols:
+            args.extend(['--symbols', source.symbols])
 
     return args
 
@@ -42,7 +42,7 @@ def main():
     with open(args.config, 'r') as fd:
         data = json.load(fd)
 
-    fonts_to_run = set(data['fonts'].keys())
+    fonts_to_run = set(data.keys())
 
     if args.font:
         enabled_fonts = set()
@@ -54,18 +54,22 @@ def main():
         fonts_to_run = fonts_to_run.intersection(enabled_fonts)
 
     for name in fonts_to_run:
-        font = data['fonts'][name]
+        font = data[name]
         sources = font.pop('sources')
         patches = font.pop('patches') if 'patches' in font else  []
         features = font.pop('features') if 'features' in font else []
         for enabled_feature in args.features:
             if enabled_feature in features:
                 sources.extend(features[enabled_feature])
-        font['fonts'] = [FontArg(thing) for thing in sources]
+        font['sources'] = [Source(thing) for thing in sources]
         line = gen_lvconv_line(f'{name}.c', **font)
         subprocess.check_call(line)
         if patches:
             for patch in patches:
+                try: patch = patch.format(name=name, file=name+'.c')
+                except: pass
+                try: patch = [arg.format(name=name, file=name+'.c') for arg in patch]
+                except: pass
                 subprocess.check_call(patch)
 
 
