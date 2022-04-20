@@ -17,6 +17,8 @@ namespace Pinetime {
         RaiseWrist = 2,
         Shake = 3,
       };
+      enum class BatteryPercentage : u_int8_t { ON, OFF };
+      enum class BatteryColor : u_int8_t { ON, OFF };
       enum class Colors : uint8_t {
         White,
         Silver,
@@ -40,6 +42,10 @@ namespace Pinetime {
         Colors ColorTime = Colors::Teal;
         Colors ColorBar = Colors::Teal;
         Colors ColorBG = Colors::Black;
+      };
+      struct DigitalWatchStyle {
+        BatteryPercentage Percentage = BatteryPercentage::OFF;
+        BatteryColor Color = BatteryColor::OFF;
       };
 
       Settings(Pinetime::Controllers::FS& fs);
@@ -92,6 +98,26 @@ namespace Pinetime {
       };
       Colors GetPTSColorBG() const {
         return settings.PTS.ColorBG;
+      };
+
+      void SetDWSBatteryPercentageStatus(BatteryPercentage status) {
+        if (status != settings.DWS.Percentage) {
+          settingsChanged = true;
+        }
+        settings.DWS.Percentage = status;
+      };
+      BatteryPercentage GetDWSBatteryPercentageStatus() const {
+        return settings.DWS.Percentage;
+      };
+
+      void SetDWSBatteryColorStatus(BatteryColor status) {
+        if (status != settings.DWS.Color) {
+          settingsChanged = true;
+        }
+        settings.DWS.Color = status;
+      };
+      BatteryColor GetDWSBatteryColorStatus() const {
+        return settings.DWS.Color;
       };
 
       void SetAppMenu(uint8_t menu) {
@@ -213,7 +239,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0003;
+      static constexpr uint32_t settingsVersion = 0x0004;
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
@@ -226,6 +252,8 @@ namespace Pinetime {
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
+
+        DigitalWatchStyle DWS;
 
         std::bitset<4> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
