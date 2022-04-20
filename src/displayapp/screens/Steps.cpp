@@ -48,12 +48,6 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_label_set_align(lstepsGoal, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lstepsGoal, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 40);
 
-  lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
-  lv_obj_set_size(backgroundLabel, 240, 240);
-  lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text_static(backgroundLabel, "");
-
   resetBtn = lv_btn_create(lv_scr_act(), nullptr);
   resetBtn->user_data = this;
   lv_obj_set_event_cb(resetBtn, lap_event_handler);

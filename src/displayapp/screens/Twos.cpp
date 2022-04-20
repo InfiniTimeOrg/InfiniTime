@@ -85,12 +85,6 @@ Twos::Twos(Pinetime::Applications::DisplayApp* app) : Screen(app) {
   lv_obj_align(scoreText, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 10);
   lv_label_set_recolor(scoreText, true);
   lv_label_set_text_fmt(scoreText, "Score #FFFF00 %i#", score);
-
-  lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
-  lv_obj_set_size(backgroundLabel, 240, 240);
-  lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text_static(backgroundLabel, "");
 }
 
 Twos::~Twos() {

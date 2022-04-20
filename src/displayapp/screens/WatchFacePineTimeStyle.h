@@ -79,7 +79,6 @@ namespace Pinetime {
         lv_obj_t* dateDayOfWeek;
         lv_obj_t* dateDay;
         lv_obj_t* dateMonth;
-        lv_obj_t* backgroundLabel;
         lv_obj_t* plugIcon;
         lv_obj_t* bleIcon;
         lv_obj_t* calendarOuter;
