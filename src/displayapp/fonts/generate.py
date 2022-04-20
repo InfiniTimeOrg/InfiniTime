@@ -11,6 +11,8 @@ import subprocess
 class Source(object):
     def __init__(self, d):
         self.file = d['file']
+        if not os.path.exists(self.file):
+            self.file = os.path.join(os.path.dirname(sys.argv[0]), self.file)
         self.range = d.get('range')
         self.symbols = d.get('symbols')
 
