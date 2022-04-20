@@ -8,12 +8,6 @@ using namespace Pinetime::Applications::Screens;
 FirmwareUpdate::FirmwareUpdate(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Ble& bleController)
   : Screen(app), bleController {bleController} {
 
-  lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
-  lv_obj_set_size(backgroundLabel, 240, 240);
-  lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text_static(backgroundLabel, "");
-
   titleLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(titleLabel, "Firmware update");
   lv_obj_align(titleLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 50);
