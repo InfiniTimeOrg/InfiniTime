@@ -181,7 +181,8 @@ static void basic_init(void) {
   lv_style_set_pad_inner(&style_list_btn, LV_STATE_DEFAULT, LV_HOR_RES / 50);
 
   style_init_reset(&style_ddlist_list);
-  lv_style_set_clip_corner(&style_ddlist_list, LV_STATE_DEFAULT, true);
+  // Causes lag unfortunately, so we'll have to live with the selected item overflowing the corner
+  //lv_style_set_clip_corner(&style_ddlist_list, LV_STATE_DEFAULT, true);
   lv_style_set_text_line_space(&style_ddlist_list, LV_STATE_DEFAULT, LV_VER_RES / 25);
   lv_style_set_shadow_width(&style_ddlist_list, LV_STATE_DEFAULT, LV_VER_RES / 20);
   lv_style_set_shadow_color(&style_ddlist_list, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
