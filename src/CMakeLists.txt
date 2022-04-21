@@ -412,6 +412,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Alarm.cpp
         displayapp/screens/Styles.cpp
         displayapp/Colors.cpp
+        displayapp/widgets/Counter.cpp
 
         ## Settings
         displayapp/screens/settings/QuickSettings.cpp
@@ -617,6 +618,7 @@ set(INCLUDE_FILES
         displayapp/screens/Timer.h
         displayapp/screens/Alarm.h
         displayapp/Colors.h
+        displayapp/widgets/Counter.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h

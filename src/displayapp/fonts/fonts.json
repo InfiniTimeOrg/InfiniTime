@@ -18,7 +18,7 @@
       "sources": [
          {
             "file": "JetBrainsMono-Regular.ttf",
-            "range": "0x25, 0x30-0x3a"
+            "range": "0x25, 0x2b, 0x2d, 0x30-0x3a"
          }
       ],
       "bpp": 1,
