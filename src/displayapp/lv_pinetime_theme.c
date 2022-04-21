@@ -26,7 +26,6 @@ static void theme_apply(lv_obj_t* obj, lv_theme_style_t name);
  **********************/
 static lv_theme_t theme;
 
-static lv_style_t style_pad;
 static lv_style_t style_circle;
 
 static lv_style_t style_bg;
@@ -76,12 +75,6 @@ static void style_init_reset(lv_style_t* style) {
 }
 
 static void basic_init(void) {
-
-  style_init_reset(&style_pad);
-  lv_style_set_pad_top(&style_pad, LV_STATE_DEFAULT, LV_VER_RES / 30);
-  lv_style_set_pad_bottom(&style_pad, LV_STATE_DEFAULT, LV_VER_RES / 30);
-  lv_style_set_pad_left(&style_pad, LV_STATE_DEFAULT, LV_VER_RES / 40);
-  lv_style_set_pad_right(&style_pad, LV_STATE_DEFAULT, LV_VER_RES / 40);
 
   style_init_reset(&style_circle);
   lv_style_set_radius(&style_circle, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
@@ -188,10 +181,12 @@ static void basic_init(void) {
   lv_style_set_pad_inner(&style_list_btn, LV_STATE_DEFAULT, LV_HOR_RES / 50);
 
   style_init_reset(&style_ddlist_list);
+  lv_style_set_clip_corner(&style_ddlist_list, LV_STATE_DEFAULT, true);
   lv_style_set_text_line_space(&style_ddlist_list, LV_STATE_DEFAULT, LV_VER_RES / 25);
   lv_style_set_shadow_width(&style_ddlist_list, LV_STATE_DEFAULT, LV_VER_RES / 20);
   lv_style_set_shadow_color(&style_ddlist_list, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
   lv_style_set_bg_color(&style_ddlist_list, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
+  lv_style_set_pad_all(&style_ddlist_list, LV_STATE_DEFAULT, 20);
 
   style_init_reset(&style_ddlist_selected);
   lv_style_set_bg_opa(&style_ddlist_selected, LV_STATE_DEFAULT, LV_OPA_COVER);
@@ -479,13 +474,11 @@ static void theme_apply(lv_obj_t* obj, lv_theme_style_t name) {
       lv_obj_clean_style_list(obj, LV_DROPDOWN_PART_MAIN);
       list = lv_obj_get_style_list(obj, LV_DROPDOWN_PART_MAIN);
       _lv_style_list_add_style(list, &style_btn);
-      _lv_style_list_add_style(list, &style_pad);
 
       lv_obj_clean_style_list(obj, LV_DROPDOWN_PART_LIST);
       list = lv_obj_get_style_list(obj, LV_DROPDOWN_PART_LIST);
       _lv_style_list_add_style(list, &style_box);
       _lv_style_list_add_style(list, &style_ddlist_list);
-      _lv_style_list_add_style(list, &style_pad);
 
       lv_obj_clean_style_list(obj, LV_DROPDOWN_PART_SELECTED);
       list = lv_obj_get_style_list(obj, LV_DROPDOWN_PART_SELECTED);
