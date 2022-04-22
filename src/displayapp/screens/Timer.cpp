@@ -14,32 +14,54 @@ void Timer::CreateButtons() {
   btnMinutesUp = lv_btn_create(lv_scr_act(), nullptr);
   btnMinutesUp->user_data = this;
   lv_obj_set_event_cb(btnMinutesUp, btnEventHandler);
-  lv_obj_set_size(btnMinutesUp, 60, 40);
-  lv_obj_align(btnMinutesUp, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, -85);
+  lv_obj_align(btnMinutesUp, lv_scr_act(), LV_ALIGN_CENTER, -65, -90);
+  //lv_obj_set_style_local_bg_opa(btnMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_obj_set_style_local_bg_color(btnMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_grad_color(btnMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_bg_grad_dir(btnMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+  lv_obj_set_style_local_radius(btnMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_move_background(btnMinutesUp);
+  lv_obj_set_size(btnMinutesUp, 100, 90);
   txtMUp = lv_label_create(btnMinutesUp, nullptr);
   lv_label_set_text_static(txtMUp, "+");
+  //lv_obj_align(txtMUp, btnMinutesUp, LV_ALIGN_CENTER, 0, -20);
 
   btnMinutesDown = lv_btn_create(lv_scr_act(), nullptr);
   btnMinutesDown->user_data = this;
   lv_obj_set_event_cb(btnMinutesDown, btnEventHandler);
-  lv_obj_set_size(btnMinutesDown, 60, 40);
-  lv_obj_align(btnMinutesDown, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, 35);
+  lv_obj_align(btnMinutesDown, lv_scr_act(), LV_ALIGN_CENTER, -65, 0);
+  lv_obj_set_style_local_bg_color(btnMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_bg_grad_color(btnMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_grad_dir(btnMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+  lv_obj_set_style_local_radius(btnMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_move_background(btnMinutesDown);
+  lv_obj_set_size(btnMinutesDown, 100, 90);
   txtMDown = lv_label_create(btnMinutesDown, nullptr);
   lv_label_set_text_static(txtMDown, "-");
 
   btnSecondsUp = lv_btn_create(lv_scr_act(), nullptr);
   btnSecondsUp->user_data = this;
   lv_obj_set_event_cb(btnSecondsUp, btnEventHandler);
-  lv_obj_set_size(btnSecondsUp, 60, 40);
-  lv_obj_align(btnSecondsUp, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, -85);
+  lv_obj_align(btnSecondsUp, lv_scr_act(), LV_ALIGN_CENTER, 65, -90);
+  lv_obj_set_style_local_bg_color(btnSecondsUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_grad_color(btnSecondsUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_bg_grad_dir(btnSecondsUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+  lv_obj_set_style_local_radius(btnSecondsUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_move_background(btnSecondsUp);
+  lv_obj_set_size(btnSecondsUp, 100, 90);
   txtSUp = lv_label_create(btnSecondsUp, nullptr);
   lv_label_set_text_static(txtSUp, "+");
 
   btnSecondsDown = lv_btn_create(lv_scr_act(), nullptr);
   btnSecondsDown->user_data = this;
   lv_obj_set_event_cb(btnSecondsDown, btnEventHandler);
-  lv_obj_set_size(btnSecondsDown, 60, 40);
-  lv_obj_align(btnSecondsDown, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, 35);
+  lv_obj_align(btnSecondsDown, lv_scr_act(), LV_ALIGN_CENTER, 65, 0);
+  lv_obj_set_style_local_bg_color(btnSecondsDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_bg_grad_color(btnSecondsDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_grad_dir(btnSecondsDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+  lv_obj_set_style_local_radius(btnSecondsDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_move_background(btnSecondsDown);
+  lv_obj_set_size(btnSecondsDown, 100, 90);
   txtSDown = lv_label_create(btnSecondsDown, nullptr);
   lv_label_set_text_static(txtSDown, "-");
 }
@@ -59,7 +81,9 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
 
   uint32_t seconds = timerController.GetTimeRemaining() / 1000;
   lv_label_set_text_fmt(time, "%02lu:%02lu", seconds / 60, seconds % 60);
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -25);
+
+  lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -20);
+  
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
