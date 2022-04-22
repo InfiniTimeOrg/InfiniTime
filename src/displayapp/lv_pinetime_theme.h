@@ -23,7 +23,7 @@ extern "C" {
 #define LV_PINETIME_LIGHT      lv_color_hex(0xf3f8fe)
 #define LV_PINETIME_GRAY       lv_color_hex(0x8a8a8a)
 #define LV_PINETIME_LIGHT_GRAY lv_color_hex(0xc4c4c4)
-#define LV_PINETIME_BLUE       lv_color_hex(0x2f3540)
+#define LV_PINETIME_BLUE       lv_color_hex(0x5d697e)
 #define LV_PINETIME_GREEN      lv_color_hex(0x4cb242)
 #define LV_PINETIME_RED        lv_color_hex(0xd51732)
 

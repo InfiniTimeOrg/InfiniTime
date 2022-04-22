@@ -55,7 +55,7 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
 
   uint32_t seconds = timerController.GetTimeRemaining() / 1000;
   lv_label_set_text_fmt(time, "%02lu:%02lu", seconds / 60, seconds % 60);

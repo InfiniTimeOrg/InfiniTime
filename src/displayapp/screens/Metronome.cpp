@@ -12,7 +12,7 @@ namespace {
   lv_obj_t* createLabel(const char* name, lv_obj_t* reference, lv_align_t align, lv_font_t* font, uint8_t x, uint8_t y) {
     lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
     lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font);
-    lv_obj_set_style_local_text_color(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+    lv_obj_set_style_local_text_color(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
     lv_label_set_text(label, name);
     lv_obj_align(label, reference, align, x, y);
 

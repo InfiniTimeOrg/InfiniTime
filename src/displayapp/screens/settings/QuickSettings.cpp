@@ -51,7 +51,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
 
   lv_style_init(&btn_style);
   lv_style_set_radius(&btn_style, LV_STATE_DEFAULT, buttonHeight / 4);
-  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, lv_color_hex(0x111111));
+  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x1c, 0x1c, 0x1c));
 
   btn1 = lv_btn_create(lv_scr_act(), nullptr);
   btn1->user_data = this;
@@ -81,7 +81,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_event_cb(btn3, ButtonEventHandler);
   lv_btn_set_checkable(btn3, true);
   lv_obj_add_style(btn3, LV_BTN_PART_MAIN, &btn_style);
-  lv_obj_set_style_local_bg_color(btn3, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_GREEN);
+  lv_obj_set_style_local_bg_color(btn3, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
   lv_obj_set_size(btn3, buttonWidth, buttonHeight);
   lv_obj_align(btn3, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, buttonXOffset, 0);
 
