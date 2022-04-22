@@ -19,7 +19,7 @@ Motion::Motion(Pinetime::Applications::DisplayApp* app, Controllers::MotionContr
 
   /*Add 3 data series*/
   ser1 = lv_chart_add_series(chart, LV_COLOR_RED);
-  ser2 = lv_chart_add_series(chart, LV_COLOR_GREEN);
+  ser2 = lv_chart_add_series(chart, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
   ser3 = lv_chart_add_series(chart, LV_COLOR_YELLOW);
 
   lv_chart_init_points(chart, ser1, 0);
@@ -28,7 +28,7 @@ Motion::Motion(Pinetime::Applications::DisplayApp* app, Controllers::MotionContr
   lv_chart_refresh(chart); /*Required after direct set*/
 
   label = lv_label_create(lv_scr_act(), NULL);
-  lv_label_set_text_fmt(label, "X #FF0000 %d# Y #008000 %d# Z #FFFF00 %d#", 0, 0, 0);
+  lv_label_set_text_fmt(label, "X #FF0000 %d# Y #00B000 %d# Z #FFFF00 %d#", 0, 0, 0);
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, NULL, LV_ALIGN_IN_TOP_MID, 0, 10);
   lv_label_set_recolor(label, true);
@@ -53,7 +53,7 @@ void Motion::Refresh() {
   lv_label_set_text_fmt(labelStep, "Steps %lu", motionController.NbSteps());
 
   lv_label_set_text_fmt(label,
-                        "X #FF0000 %d# Y #008000 %d# Z #FFFF00 %d#",
+                        "X #FF0000 %d# Y #00B000 %d# Z #FFFF00 %d#",
                         motionController.X() / 0x10,
                         motionController.Y() / 0x10,
                         motionController.Z() / 0x10);

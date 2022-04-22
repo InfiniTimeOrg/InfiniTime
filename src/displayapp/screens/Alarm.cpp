@@ -40,7 +40,7 @@ Alarm::Alarm(DisplayApp* app,
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
 
   alarmHours = alarmController.Hours();
   alarmMinutes = alarmController.Minutes();
@@ -50,7 +50,7 @@ Alarm::Alarm(DisplayApp* app,
 
   lblampm = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_set_style_local_text_color(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  lv_obj_set_style_local_text_color(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
   lv_label_set_text_static(lblampm, "  ");
   lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);

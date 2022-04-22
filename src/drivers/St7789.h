@@ -43,6 +43,7 @@ namespace Pinetime {
       void NormalModeOn();
       void WriteToRam();
       void SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
+      void SetGamma();
       void WriteCommand(uint8_t cmd);
       void WriteSpi(const uint8_t* data, size_t size);
 
@@ -52,6 +53,7 @@ namespace Pinetime {
         SleepOut = 0x11,
         NormalModeOn = 0x13,
         DisplayInversionOn = 0x21,
+        GammaSet = 0x26,
         DisplayOff = 0x28,
         DisplayOn = 0x29,
         ColumnAddressSet = 0x2a,
