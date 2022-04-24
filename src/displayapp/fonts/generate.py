@@ -33,7 +33,6 @@ def gen_lvconv_line(dest: str, size: int, bpp: int, sources: typing.List[Source]
 def main():
     ap = argparse.ArgumentParser(description='auto generate LVGL font files from fonts')
     ap.add_argument('config', type=str, help='config file to use')
-    ap.add_argument('-e', '--enable', type=str, action='append', help='optional feature to enable in font generation', default=[], metavar='FEATURE', dest='features')
     ap.add_argument('-f', '--font', type=str, action='append', help='Choose specific fonts to generate (default: all)', default=[])
     args = ap.parse_args()
 
@@ -59,10 +58,6 @@ def main():
         font = data[name]
         sources = font.pop('sources')
         patches = font.pop('patches') if 'patches' in font else  []
-        features = font.pop('features') if 'features' in font else []
-        for enabled_feature in args.features:
-            if enabled_feature in features:
-                sources.extend(features[enabled_feature])
         font['sources'] = [Source(thing) for thing in sources]
         line = gen_lvconv_line(f'{name}.c', **font)
         subprocess.check_call(line)

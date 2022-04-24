@@ -24,7 +24,6 @@ and for each font there is:
 * bpp - bits per pixel.
 * size - size.
 * patches - list of extra "patches" to run, either string to file which should be run, or list of arguments (with first one being the command being run)
-* features - optional. dictionary of extra file,range fonts to be included when the feature is enabled. (for example: a extra language)
 * compress - optional. default disabled. add `"compress": true` to enable
 
 ### Navigation font
