@@ -4,13 +4,6 @@
 * [Awesome font from LVGL](https://lvgl.io/assets/others/FontAwesome5-Solid+Brands+Regular.woff)
 * [Open Sans Light from Google](https://fonts.google.com/specimen/Open+Sans)
 
-## Generate the fonts:
-
-* Make sure you have installed lv_font_conv, and it's in the PATH
-  * See `doc/buildAndProgram.md`
-* run the `generate.py` script, while in the folder.
-  * it has a `-h` flag to show usage, nontheless: `python generate.py fonts.json`
-
 ### How to add new symbols:
 
 * Browse [this cheatsheet](https://fontawesome.com/cheatsheet/free/solid) and pick symbols
