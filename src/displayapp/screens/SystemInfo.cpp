@@ -251,7 +251,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
     buffer[1] = '\0';
     lv_table_set_cell_value(infoTask, i + 1, 1, buffer);
     lv_table_set_cell_value(infoTask, i + 1, 2, tasksStatus[i].pcTaskName);
-    if (tasksStatus[i].usStackWaterMark < 20) {
+    if (tasksStatus[i].usStackHighWaterMark < 20) {
       sprintf(buffer, "%d nizke", tasksStatus[i].usStackHighWaterMark);
     } else {
       sprintf(buffer, "%d", tasksStatus[i].usStackHighWaterMark);
