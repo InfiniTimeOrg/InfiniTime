@@ -33,7 +33,7 @@ SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Display timeout");
+  lv_label_set_text_static(title, "Casovac obrazovky");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 10, 15);
 
@@ -46,7 +46,7 @@ SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime
   char buffer[12];
   for (unsigned int i = 0; i < options.size(); i++) {
     cbOption[i] = lv_checkbox_create(container1, nullptr);
-    sprintf(buffer, "%3d seconds", options[i] / 1000);
+    sprintf(buffer, "%3d sekund", options[i] / 1000);
     lv_checkbox_set_text(cbOption[i], buffer);
     cbOption[i]->user_data = this;
     lv_obj_set_event_cb(cbOption[i], event_handler);

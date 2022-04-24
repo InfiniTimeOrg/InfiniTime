@@ -274,7 +274,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_t* alert_type = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
   if (title == nullptr) {
-    lv_label_set_text_static(alert_type, "Notification");
+    lv_label_set_text_static(alert_type, "Oznameni");
   } else {
     // copy title to label and replace newlines with spaces
     lv_label_set_text(alert_type, title);

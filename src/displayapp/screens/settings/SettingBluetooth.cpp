@@ -47,13 +47,13 @@ SettingBluetooth::SettingBluetooth(Pinetime::Applications::DisplayApp* app, Pine
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
   cbEnabled = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text(cbEnabled, " Enabled");
+  lv_checkbox_set_text(cbEnabled, " Povolono");
   cbEnabled->user_data = this;
   lv_obj_set_event_cb(cbEnabled, OnBluetoothEnabledEvent);
   SetRadioButtonStyle(cbEnabled);
 
   cbDisabled = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text(cbDisabled, " Disabled");
+  lv_checkbox_set_text(cbDisabled, " Zakazano");
   cbDisabled->user_data = this;
   lv_obj_set_event_cb(cbDisabled, OnBluetoothDisabledEvent);
   SetRadioButtonStyle(cbDisabled);

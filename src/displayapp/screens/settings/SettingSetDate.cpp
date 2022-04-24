@@ -24,7 +24,7 @@ namespace {
 SettingSetDate::SettingSetDate(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::DateTime& dateTimeController)
   : Screen(app), dateTimeController {dateTimeController} {
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Set current date");
+  lv_label_set_text_static(title, "Nastavte akutalni datum");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 
@@ -104,7 +104,7 @@ SettingSetDate::SettingSetDate(Pinetime::Applications::DisplayApp* app, Pinetime
   btnSetTime->user_data = this;
   lv_obj_set_size(btnSetTime, 120, 48);
   lv_obj_align(btnSetTime, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_obj_set_style_local_value_str(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Set");
+  lv_obj_set_style_local_value_str(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Nastavit");
   lv_obj_set_event_cb(btnSetTime, event_handler);
 }
 
@@ -153,7 +153,7 @@ void SettingSetDate::HandleButtonPress(lv_obj_t* object, lv_event_t event) {
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
     CheckDay();
   } else if (object == btnSetTime) {
-    NRF_LOG_INFO("Setting date (manually) to %04d-%02d-%02d", yearValue, monthValue, dayValue);
+    NRF_LOG_INFO("Nastavovani datumu (manualne) na %04d-%02d-%02d", yearValue, monthValue, dayValue);
     dateTimeController.SetTime(static_cast<uint16_t>(yearValue),
                                static_cast<uint8_t>(monthValue),
                                static_cast<uint8_t>(dayValue),

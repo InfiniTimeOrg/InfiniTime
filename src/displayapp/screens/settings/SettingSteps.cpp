@@ -28,7 +28,7 @@ SettingSteps::SettingSteps(Pinetime::Applications::DisplayApp* app, Pinetime::Co
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Daily steps goal");
+  lv_label_set_text_static(title, "Cil dennich kroku");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 

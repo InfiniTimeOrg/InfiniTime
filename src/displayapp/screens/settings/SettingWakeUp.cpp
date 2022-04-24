@@ -30,7 +30,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Wake Up");
+  lv_label_set_text_static(title, "Probuzeni");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 
@@ -42,7 +42,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::
 
   optionsTotal = 0;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Single Tap");
+  lv_checkbox_set_text_static(cbOption[optionsTotal], " Jedno klepnuti");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
   if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)) {
@@ -50,7 +50,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::
   }
   optionsTotal++;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Double Tap");
+  lv_checkbox_set_text_static(cbOption[optionsTotal], " Dvojite klepnuti");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
   if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
@@ -58,7 +58,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::
   }
   optionsTotal++;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Raise Wrist");
+  lv_checkbox_set_text_static(cbOption[optionsTotal], " Zvednuti zapesti");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
   if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist)) {
@@ -66,7 +66,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::
   }
   optionsTotal++;
   cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Shake Wake");
+  lv_checkbox_set_text_static(cbOption[optionsTotal], " Potreseni zapesti");
   cbOption[optionsTotal]->user_data = this;
   lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
   if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake)) {

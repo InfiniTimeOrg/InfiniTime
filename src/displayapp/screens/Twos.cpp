@@ -84,7 +84,7 @@ Twos::Twos(Pinetime::Applications::DisplayApp* app) : Screen(app) {
   lv_label_set_align(scoreText, LV_ALIGN_IN_LEFT_MID);
   lv_obj_align(scoreText, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 10);
   lv_label_set_recolor(scoreText, true);
-  lv_label_set_text_fmt(scoreText, "Score #FFFF00 %i#", score);
+  lv_label_set_text_fmt(scoreText, "Skore #FFFF00 %i#", score);
 }
 
 Twos::~Twos() {
@@ -130,7 +130,7 @@ bool Twos::tryMerge(TwosTile grid[][4], int& newRow, int& newCol, int oldRow, in
         unsigned int newVal = grid[oldRow][oldCol].value *= 2;
         grid[newRow][newCol].value = newVal;
         score += newVal;
-        lv_label_set_text_fmt(scoreText, "Score #FFFF00 %i#", score);
+        lv_label_set_text_fmt(scoreText, "Skore #FFFF00 %i#", score);
         grid[oldRow][oldCol].value = 0;
         grid[newRow][newCol].merged = true;
         return true;

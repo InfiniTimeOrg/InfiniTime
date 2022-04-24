@@ -13,7 +13,7 @@ Error::Error(Pinetime::Applications::DisplayApp* app, System::BootErrors error) 
 
   lv_obj_t* warningLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(warningLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
-  lv_label_set_text_static(warningLabel, "Warning");
+  lv_label_set_text_static(warningLabel, "Upozorneni");
   lv_obj_align(warningLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
 
   lv_obj_t* causeLabel = lv_label_create(lv_scr_act(), nullptr);
@@ -22,13 +22,13 @@ Error::Error(Pinetime::Applications::DisplayApp* app, System::BootErrors error) 
   lv_obj_align(causeLabel, warningLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
   if (error == System::BootErrors::TouchController) {
-    lv_label_set_text_static(causeLabel, "Touch controller error detected.");
+    lv_label_set_text_static(causeLabel, "Detekovana chyba ovladace dotyku");
   }
 
   lv_obj_t* tipLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(tipLabel, LV_LABEL_LONG_BREAK);
   lv_obj_set_width(tipLabel, LV_HOR_RES);
-  lv_label_set_text_static(tipLabel, "If you encounter problems and your device is under warranty, contact the devices seller.");
+  lv_label_set_text_static(tipLabel, "Pokud zaznamenate problemy a zarizeni je stale v zaruce, kontaktujte vyrobce.");
   lv_obj_align(tipLabel, causeLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
   btnOk = lv_btn_create(lv_scr_act(), nullptr);
@@ -36,7 +36,7 @@ Error::Error(Pinetime::Applications::DisplayApp* app, System::BootErrors error) 
   lv_obj_set_event_cb(btnOk, ButtonEventCallback);
   lv_obj_set_size(btnOk, LV_HOR_RES, 50);
   lv_obj_align(btnOk, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_obj_set_style_local_value_str(btnOk, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Proceed");
+  lv_obj_set_style_local_value_str(btnOk, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Pokracovat");
   lv_obj_set_style_local_bg_color(btnOk, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
 }
 

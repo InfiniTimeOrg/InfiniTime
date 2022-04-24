@@ -28,7 +28,7 @@ SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
                                Pinetime::Controllers::Settings& settingsController)
   : Screen(app), dateTimeController {dateTimeController}, settingsController {settingsController} {
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Set current time");
+  lv_label_set_text_static(title, "Nastavte aktualni cas");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 
@@ -111,7 +111,7 @@ SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
   btnSetTime->user_data = this;
   lv_obj_set_size(btnSetTime, 120, 48);
   lv_obj_align(btnSetTime, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_obj_set_style_local_value_str(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Set");
+  lv_obj_set_style_local_value_str(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Nastavit");
   lv_obj_set_event_cb(btnSetTime, event_handler);
 
   SetHourLabels();
@@ -179,7 +179,7 @@ void SettingSetTime::HandleButtonPress(lv_obj_t* object, lv_event_t event) {
     lv_label_set_text_fmt(lblMinutes, "%02d", minutesValue);
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
   } else if (object == btnSetTime) {
-    NRF_LOG_INFO("Setting time (manually) to %02d:%02d:00", hoursValue, minutesValue);
+    NRF_LOG_INFO("Nastavovani casu (manualne) na %02d:%02d:00", hoursValue, minutesValue);
     dateTimeController.SetTime(dateTimeController.Year(),
                                static_cast<uint8_t>(dateTimeController.Month()),
                                dateTimeController.Day(),

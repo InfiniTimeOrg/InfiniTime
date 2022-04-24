@@ -75,7 +75,7 @@ std::unique_ptr<Screen> Weather::CreateScreenTemperature() {
   if (current->timestamp == 0) {
     // Do not use the data, it's invalid
     lv_label_set_text_fmt(label,
-                          "#FFFF00 Temperature#\n\n"
+                          "#FFFF00 Teplota#\n\n"
                           "#444444 %d#°C \n\n"
                           "#444444 %d#\n\n"
                           "%d\n"
@@ -86,7 +86,7 @@ std::unique_ptr<Screen> Weather::CreateScreenTemperature() {
                           0);
   } else {
     lv_label_set_text_fmt(label,
-                          "#FFFF00 Temperature#\n\n"
+                          "#FFFF00 Teplota#\n\n"
                           "#444444 %d#°C \n\n"
                           "#444444 %hd#\n\n"
                           "%llu\n"
@@ -108,7 +108,7 @@ std::unique_ptr<Screen> Weather::CreateScreenAir() {
   if (current->timestamp == 0) {
     // Do not use the data, it's invalid
     lv_label_set_text_fmt(label,
-                          "#FFFF00 Air quality#\n\n"
+                          "#FFFF00 Kvalita ovzdusi#\n\n"
                           "#444444 %s#\n"
                           "#444444 %d#\n\n"
                           "%d\n"
@@ -119,7 +119,7 @@ std::unique_ptr<Screen> Weather::CreateScreenAir() {
                           0);
   } else {
     lv_label_set_text_fmt(label,
-                          "#FFFF00 Air quality#\n\n"
+                          "#FFFF00 Kvalita ovzdusi#\n\n"
                           "#444444 %s#\n"
                           "#444444 %lu#\n\n"
                           "%llu\n"
@@ -141,7 +141,7 @@ std::unique_ptr<Screen> Weather::CreateScreenClouds() {
   if (current->timestamp == 0) {
     // Do not use the data, it's invalid
     lv_label_set_text_fmt(label,
-                          "#FFFF00 Clouds#\n\n"
+                          "#FFFF00 Oblacnost#\n\n"
                           "#444444 %d%%#\n\n"
                           "%d\n"
                           "%d\n",
@@ -150,7 +150,7 @@ std::unique_ptr<Screen> Weather::CreateScreenClouds() {
                           0);
   } else {
     lv_label_set_text_fmt(label,
-                          "#FFFF00 Clouds#\n\n"
+                          "#FFFF00 Oblacnost#\n\n"
                           "#444444 %hhu%%#\n\n"
                           "%llu\n"
                           "%lu\n",
@@ -170,7 +170,7 @@ std::unique_ptr<Screen> Weather::CreateScreenPrecipitation() {
   if (current->timestamp == 0) {
     // Do not use the data, it's invalid
     lv_label_set_text_fmt(label,
-                          "#FFFF00 Precipitation#\n\n"
+                          "#FFFF00 Predpoved#\n\n"
                           "#444444 %d%%#\n\n"
                           "%d\n"
                           "%d\n",
@@ -179,7 +179,7 @@ std::unique_ptr<Screen> Weather::CreateScreenPrecipitation() {
                           0);
   } else {
     lv_label_set_text_fmt(label,
-                          "#FFFF00 Precipitation#\n\n"
+                          "#FFFF00 Predpoved#\n\n"
                           "#444444 %hhu%%#\n\n"
                           "%llu\n"
                           "%lu\n",
@@ -199,7 +199,7 @@ std::unique_ptr<Screen> Weather::CreateScreenHumidity() {
   if (current->timestamp == 0) {
     // Do not use the data, it's invalid
     lv_label_set_text_fmt(label,
-                          "#FFFF00 Humidity#\n\n"
+                          "#FFFF00 Vlhkost#\n\n"
                           "#444444 %d%%#\n\n"
                           "%d\n"
                           "%d\n",
@@ -208,7 +208,7 @@ std::unique_ptr<Screen> Weather::CreateScreenHumidity() {
                           0);
   } else {
     lv_label_set_text_fmt(label,
-                          "#FFFF00 Humidity#\n\n"
+                          "#FFFF00 Vlhkost#\n\n"
                           "#444444 %hhu%%#\n\n"
                           "%llu\n"
                           "%lu\n",

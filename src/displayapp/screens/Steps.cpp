@@ -39,12 +39,12 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
 
   lv_obj_t* lstepsL = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lstepsL, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-  lv_label_set_text_static(lstepsL, "Steps");
+  lv_label_set_text_static(lstepsL, "Kroku");
   lv_obj_align(lstepsL, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
 
   lv_obj_t* lstepsGoal = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lstepsGoal, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
-  lv_label_set_text_fmt(lstepsGoal, "Goal: %5lu", settingsController.GetStepsGoal());
+  lv_label_set_text_fmt(lstepsGoal, "Cil: %5lu", settingsController.GetStepsGoal());
   lv_label_set_align(lstepsGoal, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lstepsGoal, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 40);
 
@@ -55,13 +55,13 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_width(resetBtn, 115);
   lv_obj_align(resetBtn, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   resetButtonLabel = lv_label_create(resetBtn, nullptr);
-  lv_label_set_text_static(resetButtonLabel, "Reset");
+  lv_label_set_text_static(resetButtonLabel, "Obnovit");
 
   currentTripSteps = motionController.GetTripSteps();
 
   tripLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(tripLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-  lv_label_set_text_fmt(tripLabel, "Trip: %5li", currentTripSteps);
+  lv_label_set_text_fmt(tripLabel, "Cesta: %5li", currentTripSteps);
   lv_obj_align(tripLabel, lstepsGoal, LV_ALIGN_IN_LEFT_MID, 0, 20);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
@@ -80,9 +80,9 @@ void Steps::Refresh() {
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   if (currentTripSteps < 100000) {
-    lv_label_set_text_fmt(tripLabel, "Trip: %5li", currentTripSteps);
+    lv_label_set_text_fmt(tripLabel, "Cesta: %5li", currentTripSteps);
   } else {
-    lv_label_set_text_fmt(tripLabel, "Trip: 99999+");
+    lv_label_set_text_fmt(tripLabel, "Cesta: 99999+");
   }
   lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
 }
