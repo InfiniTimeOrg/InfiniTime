@@ -135,7 +135,7 @@ Navigation::Navigation(Pinetime::Applications::DisplayApp* app, Pinetime::Contro
   lv_obj_set_style_local_text_font(imgFlag, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_navi_80);
   lv_obj_set_style_local_text_color(imgFlag, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
   lv_label_set_text(imgFlag, iconForName("flag"));
-  lv_obj_align(imgFlag, nullptr, LV_ALIGN_CENTER, 0, -78);
+  lv_obj_align(imgFlag, nullptr, LV_ALIGN_IN_TOP_MID, 0, 2);
 
   txtNarrative = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtNarrative, LV_LABEL_LONG_BREAK);
@@ -150,7 +150,7 @@ Navigation::Navigation(Pinetime::Applications::DisplayApp* app, Pinetime::Contro
   lv_obj_set_width(txtManDist, LV_HOR_RES);
   lv_label_set_text(txtManDist, "--M");
   lv_label_set_align(txtManDist, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(txtManDist, nullptr, LV_ALIGN_CENTER, 0, 110);
+  lv_obj_align(txtManDist, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   // Route Progress
   barProgress = lv_bar_create(lv_scr_act(), nullptr);
