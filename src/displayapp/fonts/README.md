@@ -7,12 +7,7 @@
 ## Generate the fonts:
 
 * Make sure you have installed lv_font_conv, and it's in the PATH
-  * `npm i lv_font_conv`
-  * `export PATH="$PATH:$PWD/node_modules/.bin"`
-  * *OR* globally: 
-  * `npm i -g lv_font_conv`
-  * `export PATH="$PATH:$HOME/.local/bin"` (if not already in the path)
-  * or in any other path you choose.
+  * See `doc/buildAndProgram.md`
 * run the `generate.py` script, while in the folder.
   * it has a `-h` flag to show usage, nontheless: `python generate.py fonts.json`
 
