@@ -36,7 +36,7 @@ jobs:
 
       - name: Install lv_font_conv
         run:
-          npm i -g lv_font_conv
+          npm i -g lv_font_conv@1.5.2
 
       #########################################################################################
       # Checkout
