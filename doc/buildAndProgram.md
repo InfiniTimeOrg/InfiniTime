@@ -12,6 +12,11 @@ To build this project, you'll need:
 	 python -m pip install -r tools/mcuboot/requirements.txt
 	 ```
  - A reasonably recent version of CMake (I use 3.16.5)
+ - lv_font_conv, to generate the font .c files
+   - see [lv_font_conv](https://github.com/lvgl/lv_font_conv#install-the-script)
+   - install npm (commonly done via the package manager)
+   - install lv_font_conv: `npm i lv_font_conv -g`
+   - if installed non-globally, make sure `lv_font_conv` is in the PATH
 
 ## Build steps 
 ### Clone the repo
