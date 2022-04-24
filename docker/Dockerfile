@@ -13,19 +13,23 @@ RUN apt-get update -qq \
       python3-pip \
       tar \
       unzip \
-      wget \ 
+      wget \
+      curl \
 # aarch64 packages
       libffi-dev \
       libssl-dev \
       python3-dev \
       python \
       git \
+    && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
+    && apt-get install -y nodejs \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
 # Git needed for PROJECT_GIT_COMMIT_HASH variable setting
 
 RUN pip3 install adafruit-nrfutil
 RUN pip3 install -Iv cryptography==3.3
+RUN npm i lv_font_conv@1.5.2 -g
 
 # build.sh knows how to compile
 COPY build.sh /opt/
