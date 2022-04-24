@@ -199,7 +199,7 @@ float Pinetime::Controllers::MusicService::getPlaybackSpeed() const {
   return playbackSpeed;
 }
 
-int Pinetime::Controllers::MusicService::getProgress() {
+int Pinetime::Controllers::MusicService::getProgress() const {
   if (isPlaying()) {
     return trackProgress + static_cast<int>((static_cast<float>(xTaskGetTickCount() - trackProgressUpdateTime) / 1024.0f) * getPlaybackSpeed());
   }

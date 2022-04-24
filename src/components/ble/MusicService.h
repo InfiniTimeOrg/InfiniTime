@@ -47,7 +47,7 @@ namespace Pinetime {
 
       std::string getAlbum() const;
 
-      int getProgress();
+      int getProgress() const;
 
       int getTrackLength() const;
 
