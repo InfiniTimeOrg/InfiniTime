@@ -50,12 +50,12 @@ int8_t Ppg::Preprocess(float spl) {
   auto spl_int = static_cast<int8_t>(spl);
 
   data[dataIndex] = spl_int;
-  dataIndex = (dataIndex + 1) % Ppg::DATA_SIZE;
+  dataIndex = (dataIndex + 1) % Ppg::data.size();
   return spl_int;
 }
 
 int Ppg::HeartRate() {
-  if (data[DATA_SIZE - 1] == 0 || dataIndex % Ppg::UPDATE_HEARTRATE_AFTER != 0) {
+  if (data[data.size() - 1] == 0 || dataIndex % Ppg::UPDATE_HEARTRATE_AFTER != 0) {
     return 0;
   }
 
@@ -64,25 +64,25 @@ int Ppg::HeartRate() {
   return hr;
 }
 int Ppg::ProcessHeartRate() {
-  int t0 = Trough(data.data(), DATA_SIZE, 7, 48);
+  int t0 = Trough(data.data(), data.size(), 7, 48);
   if (t0 < 0) {
     return 0;
   }
 
   int t1 = t0 * 2;
-  t1 = Trough(data.data(), DATA_SIZE, (t1 - 5), (t1 + 5));
+  t1 = Trough(data.data(), data.size(), (t1 - 5), (t1 + 5));
   if (t1 < 0) {
     return 0;
   }
 
   int t2 = (t1 * 3) / 2;
-  t2 = Trough(data.data(), DATA_SIZE, (t2 - 5), (t2 + 5));
+  t2 = Trough(data.data(), data.size(), (t2 - 5), (t2 + 5));
   if (t2 < 0) {
     return 0;
   }
 
   int t3 = (t2 * 4) / 3;
-  t3 = Trough(data.data(), DATA_SIZE, (t3 - 4), (t3 + 4));
+  t3 = Trough(data.data(), data.size(), (t3 - 4), (t3 + 4));
   if (t3 < 0) {
     return (60 * 24 * 3) / (t2);
   }
@@ -93,7 +93,7 @@ int Ppg::ProcessHeartRate() {
 // Gets the Index in the Ring Buffer which corresponds to the index, if it was a 0-based Array
 // dataIndex points to the next index to write to, so it is the start of the buffer and the last element is at dataIndex-1
 int Ppg::getRingIndex(int8_t index) {
-  return (index + dataIndex) % Ppg::DATA_SIZE;
+  return (index + dataIndex) % data.size();
 }
 void Ppg::SetOffset(uint16_t offset) {
   this->offset = offset;
@@ -103,5 +103,5 @@ void Ppg::SetOffset(uint16_t offset) {
 void Ppg::Reset() {
   dataIndex = 0;
   // invalidates the current array
-  data[DATA_SIZE - 1] = 0;
+  data[data.size() - 1] = 0;
 }
