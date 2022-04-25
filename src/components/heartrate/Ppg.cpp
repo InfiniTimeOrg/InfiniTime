@@ -70,24 +70,24 @@ int Ppg::ProcessHeartRate() {
   }
 
   int t1 = t0 * 2;
-  t1 = Trough(data.data(), data.size(), (t1 - 5), (t1 + 5));
+  t1 = Trough(data.data(), data.size(), t1 - 5, t1 + 5);
   if (t1 < 0) {
     return 0;
   }
 
   int t2 = (t1 * 3) / 2;
-  t2 = Trough(data.data(), data.size(), (t2 - 5), (t2 + 5));
+  t2 = Trough(data.data(), data.size(), t2 - 5, t2 + 5);
   if (t2 < 0) {
     return 0;
   }
 
   int t3 = (t2 * 4) / 3;
-  t3 = Trough(data.data(), data.size(), (t3 - 4), (t3 + 4));
+  t3 = Trough(data.data(), data.size(), t3 - 4, t3 + 4);
   if (t3 < 0) {
-    return (60 * 24 * 3) / (t2);
+    return (60 * 24 * 3) / t2;
   }
 
-  return (60 * 24 * 4) / (t3);
+  return (60 * 24 * 4) / t3;
 }
 
 // Gets the Index in the Ring Buffer which corresponds to the index, if it was a 0-based Array
