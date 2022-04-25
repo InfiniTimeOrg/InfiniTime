@@ -26,6 +26,7 @@ namespace Pinetime::Applications::Screens {
     Controllers::TimerController& timerController;
     lv_obj_t* backgroundLabel;
     lv_obj_t* time;
+    lv_obj_t* colon;
     lv_obj_t* msecTime;
     lv_obj_t* btnPlayPause;
     lv_obj_t* txtPlayPause;
