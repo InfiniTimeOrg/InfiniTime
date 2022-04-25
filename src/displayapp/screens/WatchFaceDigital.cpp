@@ -70,7 +70,8 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundLabel, 240, 240);
   lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text_static(backgroundLabel, "#ff0000 T##ff8800 a##ffff00 t##00ff00 i##0088ff s##8800ff !#");
+  # lv_label_set_text_static(backgroundLabel, "#ff0000 T##ff8800 a##ffff00 t##00ff00 i##0088ff s##8800ff !#");
+  lv_label_set_text_static(backgroundLabel, "#55cdfc F##F7A8B8 I##ffffff N##F7A8B8 N##55cdfc !#");
 
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
