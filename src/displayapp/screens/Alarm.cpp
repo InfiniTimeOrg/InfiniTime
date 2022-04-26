@@ -38,6 +38,38 @@ Alarm::Alarm(DisplayApp* app,
              System::SystemTask& systemTask)
   : Screen(app), alarmController {alarmController}, settingsController {settingsController}, systemTask {systemTask} {
 
+  bgHoursUp = lv_btn_create(lv_scr_act(), nullptr);
+  lv_obj_align(bgHoursUp, lv_scr_act(), LV_ALIGN_CENTER, 60, -95);
+  lv_obj_set_style_local_bg_color(bgHoursUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_grad_color(bgHoursUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_bg_grad_dir(bgHoursUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+  lv_obj_set_style_local_radius(bgHoursUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_size(bgHoursUp, 100, 90);
+
+  bgHoursDown = lv_btn_create(lv_scr_act(), nullptr);
+  lv_obj_align(bgHoursDown, lv_scr_act(), LV_ALIGN_CENTER, 60, -5);
+  lv_obj_set_style_local_bg_color(bgHoursDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_bg_grad_color(bgHoursDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_grad_dir(bgHoursDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+  lv_obj_set_style_local_radius(bgHoursDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_size(bgHoursDown, 100, 90);
+
+  bgMinutesUp = lv_btn_create(lv_scr_act(), nullptr);
+  lv_obj_align(bgMinutesUp, lv_scr_act(), LV_ALIGN_CENTER, -60, -95);
+  lv_obj_set_style_local_bg_color(bgMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_grad_color(bgMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_bg_grad_dir(bgMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+  lv_obj_set_style_local_radius(bgMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_size(bgMinutesUp, 100, 90);
+
+  bgMinutesDown = lv_btn_create(lv_scr_act(), nullptr);
+  lv_obj_align(bgMinutesDown, lv_scr_act(), LV_ALIGN_CENTER, -60, -5);
+  lv_obj_set_style_local_bg_color(bgMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_bg_grad_color(bgMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_bg_grad_dir(bgMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
+  lv_obj_set_style_local_radius(bgMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_size(bgMinutesDown, 100, 90);
+
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
@@ -55,35 +87,35 @@ Alarm::Alarm(DisplayApp* app,
   lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
 
-  btnHoursUp = lv_btn_create(lv_scr_act(), nullptr);
+  btnHoursUp = lv_btn_create(lv_scr_act(), bgHoursUp);
   btnHoursUp->user_data = this;
   lv_obj_set_event_cb(btnHoursUp, btnEventHandler);
-  lv_obj_set_size(btnHoursUp, 60, 40);
-  lv_obj_align(btnHoursUp, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, -85);
+  lv_obj_set_style_local_bg_opa(btnHoursUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+  lv_obj_set_style_local_radius(btnHoursUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   txtHrUp = lv_label_create(btnHoursUp, nullptr);
   lv_label_set_text_static(txtHrUp, "+");
 
-  btnHoursDown = lv_btn_create(lv_scr_act(), nullptr);
+  btnHoursDown = lv_btn_create(lv_scr_act(), bgHoursDown);
   btnHoursDown->user_data = this;
   lv_obj_set_event_cb(btnHoursDown, btnEventHandler);
-  lv_obj_set_size(btnHoursDown, 60, 40);
-  lv_obj_align(btnHoursDown, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, 35);
+  lv_obj_set_style_local_bg_opa(btnHoursDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+  lv_obj_set_style_local_radius(btnHoursDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   txtHrDown = lv_label_create(btnHoursDown, nullptr);
   lv_label_set_text_static(txtHrDown, "-");
 
-  btnMinutesUp = lv_btn_create(lv_scr_act(), nullptr);
+  btnMinutesUp = lv_btn_create(lv_scr_act(), bgMinutesUp);
   btnMinutesUp->user_data = this;
   lv_obj_set_event_cb(btnMinutesUp, btnEventHandler);
-  lv_obj_set_size(btnMinutesUp, 60, 40);
-  lv_obj_align(btnMinutesUp, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, -85);
+  lv_obj_set_style_local_bg_opa(btnMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+  lv_obj_set_style_local_radius(btnMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   txtMinUp = lv_label_create(btnMinutesUp, nullptr);
   lv_label_set_text_static(txtMinUp, "+");
 
-  btnMinutesDown = lv_btn_create(lv_scr_act(), nullptr);
+  btnMinutesDown = lv_btn_create(lv_scr_act(), bgMinutesDown);
   btnMinutesDown->user_data = this;
   lv_obj_set_event_cb(btnMinutesDown, btnEventHandler);
-  lv_obj_set_size(btnMinutesDown, 60, 40);
-  lv_obj_align(btnMinutesDown, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, 35);
+  lv_obj_set_style_local_bg_opa(btnMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+  lv_obj_set_style_local_radius(btnMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   txtMinDown = lv_label_create(btnMinutesDown, nullptr);
   lv_label_set_text_static(txtMinDown, "-");
 

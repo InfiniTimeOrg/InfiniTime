@@ -45,7 +45,7 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         System::SystemTask& systemTask;
 
-        lv_obj_t *time, *lblampm, *btnStop, *txtStop, *btnMinutesUp, *btnMinutesDown, *btnHoursUp, *btnHoursDown, *txtMinUp,
+        lv_obj_t *time, *lblampm, *btnStop, *txtStop, *btnMinutesUp, *btnMinutesDown, *btnHoursUp, *btnHoursDown, *bgMinutesUp, *bgMinutesDown, *bgHoursUp, *bgHoursDown, *txtMinUp,
           *txtMinDown, *txtHrUp, *txtHrDown, *btnRecur, *txtRecur, *btnInfo, *txtInfo, *enableSwitch;
         lv_obj_t* txtMessage = nullptr;
         lv_obj_t* btnMessage = nullptr;
