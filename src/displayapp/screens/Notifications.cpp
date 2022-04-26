@@ -181,7 +181,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   : mode {mode}, alertNotificationService {alertNotificationService}, motorController {motorController} {
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), NULL);
 
-  lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x30, 0x30, 0x30));
+  lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
   lv_obj_set_style_local_pad_all(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
   lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
   lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
