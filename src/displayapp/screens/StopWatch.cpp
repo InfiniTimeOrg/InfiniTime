@@ -65,7 +65,7 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
   lv_obj_set_event_cb(btnStopLap, stop_lap_event_handler);
   lv_obj_set_size(btnStopLap, 115, 50);
   lv_obj_align(btnStopLap, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
-  lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DISABLED, lv_color_hex(0x0b0b0b));
+  lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DISABLED, LV_COLOR_MAKE(0x18, 0x18, 0x18));
   txtStopLap = lv_label_create(btnStopLap, nullptr);
   lv_obj_set_style_local_text_color(txtStopLap, LV_BTN_PART_MAIN, LV_STATE_DISABLED, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
   lv_label_set_text_static(txtStopLap, Symbols::stop);

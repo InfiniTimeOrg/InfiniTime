@@ -49,7 +49,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
 
   lv_style_init(&btn_style);
   lv_style_set_radius(&btn_style, LV_STATE_DEFAULT, buttonHeight / 4);
-  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x1c, 0x1c, 0x1c));
+  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
 
   btn1 = lv_btn_create(lv_scr_act(), nullptr);
   btn1->user_data = this;
