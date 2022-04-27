@@ -46,7 +46,6 @@ Alarm::Alarm(DisplayApp* app,
   lv_obj_set_size(bgHoursUp, 100, 90);
   lv_obj_align(bgHoursUp, lv_scr_act(), LV_ALIGN_CENTER, -60, -75);
 
-
   bgHoursDown = lv_btn_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(bgHoursDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_bg_grad_color(bgHoursDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
@@ -250,6 +249,43 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     }
     if (obj == btnRecur) {
       ToggleRecurrence();
+    }
+  } else if (event == LV_EVENT_LONG_PRESSED_REPEAT) {
+    if (obj == btnMinutesUp) {
+      if (alarmMinutes >= 59) {
+        alarmMinutes = 0;
+      } else {
+        alarmMinutes++;
+      }
+      UpdateAlarmTime();
+      return;
+    }
+    if (obj == btnMinutesDown) {
+      if (alarmMinutes <= 0) {
+        alarmMinutes = 59;
+      } else {
+        alarmMinutes--;
+      }
+      UpdateAlarmTime();
+      return;
+    }
+    if (obj == btnHoursUp) {
+      if (alarmHours >= 23) {
+        alarmHours = 0;
+      } else {
+        alarmHours++;
+      }
+      UpdateAlarmTime();
+      return;
+    }
+    if (obj == btnHoursDown) {
+      if (alarmHours <= 0) {
+        alarmHours = 23;
+      } else {
+        alarmHours--;
+      }
+      UpdateAlarmTime();
+      return;
     }
   }
 }
