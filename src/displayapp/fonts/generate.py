@@ -66,11 +66,18 @@ def main():
         subprocess.check_call(line)
         if patches:
             for patch in patches:
-                try: patch = patch.format(name=name, file=name+'.c')
+                try:
+                    # Try and patch, if given a string
+                    patch = patch.format(name=name, file=name+'.c')
+                    subprocess.check_call(['/usr/bin/patch', name+'.c', patch])
+                    continue
                 except: pass
-                try: patch = [arg.format(name=name, file=name+'.c') for arg in patch]
-                except: pass
-                subprocess.check_call(patch)
+                try:
+                    # otherwise, assume a "advanced" patch, which is a list of strings.
+                    patch = [arg.format(name=name, file=name+'.c') for arg in patch]
+                    subprocess.check_call(patch)
+                except Exception as e:
+                    sys.exit('Failed to patch using "{patch}"\n{err}'.format(patch=patch,err=e))
 
 
 

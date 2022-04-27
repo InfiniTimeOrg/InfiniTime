@@ -12,7 +12,7 @@
       ],
       "bpp": 1,
       "size": 20,
-      "patches": [["patch", "{file}", "{file}_zero.patch"]]
+      "patches": ["{file}_zero.patch"]
    },
    "jetbrains_mono_42": {
       "sources": [
