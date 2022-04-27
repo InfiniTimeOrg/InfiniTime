@@ -3,6 +3,7 @@
 import io
 import sys
 import json
+import shutil
 import typing
 import os.path
 import argparse
@@ -36,6 +37,8 @@ def main():
     ap.add_argument('-f', '--font', type=str, action='append', help='Choose specific fonts to generate (default: all)', default=[])
     args = ap.parse_args()
 
+    if not shutil.which('lv_font_conv'):
+        sys.exit(f'Missing lv_font_conv. (make sure it is installed and in PATH)')
     if not os.path.exists(args.config):
         sys.exit(f'Error: the config file {args.config} does not exist.')
     if not os.access(args.config, os.R_OK):
