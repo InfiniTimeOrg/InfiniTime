@@ -203,7 +203,7 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           if (minutesToSet >= 59) {
             minutesToSet = 0;
           } else {
-            minutesToSet = (minutesToSet + 2);
+            minutesToSet++;
           }
           lv_label_set_text_fmt(time, "%02d:%02d", minutesToSet, secondsToSet);
 
@@ -211,7 +211,7 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           if (minutesToSet <= 0) {
             minutesToSet = 59;
           } else {
-            minutesToSet = (minutesToSet - 2);
+            minutesToSet--;
           }
           lv_label_set_text_fmt(time, "%02d:%02d", minutesToSet, secondsToSet);
 
@@ -219,7 +219,7 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           if (secondsToSet >= 59) {
             secondsToSet = 0;
           } else {
-            secondsToSet = (secondsToSet + 2);
+            secondsToSet++;
           }
           lv_label_set_text_fmt(time, "%02d:%02d", minutesToSet, secondsToSet);
 
@@ -227,7 +227,7 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           if (secondsToSet <= 0) {
             secondsToSet = 59;
           } else {
-            secondsToSet = (secondsToSet - 2);
+            secondsToSet--;
           }
           lv_label_set_text_fmt(time, "%02d:%02d", minutesToSet, secondsToSet);
         }
