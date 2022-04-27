@@ -8,7 +8,7 @@
 
 * Browse [this cheatsheet](https://fontawesome.com/cheatsheet/free/solid) and pick symbols
 * For each symbol, add its hex code (0xf641 for the 'Ad' icon, for example) to the *Range* list (or the symbol list when its simple enough) in the `fonts.json` file
-* * Convert this hex value into a UTF-8 code
+* Convert this hex value into a UTF-8 code
   using [this site](http://www.ltg.ed.ac.uk/~richard/utf-8.cgi?input=f185&mode=hex)
 * Define the new symbols in `src/displayapp/screens/Symbols.h`:
 
