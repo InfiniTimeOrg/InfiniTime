@@ -304,7 +304,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xff, 0xb0, 0x0));
       lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
       lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
-      lv_label_set_text_static(alert_subject, "Incoming call from");
+      lv_label_set_text_static(alert_subject, "Prichozi hovor od");
 
       lv_obj_t* alert_caller = lv_label_create(subject_container, nullptr);
       lv_obj_align(alert_caller, alert_subject, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
