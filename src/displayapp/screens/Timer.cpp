@@ -58,7 +58,6 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   lv_obj_set_style_local_bg_grad_color(bgMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_bg_grad_dir(bgMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
   lv_obj_set_style_local_radius(bgMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_parent(bgMinutesUp, backgroundLabel);
   lv_obj_set_size(bgMinutesUp, 100, 90);
   lv_obj_align(bgMinutesUp, lv_scr_act(), LV_ALIGN_CENTER, -60, -75);
  
@@ -67,7 +66,6 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   lv_obj_set_style_local_bg_grad_color(bgMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_bg_grad_dir(bgMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
   lv_obj_set_style_local_radius(bgMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_parent(bgMinutesDown, backgroundLabel);
   lv_obj_set_size(bgMinutesDown, 100, 90);
   lv_obj_align(bgMinutesDown, lv_scr_act(), LV_ALIGN_CENTER, -60, 15);
 
@@ -76,7 +74,6 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   lv_obj_set_style_local_bg_grad_color(bgSecondsUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_bg_grad_dir(bgSecondsUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
   lv_obj_set_style_local_radius(bgSecondsUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_parent(bgSecondsUp, backgroundLabel);
   lv_obj_set_size(bgSecondsUp, 100, 90);
   lv_obj_align(bgSecondsUp, lv_scr_act(), LV_ALIGN_CENTER, 60, -75);
 
@@ -85,7 +82,6 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
   lv_obj_set_style_local_bg_grad_color(bgSecondsDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_bg_grad_dir(bgSecondsDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_GRAD_DIR_VER);
   lv_obj_set_style_local_radius(bgSecondsDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
-  lv_obj_set_parent(bgSecondsDown, backgroundLabel);
   lv_obj_set_size(bgSecondsDown, 100, 90);
   lv_obj_align(bgSecondsDown, lv_scr_act(), LV_ALIGN_CENTER, 60, 15);
 
