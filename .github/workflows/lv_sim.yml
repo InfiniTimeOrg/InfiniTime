@@ -46,11 +46,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: build fonts
-        run: |
-          cd src/displayapp/fonts/
-          python generate.py fonts.json
-
       #########################################################################################
       # get InfiniSim repo
 
