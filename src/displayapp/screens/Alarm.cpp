@@ -101,6 +101,8 @@ Alarm::Alarm(DisplayApp* app,
   lv_obj_set_style_local_radius(btnHoursUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   txtHrUp = lv_label_create(btnHoursUp, nullptr);
   lv_label_set_text_static(txtHrUp, "+");
+  lv_btn_set_layout(btnHoursUp, LV_LAYOUT_OFF);
+  lv_obj_align(txtHrUp, btnHoursUp, LV_ALIGN_CENTER, 0, -10);
 
   btnHoursDown = lv_btn_create(lv_scr_act(), bgHoursDown);
   btnHoursDown->user_data = this;
@@ -109,6 +111,8 @@ Alarm::Alarm(DisplayApp* app,
   lv_obj_set_style_local_radius(btnHoursDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   txtHrDown = lv_label_create(btnHoursDown, nullptr);
   lv_label_set_text_static(txtHrDown, "-");
+  lv_btn_set_layout(btnHoursDown, LV_LAYOUT_OFF);
+  lv_obj_align(txtHrDown, btnHoursDown, LV_ALIGN_CENTER, 0, 10);
 
   btnMinutesUp = lv_btn_create(lv_scr_act(), bgMinutesUp);
   btnMinutesUp->user_data = this;
@@ -117,6 +121,8 @@ Alarm::Alarm(DisplayApp* app,
   lv_obj_set_style_local_radius(btnMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   txtMinUp = lv_label_create(btnMinutesUp, nullptr);
   lv_label_set_text_static(txtMinUp, "+");
+  lv_btn_set_layout(btnMinutesUp, LV_LAYOUT_OFF);
+  lv_obj_align(txtMinUp, btnMinutesUp, LV_ALIGN_CENTER, 0, -10);
 
   btnMinutesDown = lv_btn_create(lv_scr_act(), bgMinutesDown);
   btnMinutesDown->user_data = this;
@@ -125,6 +131,8 @@ Alarm::Alarm(DisplayApp* app,
   lv_obj_set_style_local_radius(btnMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   txtMinDown = lv_label_create(btnMinutesDown, nullptr);
   lv_label_set_text_static(txtMinDown, "-");
+  lv_btn_set_layout(btnMinutesDown, LV_LAYOUT_OFF);
+  lv_obj_align(txtMinDown, btnMinutesDown, LV_ALIGN_CENTER, 0, 10);
 
   btnStop = lv_btn_create(lv_scr_act(), nullptr);
   btnStop->user_data = this;
