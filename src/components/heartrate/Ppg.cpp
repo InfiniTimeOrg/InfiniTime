@@ -51,11 +51,14 @@ int8_t Ppg::Preprocess(float spl) {
 
   data[dataIndex] = spl_int;
   dataIndex = (dataIndex + 1) % Ppg::data.size();
+  if (dataIndex == 0) {
+    dataReady = true;
+  }
   return spl_int;
 }
 
 int Ppg::HeartRate() {
-  if (data[data.size() - 1] == 0 || dataIndex % Ppg::UPDATE_HEARTRATE_AFTER != 0) {
+  if (!dataReady || dataIndex % Ppg::UPDATE_HEARTRATE_AFTER != 0) {
     return 0;
   }
 
@@ -102,6 +105,5 @@ void Ppg::SetOffset(uint16_t offset) {
 
 void Ppg::Reset() {
   dataIndex = 0;
-  // invalidates the current array
-  data[data.size() - 1] = 0;
+  dataReady = false;
 }

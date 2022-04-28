@@ -21,6 +21,7 @@ namespace Pinetime {
       static const uint8_t UPDATE_HEARTRATE_AFTER = 200;
       std::array<int8_t, 200> data;
       size_t dataIndex = 0;
+      bool dataReady = false;
       float offset;
       Biquad hpf;
       Ptagc agc;
