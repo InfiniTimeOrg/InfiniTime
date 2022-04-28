@@ -43,7 +43,7 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
     brightnessController {brightnessController},
     bleController {bleController},
     watchdog {watchdog},
-    motionController {motionController},ommit
+    motionController {motionController},
     touchPanel {touchPanel},
     screens {app,
              0,
