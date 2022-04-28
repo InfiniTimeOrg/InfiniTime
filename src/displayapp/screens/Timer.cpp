@@ -18,6 +18,8 @@ void Timer::CreateButtons() {
   lv_obj_set_style_local_radius(btnMinutesUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   txtMUp = lv_label_create(btnMinutesUp, nullptr);
   lv_label_set_text_static(txtMUp, "+");
+  lv_btn_set_layout(btnMinutesUp, LV_LAYOUT_OFF);
+  lv_obj_align(txtMUp, btnMinutesUp, LV_ALIGN_CENTER, 0, -10);
 
   btnMinutesDown = lv_btn_create(lv_scr_act(), bgMinutesDown);
   btnMinutesDown->user_data = this;
@@ -26,6 +28,8 @@ void Timer::CreateButtons() {
   lv_obj_set_style_local_radius(btnMinutesDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   txtMDown = lv_label_create(btnMinutesDown, nullptr);
   lv_label_set_text_static(txtMDown, "-");
+  lv_btn_set_layout(btnMinutesDown, LV_LAYOUT_OFF);
+  lv_obj_align(txtMDown, btnMinutesDown, LV_ALIGN_CENTER, 0, 10);
 
   btnSecondsUp = lv_btn_create(lv_scr_act(), bgSecondsUp);
   btnSecondsUp->user_data = this;
@@ -34,6 +38,8 @@ void Timer::CreateButtons() {
   lv_obj_set_style_local_radius(bgSecondsUp, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   txtSUp = lv_label_create(btnSecondsUp, nullptr);
   lv_label_set_text_static(txtSUp, "+");
+  lv_btn_set_layout(btnSecondsUp, LV_LAYOUT_OFF);
+  lv_obj_align(txtSUp, btnSecondsUp, LV_ALIGN_CENTER, 0, -10);
 
   btnSecondsDown = lv_btn_create(lv_scr_act(), bgSecondsDown);
   btnSecondsDown->user_data = this;
@@ -42,6 +48,8 @@ void Timer::CreateButtons() {
   lv_obj_set_style_local_radius(btnSecondsDown, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 0);
   txtSDown = lv_label_create(btnSecondsDown, nullptr);
   lv_label_set_text_static(txtSDown, "-");
+  lv_btn_set_layout(btnSecondsDown, LV_LAYOUT_OFF);
+  lv_obj_align(txtSDown, btnSecondsDown, LV_ALIGN_CENTER, 0, 10);
 }
 
 Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
