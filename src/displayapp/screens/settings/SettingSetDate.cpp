@@ -153,7 +153,7 @@ void SettingSetDate::HandleButtonPress(lv_obj_t* object, lv_event_t event) {
     lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
     CheckDay();
   } else if (object == btnSetTime) {
-    NRF_LOG_INFO("Nastavovani datumu (manualne) na %04d-%02d-%02d", yearValue, monthValue, dayValue);
+    NRF_LOG_INFO("Nastavovani data (manualne) na %04d-%02d-%02d", yearValue, monthValue, dayValue);
     dateTimeController.SetTime(static_cast<uint16_t>(yearValue),
                                static_cast<uint8_t>(monthValue),
                                static_cast<uint8_t>(dayValue),

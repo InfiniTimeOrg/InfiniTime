@@ -28,7 +28,7 @@ SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
                                Pinetime::Controllers::Settings& settingsController)
   : Screen(app), dateTimeController {dateTimeController}, settingsController {settingsController} {
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Nastavte aktualni cas");
+  lv_label_set_text_static(title, "Nastavte cas");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 
