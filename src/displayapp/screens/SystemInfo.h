@@ -42,7 +42,7 @@ namespace Pinetime {
         Pinetime::Controllers::MotionController& motionController;
         Pinetime::Drivers::Cst816S& touchPanel;
 
-        ScreenList<5> screens;
+        ScreenList<6> screens;
 
         static bool sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs);
 
