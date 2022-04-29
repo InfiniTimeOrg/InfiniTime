@@ -55,7 +55,7 @@ FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, 
     lv_obj_set_event_cb(buttonReset, ButtonEventHandler);
 
     labelButtonReset = lv_label_create(buttonReset, nullptr);
-    lv_label_set_text_static(labelButtonReset, "Restartovat");
+    lv_label_set_text_static(labelButtonReset, "Restart");
   }
 }
 
