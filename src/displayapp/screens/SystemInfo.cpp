@@ -61,6 +61,9 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
               },
               [this]() -> std::unique_ptr<Screen> {
                 return CreateScreen5();
+              }
+              this]() -> std::unique_ptr<Screen> {
+                return CreateScreen6();
               }},
              Screens::ScreenListModes::UpDown} {
 }
