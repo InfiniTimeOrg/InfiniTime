@@ -137,7 +137,7 @@ Alarm::Alarm(DisplayApp* app,
   btnStop = lv_btn_create(lv_scr_act(), nullptr);
   btnStop->user_data = this;
   lv_obj_set_event_cb(btnStop, btnEventHandler);
-  lv_obj_set_size(btnStop, 115, 50);
+  lv_obj_set_size(btnStop, 85, 50);
   lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   lv_obj_set_style_local_bg_color(btnStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   txtStop = lv_label_create(btnStop, nullptr);
