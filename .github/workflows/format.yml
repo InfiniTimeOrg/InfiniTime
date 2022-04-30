@@ -1,0 +1,34 @@
+name: Code formatting
+
+on:
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  test-format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1000
+
+      - name: Configure git
+        run: |
+          git config --global user.email "-"
+          git config --global user.name "Autoformatter"
+          git fetch origin "$GITHUB_BASE_REF":"$GITHUB_BASE_REF" --depth=1000
+
+      - name: Install clang-format
+        run: |
+          sudo apt-get update
+          sudo apt-get -y install clang-format-12
+
+      - name: Check formatting
+        run: tests/test-format.sh "$GITHUB_BASE_REF"
+
+      - name: Upload patches
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: Patches
+          path: ./*.patch
