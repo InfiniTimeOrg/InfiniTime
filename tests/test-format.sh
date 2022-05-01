@@ -12,6 +12,7 @@ CHANGED=0
 
 for file in $CHANGED_FILES
 do
+  [ -e "$file" ] || continue
   case "$file" in
   *.cpp|*.h)
     echo Checking "$file"
