@@ -3,21 +3,14 @@
 # Based on https://github.com/JF002/InfiniTime/blob/master/doc/buildAndProgram.md
 # and https://github.com/JF002/InfiniTime/blob/master/bootloader/README.md
 
-# Name of this Workflow
 name: Build PineTime Firmware
 
-# When to run this Workflow...
 on:
-
-  # Run this Workflow when files are updated (Pushed) in the "master" and "develop" Branch
   push:
     branches: [ master, develop ]
-
-  # Also run this Workflow when a Pull Request is created or updated in the "master" and "develop" Branch
   pull_request:
     branches: [ master, develop ]
 
-# Steps to run for the Workflow
 jobs:
   build:
     runs-on: ubuntu-latest
