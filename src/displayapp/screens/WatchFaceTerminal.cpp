@@ -87,7 +87,7 @@ void WatchFaceTerminal::Refresh() {
   powerPresent = batteryController.IsPowerPresent();
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated() || powerPresent.IsUpdated()) {
-    lv_label_set_text_fmt(batteryValue, "[BATT]#387b54 %d%%", batteryPercentRemaining.Get());
+    lv_label_set_text_fmt(batteryValue, "[BATT] #387b54 %d%%", batteryPercentRemaining.Get());
     if (batteryController.IsPowerPresent()) {
       lv_label_ins_text(batteryValue, LV_LABEL_POS_LAST, " Charging");
     }
@@ -97,12 +97,12 @@ void WatchFaceTerminal::Refresh() {
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     if(!bleRadioEnabled.Get()) {
-      lv_label_set_text_static(connectState, "[STAT]#0082fc Disabled#");
+      lv_label_set_text_static(connectState, "[STAT] #0082fc Disabled#");
     } else {
       if (bleState.Get()) {
-        lv_label_set_text_static(connectState, "[STAT]#0082fc Connected#");
+        lv_label_set_text_static(connectState, "[STAT] #0082fc Connected#");
       } else {
-        lv_label_set_text_static(connectState, "[STAT]#0082fc Disconnected#");
+        lv_label_set_text_static(connectState, "[STAT] #0082fc Disconnected#");
       }
     }
   }
@@ -149,14 +149,14 @@ void WatchFaceTerminal::Refresh() {
           hour = hour - 12;
           ampmChar[0] = 'P';
         }
-        lv_label_set_text_fmt(label_time, "[TIME]#11cc55 %02d:%02d:%02d %s#", hour, minute, second, ampmChar);
+        lv_label_set_text_fmt(label_time, "[TIME] #11cc55 %02d:%02d:%02d %s#", hour, minute, second, ampmChar);
       } else {
-        lv_label_set_text_fmt(label_time, "[TIME]#11cc55 %02d:%02d:%02d", hour, minute, second);
+        lv_label_set_text_fmt(label_time, "[TIME] #11cc55 %02d:%02d:%02d", hour, minute, second);
       }
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      lv_label_set_text_fmt(label_date, "[DATE]#007fff %04d.%02d.%02d#", short(year), char(month), char(day));
+      lv_label_set_text_fmt(label_date, "[DATE] #007fff %04d.%02d.%02d#", short(year), char(month), char(day));
 
       currentYear = year;
       currentMonth = month;
@@ -169,15 +169,15 @@ void WatchFaceTerminal::Refresh() {
   heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
   if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
     if (heartbeatRunning.Get()) {
-      lv_label_set_text_fmt(heartbeatValue, "[L_HR]#ee3311 %d bpm#", heartbeat.Get());
+      lv_label_set_text_fmt(heartbeatValue, "[L_HR] #ee3311 %d bpm#", heartbeat.Get());
     } else {
-      lv_label_set_text_static(heartbeatValue, "[L_HR]#ee3311 ---#");
+      lv_label_set_text_static(heartbeatValue, "[L_HR] #ee3311 ---#");
     }
   }
 
   stepCount = motionController.NbSteps();
   motionSensorOk = motionController.IsSensorOk();
   if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
-    lv_label_set_text_fmt(stepValue, "[STEP]#ee3377 %lu steps#", stepCount.Get());
+    lv_label_set_text_fmt(stepValue, "[STEP] #ee3377 %lu steps#", stepCount.Get());
   }
 }
