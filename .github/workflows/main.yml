@@ -34,14 +34,14 @@ jobs:
         run: |
           /opt/build.sh all
       - name: Upload DFU artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: InfiniTime DFU file
+          name: InfiniTime DFU ${{ github.head_ref }}
           path: |
             ./build/output/pinetime-mcuboot-app-dfu-*.zip
       - name: Upload MCUBoot image artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: InfiniTime MCUBoot image file
+          name: InfiniTime MCUBoot image ${{ github.head_ref }}
           path: |
             ./build/output/pinetime-mcuboot-app-image-*.bin
