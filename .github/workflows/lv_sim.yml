@@ -60,7 +60,7 @@ jobs:
           cmake --build build_lv_sim
 
       - name: Upload simulator executable
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: infinisim
+          name: infinisim-${{ github.head_ref }}
           path: build_lv_sim/infinisim
