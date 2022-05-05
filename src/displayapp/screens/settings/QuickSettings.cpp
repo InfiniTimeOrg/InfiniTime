@@ -6,12 +6,12 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static void ButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
+  void ButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<QuickSettings*>(obj->user_data);
     screen->OnButtonEvent(obj, event);
   }
 
-  static void lv_update_task(struct _lv_task_t* task) {
+  void lv_update_task(struct _lv_task_t* task) {
     auto* user_data = static_cast<QuickSettings*>(task->user_data);
     user_data->UpdateScreen();
   }
@@ -35,13 +35,11 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
 
   // Time
   label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(label_time, dateTimeController.FormattedTime().c_str());
   lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
-  batteryIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
-  lv_obj_align(batteryIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  batteryIcon.Create(lv_scr_act());
+  lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   static constexpr uint8_t barHeight = 20 + innerDistance;
   static constexpr uint8_t buttonHeight = (LV_VER_RES_MAX - barHeight - innerDistance) / 2;
@@ -51,7 +49,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
 
   lv_style_init(&btn_style);
   lv_style_set_radius(&btn_style, LV_STATE_DEFAULT, buttonHeight / 4);
-  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, lv_color_hex(0x111111));
+  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
 
   btn1 = lv_btn_create(lv_scr_act(), nullptr);
   btn1->user_data = this;
@@ -81,7 +79,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_event_cb(btn3, ButtonEventHandler);
   lv_btn_set_checkable(btn3, true);
   lv_obj_add_style(btn3, LV_BTN_PART_MAIN, &btn_style);
-  lv_obj_set_style_local_bg_color(btn3, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_GREEN);
+  lv_obj_set_style_local_bg_color(btn3, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
   lv_obj_set_size(btn3, buttonWidth, buttonHeight);
   lv_obj_align(btn3, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, buttonXOffset, 0);
 
@@ -113,6 +111,8 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_label_set_text_static(backgroundLabel, "");
 
   taskUpdate = lv_task_create(lv_update_task, 5000, LV_TASK_PRIO_MID, this);
+
+  UpdateScreen();
 }
 
 QuickSettings::~QuickSettings() {
@@ -124,7 +124,7 @@ QuickSettings::~QuickSettings() {
 
 void QuickSettings::UpdateScreen() {
   lv_label_set_text(label_time, dateTimeController.FormattedTime().c_str());
-  lv_label_set_text(batteryIcon, BatteryIcon::GetBatteryIcon(batteryController.PercentRemaining()));
+  batteryIcon.SetBatteryPercentage(batteryController.PercentRemaining());
 }
 
 void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {

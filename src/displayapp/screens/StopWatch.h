@@ -70,9 +70,9 @@ namespace Pinetime::Applications::Screens {
     void stopLapBtnEventHandler(lv_event_t event);
     bool OnButtonPushed() override;
 
-    void reset();
-    void start();
-    void pause();
+    void Reset();
+    void Start();
+    void Pause();
 
   private:
     Pinetime::System::SystemTask& systemTask;

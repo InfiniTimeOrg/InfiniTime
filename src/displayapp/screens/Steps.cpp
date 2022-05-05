@@ -38,7 +38,7 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   lv_obj_t* lstepsL = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(lstepsL, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
+  lv_obj_set_style_local_text_color(lstepsL, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
   lv_label_set_text_static(lstepsL, "Steps");
   lv_obj_align(lstepsL, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
 
@@ -61,7 +61,7 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_width(resetBtn, 115);
   lv_obj_align(resetBtn, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   resetButtonLabel = lv_label_create(resetBtn, nullptr);
-  lv_label_set_text(resetButtonLabel, "Reset");
+  lv_label_set_text_static(resetButtonLabel, "Reset");
 
   currentTripSteps = motionController.GetTripSteps();
 

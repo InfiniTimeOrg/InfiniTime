@@ -61,8 +61,8 @@ namespace Pinetime {
         return second;
       }
 
-      const char* MonthShortToString();
-      const char* DayOfWeekShortToString();
+      const char* MonthShortToString() const;
+      const char* DayOfWeekShortToString() const;
       static const char* MonthShortToStringLow(Months month);
 
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const {

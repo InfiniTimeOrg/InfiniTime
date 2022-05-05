@@ -5,11 +5,10 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static void ButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
-    List* screen = static_cast<List*>(obj->user_data);
+  void ButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<List*>(obj->user_data);
     screen->OnButtonEvent(obj, event);
   }
-
 }
 
 List::List(uint8_t screenID,
@@ -45,7 +44,7 @@ List::List(uint8_t screenID,
 
     pageIndicator = lv_line_create(lv_scr_act(), NULL);
     lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-    lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+    lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
     lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
   }
 
@@ -68,7 +67,7 @@ List::List(uint8_t screenID,
     if (applications[i].application != Apps::None) {
 
       itemApps[i] = lv_btn_create(container1, nullptr);
-      lv_obj_set_style_local_bg_opa(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
+      lv_obj_set_style_local_bg_opa(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
       lv_obj_set_style_local_radius(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 57);
       lv_obj_set_style_local_bg_color(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
 

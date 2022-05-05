@@ -8,6 +8,7 @@
 #include "displayapp/Colors.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/BleController.h"
+#include <displayapp/screens/BatteryIcon.h>
 
 namespace Pinetime {
   namespace Controllers {
@@ -21,16 +22,16 @@ namespace Pinetime {
 
   namespace Applications {
     namespace Screens {
-      class PineTimeStyle : public Screen {
+      class WatchFacePineTimeStyle : public Screen {
       public:
-        PineTimeStyle(DisplayApp* app,
+        WatchFacePineTimeStyle(DisplayApp* app,
                       Controllers::DateTime& dateTimeController,
                       Controllers::Battery& batteryController,
                       Controllers::Ble& bleController,
                       Controllers::NotificationManager& notificatioManager,
                       Controllers::Settings& settingsController,
                       Controllers::MotionController& motionController);
-        ~PineTimeStyle() override;
+        ~WatchFacePineTimeStyle() override;
 
         bool OnTouchEvent(TouchEvents event) override;
         bool OnButtonPushed() override;
@@ -79,7 +80,7 @@ namespace Pinetime {
         lv_obj_t* dateDay;
         lv_obj_t* dateMonth;
         lv_obj_t* backgroundLabel;
-        lv_obj_t* batteryIcon;
+        lv_obj_t* plugIcon;
         lv_obj_t* bleIcon;
         lv_obj_t* calendarOuter;
         lv_obj_t* calendarInner;
@@ -92,6 +93,8 @@ namespace Pinetime {
         lv_obj_t* btnSet;
         lv_obj_t* lbl_btnSet;
         lv_color_t needle_colors[1];
+
+        BatteryIcon batteryIcon;
 
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;
