@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq \
@@ -21,7 +21,8 @@ RUN apt-get update -qq \
       python3-dev \
       python \
       git \
-    && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
+      apt-utils \
+    && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
