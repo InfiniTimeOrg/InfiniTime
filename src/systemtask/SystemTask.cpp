@@ -442,7 +442,7 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
           break;
         case Messages::BleRadioEnableToggle:
-          if(settingsController.GetBleRadioEnabled()) {
+          if (settingsController.GetBleRadioEnabled()) {
             nimbleController.EnableRadio();
           } else {
             nimbleController.DisableRadio();
@@ -481,7 +481,7 @@ void SystemTask::UpdateMotion() {
   }
 
   if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                             settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
+                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
     return;
   }
 
