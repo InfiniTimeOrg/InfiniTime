@@ -19,7 +19,7 @@ namespace Pinetime {
       private:
         Controllers::Settings& settingsController;
 
-        ScreenList<4> screens;
+        ScreenList screens;
 
         std::unique_ptr<Screen> CreateScreen1();
         std::unique_ptr<Screen> CreateScreen2();
