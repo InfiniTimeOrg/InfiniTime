@@ -102,6 +102,14 @@ namespace Pinetime {
         return appMenu;
       };
 
+      void SetWatchfacesMenu(uint8_t menu) {
+        watchFacesMenu = menu;
+      };
+
+      uint8_t GetWatchfacesMenu() const {
+        return watchFacesMenu;
+      };
+
       void SetSettingsMenu(uint8_t menu) {
         settingsMenu = menu;
       };
@@ -212,7 +220,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0003;
+      static constexpr uint32_t settingsVersion = 0x0004;
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
@@ -236,6 +244,8 @@ namespace Pinetime {
 
       uint8_t appMenu = 0;
       uint8_t settingsMenu = 0;
+      uint8_t watchFacesMenu = 0;
+
       /* ble state is intentionally not saved with the other watch settings and initialized
        * to off (false) on every boot because we always want ble to be enabled on startup
        */

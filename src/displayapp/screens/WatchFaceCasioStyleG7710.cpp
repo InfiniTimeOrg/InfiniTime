@@ -1,0 +1,297 @@
+#include "displayapp/screens/WatchFaceCasioStyleG7710.h"
+
+#include <date/date.h>
+#include <lvgl/lvgl.h>
+#include <cstdio>
+#include "displayapp/screens/BatteryIcon.h"
+#include "displayapp/screens/BleIcon.h"
+#include "displayapp/screens/NotificationIcon.h"
+#include "displayapp/screens/Symbols.h"
+#include "components/battery/BatteryController.h"
+#include "components/ble/BleController.h"
+#include "components/ble/NotificationManager.h"
+#include "components/heartrate/HeartRateController.h"
+#include "components/motion/MotionController.h"
+#include "components/settings/Settings.h"
+using namespace Pinetime::Applications::Screens;
+
+
+WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
+                                   Controllers::DateTime& dateTimeController,
+                                   Controllers::Battery& batteryController,
+                                   Controllers::Ble& bleController,
+                                   Controllers::NotificationManager& notificatioManager,
+                                   Controllers::Settings& settingsController,
+                                   Controllers::HeartRateController& heartRateController,
+                                   Controllers::MotionController& motionController)
+  : Screen(app),
+    currentDateTime {{}},
+    dateTimeController {dateTimeController},
+    batteryController {batteryController},
+    bleController {bleController},
+    notificatioManager {notificatioManager},
+    settingsController {settingsController},
+    heartRateController {heartRateController},
+    motionController {motionController} {
+
+  batteryIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(batteryIcon, Symbols::batteryFull);
+  lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 0);
+
+  batteryPlug = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_label_set_text_static(batteryPlug, Symbols::plug);
+  lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  bleIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_label_set_text_static(bleIcon, Symbols::bluetooth);
+  lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  notificationIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
+  lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 5, 0);
+
+
+  label_day_of_week = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(label_day_of_week, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, 64);
+  lv_obj_set_style_local_text_color(label_day_of_week, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_obj_set_style_local_text_font(label_day_of_week, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_dots_40);
+  lv_label_set_text_static(label_day_of_week, "SUN");
+
+  label_week_number = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(label_week_number, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 5, 34);
+  lv_obj_set_style_local_text_color(label_week_number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_obj_set_style_local_text_font(label_week_number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_dots_40);
+  lv_label_set_text_static(label_week_number, "WK26");
+
+  label_day_of_year = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(label_day_of_year, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 25);
+  lv_obj_set_style_local_text_color(label_day_of_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_obj_set_style_local_text_font(label_day_of_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_7segment_40);
+  lv_label_set_text_static(label_day_of_year, "181-184");
+
+  static lv_style_t style_line;
+  lv_style_init(&style_line);
+  lv_style_set_line_width(&style_line, LV_STATE_DEFAULT, 2);
+  lv_style_set_line_color(&style_line, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_style_set_line_rounded(&style_line, LV_STATE_DEFAULT, true);
+
+  static lv_style_t style_border;
+  lv_style_init(&style_border);
+  lv_style_set_line_width(&style_border, LV_STATE_DEFAULT, 6);
+  lv_style_set_line_color(&style_border, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_style_set_line_rounded(&style_border, LV_STATE_DEFAULT, true);
+
+  line_day_of_week_number = lv_line_create(lv_scr_act(), nullptr);
+  static lv_point_t line_day_of_week_number_points[] = {{0, 0}, {100, 0}, {94, 70}, {0, 70}};
+  lv_line_set_points(line_day_of_week_number, line_day_of_week_number_points, 4);
+  lv_obj_add_style(line_day_of_week_number, LV_LINE_PART_MAIN, &style_border);
+  lv_obj_align(line_day_of_week_number, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 28);
+
+  line_day_of_year = lv_line_create(lv_scr_act(), nullptr);
+  static lv_point_t line_day_of_year_points[] = {{0, 5}, {130, 5}, {135, 0}};
+  lv_line_set_points(line_day_of_year, line_day_of_year_points, 3);
+  lv_obj_add_style(line_day_of_year, LV_LINE_PART_MAIN, &style_line);
+  lv_obj_align(line_day_of_year, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 55);
+
+  label_date = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 65);
+  lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_obj_set_style_local_text_font(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_7segment_40);
+  lv_label_set_text_static(label_date, "6-30");
+
+  line_date = lv_line_create(lv_scr_act(), nullptr);
+  static lv_point_t line_date_points[] = {{0, 5}, {135, 5}, {140, 0}};
+  lv_line_set_points(line_date, line_date_points, 3);
+  lv_obj_add_style(line_date, LV_LINE_PART_MAIN, &style_line);
+  lv_obj_align(line_date, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 95);
+
+  label_time = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_7segment_115);
+  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+
+  line_time = lv_line_create(lv_scr_act(), nullptr);
+  static lv_point_t line_time_points[] = {{0, 0}, {230, 0}, {235, 5}};
+  lv_line_set_points(line_time, line_time_points, 3);
+  lv_obj_add_style(line_time, LV_LINE_PART_MAIN, &style_line);
+  lv_obj_align(line_time, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -35);
+
+  label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(label_time_ampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_label_set_text_static(label_time_ampm, "");
+  lv_obj_align(label_time_ampm, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 5, -5);
+
+  backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_click(backgroundLabel, true);
+  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
+  lv_obj_set_size(backgroundLabel, 240, 240);
+  lv_obj_set_pos(backgroundLabel, 0, 0);
+  lv_label_set_text_static(backgroundLabel, "");
+
+  heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
+  lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
+
+  heartbeatValue = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_label_set_text_static(heartbeatValue, "");
+  lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
+
+  stepValue = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_label_set_text_static(stepValue, "0");
+  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, -2);
+
+  stepIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_label_set_text_static(stepIcon, Symbols::shoe);
+  lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+  Refresh();
+}
+
+WatchFaceCasioStyleG7710::~WatchFaceCasioStyleG7710() {
+  lv_task_del(taskRefresh);
+  lv_obj_clean(lv_scr_act());
+}
+
+void WatchFaceCasioStyleG7710::Refresh() {
+  powerPresent = batteryController.IsPowerPresent();
+  if (powerPresent.IsUpdated()) {
+    lv_label_set_text_static(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
+  }
+
+  batteryPercentRemaining = batteryController.PercentRemaining();
+  if (batteryPercentRemaining.IsUpdated()) {
+    auto batteryPercent = batteryPercentRemaining.Get();
+    lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+  }
+
+  bleState = bleController.IsConnected();
+  bleRadioEnabled = bleController.IsRadioEnabled();
+  if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
+    lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
+  }
+  lv_obj_realign(batteryPlug);
+  lv_obj_realign(bleIcon);
+
+  notificationState = notificatioManager.AreNewNotificationsAvailable();
+  if (notificationState.IsUpdated()) {
+    lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
+  }
+
+  currentDateTime = dateTimeController.CurrentDateTime();
+
+  if (currentDateTime.IsUpdated()) {
+    auto newDateTime = currentDateTime.Get();
+
+    auto dp = date::floor<date::days>(newDateTime);
+    auto time = date::make_time(newDateTime - dp);
+    auto yearMonthDay = date::year_month_day(dp);
+
+    auto year = static_cast<int>(yearMonthDay.year());
+    auto month = static_cast<Pinetime::Controllers::DateTime::Months>(static_cast<unsigned>(yearMonthDay.month()));
+    auto day = static_cast<unsigned>(yearMonthDay.day());
+    auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
+
+    uint8_t hour = time.hours().count();
+    uint8_t minute = time.minutes().count();
+    auto weekNumberFormat = "%V";
+
+    if (displayedHour != hour || displayedMinute != minute) {
+      displayedHour = hour;
+      displayedMinute = minute;
+
+      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+        char ampmChar[2] = "A";
+        if (hour == 0) {
+          hour = 12;
+        } else if (hour == 12) {
+          ampmChar[0] = 'P';
+        } else if (hour > 12) {
+          hour = hour - 12;
+          ampmChar[0] = 'P';
+        }
+        lv_label_set_text(label_time_ampm, ampmChar);
+        lv_label_set_text_fmt(label_time, "%2d:%02d", hour, minute);
+        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
+      } else {
+        lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
+        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
+      }
+    }
+
+    if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
+      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+        // 24h mode: ddmmyyyy, first DOW=Monday;
+        lv_label_set_text_fmt(
+          label_date, "%3d-%2d", day, month);
+          weekNumberFormat = "%V"; // Replaced by the week number of the year (Monday as the first day of the week) as a decimal number [01,53]. If the week containing 1 January has four or more days in the new year, then it is considered week 1. Otherwise, it is the last week of the previous year, and the next week is week 1. Both January 4th and the first Thursday of January are always in week 1. [ tm_year, tm_wday, tm_yday]
+      } else {
+        // 12h mode: mmddyyyy, first DOW=Sunday;
+        lv_label_set_text_fmt(
+          label_date, "%3d-%2d", month, day);
+          weekNumberFormat = "%U"; // Replaced by the week number of the year as a decimal number [00,53]. The first Sunday of January is the first day of week 1; days in the new year before this are in week 0. [ tm_year, tm_wday, tm_yday]
+      }
+
+      uint8_t weekNumber;
+      uint16_t dayOfYearNumber, daysTillEndOfYearNumber;
+
+      std::tm date = {};
+      date.tm_year = year - 1900;
+      date.tm_mon = static_cast<unsigned>(yearMonthDay.month()) - 1;
+      date.tm_mday = day + 1;
+      std::mktime( &date );
+
+      dayOfYearNumber = date.tm_yday;
+      daysTillEndOfYearNumber = yearMonthDay.year().is_leap() ? 366 : 365 - dayOfYearNumber;
+
+      char buffer[8];
+      strftime(buffer, 8, weekNumberFormat, &date); 
+      weekNumber = atoi(buffer);
+
+      lv_label_set_text_fmt(label_day_of_week, "%s", dateTimeController.DayOfWeekShortToString());
+      lv_label_set_text_fmt(label_day_of_year, "%3d-%3d", dayOfYearNumber, daysTillEndOfYearNumber);
+      lv_label_set_text_fmt(label_week_number, "WK%02d", weekNumber);
+
+      lv_obj_realign(label_day_of_week);
+      lv_obj_realign(label_day_of_year);
+      lv_obj_realign(label_week_number);
+      lv_obj_realign(label_date);
+
+      currentYear = year;
+      currentMonth = month;
+      currentDayOfWeek = dayOfWeek;
+      currentDay = day;
+    }
+  }
+
+  heartbeat = heartRateController.HeartRate();
+  heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
+  if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
+    if (heartbeatRunning.Get()) {
+      lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+      lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());
+    } else {
+      lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x1B1B1B));
+      lv_label_set_text_static(heartbeatValue, "");
+    }
+
+    lv_obj_realign(heartbeatIcon);
+    lv_obj_realign(heartbeatValue);
+  }
+
+  stepCount = motionController.NbSteps();
+  motionSensorOk = motionController.IsSensorOk();
+  if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
+    lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
+    lv_obj_realign(stepValue);
+    lv_obj_realign(stepIcon);
+  }
+}
