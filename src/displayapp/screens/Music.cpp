@@ -20,9 +20,9 @@
 #include <cstdint>
 #include "displayapp/DisplayApp.h"
 #include "components/ble/MusicService.h"
-#include "displayapp/icons/music/disc.cpp"
-#include "displayapp/icons/music/disc_f_1.cpp"
-#include "displayapp/icons/music/disc_f_2.cpp"
+#include "displayapp/icons/music/disc.c"
+#include "displayapp/icons/music/disc_f_1.c"
+#include "displayapp/icons/music/disc_f_2.c"
 
 using namespace Pinetime::Applications::Screens;
 
