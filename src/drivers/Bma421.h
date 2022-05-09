@@ -6,11 +6,7 @@ namespace Pinetime {
     class TwiMaster;
     class Bma421 {
     public:
-      enum class DeviceTypes : uint8_t {
-        Unknown,
-        BMA421,
-        BMA425
-      };
+      enum class DeviceTypes : uint8_t { Unknown, BMA421, BMA425 };
       struct Values {
         uint32_t steps;
         int16_t x;

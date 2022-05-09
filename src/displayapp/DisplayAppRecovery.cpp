@@ -26,7 +26,6 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler)
   : lcd {lcd}, bleController {bleController} {
-
 }
 
 void DisplayApp::Start() {
@@ -121,5 +120,4 @@ void DisplayApp::PushMessage(Display::Messages msg) {
 }
 
 void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
-
 }

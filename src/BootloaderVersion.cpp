@@ -31,6 +31,10 @@ const bool BootloaderVersion::IsValid() {
 
 void BootloaderVersion::SetVersion(uint32_t v) {
   BootloaderVersion::version = v;
-  snprintf(BootloaderVersion::versionString, BootloaderVersion::VERSION_STR_LEN, "%ld.%ld.%ld",
-           BootloaderVersion::Major(), BootloaderVersion::Minor(), BootloaderVersion::Patch());
+  snprintf(BootloaderVersion::versionString,
+           BootloaderVersion::VERSION_STR_LEN,
+           "%ld.%ld.%ld",
+           BootloaderVersion::Major(),
+           BootloaderVersion::Minor(),
+           BootloaderVersion::Patch());
 }

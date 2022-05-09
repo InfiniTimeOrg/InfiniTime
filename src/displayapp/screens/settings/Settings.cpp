@@ -13,18 +13,19 @@ Settings::Settings(Pinetime::Applications::DisplayApp* app, Pinetime::Controller
     settingsController {settingsController},
     screens {app,
              settingsController.GetSettingsMenu(),
-             {[this]() -> std::unique_ptr<Screen> {
-                return CreateScreen1();
-              },
-              [this]() -> std::unique_ptr<Screen> {
-                return CreateScreen2();
-              },
-              [this]() -> std::unique_ptr<Screen> {
-                return CreateScreen3();
-              },
-              [this]() -> std::unique_ptr<Screen> {
-               return CreateScreen4();
-              },
+             {
+               [this]() -> std::unique_ptr<Screen> {
+                 return CreateScreen1();
+               },
+               [this]() -> std::unique_ptr<Screen> {
+                 return CreateScreen2();
+               },
+               [this]() -> std::unique_ptr<Screen> {
+                 return CreateScreen3();
+               },
+               [this]() -> std::unique_ptr<Screen> {
+                 return CreateScreen4();
+               },
              },
              Screens::ScreenListModes::UpDown} {
 }
@@ -53,7 +54,8 @@ std::unique_ptr<Screen> Settings::CreateScreen2() {
     {Symbols::shoe, "Steps", Apps::SettingSteps},
     {Symbols::clock, "Set date", Apps::SettingSetDate},
     {Symbols::clock, "Set time", Apps::SettingSetTime},
-    {Symbols::batteryHalf, "Battery", Apps::BatteryInfo}}};
+    {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
+  }};
 
   return std::make_unique<Screens::List>(1, 4, app, settingsController, applications);
 }
@@ -64,7 +66,7 @@ std::unique_ptr<Screen> Settings::CreateScreen3() {
     {Symbols::clock, "Chimes", Apps::SettingChimes},
     {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
     {Symbols::check, "Firmware", Apps::FirmwareValidation},
-    {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth}
+    {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
   }};
 
   return std::make_unique<Screens::List>(2, 4, app, settingsController, applications);
@@ -76,7 +78,7 @@ std::unique_ptr<Screen> Settings::CreateScreen4() {
     {Symbols::list, "About", Apps::SysInfo},
     {Symbols::none, "None", Apps::None},
     {Symbols::none, "None", Apps::None},
-    {Symbols::none, "None", Apps::None}
+    {Symbols::none, "None", Apps::None},
   }};
 
   return std::make_unique<Screens::List>(3, 4, app, settingsController, applications);

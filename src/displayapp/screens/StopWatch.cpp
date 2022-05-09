@@ -166,8 +166,12 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
     lapBuffer.addLaps(currentTimeSeparated);
     lapNr++;
     if (lapBuffer[1]) {
-      lv_label_set_text_fmt(
-        lapOneText, "#%2d   %2d:%02d.%02d", (lapNr - 1), lapBuffer[1]->mins, lapBuffer[1]->secs, lapBuffer[1]->hundredths);
+      lv_label_set_text_fmt(lapOneText,
+                            "#%2d   %2d:%02d.%02d",
+                            (lapNr - 1),
+                            lapBuffer[1]->mins,
+                            lapBuffer[1]->secs,
+                            lapBuffer[1]->hundredths);
     }
     if (lapBuffer[0]) {
       lv_label_set_text_fmt(lapTwoText, "#%2d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);

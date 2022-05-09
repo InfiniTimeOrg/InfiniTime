@@ -120,7 +120,8 @@ void Tile::UpdateScreen() {
 }
 
 void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId) {
-  if(obj != btnm1) return;
+  if (obj != btnm1)
+    return;
 
   app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up);
   running = false;

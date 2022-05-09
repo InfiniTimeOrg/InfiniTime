@@ -6,7 +6,7 @@
 using namespace Pinetime::Applications;
 
 HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor, Controllers::HeartRateController& controller)
-  : heartRateSensor {heartRateSensor}, controller {controller}, ppg{} {
+  : heartRateSensor {heartRateSensor}, controller {controller}, ppg {} {
 }
 
 void HeartRateTask::Start() {

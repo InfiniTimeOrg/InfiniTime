@@ -53,7 +53,7 @@ void Paddle::Refresh() {
   if (ballX >= LV_HOR_RES - ballSize - 1) {
     dx *= -1;
     dy += rand() % 3 - 1; // add a little randomization in wall bounce direction, one of [-1, 0, 1]
-    if (dy > 5) { // limit dy to be in range [-5 to 5]
+    if (dy > 5) {         // limit dy to be in range [-5 to 5]
       dy = 5;
     }
     if (dy < -5) {

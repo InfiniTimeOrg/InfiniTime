@@ -198,12 +198,12 @@ Notifications::NotificationItem::NotificationItem(const char* title,
 
   lv_obj_t* alert_type = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
-  if(title == nullptr) {
+  if (title == nullptr) {
     lv_label_set_text_static(alert_type, "Notification");
   } else {
     // copy title to label and replace newlines with spaces
     lv_label_set_text(alert_type, title);
-    char *pchar = strchr(lv_label_get_text(alert_type), '\n');
+    char* pchar = strchr(lv_label_get_text(alert_type), '\n');
     while (pchar != nullptr) {
       *pchar = ' ';
       pchar = strchr(pchar + 1, '\n');

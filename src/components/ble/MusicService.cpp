@@ -22,10 +22,8 @@
 namespace {
   // 0000yyxx-78fc-48fe-8e23-433b3a1942d0
   constexpr ble_uuid128_t CharUuid(uint8_t x, uint8_t y) {
-    return ble_uuid128_t{
-      .u = {.type = BLE_UUID_TYPE_128},
-      .value =  { 0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, x, y, 0x00, 0x00 }
-    };
+    return ble_uuid128_t {.u = {.type = BLE_UUID_TYPE_128},
+                          .value = {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, x, y, 0x00, 0x00}};
   }
 
   // 00000000-78fc-48fe-8e23-433b3a1942d0
@@ -111,8 +109,7 @@ Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask& 
                                   .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ};
   characteristicDefinition[13] = {0};
 
-  serviceDefinition[0] = {
-    .type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = &msUuid.u, .characteristics = characteristicDefinition};
+  serviceDefinition[0] = {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = &msUuid.u, .characteristics = characteristicDefinition};
   serviceDefinition[1] = {0};
 }
 
@@ -137,9 +134,9 @@ int Pinetime::Controllers::MusicService::OnCommand(uint16_t conn_handle, uint16_
     os_mbuf_copydata(ctxt->om, 0, bufferSize, data);
 
     if (notifSize > bufferSize) {
-      data[bufferSize-1] = '.';
-      data[bufferSize-2] = '.';
-      data[bufferSize-3] = '.';
+      data[bufferSize - 1] = '.';
+      data[bufferSize - 2] = '.';
+      data[bufferSize - 3] = '.';
     }
     data[bufferSize] = '\0';
 
@@ -157,7 +154,8 @@ int Pinetime::Controllers::MusicService::OnCommand(uint16_t conn_handle, uint16_
       if (playing) {
         trackProgressUpdateTime = xTaskGetTickCount();
       } else {
-        trackProgress += static_cast<int>((static_cast<float>(xTaskGetTickCount() - trackProgressUpdateTime) / 1024.0f) * getPlaybackSpeed());
+        trackProgress +=
+          static_cast<int>((static_cast<float>(xTaskGetTickCount() - trackProgressUpdateTime) / 1024.0f) * getPlaybackSpeed());
       }
     } else if (ble_uuid_cmp(ctxt->chr->uuid, &msRepeatCharUuid.u) == 0) {
       repeat = s[0];
@@ -201,7 +199,8 @@ float Pinetime::Controllers::MusicService::getPlaybackSpeed() const {
 
 int Pinetime::Controllers::MusicService::getProgress() const {
   if (isPlaying()) {
-    return trackProgress + static_cast<int>((static_cast<float>(xTaskGetTickCount() - trackProgressUpdateTime) / 1024.0f) * getPlaybackSpeed());
+    return trackProgress +
+           static_cast<int>((static_cast<float>(xTaskGetTickCount() - trackProgressUpdateTime) / 1024.0f) * getPlaybackSpeed());
   }
   return trackProgress;
 }

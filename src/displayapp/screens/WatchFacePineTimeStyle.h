@@ -25,12 +25,12 @@ namespace Pinetime {
       class WatchFacePineTimeStyle : public Screen {
       public:
         WatchFacePineTimeStyle(DisplayApp* app,
-                      Controllers::DateTime& dateTimeController,
-                      Controllers::Battery& batteryController,
-                      Controllers::Ble& bleController,
-                      Controllers::NotificationManager& notificatioManager,
-                      Controllers::Settings& settingsController,
-                      Controllers::MotionController& motionController);
+                               Controllers::DateTime& dateTimeController,
+                               Controllers::Battery& batteryController,
+                               Controllers::Ble& bleController,
+                               Controllers::NotificationManager& notificatioManager,
+                               Controllers::Settings& settingsController,
+                               Controllers::MotionController& motionController);
         ~WatchFacePineTimeStyle() override;
 
         bool OnTouchEvent(TouchEvents event) override;
@@ -38,7 +38,7 @@ namespace Pinetime {
 
         void Refresh() override;
 
-        void UpdateSelected(lv_obj_t *object, lv_event_t event);
+        void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
       private:
         uint8_t displayedHour = -1;
