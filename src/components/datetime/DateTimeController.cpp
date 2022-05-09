@@ -19,8 +19,14 @@ void DateTime::SetCurrentTime(std::chrono::time_point<std::chrono::system_clock,
   UpdateTime(previousSystickCounter); // Update internal state without updating the time
 }
 
-void DateTime::SetTime(
-  uint16_t year, uint8_t month, uint8_t day, uint8_t dayOfWeek, uint8_t hour, uint8_t minute, uint8_t second, uint32_t systickCounter) {
+void DateTime::SetTime(uint16_t year,
+                       uint8_t month,
+                       uint8_t day,
+                       uint8_t dayOfWeek,
+                       uint8_t hour,
+                       uint8_t minute,
+                       uint8_t second,
+                       uint32_t systickCounter) {
   std::tm tm = {
     /* .tm_sec  = */ second,
     /* .tm_min  = */ minute,
@@ -129,16 +135,16 @@ std::string DateTime::FormattedTime() {
   // Return time as a string in 12- or 24-hour format
   char buff[9];
   if (settingsController.GetClockType() == ClockType::H12) {
-      uint8_t hour12;
-      const char* amPmStr;
-      if (hour < 12) {
-        hour12 = (hour == 0) ? 12 : hour;
-        amPmStr = "AM";
-      } else {
-        hour12 = (hour == 12) ? 12 : hour - 12;
-        amPmStr = "PM";
-      }
-      sprintf(buff, "%i:%02i %s", hour12, minute, amPmStr);
+    uint8_t hour12;
+    const char* amPmStr;
+    if (hour < 12) {
+      hour12 = (hour == 0) ? 12 : hour;
+      amPmStr = "AM";
+    } else {
+      hour12 = (hour == 12) ? 12 : hour - 12;
+      amPmStr = "PM";
+    }
+    sprintf(buff, "%i:%02i %s", hour12, minute, amPmStr);
   } else {
     sprintf(buff, "%02i:%02i", hour, minute);
   }

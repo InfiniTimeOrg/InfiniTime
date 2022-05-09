@@ -348,13 +348,21 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
 
     case Apps::Notifications:
-      currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask->nimble().alertService(), motorController, *systemTask, Screens::Notifications::Modes::Normal);
+      currentScreen = std::make_unique<Screens::Notifications>(this,
+                                                               notificationManager,
+                                                               systemTask->nimble().alertService(),
+                                                               motorController,
+                                                               *systemTask,
+                                                               Screens::Notifications::Modes::Normal);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::NotificationsPreview:
-      currentScreen = std::make_unique<Screens::Notifications>(
-        this, notificationManager, systemTask->nimble().alertService(), motorController, *systemTask, Screens::Notifications::Modes::Preview);
+      currentScreen = std::make_unique<Screens::Notifications>(this,
+                                                               notificationManager,
+                                                               systemTask->nimble().alertService(),
+                                                               motorController,
+                                                               *systemTask,
+                                                               Screens::Notifications::Modes::Preview);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
     case Apps::Timer:
@@ -366,8 +374,12 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
 
     // Settings
     case Apps::QuickSettings:
-      currentScreen = std::make_unique<Screens::QuickSettings>(
-        this, batteryController, dateTimeController, brightnessController, motorController, settingsController);
+      currentScreen = std::make_unique<Screens::QuickSettings>(this,
+                                                               batteryController,
+                                                               dateTimeController,
+                                                               brightnessController,
+                                                               motorController,
+                                                               settingsController);
       ReturnApp(Apps::Clock, FullRefreshDirections::LeftAnim, TouchEvents::SwipeLeft);
       break;
     case Apps::Settings:
@@ -419,8 +431,14 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SysInfo:
-      currentScreen = std::make_unique<Screens::SystemInfo>(
-        this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController, touchPanel);
+      currentScreen = std::make_unique<Screens::SystemInfo>(this,
+                                                            dateTimeController,
+                                                            batteryController,
+                                                            brightnessController,
+                                                            bleController,
+                                                            watchdog,
+                                                            motionController,
+                                                            touchPanel);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::FlashLight:

@@ -28,7 +28,7 @@ FlashLight::FlashLight(Pinetime::Applications::DisplayApp* app,
   lv_label_set_text_static(flashLight, Symbols::highlight);
   lv_obj_align(flashLight, nullptr, LV_ALIGN_CENTER, 0, 0);
 
-  for (auto & i : indicators) {
+  for (auto& i : indicators) {
     i = lv_obj_create(lv_scr_act(), nullptr);
     lv_obj_set_size(i, 15, 10);
     lv_obj_set_style_local_border_width(i, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 2);
@@ -64,7 +64,7 @@ void FlashLight::SetColors() {
   if (isOn) {
     lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
     lv_obj_set_style_local_text_color(flashLight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
-    for (auto & i : indicators) {
+    for (auto& i : indicators) {
       lv_obj_set_style_local_bg_color(i, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
       lv_obj_set_style_local_bg_color(i, LV_OBJ_PART_MAIN, LV_STATE_DISABLED, LV_COLOR_WHITE);
       lv_obj_set_style_local_border_color(i, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
@@ -72,7 +72,7 @@ void FlashLight::SetColors() {
   } else {
     lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
     lv_obj_set_style_local_text_color(flashLight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-    for (auto & i : indicators) {
+    for (auto& i : indicators) {
       lv_obj_set_style_local_bg_color(i, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
       lv_obj_set_style_local_bg_color(i, LV_OBJ_PART_MAIN, LV_STATE_DISABLED, LV_COLOR_BLACK);
       lv_obj_set_style_local_border_color(i, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);

@@ -26,8 +26,11 @@ namespace {
     return client->OnCharacteristicsDiscoveryEvent(conn_handle, error, chr);
   }
 
-  int OnAlertNotificationDescriptorDiscoveryEventCallback(
-    uint16_t conn_handle, const struct ble_gatt_error* error, uint16_t chr_val_handle, const struct ble_gatt_dsc* dsc, void* arg) {
+  int OnAlertNotificationDescriptorDiscoveryEventCallback(uint16_t conn_handle,
+                                                          const struct ble_gatt_error* error,
+                                                          uint16_t chr_val_handle,
+                                                          const struct ble_gatt_dsc* dsc,
+                                                          void* arg) {
     auto client = static_cast<AlertNotificationClient*>(arg);
     return client->OnDescriptorDiscoveryEventCallback(conn_handle, error, chr_val_handle, dsc);
   }

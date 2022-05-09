@@ -54,8 +54,7 @@ void AlarmController::ScheduleAlarm() {
 
   auto now = dateTimeController.CurrentDateTime();
   alarmTime = now;
-  time_t ttAlarmTime = std::chrono::system_clock::to_time_t(
-    std::chrono::time_point_cast<std::chrono::system_clock::duration>(alarmTime));
+  time_t ttAlarmTime = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::system_clock::duration>(alarmTime));
   tm* tmAlarmTime = std::localtime(&ttAlarmTime);
 
   // If the time being set has already passed today,the alarm should be set for tomorrow

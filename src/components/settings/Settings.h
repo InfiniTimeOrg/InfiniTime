@@ -140,15 +140,14 @@ namespace Pinetime {
         return settings.screenTimeOut;
       };
 
-      void SetShakeThreshold(uint16_t thresh){
-        if(settings.shakeWakeThreshold != thresh){
-            settings.shakeWakeThreshold = thresh;
-            settingsChanged = true;
+      void SetShakeThreshold(uint16_t thresh) {
+        if (settings.shakeWakeThreshold != thresh) {
+          settings.shakeWakeThreshold = thresh;
+          settingsChanged = true;
         }
-        
       }
 
-      int16_t GetShakeThreshold() const{
+      int16_t GetShakeThreshold() const {
         return settings.shakeWakeThreshold;
       }
 
@@ -195,20 +194,20 @@ namespace Pinetime {
         if (goal != settings.stepsGoal) {
           settingsChanged = true;
         }
-        settings.stepsGoal = goal; 
+        settings.stepsGoal = goal;
       };
-      
+
       uint32_t GetStepsGoal() const {
         return settings.stepsGoal;
       };
 
-     void SetBleRadioEnabled(bool enabled) {
-       bleRadioEnabled = enabled;
-     };
+      void SetBleRadioEnabled(bool enabled) {
+        bleRadioEnabled = enabled;
+      };
 
-     bool GetBleRadioEnabled() const {
-       return bleRadioEnabled;
-     };
+      bool GetBleRadioEnabled() const {
+        return bleRadioEnabled;
+      };
 
     private:
       Pinetime::Controllers::FS& fs;

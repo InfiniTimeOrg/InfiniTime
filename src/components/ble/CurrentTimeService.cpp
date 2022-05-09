@@ -29,11 +29,22 @@ int CurrentTimeService::OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handl
     CtsData result;
     os_mbuf_copydata(ctxt->om, 0, sizeof(CtsData), &result);
 
-    NRF_LOG_INFO(
-      "Received data: %d-%d-%d %d:%d:%d", result.year, result.month, result.dayofmonth, result.hour, result.minute, result.second);
+    NRF_LOG_INFO("Received data: %d-%d-%d %d:%d:%d",
+                 result.year,
+                 result.month,
+                 result.dayofmonth,
+                 result.hour,
+                 result.minute,
+                 result.second);
 
-    m_dateTimeController.SetTime(
-      result.year, result.month, result.dayofmonth, 0, result.hour, result.minute, result.second, nrf_rtc_counter_get(portNRF_RTC_REG));
+    m_dateTimeController.SetTime(result.year,
+                                 result.month,
+                                 result.dayofmonth,
+                                 0,
+                                 result.hour,
+                                 result.minute,
+                                 result.second,
+                                 nrf_rtc_counter_get(portNRF_RTC_REG));
 
   } else if (ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR) {
     CtsData currentDateTime;

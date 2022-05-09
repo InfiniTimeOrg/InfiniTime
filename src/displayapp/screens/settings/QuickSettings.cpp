@@ -44,7 +44,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   static constexpr uint8_t barHeight = 20 + innerDistance;
   static constexpr uint8_t buttonHeight = (LV_VER_RES_MAX - barHeight - innerDistance) / 2;
   static constexpr uint8_t buttonWidth = (LV_HOR_RES_MAX - innerDistance) / 2; // wide buttons
-  //static constexpr uint8_t buttonWidth = buttonHeight; // square buttons
+  // static constexpr uint8_t buttonWidth = buttonHeight; // square buttons
   static constexpr uint8_t buttonXOffset = (LV_HOR_RES_MAX - buttonWidth * 2 - innerDistance) / 2;
 
   lv_style_init(&btn_style);
@@ -67,7 +67,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_event_cb(btn2, ButtonEventHandler);
   lv_obj_add_style(btn2, LV_BTN_PART_MAIN, &btn_style);
   lv_obj_set_size(btn2, buttonWidth, buttonHeight);
-  lv_obj_align(btn2, nullptr, LV_ALIGN_IN_TOP_RIGHT, - buttonXOffset, barHeight);
+  lv_obj_align(btn2, nullptr, LV_ALIGN_IN_TOP_RIGHT, -buttonXOffset, barHeight);
 
   lv_obj_t* lbl_btn;
   lbl_btn = lv_label_create(btn2, nullptr);
@@ -98,7 +98,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_event_cb(btn4, ButtonEventHandler);
   lv_obj_add_style(btn4, LV_BTN_PART_MAIN, &btn_style);
   lv_obj_set_size(btn4, buttonWidth, buttonHeight);
-  lv_obj_align(btn4, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, - buttonXOffset, 0);
+  lv_obj_align(btn4, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, -buttonXOffset, 0);
 
   lbl_btn = lv_label_create(btn4, nullptr);
   lv_obj_set_style_local_text_font(lbl_btn, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_sys_48);

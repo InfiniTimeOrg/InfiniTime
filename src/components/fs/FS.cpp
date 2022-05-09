@@ -95,8 +95,8 @@ int FS::DirRewind(lfs_dir_t* dir) {
 int FS::DirCreate(const char* path) {
   return lfs_mkdir(&lfs, path);
 }
-int FS::Rename(const char* oldPath, const char* newPath){
-  return lfs_rename(&lfs,oldPath,newPath);
+int FS::Rename(const char* oldPath, const char* newPath) {
+  return lfs_rename(&lfs, oldPath, newPath);
 }
 int FS::Stat(const char* path, lfs_info* info) {
   return lfs_stat(&lfs, path, info);

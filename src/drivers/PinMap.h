@@ -3,18 +3,18 @@
 
 namespace Pinetime {
   namespace PinMap {
-    
-    #ifdef WATCH_P8
-      // COLMI P8
-      static constexpr uint8_t Charging = 19;
-      static constexpr uint8_t Cst816sReset = 13;
-      static constexpr uint8_t Button = 17;
-    #else
-      // Pinetime
-      static constexpr uint8_t Charging = 12;
-      static constexpr uint8_t Cst816sReset = 10;
-      static constexpr uint8_t Button = 13;      
-    #endif
+
+#ifdef WATCH_P8
+    // COLMI P8
+    static constexpr uint8_t Charging = 19;
+    static constexpr uint8_t Cst816sReset = 13;
+    static constexpr uint8_t Button = 17;
+#else
+    // Pinetime
+    static constexpr uint8_t Charging = 12;
+    static constexpr uint8_t Cst816sReset = 10;
+    static constexpr uint8_t Button = 13;
+#endif
 
     static constexpr uint8_t Cst816sIrq = 28;
     static constexpr uint8_t PowerPresent = 19;
