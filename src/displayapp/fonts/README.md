@@ -23,7 +23,7 @@ and for each font there is:
 * sources - list of file,range(,symbols) wanted (as a dictionary of those)
 * bpp - bits per pixel.
 * size - size.
-* patches - list of extra "patches" to run, either string to file which should be run, or list of arguments (with first one being the command being run)
+* patches - list of extra "patches" to run: a path to a .patch file. (may be relative)
 * compress - optional. default disabled. add `"compress": true` to enable
 
 ### Navigation font
