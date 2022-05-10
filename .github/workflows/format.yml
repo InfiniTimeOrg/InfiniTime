@@ -24,7 +24,7 @@ jobs:
           sudo apt-get -y install clang-format-12
 
       - name: Check formatting
-        run: tests/test-format.sh "$GITHUB_BASE_REF"
+        run: tests/test-format.sh
 
       - name: Upload patches
         uses: actions/upload-artifact@v3
