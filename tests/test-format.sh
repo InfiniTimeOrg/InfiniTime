@@ -16,6 +16,7 @@ for file in $CHANGED_FILES
 do
   [ -e "$file" ] || continue
   case "$file" in
+  src/libs/*) continue ;;
   *.cpp|*.h)
     echo Checking "$file"
     clang-format -i "$file"
