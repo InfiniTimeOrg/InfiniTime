@@ -73,14 +73,3 @@ The `PUID` and `PGID` build arguments are used to set the user and group ids use
 ```bash
 docker image build -t infinitime-build --build-arg PUID=$(id -u) --build-arg PGID=$(id -g) ./docker
 ```
-
-## Docker image for Github Actions
-The Github Action workflow also uses the build docker container to build the project in the cloud. However, due to [some limitations](https://docs.github.com/en/actions/creating-actions/dockerfile-support-for-github-actions) the container must be slightly modified to run in the Github Actions environment : the `USER` instruction cannot be used in Github. This means that the container runs as the default user (root), and that all the files created by the users will belong to root. That's probably fine for Docker Actions, but it's not convenient when the container is used on a personal computer : only root will be able to modify or delete the files created by the container.
-
-For this reason, we decided to create an alternative Dockerfile (`docker/Dockerfile-github`) and to build a [second docker image](https://hub.docker.com/repository/docker/jf002/infinitime-build-github) that are intended be used exclusively on Github Action.
-
-To build this image:
-
-```bash
-docker image build -t jf002/infinitime-build-github -f ./docker/Dockerfile-github ./docker
-```

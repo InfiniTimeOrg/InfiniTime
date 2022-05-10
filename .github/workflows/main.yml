@@ -22,7 +22,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-      image: jf002/infinitime-build-github
+      image: jf002/infinitime-build
     steps:
       - name: Checkout source files
         uses: actions/checkout@v2
