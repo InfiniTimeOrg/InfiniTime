@@ -9,21 +9,21 @@ set(NRF_BOARD pca10040)
 
 # check if all the necessary tools paths have been provided.
 if (NOT NRF5_SDK_PATH)
-    message(FATAL_ERROR "The path to the nRF5 SDK (NRF5_SDK_PATH) must be set.")
+  message(FATAL_ERROR "The path to the nRF5 SDK (NRF5_SDK_PATH) must be set.")
 endif ()
 if (DEFINED ARM_NONE_EABI_TOOLCHAIN_PATH)
-    set(ARM_NONE_EABI_TOOLCHAIN_BIN_PATH ${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin)
+  set(ARM_NONE_EABI_TOOLCHAIN_BIN_PATH ${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin)
 endif ()
 
 if (NOT NRF_TARGET MATCHES "nrf52")
-    message(FATAL_ERROR "Only rRF52 boards are supported right now")
+  message(FATAL_ERROR "Only rRF52 boards are supported right now")
 endif ()
 
 # Setup toolchain
 include(${CMAKE_SOURCE_DIR}/cmake-nRF5x/arm-gcc-toolchain.cmake)
 
 if (NOT DEFINED ARM_GCC_TOOLCHAIN)
-    message(FATAL_ERROR "The toolchain must be set up before calling this macro")
+  message(FATAL_ERROR "The toolchain must be set up before calling this macro")
 endif ()
 set(CMAKE_OSX_SYSROOT "/")
 set(CMAKE_OSX_DEPLOYMENT_TARGET "")
@@ -936,11 +936,11 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
         )
 
 if(BUILD_DFU)
-    add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
-            POST_BUILD
-            COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_MCUBOOT_FILE_NAME} ${DFU_MCUBOOT_FILE_NAME}
-            COMMENT "post build (DFU) steps for ${EXECUTABLE_MCUBOOT_FILE_NAME}"
-            )
+  add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
+          POST_BUILD
+          COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_MCUBOOT_FILE_NAME} ${DFU_MCUBOOT_FILE_NAME}
+          COMMENT "post build (DFU) steps for ${EXECUTABLE_MCUBOOT_FILE_NAME}"
+          )
 endif()
 
 # InfiniTime recovery firmware (autonomous)
@@ -1005,11 +1005,11 @@ add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
         )
 
 if(BUILD_DFU)
-    add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
-            POST_BUILD
-            COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME} ${DFU_RECOVERY_MCUBOOT_FILE_NAME}
-            COMMENT "post build (DFU) steps for ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}"
-            )
+  add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
+          POST_BUILD
+          COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME} ${DFU_RECOVERY_MCUBOOT_FILE_NAME}
+          COMMENT "post build (DFU) steps for ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}"
+          )
 endif()
 
 # Build binary that writes the recovery image into the SPI flash memory
@@ -1080,75 +1080,75 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
         )
 
 if(BUILD_DFU)
-    add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
-            POST_BUILD
-            COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME} ${DFU_MCUBOOT_RECOVERYLOADER_FILE_NAME}
-            COMMENT "post build (DFU) steps for ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}"
-            )
+  add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
+          POST_BUILD
+          COMMAND adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME} ${DFU_MCUBOOT_RECOVERYLOADER_FILE_NAME}
+          COMMENT "post build (DFU) steps for ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}"
+          )
 endif()
 
 
 # FLASH
 if (USE_JLINK)
-    add_custom_target(FLASH_ERASE
-            COMMAND ${NRFJPROG} --eraseall -f ${NRF_TARGET}
-            COMMENT "erasing flashing"
-            )
-    add_custom_target("FLASH_${EXECUTABLE_NAME}"
-            DEPENDS ${EXECUTABLE_NAME}
-            COMMAND ${NRFJPROG} --program ${EXECUTABLE_FILE_NAME}.hex -f ${NRF_TARGET} --sectorerase
-            COMMAND sleep 0.5s
-            COMMAND ${NRFJPROG} --reset -f ${NRF_TARGET}
-            COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
-            )
+  add_custom_target(FLASH_ERASE
+          COMMAND ${NRFJPROG} --eraseall -f ${NRF_TARGET}
+          COMMENT "erasing flashing"
+          )
+  add_custom_target("FLASH_${EXECUTABLE_NAME}"
+          DEPENDS ${EXECUTABLE_NAME}
+          COMMAND ${NRFJPROG} --program ${EXECUTABLE_FILE_NAME}.hex -f ${NRF_TARGET} --sectorerase
+          COMMAND sleep 0.5s
+          COMMAND ${NRFJPROG} --reset -f ${NRF_TARGET}
+          COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
+          )
 
 elseif (USE_GDB_CLIENT)
+  add_custom_target(FLASH_ERASE
+          COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'mon erase_mass'
+          COMMENT "erasing flashing"
+          )
+  add_custom_target("FLASH_${EXECUTABLE_NAME}"
+          DEPENDS ${EXECUTABLE_NAME}
+          COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill' ${EXECUTABLE_FILE_NAME}.hex
+          COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
+          )
+elseif (USE_OPENOCD)
+  if (USE_CMSIS_DAP)
     add_custom_target(FLASH_ERASE
-            COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'mon erase_mass'
+            COMMAND ${OPENOCD_BIN_PATH} -c 'source [find interface/cmsis-dap.cfg]' -c 'transport select swd'
+            -c 'source [find target/nrf52.cfg]'
+            -c 'init'
+            -c 'halt'
+            -c 'nrf5 mass_erase'
+            -c 'halt'
+            -c 'reset'
+            -c 'exit'
             COMMENT "erasing flashing"
             )
     add_custom_target("FLASH_${EXECUTABLE_NAME}"
             DEPENDS ${EXECUTABLE_NAME}
-            COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill' ${EXECUTABLE_FILE_NAME}.hex
+            COMMAND ${OPENOCD_BIN_PATH}
+            -c 'tcl_port disabled'
+            -c 'gdb_port 3333'
+            -c 'telnet_port 4444'
+            -c 'source [find interface/cmsis-dap.cfg]'
+            -c 'transport select swd'
+            -c 'source [find target/nrf52.cfg]'
+            -c 'halt'
+            -c "program \"${EXECUTABLE_FILE_NAME}.hex\""
+            -c 'reset'
+            -c 'shutdown'
+            COMMENT "flashing ${EXECUTABLE_BIN_NAME}.hex"
+            )
+  else ()
+    add_custom_target(FLASH_ERASE
+            COMMAND ${OPENOCD_BIN_PATH} -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c init -c halt -c 'nrf5 mass_erase' -c reset -c shutdown
+            COMMENT "erasing flashing"
+            )
+    add_custom_target("FLASH_${EXECUTABLE_NAME}"
+            DEPENDS ${EXECUTABLE_NAME}
+            COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${EXECUTABLE_FILE_NAME}.hex\"" -c reset -c shutdown
             COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
             )
-elseif (USE_OPENOCD)
-    if (USE_CMSIS_DAP)
-        add_custom_target(FLASH_ERASE
-                COMMAND ${OPENOCD_BIN_PATH} -c 'source [find interface/cmsis-dap.cfg]' -c 'transport select swd'
-                -c 'source [find target/nrf52.cfg]'
-                -c 'init'
-                -c 'halt'
-                -c 'nrf5 mass_erase'
-                -c 'halt'
-                -c 'reset'
-                -c 'exit'
-                COMMENT "erasing flashing"
-                )
-        add_custom_target("FLASH_${EXECUTABLE_NAME}"
-                DEPENDS ${EXECUTABLE_NAME}
-                COMMAND ${OPENOCD_BIN_PATH}
-                -c 'tcl_port disabled'
-                -c 'gdb_port 3333'
-                -c 'telnet_port 4444'
-                -c 'source [find interface/cmsis-dap.cfg]'
-                -c 'transport select swd'
-                -c 'source [find target/nrf52.cfg]'
-                -c 'halt'
-                -c "program \"${EXECUTABLE_FILE_NAME}.hex\""
-                -c 'reset'
-                -c 'shutdown'
-                COMMENT "flashing ${EXECUTABLE_BIN_NAME}.hex"
-                )
-    else ()
-        add_custom_target(FLASH_ERASE
-                COMMAND ${OPENOCD_BIN_PATH} -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c init -c halt -c 'nrf5 mass_erase' -c reset -c shutdown
-                COMMENT "erasing flashing"
-                )
-        add_custom_target("FLASH_${EXECUTABLE_NAME}"
-                DEPENDS ${EXECUTABLE_NAME}
-                COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${EXECUTABLE_FILE_NAME}.hex\"" -c reset -c shutdown
-                COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
-                )
-    endif ()
+  endif ()
 endif ()
