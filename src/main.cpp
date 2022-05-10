@@ -300,10 +300,24 @@ void nimble_port_ll_task_func(void* args) {
 }
 }
 
+void calibrate_lf_clock_rc(nrf_drv_clock_evt_type_t event) {
+  // 16 * 0.25s = 4s calibration cycle
+  // Not recursive, call is deferred via internal calibration timer
+  nrf_drv_clock_calibration_start(16, calibrate_lf_clock_rc);
+}
+
 int main(void) {
   logger.Init();
 
   nrf_drv_clock_init();
+  nrf_drv_clock_lfclk_request(NULL);
+
+// The RC source for the LF clock has to be calibrated
+#if (CLOCK_CONFIG_LF_SRC == NRF_CLOCK_LFCLK_RC)
+  while (!nrf_clock_lf_is_running()) {
+  }
+  nrf_drv_clock_calibration_start(0, calibrate_lf_clock_rc);
+#endif
 
   // Unblock i2c?
   nrf_gpio_cfg(Pinetime::PinMap::TwiScl,
