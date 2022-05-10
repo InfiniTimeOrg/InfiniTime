@@ -54,13 +54,8 @@ if(BUILD_DFU)
   set(BUILD_DFU true)
 endif()
 
-option(WATCH_COLMI_P8 "Build for the Colmi P8" OFF)
-set(TARGET_DEVICE "PineTime")
-
-if(WATCH_COLMI_P8)
-  set(TARGET_DEVICE "Colmi P8")
-  add_definitions(-DWATCH_P8)
-endif()
+set(TARGET_DEVICE "PINETIME" CACHE STRING "Target device")
+set_property(CACHE TARGET_DEVICE PROPERTY STRINGS PINETIME MOY-TFK5 MOY-TIN5 MOY-TON5 MOY-UNK)
 
 set(PROJECT_GIT_COMMIT_HASH "")
 
