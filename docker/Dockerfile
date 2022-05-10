@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq \
@@ -11,15 +11,15 @@ RUN apt-get update -qq \
       make \
       python3 \
       python3-pip \
+      python-is-python3 \
       tar \
       unzip \
       wget \
       curl \
-# aarch64 packages
+      # aarch64 packages
       libffi-dev \
       libssl-dev \
       python3-dev \
-      python \
       git \
       apt-utils \
     && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
@@ -30,6 +30,7 @@ RUN apt-get update -qq \
 
 RUN pip3 install adafruit-nrfutil
 RUN pip3 install -Iv cryptography==3.3
+RUN pip3 install cbor
 RUN npm i lv_font_conv@1.5.2 -g
 
 # build.sh knows how to compile
