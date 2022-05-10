@@ -8,7 +8,7 @@ namespace Pinetime {
   namespace Controllers {
     class MotionController {
     public:
-      void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps);
+      void Update(uint32_t nbSteps, int16_t x, int16_t y, int16_t z, int16_t* samples, uint16_t samples_length);
 
       int16_t X() const {
         return x;

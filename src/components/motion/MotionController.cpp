@@ -2,13 +2,13 @@
 #include "os/os_cputime.h"
 using namespace Pinetime::Controllers;
 
-void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps) {
+void MotionController::Update(uint32_t nbSteps, int16_t x, int16_t y, int16_t z, int16_t* samples, uint16_t samples_length) {
   if (this->nbSteps != nbSteps && service != nullptr) {
     service->OnNewStepCountValue(nbSteps);
   }
 
   if (service != nullptr && (this->x != x || this->y != y || this->z != z)) {
-    service->OnNewMotionValues(x, y, z);
+    service->OnNewMotionValues(samples, samples_length);
   }
 
   this->x = x;
