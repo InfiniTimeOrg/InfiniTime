@@ -16,8 +16,10 @@ namespace Pinetime {
     static constexpr uint8_t Button = 13;
 #endif
 
+    static constexpr uint8_t ButtonEnable = 15;
     static constexpr uint8_t Cst816sIrq = 28;
     static constexpr uint8_t PowerPresent = 19;
+    static constexpr uint8_t Bma421Irq = 8;
 
     static constexpr uint8_t Motor = 16;
 

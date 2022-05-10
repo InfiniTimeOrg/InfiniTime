@@ -172,39 +172,29 @@ void SystemTask::Work() {
 
   buttonHandler.Init(this);
 
-  // Button
-  nrf_gpio_cfg_output(15);
-  nrf_gpio_pin_set(15);
-
+  // Setup Interrupts
   nrfx_gpiote_in_config_t pinConfig;
   pinConfig.skip_gpio_setup = false;
   pinConfig.hi_accuracy = false;
   pinConfig.is_watcher = false;
-  pinConfig.sense = static_cast<nrf_gpiote_polarity_t>(NRF_GPIOTE_POLARITY_TOGGLE);
-  pinConfig.pull = static_cast<nrf_gpio_pin_pull_t>(GPIO_PIN_CNF_PULL_Pulldown);
 
+  // Button
+  nrf_gpio_cfg_output(PinMap::ButtonEnable);
+  nrf_gpio_pin_set(PinMap::ButtonEnable);
+  pinConfig.sense = NRF_GPIOTE_POLARITY_TOGGLE;
+  pinConfig.pull = NRF_GPIO_PIN_PULLDOWN;
   nrfx_gpiote_in_init(PinMap::Button, &pinConfig, nrfx_gpiote_evt_handler);
   nrfx_gpiote_in_event_enable(PinMap::Button, true);
 
   // Touchscreen
-  nrf_gpio_cfg_sense_input(PinMap::Cst816sIrq,
-                           static_cast<nrf_gpio_pin_pull_t>(GPIO_PIN_CNF_PULL_Pullup),
-                           static_cast<nrf_gpio_pin_sense_t>(GPIO_PIN_CNF_SENSE_Low));
-
-  pinConfig.skip_gpio_setup = true;
-  pinConfig.hi_accuracy = false;
-  pinConfig.is_watcher = false;
-  pinConfig.sense = static_cast<nrf_gpiote_polarity_t>(NRF_GPIOTE_POLARITY_HITOLO);
-  pinConfig.pull = static_cast<nrf_gpio_pin_pull_t>(GPIO_PIN_CNF_PULL_Pullup);
-
+  pinConfig.sense = NRF_GPIOTE_POLARITY_HITOLO;
+  pinConfig.pull = NRF_GPIO_PIN_PULLUP;
   nrfx_gpiote_in_init(PinMap::Cst816sIrq, &pinConfig, nrfx_gpiote_evt_handler);
+  nrfx_gpiote_in_event_enable(PinMap::Cst816sIrq, true);
 
   // Power present
   pinConfig.sense = NRF_GPIOTE_POLARITY_TOGGLE;
   pinConfig.pull = NRF_GPIO_PIN_NOPULL;
-  pinConfig.is_watcher = false;
-  pinConfig.hi_accuracy = false;
-  pinConfig.skip_gpio_setup = false;
   nrfx_gpiote_in_init(PinMap::PowerPresent, &pinConfig, nrfx_gpiote_evt_handler);
   nrfx_gpiote_in_event_enable(PinMap::PowerPresent, true);
 
