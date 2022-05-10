@@ -779,13 +779,27 @@ add_definitions(-DFREERTOS)
 add_definitions(-D__STACK_SIZE=1024)
 add_definitions(-D__HEAP_SIZE=4096)
 
-# NOTE : Add the following defines to enable debug mode of the NRF SDK:
-#add_definitions(-DDEBUG)
-#add_definitions(-DDEBUG_NRF_USER)
+# Debug configuration
+if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+  add_definitions(-DDEBUG)
+  add_definitions(-DDEBUG_NRF_USER)
 
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Release")
-endif ()
+  # NRF SDK Logging
+  add_definitions(-DNRF_LOG_ENABLED=1)
+  # add_definitions(-DNRF_LOG_BACKEND_RTT_ENABLED=1)
+  # add_definitions(-DNRF_LOG_BACKEND_SERIAL_USES_RTT=1)
+
+  # NRF SDK individual modules logging
+  # add_definitions(-DCLOCK_CONFIG_LOG_ENABLED=1)
+  # add_definitions(-DCLOCK_CONFIG_LOG_LEVEL=4)
+  # add_definitions(-DRTC_CONFIG_LOG_ENABLED=1)
+  # add_definitions(-DRTC_CONFIG_LOG_LEVEL=4)
+  
+  # Nimble Logging
+  add_definitions(-DMYNEWT_VAL_NEWT_FEATURE_LOGCFG=1)
+  # add_definitions(-DMYNEWT_VAL_LOG_LEVEL=0)
+  # add_definitions(-DMYNEWT_VAL_BLE_HS_LOG_LVL=0)
+endif()
 
 add_subdirectory(displayapp/fonts)
 target_compile_options(infinitime_fonts PUBLIC

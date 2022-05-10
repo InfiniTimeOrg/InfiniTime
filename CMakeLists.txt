@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
+
+set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose Debug or Release")
+
 project(pinetime VERSION 1.9.0 LANGUAGES C CXX ASM)
 
 set(CMAKE_C_STANDARD 99)
@@ -70,8 +73,10 @@ string(STRIP "${PROJECT_GIT_COMMIT_HASH}" PROJECT_GIT_COMMIT_HASH)
 
 message("PROJECT_GIT_COMMIT_HASH_SUCCESS? " ${PROJECT_GIT_COMMIT_HASH_SUCCESS})
 
+message("")
 message("BUILD CONFIGURATION")
 message("-------------------")
+message("    * Mode : " ${CMAKE_BUILD_TYPE})
 message("    * Version : " ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH})
 message("    * Toolchain : " ${ARM_NONE_EABI_TOOLCHAIN_PATH})
 message("    * GitRef(S) : " ${PROJECT_GIT_COMMIT_HASH})
