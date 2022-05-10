@@ -3,6 +3,10 @@ name: Code formatting
 on:
   pull_request:
     branches: [ master, develop ]
+    paths:
+      - '**.cpp'
+      - '**.h'
+      - '!src/libs/**'
 
 jobs:
   test-format:
