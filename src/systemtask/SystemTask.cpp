@@ -264,15 +264,16 @@ void SystemTask::Work() {
         case Messages::TouchWakeUp: {
           if (touchHandler.GetNewTouchInfo()) {
             auto gesture = touchHandler.GestureGet();
-            if (gesture != Pinetime::Applications::TouchEvents::None and
-                ((gesture == Pinetime::Applications::TouchEvents::DoubleTap and
-                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
-                 (gesture == Pinetime::Applications::TouchEvents::Tap and
+            if (gesture != Pinetime::Applications::TouchEvents::None &&
+                ((gesture == Pinetime::Applications::TouchEvents::DoubleTap &&
+                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) ||
+                 (gesture == Pinetime::Applications::TouchEvents::Tap &&
                   settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
               GoToRunning();
             }
           }
-        } break;
+          break;
+        }
         case Messages::GoToSleep:
           if (doNotGoToSleep) {
             break;
