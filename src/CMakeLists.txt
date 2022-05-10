@@ -447,6 +447,7 @@ list(APPEND SOURCE_FILES
         drivers/Bma421.cpp
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c
+        drivers/SC7A20.cpp
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
         components/ble/NotificationManager.cpp
@@ -515,6 +516,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         drivers/Bma421.cpp
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c
+        drivers/SC7A20.cpp
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
         components/ble/NotificationManager.cpp
@@ -632,6 +634,8 @@ set(INCLUDE_FILES
         drivers/Bma421.h
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c
+        drivers/SC7A20.h
+        drivers/SC7A20_registers.h
         components/battery/BatteryController.h
         components/ble/BleController.h
         components/ble/NotificationManager.h
