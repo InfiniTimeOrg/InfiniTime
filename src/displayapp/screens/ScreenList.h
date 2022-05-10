@@ -3,6 +3,7 @@
 #include <array>
 #include <functional>
 #include <memory>
+#include <vector>
 #include "displayapp/screens/Screen.h"
 #include "displayapp/DisplayApp.h"
 
