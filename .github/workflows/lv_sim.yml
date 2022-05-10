@@ -6,9 +6,9 @@ name: Build PineTime LVGL Simulator
 # When to run this Workflow...
 on:
 
-  # Run on all branches
+  # Run this Workflow when files are updated (Pushed) in the "master" and "develop" Branch
   push:
-    branches: []
+    branches: [ master, develop ]
 
   # Also run this Workflow when a Pull Request is created or updated in the "master" and "develop" Branch
   pull_request:
