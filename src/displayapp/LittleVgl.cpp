@@ -180,6 +180,14 @@ void LittleVgl::SetNewTouchPoint(uint16_t x, uint16_t y, bool contact) {
   tap_x = x;
   tap_y = y;
   tapped = contact;
+  simulate_tap_release = false;
+}
+
+void LittleVgl::SetNewTap(uint16_t x, uint16_t y) {
+  tap_x = x;
+  tap_y = y;
+  tapped = true;
+  simulate_tap_release = true;
 }
 
 bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
@@ -187,6 +195,12 @@ bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
   ptr->point.y = tap_y;
   if (tapped) {
     ptr->state = LV_INDEV_STATE_PR;
+    if (simulate_tap_release) {
+      // If a tap consists of only a single event, enqueue a synthetic release state update
+      tapped = false;
+      simulate_tap_release = false;
+      return true;
+    }
   } else {
     ptr->state = LV_INDEV_STATE_REL;
   }
