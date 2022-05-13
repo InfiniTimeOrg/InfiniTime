@@ -10,62 +10,32 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   screen->OnButtonEvent(obj, event);
 }
 
-void Timer::CreateButtons() {
-  btnMinutesUp = lv_btn_create(lv_scr_act(), nullptr);
-  btnMinutesUp->user_data = this;
-  lv_obj_set_event_cb(btnMinutesUp, btnEventHandler);
-  lv_obj_set_size(btnMinutesUp, 60, 40);
-  lv_obj_align(btnMinutesUp, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, -85);
-  txtMUp = lv_label_create(btnMinutesUp, nullptr);
-  lv_label_set_text_static(txtMUp, "+");
-
-  btnMinutesDown = lv_btn_create(lv_scr_act(), nullptr);
-  btnMinutesDown->user_data = this;
-  lv_obj_set_event_cb(btnMinutesDown, btnEventHandler);
-  lv_obj_set_size(btnMinutesDown, 60, 40);
-  lv_obj_align(btnMinutesDown, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 20, 35);
-  txtMDown = lv_label_create(btnMinutesDown, nullptr);
-  lv_label_set_text_static(txtMDown, "-");
-
-  btnSecondsUp = lv_btn_create(lv_scr_act(), nullptr);
-  btnSecondsUp->user_data = this;
-  lv_obj_set_event_cb(btnSecondsUp, btnEventHandler);
-  lv_obj_set_size(btnSecondsUp, 60, 40);
-  lv_obj_align(btnSecondsUp, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, -85);
-  txtSUp = lv_label_create(btnSecondsUp, nullptr);
-  lv_label_set_text_static(txtSUp, "+");
-
-  btnSecondsDown = lv_btn_create(lv_scr_act(), nullptr);
-  btnSecondsDown->user_data = this;
-  lv_obj_set_event_cb(btnSecondsDown, btnEventHandler);
-  lv_obj_set_size(btnSecondsDown, 60, 40);
-  lv_obj_align(btnSecondsDown, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -20, 35);
-  txtSDown = lv_label_create(btnSecondsDown, nullptr);
-  lv_label_set_text_static(txtSDown, "-");
-}
-
-Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController)
-  : Screen(app), running {true}, timerController {timerController} {
+Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : Screen(app), timerController {timerController} {
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_label_set_text_static(time, "00:00");
+  lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
 
-  uint32_t seconds = timerController.GetTimeRemaining() / 1000;
-  lv_label_set_text_fmt(time, "%02lu:%02lu", seconds / 60, seconds % 60);
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -25);
+  minuteCounter.Create();
+  secondCounter.Create();
+  lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+  lv_obj_align(secondCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
+  lv_obj_set_style_local_radius(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
   lv_obj_set_event_cb(btnPlayPause, btnEventHandler);
-  lv_obj_set_size(btnPlayPause, 120, 50);
+  lv_obj_set_size(btnPlayPause, LV_HOR_RES, 50);
   lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
+
   if (timerController.IsRunning()) {
-    lv_label_set_text_static(txtPlayPause, Symbols::pause);
+    SetTimerRunning();
   } else {
-    lv_label_set_text_static(txtPlayPause, Symbols::play);
-    CreateButtons();
+    SetTimerStopped();
   }
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
@@ -83,64 +53,31 @@ void Timer::Refresh() {
   }
 }
 
+void Timer::SetTimerRunning() {
+  lv_obj_set_hidden(minuteCounter.GetObject(), true);
+  lv_obj_set_hidden(secondCounter.GetObject(), true);
+  lv_label_set_text_static(txtPlayPause, "Pause");
+}
+
+void Timer::SetTimerStopped() {
+  lv_obj_set_hidden(minuteCounter.GetObject(), false);
+  lv_obj_set_hidden(secondCounter.GetObject(), false);
+  lv_label_set_text_static(txtPlayPause, "Start");
+}
+
 void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     if (obj == btnPlayPause) {
       if (timerController.IsRunning()) {
-        lv_label_set_text_static(txtPlayPause, Symbols::play);
         uint32_t seconds = timerController.GetTimeRemaining() / 1000;
-        minutesToSet = seconds / 60;
-        secondsToSet = seconds % 60;
+        minuteCounter.SetValue(seconds / 60);
+        secondCounter.SetValue(seconds % 60);
         timerController.StopTimer();
-        CreateButtons();
-
-      } else if (secondsToSet + minutesToSet > 0) {
-        lv_label_set_text_static(txtPlayPause, Symbols::pause);
-        timerController.StartTimer((secondsToSet + minutesToSet * 60) * 1000);
-
-        lv_obj_del(btnSecondsDown);
-        btnSecondsDown = nullptr;
-        lv_obj_del(btnSecondsUp);
-        btnSecondsUp = nullptr;
-        lv_obj_del(btnMinutesDown);
-        btnMinutesDown = nullptr;
-        lv_obj_del(btnMinutesUp);
-        btnMinutesUp = nullptr;
-      }
-    } else {
-      if (!timerController.IsRunning()) {
-        if (obj == btnMinutesUp) {
-          if (minutesToSet >= 59) {
-            minutesToSet = 0;
-          } else {
-            minutesToSet++;
-          }
-          lv_label_set_text_fmt(time, "%02d:%02d", minutesToSet, secondsToSet);
-
-        } else if (obj == btnMinutesDown) {
-          if (minutesToSet == 0) {
-            minutesToSet = 59;
-          } else {
-            minutesToSet--;
-          }
-          lv_label_set_text_fmt(time, "%02d:%02d", minutesToSet, secondsToSet);
-
-        } else if (obj == btnSecondsUp) {
-          if (secondsToSet >= 59) {
-            secondsToSet = 0;
-          } else {
-            secondsToSet++;
-          }
-          lv_label_set_text_fmt(time, "%02d:%02d", minutesToSet, secondsToSet);
-
-        } else if (obj == btnSecondsDown) {
-          if (secondsToSet == 0) {
-            secondsToSet = 59;
-          } else {
-            secondsToSet--;
-          }
-          lv_label_set_text_fmt(time, "%02d:%02d", minutesToSet, secondsToSet);
-        }
+        SetTimerStopped();
+      } else if (secondCounter.GetValue() + minuteCounter.GetValue() > 0) {
+        timerController.StartTimer((secondCounter.GetValue() + minuteCounter.GetValue() * 60) * 1000);
+        Refresh();
+        SetTimerRunning();
       }
     }
   }
@@ -148,8 +85,7 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 
 void Timer::SetDone() {
   lv_label_set_text_static(time, "00:00");
-  lv_label_set_text_static(txtPlayPause, Symbols::play);
-  secondsToSet = 0;
-  minutesToSet = 0;
-  CreateButtons();
+  minuteCounter.SetValue(0);
+  secondCounter.SetValue(0);
+  SetTimerStopped();
 }
