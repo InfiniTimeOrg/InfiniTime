@@ -4,6 +4,7 @@
 #include "components/datetime/DateTimeController.h"
 #include "systemtask/SystemTask.h"
 #include "displayapp/LittleVgl.h"
+#include "displayapp/widgets/Counter.h"
 
 #include "components/timer/TimerController.h"
 
@@ -19,23 +20,15 @@ namespace Pinetime::Applications::Screens {
     void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
 
   private:
-    void CreateButtons();
-    bool running;
-    uint8_t secondsToSet = 0;
-    uint8_t minutesToSet = 0;
+    void SetTimerRunning();
+    void SetTimerStopped();
     Controllers::TimerController& timerController;
     lv_obj_t* time;
     lv_obj_t* msecTime;
     lv_obj_t* btnPlayPause;
     lv_obj_t* txtPlayPause;
-    lv_obj_t* btnMinutesUp;
-    lv_obj_t* btnMinutesDown;
-    lv_obj_t* btnSecondsUp;
-    lv_obj_t* btnSecondsDown;
-    lv_obj_t* txtMUp;
-    lv_obj_t* txtMDown;
-    lv_obj_t* txtSUp;
-    lv_obj_t* txtSDown;
     lv_task_t* taskRefresh;
+    Widgets::Counter minuteCounter = Widgets::Counter(0, 59);
+    Widgets::Counter secondCounter = Widgets::Counter(0, 59);
   };
 }
