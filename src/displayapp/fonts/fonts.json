@@ -27,7 +27,7 @@
    "jetbrains_mono_76": {
       "sources": [
          {
-            "file": "JetBrainsMono-Regular.ttf",
+            "file": "JetBrainsMono-Light.ttf",
             "range": "0x25, 0x2D, 0x2F, 0x30-0x3a"
          }
       ],
