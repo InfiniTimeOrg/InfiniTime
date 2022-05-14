@@ -22,7 +22,8 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
                                    Controllers::NotificationManager& notificatioManager,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
-                                   Controllers::MotionController& motionController)
+                                   Controllers::MotionController& motionController,
+                                   Controllers::AlarmController& alarmController)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -31,7 +32,8 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
     notificatioManager {notificatioManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
-    motionController {motionController} {
+    motionController {motionController},
+    alarmController {alarmController} {
 
   batteryIcon.Create(lv_scr_act());
   lv_obj_align(batteryIcon.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
@@ -45,6 +47,10 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0082FC));
   lv_label_set_text_static(bleIcon, Symbols::bluetooth);
   lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  alarmIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(alarmIcon, Symbols::clock);
+  lv_obj_align(alarmIcon, bleIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
@@ -110,8 +116,19 @@ void WatchFaceDigital::Refresh() {
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
   }
+
+  alarmEnabled = alarmController.State() == Controllers::AlarmController::AlarmState::Set;
+  if (alarmEnabled.IsUpdated()) {
+    if (alarmEnabled.Get()) {
+      lv_label_set_text_static(alarmIcon, Symbols::clock);
+    } else {
+      lv_label_set_text_static(alarmIcon, "");
+    }
+  }
+
   lv_obj_realign(batteryPlug);
   lv_obj_realign(bleIcon);
+  lv_obj_realign(alarmIcon);
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {

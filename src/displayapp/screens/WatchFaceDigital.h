@@ -6,8 +6,9 @@
 #include <cstdint>
 #include <memory>
 #include "displayapp/screens/Screen.h"
-#include "components/datetime/DateTimeController.h"
+#include "components/alarm/AlarmController.h"
 #include "components/ble/BleController.h"
+#include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -31,7 +32,8 @@ namespace Pinetime {
                          Controllers::NotificationManager& notificatioManager,
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
-                         Controllers::MotionController& motionController);
+                         Controllers::MotionController& motionController,
+                         Controllers::AlarmController& alarmController);
         ~WatchFaceDigital() override;
 
         void Refresh() override;
@@ -49,6 +51,7 @@ namespace Pinetime {
         DirtyValue<bool> powerPresent {};
         DirtyValue<bool> bleState {};
         DirtyValue<bool> bleRadioEnabled {};
+        DirtyValue<bool> alarmEnabled {};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
         DirtyValue<bool> motionSensorOk {};
         DirtyValue<uint32_t> stepCount {};
@@ -59,6 +62,7 @@ namespace Pinetime {
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;
         lv_obj_t* label_date;
+        lv_obj_t* alarmIcon;
         lv_obj_t* bleIcon;
         lv_obj_t* batteryPlug;
         lv_obj_t* heartbeatIcon;
@@ -76,6 +80,7 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
+        Controllers::AlarmController& alarmController;
 
         lv_task_t* taskRefresh;
       };
