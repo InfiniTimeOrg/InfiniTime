@@ -24,8 +24,8 @@ jobs:
     container:
       image: jf002/infinitime-build
     steps:
-      - name: Workqround permission issues
-        run: export GIT_CEILING_DIRECTORIES=/__w # only work before git v2.35.2
+      - name: Workaround permission issues
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Checkout source files
         uses: actions/checkout@v2
         with:
