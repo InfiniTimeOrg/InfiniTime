@@ -84,7 +84,7 @@ std::unique_ptr<Screen> Clock::WatchFaceAnalogScreen() {
 
 std::unique_ptr<Screen> Clock::WatchFacePineTimeStyleScreen() {
   return std::make_unique<Screens::WatchFacePineTimeStyle>(
-    app, dateTimeController, batteryController, bleController, notificatioManager, settingsController, motionController);
+    app, dateTimeController, batteryController, bleController, notificatioManager, settingsController, motionController, alarmController);
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceTerminalScreen() {

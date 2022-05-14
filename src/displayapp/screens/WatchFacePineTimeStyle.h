@@ -18,6 +18,7 @@ namespace Pinetime {
     class NotificationManager;
     class HeartRateController;
     class MotionController;
+    class AlarmController;
   }
 
   namespace Applications {
@@ -25,12 +26,13 @@ namespace Pinetime {
       class WatchFacePineTimeStyle : public Screen {
       public:
         WatchFacePineTimeStyle(DisplayApp* app,
-                      Controllers::DateTime& dateTimeController,
-                      Controllers::Battery& batteryController,
-                      Controllers::Ble& bleController,
-                      Controllers::NotificationManager& notificatioManager,
-                      Controllers::Settings& settingsController,
-                      Controllers::MotionController& motionController);
+                               Controllers::DateTime& dateTimeController,
+                               Controllers::Battery& batteryController,
+                               Controllers::Ble& bleController,
+                               Controllers::NotificationManager& notificatioManager,
+                               Controllers::Settings& settingsController,
+                               Controllers::MotionController& motionController,
+                               Controllers::AlarmController& alarmController);
         ~WatchFacePineTimeStyle() override;
 
         bool OnTouchEvent(TouchEvents event) override;
@@ -54,6 +56,7 @@ namespace Pinetime {
         DirtyValue<bool> isCharging {};
         DirtyValue<bool> bleState {};
         DirtyValue<bool> bleRadioEnabled {};
+        DirtyValue<bool> alarmEnabled {};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
         DirtyValue<bool> motionSensorOk {};
         DirtyValue<uint32_t> stepCount {};
@@ -81,6 +84,7 @@ namespace Pinetime {
         lv_obj_t* dateMonth;
         lv_obj_t* plugIcon;
         lv_obj_t* bleIcon;
+        lv_obj_t* alarmIcon;
         lv_obj_t* calendarOuter;
         lv_obj_t* calendarInner;
         lv_obj_t* calendarBar1;
@@ -101,6 +105,7 @@ namespace Pinetime {
         Controllers::NotificationManager& notificatioManager;
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;
+        Controllers::AlarmController& alarmController;
 
         void SetBatteryIcon();
         void CloseMenu();

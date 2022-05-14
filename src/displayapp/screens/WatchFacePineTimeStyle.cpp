@@ -28,6 +28,7 @@
 #include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/screens/Symbols.h"
+#include "components/alarm/AlarmController.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
@@ -52,12 +53,13 @@ namespace {
 }
 
 WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
-                             Controllers::DateTime& dateTimeController,
-                             Controllers::Battery& batteryController,
-                             Controllers::Ble& bleController,
-                             Controllers::NotificationManager& notificatioManager,
-                             Controllers::Settings& settingsController,
-                             Controllers::MotionController& motionController)
+                                               Controllers::DateTime& dateTimeController,
+                                               Controllers::Battery& batteryController,
+                                               Controllers::Ble& bleController,
+                                               Controllers::NotificationManager& notificatioManager,
+                                               Controllers::Settings& settingsController,
+                                               Controllers::MotionController& motionController,
+                                               Controllers::AlarmController& alarmController)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -65,7 +67,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
     bleController {bleController},
     notificatioManager {notificatioManager},
     settingsController {settingsController},
-    motionController {motionController} {
+    motionController {motionController},
+    alarmController {alarmController} {
 
   // Create a 200px wide background rectangle
   timebar = lv_obj_create(lv_scr_act(), nullptr);
@@ -113,6 +116,10 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
   lv_label_set_text_static(bleIcon, "");
+
+  alarmIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_label_set_text_static(alarmIcon, "");
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
@@ -340,13 +347,22 @@ void WatchFacePineTimeStyle::SetBatteryIcon() {
 }
 
 void WatchFacePineTimeStyle::AlignIcons() {
-  if (notificationState.Get() && bleState.Get()) {
-    lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 8, 25);
-    lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, -8, 25);
-  } else if (notificationState.Get() && !bleState.Get()) {
+  if (bleState.Get()) {
+    lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, -9, 2);
+    lv_obj_align(batteryIcon.GetObject(), sidebar, LV_ALIGN_IN_TOP_MID, 9, 2);
+    lv_obj_align(plugIcon, sidebar, LV_ALIGN_IN_TOP_MID, 10, 2);
+  } else {
+    lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_MID, 0, 2);
+    lv_obj_align(plugIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 2);
+  }
+
+  if (notificationState.Get() && alarmEnabled.Get()) {
+    lv_obj_align(alarmIcon, sidebar, LV_ALIGN_IN_TOP_MID, 9, 26);
+    lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, -9, 25);
+  } else if (notificationState.Get() && !alarmEnabled.Get()) {
     lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
   } else {
-    lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
+    lv_obj_align(alarmIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 26);
   }
 }
 
@@ -373,6 +389,16 @@ void WatchFacePineTimeStyle::Refresh() {
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
+    AlignIcons();
+  }
+
+  alarmEnabled = alarmController.State() == Controllers::AlarmController::AlarmState::Set;
+  if (alarmEnabled.IsUpdated()) {
+    if (alarmEnabled.Get()) {
+      lv_label_set_text_static(alarmIcon, Symbols::clock);
+    } else {
+      lv_label_set_text_static(alarmIcon, "");
+    }
     AlignIcons();
   }
 
