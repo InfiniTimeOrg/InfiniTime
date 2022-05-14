@@ -39,7 +39,7 @@ def main():
     args = ap.parse_args()
 
     if not shutil.which(args.lv_font_conv):
-        sys.exit(f'Missing lv_font_conv. (make sure it is installed and in PATH)')
+        sys.exit(f"Missing lv_font_conv. Make sure it's findable (in PATH) or specify it manually")
     if not os.path.exists(args.config):
         sys.exit(f'Error: the config file {args.config} does not exist.')
     if not os.access(args.config, os.R_OK):
