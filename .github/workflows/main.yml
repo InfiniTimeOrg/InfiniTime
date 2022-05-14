@@ -39,10 +39,10 @@ jobs:
         with:
           name: InfiniTime DFU file
           path: |
-            build/output/pinetime-mcuboot-app-dfu-*.zip
+            /sources/build/output/pinetime-mcuboot-app-dfu-*.zip
       - name: Upload MCUBoot image artifacts
         uses: actions/upload-artifact@v2
         with:
           name: InfiniTime MCUBoot image file
           path: |
-            build/output/pinetime-mcuboot-app-image-*.bin
+            /sources/build/output/pinetime-mcuboot-app-image-*.bin
