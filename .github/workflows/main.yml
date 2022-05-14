@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: jf002/infinitime-build
+      options: -u $(id -u ${USER}):$(id -g ${USER})
     steps:
       - name: Workaround permission issues
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
