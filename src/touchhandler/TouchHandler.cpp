@@ -1,6 +1,36 @@
 #include "touchhandler/TouchHandler.h"
+#ifdef PINETIME_IS_RECOVERY
+  #include "displayapp/DummyLittleVgl.h"
+#else
+  #include "displayapp/LittleVgl.h"
+#endif
 
 using namespace Pinetime::Controllers;
+using namespace Pinetime::Applications;
+
+namespace {
+  TouchEvents ConvertGesture(Pinetime::Drivers::Cst816S::Gestures gesture) {
+    switch (gesture) {
+      case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
+        return TouchEvents::Tap;
+      case Pinetime::Drivers::Cst816S::Gestures::LongPress:
+        return TouchEvents::LongTap;
+      case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
+        return TouchEvents::DoubleTap;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
+        return TouchEvents::SwipeRight;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
+        return TouchEvents::SwipeLeft;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
+        return TouchEvents::SwipeDown;
+      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
+        return TouchEvents::SwipeUp;
+      case Pinetime::Drivers::Cst816S::Gestures::None:
+      default:
+        return TouchEvents::None;
+    }
+  }
+}
 
 TouchHandler::TouchHandler(Drivers::Cst816S& touchPanel, Components::LittleVgl& lvgl) : touchPanel {touchPanel}, lvgl {lvgl} {
 }
@@ -12,9 +42,9 @@ void TouchHandler::CancelTap() {
   }
 }
 
-Pinetime::Drivers::Cst816S::Gestures TouchHandler::GestureGet() {
+Pinetime::Applications::TouchEvents TouchHandler::GestureGet() {
   auto returnGesture = gesture;
-  gesture = Drivers::Cst816S::Gestures::None;
+  gesture = Pinetime::Applications::TouchEvents::None;
   return returnGesture;
 }
 
@@ -33,11 +63,11 @@ bool TouchHandler::GetNewTouchInfo() {
           info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideRight ||
           info.gesture == Pinetime::Drivers::Cst816S::Gestures::LongPress) {
         if (info.touching) {
-          gesture = info.gesture;
+          gesture = ConvertGesture(info.gesture);
           gestureReleased = false;
         }
       } else {
-        gesture = info.gesture;
+        gesture = ConvertGesture(info.gesture);
       }
     }
   }

@@ -13,11 +13,11 @@ namespace Pinetime {
       SpiNorFlash(SpiNorFlash&&) = delete;
       SpiNorFlash& operator=(SpiNorFlash&&) = delete;
 
-      typedef struct __attribute__((packed)) {
+      struct __attribute__((packed)) Identification {
         uint8_t manufacturer = 0;
         uint8_t type = 0;
         uint8_t density = 0;
-      } Identification;
+      };
 
       Identification ReadIdentificaion();
       uint8_t ReadStatusRegister();

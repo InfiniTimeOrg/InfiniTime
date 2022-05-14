@@ -16,7 +16,7 @@ Meter::Meter(Pinetime::Applications::DisplayApp* app) : Screen(app) {
   lv_obj_set_style_local_scale_end_color(lmeter, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(255, 0, 0));
   lv_obj_set_style_local_scale_grad_color(lmeter, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(160, 0, 0));
   lv_obj_set_style_local_line_width(lmeter, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 2);
-  lv_obj_set_style_local_line_color(lmeter, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_SILVER);
+  lv_obj_set_style_local_line_color(lmeter, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
 
   lv_obj_set_size(lmeter, 200, 200);
   lv_obj_align(lmeter, nullptr, LV_ALIGN_CENTER, 0, 0);
