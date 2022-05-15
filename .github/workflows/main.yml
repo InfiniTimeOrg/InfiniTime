@@ -20,155 +20,31 @@ on:
 # Steps to run for the Workflow
 jobs:
   build:
-
-    # Run these steps on Ubuntu
     runs-on: ubuntu-latest
-
+    container:
+      image: jf002/infinitime-build
     steps:
-
-      #########################################################################################
-      # Download and Cache Dependencies
-
-      - name: Install cmake
-        uses: lukka/get-cmake@v3.18.3
-
-      - name: Check cache for Embedded Arm Toolchain arm-none-eabi-gcc
-        id:   cache-toolchain
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-toolchain-9-2020-q2
-        with:
-          path: ${{ runner.temp }}/arm-none-eabi
-          key:  ${{ runner.os }}-build-${{ env.cache-name }}
-          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
-
-      - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
-        if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
-        uses: fiam/arm-none-eabi-gcc@v1.0.4
-        with:
-          # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
-          release: 9-2020-q2
-          # Directory to unpack GCC to. Defaults to a temporary directory.
-          directory: ${{ runner.temp }}/arm-none-eabi
-
-      - name: Check cache for nRF5 SDK
-        id:   cache-nrf5sdk
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-nrf5sdk
-        with:
-          path: ${{ runner.temp }}/nrf5_sdk
-          key:  ${{ runner.os }}-build-${{ env.cache-name }}
-          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
-
-      - name: Install nRF5 SDK
-        if:   steps.cache-nrf5sdk.outputs.cache-hit != 'true'  # Install SDK if not found in cache
-        run:  |
-          cd ${{ runner.temp }}
-          curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip -o nrf5_sdk.zip
-          unzip nrf5_sdk.zip
-          mv nRF5_SDK_15.3.0_59ac345 nrf5_sdk
-
-      - name: Check cache for MCUBoot
-        id:   cache-mcuboot
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-mcuboot
-        with:
-          path: ${{ runner.temp }}/mcuboot
-          key:  ${{ runner.os }}-build-${{ env.cache-name }}
-          restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
-
-      - name: Install MCUBoot
-        if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
-        run:  |
-          cd ${{ runner.temp }}
-          git clone --branch v1.7.2 https://github.com/mcu-tools/mcuboot
-
-      - name: Install imgtool dependencies
-        run:  |
-          pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
-
-      - name: Install adafruit-nrfutil
-        run:  |
-          pip3 install --user wheel
-          pip3 install --user setuptools
-          pip3 install --user adafruit-nrfutil
-
-      - name: Install lv_font_conv
-        run:
-          npm i -g lv_font_conv@1.5.2
-
-        #########################################################################################
-        # Checkout
-
+      - name: Workaround permission issues
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Checkout source files
         uses: actions/checkout@v2
         with:
           submodules: recursive
-
-      - name: Show files
-        run:  set ; pwd ; ls -l
-
-      #########################################################################################
-      # CMake
-
-      - name: CMake
-        run:  |
-          mkdir -p build
-          cd build
-          cmake -G Ninja -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 -DBUILD_DFU=1 ../
-
-        #########################################################################################
-        # Make and Upload DFU Package
-        # pinetime-mcuboot-app.img must be flashed at address 0x8000 in the internal flash memory with OpenOCD:
-        # program image.bin 0x8000
-
-        # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
-        # For Faster Builds: Add "make" option "-j"
-
-      - name: Make pinetime-mcuboot-app
-        run:  |
-          cmake --build build --target pinetime-mcuboot-app
-
-      - name: Unzip DFU package
-        run:  |
-          # Unzip the package because Upload Artifact will zip up the files
-          unzip build/src/pinetime-mcuboot-app-dfu*.zip -d build/src/pinetime-mcuboot-app-dfu
-
-      - name: Upload DFU package
+      - name: Build
+        shell: bash
+        env:
+          SOURCES_DIR: .
+        run: |
+          /opt/build.sh all
+      - name: Upload DFU artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: pinetime-mcuboot-app-dfu
-          path: build/src/pinetime-mcuboot-app-dfu/*
-
-        #########################################################################################
-        # Make and Upload Standalone Firmware
-
-      - name: Make pinetime-app
-        run:  |
-          cmake --build build --target pinetime-app
-
-      - name: Upload standalone firmware
+          name: InfiniTime DFU file
+          path: |
+            ./build/output/pinetime-mcuboot-app-dfu-*.zip
+      - name: Upload MCUBoot image artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: pinetime-app.out
-          path: build/src/pinetime-app*.out
-
-        #########################################################################################
-        # Make but don't Upload the Recovery Firmware to be sure it builds correctly
-
-      - name: Make pinetime-recovery
-        run:  |
-          cmake --build build --target pinetime-recovery
-
-      #########################################################################################
-      # Finish
-
-      - name: Find output
-        run:  |
-          find . -name "pinetime-app.*" -ls
-          find . -name "pinetime-mcuboot-app.*" -ls
-
-# Embedded Arm Toolchain and nRF5 SDK will only be cached if the build succeeds.
-# So make sure that the first build always succeeds, e.g. comment out the "Make" step.
+          name: InfiniTime MCUBoot image file
+          path: |
+            ./build/output/pinetime-mcuboot-app-image-*.bin

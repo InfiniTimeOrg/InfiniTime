@@ -44,19 +44,19 @@ docker run --rm -it -v $(pwd):/sources --user 1234:1234 infinitime-build
 
 ## Using the image from Docker Hub
 
-The image is available via Docker Hub for both the amd64 and arm64v8 architectures at [pfeerick/infinitime-build](https://hub.docker.com/r/pfeerick/infinitime-build).
+The image is available via Docker Hub for both the amd64 and arm64v8 architectures at [jf002/infinitime-build](https://hub.docker.com/repository/docker/jf002/infinitime-build).
 
 It can be pulled (downloaded) using the following command:
 
 ```bash
-docker pull pfeerick/infinitime-build
+docker pull jf002/infinitime-build
 ```
 
 The default `latest` tag *should* automatically identify the correct image architecture, but if for some reason Docker does not, you can specify it manually:
 
-* For AMD64 (x86_64) systems: `docker pull pfeerick/infinitime-build:amd64`
+* For AMD64 (x86_64) systems: `docker pull jf002/infinitime-build:amd64`
 
-* For ARM64v8 (ARM64/aarch64) systems: `docker pull pfeerick/infinitime-build:arm64v8`
+* For ARM64v8 (ARM64/aarch64) systems: `docker pull jf002/infinitime-build:arm64v8`
 
 ## Build the image
 

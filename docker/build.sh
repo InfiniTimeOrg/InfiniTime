@@ -9,7 +9,7 @@ set -e
 export TOOLS_DIR="${TOOLS_DIR:=/opt}"
 export SOURCES_DIR="${SOURCES_DIR:=/sources}"
 export BUILD_DIR="${BUILD_DIR:=$SOURCES_DIR/build}"
-export OUTPUT_DIR="${OUTPUT_DIR:=$BUILD_DIR/output}"
+export OUTPUT_DIR="${OUTPUT_DIR:=$SOURCES_DIR/build/output}"
 
 export BUILD_TYPE=${BUILD_TYPE:=Release}
 export GCC_ARM_VER=${GCC_ARM_VER:="gcc-arm-none-eabi-9-2020-q2-update"}
@@ -22,7 +22,7 @@ main() {
   local target="$1"
 
   mkdir -p "$TOOLS_DIR"
-  
+
   [[ ! -d "$TOOLS_DIR/$GCC_ARM_VER" ]] && GetGcc
   [[ ! -d "$TOOLS_DIR/$NRF_SDK_VER" ]] && GetNrfSdk
   [[ ! -d "$TOOLS_DIR/mcuboot" ]] && GetMcuBoot
@@ -31,7 +31,7 @@ main() {
 
   CmakeGenerate
   CmakeBuild $target
-  BUILD_RESULT=$? 
+  BUILD_RESULT=$?
   if [ "$DISABLE_POSTBUILD" != "true" -a "$BUILD_RESULT" == 0 ]; then
     source "$BUILD_DIR/post_build.sh"
   fi
@@ -54,18 +54,14 @@ GetNrfSdk() {
 }
 
 CmakeGenerate() {
-  # We can swap the CD and trailing SOURCES_DIR for -B and -S respectively
-  # once we go to newer CMake (Ubuntu 18.10 gives us CMake 3.10)
-  cd "$BUILD_DIR"
-
   cmake -G "Unix Makefiles" \
+    -S "$SOURCES_DIR" \
+    -B "$BUILD_DIR" \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DUSE_OPENOCD=1 \
     -DARM_NONE_EABI_TOOLCHAIN_PATH="$TOOLS_DIR/$GCC_ARM_VER" \
     -DNRF5_SDK_PATH="$TOOLS_DIR/$NRF_SDK_VER" \
-    -DBUILD_DFU=1 \
-    "$SOURCES_DIR"
-  cmake -L -N .
+    -DBUILD_DFU=1
 }
 
 CmakeBuild() {
