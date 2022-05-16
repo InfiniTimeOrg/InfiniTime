@@ -74,5 +74,35 @@
       "bpp": 2,
       "size": 80,
       "compress": true
+   },
+   "lv_font_dots_40": {
+      "sources": [
+         {
+            "file": "repetitionscrolling.ttf",
+            "symbols": "0123456789-MONTUEWEDTHUFRISATSUN WK"
+         }
+      ],
+      "bpp": 1,
+      "size": 40
+   },
+   "lv_font_7segment_40": {
+      "sources": [
+         {
+            "file": "7segment.woff",
+            "symbols": "0123456789: -"
+         }
+      ],
+      "bpp": 1,
+      "size": 40
+   },
+   "lv_font_7segment_115": {
+      "sources": [
+         {
+            "file": "7segment.woff",
+            "symbols": "0123456789: -"
+         }
+      ],
+      "bpp": 1,
+      "size": 115
    }
 }

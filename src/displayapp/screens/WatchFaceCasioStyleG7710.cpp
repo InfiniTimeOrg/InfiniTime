@@ -15,7 +15,6 @@
 #include "components/settings/Settings.h"
 using namespace Pinetime::Applications::Screens;
 
-
 WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
                                    Controllers::DateTime& dateTimeController,
                                    Controllers::Battery& batteryController,
@@ -34,15 +33,21 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
     heartRateController {heartRateController},
     motionController {motionController} {
 
-  batteryIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(batteryIcon, Symbols::batteryFull);
-  lv_obj_set_style_local_text_color(batteryIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
-  lv_obj_align(batteryIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -5, 0);
+
+  label_battery_vallue = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(label_battery_vallue, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  lv_obj_set_style_local_text_color(label_battery_vallue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
+  lv_label_set_text_static(label_battery_vallue, "00%");
+
+
+  batteryIcon.Create(lv_scr_act());
+  batteryIcon.SetColor(lv_color_hex(0x98B69A));
+  lv_obj_align(batteryIcon.GetObject(), label_battery_vallue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   batteryPlug = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
   lv_label_set_text_static(batteryPlug, Symbols::plug);
-  lv_obj_align(batteryPlug, batteryIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align(batteryPlug, batteryIcon.GetObject(), LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
@@ -52,7 +57,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
-  lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 5, 0);
+  lv_obj_align(notificationIcon, bleIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
 
   label_day_of_week = lv_label_create(lv_scr_act(), nullptr);
@@ -62,13 +67,13 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
   lv_label_set_text_static(label_day_of_week, "SUN");
 
   label_week_number = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_week_number, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 5, 34);
+  lv_obj_align(label_week_number, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 5, 22);
   lv_obj_set_style_local_text_color(label_week_number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
   lv_obj_set_style_local_text_font(label_week_number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_dots_40);
   lv_label_set_text_static(label_week_number, "WK26");
 
   label_day_of_year = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_day_of_year, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 25);
+  lv_obj_align(label_day_of_year, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 30);
   lv_obj_set_style_local_text_color(label_day_of_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
   lv_obj_set_style_local_text_font(label_day_of_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_7segment_40);
   lv_label_set_text_static(label_day_of_year, "181-184");
@@ -85,20 +90,26 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
   lv_style_set_line_color(&style_border, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
   lv_style_set_line_rounded(&style_border, LV_STATE_DEFAULT, true);
 
+  line_icons = lv_line_create(lv_scr_act(), nullptr);
+  static lv_point_t line_icons_points[] = {{0, 5}, {117, 5}, {122, 0}};
+  lv_line_set_points(line_icons, line_icons_points, 3);
+  lv_obj_add_style(line_icons, LV_LINE_PART_MAIN, &style_line);
+  lv_obj_align(line_icons, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 18);
+
   line_day_of_week_number = lv_line_create(lv_scr_act(), nullptr);
-  static lv_point_t line_day_of_week_number_points[] = {{0, 0}, {100, 0}, {94, 70}, {0, 70}};
+  static lv_point_t line_day_of_week_number_points[] = {{0, 0}, {100, 0}, {95, 95}, {0, 95}};
   lv_line_set_points(line_day_of_week_number, line_day_of_week_number_points, 4);
   lv_obj_add_style(line_day_of_week_number, LV_LINE_PART_MAIN, &style_border);
-  lv_obj_align(line_day_of_week_number, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 28);
+  lv_obj_align(line_day_of_week_number, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 8);
 
   line_day_of_year = lv_line_create(lv_scr_act(), nullptr);
   static lv_point_t line_day_of_year_points[] = {{0, 5}, {130, 5}, {135, 0}};
   lv_line_set_points(line_day_of_year, line_day_of_year_points, 3);
   lv_obj_add_style(line_day_of_year, LV_LINE_PART_MAIN, &style_line);
-  lv_obj_align(line_day_of_year, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 55);
+  lv_obj_align(line_day_of_year, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 60);
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 65);
+  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 70);
   lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
   lv_obj_set_style_local_text_font(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_7segment_40);
   lv_label_set_text_static(label_date, "6-30");
@@ -107,18 +118,18 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
   static lv_point_t line_date_points[] = {{0, 5}, {135, 5}, {140, 0}};
   lv_line_set_points(line_date, line_date_points, 3);
   lv_obj_add_style(line_date, LV_LINE_PART_MAIN, &style_line);
-  lv_obj_align(line_date, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 95);
+  lv_obj_align(line_date, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 100);
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
   lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_7segment_115);
-  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
 
   line_time = lv_line_create(lv_scr_act(), nullptr);
   static lv_point_t line_time_points[] = {{0, 0}, {230, 0}, {235, 5}};
   lv_line_set_points(line_time, line_time_points, 3);
   lv_obj_add_style(line_time, LV_LINE_PART_MAIN, &style_line);
-  lv_obj_align(line_time, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -35);
+  lv_obj_align(line_time, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -25);
 
   label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(label_time_ampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x98B69A));
@@ -170,7 +181,8 @@ void WatchFaceCasioStyleG7710::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
-    lv_label_set_text_static(batteryIcon, BatteryIcon::GetBatteryIcon(batteryPercent));
+    batteryIcon.SetBatteryPercentage(batteryPercent);
+    lv_label_set_text_fmt(label_battery_vallue, "%d%%", batteryPercent);
   }
 
   bleState = bleController.IsConnected();
@@ -178,8 +190,11 @@ void WatchFaceCasioStyleG7710::Refresh() {
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
   }
+  lv_obj_realign(label_battery_vallue);
+  lv_obj_realign(batteryIcon.GetObject());
   lv_obj_realign(batteryPlug);
   lv_obj_realign(bleIcon);
+  lv_obj_realign(notificationIcon);
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
@@ -220,10 +235,10 @@ void WatchFaceCasioStyleG7710::Refresh() {
         }
         lv_label_set_text(label_time_ampm, ampmChar);
         lv_label_set_text_fmt(label_time, "%2d:%02d", hour, minute);
-        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
+        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
       } else {
         lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
-        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
+        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
       }
     }
 

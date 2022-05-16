@@ -69,12 +69,15 @@ namespace Pinetime {
         lv_obj_t* backgroundLabel;
         lv_obj_t* bleIcon;
         lv_obj_t* batteryPlug;
+        lv_obj_t* label_battery_vallue;
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
-        lv_obj_t* batteryIcon;
+        lv_obj_t* line_icons;
+
+        BatteryIcon batteryIcon;
 
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;

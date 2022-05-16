@@ -98,16 +98,17 @@ namespace Pinetime {
         appMenu = menu;
       };
 
-      uint8_t GetAppMenu() const {
-        return appMenu;
-      };
-
       void SetWatchfacesMenu(uint8_t menu) {
         watchFacesMenu = menu;
       };
 
       uint8_t GetWatchfacesMenu() const {
         return watchFacesMenu;
+      };
+
+
+      uint8_t GetAppMenu() const {
+        return appMenu;
       };
 
       void SetSettingsMenu(uint8_t menu) {
