@@ -31,6 +31,7 @@ namespace Pinetime {
     public:
       AlarmController(Controllers::DateTime& dateTimeController);
 
+      void Init(System::SystemTask* systemTask);
       void SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin);
       void ScheduleAlarm();
       void DisableAlarm();
@@ -54,11 +55,6 @@ namespace Pinetime {
       void SetRecurrence(RecurType recurType) {
         recurrence = recurType;
       }
-
-    protected:
-      friend class Pinetime::System::SystemTask;
-      void Init(System::SystemTask* systemTask);
-      void OnStopRinging();
 
     private:
       Controllers::DateTime& dateTimeController;

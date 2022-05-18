@@ -99,20 +99,14 @@ void AlarmController::SetOffAlarmNow() {
 }
 
 void AlarmController::StopAlerting() {
-  systemTask->PushMessage(System::Messages::StopRinging);
-}
-
-void AlarmController::OnStopRinging() {
-  if (state != AlarmState::Alerting) {
-    return;
-  }
-
   // Alarm state is off unless this is a recurring alarm
   if (recurrence == RecurType::None) {
     state = AlarmState::Not_Set;
   } else {
-    state = AlarmState::Set;
     // set next instance
-    ScheduleAlarm();
+    systemTask->PushMessage(System::Messages::ScheduleAlarm);
+    state = AlarmState::Set;
   }
+
+  systemTask->PushMessage(System::Messages::StopRinging);
 }
