@@ -45,8 +45,10 @@ void Counter::UpdateLabel() {
 }
 
 void Counter::Create() {
+  constexpr lv_color_t bgColor = LV_COLOR_MAKE(0x38, 0x38, 0x38);
+
   counterContainer = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(counterContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
+  lv_obj_set_style_local_bg_color(counterContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
 
   number = lv_label_create(counterContainer, nullptr);
   lv_obj_set_style_local_text_font(number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -64,7 +66,7 @@ void Counter::Create() {
   UpdateLabel();
 
   upBtn = lv_btn_create(counterContainer, nullptr);
-  lv_obj_set_style_local_bg_color(upBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
+  lv_obj_set_style_local_bg_color(upBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
   lv_obj_set_size(upBtn, width, btnHeight);
   lv_obj_align(upBtn, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
   upBtn->user_data = this;
@@ -76,7 +78,7 @@ void Counter::Create() {
   lv_obj_align(upLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
 
   downBtn = lv_btn_create(counterContainer, nullptr);
-  lv_obj_set_style_local_bg_color(downBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
+  lv_obj_set_style_local_bg_color(downBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
   lv_obj_set_size(downBtn, width, btnHeight);
   lv_obj_align(downBtn, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   downBtn->user_data = this;
