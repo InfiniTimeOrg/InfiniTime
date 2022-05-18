@@ -54,9 +54,9 @@ docker pull jf002/infinitime-build
 
 The default `latest` tag *should* automatically identify the correct image architecture, but if for some reason Docker does not, you can specify it manually:
 
-* For AMD64 (x86_64) systems: `docker pull jf002/infinitime-build:amd64`
+* For AMD64 (x86_64) systems: `docker pull --platform linux/amd64 jf002/infinitime-build`
 
-* For ARM64v8 (ARM64/aarch64) systems: `docker pull jf002/infinitime-build:arm64v8`
+* For ARM64v8 (ARM64/aarch64) systems: `docker pull --platform linux/arm64 jf002/infinitime-build`
 
 ## Build the image
 
