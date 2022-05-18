@@ -89,17 +89,18 @@ void Counter::Create() {
   lv_label_set_text_static(downLabel, "-");
   lv_obj_align(downLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
 
-  static lv_point_t line_points[] = {{0, 0}, {width, 0}};
+  linePoints[0] = {0, 0};
+  linePoints[1] = {width, 0};
 
   lv_obj_t* upperLine = lv_line_create(counterContainer, nullptr);
-  lv_line_set_points(upperLine, line_points, 2);
+  lv_line_set_points(upperLine, linePoints, 2);
   lv_obj_set_style_local_line_width(upperLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_line_color(upperLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_line_opa(upperLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
   lv_obj_align(upperLine, upBtn, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
   lv_obj_t* lowerLine = lv_line_create(counterContainer, nullptr);
-  lv_line_set_points(lowerLine, line_points, 2);
+  lv_line_set_points(lowerLine, linePoints, 2);
   lv_obj_set_style_local_line_width(lowerLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_line_color(lowerLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_line_opa(lowerLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
