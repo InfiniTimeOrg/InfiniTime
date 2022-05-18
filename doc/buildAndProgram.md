@@ -14,7 +14,7 @@ To build this project, you'll need:
  - A reasonably recent version of CMake (I use 3.16.5)
  - lv_font_conv, to generate the font .c files
    - see [lv_font_conv](https://github.com/lvgl/lv_font_conv#install-the-script)
-   - install npm (commonly done via the package manager)
+   - install npm (commonly done via the package manager, ensure node's version is at least 12)
    - install lv_font_conv: `npm install lv_font_conv`
 
 ## Build steps 
