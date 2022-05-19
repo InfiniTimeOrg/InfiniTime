@@ -1,7 +1,6 @@
 #include "components/motor/MotorController.h"
 #include <hal/nrf_gpio.h>
 #include "systemtask/SystemTask.h"
-#include "app_timer.h"
 #include "drivers/PinMap.h"
 
 using namespace Pinetime::Controllers;
@@ -16,7 +15,7 @@ void MotorController::Init() {
 
 void MotorController::Ring(TimerHandle_t xTimer) {
   auto motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  xTimerChangePeriod(motorController->longVib, APP_TIMER_TICKS(1000), 0);
+  xTimerChangePeriod(motorController->longVib, pdMS_TO_TICKS(1000), 0);
   motorController->RunForDuration(50);
 }
 

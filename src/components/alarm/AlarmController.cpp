@@ -17,7 +17,6 @@
 */
 #include "components/alarm/AlarmController.h"
 #include "systemtask/SystemTask.h"
-#include "app_timer.h"
 #include "task.h"
 #include <chrono>
 
@@ -77,8 +76,8 @@ void AlarmController::ScheduleAlarm() {
 
   // now can convert back to a time_point
   alarmTime = std::chrono::system_clock::from_time_t(std::mktime(tmAlarmTime));
-  auto mSecToAlarm = std::chrono::duration_cast<std::chrono::milliseconds>(alarmTime - now).count();
-  xTimerChangePeriod(alarmTimer, APP_TIMER_TICKS(mSecToAlarm), 0);
+  auto secondsToAlarm = std::chrono::duration_cast<std::chrono::seconds>(alarmTime - now).count();
+  xTimerChangePeriod(alarmTimer, secondsToAlarm * configTICK_RATE_HZ, 0);
   xTimerStart(alarmTimer, 0);
 
   state = AlarmState::Set;
