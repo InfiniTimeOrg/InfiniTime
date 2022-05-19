@@ -284,12 +284,9 @@ void SystemTask::Work() {
         case Messages::OnNewTime:
           ReloadIdleTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateDateTime);
-          if (alarmController.State() != Controllers::AlarmController::AlarmState::Set) {
-            break;
+          if (alarmController.State() == Controllers::AlarmController::AlarmState::Set) {
+            alarmController.ScheduleAlarm();
           }
-          [[fallthrough]];
-        case Messages::ScheduleAlarm:
-          alarmController.ScheduleAlarm();
           break;
         case Messages::OnNewNotification:
           if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::ON) {

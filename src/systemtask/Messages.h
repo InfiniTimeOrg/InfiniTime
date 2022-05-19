@@ -7,7 +7,6 @@ namespace Pinetime {
         GoToRunning,
         TouchWakeUp,
         OnNewTime,
-        ScheduleAlarm,
         OnNewNotification,
         OnTimerDone,
         OnNewCall,

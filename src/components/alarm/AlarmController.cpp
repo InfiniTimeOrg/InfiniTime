@@ -103,8 +103,7 @@ void AlarmController::StopAlerting() {
     state = AlarmState::Not_Set;
   } else {
     // set next instance
-    systemTask->PushMessage(System::Messages::ScheduleAlarm);
-    state = AlarmState::Set;
+    ScheduleAlarm();
   }
 
   systemTask->PushMessage(System::Messages::StopRinging);
