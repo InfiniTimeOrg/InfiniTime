@@ -9,8 +9,6 @@ namespace Pinetime {
         Counter(int min, int max);
 
         void Create();
-        static void upBtnEventHandler(lv_obj_t* obj, lv_event_t event);
-        static void downBtnEventHandler(lv_obj_t* obj, lv_event_t event);
         void Increment();
         void Decrement();
         void SetValue(int newValue);
