@@ -26,9 +26,9 @@ namespace Pinetime {
 
       struct Notification {
         using Id = uint8_t;
-        Id id;
+        using Idx = uint8_t;
+        Id id = 0;
         bool valid = false;
-        uint8_t index;
         uint8_t size;
         std::array<char, MessageSize + 1> message;
         Categories category = Categories::Unknown;
@@ -36,27 +36,38 @@ namespace Pinetime {
         const char* Message() const;
         const char* Title() const;
       };
-      Notification::Id nextId {0};
 
       void Push(Notification&& notif);
-      Notification GetLastNotification();
-      Notification GetNext(Notification::Id id);
-      Notification GetPrevious(Notification::Id id);
+      Notification GetLastNotification() const;
+      Notification Get(Notification::Id id) const;
+      Notification GetNext(Notification::Id id) const;
+      Notification GetPrevious(Notification::Id id) const;
+      // Return the index of the notification with the specified id, if not found return NbNotifications()
+      Notification::Idx IndexOf(Notification::Id id) const;
       bool ClearNewNotificationFlag();
-      bool AreNewNotificationsAvailable();
+      bool AreNewNotificationsAvailable() const;
+      void Dismiss(Notification::Id id);
 
       static constexpr size_t MaximumMessageSize() {
         return MessageSize;
       };
+      bool IsEmpty() const {
+        return size == 0;
+      }
       size_t NbNotifications() const;
 
     private:
+      Notification::Id nextId {0};
       Notification::Id GetNextId();
+      const Notification& At(Notification::Idx idx) const;
+      Notification& At(Notification::Idx idx);
+      void DismissIdx(Notification::Idx idx);
+
       static constexpr uint8_t TotalNbNotifications = 5;
       std::array<Notification, TotalNbNotifications> notifications;
-      uint8_t readIndex = 0;
-      uint8_t writeIndex = 0;
-      bool empty = true;
+      size_t beginIdx = TotalNbNotifications - 1; // index of the newest notification
+      size_t size = 0;                            // number of valid notifications in buffer
+
       std::atomic<bool> newNotification {false};
     };
   }
