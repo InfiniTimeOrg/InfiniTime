@@ -36,7 +36,7 @@ namespace {
 
 void AlarmController::Init(System::SystemTask* systemTask) {
   this->systemTask = systemTask;
-  alarmAppTimer = xTimerCreate("alarmAppTm", 1, pdFALSE, this, SetOffAlarm);
+  alarmTimer = xTimerCreate("Alarm", 1, pdFALSE, this, SetOffAlarm);
 }
 
 void AlarmController::SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin) {
@@ -46,7 +46,7 @@ void AlarmController::SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin) {
 
 void AlarmController::ScheduleAlarm() {
   // Determine the next time the alarm needs to go off and set the timer
-  xTimerStop(alarmAppTimer, 0);
+  xTimerStop(alarmTimer, 0);
 
   auto now = dateTimeController.CurrentDateTime();
   alarmTime = now;
@@ -78,8 +78,8 @@ void AlarmController::ScheduleAlarm() {
   // now can convert back to a time_point
   alarmTime = std::chrono::system_clock::from_time_t(std::mktime(tmAlarmTime));
   auto mSecToAlarm = std::chrono::duration_cast<std::chrono::milliseconds>(alarmTime - now).count();
-  xTimerChangePeriod(alarmAppTimer, APP_TIMER_TICKS(mSecToAlarm), 0);
-  xTimerStart(alarmAppTimer, 0);
+  xTimerChangePeriod(alarmTimer, APP_TIMER_TICKS(mSecToAlarm), 0);
+  xTimerStart(alarmTimer, 0);
 
   state = AlarmState::Set;
 }
@@ -89,7 +89,7 @@ uint32_t AlarmController::SecondsToAlarm() {
 }
 
 void AlarmController::DisableAlarm() {
-  xTimerStop(alarmAppTimer, 0);
+  xTimerStop(alarmTimer, 0);
   state = AlarmState::Not_Set;
 }
 
