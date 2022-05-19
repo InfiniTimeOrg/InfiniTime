@@ -9,6 +9,7 @@ constexpr uint8_t NotificationManager::MessageSize;
 void NotificationManager::Push(NotificationManager::Notification&& notif) {
   notif.id = GetNextId();
   notif.valid = true;
+  notif.index = writeIndex;
   notifications[writeIndex] = std::move(notif);
   writeIndex = (writeIndex + 1 < TotalNbNotifications) ? writeIndex + 1 : 0;
   if (!empty)
@@ -44,9 +45,9 @@ NotificationManager::Notification NotificationManager::GetNext(NotificationManag
     result = *(notifications.begin());
   else
     result = *(currentIterator + 1);
-
+  
   if (result.id <= id)
-    return {};
+    return Notification{};
 
   result.index = (lastNotification.id - result.id) + 1;
   return result;
@@ -67,12 +68,43 @@ NotificationManager::Notification NotificationManager::GetPrevious(NotificationM
     result = *(notifications.end() - 1);
   else
     result = *(currentIterator - 1);
-
+  
   if (result.id >= id)
-    return {};
+    return Notification {};
 
   result.index = (lastNotification.id - result.id) + 1;
   return result;
+}
+
+void NotificationManager::Dismiss(NotificationManager::Notification::Id id) {
+  if(empty)
+    return;
+
+  bool found = false;
+  size_t foundIndex;
+  size_t count = NbNotifications();
+  for(size_t i = 0; i < TotalNbNotifications; i++) {
+    if(notifications[i].id == id) {
+      foundIndex = i;
+      found = true;
+      break;
+    } 
+  }
+  if(!found)
+    return;
+
+  for(size_t i = foundIndex; i < TotalNbNotifications; i++) {
+    notifications[i] = notifications[i+1];
+  }
+
+  if(count == 1) {
+    readIndex = 0;
+    writeIndex = 0;
+    empty = true;
+  } else {
+    readIndex--;
+    writeIndex--;
+  }
 }
 
 bool NotificationManager::AreNewNotificationsAvailable() {
@@ -105,3 +137,4 @@ const char* NotificationManager::Notification::Title() const {
   }
   return {};
 }
+

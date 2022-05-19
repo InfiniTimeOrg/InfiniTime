@@ -33,6 +33,9 @@ namespace Pinetime {
 
         class NotificationItem {
         public:
+          NotificationItem(Controllers::NotificationManager::Categories,
+                           Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                           Pinetime::Controllers::MotorController& motorController);
           NotificationItem(const char* title,
                            const char* msg,
                            uint8_t notifNr,
@@ -46,9 +49,12 @@ namespace Pinetime {
             return running;
           }
           void OnCallButtonEvent(lv_obj_t*, lv_event_t event);
+          void AnimateDismiss();
+          bool AnimationElapsed();
 
         private:
-          lv_obj_t* container1;
+          lv_obj_t* container;
+          lv_obj_t* page;
           lv_obj_t* bt_accept;
           lv_obj_t* bt_mute;
           lv_obj_t* bt_reject;
@@ -58,6 +64,11 @@ namespace Pinetime {
           Modes mode;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           Pinetime::Controllers::MotorController& motorController;
+        
+          lv_anim_t dismissAnim;
+          TickType_t dismissAnimTickCount;
+        static const TickType_t dismissAnimLength = pdMS_TO_TICKS(300);
+
           bool running = true;
         };
 
@@ -74,6 +85,7 @@ namespace Pinetime {
         lv_point_t timeoutLinePoints[2] {{0, 1}, {239, 1}};
         lv_obj_t* timeoutLine = nullptr;
         TickType_t timeoutTickCountStart;
+
         static const TickType_t timeoutLength = pdMS_TO_TICKS(7000);
         bool interacted = true;
 

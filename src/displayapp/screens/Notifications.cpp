@@ -1,7 +1,7 @@
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/DisplayApp.h"
-#include "components/ble/MusicService.h"
 #include "components/ble/AlertNotificationService.h"
+#include "components/ble/MusicService.h"
 #include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -20,6 +20,7 @@ Notifications::Notifications(DisplayApp* app,
     motorController {motorController},
     systemTask {systemTask},
     mode {mode} {
+
   notificationManager.ClearNewNotificationFlag();
   auto notification = notificationManager.GetLastNotification();
   if (notification.valid) {
@@ -34,12 +35,8 @@ Notifications::Notifications(DisplayApp* app,
                                                      motorController);
     validDisplay = true;
   } else {
-    currentItem = std::make_unique<NotificationItem>("Notification",
-                                                     "No notification to display",
-                                                     0,
-                                                     notification.category,
-                                                     notificationManager.NbNotifications(),
-                                                     Modes::Preview,
+    currentId = 0;
+    currentItem = std::make_unique<NotificationItem>(notification.category,
                                                      alertNotificationService,
                                                      motorController);
   }
@@ -85,6 +82,38 @@ void Notifications::Refresh() {
       lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
     }
   }
+
+  if (currentItem != nullptr && currentItem->AnimationElapsed()) {
+      auto notification = notificationManager.GetPrevious(currentId);
+      if(!notification.valid)
+        notification = notificationManager.GetNext(currentId);
+      if(!notification.valid)
+        notification = notificationManager.GetLastNotification();
+
+      if (!notification.valid) {
+        validDisplay = false;
+      }
+
+      currentId = notification.id;
+      currentItem.reset(nullptr);
+      app->SetFullRefresh(DisplayApp::FullRefreshDirections::Right);
+
+      if(validDisplay) {
+        currentItem = std::make_unique<NotificationItem>(notification.Title(),
+                                                       notification.Message(),
+                                                       notification.index,
+                                                       notification.category,
+                                                       notificationManager.NbNotifications(),
+                                                       mode,
+                                                       alertNotificationService,
+                                                       motorController);
+      } else {
+        currentItem = std::make_unique<NotificationItem>(notification.category,
+                                                        alertNotificationService,
+                                                        motorController);
+      }
+  }
+
   running = currentItem->IsRunning() && running;
 }
 
@@ -108,6 +137,13 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   }
 
   switch (event) {
+    case Pinetime::Applications::TouchEvents::SwipeRight:
+        if(validDisplay) {
+          notificationManager.Dismiss(currentId);
+          currentItem->AnimateDismiss();
+          return true;
+        }
+        return false;
     case Pinetime::Applications::TouchEvents::SwipeDown: {
       Controllers::NotificationManager::Notification previousNotification;
       if (validDisplay)
@@ -170,6 +206,20 @@ namespace {
   }
 }
 
+Notifications::NotificationItem::NotificationItem(
+    Controllers::NotificationManager::Categories category,
+    Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+    Pinetime::Controllers::MotorController& motorController)
+  : NotificationItem("Notification",
+                     "No notification to display",
+                     0,
+                     category,
+                     0,
+                     Modes::Preview,
+                     alertNotificationService,
+                     motorController) {
+}
+
 Notifications::NotificationItem::NotificationItem(const char* title,
                                                   const char* msg,
                                                   uint8_t notifNr,
@@ -178,25 +228,38 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Modes mode,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                                   Pinetime::Controllers::MotorController& motorController)
-  : mode {mode}, alertNotificationService {alertNotificationService}, motorController {motorController} {
-  lv_obj_t* container1 = lv_cont_create(lv_scr_act(), NULL);
+  : mode {mode}, 
+    alertNotificationService {alertNotificationService}, 
+    motorController {motorController} {
 
-  lv_obj_set_style_local_bg_color(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
-  lv_obj_set_style_local_pad_all(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
-  lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
-  lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
+  container = lv_cont_create(lv_scr_act(), nullptr);
+  lv_obj_set_pos(container, 0, 0);
+  lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
+  lv_obj_set_style_local_bg_color(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_pad_all(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_pad_inner(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_border_width(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
+  
+  page = lv_page_create(container, nullptr);
+  lv_obj_set_style_local_bg_color(page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
+  lv_obj_set_style_local_pad_all(page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, 10);
+  lv_obj_set_style_local_pad_inner(page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, 5);
+  lv_obj_set_style_local_border_width(page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, 0);
 
-  lv_obj_set_pos(container1, 0, 50);
-  lv_obj_set_size(container1, LV_HOR_RES, 190);
+  lv_obj_set_pos(page, 0, 50);
+  lv_obj_set_size(page, LV_HOR_RES, 190);
 
-  lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
-  lv_cont_set_fit(container1, LV_FIT_NONE);
+  lv_anim_init(&dismissAnim);
+  lv_anim_set_exec_cb(&dismissAnim, (lv_anim_exec_xcb_t)lv_obj_set_x);
+  lv_anim_set_var(&dismissAnim, container);
+  lv_anim_set_time(&dismissAnim, 300);
+  lv_anim_set_values(&dismissAnim, 0, 240);
 
-  lv_obj_t* alert_count = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_t* alert_count = lv_label_create(container, nullptr);
   lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
   lv_obj_align(alert_count, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
 
-  lv_obj_t* alert_type = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_t* alert_type = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
   if(title == nullptr) {
     lv_label_set_text_static(alert_type, "Notification");
@@ -217,27 +280,27 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   /////////
   switch (category) {
     default: {
-      lv_obj_t* alert_subject = lv_label_create(container1, nullptr);
+      lv_obj_t* alert_subject = lv_label_create(page, nullptr);
       lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xff, 0xb0, 0x0));
       lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
       lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
       lv_label_set_text(alert_subject, msg);
     } break;
     case Controllers::NotificationManager::Categories::IncomingCall: {
-      lv_obj_set_height(container1, 108);
-      lv_obj_t* alert_subject = lv_label_create(container1, nullptr);
+      lv_obj_set_height(page, 108);
+      lv_obj_t* alert_subject = lv_label_create(page, nullptr);
       lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xff, 0xb0, 0x0));
       lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
       lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
       lv_label_set_text_static(alert_subject, "Incoming call from");
 
-      lv_obj_t* alert_caller = lv_label_create(container1, nullptr);
+      lv_obj_t* alert_caller = lv_label_create(page, nullptr);
       lv_obj_align(alert_caller, alert_subject, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
       lv_label_set_long_mode(alert_caller, LV_LABEL_LONG_BREAK);
       lv_obj_set_width(alert_caller, LV_HOR_RES - 20);
       lv_label_set_text(alert_caller, msg);
 
-      bt_accept = lv_btn_create(lv_scr_act(), nullptr);
+      bt_accept = lv_btn_create(container, nullptr);
       bt_accept->user_data = this;
       lv_obj_set_event_cb(bt_accept, CallEventHandler);
       lv_obj_set_size(bt_accept, 76, 76);
@@ -246,7 +309,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_label_set_text_static(label_accept, Symbols::phone);
       lv_obj_set_style_local_bg_color(bt_accept, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
 
-      bt_reject = lv_btn_create(lv_scr_act(), nullptr);
+      bt_reject = lv_btn_create(container, nullptr);
       bt_reject->user_data = this;
       lv_obj_set_event_cb(bt_reject, CallEventHandler);
       lv_obj_set_size(bt_reject, 76, 76);
@@ -255,7 +318,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_label_set_text_static(label_reject, Symbols::phoneSlash);
       lv_obj_set_style_local_bg_color(bt_reject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
 
-      bt_mute = lv_btn_create(lv_scr_act(), nullptr);
+      bt_mute = lv_btn_create(container, nullptr);
       bt_mute->user_data = this;
       lv_obj_set_event_cb(bt_mute, CallEventHandler);
       lv_obj_set_size(bt_mute, 76, 76);
@@ -283,6 +346,21 @@ void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_
   }
 
   running = false;
+}
+
+void Notifications::NotificationItem::AnimateDismiss() {
+  dismissAnimTickCount = xTaskGetTickCount();
+  lv_anim_start(&dismissAnim);
+}
+
+bool Notifications::NotificationItem::AnimationElapsed() {
+  bool elapsed = dismissAnimTickCount != 0
+    && xTaskGetTickCount() > dismissAnimTickCount + dismissAnimLength;
+  
+  if(elapsed)
+    dismissAnimTickCount = 0;
+
+  return elapsed;
 }
 
 Notifications::NotificationItem::~NotificationItem() {
