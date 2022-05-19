@@ -2,6 +2,7 @@
 #include <cstring>
 
 #include <hal/nrf_rtc.h>
+#include <nrf_log.h>
 #define min // workaround: nimble's min/max macros conflict with libstdc++
 #define max
 #include <host/ble_gap.h>
@@ -34,7 +35,6 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
   : systemTask {systemTask},
     bleController {bleController},
     dateTimeController {dateTimeController},
-    notificationManager {notificationManager},
     spiNorFlash {spiNorFlash},
     fs {fs},
     dfuService {systemTask, bleController, spiNorFlash},
@@ -76,6 +76,7 @@ int GAPEventCallback(struct ble_gap_event* event, void* arg) {
 
 void NimbleController::Init() {
   while (!ble_hs_synced()) {
+    vTaskDelay(10);
   }
 
   nptr = this;

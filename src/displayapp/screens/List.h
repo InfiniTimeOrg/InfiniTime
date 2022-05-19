@@ -2,7 +2,7 @@
 
 #include <lvgl/lvgl.h>
 #include <cstdint>
-#include <memory>
+#include <array>
 #include "displayapp/screens/Screen.h"
 #include "displayapp/Apps.h"
 #include "components/settings/Settings.h"

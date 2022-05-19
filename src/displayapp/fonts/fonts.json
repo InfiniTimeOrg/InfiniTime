@@ -1,0 +1,78 @@
+{
+   "jetbrains_mono_bold_20": {
+      "sources": [
+         {
+            "file": "JetBrainsMono-Bold.ttf",
+            "range": "0x20-0x7e, 0x410-0x44f"
+         },
+         {
+            "file": "FontAwesome5-Solid+Brands+Regular.woff",
+            "range": "0xf293, 0xf294, 0xf244, 0xf240, 0xf242, 0xf243, 0xf241, 0xf54b, 0xf21e, 0xf1e6, 0xf54b, 0xf017, 0xf129, 0xf03a, 0xf185, 0xf560, 0xf001, 0xf3fd, 0xf069, 0xf1fc, 0xf45d, 0xf59f, 0xf5a0, 0xf029, 0xf027, 0xf028, 0xf6a9, 0xf04b, 0xf04c, 0xf048, 0xf051, 0xf095, 0xf3dd, 0xf04d, 0xf2f2, 0xf024, 0xf252, 0xf569, 0xf201, 0xf06e, 0xf015"
+         }
+      ],
+      "bpp": 1,
+      "size": 20,
+      "patches": ["jetbrains_mono_bold_20.c_zero.patch"]
+   },
+   "jetbrains_mono_42": {
+      "sources": [
+         {
+            "file": "JetBrainsMono-Regular.ttf",
+            "range": "0x25, 0x30-0x3a"
+         }
+      ],
+      "bpp": 1,
+      "size": 42
+   },
+   "jetbrains_mono_76": {
+      "sources": [
+         {
+            "file": "JetBrainsMono-Regular.ttf",
+            "range": "0x25, 0x2D, 0x2F, 0x30-0x3a"
+         }
+      ],
+      "bpp": 1,
+      "size": 76
+   },
+   "jetbrains_mono_extrabold_compressed": {
+      "sources": [
+         {
+            "file": "JetBrainsMono-ExtraBold.ttf",
+            "range": "0x30-0x3a"
+         }
+      ],
+      "bpp": 1,
+      "size": 80
+   },
+   "open_sans_light": {
+      "sources": [
+         {
+            "file": "open_sans_light.ttf",
+            "symbols": "0123456789"
+         }
+      ],
+      "bpp": 1,
+      "size": 150
+   },
+   "lv_font_sys_48": {
+      "sources": [
+         {
+            "file": "icons_sys_48.ttf",
+            "range": "0xe902, 0xe904-0xe907, 0xe90b-0xe90c"
+         }
+      ],
+      "bpp": 1,
+      "size": 48
+   },
+   "lv_font_navi_80": {
+      "sources": [
+         {
+            "file": "navigation.ttf",
+            "range": "0xe900-0xe929"
+         }
+      ],
+      "bpp": 2,
+      "size": 80,
+      "compress": true
+   }
+}

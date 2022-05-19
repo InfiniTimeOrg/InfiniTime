@@ -26,6 +26,14 @@ namespace Pinetime {
       void SetFullRefresh(FullRefreshDirections direction);
       void SetNewTouchPoint(uint16_t x, uint16_t y, bool contact);
 
+      bool GetFullRefresh() {
+        bool returnValue = fullRefresh;
+        if (fullRefresh) {
+          fullRefresh = false;
+        }
+        return returnValue;
+      }
+
     private:
       void InitDisplay();
       void InitTouchpad();
@@ -39,9 +47,8 @@ namespace Pinetime {
       lv_color_t buf2_2[LV_HOR_RES_MAX * 4];
 
       lv_disp_drv_t disp_drv;
-      lv_point_t previousClick;
 
-      bool firstTouch = true;
+      bool fullRefresh = false;
       static constexpr uint8_t nbWriteLines = 4;
       static constexpr uint16_t totalNbLines = 320;
       static constexpr uint16_t visibleNbLines = 240;

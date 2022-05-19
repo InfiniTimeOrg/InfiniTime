@@ -95,6 +95,10 @@ jobs:
           pip3 install --user setuptools
           pip3 install --user adafruit-nrfutil
 
+      - name: Install lv_font_conv
+        run:
+          npm i -g lv_font_conv@1.5.2
+
         #########################################################################################
         # Checkout
 
