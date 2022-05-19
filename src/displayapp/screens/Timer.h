@@ -23,7 +23,6 @@ namespace Pinetime::Applications::Screens {
     void SetTimerRunning();
     void SetTimerStopped();
     Controllers::TimerController& timerController;
-    lv_obj_t* time;
     lv_obj_t* msecTime;
     lv_obj_t* btnPlayPause;
     lv_obj_t* txtPlayPause;
