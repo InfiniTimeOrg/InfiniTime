@@ -40,6 +40,21 @@ void Counter::SetValue(int newValue) {
   UpdateLabel();
 }
 
+void Counter::HideControls() {
+  lv_obj_set_hidden(upBtn, true);
+  lv_obj_set_hidden(downBtn, true);
+  lv_obj_set_hidden(upperLine, true);
+  lv_obj_set_hidden(lowerLine, true);
+  lv_obj_set_style_local_bg_opa(counterContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+}
+void Counter::ShowControls() {
+  lv_obj_set_hidden(upBtn, false);
+  lv_obj_set_hidden(downBtn, false);
+  lv_obj_set_hidden(upperLine, false);
+  lv_obj_set_hidden(lowerLine, false);
+  lv_obj_set_style_local_bg_opa(counterContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
+}
+
 void Counter::UpdateLabel() {
   lv_label_set_text_fmt(number, "%.2i", value);
 }
@@ -92,14 +107,14 @@ void Counter::Create() {
   linePoints[0] = {0, 0};
   linePoints[1] = {width, 0};
 
-  lv_obj_t* upperLine = lv_line_create(counterContainer, nullptr);
+  upperLine = lv_line_create(counterContainer, nullptr);
   lv_line_set_points(upperLine, linePoints, 2);
   lv_obj_set_style_local_line_width(upperLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_line_color(upperLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_line_opa(upperLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_20);
   lv_obj_align(upperLine, upBtn, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
-  lv_obj_t* lowerLine = lv_line_create(counterContainer, nullptr);
+  lowerLine = lv_line_create(counterContainer, nullptr);
   lv_line_set_points(lowerLine, linePoints, 2);
   lv_obj_set_style_local_line_width(lowerLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_line_color(lowerLine, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
