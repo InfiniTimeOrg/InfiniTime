@@ -12,11 +12,11 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
 
 Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : Screen(app), timerController {timerController} {
 
-  time = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_label_set_text_static(time, "00:00");
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
+  lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_obj_set_style_local_text_color(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_label_set_text_static(colonLabel, ":");
+  lv_obj_align(colonLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
 
   minuteCounter.Create();
   secondCounter.Create();
@@ -49,19 +49,20 @@ Timer::~Timer() {
 void Timer::Refresh() {
   if (timerController.IsRunning()) {
     uint32_t seconds = timerController.GetTimeRemaining() / 1000;
-    lv_label_set_text_fmt(time, "%02lu:%02lu", seconds / 60, seconds % 60);
+    minuteCounter.SetValue(seconds / 60);
+    secondCounter.SetValue(seconds % 60);
   }
 }
 
 void Timer::SetTimerRunning() {
-  lv_obj_set_hidden(minuteCounter.GetObject(), true);
-  lv_obj_set_hidden(secondCounter.GetObject(), true);
+  minuteCounter.HideControls();
+  secondCounter.HideControls();
   lv_label_set_text_static(txtPlayPause, "Pause");
 }
 
 void Timer::SetTimerStopped() {
-  lv_obj_set_hidden(minuteCounter.GetObject(), false);
-  lv_obj_set_hidden(secondCounter.GetObject(), false);
+  minuteCounter.ShowControls();
+  secondCounter.ShowControls();
   lv_label_set_text_static(txtPlayPause, "Start");
 }
 
@@ -84,7 +85,6 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 void Timer::SetDone() {
-  lv_label_set_text_static(time, "00:00");
   minuteCounter.SetValue(0);
   secondCounter.SetValue(0);
   SetTimerStopped();
