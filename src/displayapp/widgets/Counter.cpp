@@ -2,21 +2,23 @@
 
 using namespace Pinetime::Applications::Widgets;
 
+namespace {
+  void upBtnEventHandler(lv_obj_t* obj, lv_event_t event) {
+    auto* widget = static_cast<Counter*>(obj->user_data);
+    if (event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_LONG_PRESSED_REPEAT) {
+      widget->Increment();
+    }
+  }
+
+  void downBtnEventHandler(lv_obj_t* obj, lv_event_t event) {
+    auto* widget = static_cast<Counter*>(obj->user_data);
+    if (event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_LONG_PRESSED_REPEAT) {
+      widget->Decrement();
+    }
+  }
+}
+
 Counter::Counter(int min, int max) : min {min}, max {max} {
-}
-
-void Counter::upBtnEventHandler(lv_obj_t* obj, lv_event_t event) {
-  auto* widget = static_cast<Counter*>(obj->user_data);
-  if (event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_LONG_PRESSED_REPEAT) {
-    widget->Increment();
-  }
-}
-
-void Counter::downBtnEventHandler(lv_obj_t* obj, lv_event_t event) {
-  auto* widget = static_cast<Counter*>(obj->user_data);
-  if (event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_LONG_PRESSED_REPEAT) {
-    widget->Decrement();
-  }
 }
 
 void Counter::Increment() {
