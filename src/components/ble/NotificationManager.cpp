@@ -95,6 +95,7 @@ void NotificationManager::Dismiss(NotificationManager::Notification::Id id) {
 
   for(size_t i = foundIndex; i < TotalNbNotifications - 1; i++) {
     notifications[i] = notifications[i+1];
+    notifications[i].index = i;
   }
 
   if(count == 1) {

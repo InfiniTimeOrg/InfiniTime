@@ -67,7 +67,7 @@ namespace Pinetime {
         
           lv_anim_t dismissAnim;
           TickType_t dismissAnimTickCount;
-        static const TickType_t dismissAnimLength = pdMS_TO_TICKS(300);
+          static const TickType_t dismissAnimLength = pdMS_TO_TICKS(300);
 
           bool running = true;
         };

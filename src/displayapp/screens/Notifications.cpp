@@ -239,7 +239,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_set_style_local_pad_all(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_pad_inner(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_border_width(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
-  
+
   page = lv_page_create(container, nullptr);
   lv_obj_set_style_local_bg_color(page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
   lv_obj_set_style_local_pad_all(page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, 10);
@@ -252,7 +252,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_anim_init(&dismissAnim);
   lv_anim_set_exec_cb(&dismissAnim, (lv_anim_exec_xcb_t)lv_obj_set_x);
   lv_anim_set_var(&dismissAnim, container);
-  lv_anim_set_time(&dismissAnim, 300);
+  lv_anim_set_time(&dismissAnim, dismissAnimLength);
   lv_anim_set_values(&dismissAnim, 0, 240);
 
   lv_obj_t* alert_count = lv_label_create(container, nullptr);
