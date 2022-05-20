@@ -33,9 +33,9 @@ bool Settings::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 std::unique_ptr<Screen> Settings::CreateScreen(unsigned int screenNum) const {
-  std::array<List::Applications, 4> screens;
-  for (int i = 0; i < 4; i++) {
-    screens[i] = entries[screenNum * 4 + i];
+  std::array<List::Applications, entriesPerScreen> screens;
+  for (int i = 0; i < entriesPerScreen; i++) {
+    screens[i] = entries[screenNum * entriesPerScreen + i];
   }
 
   return std::make_unique<Screens::List>(screenNum, nScreens, app, settingsController, screens);
