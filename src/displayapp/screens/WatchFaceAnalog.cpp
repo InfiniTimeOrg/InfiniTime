@@ -12,35 +12,33 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-constexpr int16_t HourLength = 60;
-constexpr int16_t MinuteLength = 80;
-constexpr int16_t SecondLength = 90;
+  constexpr int16_t HourLength = 60;
+  constexpr int16_t MinuteLength = 80;
+  constexpr int16_t SecondLength = 90;
 
-// sin(90) = 1 so the value of _lv_trigo_sin(90) is the scaling factor
-const auto LV_TRIG_SCALE = _lv_trigo_sin(90);
+  // sin(90) = 1 so the value of _lv_trigo_sin(90) is the scaling factor
+  const auto LV_TRIG_SCALE = _lv_trigo_sin(90);
 
-int16_t Cosine(int16_t angle) {
-  return _lv_trigo_sin(angle + 90);
-}
+  int16_t Cosine(int16_t angle) {
+    return _lv_trigo_sin(angle + 90);
+  }
 
-int16_t Sine(int16_t angle) {
-  return _lv_trigo_sin(angle);
-}
+  int16_t Sine(int16_t angle) {
+    return _lv_trigo_sin(angle);
+  }
 
-int16_t CoordinateXRelocate(int16_t x) {
-  return (x + LV_HOR_RES / 2);
-}
+  int16_t CoordinateXRelocate(int16_t x) {
+    return (x + LV_HOR_RES / 2);
+  }
 
-int16_t CoordinateYRelocate(int16_t y) {
-  return std::abs(y - LV_HOR_RES / 2);
-}
+  int16_t CoordinateYRelocate(int16_t y) {
+    return std::abs(y - LV_HOR_RES / 2);
+  }
 
-lv_point_t CoordinateRelocate(int16_t radius, int16_t angle) {
-  return lv_point_t{
-    .x = CoordinateXRelocate(radius * static_cast<int32_t>(Sine(angle)) / LV_TRIG_SCALE),
-    .y = CoordinateYRelocate(radius * static_cast<int32_t>(Cosine(angle)) / LV_TRIG_SCALE)
-  };
-}
+  lv_point_t CoordinateRelocate(int16_t radius, int16_t angle) {
+    return lv_point_t {.x = CoordinateXRelocate(radius * static_cast<int32_t>(Sine(angle)) / LV_TRIG_SCALE),
+                       .y = CoordinateYRelocate(radius * static_cast<int32_t>(Cosine(angle)) / LV_TRIG_SCALE)};
+  }
 
 }
 
@@ -69,8 +67,13 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   stepsMeter = lv_linemeter_create(lv_scr_act(), NULL);
   lv_linemeter_set_range(stepsMeter, 0, 12);
   lv_linemeter_set_scale(stepsMeter, 360, 13);
-  lv_obj_set_size(stepsMeter, 250, 250);
+  lv_linemeter_set_angle_offset(stepsMeter, 180);
+  lv_obj_set_size(stepsMeter, LV_HOR_RES, LV_VER_RES);
   lv_obj_align(stepsMeter, NULL, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_pad_top(stepsMeter, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_pad_bottom(stepsMeter, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_pad_left(stepsMeter, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_pad_right(stepsMeter, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 0);
 
   batteryIcon.Create(lv_scr_act());
   lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
@@ -79,7 +82,7 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_label_set_text_static(plugIcon, Symbols::plug);
   lv_obj_set_style_local_text_color(plugIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   lv_obj_align(plugIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-  
+
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0082FC));
   lv_label_set_text_static(bleIcon, Symbols::bluetooth);
@@ -129,13 +132,12 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_style_set_line_color(&second_line_style, LV_STATE_DEFAULT, LV_COLOR_RED);
   lv_style_set_line_rounded(&second_line_style, LV_STATE_DEFAULT, true);
   lv_obj_add_style(second_body, LV_LINE_PART_MAIN, &second_line_style);
-  
-  dot = lv_line_create(lv_scr_act(), NULL);
-  lv_style_init(&dot_style);
-  lv_style_set_line_width(&dot_style, LV_STATE_DEFAULT, 10);
-  lv_style_set_line_color(&dot_style, LV_STATE_DEFAULT, LV_COLOR_RED);
-  lv_style_set_line_rounded(&dot_style, LV_STATE_DEFAULT, true);
-  lv_obj_add_style(dot, LV_LINE_PART_MAIN, &dot_style);
+
+  dot = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(dot, 12, 12);
+  lv_obj_align(dot, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_radius(dot, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+  lv_obj_set_style_local_bg_color(dot, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 
@@ -183,11 +185,7 @@ void WatchFaceAnalog::UpdateClock() {
     second_point[0] = CoordinateRelocate(-20, angle);
     second_point[1] = CoordinateRelocate(SecondLength, angle);
 
-    dot_point[0] = lv_point_t{ 119, 120 };
-    dot_point[1] = lv_point_t{ 120, 120 };;
-
     lv_line_set_points(second_body, second_point, 2);
-    lv_line_set_points(dot, dot_point, 2);
   }
 }
 
@@ -246,7 +244,7 @@ void WatchFaceAnalog::Refresh() {
       currentDay = day;
     }
   }
-  
+
   heartbeat = heartRateController.HeartRate();
   heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
   if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
@@ -268,10 +266,10 @@ void WatchFaceAnalog::Refresh() {
     uint32_t goal = settingsController.GetStepsGoal();
     uint32_t steps = stepCount.Get();
     int32_t steps_value;
-    if(steps > goal)
-      steps_value = 12; 
+    if (steps > goal)
+      steps_value = 12;
     else
-      steps_value = ((float)steps / goal) * 12;
+      steps_value = ((float) steps / goal) * 12;
 
     lv_linemeter_set_value(stepsMeter, steps_value);
   }
