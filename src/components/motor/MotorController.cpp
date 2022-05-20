@@ -10,12 +10,11 @@ void MotorController::Init() {
   nrf_gpio_pin_set(PinMap::Motor);
 
   shortVib = xTimerCreate("shortVib", 1, pdFALSE, nullptr, StopMotor);
-  longVib = xTimerCreate("longVib", 1, pdTRUE, this, Ring);
+  longVib = xTimerCreate("longVib", pdMS_TO_TICKS(1000), pdTRUE, this, Ring);
 }
 
 void MotorController::Ring(TimerHandle_t xTimer) {
-  auto motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  xTimerChangePeriod(motorController->longVib, pdMS_TO_TICKS(1000), 0);
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
   motorController->RunForDuration(50);
 }
 
@@ -26,7 +25,7 @@ void MotorController::RunForDuration(uint8_t motorDuration) {
 }
 
 void MotorController::StartRinging() {
-  xTimerChangePeriod(longVib, 1, 0);
+  RunForDuration(50);
   xTimerStart(longVib, 0);
 }
 
