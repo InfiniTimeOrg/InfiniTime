@@ -56,6 +56,17 @@ namespace Pinetime {
         DirtyValue<bool> heartbeatRunning {};
         DirtyValue<bool> notificationState {};
 
+        lv_point_t line_icons_points[3] {{0, 5}, {117, 5}, {122, 0}};
+        lv_point_t line_day_of_week_number_points[4] {{0, 0}, {100, 0}, {95, 95}, {0, 95}};
+        lv_point_t line_day_of_year_points[3] {{0, 5}, {130, 5}, {135, 0}};
+        lv_point_t line_date_points[3] {{0, 5}, {135, 5}, {140, 0}};
+        lv_point_t line_time_points[3] {{0, 0}, {230, 0}, {235, 5}};
+
+        lv_color_t color_text =  lv_color_hex(0x98B69A);
+
+        lv_style_t style_line;
+        lv_style_t style_border;
+
         lv_obj_t* label_time;
         lv_obj_t* line_time;
         lv_obj_t* label_time_ampm;
