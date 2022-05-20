@@ -35,7 +35,7 @@ NotificationManager::Notification NotificationManager::GetNext(NotificationManag
     return n.valid && n.id == id;
   });
   if (currentIterator == notifications.end() || currentIterator->id != id)
-    return Notification {};
+    return {};
 
   auto& lastNotification = notifications[readIndex];
 
@@ -45,9 +45,9 @@ NotificationManager::Notification NotificationManager::GetNext(NotificationManag
     result = *(notifications.begin());
   else
     result = *(currentIterator + 1);
-  
+
   if (result.id <= id)
-    return Notification{};
+    return {};
 
   result.index = (lastNotification.id - result.id) + 1;
   return result;
@@ -58,7 +58,7 @@ NotificationManager::Notification NotificationManager::GetPrevious(NotificationM
     return n.valid && n.id == id;
   });
   if (currentIterator == notifications.end() || currentIterator->id != id)
-    return Notification {};
+    return {};
 
   auto& lastNotification = notifications[readIndex];
 
@@ -68,37 +68,32 @@ NotificationManager::Notification NotificationManager::GetPrevious(NotificationM
     result = *(notifications.end() - 1);
   else
     result = *(currentIterator - 1);
-  
+
   if (result.id >= id)
-    return Notification {};
+    return {};
 
   result.index = (lastNotification.id - result.id) + 1;
   return result;
 }
 
 void NotificationManager::Dismiss(NotificationManager::Notification::Id id) {
-  if(empty)
+  if (empty)
     return;
 
-  bool found = false;
-  size_t foundIndex;
+  auto currentIterator = std::find_if(notifications.begin(), notifications.end(), [id](const Notification& n) {
+    return n.valid && n.id == id;
+  });
+  if (currentIterator == notifications.end() || currentIterator->id != id)
+    return;
+
   size_t count = NbNotifications();
-  for(size_t i = 0; i < TotalNbNotifications; i++) {
-    if(notifications[i].id == id) {
-      foundIndex = i;
-      found = true;
-      break;
-    } 
-  }
-  if(!found)
-    return;
-
-  for(size_t i = foundIndex; i < TotalNbNotifications - 1; i++) {
-    notifications[i] = notifications[i+1];
+  size_t foundIndex = std::distance(notifications.begin(), currentIterator);
+  for (size_t i = foundIndex; i < TotalNbNotifications - 1; i++) {
+    notifications[i] = notifications[i + 1];
     notifications[i].index = i;
   }
 
-  if(count == 1) {
+  if (count == 1) {
     readIndex = 0;
     writeIndex = 0;
     empty = true;
@@ -138,4 +133,3 @@ const char* NotificationManager::Notification::Title() const {
   }
   return {};
 }
-

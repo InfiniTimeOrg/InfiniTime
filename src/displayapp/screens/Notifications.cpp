@@ -1,7 +1,7 @@
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/DisplayApp.h"
-#include "components/ble/AlertNotificationService.h"
 #include "components/ble/MusicService.h"
+#include "components/ble/AlertNotificationService.h"
 #include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -36,9 +36,7 @@ Notifications::Notifications(DisplayApp* app,
     validDisplay = true;
   } else {
     currentId = 0;
-    currentItem = std::make_unique<NotificationItem>(notification.category,
-                                                     alertNotificationService,
-                                                     motorController);
+    currentItem = std::make_unique<NotificationItem>(notification.category, alertNotificationService, motorController);
   }
 
   if (mode == Modes::Preview) {
@@ -84,22 +82,22 @@ void Notifications::Refresh() {
   }
 
   if (currentItem != nullptr && currentItem->AnimationElapsed()) {
-      auto notification = notificationManager.GetPrevious(currentId);
-      if(!notification.valid)
-        notification = notificationManager.GetNext(currentId);
-      if(!notification.valid)
-        notification = notificationManager.GetLastNotification();
+    auto notification = notificationManager.GetPrevious(currentId);
+    if (!notification.valid)
+      notification = notificationManager.GetNext(currentId);
+    if (!notification.valid)
+      notification = notificationManager.GetLastNotification();
 
-      if (!notification.valid) {
-        validDisplay = false;
-      }
+    if (!notification.valid) {
+      validDisplay = false;
+    }
 
-      currentId = notification.id;
-      currentItem.reset(nullptr);
-      app->SetFullRefresh(DisplayApp::FullRefreshDirections::Right);
+    currentId = notification.id;
+    currentItem.reset(nullptr);
+    app->SetFullRefresh(DisplayApp::FullRefreshDirections::Right);
 
-      if(validDisplay) {
-        currentItem = std::make_unique<NotificationItem>(notification.Title(),
+    if (validDisplay) {
+      currentItem = std::make_unique<NotificationItem>(notification.Title(),
                                                        notification.Message(),
                                                        notification.index,
                                                        notification.category,
@@ -107,11 +105,9 @@ void Notifications::Refresh() {
                                                        mode,
                                                        alertNotificationService,
                                                        motorController);
-      } else {
-        currentItem = std::make_unique<NotificationItem>(notification.category,
-                                                        alertNotificationService,
-                                                        motorController);
-      }
+    } else {
+      currentItem = std::make_unique<NotificationItem>(notification.category, alertNotificationService, motorController);
+    }
   }
 
   running = currentItem->IsRunning() && running;
@@ -138,12 +134,12 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
   switch (event) {
     case Pinetime::Applications::TouchEvents::SwipeRight:
-        if(validDisplay) {
-          notificationManager.Dismiss(currentId);
-          currentItem->AnimateDismiss();
-          return true;
-        }
-        return false;
+      if (validDisplay) {
+        notificationManager.Dismiss(currentId);
+        currentItem->AnimateDismiss();
+        return true;
+      }
+      return false;
     case Pinetime::Applications::TouchEvents::SwipeDown: {
       Controllers::NotificationManager::Notification previousNotification;
       if (validDisplay)
@@ -206,18 +202,11 @@ namespace {
   }
 }
 
-Notifications::NotificationItem::NotificationItem(
-    Controllers::NotificationManager::Categories category,
-    Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-    Pinetime::Controllers::MotorController& motorController)
-  : NotificationItem("Notification",
-                     "No notification to display",
-                     0,
-                     category,
-                     0,
-                     Modes::Preview,
-                     alertNotificationService,
-                     motorController) {
+Notifications::NotificationItem::NotificationItem(Controllers::NotificationManager::Categories category,
+                                                  Pinetime::Controllers::AlertNotificationService& alertNotificationService,
+                                                  Pinetime::Controllers::MotorController& motorController)
+  : NotificationItem(
+      "Notification", "No notification to display", 0, category, 0, Modes::Preview, alertNotificationService, motorController) {
 }
 
 Notifications::NotificationItem::NotificationItem(const char* title,
@@ -228,9 +217,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Modes mode,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                                   Pinetime::Controllers::MotorController& motorController)
-  : mode {mode}, 
-    alertNotificationService {alertNotificationService}, 
-    motorController {motorController} {
+  : mode {mode}, alertNotificationService {alertNotificationService}, motorController {motorController} {
 
   container = lv_cont_create(lv_scr_act(), nullptr);
   lv_obj_set_pos(container, 0, 0);
@@ -250,7 +237,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_set_size(page, LV_HOR_RES, 190);
 
   lv_anim_init(&dismissAnim);
-  lv_anim_set_exec_cb(&dismissAnim, (lv_anim_exec_xcb_t)lv_obj_set_x);
+  lv_anim_set_exec_cb(&dismissAnim, (lv_anim_exec_xcb_t) lv_obj_set_x);
   lv_anim_set_var(&dismissAnim, container);
   lv_anim_set_time(&dismissAnim, dismissAnimLength);
   lv_anim_set_values(&dismissAnim, 0, 240);
@@ -261,12 +248,12 @@ Notifications::NotificationItem::NotificationItem(const char* title,
 
   lv_obj_t* alert_type = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
-  if(title == nullptr) {
+  if (title == nullptr) {
     lv_label_set_text_static(alert_type, "Notification");
   } else {
     // copy title to label and replace newlines with spaces
     lv_label_set_text(alert_type, title);
-    char *pchar = strchr(lv_label_get_text(alert_type), '\n');
+    char* pchar = strchr(lv_label_get_text(alert_type), '\n');
     while (pchar != nullptr) {
       *pchar = ' ';
       pchar = strchr(pchar + 1, '\n');
@@ -354,10 +341,9 @@ void Notifications::NotificationItem::AnimateDismiss() {
 }
 
 bool Notifications::NotificationItem::AnimationElapsed() {
-  bool elapsed = dismissAnimTickCount != 0
-    && xTaskGetTickCount() > dismissAnimTickCount + dismissAnimLength;
-  
-  if(elapsed)
+  bool elapsed = dismissAnimTickCount != 0 && xTaskGetTickCount() > dismissAnimTickCount + dismissAnimLength;
+
+  if (elapsed)
     dismissAnimTickCount = 0;
 
   return elapsed;
