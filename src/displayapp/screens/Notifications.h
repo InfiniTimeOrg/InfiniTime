@@ -54,7 +54,7 @@ namespace Pinetime {
 
         private:
           lv_obj_t* container;
-          lv_obj_t* page;
+          lv_obj_t* subject_container;
           lv_obj_t* bt_accept;
           lv_obj_t* bt_mute;
           lv_obj_t* bt_reject;

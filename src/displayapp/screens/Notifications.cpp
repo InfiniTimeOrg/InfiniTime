@@ -72,7 +72,7 @@ Notifications::~Notifications() {
 void Notifications::Refresh() {
   if (mode == Modes::Preview && timeoutLine != nullptr) {
     TickType_t tick = xTaskGetTickCount();
-    int32_t pos = 240 - ((tick - timeoutTickCountStart) / (timeoutLength / 240));
+    int32_t pos = LV_HOR_RES - ((tick - timeoutTickCountStart) / (timeoutLength / LV_HOR_RES));
     if (pos <= 0) {
       running = false;
     } else {
@@ -216,27 +216,28 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   : mode {mode}, alertNotificationService {alertNotificationService}, motorController {motorController} {
 
   container = lv_cont_create(lv_scr_act(), nullptr);
-  lv_obj_set_pos(container, 0, 0);
   lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_style_local_bg_color(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_pad_all(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_pad_inner(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_border_width(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
-  page = lv_page_create(container, nullptr);
-  lv_obj_set_style_local_bg_color(page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
-  lv_obj_set_style_local_pad_all(page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, 10);
-  lv_obj_set_style_local_pad_inner(page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, 5);
-  lv_obj_set_style_local_border_width(page, LV_PAGE_PART_BG, LV_STATE_DEFAULT, 0);
+  subject_container = lv_cont_create(container, nullptr);
+  lv_obj_set_style_local_bg_color(subject_container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
+  lv_obj_set_style_local_pad_all(subject_container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
+  lv_obj_set_style_local_pad_inner(subject_container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
+  lv_obj_set_style_local_border_width(subject_container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
-  lv_obj_set_pos(page, 0, 50);
-  lv_obj_set_size(page, LV_HOR_RES, 190);
+  lv_obj_set_pos(subject_container, 0, 50);
+  lv_obj_set_size(subject_container, LV_HOR_RES, LV_VER_RES - 50);
+  lv_cont_set_layout(subject_container, LV_LAYOUT_COLUMN_LEFT);
+  lv_cont_set_fit(subject_container, LV_FIT_NONE);
 
   lv_anim_init(&dismissAnim);
   lv_anim_set_exec_cb(&dismissAnim, (lv_anim_exec_xcb_t) lv_obj_set_x);
   lv_anim_set_var(&dismissAnim, container);
   lv_anim_set_time(&dismissAnim, dismissAnimLength);
-  lv_anim_set_values(&dismissAnim, 0, 240);
+  lv_anim_set_values(&dismissAnim, 0, LV_HOR_RES);
 
   lv_obj_t* alert_count = lv_label_create(container, nullptr);
   lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
@@ -263,21 +264,21 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   /////////
   switch (category) {
     default: {
-      lv_obj_t* alert_subject = lv_label_create(page, nullptr);
+      lv_obj_t* alert_subject = lv_label_create(subject_container, nullptr);
       lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xff, 0xb0, 0x0));
       lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
       lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
       lv_label_set_text(alert_subject, msg);
     } break;
     case Controllers::NotificationManager::Categories::IncomingCall: {
-      lv_obj_set_height(page, 108);
-      lv_obj_t* alert_subject = lv_label_create(page, nullptr);
+      lv_obj_set_height(subject_container, 108);
+      lv_obj_t* alert_subject = lv_label_create(subject_container, nullptr);
       lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xff, 0xb0, 0x0));
       lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
       lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
       lv_label_set_text_static(alert_subject, "Incoming call from");
 
-      lv_obj_t* alert_caller = lv_label_create(page, nullptr);
+      lv_obj_t* alert_caller = lv_label_create(subject_container, nullptr);
       lv_obj_align(alert_caller, alert_subject, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
       lv_label_set_long_mode(alert_caller, LV_LABEL_LONG_BREAK);
       lv_obj_set_width(alert_caller, LV_HOR_RES - 20);
