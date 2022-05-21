@@ -84,13 +84,9 @@ void Notifications::Refresh() {
   if (currentItem != nullptr && currentItem->AnimationElapsed()) {
     auto notification = notificationManager.GetPrevious(currentId);
     if (!notification.valid)
-      notification = notificationManager.GetNext(currentId);
-    if (!notification.valid)
       notification = notificationManager.GetLastNotification();
-
-    if (!notification.valid) {
+    if (!notification.valid)
       validDisplay = false;
-    }
 
     currentId = notification.id;
     currentItem.reset(nullptr);

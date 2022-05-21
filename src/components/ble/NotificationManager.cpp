@@ -92,15 +92,26 @@ void NotificationManager::Dismiss(NotificationManager::Notification::Id id) {
     notifications[i] = notifications[i + 1];
     notifications[i].index = i;
   }
+  notifications[TotalNbNotifications - 1] = {};
+
+  // fill any gaps in ids
+  for (size_t i = 0; i < TotalNbNotifications; i++) {
+    if (!notifications[i].valid)
+      break;
+
+    notifications[i].id = i;
+  }
 
   if (count == 1) {
     readIndex = 0;
     writeIndex = 0;
     empty = true;
   } else {
-    readIndex--;
-    writeIndex--;
+    // wrap backwards as notifications[] is a ring buffer
+    writeIndex = (writeIndex > 0) ? writeIndex - 1 : TotalNbNotifications - 1;
+    readIndex = (readIndex > 0) ? readIndex - 1 : TotalNbNotifications - 1;
   }
+  nextId = notifications[readIndex].id + 1;
 }
 
 bool NotificationManager::AreNewNotificationsAvailable() {
