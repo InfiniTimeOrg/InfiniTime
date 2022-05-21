@@ -88,19 +88,13 @@ void NotificationManager::Dismiss(NotificationManager::Notification::Id id) {
 
   size_t count = NbNotifications();
   size_t foundIndex = std::distance(notifications.begin(), currentIterator);
+  size_t foundId = notifications[foundIndex].id;
+
   for (size_t i = foundIndex; i < TotalNbNotifications - 1; i++) {
     notifications[i] = notifications[i + 1];
     notifications[i].index = i;
   }
   notifications[TotalNbNotifications - 1] = {};
-
-  // fill any gaps in ids
-  for (size_t i = 0; i < TotalNbNotifications; i++) {
-    if (!notifications[i].valid)
-      break;
-
-    notifications[i].id = i;
-  }
 
   if (count == 1) {
     readIndex = 0;
@@ -111,6 +105,12 @@ void NotificationManager::Dismiss(NotificationManager::Notification::Id id) {
     writeIndex = (writeIndex > 0) ? writeIndex - 1 : TotalNbNotifications - 1;
     readIndex = (readIndex > 0) ? readIndex - 1 : TotalNbNotifications - 1;
   }
+  for (size_t i = 0; i < TotalNbNotifications - 1; i++) {
+    if(notifications[i].id > foundId)
+      notifications[i].id--;
+  }
+
+  // Ensure any new id's are incrementing from the last notification id
   nextId = notifications[readIndex].id + 1;
 }
 

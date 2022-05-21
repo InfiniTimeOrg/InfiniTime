@@ -90,7 +90,7 @@ void Notifications::Refresh() {
 
     currentId = notification.id;
     currentItem.reset(nullptr);
-    app->SetFullRefresh(DisplayApp::FullRefreshDirections::Right);
+    app->SetFullRefresh(DisplayApp::FullRefreshDirections::Up);
 
     if (validDisplay) {
       currentItem = std::make_unique<NotificationItem>(notification.Title(),
