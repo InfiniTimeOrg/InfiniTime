@@ -139,6 +139,7 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
 
         void SetBatteryLevel(uint8_t batteryPercent);
+        void ToggleBatteryIndicatorColor(bool showSideCover);
 
         lv_task_t* taskRefresh;
       };

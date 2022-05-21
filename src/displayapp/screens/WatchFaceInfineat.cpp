@@ -153,7 +153,7 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_obj_move_foreground(lineBattery);
 
   if(!settingsController.GetInfineatShowSideCover()) {
-    lv_obj_set_hidden(logoPine, true);
+    ToggleBatteryIndicatorColor(false);
     lv_obj_set_hidden(line0, true);
     lv_obj_set_hidden(line1, true);
     lv_obj_set_hidden(line2, true);
@@ -163,7 +163,6 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
     lv_obj_set_hidden(line6, true);
     lv_obj_set_hidden(line7, true);
     lv_obj_set_hidden(line8, true);
-    lv_obj_set_hidden(lineBattery, true);
   }
 
   notificationIcon = lv_obj_create(lv_scr_act(), nullptr);
@@ -338,7 +337,7 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     }
     if (object == btnToggleCover) {
       settingsController.SetInfineatShowSideCover(!showSideCover);
-      lv_obj_set_hidden(logoPine, showSideCover);
+      ToggleBatteryIndicatorColor(!showSideCover);
       lv_obj_set_hidden(line0, showSideCover);
       lv_obj_set_hidden(line1, showSideCover);
       lv_obj_set_hidden(line2, showSideCover);
@@ -348,7 +347,6 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       lv_obj_set_hidden(line6, showSideCover);
       lv_obj_set_hidden(line7, showSideCover);
       lv_obj_set_hidden(line8, showSideCover);
-      lv_obj_set_hidden(lineBattery, showSideCover);
       lv_obj_set_hidden(btnNextColor, showSideCover);
       lv_obj_set_hidden(btnPrevColor, showSideCover);
       const char* labelToggle = showSideCover ? "OFF" : "ON";
@@ -519,4 +517,17 @@ void WatchFaceInfineat::SetBatteryLevel(uint8_t batteryPercent) {
   // starting point (y) + Pine64 logo height * (100 - batteryPercent) / 100
   lineBatteryPoints[1] = {27, static_cast<lv_coord_t>(105 + 32*(100-batteryPercent)/100)};
   lv_line_set_points(lineBattery, lineBatteryPoints, 2);
+}
+
+void WatchFaceInfineat::ToggleBatteryIndicatorColor(bool showSideCover) {
+  if (!showSideCover) { // make indicator white
+    lv_obj_set_style_local_image_recolor_opa(logoPine, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_100);
+    lv_obj_set_style_local_image_recolor(logoPine, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+    lv_style_set_line_color(&lineBatteryStyle, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  } else {
+    lv_obj_set_style_local_image_recolor_opa(logoPine, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
+    lv_style_set_line_color(&lineBatteryStyle, LV_STATE_DEFAULT,
+                            lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 4]));
+  }
+  lv_obj_add_style(lineBattery, LV_LINE_PART_MAIN, &lineBatteryStyle);
 }
