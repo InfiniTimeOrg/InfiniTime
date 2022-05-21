@@ -58,15 +58,21 @@ namespace Pinetime {
 
         lv_obj_t* dot;
         lv_obj_t* hour_body;
+        lv_obj_t* hour_body_trace;
         lv_obj_t* minute_body;
+        lv_obj_t* minute_body_trace;
         lv_obj_t* second_body;
 
         lv_point_t hour_point[2];
+        lv_point_t hour_trace_point[2];
         lv_point_t minute_point[2];
+        lv_point_t minute_trace_point[2];
         lv_point_t second_point[2];
 
         lv_style_t hour_line_style;
+        lv_style_t hour_trace_line_style;
         lv_style_t minute_line_style;
+        lv_style_t minute_trace_line_style;
         lv_style_t second_line_style;
 
         lv_obj_t* label_date_day;
