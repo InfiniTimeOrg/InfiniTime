@@ -17,20 +17,24 @@ namespace Pinetime {
     class Battery;
     class Ble;
     class NotificationManager;
+    class HeartRateController;
+    class MotionController;
   }
   namespace Applications {
     namespace Screens {
 
-      class WatchFaceAnalog : public Screen {
+      class WatchFaceSimpleAnalog : public Screen {
       public:
-        WatchFaceAnalog(DisplayApp* app,
-                        Controllers::DateTime& dateTimeController,
-                        Controllers::Battery& batteryController,
-                        Controllers::Ble& bleController,
-                        Controllers::NotificationManager& notificationManager,
-                        Controllers::Settings& settingsController);
+        WatchFaceSimpleAnalog(DisplayApp* app,
+                              Controllers::DateTime& dateTimeController,
+                              Controllers::Battery& batteryController,
+                              Controllers::Ble& bleController,
+                              Controllers::NotificationManager& notificationManager,
+                              Controllers::Settings& settingsController,
+                              Controllers::HeartRateController& heartRateController,
+                              Controllers::MotionController& motionController);
 
-        ~WatchFaceAnalog() override;
+        ~WatchFaceSimpleAnalog() override;
 
         void Refresh() override;
 
@@ -45,7 +49,14 @@ namespace Pinetime {
         DirtyValue<bool> isCharging {};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
         DirtyValue<bool> notificationState {false};
+        DirtyValue<bool> bleState {};
+        DirtyValue<bool> bleRadioEnabled {};
+        DirtyValue<bool> motionSensorOk {};
+        DirtyValue<uint32_t> stepCount {};
+        DirtyValue<uint8_t> heartbeat {};
+        DirtyValue<bool> heartbeatRunning {};
 
+        lv_obj_t* dot;
         lv_obj_t* hour_body;
         lv_obj_t* hour_body_trace;
         lv_obj_t* minute_body;
@@ -53,20 +64,24 @@ namespace Pinetime {
         lv_obj_t* second_body;
 
         lv_point_t hour_point[2];
-        lv_point_t hour_point_trace[2];
+        lv_point_t hour_trace_point[2];
         lv_point_t minute_point[2];
-        lv_point_t minute_point_trace[2];
+        lv_point_t minute_trace_point[2];
         lv_point_t second_point[2];
 
         lv_style_t hour_line_style;
-        lv_style_t hour_line_style_trace;
+        lv_style_t hour_trace_line_style;
         lv_style_t minute_line_style;
-        lv_style_t minute_line_style_trace;
+        lv_style_t minute_trace_line_style;
         lv_style_t second_line_style;
 
         lv_obj_t* label_date_day;
         lv_obj_t* plugIcon;
+        lv_obj_t* bleIcon;
         lv_obj_t* notificationIcon;
+        lv_obj_t* heartbeatIcon;
+        lv_obj_t* heartbeatValue;
+        lv_obj_t* stepsMeter;
 
         BatteryIcon batteryIcon;
 
@@ -75,6 +90,8 @@ namespace Pinetime {
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
+        Controllers::HeartRateController& heartRateController;
+        Controllers::MotionController& motionController;
 
         void UpdateClock();
         void SetBatteryIcon();

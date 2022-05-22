@@ -128,6 +128,13 @@ namespace Pinetime {
       Notification GetNotificationStatus() const {
         return settings.notificationStatus;
       };
+      void SetWatchfacesMenu(uint8_t menu) {
+        watchFacesMenu = menu;
+      };
+
+      uint8_t GetWatchfacesMenu() const {
+        return watchFacesMenu;
+      };
 
       void SetScreenTimeOut(uint32_t timeout) {
         if (timeout != settings.screenTimeOut) {
@@ -140,15 +147,14 @@ namespace Pinetime {
         return settings.screenTimeOut;
       };
 
-      void SetShakeThreshold(uint16_t thresh){
-        if(settings.shakeWakeThreshold != thresh){
-            settings.shakeWakeThreshold = thresh;
-            settingsChanged = true;
+      void SetShakeThreshold(uint16_t thresh) {
+        if (settings.shakeWakeThreshold != thresh) {
+          settings.shakeWakeThreshold = thresh;
+          settingsChanged = true;
         }
-        
       }
 
-      int16_t GetShakeThreshold() const{
+      int16_t GetShakeThreshold() const {
         return settings.shakeWakeThreshold;
       }
 
@@ -195,20 +201,20 @@ namespace Pinetime {
         if (goal != settings.stepsGoal) {
           settingsChanged = true;
         }
-        settings.stepsGoal = goal; 
+        settings.stepsGoal = goal;
       };
-      
+
       uint32_t GetStepsGoal() const {
         return settings.stepsGoal;
       };
 
-     void SetBleRadioEnabled(bool enabled) {
-       bleRadioEnabled = enabled;
-     };
+      void SetBleRadioEnabled(bool enabled) {
+        bleRadioEnabled = enabled;
+      };
 
-     bool GetBleRadioEnabled() const {
-       return bleRadioEnabled;
-     };
+      bool GetBleRadioEnabled() const {
+        return bleRadioEnabled;
+      };
 
     private:
       Pinetime::Controllers::FS& fs;
@@ -237,6 +243,7 @@ namespace Pinetime {
 
       uint8_t appMenu = 0;
       uint8_t settingsMenu = 0;
+      uint8_t watchFacesMenu = 0;
       /* ble state is intentionally not saved with the other watch settings and initialized
        * to off (false) on every boot because we always want ble to be enabled on startup
        */

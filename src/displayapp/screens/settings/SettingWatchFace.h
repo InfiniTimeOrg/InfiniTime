@@ -4,8 +4,10 @@
 #include <cstdint>
 #include <lvgl/lvgl.h>
 
+#include "displayapp/screens/ScreenList.h"
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
+#include "displayapp/screens/Symbols.h"
 
 namespace Pinetime {
 
@@ -17,13 +19,16 @@ namespace Pinetime {
         SettingWatchFace(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingWatchFace() override;
 
-        void UpdateSelected(lv_obj_t* object, lv_event_t event);
+        bool OnTouchEvent(TouchEvents event) override;
 
       private:
-        static constexpr std::array<const char*, 4> options = {" Digital face", " Analog face", " PineTimeStyle", " Terminal"};
         Controllers::Settings& settingsController;
+        ScreenList<2> screens;
 
-        lv_obj_t* cbOption[options.size()];
+        static constexpr const char* title = "Watch face";
+        static constexpr const char* symbol = Symbols::home;
+        std::unique_ptr<Screen> CreateScreen1();
+        std::unique_ptr<Screen> CreateScreen2();
       };
     }
   }
