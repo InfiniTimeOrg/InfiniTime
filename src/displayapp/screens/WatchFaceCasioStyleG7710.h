@@ -25,13 +25,13 @@ namespace Pinetime {
       class WatchFaceCasioStyleG7710 : public Screen {
       public:
         WatchFaceCasioStyleG7710(DisplayApp* app,
-                         Controllers::DateTime& dateTimeController,
-                         Controllers::Battery& batteryController,
-                         Controllers::Ble& bleController,
-                         Controllers::NotificationManager& notificatioManager,
-                         Controllers::Settings& settingsController,
-                         Controllers::HeartRateController& heartRateController,
-                         Controllers::MotionController& motionController);
+                                 Controllers::DateTime& dateTimeController,
+                                 Controllers::Battery& batteryController,
+                                 Controllers::Ble& bleController,
+                                 Controllers::NotificationManager& notificatioManager,
+                                 Controllers::Settings& settingsController,
+                                 Controllers::HeartRateController& heartRateController,
+                                 Controllers::MotionController& motionController);
         ~WatchFaceCasioStyleG7710() override;
 
         void Refresh() override;
@@ -62,7 +62,7 @@ namespace Pinetime {
         lv_point_t line_date_points[3] {{0, 5}, {135, 5}, {140, 0}};
         lv_point_t line_time_points[3] {{0, 0}, {230, 0}, {235, 5}};
 
-        lv_color_t color_text =  lv_color_hex(0x98B69A);
+        lv_color_t color_text = lv_color_hex(0x98B69A);
 
         lv_style_t style_line;
         lv_style_t style_border;

@@ -16,13 +16,13 @@
 using namespace Pinetime::Applications::Screens;
 
 WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
-                                   Controllers::DateTime& dateTimeController,
-                                   Controllers::Battery& batteryController,
-                                   Controllers::Ble& bleController,
-                                   Controllers::NotificationManager& notificatioManager,
-                                   Controllers::Settings& settingsController,
-                                   Controllers::HeartRateController& heartRateController,
-                                   Controllers::MotionController& motionController)
+                                                   Controllers::DateTime& dateTimeController,
+                                                   Controllers::Battery& batteryController,
+                                                   Controllers::Ble& bleController,
+                                                   Controllers::NotificationManager& notificatioManager,
+                                                   Controllers::Settings& settingsController,
+                                                   Controllers::HeartRateController& heartRateController,
+                                                   Controllers::MotionController& motionController)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -32,7 +32,6 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController} {
-
 
   label_battery_vallue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_battery_vallue, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
@@ -163,7 +162,7 @@ WatchFaceCasioStyleG7710::~WatchFaceCasioStyleG7710() {
 
   lv_style_reset(&style_line);
   lv_style_reset(&style_border);
-  
+
   lv_obj_clean(lv_scr_act());
 }
 
@@ -240,30 +239,30 @@ void WatchFaceCasioStyleG7710::Refresh() {
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
         // 24h mode: ddmmyyyy, first DOW=Monday;
-        lv_label_set_text_fmt(
-          label_date, "%3d-%2d", day, month);
-          weekNumberFormat = "%V"; // Replaced by the week number of the year (Monday as the first day of the week) as a decimal number [01,53]. If the week containing 1 January has four or more days in the new year, then it is considered week 1. Otherwise, it is the last week of the previous year, and the next week is week 1. Both January 4th and the first Thursday of January are always in week 1. [ tm_year, tm_wday, tm_yday]
+        lv_label_set_text_fmt(label_date, "%3d-%2d", day, month);
+        weekNumberFormat = "%V"; // Replaced by the week number of the year (Monday as the first day of the week) as a decimal number
+                                 // [01,53]. If the week containing 1 January has four or more days in the new year, then it is considered
+                                 // week 1. Otherwise, it is the last week of the previous year, and the next week is week 1. Both January
+                                 // 4th and the first Thursday of January are always in week 1. [ tm_year, tm_wday, tm_yday]
       } else {
         // 12h mode: mmddyyyy, first DOW=Sunday;
-        lv_label_set_text_fmt(
-          label_date, "%3d-%2d", month, day);
-          weekNumberFormat = "%U"; // Replaced by the week number of the year as a decimal number [00,53]. The first Sunday of January is the first day of week 1; days in the new year before this are in week 0. [ tm_year, tm_wday, tm_yday]
+        lv_label_set_text_fmt(label_date, "%3d-%2d", month, day);
+        weekNumberFormat = "%U"; // Replaced by the week number of the year as a decimal number [00,53]. The first Sunday of January is the
+                                 // first day of week 1; days in the new year before this are in week 0. [ tm_year, tm_wday, tm_yday]
       }
 
       uint8_t weekNumber;
       uint16_t dayOfYearNumber, daysTillEndOfYearNumber;
 
-      std::tm date = {};
-      date.tm_year = year - 1900;
-      date.tm_mon = static_cast<unsigned>(yearMonthDay.month()) - 1;
-      date.tm_mday = day + 1;
-      std::mktime( &date );
+      time_t ttTime =
+        std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::system_clock::duration>(currentDateTime.Get()));
+      tm* tmTime = std::localtime(&ttTime);
 
-      dayOfYearNumber = date.tm_yday;
-      daysTillEndOfYearNumber = yearMonthDay.year().is_leap() ? 366 : 365 - dayOfYearNumber;
+      dayOfYearNumber = tmTime->tm_yday + 1; //  tm_yday  day of year [0,365] => yday+1
+      daysTillEndOfYearNumber = (yearMonthDay.year().is_leap() ? 366 : 365) - dayOfYearNumber;
 
       char buffer[8];
-      strftime(buffer, 8, weekNumberFormat, &date); 
+      strftime(buffer, 8, weekNumberFormat, tmTime);
       weekNumber = atoi(buffer);
 
       lv_label_set_text_fmt(label_day_of_week, "%s", dateTimeController.DayOfWeekShortToString());

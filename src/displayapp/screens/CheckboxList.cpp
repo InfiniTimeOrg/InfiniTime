@@ -20,10 +20,13 @@ CheckboxList::CheckboxList(const uint8_t screenID,
                            const char* optionsTitle,
                            const char* optionsSymbol,
                            void (Controllers::Settings::*SetOptionIndex)(uint8_t),
-                           uint8_t (Controllers::Settings::*GetOptionIndex )() const,
+                           uint8_t (Controllers::Settings::*GetOptionIndex)() const,
                            std::array<const char*, MAXLISTITEMS> options)
-  : Screen(app), screenID {screenID}, settingsController {settingsController},
-    SetOptionIndex {SetOptionIndex}, GetOptionIndex {GetOptionIndex},
+  : Screen(app),
+    screenID {screenID},
+    settingsController {settingsController},
+    SetOptionIndex {SetOptionIndex},
+    GetOptionIndex {GetOptionIndex},
     options {options} {
 
   settingsController.SetWatchfacesMenu(screenID);
@@ -87,7 +90,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
       lv_obj_set_event_cb(cbOption[i], event_handler);
       SetRadioButtonStyle(cbOption[i]);
 
-      if (static_cast<unsigned int>((settingsController.*GetOptionIndex)() - MAXLISTITEMS*screenID) == i) {
+      if (static_cast<unsigned int>((settingsController.*GetOptionIndex)() - MAXLISTITEMS * screenID) == i) {
         lv_checkbox_set_checked(cbOption[i], true);
       }
     }
@@ -105,7 +108,7 @@ void CheckboxList::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       if (strcmp(options[i], "")) {
         if (object == cbOption[i]) {
           lv_checkbox_set_checked(cbOption[i], true);
-          (settingsController.*SetOptionIndex)(MAXLISTITEMS*screenID + i);
+          (settingsController.*SetOptionIndex)(MAXLISTITEMS * screenID + i);
         } else {
           lv_checkbox_set_checked(cbOption[i], false);
         }
