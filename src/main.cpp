@@ -312,10 +312,15 @@ int main(void) {
   nrf_drv_clock_init();
   nrf_drv_clock_lfclk_request(NULL);
 
-// The RC source for the LF clock has to be calibrated
-#if (CLOCK_CONFIG_LF_SRC == NRF_CLOCK_LFCLK_RC)
+  // When loading the firmware via the Wasp-OS reloader-factory, which uses the used internal LF RC oscillator,
+  // the LF clock has to be explicitly restarted because InfiniTime uses the external crystal oscillator if available.
+  // If the clock is not restarted, the Bluetooth timers fail to initialize.
+  nrfx_clock_lfclk_start();
   while (!nrf_clock_lf_is_running()) {
   }
+
+// The RC source for the LF clock has to be calibrated
+#if (CLOCK_CONFIG_LF_SRC == NRF_CLOCK_LFCLK_RC)
   nrf_drv_clock_calibration_start(0, calibrate_lf_clock_rc);
 #endif
 
