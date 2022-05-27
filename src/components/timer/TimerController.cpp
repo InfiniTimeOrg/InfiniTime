@@ -10,7 +10,7 @@ void TimerCallback(TimerHandle_t xTimer) {
 
 void TimerController::Init(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
-  timer = xTimerCreate("Timer", 0, pdFALSE, this, TimerCallback);
+  timer = xTimerCreate("Timer", 1, pdFALSE, this, TimerCallback);
 }
 
 void TimerController::StartTimer(uint32_t duration) {
