@@ -33,12 +33,14 @@ jobs:
           SOURCES_DIR: .
         run: |
           /opt/build.sh all
+      # Unzip the package because Upload Artifact will zip up the files
+      - name: Unzip DFU package
+        run: unzip ./build/output/pinetime-mcuboot-app-dfu-*.zip -d ./build/output/pinetime-mcuboot-app-dfu
       - name: Upload DFU artifacts
         uses: actions/upload-artifact@v3
         with:
           name: InfiniTime DFU ${{ github.head_ref }}
-          path: |
-            ./build/output/pinetime-mcuboot-app-dfu-*.zip
+          path: ./build/output/pinetime-mcuboot-app-dfu/*
       - name: Upload MCUBoot image artifacts
         uses: actions/upload-artifact@v3
         with:
