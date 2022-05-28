@@ -29,14 +29,16 @@ namespace Pinetime {
 
     private:
       typedef struct __attribute__((packed)) {
-        uint16_t year;
+        uint8_t year_LSO; // explicit byte ordering to be independent of machine order
+        uint8_t year_MSO; // BLE GATT is little endian
         uint8_t month;
         uint8_t dayofmonth;
         uint8_t hour;
         uint8_t minute;
         uint8_t second;
-        uint8_t millis;
-        uint8_t reason;
+        uint8_t dayofweek;
+        uint8_t fractions256; // currently ignored
+        uint8_t reason;       // currently ignored, not that any host would set it anyway
       } CtsData;
 
       static constexpr uint16_t ctsServiceId {0x1805};
