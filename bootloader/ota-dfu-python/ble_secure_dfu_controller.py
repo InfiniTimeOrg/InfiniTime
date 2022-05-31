@@ -236,7 +236,7 @@ class BleDfuControllerSecure(NrfBleDfuController):
         self._dfu_send_command(Procedures.EXECUTE)
         self._wait_and_parse_notify()
 
-        print("Init packet successfully transfered")
+        print("Init packet successfully transferred")
 
     # --------------------------------------------------------------------------
     #  Send the Firmware image to peripheral device.
@@ -319,5 +319,5 @@ class BleDfuControllerSecure(NrfBleDfuController):
         self._dfu_send_command(Procedures.EXECUTE)
         self._wait_and_parse_notify()
 
-        # If everything executed correctly, return amount of bytes transfered
+        # If everything executed correctly, return amount of bytes transferred
         return obj_max_size

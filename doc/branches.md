@@ -5,7 +5,7 @@ The project is based on 2 main branches:
  - **master** : this branch is always ready to be deployed. It means that at any time, we should be able to build the branch and release a new version of the application.
  - **develop** : this branch contains the latest development that will be integrated in the next release once it's considered as stable.
 
-New features should be implemented in **feature branches** created from **develop**. When the feature is ready, a pull-request is created and it'll be merge into **develop** when it is succesfully reviewed and accepted.
+New features should be implemented in **feature branches** created from **develop**. When the feature is ready, a pull-request is created and it'll be merge into **develop** when it is successfully reviewed and accepted.
 
 To release a new version of the application, when develop is considered stable, a **release** branch is created from **develop**. This can be considered as a *release candidate* branch. When everything is OK, this release branch is merged into **master** and the release is generated (a tag is applied to git, the release note is finalized, binaries are built,...) from **master**.
 

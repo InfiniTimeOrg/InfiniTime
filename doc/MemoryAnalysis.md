@@ -60,7 +60,7 @@ Puncover is really easy to install:
  - Launch a browser at http://localhost:5000/
 
 ### Analysis
-Using the MAP file and tools, we can easily see what symbols are using most of the flash memory. In this case, unsuprisingly, fonts and graphics are the largest use of flash memory.
+Using the MAP file and tools, we can easily see what symbols are using most of the flash memory. In this case, unsurprisingly, fonts and graphics are the largest use of flash memory.
 
 ![Puncover](./memoryAnalysis/puncover-all-symbols.png)
 
@@ -150,7 +150,7 @@ You can then display the file using objdump:
 hexdump ram.bin -v  | less
 ```
 
-The stack is positionned at the end of the RAM -> 0xFFFF. Its size is 8192 bytes, so the end of the stack is at 0xE000.
+The stack is positioned at the end of the RAM -> 0xFFFF. Its size is 8192 bytes, so the end of the stack is at 0xE000.
 On the following dump, the maximum stack usage is 520 bytes (0xFFFF - 0xFDF8):
 
 ```

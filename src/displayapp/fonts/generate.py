@@ -43,7 +43,7 @@ def main():
     if not os.path.exists(args.config):
         sys.exit(f'Error: the config file {args.config} does not exist.')
     if not os.access(args.config, os.R_OK):
-        sys.exit(f'Error: the config file {args.config} is not accessable (permissions?).')
+        sys.exit(f'Error: the config file {args.config} is not accessible (permissions?).')
     with open(args.config, 'r') as fd:
         data = json.load(fd)
 
