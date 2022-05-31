@@ -456,7 +456,7 @@ void SystemTask::Work() {
     if (isBleDiscoveryTimerRunning) {
       if (bleDiscoveryTimer == 0) {
         isBleDiscoveryTimerRunning = false;
-        // Services discovery is deffered from 3 seconds to avoid the conflicts between the host communicating with the
+        // Services discovery is deferred from 3 seconds to avoid the conflicts between the host communicating with the
         // target and vice-versa. I'm not sure if this is the right way to handle this...
         nimbleController.StartDiscovery();
       } else {

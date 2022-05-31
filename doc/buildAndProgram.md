@@ -47,7 +47,7 @@ By default, this variable is set to *Release*. It compiles the code with size an
 The *Debug* mode disables all optimizations, which makes the code easier to debug. However, the binary size will likely be too big to fit in the internal flash memory. If you want to build and debug a *Debug* binary, you'll need to disable some parts of the code. For example, the icons for the **Navigation** app use a lot of memory space. You can comment the content of `m_iconMap` in the [Navigation](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/displayapp/screens/Navigation.h#L148) application to free some memory.
 
 ####(**) Note about **BUILD_DFU**:
-DFU files are the files you'll need to install your build of InfiniTime using OTA (over-the-air) mecanism. To generate the DFU file, the Python tool [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil) is needed on your system. Check that this tool is properly installed before enabling this option.
+DFU files are the files you'll need to install your build of InfiniTime using OTA (over-the-air) mechanism. To generate the DFU file, the Python tool [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil) is needed on your system. Check that this tool is properly installed before enabling this option.
 
 #### CMake command line for JLink
 ```

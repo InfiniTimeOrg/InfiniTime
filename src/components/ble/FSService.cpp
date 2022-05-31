@@ -81,7 +81,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         return -1;
       }
       memcpy(filepath, header->pathstr, plen);
-      filepath[plen] = 0; // Copy and null teminate string
+      filepath[plen] = 0; // Copy and null terminate string
       ReadResponse resp;
       os_mbuf* om;
       resp.command = commands::READ_DATA;
@@ -148,7 +148,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
         return -1;             // TODO make this actually return a BLE notif
       }
       memcpy(filepath, header->pathstr, plen);
-      filepath[plen] = 0; // Copy and null teminate string
+      filepath[plen] = 0; // Copy and null terminate string
       fileSize = header->totalSize;
       WriteResponse resp;
       resp.command = commands::WRITE_PACING;
@@ -193,7 +193,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       uint16_t plen = header->pathlen;
       char path[plen + 1] = {0};
       memcpy(path, header->pathstr, plen);
-      path[plen] = 0; // Copy and null teminate string
+      path[plen] = 0; // Copy and null terminate string
       DelResponse resp {};
       resp.command = commands::DELETE_STATUS;
       int res = fs.FileDelete(path);
@@ -208,7 +208,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       uint16_t plen = header->pathlen;
       char path[plen + 1] = {0};
       memcpy(path, header->pathstr, plen);
-      path[plen] = 0; // Copy and null teminate string
+      path[plen] = 0; // Copy and null terminate string
       MKDirResponse resp {};
       resp.command = commands::MKDIR_STATUS;
       resp.modification_time = 0;
@@ -223,7 +223,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       ListDirHeader* header = (ListDirHeader*) om->om_data;
       uint16_t plen = header->pathlen;
       char path[plen + 1] = {0};
-      path[plen] = 0; // Copy and null teminate string
+      path[plen] = 0; // Copy and null terminate string
       memcpy(path, header->pathstr, plen);
 
       ListDirResponse resp {};
@@ -290,7 +290,7 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       header->pathstr[plen] = 0;
       char path[header->NewPathLength + 1] = {0};
       memcpy(path, &header->pathstr[plen + 1], header->NewPathLength);
-      path[header->NewPathLength] = 0; // Copy and null teminate string
+      path[header->NewPathLength] = 0; // Copy and null terminate string
       MoveResponse resp {};
       resp.command = commands::MOVE_STATUS;
       int8_t res = (int8_t) fs.Rename(header->pathstr, path);

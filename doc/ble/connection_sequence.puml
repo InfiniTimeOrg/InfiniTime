@@ -3,7 +3,7 @@ Pinetime --> CompanionApp: Start advertising
 
 group BLE Connection
 CompanionApp -> Pinetime: Connection request
-CompanionApp <-> Pinetime: Connection parameters negociation, security procedure,...
+CompanionApp <-> Pinetime: Connection parameters negotiation, security procedure,...
 end
 
 group Service Discovery

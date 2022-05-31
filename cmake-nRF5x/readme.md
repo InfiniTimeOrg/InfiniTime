@@ -7,7 +7,7 @@ Cmake script for projects targeting Nordic Semiconductor nRF5x series devices us
 The script makes use of the following tools:
 
 - nRF5x SDK by Nordic Semiconductor - SoC specific drivers and libraries (also includes a lot of examples)
-- JLink by Segger - interface software for the JLink familiy of programmers
+- JLink by Segger - interface software for the JLink family of programmers
 - nrfjprog by Nordic Semiconductor - Wrapper utility around JLink
 - arm-non-eabi-gcc by ARM and the GCC Team - compiler toolchain for embedded (= bare metal) ARM chips
 
@@ -15,11 +15,11 @@ The script makes use of the following tools:
 
 1. Download this repo (or add as submodule) to the directory `cmake-nRF5x` in your project
 
-1. Search the SDK `example` directory for a `sdk_config.h`, `main.c` and a linker script (normally named `<project_name>_gcc_<chip familly>.ld`) that fits your chip and project needs.
+1. Search the SDK `example` directory for a `sdk_config.h`, `main.c` and a linker script (normally named `<project_name>_gcc_<chip family>.ld`) that fits your chip and project needs.
 
 1. Copy the `sdk_config.h` and the project `main.c` into a new directory `src`. Modify them as required for your project.
 
-1. Copy the linker script into the root of your project. Rename it to just `gcc_<chip familly>.ld` For example:
+1. Copy the linker script into the root of your project. Rename it to just `gcc_<chip family>.ld` For example:
 	
 	```
 	gcc_nrf51.ld

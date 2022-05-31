@@ -44,7 +44,7 @@ When starting, the firmware starts BLE advertising. It sends small messages that
 
 A companion application (running on a PC, Raspberry Pi, smartphone, etc.) which receives this advertising packet can request a connection to the device. This connection procedure allows the 2 devices to negotiate communication parameters, security keys, etc.
 
-When the connection is established, the PineTime will try to discover services running on the companion application. For now **CTS** (**C**urrent **T**ime **S**ervice) and **ANS** (**A**lert **N**otification **S**ervice) are supported.
+When the connection is established, the PineTime will try to discover services running on the companion application. For now **CTS** (**C**urrent **T**ime **S**ervice) and **ANS** (**A**lert **N**notification **S**ervice) are supported.
 
 If **CTS** is detected, it'll request the current time to the companion application. If **ANS** is detected, it will listen to new notifications coming from the companion application.
 
@@ -146,14 +146,14 @@ The new alert characteristic allows sending new notifications to InfiniTime. It 
 For example, here is what a normal notification looks like in Golang (language of `itd`):
 
 ```go
-// \x00 is the category for simple alert, and there is one new notifcation, hence \x01.
+// \x00 is the category for simple alert, and there is one new notification, hence \x01.
 "\x00\x01\x00Test Title\x00Test Body"
 ```
 
 A call notification looks like so:
 
 ```go
-// \x03 is the category for calls, and there is one new call notifcation, hence \x01.
+// \x03 is the category for calls, and there is one new call notification, hence \x01.
 "\x03\x01\x00Mary"
 ```
 
