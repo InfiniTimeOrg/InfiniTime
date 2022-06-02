@@ -106,7 +106,6 @@ namespace Pinetime {
         return watchFacesMenu;
       };
 
-
       uint8_t GetAppMenu() const {
         return appMenu;
       };
