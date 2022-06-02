@@ -110,11 +110,11 @@ std::unique_ptr<Screen> Clock::WatchFaceTerminalScreen() {
 
 std::unique_ptr<Screen> Clock::WatchFaceCasioStyleG7710() {
   return std::make_unique<Screens::WatchFaceCasioStyleG7710>(app,
-                                                              dateTimeController,
-                                                              batteryController,
-                                                              bleController,
-                                                              notificatioManager,
-                                                              settingsController,
-                                                              heartRateController,
-                                                              motionController);
+                                                             dateTimeController,
+                                                             batteryController,
+                                                             bleController,
+                                                             notificatioManager,
+                                                             settingsController,
+                                                             heartRateController,
+                                                             motionController);
 }
