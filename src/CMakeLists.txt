@@ -368,10 +368,6 @@ set(QCBOR_SRC
 
 list(APPEND IMAGE_FILES
         displayapp/icons/battery/batteryicon.c
-
-        displayapp/icons/bluetooth/os_bt_connected.c
-        displayapp/icons/bluetooth/os_bt_disconnected.c
-
         )
 list(APPEND SOURCE_FILES
         BootloaderVersion.cpp
