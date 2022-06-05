@@ -11,7 +11,6 @@
 #include "components/motion/MotionController.h"
 #include "components/motor/MotorController.h"
 #include "displayapp/screens/ApplicationList.h"
-#include "displayapp/screens/Brightness.h"
 #include "displayapp/screens/Clock.h"
 #include "displayapp/screens/FirmwareUpdate.h"
 #include "displayapp/screens/FirmwareValidation.h"
