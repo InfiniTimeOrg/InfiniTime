@@ -383,7 +383,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/BatteryIcon.cpp
         displayapp/screens/BleIcon.cpp
         displayapp/screens/NotificationIcon.cpp
-        displayapp/screens/Brightness.cpp
         displayapp/screens/SystemInfo.cpp
         displayapp/screens/Label.cpp
         displayapp/screens/FirmwareUpdate.cpp
@@ -598,7 +597,6 @@ set(INCLUDE_FILES
         displayapp/screens/BatteryIcon.h
         displayapp/screens/BleIcon.h
         displayapp/screens/NotificationIcon.h
-        displayapp/screens/Brightness.h
         displayapp/screens/SystemInfo.h
         displayapp/screens/ScreenList.h
         displayapp/screens/Label.h
