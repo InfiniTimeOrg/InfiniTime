@@ -2,7 +2,6 @@
 #include <hal/nrf_rtc.h>
 #include <libraries/gpiote/app_gpiote.h>
 #include <libraries/log/nrf_log.h>
-#include <app_timer.h>
 #include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
@@ -126,8 +125,6 @@ void SystemTask::Work() {
   watchdog.Start();
   NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
-
-  app_timer_init();
 
   spi.Init();
   spiNorFlash.Init();
