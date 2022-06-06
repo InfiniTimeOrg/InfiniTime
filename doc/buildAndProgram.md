@@ -1,7 +1,7 @@
 # Build
 ## Dependencies
 To build this project, you'll need:
- - A cross-compiler : [ARM-GCC (11.2-2022.02)](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads)
+ - A cross-compiler : [ARM-GCC (arm-none-eabi 11.2-2022.02)](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads)
  - The NRF52 SDK 15.3.0 : [nRF-SDK v15.3.0](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip)
  - The Python 3 modules `cbor`, `intelhex`, `click` and `cryptography` modules for the `mcuboot` tool (see [requirements.txt](../tools/mcuboot/requirements.txt))
    - To keep the system clean, you can install python modules into a python virtual environment (`venv`)
