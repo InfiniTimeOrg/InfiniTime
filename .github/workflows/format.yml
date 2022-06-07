@@ -7,6 +7,7 @@ on:
       - '**.cpp'
       - '**.h'
       - '!src/libs/**'
+      - '!src/FreeRTOS/**'
 
 jobs:
   test-format:
@@ -17,10 +18,7 @@ jobs:
           fetch-depth: 1000
 
       - name: Configure git
-        run: |
-          git config --global user.email "-"
-          git config --global user.name "Autoformatter"
-          git fetch origin "$GITHUB_BASE_REF":"$GITHUB_BASE_REF" --depth=1000
+        run: git fetch origin "$GITHUB_BASE_REF":"$GITHUB_BASE_REF" --depth=1000
 
       - name: Install clang-format
         run: |
@@ -28,11 +26,17 @@ jobs:
           sudo apt-get -y install clang-format-12
 
       - name: Check formatting
-        run: tests/test-format.sh
+        run: |
+          git clang-format-12 --extensions cpp,h --style file "$GITHUB_BASE_REF" ":!src/FreeRTOS" ":!src/libs"
+          git diff --output=format.patch
+          if [ -s format.patch ]; then
+            printf "\033[31mError:\033[0m Issues found. You may use the patch provided as an artifact to format the code."
+            exit 1
+          fi
 
       - name: Upload patches
         uses: actions/upload-artifact@v3
         if: failure()
         with:
           name: Patches
-          path: ./*.patch
+          path: ./format.patch
