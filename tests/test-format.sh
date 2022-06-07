@@ -16,18 +16,17 @@ for file in $CHANGED_FILES
 do
   [ -e "$file" ] || continue
   case "$file" in
-  src/libs/*) continue ;;
+  src/libs/*|src/FreeRTOS/*) continue ;;
   *.cpp|*.h)
     echo Checking "$file"
-    clang-format -i "$file"
-    if ! git diff --quiet
+    PATCH="$(basename "$file").patch"
+    git clang-format-12 -q --style file --diff "$GITHUB_BASE_REF" "$file" > "$PATCH"
+    if [ -s "$PATCH" ]
     then
       printf "\033[31mError:\033[0m Formatting error in %s\n" "$file"
       CHANGED=1
-      git add "$file"
-      git commit -q -m "Apply clang-format to $(basename "$file")"
-      printf "Creating patch "
-      git format-patch HEAD~
+    else
+      rm "$PATCH"
     fi
   esac
 done
