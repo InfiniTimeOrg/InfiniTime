@@ -100,14 +100,9 @@ namespace Pinetime {
         lv_obj_t* labelHour;
         lv_obj_t* labelMinutes;
         lv_obj_t* labelTimeAmPm;
-<<<<<<< HEAD
         lv_obj_t* dateContainer;
         lv_obj_t* labelDateDay;
         lv_obj_t* labelDateNum;
-=======
-        lv_obj_t* dateBleContainer;
-        lv_obj_t* labelDate;
->>>>>>> 5e798689 (Better alignment of the date label)
         lv_obj_t* bleIcon;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;

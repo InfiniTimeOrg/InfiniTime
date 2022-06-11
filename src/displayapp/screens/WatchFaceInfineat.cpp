@@ -192,21 +192,27 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_label_set_text(labelTimeAmPm, "");
   lv_obj_align(labelTimeAmPm, timeContainer, LV_ALIGN_OUT_RIGHT_TOP, 0, 15);
 
-  dateBleContainer = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_opa(dateBleContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_size(dateBleContainer, 60, 30);
-  lv_obj_align(dateBleContainer, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
+  dateContainer = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_opa(dateContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_size(dateContainer, 40, 50);
+  lv_obj_align(dateContainer, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 5);
 
-  labelDate = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  lv_obj_set_style_local_text_font(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &teko_28);
-  lv_obj_align(labelDate, dateBleContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
-  lv_label_set_text(labelDate, "Mon 01");
+  labelDateDay = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(labelDateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  lv_obj_set_style_local_text_font(labelDateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_align(labelDateDay, dateContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_label_set_text(labelDateDay, "Mon");
+
+  labelDateNum = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(labelDateNum, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  lv_obj_set_style_local_text_font(labelDateNum, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_align(labelDateNum, dateContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_label_set_text(labelDateNum, "01");
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
   lv_label_set_text(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, dateBleContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+  lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 7);
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
@@ -453,8 +459,10 @@ void WatchFaceInfineat::Refresh() {
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      lv_label_set_text_fmt(labelDate, "%s %02d", dateTimeController.DayOfWeekShortToStringLow(), day);
-      lv_obj_realign(labelDate);
+      lv_label_set_text_fmt(labelDateDay, "%s", dateTimeController.DayOfWeekShortToStringLow());
+      lv_label_set_text_fmt(labelDateNum, "%02d", day);
+      lv_obj_align(labelDateDay, dateContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
+      lv_obj_align(labelDateNum, dateContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
       currentYear = year;
       currentMonth = month;
@@ -484,7 +492,7 @@ void WatchFaceInfineat::Refresh() {
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated()) {
     lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
-    lv_obj_realign(bleIcon);
+    lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 3);
   }
 
   stepCount = motionController.NbSteps();
