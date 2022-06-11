@@ -50,7 +50,6 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
   label_prompt_1 = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label_prompt_1, true);
   lv_obj_align(label_prompt_1, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -80);
-  lv_label_set_text_static(label_prompt_1, "user@watch:~ $ now");
 
   label_ctf = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label_ctf, true);
@@ -85,6 +84,11 @@ WatchFaceTerminal::~WatchFaceTerminal() {
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
+
+static uint to_timestamp(uint hour, uint minute, uint second)
+  {
+    return (hour * 60 * 60) + (minute * 60) + second;
+  }
 
 void WatchFaceTerminal::Refresh() {
   powerPresent = batteryController.IsPowerPresent();
@@ -142,6 +146,24 @@ void WatchFaceTerminal::Refresh() {
       displayedMinute = minute;
       displayedSecond = second;
 
+      bool is_leet = (to_timestamp(13, 37, 16) <= to_timestamp(hour, minute, second)) && 
+                     (to_timestamp(hour, minute, second) <= to_timestamp(14, 0, 0));
+      bool is_midnight = (to_timestamp(0, 0, 16) <= to_timestamp(hour, minute, second)) && 
+                     (to_timestamp(hour, minute, second) <= to_timestamp(4, 0, 0));
+
+      if (is_leet)
+      {
+          lv_label_set_text_static(label_prompt_1, "#00FFFF 1337##00FF00 @badge:~ $ now");
+      }
+      else if (is_midnight)
+      {
+        lv_label_set_text_static(label_prompt_1, "#FF0000 root##00FF00 @badge:~ ! now");
+      }
+      else
+      {
+          lv_label_set_text_static(label_prompt_1, "#00FF00 user@badge:~ $ now");
+      }
+
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         char ampmChar[3] = "AM";
         if (hour == 0) {
@@ -152,9 +174,30 @@ void WatchFaceTerminal::Refresh() {
           hour = hour - 12;
           ampmChar[0] = 'P';
         }
-        lv_label_set_text_fmt(label_time, "[TIME]#11cc55 %02d:%02d:%02d %s#", hour, minute, second, ampmChar);
-      } else {
-        lv_label_set_text_fmt(label_time, "[TIME]#11cc55 %02d:%02d:%02d", hour, minute, second);
+        auto format = "[TIME] #00ff00 %02d:%02d:%02d %s#";
+        if (is_leet)
+        {
+          format = "[T1M3] #00ffff %02X:%02X:%02X %s#";
+        }
+        else if (is_midnight)
+        {
+          format = "[T1M3] #ff0000 %02X:%02X:%02X %s#";
+        }
+        
+        lv_label_set_text_fmt(label_time, format, hour, minute, second, ampmChar);
+      } 
+      else 
+      {
+        auto format = "[TIME] #00ff00 %02d:%02d:%02d#";
+        if (is_leet)
+        {
+          format = "[T1M3] #00ffff %02X:%02X:%02X#";
+        }
+        else if (is_midnight)
+        {
+          format = "[T1M3] #ff0000 %02X:%02X:%02X#";
+        }
+        lv_label_set_text_fmt(label_time, format, hour, minute, second);
       }
     }
 
