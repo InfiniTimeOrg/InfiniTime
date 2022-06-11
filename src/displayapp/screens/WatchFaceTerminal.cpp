@@ -38,7 +38,7 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
 
   connectState = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(connectState, true);
-  lv_obj_align(connectState, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 40);
+  lv_obj_align(connectState, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_LEFT_MID, 0, -100);
@@ -48,12 +48,14 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -40);
 
   label_prompt_1 = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_recolor(label_prompt_1, true);
   lv_obj_align(label_prompt_1, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -80);
   lv_label_set_text_static(label_prompt_1, "user@watch:~ $ now");
 
-  label_prompt_2 = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_prompt_2, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
-  lv_label_set_text_static(label_prompt_2, "user@watch:~ $");
+  label_ctf = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_recolor(label_ctf, true);
+  lv_obj_align(label_ctf, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
+  lv_label_set_text_static(label_ctf, "[LVL ] #00FF00 .....");
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label_time, true);
@@ -72,7 +74,8 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(stepValue, true);
-  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
+  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 40);
+  
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -87,9 +90,9 @@ void WatchFaceTerminal::Refresh() {
   powerPresent = batteryController.IsPowerPresent();
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated() || powerPresent.IsUpdated()) {
-    lv_label_set_text_fmt(batteryValue, "[BATT]#387b54 %d%%", batteryPercentRemaining.Get());
+    lv_label_set_text_fmt(batteryValue, "[BATT] #00FF00 %d%%", batteryPercentRemaining.Get());
     if (batteryController.IsPowerPresent()) {
-      lv_label_ins_text(batteryValue, LV_LABEL_POS_LAST, " Charging");
+      lv_label_ins_text(batteryValue, LV_LABEL_POS_LAST, " CHG");
     }
   }
 
@@ -97,12 +100,12 @@ void WatchFaceTerminal::Refresh() {
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     if(!bleRadioEnabled.Get()) {
-      lv_label_set_text_static(connectState, "[STAT]#0082fc Disabled#");
+      lv_label_set_text_static(connectState, "[BLE ] #0082fc DISABLED#");
     } else {
       if (bleState.Get()) {
-        lv_label_set_text_static(connectState, "[STAT]#0082fc Connected#");
+        lv_label_set_text_static(connectState, "[BLE ]#00FF00  ON#");
       } else {
-        lv_label_set_text_static(connectState, "[STAT]#0082fc Disconnected#");
+        lv_label_set_text_static(connectState, "[BLE ]#001000  OFF#");
       }
     }
   }
@@ -156,7 +159,7 @@ void WatchFaceTerminal::Refresh() {
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      lv_label_set_text_fmt(label_date, "[DATE]#007fff %04d.%02d.%02d#", short(year), char(month), char(day));
+      lv_label_set_text_fmt(label_date, "[DATE] #007f00 %02d_%02d_%04d#", char(day), char(month), short(year));
 
       currentYear = year;
       currentMonth = month;
@@ -169,15 +172,15 @@ void WatchFaceTerminal::Refresh() {
   heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
   if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
     if (heartbeatRunning.Get()) {
-      lv_label_set_text_fmt(heartbeatValue, "[L_HR]#ee3311 %d bpm#", heartbeat.Get());
+      lv_label_set_text_fmt(heartbeatValue, "[CPU ] #ee3311 %d bpm#", heartbeat.Get());
     } else {
-      lv_label_set_text_static(heartbeatValue, "[L_HR]#ee3311 ---#");
+      lv_label_set_text_static(heartbeatValue, "[CPU ] #ee3311 ---#");
     }
   }
 
   stepCount = motionController.NbSteps();
   motionSensorOk = motionController.IsSensorOk();
   if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
-    lv_label_set_text_fmt(stepValue, "[STEP]#ee3377 %lu steps#", stepCount.Get());
+    lv_label_set_text_fmt(stepValue, "[STEP] #004000 %lu steps#", stepCount.Get());
   }
 }
