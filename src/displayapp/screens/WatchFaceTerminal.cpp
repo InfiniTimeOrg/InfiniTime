@@ -85,7 +85,7 @@ WatchFaceTerminal::~WatchFaceTerminal() {
   lv_obj_clean(lv_scr_act());
 }
 
-static uint to_timestamp(uint hour, uint minute, uint second)
+static uint32_t to_timestamp(uint32_t hour, uint32_t minute, uint32_t second)
   {
     return (hour * 60 * 60) + (minute * 60) + second;
   }
