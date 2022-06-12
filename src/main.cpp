@@ -130,6 +130,7 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               motionController,
                                               timerController,
                                               alarmController,
+                                              fs,
                                               brightnessController,
                                               touchHandler);
 
