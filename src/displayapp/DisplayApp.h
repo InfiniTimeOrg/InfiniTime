@@ -8,6 +8,7 @@
 #include "displayapp/Apps.h"
 #include "displayapp/LittleVgl.h"
 #include "displayapp/TouchEvents.h"
+#include "components/calendar/CalendarManager.h"
 #include "components/brightness/BrightnessController.h"
 #include "components/motor/MotorController.h"
 #include "components/firmwarevalidator/FirmwareValidator.h"
@@ -52,6 +53,7 @@ namespace Pinetime {
                  Drivers::Cst816S&,
                  Controllers::Battery& batteryController,
                  Controllers::Ble& bleController,
+                 Controllers::CalendarManager& calendarManager,
                  Controllers::DateTime& dateTimeController,
                  Drivers::WatchdogView& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
@@ -78,6 +80,7 @@ namespace Pinetime {
       Pinetime::Drivers::Cst816S& touchPanel;
       Pinetime::Controllers::Battery& batteryController;
       Pinetime::Controllers::Ble& bleController;
+      Pinetime::Controllers::CalendarManager& calendarManager;
       Pinetime::Controllers::DateTime& dateTimeController;
       Pinetime::Drivers::WatchdogView& watchdog;
       Pinetime::System::SystemTask* systemTask = nullptr;

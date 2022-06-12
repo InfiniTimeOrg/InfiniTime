@@ -115,12 +115,14 @@ Pinetime::Controllers::AlarmController alarmController {dateTimeController};
 Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);
 Pinetime::Controllers::ButtonHandler buttonHandler;
 Pinetime::Controllers::BrightnessController brightnessController {};
+Pinetime::Controllers::CalendarManager calendarManager {};
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               lvgl,
                                               touchPanel,
                                               batteryController,
                                               bleController,
+                                              calendarManager,
                                               dateTimeController,
                                               watchdogView,
                                               notificationManager,
@@ -141,6 +143,7 @@ Pinetime::System::SystemTask systemTask(spi,
                                         lvgl,
                                         batteryController,
                                         bleController,
+                                        calendarManager,
                                         dateTimeController,
                                         timerController,
                                         alarmController,
