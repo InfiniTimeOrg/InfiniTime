@@ -5,9 +5,11 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  void event_handler(lv_obj_t* obj, lv_event_t event) {
-    auto* screen = static_cast<FlashLight*>(obj->user_data);
-    screen->OnClickEvent(obj, event);
+  void EventHandler(lv_obj_t* obj, lv_event_t event) {
+    if (event == LV_EVENT_CLICKED) {
+      auto* screen = static_cast<FlashLight*>(obj->user_data);
+      screen->Toggle();
+    }
   }
 }
 
@@ -16,7 +18,7 @@ FlashLight::FlashLight(Pinetime::Applications::DisplayApp* app,
                        Controllers::BrightnessController& brightnessController)
   : Screen(app), systemTask {systemTask}, brightnessController {brightnessController} {
 
-  brightnessLevel = brightnessController.Level();
+  brightnessController.Set(brightnessLevel);
 
   flashLight = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(flashLight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_sys_48);
@@ -43,7 +45,7 @@ FlashLight::FlashLight(Pinetime::Applications::DisplayApp* app,
   lv_label_set_text_static(backgroundAction, "");
   lv_obj_set_click(backgroundAction, true);
   backgroundAction->user_data = this;
-  lv_obj_set_event_cb(backgroundAction, event_handler);
+  lv_obj_set_event_cb(backgroundAction, EventHandler);
 
   systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
 }
@@ -89,11 +91,9 @@ void FlashLight::SetIndicators() {
   }
 }
 
-void FlashLight::OnClickEvent(lv_obj_t* obj, lv_event_t event) {
-  if (obj == backgroundAction && event == LV_EVENT_CLICKED) {
-    isOn = !isOn;
-    SetColors();
-  }
+void FlashLight::Toggle() {
+  isOn = !isOn;
+  SetColors();
 }
 
 bool FlashLight::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
