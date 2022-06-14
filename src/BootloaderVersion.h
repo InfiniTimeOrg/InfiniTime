@@ -6,11 +6,11 @@
 namespace Pinetime {
   class BootloaderVersion {
   public:
-    static const uint32_t Major();
-    static const uint32_t Minor();
-    static const uint32_t Patch();
+    static uint32_t Major();
+    static uint32_t Minor();
+    static uint32_t Patch();
     static const char* VersionString();
-    static const bool IsValid();
+    static bool IsValid();
     static void SetVersion(uint32_t v);
 
   private:
