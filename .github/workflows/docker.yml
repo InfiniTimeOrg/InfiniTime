@@ -1,0 +1,42 @@
+name: Build and push Docker image
+
+on:
+  push:
+    branches: [ master, develop ]
+    paths:
+      - 'docker/**'
+  pull_request:
+    branches: [ master, develop ]
+    paths:
+      - 'docker/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: ./docker/
+          file: ./docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          builder: ${{ steps.buildx.outputs.name }}
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/infinitime-build:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/infinitime-build:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/infinitime-build:buildcache,mode=max
