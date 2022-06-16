@@ -1,12 +1,22 @@
 #include "displayapp/screens/ApplicationList.h"
 #include <lvgl/lvgl.h>
-#include <array>
-#include "displayapp/screens/Symbols.h"
-#include "displayapp/screens/Tile.h"
+#include <functional>
 #include "displayapp/Apps.h"
 #include "displayapp/DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;
+
+constexpr std::array<Tile::Applications, ApplicationList::applications.size()> ApplicationList::applications;
+
+auto ApplicationList::CreateScreenList() const {
+  std::array<std::function<std::unique_ptr<Screen>()>, nScreens> screens;
+  for (size_t i = 0; i < screens.size(); i++) {
+    screens[i] = [this, i]() -> std::unique_ptr<Screen> {
+      return CreateScreen(i);
+    };
+  }
+  return screens;
+}
 
 ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp* app,
                                  Pinetime::Controllers::Settings& settingsController,
@@ -16,18 +26,7 @@ ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp* app,
     settingsController {settingsController},
     batteryController {batteryController},
     dateTimeController {dateTimeController},
-    screens {app,
-             settingsController.GetAppMenu(),
-             {
-               [this]() -> std::unique_ptr<Screen> {
-                 return CreateScreen1();
-               },
-               [this]() -> std::unique_ptr<Screen> {
-                 return CreateScreen2();
-               },
-               //[this]() -> std::unique_ptr<Screen> { return CreateScreen3(); }
-             },
-             Screens::ScreenListModes::UpDown} {
+    screens {app, settingsController.GetAppMenu(), CreateScreenList(), Screens::ScreenListModes::UpDown} {
 }
 
 ApplicationList::~ApplicationList() {
@@ -38,42 +37,11 @@ bool ApplicationList::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return screens.OnTouchEvent(event);
 }
 
-std::unique_ptr<Screen> ApplicationList::CreateScreen1() {
-  std::array<Screens::Tile::Applications, 6> applications {{
-    {Symbols::stopWatch, Apps::StopWatch},
-    {Symbols::clock, Apps::Alarm},
-    {Symbols::hourGlass, Apps::Timer},
-    {Symbols::shoe, Apps::Steps},
-    {Symbols::heartBeat, Apps::HeartRate},
-    {Symbols::music, Apps::Music},
-  }};
+std::unique_ptr<Screen> ApplicationList::CreateScreen(unsigned int screenNum) const {
+  std::array<Tile::Applications, appsPerScreen> apps;
+  for (int i = 0; i < appsPerScreen; i++) {
+    apps[i] = applications[screenNum * appsPerScreen + i];
+  }
 
-  return std::make_unique<Screens::Tile>(0, 2, app, settingsController, batteryController, dateTimeController, applications);
+  return std::make_unique<Screens::Tile>(screenNum, nScreens, app, settingsController, batteryController, dateTimeController, apps);
 }
-
-std::unique_ptr<Screen> ApplicationList::CreateScreen2() {
-  std::array<Screens::Tile::Applications, 6> applications {{
-    {Symbols::paintbrush, Apps::Paint},
-    {Symbols::paddle, Apps::Paddle},
-    {"2", Apps::Twos},
-    {Symbols::chartLine, Apps::Motion},
-    {Symbols::drum, Apps::Metronome},
-    {Symbols::map, Apps::Navigation},
-  }};
-
-  return std::make_unique<Screens::Tile>(1, 2, app, settingsController, batteryController, dateTimeController, applications);
-}
-
-/*std::unique_ptr<Screen> ApplicationList::CreateScreen3() {
-  std::array<Screens::Tile::Applications, 6> applications {
-          {{"A", Apps::Meter},
-           {"B", Apps::Navigation},
-           {"C", Apps::Clock},
-           {"D", Apps::Music},
-           {"E", Apps::SysInfo},
-           {"F", Apps::Brightness}
-          }
-  };
-
-  return std::make_unique<Screens::Tile>(2, 3, app, settingsController, batteryController, dateTimeController, applications);
-}*/
