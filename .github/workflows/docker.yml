@@ -20,7 +20,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          username: infinitime
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: Set up QEMU
@@ -37,6 +37,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           builder: ${{ steps.buildx.outputs.name }}
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/infinitime-build:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/infinitime-build:buildcache
-          cache-to: type=registry,ref=${{ secrets.DOCKER_HUB_USERNAME }}/infinitime-build:buildcache,mode=max
+          tags: infinitime/infinitime-build:latest
+          cache-from: type=registry,ref=infinitime/infinitime-build:buildcache
+          cache-to: type=registry,ref=infinitime/infinitime-build:buildcache,mode=max
