@@ -25,7 +25,11 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
 
         static constexpr int entriesPerScreen = 4;
-        static constexpr std::array<List::Applications, entriesPerScreen * 4> entries {{
+
+        // Increment this when more space is needed
+        static constexpr int nScreens = 4;
+
+        static constexpr std::array<List::Applications, entriesPerScreen * nScreens> entries {{
           {Symbols::sun, "Display", Apps::SettingDisplay},
           {Symbols::eye, "Wake Up", Apps::SettingWakeUp},
           {Symbols::clock, "Time format", Apps::SettingTimeFormat},
@@ -46,7 +50,6 @@ namespace Pinetime {
           {Symbols::none, "None", Apps::None},
           {Symbols::none, "None", Apps::None},
         }};
-        static constexpr int nScreens = (entries.size() + entriesPerScreen - 1) / entriesPerScreen;
         ScreenList<nScreens> screens;
       };
     }

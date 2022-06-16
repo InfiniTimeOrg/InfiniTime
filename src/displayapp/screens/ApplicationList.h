@@ -31,7 +31,11 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
 
         static constexpr int appsPerScreen = 6;
-        static constexpr std::array<Tile::Applications, appsPerScreen * 2> applications {{
+
+        // Increment this when more space is needed
+        static constexpr int nScreens = 2;
+
+        static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
           {Symbols::stopWatch, Apps::StopWatch},
           {Symbols::clock, Apps::Alarm},
           {Symbols::hourGlass, Apps::Timer},
@@ -46,7 +50,6 @@ namespace Pinetime {
           {Symbols::drum, Apps::Metronome},
           {Symbols::map, Apps::Navigation},
         }};
-        static constexpr int nScreens = (applications.size() + appsPerScreen - 1) / appsPerScreen;
         ScreenList<nScreens> screens;
       };
     }
