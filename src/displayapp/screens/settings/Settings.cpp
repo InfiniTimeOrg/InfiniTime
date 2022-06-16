@@ -1,6 +1,6 @@
 #include "displayapp/screens/settings/Settings.h"
 #include <lvgl/lvgl.h>
-#include <array>
+#include <functional>
 #include "displayapp/Apps.h"
 #include "displayapp/DisplayApp.h"
 
