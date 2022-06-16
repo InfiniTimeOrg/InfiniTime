@@ -129,7 +129,7 @@ void DisplayApp::InitHw() {
 }
 
 void DisplayApp::Refresh() {
-  auto Return = [this]() {
+  auto LoadPreviousScreen = [this]() {
     brightnessController.Set(settingsController.GetBrightness());
     LoadApp(returnToApp, returnDirection);
   };
@@ -141,7 +141,7 @@ void DisplayApp::Refresh() {
       break;
     case States::Running:
       if (!currentScreen->IsRunning()) {
-        Return();
+        LoadPreviousScreen();
       }
       queueTimeout = lv_task_handler();
       break;
@@ -227,7 +227,7 @@ void DisplayApp::Refresh() {
                 break;
             }
           } else if (returnTouchEvent == gesture) {
-            Return();
+            LoadPreviousScreen();
           }
         } else {
           touchHandler.CancelTap();
@@ -238,7 +238,7 @@ void DisplayApp::Refresh() {
           if (currentApp == Apps::Clock) {
             PushMessageToSystemTask(System::Messages::GoToSleep);
           } else {
-            Return();
+            LoadPreviousScreen();
           }
         }
         break;
