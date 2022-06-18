@@ -14,12 +14,7 @@ namespace {
 FlashLight::FlashLight(Pinetime::Applications::DisplayApp* app,
                        System::SystemTask& systemTask,
                        Controllers::BrightnessController& brightnessController)
-  : Screen(app),
-    systemTask {systemTask},
-    brightnessController {brightnessController}
-
-{
-  brightnessController.Backup();
+  : Screen(app), systemTask {systemTask}, brightnessController {brightnessController} {
 
   brightnessLevel = brightnessController.Level();
 
@@ -56,7 +51,6 @@ FlashLight::FlashLight(Pinetime::Applications::DisplayApp* app,
 FlashLight::~FlashLight() {
   lv_obj_clean(lv_scr_act());
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  brightnessController.Restore();
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
