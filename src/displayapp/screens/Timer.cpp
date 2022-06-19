@@ -28,9 +28,18 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : S
   lv_obj_set_style_local_radius(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
   lv_obj_set_event_cb(btnPlayPause, btnEventHandler);
-  lv_obj_set_size(btnPlayPause, LV_HOR_RES, 50);
+  lv_obj_set_size(btnPlayPause, 150, 50);
   lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
+
+  btnReset = lv_btn_create(lv_scr_act(), nullptr);
+  btnReset->user_data = this;
+  lv_obj_set_event_cb(btnReset, btnEventHandler);
+  lv_obj_set_style_local_bg_color(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_SILVER);
+  lv_obj_set_size(btnReset, 80, 50);
+  lv_obj_align(btnReset, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 160, 0);
+  txtReset = lv_label_create(btnReset, nullptr);
+  lv_label_set_text_static(txtReset, "Rset");
 
   if (timerController.IsRunning()) {
     SetTimerRunning();
