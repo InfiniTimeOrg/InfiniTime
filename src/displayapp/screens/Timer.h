@@ -20,6 +20,7 @@ namespace Pinetime::Applications::Screens {
     void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
 
   private:
+    void MakeResetButton();
     void SetTimerRunning();
     void SetTimerStopped();
     Controllers::TimerController& timerController;
