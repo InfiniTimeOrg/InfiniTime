@@ -81,6 +81,8 @@ void Counter::Create() {
 
   UpdateLabel();
 
+  static constexpr const char* upArrow = "\xEF\x83\x98\n\n";
+  static constexpr const char* downArrow = "\n\n\xEF\x83\x97";
 
   upBtn = lv_btn_create(counterContainer, nullptr);
   lv_obj_set_style_local_bg_color(upBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
@@ -92,7 +94,8 @@ void Counter::Create() {
 
   lv_obj_t* upLabel = lv_label_create(upBtn, nullptr);
   lv_obj_set_style_local_text_font(upLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_label_set_text_static(upLabel, "+");
+  lv_obj_set_style_local_text_opa(upLabel, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_label_set_text_static(upLabel, upArrow);
   lv_obj_align(upLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
 
   downBtn = lv_btn_create(counterContainer, nullptr); 
@@ -105,8 +108,8 @@ void Counter::Create() {
 
   lv_obj_t* downLabel = lv_label_create(downBtn, nullptr);
   lv_obj_set_style_local_text_font(downLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_set_style_local_text_opa(downLabel, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_40);
-  lv_label_set_text_static(downLabel, "-");
+  lv_obj_set_style_local_text_opa(downLabel, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_label_set_text_static(downLabel, downArrow);
   lv_obj_align(downLabel, nullptr, LV_LABEL_ALIGN_CENTER, 0, 20);
 
   linePoints[0] = {0, 0};

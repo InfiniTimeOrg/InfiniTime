@@ -33,6 +33,7 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : S
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
 
   
+  static constexpr const char* resetIcon = "\xEF\x87\x9A";
 
   btnReset = lv_btn_create(lv_scr_act(), nullptr);
   btnReset->user_data = this;
@@ -42,7 +43,8 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : S
   lv_obj_set_size(btnReset, 60, 50);
   lv_obj_align(btnReset, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, 0);
   txtReset = lv_label_create(btnReset, nullptr);
-  lv_label_set_text_static(txtReset, "Rset");
+  lv_label_set_text_static(txtReset, resetIcon);
+  lv_label_set_align(txtReset, LV_ALIGN_CENTER);
 
   if (timerController.IsRunning()) {
     SetTimerRunning();
@@ -69,14 +71,14 @@ void Timer::Refresh() {
 void Timer::SetTimerRunning() {
   minuteCounter.HideControls();
   secondCounter.HideControls();
-  lv_label_set_text_static(txtPlayPause, "Pause");
+  lv_label_set_text_static(txtPlayPause, Symbols::pause);
   lv_obj_set_hidden(btnReset, true);
 }
 
 void Timer::SetTimerStopped() {
   minuteCounter.ShowControls();
   secondCounter.ShowControls();
-  lv_label_set_text_static(txtPlayPause, "Play");
+  lv_label_set_text_static(txtPlayPause, Symbols::play);
   lv_obj_set_hidden(btnReset, false);
 }
 
