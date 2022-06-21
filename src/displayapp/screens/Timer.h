@@ -22,10 +22,13 @@ namespace Pinetime::Applications::Screens {
   private:
     void SetTimerRunning();
     void SetTimerStopped();
+    void MakeResetButton();
     Controllers::TimerController& timerController;
     lv_obj_t* msecTime;
     lv_obj_t* btnPlayPause;
     lv_obj_t* txtPlayPause;
+    lv_obj_t* btnReset;
+    lv_obj_t* txtReset;
     lv_task_t* taskRefresh;
     Widgets::Counter minuteCounter = Widgets::Counter(0, 59);
     Widgets::Counter secondCounter = Widgets::Counter(0, 59);

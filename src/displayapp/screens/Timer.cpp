@@ -28,10 +28,22 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : S
   lv_obj_set_style_local_radius(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
   lv_obj_set_event_cb(btnPlayPause, btnEventHandler);
-  lv_obj_set_size(btnPlayPause, LV_HOR_RES, 50);
-  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  lv_obj_set_size(btnPlayPause, 150, 50);
+  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
 
+
+
+  btnReset = lv_btn_create(lv_scr_act(), nullptr);
+  btnReset->user_data = this;
+  lv_obj_set_event_cb(btnReset, btnEventHandler);
+  lv_obj_set_style_local_radius(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+  lv_obj_set_style_local_bg_color(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
+  lv_obj_set_size(btnReset, 60, 50);
+  lv_obj_align(btnReset, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, 0);
+  txtReset = lv_label_create(btnReset, nullptr);
+  lv_label_set_text_static(txtReset, "Reset");
+  lv_label_set_align(txtReset, LV_ALIGN_CENTER);
   if (timerController.IsRunning()) {
     SetTimerRunning();
   } else {
@@ -58,12 +70,14 @@ void Timer::SetTimerRunning() {
   minuteCounter.HideControls();
   secondCounter.HideControls();
   lv_label_set_text_static(txtPlayPause, "Pause");
+  lv_obj_set_hidden(btnReset, true);
 }
 
 void Timer::SetTimerStopped() {
   minuteCounter.ShowControls();
   secondCounter.ShowControls();
   lv_label_set_text_static(txtPlayPause, "Start");
+  lv_obj_set_hidden(btnReset, false);
 }
 
 void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
@@ -80,6 +94,9 @@ void Timer::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         Refresh();
         SetTimerRunning();
       }
+    }
+    if (obj == btnReset){
+      SetDone();
     }
   }
 }
