@@ -7,13 +7,19 @@
 #include <lvgl/lvgl.h>
 
 namespace Pinetime {
+  namespace Controllers {
+    class InfinitimeService;
+  }
 
   namespace Applications {
     namespace Screens {
 
       class FlashLight : public Screen {
       public:
-        FlashLight(DisplayApp* app, System::SystemTask& systemTask, Controllers::BrightnessController& brightness);
+        FlashLight(DisplayApp* app,
+                   System::SystemTask& systemTask,
+                   Controllers::BrightnessController& brightness,
+                   Pinetime::Controllers::InfinitimeService& infinitime);
         ~FlashLight() override;
 
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
@@ -25,6 +31,7 @@ namespace Pinetime {
 
         Pinetime::System::SystemTask& systemTask;
         Controllers::BrightnessController& brightnessController;
+        Pinetime::Controllers::InfinitimeService& infinitimeService;
 
         Controllers::BrightnessController::Levels brightnessLevel = Controllers::BrightnessController::Levels::High;
 

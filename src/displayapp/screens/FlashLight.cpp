@@ -13,10 +13,11 @@ namespace {
   }
 }
 
-FlashLight::FlashLight(Pinetime::Applications::DisplayApp* app,
+FlashLight::FlashLight(DisplayApp* app,
                        System::SystemTask& systemTask,
-                       Controllers::BrightnessController& brightnessController)
-  : Screen(app), systemTask {systemTask}, brightnessController {brightnessController} {
+                       Controllers::BrightnessController& brightness,
+                       Pinetime::Controllers::InfinitimeService& infinitime)
+  : Screen(app), systemTask {systemTask}, brightnessController {brightnessController}, infinitimeService {infinitime} {
 
   brightnessController.Set(brightnessLevel);
 
@@ -92,7 +93,14 @@ void FlashLight::SetIndicators() {
 }
 
 void FlashLight::Toggle() {
+  if (isOn) {
+    infinitimeService.event(Controllers::InfinitimeService::EVENT_PHONE_FIND_START);
+  } else {
+    infinitimeService.event(Controllers::InfinitimeService::EVENT_PHONE_FIND_STOP);
+  }
+
   isOn = !isOn;
+
   SetColors();
 }
 

@@ -8,6 +8,7 @@
 #include "displayapp/Apps.h"
 #include "displayapp/LittleVgl.h"
 #include "displayapp/TouchEvents.h"
+#include "components/ble/infinitimeService.h"
 #include "components/brightness/BrightnessController.h"
 #include "components/motor/MotorController.h"
 #include "components/firmwarevalidator/FirmwareValidator.h"

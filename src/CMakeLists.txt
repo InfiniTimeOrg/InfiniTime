@@ -448,13 +448,13 @@ list(APPEND SOURCE_FILES
         components/brightness/BrightnessController.cpp
         components/motion/MotionController.cpp
         components/ble/NimbleController.cpp
-        components/ble/InfinitimeService.cpp
         components/ble/DeviceInformationService.cpp
         components/ble/CurrentTimeClient.cpp
         components/ble/AlertNotificationClient.cpp
         components/ble/DfuService.cpp
         components/ble/CurrentTimeService.cpp
         components/ble/AlertNotificationService.cpp
+        components/ble/InfinitimeService.cpp
         components/ble/MusicService.cpp
         components/ble/weather/WeatherService.cpp
         components/ble/NavigationService.cpp
@@ -518,11 +518,11 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/NimbleController.cpp
         components/ble/DeviceInformationService.cpp
         components/ble/CurrentTimeClient.cpp
-        components/ble/InfinitimeService.cpp
         components/ble/AlertNotificationClient.cpp
         components/ble/DfuService.cpp
         components/ble/CurrentTimeService.cpp
         components/ble/AlertNotificationService.cpp
+        components/ble/InfinitimeService.cpp
         components/ble/MusicService.cpp
         components/ble/weather/WeatherService.cpp
         components/ble/BatteryInformationService.cpp
@@ -643,6 +643,7 @@ set(INCLUDE_FILES
         components/ble/ImmediateAlertService.h
         components/ble/ServiceDiscovery.h
         components/ble/BleClient.h
+        components/ble/InfinitimeService.h
         components/ble/HeartRateService.h
         components/ble/MotionService.h
         components/ble/weather/WeatherService.h
