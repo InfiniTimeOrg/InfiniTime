@@ -39,7 +39,7 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : S
   lv_obj_set_event_cb(btnReset, btnEventHandler);
   lv_obj_set_style_local_radius(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_obj_set_style_local_bg_color(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
-  lv_obj_set_size(btnReset, 60, 50);
+  lv_obj_set_size(btnReset, 65, 50);
   lv_obj_align(btnReset, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -5, 0);
   txtReset = lv_label_create(btnReset, nullptr);
   lv_label_set_text_static(txtReset, "Reset");
