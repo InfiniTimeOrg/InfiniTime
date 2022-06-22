@@ -43,8 +43,8 @@ namespace Pinetime {
 
       bool isPhoneFinding() const;
 
-      static const char EVENT_PHONE_FIND_START = 0x00;
-      static const char EVENT_PHONE_FIND_STOP = 0x01;
+      static const char EVENT_PHONE_FIND_STOP = 0x00;
+      static const char EVENT_PHONE_FIND_START = 0x01;
 
       enum FindPhone { FindPhoneRunning = 0x00, FindPhoneStopped = 0x01 };
 

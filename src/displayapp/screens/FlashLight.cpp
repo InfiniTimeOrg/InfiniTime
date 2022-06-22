@@ -93,13 +93,13 @@ void FlashLight::SetIndicators() {
 }
 
 void FlashLight::Toggle() {
+  isOn = !isOn;
+
   if (isOn) {
     infinitimeService.event(Controllers::InfinitimeService::EVENT_PHONE_FIND_START);
   } else {
     infinitimeService.event(Controllers::InfinitimeService::EVENT_PHONE_FIND_STOP);
   }
-
-  isOn = !isOn;
 
   SetColors();
 }
