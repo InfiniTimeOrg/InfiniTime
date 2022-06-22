@@ -448,6 +448,7 @@ list(APPEND SOURCE_FILES
         components/brightness/BrightnessController.cpp
         components/motion/MotionController.cpp
         components/ble/NimbleController.cpp
+        components/ble/InfinitimeService.cpp
         components/ble/DeviceInformationService.cpp
         components/ble/CurrentTimeClient.cpp
         components/ble/AlertNotificationClient.cpp
@@ -517,6 +518,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/NimbleController.cpp
         components/ble/DeviceInformationService.cpp
         components/ble/CurrentTimeClient.cpp
+        components/ble/InfinitimeService.cpp
         components/ble/AlertNotificationClient.cpp
         components/ble/DfuService.cpp
         components/ble/CurrentTimeService.cpp

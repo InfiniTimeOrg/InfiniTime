@@ -7,6 +7,7 @@
 #include <host/ble_gap.h>
 #undef max
 #undef min
+#include "components/ble/InfinitimeService.h"
 #include "components/ble/AlertNotificationClient.h"
 #include "components/ble/AlertNotificationService.h"
 #include "components/ble/BatteryInformationService.h"
@@ -55,6 +56,10 @@ namespace Pinetime {
       int OnGAPEvent(ble_gap_event* event);
       void StartDiscovery();
 
+      Pinetime::Controllers::InfinitimeService& infinitime() {
+        return infinitimeService;
+      };
+
       Pinetime::Controllers::MusicService& music() {
         return musicService;
       };
@@ -92,6 +97,7 @@ namespace Pinetime {
 
       DeviceInformationService deviceInformationService;
       CurrentTimeClient currentTimeClient;
+      InfinitimeService infinitimeService;
       AlertNotificationService anService;
       AlertNotificationClient alertNotificationClient;
       CurrentTimeService currentTimeService;
