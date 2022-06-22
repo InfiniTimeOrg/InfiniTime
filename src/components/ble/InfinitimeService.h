@@ -46,7 +46,7 @@ namespace Pinetime {
       static const char EVENT_PHONE_FIND_STOP = 0x00;
       static const char EVENT_PHONE_FIND_START = 0x01;
 
-      enum FindPhone { FindPhoneRunning = 0x00, FindPhoneStopped = 0x01 };
+      enum FindPhone { FindPhoneStopped = 0x00, FindPhoneRunning = 0x01 };
 
     private:
       struct ble_gatt_chr_def characteristicDefinition[2];
