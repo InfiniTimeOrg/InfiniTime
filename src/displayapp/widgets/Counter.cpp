@@ -1,4 +1,5 @@
 #include "displayapp/widgets/Counter.h"
+#include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Widgets;
 
@@ -90,9 +91,9 @@ void Counter::Create() {
   lv_obj_set_event_cb(upBtn, upBtnEventHandler);
 
   lv_obj_t* upLabel = lv_label_create(upBtn, nullptr);
-  lv_obj_set_style_local_text_font(upLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text_static(upLabel, "+");
-  lv_obj_align(upLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_text_font(upLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_label_set_text_static(upLabel, Screens::Symbols::upArrow);
+  lv_obj_align(upLabel, nullptr, LV_ALIGN_CENTER, 0,0);
 
   downBtn = lv_btn_create(counterContainer, nullptr);
   lv_obj_set_style_local_bg_color(downBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
@@ -102,8 +103,8 @@ void Counter::Create() {
   lv_obj_set_event_cb(downBtn, downBtnEventHandler);
 
   lv_obj_t* downLabel = lv_label_create(downBtn, nullptr);
-  lv_obj_set_style_local_text_font(downLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text_static(downLabel, "-");
+  lv_obj_set_style_local_text_font(downLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_label_set_text_static(downLabel, Screens::Symbols::downArrow);
   lv_obj_align(downLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
 
   linePoints[0] = {0, 0};
