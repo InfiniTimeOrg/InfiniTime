@@ -4,7 +4,7 @@ The purpose of this document is to steer efforts towards a common goal, and as s
 
 ## InfiniTime
 
-InfiniTime is a community built smartwatch firmware, providing freedom and privacy that's usually insufficient in wearable technology.
+InfiniTime is a community-built smartwatch firmware, providing freedom and privacy that's usually insufficient in wearable technology.
 
 InfiniTime is not to be used for medical or other health tracking purposes.
 
@@ -17,7 +17,7 @@ InfiniTime is not to be used for medical or other health tracking purposes.
 - Behaviour should be predictable and easy to understand
 - Prefer solid default experience over customization
 - Personalization is achieved through custom watchfaces.
-More options may be available through a companion app.
+  More options may be available through a companion app.
 - Use standard protocols and methods
 
 ## Long term vision
@@ -25,8 +25,8 @@ More options may be available through a companion app.
 The perfect version of InfiniTime would include:
 
 - Capability to upload apps and watchfaces from a phone
-- Only minimal features.
-Users would add the features they want.
+- Only a minimal feature set in the flashed firmware.
+  Users would add the features they want.
 - Ports to other devices
 - Translations
-- Great documentation
+- Great user documentation
