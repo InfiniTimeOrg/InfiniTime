@@ -5,8 +5,14 @@ name: Build PineTime LVGL Simulator
 on:
   push:
     branches: [ master, develop ]
+    paths-ignore:
+      - 'doc/**'
+      - 'images/**'
   pull_request:
     branches: [ master, develop ]
+    paths-ignore:
+      - 'doc/**'
+      - 'images/**'
 
 jobs:
   build:
