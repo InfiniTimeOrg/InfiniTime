@@ -293,7 +293,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen6() {
 			   "#444444 Cesky preklad#\n"
                            "#FFFF00 https://github.com/#\n"
                            "#FFFF00 ShimonHoranek/#\n"
-                           "#FFFF00 InfiniTime#");
+                           "#FFFF00 InfiniTime-Cesky#");
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(5, 6, app, label);
