@@ -8,7 +8,7 @@ To support as many setups as possible the VS Code configuration files expect the
 
  Variable | Description | Example
 ----------|-------------|--------
-**ARM_NONE_EABI_TOOLCHAIN_PATH**|path to the toolchain directory|`export ARM_NONE_EABI_TOOLCHAIN_PATH=/opt/gcc-arm-11.2-2022.02-x86_64-arm-none-eabi`
+**ARM_NONE_EABI_TOOLCHAIN_PATH**|path to the toolchain directory|`export ARM_NONE_EABI_TOOLCHAIN_PATH=/opt/gcc-arm-none-eabi-10.3-2021.10`
 **NRF5_SDK_PATH**|path to the NRF52 SDK|`export NRF5_SDK_PATH=/opt/nRF5_SDK_15.3.0_59ac345`
 
 ## VS Code Extensions

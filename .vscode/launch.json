@@ -52,7 +52,7 @@
             "servertype": "openocd",
             "runToMain": true,
             // Only use armToolchainPath if your arm-none-eabi-gdb is not in your path (some GCC packages does not contain arm-none-eabi-gdb)
-            "armToolchainPath": "${workspaceRoot}/../gcc-arm-11.2-2022.02-x86_64-arm-none-eabi/bin",
+            "armToolchainPath": "${workspaceRoot}/../gcc-arm-none-eabi-10.3-2021.10/bin",
             "svdFile": "${workspaceRoot}/nrf52.svd",
             "configFiles": [
                 "interface/stlink.cfg",
