@@ -34,16 +34,14 @@ namespace Pinetime {
         class NotificationItem {
         public:
           NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                           Pinetime::Controllers::MotorController& motorController,
-                           bool isTransition = false);
+                           Pinetime::Controllers::MotorController& motorController);
           NotificationItem(const char* title,
                            const char* msg,
                            uint8_t notifNr,
                            Controllers::NotificationManager::Categories,
                            uint8_t notifNb,
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                           Pinetime::Controllers::MotorController& motorController,
-                           bool isTransition = false);
+                           Pinetime::Controllers::MotorController& motorController);
           ~NotificationItem();
           bool IsRunning() const {
             return running;
