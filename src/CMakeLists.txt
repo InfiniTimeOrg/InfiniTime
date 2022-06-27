@@ -785,6 +785,7 @@ add_definitions(-D__HEAP_SIZE=4096)
 
 # Target hardware configuration options
 add_definitions(-DTARGET_DEVICE_${TARGET_DEVICE})
+add_definitions(-DTARGET_DEVICE_NAME="${TARGET_DEVICE}")
 if(TARGET_DEVICE STREQUAL "PINETIME")
   add_definitions(-DDRIVER_PINMAP_PINETIME)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=1) # XTAL
