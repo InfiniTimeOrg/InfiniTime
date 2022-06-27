@@ -157,8 +157,10 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
         }
         currentItem.reset(nullptr);
         app->SetFullRefresh(DisplayApp::FullRefreshDirections::RightAnim);
-        // create black "inTransition" screen
-        currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController, true);
+        // create black transition screen to let the notification dismiss to blackness
+        lv_obj_t* blackBox = lv_obj_create(lv_scr_act(), nullptr);
+        lv_obj_set_size(blackBox, LV_HOR_RES, LV_VER_RES);
+        lv_obj_set_style_local_bg_color(blackBox, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
         dismissingNotification = true;
         return true;
       }
@@ -229,16 +231,14 @@ namespace {
 }
 
 Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController,
-                                                  bool isTransition)
+                                                  Pinetime::Controllers::MotorController& motorController)
   : NotificationItem("Notification",
                      "No notification to display",
                      0,
                      Controllers::NotificationManager::Categories::Unknown,
                      0,
                      alertNotificationService,
-                     motorController,
-                     isTransition) {
+                     motorController) {
 }
 
 Notifications::NotificationItem::NotificationItem(const char* title,
@@ -247,12 +247,8 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Controllers::NotificationManager::Categories category,
                                                   uint8_t notifNb,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController,
-                                                  bool isTransition)
+                                                  Pinetime::Controllers::MotorController& motorController)
   : alertNotificationService {alertNotificationService}, motorController {motorController} {
-  if (isTransition) {
-    return; // nothing to do, just a black box
-  }
   container = lv_cont_create(lv_scr_act(), nullptr);
   lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_style_local_bg_color(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
