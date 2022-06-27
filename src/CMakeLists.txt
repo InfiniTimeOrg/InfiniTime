@@ -788,6 +788,7 @@ add_definitions(-DMYNEWT_VAL_BLE_LL_RFMGMT_ENABLE_TIME=1500)
 
 # Target hardware configuration options
 add_definitions(-DTARGET_DEVICE_${TARGET_DEVICE})
+add_definitions(-DTARGET_DEVICE_NAME="${TARGET_DEVICE}")
 if(TARGET_DEVICE STREQUAL "PINETIME")
   add_definitions(-DDRIVER_PINMAP_PINETIME)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=1) # XTAL
