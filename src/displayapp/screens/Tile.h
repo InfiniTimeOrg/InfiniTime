@@ -37,6 +37,7 @@ namespace Pinetime {
 
       private:
         Pinetime::Controllers::Battery& batteryController;
+        Pinetime::Controllers::Settings& settingsController;
         Controllers::DateTime& dateTimeController;
 
         lv_task_t* taskUpdate;

@@ -209,10 +209,18 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
+      void SetShowBatteryPercentage(bool enabled) {
+        settings.showBatteryPercentage = enabled;
+      }
+
+      bool GetShowBatteryPercentage() {
+        return settings.showBatteryPercentage;
+      }
+
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0003;
+      static constexpr uint32_t settingsVersion = 0x0004;
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
@@ -229,6 +237,7 @@ namespace Pinetime {
         std::bitset<4> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+        bool showBatteryPercentage = false;
       };
 
       SettingsData settings;

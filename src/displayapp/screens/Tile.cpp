@@ -29,7 +29,11 @@ Tile::Tile(uint8_t screenID,
            Pinetime::Controllers::Battery& batteryController,
            Controllers::DateTime& dateTimeController,
            std::array<Applications, 6>& applications)
-  : Screen(app), batteryController {batteryController}, dateTimeController {dateTimeController}, pageIndicator(screenID, numScreens) {
+  : Screen(app),
+    batteryController {batteryController},
+    settingsController(settingsController),
+    dateTimeController {dateTimeController},
+    pageIndicator(screenID, numScreens) {
 
   settingsController.SetAppMenu(screenID);
 
@@ -93,7 +97,7 @@ Tile::~Tile() {
 
 void Tile::UpdateScreen() {
   lv_label_set_text(label_time, dateTimeController.FormattedTime().c_str());
-  batteryIcon.SetBatteryPercentage(batteryController.PercentRemaining());
+  batteryIcon.SetBatteryPercentage(batteryController.PercentRemaining(), settingsController.GetShowBatteryPercentage());
 }
 
 void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId) {
