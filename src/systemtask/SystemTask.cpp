@@ -417,8 +417,9 @@ void SystemTask::UpdateMotion() {
     return;
   }
 
-  if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
+  if (state == SystemTaskState::Sleeping &&
+      !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
+        settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) || bleController.IsConnected())) {
     return;
   }
 
