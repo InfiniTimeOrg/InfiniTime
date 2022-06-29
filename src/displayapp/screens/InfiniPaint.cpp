@@ -26,7 +26,7 @@ bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
           selectColor = LV_COLOR_MAGENTA;
           break;
         case 1:
-          selectColor = LV_COLOR_GREEN;
+          selectColor = LV_COLOR_MAKE(0x0, 0xb0, 0x0);
           break;
         case 2:
           selectColor = LV_COLOR_WHITE;

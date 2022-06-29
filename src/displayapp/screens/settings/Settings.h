@@ -1,8 +1,11 @@
 #pragma once
 
-#include <cstdint>
+#include <array>
+#include <memory>
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/ScreenList.h"
+#include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/List.h"
 
 namespace Pinetime {
 
@@ -17,14 +20,38 @@ namespace Pinetime {
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
       private:
+        auto CreateScreenList() const;
+        std::unique_ptr<Screen> CreateScreen(unsigned int screenNum) const;
+
         Controllers::Settings& settingsController;
 
-        ScreenList<4> screens;
+        static constexpr int entriesPerScreen = 4;
 
-        std::unique_ptr<Screen> CreateScreen1();
-        std::unique_ptr<Screen> CreateScreen2();
-        std::unique_ptr<Screen> CreateScreen3();
-        std::unique_ptr<Screen> CreateScreen4();
+        // Increment this when more space is needed
+        static constexpr int nScreens = 4;
+
+        static constexpr std::array<List::Applications, entriesPerScreen * nScreens> entries {{
+          {Symbols::sun, "Display", Apps::SettingDisplay},
+          {Symbols::eye, "Wake Up", Apps::SettingWakeUp},
+          {Symbols::clock, "Time format", Apps::SettingTimeFormat},
+          {Symbols::home, "Watch face", Apps::SettingWatchFace},
+
+          {Symbols::shoe, "Steps", Apps::SettingSteps},
+          {Symbols::clock, "Set date", Apps::SettingSetDate},
+          {Symbols::clock, "Set time", Apps::SettingSetTime},
+          {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
+
+          {Symbols::clock, "Chimes", Apps::SettingChimes},
+          {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
+          {Symbols::check, "Firmware", Apps::FirmwareValidation},
+          {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
+
+          {Symbols::list, "About", Apps::SysInfo},
+          {Symbols::none, "None", Apps::None},
+          {Symbols::none, "None", Apps::None},
+          {Symbols::none, "None", Apps::None},
+        }};
+        ScreenList<nScreens> screens;
       };
     }
   }

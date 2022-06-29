@@ -70,10 +70,8 @@ namespace Pinetime {
 
         /** Total length in seconds */
         int totalLength = 0;
-        /** Current length in seconds */
-        int currentLength;
-        /** Last length */
-        int lastLength;
+        /** Current position in seconds */
+        int currentPosition;
         /** Last time an animation update or timer was incremented */
         TickType_t lastIncrement = 0;
 

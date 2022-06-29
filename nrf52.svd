@@ -13659,12 +13659,12 @@ POSSIBILITY OF SUCH DAMAGE.\n
                 <usage>read</usage>
                 <enumeratedValue>
                   <name>NotPresent</name>
-                  <description>Read: no overrun occured</description>
+                  <description>Read: no overrun occurred</description>
                   <value>0</value>
                 </enumeratedValue>
                 <enumeratedValue>
                   <name>Present</name>
-                  <description>Read: overrun occured</description>
+                  <description>Read: overrun occurred</description>
                   <value>1</value>
                 </enumeratedValue>
               </enumeratedValues>

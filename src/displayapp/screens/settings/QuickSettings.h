@@ -8,6 +8,7 @@
 #include "components/motor/MotorController.h"
 #include "components/settings/Settings.h"
 #include "components/battery/BatteryController.h"
+#include <displayapp/screens/BatteryIcon.h>
 
 namespace Pinetime {
 
@@ -37,7 +38,6 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
 
         lv_task_t* taskUpdate;
-        lv_obj_t* batteryIcon;
         lv_obj_t* label_time;
 
         lv_style_t btn_style;
@@ -48,6 +48,8 @@ namespace Pinetime {
         lv_obj_t* btn3;
         lv_obj_t* btn3_lvl;
         lv_obj_t* btn4;
+
+        BatteryIcon batteryIcon;
       };
     }
   }

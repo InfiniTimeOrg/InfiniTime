@@ -10,7 +10,7 @@ SpiMaster::SpiMaster(const SpiMaster::SpiModule spi, const SpiMaster::Parameters
 }
 
 bool SpiMaster::Init() {
-  if(mutex == nullptr) {
+  if (mutex == nullptr) {
     mutex = xSemaphoreCreateBinary();
     ASSERT(mutex != nullptr);
   }

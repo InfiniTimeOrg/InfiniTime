@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -qq \
@@ -11,21 +11,27 @@ RUN apt-get update -qq \
       make \
       python3 \
       python3-pip \
+      python-is-python3 \
       tar \
       unzip \
-      wget \ 
-# aarch64 packages
+      wget \
+      curl \
+      # aarch64 packages
       libffi-dev \
       libssl-dev \
       python3-dev \
-      python \
       git \
+      apt-utils \
+    && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
 # Git needed for PROJECT_GIT_COMMIT_HASH variable setting
 
 RUN pip3 install adafruit-nrfutil
 RUN pip3 install -Iv cryptography==3.3
+RUN pip3 install cbor
+RUN npm i lv_font_conv@1.5.2 -g
 
 # build.sh knows how to compile
 COPY build.sh /opt/
@@ -38,10 +44,5 @@ RUN bash -c "source /opt/build.sh; GetNrfSdk;"
 # McuBoot
 RUN bash -c "source /opt/build.sh; GetMcuBoot;"
 
-ARG PUID=1000
-ARG PGID=1000
-RUN groupadd --system --gid $PGID infinitime && useradd --system --uid $PUID --gid $PGID infinitime
-
-USER infinitime:infinitime
 ENV SOURCES_DIR /sources
 CMD ["/opt/build.sh"]

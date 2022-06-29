@@ -13,7 +13,7 @@ The service UUID is 00010000-78fc-48fe-8e23-433b3a1942d0
 
 ## Characteristics
 ## Flags (UUID 00010001-78fc-48fe-8e23-433b3a1942d0)
-All included icons are from pure-maps, which provides the actual routing from the client. The icon names ultimately come from the mapbox project "direction-icons", See https://github.com/rinigus/pure-maps/tree/master/qml/icons/navigation See the end of this document for the full lsit of supported icon names.
+All included icons are from pure-maps, which provides the actual routing from the client. The icon names ultimately come from the mapbox project "direction-icons", See https://github.com/rinigus/pure-maps/tree/master/qml/icons/navigation See the end of this document for the full list of supported icon names.
 
 ## Narrative (UUID 00010002-78fc-48fe-8e23-433b3a1942d0)
 This is a client supplied string describing the upcoming instruction such as "At the roundabout take the first exit".

@@ -127,7 +127,8 @@ namespace Pinetime {
         {.uuid = &weatherControlCharUuid.u, .access_cb = WeatherCallback, .arg = this, .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ},
         {nullptr}};
       const struct ble_gatt_svc_def serviceDefinition[2] = {
-        {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = &weatherUuid.u, .characteristics = characteristicDefinition}, {0}};
+        {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = &weatherUuid.u, .characteristics = characteristicDefinition},
+        {0}};
 
       uint16_t eventHandle {};
 
