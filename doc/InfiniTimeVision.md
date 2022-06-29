@@ -25,7 +25,7 @@ InfiniTime is not to be used for medical or other health tracking purposes.
 
 The perfect version of InfiniTime would include:
 
-- Capability to upload apps and watchfaces from a phone
+- Capability to sideload apps and watchfaces
 - Only a minimal feature set in the flashed firmware.
   Users would add the features they want.
 - Ports to other devices
