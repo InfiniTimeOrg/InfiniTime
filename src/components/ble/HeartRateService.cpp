@@ -57,7 +57,8 @@ int HeartRateService::OnHeartRateRequested(uint16_t connectionHandle, uint16_t a
 }
 
 void HeartRateService::OnNewHeartRateValue(uint8_t heartRateValue) {
-  if(!heartRateMeasurementNotificationEnable) return;
+  if (!heartRateMeasurementNotificationEnable)
+    return;
 
   uint8_t buffer[2] = {0, heartRateController.HeartRate()}; // [0] = flags, [1] = hr value
   auto* om = ble_hs_mbuf_from_flat(buffer, 2);
@@ -72,11 +73,11 @@ void HeartRateService::OnNewHeartRateValue(uint8_t heartRateValue) {
 }
 
 void HeartRateService::SubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) {
-  if(attributeHandle == heartRateMeasurementHandle)
+  if (attributeHandle == heartRateMeasurementHandle)
     heartRateMeasurementNotificationEnable = true;
 }
 
 void HeartRateService::UnsubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) {
-  if(attributeHandle == heartRateMeasurementHandle)
+  if (attributeHandle == heartRateMeasurementHandle)
     heartRateMeasurementNotificationEnable = false;
 }

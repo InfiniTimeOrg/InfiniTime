@@ -35,7 +35,6 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
   : systemTask {systemTask},
     bleController {bleController},
     dateTimeController {dateTimeController},
-    notificationManager {notificationManager},
     spiNorFlash {spiNorFlash},
     fs {fs},
     dfuService {systemTask, bleController, spiNorFlash},
@@ -224,7 +223,7 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
       currentTimeClient.Reset();
       alertNotificationClient.Reset();
       connectionHandle = BLE_HS_CONN_HANDLE_NONE;
-      if(bleController.IsConnected()) {
+      if (bleController.IsConnected()) {
         bleController.Disconnect();
         fastAdvCount = 0;
         StartAdvertising();

@@ -1,6 +1,7 @@
 #include "components/ble/NotificationManager.h"
 #include <cstring>
 #include <algorithm>
+#include <cassert>
 
 using namespace Pinetime::Controllers;
 
@@ -9,73 +10,117 @@ constexpr uint8_t NotificationManager::MessageSize;
 void NotificationManager::Push(NotificationManager::Notification&& notif) {
   notif.id = GetNextId();
   notif.valid = true;
-  notifications[writeIndex] = std::move(notif);
-  writeIndex = (writeIndex + 1 < TotalNbNotifications) ? writeIndex + 1 : 0;
-  if (!empty)
-    readIndex = (readIndex + 1 < TotalNbNotifications) ? readIndex + 1 : 0;
-  else
-    empty = false;
-
   newNotification = true;
-}
-
-NotificationManager::Notification NotificationManager::GetLastNotification() {
-  NotificationManager::Notification notification = notifications[readIndex];
-  notification.index = 1;
-  return notification;
+  if (beginIdx > 0) {
+    --beginIdx;
+  } else {
+    beginIdx = notifications.size() - 1;
+  }
+  notifications[beginIdx] = std::move(notif);
+  if (size < notifications.size()) {
+    size++;
+  }
 }
 
 NotificationManager::Notification::Id NotificationManager::GetNextId() {
   return nextId++;
 }
 
-NotificationManager::Notification NotificationManager::GetNext(NotificationManager::Notification::Id id) {
-  auto currentIterator = std::find_if(notifications.begin(), notifications.end(), [id](const Notification& n) {
-    return n.valid && n.id == id;
-  });
-  if (currentIterator == notifications.end() || currentIterator->id != id)
-    return Notification {};
-
-  auto& lastNotification = notifications[readIndex];
-
-  NotificationManager::Notification result;
-
-  if (currentIterator == (notifications.end() - 1))
-    result = *(notifications.begin());
-  else
-    result = *(currentIterator + 1);
-
-  if (result.id <= id)
+NotificationManager::Notification NotificationManager::GetLastNotification() const {
+  if (this->IsEmpty()) {
     return {};
-
-  result.index = (lastNotification.id - result.id) + 1;
-  return result;
+  }
+  return this->At(0);
 }
 
-NotificationManager::Notification NotificationManager::GetPrevious(NotificationManager::Notification::Id id) {
-  auto currentIterator = std::find_if(notifications.begin(), notifications.end(), [id](const Notification& n) {
-    return n.valid && n.id == id;
-  });
-  if (currentIterator == notifications.end() || currentIterator->id != id)
-    return Notification {};
-
-  auto& lastNotification = notifications[readIndex];
-
-  NotificationManager::Notification result;
-
-  if (currentIterator == notifications.begin())
-    result = *(notifications.end() - 1);
-  else
-    result = *(currentIterator - 1);
-
-  if (result.id >= id)
-    return {};
-
-  result.index = (lastNotification.id - result.id) + 1;
-  return result;
+const NotificationManager::Notification& NotificationManager::At(NotificationManager::Notification::Idx idx) const {
+  if (idx >= notifications.size()) {
+    assert(false);
+    return notifications.at(beginIdx); // this should not happen
+  }
+  size_t read_idx = (beginIdx + idx) % notifications.size();
+  return notifications.at(read_idx);
 }
 
-bool NotificationManager::AreNewNotificationsAvailable() {
+NotificationManager::Notification& NotificationManager::At(NotificationManager::Notification::Idx idx) {
+  if (idx >= notifications.size()) {
+    assert(false);
+    return notifications.at(beginIdx); // this should not happen
+  }
+  size_t read_idx = (beginIdx + idx) % notifications.size();
+  return notifications.at(read_idx);
+}
+
+NotificationManager::Notification::Idx NotificationManager::IndexOf(NotificationManager::Notification::Id id) const {
+  for (NotificationManager::Notification::Idx idx = 0; idx < this->size; idx++) {
+    const NotificationManager::Notification& notification = this->At(idx);
+    if (notification.id == id) {
+      return idx;
+    }
+  }
+  return size;
+}
+
+NotificationManager::Notification NotificationManager::Get(NotificationManager::Notification::Id id) const {
+  NotificationManager::Notification::Idx idx = this->IndexOf(id);
+  if (idx == this->size) {
+    return {};
+  }
+  return this->At(idx);
+}
+
+NotificationManager::Notification NotificationManager::GetNext(NotificationManager::Notification::Id id) const {
+  NotificationManager::Notification::Idx idx = this->IndexOf(id);
+  if (idx == this->size) {
+    return {};
+  }
+  if (idx == 0 || idx > notifications.size()) {
+    return {};
+  }
+  return this->At(idx - 1);
+}
+
+NotificationManager::Notification NotificationManager::GetPrevious(NotificationManager::Notification::Id id) const {
+  NotificationManager::Notification::Idx idx = this->IndexOf(id);
+  if (idx == this->size) {
+    return {};
+  }
+  if (static_cast<size_t>(idx + 1) >= notifications.size()) {
+    return {};
+  }
+  return this->At(idx + 1);
+}
+
+void NotificationManager::DismissIdx(NotificationManager::Notification::Idx idx) {
+  if (this->IsEmpty()) {
+    return;
+  }
+  if (idx >= size) {
+    assert(false);
+    return; // this should not happen
+  }
+  if (idx == 0) { // just remove the first element, don't need to change the other elements
+    notifications.at(beginIdx).valid = false;
+    beginIdx = (beginIdx + 1) % notifications.size();
+  } else {
+    // overwrite the specified entry by moving all later messages one index to the front
+    for (size_t i = idx; i < size - 1; ++i) {
+      this->At(i) = this->At(i + 1);
+    }
+    this->At(size - 1).valid = false;
+  }
+  --size;
+}
+
+void NotificationManager::Dismiss(NotificationManager::Notification::Id id) {
+  NotificationManager::Notification::Idx idx = this->IndexOf(id);
+  if (idx == this->size) {
+    return;
+  }
+  this->DismissIdx(idx);
+}
+
+bool NotificationManager::AreNewNotificationsAvailable() const {
   return newNotification;
 }
 
@@ -84,9 +129,7 @@ bool NotificationManager::ClearNewNotificationFlag() {
 }
 
 size_t NotificationManager::NbNotifications() const {
-  return std::count_if(notifications.begin(), notifications.end(), [](const Notification& n) {
-    return n.valid;
-  });
+  return size;
 }
 
 const char* NotificationManager::Notification::Message() const {

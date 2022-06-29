@@ -9,14 +9,14 @@ Integrating a BLE stack for the OTA functionality would have used to much memory
 
 When it is run, this bootloader looks in the SPI flash memory if a new firmware is available. It there is one, it *swaps* the current firmware with the new one (the new one is copied in the main flash memory, and the current one is copied in the SPI flash memory) and run the new one. If the new one fails to run properly, the bootloader is able to revert to the old one and mark the new one as not working.
 
-As this bootloader does not provide any OTA capability, it is not able to actually download a new version of the application. Providing OTA functionality is thus the responsability of the application firmware.
+As this bootloader does not provide any OTA capability, it is not able to actually download a new version of the application. Providing OTA functionality is thus the responsibility of the application firmware.
 
 # About MCUBoot
 MCUBoot is run at boot time. In normal operation, it just jumps to the reset handler of the application firmware to run it. Once the application firmware is running, MCUBoot does not run at all.
 
 ![MCUBoot boot sequence diagram](../doc/bootloader/boot.png "MCUBoot boot sequence diagram")
 
-But MCUBoot does much more than that : it can upgrade the firmware that is currently running by a new one, and it is also able to revert to the previous version of the firmware in case the new one does not run propertly.
+But MCUBoot does much more than that : it can upgrade the firmware that is currently running by a new one, and it is also able to revert to the previous version of the firmware in case the new one does not run properly.
 
 To do this, it uses 2 memory 'slots' :
  - **The primary slot** : it contains the current firmware, the one that will be executed by MCUBoot
@@ -40,7 +40,7 @@ This chapter describes degraded cases that are handled by our bootloader and tho
 Case | Current bootloader | Solution
 -----|--------------------|----------------------------------------------
 Data got corrupted during file transfer | [OK] Application firmware does a CRC check before applying the update, and does not proceed if it fails. | N/A
-New firmware does not run at all (bad file) (1) | [NOK] MCU executes unknown instructions and will most likely end up in an infinite loop or freeze in an error handler. The bootloader does not run, it can do nothing, the MCU is stucked until next reset | [OK] The bootloader starts the watchdog just before running the new firmware. This way, the watchdog will reset the MCU after ~7s because the firmware does not refresh it. Bootloader reverts to the previous version of the firmware during the reset.
+New firmware does not run at all (bad file) (1) | [NOK] MCU executes unknown instructions and will most likely end up in an infinite loop or freeze in an error handler. The bootloader does not run, it can do nothing, the MCU is stuck until next reset | [OK] The bootloader starts the watchdog just before running the new firmware. This way, the watchdog will reset the MCU after ~7s because the firmware does not refresh it. Bootloader reverts to the previous version of the firmware during the reset.
 New firmware runs, does not set the valid bit and does not refresh the watchdog | [NOK] The new firmware runs until the next reset. The bootloader will be able to revert to the previous firmware only during the next reset. If the new firmware does not run properly and does not reset, the bootloader can do nothing until the next reset | [OK] The bootloader starts the watchdog just before running the new firmware. This way, the watchdog will reset the MCU after ~7s because the firmware does not refresh it. Bootloader reverts to the previous version of the firmware during the reset.
 New firmware does not run properly, does not set the valid bit but refreshes the watchdog | [NOK] The bootloader will be able to revert to the previous firmware only during the next reset. If the new firmware does not run properly and does not reset, the bootloader can do nothing until the next reset | [~] Wait for the battery to drain. The CPU will reset the next time the device is charged and will be able to rollback to the previous version.
 New firmware does not run properly but sets the valid bit and refreshes the watchdog | [NOK] The bootloader won't revert to the previous version because the valid flag is set | [~] Wait for the battery to drain. The CPU will reset the next time the device is charged. Then, the bootloader must provide a way for the user to force the rollback to the previous version

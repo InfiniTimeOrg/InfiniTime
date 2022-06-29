@@ -119,8 +119,10 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
       bootloaderSize = om->om_data[4] + (om->om_data[5] << 8) + (om->om_data[6] << 16) + (om->om_data[7] << 24);
       applicationSize = om->om_data[8] + (om->om_data[9] << 8) + (om->om_data[10] << 16) + (om->om_data[11] << 24);
       bleController.FirmwareUpdateTotalBytes(applicationSize);
-      NRF_LOG_INFO(
-        "[DFU] -> Start data received : SD size : %d, BT size : %d, app size : %d", softdeviceSize, bootloaderSize, applicationSize);
+      NRF_LOG_INFO("[DFU] -> Start data received : SD size : %d, BT size : %d, app size : %d",
+                   softdeviceSize,
+                   bootloaderSize,
+                   applicationSize);
 
       // wait until SystemTask has finished waking up all devices
       while (systemTask.IsSleeping()) {
@@ -165,10 +167,10 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
 
       if ((nbPacketReceived % nbPacketsToNotify) == 0 && bytesReceived != applicationSize) {
         uint8_t data[5] {static_cast<uint8_t>(Opcodes::PacketReceiptNotification),
-                         (uint8_t)(bytesReceived & 0x000000FFu),
-                         (uint8_t)(bytesReceived >> 8u),
-                         (uint8_t)(bytesReceived >> 16u),
-                         (uint8_t)(bytesReceived >> 24u)};
+                         static_cast<uint8_t>(bytesReceived & 0x000000FFu),
+                         static_cast<uint8_t>(bytesReceived >> 8u),
+                         static_cast<uint8_t>(bytesReceived >> 16u),
+                         static_cast<uint8_t>(bytesReceived >> 24u)};
         NRF_LOG_INFO("[DFU] -> Send packet notification: %d bytes received", bytesReceived);
         notificationManager.Send(connectionHandle, controlPointCharacteristicHandle, data, 5);
       }
@@ -244,7 +246,7 @@ int DfuService::ControlPointHandler(uint16_t connectionHandle, os_mbuf* om) {
         NRF_LOG_INFO("[DFU] -> Receive firmware image requested, but we are not in Start Init");
         return 0;
       }
-      // TODO the chunk size is dependant of the implementation of the host application...
+      // TODO the chunk size is dependent of the implementation of the host application...
       dfuImage.Init(20, applicationSize, expectedCrc);
       NRF_LOG_INFO("[DFU] -> Starting receive firmware");
       state = States::Data;
@@ -423,9 +425,9 @@ uint16_t DfuService::DfuImage::ComputeCrc(uint8_t const* p_data, uint32_t size, 
   uint16_t crc = (p_crc == NULL) ? 0xFFFF : *p_crc;
 
   for (uint32_t i = 0; i < size; i++) {
-    crc = (uint8_t)(crc >> 8) | (crc << 8);
+    crc = static_cast<uint8_t>(crc >> 8) | (crc << 8);
     crc ^= p_data[i];
-    crc ^= (uint8_t)(crc & 0xFF) >> 4;
+    crc ^= static_cast<uint8_t>(crc & 0xFF) >> 4;
     crc ^= (crc << 8) << 4;
     crc ^= ((crc & 0xFF) << 4) << 1;
   }

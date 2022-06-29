@@ -17,7 +17,7 @@ Paddle::Paddle(Pinetime::Applications::DisplayApp* app, Pinetime::Components::Li
 
   points = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(points, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text(points, "0000");
+  lv_label_set_text_static(points, "0000");
   lv_obj_align(points, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 10);
 
   paddle = lv_obj_create(lv_scr_act(), nullptr);
@@ -53,7 +53,7 @@ void Paddle::Refresh() {
   if (ballX >= LV_HOR_RES - ballSize - 1) {
     dx *= -1;
     dy += rand() % 3 - 1; // add a little randomization in wall bounce direction, one of [-1, 0, 1]
-    if (dy > 5) { // limit dy to be in range [-5 to 5]
+    if (dy > 5) {         // limit dy to be in range [-5 to 5]
       dy = 5;
     }
     if (dy < -5) {
@@ -85,7 +85,14 @@ bool Paddle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
 bool Paddle::OnTouchEvent(uint16_t x, uint16_t y) {
   // sets the center paddle pos. (30px offset) with the the y_coordinate of the finger
-  lv_obj_set_pos(paddle, 0, y - 30);
+  // but clamp it such that the paddle never clips off screen
+  if (y < 31) {
+    lv_obj_set_pos(paddle, 0, 1);
+  } else if (y > LV_VER_RES - 31) {
+    lv_obj_set_pos(paddle, 0, LV_VER_RES - 61);
+  } else {
+    lv_obj_set_pos(paddle, 0, y - 30);
+  }
   paddlePos = y;
   return true;
 }

@@ -23,6 +23,7 @@ void St7789::Init() {
   RowAddressSet();
   DisplayInversionOn();
   NormalModeOn();
+  SetVdv();
   DisplayOn();
 }
 
@@ -112,6 +113,13 @@ void St7789::SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
 
 void St7789::WriteToRam() {
   WriteCommand(static_cast<uint8_t>(Commands::WriteToRam));
+}
+
+void St7789::SetVdv() {
+  // By default there is a large step from pixel brightness zero to one.
+  // After experimenting with VCOMS, VRH and VDV, this was found to produce good results.
+  WriteCommand(static_cast<uint8_t>(Commands::VdvSet));
+  WriteData(0x10);
 }
 
 void St7789::DisplayOff() {

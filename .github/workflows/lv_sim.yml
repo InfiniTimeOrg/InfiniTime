@@ -1,24 +1,15 @@
 # GitHub Actions Workflow to build Simulator for PineTime Smart Watch LVGL Interface
 
-# Name of this Workflow
 name: Build PineTime LVGL Simulator
 
-# When to run this Workflow...
 on:
-
-  # Run on all branches
   push:
-    branches: []
-
-  # Also run this Workflow when a Pull Request is created or updated in the "master" and "develop" Branch
+    branches: [ master, develop ]
   pull_request:
     branches: [ master, develop ]
 
-# Steps to run for the Workflow
 jobs:
   build:
-
-    # Run these steps on Ubuntu
     runs-on: ubuntu-latest
 
     steps:
@@ -33,6 +24,10 @@ jobs:
         run:  |
           sudo apt-get update
           sudo apt-get -y install libsdl2-dev
+
+      - name: Install lv_font_conv
+        run:
+          npm i -g lv_font_conv@1.5.2
 
       #########################################################################################
       # Checkout
@@ -60,15 +55,12 @@ jobs:
       #########################################################################################
       # Build and Upload simulator
 
-      # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
-      # For Faster Builds: Add "make" option "-j"
-
       - name: Build simulator executable
         run:  |
           cmake --build build_lv_sim
 
       - name: Upload simulator executable
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: infinisim
+          name: infinisim-${{ github.head_ref }}
           path: build_lv_sim/infinisim

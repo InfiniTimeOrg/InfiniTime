@@ -17,8 +17,12 @@ namespace Pinetime {
                    uint8_t initScreen,
                    const std::array<std::function<std::unique_ptr<Screen>()>, N>&& screens,
                    ScreenListModes mode)
-          : Screen(app), initScreen {initScreen}, screens {std::move(screens)}, mode {mode}, screenIndex{initScreen}, current {this->screens[initScreen]()} {
-
+          : Screen(app),
+            initScreen {initScreen},
+            screens {std::move(screens)},
+            mode {mode},
+            screenIndex {initScreen},
+            current {this->screens[initScreen]()} {
         }
 
         ScreenList(const ScreenList&) = delete;

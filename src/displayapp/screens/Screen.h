@@ -35,7 +35,7 @@ namespace Pinetime {
 
       private:
         T value {};            // NSDMI - default initialise type
-        bool isUpdated {true}; // NSDMI - use brace initilisation
+        bool isUpdated {true}; // NSDMI - use brace initialisation
       };
 
       class Screen {

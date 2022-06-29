@@ -14,7 +14,6 @@ namespace Pinetime {
 
       private:
         lv_obj_t* passkeyLabel;
-        lv_obj_t* backgroundLabel;
       };
     }
   }
