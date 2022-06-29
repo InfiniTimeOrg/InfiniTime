@@ -4,13 +4,14 @@ The purpose of this document is to steer efforts towards a common goal, and as s
 
 ## InfiniTime
 
-InfiniTime is a community-built smartwatch firmware, providing freedom and privacy that's usually insufficient in wearable technology.
+InfiniTime is a community-built smartwatch firmware.
+It offers freedom and privacy advantages unavailable to users of proprietary wearable technology.
 
 InfiniTime is not to be used for medical or other health tracking purposes.
 
 ## Core Principles
 
-- KISS (Keep It Short and Simple)
+- Keep It Simple
 - Reliability
 - Battery efficiency
 - Easy and simple navigation
