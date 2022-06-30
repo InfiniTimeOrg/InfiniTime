@@ -417,9 +417,9 @@ void SystemTask::UpdateMotion() {
     return;
   }
 
-  if (state == SystemTaskState::Sleeping &&
-      !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-        settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) || bleController.IsConnected())) {
+  if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
+                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) ||
+                                              motionController.GetService()->IsMotionNotificationSubscribed())) {
     return;
   }
 
