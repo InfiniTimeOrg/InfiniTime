@@ -9,7 +9,7 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<Timer*>(obj->user_data);
   if (event == LV_EVENT_PRESSED) {
     screen->ButtonPressed();
-  } else if (event == LV_EVENT_RELEASED) {
+  } else if (event == LV_EVENT_RELEASED || event == LV_EVENT_PRESS_LOST) {
     screen->MaskReset();
   } else if (event == LV_EVENT_SHORT_CLICKED) {
     screen->ToggleRunning();
