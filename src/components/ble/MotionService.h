@@ -22,6 +22,7 @@ namespace Pinetime {
 
       void SubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle);
       void UnsubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle);
+      bool IsMotionNotificationSubscribed() const;
 
     private:
       Pinetime::System::SystemTask& system;
