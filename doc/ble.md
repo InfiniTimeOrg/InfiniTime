@@ -2,13 +2,14 @@
 ## Introduction
 This page describes the BLE implementation and API built in this firmware.
 
-**Note** : I'm a beginner in BLE related technologies and the information in this document reflects my current knowledge and understanding of the BLE stack. This information might be erroneous or incomplete. Feel free to submit a PR if you think you can improve it.
+**Note**: I'm a beginner in BLE related technologies and the information in this document reflects my current knowledge and understanding of the BLE stack. This information might be erroneous or incomplete. Feel free to submit a PR if you think you can improve it.
 
 ---
 
 ### Table of Contents
 
 - [BLE Connection](#ble-connection)
+- [BLE FS](#ble-fs)
 - [BLE UUIDs](#ble-uuids)
 - [BLE Services](#ble-services)
   - [CTS](#cts)
@@ -51,6 +52,13 @@ If **CTS** is detected, it'll request the current time to the companion applicat
 
 ---
 
+## BLE FS
+
+The documentation for BLE FS can be found here:
+[BLEFS.md](./BLEFS.md)
+
+---
+
 ## BLE UUIDs
 When possible, InfiniTime tries to implement BLE services defined by the BLE specification. 
 
@@ -72,12 +80,16 @@ The following custom services are implemented in InfiniTime:
      * [Navigation Service](NavigationService.md) : 00010000-78fc-48fe-8e23-433b3a1942d0
 
 
- - Since InfiniTime 0.13
-     * Call characteristic (extension to the Alert Notification Service): 00020001-78fc-48fe-8e23-433b3a1942d0
- 
-  
- - Since InfiniTime 1.7:
-   * [Motion Service](MotionService.md) :        00030000-78fc-48fe-8e23-433b3a1942d0
+- Since InfiniTime 0.13
+    * Call characteristic (extension to the Alert Notification Service): 00020001-78fc-48fe-8e23-433b3a1942d0
+
+
+- Since InfiniTime 1.7:
+    * [Motion Service](MotionService.md): 00030000-78fc-48fe-8e23-433b3a1942d0
+
+
+- Since InfiniTime 1.8:
+    * [Weather Service](/src/components/ble/weather/WeatherService.h): 00040000-78fc-48fe-8e23-433b3a1942d0
 
 ---
 
@@ -108,11 +120,11 @@ Reading a value from the firmware version characteristic will yield a UTF-8 enco
 
 #### Battery Level
 
-Reading from the battery level characteristic yields a single byte of data. This byte can be converted to an unsigned 8-bit integer which will be the battery percentage. This characteristic allows notify for updates as the value changes.
+Reading from the battery level characteristic yields a single byte of data. This byte can be converted to an unsigned 8-bit integer which will be the battery percentage. This characteristic allows notifications for updates as the value changes.
 
 #### Heart Rate
 
-Reading from the heart rate characteristic yields two bytes of data. I am not sure of the function of the first byte. It appears to always be zero. The second byte can be converted to an unsigned 8-bit integer which is the current heart rate. This characteristic also allows notify for updates as the value changes.
+Reading from the heart rate characteristic yields two bytes of data. I am not sure of the function of the first byte. It appears to always be zero. The second byte can be converted to an unsigned 8-bit integer which is the current heart rate. This characteristic also allows notifications for updates as the value changes.
 
 ---
 
@@ -134,14 +146,14 @@ The new alert characteristic allows sending new notifications to InfiniTime. It 
 For example, here is what a normal notification looks like in Golang (language of `itd`):
 
 ```go
-// \x00 is the category for simple alert, and there is one new notifcation, hence \x01.
+// \x00 is the category for simple alert, and there is one new notification, hence \x01.
 "\x00\x01\x00Test Title\x00Test Body"
 ```
 
 A call notification looks like so:
 
 ```go
-// \x03 is the category for calls, and there is one new call notifcation, hence \x01.
+// \x03 is the category for calls, and there is one new call notification, hence \x01.
 "\x03\x01\x00Mary"
 ```
 

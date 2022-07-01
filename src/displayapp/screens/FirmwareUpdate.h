@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include <lvgl/src/lv_core/lv_obj.h>
 #include "FreeRTOS.h"
 
@@ -24,7 +24,6 @@ namespace Pinetime {
         lv_obj_t* bar1;
         lv_obj_t* percentLabel;
         lv_obj_t* titleLabel;
-        mutable char percentStr[10];
 
         States state = States::Idle;
 

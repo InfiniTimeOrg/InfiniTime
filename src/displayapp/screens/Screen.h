@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cstdint>
-#include "../TouchEvents.h"
+#include "displayapp/TouchEvents.h"
 #include <lvgl/lvgl.h>
 
 namespace Pinetime {
@@ -35,7 +35,7 @@ namespace Pinetime {
 
       private:
         T value {};            // NSDMI - default initialise type
-        bool isUpdated {true}; // NSDMI - use brace initilisation
+        bool isUpdated {true}; // NSDMI - use brace initialisation
       };
 
       class Screen {

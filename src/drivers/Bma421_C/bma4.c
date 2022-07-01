@@ -621,7 +621,7 @@ static int8_t get_average_of_sensor_data(uint8_t accel_en,
  *
  * @param[in] accel_en : Variable to store status of accel
  * @param[in] accel_g_axis : Accel axis to FOC
- * @param[in] avg_foc_data : Average value of sensor sample datas
+ * @param[in] avg_foc_data : Average value of sensor sample data
  * @param[in] dev : Structure instance of bma4_dev.
  *
  * @return Result of API execution status
@@ -637,7 +637,7 @@ static int8_t validate_foc_position(uint8_t accel_en,
 /*!
  * @brief This internal API validates accel FOC axis given as input
  *
- * @param[in] avg_foc_data : Average value of sensor sample datas
+ * @param[in] avg_foc_data : Average value of sensor sample data
  * @param[in] dev : Structure instance of bma4_dev.
  *
  * @return Result of API execution status

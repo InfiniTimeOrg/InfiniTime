@@ -1,4 +1,4 @@
-#include "SpiMaster.h"
+#include "drivers/SpiMaster.h"
 #include <hal/nrf_gpio.h>
 #include <hal/nrf_spim.h>
 #include <nrfx_log.h>
@@ -10,7 +10,7 @@ SpiMaster::SpiMaster(const SpiMaster::SpiModule spi, const SpiMaster::Parameters
 }
 
 bool SpiMaster::Init() {
-  if(mutex == nullptr) {
+  if (mutex == nullptr) {
     mutex = xSemaphoreCreateBinary();
     ASSERT(mutex != nullptr);
   }

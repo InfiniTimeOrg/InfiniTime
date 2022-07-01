@@ -259,7 +259,7 @@
 #define BMA4_ACCEL_RANGE_8G                       UINT8_C(2)
 #define BMA4_ACCEL_RANGE_16G                      UINT8_C(3)
 
-/**\name  CONDITION CHECK FOR READING AND WRTING DATA*/
+/**\name  CONDITION CHECK FOR READING AND WRITING DATA*/
 #define BMA4_MAX_VALUE_FIFO_FILTER                UINT8_C(1)
 #define BMA4_MAX_VALUE_SPI3                       UINT8_C(1)
 #define BMA4_MAX_VALUE_SELFTEST_AMP               UINT8_C(1)

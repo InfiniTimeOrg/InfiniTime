@@ -1,4 +1,4 @@
-#include "HeartRateTask.h"
+#include "heartratetask/HeartRateTask.h"
 #include <drivers/Hrs3300.h>
 #include <components/heartrate/HeartRateController.h>
 #include <nrf_log.h>
@@ -6,7 +6,7 @@
 using namespace Pinetime::Applications;
 
 HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor, Controllers::HeartRateController& controller)
-  : heartRateSensor {heartRateSensor}, controller {controller}, ppg{} {
+  : heartRateSensor {heartRateSensor}, controller {controller}, ppg {} {
 }
 
 void HeartRateTask::Start() {
@@ -65,8 +65,7 @@ void HeartRateTask::Work() {
     }
 
     if (measurementStarted) {
-      auto hrs = heartRateSensor.ReadHrs();
-      ppg.Preprocess(hrs);
+      ppg.Preprocess(static_cast<float>(heartRateSensor.ReadHrs()));
       auto bpm = ppg.HeartRate();
 
       if (lastBpm == 0 && bpm == 0)

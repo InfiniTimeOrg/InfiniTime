@@ -1,6 +1,10 @@
-#include "BleController.h"
+#include "components/ble/BleController.h"
 
 using namespace Pinetime::Controllers;
+
+bool Ble::IsConnected() const {
+  return isConnected;
+}
 
 void Ble::Connect() {
   isConnected = true;
@@ -8,6 +12,18 @@ void Ble::Connect() {
 
 void Ble::Disconnect() {
   isConnected = false;
+}
+
+bool Ble::IsRadioEnabled() const {
+  return isRadioEnabled;
+}
+
+void Ble::EnableRadio() {
+  isRadioEnabled = true;
+}
+
+void Ble::DisableRadio() {
+  isRadioEnabled = false;
 }
 
 void Ble::StartFirmwareUpdate() {

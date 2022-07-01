@@ -1,4 +1,4 @@
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 using namespace Pinetime::Applications::Screens;
 
 void Screen::RefreshTaskCallback(lv_task_t* task) {

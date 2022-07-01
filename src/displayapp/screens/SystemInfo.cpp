@@ -1,7 +1,9 @@
-#include "SystemInfo.h"
+#include <FreeRTOS.h>
+#include <task.h>
+#include "displayapp/screens/SystemInfo.h"
 #include <lvgl/lvgl.h>
-#include "../DisplayApp.h"
-#include "Label.h"
+#include "displayapp/DisplayApp.h"
+#include "displayapp/screens/Label.h"
 #include "Version.h"
 #include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
@@ -41,8 +43,8 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
     brightnessController {brightnessController},
     bleController {bleController},
     watchdog {watchdog},
-    motionController{motionController},
-    touchPanel{touchPanel},
+    motionController {motionController},
+    touchPanel {touchPanel},
     screens {app,
              0,
              {[this]() -> std::unique_ptr<Screen> {
@@ -76,12 +78,12 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
   lv_label_set_recolor(label, true);
   lv_label_set_text_fmt(label,
                         "#FFFF00 InfiniTime#\n\n"
-                        "#444444 Version# %ld.%ld.%ld\n"
-                        "#444444 Short Ref# %s\n"
-                        "#444444 Build date#\n"
+                        "#808080 Version# %ld.%ld.%ld\n"
+                        "#808080 Short Ref# %s\n"
+                        "#808080 Build date#\n"
                         "%s\n"
                         "%s\n\n"
-                        "#444444 Bootloader# %s",
+                        "#808080 Bootloader# %s",
                         Version::Major(),
                         Version::Minor(),
                         Version::Patch(),
@@ -137,14 +139,14 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
   lv_label_set_text_fmt(label,
-                        "#444444 Date# %02d/%02d/%04d\n"
-                        "#444444 Time# %02d:%02d:%02d\n"
-                        "#444444 Uptime#\n %02lud %02lu:%02lu:%02lu\n"
-                        "#444444 Battery# %d%%/%03imV\n"
-                        "#444444 Backlight# %s\n"
-                        "#444444 Last reset# %s\n"
-                        "#444444 Accel.# %s\n"
-                        "#444444 Touch.# %x.%x.%x\n",
+                        "#808080 Date# %02d/%02d/%04d\n"
+                        "#808080 Time# %02d:%02d:%02d\n"
+                        "#808080 Uptime#\n %02lud %02lu:%02lu:%02lu\n"
+                        "#808080 Battery# %d%%/%03imV\n"
+                        "#808080 Backlight# %s\n"
+                        "#808080 Last reset# %s\n"
+                        "#808080 Accel.# %s\n"
+                        "#808080 Touch.# %x.%x.%x\n",
                         dateTimeController.Day(),
                         static_cast<uint8_t>(dateTimeController.Month()),
                         dateTimeController.Year(),
@@ -175,16 +177,14 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
   lv_label_set_recolor(label, true);
   auto& bleAddr = bleController.Address();
   lv_label_set_text_fmt(label,
-                        "#444444 BLE MAC#\n"
+                        "#808080 BLE MAC#\n"
                         " %02x:%02x:%02x:%02x:%02x:%02x"
                         "\n"
-                        "#444444 LVGL Memory#\n"
-                        " #444444 used# %d (%d%%)\n"
-                        " #444444 max used# %lu\n"
-                        " #444444 frag# %d%%\n"
-                        " #444444 free# %d"
-                        "\n"
-                        "#444444 Steps# %i",
+                        "#808080 LVGL Memory#\n"
+                        " #808080 used# %d (%d%%)\n"
+                        " #808080 max used# %lu\n"
+                        " #808080 frag# %d%%\n"
+                        " #808080 free# %d",
                         bleAddr[5],
                         bleAddr[4],
                         bleAddr[3],
@@ -195,8 +195,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         mon.used_pct,
                         mon.max_used,
                         mon.frag_pct,
-                        static_cast<int>(mon.free_biggest_size),
-                        0);
+                        static_cast<int>(mon.free_biggest_size));
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(2, 5, app, label);
 }
@@ -213,7 +212,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
   lv_table_set_col_cnt(infoTask, 4);
   lv_table_set_row_cnt(infoTask, maxTaskCount + 1);
   lv_obj_set_style_local_pad_all(infoTask, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_border_color(infoTask, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  lv_obj_set_style_local_border_color(infoTask, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
 
   lv_table_set_cell_value(infoTask, 0, 0, "#");
   lv_table_set_col_width(infoTask, 0, 30);
@@ -270,7 +269,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
                            "under the terms of\n"
                            "the GNU General\n"
                            "Public License v3\n"
-                           "#444444 Source code#\n"
+                           "#808080 Source code#\n"
                            "#FFFF00 https://github.com/#\n"
                            "#FFFF00 InfiniTimeOrg/#\n"
                            "#FFFF00 InfiniTime#");

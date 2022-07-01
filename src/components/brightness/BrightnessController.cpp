@@ -1,4 +1,4 @@
-#include "BrightnessController.h"
+#include "components/brightness/BrightnessController.h"
 #include <hal/nrf_gpio.h>
 #include "displayapp/screens/Symbols.h"
 #include "drivers/PinMap.h"
@@ -72,14 +72,6 @@ void BrightnessController::Higher() {
 
 BrightnessController::Levels BrightnessController::Level() const {
   return level;
-}
-
-void BrightnessController::Backup() {
-  backupLevel = level;
-}
-
-void BrightnessController::Restore() {
-  Set(backupLevel);
 }
 
 void BrightnessController::Step() {

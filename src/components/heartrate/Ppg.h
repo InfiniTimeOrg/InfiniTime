@@ -1,8 +1,10 @@
 #pragma once
 
 #include <array>
-#include "Biquad.h"
-#include "Ptagc.h"
+#include <cstddef>
+#include <cstdint>
+#include "components/heartrate/Biquad.h"
+#include "components/heartrate/Ptagc.h"
 
 namespace Pinetime {
   namespace Controllers {

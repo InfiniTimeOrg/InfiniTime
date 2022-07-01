@@ -1,17 +1,20 @@
-#include "SettingTimeFormat.h"
+#include "displayapp/screens/settings/SettingTimeFormat.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
+#include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static void event_handler(lv_obj_t* obj, lv_event_t event) {
-    SettingTimeFormat* screen = static_cast<SettingTimeFormat*>(obj->user_data);
+  void event_handler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<SettingTimeFormat*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
 }
+
+constexpr std::array<const char*, 2> SettingTimeFormat::options;
 
 SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
@@ -39,24 +42,19 @@ SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pi
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
-  optionsTotal = 0;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " 12-hour");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
+  for (unsigned int i = 0; i < options.size(); i++) {
+    cbOption[i] = lv_checkbox_create(container1, nullptr);
+    lv_checkbox_set_text(cbOption[i], options[i]);
+    cbOption[i]->user_data = this;
+    lv_obj_set_event_cb(cbOption[i], event_handler);
+    SetRadioButtonStyle(cbOption[i]);
   }
 
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " 24-hour");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+    lv_checkbox_set_checked(cbOption[0], true);
+  } else if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+    lv_checkbox_set_checked(cbOption[1], true);
   }
-  optionsTotal++;
 }
 
 SettingTimeFormat::~SettingTimeFormat() {
@@ -66,7 +64,7 @@ SettingTimeFormat::~SettingTimeFormat() {
 
 void SettingTimeFormat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
-    for (int i = 0; i < optionsTotal; i++) {
+    for (unsigned int i = 0; i < options.size(); i++) {
       if (object == cbOption[i]) {
         lv_checkbox_set_checked(cbOption[i], true);
 

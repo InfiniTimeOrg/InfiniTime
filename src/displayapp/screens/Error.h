@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 #include "BootErrors.h"
 #include <lvgl/lvgl.h>
 
@@ -13,6 +13,7 @@ namespace Pinetime {
         ~Error() override;
 
         void ButtonEventHandler();
+
       private:
         lv_obj_t* btnOk;
       };

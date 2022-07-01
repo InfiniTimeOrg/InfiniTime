@@ -8,7 +8,7 @@ namespace Pinetime {
   namespace Controllers {
     class MotionController {
     public:
-      enum class DeviceTypes{
+      enum class DeviceTypes {
         Unknown,
         BMA421,
         BMA425,
@@ -28,8 +28,17 @@ namespace Pinetime {
       uint32_t NbSteps() const {
         return nbSteps;
       }
-      bool ShouldWakeUp(bool isSleeping);
 
+      void ResetTrip() {
+        currentTripSteps = 0;
+      }
+      uint32_t GetTripSteps() const {
+        return currentTripSteps;
+      }
+
+      bool Should_ShakeWake(uint16_t thresh);
+      bool Should_RaiseWake(bool isSleeping);
+      int32_t currentShakeSpeed();
       void IsSensorOk(bool isOk);
       bool IsSensorOk() const {
         return isSensorOk;
@@ -44,6 +53,7 @@ namespace Pinetime {
 
     private:
       uint32_t nbSteps;
+      uint32_t currentTripSteps = 0;
       int16_t x;
       int16_t y;
       int16_t z;
@@ -51,6 +61,12 @@ namespace Pinetime {
       bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
       Pinetime::Controllers::MotionService* service = nullptr;
+
+      int16_t lastXForShake = 0;
+      int16_t lastYForShake = 0;
+      int16_t lastZForShake = 0;
+      int32_t accumulatedspeed = 0;
+      uint32_t lastShakeTime = 0;
     };
   }
 }

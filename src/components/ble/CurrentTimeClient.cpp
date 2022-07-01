@@ -1,4 +1,4 @@
-#include "CurrentTimeClient.h"
+#include "components/ble/CurrentTimeClient.h"
 #include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #include "components/datetime/DateTimeController.h"
@@ -85,10 +85,21 @@ int CurrentTimeClient::OnCurrentTimeReadResult(uint16_t conn_handle, const ble_g
     // TODO check that attribute->handle equals the handle discovered in OnCharacteristicDiscoveryEvent
     CtsData result;
     os_mbuf_copydata(attribute->om, 0, sizeof(CtsData), &result);
-    NRF_LOG_INFO(
-      "Received data: %d-%d-%d %d:%d:%d", result.year, result.month, result.dayofmonth, result.hour, result.minute, result.second);
-    dateTimeController.SetTime(
-      result.year, result.month, result.dayofmonth, 0, result.hour, result.minute, result.second, nrf_rtc_counter_get(portNRF_RTC_REG));
+    NRF_LOG_INFO("Received data: %d-%d-%d %d:%d:%d",
+                 result.year,
+                 result.month,
+                 result.dayofmonth,
+                 result.hour,
+                 result.minute,
+                 result.second);
+    dateTimeController.SetTime(result.year,
+                               result.month,
+                               result.dayofmonth,
+                               0,
+                               result.hour,
+                               result.minute,
+                               result.second,
+                               nrf_rtc_counter_get(portNRF_RTC_REG));
   } else {
     NRF_LOG_INFO("Error retrieving current time: %d", error->status);
   }

@@ -1,5 +1,5 @@
-#include "LittleVgl.h"
-#include "lv_pinetime_theme.h"
+#include "displayapp/LittleVgl.h"
+#include "displayapp/lv_pinetime_theme.h"
 
 #include <FreeRTOS.h>
 #include <task.h>
@@ -16,14 +16,22 @@ static void disp_flush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_
   lvgl->FlushDisplay(area, color_p);
 }
 
+static void rounder(lv_disp_drv_t* disp_drv, lv_area_t* area) {
+  auto* lvgl = static_cast<LittleVgl*>(disp_drv->user_data);
+  if (lvgl->GetFullRefresh()) {
+    area->x1 = 0;
+    area->x2 = LV_HOR_RES - 1;
+    area->y1 = 0;
+    area->y2 = LV_VER_RES - 1;
+  }
+}
+
 bool touchpad_read(lv_indev_drv_t* indev_drv, lv_indev_data_t* data) {
   auto* lvgl = static_cast<LittleVgl*>(indev_drv->user_data);
   return lvgl->GetTouchPadInfo(data);
 }
 
-LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel)
-  : lcd {lcd}, touchPanel {touchPanel}, previousClick {0, 0} {
-
+LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel) : lcd {lcd}, touchPanel {touchPanel} {
 }
 
 void LittleVgl::Init() {
@@ -48,6 +56,7 @@ void LittleVgl::InitDisplay() {
   /*Set a display buffer*/
   disp_drv.buffer = &disp_buf_2;
   disp_drv.user_data = this;
+  disp_drv.rounder_cb = rounder;
 
   /*Finally register the driver*/
   lv_disp_drv_register(&disp_drv);
@@ -78,14 +87,15 @@ void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
       lv_disp_set_direction(lv_disp_get_default(), 4);
     }
   }
+  fullRefresh = true;
 }
 
 void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   uint16_t y1, y2, width, height = 0;
 
   ulTaskNotifyTake(pdTRUE, 200);
-  // NOtification is still needed (even if there is a mutex on SPI) because of the DataCommand pin
-  // which cannot be set/clear during a transfert.
+  // Notification is still needed (even if there is a mutex on SPI) because of the DataCommand pin
+  // which cannot be set/clear during a transfer.
 
   if ((scrollDirection == LittleVgl::FullRefreshDirections::Down) && (area->y2 == visibleNbLines - 1)) {
     writeOffset = ((writeOffset + totalNbLines) - visibleNbLines) % totalNbLines;
@@ -185,8 +195,13 @@ bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
 
 void LittleVgl::InitTheme() {
 
-  lv_theme_t* th = lv_pinetime_theme_init(
-    LV_COLOR_WHITE, LV_COLOR_SILVER, 0, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20);
+  lv_theme_t* th = lv_pinetime_theme_init(LV_COLOR_WHITE,
+                                          LV_COLOR_SILVER,
+                                          0,
+                                          &jetbrains_mono_bold_20,
+                                          &jetbrains_mono_bold_20,
+                                          &jetbrains_mono_bold_20,
+                                          &jetbrains_mono_bold_20);
 
   lv_theme_set_act(th);
 }

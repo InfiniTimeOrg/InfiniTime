@@ -2,7 +2,7 @@
 
 #include <lvgl/lvgl.h>
 #include <cstdint>
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
 
 namespace Pinetime {
   namespace Components {

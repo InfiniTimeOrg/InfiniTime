@@ -1,5 +1,5 @@
-#include "Metronome.h"
-#include "Symbols.h"
+#include "displayapp/screens/Metronome.h"
+#include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -12,7 +12,7 @@ namespace {
   lv_obj_t* createLabel(const char* name, lv_obj_t* reference, lv_align_t align, lv_font_t* font, uint8_t x, uint8_t y) {
     lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
     lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font);
-    lv_obj_set_style_local_text_color(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+    lv_obj_set_style_local_text_color(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
     lv_label_set_text(label, name);
     lv_obj_align(label, reference, align, x, y);
 
@@ -47,8 +47,6 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   bpbDropdown = lv_dropdown_create(lv_scr_act(), nullptr);
   bpbDropdown->user_data = this;
   lv_obj_set_event_cb(bpbDropdown, eventHandler);
-  lv_obj_set_style_local_pad_left(bpbDropdown, LV_DROPDOWN_PART_MAIN, LV_STATE_DEFAULT, 20);
-  lv_obj_set_style_local_pad_left(bpbDropdown, LV_DROPDOWN_PART_LIST, LV_STATE_DEFAULT, 20);
   lv_obj_set_size(bpbDropdown, 115, 50);
   lv_obj_align(bpbDropdown, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   lv_dropdown_set_options(bpbDropdown, "1\n2\n3\n4\n5\n6\n7\n8\n9");
@@ -113,9 +111,16 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
           lv_label_set_text_fmt(bpmValue, "%03d", bpm);
         }
         tappedTime = xTaskGetTickCount();
+        allowExit = true;
       }
       break;
     }
+    case LV_EVENT_RELEASED:
+    case LV_EVENT_PRESS_LOST:
+      if (obj == bpmTap) {
+        allowExit = false;
+      }
+      break;
     case LV_EVENT_CLICKED: {
       if (obj == playPause) {
         metronomeStarted = !metronomeStarted;
@@ -134,4 +139,12 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
     default:
       break;
   }
+}
+
+bool Metronome::OnTouchEvent(TouchEvents event) {
+  if (event == TouchEvents::SwipeDown && allowExit) {
+    running = false;
+    return true;
+  }
+  return false;
 }

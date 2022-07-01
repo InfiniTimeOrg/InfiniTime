@@ -1,9 +1,9 @@
-#include "DisplayAppRecovery.h"
+#include "displayapp/DisplayAppRecovery.h"
 #include <FreeRTOS.h>
 #include <task.h>
 #include <libraries/log/nrf_log.h>
-#include <components/rle/RleDecoder.h>
-#include <touchhandler/TouchHandler.h>
+#include "components/rle/RleDecoder.h"
+#include "touchhandler/TouchHandler.h"
 #include "displayapp/icons/infinitime/infinitime-nb.c"
 #include "components/ble/BleController.h"
 
@@ -23,9 +23,9 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::TimerController& timerController,
                        Pinetime::Controllers::AlarmController& alarmController,
+                       Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler)
   : lcd {lcd}, bleController {bleController} {
-
 }
 
 void DisplayApp::Start() {
@@ -120,5 +120,4 @@ void DisplayApp::PushMessage(Display::Messages msg) {
 }
 
 void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
-
 }

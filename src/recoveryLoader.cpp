@@ -28,7 +28,6 @@ Pinetime::Logging::NrfLogger logger;
 Pinetime::Logging::DummyLogger logger;
 #endif
 
-
 static constexpr uint8_t displayWidth = 240;
 static constexpr uint8_t displayHeight = 240;
 static constexpr uint8_t bytesPerPixel = 2;

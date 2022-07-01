@@ -1,4 +1,4 @@
-#include "Twos.h"
+#include "displayapp/screens/Twos.h"
 #include <array>
 #include <cstdio>
 #include <cstdlib>
@@ -85,12 +85,6 @@ Twos::Twos(Pinetime::Applications::DisplayApp* app) : Screen(app) {
   lv_obj_align(scoreText, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 10);
   lv_label_set_recolor(scoreText, true);
   lv_label_set_text_fmt(scoreText, "Score #FFFF00 %i#", score);
-
-  lv_obj_t* backgroundLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
-  lv_obj_set_size(backgroundLabel, 240, 240);
-  lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text(backgroundLabel, "");
 }
 
 Twos::~Twos() {
@@ -129,8 +123,8 @@ bool Twos::placeNewTile() {
   return true;
 }
 
-bool Twos::tryMerge(Tile grid[][4], int& newRow, int& newCol, int oldRow, int oldCol) {
-  if ((grid[newRow][newCol].value == grid[oldRow][oldCol].value)) {
+bool Twos::tryMerge(TwosTile grid[][4], int& newRow, int& newCol, int oldRow, int oldCol) {
+  if (grid[newRow][newCol].value == grid[oldRow][oldCol].value) {
     if ((newCol != oldCol) || (newRow != oldRow)) {
       if (!grid[newRow][newCol].merged) {
         unsigned int newVal = grid[oldRow][oldCol].value *= 2;
@@ -146,7 +140,7 @@ bool Twos::tryMerge(Tile grid[][4], int& newRow, int& newCol, int oldRow, int ol
   return false;
 }
 
-bool Twos::tryMove(Tile grid[][4], int newRow, int newCol, int oldRow, int oldCol) {
+bool Twos::tryMove(TwosTile grid[][4], int newRow, int newCol, int oldRow, int oldCol) {
   if (((newCol >= 0) && (newCol != oldCol)) || ((newRow >= 0) && (newRow != oldRow))) {
     grid[newRow][newCol].value = grid[oldRow][oldCol].value;
     grid[oldRow][oldCol].value = 0;
@@ -261,7 +255,7 @@ bool Twos::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return false;
 }
 
-void Twos::updateGridDisplay(Tile grid[][4]) {
+void Twos::updateGridDisplay(TwosTile grid[][4]) {
   for (int row = 0; row < 4; row++) {
     for (int col = 0; col < 4; col++) {
       if (grid[row][col].value) {

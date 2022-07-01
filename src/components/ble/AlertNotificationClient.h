@@ -7,7 +7,7 @@
 #include <host/ble_gap.h>
 #undef max
 #undef min
-#include "BleClient.h"
+#include "components/ble/BleClient.h"
 
 namespace Pinetime {
 

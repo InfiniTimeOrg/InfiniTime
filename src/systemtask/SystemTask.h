@@ -3,6 +3,7 @@
 #include <memory>
 
 #include <FreeRTOS.h>
+#include <queue.h>
 #include <task.h>
 #include <timers.h>
 #include <heartratetask/HeartRateTask.h>
@@ -11,8 +12,7 @@
 #include <drivers/PinMap.h>
 #include <components/motion/MotionController.h>
 
-#include "SystemMonitor.h"
-#include "components/battery/BatteryController.h"
+#include "systemtask/SystemMonitor.h"
 #include "components/ble/NimbleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motor/MotorController.h"
@@ -33,7 +33,7 @@
 #endif
 
 #include "drivers/Watchdog.h"
-#include "Messages.h"
+#include "systemtask/Messages.h"
 
 extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
 namespace Pinetime {
@@ -46,12 +46,14 @@ namespace Pinetime {
     class Hrs3300;
   }
   namespace Controllers {
+    class Battery;
     class TouchHandler;
     class ButtonHandler;
   }
   namespace System {
     class SystemTask {
     public:
+      enum class SystemTaskState { Sleeping, Running, GoingToSleep, WakingUp };
       SystemTask(Drivers::SpiMaster& spi,
                  Drivers::St7789& lcd,
                  Pinetime::Drivers::SpiNorFlash& spiNorFlash,
@@ -90,7 +92,7 @@ namespace Pinetime {
       };
 
       bool IsSleeping() const {
-        return isSleeping;
+        return state == SystemTaskState::Sleeping || state == SystemTaskState::WakingUp;
       }
 
     private:
@@ -109,10 +111,6 @@ namespace Pinetime {
       Pinetime::Controllers::TimerController& timerController;
       Pinetime::Controllers::AlarmController& alarmController;
       QueueHandle_t systemTasksMsgQueue;
-      std::atomic<bool> isSleeping {false};
-      std::atomic<bool> isGoingToSleep {false};
-      std::atomic<bool> isWakingUp {false};
-      std::atomic<bool> isDimmed {false};
       Pinetime::Drivers::Watchdog& watchdog;
       Pinetime::Controllers::NotificationManager& notificationManager;
       Pinetime::Controllers::MotorController& motorController;
@@ -138,6 +136,8 @@ namespace Pinetime {
       TimerHandle_t idleTimer;
       TimerHandle_t measureBatteryTimer;
       bool doNotGoToSleep = false;
+      bool isDimmed = false;
+      SystemTaskState state = SystemTaskState::Running;
 
       void HandleButtonAction(Controllers::ButtonActions action);
       bool fastWakeUpDone = false;
@@ -147,11 +147,7 @@ namespace Pinetime {
       bool stepCounterMustBeReset = false;
       static constexpr TickType_t batteryMeasurementPeriod = pdMS_TO_TICKS(10 * 60 * 1000);
 
-#if configUSE_TRACE_FACILITY == 1
-      SystemMonitor<FreeRtosMonitor> monitor;
-#else
-      SystemMonitor<DummyMonitor> monitor;
-#endif
+      SystemMonitor monitor;
     };
   }
 }
