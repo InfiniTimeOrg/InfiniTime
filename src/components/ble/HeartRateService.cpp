@@ -7,11 +7,12 @@ using namespace Pinetime::Controllers;
 
 constexpr ble_uuid16_t HeartRateService::heartRateServiceUuid;
 constexpr ble_uuid16_t HeartRateService::heartRateMeasurementUuid;
+constexpr ble_uuid128_t HeartRateService::runningCharUuid;
 
 namespace {
   int HeartRateServiceCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
     auto* heartRateService = static_cast<HeartRateService*>(arg);
-    return heartRateService->OnHeartRateRequested(conn_handle, attr_handle, ctxt);
+    return heartRateService->OnAtributeRequested(conn_handle, attr_handle, ctxt);
   }
 }
 
@@ -24,6 +25,13 @@ HeartRateService::HeartRateService(Pinetime::System::SystemTask& system, Control
                                .arg = this,
                                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
                                .val_handle = &heartRateMeasurementHandle},
+                              {
+                                .uuid = &runningCharUuid.u,
+                                .access_cb = HeartRateServiceCallback,
+                                .arg = this,
+                                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_WRITE,
+                                .val_handle = &runningCharHandle,
+                              },
                               {0}},
     serviceDefinition {
       {/* Device Information Service */
@@ -45,13 +53,42 @@ void HeartRateService::Init() {
   ASSERT(res == 0);
 }
 
-int HeartRateService::OnHeartRateRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
+int HeartRateService::OnAtributeRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
   if (attributeHandle == heartRateMeasurementHandle) {
     NRF_LOG_INFO("HEARTRATE : handle = %d", heartRateMeasurementHandle);
     uint8_t buffer[2] = {0, heartRateController.HeartRate()}; // [0] = flags, [1] = hr value
 
     int res = os_mbuf_append(context->om, buffer, 2);
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+
+  } else if (attributeHandle == runningCharHandle && context->op == BLE_GATT_ACCESS_OP_READ_CHR) {
+    uint8_t running;
+    switch (heartRateController.State()) {
+      case HeartRateController::States::Stopped:
+      case HeartRateController::States::NoTouch:
+        running = 0;
+        break;
+      case HeartRateController::States::NotEnoughData:
+      case HeartRateController::States::Running:
+        running = 1;
+        break;
+    }
+
+    int res = os_mbuf_append(context->om, &running, 1);
+    return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
+
+  } else if (attributeHandle == runningCharHandle && context->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
+    if (context->om->om_len != 1) {
+      return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+    }
+
+    uint8_t enable = context->om->om_data[0];
+    if (enable) {
+      heartRateController.Start();
+    } else {
+      heartRateController.Stop();
+    }
+    return 0;
   }
   return 0;
 }

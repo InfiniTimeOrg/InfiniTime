@@ -91,6 +91,9 @@ The following custom services are implemented in InfiniTime:
 - Since InfiniTime 1.8:
     * [Weather Service](/src/components/ble/weather/WeatherService.h): 00040000-78fc-48fe-8e23-433b3a1942d0
 
+
+- Development:
+    * Running characteristic (extension to Heart Rate Service): 00050001-78fc-48fe-8e23-433b3a1942d0
 ---
 
 ## BLE services
