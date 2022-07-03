@@ -92,7 +92,7 @@ Twos::~Twos() {
 }
 
 bool Twos::placeNewTile() {
-  unsigned int emptyCells[nCells - 1];
+  unsigned int emptyCells[nCells];
   unsigned int nEmpty = 0;
   for (unsigned int i = 0; i < nCells; i++) {
     const unsigned int row = i / nCols;
