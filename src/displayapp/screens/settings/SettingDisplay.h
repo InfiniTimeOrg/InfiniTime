@@ -17,13 +17,19 @@ namespace Pinetime {
         SettingDisplay(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingDisplay() override;
 
-        void UpdateSelected(lv_obj_t* object, lv_event_t event);
+        void Increase();
+        void Decrease();
 
       private:
-        static constexpr std::array<uint16_t, 4> options = {5000, 15000, 20000, 30000};
+        static constexpr std::array<uint16_t, 6> options = {5000, 7000, 10000, 15000, 20000, 30000};
 
         Controllers::Settings& settingsController;
-        lv_obj_t* cbOption[options.size()];
+
+        unsigned int setTimeout;
+
+        lv_obj_t* timeoutLabel;
+        lv_obj_t* increaseBtn;
+        lv_obj_t* decreaseBtn;
       };
     }
   }

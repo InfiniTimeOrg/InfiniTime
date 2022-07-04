@@ -2,35 +2,30 @@
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/Messages.h"
-#include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  void event_handler(lv_obj_t* obj, lv_event_t event) {
+  void IncreaseBtnHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingDisplay*>(obj->user_data);
-    screen->UpdateSelected(obj, event);
+    if (event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_LONG_PRESSED_REPEAT) {
+      screen->Increase();
+    }
+  }
+  void DecreaseBtnHandler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<SettingDisplay*>(obj->user_data);
+    if (event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_LONG_PRESSED_REPEAT) {
+      screen->Decrease();
+    }
   }
 }
 
-constexpr std::array<uint16_t, 4> SettingDisplay::options;
+constexpr std::array<uint16_t, 6> SettingDisplay::options;
 
 SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
-  : Screen(app), settingsController {settingsController} {
-
-  lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
-
-  lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_style_local_pad_all(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
-  lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
-  lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
-
-  lv_obj_set_pos(container1, 10, 60);
-  lv_obj_set_width(container1, LV_HOR_RES - 20);
-  lv_obj_set_height(container1, LV_VER_RES - 50);
-  lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
+  : Screen(app), settingsController {settingsController}, setTimeout {settingsController.GetScreenTimeOut()} {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Display timeout");
@@ -43,36 +38,69 @@ SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
-  char buffer[12];
-  for (unsigned int i = 0; i < options.size(); i++) {
-    cbOption[i] = lv_checkbox_create(container1, nullptr);
-    sprintf(buffer, "%3d seconds", options[i] / 1000);
-    lv_checkbox_set_text(cbOption[i], buffer);
-    cbOption[i]->user_data = this;
-    lv_obj_set_event_cb(cbOption[i], event_handler);
-    SetRadioButtonStyle(cbOption[i]);
+  timeoutLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(timeoutLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_label_set_text_static(timeoutLabel, "00");
+  lv_label_set_align(timeoutLabel, LV_LABEL_ALIGN_CENTER);
+  lv_label_set_long_mode(timeoutLabel, LV_LABEL_LONG_CROP);
+  static constexpr int horizOffset = -LV_HOR_RES_MAX / 4;
+  lv_obj_align(timeoutLabel, nullptr, LV_ALIGN_CENTER, horizOffset, 0);
 
-    if (settingsController.GetScreenTimeOut() == options[i]) {
-      lv_checkbox_set_checked(cbOption[i], true);
-    }
-  }
+  lv_label_set_text_fmt(timeoutLabel, "%d", setTimeout / 1000);
+
+  lv_obj_t* secondsLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(secondsLabel, "seconds");
+  lv_obj_align(secondsLabel, timeoutLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+
+  static constexpr int btnWidth = LV_HOR_RES_MAX / 2;
+  static constexpr lv_coord_t btnHeight = 90;
+
+  decreaseBtn = lv_btn_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(decreaseBtn, btnWidth, btnHeight);
+  lv_obj_align(decreaseBtn, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  decreaseBtn->user_data = this;
+  lv_obj_set_event_cb(decreaseBtn, DecreaseBtnHandler);
+
+  lv_obj_t* decreaseLabel = lv_label_create(decreaseBtn, nullptr);
+  lv_obj_set_style_local_text_font(decreaseLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_label_set_text_static(decreaseLabel, "-");
+  lv_obj_align(decreaseLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
+
+  increaseBtn = lv_btn_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(increaseBtn, btnWidth, btnHeight);
+  lv_obj_align(increaseBtn, decreaseBtn, LV_ALIGN_OUT_TOP_MID, 0, -10);
+  increaseBtn->user_data = this;
+  lv_obj_set_event_cb(increaseBtn, IncreaseBtnHandler);
+
+  lv_obj_t* increaseLabel = lv_label_create(increaseBtn, nullptr);
+  lv_obj_set_style_local_text_font(increaseLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_label_set_text_static(increaseLabel, "+");
+  lv_obj_align(increaseLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
 }
 
 SettingDisplay::~SettingDisplay() {
   lv_obj_clean(lv_scr_act());
+  settingsController.SetScreenTimeOut(setTimeout);
+  app->PushMessage(Applications::Display::Messages::UpdateTimeOut);
   settingsController.SaveSettings();
 }
 
-void SettingDisplay::UpdateSelected(lv_obj_t* object, lv_event_t event) {
-  if (event == LV_EVENT_CLICKED) {
-    for (unsigned int i = 0; i < options.size(); i++) {
-      if (object == cbOption[i]) {
-        lv_checkbox_set_checked(cbOption[i], true);
-        settingsController.SetScreenTimeOut(options[i]);
-        app->PushMessage(Applications::Display::Messages::UpdateTimeOut);
-      } else {
-        lv_checkbox_set_checked(cbOption[i], false);
-      }
+void SettingDisplay::Increase() {
+  for (uint16_t option : options) {
+    if (option > setTimeout) {
+      setTimeout = option;
+      break;
     }
   }
+  lv_label_set_text_fmt(timeoutLabel, "%d", setTimeout / 1000);
+}
+
+void SettingDisplay::Decrease() {
+  for (size_t i = 0; i < options.size() - 1; i++) {
+    if (options[i + 1] >= setTimeout) {
+      setTimeout = options[i];
+      break;
+    }
+  }
+  lv_label_set_text_fmt(timeoutLabel, "%d", setTimeout / 1000);
 }
