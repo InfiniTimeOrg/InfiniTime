@@ -6,12 +6,12 @@ namespace Pinetime {
     namespace Widgets {
       class PageIndicator {
       public:
-        PageIndicator(int nCurrentScreen, int nScreens);
+        PageIndicator(uint8_t nCurrentScreen, uint8_t nScreens);
         void Create();
 
       private:
-        int nCurrentScreen;
-        int nScreens;
+        uint8_t nCurrentScreen;
+        uint8_t nScreens;
 
         lv_point_t pageIndicatorBasePoints[2];
         lv_point_t pageIndicatorPoints[2];

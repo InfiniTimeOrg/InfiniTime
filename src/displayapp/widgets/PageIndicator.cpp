@@ -2,7 +2,7 @@
 
 using namespace Pinetime::Applications::Widgets;
 
-PageIndicator::PageIndicator(int nCurrentScreen, int nScreens) : nCurrentScreen {nCurrentScreen}, nScreens {nScreens} {
+PageIndicator::PageIndicator(uint8_t nCurrentScreen, uint8_t nScreens) : nCurrentScreen {nCurrentScreen}, nScreens {nScreens} {
 }
 
 void PageIndicator::Create() {
