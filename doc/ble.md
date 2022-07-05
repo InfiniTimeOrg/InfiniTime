@@ -146,14 +146,14 @@ The new alert characteristic allows sending new notifications to InfiniTime. It 
 For example, here is what a normal notification looks like in Golang (language of `itd`):
 
 ```go
-// \x00 is the category for simple alert, and there is one new notifcation, hence \x01.
+// \x00 is the category for simple alert, and there is one new notification, hence \x01.
 "\x00\x01\x00Test Title\x00Test Body"
 ```
 
 A call notification looks like so:
 
 ```go
-// \x03 is the category for calls, and there is one new call notifcation, hence \x01.
+// \x03 is the category for calls, and there is one new call notification, hence \x01.
 "\x03\x01\x00Mary"
 ```
 

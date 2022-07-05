@@ -15,15 +15,11 @@ namespace Pinetime {
       void Higher();
       void Step();
 
-      void Backup();
-      void Restore();
-
       const char* GetIcon();
       const char* ToString();
 
     private:
       Levels level = Levels::High;
-      Levels backupLevel = Levels::High;
     };
   }
 }

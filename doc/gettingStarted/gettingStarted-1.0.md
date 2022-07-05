@@ -18,7 +18,7 @@ You can sync the time using companion apps.
 
 You can also set the time in the settings without a companion app. (version >1.7.0)
 
-InfiniTime doesn't handle daylight savings automatically, so make sure to set the correct the time or sync it with a companion app.
+InfiniTime doesn't handle daylight savings automatically, so make sure to set the correct time or sync it with a companion app.
 
 ### Digital watch face
 

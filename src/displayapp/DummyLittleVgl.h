@@ -20,7 +20,6 @@ namespace Pinetime {
       LittleVgl& operator=(LittleVgl&&) = delete;
 
       void Init() {
-
       }
 
       void FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
@@ -33,7 +32,6 @@ namespace Pinetime {
       void SetNewTapEvent(uint16_t x, uint16_t y) {
       }
       void SetNewTouchPoint(uint16_t x, uint16_t y, bool contact) {
-
       }
     };
   }

@@ -7,6 +7,7 @@ on:
       - '**.cpp'
       - '**.h'
       - '!src/libs/**'
+      - '!src/FreeRTOS/**'
 
 jobs:
   test-format:
@@ -18,8 +19,6 @@ jobs:
 
       - name: Configure git
         run: |
-          git config --global user.email "-"
-          git config --global user.name "Autoformatter"
           git fetch origin "$GITHUB_BASE_REF":"$GITHUB_BASE_REF" --depth=1000
 
       - name: Install clang-format

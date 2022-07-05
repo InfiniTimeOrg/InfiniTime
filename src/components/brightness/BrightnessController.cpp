@@ -74,14 +74,6 @@ BrightnessController::Levels BrightnessController::Level() const {
   return level;
 }
 
-void BrightnessController::Backup() {
-  backupLevel = level;
-}
-
-void BrightnessController::Restore() {
-  Set(backupLevel);
-}
-
 void BrightnessController::Step() {
   switch (level) {
     case Levels::Low:

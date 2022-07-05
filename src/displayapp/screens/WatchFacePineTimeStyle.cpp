@@ -42,22 +42,15 @@ namespace {
     auto* screen = static_cast<WatchFacePineTimeStyle*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
-
-  bool IsBleIconVisible(bool isRadioEnabled, bool isConnected) {
-    if(!isRadioEnabled) {
-      return true;
-    }
-    return isConnected;
-  }
 }
 
 WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
-                             Controllers::DateTime& dateTimeController,
-                             Controllers::Battery& batteryController,
-                             Controllers::Ble& bleController,
-                             Controllers::NotificationManager& notificatioManager,
-                             Controllers::Settings& settingsController,
-                             Controllers::MotionController& motionController)
+                                               Controllers::DateTime& dateTimeController,
+                                               Controllers::Battery& batteryController,
+                                               Controllers::Ble& bleController,
+                                               Controllers::NotificationManager& notificatioManager,
+                                               Controllers::Settings& settingsController,
+                                               Controllers::MotionController& motionController)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},

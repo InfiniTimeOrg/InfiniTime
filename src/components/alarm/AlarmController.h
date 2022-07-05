@@ -17,6 +17,8 @@
 */
 #pragma once
 
+#include <FreeRTOS.h>
+#include <timers.h>
 #include <cstdint>
 #include "components/datetime/DateTimeController.h"
 
@@ -57,6 +59,7 @@ namespace Pinetime {
     private:
       Controllers::DateTime& dateTimeController;
       System::SystemTask* systemTask = nullptr;
+      TimerHandle_t alarmTimer;
       uint8_t hours = 7;
       uint8_t minutes = 0;
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> alarmTime;

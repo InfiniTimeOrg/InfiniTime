@@ -11,8 +11,10 @@ SpiNorFlash::SpiNorFlash(Spi& spi) : spi {spi} {
 
 void SpiNorFlash::Init() {
   device_id = ReadIdentificaion();
-  NRF_LOG_INFO(
-    "[SpiNorFlash] Manufacturer : %d, Memory type : %d, memory density : %d", device_id.manufacturer, device_id.type, device_id.density);
+  NRF_LOG_INFO("[SpiNorFlash] Manufacturer : %d, Memory type : %d, memory density : %d",
+               device_id.manufacturer,
+               device_id.type,
+               device_id.density);
 }
 
 void SpiNorFlash::Uninit() {
@@ -70,7 +72,10 @@ uint8_t SpiNorFlash::ReadConfigurationRegister() {
 
 void SpiNorFlash::Read(uint32_t address, uint8_t* buffer, size_t size) {
   static constexpr uint8_t cmdSize = 4;
-  uint8_t cmd[cmdSize] = {static_cast<uint8_t>(Commands::Read), (uint8_t) (address >> 16U), (uint8_t) (address >> 8U), (uint8_t) address};
+  uint8_t cmd[cmdSize] = {static_cast<uint8_t>(Commands::Read),
+                          static_cast<uint8_t>(address >> 16U),
+                          static_cast<uint8_t>(address >> 8U),
+                          static_cast<uint8_t>(address)};
   spi.Read(reinterpret_cast<uint8_t*>(&cmd), cmdSize, buffer, size);
 }
 
@@ -82,9 +87,9 @@ void SpiNorFlash::WriteEnable() {
 void SpiNorFlash::SectorErase(uint32_t sectorAddress) {
   static constexpr uint8_t cmdSize = 4;
   uint8_t cmd[cmdSize] = {static_cast<uint8_t>(Commands::SectorErase),
-                          (uint8_t) (sectorAddress >> 16U),
-                          (uint8_t) (sectorAddress >> 8U),
-                          (uint8_t) sectorAddress};
+                          static_cast<uint8_t>(sectorAddress >> 16U),
+                          static_cast<uint8_t>(sectorAddress >> 8U),
+                          static_cast<uint8_t>(sectorAddress)};
 
   WriteEnable();
   while (!WriteEnabled())
@@ -121,7 +126,10 @@ void SpiNorFlash::Write(uint32_t address, const uint8_t* buffer, size_t size) {
     uint32_t pageLimit = (addr & ~(pageSize - 1u)) + pageSize;
     uint32_t toWrite = pageLimit - addr > len ? len : pageLimit - addr;
 
-    uint8_t cmd[cmdSize] = {static_cast<uint8_t>(Commands::PageProgram), (uint8_t) (addr >> 16U), (uint8_t) (addr >> 8U), (uint8_t) addr};
+    uint8_t cmd[cmdSize] = {static_cast<uint8_t>(Commands::PageProgram),
+                            static_cast<uint8_t>(addr >> 16U),
+                            static_cast<uint8_t>(addr >> 8U),
+                            static_cast<uint8_t>(addr)};
 
     WriteEnable();
     while (!WriteEnabled())

@@ -1224,7 +1224,7 @@
 
 // <q> PM_SERVICE_CHANGED_ENABLED  - Enable/disable the service changed management for GATT server in Peer Manager.
 
-// <i> If not using a GATT server, or using a server wihout a service changed characteristic,
+// <i> If not using a GATT server, or using a server without a service changed characteristic,
 // <i> disable this to save code space.
 
 #ifndef PM_SERVICE_CHANGED_ENABLED
@@ -6781,7 +6781,7 @@
 // <e> APP_TIMER_ENABLED - app_timer - Application timer functionality
 //==========================================================
 #ifndef APP_TIMER_ENABLED
-  #define APP_TIMER_ENABLED 1
+  #define APP_TIMER_ENABLED 0
 #endif
 // <o> APP_TIMER_CONFIG_RTC_FREQUENCY  - Configure RTC prescaler.
 
@@ -7667,7 +7667,7 @@
 #endif
 // <e> USE_COMP - Use the comparator to implement the capacitive sensor driver.
 
-// <i> Due to Anomaly 84, COMP I_SOURCE is not functional. It has too high a varation.
+// <i> Due to Anomaly 84, COMP I_SOURCE is not functional. It has too high a variation.
 //==========================================================
 #ifndef USE_COMP
   #define USE_COMP 0
@@ -8200,7 +8200,7 @@
   #define NRF_LOG_DEFAULT_LEVEL 3
 #endif
 
-// <q> NRF_LOG_DEFERRED  - Enable deffered logger.
+// <q> NRF_LOG_DEFERRED  - Enable deferred logger.
 
 // <i> Log data is buffered and can be processed in idle.
 
@@ -11620,7 +11620,7 @@
   #define NRF_SDH_ANT_OBSERVER_PRIO_LEVELS 2
 #endif
 
-// <h> ANT Observers priorities - Invididual priorities
+// <h> ANT Observers priorities - Individual priorities
 
 //==========================================================
 // <o> ANT_BPWR_ANT_OBSERVER_PRIO
@@ -11696,7 +11696,7 @@
 // <h> BLE Stack configuration - Stack configuration parameters
 
 // <i> The SoftDevice handler will configure the stack with these parameters when calling @ref nrf_sdh_ble_default_cfg_set.
-// <i> Other libraries might depend on these values; keep them up-to-date even if you are not explicitely calling @ref
+// <i> Other libraries might depend on these values; keep them up-to-date even if you are not explicitly calling @ref
 // nrf_sdh_ble_default_cfg_set.
 //==========================================================
 // <o> NRF_SDH_BLE_GAP_DATA_LENGTH   <27-251>
@@ -11766,7 +11766,7 @@
   #define NRF_SDH_BLE_OBSERVER_PRIO_LEVELS 4
 #endif
 
-// <h> BLE Observers priorities - Invididual priorities
+// <h> BLE Observers priorities - Individual priorities
 
 //==========================================================
 // <o> BLE_ADV_BLE_OBSERVER_PRIO
@@ -12302,7 +12302,7 @@
   #define NRF_SDH_STACK_OBSERVER_PRIO_LEVELS 2
 #endif
 
-// <h> State Observers priorities - Invididual priorities
+// <h> State Observers priorities - Individual priorities
 
 //==========================================================
 // <o> CLOCK_CONFIG_STATE_OBSERVER_PRIO
@@ -12329,7 +12329,7 @@
 // </h>
 //==========================================================
 
-// <h> Stack Event Observers priorities - Invididual priorities
+// <h> Stack Event Observers priorities - Individual priorities
 
 //==========================================================
 // <o> NRF_SDH_ANT_STACK_OBSERVER_PRIO
@@ -12383,7 +12383,7 @@
   #define NRF_SDH_SOC_OBSERVER_PRIO_LEVELS 2
 #endif
 
-// <h> SoC Observers priorities - Invididual priorities
+// <h> SoC Observers priorities - Individual priorities
 
 //==========================================================
 // <o> BLE_ADV_SOC_OBSERVER_PRIO

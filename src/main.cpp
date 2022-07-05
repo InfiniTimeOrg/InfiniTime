@@ -3,7 +3,6 @@
 #include <hal/nrf_wdt.h>
 #include <legacy/nrf_drv_clock.h>
 #include <libraries/gpiote/app_gpiote.h>
-#include <libraries/timer/app_timer.h>
 #include <softdevice/common/nrf_sdh.h>
 #include <nrf_delay.h>
 
@@ -159,7 +158,7 @@ Pinetime::System::SystemTask systemTask(spi,
                                         touchHandler,
                                         buttonHandler);
 
-/* Variable Declarations for variables in noinit SRAM 
+/* Variable Declarations for variables in noinit SRAM
    Increment NoInit_MagicValue upon adding variables to this area
 */
 extern uint32_t __start_noinit_data;
@@ -167,7 +166,6 @@ extern uint32_t __stop_noinit_data;
 static constexpr uint32_t NoInit_MagicValue = 0xDEAD0000;
 uint32_t NoInit_MagicWord __attribute__((section(".noinit")));
 std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime __attribute__((section(".noinit")));
-
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if (pin == Pinetime::PinMap::Cst816sIrq) {
@@ -302,10 +300,29 @@ void nimble_port_ll_task_func(void* args) {
 }
 }
 
+void calibrate_lf_clock_rc(nrf_drv_clock_evt_type_t event) {
+  // 16 * 0.25s = 4s calibration cycle
+  // Not recursive, call is deferred via internal calibration timer
+  nrf_drv_clock_calibration_start(16, calibrate_lf_clock_rc);
+}
+
 int main(void) {
   logger.Init();
 
   nrf_drv_clock_init();
+  nrf_drv_clock_lfclk_request(NULL);
+
+  // When loading the firmware via the Wasp-OS reloader-factory, which uses the used internal LF RC oscillator,
+  // the LF clock has to be explicitly restarted because InfiniTime uses the external crystal oscillator if available.
+  // If the clock is not restarted, the Bluetooth timers fail to initialize.
+  nrfx_clock_lfclk_start();
+  while (!nrf_clock_lf_is_running()) {
+  }
+
+// The RC source for the LF clock has to be calibrated
+#if (CLOCK_CONFIG_LF_SRC == NRF_CLOCK_LFCLK_RC)
+  nrf_drv_clock_calibration_start(0, calibrate_lf_clock_rc);
+#endif
 
   // Unblock i2c?
   nrf_gpio_cfg(Pinetime::PinMap::TwiScl,
@@ -327,12 +344,11 @@ int main(void) {
   // retrieve version stored by bootloader
   Pinetime::BootloaderVersion::SetVersion(NRF_TIMER2->CC[0]);
 
-  
   if (NoInit_MagicWord == NoInit_MagicValue) {
     dateTimeController.SetCurrentTime(NoInit_BackUpTime);
   } else {
-    //Clear Memory to known state
-    memset(&__start_noinit_data,0,(uintptr_t)&__stop_noinit_data-(uintptr_t)&__start_noinit_data);
+    // Clear Memory to known state
+    memset(&__start_noinit_data, 0, (uintptr_t) &__stop_noinit_data - (uintptr_t) &__start_noinit_data);
     NoInit_MagicWord = NoInit_MagicValue;
   }
 

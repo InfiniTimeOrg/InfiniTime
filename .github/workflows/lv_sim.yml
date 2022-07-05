@@ -1,24 +1,21 @@
 # GitHub Actions Workflow to build Simulator for PineTime Smart Watch LVGL Interface
 
-# Name of this Workflow
 name: Build PineTime LVGL Simulator
 
-# When to run this Workflow...
 on:
-
-  # Run this Workflow when files are updated (Pushed) in the "master" and "develop" Branch
   push:
     branches: [ master, develop ]
-
-  # Also run this Workflow when a Pull Request is created or updated in the "master" and "develop" Branch
+    paths-ignore:
+      - 'doc/**'
+      - 'images/**'
   pull_request:
     branches: [ master, develop ]
+    paths-ignore:
+      - 'doc/**'
+      - 'images/**'
 
-# Steps to run for the Workflow
 jobs:
   build:
-
-    # Run these steps on Ubuntu
     runs-on: ubuntu-latest
 
     steps:
@@ -64,15 +61,12 @@ jobs:
       #########################################################################################
       # Build and Upload simulator
 
-      # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
-      # For Faster Builds: Add "make" option "-j"
-
       - name: Build simulator executable
         run:  |
           cmake --build build_lv_sim
 
       - name: Upload simulator executable
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: infinisim
+          name: infinisim-${{ github.head_ref }}
           path: build_lv_sim/infinisim

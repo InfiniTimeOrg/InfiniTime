@@ -94,8 +94,8 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   uint16_t y1, y2, width, height = 0;
 
   ulTaskNotifyTake(pdTRUE, 200);
-  // NOtification is still needed (even if there is a mutex on SPI) because of the DataCommand pin
-  // which cannot be set/clear during a transfert.
+  // Notification is still needed (even if there is a mutex on SPI) because of the DataCommand pin
+  // which cannot be set/clear during a transfer.
 
   if ((scrollDirection == LittleVgl::FullRefreshDirections::Down) && (area->y2 == visibleNbLines - 1)) {
     writeOffset = ((writeOffset + totalNbLines) - visibleNbLines) % totalNbLines;
@@ -195,8 +195,13 @@ bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
 
 void LittleVgl::InitTheme() {
 
-  lv_theme_t* th = lv_pinetime_theme_init(
-    LV_COLOR_WHITE, LV_COLOR_SILVER, 0, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20, &jetbrains_mono_bold_20);
+  lv_theme_t* th = lv_pinetime_theme_init(LV_COLOR_WHITE,
+                                          LV_COLOR_SILVER,
+                                          0,
+                                          &jetbrains_mono_bold_20,
+                                          &jetbrains_mono_bold_20,
+                                          &jetbrains_mono_bold_20,
+                                          &jetbrains_mono_bold_20);
 
   lv_theme_set_act(th);
 }

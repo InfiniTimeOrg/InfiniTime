@@ -14,6 +14,8 @@ namespace {
   }
 }
 
+constexpr std::array<SettingChimes::Option, 3> SettingChimes::options;
+
 SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
 
@@ -40,37 +42,16 @@ SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
-  optionsTotal = 0;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Off");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  SetRadioButtonStyle(cbOption[optionsTotal]);
-  if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::None) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
+  for (unsigned int i = 0; i < options.size(); i++) {
+    cbOption[i] = lv_checkbox_create(container1, nullptr);
+    lv_checkbox_set_text(cbOption[i], options[i].name);
+    if (settingsController.GetChimeOption() == options[i].chimesOption) {
+      lv_checkbox_set_checked(cbOption[i], true);
+    }
+    cbOption[i]->user_data = this;
+    lv_obj_set_event_cb(cbOption[i], event_handler);
+    SetRadioButtonStyle(cbOption[i]);
   }
-
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Every hour");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  SetRadioButtonStyle(cbOption[optionsTotal]);
-  if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
-
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Every 30 mins");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  SetRadioButtonStyle(cbOption[optionsTotal]);
-  if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
-
-  optionsTotal++;
 }
 
 SettingChimes::~SettingChimes() {
@@ -80,18 +61,10 @@ SettingChimes::~SettingChimes() {
 
 void SettingChimes::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
-    for (uint8_t i = 0; i < optionsTotal; i++) {
+    for (uint8_t i = 0; i < options.size(); i++) {
       if (object == cbOption[i]) {
         lv_checkbox_set_checked(cbOption[i], true);
-        if (i == 0) {
-          settingsController.SetChimeOption(Controllers::Settings::ChimesOption::None);
-        }
-        if (i == 1) {
-          settingsController.SetChimeOption(Controllers::Settings::ChimesOption::Hours);
-        }
-        if (i == 2) {
-          settingsController.SetChimeOption(Controllers::Settings::ChimesOption::HalfHours);
-        }
+        settingsController.SetChimeOption(options[i].chimesOption);
       } else {
         lv_checkbox_set_checked(cbOption[i], false);
       }

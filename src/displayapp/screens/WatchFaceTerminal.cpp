@@ -89,7 +89,7 @@ void WatchFaceTerminal::Refresh() {
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
-    if(!bleRadioEnabled.Get()) {
+    if (!bleRadioEnabled.Get()) {
       lv_label_set_text_static(connectState, "[STAT]#0082fc Disabled#");
     } else {
       if (bleState.Get()) {

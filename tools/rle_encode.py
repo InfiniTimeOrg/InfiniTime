@@ -101,7 +101,7 @@ class ReverseCLUT:
             rd = r - (candidate >> 16)
             gd = g - ((candidate >> 8) & 0xff)
             bd = b - (candidate & 0xff)
-            # This is the Euclidian distance (squared)
+            # This is the Euclidean distance (squared)
             distance = rd * rd + gd * gd + bd * bd
             if distance < best:
                 best = distance
