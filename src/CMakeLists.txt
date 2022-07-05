@@ -405,6 +405,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Styles.cpp
         displayapp/Colors.cpp
         displayapp/widgets/Counter.cpp
+        displayapp/widgets/PageIndicator.cpp
 
         ## Settings
         displayapp/screens/settings/QuickSettings.cpp
@@ -609,6 +610,7 @@ set(INCLUDE_FILES
         displayapp/screens/Alarm.h
         displayapp/Colors.h
         displayapp/widgets/Counter.h
+        displayapp/widgets/PageIndicator.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h
