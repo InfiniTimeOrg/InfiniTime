@@ -122,7 +122,8 @@ bool Twos::tryMerge(int newRow, int newCol, int oldRow, int oldCol) {
   if (grid[newRow][newCol].value == grid[oldRow][oldCol].value) {
     if ((newCol != oldCol) || (newRow != oldRow)) {
       if (!grid[newRow][newCol].merged) {
-        score += grid[newRow][newCol].value *= 2;
+        grid[newRow][newCol].value *= 2;
+        score += grid[newRow][newCol].value;
         lv_label_set_text_fmt(scoreText, "Score #FFFF00 %i#", score);
         grid[oldRow][oldCol].value = 0;
         grid[newRow][newCol].merged = true;
