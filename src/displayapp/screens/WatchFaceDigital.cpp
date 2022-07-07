@@ -85,7 +85,9 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+  bgLoaded = true;
   Refresh();
+  bgLoaded = false;
 }
 
 WatchFaceDigital::~WatchFaceDigital() {
@@ -94,6 +96,14 @@ WatchFaceDigital::~WatchFaceDigital() {
 }
 
 void WatchFaceDigital::Refresh() {
+  if(!bgLoaded) {
+    bgImg = lv_img_create(lv_scr_act(), nullptr);
+    lv_img_set_src(bgImg, "F:/matrix.bin");
+    lv_obj_align(bgImg, nullptr, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_move_background(bgImg);
+    bgLoaded = true;
+  }
+
   powerPresent = batteryController.IsPowerPresent();
   if (powerPresent.IsUpdated()) {
     lv_label_set_text_static(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));

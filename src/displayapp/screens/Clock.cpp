@@ -12,6 +12,8 @@
 #include "displayapp/screens/WatchFaceTerminal.h"
 #include "displayapp/screens/WatchFaceAnalog.h"
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
+#include "displayapp/screens/WatchFaceInfineat.h"
+#include "displayapp/screens/WatchFaceCasioStyleG7710.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -44,6 +46,12 @@ Clock::Clock(DisplayApp* app,
           break;
         case 3:
           return WatchFaceTerminalScreen();
+          break;
+        case 4:
+          return WatchFaceInfineatScreen();
+          break;
+        case 5:
+          return WatchFaceG7710Screen();
           break;
       }
       return WatchFaceDigitalScreen();
@@ -95,6 +103,27 @@ std::unique_ptr<Screen> Clock::WatchFacePineTimeStyleScreen() {
 
 std::unique_ptr<Screen> Clock::WatchFaceTerminalScreen() {
   return std::make_unique<Screens::WatchFaceTerminal>(app,
+                                                      dateTimeController,
+                                                      batteryController,
+                                                      bleController,
+                                                      notificatioManager,
+                                                      settingsController,
+                                                      heartRateController,
+                                                      motionController);
+}
+
+std::unique_ptr<Screen> Clock::WatchFaceInfineatScreen() {
+  return std::make_unique<Screens::WatchFaceInfineat>(app,
+                                                      dateTimeController,
+                                                      batteryController,
+                                                      bleController,
+                                                      notificatioManager,
+                                                      settingsController,
+                                                      motionController);
+}
+
+std::unique_ptr<Screen> Clock::WatchFaceG7710Screen() {
+  return std::make_unique<Screens::WatchFaceCasioStyleG7710>(app,
                                                       dateTimeController,
                                                       batteryController,
                                                       bleController,

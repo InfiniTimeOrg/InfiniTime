@@ -22,17 +22,17 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class WatchFaceDigital : public Screen {
+      class WatchFaceCasioStyleG7710 : public Screen {
       public:
-        WatchFaceDigital(DisplayApp* app,
-                         Controllers::DateTime& dateTimeController,
-                         Controllers::Battery& batteryController,
-                         Controllers::Ble& bleController,
-                         Controllers::NotificationManager& notificatioManager,
-                         Controllers::Settings& settingsController,
-                         Controllers::HeartRateController& heartRateController,
-                         Controllers::MotionController& motionController);
-        ~WatchFaceDigital() override;
+        WatchFaceCasioStyleG7710(DisplayApp* app,
+                                 Controllers::DateTime& dateTimeController,
+                                 Controllers::Battery& batteryController,
+                                 Controllers::Ble& bleController,
+                                 Controllers::NotificationManager& notificatioManager,
+                                 Controllers::Settings& settingsController,
+                                 Controllers::HeartRateController& heartRateController,
+                                 Controllers::MotionController& motionController);
+        ~WatchFaceCasioStyleG7710() override;
 
         void Refresh() override;
 
@@ -56,16 +56,37 @@ namespace Pinetime {
         DirtyValue<bool> heartbeatRunning {};
         DirtyValue<bool> notificationState {};
 
+        lv_point_t line_icons_points[3] {{0, 5}, {117, 5}, {122, 0}};
+        lv_point_t line_day_of_week_number_points[4] {{0, 0}, {100, 0}, {95, 95}, {0, 95}};
+        lv_point_t line_day_of_year_points[3] {{0, 5}, {130, 5}, {135, 0}};
+        lv_point_t line_date_points[3] {{0, 5}, {135, 5}, {140, 0}};
+        lv_point_t line_time_points[3] {{0, 0}, {230, 0}, {235, 5}};
+
+        lv_color_t color_text = lv_color_hex(0x98B69A);
+
+        lv_style_t style_line;
+        lv_style_t style_border;
+
         lv_obj_t* label_time;
+        lv_obj_t* line_time;
         lv_obj_t* label_time_ampm;
         lv_obj_t* label_date;
+        lv_obj_t* line_date;
+        lv_obj_t* label_day_of_week;
+        lv_obj_t* label_week_number;
+        lv_obj_t* line_day_of_week_number;
+        lv_obj_t* label_day_of_year;
+        lv_obj_t* line_day_of_year;
+        lv_obj_t* backgroundLabel;
         lv_obj_t* bleIcon;
         lv_obj_t* batteryPlug;
+        lv_obj_t* label_battery_vallue;
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
+        lv_obj_t* line_icons;
 
         BatteryIcon batteryIcon;
 
@@ -78,8 +99,11 @@ namespace Pinetime {
         Controllers::MotionController& motionController;
 
         lv_task_t* taskRefresh;
-        lv_obj_t* bgImg;
-        bool bgLoaded = false;
+
+        lv_font_t* font_dot40 = nullptr;
+        lv_font_t* font_segment40 = nullptr;
+        lv_font_t* font_segment115 = nullptr;
+
       };
     }
   }

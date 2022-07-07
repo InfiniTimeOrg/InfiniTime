@@ -402,6 +402,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
+        displayapp/screens/CheckboxList.cpp
         displayapp/screens/Styles.cpp
         displayapp/Colors.cpp
         displayapp/widgets/Counter.cpp
@@ -426,6 +427,8 @@ list(APPEND SOURCE_FILES
         displayapp/screens/WatchFaceDigital.cpp
         displayapp/screens/WatchFaceTerminal.cpp
         displayapp/screens/WatchFacePineTimeStyle.cpp
+        displayapp/screens/WatchFaceInfineat.cpp
+        displayapp/screens/WatchFaceCasioStyleG7710.cpp
 
         ##
 
@@ -607,6 +610,7 @@ set(INCLUDE_FILES
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
         displayapp/screens/Alarm.h
+        displayapp/screens/CheckboxList.h
         displayapp/Colors.h
         displayapp/widgets/Counter.h
         drivers/St7789.h
