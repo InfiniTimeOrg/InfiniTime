@@ -2,11 +2,11 @@ name: Build and push Docker image
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ develop ]
     paths:
       - 'docker/**'
   pull_request:
-    branches: [ master, develop ]
+    branches: [ develop ]
     paths:
       - 'docker/**'
 
