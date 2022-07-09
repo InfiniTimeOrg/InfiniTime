@@ -57,8 +57,8 @@
    "lv_font_sys_48": {
       "sources": [
          {
-            "file": "icons_sys_48.ttf",
-            "range": "0xe902, 0xe904-0xe907, 0xe90b-0xe90c"
+            "file": "material-design-icons/MaterialIcons-Regular.ttf",
+            "range": "0xf00b, 0xe3aa-0xe3ac, 0xe7f6-0xe7f7, 0xe8b8"
          }
       ],
       "bpp": 1,

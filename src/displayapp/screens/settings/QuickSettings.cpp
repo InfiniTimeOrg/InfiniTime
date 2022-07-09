@@ -72,7 +72,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_t* lbl_btn;
   lbl_btn = lv_label_create(btn2, nullptr);
   lv_obj_set_style_local_text_font(lbl_btn, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_sys_48);
-  lv_label_set_text_static(lbl_btn, Symbols::highlight);
+  lv_label_set_text_static(lbl_btn, Symbols::flashlight);
 
   btn3 = lv_btn_create(lv_scr_act(), nullptr);
   btn3->user_data = this;
