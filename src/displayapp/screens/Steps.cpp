@@ -2,6 +2,7 @@
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/lv_pinetime_theme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -17,10 +18,7 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
 
   stepsArc = lv_arc_create(lv_scr_act(), nullptr);
 
-  lv_obj_set_style_local_bg_opa(stepsArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, LV_OPA_0);
-  lv_obj_set_style_local_border_width(stepsArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 2);
-  lv_obj_set_style_local_radius(stepsArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_line_color(stepsArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, lv_color_hex(0x0000FF));
+  lv_obj_set_state(stepsArc, PT_STATE_PRIMARY);
   lv_arc_set_end_angle(stepsArc, 200);
   lv_obj_set_size(stepsArc, 240, 240);
   lv_arc_set_range(stepsArc, 0, 500);
@@ -32,9 +30,9 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
 
   lSteps = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
   lv_obj_set_style_local_text_font(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
+  lv_obj_set_state(lSteps, PT_STATE_PRIMARY);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   lv_obj_t* lstepsL = lv_label_create(lv_scr_act(), nullptr);
@@ -43,7 +41,7 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_obj_align(lstepsL, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
 
   lv_obj_t* lstepsGoal = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(lstepsGoal, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
+  lv_obj_set_state(lstepsGoal, PT_STATE_SECONDARY);
   lv_label_set_text_fmt(lstepsGoal, "Goal: %5lu", settingsController.GetStepsGoal());
   lv_label_set_align(lstepsGoal, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(lstepsGoal, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 40);
@@ -60,7 +58,8 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   currentTripSteps = motionController.GetTripSteps();
 
   tripLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(tripLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+  lv_obj_set_state(tripLabel, PT_STATE_SECONDARY);
+  // lv_obj_set_style_local_text_color(tripLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   lv_label_set_text_fmt(tripLabel, "Trip: %5li", currentTripSteps);
   lv_obj_align(tripLabel, lstepsGoal, LV_ALIGN_IN_LEFT_MID, 0, 20);
 

@@ -18,6 +18,7 @@
 #include "displayapp/screens/Alarm.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/lv_pinetime_theme.h"
 
 using namespace Pinetime::Applications::Screens;
 using Pinetime::Controllers::AlarmController;
@@ -119,6 +120,7 @@ Alarm::Alarm(DisplayApp* app,
   lv_obj_set_size(enableSwitch, 100, 50);
   // Align to the center of 115px from edge
   lv_obj_align(enableSwitch, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 7, 0);
+  lv_obj_set_state(enableSwitch, PT_STATE_PRIMARY);
 
   UpdateAlarmTime();
 

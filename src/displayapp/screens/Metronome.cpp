@@ -1,5 +1,6 @@
 #include "displayapp/screens/Metronome.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/lv_pinetime_theme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -33,9 +34,11 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   lv_obj_set_size(bpmArc, 210, 210);
   lv_arc_set_adjustable(bpmArc, true);
   lv_obj_align(bpmArc, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_obj_set_state(bpmArc, PT_STATE_PRIMARY);
 
   bpmValue = createLabel("120", bpmArc, LV_ALIGN_IN_TOP_MID, &jetbrains_mono_76, 0, 55);
   createLabel("bpm", bpmValue, LV_ALIGN_OUT_BOTTOM_MID, &jetbrains_mono_bold_20, 0, 0);
+  lv_obj_set_state(bpmValue, PT_STATE_PRIMARY);
 
   bpmTap = lv_btn_create(lv_scr_act(), nullptr);
   bpmTap->user_data = this;

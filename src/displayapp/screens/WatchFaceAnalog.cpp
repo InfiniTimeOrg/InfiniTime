@@ -65,6 +65,7 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_obj_align(bg_clock_img, NULL, LV_ALIGN_CENTER, 0, 0);
 
   batteryIcon.Create(lv_scr_act());
+  batteryIcon.SetColor(LV_COLOR_WHITE);
   lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   plugIcon = lv_label_create(lv_scr_act(), nullptr);

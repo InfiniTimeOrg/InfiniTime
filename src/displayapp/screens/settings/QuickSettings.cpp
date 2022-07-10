@@ -39,6 +39,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   batteryIcon.Create(lv_scr_act());
+  batteryIcon.SetColor(LV_COLOR_WHITE);
   lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   static constexpr uint8_t barHeight = 20 + innerDistance;
@@ -49,7 +50,6 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
 
   lv_style_init(&btn_style);
   lv_style_set_radius(&btn_style, LV_STATE_DEFAULT, buttonHeight / 4);
-  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
 
   btn1 = lv_btn_create(lv_scr_act(), nullptr);
   btn1->user_data = this;
@@ -79,7 +79,6 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_event_cb(btn3, ButtonEventHandler);
   lv_btn_set_checkable(btn3, true);
   lv_obj_add_style(btn3, LV_BTN_PART_MAIN, &btn_style);
-  lv_obj_set_style_local_bg_color(btn3, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
   lv_obj_set_size(btn3, buttonWidth, buttonHeight);
   lv_obj_align(btn3, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, buttonXOffset, 0);
 
