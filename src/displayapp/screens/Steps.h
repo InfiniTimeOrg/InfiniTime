@@ -27,6 +27,7 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
 
         uint32_t currentTripSteps = 0;
+        uint32_t currentTripStepsDistance = 0;
 
         lv_obj_t* lSteps;
         lv_obj_t* lStepsIcon;
@@ -34,6 +35,7 @@ namespace Pinetime {
         lv_obj_t* resetBtn;
         lv_obj_t* resetButtonLabel;
         lv_obj_t* tripLabel;
+        lv_obj_t* distanceLabel;
 
         uint32_t stepsCount;
 

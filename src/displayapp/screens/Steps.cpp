@@ -28,6 +28,8 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
 
   stepsCount = motionController.NbSteps();
   currentTripSteps = stepsCount - motionController.GetTripSteps();
+  currentTripStepsDistance = motionController.GetTripSteps() * 0.0008;
+  // Step conversion data source: https://www.uwyo.edu/wintherockies_edur/win%20steps/coordinator%20info/step%20conversions.pdf
 
   lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
 
@@ -51,18 +53,24 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   resetBtn = lv_btn_create(lv_scr_act(), nullptr);
   resetBtn->user_data = this;
   lv_obj_set_event_cb(resetBtn, lap_event_handler);
-  lv_obj_set_height(resetBtn, 50);
+  lv_obj_set_height(resetBtn, 30);
   lv_obj_set_width(resetBtn, 115);
   lv_obj_align(resetBtn, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   resetButtonLabel = lv_label_create(resetBtn, nullptr);
   lv_label_set_text_static(resetButtonLabel, "Reset");
 
   currentTripSteps = motionController.GetTripSteps();
+  currentTripStepsDistance = motionController.GetTripSteps() * 0.0008;
 
   tripLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(tripLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   lv_label_set_text_fmt(tripLabel, "Trip: %5li", currentTripSteps);
   lv_obj_align(tripLabel, lstepsGoal, LV_ALIGN_IN_LEFT_MID, 0, 20);
+
+  distanceLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(distanceLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  lv_label_set_text_fmt(distanceLabel, "%li km", currentTripStepsDistance);
+  lv_obj_align(distanceLabel, tripLabel, LV_ALIGN_CENTER, 0, 22.5);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
 }
@@ -75,6 +83,8 @@ Steps::~Steps() {
 void Steps::Refresh() {
   stepsCount = motionController.NbSteps();
   currentTripSteps = motionController.GetTripSteps();
+  currentTripStepsDistance = motionController.GetTripSteps() * 0.0008;
+  // Step conversion data source: https://www.uwyo.edu/wintherockies_edur/win%20steps/coordinator%20info/step%20conversions.pdf
 
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
@@ -85,6 +95,8 @@ void Steps::Refresh() {
     lv_label_set_text_fmt(tripLabel, "Trip: 99999+");
   }
   lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
+
+  lv_label_set_text_fmt(distanceLabel, "%li km", currentTripStepsDistance);
 }
 
 void Steps::lapBtnEventHandler(lv_event_t event) {
