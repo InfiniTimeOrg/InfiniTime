@@ -85,7 +85,6 @@ static void basic_init(void) {
   lv_color_t color_btn_disabled = lv_color_hex(0x888888);
 
   lv_color_t color_on_bg = LV_COLOR_WHITE;
-  lv_color_t color_on_bg_disabled = LV_COLOR_GRAY;
   lv_color_t color_on_btn_disabled = lv_color_hex(0xB0B0B0);
   lv_color_t color_on_btn = LV_COLOR_WHITE;
 
