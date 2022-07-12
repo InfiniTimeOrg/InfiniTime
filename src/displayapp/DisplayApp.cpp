@@ -226,6 +226,10 @@ void DisplayApp::Refresh() {
               default:
                 break;
             }
+          } else if (currentApp == Apps::NotificationsPreview && gesture == TouchEvents::SwipeRight) {
+            auto currentId = notificationManager.GetLastNotification().id;
+            notificationManager.Dismiss(currentId);
+            LoadPreviousScreen();
           } else if (returnTouchEvent == gesture) {
             LoadPreviousScreen();
           }
