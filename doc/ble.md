@@ -2,8 +2,6 @@
 ## Introduction
 This page describes the BLE implementation and API built in this firmware.
 
-**Note**: I'm a beginner in BLE related technologies and the information in this document reflects my current knowledge and understanding of the BLE stack. This information might be erroneous or incomplete. Feel free to submit a PR if you think you can improve it.
-
 ---
 
 ### Table of Contents
