@@ -83,7 +83,7 @@ Steps::~Steps() {
 void Steps::Refresh() {
   stepsCount = motionController.NbSteps();
   currentTripSteps = motionController.GetTripSteps();
-  currentTripStepsDistance = motionController.GetTripSteps() * 0.0008;
+  currentTripStepsDistance = motionController.GetTripSteps() / 1250;
   // Step conversion data source: https://www.uwyo.edu/wintherockies_edur/win%20steps/coordinator%20info/step%20conversions.pdf
 
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
