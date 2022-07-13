@@ -28,7 +28,7 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
 
   stepsCount = motionController.NbSteps();
   currentTripSteps = stepsCount - motionController.GetTripSteps();
-  currentTripStepsDistance = motionController.GetTripSteps() * 0.0008;
+  currentTripStepsDistance = motionController.GetTripSteps() / 1250;
   // Step conversion data source: https://www.uwyo.edu/wintherockies_edur/win%20steps/coordinator%20info/step%20conversions.pdf
 
   lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
