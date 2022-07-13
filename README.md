@@ -27,15 +27,15 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
  - [How to implement an application](doc/code/Apps.md)
  - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
  - [Tips on designing an app UI](doc/ui_guidelines.md)
- - [Bootloader, OTA and DFU](./bootloader/README.md)
+ - [Bootloader, OTA and DFU](bootloader/README.md)
  - [Versioning](doc/versioning.md)
  - [Project branches](doc/branches.md)
  - [Files included in the release notes](doc/filesInReleaseNotes.md)
 
 ### Contributing
 
- - [How to contribute?](/doc/contribute.md)
- - [Coding conventions](/doc/coding-convention.md)
+ - [How to contribute?](doc/contribute.md)
+ - [Coding conventions](doc/coding-convention.md)
 
 ### Build, flash and debug
 
@@ -47,15 +47,15 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
  - [Flash the firmware using SWD interface](doc/SWD.md)
  - [Flash the firmware using JLink](doc/jlink.md)
  - [Flash the firmware using GDB](doc/gdb.md)
- - [Stub using NRF52-DK](./doc/PinetimeStubWithNrf52DK.md)
+ - [Stub using NRF52-DK](doc/PinetimeStubWithNrf52DK.md)
 
 ### API
 
- - [BLE implementation and API](./doc/ble.md)
+ - [BLE implementation and API](doc/ble.md)
 
 ### Architecture and technical topics
 
- - [Memory analysis](./doc/MemoryAnalysis.md)
+ - [Memory analysis](doc/MemoryAnalysis.md)
 
 ## Licenses
 
