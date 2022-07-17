@@ -86,22 +86,32 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   minute = time.minutes().count();
   second = time.seconds().count();
 
-  if (minute == 0 && !isHourAlreadyNotified) {
-    isHourAlreadyNotified = true;
-    if (systemTask != nullptr) {
-      systemTask->PushMessage(System::Messages::OnNewHour);
+  auto chimeOption = settingsController.GetChimeOption();
+  if (chimeOption != Controllers::Settings::ChimesOption::None &&
+      systemTask != nullptr) {
+    uint8_t chimeModulo = 0;
+    switch(chimeOption) {
+      case Controllers::Settings::ChimesOption::Hours:
+        chimeModulo = 60;
+        break;
+      case Controllers::Settings::ChimesOption::HalfHours:
+        chimeModulo = 30;
+        break;
+      case Controllers::Settings::ChimesOption::QuarterHours:
+        chimeModulo = 15;
+        break;
+      default:
+        chimeModulo = 0;
     }
-  } else if (minute != 0) {
-    isHourAlreadyNotified = false;
-  }
 
-  if ((minute == 0 || minute == 30) && !isHalfHourAlreadyNotified) {
-    isHalfHourAlreadyNotified = true;
-    if (systemTask != nullptr) {
-      systemTask->PushMessage(System::Messages::OnNewHalfHour);
+    if (chimeModulo > 0 && minute % chimeModulo == 0) {
+      if (!isChimeAlreadyNotified) {
+        isChimeAlreadyNotified = true;
+        systemTask->PushMessage(System::Messages::OnChime);
+      }
+    } else {
+      isChimeAlreadyNotified = false;
     }
-  } else if (minute != 0 && minute != 30) {
-    isHalfHourAlreadyNotified = false;
   }
 
   // Notify new day to SystemTask

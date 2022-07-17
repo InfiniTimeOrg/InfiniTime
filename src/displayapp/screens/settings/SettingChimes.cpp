@@ -14,7 +14,7 @@ namespace {
   }
 }
 
-constexpr std::array<SettingChimes::Option, 3> SettingChimes::options;
+constexpr std::array<SettingChimes::Option, 4> SettingChimes::options;
 
 SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
