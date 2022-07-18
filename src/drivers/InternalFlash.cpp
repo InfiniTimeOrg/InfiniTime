@@ -1,5 +1,6 @@
 #include "drivers/InternalFlash.h"
 #include <mdk/nrf.h>
+// #include <sdk/modules/nrfx/mdk/nrf.h>
 using namespace Pinetime::Drivers;
 
 void InternalFlash::ErasePage(uint32_t address) {
