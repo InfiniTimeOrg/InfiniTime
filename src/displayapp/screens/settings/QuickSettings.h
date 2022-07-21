@@ -40,11 +40,6 @@ namespace Pinetime {
         lv_task_t* taskUpdate;
         lv_obj_t* label_time;
 
-        DirtyValue<uint8_t> batteryPercentRemaining {};
-        DirtyValue<bool> powerPresent {};
-        DirtyValue<bool> bleState {};
-        DirtyValue<bool> bleRadioEnabled {};
-
         lv_style_t btn_style;
 
         lv_obj_t* btn1;
