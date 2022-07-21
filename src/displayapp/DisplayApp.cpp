@@ -310,7 +310,8 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
 
   switch (app) {
     case Apps::Launcher:
-      currentScreen = std::make_unique<Screens::ApplicationList>(this, settingsController, batteryController, dateTimeController);
+      currentScreen =
+        std::make_unique<Screens::ApplicationList>(this, settingsController, batteryController, bleController, dateTimeController);
       ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::None:
@@ -376,7 +377,8 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
                                                                dateTimeController,
                                                                brightnessController,
                                                                motorController,
-                                                               settingsController);
+                                                               settingsController,
+                                                               bleController);
       ReturnApp(Apps::Clock, FullRefreshDirections::LeftAnim, TouchEvents::SwipeLeft);
       break;
     case Apps::Settings:

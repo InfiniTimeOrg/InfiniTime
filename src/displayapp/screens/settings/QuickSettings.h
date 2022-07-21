@@ -8,7 +8,7 @@
 #include "components/motor/MotorController.h"
 #include "components/settings/Settings.h"
 #include "components/battery/BatteryController.h"
-#include <displayapp/screens/BatteryIcon.h>
+#include "displayapp/widgets/StatusIcons.h"
 
 namespace Pinetime {
 
@@ -22,7 +22,8 @@ namespace Pinetime {
                       Controllers::DateTime& dateTimeController,
                       Controllers::BrightnessController& brightness,
                       Controllers::MotorController& motorController,
-                      Pinetime::Controllers::Settings& settingsController);
+                      Pinetime::Controllers::Settings& settingsController,
+                      Controllers::Ble& bleController);
 
         ~QuickSettings() override;
 
@@ -31,7 +32,6 @@ namespace Pinetime {
         void UpdateScreen();
 
       private:
-        Pinetime::Controllers::Battery& batteryController;
         Controllers::DateTime& dateTimeController;
         Controllers::BrightnessController& brightness;
         Controllers::MotorController& motorController;
@@ -39,6 +39,11 @@ namespace Pinetime {
 
         lv_task_t* taskUpdate;
         lv_obj_t* label_time;
+
+        DirtyValue<uint8_t> batteryPercentRemaining {};
+        DirtyValue<bool> powerPresent {};
+        DirtyValue<bool> bleState {};
+        DirtyValue<bool> bleRadioEnabled {};
 
         lv_style_t btn_style;
 
@@ -49,7 +54,7 @@ namespace Pinetime {
         lv_obj_t* btn3_lvl;
         lv_obj_t* btn4;
 
-        BatteryIcon batteryIcon;
+        Widgets::StatusIcons statusIcons;
       };
     }
   }
