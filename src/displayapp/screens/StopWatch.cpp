@@ -1,10 +1,6 @@
 #include "displayapp/screens/StopWatch.h"
 
-#include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
-#include <lvgl/lvgl.h>
-#include <FreeRTOS.h>
-#include <task.h>
 
 using namespace Pinetime::Applications::Screens;
 
@@ -30,15 +26,7 @@ namespace {
   }
 }
 
-StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
-  : Screen(app),
-    systemTask {systemTask},
-    currentState {States::Init},
-    startTime {},
-    oldTimeElapsed {},
-    currentTimeSeparated {},
-    lapBuffer {},
-    lapNr {} {
+StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask) : Screen(app), systemTask {systemTask} {
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -70,15 +58,10 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask)
   lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
   lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
 
-  lapOneText = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(lapOneText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-  lv_obj_align(lapOneText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 30);
-  lv_label_set_text_static(lapOneText, "");
-
-  lapTwoText = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(lapTwoText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-  lv_obj_align(lapTwoText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 55);
-  lv_label_set_text_static(lapTwoText, "");
+  lapText = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(lapText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+  lv_obj_align(lapText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 30);
+  lv_label_set_text_static(lapText, "");
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
@@ -98,10 +81,8 @@ void StopWatch::Reset() {
   lv_label_set_text_static(time, "00:00");
   lv_label_set_text_static(msecTime, "00");
 
-  lv_label_set_text_static(lapOneText, "");
-  lv_label_set_text_static(lapTwoText, "");
-  lapBuffer.clearBuffer();
-  lapNr = 0;
+  lv_label_set_text_static(lapText, "");
+  lapsDone = 0;
   lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
   lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
 }
@@ -121,7 +102,7 @@ void StopWatch::Start() {
 void StopWatch::Pause() {
   startTime = 0;
   // Store the current time elapsed in cache
-  oldTimeElapsed += timeElapsed;
+  oldTimeElapsed = laps[lapsDone];
   currentState = States::Halted;
   lv_label_set_text_static(txtPlayPause, Symbols::play);
   lv_label_set_text_static(txtStopLap, Symbols::stop);
@@ -132,9 +113,9 @@ void StopWatch::Pause() {
 
 void StopWatch::Refresh() {
   if (currentState == States::Running) {
-    timeElapsed = xTaskGetTickCount() - startTime;
-    currentTimeSeparated = convertTicksToTimeSegments((oldTimeElapsed + timeElapsed));
+    laps[lapsDone] = oldTimeElapsed + xTaskGetTickCount() - startTime;
 
+    TimeSeparated_t currentTimeSeparated = convertTicksToTimeSegments(laps[lapsDone]);
     lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
     lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
   }
@@ -159,18 +140,17 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
   }
   // If running, then this button is used to save laps
   if (currentState == States::Running) {
-    lapBuffer.addLaps(currentTimeSeparated);
-    lapNr++;
-    if (lapBuffer[1]) {
-      lv_label_set_text_fmt(lapOneText,
-                            "#%2d   %2d:%02d.%02d",
-                            (lapNr - 1),
-                            lapBuffer[1]->mins,
-                            lapBuffer[1]->secs,
-                            lapBuffer[1]->hundredths);
-    }
-    if (lapBuffer[0]) {
-      lv_label_set_text_fmt(lapTwoText, "#%2d   %2d:%02d.%02d", lapNr, lapBuffer[0]->mins, lapBuffer[0]->secs, lapBuffer[0]->hundredths);
+    lv_label_set_text(lapText, "");
+    lapsDone = std::min(lapsDone + 1, maxLapCount);
+    for (int i = lapsDone - displayedLaps; i < lapsDone; i++) {
+      if (i < 0) {
+        lv_label_ins_text(lapText, LV_LABEL_POS_LAST, "\n");
+        continue;
+      }
+      TimeSeparated_t times = convertTicksToTimeSegments(laps[i]);
+      char buffer[16];
+      sprintf(buffer, "#%2d   %2d:%02d.%02d\n", i + 1, times.mins, times.secs, times.hundredths);
+      lv_label_ins_text(lapText, LV_LABEL_POS_LAST, buffer);
     }
   } else if (currentState == States::Halted) {
     Reset();
