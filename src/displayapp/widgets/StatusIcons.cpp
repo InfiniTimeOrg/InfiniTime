@@ -7,36 +7,30 @@ StatusIcons::StatusIcons(Controllers::Battery& batteryController, Controllers::B
   : batteryController {batteryController}, bleController {bleController} {
 }
 
-void StatusIcons::Align() {
-  lv_obj_t* lastIcon = batteryIcon.GetObject();
-
-  for (auto& icon : icons) {
-    if (!lv_obj_get_hidden(icon)) {
-      lv_obj_align(icon, lastIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
-      lastIcon = icon;
-    }
-  }
-}
-
 void StatusIcons::Create() {
-  batteryIcon.Create(lv_scr_act());
-  lv_obj_align(batteryIcon.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  container = lv_cont_create(lv_scr_act(), nullptr);
+  lv_cont_set_layout(container, LV_LAYOUT_ROW_TOP);
+  lv_cont_set_fit(container, LV_FIT_TIGHT);
+  lv_obj_set_style_local_pad_inner(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
+  lv_obj_set_style_local_bg_opa(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
 
-  icons[Icons::BatteryPlug] = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(icons[Icons::BatteryPlug], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFF0000));
-  lv_label_set_text_static(icons[Icons::BatteryPlug], Screens::Symbols::plug);
+  bleIcon = lv_label_create(container, nullptr);
+  lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0082FC));
+  lv_label_set_text_static(bleIcon, Screens::Symbols::bluetooth);
 
-  icons[Icons::BleIcon] = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(icons[Icons::BleIcon], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0082FC));
-  lv_label_set_text_static(icons[Icons::BleIcon], Screens::Symbols::bluetooth);
+  batteryPlug = lv_label_create(container, nullptr);
+  lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFF0000));
+  lv_label_set_text_static(batteryPlug, Screens::Symbols::plug);
 
-  Align();
+  batteryIcon.Create(container);
+
+  lv_obj_align(container, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 }
 
 void StatusIcons::Update() {
   powerPresent = batteryController.IsPowerPresent();
   if (powerPresent.IsUpdated()) {
-    lv_obj_set_hidden(icons[Icons::BatteryPlug], !powerPresent.Get());
+    lv_obj_set_hidden(batteryPlug, !powerPresent.Get());
   }
 
   batteryPercentRemaining = batteryController.PercentRemaining();
@@ -48,8 +42,8 @@ void StatusIcons::Update() {
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
-    lv_obj_set_hidden(icons[Icons::BleIcon], !bleState.Get());
+    lv_obj_set_hidden(bleIcon, !bleState.Get());
   }
 
-  Align();
+  lv_obj_realign(container);
 }

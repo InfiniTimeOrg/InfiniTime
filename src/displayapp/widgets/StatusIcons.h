@@ -16,7 +16,7 @@ namespace Pinetime {
         void Align();
         void Create();
         lv_obj_t* GetObject() {
-          return batteryIcon.GetObject();
+          return container;
         }
         void Update();
 
@@ -30,8 +30,9 @@ namespace Pinetime {
         Screens::DirtyValue<bool> bleState {};
         Screens::DirtyValue<bool> bleRadioEnabled {};
 
-        enum Icons { BatteryPlug, BleIcon };
-        lv_obj_t* icons[2];
+        lv_obj_t* bleIcon;
+        lv_obj_t* batteryPlug;
+        lv_obj_t* container;
       };
     }
   }
