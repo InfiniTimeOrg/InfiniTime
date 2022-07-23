@@ -406,10 +406,11 @@ void WatchFacePineTimeStyle::SetBatteryIcon() {
 }
 
 void WatchFacePineTimeStyle::AlignIcons() {
-  if (notificationState.Get() && bleState.Get()) {
+  bool notif = notificationState.Get() || notificationNbState.Get();
+  if (notif && bleState.Get()) {
     lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 8, 25);
     lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, -8, 25);
-  } else if (notificationState.Get() && !bleState.Get()) {
+  } else if (notif && !bleState.Get()) {
     lv_obj_align(notificationIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
   } else {
     lv_obj_align(bleIcon, sidebar, LV_ALIGN_IN_TOP_MID, 0, 25);
@@ -442,9 +443,18 @@ void WatchFacePineTimeStyle::Refresh() {
     AlignIcons();
   }
 
-  notificationState = notificationManager.AreNewNotificationsAvailable();
-  if (notificationState.IsUpdated()) {
-    lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
+  notificationState = notificatioManager.AreNewNotificationsAvailable();
+  notificationNbState = notificatioManager.NbNotifications() > 0;
+  if (notificationState.IsUpdated() || notificationNbState.IsUpdated()) {
+    if (notificationState.Get()) {
+      lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFFFFFF));
+      lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(true));
+    } else if (notificationNbState.Get()) {
+      lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
+      lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(true));
+    } else {
+      lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(true));
+    }
     AlignIcons();
   }
 
