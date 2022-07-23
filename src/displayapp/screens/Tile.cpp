@@ -40,7 +40,6 @@ Tile::Tile(uint8_t screenID,
 
   statusIcons.Create();
   lv_obj_align(statusIcons.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -8, 0);
-  statusIcons.Align();
 
   // Time
   label_time = lv_label_create(lv_scr_act(), nullptr);
