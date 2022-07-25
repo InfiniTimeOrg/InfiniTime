@@ -1,13 +1,16 @@
 # Fonts
 
-* [Jetbrains Mono](https://www.jetbrains.com/fr-fr/lp/mono/)
-* [Awesome font from LVGL](https://lvgl.io/assets/others/FontAwesome5-Solid+Brands+Regular.woff)
-* [Open Sans Light from Google](https://fonts.google.com/specimen/Open+Sans)
+* [Jetbrains Mono](https://www.jetbrains.com/lp/mono/)
+* [Font Awesome](https://fontawesome.com/v5/cheatsheet/free/solid)
+* [Open Sans Light](https://fonts.google.com/specimen/Open+Sans)
+* [Material Symbols](https://fonts.google.com/icons)
 
 ### How to add new symbols:
 
-* Browse [this cheatsheet](https://fontawesome.com/cheatsheet/free/solid) and pick symbols
-* For each symbol, add its hex code (0xf641 for the 'Ad' icon, for example) to the *Range* list (or the symbol list when its simple enough) in the `fonts.json` file
+* Browse the cheat sheets and pick symbols
+  * [Font Awesome](https://fontawesome.com/v5/cheatsheet/free/solid)
+  * [Material Symbols](https://fonts.google.com/icons)
+* For each symbol, add its hex code (0xf641 for the 'Ad' icon, for example) to the *Range* list in the `fonts.json` file
 * Convert this hex value into a UTF-8 code
   using [this site](http://www.ltg.ed.ac.uk/~richard/utf-8.cgi?input=f185&mode=hex)
 * Define the new symbols in `src/displayapp/screens/Symbols.h`:

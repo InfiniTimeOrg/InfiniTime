@@ -37,6 +37,8 @@ extern "C" {
 
 #define BLE_NPL_TIME_FOREVER    portMAX_DELAY
 
+extern volatile int ble_npl_in_critical;
+
 /* This should be compatible with TickType_t */
 typedef uint32_t ble_npl_time_t;
 typedef int32_t ble_npl_stime_t;
@@ -282,14 +284,22 @@ static inline uint32_t
 ble_npl_hw_enter_critical(void)
 {
     //vPortEnterCritical();
-  return npl_freertos_hw_enter_critical();
+    ++ble_npl_in_critical;
+    return npl_freertos_hw_enter_critical();
 }
 
 static inline void
 ble_npl_hw_exit_critical(uint32_t ctx)
 {
-  npl_freertos_hw_exit_critical(ctx);
+    --ble_npl_in_critical;
+    npl_freertos_hw_exit_critical(ctx);
+}
 
+static inline bool
+ble_npl_hw_is_in_critical(void)
+{
+    // Do the same as RIOT and keep track of the critical state manually
+    return (ble_npl_in_critical > 0);
 }
 
 #ifdef __cplusplus

@@ -1,7 +1,7 @@
 # Build
 ## Dependencies
 To build this project, you'll need:
- - A cross-compiler : [ARM-GCC (arm-none-eabi 11.2-2022.02)](https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/downloads)
+ - A cross-compiler : [ARM-GCC (10.3-2021.10)](https://developer.arm.com/downloads/-/gnu-rm)
  - The NRF52 SDK 15.3.0 : [nRF-SDK v15.3.0](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip)
  - The Python 3 modules `cbor`, `intelhex`, `click` and `cryptography` modules for the `mcuboot` tool (see [requirements.txt](../tools/mcuboot/requirements.txt))
    - To keep the system clean, you can install python modules into a python virtual environment (`venv`)
@@ -17,7 +17,7 @@ To build this project, you'll need:
    - install npm (commonly done via the package manager, ensure node's version is at least 12)
    - install lv_font_conv: `npm install lv_font_conv`
 
-## Build steps 
+## Build steps
 ### Clone the repo
 ```
 git clone https://github.com/InfiniTimeOrg/InfiniTime.git
@@ -31,7 +31,7 @@ CMake configures the project according to variables you specify the command line
 
  Variable | Description | Example|
 ----------|-------------|--------|
-**ARM_NONE_EABI_TOOLCHAIN_PATH**|path to the toolchain directory|`-DARM_NONE_EABI_TOOLCHAIN_PATH=/home/jf/nrf52/gcc-arm-11.2-2022.02-x86_64-arm-none-eabi/`|
+**ARM_NONE_EABI_TOOLCHAIN_PATH**|path to the toolchain directory|`-DARM_NONE_EABI_TOOLCHAIN_PATH=/home/jf/nrf52/gcc-arm-none-eabi-10.3-2021.10/`|
 **NRF5_SDK_PATH**|path to the NRF52 SDK|`-DNRF5_SDK_PATH=/home/jf/nrf52/Pinetime/sdk`|
 **USE_JLINK, USE_GDB_CLIENT and USE_OPENOCD**|Enable *JLink* mode, *GDB Client* (Black Magic Probe) mode or *OpenOCD* mode (set the one you want to use to `1`)|`-DUSE_JLINK=1`
 **CMAKE_BUILD_TYPE (\*)**| Build type (Release or Debug). Release is applied by default if this variable is not specified.|`-DCMAKE_BUILD_TYPE=Debug`
@@ -39,7 +39,7 @@ CMake configures the project according to variables you specify the command line
 **GDB_CLIENT_BIN_PATH**|Path to arm-none-eabi-gdb executable. Used only if `USE_GDB_CLIENT` is 1.|`-DGDB_CLIENT_BIN_PATH=/home/jf/nrf52/gcc-arm-none-eabi-9-2019-q4-major/bin/arm-none-eabi-gdb`
 **GDB_CLIENT_TARGET_REMOTE**|Target remote connection string. Used only if `USE_GDB_CLIENT` is 1.|`-DGDB_CLIENT_TARGET_REMOTE=/dev/ttyACM0`
 **BUILD_DFU (\*\*)**|Build DFU files while building (needs [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil)).|`-DBUILD_DFU=1`
-**WATCH_COLMI_P8**|Use pin configuration for Colmi P8 watch|`-DWATCH_COLMI_P8=1`
+**TARGET_DEVICE**|Target device, used for hardware configuration. Allowed: `PINETIME, MOY-TFK5, MOY-TIN5, MOY-TON5, MOY-UNK`|`-DTARGET_DEVICE=PINETIME` (Default)
 
 ####(**) Note about **CMAKE_BUILD_TYPE**:
 By default, this variable is set to *Release*. It compiles the code with size and speed optimizations. We use this value for all the binaries we publish when we [release](https://github.com/InfiniTimeOrg/InfiniTime/releases) new versions of InfiniTime.
@@ -95,6 +95,7 @@ The same files are generated for **pinetime-recovery** and **pinetime-recoverylo
 
  
 ### Program and run
+
 #### Using CMake targets
 These target have been configured during the project generation by CMake according to the parameters you provided to the command line.
 
@@ -106,134 +107,6 @@ make FLASH_ERASE
 Flash the application:
 ```
 make FLASH_pinetime-app
-```
-
-### Using JLink
-Start JLinkExe:
-```
-$ /opt/SEGGER/JLink/JLinkExe -device nrf52 -if swd -speed 4000 -autoconnect 1     
-SEGGER J-Link Commander V6.70d (Compiled Apr 16 2020 17:59:37)
-DLL version V6.70d, compiled Apr 16 2020 17:59:25
-
-Connecting to J-Link via USB...O.K.
-Firmware: J-Link OB-SAM3U128-V2-NordicSemi compiled Mar 17 2020 14:43:00
-Hardware version: V1.00
-S/N: 682579153
-License(s): RDI, FlashBP, FlashDL, JFlash, GDB
-VTref=3.300V
-Device "NRF52" selected.
-
-
-Connecting to target via SWD
-InitTarget() start
-InitTarget() end
-Found SW-DP with ID 0x2BA01477
-DPIDR: 0x2BA01477
-Scanning AP map to find all available APs
-AP[2]: Stopped AP scan as end of AP map has been reached
-AP[0]: AHB-AP (IDR: 0x24770011)
-AP[1]: JTAG-AP (IDR: 0x02880000)
-Iterating through AP map to find AHB-AP to use
-AP[0]: Core found
-AP[0]: AHB-AP ROM base: 0xE00FF000
-CPUID register: 0x410FC241. Implementer code: 0x41 (ARM)
-Found Cortex-M4 r0p1, Little endian.
-FPUnit: 6 code (BP) slots and 2 literal slots
-CoreSight components:
-ROMTbl[0] @ E00FF000
-ROMTbl[0][0]: E000E000, CID: B105E00D, PID: 000BB00C SCS-M7
-ROMTbl[0][1]: E0001000, CID: B105E00D, PID: 003BB002 DWT
-ROMTbl[0][2]: E0002000, CID: B105E00D, PID: 002BB003 FPB
-ROMTbl[0][3]: E0000000, CID: B105E00D, PID: 003BB001 ITM
-ROMTbl[0][4]: E0040000, CID: B105900D, PID: 000BB9A1 TPIU
-ROMTbl[0][5]: E0041000, CID: B105900D, PID: 000BB925 ETM
-Cortex-M4 identified.
-J-Link>
-```
-
-Use the command loadfile to program the .hex file:
-```
-J-Link>loadfile pinetime-app.hex 
-Downloading file [pinetime-app.hex]...
-Comparing flash   [100%] Done.
-Erasing flash     [100%] Done.
-Programming flash [100%] Done.
-Verifying flash   [100%] Done.
-J-Link: Flash download: Bank 0 @ 0x00000000: 1 range affected (4096 bytes)
-J-Link: Flash download: Total time needed: 0.322s (Prepare: 0.043s, Compare: 0.202s, Erase: 0.003s, Program: 0.064s, Verify: 0.000s, Restore: 0.007s)
-O.K.
-```
-
-Then reset (r) and start (g) the CPU:
-```
-J-Link>r
-Reset delay: 0 ms
-Reset type NORMAL: Resets core & peripherals via SYSRESETREQ & VECTRESET bit.
-Reset: Halt core after reset via DEMCR.VC_CORERESET.
-Reset: Reset device via AIRCR.SYSRESETREQ.
-J-Link>g
-```
-
-#### JLink RTT
-RTT is a feature from Segger's JLink devices that allows bidirectional communication between the debugger and the target. This feature can be used to get the logs from the embedded software on the development computer.
-
- - Program the MCU with the code (see above)
- - Start JLinkExe
- 
-```
-$ JLinkExe -device nrf52 -if swd -speed 4000 -autoconnect 1
-```
-
-Start JLinkRTTClient
-```
-$ JLinkRTTClient
-```
-
-### Using GDB and Black Magic Probe (BMP)
-Enter the following command into GDB:
-
-```
-target extended-remote /dev/ttyACM0
-monitor swdp_scan
-attach 1
-file ./pinetime-app-full.hex 
-load
-run
-```
-
-Example :
-```
-$ /home/jf/nrf52/gcc-arm-none-eabi-8-2019-q3-update/bin/arm-none-eabi-gdb
-
-(gdb) target extended-remote /dev/ttyACM0
-Remote debugging using /dev/ttyACM0
-(gdb) monitor swdp_scan
-Target voltage: ABSENT!
-Available Targets:
-No. Att Driver
- 1      Nordic nRF52 M3/M4
- 2      Nordic nRF52 Access Port 
-
-(gdb) attach 1
-Attaching to Remote target
-warning: No executable has been specified and target does not support
-determining executable automatically.  Try using the "file" command.
-0xfffffffe in ?? ()
-(gdb) file ./pinetime-app-full.hex 
-A program is being debugged already.
-Are you sure you want to change the file? (y or n) y
-Reading symbols from ./pinetime-app-full.hex...
-(No debugging symbols found in ./pinetime-app-full.hex)
-(gdb) load
-Loading section .sec1, size 0xb00 lma 0x0
-Loading section .sec2, size 0xf000 lma 0x1000
-Loading section .sec3, size 0x10000 lma 0x10000
-Loading section .sec4, size 0x5150 lma 0x20000
-Loading section .sec5, size 0xa000 lma 0x26000
-Loading section .sec6, size 0x10000 lma 0x30000
-Loading section .sec7, size 0xdf08 lma 0x40000
-Start address 0x0, load size 314200
-Transfer rate: 45 KB/sec, 969 bytes/write.
 ```
 
 ### How to generate files needed by the factory

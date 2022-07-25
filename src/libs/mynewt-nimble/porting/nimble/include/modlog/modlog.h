@@ -20,7 +20,8 @@
 #ifndef H_MODLOG_
 #define H_MODLOG_
 
-#include <stdio.h>
+#include "SEGGER_RTT.h"
+#define printf(...) SEGGER_RTT_printf(0, __VA_ARGS__)
 
 #include "log_common/log_common.h"
 #include "log/log.h"

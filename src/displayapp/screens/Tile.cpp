@@ -29,7 +29,7 @@ Tile::Tile(uint8_t screenID,
            Pinetime::Controllers::Battery& batteryController,
            Controllers::DateTime& dateTimeController,
            std::array<Applications, 6>& applications)
-  : Screen(app), batteryController {batteryController}, dateTimeController {dateTimeController} {
+  : Screen(app), batteryController {batteryController}, dateTimeController {dateTimeController}, pageIndicator(screenID, numScreens) {
 
   settingsController.SetAppMenu(screenID);
 
@@ -42,30 +42,7 @@ Tile::Tile(uint8_t screenID,
   batteryIcon.Create(lv_scr_act());
   lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, -8, 0);
 
-  if (numScreens > 1) {
-    pageIndicatorBasePoints[0].x = LV_HOR_RES - 1;
-    pageIndicatorBasePoints[0].y = 0;
-    pageIndicatorBasePoints[1].x = LV_HOR_RES - 1;
-    pageIndicatorBasePoints[1].y = LV_VER_RES;
-
-    pageIndicatorBase = lv_line_create(lv_scr_act(), nullptr);
-    lv_obj_set_style_local_line_width(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-    lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
-    lv_line_set_points(pageIndicatorBase, pageIndicatorBasePoints, 2);
-
-    const uint16_t indicatorSize = LV_VER_RES / numScreens;
-    const uint16_t indicatorPos = indicatorSize * screenID;
-
-    pageIndicatorPoints[0].x = LV_HOR_RES - 1;
-    pageIndicatorPoints[0].y = indicatorPos;
-    pageIndicatorPoints[1].x = LV_HOR_RES - 1;
-    pageIndicatorPoints[1].y = indicatorPos + indicatorSize;
-
-    pageIndicator = lv_line_create(lv_scr_act(), nullptr);
-    lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-    lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
-    lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
-  }
+  pageIndicator.Create();
 
   uint8_t btIndex = 0;
   for (uint8_t i = 0; i < 6; i++) {

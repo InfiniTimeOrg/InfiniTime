@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose Debug or Release")
 
-project(pinetime VERSION 1.9.0 LANGUAGES C CXX ASM)
+project(pinetime VERSION 1.10.0 LANGUAGES C CXX ASM)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 14)
@@ -54,13 +54,8 @@ if(BUILD_DFU)
   set(BUILD_DFU true)
 endif()
 
-option(WATCH_COLMI_P8 "Build for the Colmi P8" OFF)
-set(TARGET_DEVICE "PineTime")
-
-if(WATCH_COLMI_P8)
-  set(TARGET_DEVICE "Colmi P8")
-  add_definitions(-DWATCH_P8)
-endif()
+set(TARGET_DEVICE "PINETIME" CACHE STRING "Target device")
+set_property(CACHE TARGET_DEVICE PROPERTY STRINGS PINETIME MOY-TFK5 MOY-TIN5 MOY-TON5 MOY-UNK)
 
 set(PROJECT_GIT_COMMIT_HASH "")
 

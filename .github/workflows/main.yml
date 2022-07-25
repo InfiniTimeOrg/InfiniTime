@@ -8,8 +8,16 @@ name: Build PineTime Firmware
 on:
   push:
     branches: [ master, develop ]
+    paths-ignore:
+      - 'doc/**'
+      - 'images/**'
   pull_request:
-    branches: [ master, develop ]
+    branches: [ develop ]
+    paths-ignore:
+      - 'doc/**'
+      - 'images/**'
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   build:
