@@ -43,12 +43,18 @@ Alarm::Alarm(DisplayApp* app,
              Controllers::AlarmController& alarmController,
              Controllers::Settings::ClockType clockType,
              System::SystemTask& systemTask)
-  : Screen(app), alarmController {alarmController}, clockType {clockType}, systemTask {systemTask} {
+  : Screen(app), alarmController {alarmController}, systemTask {systemTask} {
 
   hourCounter.Create();
   lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   if (clockType == Controllers::Settings::ClockType::H12) {
     hourCounter.EnableTwelveHourMode();
+
+    lblampm = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+    lv_label_set_text_static(lblampm, "AM");
+    lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
+    lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
   }
   hourCounter.SetValue(alarmController.Hours());
   hourCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
@@ -62,12 +68,6 @@ Alarm::Alarm(DisplayApp* app,
   lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_label_set_text_static(colonLabel, ":");
   lv_obj_align(colonLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
-
-  lblampm = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_label_set_text_static(lblampm, "  ");
-  lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
 
   btnStop = lv_btn_create(lv_scr_act(), nullptr);
   btnStop->user_data = this;
@@ -179,7 +179,7 @@ void Alarm::OnValueChanged() {
 }
 
 void Alarm::UpdateAlarmTime() {
-  if (clockType == Controllers::Settings::ClockType::H12) {
+  if (lblampm != nullptr) {
     if (hourCounter.GetValue() >= 12) {
       lv_label_set_text_static(lblampm, "PM");
     } else {
