@@ -6,35 +6,43 @@ namespace {
   void upBtnEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* widget = static_cast<Counter*>(obj->user_data);
     if (event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_LONG_PRESSED_REPEAT) {
-      widget->Increment();
+      widget->UpBtnPressed();
     }
   }
 
   void downBtnEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* widget = static_cast<Counter*>(obj->user_data);
     if (event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_LONG_PRESSED_REPEAT) {
-      widget->Decrement();
+      widget->DownBtnPressed();
     }
   }
 }
 
-Counter::Counter(int min, int max) : min {min}, max {max} {
+Counter::Counter(int min, int max, lv_font_t& font) : min {min}, max {max}, font {font} {
 }
 
-void Counter::Increment() {
+void Counter::UpBtnPressed() {
   value++;
   if (value > max) {
     value = min;
   }
   UpdateLabel();
+
+  if (ValueChangedHandler != nullptr) {
+    ValueChangedHandler(userData);
+  }
 };
 
-void Counter::Decrement() {
+void Counter::DownBtnPressed() {
   value--;
   if (value < min) {
     value = max;
   }
   UpdateLabel();
+
+  if (ValueChangedHandler != nullptr) {
+    ValueChangedHandler(userData);
+  }
 };
 
 void Counter::SetValue(int newValue) {
@@ -58,7 +66,28 @@ void Counter::ShowControls() {
 }
 
 void Counter::UpdateLabel() {
-  lv_label_set_text_fmt(number, "%.2i", value);
+  if (twelveHourMode) {
+    if (value == 0) {
+      lv_label_set_text_static(number, "12");
+    } else if (value <= 12) {
+      lv_label_set_text_fmt(number, "%.2i", value);
+    } else {
+      lv_label_set_text_fmt(number, "%.2i", value - 12);
+    }
+  } else {
+    lv_label_set_text_fmt(number, "%.2i", value);
+  }
+}
+
+// Value is kept between 0 and 23, but the displayed value is converted to 12-hour.
+// Make sure to set the max and min values to 0 and 23. Otherwise behaviour is undefined
+void Counter::EnableTwelveHourMode() {
+  twelveHourMode = true;
+}
+
+void Counter::SetValueChangedEventCallback(void* userData, void (*handler)(void* userData)) {
+  this->userData = userData;
+  this->ValueChangedHandler = handler;
 }
 
 void Counter::Create() {
@@ -68,7 +97,7 @@ void Counter::Create() {
   lv_obj_set_style_local_bg_color(counterContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
 
   number = lv_label_create(counterContainer, nullptr);
-  lv_obj_set_style_local_text_font(number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_obj_set_style_local_text_font(number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &font);
   lv_obj_align(number, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_auto_realign(number, true);
   lv_label_set_text_static(number, "00");
