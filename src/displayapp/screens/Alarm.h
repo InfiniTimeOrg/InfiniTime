@@ -42,10 +42,10 @@ namespace Pinetime {
 
       private:
         Controllers::AlarmController& alarmController;
-        const Controllers::Settings::ClockType clockType;
         System::SystemTask& systemTask;
 
-        lv_obj_t *lblampm, *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch;
+        lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch;
+        lv_obj_t* lblampm = nullptr;
         lv_obj_t* txtMessage = nullptr;
         lv_obj_t* btnMessage = nullptr;
         lv_task_t* taskStopAlarm = nullptr;
