@@ -79,6 +79,8 @@ Alarm::Alarm(DisplayApp* app,
   lv_label_set_text_static(txtStop, Symbols::stop);
   lv_obj_set_hidden(btnStop, true);
 
+  static constexpr lv_color_t bgColor = LV_COLOR_MAKE(0x38, 0x38, 0x38);
+
   btnRecur = lv_btn_create(lv_scr_act(), nullptr);
   btnRecur->user_data = this;
   lv_obj_set_event_cb(btnRecur, btnEventHandler);
@@ -86,15 +88,19 @@ Alarm::Alarm(DisplayApp* app,
   lv_obj_align(btnRecur, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   txtRecur = lv_label_create(btnRecur, nullptr);
   SetRecurButtonState();
-  lv_obj_set_style_local_bg_color(btnRecur, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
+  lv_obj_set_style_local_bg_color(btnRecur, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
 
-  // Invisible button above the time
   btnInfo = lv_btn_create(lv_scr_act(), nullptr);
   btnInfo->user_data = this;
   lv_obj_set_event_cb(btnInfo, btnEventHandler);
-  lv_obj_set_size(btnInfo, LV_HOR_RES, 80);
-  lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
-  lv_obj_set_style_local_bg_opa(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_size(btnInfo, 50, 50);
+  lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, -4);
+  lv_obj_set_style_local_bg_color(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+  lv_obj_set_style_local_border_width(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 4);
+  lv_obj_set_style_local_border_color(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+
+  lv_obj_t* txtInfo = lv_label_create(btnInfo, nullptr);
+  lv_label_set_text_static(txtInfo, "i");
 
   enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
   enableSwitch->user_data = this;
@@ -102,7 +108,7 @@ Alarm::Alarm(DisplayApp* app,
   lv_obj_set_size(enableSwitch, 100, 50);
   // Align to the center of 115px from edge
   lv_obj_align(enableSwitch, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 7, 0);
-  lv_obj_set_style_local_bg_color(enableSwitch, LV_SWITCH_PART_BG, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
+  lv_obj_set_style_local_bg_color(enableSwitch, LV_SWITCH_PART_BG, LV_STATE_DEFAULT, bgColor);
 
   UpdateAlarmTime();
 
