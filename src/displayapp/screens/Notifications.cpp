@@ -272,7 +272,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_align(alert_count, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
 
   lv_obj_t* alert_type = lv_label_create(container, nullptr);
-  lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
+  lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xff, 0xb0, 0x0));
   if (title == nullptr) {
     lv_label_set_text_static(alert_type, "Notification");
   } else {
@@ -289,21 +289,16 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_set_width(alert_type, 180);
   lv_obj_align(alert_type, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 16);
 
-  /////////
+  lv_obj_t* alert_subject = lv_label_create(subject_container, nullptr);
+  lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
+  lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
+
   switch (category) {
-    default: {
-      lv_obj_t* alert_subject = lv_label_create(subject_container, nullptr);
-      lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xff, 0xb0, 0x0));
-      lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
-      lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
+    default:
       lv_label_set_text(alert_subject, msg);
-    } break;
+      break;
     case Controllers::NotificationManager::Categories::IncomingCall: {
       lv_obj_set_height(subject_container, 108);
-      lv_obj_t* alert_subject = lv_label_create(subject_container, nullptr);
-      lv_obj_set_style_local_text_color(alert_subject, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xff, 0xb0, 0x0));
-      lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
-      lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
       lv_label_set_text_static(alert_subject, "Incoming call from");
 
       lv_obj_t* alert_caller = lv_label_create(subject_container, nullptr);
