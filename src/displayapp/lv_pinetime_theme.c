@@ -207,7 +207,7 @@ static void basic_init(void) {
 
   lv_style_reset(&style_cb_bg);
   lv_style_set_radius(&style_cb_bg, LV_STATE_DEFAULT, LV_DPX(4));
-  lv_style_set_pad_inner(&style_cb_bg, LV_STATE_DEFAULT, LV_DPX(10));
+  lv_style_set_pad_inner(&style_cb_bg, LV_STATE_DEFAULT, 18);
   lv_style_set_outline_color(&style_cb_bg, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_style_set_outline_width(&style_cb_bg, LV_STATE_DEFAULT, LV_DPX(2));
   lv_style_set_outline_pad(&style_cb_bg, LV_STATE_DEFAULT, LV_DPX(20));
