@@ -111,6 +111,8 @@ void Notifications::Refresh() {
                                                        notification.Message(),
                                                        currentIdx + 1,
                                                        notification.category,
+                                                       notification.timeArrived,
+                                                       std::chrono::system_clock::to_time_t(this->dateTimeController.CurrentDateTime()),
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
                                                        motorController);
@@ -303,24 +305,24 @@ Notifications::NotificationItem::NotificationItem(const char* title,
     lv_label_set_text_static(alert_type, "Notification");
   } else {
     // almost impossible to receive a real notification at time 0, so skip because it is the "no notifications" notification
-    if(timeNow != 0) {
-        auto diff = std::chrono::system_clock::from_time_t(timeNow) - std::chrono::system_clock::from_time_t(timeArrived);
-        std::chrono::minutes age = std::chrono::duration_cast<std::chrono::minutes>(diff);
-        uint32_t ageInt = static_cast<uint32_t>(age.count());
-        char timeUnit;
-        if ((ageInt / (60 * 24)) >= 1) {
-            ageInt /= (60*24);
-            timeUnit = 'd';
-        } else if ((ageInt / 60) >= 1) {
-            ageInt /= 60;
-            timeUnit = 'h';
-        } else {
-            timeUnit = 'm';
-        }
-        lv_obj_t* alert_age = lv_label_create(container1, nullptr);
-        lv_label_set_text_fmt(alert_age, "%d%c ago",ageInt, timeUnit);
-        // same format as alert_count
-        lv_obj_align(alert_age, container1, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -16);
+    if (timeNow != 0) {
+      auto diff = std::chrono::system_clock::from_time_t(timeNow) - std::chrono::system_clock::from_time_t(timeArrived);
+      std::chrono::minutes age = std::chrono::duration_cast<std::chrono::minutes>(diff);
+      uint32_t ageInt = static_cast<uint32_t>(age.count());
+      char timeUnit;
+      if ((ageInt / (60 * 24)) >= 1) {
+        ageInt /= (60 * 24);
+        timeUnit = 'd';
+      } else if ((ageInt / 60) >= 1) {
+        ageInt /= 60;
+        timeUnit = 'h';
+      } else {
+        timeUnit = 'm';
+      }
+      lv_obj_t* alert_age = lv_label_create(container, nullptr);
+      lv_label_set_text_fmt(alert_age, "%d%c ago", ageInt, timeUnit);
+      // same format as alert_count
+      lv_obj_align(alert_age, container, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -16);
     }
 
     // copy title to label and replace newlines with spaces
