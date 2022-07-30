@@ -39,6 +39,7 @@ namespace Pinetime {
       private:
         uint8_t displayedHour = -1;
         uint8_t displayedMinute = -1;
+        uint8_t displayedSecond = -1;
 
         uint16_t currentYear = 1970;
         Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
@@ -58,6 +59,7 @@ namespace Pinetime {
 
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;
+        lv_obj_t* label_time_seconds;
         lv_obj_t* label_date;
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;

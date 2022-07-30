@@ -45,6 +45,10 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
 
+  label_time_seconds = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(label_time_seconds, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_obj_set_style_local_text_color(label_time_seconds, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x24FF00));
+
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
 
   label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
@@ -104,10 +108,12 @@ void WatchFaceDigital::Refresh() {
 
     uint8_t hour = time.hours().count();
     uint8_t minute = time.minutes().count();
+    uint8_t second = time.seconds().count();
 
-    if (displayedHour != hour || displayedMinute != minute) {
+    if (displayedHour != hour || displayedMinute != minute || displayedSecond != second) {
       displayedHour = hour;
       displayedMinute = minute;
+      displayedSecond = second;
 
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         char ampmChar[3] = "AM";
@@ -122,9 +128,15 @@ void WatchFaceDigital::Refresh() {
         lv_label_set_text(label_time_ampm, ampmChar);
         lv_label_set_text_fmt(label_time, "%2d:%02d", hour, minute);
         lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
+        //very crude way of adding the seconds, maybe better create a new font where all elements fit horizontally
+        lv_label_set_text_fmt(label_time_seconds, "%02d", second);
+        lv_obj_align(label_time_seconds, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -8);
+
       } else {
         lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
         lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+        lv_label_set_text_fmt(label_time_seconds, "%02d", second);
+        lv_obj_align(label_time_seconds, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -8);
       }
     }
 
