@@ -102,7 +102,7 @@ void WatchFaceDigital::Refresh() {
   batteryPercentRemaining = batteryController.PercentRemaining();
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
-    batteryIcon.SetBatteryPercentage(batteryPercent);
+    batteryIcon.SetBatteryPercentage(batteryPercent, settingsController.GetShowBatteryPercentage());
   }
 
   bleState = bleController.IsConnected();

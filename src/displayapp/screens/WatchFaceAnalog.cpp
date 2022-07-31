@@ -182,7 +182,7 @@ void WatchFaceAnalog::UpdateClock() {
 
 void WatchFaceAnalog::SetBatteryIcon() {
   auto batteryPercent = batteryPercentRemaining.Get();
-  batteryIcon.SetBatteryPercentage(batteryPercent);
+  batteryIcon.SetBatteryPercentage(batteryPercent, settingsController.GetShowBatteryPercentage());
 }
 
 void WatchFaceAnalog::Refresh() {

@@ -117,7 +117,7 @@ QuickSettings::~QuickSettings() {
 
 void QuickSettings::UpdateScreen() {
   lv_label_set_text(label_time, dateTimeController.FormattedTime().c_str());
-  batteryIcon.SetBatteryPercentage(batteryController.PercentRemaining());
+  batteryIcon.SetBatteryPercentage(batteryController.PercentRemaining(), settingsController.GetShowBatteryPercentage());
 }
 
 void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {

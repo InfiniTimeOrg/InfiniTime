@@ -425,7 +425,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::BatteryInfo:
-      currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController);
+      currentScreen = std::make_unique<Screens::BatteryInfo>(this, batteryController, settingsController);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SysInfo:

@@ -6,7 +6,15 @@
 using namespace Pinetime::Applications::Screens;
 
 void BatteryIcon::Create(lv_obj_t* parent) {
-  batteryImg = lv_img_create(parent, nullptr);
+
+  batteryContainer = lv_cont_create(parent, nullptr);
+  lv_cont_set_layout(batteryContainer, LV_LAYOUT_ROW_MID);
+  lv_cont_set_fit(batteryContainer, LV_FIT_TIGHT);
+  lv_obj_set_style_local_bg_color(batteryContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_pad_inner(batteryContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
+  lv_obj_set_style_local_pad_hor(batteryContainer, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
+
+  batteryImg = lv_img_create(batteryContainer, nullptr);
   lv_img_set_src(batteryImg, &batteryicon);
   lv_obj_set_style_local_image_recolor(batteryImg, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
@@ -14,15 +22,26 @@ void BatteryIcon::Create(lv_obj_t* parent) {
   lv_obj_set_width(batteryJuice, 8);
   lv_obj_align(batteryJuice, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, -2, -2);
   lv_obj_set_style_local_radius(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, 0);
+
+  batteryPercentageText = lv_label_create(batteryContainer, nullptr);
+  lv_label_set_text(batteryPercentageText, "");
+  lv_obj_align(batteryPercentageText, batteryContainer, LV_ALIGN_IN_RIGHT_MID, 0, 0);
 }
 
 lv_obj_t* BatteryIcon::GetObject() {
-  return batteryImg;
+  return batteryContainer;
 }
 
-void BatteryIcon::SetBatteryPercentage(uint8_t percentage) {
+void BatteryIcon::SetBatteryPercentage(uint8_t percentage, bool show_percentage) {
   lv_obj_set_height(batteryJuice, percentage * 14 / 100);
   lv_obj_realign(batteryJuice);
+  if (show_percentage) {
+    lv_label_set_text_fmt(batteryPercentageText, "%02i%%", percentage);
+  } else {
+    lv_label_set_text(batteryPercentageText, "");
+  }
+  lv_obj_realign(batteryPercentageText);
+  lv_obj_realign(batteryContainer);
 }
 
 void BatteryIcon::SetColor(lv_color_t color) {
@@ -32,8 +51,8 @@ void BatteryIcon::SetColor(lv_color_t color) {
 }
 
 const char* BatteryIcon::GetPlugIcon(bool isCharging) {
-  if (isCharging)
+  if (isCharging) {
     return Symbols::plug;
-  else
-    return "";
+  }
+  return "";
 }
