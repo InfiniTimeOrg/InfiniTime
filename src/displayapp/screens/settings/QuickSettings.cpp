@@ -79,7 +79,6 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_event_cb(btn3, ButtonEventHandler);
   lv_btn_set_checkable(btn3, true);
   lv_obj_add_style(btn3, LV_BTN_PART_MAIN, &btn_style);
-  lv_obj_set_style_local_bg_color(btn3, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
   lv_obj_set_size(btn3, buttonWidth, buttonHeight);
   lv_obj_align(btn3, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, buttonXOffset, 0);
 
