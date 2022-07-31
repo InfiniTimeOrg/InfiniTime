@@ -1,14 +1,17 @@
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <lvgl/lvgl.h>
 
-#define IT_COLOR_BG      LV_COLOR_MAKE(0x5d, 0x69, 0x7e)
-#define IT_COLOR_BG_DARK LV_COLOR_MAKE(0x18, 0x18, 0x18)
-#define IT_COLOR_SEL     LV_COLOR_MAKE(0x0, 0xb0, 0x0)
+namespace Colors {
+  static constexpr lv_color_t orange = LV_COLOR_MAKE(0xff, 0xb0, 0x0);
+  static constexpr lv_color_t green = LV_COLOR_MAKE(0x0, 0xb0, 0x0);
+  static constexpr lv_color_t lightGray = LV_COLOR_MAKE(0xb0, 0xb0, 0xb0);
+
+  static constexpr lv_color_t bg = LV_COLOR_MAKE(0x5d, 0x69, 0x7e);
+  static constexpr lv_color_t bgAlt = LV_COLOR_MAKE(0x38, 0x38, 0x38);
+  static constexpr lv_color_t bgDark = LV_COLOR_MAKE(0x18, 0x18, 0x18);
+  static constexpr lv_color_t highlight = green;
+};
 
 /**
  * Initialize the default
@@ -28,6 +31,3 @@ lv_theme_t* lv_pinetime_theme_init(lv_color_t color_primary,
                                    const lv_font_t* font_normal,
                                    const lv_font_t* font_subtitle,
                                    const lv_font_t* font_title);
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
