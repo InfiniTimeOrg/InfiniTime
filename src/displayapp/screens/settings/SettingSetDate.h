@@ -4,6 +4,7 @@
 #include <lvgl/lvgl.h>
 #include "components/datetime/DateTimeController.h"
 #include "displayapp/screens/Screen.h"
+#include "displayapp/widgets/Counter.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -13,28 +14,17 @@ namespace Pinetime {
         SettingSetDate(DisplayApp* app, Pinetime::Controllers::DateTime& dateTimeController);
         ~SettingSetDate() override;
 
-        void HandleButtonPress(lv_obj_t* object, lv_event_t event);
+        void HandleButtonPress();
+        void CheckDay();
 
       private:
         Controllers::DateTime& dateTimeController;
 
-        int dayValue;
-        int monthValue;
-        int yearValue;
-        lv_obj_t* lblDay;
-        lv_obj_t* lblMonth;
-        lv_obj_t* lblYear;
-        lv_obj_t* btnDayPlus;
-        lv_obj_t* btnDayMinus;
-        lv_obj_t* btnMonthPlus;
-        lv_obj_t* btnMonthMinus;
-        lv_obj_t* btnYearPlus;
-        lv_obj_t* btnYearMinus;
         lv_obj_t* btnSetTime;
 
-        int MaximumDayOfMonth() const;
-        void CheckDay();
-        void UpdateMonthLabel();
+        Widgets::Counter dayCounter = Widgets::Counter(1, 31, jetbrains_mono_bold_20);
+        Widgets::Counter monthCounter = Widgets::Counter(1, 12, jetbrains_mono_bold_20);
+        Widgets::Counter yearCounter = Widgets::Counter(1970, 9999, jetbrains_mono_bold_20);
       };
     }
   }
