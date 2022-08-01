@@ -1,4 +1,5 @@
 #include "displayapp/widgets/Counter.h"
+#include "components/datetime/DateTimeController.h"
 
 using namespace Pinetime::Applications::Widgets;
 
@@ -18,7 +19,7 @@ namespace {
   }
 }
 
-Counter::Counter(int min, int max, lv_font_t& font) : min {min}, max {max}, font {font} {
+Counter::Counter(int min, int max, lv_font_t& font) : min {min}, max {max}, value {min}, font {font} {
 }
 
 void Counter::UpBtnPressed() {
@@ -74,6 +75,8 @@ void Counter::UpdateLabel() {
     } else {
       lv_label_set_text_fmt(number, "%.2i", value - 12);
     }
+  } else if (monthMode) {
+    lv_label_set_text(number, Controllers::DateTime::MonthShortToStringLow(static_cast<Controllers::DateTime::Months>(value)));
   } else {
     lv_label_set_text_fmt(number, "%.2i", value);
   }
@@ -83,6 +86,20 @@ void Counter::UpdateLabel() {
 // Make sure to set the max and min values to 0 and 23. Otherwise behaviour is undefined
 void Counter::EnableTwelveHourMode() {
   twelveHourMode = true;
+}
+
+// Value is kept between 1 and 12, but the displayed value is the corresponding month
+// Make sure to set the max and min values to 1 and 12. Otherwise behaviour is undefined
+void Counter::EnableMonthMode() {
+  monthMode = true;
+}
+
+void Counter::SetMax(int newMax) {
+  max = newMax;
+  if (value > max) {
+    value = max;
+    UpdateLabel();
+  }
 }
 
 void Counter::SetValueChangedEventCallback(void* userData, void (*handler)(void* userData)) {
@@ -100,10 +117,14 @@ void Counter::Create() {
   lv_obj_set_style_local_text_font(number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &font);
   lv_obj_align(number, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_auto_realign(number, true);
-  lv_label_set_text_static(number, "00");
+  if (monthMode) {
+    lv_label_set_text_static(number, "Jan");
+  } else {
+    lv_label_set_text_fmt(number, "%d", max);
+  }
 
   static constexpr uint8_t padding = 5;
-  const uint8_t width = lv_obj_get_width(number) + padding * 2;
+  const uint8_t width = std::max(lv_obj_get_width(number) + padding * 2, 58);
   static constexpr uint8_t btnHeight = 50;
   const uint8_t containerHeight = btnHeight * 2 + lv_obj_get_height(number) + padding * 2;
 

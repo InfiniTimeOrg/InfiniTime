@@ -15,6 +15,8 @@ namespace Pinetime {
         void HideControls();
         void ShowControls();
         void EnableTwelveHourMode();
+        void EnableMonthMode();
+        void SetMax(int newMax);
         void SetValueChangedEventCallback(void* userData, void (*handler)(void* userData));
 
         int GetValue() const {
@@ -36,10 +38,11 @@ namespace Pinetime {
         lv_obj_t* upperLine;
         lv_obj_t* lowerLine;
         lv_point_t linePoints[2];
-        int value = 0;
         int min;
         int max;
+        int value;
         bool twelveHourMode = false;
+        bool monthMode = false;
         lv_font_t& font;
 
         void* userData = nullptr;
