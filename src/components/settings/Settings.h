@@ -9,7 +9,7 @@ namespace Pinetime {
     class Settings {
     public:
       enum class ClockType : uint8_t { H24, H12 };
-      enum class Notification : uint8_t { ON, OFF };
+      enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t {
         SingleTap = 0,
@@ -219,7 +219,7 @@ namespace Pinetime {
         uint32_t screenTimeOut = 15000;
 
         ClockType clockType = ClockType::H24;
-        Notification notificationStatus = Notification::ON;
+        Notification notificationStatus = Notification::On;
 
         uint8_t clockFace = 0;
         ChimesOption chimesOption = ChimesOption::None;
