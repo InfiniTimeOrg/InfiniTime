@@ -45,9 +45,19 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
 
+  label_hours = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(label_hours, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
+  lv_obj_set_style_local_text_color(label_hours, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x24FF00));
+
+  label_minutes = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(label_minutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
+  lv_obj_set_style_local_text_color(label_minutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x24FF00));
+
   label_time_seconds = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(label_time_seconds, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_obj_set_style_local_text_color(label_time_seconds, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x24FF00));
+
+
 
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
 
@@ -134,13 +144,27 @@ void WatchFaceDigital::Refresh() {
           1. Align hours and minutes manually
           2. find a way to insert a space character between hour and minute
         */
+
         lv_label_set_text(label_time_ampm, ampmChar);
-        lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
+        lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute); //how the fuck do I insert a blank instead of the : ?!? Possibly time for stackoverflow...
         lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
 
       } else {
-        lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
-        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+        //lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
+        //lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+
+        //split hours and minutes 
+        lv_label_set_text_fmt(label_hours, "%02d", hour);
+        lv_obj_align(label_hours, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
+        lv_label_set_text_fmt(label_minutes, "%02d", hour);
+        lv_obj_align(label_minutes, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
+        
+
+
+        //align digits
+
+        //place seconds inbetween
+
       }
     }
 

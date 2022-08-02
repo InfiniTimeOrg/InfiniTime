@@ -59,6 +59,8 @@ namespace Pinetime {
 
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;
+        lv_obj_t* label_hours;
+        lv_obj_t* label_minutes;
         lv_obj_t* label_time_seconds;
         lv_obj_t* label_date;
         lv_obj_t* heartbeatIcon;
