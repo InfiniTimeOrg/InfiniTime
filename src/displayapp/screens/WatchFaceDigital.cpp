@@ -57,6 +57,13 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_set_style_local_text_font(label_time_seconds, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_obj_set_style_local_text_color(label_time_seconds, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x24FF00));
 
+  label_time_seconds_first = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(label_time_seconds_first, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_set_style_local_text_color(label_time_seconds_first, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x24FF00));
+
+  label_time_seconds_second = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(label_time_seconds_second, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_obj_set_style_local_text_color(label_time_seconds_second, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x24FF00));
 
 
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
@@ -119,15 +126,22 @@ void WatchFaceDigital::Refresh() {
     uint8_t hour = time.hours().count();
     uint8_t minute = time.minutes().count();
     uint8_t second = time.seconds().count();
+    uint8_t secondFirstDigit = second % 10;
+    uint8_t secondSecondDigit = second / 10;
 
     if (displayedHour != hour || displayedMinute != minute || displayedSecond != second) {
       displayedHour = hour;
       displayedMinute = minute;
       displayedSecond = second;
+      secondFirstDigit = second / 10;
+      secondSecondDigit = second % 10;
+        //very crude way of adding the seconds to the watchface, maybe better create a new font where all elements fit horizontally
 
-      //very crude way of adding the seconds to the watchface, maybe better create a new font where all elements fit horizontally
-        lv_label_set_text_fmt(label_time_seconds, "%02d", second);
-        lv_obj_align(label_time_seconds, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -8);
+        lv_label_set_text_fmt(label_time_seconds_first, "%2d", secondFirstDigit);
+        lv_obj_align(label_time_seconds_first, lv_scr_act(), LV_ALIGN_CENTER, -8, -6);
+
+        lv_label_set_text_fmt(label_time_seconds_second, "%2d", secondSecondDigit);
+        lv_obj_align(label_time_seconds_second, lv_scr_act(), LV_ALIGN_CENTER, -8, 20);
 
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         char ampmChar[3] = "AM";
@@ -139,32 +153,19 @@ void WatchFaceDigital::Refresh() {
           hour = hour - 12;
           ampmChar[0] = 'P';
         }
-        /*
-          Show seconds instead of : seperator between hour & minute
-          1. Align hours and minutes manually
-          2. find a way to insert a space character between hour and minute
-        */
 
-        lv_label_set_text(label_time_ampm, ampmChar);
-        lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute); //how the fuck do I insert a blank instead of the : ?!? Possibly time for stackoverflow...
-        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
-
-      } else {
-        //lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
-        //lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-
-        //split hours and minutes 
+        //ToDo: fix leading 0 of hours in 12H mode
+        //could be problematic with aligning or maybee needs manual alignment
         lv_label_set_text_fmt(label_hours, "%02d", hour);
         lv_obj_align(label_hours, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
-        lv_label_set_text_fmt(label_minutes, "%02d", hour);
+        lv_label_set_text_fmt(label_minutes, "%02d", minute);
         lv_obj_align(label_minutes, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
-        
 
-
-        //align digits
-
-        //place seconds inbetween
-
+      } else {
+        lv_label_set_text_fmt(label_hours, "%02d", hour);
+        lv_obj_align(label_hours, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
+        lv_label_set_text_fmt(label_minutes, "%02d", minute);
+        lv_obj_align(label_minutes, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
       }
     }
 
