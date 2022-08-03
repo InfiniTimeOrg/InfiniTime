@@ -34,7 +34,7 @@ Pinetime::Applications::TouchEvents TouchHandler::GestureGet() {
 }
 
 bool TouchHandler::ProcessTouchInfo(Drivers::Cst816S::TouchInfos info) {
-  if (!info.isValid) {
+  if (!info.isValid || screenLock) {
     return false;
   }
 

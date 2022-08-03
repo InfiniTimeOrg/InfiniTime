@@ -5,7 +5,9 @@
 #include "displayapp/screens/Screen.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
+#include "components/settings/Settings.h"
 #include "displayapp/screens/BatteryIcon.h"
+#include "touchhandler/TouchHandler.h"
 #include "utility/DirtyValue.h"
 
 namespace Pinetime {
@@ -13,7 +15,9 @@ namespace Pinetime {
     namespace Widgets {
       class StatusIcons {
       public:
-        StatusIcons(const Controllers::Battery& batteryController, const Controllers::Ble& bleController);
+        StatusIcons(const Controllers::Battery& batteryController,
+                    const Controllers::Ble& bleController,
+                    const Controllers::TouchHandler& touchHandler);
         void Align();
         void Create();
 
@@ -27,12 +31,14 @@ namespace Pinetime {
         Screens::BatteryIcon batteryIcon;
         const Pinetime::Controllers::Battery& batteryController;
         const Controllers::Ble& bleController;
+        const Controllers::TouchHandler& touchHandler;
 
         Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
         Utility::DirtyValue<bool> powerPresent {};
         Utility::DirtyValue<bool> bleState {};
         Utility::DirtyValue<bool> bleRadioEnabled {};
 
+        lv_obj_t* screenLockIcon;
         lv_obj_t* bleIcon;
         lv_obj_t* batteryPlug;
         lv_obj_t* container;

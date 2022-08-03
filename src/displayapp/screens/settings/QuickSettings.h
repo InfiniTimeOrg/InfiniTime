@@ -9,6 +9,7 @@
 #include "components/settings/Settings.h"
 #include "components/battery/BatteryController.h"
 #include "displayapp/widgets/StatusIcons.h"
+#include "touchhandler/TouchHandler.h"
 
 namespace Pinetime {
 
@@ -23,7 +24,8 @@ namespace Pinetime {
                       Controllers::BrightnessController& brightness,
                       Controllers::MotorController& motorController,
                       Pinetime::Controllers::Settings& settingsController,
-                      const Controllers::Ble& bleController);
+                      const Controllers::Ble& bleController,
+                      const Controllers::TouchHandler& touchHandler);
 
         ~QuickSettings() override;
 

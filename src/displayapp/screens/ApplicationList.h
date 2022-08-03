@@ -10,6 +10,7 @@
 #include "components/battery/BatteryController.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/Tile.h"
+#include "touchhandler/TouchHandler.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -20,7 +21,8 @@ namespace Pinetime {
                                  Pinetime::Controllers::Settings& settingsController,
                                  const Pinetime::Controllers::Battery& batteryController,
                                  const Pinetime::Controllers::Ble& bleController,
-                                 Controllers::DateTime& dateTimeController);
+                                 Controllers::DateTime& dateTimeController,
+                                 const Controllers::TouchHandler& touchHandler);
         ~ApplicationList() override;
         bool OnTouchEvent(TouchEvents event) override;
 
@@ -33,6 +35,7 @@ namespace Pinetime {
         const Pinetime::Controllers::Battery& batteryController;
         const Pinetime::Controllers::Ble& bleController;
         Controllers::DateTime& dateTimeController;
+        const Controllers::TouchHandler& touchHandler;
 
         static constexpr int appsPerScreen = 6;
 
@@ -52,7 +55,7 @@ namespace Pinetime {
           {"2", Apps::Twos},
           {Symbols::drum, Apps::Metronome},
           {Symbols::map, Apps::Navigation},
-          {Symbols::none, Apps::None},
+          {Symbols::flashlight, Apps::FlashLight},
 
           // {"M", Apps::Motion},
         }};
