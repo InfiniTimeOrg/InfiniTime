@@ -49,6 +49,7 @@ namespace Pinetime {
         static constexpr const char* notificationsOn = "\xEE\x9F\xB7";
 
         static constexpr const char* flashlight = "\xEF\x80\x8B";
+        static constexpr const char* paintbrushLg = "\xEE\x90\x8A";
       }
     }
   }
