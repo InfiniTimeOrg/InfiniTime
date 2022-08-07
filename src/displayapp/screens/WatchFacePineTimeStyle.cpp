@@ -192,7 +192,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
 
   // Display seconds
   timeDD3 = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(timeDD3, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
+  lv_obj_set_style_local_text_color(timeDD3, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_label_set_text_static(timeDD3, ":00");
   lv_obj_align(timeDD3, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
@@ -423,7 +423,6 @@ void WatchFacePineTimeStyle::Refresh() {
 
     if (displayedSecond != second) {
       displayedSecond = second;
-
       lv_label_set_text_fmt(timeDD3, ":%02d", second);
     }
 
