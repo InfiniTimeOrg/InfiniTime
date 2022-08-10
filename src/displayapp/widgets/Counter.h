@@ -41,6 +41,7 @@ namespace Pinetime {
         int min;
         int max;
         int value;
+        const int leadingZeroCount;
         bool twelveHourMode = false;
         bool monthMode = false;
         lv_font_t& font;
