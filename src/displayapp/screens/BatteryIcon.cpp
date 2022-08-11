@@ -23,6 +23,13 @@ lv_obj_t* BatteryIcon::GetObject() {
 void BatteryIcon::SetBatteryPercentage(uint8_t percentage) {
   lv_obj_set_height(batteryJuice, percentage * 14 / 100);
   lv_obj_realign(batteryJuice);
+  if (percentage <= 40) {
+  lv_obj_set_style_local_bg_color(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFF0000));
+    } else if (percentage > 40 && percentage < 60) {
+  lv_obj_set_style_local_bg_color(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFF8600));
+    } else if (percentage >= 60) {
+  lv_obj_set_style_local_bg_color(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x24FF00));
+    }
 }
 
 void BatteryIcon::SetColor(lv_color_t color) {
