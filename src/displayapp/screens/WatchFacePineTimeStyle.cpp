@@ -196,7 +196,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_obj_set_size(btnNextTime, 60, 60);
   lv_obj_align(btnNextTime, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -15, -80);
   lv_obj_set_style_local_bg_opa(btnNextTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_value_str(btnNextTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, ">");
+  lv_obj_t* lblNextTime = lv_label_create(btnNextTime, nullptr);
+  lv_label_set_text_static(lblNextTime, ">");
   lv_obj_set_event_cb(btnNextTime, event_handler);
   lv_obj_set_hidden(btnNextTime, true);
 
@@ -205,7 +206,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_obj_set_size(btnPrevTime, 60, 60);
   lv_obj_align(btnPrevTime, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 15, -80);
   lv_obj_set_style_local_bg_opa(btnPrevTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_value_str(btnPrevTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<");
+  lv_obj_t* lblPrevTime = lv_label_create(btnPrevTime, nullptr);
+  lv_label_set_text_static(lblPrevTime, "<");
   lv_obj_set_event_cb(btnPrevTime, event_handler);
   lv_obj_set_hidden(btnPrevTime, true);
 
@@ -214,7 +216,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_obj_set_size(btnNextBar, 60, 60);
   lv_obj_align(btnNextBar, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -15, 0);
   lv_obj_set_style_local_bg_opa(btnNextBar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_value_str(btnNextBar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, ">");
+  lv_obj_t* lblNextBar = lv_label_create(btnNextBar, nullptr);
+  lv_label_set_text_static(lblNextBar, ">");
   lv_obj_set_event_cb(btnNextBar, event_handler);
   lv_obj_set_hidden(btnNextBar, true);
 
@@ -223,7 +226,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_obj_set_size(btnPrevBar, 60, 60);
   lv_obj_align(btnPrevBar, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 15, 0);
   lv_obj_set_style_local_bg_opa(btnPrevBar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_value_str(btnPrevBar, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<");
+  lv_obj_t* lblPrevBar = lv_label_create(btnPrevBar, nullptr);
+  lv_label_set_text_static(lblPrevBar, "<");
   lv_obj_set_event_cb(btnPrevBar, event_handler);
   lv_obj_set_hidden(btnPrevBar, true);
 
@@ -232,7 +236,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_obj_set_size(btnNextBG, 60, 60);
   lv_obj_align(btnNextBG, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -15, 80);
   lv_obj_set_style_local_bg_opa(btnNextBG, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_value_str(btnNextBG, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, ">");
+  lv_obj_t* lblNextBG = lv_label_create(btnNextBG, nullptr);
+  lv_label_set_text_static(lblNextBG, ">");
   lv_obj_set_event_cb(btnNextBG, event_handler);
   lv_obj_set_hidden(btnNextBG, true);
 
@@ -241,7 +246,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_obj_set_size(btnPrevBG, 60, 60);
   lv_obj_align(btnPrevBG, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 15, 80);
   lv_obj_set_style_local_bg_opa(btnPrevBG, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_value_str(btnPrevBG, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<");
+  lv_obj_t* lblPrevBG = lv_label_create(btnPrevBG, nullptr);
+  lv_label_set_text_static(lblPrevBG, "<");
   lv_obj_set_event_cb(btnPrevBG, event_handler);
   lv_obj_set_hidden(btnPrevBG, true);
 
@@ -250,7 +256,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_obj_set_size(btnReset, 60, 60);
   lv_obj_align(btnReset, lv_scr_act(), LV_ALIGN_CENTER, 0, 80);
   lv_obj_set_style_local_bg_opa(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_value_str(btnReset, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Rst");
+  lv_obj_t* lblReset = lv_label_create(btnReset, nullptr);
+  lv_label_set_text_static(lblReset, "Rst");
   lv_obj_set_event_cb(btnReset, event_handler);
   lv_obj_set_hidden(btnReset, true);
 
@@ -259,7 +266,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_obj_set_size(btnRandom, 60, 60);
   lv_obj_align(btnRandom, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_local_bg_opa(btnRandom, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_value_str(btnRandom, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Rnd");
+  lv_obj_t* lblRandom = lv_label_create(btnRandom, nullptr);
+  lv_label_set_text_static(lblRandom, "Rnd");
   lv_obj_set_event_cb(btnRandom, event_handler);
   lv_obj_set_hidden(btnRandom, true);
 
@@ -268,7 +276,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_obj_set_size(btnClose, 60, 60);
   lv_obj_align(btnClose, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
   lv_obj_set_style_local_bg_opa(btnClose, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_value_str(btnClose, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "X");
+  lv_obj_t* lblClose = lv_label_create(btnClose, nullptr);
+  lv_label_set_text_static(lblClose, "X");
   lv_obj_set_event_cb(btnClose, event_handler);
   lv_obj_set_hidden(btnClose, true);
 
