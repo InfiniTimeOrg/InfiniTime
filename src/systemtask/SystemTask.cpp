@@ -248,6 +248,29 @@ void SystemTask::Work() {
           state = SystemTaskState::Running;
           isDimmed = false;
           break;
+          case Messages::GoToRunningDim:
+          spi.Wakeup();
+
+          // Double Tap needs the touch screen to be in normal mode
+          if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
+            touchPanel.Wakeup();
+          }
+
+          xTimerStart(dimTimer, 0);
+          spiNorFlash.Wakeup();
+          lcd.Wakeup();
+
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
+          heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
+
+          if (bleController.IsRadioEnabled() && !bleController.IsConnected()) {
+            nimbleController.RestartFastAdv();
+          }
+
+          state = SystemTaskState::Running;
+          isDimmed = true;
+          break;
+          
         case Messages::TouchWakeUp: {
           if (touchHandler.GetNewTouchInfo()) {
             auto gesture = touchHandler.GestureGet();
@@ -385,6 +408,8 @@ void SystemTask::Work() {
           // We might be sleeping (with TWI device disabled.
           // Remember we'll have to reset the counter next time we're awake
           stepCounterMustBeReset = true;
+          //GoToRunning();
+          GoToRunningDim();
           break;
         case Messages::OnNewHour:
           using Pinetime::Controllers::AlarmController;
@@ -469,7 +494,9 @@ void SystemTask::UpdateMotion() {
   }
 
   if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
+                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) || 
+                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) ||
+                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap))) {
     return;
   }
 
@@ -491,6 +518,15 @@ void SystemTask::UpdateMotion() {
       motionController.Should_ShakeWake(settingsController.GetShakeThreshold())) {
     GoToRunning();
   }
+  /*if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) &&
+      motionController.Should_RaiseWake(state == SystemTaskState::Sleeping)) {
+    GoToRunning();
+  }
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap) &&
+      motionController.Should_RaiseWake(state == SystemTaskState::Sleeping)) {
+    GoToRunning();
+  }
+  */
 }
 
 void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
@@ -529,6 +565,13 @@ void SystemTask::GoToRunning() {
   if (state == SystemTaskState::Sleeping) {
     state = SystemTaskState::WakingUp;
     PushMessage(Messages::GoToRunning);
+  }
+}
+
+void SystemTask::GoToRunningDim() {
+  if (state == SystemTaskState::Sleeping) {
+    state = SystemTaskState::WakingUp;
+    PushMessage(Messages::GoToRunningDim);
   }
 }
 
