@@ -38,13 +38,9 @@ void DateTime::SetTime(uint16_t year,
   tm.tm_isdst = -1; // Use DST value from local time zone
   currentDateTime = std::chrono::system_clock::from_time_t(std::mktime(&tm));
 
-  NRF_LOG_INFO("%d %d %d ", day, month, year);
-  NRF_LOG_INFO("%d %d %d ", hour, minute, second);
   previousSystickCounter = systickCounter;
 
   UpdateTime(systickCounter);
-  NRF_LOG_INFO("* %d %d %d ", this->hour, this->minute, this->second);
-  NRF_LOG_INFO("* %d %d %d ", this->day, this->month, this->year);
 
   systemTask->PushMessage(System::Messages::OnNewTime);
 }

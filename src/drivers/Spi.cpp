@@ -19,7 +19,6 @@ bool Spi::Read(uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize) {
 
 void Spi::Sleep() {
   nrf_gpio_cfg_default(pinCsn);
-  NRF_LOG_INFO("[SPI] Sleep")
 }
 
 bool Spi::WriteCmdAndBuffer(const uint8_t* cmd, size_t cmdSize, const uint8_t* data, size_t dataSize) {
@@ -34,5 +33,4 @@ bool Spi::Init() {
 void Spi::Wakeup() {
   nrf_gpio_cfg_output(pinCsn);
   nrf_gpio_pin_set(pinCsn);
-  NRF_LOG_INFO("[SPI] Wakeup")
 }

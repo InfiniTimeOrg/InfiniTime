@@ -18,8 +18,6 @@ void NrfLogger::Init() {
 }
 
 void NrfLogger::Process(void*) {
-  NRF_LOG_INFO("Logger task started!");
-
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
   while (true) {

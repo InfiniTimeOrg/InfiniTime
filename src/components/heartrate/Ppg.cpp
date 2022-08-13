@@ -61,7 +61,6 @@ float Ppg::HeartRate() {
   if (dataIndex < 200)
     return 0;
 
-  NRF_LOG_INFO("PREPROCESS, offset = %d", offset);
   auto hr = ProcessHeartRate();
   dataIndex = 0;
   return hr;

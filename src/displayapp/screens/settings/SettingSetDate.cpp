@@ -92,7 +92,6 @@ void SettingSetDate::HandleButtonPress() {
   const uint16_t yearValue = yearCounter.GetValue();
   const uint8_t monthValue = monthCounter.GetValue();
   const uint8_t dayValue = dayCounter.GetValue();
-  NRF_LOG_INFO("Setting date (manually) to %04d-%02d-%02d", yearValue, monthValue, dayValue);
   dateTimeController.SetTime(yearValue,
                              monthValue,
                              dayValue,

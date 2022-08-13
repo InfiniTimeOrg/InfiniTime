@@ -169,8 +169,6 @@ void TwiMaster::Wakeup() {
  * this issue from happening.
  * */
 void TwiMaster::FixHwFreezed() {
-  NRF_LOG_INFO("I2C device frozen, reinitializing it!");
-
   uint32_t twi_state = NRF_TWI1->ENABLE;
 
   Sleep();

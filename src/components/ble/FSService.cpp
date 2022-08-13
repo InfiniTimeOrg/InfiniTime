@@ -50,7 +50,6 @@ void FSService::Init() {
 
 int FSService::OnFSServiceRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
   if (attributeHandle == versionCharacteristicHandle) {
-    NRF_LOG_INFO("FS_S : handle = %d", versionCharacteristicHandle);
     int res = os_mbuf_append(context->om, &fsVersion, sizeof(fsVersion));
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
   }
@@ -62,7 +61,6 @@ int FSService::OnFSServiceRequested(uint16_t connectionHandle, uint16_t attribut
 
 int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
   auto command = static_cast<commands>(om->om_data[0]);
-  NRF_LOG_INFO("[FS_S] -> FSCommandHandler Command %d", command);
   // Just always make sure we are awake...
   systemTask.PushMessage(Pinetime::System::Messages::StartFileTransfer);
   vTaskDelay(10);
@@ -74,7 +72,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
   lfs_file f = {0};
   switch (command) {
     case commands::READ: {
-      NRF_LOG_INFO("[FS_S] -> Read");
       auto* header = (ReadHeader*) om->om_data;
       uint16_t plen = header->pathlen;
       if (plen > maxpathlen) { //> counts for null term
@@ -109,7 +106,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
     }
     case commands::READ_PACING: {
-      NRF_LOG_INFO("[FS_S] -> Readpacing");
       auto* header = (ReadHeader*) om->om_data;
       ReadResponse resp;
       resp.command = commands::READ_DATA;
@@ -141,7 +137,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
     }
     case commands::WRITE: {
-      NRF_LOG_INFO("[FS_S] -> Write");
       auto* header = (WriteHeader*) om->om_data;
       uint16_t plen = header->pathlen;
       if (plen > maxpathlen) { //> counts for null term
@@ -166,7 +161,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
     }
     case commands::WRITE_DATA: {
-      NRF_LOG_INFO("[FS_S] -> WriteData");
       auto* header = (WritePacing*) om->om_data;
       WriteResponse resp;
       resp.command = commands::WRITE_PACING;
@@ -188,7 +182,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
     }
     case commands::DELETE: {
-      NRF_LOG_INFO("[FS_S] -> Delete");
       auto* header = (DelHeader*) om->om_data;
       uint16_t plen = header->pathlen;
       char path[plen + 1] = {0};
@@ -203,7 +196,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
     }
     case commands::MKDIR: {
-      NRF_LOG_INFO("[FS_S] -> MKDir");
       auto* header = (MKDirHeader*) om->om_data;
       uint16_t plen = header->pathlen;
       char path[plen + 1] = {0};
@@ -219,7 +211,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
     }
     case commands::LISTDIR: {
-      NRF_LOG_INFO("[FS_S] -> ListDir");
       ListDirHeader* header = (ListDirHeader*) om->om_data;
       uint16_t plen = header->pathlen;
       char path[plen + 1] = {0};
@@ -283,7 +274,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
       break;
     }
     case commands::MOVE: {
-      NRF_LOG_INFO("[FS_S] -> Move");
       MoveHeader* header = (MoveHeader*) om->om_data;
       uint16_t plen = header->OldPathLength;
       // Null Terminate string
@@ -301,7 +291,6 @@ int FSService::FSCommandHandler(uint16_t connectionHandle, os_mbuf* om) {
     default:
       break;
   }
-  NRF_LOG_INFO("[FS_S] -> done ");
   systemTask.PushMessage(Pinetime::System::Messages::StopFileTransfer);
   return 0;
 }

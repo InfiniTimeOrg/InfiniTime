@@ -103,12 +103,10 @@ void Cst816S::Sleep() {
   vTaskDelay(50);
   static constexpr uint8_t sleepValue = 0x03;
   twiMaster.Write(twiAddress, 0xA5, &sleepValue, 1);
-  NRF_LOG_INFO("[TOUCHPANEL] Sleep");
 }
 
 void Cst816S::Wakeup() {
   Init();
-  NRF_LOG_INFO("[TOUCHPANEL] Wakeup");
 }
 
 bool Cst816S::CheckDeviceIds() {

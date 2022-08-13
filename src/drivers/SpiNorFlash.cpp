@@ -11,10 +11,6 @@ SpiNorFlash::SpiNorFlash(Spi& spi) : spi {spi} {
 
 void SpiNorFlash::Init() {
   device_id = ReadIdentificaion();
-  NRF_LOG_INFO("[SpiNorFlash] Manufacturer : %d, Memory type : %d, memory density : %d",
-               device_id.manufacturer,
-               device_id.type,
-               device_id.density);
 }
 
 void SpiNorFlash::Uninit() {
@@ -23,7 +19,6 @@ void SpiNorFlash::Uninit() {
 void SpiNorFlash::Sleep() {
   auto cmd = static_cast<uint8_t>(Commands::DeepPowerDown);
   spi.Write(&cmd, sizeof(uint8_t));
-  NRF_LOG_INFO("[SpiNorFlash] Sleep")
 }
 
 void SpiNorFlash::Wakeup() {
@@ -32,13 +27,7 @@ void SpiNorFlash::Wakeup() {
   uint8_t cmd[cmdSize] = {static_cast<uint8_t>(Commands::ReleaseFromDeepPowerDown), 0x01, 0x02, 0x03};
   uint8_t id = 0;
   spi.Read(reinterpret_cast<uint8_t*>(&cmd), cmdSize, &id, 1);
-  auto devId = device_id = ReadIdentificaion();
-  if (devId.type != device_id.type) {
-    NRF_LOG_INFO("[SpiNorFlash] ID on Wakeup: Failed");
-  } else {
-    NRF_LOG_INFO("[SpiNorFlash] ID on Wakeup: %d", id);
-  }
-  NRF_LOG_INFO("[SpiNorFlash] Wakeup")
+  device_id = ReadIdentificaion();
 }
 
 SpiNorFlash::Identification SpiNorFlash::ReadIdentificaion() {

@@ -61,7 +61,6 @@ void MotionService::Init() {
 
 int MotionService::OnStepCountRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
   if (attributeHandle == stepCountHandle) {
-    NRF_LOG_INFO("Motion-stepcount : handle = %d", stepCountHandle);
     uint32_t buffer = motionController.NbSteps();
 
     int res = os_mbuf_append(context->om, &buffer, 4);

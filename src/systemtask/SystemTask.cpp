@@ -28,15 +28,11 @@ namespace {
 }
 
 void DimTimerCallback(TimerHandle_t xTimer) {
-
-  NRF_LOG_INFO("DimTimerCallback");
   auto sysTask = static_cast<SystemTask*>(pvTimerGetTimerID(xTimer));
   sysTask->OnDim();
 }
 
 void IdleTimerCallback(TimerHandle_t xTimer) {
-
-  NRF_LOG_INFO("IdleTimerCallback");
   auto sysTask = static_cast<SystemTask*>(pvTimerGetTimerID(xTimer));
   sysTask->OnIdle();
 }
@@ -114,7 +110,6 @@ void SystemTask::Start() {
 
 void SystemTask::Process(void* instance) {
   auto* app = static_cast<SystemTask*>(instance);
-  NRF_LOG_INFO("systemtask task started!");
   app->Work();
 }
 
@@ -123,7 +118,6 @@ void SystemTask::Work() {
 
   watchdog.Setup(7);
   watchdog.Start();
-  NRF_LOG_INFO("Last reset reason : %s", Pinetime::Drivers::Watchdog::ResetReasonToString(watchdog.ResetReason()));
   APP_GPIOTE_INIT(2);
 
   spi.Init();
@@ -266,7 +260,6 @@ void SystemTask::Work() {
             break;
           }
           state = SystemTaskState::GoingToSleep; // Already set in PushMessage()
-          NRF_LOG_INFO("[systemtask] Going to sleep");
           xTimerStop(idleTimer, 0);
           xTimerStop(dimTimer, 0);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
@@ -326,7 +319,6 @@ void SystemTask::Work() {
           xTimerStart(dimTimer, 0);
           break;
         case Messages::StartFileTransfer:
-          NRF_LOG_INFO("[systemtask] FS Started");
           doNotGoToSleep = true;
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
@@ -334,7 +326,6 @@ void SystemTask::Work() {
           // TODO add intent of fs access icon or something
           break;
         case Messages::StopFileTransfer:
-          NRF_LOG_INFO("[systemtask] FS Stopped");
           doNotGoToSleep = false;
           xTimerStart(dimTimer, 0);
           // TODO add intent of fs access icon or something
@@ -565,7 +556,6 @@ void SystemTask::OnDim() {
   if (doNotGoToSleep) {
     return;
   }
-  NRF_LOG_INFO("Dim timeout -> Dim screen")
   displayApp.PushMessage(Pinetime::Applications::Display::Messages::DimScreen);
   xTimerStart(idleTimer, 0);
   isDimmed = true;
@@ -575,7 +565,6 @@ void SystemTask::OnIdle() {
   if (doNotGoToSleep) {
     return;
   }
-  NRF_LOG_INFO("Idle timeout -> Going to sleep")
   PushMessage(Messages::GoToSleep);
 }
 

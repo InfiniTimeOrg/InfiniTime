@@ -22,20 +22,9 @@ void CurrentTimeService::Init() {
 }
 
 int CurrentTimeService::OnTimeAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
-
-  NRF_LOG_INFO("Setting time...");
-
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     CtsData result;
     os_mbuf_copydata(ctxt->om, 0, sizeof(CtsData), &result);
-
-    NRF_LOG_INFO("Received data: %d-%d-%d %d:%d:%d",
-                 result.year,
-                 result.month,
-                 result.dayofmonth,
-                 result.hour,
-                 result.minute,
-                 result.second);
 
     m_dateTimeController.SetTime(result.year,
                                  result.month,

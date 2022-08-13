@@ -173,7 +173,6 @@ void St7789::HardwareReset() {
 void St7789::Sleep() {
   SleepIn();
   nrf_gpio_cfg_default(pinDataCommand);
-  NRF_LOG_INFO("[LCD] Sleep");
 }
 
 void St7789::Wakeup() {
@@ -181,5 +180,4 @@ void St7789::Wakeup() {
   SleepOut();
   VerticalScrollStartAddress(verticalScrollingStartAddress);
   DisplayOn();
-  NRF_LOG_INFO("[LCD] Wakeup")
 }

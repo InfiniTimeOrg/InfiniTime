@@ -49,18 +49,14 @@ AlertNotificationClient::AlertNotificationClient(Pinetime::System::SystemTask& s
 bool AlertNotificationClient::OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_svc* service) {
   if (service == nullptr && error->status == BLE_HS_EDONE) {
     if (isDiscovered) {
-      NRF_LOG_INFO("ANS Discovery found, starting characteristics discovery");
-
       ble_gattc_disc_all_chrs(connectionHandle, ansStartHandle, ansEndHandle, OnAlertNotificationCharacteristicDiscoveredCallback, this);
     } else {
-      NRF_LOG_INFO("ANS not found");
       onServiceDiscovered(connectionHandle);
     }
     return true;
   }
 
   if (service != nullptr && ble_uuid_cmp(&ansServiceUuid.u, &service->uuid.u) == 0) {
-    NRF_LOG_INFO("ANS discovered : 0x%x - 0x%x", service->start_handle, service->end_handle);
     ansStartHandle = service->start_handle;
     ansEndHandle = service->end_handle;
     isDiscovered = true;
@@ -72,47 +68,34 @@ int AlertNotificationClient::OnCharacteristicsDiscoveryEvent(uint16_t connection
                                                              const ble_gatt_error* error,
                                                              const ble_gatt_chr* characteristic) {
   if (error->status != 0 && error->status != BLE_HS_EDONE) {
-    NRF_LOG_INFO("ANS Characteristic discovery ERROR");
     onServiceDiscovered(connectionHandle);
     return 0;
   }
 
   if (characteristic == nullptr && error->status == BLE_HS_EDONE) {
-    NRF_LOG_INFO("ANS Characteristic discovery complete");
     if (isCharacteristicDiscovered) {
       ble_gattc_disc_all_dscs(connectionHandle, newAlertHandle, ansEndHandle, OnAlertNotificationDescriptorDiscoveryEventCallback, this);
     } else
       onServiceDiscovered(connectionHandle);
   } else {
     if (characteristic != nullptr && ble_uuid_cmp(&supportedNewAlertCategoryUuid.u, &characteristic->uuid.u) == 0) {
-      NRF_LOG_INFO("ANS Characteristic discovered : supportedNewAlertCategoryUuid");
       supportedNewAlertCategoryHandle = characteristic->val_handle;
     } else if (characteristic != nullptr && ble_uuid_cmp(&supportedUnreadAlertCategoryUuid.u, &characteristic->uuid.u) == 0) {
-      NRF_LOG_INFO("ANS Characteristic discovered : supportedUnreadAlertCategoryUuid");
       supportedUnreadAlertCategoryHandle = characteristic->val_handle;
     } else if (characteristic != nullptr && ble_uuid_cmp(&newAlertUuid.u, &characteristic->uuid.u) == 0) {
-      NRF_LOG_INFO("ANS Characteristic discovered : newAlertUuid");
       newAlertHandle = characteristic->val_handle;
       newAlertDefHandle = characteristic->def_handle;
       isCharacteristicDiscovered = true;
     } else if (characteristic != nullptr && ble_uuid_cmp(&unreadAlertStatusUuid.u, &characteristic->uuid.u) == 0) {
-      NRF_LOG_INFO("ANS Characteristic discovered : unreadAlertStatusUuid");
       unreadAlertStatusHandle = characteristic->val_handle;
     } else if (characteristic != nullptr && ble_uuid_cmp(&controlPointUuid.u, &characteristic->uuid.u) == 0) {
-      NRF_LOG_INFO("ANS Characteristic discovered : controlPointUuid");
       controlPointHandle = characteristic->val_handle;
-    } else
-      NRF_LOG_INFO("ANS Characteristic discovered : 0x%x", characteristic->val_handle);
+    }
   }
   return 0;
 }
 
 int AlertNotificationClient::OnNewAlertSubcribe(uint16_t connectionHandle, const ble_gatt_error* error, ble_gatt_attr* attribute) {
-  if (error->status == 0) {
-    NRF_LOG_INFO("ANS New alert subscribe OK");
-  } else {
-    NRF_LOG_INFO("ANS New alert subscribe ERROR");
-  }
   onServiceDiscovered(connectionHandle);
 
   return 0;
@@ -125,7 +108,6 @@ int AlertNotificationClient::OnDescriptorDiscoveryEventCallback(uint16_t connect
   if (error->status == 0) {
     if (characteristicValueHandle == newAlertHandle && ble_uuid_cmp(&newAlertUuid.u, &descriptor->uuid.u)) {
       if (newAlertDescriptorHandle == 0) {
-        NRF_LOG_INFO("ANS Descriptor discovered : %d", descriptor->handle);
         newAlertDescriptorHandle = descriptor->handle;
         isDescriptorFound = true;
         uint8_t value[2];
@@ -183,7 +165,6 @@ void AlertNotificationClient::Reset() {
 }
 
 void AlertNotificationClient::Discover(uint16_t connectionHandle, std::function<void(uint16_t)> onServiceDiscovered) {
-  NRF_LOG_INFO("[ANS] Starting discovery");
   this->onServiceDiscovered = onServiceDiscovered;
   ble_gattc_disc_svc_by_uuid(connectionHandle, &ansServiceUuid.u, OnDiscoveryEventCallback, this);
 }
