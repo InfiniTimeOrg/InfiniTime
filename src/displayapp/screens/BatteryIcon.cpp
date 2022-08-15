@@ -28,7 +28,7 @@ void BatteryIcon::SetBatteryPercentage(uint8_t percentage) {
   } else if (percentage > 40 && percentage < 60) {
     lv_obj_set_style_local_bg_color(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
   } else if (percentage >= 60) {
-    lv_obj_set_style_local_bg_color(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIGHT_GREEN);
+    lv_obj_set_style_local_bg_color(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
   }
 }
 
