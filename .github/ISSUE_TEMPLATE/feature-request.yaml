@@ -2,22 +2,14 @@ name: Feature Request
 description: File a feature request
 labels: ["feature request"]
 body:
-  - type: markdown
-    attributes:
-      value: |
-        **Thanks for taking the time to fill out this feature request!**
-        *Please, before opening a feature request, check if similar issues already exist. In that case, use those issues to provide your feedback instead.*
   - type: checkboxes
     attributes:
       label: Verification
       options:
-      - label: I searched for similar feature request and found none was relevant.
+      - label: I searched for similar issues and found none was relevant.
         required: true
-  - type: markdown
-    attributes:
-      value: |
-        **Note:** keep in mind that, while InfiniTime is usable, it is still under heavy development and as such it is continuously evolving.
-        Some features you want to see implemented might not be compatible with the current state of the project, or might not even be suitable to include *in the firmware* of the watch.
+      - label: This feature is **not** related to a problem. If this feature relates to a problem, use the issue report form instead.
+        required: true
   - type: input
     id: desc-brief
     attributes:
