@@ -63,7 +63,8 @@ jobs:
       run: |
         . docker/build.sh
         GetGcc
-        GetNrfSdk
-        GetMcuBoot
+        # I guess these already exist inside the docker?
+        #GetNrfSdk
+        #GetMcuBoot
         CmakeGenerate
     - run: tests/test-tidy.sh
