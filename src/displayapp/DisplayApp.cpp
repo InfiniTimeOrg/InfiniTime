@@ -55,7 +55,7 @@ using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
 
 namespace {
-  static inline bool in_isr(void) {
+  inline bool in_isr() {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
   }
 }
