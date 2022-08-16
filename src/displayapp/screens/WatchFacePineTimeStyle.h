@@ -43,6 +43,7 @@ namespace Pinetime {
       private:
         uint8_t displayedHour = -1;
         uint8_t displayedMinute = -1;
+        uint8_t displayedSecond = -1;
 
         uint16_t currentYear = 1970;
         Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
@@ -76,6 +77,7 @@ namespace Pinetime {
         lv_obj_t* sidebar;
         lv_obj_t* timeDD1;
         lv_obj_t* timeDD2;
+        lv_obj_t* timeDD3;
         lv_obj_t* timeAMPM;
         lv_obj_t* dateDayOfWeek;
         lv_obj_t* dateDay;
