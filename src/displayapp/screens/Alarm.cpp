@@ -18,6 +18,7 @@
 #include "displayapp/screens/Alarm.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 using Pinetime::Controllers::AlarmController;
@@ -79,7 +80,7 @@ Alarm::Alarm(DisplayApp* app,
   lv_label_set_text_static(txtStop, Symbols::stop);
   lv_obj_set_hidden(btnStop, true);
 
-  static constexpr lv_color_t bgColor = LV_COLOR_MAKE(0x38, 0x38, 0x38);
+  static constexpr lv_color_t bgColor = Colors::bgAlt;
 
   btnRecur = lv_btn_create(lv_scr_act(), nullptr);
   btnRecur->user_data = this;
