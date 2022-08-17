@@ -86,25 +86,9 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   minute = time.minutes().count();
   second = time.seconds().count();
 
-  auto chimeOption = settingsController.GetChimeOption();
-  if (chimeOption != Controllers::Settings::ChimesOption::None &&
-      systemTask != nullptr) {
-    uint8_t chimeModulo = 0;
-    switch(chimeOption) {
-      case Controllers::Settings::ChimesOption::Hours:
-        chimeModulo = 60;
-        break;
-      case Controllers::Settings::ChimesOption::HalfHours:
-        chimeModulo = 30;
-        break;
-      case Controllers::Settings::ChimesOption::QuarterHours:
-        chimeModulo = 15;
-        break;
-      default:
-        chimeModulo = 0;
-    }
-
-    if (chimeModulo > 0 && minute % chimeModulo == 0) {
+  if (systemTask != nullptr) {
+    uint8_t chimesFrequency = settingsController.GetChimesFrequency();
+    if (chimesFrequency != 0 && minute % chimesFrequency == 0) {
       if (!isChimeAlreadyNotified) {
         isChimeAlreadyNotified = true;
         systemTask->PushMessage(System::Messages::OnChime);

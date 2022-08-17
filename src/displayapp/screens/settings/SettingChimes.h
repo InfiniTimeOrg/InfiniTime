@@ -16,21 +16,22 @@ namespace Pinetime {
         SettingChimes(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingChimes() override;
 
-        void UpdateSelected(lv_obj_t* object, lv_event_t event);
+        void UpdateFrequency(lv_obj_t* object, lv_event_t event);
 
       private:
         struct Option {
-          Controllers::Settings::ChimesOption chimesOption;
-          const char* name;
+          uint8_t value;
+          const char* label;
         };
-        static constexpr std::array<Option, 4> options = {{
-          {Controllers::Settings::ChimesOption::None, " Off"},
-          {Controllers::Settings::ChimesOption::Hours, " Every hour"},
-          {Controllers::Settings::ChimesOption::HalfHours, " Every 30 mins"},
-          {Controllers::Settings::ChimesOption::QuarterHours, " Every 15 mins"}
+
+        static constexpr std::array<Option, 4> frequencyOptions = {{
+          {0, " Off"},
+          {60, " Every hour"},
+          {30, " Every 30 mins"},
+          {15, " Every 15 mins"}
         }};
 
-        std::array<lv_obj_t*, options.size()> cbOption;
+        std::array<lv_obj_t*, frequencyOptions.size()> frequencyCheckBoxes;
 
         Controllers::Settings& settingsController;
       };
