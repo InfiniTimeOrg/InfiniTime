@@ -3,8 +3,6 @@
 #include <date/date.h>
 #include <lvgl/lvgl.h>
 #include <cstdio>
-#include "displayapp/screens/BatteryIcon.h"
-#include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/screens/Symbols.h"
 #include "components/battery/BatteryController.h"
@@ -13,6 +11,7 @@
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
+
 using namespace Pinetime::Applications::Screens;
 
 WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
@@ -26,28 +25,16 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
-    batteryController {batteryController},
-    bleController {bleController},
     notificatioManager {notificatioManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
-    motionController {motionController} {
+    motionController {motionController},
+    statusIcons(batteryController, bleController) {
 
-  batteryIcon.Create(lv_scr_act());
-  lv_obj_align(batteryIcon.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-
-  batteryPlug = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFF0000));
-  lv_label_set_text_static(batteryPlug, Symbols::plug);
-  lv_obj_align(batteryPlug, batteryIcon.GetObject(), LV_ALIGN_OUT_LEFT_MID, -5, 0);
-
-  bleIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0082FC));
-  lv_label_set_text_static(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  statusIcons.Create();
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
+  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
@@ -94,24 +81,7 @@ WatchFaceDigital::~WatchFaceDigital() {
 }
 
 void WatchFaceDigital::Refresh() {
-  powerPresent = batteryController.IsPowerPresent();
-  if (powerPresent.IsUpdated()) {
-    lv_label_set_text_static(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
-  }
-
-  batteryPercentRemaining = batteryController.PercentRemaining();
-  if (batteryPercentRemaining.IsUpdated()) {
-    auto batteryPercent = batteryPercentRemaining.Get();
-    batteryIcon.SetBatteryPercentage(batteryPercent);
-  }
-
-  bleState = bleController.IsConnected();
-  bleRadioEnabled = bleController.IsRadioEnabled();
-  if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
-    lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
-  }
-  lv_obj_realign(batteryPlug);
-  lv_obj_realign(bleIcon);
+  statusIcons.Update();
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {

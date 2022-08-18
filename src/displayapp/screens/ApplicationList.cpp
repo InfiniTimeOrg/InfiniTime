@@ -21,10 +21,12 @@ auto ApplicationList::CreateScreenList() const {
 ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp* app,
                                  Pinetime::Controllers::Settings& settingsController,
                                  Pinetime::Controllers::Battery& batteryController,
+                                 Pinetime::Controllers::Ble& bleController,
                                  Controllers::DateTime& dateTimeController)
   : Screen(app),
     settingsController {settingsController},
     batteryController {batteryController},
+    bleController {bleController},
     dateTimeController {dateTimeController},
     screens {app, settingsController.GetAppMenu(), CreateScreenList(), Screens::ScreenListModes::UpDown} {
 }
@@ -43,5 +45,12 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen(unsigned int screenNum) co
     apps[i] = applications[screenNum * appsPerScreen + i];
   }
 
-  return std::make_unique<Screens::Tile>(screenNum, nScreens, app, settingsController, batteryController, dateTimeController, apps);
+  return std::make_unique<Screens::Tile>(screenNum,
+                                         nScreens,
+                                         app,
+                                         settingsController,
+                                         batteryController,
+                                         bleController,
+                                         dateTimeController,
+                                         apps);
 }

@@ -2,6 +2,8 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/BatteryIcon.h"
+#include "components/ble/BleController.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -22,13 +24,16 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
                              Controllers::DateTime& dateTimeController,
                              Controllers::BrightnessController& brightness,
                              Controllers::MotorController& motorController,
-                             Pinetime::Controllers::Settings& settingsController)
+                             Pinetime::Controllers::Settings& settingsController,
+                             Controllers::Ble& bleController)
   : Screen(app),
-    batteryController {batteryController},
     dateTimeController {dateTimeController},
     brightness {brightness},
     motorController {motorController},
-    settingsController {settingsController} {
+    settingsController {settingsController},
+    statusIcons(batteryController, bleController) {
+
+  statusIcons.Create();
 
   // This is the distance (padding) between all objects on this screen.
   static constexpr uint8_t innerDistance = 10;
@@ -38,9 +43,6 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
-  batteryIcon.Create(lv_scr_act());
-  lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-
   static constexpr uint8_t barHeight = 20 + innerDistance;
   static constexpr uint8_t buttonHeight = (LV_VER_RES_MAX - barHeight - innerDistance) / 2;
   static constexpr uint8_t buttonWidth = (LV_HOR_RES_MAX - innerDistance) / 2; // wide buttons
@@ -49,7 +51,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
 
   lv_style_init(&btn_style);
   lv_style_set_radius(&btn_style, LV_STATE_DEFAULT, buttonHeight / 4);
-  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
+  lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, Colors::bgAlt);
 
   btn1 = lv_btn_create(lv_scr_act(), nullptr);
   btn1->user_data = this;
@@ -72,14 +74,13 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_t* lbl_btn;
   lbl_btn = lv_label_create(btn2, nullptr);
   lv_obj_set_style_local_text_font(lbl_btn, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_sys_48);
-  lv_label_set_text_static(lbl_btn, Symbols::highlight);
+  lv_label_set_text_static(lbl_btn, Symbols::flashlight);
 
   btn3 = lv_btn_create(lv_scr_act(), nullptr);
   btn3->user_data = this;
   lv_obj_set_event_cb(btn3, ButtonEventHandler);
   lv_btn_set_checkable(btn3, true);
   lv_obj_add_style(btn3, LV_BTN_PART_MAIN, &btn_style);
-  lv_obj_set_style_local_bg_color(btn3, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
   lv_obj_set_size(btn3, buttonWidth, buttonHeight);
   lv_obj_align(btn3, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, buttonXOffset, 0);
 
@@ -118,7 +119,7 @@ QuickSettings::~QuickSettings() {
 
 void QuickSettings::UpdateScreen() {
   lv_label_set_text(label_time, dateTimeController.FormattedTime().c_str());
-  batteryIcon.SetBatteryPercentage(batteryController.PercentRemaining());
+  statusIcons.Update();
 }
 
 void QuickSettings::OnButtonEvent(lv_obj_t* object, lv_event_t event) {

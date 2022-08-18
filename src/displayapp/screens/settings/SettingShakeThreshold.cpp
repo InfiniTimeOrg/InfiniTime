@@ -3,6 +3,7 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -123,8 +124,7 @@ void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
           vCalTime = xTaskGetTickCount();
           lv_label_set_text_static(calLabel, "Ready!");
           lv_obj_set_click(positionArc, false);
-          lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
-          lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
+          lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, Colors::highlight);
         } else if (lv_btn_get_state(calButton) == LV_BTN_STATE_RELEASED) {
           calibrating = 0;
           lv_obj_set_click(positionArc, true);
