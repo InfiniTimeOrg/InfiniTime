@@ -248,6 +248,7 @@ void SystemTask::Work() {
           state = SystemTaskState::Running;
           isDimmed = false;
           break;
+
           case Messages::GoToRunningDim:
           spi.Wakeup();
 
@@ -258,14 +259,8 @@ void SystemTask::Work() {
 
           xTimerStart(dimTimer, 0);
           spiNorFlash.Wakeup();
-          lcd.Wakeup();
 
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
-
-          if (bleController.IsRadioEnabled() && !bleController.IsConnected()) {
-            nimbleController.RestartFastAdv();
-          }
 
           state = SystemTaskState::Running;
           isDimmed = true;
@@ -408,7 +403,6 @@ void SystemTask::Work() {
           // We might be sleeping (with TWI device disabled.
           // Remember we'll have to reset the counter next time we're awake
           stepCounterMustBeReset = true;
-          //GoToRunning();
           GoToRunningDim();
           break;
         case Messages::OnNewHour:
