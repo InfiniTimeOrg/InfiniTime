@@ -66,6 +66,16 @@ namespace Pinetime {
         return settings.chimesFrequency;
       };
 
+      void SetChimesDuration(uint8_t duration) {
+        if (duration != settings.chimesDuration) {
+          settings.chimesDuration = duration;
+          settingsChanged = true;
+        }
+      };
+      uint8_t GetChimesDuration() const {
+        return settings.chimesDuration;
+      };
+
       void SetPTSColorTime(Colors colorTime) {
         if (colorTime != settings.PTS.ColorTime)
           settingsChanged = true;
@@ -222,6 +232,7 @@ namespace Pinetime {
 
         uint8_t clockFace = 0;
         uint8_t chimesFrequency = 0;
+        uint8_t chimesDuration = 35;
 
         PineTimeStyle PTS;
 

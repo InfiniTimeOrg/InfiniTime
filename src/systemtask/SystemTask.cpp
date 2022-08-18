@@ -395,7 +395,7 @@ void SystemTask::Work() {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
             }
-            motorController.RunForDuration(35);
+            motorController.RunForDuration(settingsController.GetChimesDuration());
           }
           break;
         case Messages::OnChargingEvent:
