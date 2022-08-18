@@ -488,9 +488,7 @@ void SystemTask::UpdateMotion() {
   }
 
   if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) || 
-                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) ||
-                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap))) {
+                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
     return;
   }
 
@@ -512,15 +510,6 @@ void SystemTask::UpdateMotion() {
       motionController.Should_ShakeWake(settingsController.GetShakeThreshold())) {
     GoToRunning();
   }
-  /*if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) &&
-      motionController.Should_RaiseWake(state == SystemTaskState::Sleeping)) {
-    GoToRunning();
-  }
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap) &&
-      motionController.Should_RaiseWake(state == SystemTaskState::Sleeping)) {
-    GoToRunning();
-  }
-  */
 }
 
 void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
