@@ -118,14 +118,14 @@ void WatchFaceDigital::Refresh() {
       secondFirstDigit = second / 10;
       secondSecondDigit = second % 10;
 
-        lv_label_set_text_fmt(label_seconds_first_digit, "%2d", secondFirstDigit);
-        lv_obj_align(label_seconds_first_digit, lv_scr_act(), LV_ALIGN_CENTER, -8, -6);
+      lv_label_set_text_fmt(label_seconds_first_digit, "%2d", secondFirstDigit);
+      lv_obj_align(label_seconds_first_digit, lv_scr_act(), LV_ALIGN_CENTER, -8, -6);
 
-        lv_label_set_text_fmt(label_seconds_second_digit, "%2d", secondSecondDigit);
-        lv_obj_align(label_seconds_second_digit, lv_scr_act(), LV_ALIGN_CENTER, -8, 22);
+      lv_label_set_text_fmt(label_seconds_second_digit, "%2d", secondSecondDigit);
+      lv_obj_align(label_seconds_second_digit, lv_scr_act(), LV_ALIGN_CENTER, -8, 22);
 
-        lv_label_set_text_fmt(label_minutes, "%02d", minute);
-        lv_obj_align(label_minutes, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
+      lv_label_set_text_fmt(label_minutes, "%02d", minute);
+      lv_obj_align(label_minutes, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
 
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         char ampmChar[3] = "AM";
