@@ -1,4 +1,3 @@
-#include <nrf_log.h>
 #include "FSService.h"
 #include "components/ble/BleController.h"
 #include "systemtask/SystemTask.h"

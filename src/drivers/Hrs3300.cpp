@@ -10,7 +10,6 @@
 
 #include <FreeRTOS.h>
 #include <task.h>
-#include <nrf_log.h>
 
 using namespace Pinetime::Drivers;
 /** Driver for the HRS3300 heart rate sensor.

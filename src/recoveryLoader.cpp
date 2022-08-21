@@ -3,7 +3,6 @@
 #include <drivers/SpiMaster.h>
 #include <drivers/Spi.h>
 #include <drivers/SpiNorFlash.h>
-#include <libraries/log/nrf_log.h>
 #include <FreeRTOS.h>
 #include <task.h>
 #include <legacy/nrf_drv_gpiote.h>

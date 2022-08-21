@@ -1,7 +1,6 @@
 #include "displayapp/screens/settings/SettingSetTime.h"
 #include <lvgl/lvgl.h>
 #include <hal/nrf_rtc.h>
-#include <nrf_log.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
 #include "components/settings/Settings.h"

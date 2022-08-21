@@ -1,7 +1,6 @@
 #include "heartratetask/HeartRateTask.h"
 #include <drivers/Hrs3300.h>
 #include <components/heartrate/HeartRateController.h>
-#include <nrf_log.h>
 
 using namespace Pinetime::Applications;
 

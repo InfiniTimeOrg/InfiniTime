@@ -1,7 +1,6 @@
 #include "components/ble/MotionService.h"
 #include "components/motion/MotionController.h"
 #include "systemtask/SystemTask.h"
-#include <nrf_log.h>
 
 using namespace Pinetime::Controllers;
 
