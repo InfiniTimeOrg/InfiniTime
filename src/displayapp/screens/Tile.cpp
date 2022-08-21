@@ -1,6 +1,8 @@
 #include "displayapp/screens/Tile.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/BatteryIcon.h"
+#include "components/ble/BleController.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -26,21 +28,24 @@ Tile::Tile(uint8_t screenID,
            uint8_t numScreens,
            DisplayApp* app,
            Controllers::Settings& settingsController,
-           Pinetime::Controllers::Battery& batteryController,
+           Controllers::Battery& batteryController,
+           Controllers::Ble& bleController,
            Controllers::DateTime& dateTimeController,
            std::array<Applications, 6>& applications)
-  : Screen(app), batteryController {batteryController}, dateTimeController {dateTimeController}, pageIndicator(screenID, numScreens) {
+  : Screen(app),
+    dateTimeController {dateTimeController},
+    pageIndicator(screenID, numScreens),
+    statusIcons(batteryController, bleController) {
 
   settingsController.SetAppMenu(screenID);
+
+  statusIcons.Create();
+  lv_obj_align(statusIcons.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -8, 0);
 
   // Time
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
-
-  // Battery
-  batteryIcon.Create(lv_scr_act());
-  lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, -8, 0);
 
   pageIndicator.Create();
 
@@ -67,7 +72,7 @@ Tile::Tile(uint8_t screenID,
   lv_obj_set_style_local_bg_opa(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, LV_OPA_50);
   lv_obj_set_style_local_bg_color(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
   lv_obj_set_style_local_bg_opa(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DISABLED, LV_OPA_50);
-  lv_obj_set_style_local_bg_color(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DISABLED, lv_color_hex(0x111111));
+  lv_obj_set_style_local_bg_color(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DISABLED, Colors::bgDark);
   lv_obj_set_style_local_pad_all(btnm1, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_pad_inner(btnm1, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 10);
 
@@ -93,7 +98,7 @@ Tile::~Tile() {
 
 void Tile::UpdateScreen() {
   lv_label_set_text(label_time, dateTimeController.FormattedTime().c_str());
-  batteryIcon.SetBatteryPercentage(batteryController.PercentRemaining());
+  statusIcons.Update();
 }
 
 void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId) {

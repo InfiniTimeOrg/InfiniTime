@@ -1,4 +1,5 @@
 # How to flash InfiniTime using the SWD interface
+
 Download the files **bootloader.bin**, **image-x.y.z.bin** and **pinetime-graphics-x.y.z.bin** from the release page:
 
 ![Image file](gettingStarted/imageFile.png)
@@ -8,7 +9,7 @@ Using your SWD tool, flash **pinetime-graphics-x.y.z.bin** at offset **0x0000**.
 
 Then, using your SWD tool, flash these file at the following offsets:
 
- - bootloader.bin : **0x0000**
- - image-x.y.z.bin : **0x8000**
+- bootloader.bin : **0x0000**
+- image-x.y.z.bin : **0x8000**
 
 Reset and voilà, you're running InfiniTime on your PineTime!

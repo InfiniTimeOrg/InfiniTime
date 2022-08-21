@@ -26,8 +26,8 @@ To update the firmware, you need to download the DFU of the firmware version tha
 
 We have prepared instructions for flashing InfiniTime with Gadgetbridge and NRFConnect.
 
- - [Updating with Gadgetbridge](/doc/gettingStarted/ota-gadgetbridge.md)
- - [Updating with NRFConnect](/doc/gettingStarted/ota-nrfconnect.md)
+- [Updating with Gadgetbridge](/doc/gettingStarted/ota-gadgetbridge.md)
+- [Updating with NRFConnect](/doc/gettingStarted/ota-nrfconnect.md)
 
 ## Firmware validation
 
@@ -35,7 +35,7 @@ Firmware updates must be manually validated. If the firmware isn't validated and
 
 You can validate your updated firmware on InfiniTime >= 1.0 by following this simple procedure:
 
- - From the watchface, swipe **right** to display the *quick settings menu*
- - Open settings by tapping the cogwheel on the bottom right
- - Swipe up until you find an entry named **Firmware** and tap on it
- - If the firmware is not validated yet, you can either validate the running firmware, or reset and revert to the previous firmware version
+- From the watchface, swipe **right** to display the *quick settings menu*
+- Open settings by tapping the cogwheel on the bottom right
+- Swipe up until you find an entry named **Firmware** and tap on it
+- If the firmware is not validated yet, you can either validate the running firmware, or reset and revert to the previous firmware version

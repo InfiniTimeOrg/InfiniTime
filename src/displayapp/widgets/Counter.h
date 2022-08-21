@@ -6,14 +6,18 @@ namespace Pinetime {
     namespace Widgets {
       class Counter {
       public:
-        Counter(int min, int max);
+        Counter(int min, int max, lv_font_t& font);
 
         void Create();
-        void Increment();
-        void Decrement();
+        void UpBtnPressed();
+        void DownBtnPressed();
         void SetValue(int newValue);
         void HideControls();
         void ShowControls();
+        void EnableTwelveHourMode();
+        void EnableMonthMode();
+        void SetMax(int newMax);
+        void SetValueChangedEventCallback(void* userData, void (*handler)(void* userData));
 
         int GetValue() const {
           return value;
@@ -25,6 +29,7 @@ namespace Pinetime {
 
       private:
         void UpdateLabel();
+        void (*ValueChangedHandler)(void* userData) = nullptr;
 
         lv_obj_t* counterContainer;
         lv_obj_t* upBtn;
@@ -33,9 +38,15 @@ namespace Pinetime {
         lv_obj_t* upperLine;
         lv_obj_t* lowerLine;
         lv_point_t linePoints[2];
-        int value = 0;
         int min;
         int max;
+        int value;
+        const int leadingZeroCount;
+        bool twelveHourMode = false;
+        bool monthMode = false;
+        lv_font_t& font;
+
+        void* userData = nullptr;
       };
     }
   }

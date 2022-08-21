@@ -1,39 +1,17 @@
-/**
- * @file lv_pinetime_theme.h
- *
- */
+#pragma once
 
-#ifndef LV_PINETIME_THEME_H
-#define LV_PINETIME_THEME_H
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/*********************
- *      INCLUDES
- *********************/
 #include <lvgl/lvgl.h>
 
-/*********************
- *      DEFINES
- *********************/
-/*Colors*/
-#define LV_PINETIME_WHITE      lv_color_hex(0xffffff)
-#define LV_PINETIME_LIGHT      lv_color_hex(0xf3f8fe)
-#define LV_PINETIME_GRAY       lv_color_hex(0x8a8a8a)
-#define LV_PINETIME_LIGHT_GRAY lv_color_hex(0xc4c4c4)
-#define LV_PINETIME_BLUE       lv_color_hex(0x5d697e)
-#define LV_PINETIME_GREEN      lv_color_hex(0x4cb242)
-#define LV_PINETIME_RED        lv_color_hex(0xd51732)
+namespace Colors {
+  static constexpr lv_color_t orange = LV_COLOR_MAKE(0xff, 0xb0, 0x0);
+  static constexpr lv_color_t green = LV_COLOR_MAKE(0x0, 0xb0, 0x0);
+  static constexpr lv_color_t lightGray = LV_COLOR_MAKE(0xb0, 0xb0, 0xb0);
 
-/**********************
- *      TYPEDEFS
- **********************/
-
-/**********************
- * GLOBAL PROTOTYPES
- **********************/
+  static constexpr lv_color_t bg = LV_COLOR_MAKE(0x5d, 0x69, 0x7e);
+  static constexpr lv_color_t bgAlt = LV_COLOR_MAKE(0x38, 0x38, 0x38);
+  static constexpr lv_color_t bgDark = LV_COLOR_MAKE(0x18, 0x18, 0x18);
+  static constexpr lv_color_t highlight = green;
+};
 
 /**
  * Initialize the default
@@ -53,12 +31,3 @@ lv_theme_t* lv_pinetime_theme_init(lv_color_t color_primary,
                                    const lv_font_t* font_normal,
                                    const lv_font_t* font_subtitle,
                                    const lv_font_t* font_title);
-/**********************
- *      MACROS
- **********************/
-
-#endif
-
-#ifdef __cplusplus
-} /* extern "C" */
-#endif
