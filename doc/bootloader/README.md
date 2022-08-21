@@ -6,7 +6,7 @@ This article describes the design choices behind this feature and how it's imple
 
 ## The theory
 
-During development, developers use specific softwares and tools to program and debug the firmware running on the device. For example, the nRF52832 (the MCU at the heart of the PineTime) supports the SWD debug protocol.
+During development, developers use specific software and tools to program and debug the firmware running on the device. For example, the nRF52832 (the MCU at the heart of the PineTime) supports the SWD debug protocol.
 Using a SWD probe (STLinkV2, J-Link, BlackMagicProbe) and tools like OpenOCD, developers can easily load their firmware to the PineTime, debug it, display debug messages and much more.
 
 This procedure is fine during development but it's obviously not suitable for the end users. As the PineTime does not provide any wired connectivity, the only possible way to update the firmware is via the BLE connection  : the new version of the firmware is transfered *over the air* from a computer or smartphone to the watch.
@@ -29,9 +29,9 @@ Our goals when we designed the bootloader and the OTA procedure for the PineTime
 
 When designing the OTA procedure for the PineTime, we basically had 2 options : implement the OTA procedure in the bootloader or in the application firmware.
 
-Using the bootloader to handle the OTA is tempting as this would allow to implement it only once, and the application firmware would not need to care about it. However, the downside is that the BLE stack would need to integrate the whole BLE stack.
+Using the bootloader to handle the OTA is tempting as this would allow to implement it only once, and the application firmware would not need to care about it. However, the downside is that the bootloader would need to integrate the whole BLE stack.
 
-Indeed, the BLE stack is quite heavy in flash memory and pretty all the code space of the PineTime would be filled if both the bootloader **and** the application firmware would integrate their own BLE stack. Of course, both the bootloader and the application firwmare could share the same stack, but that's against our "freedom to the developers" goal : firmware developer would be forced to use whatever BLE stack we used in the bootloader.
+Indeed, the BLE stack is quite heavy in flash memory and a lot of memory would be waster if both the bootloader **and** the application firmware would integrate their own BLE stack. Of course, both the bootloader and the application firmware could share the same stack, but that's against our "freedom to the developers" goal : firmware developer would be forced to use whatever BLE stack we used in the bootloader.
 
 You've probably guessed it, we chose the 2nd solution, and we decided to implement the OTA procedure in the application firmware. In this case, the bootloader is much simpler, and firmware developers have a lot more freedom in their design choices (like the BLE stack to integrate, the data transfer protocol to implement,...).
 
@@ -39,7 +39,7 @@ Here is basically how it works:
 
 - the application firmware exposes a BLE "firmware update" service. In InfiniTime we decided to implement the **nRF DFU** protocol.
 - this update service stores the new firmware in a temporary location in the *external flash memory* and checks the integrity of the data (CRC).
-- when the new firmware is completely transfered and checked, the watch is rebooted and the bootloader is ran again. The bootloader detects that a new firmware is available in the *external* flash memory and safely swaps the current firmware in the *internal* memory with the new one from the *external* memory.
+- when the new firmware is completely transferred and checked, the watch is rebooted and the bootloader is ran again. The bootloader detects that a new firmware is available in the *external* flash memory and safely swaps the current firmware in the *internal* memory with the new one from the *external* memory.
 - When the swapping is done and checked, the new firmware is executed from the *internal* memory.
 - If the new firmware does not properly run, the bootloader will automatically revert to the older firmware by swapping again firmwares from the external to the internal memory.
 
@@ -76,18 +76,18 @@ When the swapping is done, it runs the new version of the firmware from the prim
 
 ![MCUBoot update sequence diagram](upgrade.png)
 
-The next time MCUBoot will be run (after a MCU reset), MCUBoot will check if the new firmware ran correctly (it must set a flag in memory). If it is not the case, it'll revert to the previous version of the firmware by copying it from the secondary to the primary.
+The next time MCUBoot will be run (after an MCU reset), MCUBoot will check if the new firmware ran correctly (it must set a flag in memory). If it is not the case, it'll revert to the previous version of the firmware by copying it from the secondary to the primary.
 
 ![MCUBoot update sequence diagram](recover.png)
 
-You'll find more information about MCUBoot, its design and how it works in [the documentation of the projet](https://docs.mcuboot.com/).
+You'll find more information about MCUBoot, its design and how it works in [the documentation of the project](https://docs.mcuboot.com/).
 
 The [pinetime-mcuboot-bootloader](https://github.com/InfiniTimeOrg/pinetime-mcuboot-bootloader) integrates MCUBoot, provides low-level drivers for the display and SPI flash memory and implements a very basic UI. See [the documentation of the project for more details about this](https://github.com/InfiniTimeOrg/pinetime-mcuboot-bootloader#boot-flow).
 
 An application firmware must implement the following functionalities to be compatible with our bootloader:
 
-- The application firmware will be flashed at **adress 0x8000 of the internal flash**. It must then be **linked** with a start adress of 0x8000 (instead of 0x00 by default).
-- The bootloader starts the **watchdog** just before loading the application firmware. The application firmware must **refresh the watchdog regularly**. If the watchdog is not refreshed in time, the microcontroller will reset, and the bootloader will consider the firmware as unfunctionnal and will revert to the previous one.
+- The application firmware will be flashed at **address 0x8000 of the internal flash**. It must then be **linked** with a start address of 0x8000 (instead of 0x00 by default).
+- The bootloader starts the **watchdog** just before loading the application firmware. The application firmware must **refresh the watchdog regularly**. If the watchdog is not refreshed in time, the microcontroller will reset, and the bootloader will consider the firmware as unfunctional and will revert to the previous one.
 - The application firmware must implement an **OTA procedure which copies the new firmware at offset 0x040000 of the external SPI flash memory**.
 - The application firmware must set the valid bit in flash memory (write `1` at offset 0x7BFE8 of the internal flash memory) to validate the installation. If this bit is not set, the bootloader will revert to the previous version at next reset.
 
@@ -97,7 +97,7 @@ Those are basically the only constraints imposed on developers. They are free to
 
 The OTA relies on the BLE connectivity of the PineTime to transfer the new version of the firmware from the host (a computer or a smartphone running a supported companion app) to the watch. In InfiniTime, we decided to [implement](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/doc/ble.md#firmware-upgrades) the [nRF DFU protocol](https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.3.0/lib_dfu_transport.html), because it already exists, it's quite well documented and supported by a few existing applications like nRFConnect.
 
-With this protocol, the companion app running on the host sends the new firmware by chunks of 20 bytes. When InfiniTime receives a new chunk, it writes it in the external SPI flash memory. At the end of the transfer, both InfiniTime and the companion app generate a CRC on the file. If those CRCs match, the watch is reset to let the bootloader apply the firmware update.
+With this protocol, the companion app running on the host sends the new firmware in 20 byte chunks. When InfiniTime receives a new chunk, it writes it in the external SPI flash memory. At the end of the transfer, both InfiniTime and the companion app generate a CRC on the file. If those CRCs match, the watch is reset to let the bootloader apply the firmware update.
 
 ### Firmware validation
 Once the OTA is done, InfiniTime will reset the watch to apply the update.
