@@ -46,8 +46,8 @@ namespace Pinetime {
         static constexpr const char* brightnessMedium = "\xEE\x8E\xAB";
         static constexpr const char* brightnessHigh = "\xEE\x8E\xAC";
 
-        static constexpr const char* notificationsOff = "\xEE\x9F\xB6";
-        static constexpr const char* notificationsOn = "\xEE\x9F\xB7";
+        static constexpr const char* bell = "\xEE\x9F\xB6";
+        static constexpr const char* crossedBell = "\xEE\x9F\xB7";
 
         static constexpr const char* flashlight = "\xEF\x80\x8B";
       }

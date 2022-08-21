@@ -98,10 +98,10 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_style_local_text_font(btn3_lvl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_sys_48);
 
   if (settingsController.GetMode() == Controllers::Settings::Mode::Normal) {
-    lv_label_set_text_static(btn3_lvl, Symbols::notificationsOn);
+    lv_label_set_text_static(btn3_lvl, Symbols::bell);
     lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::NotificationsOn));
   } else if (settingsController.GetMode() == Controllers::Settings::Mode::DoNotDisturb) {
-    lv_label_set_text_static(btn3_lvl, Symbols::notificationsOff);
+    lv_label_set_text_static(btn3_lvl, Symbols::crossedBell);
   } else {
     lv_label_set_text_static(btn3_lvl, Symbols::sleep);
     lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::Sleep));
@@ -148,7 +148,7 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object) {
 
     if (settingsController.GetMode() == Controllers::Settings::Mode::Normal) {
       settingsController.SetMode(Controllers::Settings::Mode::DoNotDisturb);
-      lv_label_set_text_static(btn3_lvl, Symbols::notificationsOff);
+      lv_label_set_text_static(btn3_lvl, Symbols::crossedBell);
       lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::NotificationsOff));
     } else if (settingsController.GetMode() == Controllers::Settings::Mode::DoNotDisturb) {
       settingsController.SetMode(Controllers::Settings::Mode::Sleep);
@@ -156,7 +156,7 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object) {
       lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::Sleep));
     } else {
       settingsController.SetMode(Controllers::Settings::Mode::Normal);
-      lv_label_set_text_static(btn3_lvl, Symbols::notificationsOn);
+      lv_label_set_text_static(btn3_lvl, Symbols::bell);
       lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::NotificationsOn));
       motorController.RunForDuration(35);
     }
