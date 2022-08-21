@@ -124,6 +124,9 @@ void WatchFaceDigital::Refresh() {
         lv_label_set_text_fmt(label_seconds_second, "%2d", secondSecondDigit);
         lv_obj_align(label_seconds_second, lv_scr_act(), LV_ALIGN_CENTER, -8, 20);
 
+        lv_label_set_text_fmt(label_minutes, "%02d", minute);
+        lv_obj_align(label_minutes, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
+
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         char ampmChar[3] = "AM";
         if (hour == 0) {
@@ -135,18 +138,16 @@ void WatchFaceDigital::Refresh() {
           ampmChar[0] = 'P';
         }
 
-        //ToDo: fix leading 0 of hours in 12H mode
-        //could be problematic with aligning or maybee needs manual alignment
-        lv_label_set_text_fmt(label_hours, "%02d", hour);
-        lv_obj_align(label_hours, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
-        lv_label_set_text_fmt(label_minutes, "%02d", minute);
-        lv_obj_align(label_minutes, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
-
+        if (hour < 10) {
+          lv_label_set_text_fmt(label_hours, "%1d", hour);
+          lv_obj_align(label_hours, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 45, 0);
+        } else {
+          lv_label_set_text_fmt(label_hours, "%2d", hour);
+          lv_obj_align(label_hours, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
+        }
       } else {
         lv_label_set_text_fmt(label_hours, "%02d", hour);
         lv_obj_align(label_hours, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 0);
-        lv_label_set_text_fmt(label_minutes, "%02d", minute);
-        lv_obj_align(label_minutes, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
       }
     }
 
