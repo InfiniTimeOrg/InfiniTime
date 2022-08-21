@@ -9,7 +9,7 @@ namespace Pinetime {
     class Settings {
     public:
       enum class ClockType : uint8_t { H24, H12 };
-      enum class Notification : uint8_t { On, Off, Sleep };
+      enum class Mode : uint8_t { Normal, DoNotDisturb, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t {
         SingleTap = 0,
@@ -119,14 +119,36 @@ namespace Pinetime {
         return settings.clockType;
       };
 
-      void SetNotificationStatus(Notification status) {
-        if (status != settings.notificationStatus) {
-          settingsChanged = true;
-        }
-        settings.notificationStatus = status;
+      void SetMode(Mode newMode) {
+        mode = newMode;
       };
-      Notification GetNotificationStatus() const {
-        return settings.notificationStatus;
+
+      Mode GetMode() const {
+        return mode;
+      };
+
+      bool NotificationAllowed() const {
+        return (mode == Mode::Normal);
+      };
+
+      bool FullHourChimesAllowed() const {
+        switch (mode) {
+          case Mode::Normal:
+          case Mode::DoNotDisturb:
+            return (settings.chimesOption != ChimesOption::None);
+          case Mode::Sleep:
+            return false;
+        };
+      };
+
+      bool HalfHourChimesAllowed() const {
+        switch (mode) {
+          case Mode::Normal:
+          case Mode::DoNotDisturb:
+            return (settings.chimesOption == ChimesOption::HalfHours);
+          case Mode::Sleep:
+            return false;
+        };
       };
 
       void SetScreenTimeOut(uint32_t timeout) {
@@ -212,14 +234,14 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0003;
+      static constexpr uint32_t settingsVersion = 0x0004;
       struct SettingsData {
         uint32_t version = settingsVersion;
+
         uint32_t stepsGoal = 10000;
         uint32_t screenTimeOut = 15000;
 
         ClockType clockType = ClockType::H24;
-        Notification notificationStatus = Notification::On;
 
         uint8_t clockFace = 0;
         ChimesOption chimesOption = ChimesOption::None;
@@ -240,6 +262,7 @@ namespace Pinetime {
        * to off (false) on every boot because we always want ble to be enabled on startup
        */
       bool bleRadioEnabled = true;
+      Mode mode = Mode::Normal;
 
       void LoadSettingsFromFile();
       void SaveSettingsToFile();

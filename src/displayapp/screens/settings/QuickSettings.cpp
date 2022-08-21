@@ -97,10 +97,10 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   btn3_lvl = lv_label_create(btn3, nullptr);
   lv_obj_set_style_local_text_font(btn3_lvl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_sys_48);
 
-  if (settingsController.GetNotificationStatus() == Controllers::Settings::Notification::On) {
+  if (settingsController.GetMode() == Controllers::Settings::Mode::Normal) {
     lv_label_set_text_static(btn3_lvl, Symbols::notificationsOn);
     lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::NotificationsOn));
-  } else if (settingsController.GetNotificationStatus() == Controllers::Settings::Notification::Off) {
+  } else if (settingsController.GetMode() == Controllers::Settings::Mode::DoNotDisturb) {
     lv_label_set_text_static(btn3_lvl, Symbols::notificationsOff);
   } else {
     lv_label_set_text_static(btn3_lvl, Symbols::sleep);
@@ -146,16 +146,16 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object) {
 
   } else if (object == btn3) {
 
-    if (settingsController.GetNotificationStatus() == Controllers::Settings::Notification::On) {
-      settingsController.SetNotificationStatus(Controllers::Settings::Notification::Off);
+    if (settingsController.GetMode() == Controllers::Settings::Mode::Normal) {
+      settingsController.SetMode(Controllers::Settings::Mode::DoNotDisturb);
       lv_label_set_text_static(btn3_lvl, Symbols::notificationsOff);
       lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::NotificationsOff));
-    } else if (settingsController.GetNotificationStatus() == Controllers::Settings::Notification::Off) {
-      settingsController.SetNotificationStatus(Controllers::Settings::Notification::Sleep);
+    } else if (settingsController.GetMode() == Controllers::Settings::Mode::DoNotDisturb) {
+      settingsController.SetMode(Controllers::Settings::Mode::Sleep);
       lv_label_set_text_static(btn3_lvl, Symbols::sleep);
       lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::Sleep));
     } else {
-      settingsController.SetNotificationStatus(Controllers::Settings::Notification::On);
+      settingsController.SetMode(Controllers::Settings::Mode::Normal);
       lv_label_set_text_static(btn3_lvl, Symbols::notificationsOn);
       lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::NotificationsOn));
       motorController.RunForDuration(35);
