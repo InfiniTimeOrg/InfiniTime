@@ -389,8 +389,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewHour:
           using Pinetime::Controllers::AlarmController;
-          if (settingsController.FullHourChimesAllowed() &&
-              alarmController.State() != AlarmController::AlarmState::Alerting) {
+          if (settingsController.FullHourChimesAllowed() && alarmController.State() != AlarmController::AlarmState::Alerting) {
             if (state == SystemTaskState::Sleeping) {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
@@ -400,8 +399,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewHalfHour:
           using Pinetime::Controllers::AlarmController;
-          if (settingsController.HalfHourChimesAllowed() &&
-              alarmController.State() != AlarmController::AlarmState::Alerting) {
+          if (settingsController.HalfHourChimesAllowed() && alarmController.State() != AlarmController::AlarmState::Alerting) {
             if (state == SystemTaskState::Sleeping) {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
