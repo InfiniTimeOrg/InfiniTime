@@ -18,9 +18,17 @@ namespace {
       widget->DownBtnPressed();
     }
   }
+  constexpr int digitCount(int number) {
+    int digitCount = 0;
+    while (number > 0) {
+      digitCount++;
+      number /= 10;
+    }
+    return digitCount;
+  }
 }
 
-Counter::Counter(int min, int max, lv_font_t& font) : min {min}, max {max}, value {min}, font {font} {
+Counter::Counter(int min, int max, lv_font_t& font) : min {min}, max {max}, value {min}, font {font}, leadingZeroCount {digitCount(max)} {
 }
 
 void Counter::UpBtnPressed() {
@@ -72,14 +80,14 @@ void Counter::UpdateLabel() {
     if (value == 0) {
       lv_label_set_text_static(number, "12");
     } else if (value <= 12) {
-      lv_label_set_text_fmt(number, "%.2i", value);
+      lv_label_set_text_fmt(number, "%.*i", leadingZeroCount, value);
     } else {
-      lv_label_set_text_fmt(number, "%.2i", value - 12);
+      lv_label_set_text_fmt(number, "%.*i", leadingZeroCount, value - 12);
     }
   } else if (monthMode) {
     lv_label_set_text(number, Controllers::DateTime::MonthShortToStringLow(static_cast<Controllers::DateTime::Months>(value)));
   } else {
-    lv_label_set_text_fmt(number, "%.2i", value);
+    lv_label_set_text_fmt(number, "%.*i", leadingZeroCount, value);
   }
 }
 
@@ -95,6 +103,8 @@ void Counter::EnableMonthMode() {
   monthMode = true;
 }
 
+// Counter cannot be resized after creation,
+// so the newMax value must have the same number of digits as the old one
 void Counter::SetMax(int newMax) {
   max = newMax;
   if (value > max) {
