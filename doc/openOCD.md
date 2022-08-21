@@ -99,7 +99,7 @@ openocd -f ./openocd-stlink.ocd -f ./flash_graphics.ocd
 
 ## Connect the STLinkV2 to the PineTime
 Here is an example using the pogo pins:
-![SWD pinout](../images/swd_pinout.jpg)
-![Pogo pins](../images/pogopins.jpg)
+![SWD pinout](openOCD/swd_pinout.jpg)
+![Pogo pins](openOCD/pogopins.jpg)
 
 You can find more information about the SWD wiring [on the wiki](https://wiki.pine64.org/index.php?title=PineTime_devkit_wiring).
