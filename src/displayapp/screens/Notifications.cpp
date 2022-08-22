@@ -306,7 +306,11 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_align(alert_caller, alert_subject, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
       lv_label_set_long_mode(alert_caller, LV_LABEL_LONG_BREAK);
       lv_obj_set_width(alert_caller, LV_HOR_RES - 20);
-      lv_label_set_text(alert_caller, msg);
+      if (strcmp(msg, "null") != 0) {
+        lv_label_set_text(alert_caller, msg);
+      } else {
+        lv_label_set_text(alert_caller, "Unknown");
+      }
 
       bt_accept = lv_btn_create(container, nullptr);
       bt_accept->user_data = this;
