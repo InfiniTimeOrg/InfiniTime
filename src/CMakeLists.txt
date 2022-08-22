@@ -1127,6 +1127,8 @@ if(BUILD_DFU)
           )
 endif()
 
+add_subdirectory(resources)
+
 
 # FLASH
 if (USE_JLINK)
