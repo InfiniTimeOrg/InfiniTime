@@ -1,4 +1,4 @@
-# Bootloader and OTA implementation in InfiniTime on the PineTime
+# Bootloader, OTA and recovery on the PineTime
 
 Like most "smart" devices these days, the PineTime is designed to support OTA update : the update of the firmware **O**ver **T**he **Air**, via its Bluetooth Low Energy (BLE) connectivity.
 
@@ -92,32 +92,6 @@ An application firmware must implement the following functionalities to be compa
 - The application firmware must set the valid bit in flash memory (write `1` at offset 0x7BFE8 of the internal flash memory) to validate the installation. If this bit is not set, the bootloader will revert to the previous version at next reset.
 
 Those are basically the only constraints imposed on developers. They are free to use any language, framework, build system, BLE stack and communication protocol, as long as they implement those functionalities.
-
-### The OTA implementation
-
-The OTA relies on the BLE connectivity of the PineTime to transfer the new version of the firmware from the host (a computer or a smartphone running a supported companion app) to the watch. In InfiniTime, we decided to [implement](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/doc/ble.md#firmware-upgrades) the [nRF DFU protocol](https://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v15.3.0/lib_dfu_transport.html), because it already exists, it's quite well documented and supported by a few existing applications like nRFConnect.
-
-With this protocol, the companion app running on the host sends the new firmware in 20 byte chunks. When InfiniTime receives a new chunk, it writes it in the external SPI flash memory. At the end of the transfer, both InfiniTime and the companion app generate a CRC on the file. If those CRCs match, the watch is reset to let the bootloader apply the firmware update.
-
-### Firmware validation
-Once the OTA is done, InfiniTime will reset the watch to apply the update.
-
-One last step is needed to finalize the upgrade : the new firmware must be manually validated. If the watch resets while the firmware is not validated, the bootloader will automatically revert to the previous version.
-
-If the new firmware is working correctly, open the settings and select the "Firmware" entry. This setting page displays the version of the firmware that is currently running, and allows you to validate the firmware, or reset the device to rollback to the previous version.
-
-Firmware validation setting:
-
-![Firmware Validation setting](firmwareValidationSetting.png)
-
-The firmware is not validated yet. Tap 'Validate' to validate it, or 'Reset' to rollback to the previous version.
-
-![Firmware Not Validated](firmwareNotValidated.png)
-
-The firmware is validated!
-
-![Firmware Validated](firmwareValidated.png)
-
 
 ### Recovery firmware
 
