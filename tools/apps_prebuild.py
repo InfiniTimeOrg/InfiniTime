@@ -43,7 +43,8 @@ lines = '\n' + ''.join(lines) + ' '*8
 print(lines)
 
 # 6 apps per screen, result rounded up
-n_screens = math.ceil(len(lines) / 6)
+n_screens = math.ceil(len(apps) / 6)
+print(f'Created {n_screens} screens.')
 
 with open('tools/template.h', 'r') as template:
     content = template.read()
