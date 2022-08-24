@@ -11,21 +11,8 @@ namespace Pinetime {
       FirmwareValidation,
       NotificationsPreview,
       Notifications,
-      Timer,
-      Alarm,
       FlashLight,
       BatteryInfo,
-      Music,
-      Paint,
-      Paddle,
-      Twos,
-      HeartRate,
-      Navigation,
-      StopWatch,
-      Metronome,
-      Motion,
-      Steps,
-      Weather,
       PassKey,
       QuickSettings,
       Settings,
@@ -39,7 +26,10 @@ namespace Pinetime {
       SettingChimes,
       SettingShakeThreshold,
       SettingBluetooth,
-      Error
+      Error,
+
+      // apps
+      @APPS@
     };
   }
 }

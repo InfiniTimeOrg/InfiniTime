@@ -12,6 +12,12 @@ Makefile
 build
 tools
 
+# files generated from templates
+src/CMakeLists.txt
+src/displayapp/Apps.h
+src/displayapp/DisplayApp.cpp
+src/displayapp/screens/ApplicationList.h
+
 # Resulting binary files
 *.a
 *.so

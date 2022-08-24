@@ -1,9 +1,5 @@
 #include "displayapp/DisplayApp.h"
 #include <libraries/log/nrf_log.h>
-#include "displayapp/screens/HeartRate.h"
-#include "displayapp/screens/Motion.h"
-#include "displayapp/screens/Timer.h"
-#include "displayapp/screens/Alarm.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
@@ -14,21 +10,18 @@
 #include "displayapp/screens/Clock.h"
 #include "displayapp/screens/FirmwareUpdate.h"
 #include "displayapp/screens/FirmwareValidation.h"
-#include "displayapp/screens/InfiniPaint.h"
-#include "displayapp/screens/Paddle.h"
-#include "displayapp/screens/StopWatch.h"
-#include "displayapp/screens/Metronome.h"
-#include "displayapp/screens/Music.h"
-#include "displayapp/screens/Navigation.h"
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/screens/SystemInfo.h"
-#include "displayapp/screens/Tile.h"
-#include "displayapp/screens/Twos.h"
-#include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
-#include "displayapp/screens/Steps.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
+#include "displayapp/screens/FlashLight.h"
+
+// apps
+@APP_INCLUDES@
+
+// defines
+@APP_DEFINES@
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -364,12 +357,6 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
                                                                Screens::Notifications::Modes::Preview);
       ReturnApp(Apps::Clock, FullRefreshDirections::Up, TouchEvents::SwipeUp);
       break;
-    case Apps::Timer:
-      currentScreen = std::make_unique<Screens::Timer>(this, timerController);
-      break;
-    case Apps::Alarm:
-      currentScreen = std::make_unique<Screens::Alarm>(this, alarmController, settingsController.GetClockType(), *systemTask);
-      break;
 
     // Settings
     case Apps::QuickSettings:
@@ -445,37 +432,69 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::FlashLight>(this, *systemTask, brightnessController);
       ReturnApp(Apps::QuickSettings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
+
+    // apps
+#ifdef APP_TIMER
+    case Apps::Timer:
+      currentScreen = std::make_unique<Screens::Timer>(this, timerController);
+      break;
+#endif
+#ifdef APP_ALARM
+    case Apps::Alarm:
+      currentScreen = std::make_unique<Screens::Alarm>(this, alarmController, settingsController.GetClockType(), *systemTask);
+      break;
+#endif
+#ifdef APP_STOPWATCH
     case Apps::StopWatch:
       currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask);
       break;
+#endif
+#ifdef APP_TWOS
     case Apps::Twos:
       currentScreen = std::make_unique<Screens::Twos>(this);
       break;
+#endif
+#ifdef APP_PAINT
     case Apps::Paint:
       currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl, motorController);
       break;
+#endif
+#ifdef APP_PADDLE
     case Apps::Paddle:
       currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
       break;
+#endif
+#ifdef APP_MUSIC
     case Apps::Music:
       currentScreen = std::make_unique<Screens::Music>(this, systemTask->nimble().music());
       break;
+#endif
+#ifdef APP_NAVIGATION
     case Apps::Navigation:
       currentScreen = std::make_unique<Screens::Navigation>(this, systemTask->nimble().navigation());
       break;
+#endif
+#ifdef APP_HEARTRATE
     case Apps::HeartRate:
       currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, *systemTask);
       break;
+#endif
+#ifdef APP_METRONOME
     case Apps::Metronome:
       currentScreen = std::make_unique<Screens::Metronome>(this, motorController, *systemTask);
       ReturnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::None);
       break;
+#endif
+#ifdef APP_MOTION
     case Apps::Motion:
       currentScreen = std::make_unique<Screens::Motion>(this, motionController);
       break;
+#endif
+#ifdef APP_STEPS
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
+#endif
   }
   currentApp = app;
 }
