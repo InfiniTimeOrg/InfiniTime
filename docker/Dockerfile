@@ -45,6 +45,7 @@ RUN npm i lv_img_conv@0.3.0 -g
 
 # build.sh knows how to compile
 COPY build.sh /opt/
+COPY apps_prebuild.py /opt/
 
 # Lets get each in a separate docker layer for better downloads
 # GCC

@@ -35,7 +35,7 @@ main() {
 
   mkdir -p "$BUILD_DIR"
 
-  python3 tools/app_prebuild.py
+  python3 $TOOLS_DIR/apps_prebuild.py
   CmakeGenerate
   CmakeBuild $target
   BUILD_RESULT=$?

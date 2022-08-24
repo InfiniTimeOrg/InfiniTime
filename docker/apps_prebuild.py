@@ -67,7 +67,7 @@ ALL_APPS = {
 
 
 def get_apps():
-    with open('apps.txt', 'r') as file:
+    with open('/sources/apps.txt', 'r') as file:
         apps = file.readlines()
     
     apps = [app.strip() for app in apps]
@@ -96,13 +96,13 @@ def generate_application_list(apps):
 	n_screens = math.ceil(len(apps) / 6)
 	print(f'Created {n_screens} screens.')
 
-	with open('src/displayapp/screens/ApplicationList.h.template', 'r') as template:
+	with open('/sources/src/displayapp/screens/ApplicationList.h.template', 'r') as template:
 		content = template.read()
 
 	content = re.sub(r'@N_SCREENS@', str(n_screens), content)
 	content = re.sub('\s*@APPS@\s*', lines, content)
 
-	with open('src/displayapp/screens/ApplicationList.h', 'w') as out:
+	with open('/sources/src/displayapp/screens/ApplicationList.h', 'w') as out:
 		out.write(content)
 
 
@@ -116,12 +116,12 @@ def generate_cmake_list(apps):
 
 	print(lines)
 
-	with open('src/CMakeLists.txt.template', 'r') as template:
+	with open('/sources/src/CMakeLists.txt.template', 'r') as template:
 		content = template.read()
 
 	content = re.sub(r'\s*@APPS@\s*', lines, content)
 
-	with open('src/CMakeLists.txt', 'w') as out:
+	with open('/sources/src/CMakeLists.txt', 'w') as out:
 		out.write(content)
 
 
@@ -136,13 +136,13 @@ def generate_display_app(apps):
     include_lines = '\n' + ''.join(include_lines) + '\n'
     define_lines = '\n' + ''.join(define_lines) + '\n\n'
 
-    with open('src/displayapp/DisplayApp.cpp.template', 'r') as template:
+    with open('/sources/src/displayapp/DisplayApp.cpp.template', 'r') as template:
         content = template.read()
 
     content = re.sub(r'\s*@APP_INCLUDES@\s*', include_lines, content)
     content = re.sub(r'\s*@APP_DEFINES@\s*', define_lines, content)
 
-    with open('src/displayapp/DisplayApp.cpp', 'w') as out:
+    with open('/sources/src/displayapp/DisplayApp.cpp', 'w') as out:
         out.write(content)
 
 
@@ -154,12 +154,12 @@ def generate_apps(apps):
 
     lines = '\n' + ''.join(lines)
 
-    with open('src/displayapp/Apps.h.template', 'r') as template:
+    with open('/sources/src/displayapp/Apps.h.template', 'r') as template:
         content = template.read()
 
     content = re.sub(r'\s*@APPS@\s*', lines, content)
 
-    with open('src/displayapp/Apps.h', 'w') as out:
+    with open('/sources/src/displayapp/Apps.h', 'w') as out:
         out.write(content)
 
 
