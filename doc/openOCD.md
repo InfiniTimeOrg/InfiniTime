@@ -1,4 +1,5 @@
 # OpenOCD and STLink
+
 OpenOCD (**Open O**n **C**hip **D**ebugger) is an open source tool that interfaces with many SWD/JTAG debugger to provide debugging and *in-system* programming for embedded target devices.
 
 OpenOCD supports the **NRF52** (the CPU of the PineTime) and the **STLinkV2**, a cheap SWD debugger.
@@ -6,9 +7,10 @@ OpenOCD supports the **NRF52** (the CPU of the PineTime) and the **STLinkV2**, a
 OpenOCD works on X86 computers, ARM/ARM64 computers, and SBCs (like the RaspberryPi and Pine64 Pinebook Pro)!
 
 ## Installation
+
 We will build OpenOCD from sources, as packages from Linux distributions are most of the time outdated and do not support the NRF52 properly.
 
- - Fetch the sources from GIT, and build and install it:
+- Fetch the sources from GIT, and build and install it:
 
 ```
 git clone https://git.code.sf.net/p/openocd/code openocd-code
@@ -21,13 +23,14 @@ make -j 4
 sudo make install
 ```
 
- - Configure UDEV to allow OpenOCD to open the interface to your STLinkV2:
+- Configure UDEV to allow OpenOCD to open the interface to your STLinkV2:
+
 ```
 sudo cp contrib/60-openocd.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules
 ```
 
- - You can now plug your STLinkV2 into a USB port and run OpenOCD to see if it's working correctly:
+- You can now plug your STLinkV2 into a USB port and run OpenOCD to see if it's working correctly:
 
 ```
 $ openocd -f interface/stlink.cfg -f target/nrf52.cfg
@@ -50,11 +53,14 @@ Info : STLINK V2J34S7 (API v2) VID:PID 0483:3748
 Info : Target voltage: 3.294340
 Error: init mode failed (unable to connect to the target)
 ```
+
 Ok, OpenOCD is running and it detects my STLinkV2. The last error shows that I've not connected the STLinkV2 to the PineTime.
 
 ## Configuration files
+
 OpenOCD is configured using configuration files.
 First, we need a common configuration file for the project : **openocd-stlink.ocd**:
+
 ```
 source [find interface/stlink.cfg]
 
@@ -63,11 +69,13 @@ gdb_breakpoint_override hard
 
 source [find target/nrf52.cfg]
 ```
+
 This file specifies to OpenOCD which debugger and target it will be connected to.
 
 Then, we use various *user files* to use OpenOCD to flash InfiniTime binary files.
 
 This files flashes the bootloader and the application firmware : **flash_bootloader_app.ocd**:
+
 ```
 init
 
@@ -78,6 +86,7 @@ reset
 ```
 
 And this one flashes the graphics flasher (it writes the bootloader graphics into the SPI NOR flash memory) : **flash_graphics.ocd**:
+
 ```
 init
 
@@ -87,19 +96,23 @@ reset
 ```
 
 ## Examples
+
 ### Flash bootloader and application
+
 ```
 openocd -f ./openocd-stlink.ocd -f ./flash_bootloader_app.ocd
 ```
 
 ### Flash graphics flasher
+
 ```
 openocd -f ./openocd-stlink.ocd -f ./flash_graphics.ocd
 ```
 
 ## Connect the STLinkV2 to the PineTime
+
 Here is an example using the pogo pins:
-![SWD pinout](../images/swd_pinout.jpg)
-![Pogo pins](../images/pogopins.jpg)
+![SWD pinout](openOCD/swd_pinout.jpg)
+![Pogo pins](openOCD/pogopins.jpg)
 
 You can find more information about the SWD wiring [on the wiki](https://wiki.pine64.org/index.php?title=PineTime_devkit_wiring).

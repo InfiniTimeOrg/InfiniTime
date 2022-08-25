@@ -1,6 +1,7 @@
 # Flashing the firmware with JLink
 
 Start JLinkExe:
+
 ```
 $ /opt/SEGGER/JLink/JLinkExe -device nrf52 -if swd -speed 4000 -autoconnect 1
 SEGGER J-Link Commander V6.70d (Compiled Apr 16 2020 17:59:37)
@@ -43,6 +44,7 @@ J-Link>
 ```
 
 Use the command loadfile to program the .hex file:
+
 ```
 J-Link>loadfile pinetime-app.hex
 Downloading file [pinetime-app.hex]...
@@ -56,6 +58,7 @@ O.K.
 ```
 
 Then reset (r) and start (g) the CPU:
+
 ```
 J-Link>r
 Reset delay: 0 ms
@@ -66,17 +69,18 @@ J-Link>g
 ```
 
 # JLink RTT
+
 RTT is a feature from Segger's JLink devices that allows bidirectional communication between the debugger and the target. This feature can be used to get the logs from the embedded software on the development computer.
 
- - Program the MCU with the code (see above)
- - Start JLinkExe
+- Program the MCU with the code (see above)
+- Start JLinkExe
 
 ```
 $ JLinkExe -device nrf52 -if swd -speed 4000 -autoconnect 1
 ```
 
 Start JLinkRTTClient
+
 ```
 $ JLinkRTTClient
 ```
-

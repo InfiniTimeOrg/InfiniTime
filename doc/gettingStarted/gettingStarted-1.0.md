@@ -12,9 +12,9 @@ By default, InfiniTime starts on the digital watchface. It'll probably display t
 
 You can sync the time using companion apps.
 
- - Gadgetbridge automatically synchronizes the time when you connect it to your watch. More information on Gadgetbridge [here](/doc/gettingStarted/ota-gadgetbridge.md)
- - [Sync the time with NRFConnect](/doc/gettingStarted/time-nrfconnect.md)
- - Sync the time with your browser https://hubmartin.github.io/WebBLEWatch/
+- Gadgetbridge automatically synchronizes the time when you connect it to your watch. More information on Gadgetbridge [here](/doc/gettingStarted/ota-gadgetbridge.md)
+- [Sync the time with NRFConnect](/doc/gettingStarted/time-nrfconnect.md)
+- Sync the time with your browser https://hubmartin.github.io/WebBLEWatch/
 
 You can also set the time in the settings without a companion app. (version >1.7.0)
 
@@ -30,9 +30,9 @@ The indicator on the top left is visible if you have unread notifications
 
 On the top right there are status icons
 
- - The battery icon shows roughly how much charge is remaining
- - The Bluetooth icon is visible when the watch is connected to a companion app
- - A plug icon is shown when the watch is plugged into a charger.
+- The battery icon shows roughly how much charge is remaining
+- The Bluetooth icon is visible when the watch is connected to a companion app
+- A plug icon is shown when the watch is plugged into a charger.
 
 On the bottom left you can see your heart rate if you have the measurement enabled in the heart rate app.
 
@@ -45,13 +45,13 @@ On the bottom right you can see how many steps you have taken today.
 ![Quick actions](ui/quicksettings.jpg)
 ![Settings](ui/settings.jpg)
 
- - Swipe **up** to display the application menus. Apps (stopwatch, music, step, games,...) can be started from this menu.
- - Swipe **down** to display the notification panel. Notification sent by your companion app will be displayed here.
- - Swipe **right** to display the Quick Actions menu. This menu allows you to
-    - Set the brightness of the display
-    - Start the **flashlight** app
-    - Enable/disable notifications (Do Not Disturb mode)
-    - Enter the **settings** menu
-       - Swipe up and down to see all options
- - Click the button to go back a screen.
- - You can hold the button for a short time to return to the watch face. (version >1.7.0)
+- Swipe **up** to display the application menus. Apps (stopwatch, music, step, games,...) can be started from this menu.
+- Swipe **down** to display the notification panel. Notification sent by your companion app will be displayed here.
+- Swipe **right** to display the Quick Actions menu. This menu allows you to
+  - Set the brightness of the display
+  - Start the **flashlight** app
+  - Enable/disable notifications (Do Not Disturb mode)
+  - Enter the **settings** menu
+    - Swipe up and down to see all options
+- Click the button to go back a screen.
+- You can hold the button for a short time to return to the watch face. (version >1.7.0)

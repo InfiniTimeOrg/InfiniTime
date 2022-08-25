@@ -1,6 +1,7 @@
 #include "displayapp/screens/Motion.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -19,7 +20,7 @@ Motion::Motion(Pinetime::Applications::DisplayApp* app, Controllers::MotionContr
 
   /*Add 3 data series*/
   ser1 = lv_chart_add_series(chart, LV_COLOR_RED);
-  ser2 = lv_chart_add_series(chart, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
+  ser2 = lv_chart_add_series(chart, Colors::green);
   ser3 = lv_chart_add_series(chart, LV_COLOR_YELLOW);
 
   lv_chart_init_points(chart, ser1, 0);

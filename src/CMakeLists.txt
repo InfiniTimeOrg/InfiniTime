@@ -477,7 +477,7 @@ list(APPEND SOURCE_FILES
         FreeRTOS/port_cmsis.c
 
         displayapp/LittleVgl.cpp
-        displayapp/lv_pinetime_theme.c
+        displayapp/InfiniTimeTheme.cpp
 
         systemtask/SystemTask.cpp
         systemtask/SystemMonitor.cpp
@@ -663,7 +663,7 @@ set(INCLUDE_FILES
         libs/date/include/date/ptz.h
         libs/date/include/date/tz_private.h
         displayapp/LittleVgl.h
-        displayapp/lv_pinetime_theme.h
+        displayapp/InfiniTimeTheme.h
         systemtask/SystemTask.h
         systemtask/SystemMonitor.h
         displayapp/screens/Symbols.h
@@ -810,6 +810,7 @@ elseif(TARGET_DEVICE STREQUAL "MOY-UNK") # P8b mirrored
   add_definitions(-DCLOCK_CONFIG_LF_SRC=0) # RC
   add_definitions(-DMYNEWT_VAL_BLE_LL_SCA=500)
   add_definitions(-DCLOCK_CONFIG_LF_CAL_ENABLED=1)
+  add_definitions(-DDRIVER_DISPLAY_MIRROR)
 else()
   message(FATAL_ERROR "Invalid TARGET_DEVICE")
 endif()

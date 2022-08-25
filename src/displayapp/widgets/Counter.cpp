@@ -1,5 +1,6 @@
 #include "displayapp/widgets/Counter.h"
 #include "components/datetime/DateTimeController.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Widgets;
 
@@ -17,9 +18,17 @@ namespace {
       widget->DownBtnPressed();
     }
   }
+  constexpr int digitCount(int number) {
+    int digitCount = 0;
+    while (number > 0) {
+      digitCount++;
+      number /= 10;
+    }
+    return digitCount;
+  }
 }
 
-Counter::Counter(int min, int max, lv_font_t& font) : min {min}, max {max}, value {min}, font {font} {
+Counter::Counter(int min, int max, lv_font_t& font) : min {min}, max {max}, value {min}, font {font}, leadingZeroCount {digitCount(max)} {
 }
 
 void Counter::UpBtnPressed() {
@@ -71,14 +80,14 @@ void Counter::UpdateLabel() {
     if (value == 0) {
       lv_label_set_text_static(number, "12");
     } else if (value <= 12) {
-      lv_label_set_text_fmt(number, "%.2i", value);
+      lv_label_set_text_fmt(number, "%.*i", leadingZeroCount, value);
     } else {
-      lv_label_set_text_fmt(number, "%.2i", value - 12);
+      lv_label_set_text_fmt(number, "%.*i", leadingZeroCount, value - 12);
     }
   } else if (monthMode) {
     lv_label_set_text(number, Controllers::DateTime::MonthShortToStringLow(static_cast<Controllers::DateTime::Months>(value)));
   } else {
-    lv_label_set_text_fmt(number, "%.2i", value);
+    lv_label_set_text_fmt(number, "%.*i", leadingZeroCount, value);
   }
 }
 
@@ -94,6 +103,8 @@ void Counter::EnableMonthMode() {
   monthMode = true;
 }
 
+// Counter cannot be resized after creation,
+// so the newMax value must have the same number of digits as the old one
 void Counter::SetMax(int newMax) {
   max = newMax;
   if (value > max) {
@@ -108,10 +119,8 @@ void Counter::SetValueChangedEventCallback(void* userData, void (*handler)(void*
 }
 
 void Counter::Create() {
-  constexpr lv_color_t bgColor = LV_COLOR_MAKE(0x38, 0x38, 0x38);
-
   counterContainer = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(counterContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+  lv_obj_set_style_local_bg_color(counterContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
 
   number = lv_label_create(counterContainer, nullptr);
   lv_obj_set_style_local_text_font(number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &font);
@@ -133,7 +142,7 @@ void Counter::Create() {
   UpdateLabel();
 
   upBtn = lv_btn_create(counterContainer, nullptr);
-  lv_obj_set_style_local_bg_color(upBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+  lv_obj_set_style_local_bg_color(upBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_set_size(upBtn, width, btnHeight);
   lv_obj_align(upBtn, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
   upBtn->user_data = this;
@@ -145,7 +154,7 @@ void Counter::Create() {
   lv_obj_align(upLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
 
   downBtn = lv_btn_create(counterContainer, nullptr);
-  lv_obj_set_style_local_bg_color(downBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+  lv_obj_set_style_local_bg_color(downBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_set_size(downBtn, width, btnHeight);
   lv_obj_align(downBtn, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   downBtn->user_data = this;

@@ -19,4 +19,5 @@ Don't forget to **validate** your firmware. In the InfiniTime go to the settings
 ![NRFConnect 3](nrfconnect3.jpg)
 
 # Demo
+
 [This video](https://seafile.codingfield.com/f/a52b69683a05472a90c7/) shows how to use NRFConnect to update the firmware running on the Pinetime.

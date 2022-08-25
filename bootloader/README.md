@@ -1,4 +1,5 @@
 # About this bootloader
+
 The [bootloader](https://github.com/lupyuen/pinetime-rust-mynewt/tree/master/libs/pinetime_boot/src) is mostly developed by [Lup Yuen](https://github.com/lupyuen). It is based on [MCUBoot](https://www.mcuboot.com) and [Mynewt](https://mynewt.apache.org/).
 
 The goal of this project is to provide a common bootloader for multiple (all?) Pinetime projects. It allows to upgrade the current bootloader and even replace the current application by another one that supports the same bootloader.
@@ -12,6 +13,7 @@ When it is run, this bootloader looks in the SPI flash memory if a new firmware 
 As this bootloader does not provide any OTA capability, it is not able to actually download a new version of the application. Providing OTA functionality is thus the responsibility of the application firmware.
 
 # About MCUBoot
+
 MCUBoot is run at boot time. In normal operation, it just jumps to the reset handler of the application firmware to run it. Once the application firmware is running, MCUBoot does not run at all.
 
 ![MCUBoot boot sequence diagram](../doc/bootloader/boot.png "MCUBoot boot sequence diagram")
@@ -19,8 +21,9 @@ MCUBoot is run at boot time. In normal operation, it just jumps to the reset han
 But MCUBoot does much more than that : it can upgrade the firmware that is currently running by a new one, and it is also able to revert to the previous version of the firmware in case the new one does not run properly.
 
 To do this, it uses 2 memory 'slots' :
- - **The primary slot** : it contains the current firmware, the one that will be executed by MCUBoot
- - **The secondary slot** : it is used to store the upgraded version of the firmware, when available.
+
+- **The primary slot** : it contains the current firmware, the one that will be executed by MCUBoot
+- **The secondary slot** : it is used to store the upgraded version of the firmware, when available.
 
 At boot time, MCUBoot detects that a new version of the firmware is available in the secondary slot and swaps them : the current version of the firmware is copied from the primary to the secondary slot and vice-versa.
 
@@ -35,6 +38,7 @@ The next time MCUBoot will be run (after a MCU reset), MCUBoot will check if the
 Note than MCUBoot **does not** provide any means to download and store the new version of the firmware into the secondary slot. This must be implemented by the application firmware.
 
 # Degraded cases
+
 This chapter describes degraded cases that are handled by our bootloader and those that are not supported.
 
 Case | Current bootloader | Solution
@@ -50,72 +54,73 @@ New firmware does not run properly but sets the valid bit and refreshes the watc
 # Using the bootloader
 
 ## Bootloader graphic
+
 The bootloader loads a graphic (Pinetime logo) from the SPI Flash memory. If this graphic is not loaded in the memory, the LCD will display garbage (the content of the SPI flash memory).
 
 The SPI Flash memory is not accessible via the SWD debugger. Use the firmware 'pinetime-graphics' to load the graphic into memory. All you have to do is build it and program it at address 0x00 :
 
- - Build:
-```
-$ make pinetime-graphics
+- Build:
+
+```sh
+make pinetime-graphics
 ```
 
- - Program (using OpenOCD for example) :
+- Program (using OpenOCD for example) :
+
 ```
 program pinetime-graphics.bin 0
 ```
 
- - Let it run for ~10s (it does nothing for 5 seconds, then write the logo into the SPI memory, then (slowly) displays it on the LCD).
+- Let it run for ~10s (it does nothing for 5 seconds, then write the logo into the SPI memory, then (slowly) displays it on the LCD).
 
 ## Bootloader binary
+
 The binary comes from https://github.com/lupyuen/pinetime-rust-mynewt/releases/tag/v5.0.4
 
 It must be flash at address **0x00** in the internal flash memory.
 
 Using OpenOCD:
 
-`
-program bootloader-5.0.4.bin 0
-`
+`program bootloader-5.0.4.bin 0`
 
 ## Application firmware image
+
 Build the binary compatible with the booloader:
 
-`
-make pinetime-mcuboot-app
-`
+`make pinetime-mcuboot-app`
 
 The binary is located in *<build directory>/src/pinetime-mcuboot-app.bin*.
 
 It must me converted into a MCUBoot image using *imgtool.py* from [MCUBoot](https://github.com/mcu-tools/mcuboot/tree/master/scripts). Simply checkout the project and run the script <mcuboot root>/scripts/imgtool.py with the following command line:
 
-`
-imgtool.py  create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header <build directory>/src/pinetime-mcuboot-app.bin image.bin
-`
+```sh
+imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header <build directory>/src/pinetime-mcuboot-app.bin image.bin
+```
 
 The image must be then flashed at address **0x8000** in the internal flash memory.
 
 Using OpenOCD:
 
-`
-program image.bin 0x8000
-`
+`program image.bin 0x8000`
 
 ## OTA and DFU
+
 Pack the image into a .zip file for the NRF DFU protocol:
 
-`
+```sh
 adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application image.bin dfu.zip
-`
+```
 
 Use NRFConnect or dfu.py (in <project root>/bootloader/ota-dfu-python) to upload the zip file to the device:
 
-`
+```sh
 sudo dfu.py -z /home/jf/nrf52/bootloader/dfu.zip -a <pinetime MAC address> --legacy
-`
+```
 
 **Note** : dfu.py is a slightly modified version of [this repo](https://github.com/daniel-thompson/ota-dfu-python).
 
 ### Firmware validation
+
 Once the OTA is done, InfiniTime will reset the watch to apply the update. When the watch reboots, the new firmware is running.
 
 One last step is needed to finalize the upgrade : the new firmware must be manually validated. If the watch resets while the image is not validated, the bootloader will automatically revert to the previous version of the firmware.
