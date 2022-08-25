@@ -1,10 +1,6 @@
-# GitHub Actions Workflow to build FreeRTOS Firmware for PineTime Smart Watch
-# See https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud
-# Based on https://github.com/JF002/InfiniTime/blob/master/doc/buildAndProgram.md
-# and https://github.com/JF002/InfiniTime/blob/master/bootloader/README.md
+name: CI
 
-name: Build PineTime Firmware
-
+# Run this workflow whenever the build may be affected
 on:
   push:
     branches: [ master, develop ]
@@ -16,11 +12,10 @@ on:
     paths-ignore:
       - 'doc/**'
       - '**.md'
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+
 
 jobs:
-  build:
+  build-firmware:
     runs-on: ubuntu-latest
     container:
       image: infinitime/infinitime-build
@@ -53,3 +48,42 @@ jobs:
         with:
           name: InfiniTime MCUBoot image ${{ github.head_ref }}
           path: ./build/output/pinetime-mcuboot-app-image-*.bin
+
+  build-simulator:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install cmake
+      uses: lukka/get-cmake@v3.18.3
+
+    - name: Install SDL2 development package
+      run:  |
+        sudo apt-get update
+        sudo apt-get -y install libsdl2-dev
+
+    - name: Install lv_font_conv
+      run:
+        npm i -g lv_font_conv@1.5.2
+
+    - name: Checkout source files
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Get InfiniSim repo
+      run:  |
+        git clone https://github.com/InfiniTimeOrg/InfiniSim.git --depth 1 --branch main
+        git -C InfiniSim submodule update --init lv_drivers libpng
+
+    - name: CMake
+      run:  |
+        cmake -G Ninja -S InfiniSim -B build_lv_sim -DInfiniTime_DIR="${PWD}"
+
+    - name: Build simulator executable
+      run:  |
+        cmake --build build_lv_sim
+
+    - name: Upload simulator executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: infinisim-${{ github.head_ref }}
+        path: build_lv_sim/infinisim
