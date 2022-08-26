@@ -75,52 +75,59 @@ def get_apps():
 
 
 def generate_application_list(apps):
-	lines = []
-	for app in apps:
-		if app in ALL_APPS:
-		    # 10 spaces for correct indentation
-		    # '{' and '}' separate because format strings interfere with them
-		    # Symbols::symbol, Apps::app in the middle
-		    # \n at the end for correct format
-		    lines.append(' '*10 + '{' + f'{ALL_APPS[app]["symbol"]}, Apps::{app}'  + '},\n')
+    lines = []
+    for app in apps:
+        if app in ALL_APPS:
+            # 10 spaces for correct indentation
+            # '{' and '}' separate because format strings interfere with them
+            # Symbols::symbol, Apps::app in the middle
+            # \n at the end for correct format
+            lines.append(' '*10 + '{' + f'{ALL_APPS[app]["symbol"]}, Apps::{app}'  + '},\n')
 
-	# \n at start
-	# 8 space for correct indentation of closing braces
-	lines = '\n' + ''.join(lines) + ' '*8
+    # fill the missing slots with Nones
+    n_missing_lines = 6 - len(lines) % 6
+    for _ in range(n_missing_lines):
+        lines.append(' '*10 + '{nullptr, Apps::None},\n')
 
-	print(lines)
+    # \n at start
+    # 8 space for correct indentation of closing braces
+    lines = '\n' + ''.join(lines) + ' '*8
 
-	# 6 apps per screen, result rounded up
-	n_screens = math.ceil(len(apps) / 6)
-	print(f'Created {n_screens} screens.')
+    print(lines)
 
-	with open('/sources/src/displayapp/screens/ApplicationList.h.template', 'r') as template:
-		content = template.read()
+    # 6 apps per screen, result rounded up
+    n_screens = math.ceil(len(apps) / 6)
+    # have at least one screen
+    n_screens = max(1, n_screens)
+    print(f'Created {n_screens} screens.')
 
-	content = re.sub(r'@N_SCREENS@', str(n_screens), content)
-	content = re.sub('\s*@APPS@\s*', lines, content)
+    with open('/sources/src/displayapp/screens/ApplicationList.h.template', 'r') as template:
+        content = template.read()
 
-	with open('/sources/src/displayapp/screens/ApplicationList.h', 'w') as out:
-		out.write(content)
+    content = re.sub(r'@N_SCREENS@', str(n_screens), content)
+    content = re.sub('\s*@APPS@\s*', lines, content)
+
+    with open('/sources/src/displayapp/screens/ApplicationList.h', 'w') as out:
+        out.write(content)
 
 
 def generate_cmake_list(apps):
-	lines = []
-	for app in apps:
-		if app in ALL_APPS:
-		    lines.append(' '*8 + f'displayapp/screens/{ALL_APPS[app]["cpp"]}\n')
+    lines = []
+    for app in apps:
+        if app in ALL_APPS:
+            lines.append(' '*8 + f'displayapp/screens/{ALL_APPS[app]["cpp"]}\n')
 
-	lines = '\n' + ''.join(lines) + '\n' + ' '*8
+    lines = '\n' + ''.join(lines) + '\n' + ' '*8
 
-	print(lines)
+    print(lines)
 
-	with open('/sources/src/CMakeLists.txt.template', 'r') as template:
-		content = template.read()
+    with open('/sources/src/CMakeLists.txt.template', 'r') as template:
+        content = template.read()
 
-	content = re.sub(r'\s*@APPS@\s*', lines, content)
+    content = re.sub(r'\s*@APPS@\s*', lines, content)
 
-	with open('/sources/src/CMakeLists.txt', 'w') as out:
-		out.write(content)
+    with open('/sources/src/CMakeLists.txt', 'w') as out:
+        out.write(content)
 
 
 def generate_display_app(apps):
@@ -161,7 +168,7 @@ def main():
     generate_display_app(apps)
     generate_apps(apps)
     print('Done.')
-	
+    
 
 if __name__ == '__main__':
-	main()
+    main()
