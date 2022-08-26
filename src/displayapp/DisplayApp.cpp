@@ -17,11 +17,41 @@
 #include "displayapp/screens/Error.h"
 #include "displayapp/screens/FlashLight.h"
 
-// apps
-@APP_INCLUDES@
+#include "displayapp/AvialableApps.h"
 
-// defines
-@APP_DEFINES@
+#ifdef APP_ALARM
+#include "displayapp/screens/Alarm.h"
+#endif
+#ifdef APP_HEARTRATE
+#include "displayapp/screens/HeartRate.h"
+#endif
+#ifdef APP_METRONOME
+#include "displayapp/screens/Metronome.h"
+#endif
+#ifdef APP_MUSIC
+#include "displayapp/screens/Music.h"
+#endif
+#ifdef APP_NAVIGATION
+#include "displayapp/screens/Navigation.h"
+#endif
+#ifdef APP_PADDLE
+#include "displayapp/screens/Paddle.h"
+#endif
+#ifdef APP_PAINT
+#include "displayapp/screens/Paint.h"
+#endif
+#ifdef APP_STEPS
+#include "displayapp/screens/Steps.h"
+#endif
+#ifdef APP_STOPWATCH
+#include "displayapp/screens/StopWatch.h"
+#endif
+#ifdef APP_TIMER
+#include "displayapp/screens/Timer.h"
+#endif
+#ifdef APP_TWOS
+#include "displayapp/screens/Twos.h"
+#endif
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -174,20 +204,24 @@ void DisplayApp::Refresh() {
         LoadApp(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
         break;
       case Messages::TimerDone:
+#ifdef APP_TIMER
         if (currentApp == Apps::Timer) {
           auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
           timer->Reset();
         } else {
           LoadApp(Apps::Timer, DisplayApp::FullRefreshDirections::Down);
         }
+#endif
         break;
       case Messages::AlarmTriggered:
+#ifdef APP_ALARM
         if (currentApp == Apps::Alarm) {
           auto* alarm = static_cast<Screens::Alarm*>(currentScreen.get());
           alarm->SetAlerting();
         } else {
           LoadApp(Apps::Alarm, DisplayApp::FullRefreshDirections::None);
         }
+#endif
         break;
       case Messages::ShowPairingKey:
         LoadApp(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);

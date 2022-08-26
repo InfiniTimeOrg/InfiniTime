@@ -71,8 +71,6 @@ def get_apps():
         apps = file.readlines()
     
     apps = [app.strip() for app in apps]
-    apps.append('Alarm')
-    apps.append('Timer')
     return apps
 
 
@@ -126,24 +124,15 @@ def generate_cmake_list(apps):
 
 
 def generate_display_app(apps):
-    include_lines = []
     define_lines = []
     for app in apps:
         if app in ALL_APPS:
-            include_lines.append(f'#include "displayapp/screens/{ALL_APPS[app]["h"]}"\n')
-            define_lines.append(f'#define APP_{app.upper()}\n')
+            define_lines.append(f'#define APP_{app.upper()}')
 
-    include_lines = '\n' + ''.join(include_lines) + '\n'
-    define_lines = '\n' + ''.join(define_lines) + '\n\n'
+    define_lines = '\n'.join(define_lines)
 
-    with open('/sources/src/displayapp/DisplayApp.cpp.template', 'r') as template:
-        content = template.read()
-
-    content = re.sub(r'\s*@APP_INCLUDES@\s*', include_lines, content)
-    content = re.sub(r'\s*@APP_DEFINES@\s*', define_lines, content)
-
-    with open('/sources/src/displayapp/DisplayApp.cpp', 'w') as out:
-        out.write(content)
+    with open('/sources/src/displayapp/AvailableApps.h', 'w') as out:
+        out.write(define_lines)
 
 
 def generate_apps(apps):

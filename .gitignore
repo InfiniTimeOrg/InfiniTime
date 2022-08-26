@@ -15,7 +15,7 @@ tools
 # files generated from templates
 src/CMakeLists.txt
 src/displayapp/Apps.h
-src/displayapp/DisplayApp.cpp
+src/displayapp/AvailableApps.h
 src/displayapp/screens/ApplicationList.h
 
 # Resulting binary files
