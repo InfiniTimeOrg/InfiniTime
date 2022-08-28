@@ -103,7 +103,7 @@ void WatchFaceAccurateWords::Refresh() {
     uint8_t hour = time.hours().count();
     uint8_t minute = time.minutes().count();
 
-    uint8_t hour_adjusted = time.hours().count();
+    uint8_t hour_adjusted;
     char words[78];
     char part_day[20];
     const char hour_word_array[26][10] = {
@@ -145,9 +145,13 @@ void WatchFaceAccurateWords::Refresh() {
     if (displayedHour != hour || displayedMinute != minute) {
       displayedHour = hour;
       displayedMinute = minute;
+
       if(minute>32) {
         hour_adjusted = (hour+1) % 24;
-        }
+      }
+      else {
+		  hour_adjusted = hour;
+	  }
 
       if (hour_adjusted != 0 && hour_adjusted != 12) {
         sprintf(part_day, "%s", part_day_word_array[hour_adjusted/3]);
