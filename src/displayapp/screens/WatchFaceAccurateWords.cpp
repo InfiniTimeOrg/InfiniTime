@@ -39,8 +39,11 @@ WatchFaceAccurateWords::WatchFaceAccurateWords(DisplayApp* app,
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
   lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  lv_label_set_long_mode(label_date, LV_LABEL_LONG_BREAK);
+  lv_obj_set_width(label_date, LV_HOR_RES - 20);
+  lv_label_set_align(label_date, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
@@ -140,8 +143,34 @@ void WatchFaceAccurateWords::Refresh() {
     const char minutes_accurate_array[6][16] = {
                             "", "just gone ", "a little after ", 
                             "coming up to ", "almost "
-                         };
-
+                             };
+    const char days_array[9][10] = { 
+		                    "", 
+		                    "Monday", "Tuesday", "Wednesday", 
+		                    "Thursday", "Friday", "Saturday",
+		                    "Sunday"
+		                     };
+    const char months_array[13][10] = { 
+		                    "", 
+		                    "January", "February", "March", "April", 
+		                    "May", "June", "July", "August", 
+		                    "September", "October", "November", 
+		                    "December"
+		                     };
+    const char months_numbers_array[32][15] = {
+                             "zero", "first", "second", "third", 
+                             "fourth", "fifth", "sixth", "seventh", 
+                             "eighth", "ninth", "tenth", "eleventh", 
+                             "twelfth", "thirteenth", "fourteenth", 
+                             "fifteenth", "sixteenth", "seventeenth", 
+                             "eighteenth", "nineteenth", "twentieth", 
+                             "twenty-first", "twenty-second", 
+                             "twenty-third", "twenty-fourth", 
+                             "twenty-fifth", "twenty-sixth", 
+                             "twenty-seventh", "twenty-eighth", 
+                             "twenty-ninth", "thirtieth", 
+                             "thirty-first"
+		                     };
     if (displayedHour != hour || displayedMinute != minute) {
       displayedHour = hour;
       displayedMinute = minute;
@@ -169,17 +198,16 @@ void WatchFaceAccurateWords::Refresh() {
 
       lv_label_set_text_fmt(label_time, "%s", words);
       lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, -40);
-    }
 
-    if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      lv_label_set_text_fmt(label_date,
-                              "%s %d-%d-%d",
-                              dateTimeController.DayOfWeekShortToString(),
-                              year,
-                              month,
-                              day
-                              );
-      lv_obj_realign(label_date);
+      lv_label_set_text_fmt(label_date,"%s, %s of %s",
+                            days_array[static_cast<uint8_t>(dayOfWeek)],
+                            months_numbers_array[static_cast<uint8_t>(day)],
+                            months_array[static_cast<uint8_t>(month)]
+                            );
+      // Maximum lenght of date in words
+//      lv_label_set_text_fmt(label_date,"Wednesday, twenty-seventh of September");
+
+      lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
 
       currentYear = year;
       currentMonth = month;
