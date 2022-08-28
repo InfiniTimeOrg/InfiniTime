@@ -1,8 +1,6 @@
-# Add Watch Faces 
+# Add Watchfaces 
 
-This page will help you:
-
-- Add a new Watch Face to InfiniTime
+This page will help you to add a new Watch Face to InfiniTime.
 
 ## Theory
 
@@ -24,10 +22,10 @@ Use git to fork and get a local copy (commands not shown).
 Then with all the submodules updated add a branch and copy the watch face files
 
 ```bash
-$ git submodule update --init
-$ git checkout -b Watchface_Accurate_Words
-$ cp ./src/displayapp/screens/WatchFaceDigital.cpp ./src/displayapp/screens/WatchFaceAccurateWords.cpp
-$ cp ./src/displayapp/screens/WatchFaceDigital.h ./src/displayapp/screens/WatchFaceAccurateWords.h
+git submodule update --init
+git checkout -b Watchface_Accurate_Words
+cp ./src/displayapp/screens/WatchFaceDigital.cpp ./src/displayapp/screens/WatchFaceAccurateWords.cpp
+cp ./src/displayapp/screens/WatchFaceDigital.h ./src/displayapp/screens/WatchFaceAccurateWords.h
 ```
 
 ### Amend Files
@@ -159,30 +157,13 @@ void WatchFaceAccurateWords::Refresh() {
 
 ## Test Copied Watch Face
 
-At this point - assuming you have InfiniSim locally installed.
-
-
-```bash
-$ ls ../Infini* -d
-../InfiniSim  ../InfiniTime
-```
-
-It is a good time to test. 
-
-```bash
-$ cd ../InfiniSim
-$ cmake -S . -B build
-$ cmake --build build -j4
-$ ./build/infinisim
-$ cd ../InfiniTime
-```
+At this point - assuming you have [InfiniTime simulator](https://github.com/InfiniTimeOrg/InfiniSim) locally installed. It is a good time to test. 
 
 
 ## Amending the Watch Face to Suit 
 
 
 Start editing and ammended WatchFaceAccurateWords.cpp to suit your tastes. To save space on the firmware, use existing fonts. 
-
 
 ## Finish
 
