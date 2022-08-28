@@ -422,7 +422,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingShakeThreshold.cpp
         displayapp/screens/settings/SettingBluetooth.cpp
 
-        ## Watch faces
+        ## Watchfaces
         displayapp/icons/bg_clock.c
         displayapp/screens/WatchFaceAnalog.cpp
         displayapp/screens/WatchFaceDigital.cpp

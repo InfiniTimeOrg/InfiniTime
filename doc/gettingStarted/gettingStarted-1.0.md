@@ -20,11 +20,11 @@ You can also set the time in the settings without a companion app. (version >1.7
 
 InfiniTime doesn't handle daylight savings automatically, so make sure to set the correct time or sync it with a companion app.
 
-### Digital watch face
+### Digital Watchface
 
-![Digital watch face](ui/watchface.jpg)
+![Digital Watchface](ui/watchface.jpg)
 
-This is what the default digital watch face looks like. You can change watch faces in the settings.
+This is what the default digital watchface looks like. You can change watchfaces in the settings.
 
 The indicator on the top left is visible if you have unread notifications
 
@@ -54,4 +54,4 @@ On the bottom right you can see how many steps you have taken today.
   - Enter the **settings** menu
     - Swipe up and down to see all options
 - Click the button to go back a screen.
-- You can hold the button for a short time to return to the watch face. (version >1.7.0)
+- You can hold the button for a short time to return to the Watchface. (version >1.7.0)
