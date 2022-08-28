@@ -43,13 +43,11 @@ WatchFaceAccurateWords::WatchFaceAccurateWords(DisplayApp* app,
   lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
-
-  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
-
-  label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(label_time_ampm, "");
-  lv_obj_align(label_time_ampm, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -30, -55);
+  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  lv_label_set_long_mode(label_time, LV_LABEL_LONG_BREAK);
+  lv_obj_set_width(label_time, LV_HOR_RES - 20);
+  lv_label_set_align(label_time, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
@@ -105,45 +103,78 @@ void WatchFaceAccurateWords::Refresh() {
     uint8_t hour = time.hours().count();
     uint8_t minute = time.minutes().count();
 
+    uint8_t hour_adjusted = time.hours().count();
+    char words[78];
+    char part_day[20];
+    const char hour_word_array[26][10] = {
+                            "midnight", "one", "two", 
+                            "three", "four", "five", 
+                            "six", "seven", "eight", 
+                            "nine", "ten", "eleven", 
+                            "twelve",
+                            "one", "two", 
+                            "three", "four", "five", 
+                            "six", "seven", "eight", 
+                            "nine", "ten", "eleven", 
+                            "midnight"
+                         };
+    const char part_day_word_array[9][20] = {
+                            " at night", 
+                            " in the early hours", 
+                            " in the morning", 
+                            " in the morning", 
+                            " in the afternoon", 
+                            " in the afternoon", 
+                            " in the evening",
+                            " at night"
+                         };
+    const char minutes_rough_array[14][18] = {
+                            "", "five past ",
+                            "ten past ", "quarter past ", 
+                            "twenty past ", "twenty-five past ", 
+                            "half past ", "twenty-five to ",
+                            "twenty to ", "quarter to ", "ten to ", 
+                            "five to "
+                             ""
+                             };
+    const char minutes_accurate_array[6][16] = {
+                            "", "just gone ", "a little after ", 
+                            "coming up to ", "almost "
+                         };
+
     if (displayedHour != hour || displayedMinute != minute) {
       displayedHour = hour;
       displayedMinute = minute;
-
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-        char ampmChar[3] = "AM";
-        if (hour == 0) {
-          hour = 12;
-        } else if (hour == 12) {
-          ampmChar[0] = 'P';
-        } else if (hour > 12) {
-          hour = hour - 12;
-          ampmChar[0] = 'P';
+      if(minute>32) {
+        hour_adjusted = (hour+1) % 24;
         }
-        lv_label_set_text(label_time_ampm, ampmChar);
-        lv_label_set_text_fmt(label_time, "%2d:%02d", hour, minute);
-        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
-      } else {
-        lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
-        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+
+      if (hour_adjusted != 0 && hour_adjusted != 12) {
+        sprintf(part_day, "%s", part_day_word_array[hour_adjusted/3]);
       }
+      else {
+        sprintf(part_day, "");
+      }
+      sprintf(words, "%s%s%s%s", 
+                     minutes_accurate_array[(minute)%5],
+                     minutes_rough_array[(minute+2)/5],
+                     hour_word_array[hour_adjusted],
+                     part_day);
+      // Make first letter Uppercase
+      words[0]=words[0]-32;
+
+      lv_label_set_text_fmt(label_time, "%s", words);
+      lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, -40);
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        lv_label_set_text_fmt(label_date,
-                              "%s %d %s %d",
+      lv_label_set_text_fmt(label_date,
+                              "%s %d-%d-%d",
                               dateTimeController.DayOfWeekShortToString(),
-                              day,
-                              dateTimeController.MonthShortToString(),
-                              year);
-      } else {
-        lv_label_set_text_fmt(label_date,
-                              "%s %s %d %d",
-                              dateTimeController.DayOfWeekShortToString(),
-                              dateTimeController.MonthShortToString(),
-                              day,
-                              year);
-      }
+                              year,
+                              month,
+                              day
+                              );
       lv_obj_realign(label_date);
 
       currentYear = year;
