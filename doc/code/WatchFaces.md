@@ -8,8 +8,8 @@ This example uses the existing Digital Watch Face, copies this to a new watch fa
 
 ## Files 
 
-- WatchFaceAccurateWords.cpp 
-- WatchFaceAccurateWords.h 
+- WatchFaceNew.cpp 
+- WatchFaceNew.h 
 - Clock.cpp
 - Clock.h
 - SettingWatchFace.h
@@ -23,9 +23,9 @@ Then with all the submodules updated add a branch and copy the watch face files
 
 ```bash
 git submodule update --init
-git checkout -b Watchface_Accurate_Words
-cp ./src/displayapp/screens/WatchFaceDigital.cpp ./src/displayapp/screens/WatchFaceAccurateWords.cpp
-cp ./src/displayapp/screens/WatchFaceDigital.h ./src/displayapp/screens/WatchFaceAccurateWords.h
+git checkout -b Watchface_New
+cp ./src/displayapp/screens/WatchFaceDigital.cpp ./src/displayapp/screens/WatchFaceNew.cpp
+cp ./src/displayapp/screens/WatchFaceDigital.h ./src/displayapp/screens/WatchFaceNew.h
 ```
 
 ### Amend Files
@@ -37,18 +37,18 @@ Include reference to the new Watch Face
 ```cpp
 
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
-#include "displayapp/screens/WatchFaceAccurateWords.h"
+#include "displayapp/screens/WatchFaceNew.h"
 ```
 
 
-Add to clock.cpp a WatchFaceAccurateWordsScreen
+Add to clock.cpp a WatchFaceNew
 
 ./src/displayapp/screens/Clock.cpp:
 
 ```cpp
 
-std::unique_ptr<Screen> Clock::WatchFaceAccurateWordsScreen() {
-  return std::make_unique<Screens::WatchFaceAccurateWords>(app,
+std::unique_ptr<Screen> Clock::WatchFaceNewScreen() {
+  return std::make_unique<Screens::WatchFaceNew>(app,
                                                      dateTimeController,
                                                      batteryController,
                                                      bleController,
@@ -66,7 +66,7 @@ Add to ~line 40 an additional case to select the new screen
           return WatchFaceTerminalScreen();
           break;
         case 4:
-          return WatchFaceAccurateWordsScreen();
+          return WatchFaceNewScreen();
           break;
       }
       return WatchFaceDigitalScreen();
@@ -79,7 +79,7 @@ Add these reference to the head files
 ```cpp
         std::unique_ptr<Screen> WatchFacePineTimeStyleScreen();
         std::unique_ptr<Screen> WatchFaceTerminalScreen();
-        std::unique_ptr<Screen> WatchFaceAccurateWordsScreen();
+        std::unique_ptr<Screen> WatchFaceNewScreen();
       };
 }
 ```
@@ -90,7 +90,7 @@ Amend the setting file to allow this watch face to be selected, by incrementing 
 
 ```cpp
       private:
-        static constexpr std::array<const char*, 5> options = {"Digital face", "Analog face", "PineTimeStyle", "Terminal", "Words"};
+        static constexpr std::array<const char*, 5> options = {"Digital face", "Analog face", "PineTimeStyle", "Terminal", "New"};
         Controllers::Settings& settingsController;
 ```
 
@@ -113,36 +113,36 @@ Add a referenace to WatchFaceAccurateWords.cpp
         displayapp/screens/WatchFaceDigital.cpp
         displayapp/screens/WatchFaceTerminal.cpp
         displayapp/screens/WatchFacePineTimeStyle.cpp
-        displayapp/screens/WatchFaceAccurateWords.cpp
+        displayapp/screens/WatchFaceNew.cpp
 ```
 
-Then finally amened WatchFaceAccurateWords.cpp and .h with the new names rather than the old WatchFaceDigital
+Then finally amened WatchFaceNew.cpp and .h with the new names rather than the old WatchFaceDigital
 
-./src/displayapp/screens/WatchFaceAccurateWords.cpp:
+./src/displayapp/screens/WatchFaceNew.cpp:
 
 ```cpp
-#include "displayapp/screens/WatchFaceAccurateWords.h
+#include "displayapp/screens/WatchFaceNew.h
 ...
-WatchFaceAccurateWords::WatchFaceAccurateWords(DisplayApp* app,
+WatchFaceAccurateWords::WatchFaceNew(DisplayApp* app,
                                    Controllers::DateTime& dateTimeController,
 ...
-WatchFaceAccurateWords::~WatchFaceAccurateWords() {
+WatchFaceNew::~WatchFaceNew() {
   lv_task_del(taskRefresh);
 ...
-void WatchFaceAccurateWords::Refresh() {
+void WatchFaceNew::Refresh() {
   statusIcons.Update();
 ```
 
-./src/displayapp/screens/WatchFaceAccurateWords.cpp:
+./src/displayapp/screens/WatchFaceNew.cpp:
 
 ```cpp
 ...
   namespace Applications {
     namespace Screens {
 
-      class WatchFaceAccurateWords : public Screen {
+      class WatchFaceNew : public Screen {
       public:
-        WatchFaceAccurateWords(DisplayApp* app,
+        WatchFaceNew(DisplayApp* app,
                          Controllers::DateTime& dateTimeController,
                          Controllers::Battery& batteryController,
                          Controllers::Ble& bleController,
@@ -150,7 +150,7 @@ void WatchFaceAccurateWords::Refresh() {
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
                          Controllers::MotionController& motionController);
-        ~WatchFaceAccurateWords() override;
+        ~WatchFaceNew() override;
 ...
 ```
 
@@ -163,7 +163,7 @@ At this point - assuming you have [InfiniTime simulator](https://github.com/Infi
 ## Amending the Watch Face to Suit 
 
 
-Start editing and ammended WatchFaceAccurateWords.cpp to suit your tastes. To save space on the firmware, use existing fonts. 
+Start editing and ammended WatchFaceNew.cpp to suit your tastes. To save space on the firmware, use existing fonts. 
 
 ## Finish
 
