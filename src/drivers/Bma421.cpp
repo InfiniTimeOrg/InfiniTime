@@ -86,7 +86,6 @@ void Bma421::Init() {
   remap_data = {1, 0, 2, 1, 1, 1};
   ret = bma423_set_remap_axes(&remap_data, &bma);
   if (ret != BMA4_OK) {
-    remap_data = {0, 1, 2, 0, 0, 0};
     return;
   }
 
