@@ -157,7 +157,7 @@ void SystemTask::Work() {
   twiMaster.Init();
 
   motionSensor.Init();
-  motionController.Init(motionSensor.DeviceType());
+  motionController.Init(motionSensor.DeviceType(), &motionSensor);
   settingsController.Init();
 
   displayApp.Register(this);
@@ -488,7 +488,7 @@ void SystemTask::UpdateMotion() {
 
   if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep) {
     if ((settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) &&
-         motionController.Should_RaiseWake(state == SystemTaskState::Sleeping)) ||
+         motionController.shouldRaiseWake()) ||
         (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) &&
          motionController.Should_ShakeWake(settingsController.GetShakeThreshold()))) {
       GoToRunning();

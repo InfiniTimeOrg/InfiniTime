@@ -1,5 +1,6 @@
 #pragma once
 #include <drivers/Bma421_C/bma4_defs.h>
+#include <drivers/Bma421_C/bma423.h>
 
 namespace Pinetime {
   namespace Drivers {
@@ -32,15 +33,28 @@ namespace Pinetime {
       bool IsOk() const;
       DeviceTypes DeviceType() const;
 
+      bool getAndClearWristTiltInterrupt() {
+        bool tmp = wristTiltInterrupt;
+        wristTiltInterrupt = false;
+        return tmp;
+      }
+
+      void clearWristTiltInterrupt() {
+        wristTiltInterrupt = false;
+      }
+
     private:
       void Reset();
 
       TwiMaster& twiMaster;
       uint8_t deviceAddress = 0x18;
-      struct bma4_dev bma;
+      struct bma4_dev bma {};
       bool isOk = false;
       bool isResetOk = false;
+      bool wristTiltInterrupt = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
+      // Default mapping
+      bma423_axes_remap remap_data = {0, 1, 2, 0, 0, 0};
     };
   }
 }
