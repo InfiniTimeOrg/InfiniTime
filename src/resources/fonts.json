@@ -45,7 +45,7 @@
       "bpp": 1,
       "size": 40,
       "format": "bin",
-      "target_path": "/fonts"
+      "target_path": "/fonts/"
    },
    "7segments_115" : {
       "sources": [
