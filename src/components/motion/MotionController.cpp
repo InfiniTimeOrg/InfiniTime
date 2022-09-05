@@ -19,6 +19,10 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   if (deltaSteps > 0) {
     currentTripSteps += deltaSteps;
   }
+
+  // We ignore stepCountMustBeReset in this function and trust the nbSteps value.
+  // Overwriting nbSteps here invalidates stepCounterMustBeReset, so we set it to false.
+  stepCounterMustBeReset = false;
 }
 
 bool MotionController::Should_RaiseWake(bool isSleeping) {

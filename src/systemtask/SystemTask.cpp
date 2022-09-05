@@ -385,7 +385,7 @@ void SystemTask::Work() {
         case Messages::OnNewDay:
           // We might be sleeping (with TWI device disabled.
           // Remember we'll have to reset the counter next time we're awake
-          stepCounterMustBeReset = true;
+          motionController.SetStepCounterMustBeReset(true);
           break;
         case Messages::OnNewHour:
           using Pinetime::Controllers::AlarmController;
@@ -476,14 +476,17 @@ void SystemTask::UpdateMotion() {
     return;
   }
 
-  if (stepCounterMustBeReset) {
+  if (motionController.GetStepCounterMustBeReset()) {
     motionSensor.ResetStepCounter();
-    stepCounterMustBeReset = false;
+    // A manual reset of stepCounterMustBeReset is logical here, but not necessary,
+    // because motionController.Update() below does it anyways
+    // motionController.SetStepCounterMustBeReset(false);
   }
 
   auto motionValues = motionSensor.Process();
 
   motionController.IsSensorOk(motionSensor.IsOk());
+  // Update() resets the need to reset the stepCounter, see the comment above
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
 
   if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep) {

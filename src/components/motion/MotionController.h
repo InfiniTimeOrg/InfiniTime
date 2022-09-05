@@ -26,7 +26,11 @@ namespace Pinetime {
         return z;
       }
       uint32_t NbSteps() const {
-        return nbSteps;
+        if (stepCounterMustBeReset) {
+          return 0;
+        } else {
+          return nbSteps;
+        }
       }
 
       void ResetTrip() {
@@ -34,6 +38,13 @@ namespace Pinetime {
       }
       uint32_t GetTripSteps() const {
         return currentTripSteps;
+      }
+
+      bool GetStepCounterMustBeReset() const {
+        return stepCounterMustBeReset;
+      }
+      void SetStepCounterMustBeReset(bool reset) {
+        stepCounterMustBeReset = reset;
       }
 
       bool Should_ShakeWake(uint16_t thresh);
@@ -54,6 +65,7 @@ namespace Pinetime {
     private:
       uint32_t nbSteps;
       uint32_t currentTripSteps = 0;
+      bool stepCounterMustBeReset = false;
       int16_t x;
       int16_t y;
       int16_t z;
