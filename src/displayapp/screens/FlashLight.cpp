@@ -1,6 +1,7 @@
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -58,7 +59,7 @@ FlashLight::~FlashLight() {
 
 void FlashLight::SetColors() {
   lv_color_t bgColor = isOn ? LV_COLOR_WHITE : LV_COLOR_BLACK;
-  lv_color_t fgColor = isOn ? LV_COLOR_MAKE(0xb0, 0xb0, 0xb0) : LV_COLOR_WHITE;
+  lv_color_t fgColor = isOn ? Colors::lightGray : LV_COLOR_WHITE;
 
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, bgColor);
   lv_obj_set_style_local_text_color(flashLight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, fgColor);

@@ -12,6 +12,7 @@ run
 ```
 
 Example :
+
 ```
 $ /home/jf/nrf52/gcc-arm-none-eabi-8-2019-q3-update/bin/arm-none-eabi-gdb
 
@@ -45,4 +46,3 @@ Loading section .sec7, size 0xdf08 lma 0x40000
 Start address 0x0, load size 314200
 Transfer rate: 45 KB/sec, 969 bytes/write.
 ```
-

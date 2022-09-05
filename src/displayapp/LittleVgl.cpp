@@ -1,5 +1,5 @@
 #include "displayapp/LittleVgl.h"
-#include "displayapp/lv_pinetime_theme.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 #include <FreeRTOS.h>
 #include <task.h>

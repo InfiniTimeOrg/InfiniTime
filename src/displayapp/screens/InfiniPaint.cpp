@@ -1,6 +1,7 @@
 #include "displayapp/screens/InfiniPaint.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/LittleVgl.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 #include <algorithm> // std::fill
 
@@ -26,7 +27,7 @@ bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
           selectColor = LV_COLOR_MAGENTA;
           break;
         case 1:
-          selectColor = LV_COLOR_MAKE(0x0, 0xb0, 0x0);
+          selectColor = Colors::green;
           break;
         case 2:
           selectColor = LV_COLOR_WHITE;

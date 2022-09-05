@@ -1,6 +1,7 @@
 #include "displayapp/screens/StopWatch.h"
 
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -30,13 +31,13 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask) : Screen(a
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   lv_label_set_text_static(time, "00:00");
   lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -45);
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
   // lv_obj_set_style_local_text_font(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   lv_label_set_text_static(msecTime, "00");
   lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_CENTER, 0, 3);
 
@@ -75,8 +76,8 @@ StopWatch::~StopWatch() {
 void StopWatch::Reset() {
   currentState = States::Init;
   oldTimeElapsed = 0;
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
-  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
   lv_label_set_text_static(time, "00:00");
   lv_label_set_text_static(msecTime, "00");
@@ -90,8 +91,8 @@ void StopWatch::Reset() {
 void StopWatch::Start() {
   lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
   lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
-  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
   lv_label_set_text_static(txtPlayPause, Symbols::pause);
   lv_label_set_text_static(txtStopLap, Symbols::lapsFlag);
   startTime = xTaskGetTickCount();
