@@ -36,10 +36,13 @@ namespace Pinetime {
         Purple,
         Orange
       };
+      enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
+      
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
         Colors ColorBar = Colors::Teal;
         Colors ColorBG = Colors::Black;
+        PTSGaugeStyle gaugeStyle = PTSGaugeStyle::Full;
       };
 
       Settings(Pinetime::Controllers::FS& fs);
@@ -92,6 +95,15 @@ namespace Pinetime {
       };
       Colors GetPTSColorBG() const {
         return settings.PTS.ColorBG;
+      };
+
+      void SetPTSGaugeStyle(PTSGaugeStyle gaugeStyle) {
+        if (gaugeStyle != settings.PTS.gaugeStyle)
+          settingsChanged = true;
+        settings.PTS.gaugeStyle = gaugeStyle;
+      };
+      PTSGaugeStyle GetPTSGaugeStyle() const {
+        return settings.PTS.gaugeStyle;
       };
 
       void SetAppMenu(uint8_t menu) {
@@ -212,7 +224,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0003;
+      static constexpr uint32_t settingsVersion = 0x0004;
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
@@ -225,6 +237,7 @@ namespace Pinetime {
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
+        //PineTimeStyle::GaugeStyle gaugeStyle = PineTimeStyle::GaugeStyle::Full;
 
         std::bitset<4> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
