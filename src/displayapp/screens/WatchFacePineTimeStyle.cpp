@@ -315,10 +315,10 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
 
   btnSteps = lv_btn_create(lv_scr_act(), nullptr);
   btnSteps->user_data = this;
-  lv_obj_set_size(btnSteps, 120, 60);
+  lv_obj_set_size(btnSteps, 160, 60);
   lv_obj_align(btnSteps, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_local_bg_opa(btnSteps, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_value_str(btnSteps, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Toggle");
+  lv_obj_set_style_local_value_str(btnSteps, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Steps style");
   lv_obj_set_event_cb(btnSteps, event_handler);
   lv_obj_set_hidden(btnSteps, true);
 
