@@ -37,7 +37,7 @@ namespace Pinetime {
         Orange
       };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
-      
+
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
         Colors ColorBar = Colors::Teal;
@@ -237,7 +237,6 @@ namespace Pinetime {
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
-        //PineTimeStyle::GaugeStyle gaugeStyle = PineTimeStyle::GaugeStyle::Full;
 
         std::bitset<4> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;

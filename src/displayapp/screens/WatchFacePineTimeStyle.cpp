@@ -189,7 +189,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   } else if (settingsController.GetPTSGaugeStyle() == Pinetime::Controllers::Settings::PTSGaugeStyle::Numeric) {
     lv_obj_set_hidden(stepGauge, true);
   }
-  
+
   lv_obj_set_style_local_pad_right(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
   lv_obj_set_style_local_pad_left(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
   lv_obj_set_style_local_pad_bottom(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
@@ -626,32 +626,32 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
     }
     if (object == btnSteps) {
       if (!lv_obj_get_hidden(stepGauge) && (lv_obj_get_hidden(timeDD3))) {
-      // show half gauge & seconds
-      lv_obj_set_hidden(timeDD3, false);
-      lv_obj_set_size(stepGauge, 37, 37);
-      lv_obj_align(stepGauge, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
-      lv_gauge_set_scale(stepGauge, 180, 5, 0);
-      lv_gauge_set_angle_offset(stepGauge, 0);
-      lv_gauge_set_critical_value(stepGauge, 120);
-      settingsController.SetPTSGaugeStyle(Controllers::Settings::PTSGaugeStyle::Half);
+        // show half gauge & seconds
+        lv_obj_set_hidden(timeDD3, false);
+        lv_obj_set_size(stepGauge, 37, 37);
+        lv_obj_align(stepGauge, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, -10);
+        lv_gauge_set_scale(stepGauge, 180, 5, 0);
+        lv_gauge_set_angle_offset(stepGauge, 0);
+        lv_gauge_set_critical_value(stepGauge, 120);
+        settingsController.SetPTSGaugeStyle(Controllers::Settings::PTSGaugeStyle::Half);
       } else if (!lv_obj_get_hidden(timeDD3) && (lv_obj_get_hidden(stepValue))) {
-      // show step count & icon
-      lv_obj_set_hidden(timeDD3, true);
-      lv_obj_set_hidden(stepGauge, true);
-      lv_obj_set_hidden(stepValue, false);
-      lv_obj_set_hidden(stepIcon, false);
-      settingsController.SetPTSGaugeStyle(Controllers::Settings::PTSGaugeStyle::Numeric);
+        // show step count & icon
+        lv_obj_set_hidden(timeDD3, true);
+        lv_obj_set_hidden(stepGauge, true);
+        lv_obj_set_hidden(stepValue, false);
+        lv_obj_set_hidden(stepIcon, false);
+        settingsController.SetPTSGaugeStyle(Controllers::Settings::PTSGaugeStyle::Numeric);
       } else {
-      // show full gauge
-      lv_obj_set_hidden(stepGauge, false);
-      lv_obj_set_hidden(stepValue, true);
-      lv_obj_set_hidden(stepIcon, true);
-      lv_obj_set_size(stepGauge, 40, 40);
-      lv_obj_align(stepGauge, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-      lv_gauge_set_scale(stepGauge, 360, 11, 0);
-      lv_gauge_set_angle_offset(stepGauge, 180);
-      lv_gauge_set_critical_value(stepGauge, 100);
-      settingsController.SetPTSGaugeStyle(Controllers::Settings::PTSGaugeStyle::Full);
+        // show full gauge
+        lv_obj_set_hidden(stepGauge, false);
+        lv_obj_set_hidden(stepValue, true);
+        lv_obj_set_hidden(stepIcon, true);
+        lv_obj_set_size(stepGauge, 40, 40);
+        lv_obj_align(stepGauge, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+        lv_gauge_set_scale(stepGauge, 360, 11, 0);
+        lv_gauge_set_angle_offset(stepGauge, 180);
+        lv_gauge_set_critical_value(stepGauge, 100);
+        settingsController.SetPTSGaugeStyle(Controllers::Settings::PTSGaugeStyle::Full);
       }
     }
     if (object == btnSetColor) {
