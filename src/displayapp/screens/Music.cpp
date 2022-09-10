@@ -248,9 +248,9 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
     } else if (obj == btnRewind) {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_REWIND);
     } else if (obj == btnVolDown) {
-      musicService.event(Controllers::MusicService::EVENT_MUSIC_VOLUP);
-    } else if (obj == btnVolUp) {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_VOLDOWN);
+    } else if (obj == btnVolUp) {
+      musicService.event(Controllers::MusicService::EVENT_MUSIC_VOLUP);
     } else if (obj == btnPrev) {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_PREV);
     } else if (obj == btnPlayPause) {
