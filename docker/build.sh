@@ -11,6 +11,10 @@ export SOURCES_DIR="${SOURCES_DIR:=/sources}"
 export BUILD_DIR="${BUILD_DIR:=$SOURCES_DIR/build}"
 export OUTPUT_DIR="${OUTPUT_DIR:=$SOURCES_DIR/build/output}"
 
+# Specify a folder with read/write access to NPM
+export NPM_DIR="$BUILD_DIR/npm"
+export npm_config_cache="${NPM_DIR}"
+
 export BUILD_TYPE=${BUILD_TYPE:=Release}
 export GCC_ARM_VER=${GCC_ARM_VER:="10.3-2021.10"}
 export NRF_SDK_VER=${NRF_SDK_VER:="nRF5_SDK_15.3.0_59ac345"}
@@ -62,7 +66,8 @@ CmakeGenerate() {
     -DUSE_OPENOCD=1 \
     -DARM_NONE_EABI_TOOLCHAIN_PATH="$TOOLS_DIR/$GCC_ARM_PATH" \
     -DNRF5_SDK_PATH="$TOOLS_DIR/$NRF_SDK_VER" \
-    -DBUILD_DFU=1
+    -DBUILD_DFU=1 \
+    -DBUILD_RESOURCES=1
 }
 
 CmakeBuild() {

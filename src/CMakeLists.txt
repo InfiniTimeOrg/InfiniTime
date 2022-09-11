@@ -940,6 +940,10 @@ add_custom_command(TARGET ${EXECUTABLE_NAME}
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_FILE_NAME}.out "${EXECUTABLE_FILE_NAME}.hex"
         COMMENT "post build steps for ${EXECUTABLE_FILE_NAME}")
 
+if(BUILD_RESOURCES)
+  add_dependencies(${EXECUTABLE_NAME} GenerateResources)
+endif()
+
 # Build binary intended to be used by bootloader
 set(EXECUTABLE_MCUBOOT_NAME "pinetime-mcuboot-app")
 set(EXECUTABLE_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
@@ -972,6 +976,10 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
         COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_FILE_NAME}.bin ${IMAGE_MCUBOOT_FILE_NAME_BIN}
         COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_FILE_NAME}"
         )
+
+if(BUILD_RESOURCES)
+  add_dependencies(${EXECUTABLE_MCUBOOT_NAME} GenerateResources)
+endif()
 
 if(BUILD_DFU)
   add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
@@ -1127,7 +1135,9 @@ if(BUILD_DFU)
           )
 endif()
 
-add_subdirectory(resources)
+if(BUILD_RESOURCES)
+  add_subdirectory(resources)
+endif()
 
 
 # FLASH
