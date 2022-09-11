@@ -399,6 +399,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
+        displayapp/screens/Dice.cpp
         displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
@@ -608,6 +609,7 @@ set(INCLUDE_FILES
         displayapp/screens/Metronome.h
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
+        displayapp/screens/Dice.h
         displayapp/screens/Alarm.h
         displayapp/Colors.h
         displayapp/widgets/Counter.h
