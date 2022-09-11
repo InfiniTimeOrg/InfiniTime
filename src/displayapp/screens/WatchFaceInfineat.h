@@ -34,7 +34,7 @@ namespace Pinetime {
 
         bool OnTouchEvent(TouchEvents event) override;
         bool OnButtonPushed() override;
-        void UpdateSelected(lv_obj_t *object, lv_event_t event);
+        void UpdateSelected(lv_obj_t* object, lv_event_t event);
         void CloseMenu();
 
         void Refresh() override;
@@ -47,8 +47,7 @@ namespace Pinetime {
         Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
         uint8_t currentDay = 0;
         uint32_t savedTick = 0;
-        uint8_t chargingBatteryPercent = 101;  // not a mistake ;)
-
+        uint8_t chargingBatteryPercent = 101; // not a mistake ;)
 
         DirtyValue<uint8_t> batteryPercentRemaining {};
         DirtyValue<bool> isCharging {};

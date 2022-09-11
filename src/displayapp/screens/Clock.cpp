@@ -33,7 +33,7 @@ Clock::Clock(DisplayApp* app,
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
-    fs{fs},
+    fs {fs},
     screen {[this, &settingsController]() {
       switch (settingsController.GetClockFace()) {
         case 0:

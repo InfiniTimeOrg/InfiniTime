@@ -93,7 +93,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     alarmController {alarmController},
     brightnessController {brightnessController},
     touchHandler {touchHandler},
-    filesystem{filesystem} {
+    filesystem {filesystem} {
 }
 
 void DisplayApp::Start(System::BootErrors error) {

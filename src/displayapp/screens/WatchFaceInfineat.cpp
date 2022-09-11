@@ -37,11 +37,11 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
     settingsController {settingsController},
     motionController {motionController} {
   lfs_file f = {};
-  if(fs.FileOpen(&f, "/fonts/teko.bin", LFS_O_RDONLY) >= 0) {
+  if (fs.FileOpen(&f, "/fonts/teko.bin", LFS_O_RDONLY) >= 0) {
     font_teko = lv_font_load("F:/fonts/teko.bin");
   }
 
-  if(fs.FileOpen(&f, "/fonts/bebas.bin", LFS_O_RDONLY) >= 0) {
+  if (fs.FileOpen(&f, "/fonts/bebas.bin", LFS_O_RDONLY) >= 0) {
     font_bebas = lv_font_load("F:/fonts/bebas.bin");
   }
 
@@ -65,8 +65,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   lv_style_init(&line0Style);
   lv_style_set_line_width(&line0Style, LV_STATE_DEFAULT, 18);
-  lv_style_set_line_color(&line0Style, LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines]));
+  lv_style_set_line_color(&line0Style,
+                          LV_STATE_DEFAULT,
+                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines]));
   lv_obj_add_style(line0, LV_LINE_PART_MAIN, &line0Style);
   line0Points[0] = {30, 25};
   line0Points[1] = {68, -8};
@@ -74,8 +75,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   lv_style_init(&line1Style);
   lv_style_set_line_width(&line1Style, LV_STATE_DEFAULT, 15);
-  lv_style_set_line_color(&line1Style, LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 1]));
+  lv_style_set_line_color(&line1Style,
+                          LV_STATE_DEFAULT,
+                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 1]));
   lv_obj_add_style(line1, LV_LINE_PART_MAIN, &line1Style);
   line1Points[0] = {26, 167};
   line1Points[1] = {43, 216};
@@ -83,8 +85,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   lv_style_init(&line2Style);
   lv_style_set_line_width(&line2Style, LV_STATE_DEFAULT, 14);
-  lv_style_set_line_color(&line2Style, LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 2]));
+  lv_style_set_line_color(&line2Style,
+                          LV_STATE_DEFAULT,
+                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 2]));
   lv_obj_add_style(line2, LV_LINE_PART_MAIN, &line2Style);
   line2Points[0] = {27, 40};
   line2Points[1] = {27, 196};
@@ -92,8 +95,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   lv_style_init(&line3Style);
   lv_style_set_line_width(&line3Style, LV_STATE_DEFAULT, 22);
-  lv_style_set_line_color(&line3Style, LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 3]));
+  lv_style_set_line_color(&line3Style,
+                          LV_STATE_DEFAULT,
+                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 3]));
   lv_obj_add_style(line3, LV_LINE_PART_MAIN, &line3Style);
   line3Points[0] = {12, 182};
   line3Points[1] = {65, 249};
@@ -101,8 +105,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   lv_style_init(&line4Style);
   lv_style_set_line_width(&line4Style, LV_STATE_DEFAULT, 20);
-  lv_style_set_line_color(&line4Style, LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 4]));
+  lv_style_set_line_color(&line4Style,
+                          LV_STATE_DEFAULT,
+                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 4]));
   lv_obj_add_style(line4, LV_LINE_PART_MAIN, &line4Style);
   line4Points[0] = {17, 99};
   line4Points[1] = {17, 144};
@@ -110,8 +115,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   lv_style_init(&line5Style);
   lv_style_set_line_width(&line5Style, LV_STATE_DEFAULT, 18);
-  lv_style_set_line_color(&line5Style, LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 5]));
+  lv_style_set_line_color(&line5Style,
+                          LV_STATE_DEFAULT,
+                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 5]));
   lv_obj_add_style(line5, LV_LINE_PART_MAIN, &line5Style);
   line5Points[0] = {14, 81};
   line5Points[1] = {40, 127};
@@ -119,8 +125,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   lv_style_init(&line6Style);
   lv_style_set_line_width(&line6Style, LV_STATE_DEFAULT, 18);
-  lv_style_set_line_color(&line6Style, LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 6]));
+  lv_style_set_line_color(&line6Style,
+                          LV_STATE_DEFAULT,
+                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 6]));
   lv_obj_add_style(line6, LV_LINE_PART_MAIN, &line6Style);
   line6Points[0] = {14, 163};
   line6Points[1] = {40, 118};
@@ -128,8 +135,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   lv_style_init(&line7Style);
   lv_style_set_line_width(&line7Style, LV_STATE_DEFAULT, 52);
-  lv_style_set_line_color(&line7Style, LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 7]));
+  lv_style_set_line_color(&line7Style,
+                          LV_STATE_DEFAULT,
+                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 7]));
   lv_obj_add_style(line7, LV_LINE_PART_MAIN, &line7Style);
   line7Points[0] = {-20, 124};
   line7Points[1] = {25, -11};
@@ -137,8 +145,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   lv_style_init(&line8Style);
   lv_style_set_line_width(&line8Style, LV_STATE_DEFAULT, 48);
-  lv_style_set_line_color(&line8Style, LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 8]));
+  lv_style_set_line_color(&line8Style,
+                          LV_STATE_DEFAULT,
+                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 8]));
   lv_obj_add_style(line8, LV_LINE_PART_MAIN, &line8Style);
   line8Points[0] = {-29, 89};
   line8Points[1] = {27, 254};
@@ -150,8 +159,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   lv_style_init(&lineBatteryStyle);
   lv_style_set_line_width(&lineBatteryStyle, LV_STATE_DEFAULT, 24);
-  lv_style_set_line_color(&lineBatteryStyle, LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 4]));
+  lv_style_set_line_color(&lineBatteryStyle,
+                          LV_STATE_DEFAULT,
+                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 4]));
   lv_style_set_line_opa(&lineBatteryStyle, LV_STATE_DEFAULT, 190);
   lv_obj_add_style(lineBattery, LV_LINE_PART_MAIN, &lineBatteryStyle);
   lineBatteryPoints[0] = {27, 105};
@@ -160,13 +170,15 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_obj_move_foreground(lineBattery);
 
   notificationIcon = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,
-                                  lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 7]));
+  lv_obj_set_style_local_bg_color(notificationIcon,
+                                  LV_BTN_PART_MAIN,
+                                  LV_STATE_DEFAULT,
+                                  lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 7]));
   lv_obj_set_style_local_radius(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
   lv_obj_set_size(notificationIcon, 13, 13);
   lv_obj_set_hidden(notificationIcon, true);
 
-  if(!settingsController.GetInfineatShowSideCover()) {
+  if (!settingsController.GetInfineatShowSideCover()) {
     ToggleBatteryIndicatorColor(false);
     lv_obj_set_hidden(line0, true);
     lv_obj_set_hidden(line1, true);
@@ -181,7 +193,7 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   timeContainer = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_opa(timeContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  if(font_bebas != nullptr) {
+  if (font_bebas != nullptr) {
     lv_obj_set_size(timeContainer, 185, 185);
     lv_obj_align(timeContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
   } else {
@@ -192,30 +204,27 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   labelHour = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
   lv_label_set_text(labelHour, "01");
-  if(font_bebas != nullptr) {
+  if (font_bebas != nullptr) {
     lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_bebas);
     lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
-  }
-  else {
+  } else {
     lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
     lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 5);
   }
 
   labelMinutes = lv_label_create(lv_scr_act(), nullptr);
-  if(font_bebas != nullptr) {
+  if (font_bebas != nullptr) {
     lv_obj_set_style_local_text_font(labelMinutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_bebas);
-  }
-  else {
+  } else {
     lv_obj_set_style_local_text_font(labelMinutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
   }
   lv_label_set_text(labelMinutes, "00");
   lv_obj_align(labelMinutes, timeContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   labelTimeAmPm = lv_label_create(lv_scr_act(), nullptr);
-  if(font_teko != nullptr) {
+  if (font_teko != nullptr) {
     lv_obj_set_style_local_text_font(labelTimeAmPm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
-  }
-  else {
+  } else {
     lv_obj_set_style_local_text_font(labelTimeAmPm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   }
 
@@ -229,10 +238,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   labelDate = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  if(font_teko != nullptr) {
+  if (font_teko != nullptr) {
     lv_obj_set_style_local_text_font(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
-  }
-  else {
+  } else {
     lv_obj_set_style_local_text_font(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   }
   lv_obj_align(labelDate, dateContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
@@ -245,10 +253,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  if(font_teko != nullptr) {
+  if (font_teko != nullptr) {
     lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
-  }
-  else {
+  } else {
     lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   }
   lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 10, 0);
@@ -331,7 +338,7 @@ WatchFaceInfineat::~WatchFaceInfineat() {
   if (font_bebas != nullptr) {
     lv_font_free(font_bebas);
   }
-  if(font_teko != nullptr) {
+  if (font_teko != nullptr) {
     lv_font_free(font_teko);
   }
 
@@ -410,28 +417,50 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       settingsController.SetInfineatColorIndex(colorIndex);
     }
     if (object == btnNextColor || object == btnPrevColor) {
-      lv_obj_set_style_local_line_color(line0, LV_LINE_PART_MAIN, LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex*nLines + 0]));
-      lv_obj_set_style_local_line_color(line1, LV_LINE_PART_MAIN, LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex*nLines + 1]));
-      lv_obj_set_style_local_line_color(line2, LV_LINE_PART_MAIN, LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex*nLines + 2]));
-      lv_obj_set_style_local_line_color(line3, LV_LINE_PART_MAIN, LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex*nLines + 3]));
-      lv_obj_set_style_local_line_color(line4, LV_LINE_PART_MAIN, LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex*nLines + 4]));
-      lv_obj_set_style_local_line_color(line5, LV_LINE_PART_MAIN, LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex*nLines + 5]));
-      lv_obj_set_style_local_line_color(line6, LV_LINE_PART_MAIN, LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex*nLines + 6]));
-      lv_obj_set_style_local_line_color(line7, LV_LINE_PART_MAIN, LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex*nLines + 7]));
-      lv_obj_set_style_local_line_color(line8, LV_LINE_PART_MAIN, LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex*nLines + 8]));
-      lv_obj_set_style_local_line_color(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex*nLines + 4]));
-      lv_obj_set_style_local_bg_color(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,
-                                      lv_color_hex(infineatColors.orange[colorIndex*nLines + 7]));
+      lv_obj_set_style_local_line_color(line0,
+                                        LV_LINE_PART_MAIN,
+                                        LV_STATE_DEFAULT,
+                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 0]));
+      lv_obj_set_style_local_line_color(line1,
+                                        LV_LINE_PART_MAIN,
+                                        LV_STATE_DEFAULT,
+                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 1]));
+      lv_obj_set_style_local_line_color(line2,
+                                        LV_LINE_PART_MAIN,
+                                        LV_STATE_DEFAULT,
+                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 2]));
+      lv_obj_set_style_local_line_color(line3,
+                                        LV_LINE_PART_MAIN,
+                                        LV_STATE_DEFAULT,
+                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 3]));
+      lv_obj_set_style_local_line_color(line4,
+                                        LV_LINE_PART_MAIN,
+                                        LV_STATE_DEFAULT,
+                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 4]));
+      lv_obj_set_style_local_line_color(line5,
+                                        LV_LINE_PART_MAIN,
+                                        LV_STATE_DEFAULT,
+                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 5]));
+      lv_obj_set_style_local_line_color(line6,
+                                        LV_LINE_PART_MAIN,
+                                        LV_STATE_DEFAULT,
+                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 6]));
+      lv_obj_set_style_local_line_color(line7,
+                                        LV_LINE_PART_MAIN,
+                                        LV_STATE_DEFAULT,
+                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 7]));
+      lv_obj_set_style_local_line_color(line8,
+                                        LV_LINE_PART_MAIN,
+                                        LV_STATE_DEFAULT,
+                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 8]));
+      lv_obj_set_style_local_line_color(lineBattery,
+                                        LV_LINE_PART_MAIN,
+                                        LV_STATE_DEFAULT,
+                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 4]));
+      lv_obj_set_style_local_bg_color(notificationIcon,
+                                      LV_BTN_PART_MAIN,
+                                      LV_STATE_DEFAULT,
+                                      lv_color_hex(infineatColors.orange[colorIndex * nLines + 7]));
     }
   }
 }
@@ -516,7 +545,7 @@ void WatchFaceInfineat::Refresh() {
   // since Get() sets isUpdated to false.
   bool isBatteryUpdated = batteryPercentRemaining.IsUpdated();
   bool isChargingUpdated = isCharging.IsUpdated();
-  if (isCharging.Get()) {  // Charging battery animation
+  if (isCharging.Get()) { // Charging battery animation
     chargingBatteryPercent += 1;
     if (chargingBatteryPercent > 100) {
       chargingBatteryPercent = batteryPercentRemaining.Get();
@@ -552,7 +581,7 @@ void WatchFaceInfineat::Refresh() {
 
 void WatchFaceInfineat::SetBatteryLevel(uint8_t batteryPercent) {
   // starting point (y) + Pine64 logo height * (100 - batteryPercent) / 100
-  lineBatteryPoints[1] = {27, static_cast<lv_coord_t>(105 + 32*(100-batteryPercent)/100)};
+  lineBatteryPoints[1] = {27, static_cast<lv_coord_t>(105 + 32 * (100 - batteryPercent) / 100)};
   lv_line_set_points(lineBattery, lineBatteryPoints, 2);
 }
 
@@ -564,9 +593,13 @@ void WatchFaceInfineat::ToggleBatteryIndicatorColor(bool showSideCover) {
     lv_obj_set_style_local_bg_color(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   } else {
     lv_obj_set_style_local_image_recolor_opa(logoPine, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_0);
-    lv_obj_set_style_local_line_color(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT,
-                                      lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 4]));
-    lv_obj_set_style_local_bg_color(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT,
-                                    lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex()*nLines + 7]));
+    lv_obj_set_style_local_line_color(lineBattery,
+                                      LV_LINE_PART_MAIN,
+                                      LV_STATE_DEFAULT,
+                                      lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 4]));
+    lv_obj_set_style_local_bg_color(notificationIcon,
+                                    LV_BTN_PART_MAIN,
+                                    LV_STATE_DEFAULT,
+                                    lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 7]));
   }
 }
