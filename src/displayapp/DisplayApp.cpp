@@ -75,7 +75,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::TimerController& timerController,
                        Pinetime::Controllers::AlarmController& alarmController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
-                       Pinetime::Controllers::TouchHandler& touchHandler)
+                       Pinetime::Controllers::TouchHandler& touchHandler,
+                       Pinetime::Controllers::FS& filesystem)
   : lcd {lcd},
     lvgl {lvgl},
     touchPanel {touchPanel},
@@ -91,7 +92,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     timerController {timerController},
     alarmController {alarmController},
     brightnessController {brightnessController},
-    touchHandler {touchHandler} {
+    touchHandler {touchHandler},
+    filesystem{filesystem} {
 }
 
 void DisplayApp::Start(System::BootErrors error) {
@@ -324,7 +326,8 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
                                                        notificationManager,
                                                        settingsController,
                                                        heartRateController,
-                                                       motionController);
+                                                       motionController,
+                                                       filesystem);
       break;
 
     case Apps::Error:

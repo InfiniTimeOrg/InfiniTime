@@ -20,15 +20,14 @@ namespace {
   }
 }
 
-LV_IMG_DECLARE(logo_pine);
-
 WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
                                      Controllers::DateTime& dateTimeController,
                                      Controllers::Battery& batteryController,
                                      Controllers::Ble& bleController,
                                      Controllers::NotificationManager& notificationManager,
                                      Controllers::Settings& settingsController,
-                                     Controllers::MotionController& motionController)
+                                     Controllers::MotionController& motionController,
+                                     Controllers::FS& fs)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -37,6 +36,14 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
     notificationManager {notificationManager},
     settingsController {settingsController},
     motionController {motionController} {
+  lfs_file f = {};
+  if(fs.FileOpen(&f, "/fonts/teko.bin", LFS_O_RDONLY) >= 0) {
+    font_teko = lv_font_load("F:/fonts/teko.bin");
+  }
+
+  if(fs.FileOpen(&f, "/fonts/bebas.bin", LFS_O_RDONLY) >= 0) {
+    font_bebas = lv_font_load("F:/fonts/bebas.bin");
+  }
 
   // Black background covering the whole screen
   background = lv_obj_create(lv_scr_act(), nullptr);
@@ -138,7 +145,7 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_line_set_points(line8, line8Points, 2);
 
   logoPine = lv_img_create(lv_scr_act(), nullptr);
-  lv_img_set_src(logoPine, &logo_pine);
+  lv_img_set_src(logoPine, "F:/images/pine_small.bin");
   lv_obj_set_pos(logoPine, 15, 106);
 
   lv_style_init(&lineBatteryStyle);
@@ -174,49 +181,76 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   timeContainer = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_opa(timeContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_size(timeContainer, 110, 145);
-  lv_obj_align(timeContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  if(font_bebas != nullptr) {
+    lv_obj_set_size(timeContainer, 185, 185);
+    lv_obj_align(timeContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
+  } else {
+    lv_obj_set_size(timeContainer, 110, 145);
+    lv_obj_align(timeContainer, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  }
 
   labelHour = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
   lv_label_set_text(labelHour, "01");
-  lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 5);
+  if(font_bebas != nullptr) {
+    lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_bebas);
+    lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
+  }
+  else {
+    lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
+    lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 5);
+  }
 
   labelMinutes = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(labelMinutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
+  if(font_bebas != nullptr) {
+    lv_obj_set_style_local_text_font(labelMinutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_bebas);
+  }
+  else {
+    lv_obj_set_style_local_text_font(labelMinutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
+  }
   lv_label_set_text(labelMinutes, "00");
   lv_obj_align(labelMinutes, timeContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   labelTimeAmPm = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(labelTimeAmPm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  if(font_teko != nullptr) {
+    lv_obj_set_style_local_text_font(labelTimeAmPm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+  }
+  else {
+    lv_obj_set_style_local_text_font(labelTimeAmPm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  }
+
   lv_label_set_text(labelTimeAmPm, "");
   lv_obj_align(labelTimeAmPm, timeContainer, LV_ALIGN_OUT_RIGHT_TOP, 0, 15);
 
   dateContainer = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_opa(dateContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_size(dateContainer, 40, 50);
+  lv_obj_set_size(dateContainer, 60, 30);
   lv_obj_align(dateContainer, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 5);
 
-  labelDateDay = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(labelDateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  lv_obj_set_style_local_text_font(labelDateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_align(labelDateDay, dateContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
-  lv_label_set_text(labelDateDay, "Mon");
-
-  labelDateNum = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(labelDateNum, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  lv_obj_set_style_local_text_font(labelDateNum, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_align(labelDateNum, dateContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_label_set_text(labelDateNum, "01");
+  labelDate = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  if(font_teko != nullptr) {
+    lv_obj_set_style_local_text_font(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+  }
+  else {
+    lv_obj_set_style_local_text_font(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  }
+  lv_obj_align(labelDate, dateContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_label_set_text(labelDate, "Mon 01");
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
   lv_label_set_text(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 7);
+  lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  if(font_teko != nullptr) {
+    lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+  }
+  else {
+    lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+  }
   lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 10, 0);
   lv_label_set_text(stepValue, "0");
 
@@ -293,6 +327,13 @@ WatchFaceInfineat::~WatchFaceInfineat() {
   lv_style_reset(&line7Style);
   lv_style_reset(&line8Style);
   lv_style_reset(&lineBatteryStyle);
+
+  if (font_bebas != nullptr) {
+    lv_font_free(font_bebas);
+  }
+  if(font_teko != nullptr) {
+    lv_font_free(font_teko);
+  }
 
   lv_obj_clean(lv_scr_act());
 }
@@ -459,10 +500,8 @@ void WatchFaceInfineat::Refresh() {
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      lv_label_set_text_fmt(labelDateDay, "%s", dateTimeController.DayOfWeekShortToStringLow());
-      lv_label_set_text_fmt(labelDateNum, "%02d", day);
-      lv_obj_align(labelDateDay, dateContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
-      lv_obj_align(labelDateNum, dateContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+      lv_label_set_text_fmt(labelDate, "%s %02d", dateTimeController.DayOfWeekShortToStringLow(), day);
+      lv_obj_realign(labelDate);
 
       currentYear = year;
       currentMonth = month;

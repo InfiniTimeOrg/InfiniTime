@@ -23,7 +23,8 @@ Clock::Clock(DisplayApp* app,
              Controllers::NotificationManager& notificatioManager,
              Controllers::Settings& settingsController,
              Controllers::HeartRateController& heartRateController,
-             Controllers::MotionController& motionController)
+             Controllers::MotionController& motionController,
+             Controllers::FS& fs)
   : Screen(app),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
@@ -32,6 +33,7 @@ Clock::Clock(DisplayApp* app,
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
+    fs{fs},
     screen {[this, &settingsController]() {
       switch (settingsController.GetClockFace()) {
         case 0:
@@ -115,5 +117,6 @@ std::unique_ptr<Screen> Clock::WatchFaceInfineatScreen() {
                                                       bleController,
                                                       notificatioManager,
                                                       settingsController,
-                                                      motionController);
+                                                      motionController,
+                                                      fs);
 }

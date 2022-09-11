@@ -27,7 +27,8 @@ namespace Pinetime {
                           Controllers::Ble& bleController,
                           Controllers::NotificationManager& notificationManager,
                           Controllers::Settings& settingsController,
-                          Controllers::MotionController& motionController);
+                          Controllers::MotionController& motionController,
+                          Controllers::FS& fs);
 
         ~WatchFaceInfineat() override;
 
@@ -101,8 +102,7 @@ namespace Pinetime {
         lv_obj_t* labelMinutes;
         lv_obj_t* labelTimeAmPm;
         lv_obj_t* dateContainer;
-        lv_obj_t* labelDateDay;
-        lv_obj_t* labelDateNum;
+        lv_obj_t* labelDate;
         lv_obj_t* bleIcon;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
@@ -137,6 +137,8 @@ namespace Pinetime {
         void ToggleBatteryIndicatorColor(bool showSideCover);
 
         lv_task_t* taskRefresh;
+        lv_font_t* font_teko = nullptr;
+        lv_font_t* font_bebas = nullptr;
       };
     }
   }
