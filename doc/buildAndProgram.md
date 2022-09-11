@@ -36,18 +36,18 @@ cd build
 
 CMake configures the project according to variables you specify the command line. The variables are:
 
- Variable | Description                                                                                                                | Example|
-----------|----------------------------------------------------------------------------------------------------------------------------|--------|
-**ARM_NONE_EABI_TOOLCHAIN_PATH**| path to the toolchain directory                                                                                            |`-DARM_NONE_EABI_TOOLCHAIN_PATH=/home/jf/nrf52/gcc-arm-none-eabi-10.3-2021.10/`|
-**NRF5_SDK_PATH**| path to the NRF52 SDK                                                                                                      |`-DNRF5_SDK_PATH=/home/jf/nrf52/Pinetime/sdk`|
-**USE_JLINK, USE_GDB_CLIENT and USE_OPENOCD**| Enable *JLink* mode, *GDB Client* (Black Magic Probe) mode or *OpenOCD* mode (set the one you want to use to `1`)          |`-DUSE_JLINK=1`
-**CMAKE_BUILD_TYPE (\*)**| Build type (Release or Debug). Release is applied by default if this variable is not specified.                            |`-DCMAKE_BUILD_TYPE=Debug`
-**NRFJPROG**| Path to the NRFJProg executable. Used only if `USE_JLINK` is 1.                                                            |`-DNRFJPROG=/opt/nrfjprog/nrfjprog`
-**GDB_CLIENT_BIN_PATH**| Path to arm-none-eabi-gdb executable. Used only if `USE_GDB_CLIENT` is 1.                                                  |`-DGDB_CLIENT_BIN_PATH=/home/jf/nrf52/gcc-arm-none-eabi-9-2019-q4-major/bin/arm-none-eabi-gdb`
-**GDB_CLIENT_TARGET_REMOTE**| Target remote connection string. Used only if `USE_GDB_CLIENT` is 1.                                                       |`-DGDB_CLIENT_TARGET_REMOTE=/dev/ttyACM0`
-**BUILD_DFU (\*\*)**| Build DFU files while building (needs [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil)).             |`-DBUILD_DFU=1`
+ Variable | Description | Example|
+----------|-------------|--------|
+**ARM_NONE_EABI_TOOLCHAIN_PATH**|path to the toolchain directory|`-DARM_NONE_EABI_TOOLCHAIN_PATH=/home/jf/nrf52/gcc-arm-none-eabi-10.3-2021.10/`|
+**NRF5_SDK_PATH**|path to the NRF52 SDK|`-DNRF5_SDK_PATH=/home/jf/nrf52/Pinetime/sdk`|
+**USE_JLINK, USE_GDB_CLIENT and USE_OPENOCD**|Enable *JLink* mode, *GDB Client* (Black Magic Probe) mode or *OpenOCD* mode (set the one you want to use to `1`)|`-DUSE_JLINK=1`
+**CMAKE_BUILD_TYPE (\*)**| Build type (Release or Debug). Release is applied by default if this variable is not specified.|`-DCMAKE_BUILD_TYPE=Debug`
+**NRFJPROG**|Path to the NRFJProg executable. Used only if `USE_JLINK` is 1.|`-DNRFJPROG=/opt/nrfjprog/nrfjprog`
+**GDB_CLIENT_BIN_PATH**|Path to arm-none-eabi-gdb executable. Used only if `USE_GDB_CLIENT` is 1.|`-DGDB_CLIENT_BIN_PATH=/home/jf/nrf52/gcc-arm-none-eabi-9-2019-q4-major/bin/arm-none-eabi-gdb`
+**GDB_CLIENT_TARGET_REMOTE**|Target remote connection string. Used only if `USE_GDB_CLIENT` is 1.|`-DGDB_CLIENT_TARGET_REMOTE=/dev/ttyACM0`
+**BUILD_DFU (\*\*)**|Build DFU files while building (needs [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil)).|`-DBUILD_DFU=1`
 **BUILD_RESOURCES (\*\*)**| Generate external resource while building (needs [lv_font_conv](https://github.com/lvgl/lv_font_conv) and [lv_img_conv](https://github.com/lvgl/lv_img_conv). |`-DBUILD_RESOURCES=1`
-**TARGET_DEVICE**| Target device, used for hardware configuration. Allowed: `PINETIME, MOY-TFK5, MOY-TIN5, MOY-TON5, MOY-UNK`                 |`-DTARGET_DEVICE=PINETIME` (Default)
+**TARGET_DEVICE**|Target device, used for hardware configuration. Allowed: `PINETIME, MOY-TFK5, MOY-TIN5, MOY-TON5, MOY-UNK`|`-DTARGET_DEVICE=PINETIME` (Default)
 
 #### (\*) Note about **CMAKE_BUILD_TYPE**
 By default, this variable is set to *Release*. It compiles the code with size and speed optimizations. We use this value for all the binaries we publish when we [release](https://github.com/InfiniTimeOrg/InfiniTime/releases) new versions of InfiniTime.
