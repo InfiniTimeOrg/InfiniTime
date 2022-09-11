@@ -20,7 +20,7 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_style_local_bg_opa(stepsArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, LV_OPA_0);
   lv_obj_set_style_local_border_width(stepsArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 2);
   lv_obj_set_style_local_radius(stepsArc, LV_ARC_PART_BG, LV_STATE_DEFAULT, 0);
-  lv_obj_set_style_local_line_color(stepsArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, lv_color_hex(0x0000FF));
+  lv_obj_set_style_local_line_color(stepsArc, LV_ARC_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_BLUE);
   lv_arc_set_end_angle(stepsArc, 200);
   lv_obj_set_size(stepsArc, 240, 240);
   lv_arc_set_range(stepsArc, 0, 500);
@@ -32,7 +32,7 @@ Steps::Steps(Pinetime::Applications::DisplayApp* app,
   lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
 
   lSteps = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
+  lv_obj_set_style_local_text_color(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
   lv_obj_set_style_local_text_font(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_label_set_text_fmt(lSteps, "%li", stepsCount);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);

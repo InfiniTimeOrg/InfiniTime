@@ -4,8 +4,8 @@
 namespace Pinetime {
   namespace PinMap {
 
-#ifdef WATCH_P8
-    // COLMI P8
+#if defined(DRIVER_PINMAP_P8)
+    // COLMI P8 and variants
     static constexpr uint8_t Charging = 19;
     static constexpr uint8_t Cst816sReset = 13;
     static constexpr uint8_t Button = 17;

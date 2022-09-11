@@ -37,20 +37,20 @@ namespace Pinetime {
         static constexpr const char* chartLine = "\xEF\x88\x81";
         static constexpr const char* eye = "\xEF\x81\xAE";
         static constexpr const char* home = "\xEF\x80\x95";
+        static constexpr const char* sleep = "\xEE\xBD\x84";
         static constexpr const char* circle = "\xEF\x84\x91";
 
         // lv_font_sys_48.c
-        static constexpr const char* settings = "\xEE\xA4\x82"; // e902
+        static constexpr const char* settings = "\xEE\xA2\xB8";
 
-        static constexpr const char* brightnessHigh = "\xEE\xA4\x84";   // e904
-        static constexpr const char* brightnessLow = "\xEE\xA4\x85";    // e905
-        static constexpr const char* brightnessMedium = "\xEE\xA4\x86"; // e906
+        static constexpr const char* brightnessLow = "\xEE\x8E\xAA";
+        static constexpr const char* brightnessMedium = "\xEE\x8E\xAB";
+        static constexpr const char* brightnessHigh = "\xEE\x8E\xAC";
 
-        static constexpr const char* notificationsOff = "\xEE\xA4\x8B"; // e90b
-        static constexpr const char* notificationsOn = "\xEE\xA4\x8C";  // e90c
+        static constexpr const char* notificationsOff = "\xEE\x9F\xB6";
+        static constexpr const char* notificationsOn = "\xEE\x9F\xB7";
 
-        static constexpr const char* highlight = "\xEE\xA4\x87"; // e907
-
+        static constexpr const char* flashlight = "\xEF\x80\x8B";
       }
     }
   }
