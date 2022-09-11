@@ -20,7 +20,7 @@ class Source(object):
 
 def gen_lvconv_line(lv_font_conv: str, dest: str, size: int, bpp: int, format: str, sources: typing.List[Source], compress:bool=False):
     if format != "lvgl" and format != "bin":
-        format = "lvgl"
+        format = "bin" if dest.lower().endswith(".bin") else "lvgl"
 
     args = [lv_font_conv, '--size', str(size), '--output', dest, '--bpp', str(bpp), '--format', format]
     if not compress:
