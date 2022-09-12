@@ -579,7 +579,7 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
 Pinetime::Controllers::Settings::Colors WatchFacePineTimeStyle::GetNext(Pinetime::Controllers::Settings::Colors color) {
   auto colorAsInt = static_cast<uint8_t>(color);
   Pinetime::Controllers::Settings::Colors nextColor;
-  if (colorAsInt < 16) {
+  if (colorAsInt < 17) {
     nextColor = static_cast<Controllers::Settings::Colors>(colorAsInt + 1);
   } else {
     nextColor = static_cast<Controllers::Settings::Colors>(0);
@@ -594,7 +594,7 @@ Pinetime::Controllers::Settings::Colors WatchFacePineTimeStyle::GetPrevious(Pine
   if (colorAsInt > 0) {
     prevColor = static_cast<Controllers::Settings::Colors>(colorAsInt - 1);
   } else {
-    prevColor = static_cast<Controllers::Settings::Colors>(16);
+    prevColor = static_cast<Controllers::Settings::Colors>(17);
   }
   return prevColor;
 }
