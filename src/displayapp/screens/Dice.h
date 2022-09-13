@@ -14,8 +14,6 @@ namespace Pinetime::Applications::Screens {
     void NextColor();
 
   private:
-    Controllers::DateTime& dateTime;
-
     lv_obj_t* btnRoll;
     lv_obj_t* btnRollLabel;
     lv_obj_t* resultLabel;
