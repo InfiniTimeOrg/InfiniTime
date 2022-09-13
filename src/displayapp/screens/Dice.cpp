@@ -53,8 +53,7 @@ Dice::~Dice() {
 }
 
 void Dice::Roll() {
-  rollResult = ((rand() % sidesCounter.GetValue()) + 1);
-  lv_label_set_text_fmt(resultLabel, "%d", rollResult);
+  lv_label_set_text_fmt(resultLabel, "%d", ((rand() % sidesCounter.GetValue()) + 1));
   NextColor();
 }
 

@@ -22,8 +22,6 @@ namespace Pinetime::Applications::Screens {
     std::array<lv_color_t, 3> resultColors = {LV_COLOR_YELLOW, LV_COLOR_MAGENTA, LV_COLOR_AQUA};
     uint8_t currentColorIndex;
 
-    uint8_t rollResult;
-
     Widgets::Counter sidesCounter = Widgets::Counter(2, 99, jetbrains_mono_42);
   };
 }
