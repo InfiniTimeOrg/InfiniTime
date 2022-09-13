@@ -14,7 +14,7 @@ static void btnRollEventHandler(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
-Dice::Dice(DisplayApp* app, Controllers::DateTime& dateTime) : Screen(app), dateTime {dateTime} {
+Dice::Dice(DisplayApp* app, Controllers::DateTime& dateTime) : Screen(app) {
 
   srand(dateTime.Uptime().count() * time(nullptr));
 
