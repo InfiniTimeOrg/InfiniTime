@@ -4,6 +4,7 @@
 #include "displayapp/widgets/Counter.h"
 #include "components/datetime/DateTimeController.h"
 #include <lvgl/lvgl.h>
+#include <array>
 
 namespace Pinetime::Applications::Screens {
   class Dice : public Screen {
@@ -18,8 +19,7 @@ namespace Pinetime::Applications::Screens {
     lv_obj_t* btnRollLabel;
     lv_obj_t* resultLabel;
 
-    lv_color_t resultColors[3] = {LV_COLOR_YELLOW, LV_COLOR_MAGENTA, LV_COLOR_AQUA};
-    uint8_t resultColorsLength = sizeof(resultColors) / sizeof(resultColors[0]);
+    std::array<lv_color_t, 3> resultColors = {LV_COLOR_YELLOW, LV_COLOR_MAGENTA, LV_COLOR_AQUA};
     uint8_t currentColorIndex;
 
     uint8_t rollResult;

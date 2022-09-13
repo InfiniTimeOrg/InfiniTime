@@ -28,7 +28,7 @@ Dice::Dice(DisplayApp* app, Controllers::DateTime& dateTime) : Screen(app) {
   lv_obj_align(sidesCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 49, 24);
   sidesCounter.SetValue(2);
 
-  currentColorIndex = rand() % resultColorsLength;
+  currentColorIndex = rand() % resultColors.size();
 
   resultLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(resultLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -59,6 +59,6 @@ void Dice::Roll() {
 }
 
 void Dice::NextColor() {
-  currentColorIndex = (currentColorIndex + 1) % resultColorsLength;
+  currentColorIndex = (currentColorIndex + 1) % resultColors.size();
   lv_obj_set_style_local_text_color(resultLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, resultColors[currentColorIndex]);
 }
