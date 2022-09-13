@@ -10,7 +10,10 @@ on:
     branches: [ develop ]
     paths-ignore:
       - 'doc/**'
-
+  # Allows you to run this workflow manually from the Actions tab
+  # this can be useful for running workflows for other branches than develop
+  workflow_dispatch:
+    
 jobs:
   build-firmware:
     runs-on: ubuntu-latest
