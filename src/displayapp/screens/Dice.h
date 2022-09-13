@@ -12,7 +12,6 @@ namespace Pinetime::Applications::Screens {
     Dice(DisplayApp* app, Controllers::DateTime& dateTime);
     ~Dice() override;
     void Roll();
-    void NextColor();
 
   private:
     lv_obj_t* btnRoll;
@@ -21,6 +20,7 @@ namespace Pinetime::Applications::Screens {
 
     std::array<lv_color_t, 3> resultColors = {LV_COLOR_YELLOW, LV_COLOR_MAGENTA, LV_COLOR_AQUA};
     uint8_t currentColorIndex;
+    void NextColor();
 
     Widgets::Counter sidesCounter = Widgets::Counter(2, 99, jetbrains_mono_42);
   };
