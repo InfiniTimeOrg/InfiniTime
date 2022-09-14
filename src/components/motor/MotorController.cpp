@@ -25,9 +25,9 @@ void MotorController::RunForDuration(uint8_t motorDuration) {
   }
 }
 
-void MotorController::StartRinging() {
+void MotorController::StartRinging(uint8_t Duration) {
   isLongVibrating = true;
-  RunForDuration(50);
+  RunForDuration(Duration);
   xTimerStart(longVib, 0);
 }
 
@@ -56,17 +56,17 @@ void MotorController::Update() {
     return;
 
   if (phoneCallIsActive) {
-    // ring phone call
-
+    StartRinging(55);
   } else if (timerIsActive) {
-    // ring timer
+    StartRinging(50);
   } else if (alarmIsActive) {
-    // ring alarm
+    StartRinging(45);
   } else if (notificationIsActive) {
-    // ring notification
+    RunForDuration(40);
   }
 }
 
+// CAUTION: this one will not trigger a vibration if another one is already running!
 void MotorController::SingleVibration(uint8_t Duration) {
   if (IsVibrating()) {
     return;
