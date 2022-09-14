@@ -42,11 +42,12 @@ void MotorController::StopRinging() {
 }
 
 void MotorController::StopMotor(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
   nrf_gpio_pin_set(PinMap::Motor);
-  isShortVibrating = false;
-  if (!IsVibrating()) {
+  motorController->isShortVibrating = false;
+  if (!motorController->IsVibrating()) {
     // current vibration pattern is over, so check for next one
-    Update();
+    motorController->Update();
   }
 }
 
