@@ -29,7 +29,7 @@ namespace Pinetime {
   namespace Controllers {
     class AlarmController {
     public:
-      AlarmController(Controllers::DateTime& dateTimeController);
+      AlarmController(Controllers::DateTime& dateTimeController, Controllers::FS& fs);
 
       void Init(System::SystemTask* systemTask);
       void SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin);
@@ -57,7 +57,15 @@ namespace Pinetime {
       }
 
     private:
+      static constexpr uint8_t alarmFormatVersion = 1;
+      struct AlarmData {
+        uint8_t version = alarmFormatVersion;
+        uint8_t hours = 7;
+        uint8_t minutes = 0;
+      };
+
       Controllers::DateTime& dateTimeController;
+      Controllers::FS& fs;
       System::SystemTask* systemTask = nullptr;
       TimerHandle_t alarmTimer;
       uint8_t hours = 7;
@@ -65,6 +73,9 @@ namespace Pinetime {
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> alarmTime;
       AlarmState state = AlarmState::Not_Set;
       RecurType recurrence = RecurType::None;
+
+      void LoadAlarmFromFile();
+      void SaveAlarmToFile();
     };
   }
 }

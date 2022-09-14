@@ -19,11 +19,13 @@
 #include "systemtask/SystemTask.h"
 #include "task.h"
 #include <chrono>
+#include <libraries/log/nrf_log.h>
 
 using namespace Pinetime::Controllers;
 using namespace std::chrono_literals;
 
-AlarmController::AlarmController(Controllers::DateTime& dateTimeController) : dateTimeController {dateTimeController} {
+AlarmController::AlarmController(Controllers::DateTime& dateTimeController, Controllers::FS& fs)
+  : dateTimeController {dateTimeController}, fs {fs} {
 }
 
 namespace {
@@ -35,12 +37,14 @@ namespace {
 
 void AlarmController::Init(System::SystemTask* systemTask) {
   this->systemTask = systemTask;
+  LoadAlarmFromFile();
   alarmTimer = xTimerCreate("Alarm", 1, pdFALSE, this, SetOffAlarm);
 }
 
 void AlarmController::SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin) {
   hours = alarmHr;
   minutes = alarmMin;
+  SaveAlarmToFile();
 }
 
 void AlarmController::ScheduleAlarm() {
@@ -105,4 +109,39 @@ void AlarmController::StopAlerting() {
     ScheduleAlarm();
   }
   systemTask->PushMessage(System::Messages::StopRinging);
+}
+
+void AlarmController::LoadAlarmFromFile() {
+  lfs_file_t file;
+  AlarmData buffer;
+
+  if (fs.FileOpen(&file, "/alarm.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
+    NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file");
+    return;
+  }
+
+  fs.FileRead(&file, reinterpret_cast<uint8_t*>(&buffer), sizeof buffer);
+  fs.FileClose(&file);
+  if (buffer.version != alarmFormatVersion) {
+    NRF_LOG_WARNING("[AlarmController] Loaded alarm data has version %u instead of %u, discarding", buffer.version, alarmFormatVersion);
+    return;
+  }
+
+  hours = buffer.hours;
+  minutes = buffer.minutes;
+  NRF_LOG_INFO("[AlarmController] Loaded alarm data from file");
+}
+
+void AlarmController::SaveAlarmToFile() {
+  lfs_file_t file;
+  AlarmData buffer = {.version = alarmFormatVersion, .hours = hours, .minutes = minutes};
+
+  if (fs.FileOpen(&file, "/alarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
+    NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file for saving");
+    return;
+  }
+
+  fs.FileWrite(&file, reinterpret_cast<uint8_t*>(&buffer), sizeof buffer);
+  fs.FileClose(&file);
+  NRF_LOG_INFO("[AlarmController] Saved alarm data with format version %u to file", buffer.version);
 }
