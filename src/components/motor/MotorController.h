@@ -33,7 +33,7 @@ namespace Pinetime {
       void RunForDuration(uint8_t motorDuration);
       void StartRinging(uint8_t Duration);
       void StopRinging();
-      
+
       static void Ring(TimerHandle_t xTimer);
       static void StopMotor(TimerHandle_t xTimer);
       TimerHandle_t shortVib;
@@ -41,7 +41,7 @@ namespace Pinetime {
 
       bool isShortVibrating = false;
       bool isLongVibrating = false;
-      
+
       bool phoneCallIsActive = false;
       bool timerIsActive = false;
       bool alarmIsActive = false;
