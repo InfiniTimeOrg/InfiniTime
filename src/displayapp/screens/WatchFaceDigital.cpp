@@ -184,7 +184,7 @@ void WatchFaceDigital::Refresh() {
   temperature = motionController.Temperature();
   motionSensorOk = motionController.IsSensorOk();
   if (temperature.IsUpdated() || motionSensorOk.IsUpdated()) {
-    lv_label_set_text_fmt(temperatureValue, "%lu", temperature.Get());
+    lv_label_set_text_fmt(temperatureValue, "%li", temperature.Get());
     lv_obj_realign(temperatureValue);
   }
 }
