@@ -22,7 +22,7 @@ InfiniTime doesn't handle daylight savings automatically, so make sure to set th
 
 ### Digital watch face
 
-![Digital watch face](ui/watch face.jpg)
+![Digital watch face](ui/watchface.jpg)
 
 This is what the default digital watch face looks like. You can change watch faces in the settings.
 
