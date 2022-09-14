@@ -78,6 +78,11 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
+  bleIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text(bleIcon, Symbols::bluetooth);
+  lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0082FC)); 
+  lv_obj_align(bleIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+
   // Date - Day / Week day
 
   label_date_day = lv_label_create(lv_scr_act(), NULL);
@@ -209,6 +214,16 @@ void WatchFaceAnalog::Refresh() {
 
   if (notificationState.IsUpdated()) {
     lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
+  }
+
+  bleState = bleController.IsConnected();
+  if (bleState.IsUpdated()) {
+    if (bleState.Get() == true) {
+      lv_label_set_text(bleIcon, BleIcon::GetIcon(true));
+      lv_obj_realign(bleIcon);
+    } else {
+      lv_label_set_text(bleIcon, BleIcon::GetIcon(false));
+    }
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();
