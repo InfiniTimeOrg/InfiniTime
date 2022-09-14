@@ -2,7 +2,7 @@
 #include "os/os_cputime.h"
 using namespace Pinetime::Controllers;
 
-void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps) {
+void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps, int32_t temperature) {
   if (this->nbSteps != nbSteps && service != nullptr) {
     service->OnNewStepCountValue(nbSteps);
   }
@@ -19,6 +19,7 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   if (deltaSteps > 0) {
     currentTripSteps += deltaSteps;
   }
+  this->temperature = temperature;
 }
 
 bool MotionController::Should_RaiseWake(bool isSleeping) {

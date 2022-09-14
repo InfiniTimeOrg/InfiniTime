@@ -51,19 +51,21 @@ namespace Pinetime {
         DirtyValue<bool> bleRadioEnabled {};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
         DirtyValue<bool> motionSensorOk {};
-        DirtyValue<uint32_t> stepCount {};
-        DirtyValue<uint8_t> heartbeat {};
-        DirtyValue<bool> heartbeatRunning {};
+        // DirtyValue<uint32_t> stepCount {};
+        // DirtyValue<uint8_t> heartbeat {};
+        // DirtyValue<bool> heartbeatRunning {};
         DirtyValue<bool> notificationState {};
+        DirtyValue<bool> temperature {};
 
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;
         lv_obj_t* label_date;
-        lv_obj_t* heartbeatIcon;
-        lv_obj_t* heartbeatValue;
-        lv_obj_t* stepIcon;
-        lv_obj_t* stepValue;
+        // lv_obj_t* heartbeatIcon;
+        // lv_obj_t* heartbeatValue;
+        // lv_obj_t* stepIcon;
+        // lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
+        lv_obj_t* temperatureValue;
 
         Controllers::DateTime& dateTimeController;
         Controllers::NotificationManager& notificatioManager;

@@ -14,7 +14,7 @@ namespace Pinetime {
         BMA425,
       };
 
-      void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps);
+      void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps, int32_t temperature);
 
       int16_t X() const {
         return x;
@@ -27,6 +27,10 @@ namespace Pinetime {
       }
       uint32_t NbSteps() const {
         return nbSteps;
+      }
+
+      int32_t Temperature() const {
+        return temperature;
       }
 
       void ResetTrip() {
@@ -57,6 +61,7 @@ namespace Pinetime {
       int16_t x;
       int16_t y;
       int16_t z;
+      int32_t temperature;
       int16_t lastYForWakeUp = 0;
       bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
