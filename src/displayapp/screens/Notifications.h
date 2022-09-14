@@ -30,6 +30,7 @@ namespace Pinetime {
         void Refresh() override;
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
         void OnPreviewInteraction();
+        void OnPreviewDismiss();
 
         class NotificationItem {
         public:
