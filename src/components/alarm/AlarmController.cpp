@@ -104,5 +104,5 @@ void AlarmController::StopAlerting() {
     // set next instance
     ScheduleAlarm();
   }
-  systemTask->PushMessage(System::Messages::StopRinging);
+  systemTask->PushMessage(System::Messages::StopAlarm);
 }

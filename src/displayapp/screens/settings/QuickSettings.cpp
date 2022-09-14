@@ -158,7 +158,7 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object) {
       settingsController.SetNotificationStatus(Controllers::Settings::Notification::On);
       lv_label_set_text_static(btn3_lvl, Symbols::notificationsOn);
       lv_obj_set_state(btn3, static_cast<lv_state_t>(ButtonState::NotificationsOn));
-      motorController.RunForDuration(35);
+      motorController.SingleVibration(35);
     }
 
   } else if (object == btn4) {

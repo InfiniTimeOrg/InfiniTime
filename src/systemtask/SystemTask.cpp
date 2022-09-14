@@ -294,18 +294,18 @@ void SystemTask::Work() {
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
           }
-          motorController.RunForDuration(35);
+          motorController.ActivateTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
         case Messages::SetOffAlarm:
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
           }
-          motorController.StartRinging();
+          motorController.ActivateAlarm();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
           break;
-        case Messages::StopRinging:
-          motorController.StopRinging();
+        case Messages::StopAlarm:
+          motorController.DeactivateAlarm();
           break;
         case Messages::BleConnected:
           ReloadIdleTimer();
@@ -396,7 +396,7 @@ void SystemTask::Work() {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
             }
-            motorController.RunForDuration(35);
+            motorController.SingleVibration(35);
           }
           break;
         case Messages::OnNewHalfHour:
@@ -408,12 +408,12 @@ void SystemTask::Work() {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
             }
-            motorController.RunForDuration(35);
+            motorController.SingleVibration(35);
           }
           break;
         case Messages::OnChargingEvent:
           batteryController.ReadPowerState();
-          motorController.RunForDuration(15);
+          motorController.SingleVibration(15);
           ReloadIdleTimer();
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
@@ -429,7 +429,7 @@ void SystemTask::Work() {
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
           }
-          motorController.RunForDuration(35);
+          motorController.SingleVibration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
           break;
         case Messages::BleRadioEnableToggle:

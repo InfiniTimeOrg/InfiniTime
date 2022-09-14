@@ -42,9 +42,9 @@ Notifications::Notifications(DisplayApp* app,
   if (mode == Modes::Preview) {
     systemTask.PushMessage(System::Messages::DisableSleeping);
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
-      motorController.StartRinging();
+      motorController.ActivatePhoneCall();
     } else {
-      motorController.RunForDuration(35);
+      motorController.ActivateNotification();
     }
 
     timeoutLine = lv_line_create(lv_scr_act(), nullptr);
@@ -63,8 +63,6 @@ Notifications::Notifications(DisplayApp* app,
 
 Notifications::~Notifications() {
   lv_task_del(taskRefresh);
-  // make sure we stop any vibrations before exiting
-  motorController.StopRinging();
   systemTask.PushMessage(System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }
@@ -119,7 +117,6 @@ void Notifications::Refresh() {
 
 void Notifications::OnPreviewInteraction() {
   systemTask.PushMessage(System::Messages::EnableSleeping);
-  motorController.StopRinging();
   if (timeoutLine != nullptr) {
     lv_obj_del(timeoutLine);
     timeoutLine = nullptr;
@@ -343,7 +340,7 @@ void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_
     return;
   }
 
-  motorController.StopRinging();
+  motorController.DeactivatePhoneCall();
 
   if (obj == bt_accept) {
     alertNotificationService.AcceptIncomingCall();
