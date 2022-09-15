@@ -46,9 +46,6 @@ Alarm::Alarm(DisplayApp* app,
              System::SystemTask& systemTask)
   : Screen(app), alarmController {alarmController}, systemTask {systemTask} {
 
-  hours = alarmController.Hours();
-  minutes = alarmController.Minutes();
-
   hourCounter.Create();
   lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   if (clockType == Controllers::Settings::ClockType::H12) {
@@ -60,12 +57,13 @@ Alarm::Alarm(DisplayApp* app,
     lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
     lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
   }
-  hourCounter.SetValue(hours);
+  hourCounter.SetValue(alarmController.Hours());
   hourCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   minuteCounter.Create();
   lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-  minuteCounter.SetValue(minutes);
+  minuteCounter.SetValue(alarmController.Minutes());
+
   minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
@@ -116,7 +114,7 @@ Alarm::Alarm(DisplayApp* app,
 
   UpdateAlarmTime();
 
-  if (alarmController.State() == Controllers::AlarmController::AlarmState::Alerting) {
+  if (alarmController.IsAlerting()) {
     SetAlerting();
   } else {
     SetSwitchState(LV_ANIM_OFF);
@@ -124,15 +122,14 @@ Alarm::Alarm(DisplayApp* app,
 }
 
 Alarm::~Alarm() {
-  alarmController.SetAlarmTime(hours, minutes);
-  if (alarmController.State() == AlarmController::AlarmState::Alerting) {
+  if (alarmController.IsAlerting()) {
     StopAlerting();
   }
   lv_obj_clean(lv_scr_act());
 }
 
 void Alarm::DisableAlarm() {
-  if (alarmController.State() == AlarmController::AlarmState::Set) {
+  if (alarmController.IsEnabled()) {
     alarmController.DisableAlarm();
     lv_switch_off(enableSwitch, LV_ANIM_ON);
   }
@@ -154,7 +151,6 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     }
     if (obj == enableSwitch) {
       if (lv_switch_get_state(enableSwitch)) {
-        alarmController.SetAlarmTime(hours, minutes);
         alarmController.ScheduleAlarm();
       } else {
         alarmController.DisableAlarm();
@@ -173,7 +169,7 @@ bool Alarm::OnButtonPushed() {
     HideInfo();
     return true;
   }
-  if (alarmController.State() == AlarmController::AlarmState::Alerting) {
+  if (alarmController.IsAlerting()) {
     StopAlerting();
     return true;
   }
@@ -182,15 +178,10 @@ bool Alarm::OnButtonPushed() {
 
 bool Alarm::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   // Don't allow closing the screen by swiping while the alarm is alerting
-  return alarmController.State() == AlarmController::AlarmState::Alerting && event == TouchEvents::SwipeDown;
+  return alarmController.IsAlerting() && event == TouchEvents::SwipeDown;
 }
 
 void Alarm::OnValueChanged() {
-  // Watch out when removing the next line! The selected time is only sent
-  // to the AlarmController when enabling the toggle and when closing the
-  // alarm app, to avoid excessive writes to flash. That means when changing
-  // the time and leaving the app open, the AlarmController is not yet aware
-  // of the new time and will ring on the previously set time.
   DisableAlarm();
   UpdateAlarmTime();
 }
@@ -203,8 +194,7 @@ void Alarm::UpdateAlarmTime() {
       lv_label_set_text_static(lblampm, "AM");
     }
   }
-  hours = hourCounter.GetValue();
-  minutes = minuteCounter.GetValue();
+  alarmController.SetAlarmTime(hourCounter.GetValue(), minuteCounter.GetValue());
 }
 
 void Alarm::SetAlerting() {
@@ -227,15 +217,10 @@ void Alarm::StopAlerting() {
 }
 
 void Alarm::SetSwitchState(lv_anim_enable_t anim) {
-  switch (alarmController.State()) {
-    case AlarmController::AlarmState::Set:
-      lv_switch_on(enableSwitch, anim);
-      break;
-    case AlarmController::AlarmState::Not_Set:
-      lv_switch_off(enableSwitch, anim);
-      break;
-    default:
-      break;
+  if (alarmController.IsEnabled()) {
+    lv_switch_on(enableSwitch, anim);
+  } else {
+    lv_switch_off(enableSwitch, anim);
   }
 }
 
@@ -252,7 +237,7 @@ void Alarm::ShowInfo() {
   txtMessage = lv_label_create(btnMessage, nullptr);
   lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
 
-  if (alarmController.State() == AlarmController::AlarmState::Set) {
+  if (alarmController.IsEnabled()) {
     auto timeToAlarm = alarmController.SecondsToAlarm();
 
     auto daysToAlarm = timeToAlarm / 86400;
