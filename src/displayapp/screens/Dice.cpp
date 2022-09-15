@@ -14,9 +14,8 @@ static void btnRollEventHandler(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
-Dice::Dice(DisplayApp* app, Controllers::DateTime& dateTime) : Screen(app) {
-
-  srand(time(nullptr) + dateTime.Uptime().count());
+Dice::Dice(DisplayApp* app, System::SystemTask& systemTask) : Screen(app), systemTask {systemTask} {
+  srand(xTaskGetTickCount() % (std::numeric_limits<unsigned int>::max()));
 
   lv_obj_t* dLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(dLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);

@@ -2,18 +2,20 @@
 
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"
-#include "components/datetime/DateTimeController.h"
+#include "systemtask/SystemTask.h"
 #include <lvgl/lvgl.h>
 #include <array>
 
 namespace Pinetime::Applications::Screens {
   class Dice : public Screen {
   public:
-    Dice(DisplayApp* app, Controllers::DateTime& dateTime);
+    Dice(DisplayApp* app, System::SystemTask& systemTask);
     ~Dice() override;
     void Roll();
 
   private:
+    Pinetime::System::SystemTask& systemTask;
+
     lv_obj_t* btnRoll;
     lv_obj_t* btnRollLabel;
     lv_obj_t* resultLabel;
