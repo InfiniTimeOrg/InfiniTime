@@ -169,50 +169,52 @@ void WatchFaceAccurateWords::Refresh() {
       lv_label_set_text_fmt(label_time, "%s", words);
       lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, -40);
 
-      lv_label_set_text_fmt(label_date,
-                            "%s, %s of %s",
-                            days_array[static_cast<uint8_t>(dayOfWeek)],
-                            months_numbers_array[static_cast<uint8_t>(day)],
-                            months_array[static_cast<uint8_t>(month)]);
-
-      // Specific dates have specific names
-      if (static_cast<uint8_t>(month) == 1 & static_cast<uint8_t>(day) == 1) {
-        lv_label_set_text_fmt(label_date, "%s, New Year's Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
+      if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
+        lv_label_set_text_fmt(label_date,
+                              "%s, %s of %s",
+                              days_array[static_cast<uint8_t>(dayOfWeek)],
+                              months_numbers_array[static_cast<uint8_t>(day)],
+                              months_array[static_cast<uint8_t>(month)]);
+  
+        // Specific dates have specific names
+        if (static_cast<uint8_t>(month) == 1 && static_cast<uint8_t>(day) == 1) {
+          lv_label_set_text_fmt(label_date, "%s, New Year's Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
+        }
+        if (static_cast<uint8_t>(month) == 3 && static_cast<uint8_t>(day) == 15) {
+          lv_label_set_text_fmt(label_date, "%s on the Ides of March", days_array[static_cast<uint8_t>(dayOfWeek)]);
+        }
+        if (static_cast<uint8_t>(month) == 4 && static_cast<uint8_t>(day) == 1) {
+          lv_label_set_text_fmt(label_date, "%s, ERROR C Nonsense in BASIC", days_array[static_cast<uint8_t>(dayOfWeek)]);
+        }
+        if (static_cast<uint8_t>(month) == 7 && static_cast<uint8_t>(day) == 1) {
+          lv_label_set_text_fmt(label_date, "%s - O'Canada", days_array[static_cast<uint8_t>(dayOfWeek)]);
+        }
+        if (static_cast<uint8_t>(month) == 10 && static_cast<uint8_t>(day) == 31) {
+          lv_label_set_text_fmt(label_date, "%s on Halloween", days_array[static_cast<uint8_t>(dayOfWeek)]);
+        }
+        if (static_cast<uint8_t>(month) == 12 && static_cast<uint8_t>(day) == 24) {
+          lv_label_set_text_fmt(label_date, "%s, Christmas Eve", days_array[static_cast<uint8_t>(dayOfWeek)]);
+        }
+        if (static_cast<uint8_t>(month) == 12 && static_cast<uint8_t>(day) == 25) {
+          lv_label_set_text_fmt(label_date, "%s, Christmas Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
+        }
+        if (static_cast<uint8_t>(month) == 12 && static_cast<uint8_t>(day) == 26) {
+          lv_label_set_text_fmt(label_date, "%s, Boxing Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
+        }
+        if (static_cast<uint8_t>(month) == 12 && static_cast<uint8_t>(day) == 31) {
+          lv_label_set_text_fmt(label_date, "%s, New Year's Eve", days_array[static_cast<uint8_t>(dayOfWeek)]);
+        }
+  
+        // Maximum lenght of date in words
+        //      lv_label_set_text_fmt(label_date,"Wednesday, twenty-seventh of September");
+  
+        lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
+  
+        currentYear = year;
+        currentMonth = month;
+        currentDayOfWeek = dayOfWeek;
+        currentDay = day;
       }
-      if (static_cast<uint8_t>(month) == 3 & static_cast<uint8_t>(day) == 15) {
-        lv_label_set_text_fmt(label_date, "%s on the Ides of March", days_array[static_cast<uint8_t>(dayOfWeek)]);
-      }
-      if (static_cast<uint8_t>(month) == 4 & static_cast<uint8_t>(day) == 1) {
-        lv_label_set_text_fmt(label_date, "%s, ERROR C Nonsense in BASIC", days_array[static_cast<uint8_t>(dayOfWeek)]);
-      }
-      if (static_cast<uint8_t>(month) == 7 & static_cast<uint8_t>(day) == 1) {
-        lv_label_set_text_fmt(label_date, "%s - O'Canada", days_array[static_cast<uint8_t>(dayOfWeek)]);
-      }
-      if (static_cast<uint8_t>(month) == 10 & static_cast<uint8_t>(day) == 31) {
-        lv_label_set_text_fmt(label_date, "%s on Halloween", days_array[static_cast<uint8_t>(dayOfWeek)]);
-      }
-      if (static_cast<uint8_t>(month) == 12 & static_cast<uint8_t>(day) == 24) {
-        lv_label_set_text_fmt(label_date, "%s, Christmas Eve", days_array[static_cast<uint8_t>(dayOfWeek)]);
-      }
-      if (static_cast<uint8_t>(month) == 12 & static_cast<uint8_t>(day) == 25) {
-        lv_label_set_text_fmt(label_date, "%s, Christmas Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
-      }
-      if (static_cast<uint8_t>(month) == 12 & static_cast<uint8_t>(day) == 26) {
-        lv_label_set_text_fmt(label_date, "%s, Boxing Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
-      }
-      if (static_cast<uint8_t>(month) == 12 & static_cast<uint8_t>(day) == 31) {
-        lv_label_set_text_fmt(label_date, "%s, New Year's Eve", days_array[static_cast<uint8_t>(dayOfWeek)]);
-      }
-
-      // Maximum lenght of date in words
-      //      lv_label_set_text_fmt(label_date,"Wednesday, twenty-seventh of September");
-
-      lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
-
-      currentYear = year;
-      currentMonth = month;
-      currentDayOfWeek = dayOfWeek;
-      currentDay = day;
     }
   }
 
