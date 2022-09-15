@@ -18,12 +18,14 @@ namespace Pinetime::Applications::Screens {
 
     lv_obj_t* btnRoll;
     lv_obj_t* btnRollLabel;
-    lv_obj_t* resultLabel;
+    lv_obj_t* resultTotalLabel;
+    lv_obj_t* resultIndividualLabel;
 
     std::array<lv_color_t, 3> resultColors = {LV_COLOR_YELLOW, LV_COLOR_MAGENTA, LV_COLOR_AQUA};
     uint8_t currentColorIndex;
     void NextColor();
 
-    Widgets::Counter sidesCounter = Widgets::Counter(2, 99, jetbrains_mono_42);
+    Widgets::Counter nCounter = Widgets::Counter(1, 9, jetbrains_mono_42);
+    Widgets::Counter dCounter = Widgets::Counter(2, 99, jetbrains_mono_42);
   };
 }
