@@ -175,7 +175,7 @@ void WatchFaceAccurateWords::Refresh() {
                               days_array[static_cast<uint8_t>(dayOfWeek)],
                               months_numbers_array[static_cast<uint8_t>(day)],
                               months_array[static_cast<uint8_t>(month)]);
-  
+
         // Specific dates have specific names
         if (static_cast<uint8_t>(month) == 1 && static_cast<uint8_t>(day) == 1) {
           lv_label_set_text_fmt(label_date, "%s, New Year's Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
@@ -204,12 +204,12 @@ void WatchFaceAccurateWords::Refresh() {
         if (static_cast<uint8_t>(month) == 12 && static_cast<uint8_t>(day) == 31) {
           lv_label_set_text_fmt(label_date, "%s, New Year's Eve", days_array[static_cast<uint8_t>(dayOfWeek)]);
         }
-  
+
         // Maximum lenght of date in words
         //      lv_label_set_text_fmt(label_date,"Wednesday, twenty-seventh of September");
-  
+
         lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
-  
+
         currentYear = year;
         currentMonth = month;
         currentDayOfWeek = dayOfWeek;
