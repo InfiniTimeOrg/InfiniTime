@@ -109,35 +109,35 @@ void WatchFaceAccurateWords::Refresh() {
     uint8_t hour_adjusted;
     char words[78];
     char part_day[20];
-    const char hour_word_array[26][10] = {"midnight", "one",   "two",    "three",  "four", "five",   "six",     "seven", "eight",
-                                          "nine",     "ten",   "eleven", "twelve", "one",  "two",    "three",   "four",  "five",
-                                          "six",      "seven", "eight",  "nine",   "ten",  "eleven", "midnight"};
-    const char part_day_word_array[9][20] = {" at night",
-                                             " in the early hours",
-                                             " in the morning",
-                                             " in the morning",
-                                             " in the afternoon",
-                                             " in the afternoon",
-                                             " in the evening",
-                                             " at night"};
-    const char minutes_rough_array[14][18] = {"",
-                                              "five past ",
-                                              "ten past ",
-                                              "quarter past ",
-                                              "twenty past ",
-                                              "twenty-five past ",
-                                              "half past ",
-                                              "twenty-five to ",
-                                              "twenty to ",
-                                              "quarter to ",
-                                              "ten to ",
-                                              "five to "
-                                              ""};
-    const char minutes_accurate_array[6][16] = {"", "just gone ", "a little after ", "coming up to ", "almost "};
-    const char days_array[9][10] = {"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-    const char months_array[13][10] =
+    const char* hour_word_array[26] = {"midnight", "one",   "two",    "three",  "four", "five",   "six",     "seven", "eight",
+                                       "nine",     "ten",   "eleven", "twelve", "one",  "two",    "three",   "four",  "five",
+                                       "six",      "seven", "eight",  "nine",   "ten",  "eleven", "midnight"};
+    const char* part_day_word_array[9] = {" at night",
+                                          " in the early hours",
+                                          " in the morning",
+                                          " in the morning",
+                                          " in the afternoon",
+                                          " in the afternoon",
+                                          " in the evening",
+                                          " at night"};
+    const char* minutes_rough_array[14] = {"",
+                                           "five past ",
+                                           "ten past ",
+                                           "quarter past ",
+                                           "twenty past ",
+                                           "twenty-five past ",
+                                           "half past ",
+                                           "twenty-five to ",
+                                           "twenty to ",
+                                           "quarter to ",
+                                           "ten to ",
+                                           "five to "
+                                           ""};
+    const char* minutes_accurate_array[6] = {"", "just gone ", "a little after ", "coming up to ", "almost "};
+    const char* days_array[9] = {"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    const char* months_array[13] =
       {"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-    const char months_numbers_array[32][15] = {
+    const char* months_numbers_array[32] = {
       "zero",          "first",        "second",       "third",          "fourth",        "fifth",        "sixth",         "seventh",
       "eighth",        "ninth",        "tenth",        "eleventh",       "twelfth",       "thirteenth",   "fourteenth",    "fifteenth",
       "sixteenth",     "seventeenth",  "eighteenth",   "nineteenth",     "twentieth",     "twenty-first", "twenty-second", "twenty-third",
