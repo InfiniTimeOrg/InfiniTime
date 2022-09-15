@@ -15,13 +15,13 @@
 using namespace Pinetime::Applications::Screens;
 
 WatchFaceAccurateWords::WatchFaceAccurateWords(DisplayApp* app,
-                                   Controllers::DateTime& dateTimeController,
-                                   Controllers::Battery& batteryController,
-                                   Controllers::Ble& bleController,
-                                   Controllers::NotificationManager& notificatioManager,
-                                   Controllers::Settings& settingsController,
-                                   Controllers::HeartRateController& heartRateController,
-                                   Controllers::MotionController& motionController)
+                                               Controllers::DateTime& dateTimeController,
+                                               Controllers::Battery& batteryController,
+                                               Controllers::Ble& bleController,
+                                               Controllers::NotificationManager& notificatioManager,
+                                               Controllers::Settings& settingsController,
+                                               Controllers::HeartRateController& heartRateController,
+                                               Controllers::MotionController& motionController)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -109,142 +109,103 @@ void WatchFaceAccurateWords::Refresh() {
     uint8_t hour_adjusted;
     char words[78];
     char part_day[20];
-    const char hour_word_array[26][10] = {
-                            "midnight", "one", "two", 
-                            "three", "four", "five", 
-                            "six", "seven", "eight", 
-                            "nine", "ten", "eleven", 
-                            "twelve",
-                            "one", "two", 
-                            "three", "four", "five", 
-                            "six", "seven", "eight", 
-                            "nine", "ten", "eleven", 
-                            "midnight"
-                         };
-    const char part_day_word_array[9][20] = {
-                            " at night", 
-                            " in the early hours", 
-                            " in the morning", 
-                            " in the morning", 
-                            " in the afternoon", 
-                            " in the afternoon", 
-                            " in the evening",
-                            " at night"
-                         };
-    const char minutes_rough_array[14][18] = {
-                            "", "five past ",
-                            "ten past ", "quarter past ", 
-                            "twenty past ", "twenty-five past ", 
-                            "half past ", "twenty-five to ",
-                            "twenty to ", "quarter to ", "ten to ", 
-                            "five to "
-                             ""
-                             };
-    const char minutes_accurate_array[6][16] = {
-                            "", "just gone ", "a little after ", 
-                            "coming up to ", "almost "
-                             };
-    const char days_array[9][10] = { 
-		                    "", 
-		                    "Monday", "Tuesday", "Wednesday", 
-		                    "Thursday", "Friday", "Saturday",
-		                    "Sunday"
-		                     };
-    const char months_array[13][10] = { 
-		                    "", 
-		                    "January", "February", "March", "April", 
-		                    "May", "June", "July", "August", 
-		                    "September", "October", "November", 
-		                    "December"
-		                     };
+    const char hour_word_array[26][10] = {"midnight", "one",   "two",    "three",  "four", "five",   "six",     "seven", "eight",
+                                          "nine",     "ten",   "eleven", "twelve", "one",  "two",    "three",   "four",  "five",
+                                          "six",      "seven", "eight",  "nine",   "ten",  "eleven", "midnight"};
+    const char part_day_word_array[9][20] = {" at night",
+                                             " in the early hours",
+                                             " in the morning",
+                                             " in the morning",
+                                             " in the afternoon",
+                                             " in the afternoon",
+                                             " in the evening",
+                                             " at night"};
+    const char minutes_rough_array[14][18] = {"",
+                                              "five past ",
+                                              "ten past ",
+                                              "quarter past ",
+                                              "twenty past ",
+                                              "twenty-five past ",
+                                              "half past ",
+                                              "twenty-five to ",
+                                              "twenty to ",
+                                              "quarter to ",
+                                              "ten to ",
+                                              "five to "
+                                              ""};
+    const char minutes_accurate_array[6][16] = {"", "just gone ", "a little after ", "coming up to ", "almost "};
+    const char days_array[9][10] = {"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    const char months_array[13][10] =
+      {"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
     const char months_numbers_array[32][15] = {
-                             "zero", "first", "second", "third", 
-                             "fourth", "fifth", "sixth", "seventh", 
-                             "eighth", "ninth", "tenth", "eleventh", 
-                             "twelfth", "thirteenth", "fourteenth", 
-                             "fifteenth", "sixteenth", "seventeenth", 
-                             "eighteenth", "nineteenth", "twentieth", 
-                             "twenty-first", "twenty-second", 
-                             "twenty-third", "twenty-fourth", 
-                             "twenty-fifth", "twenty-sixth", 
-                             "twenty-seventh", "twenty-eighth", 
-                             "twenty-ninth", "thirtieth", 
-                             "thirty-first"
-		                     };
+      "zero",          "first",        "second",       "third",          "fourth",        "fifth",        "sixth",         "seventh",
+      "eighth",        "ninth",        "tenth",        "eleventh",       "twelfth",       "thirteenth",   "fourteenth",    "fifteenth",
+      "sixteenth",     "seventeenth",  "eighteenth",   "nineteenth",     "twentieth",     "twenty-first", "twenty-second", "twenty-third",
+      "twenty-fourth", "twenty-fifth", "twenty-sixth", "twenty-seventh", "twenty-eighth", "twenty-ninth", "thirtieth",     "thirty-first"};
     if (displayedHour != hour || displayedMinute != minute) {
       displayedHour = hour;
       displayedMinute = minute;
 
-      if(minute>32) {
-        hour_adjusted = (hour+1) % 24;
+      if (minute > 32) {
+        hour_adjusted = (hour + 1) % 24;
+      } else {
+        hour_adjusted = hour;
       }
-      else {
-		  hour_adjusted = hour;
-	  }
 
       if (hour_adjusted != 0 && hour_adjusted != 12) {
-        sprintf(part_day, "%s", part_day_word_array[hour_adjusted/3]);
-      }
-      else {
+        sprintf(part_day, "%s", part_day_word_array[hour_adjusted / 3]);
+      } else {
         sprintf(part_day, "");
       }
-      sprintf(words, "%s%s%s%s", 
-                     minutes_accurate_array[(minute)%5],
-                     minutes_rough_array[(minute+2)/5],
-                     hour_word_array[hour_adjusted],
-                     part_day);
+      sprintf(words,
+              "%s%s%s%s",
+              minutes_accurate_array[(minute) % 5],
+              minutes_rough_array[(minute + 2) / 5],
+              hour_word_array[hour_adjusted],
+              part_day);
       // Make first letter Uppercase
-      words[0]=words[0]-32;
+      words[0] = words[0] - 32;
 
       lv_label_set_text_fmt(label_time, "%s", words);
       lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, -40);
 
-      lv_label_set_text_fmt(label_date,"%s, %s of %s",
+      lv_label_set_text_fmt(label_date,
+                            "%s, %s of %s",
                             days_array[static_cast<uint8_t>(dayOfWeek)],
                             months_numbers_array[static_cast<uint8_t>(day)],
-                            months_array[static_cast<uint8_t>(month)]
-                            );
-                            
+                            months_array[static_cast<uint8_t>(month)]);
+
       // Specific dates have specific names
       if (static_cast<uint8_t>(month) == 1 & static_cast<uint8_t>(day) == 1) {
-        lv_label_set_text_fmt(label_date,"%s, New Year's Day",
-                            days_array[static_cast<uint8_t>(dayOfWeek)]);
-	  }
+        lv_label_set_text_fmt(label_date, "%s, New Year's Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
+      }
       if (static_cast<uint8_t>(month) == 3 & static_cast<uint8_t>(day) == 15) {
-        lv_label_set_text_fmt(label_date,"%s on the Ides of March",
-                            days_array[static_cast<uint8_t>(dayOfWeek)]);
-	  }
+        lv_label_set_text_fmt(label_date, "%s on the Ides of March", days_array[static_cast<uint8_t>(dayOfWeek)]);
+      }
       if (static_cast<uint8_t>(month) == 4 & static_cast<uint8_t>(day) == 1) {
-        lv_label_set_text_fmt(label_date,"%s, ERROR C Nonsense in BASIC",
-                            days_array[static_cast<uint8_t>(dayOfWeek)]);
-	  }
+        lv_label_set_text_fmt(label_date, "%s, ERROR C Nonsense in BASIC", days_array[static_cast<uint8_t>(dayOfWeek)]);
+      }
       if (static_cast<uint8_t>(month) == 7 & static_cast<uint8_t>(day) == 1) {
-        lv_label_set_text_fmt(label_date,"%s - O'Canada",
-                            days_array[static_cast<uint8_t>(dayOfWeek)]);
-	  }
+        lv_label_set_text_fmt(label_date, "%s - O'Canada", days_array[static_cast<uint8_t>(dayOfWeek)]);
+      }
       if (static_cast<uint8_t>(month) == 10 & static_cast<uint8_t>(day) == 31) {
-        lv_label_set_text_fmt(label_date,"%s on Halloween",
-                            days_array[static_cast<uint8_t>(dayOfWeek)]);
-	  }
+        lv_label_set_text_fmt(label_date, "%s on Halloween", days_array[static_cast<uint8_t>(dayOfWeek)]);
+      }
       if (static_cast<uint8_t>(month) == 12 & static_cast<uint8_t>(day) == 24) {
-        lv_label_set_text_fmt(label_date,"%s, Christmas Eve",
-                            days_array[static_cast<uint8_t>(dayOfWeek)]);
-	  }
+        lv_label_set_text_fmt(label_date, "%s, Christmas Eve", days_array[static_cast<uint8_t>(dayOfWeek)]);
+      }
       if (static_cast<uint8_t>(month) == 12 & static_cast<uint8_t>(day) == 25) {
-        lv_label_set_text_fmt(label_date,"%s, Christmas Day",
-                            days_array[static_cast<uint8_t>(dayOfWeek)]);
-	  }
+        lv_label_set_text_fmt(label_date, "%s, Christmas Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
+      }
       if (static_cast<uint8_t>(month) == 12 & static_cast<uint8_t>(day) == 26) {
-        lv_label_set_text_fmt(label_date,"%s, Boxing Day",
-                            days_array[static_cast<uint8_t>(dayOfWeek)]);
-	  }
+        lv_label_set_text_fmt(label_date, "%s, Boxing Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
+      }
       if (static_cast<uint8_t>(month) == 12 & static_cast<uint8_t>(day) == 31) {
-        lv_label_set_text_fmt(label_date,"%s, New Year's Eve",
-                            days_array[static_cast<uint8_t>(dayOfWeek)]);
-	  }
+        lv_label_set_text_fmt(label_date, "%s, New Year's Eve", days_array[static_cast<uint8_t>(dayOfWeek)]);
+      }
 
       // Maximum lenght of date in words
-//      lv_label_set_text_fmt(label_date,"Wednesday, twenty-seventh of September");
+      //      lv_label_set_text_fmt(label_date,"Wednesday, twenty-seventh of September");
 
       lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
 

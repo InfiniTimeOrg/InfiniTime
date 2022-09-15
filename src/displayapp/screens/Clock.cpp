@@ -14,7 +14,6 @@
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
 #include "displayapp/screens/WatchFaceAccurateWords.h"
 
-
 using namespace Pinetime::Applications::Screens;
 
 Clock::Clock(DisplayApp* app,
@@ -111,11 +110,11 @@ std::unique_ptr<Screen> Clock::WatchFaceTerminalScreen() {
 
 std::unique_ptr<Screen> Clock::WatchFaceAccurateWordsScreen() {
   return std::make_unique<Screens::WatchFaceAccurateWords>(app,
-                                                     dateTimeController,
-                                                     batteryController,
-                                                     bleController,
-                                                     notificatioManager,
-                                                     settingsController,
-                                                     heartRateController,
-                                                     motionController);
+                                                           dateTimeController,
+                                                           batteryController,
+                                                           bleController,
+                                                           notificatioManager,
+                                                           settingsController,
+                                                           heartRateController,
+                                                           motionController);
 }

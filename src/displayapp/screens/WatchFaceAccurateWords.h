@@ -25,13 +25,13 @@ namespace Pinetime {
       class WatchFaceAccurateWords : public Screen {
       public:
         WatchFaceAccurateWords(DisplayApp* app,
-                         Controllers::DateTime& dateTimeController,
-                         Controllers::Battery& batteryController,
-                         Controllers::Ble& bleController,
-                         Controllers::NotificationManager& notificatioManager,
-                         Controllers::Settings& settingsController,
-                         Controllers::HeartRateController& heartRateController,
-                         Controllers::MotionController& motionController);
+                               Controllers::DateTime& dateTimeController,
+                               Controllers::Battery& batteryController,
+                               Controllers::Ble& bleController,
+                               Controllers::NotificationManager& notificatioManager,
+                               Controllers::Settings& settingsController,
+                               Controllers::HeartRateController& heartRateController,
+                               Controllers::MotionController& motionController);
         ~WatchFaceAccurateWords() override;
 
         void Refresh() override;
