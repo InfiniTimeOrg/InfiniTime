@@ -9,13 +9,11 @@
 namespace Pinetime::Applications::Screens {
   class Dice : public Screen {
   public:
-    Dice(DisplayApp* app, System::SystemTask& systemTask);
+    Dice(DisplayApp* app);
     ~Dice() override;
     void Roll();
 
   private:
-    Pinetime::System::SystemTask& systemTask;
-
     lv_obj_t* btnRoll;
     lv_obj_t* btnRollLabel;
     lv_obj_t* resultTotalLabel;

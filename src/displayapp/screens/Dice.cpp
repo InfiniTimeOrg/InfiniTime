@@ -14,7 +14,7 @@ static void btnRollEventHandler(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
-Dice::Dice(DisplayApp* app, System::SystemTask& systemTask) : Screen(app), systemTask {systemTask} {
+Dice::Dice(DisplayApp* app) : Screen(app) {
   srand(xTaskGetTickCount() % (std::numeric_limits<unsigned int>::max()));
 
   nCounter.Create();

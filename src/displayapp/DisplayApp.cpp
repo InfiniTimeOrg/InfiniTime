@@ -478,7 +478,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
     case Apps::Dice:
-      currentScreen = std::make_unique<Screens::Dice>(this, *systemTask);
+      currentScreen = std::make_unique<Screens::Dice>(this);
       break;
   }
   currentApp = app;
