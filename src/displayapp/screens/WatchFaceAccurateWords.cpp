@@ -105,10 +105,11 @@ void WatchFaceAccurateWords::Refresh() {
 
     uint8_t hour = time.hours().count();
     uint8_t minute = time.minutes().count();
+    uint8_t monthInt = static_cast<uint8_t>(month);
+    uint8_t dayInt = static_cast<uint8_t>(day);
 
     uint8_t hour_adjusted;
     char words[78];
-    char part_day[20];
     const char* hour_word_array[26] = {"midnight", "one",   "two",    "three",  "four", "five",   "six",     "seven", "eight",
                                        "nine",     "ten",   "eleven", "twelve", "one",  "two",    "three",   "four",  "five",
                                        "six",      "seven", "eight",  "nine",   "ten",  "eleven", "midnight"};
@@ -120,7 +121,7 @@ void WatchFaceAccurateWords::Refresh() {
                                           " in the afternoon",
                                           " in the evening",
                                           " at night"};
-    const char* minutes_rough_array[14] = {"",
+    const char* minutes_rough_array[14] = {"--",
                                            "five past ",
                                            "ten past ",
                                            "quarter past ",
@@ -132,11 +133,11 @@ void WatchFaceAccurateWords::Refresh() {
                                            "quarter to ",
                                            "ten to ",
                                            "five to "
-                                           ""};
-    const char* minutes_accurate_array[6] = {"", "just gone ", "a little after ", "coming up to ", "almost "};
-    const char* days_array[9] = {"", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+                                           "--"};
+    const char* minutes_accurate_array[6] = {"--", "just gone ", "a little after ", "coming up to ", "almost "};
+    const char* days_array[9] = {"--", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     const char* months_array[13] =
-      {"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+      {"--", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
     const char* months_numbers_array[32] = {
       "zero",          "first",        "second",       "third",          "fourth",        "fifth",        "sixth",         "seventh",
       "eighth",        "ninth",        "tenth",        "eleventh",       "twelfth",       "thirteenth",   "fourteenth",    "fifteenth",
@@ -146,23 +147,51 @@ void WatchFaceAccurateWords::Refresh() {
       displayedHour = hour;
       displayedMinute = minute;
 
+      // At 33 past the hours we start referign to the next hour
       if (minute > 32) {
         hour_adjusted = (hour + 1) % 24;
       } else {
         hour_adjusted = hour;
       }
 
-      if (hour_adjusted != 0 && hour_adjusted != 12) {
-        sprintf(part_day, "%s", part_day_word_array[hour_adjusted / 3]);
+      if ((hour_adjusted == 0 || hour_adjusted == 12) && minute == 0) {
+        // Example 12:00 = Twelve
+        sprintf(words, "%s", hour_word_array[hour_adjusted]);
+      } else if ((hour_adjusted == 0 || hour_adjusted == 12) && (((minute + 2) % 60) / 5 == 0)) {
+        // Example 23:59 = Almost midnight
+        sprintf(words, "%s%s", minutes_accurate_array[minute % 5], hour_word_array[hour_adjusted]);
+      } else if ((hour_adjusted == 0 || hour_adjusted == 12) && (minute % 5 == 0)) {
+        // Example 12:15 = Quarter past twelve
+        sprintf(words, "%s%s", minutes_rough_array[(minute + 2) / 5], hour_word_array[hour_adjusted]);
+      } else if (hour_adjusted == 0 || hour_adjusted == 12) {
+        // Example 00:16 = Just gone quarter past twelve
+        sprintf(words, "%s%s%s", minutes_accurate_array[minute % 5], minutes_rough_array[(minute + 2) / 5], hour_word_array[hour_adjusted]);
+      } else if (minute == 0) {
+        // Example 01:00 = One at night
+        sprintf(words, "%s%s", hour_word_array[hour_adjusted], part_day_word_array[hour_adjusted / 3]);
+      } else if (((minute + 2) % 60) / 5 == 0) {
+        // Example 17:01 = Just gone five in the afternoon
+        sprintf(words,
+                "%s%s%s",
+                minutes_accurate_array[minute % 5],
+                hour_word_array[hour_adjusted],
+                part_day_word_array[hour_adjusted / 3]);
+      } else if (minute % 5 == 0) {
+        // Example 05:25 = Twenty-five past five in the early hours
+        sprintf(words,
+                "%s%s%s",
+                minutes_rough_array[(minute + 2) / 5],
+                hour_word_array[hour_adjusted],
+                part_day_word_array[hour_adjusted / 3]);
       } else {
-        sprintf(part_day, "");
+        // Example 22:33 = coming up to eleven at night
+        sprintf(words,
+                "%s%s%s%s",
+                minutes_accurate_array[minute % 5],
+                minutes_rough_array[(minute + 2) / 5],
+                hour_word_array[hour_adjusted],
+                part_day_word_array[hour_adjusted / 3]);
       }
-      sprintf(words,
-              "%s%s%s%s",
-              minutes_accurate_array[(minute) % 5],
-              minutes_rough_array[(minute + 2) / 5],
-              hour_word_array[hour_adjusted],
-              part_day);
       // Make first letter Uppercase
       words[0] = words[0] - 32;
 
@@ -170,44 +199,34 @@ void WatchFaceAccurateWords::Refresh() {
       lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, -40);
 
       if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-        lv_label_set_text_fmt(label_date,
-                              "%s, %s of %s",
-                              days_array[static_cast<uint8_t>(dayOfWeek)],
-                              months_numbers_array[static_cast<uint8_t>(day)],
-                              months_array[static_cast<uint8_t>(month)]);
-
         // Specific dates have specific names
-        if (static_cast<uint8_t>(month) == 1 && static_cast<uint8_t>(day) == 1) {
+        if (year == 1970) {
+          lv_label_set_text_fmt(label_date, "New Firmware");
+        } else if (monthInt == 1 && dayInt == 1) {
           lv_label_set_text_fmt(label_date, "%s, New Year's Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
-        }
-        if (static_cast<uint8_t>(month) == 3 && static_cast<uint8_t>(day) == 15) {
+        } else if (monthInt == 3 && dayInt == 15) {
           lv_label_set_text_fmt(label_date, "%s on the Ides of March", days_array[static_cast<uint8_t>(dayOfWeek)]);
-        }
-        if (static_cast<uint8_t>(month) == 4 && static_cast<uint8_t>(day) == 1) {
+        } else if (monthInt == 4 && dayInt == 1) {
           lv_label_set_text_fmt(label_date, "%s, ERROR C Nonsense in BASIC", days_array[static_cast<uint8_t>(dayOfWeek)]);
-        }
-        if (static_cast<uint8_t>(month) == 7 && static_cast<uint8_t>(day) == 1) {
+        } else if (monthInt == 7 && dayInt == 1) {
           lv_label_set_text_fmt(label_date, "%s - O'Canada", days_array[static_cast<uint8_t>(dayOfWeek)]);
-        }
-        if (static_cast<uint8_t>(month) == 10 && static_cast<uint8_t>(day) == 31) {
+        } else if (monthInt == 10 && dayInt == 31) {
           lv_label_set_text_fmt(label_date, "%s on Halloween", days_array[static_cast<uint8_t>(dayOfWeek)]);
-        }
-        if (static_cast<uint8_t>(month) == 12 && static_cast<uint8_t>(day) == 24) {
+        } else if (monthInt == 12 && dayInt == 24) {
           lv_label_set_text_fmt(label_date, "%s, Christmas Eve", days_array[static_cast<uint8_t>(dayOfWeek)]);
-        }
-        if (static_cast<uint8_t>(month) == 12 && static_cast<uint8_t>(day) == 25) {
+        } else if (monthInt == 12 && dayInt == 25) {
           lv_label_set_text_fmt(label_date, "%s, Christmas Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
-        }
-        if (static_cast<uint8_t>(month) == 12 && static_cast<uint8_t>(day) == 26) {
+        } else if (monthInt == 12 && dayInt == 26) {
           lv_label_set_text_fmt(label_date, "%s, Boxing Day", days_array[static_cast<uint8_t>(dayOfWeek)]);
-        }
-        if (static_cast<uint8_t>(month) == 12 && static_cast<uint8_t>(day) == 31) {
+        } else if (monthInt == 12 && dayInt == 31) {
           lv_label_set_text_fmt(label_date, "%s, New Year's Eve", days_array[static_cast<uint8_t>(dayOfWeek)]);
+        } else {
+          lv_label_set_text_fmt(label_date,
+                                "%s, %s of %s",
+                                days_array[static_cast<uint8_t>(dayOfWeek)],
+                                months_numbers_array[dayInt],
+                                months_array[monthInt]);
         }
-
-        // Maximum lenght of date in words
-        //      lv_label_set_text_fmt(label_date,"Wednesday, twenty-seventh of September");
-
         lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
 
         currentYear = year;
