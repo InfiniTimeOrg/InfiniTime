@@ -138,7 +138,7 @@ void WatchFaceAccurateWords::Refresh() {
     const char* days_array[9] = {"--", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     const char* months_array[13] =
       {"--", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-    const char* months_numbers_array[32] = {
+    const char* months_numbers_array[33] = {
       "zero",          "first",        "second",       "third",          "fourth",        "fifth",        "sixth",         "seventh",
       "eighth",        "ninth",        "tenth",        "eleventh",       "twelfth",       "thirteenth",   "fourteenth",    "fifteenth",
       "sixteenth",     "seventeenth",  "eighteenth",   "nineteenth",     "twentieth",     "twenty-first", "twenty-second", "twenty-third",
