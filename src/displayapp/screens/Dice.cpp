@@ -29,7 +29,7 @@ Dice::Dice(DisplayApp* app) : Screen(app) {
 
   dCounter.Create();
   lv_obj_align(dCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 83, 24);
-  dCounter.SetValue(2);
+  dCounter.SetValue(6);
 
   currentColorIndex = rand() % resultColors.size();
 
