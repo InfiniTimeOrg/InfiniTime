@@ -129,6 +129,13 @@ namespace Pinetime {
       Notification GetNotificationStatus() const {
         return settings.notificationStatus;
       };
+      void SetWatchfacesMenu(uint8_t menu) {
+        watchFacesMenu = menu;
+      };
+
+      uint8_t GetWatchfacesMenu() const {
+        return watchFacesMenu;
+      };
 
       void SetScreenTimeOut(uint32_t timeout) {
         if (timeout != settings.screenTimeOut) {
@@ -237,6 +244,7 @@ namespace Pinetime {
 
       uint8_t appMenu = 0;
       uint8_t settingsMenu = 0;
+      uint8_t watchFacesMenu = 0;
       /* ble state is intentionally not saved with the other watch settings and initialized
        * to off (false) on every boot because we always want ble to be enabled on startup
        */
