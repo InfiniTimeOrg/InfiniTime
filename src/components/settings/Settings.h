@@ -34,7 +34,8 @@ namespace Pinetime {
         Navy,
         Magenta,
         Purple,
-        Orange
+        Orange,
+        Pink
       };
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;

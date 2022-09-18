@@ -36,7 +36,8 @@ Error::Error(Pinetime::Applications::DisplayApp* app, System::BootErrors error) 
   lv_obj_set_event_cb(btnOk, ButtonEventCallback);
   lv_obj_set_size(btnOk, LV_HOR_RES, 50);
   lv_obj_align(btnOk, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_obj_set_style_local_value_str(btnOk, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Proceed");
+  lv_obj_t* lblOk = lv_label_create(btnOk, nullptr);
+  lv_label_set_text_static(lblOk, "Proceed");
   lv_obj_set_style_local_bg_color(btnOk, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
 }
 

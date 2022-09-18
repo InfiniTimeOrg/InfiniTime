@@ -6,10 +6,13 @@ on:
     branches: [ master, develop ]
     paths-ignore:
       - 'doc/**'
+      - '**.md'
   pull_request:
     branches: [ develop ]
     paths-ignore:
       - 'doc/**'
+      - '**.md'
+
 
 jobs:
   build-firmware:
