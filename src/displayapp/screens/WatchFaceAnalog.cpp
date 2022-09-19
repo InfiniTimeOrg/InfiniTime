@@ -52,10 +52,9 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
-    batteryController {batteryController},
-    bleController {bleController},
     notificationManager {notificationManager},
-    settingsController {settingsController} {
+    settingsController {settingsController},
+    statusIcons(batteryController, bleController) {
 
   sHour = 99;
   sMinute = 99;
@@ -65,12 +64,7 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_img_set_src(bg_clock_img, &bg_clock);
   lv_obj_align(bg_clock_img, NULL, LV_ALIGN_CENTER, 0, 0);
 
-  batteryIcon.Create(lv_scr_act());
-  lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-
-  plugIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(plugIcon, Symbols::plug);
-  lv_obj_align(plugIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  statusIcons.Create();
 
   notificationIcon = lv_label_create(lv_scr_act(), NULL);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
@@ -180,32 +174,10 @@ void WatchFaceAnalog::UpdateClock() {
   }
 }
 
-void WatchFaceAnalog::SetBatteryIcon() {
-  auto batteryPercent = batteryPercentRemaining.Get();
-  batteryIcon.SetBatteryPercentage(batteryPercent);
-}
-
 void WatchFaceAnalog::Refresh() {
-  isCharging = batteryController.IsCharging();
-  if (isCharging.IsUpdated()) {
-    if (isCharging.Get()) {
-      lv_obj_set_hidden(batteryIcon.GetObject(), true);
-      lv_obj_set_hidden(plugIcon, false);
-    } else {
-      lv_obj_set_hidden(batteryIcon.GetObject(), false);
-      lv_obj_set_hidden(plugIcon, true);
-      SetBatteryIcon();
-    }
-  }
-  if (!isCharging.Get()) {
-    batteryPercentRemaining = batteryController.PercentRemaining();
-    if (batteryPercentRemaining.IsUpdated()) {
-      SetBatteryIcon();
-    }
-  }
+  statusIcons.Update();
 
   notificationState = notificationManager.AreNewNotificationsAvailable();
-
   if (notificationState.IsUpdated()) {
     lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
