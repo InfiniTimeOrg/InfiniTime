@@ -2,7 +2,7 @@
 
 using namespace Pinetime::Controllers;
 
-void AlertController::AlertController(MotorController& motorControllerController)
+AlertController::AlertController(MotorController& motorControllerController)
   : motorController {motor} {
 }
 
