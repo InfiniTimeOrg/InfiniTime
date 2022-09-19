@@ -30,8 +30,9 @@ namespace {
   }
 }
 
-Dice::Dice(DisplayApp* app) : Screen(app) {
-  srand(xTaskGetTickCount() % (std::numeric_limits<unsigned int>::max()));
+Dice::Dice(DisplayApp* app, Controllers::MotionController& motionController) : Screen(app) {
+  std::seed_seq sseq{xTaskGetTickCount(), static_cast<uint32_t>(motionController.X()), static_cast<uint32_t>(motionController.Y()), static_cast<uint32_t>(motionController.Z())};
+  gen.seed(sseq);
 
   nCounter.Create();
   lv_obj_align(nCounter.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 24);
@@ -66,11 +67,12 @@ Dice::~Dice() {
 void Dice::Roll() {
   uint8_t resultIndividual;
   uint16_t resultTotal = 0;
+  std::uniform_int_distribution<> distrib(1, dCounter.GetValue());
 
   lv_label_set_text(resultIndividualLabel, "");
 
   for (uint8_t i = 0; i < nCounter.GetValue(); i++) {
-    resultIndividual = ((rand() % dCounter.GetValue()) + 1);
+    resultIndividual = distrib(gen);
     resultTotal += resultIndividual;
     lv_label_ins_text(resultIndividualLabel, LV_LABEL_POS_LAST, std::to_string(resultIndividual).c_str());
     if (i < (nCounter.GetValue() - 1)) {
@@ -87,3 +89,4 @@ void Dice::NextColor() {
   lv_obj_set_style_local_text_color(resultTotalLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, resultColors[currentColorIndex]);
   lv_obj_set_style_local_text_color(resultIndividualLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, resultColors[currentColorIndex]);
 }
+
