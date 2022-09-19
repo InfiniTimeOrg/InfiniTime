@@ -31,7 +31,7 @@ namespace {
 }
 
 Dice::Dice(DisplayApp* app, Controllers::MotionController& motionController) : Screen(app) {
-  std::seed_seq sseq{xTaskGetTickCount(), static_cast<uint32_t>(motionController.X()), static_cast<uint32_t>(motionController.Y()), static_cast<uint32_t>(motionController.Z())};
+  std::seed_seq sseq{static_cast<uint32_t>(xTaskGetTickCount()), static_cast<uint32_t>(motionController.X()), static_cast<uint32_t>(motionController.Y()), static_cast<uint32_t>(motionController.Z())};
   gen.seed(sseq);
 
   nCounter.Create();
