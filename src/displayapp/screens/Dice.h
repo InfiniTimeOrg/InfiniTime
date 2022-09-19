@@ -1,12 +1,13 @@
 #pragma once
 
+#include "components/motion/MotionController.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"
+#include "lvgl/lvgl.h"
 #include "systemtask/SystemTask.h"
-#include <components/motion/MotionController.h>
-#include <lvgl/lvgl.h>
-#include <random>
+
 #include <array>
+#include <random>
 
 namespace Pinetime::Applications::Screens {
   class Dice : public Screen {
