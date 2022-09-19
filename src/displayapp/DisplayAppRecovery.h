@@ -10,6 +10,7 @@
 #include <date/date.h>
 #include <drivers/Watchdog.h>
 #include <components/motor/MotorController.h>
+#include <components/alert/AlertController.h>
 #include "BootErrors.h"
 #include "displayapp/TouchEvents.h"
 #include "displayapp/Apps.h"
@@ -59,6 +60,7 @@ namespace Pinetime {
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::TimerController& timerController,
                  Pinetime::Controllers::AlarmController& alarmController,
+                 Pinetime::Controllers::AlertController& alertController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
                  Pinetime::Controllers::TouchHandler& touchHandler,
                  Pinetime::Controllers::FS& filesystem);

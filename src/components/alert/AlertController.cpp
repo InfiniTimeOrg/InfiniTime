@@ -1,4 +1,4 @@
-#include "components/motor/AlertController.h"
+#include "components/alert/AlertController.h"
 
 using namespace Pinetime::Controllers;
 

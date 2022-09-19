@@ -66,6 +66,7 @@ namespace Pinetime {
                  Controllers::DateTime& dateTimeController,
                  Controllers::TimerController& timerController,
                  Controllers::AlarmController& alarmController,
+                 Controllers::AlertController& alertController,
                  Drivers::Watchdog& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::MotorController& motorController,
