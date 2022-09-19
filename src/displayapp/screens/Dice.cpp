@@ -44,7 +44,8 @@ Dice::Dice(DisplayApp* app, Controllers::MotionController& motionController) : S
   lv_obj_align(dCounter.GetObject(), dLabel, LV_ALIGN_OUT_RIGHT_MID, 2, 0);
   dCounter.SetValue(6);
 
-  currentColorIndex = rand() % resultColors.size();
+  std::uniform_int_distribution<> distrib(0, resultColors.size()-1);
+  currentColorIndex = distrib(gen);
 
   resultTotalLabel = MakeLabel(&jetbrains_mono_42, resultColors[currentColorIndex], LV_LABEL_LONG_BREAK, 120, LV_LABEL_ALIGN_CENTER, "", lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 13, 30);
   resultIndividualLabel = MakeLabel(&jetbrains_mono_bold_20, resultColors[currentColorIndex], LV_LABEL_LONG_BREAK, 90, LV_LABEL_ALIGN_CENTER, "", resultTotalLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
