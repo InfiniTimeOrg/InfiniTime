@@ -81,6 +81,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     dateTimeController {dateTimeController},
     timerController {timerController},
     alarmController {alarmController},
+    alertController(motorController),
     watchdog {watchdog},
     notificationManager {notificationManager},
     motorController {motorController},
@@ -294,18 +295,18 @@ void SystemTask::Work() {
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
           }
-          motorController.ActivateTimer();
+          alertController.ActivateTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
         case Messages::SetOffAlarm:
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
           }
-          motorController.ActivateAlarm();
+          alertController.ActivateAlarm();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
           break;
         case Messages::StopAlarm:
-          motorController.DeactivateAlarm();
+          alertController.DeactivateAlarm();
           break;
         case Messages::BleConnected:
           ReloadIdleTimer();

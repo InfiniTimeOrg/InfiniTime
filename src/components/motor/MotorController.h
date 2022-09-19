@@ -13,26 +13,19 @@ namespace Pinetime {
 
       void Init();
 
-      void SingleVibration(uint8_t Duration);
+      // SingleVibration and StartRinging do nothing when a vibration is already running.
+      // they return false in this case.
+      // if everything went good they return true.
+      bool SingleVibration(uint8_t Duration);
+      bool StartRinging(uint8_t Duration);
+      void StopRinging();
 
       bool IsVibrating() {
         return isShortVibrating || isLongVibrating;
       };
 
-      void ActivatePhoneCall();
-      void ActivateTimer();
-      void ActivateAlarm();
-      void ActivateNotification();
-
-      void DeactivatePhoneCall();
-      void DeactivateTimer();
-      void DeactivateAlarm();
-
     private:
-      void Update();
       void RunForDuration(uint8_t motorDuration);
-      void StartRinging(uint8_t Duration);
-      void StopRinging();
 
       static void Ring(TimerHandle_t xTimer);
       static void StopMotor(TimerHandle_t xTimer);
@@ -41,11 +34,6 @@ namespace Pinetime {
 
       bool isShortVibrating = false;
       bool isLongVibrating = false;
-
-      bool phoneCallIsActive = false;
-      bool timerIsActive = false;
-      bool alarmIsActive = false;
-      bool notificationIsActive = false;
     };
   }
 }
