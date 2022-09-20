@@ -2,13 +2,12 @@
 
 using namespace Pinetime::Controllers;
 
-AlertController::AlertController(MotorController& motorController)
-  : motorController {motorController} {
+AlertController::AlertController(MotorController& motorController) : motorController {motorController} {
 }
 
 void AlertController::Update() {
   // this can be a bug. A SingleVibration can break the Update-chain even if there are still things active.
-  // maybe we have to trigger Update through the system task in each iteration 
+  // maybe we have to trigger Update through the system task in each iteration
   if (motorController.IsVibrating())
     return;
 
@@ -23,7 +22,7 @@ void AlertController::Update() {
   } else if (notificationIsActive) {
     ok = motorController.SingleVibration(40);
   }
-  
+
   // handle not ok
 }
 

@@ -10,7 +10,7 @@ namespace Pinetime {
       AlertController(MotorController& motorController);
 
       bool IsActive() const {
-        return phoneCallIsActive || timerIsActive || alarmIsActive || notificationIsActive; 
+        return phoneCallIsActive || timerIsActive || alarmIsActive || notificationIsActive;
       }
 
       void ActivatePhoneCall();
@@ -24,12 +24,12 @@ namespace Pinetime {
 
     private:
       void Update();
-      
+
       bool phoneCallIsActive = false;
       bool timerIsActive = false;
       bool alarmIsActive = false;
       bool notificationIsActive = false;
-      
+
       MotorController& motorController;
     };
   }
