@@ -57,6 +57,8 @@ namespace Pinetime {
       void SetRecurrence(RecurType recurrence);
 
     private:
+      // Versions 255 is reserved for now, so the version field can be made
+      // bigger, should it ever be needed.
       static constexpr uint8_t alarmFormatVersion = 1;
       struct AlarmData {
         uint8_t version = alarmFormatVersion;

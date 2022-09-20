@@ -136,33 +136,35 @@ void AlarmController::SetRecurrence(RecurType recurrence) {
 }
 
 void AlarmController::LoadAlarmFromFile() {
-  lfs_file_t file;
-  AlarmData buffer;
+  lfs_file_t alarmFile;
+  AlarmData alarmBuffer;
 
-  if (fs.FileOpen(&file, "/alarm.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
+  if (fs.FileOpen(&alarmFile, "/alarm.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
     NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file");
     return;
   }
 
-  fs.FileRead(&file, reinterpret_cast<uint8_t*>(&buffer), sizeof buffer);
-  fs.FileClose(&file);
-  if (buffer.version != alarmFormatVersion) {
-    NRF_LOG_WARNING("[AlarmController] Loaded alarm data has version %u instead of %u, discarding", buffer.version, alarmFormatVersion);
+  fs.FileRead(&alarmFile, reinterpret_cast<uint8_t*>(&alarmBuffer), sizeof(alarmBuffer));
+  fs.FileClose(&alarmFile);
+  if (alarmBuffer.version != alarmFormatVersion) {
+    NRF_LOG_WARNING("[AlarmController] Loaded alarm data has version %u instead of %u, discarding",
+                    alarmBuffer.version,
+                    alarmFormatVersion);
     return;
   }
 
-  alarm = buffer;
+  alarm = alarmBuffer;
   NRF_LOG_INFO("[AlarmController] Loaded alarm data from file");
 }
 
 void AlarmController::SaveAlarmToFile() {
-  lfs_file_t file;
-  if (fs.FileOpen(&file, "/alarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
+  lfs_file_t alarmFile;
+  if (fs.FileOpen(&alarmFile, "/alarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
     NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file for saving");
     return;
   }
 
-  fs.FileWrite(&file, reinterpret_cast<uint8_t*>(&alarm), sizeof alarm);
-  fs.FileClose(&file);
+  fs.FileWrite(&alarmFile, reinterpret_cast<uint8_t*>(&alarm), sizeof(alarm));
+  fs.FileClose(&alarmFile);
   NRF_LOG_INFO("[AlarmController] Saved alarm data with format version %u to file", alarm.version);
 }

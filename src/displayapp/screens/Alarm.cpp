@@ -63,7 +63,6 @@ Alarm::Alarm(DisplayApp* app,
   minuteCounter.Create();
   lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
   minuteCounter.SetValue(alarmController.Minutes());
-
   minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
