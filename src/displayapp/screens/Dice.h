@@ -3,10 +3,10 @@
 #include "components/motion/MotionController.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"
-#include "lvgl/lvgl.h"
 #include "systemtask/SystemTask.h"
 
 #include <array>
+#include <lvgl/lvgl.h>
 #include <random>
 
 namespace Pinetime::Applications::Screens {
