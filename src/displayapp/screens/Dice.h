@@ -5,8 +5,9 @@
 #include "displayapp/widgets/Counter.h"
 #include "systemtask/SystemTask.h"
 
-#include <array>
 #include <lvgl/lvgl.h>
+
+#include <array>
 #include <random>
 
 namespace Pinetime::Applications::Screens {
