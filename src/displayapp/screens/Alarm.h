@@ -44,6 +44,9 @@ namespace Pinetime {
         Controllers::AlarmController& alarmController;
         System::SystemTask& systemTask;
 
+        uint8_t hours = 0;
+        uint8_t minutes = 0;
+
         lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch;
         lv_obj_t* lblampm = nullptr;
         lv_obj_t* txtMessage = nullptr;
