@@ -1,15 +1,15 @@
 #include "components/alert/AlertController.h"
 
 using namespace Pinetime::Controllers;
+using namespace Pinetime::Applications::Display;
 
 AlertController::AlertController(MotorController& motorController) : motorController {motorController} {
 }
 
-void AlertController::Update() {
-  // this can be a bug. A SingleVibration can break the Update-chain even if there are still things active.
-  // maybe we have to trigger Update through the system task in each iteration
+// return true if a change has happened
+bool AlertController::Update() {
   if (motorController.IsVibrating())
-    return;
+    return false;
 
   bool ok = true;
 
@@ -23,27 +23,33 @@ void AlertController::Update() {
     ok = motorController.SingleVibration(40);
   }
 
-  // handle not ok
+  return ok;
+}
+
+Messages AlertController::DisplayMessage() const {
+  if (timerIsActive) {
+    return Messages::TimerDone;
+  } else if (alarmIsActive) {
+    return Messages::AlarmTriggered;
+  }
+
+  return Messages::NewNotification;
 }
 
 void AlertController::ActivatePhoneCall() {
   phoneCallIsActive = true;
-  Update();
 };
 
 void AlertController::ActivateTimer() {
   timerIsActive = true;
-  Update();
 };
 
 void AlertController::ActivateAlarm() {
   alarmIsActive = true;
-  Update();
 };
 
 void AlertController::ActivateNotification() {
   notificationIsActive = true;
-  Update();
 };
 
 void AlertController::DeactivatePhoneCall() {
@@ -51,14 +57,13 @@ void AlertController::DeactivatePhoneCall() {
     motorController.StopRinging();
   }
   phoneCallIsActive = false;
-  Update();
 };
+
 void AlertController::DeactivateTimer() {
   if (!phoneCallIsActive && timerIsActive) {
     motorController.StopRinging();
   }
   timerIsActive = false;
-  Update();
 };
 
 void AlertController::DeactivateAlarm() {
@@ -66,5 +71,4 @@ void AlertController::DeactivateAlarm() {
     motorController.StopRinging();
   }
   alarmIsActive = false;
-  Update();
 };

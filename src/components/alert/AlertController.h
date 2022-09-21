@@ -1,6 +1,7 @@
 #pragma once
 
 #include "components/motor/MotorController.h"
+#include "displayapp/Messages.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -22,9 +23,9 @@ namespace Pinetime {
       void DeactivateTimer();
       void DeactivateAlarm();
 
+      bool Update();
+      Pinetime::Applications::Display::Messages DisplayMessage() const;
     private:
-      void Update();
-
       bool phoneCallIsActive = false;
       bool timerIsActive = false;
       bool alarmIsActive = false;

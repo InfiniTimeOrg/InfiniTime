@@ -82,7 +82,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     dateTimeController {dateTimeController},
     timerController {timerController},
     alarmController {alarmController},
-    alertController(alertController),
+    alertController {alertController},
     watchdog {watchdog},
     notificationManager {notificationManager},
     motorController {motorController},
@@ -209,6 +209,9 @@ void SystemTask::Work() {
 #pragma ide diagnostic ignored "EndlessLoop"
   while (true) {
     UpdateMotion();
+    if (alertController.Update()) {
+      displayApp.PushMessage(alertController.DisplayMessage());
+    }
 
     uint8_t msg;
     if (xQueueReceive(systemTasksMsgQueue, &msg, 100)) {
