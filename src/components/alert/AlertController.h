@@ -25,6 +25,7 @@ namespace Pinetime {
 
       bool Update();
       Pinetime::Applications::Display::Messages DisplayMessage() const;
+
     private:
       bool phoneCallIsActive = false;
       bool timerIsActive = false;
