@@ -129,8 +129,7 @@ void Notifications::OnPreviewInteraction() {
   }
 }
 
-void Notifications::DismissToBlack()
-{
+void Notifications::DismissToBlack() {
   currentItem.reset(nullptr);
   app->SetFullRefresh(DisplayApp::FullRefreshDirections::RightAnim);
   // create black transition screen to let the notification dismiss to blackness
