@@ -129,20 +129,24 @@ void Notifications::OnPreviewInteraction() {
   }
 }
 
+void Notifications::DismissToBlack()
+{
+  currentItem.reset(nullptr);
+  app->SetFullRefresh(DisplayApp::FullRefreshDirections::RightAnim);
+  // create black transition screen to let the notification dismiss to blackness
+  lv_obj_t* blackBox = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(blackBox, LV_HOR_RES, LV_VER_RES);
+  lv_obj_set_style_local_bg_color(blackBox, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  dismissingNotification = true;
+}
+
 void Notifications::OnPreviewDismiss() {
   notificationManager.Dismiss(currentId);
   if (timeoutLine != nullptr) {
     lv_obj_del(timeoutLine);
     timeoutLine = nullptr;
   }
-  currentItem.reset(nullptr);
-  dismissingNotification = true;
-  afterDismissNextMessageFromAbove = true; // show next message coming from below
-  app->SetFullRefresh(DisplayApp::FullRefreshDirections::RightAnim);
-  // create black transition screen to let the notification dismiss to blackness
-  lv_obj_t* blackBox = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(blackBox, LV_HOR_RES, LV_VER_RES);
-  lv_obj_set_style_local_bg_color(blackBox, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  DismissToBlack();
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
@@ -172,13 +176,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
         } else {
           // don't update id, won't be found be refresh and try to load latest message or no message box
         }
-        currentItem.reset(nullptr);
-        app->SetFullRefresh(DisplayApp::FullRefreshDirections::RightAnim);
-        // create black transition screen to let the notification dismiss to blackness
-        lv_obj_t* blackBox = lv_obj_create(lv_scr_act(), nullptr);
-        lv_obj_set_size(blackBox, LV_HOR_RES, LV_VER_RES);
-        lv_obj_set_style_local_bg_color(blackBox, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-        dismissingNotification = true;
+        DismissToBlack();
         return true;
       }
       return false;

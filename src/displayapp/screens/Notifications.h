@@ -29,6 +29,7 @@ namespace Pinetime {
 
         void Refresh() override;
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
+        void DismissToBlack();
         void OnPreviewInteraction();
         void OnPreviewDismiss();
 
