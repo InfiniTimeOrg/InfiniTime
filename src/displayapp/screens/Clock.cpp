@@ -15,6 +15,7 @@
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
 
 using namespace Pinetime::Applications::Screens;
+using namespace Pinetime::Applications;
 
 Clock::Clock(Controllers::DateTime& dateTimeController,
              const Controllers::Battery& batteryController,
@@ -34,16 +35,16 @@ Clock::Clock(Controllers::DateTime& dateTimeController,
     filesystem {filesystem},
     screen {[this, &settingsController]() {
       switch (settingsController.GetClockFace()) {
-        case 0:
+        case WatchFace::Digital:
           return WatchFaceDigitalScreen();
           break;
-        case 1:
+        case WatchFace::Analog:
           return WatchFaceAnalogScreen();
           break;
-        case 2:
+        case WatchFace::PineTimeStyle:
           return WatchFacePineTimeStyleScreen();
           break;
-        case 3:
+        case WatchFace::Terminal:
           return WatchFaceTerminalScreen();
           break;
         case 4:
