@@ -19,7 +19,7 @@ Clock::Clock(DisplayApp* app,
              Controllers::DateTime& dateTimeController,
              Controllers::Battery& batteryController,
              Controllers::Ble& bleController,
-             Controllers::NotificationManager& notificatioManager,
+             Controllers::NotificationManager& notificationManager,
              Controllers::Settings& settingsController,
              Controllers::HeartRateController& heartRateController,
              Controllers::MotionController& motionController)
@@ -27,7 +27,7 @@ Clock::Clock(DisplayApp* app,
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
-    notificatioManager {notificatioManager},
+    notificationManager {notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
@@ -68,7 +68,7 @@ std::unique_ptr<Screen> Clock::WatchFaceDigitalScreen() {
                                                      dateTimeController,
                                                      batteryController,
                                                      bleController,
-                                                     notificatioManager,
+                                                     notificationManager,
                                                      settingsController,
                                                      heartRateController,
                                                      motionController);
@@ -79,7 +79,7 @@ std::unique_ptr<Screen> Clock::WatchFaceAnalogScreen() {
                                                     dateTimeController,
                                                     batteryController,
                                                     bleController,
-                                                    notificatioManager,
+                                                    notificationManager,
                                                     settingsController);
 }
 
@@ -88,7 +88,7 @@ std::unique_ptr<Screen> Clock::WatchFacePineTimeStyleScreen() {
                                                            dateTimeController,
                                                            batteryController,
                                                            bleController,
-                                                           notificatioManager,
+                                                           notificationManager,
                                                            settingsController,
                                                            motionController);
 }
@@ -98,7 +98,7 @@ std::unique_ptr<Screen> Clock::WatchFaceTerminalScreen() {
                                                       dateTimeController,
                                                       batteryController,
                                                       bleController,
-                                                      notificatioManager,
+                                                      notificationManager,
                                                       settingsController,
                                                       heartRateController,
                                                       motionController);
