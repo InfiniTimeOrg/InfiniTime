@@ -48,7 +48,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
                                                Controllers::DateTime& dateTimeController,
                                                Controllers::Battery& batteryController,
                                                Controllers::Ble& bleController,
-                                               Controllers::NotificationManager& notificatioManager,
+                                               Controllers::NotificationManager& notificationManager,
                                                Controllers::Settings& settingsController,
                                                Controllers::MotionController& motionController)
   : Screen(app),
@@ -56,7 +56,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
-    notificatioManager {notificatioManager},
+    notificationManager {notificationManager},
     settingsController {settingsController},
     motionController {motionController} {
 
@@ -378,7 +378,7 @@ void WatchFacePineTimeStyle::Refresh() {
     AlignIcons();
   }
 
-  notificationState = notificatioManager.AreNewNotificationsAvailable();
+  notificationState = notificationManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
     AlignIcons();
