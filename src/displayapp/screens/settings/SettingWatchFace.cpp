@@ -4,6 +4,10 @@
 #include "displayapp/screens/Screen.h"
 #include "components/settings/Settings.h"
 
+#include "displayapp/screens/WatchFaceInfineat.h"
+#include "displayapp/screens/WatchFaceCasioStyleG7710.h"
+#include "displayapp/WatchFaces.h"
+
 using namespace Pinetime::Applications::Screens;
 
 constexpr const char* SettingWatchFace::title;
