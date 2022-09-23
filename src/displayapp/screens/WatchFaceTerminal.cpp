@@ -168,9 +168,13 @@ void WatchFaceTerminal::Refresh() {
     }
   }
 
-  stepCount = motionController.NbSteps();
-  motionSensorOk = motionController.IsSensorOk();
-  if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
-    lv_label_set_text_fmt(stepValue, "[STEP]#ee3377 %lu steps#", stepCount.Get());
+  if (settingsController.IsStepCountEnabled()) {
+    stepCount = motionController.NbSteps();
+    motionSensorOk = motionController.IsSensorOk();
+    if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
+      lv_label_set_text_fmt(stepValue, "[STEP]#ee3377 %lu steps#", stepCount.Get());
+    }
+  } else {
+    lv_label_set_text_fmt(stepValue, "[STEP]#ee3377 ---#");
   }
 }

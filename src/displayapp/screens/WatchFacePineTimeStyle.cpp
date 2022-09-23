@@ -164,32 +164,34 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_label_set_text_static(dateMonth, "MAR");
   lv_obj_align(dateMonth, sidebar, LV_ALIGN_CENTER, 0, 32);
 
-  // Step count gauge
-  if (settingsController.GetPTSColorBar() == Pinetime::Controllers::Settings::Colors::White) {
-    needle_colors[0] = LV_COLOR_BLACK;
-  } else {
-    needle_colors[0] = LV_COLOR_WHITE;
-  }
-  stepGauge = lv_gauge_create(lv_scr_act(), nullptr);
-  lv_gauge_set_needle_count(stepGauge, 1, needle_colors);
-  lv_obj_set_size(stepGauge, 40, 40);
-  lv_obj_align(stepGauge, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_gauge_set_scale(stepGauge, 360, 11, 0);
-  lv_gauge_set_angle_offset(stepGauge, 180);
-  lv_gauge_set_critical_value(stepGauge, 100);
-  lv_gauge_set_range(stepGauge, 0, 100);
-  lv_gauge_set_value(stepGauge, 0, 0);
+  if (settingsController.IsStepCountEnabled()) {
+    // Step count gauge
+    if (settingsController.GetPTSColorBar() == Pinetime::Controllers::Settings::Colors::White) {
+      needle_colors[0] = LV_COLOR_BLACK;
+    } else {
+      needle_colors[0] = LV_COLOR_WHITE;
+    }
+    stepGauge = lv_gauge_create(lv_scr_act(), nullptr);
+    lv_gauge_set_needle_count(stepGauge, 1, needle_colors);
+    lv_obj_set_size(stepGauge, 40, 40);
+    lv_obj_align(stepGauge, sidebar, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+    lv_gauge_set_scale(stepGauge, 360, 11, 0);
+    lv_gauge_set_angle_offset(stepGauge, 180);
+    lv_gauge_set_critical_value(stepGauge, 100);
+    lv_gauge_set_range(stepGauge, 0, 100);
+    lv_gauge_set_value(stepGauge, 0, 0);
 
-  lv_obj_set_style_local_pad_right(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
-  lv_obj_set_style_local_pad_left(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
-  lv_obj_set_style_local_pad_bottom(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
-  lv_obj_set_style_local_line_opa(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_obj_set_style_local_scale_width(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 4);
-  lv_obj_set_style_local_line_width(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 4);
-  lv_obj_set_style_local_line_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_set_style_local_line_opa(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_obj_set_style_local_line_width(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 3);
-  lv_obj_set_style_local_pad_inner(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 4);
+    lv_obj_set_style_local_pad_right(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
+    lv_obj_set_style_local_pad_left(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
+    lv_obj_set_style_local_pad_bottom(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 3);
+    lv_obj_set_style_local_line_opa(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_COVER);
+    lv_obj_set_style_local_scale_width(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 4);
+    lv_obj_set_style_local_line_width(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, 4);
+    lv_obj_set_style_local_line_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+    lv_obj_set_style_local_line_opa(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, LV_OPA_COVER);
+    lv_obj_set_style_local_line_width(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 3);
+    lv_obj_set_style_local_pad_inner(stepGauge, LV_GAUGE_PART_NEEDLE, LV_STATE_DEFAULT, 4);
+  }
 
   btnNextTime = lv_btn_create(lv_scr_act(), nullptr);
   btnNextTime->user_data = this;
@@ -437,14 +439,16 @@ void WatchFacePineTimeStyle::Refresh() {
     }
   }
 
-  stepCount = motionController.NbSteps();
-  motionSensorOk = motionController.IsSensorOk();
-  if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
-    lv_gauge_set_value(stepGauge, 0, (stepCount.Get() / (settingsController.GetStepsGoal() / 100)));
-    lv_obj_realign(stepGauge);
-    if (stepCount.Get() > settingsController.GetStepsGoal()) {
-      lv_obj_set_style_local_line_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-      lv_obj_set_style_local_scale_grad_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  if (settingsController.IsStepCountEnabled()) {
+    stepCount = motionController.NbSteps();
+    motionSensorOk = motionController.IsSensorOk();
+    if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
+      lv_gauge_set_value(stepGauge, 0, (stepCount.Get() / (settingsController.GetStepsGoal() / 100)));
+      lv_obj_realign(stepGauge);
+      if (stepCount.Get() > settingsController.GetStepsGoal()) {
+        lv_obj_set_style_local_line_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+        lv_obj_set_style_local_scale_grad_color(stepGauge, LV_GAUGE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+      }
     }
   }
   if (!lv_obj_get_hidden(btnSet)) {
