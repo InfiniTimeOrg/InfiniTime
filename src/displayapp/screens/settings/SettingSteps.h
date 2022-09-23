@@ -23,6 +23,8 @@ namespace Pinetime {
         lv_obj_t* stepValue;
         lv_obj_t* btnPlus;
         lv_obj_t* btnMinus;
+        lv_obj_t* enableSwitch;
+        lv_obj_t* enableText;
       };
     }
   }
