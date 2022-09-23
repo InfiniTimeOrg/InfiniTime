@@ -202,6 +202,15 @@ namespace Pinetime {
         return settings.stepsGoal;
       };
 
+      void SetStepCountEnabled(bool enabled) {
+        settingsChanged = settings.stepCountEnabled != enabled;
+        settings.stepCountEnabled = enabled;
+      };
+
+      bool IsStepCountEnabled() {
+        return settings.stepCountEnabled;
+      }
+
       void SetBleRadioEnabled(bool enabled) {
         bleRadioEnabled = enabled;
       };
@@ -230,6 +239,8 @@ namespace Pinetime {
         std::bitset<4> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        bool stepCountEnabled = true;
       };
 
       SettingsData settings;
