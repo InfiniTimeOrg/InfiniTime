@@ -2,18 +2,25 @@
 
 #include "displayapp/screens/Screen.h"
 #include <lvgl/lvgl.h>
+#include "portmacro_cmsis.h"
 
 namespace Pinetime::Applications::Screens {
 
-  enum TrackTimeState {
+  enum TimeTrackingModes {
     Work,
+    Play,
     Chores,
     Social,
-    Learn,
     Health,
-    Play,
-    Iddle,
-  }
+    Learn,
+    Total
+  };
+
+  struct TimeTrackedPretty {
+    int hours;
+    int mins;
+    int secs;
+  };
 
   class TrackTime : public Screen {
 
@@ -21,10 +28,13 @@ namespace Pinetime::Applications::Screens {
     TrackTime(DisplayApp* app);
     ~TrackTime() override;
 
+    void OnEvent(lv_obj_t* obj, lv_event_t event);
 
   private:
-    States currState = TrackTimeState::Iddle;
-    lv_obj_t* buttons[TrackTimeState::Iddle] = {}
-    lv_obj_t* textCurrState;
+    int currentMode = TimeTrackingModes::Learn;
+    uint16_t oldBtnPressed = 0;
+    TickType_t oldTimes[TimeTrackingModes::Total] = {0};
+    TickType_t totals[TimeTrackingModes::Total] = {0};
+    lv_obj_t* btnm1;
   };
 }
