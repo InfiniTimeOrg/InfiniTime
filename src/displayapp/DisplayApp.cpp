@@ -371,11 +371,6 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
     case Apps::Alarm:
       currentScreen = std::make_unique<Screens::Alarm>(this, alarmController, settingsController.GetClockType(), *systemTask);
       break;
-    case Apps::TrackTime:
-      printf("TrackTime Start\n");
-      currentScreen = std::make_unique<Screens::TrackTime>(this);
-      break;
-
     // Settings
     case Apps::QuickSettings:
       currentScreen = std::make_unique<Screens::QuickSettings>(this,
@@ -452,6 +447,10 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::StopWatch:
       currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask);
+      break;
+    case Apps::TrackTime:
+      printf("TrackTime Start\n");
+      currentScreen = std::make_unique<Screens::TrackTime>(this, *systemTask);
       break;
     case Apps::Twos:
       currentScreen = std::make_unique<Screens::Twos>(this);

@@ -2,39 +2,48 @@
 
 #include "displayapp/screens/Screen.h"
 #include <lvgl/lvgl.h>
+
+#include <FreeRTOS.h>
 #include "portmacro_cmsis.h"
+
+#include "systemtask/SystemTask.h"
 
 namespace Pinetime::Applications::Screens {
 
-  enum TimeTrackingModes {
-    Work,
-    Play,
-    Chores,
-    Social,
-    Health,
-    Learn,
-    Total
-  };
+  enum class TrackerStates { Init, Running, Halted };
 
-  struct TimeTrackedPretty {
-    int hours;
+  struct TimePretty_t {
     int mins;
     int secs;
+    int hundredths;
   };
 
   class TrackTime : public Screen {
-
   public:
-    TrackTime(DisplayApp* app);
+    TrackTime(DisplayApp* app, System::SystemTask& systemTask);
     ~TrackTime() override;
+    void Refresh() override;
 
-    void OnEvent(lv_obj_t* obj, lv_event_t event);
+    void playPauseBtnEventHandler(lv_event_t event);
+    void stopLapBtnEventHandler(lv_event_t event);
+    bool OnButtonPushed() override;
+
+    void Reset();
+    void Start();
+    void Pause();
 
   private:
-    int currentMode = TimeTrackingModes::Learn;
-    uint16_t oldBtnPressed = 0;
-    TickType_t oldTimes[TimeTrackingModes::Total] = {0};
-    TickType_t totals[TimeTrackingModes::Total] = {0};
-    lv_obj_t* btnm1;
+    Pinetime::System::SystemTask& systemTask;
+    TrackerStates currentState = TrackerStates::Init;
+    TickType_t startTime;
+    TickType_t oldTimeElapsed = 0;
+    static constexpr int maxLapCount = 20;
+    TickType_t laps[maxLapCount + 1];
+    static constexpr int displayedLaps = 2;
+    int lapsDone = 0;
+    lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
+    lv_obj_t* lapText;
+
+    lv_task_t* taskRefresh;
   };
 }
