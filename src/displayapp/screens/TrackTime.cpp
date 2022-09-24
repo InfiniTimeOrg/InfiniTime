@@ -25,6 +25,11 @@ namespace {
     auto* stopWatch = static_cast<TrackTime*>(obj->user_data);
     stopWatch->stopLapBtnEventHandler(event);
   }
+
+  void btnHandler(lv_obj_t* obj, lv_event_t event) {
+    auto* tracktime = static_cast<TrackTime*>(obj->user_data);
+    tracktime->handleModeUpdate(event);
+  }
 }
 
 TrackTime::TrackTime(DisplayApp* app, System::SystemTask& systemTask) : Screen(app), systemTask {systemTask} {
@@ -158,10 +163,16 @@ void TrackTime::stopLapBtnEventHandler(lv_event_t event) {
   }
 }
 
-bool TrackTime::OnButtonPushed() {
-  if (currentState == TrackerStates::Running) {
-    Pause();
-    return true;
+void TrackTime::handleModeUpdate(lv_event_t event) {
+  if (event != LV_EVENT_VALUE_CHANGED) {
+    return;
   }
-  return false;
+  oldBtnPressed = oldBtnPressed + 1;
+  printf("sanity %i\n", oldBtnPressed);
+}
+
+bool TrackTime::OnButtonPushed() {
+  oldBtnPressed = oldBtnPressed + 1;
+  printf("sanity %i\n", oldBtnPressed);
+  return true;
 }

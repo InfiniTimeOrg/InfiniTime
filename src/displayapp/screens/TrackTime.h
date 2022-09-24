@@ -26,6 +26,7 @@ namespace Pinetime::Applications::Screens {
 
     void playPauseBtnEventHandler(lv_event_t event);
     void stopLapBtnEventHandler(lv_event_t event);
+    void handleModeUpdate(lv_event_t event);
     bool OnButtonPushed() override;
 
     void Reset();
@@ -45,5 +46,7 @@ namespace Pinetime::Applications::Screens {
     lv_obj_t* lapText;
 
     lv_task_t* taskRefresh;
+
+    uint16_t oldBtnPressed = 0 ;
   };
 }
