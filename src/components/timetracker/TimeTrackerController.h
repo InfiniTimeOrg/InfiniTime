@@ -23,16 +23,6 @@ namespace Pinetime {
       TickType_t TimeInMode(TimeTrackingMode mode);
       TimeTrackingMode CurrMode();
 
-      void StartTimer(uint32_t duration);
-
-      void StopTimer();
-
-      uint32_t GetTimeRemaining();
-
-      bool IsRunning();
-
-      void OnTimerEnd();
-
     private:
       TickType_t startTime = 0;
       TickType_t totals[6] = {0};
