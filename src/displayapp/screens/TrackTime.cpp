@@ -54,20 +54,6 @@ TrackTime::~TrackTime() {
   lv_obj_clean(lv_scr_act());
 }
 
-/*
-void TrackTime::Refresh() {
-   if (currMode != TimeTrackingMode::Total) {
-     TickType_t currTime = xTaskGetTickCount();
-     TickType_t elapsedTime = currTime - startTime;
-     totals[currMode] += elapsedTime;
-     startTime = currTime;
-     printf("%i %i\n", currMode, totals[currMode]);
-     TimePretty_t total = convertTicksToTimeSegments(totals[currMode]);
-     lv_label_set_text_fmt(title, "Total %02d:%02d:%02d", total.hours, total.mins, total.secs);
-   }
-}
-*/
-
 void TrackTime::ShowInfo() {
   if (currMode != TimeTrackingMode::Iddle) {
     timeTrackerController.ModeChanged(currMode);
@@ -115,7 +101,6 @@ void TrackTime::ShowInfo() {
   lv_obj_set_event_cb(btnReset, btnHandler);
   lv_obj_set_height(btnReset, 50);
   lv_obj_set_width(btnReset, 100);
-  //lv_obj_align(btnReset, btnMessage, LV_ALIGN_IN_TOP_MID, 0, 0);
   txtReset = lv_label_create(btnReset, nullptr);
   lv_label_set_text_static(txtReset, "Reset");
 }
@@ -129,7 +114,6 @@ void TrackTime::handleModeUpdate(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
     const char* txt = lv_btnmatrix_get_active_btn_text(btnm1);
     uint16_t btnId = lv_btnmatrix_get_active_btn(btnm1);
-    printf("%s %i was pressed\n", txt, btnId);
     auto newMode = static_cast<TimeTrackingMode>(btnId);
     currMode = newMode;
     timeTrackerController.ModeChanged(newMode);
@@ -138,24 +122,16 @@ void TrackTime::handleModeUpdate(lv_obj_t* obj, lv_event_t event) {
 
   if (event == LV_EVENT_CLICKED) {
     if (obj == btnMessage) {
-      printf("Close Summary\n");
       CloseInfo();
     } else if (obj == btnSummary) {
-      printf("Show Summary\n");
-      timeTrackerController.Demo();
       ShowInfo();
     }
 
     if (obj == btnReset) {
-      printf("Reset\n");
       timeTrackerController.Reset();
       CloseInfo();
     }
 
     return;
   }
-
-  // TickType_t currTime = xTaskGetTickCount();
-  // startTime = currTime;
-  // currMode = static_cast<TimeTrackingMode>(btnId);
 }

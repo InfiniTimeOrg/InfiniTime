@@ -41,7 +41,7 @@ namespace Pinetime {
         static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
           {Symbols::stopWatch, Apps::StopWatch},
           {Symbols::clock, Apps::Alarm},
-          {"1", Apps::TrackTime},
+          {Symbols::list, Apps::TrackTime},
           {Symbols::hourGlass, Apps::Timer},
           {Symbols::shoe, Apps::Steps},
           {Symbols::heartBeat, Apps::HeartRate},

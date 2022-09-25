@@ -451,7 +451,6 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask);
       break;
     case Apps::TrackTime:
-      printf("TrackTime Start\n");
       currentScreen = std::make_unique<Screens::TrackTime>(this, *systemTask, timeTrackerController);
       break;
     case Apps::Twos:

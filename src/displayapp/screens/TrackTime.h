@@ -19,8 +19,6 @@ namespace Pinetime::Applications::Screens {
     int secs;
   };
 
-  //enum TimeTrackingMode { Work = 0, Play = 1, Chores = 2, Social = 3, Health = 4, Learn = 5, Total };
-
   class TrackTime : public Screen {
   public:
     TrackTime(DisplayApp* app, System::SystemTask& systemTask, Controllers::TimeTrackerController& timeTrackerController);

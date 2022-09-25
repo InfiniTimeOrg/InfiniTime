@@ -24,7 +24,6 @@ void TimeTrackerController::ModeChanged(TimeTrackingMode newMode) {
     TickType_t elapsedTime = currTime - this->startTime;
     // Add elapsed to the current mode
     auto totalsIndex = static_cast<int>(this->currMode);
-    printf("updating %i to + %i", totalsIndex, elapsedTime);
     this->totals[totalsIndex] += elapsedTime;
   }
 
