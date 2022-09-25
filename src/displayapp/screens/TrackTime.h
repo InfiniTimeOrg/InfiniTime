@@ -10,6 +10,8 @@
 
 namespace Pinetime::Applications::Screens {
 
+  static const char* btnm_map[] = {"Work", "Play", "\n", "Chores", "Social", "\n", "Health", "Learn", ""};
+
   enum class TrackerStates { Init, Running, Halted };
 
   struct TimePretty_t {
@@ -44,6 +46,8 @@ namespace Pinetime::Applications::Screens {
     int lapsDone = 0;
     lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
     lv_obj_t* lapText;
+    lv_obj_t* btnm1;
+    lv_obj_t* title;
 
     lv_task_t* taskRefresh;
 

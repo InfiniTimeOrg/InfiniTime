@@ -34,42 +34,19 @@ namespace {
 
 TrackTime::TrackTime(DisplayApp* app, System::SystemTask& systemTask) : Screen(app), systemTask {systemTask} {
 
-  time = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_label_set_text_static(time, "00:00");
-  lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -45);
+  btnm1 = lv_btnmatrix_create(lv_scr_act(), nullptr);
+  btnm1->user_data = this;
+  lv_obj_align(btnm1, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+  lv_obj_set_size(btnm1, 240, 180);
+  lv_btnmatrix_set_map(btnm1, btnm_map);
+  lv_btnmatrix_set_btn_ctrl_all(btnm1, LV_BTNMATRIX_CTRL_CHECKABLE);
+  lv_obj_set_event_cb(btnm1, btnHandler);
+  lv_btnmatrix_set_one_check(btnm1, true);
 
-  msecTime = lv_label_create(lv_scr_act(), nullptr);
-  // lv_obj_set_style_local_text_font(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_label_set_text_static(msecTime, "00");
-  lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_CENTER, 0, 3);
-
-  btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
-  btnPlayPause->user_data = this;
-  lv_obj_set_event_cb(btnPlayPause, play_pause_event_handler);
-  lv_obj_set_size(btnPlayPause, 115, 50);
-  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  txtPlayPause = lv_label_create(btnPlayPause, nullptr);
-  lv_label_set_text_static(txtPlayPause, Symbols::play);
-
-  btnStopLap = lv_btn_create(lv_scr_act(), nullptr);
-  btnStopLap->user_data = this;
-  lv_obj_set_event_cb(btnStopLap, stop_lap_event_handler);
-  lv_obj_set_size(btnStopLap, 115, 50);
-  lv_obj_align(btnStopLap, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
-  txtStopLap = lv_label_create(btnStopLap, nullptr);
-  lv_label_set_text_static(txtStopLap, Symbols::stop);
-  lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
-  lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
-
-  lapText = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(lapText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-  lv_obj_align(lapText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 30);
-  lv_label_set_text_static(lapText, "");
-
-  taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+  title = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(title, "Total: ");
+  lv_label_set_align(title, LV_LABEL_ALIGN_LEFT);
+  lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, -20);
 }
 
 TrackTime::~TrackTime() {
@@ -167,8 +144,11 @@ void TrackTime::handleModeUpdate(lv_event_t event) {
   if (event != LV_EVENT_VALUE_CHANGED) {
     return;
   }
+  const char* txt = lv_btnmatrix_get_active_btn_text(btnm1);
+  uint16_t btnId = lv_btnmatrix_get_active_btn(btnm1);
+  printf("%s %i was pressed\n", txt, btnId);
   oldBtnPressed = oldBtnPressed + 1;
-  printf("sanity %i\n", oldBtnPressed);
+  printf("demo %i\n", oldBtnPressed);
 }
 
 bool TrackTime::OnButtonPushed() {
