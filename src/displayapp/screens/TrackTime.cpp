@@ -23,7 +23,8 @@ namespace {
   }
 }
 
-TrackTime::TrackTime(DisplayApp* app, System::SystemTask& systemTask) : Screen(app), systemTask {systemTask} {
+TrackTime::TrackTime(DisplayApp* app, System::SystemTask& systemTask, Controllers::TimeTrackerController& timeTrackerController)
+  : Screen(app), systemTask {systemTask}, timeTrackerController {timeTrackerController} {
   btnm1 = lv_btnmatrix_create(lv_scr_act(), nullptr);
   btnm1->user_data = this;
   lv_obj_align(btnm1, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
@@ -40,6 +41,7 @@ TrackTime::TrackTime(DisplayApp* app, System::SystemTask& systemTask) : Screen(a
   lv_obj_align(btnSummary, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   txtSummary = lv_label_create(btnSummary, nullptr);
   lv_label_set_text_static(txtSummary, "Summary");
+
 }
 
 TrackTime::~TrackTime() {
@@ -69,7 +71,8 @@ void TrackTime::ShowInfo() {
   lv_obj_align(btnMessage, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   txtMessage = lv_label_create(btnMessage, nullptr);
   lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
-  lv_label_set_text_static(txtMessage, "Alarm\nis not\nset.");
+  lv_label_set_text_static(txtMessage,
+                           "Work  : 12:34:56\nPlay  : 12:34:56\nChores: 12:34:56\nSocial: 12:34:56\nHealth: 12:34:56\nLearn : 12:34:56\n");
 }
 
 void TrackTime::CloseInfo() {
@@ -92,6 +95,7 @@ void TrackTime::handleModeUpdate(lv_obj_t* obj, lv_event_t event) {
       CloseInfo();
     } else if (obj == btnSummary) {
       printf("Show Summary\n");
+      timeTrackerController.Demo();
       ShowInfo();
     }
 

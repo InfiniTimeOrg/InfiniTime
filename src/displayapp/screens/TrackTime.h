@@ -7,6 +7,7 @@
 #include "portmacro_cmsis.h"
 
 #include "systemtask/SystemTask.h"
+#include "components/timetracker/TimeTrackerController.h"
 
 namespace Pinetime::Applications::Screens {
 
@@ -22,7 +23,7 @@ namespace Pinetime::Applications::Screens {
 
   class TrackTime : public Screen {
   public:
-    TrackTime(DisplayApp* app, System::SystemTask& systemTask);
+    TrackTime(DisplayApp* app, System::SystemTask& systemTask, Controllers::TimeTrackerController& timeTrackerController);
     ~TrackTime() override;
 
     void ShowInfo();
@@ -32,9 +33,10 @@ namespace Pinetime::Applications::Screens {
 
   private:
     Pinetime::System::SystemTask& systemTask;
-    TickType_t startTime;
-    TimeTrackingMode currMode = TimeTrackingMode::Total;
-    TickType_t totals[TimeTrackingMode::Total];
+    Controllers::TimeTrackerController& timeTrackerController;
+    //TickType_t startTime;
+    //TimeTrackingMode currMode = TimeTrackingMode::Total;
+    //TickType_t totals[TimeTrackingMode::Total];
     lv_obj_t* btnm1;
     lv_obj_t* title;
     lv_obj_t* txtMessage = nullptr;

@@ -111,6 +111,7 @@ Pinetime::Drivers::WatchdogView watchdogView(watchdog);
 Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::TimerController timerController;
+Pinetime::Controllers::TimeTrackerController timeTrackerController;
 Pinetime::Controllers::AlarmController alarmController {dateTimeController};
 Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);
 Pinetime::Controllers::ButtonHandler buttonHandler;
@@ -129,6 +130,7 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               motorController,
                                               motionController,
                                               timerController,
+                                              timeTrackerController,
                                               alarmController,
                                               brightnessController,
                                               touchHandler);
