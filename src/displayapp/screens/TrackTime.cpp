@@ -41,7 +41,6 @@ TrackTime::TrackTime(DisplayApp* app, System::SystemTask& systemTask, Controller
   lv_obj_align(btnSummary, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   txtSummary = lv_label_create(btnSummary, nullptr);
   lv_label_set_text_static(txtSummary, "Summary");
-
 }
 
 TrackTime::~TrackTime() {
@@ -63,6 +62,9 @@ void TrackTime::Refresh() {
 */
 
 void TrackTime::ShowInfo() {
+  if (currMode != TimeTrackingMode::Iddle) {
+    timeTrackerController.ModeChanged(currMode);
+  }
   btnMessage = lv_btn_create(lv_scr_act(), nullptr);
   btnMessage->user_data = this;
   lv_obj_set_event_cb(btnMessage, btnHandler);
@@ -71,8 +73,44 @@ void TrackTime::ShowInfo() {
   lv_obj_align(btnMessage, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   txtMessage = lv_label_create(btnMessage, nullptr);
   lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
-  lv_label_set_text_static(txtMessage,
-                           "Work  : 12:34:56\nPlay  : 12:34:56\nChores: 12:34:56\nSocial: 12:34:56\nHealth: 12:34:56\nLearn : 12:34:56\n");
+
+  TimePretty_t modeWork = convertTicksToTimeSegments(timeTrackerController.TimeInMode(TimeTrackingMode::Work));
+  TimePretty_t modePlay = convertTicksToTimeSegments(timeTrackerController.TimeInMode(TimeTrackingMode::Play));
+  TimePretty_t modeChores = convertTicksToTimeSegments(timeTrackerController.TimeInMode(TimeTrackingMode::Chores));
+  TimePretty_t modeSocial = convertTicksToTimeSegments(timeTrackerController.TimeInMode(TimeTrackingMode::Social));
+  TimePretty_t modeHealth = convertTicksToTimeSegments(timeTrackerController.TimeInMode(TimeTrackingMode::Health));
+  TimePretty_t modeLearn = convertTicksToTimeSegments(timeTrackerController.TimeInMode(TimeTrackingMode::Learn));
+
+  lv_label_set_text_fmt(txtMessage,
+                        "Work  : %02d:%02d:%02d\nPlay  : %02d:%02d:%02d\nChores: %02d:%02d:%02d\nSocial: %02d:%02d:%02d\nHealth: "
+                        "%02d:%02d:%02d\nLearn : %02d:%02d:%02d\n",
+                        modeWork.hours,
+                        modeWork.mins,
+                        modeWork.secs,
+                        modePlay.hours,
+                        modePlay.mins,
+                        modePlay.secs,
+                        modeChores.hours,
+                        modeChores.mins,
+                        modeChores.secs,
+                        modeSocial.hours,
+                        modeSocial.mins,
+                        modeSocial.secs,
+                        modeHealth.hours,
+                        modeHealth.mins,
+                        modeHealth.secs,
+                        modeLearn.hours,
+                        modeLearn.mins,
+                        modeLearn.secs);
+
+  btnReset = lv_btn_create(btnMessage, nullptr);
+  btnReset->user_data = this;
+  lv_obj_set_event_cb(btnReset, btnHandler);
+  lv_obj_set_height(btnReset, 50);
+  lv_obj_set_width(btnReset, 100);
+  //lv_obj_align(btnReset, btnMessage, LV_ALIGN_IN_TOP_MID, 0, 0);
+  txtReset = lv_label_create(btnReset, nullptr);
+  lv_label_set_text_static(txtReset, "Reset");
 }
 
 void TrackTime::CloseInfo() {
@@ -85,7 +123,9 @@ void TrackTime::handleModeUpdate(lv_obj_t* obj, lv_event_t event) {
     const char* txt = lv_btnmatrix_get_active_btn_text(btnm1);
     uint16_t btnId = lv_btnmatrix_get_active_btn(btnm1);
     printf("%s %i was pressed\n", txt, btnId);
-
+    auto newMode = static_cast<TimeTrackingMode>(btnId);
+    currMode = newMode;
+    timeTrackerController.ModeChanged(newMode);
     return;
   }
 
@@ -97,6 +137,12 @@ void TrackTime::handleModeUpdate(lv_obj_t* obj, lv_event_t event) {
       printf("Show Summary\n");
       timeTrackerController.Demo();
       ShowInfo();
+    }
+
+    if (obj == btnReset) {
+      printf("Reset\n");
+      timeTrackerController.Reset();
+      CloseInfo();
     }
 
     return;

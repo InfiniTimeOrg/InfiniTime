@@ -3,19 +3,24 @@
 #include <FreeRTOS.h>
 #include <timers.h>
 
+enum class TimeTrackingMode { Work = 0, Play = 1, Chores = 2, Social = 3, Health = 4, Learn = 5, Iddle = 6 };
+
 namespace Pinetime {
   namespace System {
     class SystemTask;
   }
   namespace Controllers {
 
+
     class TimeTrackerController {
     public:
       TimeTrackerController() = default;
 
-      void Init();
       void Reset();
       void Demo();
+
+      void ModeChanged(TimeTrackingMode newMode);
+      TickType_t TimeInMode(TimeTrackingMode mode);
 
       void StartTimer(uint32_t duration);
 
@@ -28,9 +33,9 @@ namespace Pinetime {
       void OnTimerEnd();
 
     private:
-      TickType_t startTime;
-      TickType_t totals[6] = {};
-      uint16_t currMode = 6;
+      TickType_t startTime = 0;
+      TickType_t totals[6] = {0};
+      TimeTrackingMode currMode = TimeTrackingMode::Iddle;
     };
   }
 }
