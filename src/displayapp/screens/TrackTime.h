@@ -12,45 +12,36 @@ namespace Pinetime::Applications::Screens {
 
   static const char* btnm_map[] = {"Work", "Play", "\n", "Chores", "Social", "\n", "Health", "Learn", ""};
 
-  enum class TrackerStates { Init, Running, Halted };
-
   struct TimePretty_t {
+    int hours;
     int mins;
     int secs;
-    int hundredths;
   };
+
+  enum TimeTrackingMode { Work = 0, Play = 1, Chores = 2, Social = 3, Health = 4, Learn = 5, Total };
 
   class TrackTime : public Screen {
   public:
     TrackTime(DisplayApp* app, System::SystemTask& systemTask);
     ~TrackTime() override;
-    void Refresh() override;
 
-    void playPauseBtnEventHandler(lv_event_t event);
-    void stopLapBtnEventHandler(lv_event_t event);
-    void handleModeUpdate(lv_event_t event);
-    bool OnButtonPushed() override;
+    void ShowInfo();
+    void CloseInfo();
 
-    void Reset();
-    void Start();
-    void Pause();
+    void handleModeUpdate(lv_obj_t* obj, lv_event_t event);
 
   private:
     Pinetime::System::SystemTask& systemTask;
-    TrackerStates currentState = TrackerStates::Init;
     TickType_t startTime;
-    TickType_t oldTimeElapsed = 0;
-    static constexpr int maxLapCount = 20;
-    TickType_t laps[maxLapCount + 1];
-    static constexpr int displayedLaps = 2;
-    int lapsDone = 0;
-    lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
-    lv_obj_t* lapText;
+    TimeTrackingMode currMode = TimeTrackingMode::Total;
+    TickType_t totals[TimeTrackingMode::Total];
     lv_obj_t* btnm1;
     lv_obj_t* title;
+    lv_obj_t* txtMessage = nullptr;
+    lv_obj_t* btnMessage = nullptr;
+    lv_obj_t* btnSummary = nullptr;
+    lv_obj_t* txtSummary = nullptr;
 
     lv_task_t* taskRefresh;
-
-    uint16_t oldBtnPressed = 0 ;
   };
 }
