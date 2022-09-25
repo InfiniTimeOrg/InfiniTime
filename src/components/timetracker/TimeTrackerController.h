@@ -21,6 +21,7 @@ namespace Pinetime {
 
       void ModeChanged(TimeTrackingMode newMode);
       TickType_t TimeInMode(TimeTrackingMode mode);
+      TimeTrackingMode CurrMode();
 
       void StartTimer(uint32_t duration);
 

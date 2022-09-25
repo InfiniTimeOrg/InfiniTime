@@ -34,6 +34,13 @@ TrackTime::TrackTime(DisplayApp* app, System::SystemTask& systemTask, Controller
   lv_obj_set_event_cb(btnm1, btnHandler);
   lv_btnmatrix_set_one_check(btnm1, true);
 
+  TimeTrackingMode savedCurrMode = timeTrackerController.CurrMode();
+  if ( savedCurrMode != TimeTrackingMode::Iddle ) {
+    auto btnId = static_cast<int>(savedCurrMode);
+    currMode = savedCurrMode;
+    lv_btnmatrix_set_btn_ctrl(btnm1, btnId, LV_BTNMATRIX_CTRL_CHECK_STATE);
+  }
+
   btnSummary = lv_btn_create(lv_scr_act(), nullptr);
   btnSummary->user_data = this;
   lv_obj_set_event_cb(btnSummary, btnHandler);

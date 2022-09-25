@@ -24,8 +24,6 @@ void TimeTrackerController::Reset() {
 }
 
 void TimeTrackerController::ModeChanged(TimeTrackingMode newMode) {
-  printf("Mode changed %i %i\n", this->currMode, newMode);
-
   TickType_t currTime = xTaskGetTickCount();
 
   if (TimeTrackingMode::Iddle != this->currMode) {
@@ -42,10 +40,12 @@ void TimeTrackerController::ModeChanged(TimeTrackingMode newMode) {
 }
 
 TickType_t TimeTrackerController::TimeInMode(TimeTrackingMode mode) {
-    printf("wait what ?\n");
-    auto totalsIndex = static_cast<int>(mode);
-    printf("index = %d; totals = %d\n", totalsIndex, this->totals[totalsIndex] );
-    return this->totals[totalsIndex];
+  auto totalsIndex = static_cast<int>(mode);
+  return this->totals[totalsIndex];
+}
+
+TimeTrackingMode TimeTrackerController::CurrMode() {
+  return this->currMode;
 }
 
 void TimeTrackerController::StartTimer(uint32_t duration) {
