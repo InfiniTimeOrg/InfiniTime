@@ -46,9 +46,6 @@ Alarm::Alarm(DisplayApp* app,
              System::SystemTask& systemTask)
   : Screen(app), alarmController {alarmController}, systemTask {systemTask} {
 
-  hours = alarmController.Hours();
-  minutes = alarmController.Minutes();
-
   hourCounter.Create();
   lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   if (clockType == Controllers::Settings::ClockType::H12) {
@@ -60,12 +57,12 @@ Alarm::Alarm(DisplayApp* app,
     lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
     lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
   }
-  hourCounter.SetValue(hours);
+  hourCounter.SetValue(alarmController.Hours());
   hourCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   minuteCounter.Create();
   lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-  minuteCounter.SetValue(minutes);
+  minuteCounter.SetValue(alarmController.Minutes());
   minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
@@ -127,7 +124,6 @@ Alarm::~Alarm() {
   if (alarmController.IsAlerting()) {
     StopAlerting();
   }
-  alarmController.SetAlarmTime(hours, minutes);
   lv_obj_clean(lv_scr_act());
 }
 
@@ -154,7 +150,6 @@ void Alarm::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     }
     if (obj == enableSwitch) {
       if (lv_switch_get_state(enableSwitch)) {
-        alarmController.SetAlarmTime(hours, minutes);
         alarmController.ScheduleAlarm();
       } else {
         alarmController.DisableAlarm();
@@ -198,8 +193,7 @@ void Alarm::UpdateAlarmTime() {
       lv_label_set_text_static(lblampm, "AM");
     }
   }
-  hours = hourCounter.GetValue();
-  minutes = minuteCounter.GetValue();
+  alarmController.SetAlarmTime(hourCounter.GetValue(), minuteCounter.GetValue());
 }
 
 void Alarm::SetAlerting() {
