@@ -45,13 +45,22 @@ void AlarmController::Init(System::SystemTask* systemTask) {
   }
 }
 
+void AlarmController::SaveAlarm() {
+
+  // verify if is necessary to save
+  if (alarmChanged) {
+    SaveAlarmToFile();
+  }
+  alarmChanged = false;
+}
+
 void AlarmController::SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin) {
   if (alarm.hours == alarmHr && alarm.minutes == alarmMin) {
     return;
   }
   alarm.hours = alarmHr;
   alarm.minutes = alarmMin;
-  SaveAlarmToFile();
+  alarmChanged = true;
 }
 
 void AlarmController::ScheduleAlarm() {
@@ -93,7 +102,9 @@ void AlarmController::ScheduleAlarm() {
 
   if (!alarm.isEnabled) {
     alarm.isEnabled = true;
-    SaveAlarmToFile();
+    // store enabled alarm immediately
+    alarmChanged = true;
+    SaveAlarm();
   }
 }
 
@@ -106,7 +117,9 @@ void AlarmController::DisableAlarm() {
   isAlerting = false;
   if (alarm.isEnabled) {
     alarm.isEnabled = false;
-    SaveAlarmToFile();
+    // store disabled alarm immediately
+    alarmChanged = true;
+    SaveAlarm();
   }
 }
 
@@ -120,7 +133,9 @@ void AlarmController::StopAlerting() {
   // Disable alarm unless it is recurring
   if (alarm.recurrence == RecurType::None) {
     alarm.isEnabled = false;
-    SaveAlarmToFile();
+    // store disabled alarm immediately
+    alarmChanged = true;
+    SaveAlarm();
   } else {
     // set next instance
     ScheduleAlarm();
@@ -131,7 +146,7 @@ void AlarmController::StopAlerting() {
 void AlarmController::SetRecurrence(RecurType recurrence) {
   if (alarm.recurrence != recurrence) {
     alarm.recurrence = recurrence;
-    SaveAlarmToFile();
+    alarmChanged = true;
   }
 }
 
@@ -157,14 +172,14 @@ void AlarmController::LoadAlarmFromFile() {
   NRF_LOG_INFO("[AlarmController] Loaded alarm data from file");
 }
 
-void AlarmController::SaveAlarmToFile() {
+void AlarmController::SaveAlarmToFile() const {
   lfs_file_t alarmFile;
   if (fs.FileOpen(&alarmFile, "/alarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
     NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file for saving");
     return;
   }
 
-  fs.FileWrite(&alarmFile, reinterpret_cast<uint8_t*>(&alarm), sizeof(alarm));
+  fs.FileWrite(&alarmFile, reinterpret_cast<const uint8_t*>(&alarm), sizeof(alarm));
   fs.FileClose(&alarmFile);
   NRF_LOG_INFO("[AlarmController] Saved alarm data with format version %u to file", alarm.version);
 }
