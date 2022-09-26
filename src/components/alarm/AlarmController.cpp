@@ -82,7 +82,7 @@ void AlarmController::ScheduleAlarm() {
   state = AlarmState::Set;
 }
 
-uint32_t AlarmController::SecondsToAlarm() {
+uint32_t AlarmController::SecondsToAlarm() const {
   return std::chrono::duration_cast<std::chrono::seconds>(alarmTime - dateTimeController.CurrentDateTime()).count();
 }
 
