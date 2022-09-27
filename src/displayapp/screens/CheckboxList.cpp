@@ -89,7 +89,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
       lv_obj_set_event_cb(cbOption[i], event_handler);
       SetRadioButtonStyle(cbOption[i]);
 
-      if (static_cast<unsigned int>((settingsController.*GetOptionIndex)() - MAXLISTITEMS * screenID) == i) {
+      if (static_cast<unsigned int>((settingsController.*GetOptionIndex)() - MaxItems * screenID) == i) {
         lv_checkbox_set_checked(cbOption[i], true);
       }
     }
@@ -107,7 +107,7 @@ void CheckboxList::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       if (strcmp(options[i], "")) {
         if (object == cbOption[i]) {
           lv_checkbox_set_checked(cbOption[i], true);
-          (settingsController.*SetOptionIndex)(MAXLISTITEMS * screenID + i);
+          (settingsController.*SetOptionIndex)(MaxItems* screenID + i);
         } else {
           lv_checkbox_set_checked(cbOption[i], false);
         }
