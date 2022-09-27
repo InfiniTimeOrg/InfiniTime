@@ -107,7 +107,7 @@ void CheckboxList::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       if (strcmp(options[i], "")) {
         if (object == cbOption[i]) {
           lv_checkbox_set_checked(cbOption[i], true);
-          (settingsController.*SetOptionIndex)(MaxItems* screenID + i);
+          (settingsController.*SetOptionIndex)(MaxItems * screenID + i);
         } else {
           lv_checkbox_set_checked(cbOption[i], false);
         }
