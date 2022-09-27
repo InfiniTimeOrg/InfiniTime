@@ -20,7 +20,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
                            const char* optionsSymbol,
                            void (Controllers::Settings::*SetOptionIndex)(uint8_t),
                            uint8_t (Controllers::Settings::*GetOptionIndex)() const,
-                           std::array<const char*, MAXLISTITEMS> options)
+                           std::array<const char*, MaxItems> options)
   : Screen(app),
     screenID {screenID},
     settingsController {settingsController},
@@ -42,7 +42,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
     pageIndicatorBase = lv_line_create(lv_scr_act(), NULL);
     lv_obj_set_style_local_line_width(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
     lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
-    lv_line_set_points(pageIndicatorBase, pageIndicatorBasePoints, 2);
+    lv_line_set_points(pageIndicatorBase, pageIndicatorBasePoints.data(), 2);
 
     const uint16_t indicatorSize = LV_VER_RES / numScreens;
     const uint16_t indicatorPos = indicatorSize * screenID;
@@ -55,7 +55,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
     pageIndicator = lv_line_create(lv_scr_act(), NULL);
     lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
     lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-    lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
+    lv_line_set_points(pageIndicator, pageIndicatorPoints.data(), 2);
   }
 
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);

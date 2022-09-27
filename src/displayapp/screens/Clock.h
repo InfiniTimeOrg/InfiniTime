@@ -29,7 +29,7 @@ namespace Pinetime {
               Controllers::Settings& settingsController,
               Controllers::HeartRateController& heartRateController,
               Controllers::MotionController& motionController,
-              Controllers::FS& fs);
+              Controllers::FS& filesystem);
         ~Clock() override;
 
         bool OnTouchEvent(TouchEvents event) override;
@@ -43,7 +43,7 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
-        Controllers::FS& fs;
+        Controllers::FS& filesystem;
 
         std::unique_ptr<Screen> screen;
         std::unique_ptr<Screen> WatchFaceDigitalScreen();
