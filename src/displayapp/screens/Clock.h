@@ -51,6 +51,7 @@ namespace Pinetime {
         std::unique_ptr<Screen> WatchFacePineTimeStyleScreen();
         std::unique_ptr<Screen> WatchFaceTerminalScreen();
         std::unique_ptr<Screen> WatchFaceInfineatScreen();
+        std::unique_ptr<Screen> WatchFaceCasioStyleG7710();
       };
     }
   }
