@@ -102,17 +102,17 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
   line_icons = lv_line_create(lv_scr_act(), nullptr);
   lv_line_set_points(line_icons, line_icons_points, 3);
   lv_obj_add_style(line_icons, LV_LINE_PART_MAIN, &style_line);
-  lv_obj_align(line_icons, NULL, LV_ALIGN_IN_TOP_RIGHT, -10, 18);
+  lv_obj_align(line_icons, nullptr, LV_ALIGN_IN_TOP_RIGHT, -10, 18);
 
   line_day_of_week_number = lv_line_create(lv_scr_act(), nullptr);
   lv_line_set_points(line_day_of_week_number, line_day_of_week_number_points, 4);
   lv_obj_add_style(line_day_of_week_number, LV_LINE_PART_MAIN, &style_border);
-  lv_obj_align(line_day_of_week_number, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 8);
+  lv_obj_align(line_day_of_week_number, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 8);
 
   line_day_of_year = lv_line_create(lv_scr_act(), nullptr);
   lv_line_set_points(line_day_of_year, line_day_of_year_points, 3);
   lv_obj_add_style(line_day_of_year, LV_LINE_PART_MAIN, &style_line);
-  lv_obj_align(line_day_of_year, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 60);
+  lv_obj_align(line_day_of_year, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 60);
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 70);
@@ -123,7 +123,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
   line_date = lv_line_create(lv_scr_act(), nullptr);
   lv_line_set_points(line_date, line_date_points, 3);
   lv_obj_add_style(line_date, LV_LINE_PART_MAIN, &style_line);
-  lv_obj_align(line_date, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 100);
+  lv_obj_align(line_date, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 100);
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
@@ -133,7 +133,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
   line_time = lv_line_create(lv_scr_act(), nullptr);
   lv_line_set_points(line_time, line_time_points, 3);
   lv_obj_add_style(line_time, LV_LINE_PART_MAIN, &style_line);
-  lv_obj_align(line_time, NULL, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -25);
+  lv_obj_align(line_time, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -25);
 
   label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(label_time_ampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
@@ -176,6 +176,18 @@ WatchFaceCasioStyleG7710::~WatchFaceCasioStyleG7710() {
 
   lv_style_reset(&style_line);
   lv_style_reset(&style_border);
+
+  if (font_dot40 != nullptr) {
+    lv_font_free(font_dot40);
+  }
+
+  if (font_segment40 != nullptr) {
+    lv_font_free(font_segment40);
+  }
+
+  if (font_segment115 != nullptr) {
+    lv_font_free(font_segment115);
+  }
 
   lv_obj_clean(lv_scr_act());
 }
