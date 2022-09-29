@@ -21,7 +21,7 @@ WatchFaceFuzzy::WatchFaceFuzzy(DisplayApp* app,
   lv_label_set_long_mode(backgroundLabel, LV_LABEL_LONG_CROP);
   lv_obj_set_size(backgroundLabel, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_pos(backgroundLabel, 0, 0);
-  lv_label_set_text(backgroundLabel, "");
+  lv_label_set_text_static(backgroundLabel, "");
 
   timeLabel = lv_label_create(backgroundLabel, nullptr);
   lv_label_set_long_mode(timeLabel, LV_LABEL_LONG_BREAK);

@@ -431,7 +431,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/WatchFaceTerminal.cpp
         displayapp/screens/WatchFaceFuzzy.cpp
         displayapp/screens/WatchFacePineTimeStyle.cpp
-        displayapp/screens/PineTimeStyle.cpp
 
         ##
 
