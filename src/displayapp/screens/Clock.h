@@ -15,6 +15,7 @@ namespace Pinetime {
     class Ble;
     class NotificationManager;
     class MotionController;
+    class MotorController;
   }
 
   namespace Applications {
@@ -29,6 +30,7 @@ namespace Pinetime {
               Controllers::Settings& settingsController,
               Controllers::HeartRateController& heartRateController,
               Controllers::MotionController& motionController,
+              Controllers::MotorController& motorController,
               Controllers::FS& filesystem);
         ~Clock() override;
 
@@ -43,6 +45,7 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
+        Controllers::MotorController& motorController;
         Controllers::FS& filesystem;
 
         std::unique_ptr<Screen> screen;
@@ -51,6 +54,7 @@ namespace Pinetime {
         std::unique_ptr<Screen> WatchFacePineTimeStyleScreen();
         std::unique_ptr<Screen> WatchFaceTerminalScreen();
         std::unique_ptr<Screen> WatchFaceInfineatScreen();
+        std::unique_ptr<Screen> WatchFaceFuzzyScreen();
       };
     }
   }

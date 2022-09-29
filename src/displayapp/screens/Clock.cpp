@@ -4,6 +4,7 @@
 #include <lvgl/lvgl.h>
 #include "components/battery/BatteryController.h"
 #include "components/motion/MotionController.h"
+#include "components/motor/MotorController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/settings/Settings.h"
@@ -13,6 +14,7 @@
 #include "displayapp/screens/WatchFaceInfineat.h"
 #include "displayapp/screens/WatchFaceAnalog.h"
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
+#include "displayapp/screens/WatchFaceFuzzy.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -24,6 +26,7 @@ Clock::Clock(DisplayApp* app,
              Controllers::Settings& settingsController,
              Controllers::HeartRateController& heartRateController,
              Controllers::MotionController& motionController,
+             Controllers::MotorController& motorController,
              Controllers::FS& filesystem)
   : Screen(app),
     dateTimeController {dateTimeController},
@@ -33,6 +36,7 @@ Clock::Clock(DisplayApp* app,
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
+    motorController {motorController},
     filesystem {filesystem},
     screen {[this, &settingsController]() {
       switch (settingsController.GetClockFace()) {
@@ -50,6 +54,9 @@ Clock::Clock(DisplayApp* app,
           break;
         case 4:
           return WatchFaceInfineatScreen();
+          break;
+        case 5:
+          return WatchFaceFuzzyScreen();
           break;
       }
       return WatchFaceDigitalScreen();
@@ -115,8 +122,16 @@ std::unique_ptr<Screen> Clock::WatchFaceInfineatScreen() {
                                                       dateTimeController,
                                                       batteryController,
                                                       bleController,
-                                                      notificatioManager,
+                                                      notificationManager,
                                                       settingsController,
                                                       motionController,
                                                       filesystem);
+}
+
+std::unique_ptr<Screen> Clock::WatchFaceFuzzyScreen() {
+  return std::make_unique<Screens::WatchFaceFuzzy>(app,
+                                                   dateTimeController,
+                                                   settingsController,
+                                                   motorController,
+                                                   motionController);
 }

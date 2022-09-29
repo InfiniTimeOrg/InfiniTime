@@ -18,7 +18,6 @@ namespace Pinetime {
 
       class Notifications : public Screen {
       public:
-        enum class Modes { Normal, Preview };
         explicit Notifications(DisplayApp* app,
                                Pinetime::Controllers::NotificationManager& notificationManager,
                                Pinetime::Controllers::AlertNotificationService& alertNotificationService,

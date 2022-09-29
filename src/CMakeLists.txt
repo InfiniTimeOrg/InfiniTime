@@ -396,7 +396,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Motion.cpp
         displayapp/screens/FlashLight.cpp
         displayapp/screens/List.cpp
-        displayapp/screens/CheckboxList.cpp
+        displayapp/screens/Container.cpp
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
@@ -429,6 +429,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/WatchFaceDigital.cpp
         displayapp/screens/WatchFaceInfineat.cpp
         displayapp/screens/WatchFaceTerminal.cpp
+        displayapp/screens/WatchFaceFuzzy.cpp
         displayapp/screens/WatchFacePineTimeStyle.cpp
 
         ##

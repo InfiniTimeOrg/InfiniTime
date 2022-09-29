@@ -6,6 +6,7 @@ namespace Pinetime {
       None,
       Launcher,
       Clock,
+      WatchFaceDigitalPreview,
       SysInfo,
       FirmwareUpdate,
       FirmwareValidation,

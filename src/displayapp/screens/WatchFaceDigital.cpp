@@ -21,8 +21,9 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
                                    Controllers::NotificationManager& notificationManager,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
-                                   Controllers::MotionController& motionController)
-  : Screen(app),
+                                   Controllers::MotionController& motionController,
+                                   Screen::Modes mode)
+  : Screen(app, mode),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
@@ -70,6 +71,10 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
   lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  if (mode == Screen::Modes::Preview) {
+    timeoutTickCount = xTaskGetTickCount() + (5 * 1024);
+  }
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -174,5 +179,9 @@ void WatchFaceDigital::Refresh() {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
     lv_obj_realign(stepValue);
     lv_obj_realign(stepIcon);
+  }
+
+  if (mode == Screen::Modes::Preview && xTaskGetTickCount() > timeoutTickCount) {
+    running = false;
   }
 }
