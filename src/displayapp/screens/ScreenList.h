@@ -99,6 +99,10 @@ namespace Pinetime {
           return false;
         }
 
+        uint8_t getScreenIndex() {
+            return screenIndex;
+        }
+
       private:
         uint8_t initScreen = 0;
         const std::array<std::function<std::unique_ptr<Screen>()>, N> screens;

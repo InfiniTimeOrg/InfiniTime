@@ -9,54 +9,98 @@
 
 using namespace Pinetime::Applications::Screens;
 
-constexpr const char* SettingWatchFace::title;
-constexpr const char* SettingWatchFace::symbol;
+namespace {
+  void event_handler(lv_obj_t* obj, lv_event_t event) {
+    auto* settings = static_cast<SettingWatchFace*>(obj->user_data);
+    settings->UpdateSelected(obj, event);
+  }
+}
 
-SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
+auto SettingWatchFace::CreateScreenList() {
+  std::array<std::function<std::unique_ptr<Screen>()>, nScreens> screens;
+  for (uint8_t i = 0; i < screens.size(); i++) {
+    screens[i] = [this, i]() -> std::unique_ptr<Screen> { return CreateScreen(i); };
+  }
+  return screens;
+}
+
+std::unique_ptr<Screen> SettingWatchFace::CreateScreen(uint8_t screenIdx) {
+  /* Container */
+  lv_obj_t* container = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_opa(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
+  lv_obj_set_pos(container, 0, 0);
+
+  /* Title... */
+  lv_obj_t* title = lv_label_create(container, nullptr);
+  lv_label_set_text_static(title, this.title);
+  lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(title, container, LV_ALIGN_IN_TOP_MID, 10, 15);
+
+  /* ...with icon */
+  lv_obj_t* icon = lv_label_create(container, nullptr);
+  lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+  lv_label_set_text_static(icon, this.icon);
+  lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
+
+  /* Watchface option list */
+  lv_obj_t* list = lv_cont_create(container, nullptr);
+
+  lv_obj_set_style_local_bg_opa(list, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_style_local_pad_all(list, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
+  lv_obj_set_style_local_pad_inner(list, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
+  lv_obj_set_style_local_border_width(list, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
+
+  lv_obj_set_pos(list, 10, 60);
+  lv_obj_set_width(list, LV_HOR_RES - 20);
+  lv_obj_set_height(list, LV_VER_RES - 50);
+  lv_cont_set_layout(list, LV_LAYOUT_COLUMN_LEFT);
+
+  for (uint8_t i = 0; i < optionsPerScreen ; i++) {
+    uint8_t optionIdx = screenIdx * optionsPerScreen + i;
+    if (optionIdx < nOptions) {
+      lv_obj_t* checkbox = lv_checkbox_create(list, nullptr);
+      lv_checkbox_set_text(checkbox, options[optionIdx]);
+      checkbox->user_data = this;
+      lv_obj_set_event_cb(checkbox, event_handler);
+      SetRadioButtonStyle(checkbox);
+      if (optionIdx == settingsController.GetClockFace()) {
+        lv_checkbox_set_checked(checkbox, true);
+      }
+      checkboxes[i] = checkbox;
+    } else {
+      checkboxes[i] = nullptr;
+    }
+  }
+
+  return std::make_unique<Screens::Container>(app, container, screenIdx, nScreens, true);
+}
+
+SettingWatchFace::SettingWatchFace(DisplayApp* app, Controllers::Settings& settingsController)
   : Screen(app),
     settingsController {settingsController},
-    screens {app,
-             settingsController.GetWatchfacesMenu(),
-             {[this]() -> std::unique_ptr<Screen> {
-                return CreateScreen1();
-              },
-              [this]() -> std::unique_ptr<Screen> {
-                return CreateScreen2();
-              }},
-             Screens::ScreenListModes::UpDown} {
-}
+    screens {app, 0, CreateScreenList(), Screens::ScreenListModes::RightLeft} { }
 
 SettingWatchFace::~SettingWatchFace() {
   lv_obj_clean(lv_scr_act());
   settingsController.SaveSettings();
 }
 
-bool SettingWatchFace::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+bool SettingWatchFace::OnTouchEvent(Applications::TouchEvents event) {
   return screens.OnTouchEvent(event);
 }
 
-std::unique_ptr<Screen> SettingWatchFace::CreateScreen1() {
-  std::array<const char*, 4> watchfaces {"Digital face", "Analog face", "PineTimeStyle", "Terminal"};
-  return std::make_unique<Screens::CheckboxList>(0,
-                                                 2,
-                                                 app,
-                                                 settingsController,
-                                                 title,
-                                                 symbol,
-                                                 &Controllers::Settings::SetClockFace,
-                                                 &Controllers::Settings::GetClockFace,
-                                                 watchfaces);
-}
-
-std::unique_ptr<Screen> SettingWatchFace::CreateScreen2() {
-  std::array<const char*, 4> watchfaces {"Infineat face", "", "", ""};
-  return std::make_unique<Screens::CheckboxList>(1,
-                                                 2,
-                                                 app,
-                                                 settingsController,
-                                                 title,
-                                                 symbol,
-                                                 &Controllers::Settings::SetClockFace,
-                                                 &Controllers::Settings::GetClockFace,
-                                                 watchfaces);
+void SettingWatchFace::UpdateSelected(lv_obj_t* obj, lv_event_t event) {
+  if (event == LV_EVENT_VALUE_CHANGED) {
+    uint8_t screenIdx = screens.getScreenIndex(); 
+    for (uint8_t i = 0; i < optionsPerScreen && checkboxes[i]; i++) {
+      if (obj == checkboxes[i]) {
+        lv_checkbox_set_checked(checkboxes[i], true);
+        settingsController.SetClockFace(screenIdx * optionsPerScreen + i);
+      } else {
+        lv_checkbox_set_checked(checkboxes[i], false);
+      }
+    }
+  }
 }
