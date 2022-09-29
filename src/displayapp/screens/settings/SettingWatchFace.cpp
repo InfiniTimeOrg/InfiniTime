@@ -1,10 +1,8 @@
 #include "displayapp/screens/settings/SettingWatchFace.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
-#include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Styles.h"
-#include "displayapp/screens/Symbols.h"
 #include "components/settings/Settings.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -15,6 +13,8 @@ namespace {
     settings->UpdateSelected(obj, event);
   }
 }
+
+constexpr std::array<const char*, SettingWatchFace::options.size()> SettingWatchFace::options;
 
 auto SettingWatchFace::CreateScreenList() {
   std::array<std::function<std::unique_ptr<Screen>()>, nScreens> screens;
@@ -33,14 +33,14 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen(uint8_t screenIdx) {
 
   /* Title... */
   lv_obj_t* title = lv_label_create(container, nullptr);
-  lv_label_set_text_static(title, this.title);
+  lv_label_set_text_static(title, this->title);
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, container, LV_ALIGN_IN_TOP_MID, 10, 15);
 
   /* ...with icon */
   lv_obj_t* icon = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
-  lv_label_set_text_static(icon, this.icon);
+  lv_label_set_text_static(icon, this->icon);
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 

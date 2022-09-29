@@ -3,10 +3,11 @@
 #include <array>
 #include <cstdint>
 #include <lvgl/lvgl.h>
+#include "components/settings/Settings.h"
+#include "displayapp/screens/Container.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/ScreenList.h"
-#include "displayapp/screens/Container.h"
-#include "components/settings/Settings.h"
+#include "displayapp/screens/Symbols.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -37,7 +38,6 @@ namespace Pinetime {
         std::unique_ptr<Screen> CreateScreen(uint8_t screenIdx);
 
         Controllers::Settings& settingsController;
-        ScreenList<2> screens;
 
         ScreenList<nScreens> screens;
 
