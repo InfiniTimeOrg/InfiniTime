@@ -28,7 +28,7 @@ namespace Pinetime {
                                Controllers::DateTime& dateTimeController,
                                Controllers::Battery& batteryController,
                                Controllers::Ble& bleController,
-                               Controllers::NotificationManager& notificatioManager,
+                               Controllers::NotificationManager& notificationManager,
                                Controllers::Settings& settingsController,
                                Controllers::MotionController& motionController);
         ~WatchFacePineTimeStyle() override;
@@ -98,7 +98,7 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
-        Controllers::NotificationManager& notificatioManager;
+        Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;
 

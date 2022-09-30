@@ -42,6 +42,10 @@ namespace Pinetime {
         Colors ColorBar = Colors::Teal;
         Colors ColorBG = Colors::Black;
       };
+      struct WatchFaceInfineat {
+        bool showSideCover = true;
+        int colorIndex = 0;
+      };
 
       Settings(Pinetime::Controllers::FS& fs);
 
@@ -95,6 +99,26 @@ namespace Pinetime {
         return settings.PTS.ColorBG;
       };
 
+      void SetInfineatShowSideCover(bool show) {
+        if (show != settings.watchFaceInfineat.showSideCover) {
+          settings.watchFaceInfineat.showSideCover = show;
+          settingsChanged = true;
+        }
+      };
+      bool GetInfineatShowSideCover() const {
+        return settings.watchFaceInfineat.showSideCover;
+      };
+
+      void SetInfineatColorIndex(int index) {
+        if (index != settings.watchFaceInfineat.colorIndex) {
+          settings.watchFaceInfineat.colorIndex = index;
+          settingsChanged = true;
+        }
+      };
+      int GetInfineatColorIndex() const {
+        return settings.watchFaceInfineat.colorIndex;
+      };
+
       void SetAppMenu(uint8_t menu) {
         appMenu = menu;
       };
@@ -108,6 +132,14 @@ namespace Pinetime {
       };
       uint8_t GetSettingsMenu() const {
         return settingsMenu;
+      };
+
+      void SetWatchfacesMenu(uint8_t menu) {
+        watchFacesMenu = menu;
+      };
+
+      uint8_t GetWatchfacesMenu() const {
+        return watchFacesMenu;
       };
 
       void SetClockType(ClockType clocktype) {
@@ -213,7 +245,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0003;
+      static constexpr uint32_t settingsVersion = 0x0004;
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
@@ -227,6 +259,8 @@ namespace Pinetime {
 
         PineTimeStyle PTS;
 
+        WatchFaceInfineat watchFaceInfineat;
+
         std::bitset<4> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
@@ -237,6 +271,7 @@ namespace Pinetime {
 
       uint8_t appMenu = 0;
       uint8_t settingsMenu = 0;
+      uint8_t watchFacesMenu = 0;
       /* ble state is intentionally not saved with the other watch settings and initialized
        * to off (false) on every boot because we always want ble to be enabled on startup
        */
