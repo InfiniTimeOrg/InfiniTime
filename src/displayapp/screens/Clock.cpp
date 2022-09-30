@@ -47,7 +47,7 @@ Clock::Clock(Controllers::DateTime& dateTimeController,
         case WatchFace::Terminal:
           return WatchFaceTerminalScreen();
           break;
-        case 4:
+        case WatchFace::Infineat:
           return WatchFaceInfineatScreen();
           break;
         case 5:

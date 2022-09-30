@@ -7,6 +7,7 @@ namespace Pinetime {
       Analog,
       PineTimeStyle,
       Terminal,
+      Infineat,
     };
   }
 }
