@@ -130,7 +130,7 @@ std::unique_ptr<Screen> Clock::WatchFaceCasioStyleG7710() {
                                                              dateTimeController,
                                                              batteryController,
                                                              bleController,
-                                                             notificatioManager,
+                                                             notificationManager,
                                                              settingsController,
                                                              heartRateController,
                                                              motionController,
