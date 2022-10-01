@@ -27,7 +27,7 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
                                      Controllers::NotificationManager& notificationManager,
                                      Controllers::Settings& settingsController,
                                      Controllers::MotionController& motionController,
-                                     Controllers::FS& fs)
+                                     Controllers::FS& filesystem)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -37,11 +37,13 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
     settingsController {settingsController},
     motionController {motionController} {
   lfs_file f = {};
-  if (fs.FileOpen(&f, "/fonts/teko.bin", LFS_O_RDONLY) >= 0) {
+  if (filesystem.FileOpen(&f, "/fonts/teko.bin", LFS_O_RDONLY) >= 0) {
+    filesystem.FileClose(&f);
     font_teko = lv_font_load("F:/fonts/teko.bin");
   }
 
-  if (fs.FileOpen(&f, "/fonts/bebas.bin", LFS_O_RDONLY) >= 0) {
+  if (filesystem.FileOpen(&f, "/fonts/bebas.bin", LFS_O_RDONLY) >= 0) {
+    filesystem.FileClose(&f);
     font_bebas = lv_font_load("F:/fonts/bebas.bin");
   }
 

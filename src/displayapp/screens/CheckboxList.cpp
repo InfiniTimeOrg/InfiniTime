@@ -98,7 +98,6 @@ CheckboxList::CheckboxList(const uint8_t screenID,
 
 CheckboxList::~CheckboxList() {
   lv_obj_clean(lv_scr_act());
-  settingsController.SaveSettings();
 }
 
 void CheckboxList::UpdateSelected(lv_obj_t* object, lv_event_t event) {
