@@ -36,14 +36,17 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
 
   lfs_file f = {};
   if (filesystem.FileOpen(&f, "/fonts/lv_font_dots_40.bin", LFS_O_RDONLY) >= 0) {
+    filesystem.FileClose(&f);
     font_dot40 = lv_font_load("F:/fonts/lv_font_dots_40.bin");
   }
 
   if (filesystem.FileOpen(&f, "/fonts/7segments_40.bin", LFS_O_RDONLY) >= 0) {
+    filesystem.FileClose(&f);
     font_segment40 = lv_font_load("F:/fonts/7segments_40.bin");
   }
 
   if (filesystem.FileOpen(&f, "/fonts/7segments_115.bin", LFS_O_RDONLY) >= 0) {
+    filesystem.FileClose(&f);
     font_segment115 = lv_font_load("F:/fonts/7segments_115.bin");
   }
 
