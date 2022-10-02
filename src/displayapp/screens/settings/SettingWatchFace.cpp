@@ -3,8 +3,6 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/Screen.h"
-#include "displayapp/screens/Styles.h"
-#include "displayapp/screens/Symbols.h"
 #include "components/settings/Settings.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -16,7 +14,7 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pine
   : Screen(app),
     settingsController {settingsController},
     screens {app,
-             settingsController.GetWatchfacesMenu(),
+             0,
              {[this]() -> std::unique_ptr<Screen> {
                 return CreateScreen1();
               },
@@ -28,7 +26,6 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pine
 
 SettingWatchFace::~SettingWatchFace() {
   lv_obj_clean(lv_scr_act());
-  settingsController.SaveSettings();
 }
 
 bool SettingWatchFace::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
@@ -40,11 +37,13 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen1() {
   return std::make_unique<Screens::CheckboxList>(0,
                                                  2,
                                                  app,
-                                                 settingsController,
                                                  title,
                                                  symbol,
-                                                 &Controllers::Settings::SetClockFace,
-                                                 &Controllers::Settings::GetClockFace,
+                                                 settingsController.GetClockFace(),
+                                                 [&settings = settingsController](uint32_t clockFace) {
+                                                   settings.SetClockFace(clockFace);
+                                                   settings.SaveSettings();
+                                                 },
                                                  watchfaces);
 }
 
@@ -53,10 +52,12 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen2() {
   return std::make_unique<Screens::CheckboxList>(1,
                                                  2,
                                                  app,
-                                                 settingsController,
                                                  title,
                                                  symbol,
-                                                 &Controllers::Settings::SetClockFace,
-                                                 &Controllers::Settings::GetClockFace,
+                                                 settingsController.GetClockFace(),
+                                                 [&settings = settingsController](uint32_t clockFace) {
+                                                   settings.SetClockFace(clockFace);
+                                                   settings.SaveSettings();
+                                                 },
                                                  watchfaces);
 }

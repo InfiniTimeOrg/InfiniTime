@@ -1,5 +1,5 @@
-#include "displayapp/screens/CheckboxList.h"
 #include "displayapp/DisplayApp.h"
+#include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/Styles.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -9,27 +9,21 @@ namespace {
     CheckboxList* screen = static_cast<CheckboxList*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
-
 }
 
 CheckboxList::CheckboxList(const uint8_t screenID,
                            const uint8_t numScreens,
                            DisplayApp* app,
-                           Controllers::Settings& settingsController,
                            const char* optionsTitle,
                            const char* optionsSymbol,
-                           void (Controllers::Settings::*SetOptionIndex)(uint8_t),
-                           uint8_t (Controllers::Settings::*GetOptionIndex)() const,
+                           uint32_t originalValue,
+                           std::function<void(uint32_t)>OnValueChanged,
                            std::array<const char*, MaxItems> options)
   : Screen(app),
     screenID {screenID},
-    settingsController {settingsController},
-    SetOptionIndex {SetOptionIndex},
-    GetOptionIndex {GetOptionIndex},
-    options {options} {
-
-  settingsController.SetWatchfacesMenu(screenID);
-
+    OnValueChanged{std::move(OnValueChanged)},
+    options {options},
+    newValue{originalValue} {
   // Set the background to Black
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
@@ -39,7 +33,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
     pageIndicatorBasePoints[1].x = LV_HOR_RES - 1;
     pageIndicatorBasePoints[1].y = LV_VER_RES;
 
-    pageIndicatorBase = lv_line_create(lv_scr_act(), NULL);
+    pageIndicatorBase = lv_line_create(lv_scr_act(), nullptr);
     lv_obj_set_style_local_line_width(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
     lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x111111));
     lv_line_set_points(pageIndicatorBase, pageIndicatorBasePoints.data(), 2);
@@ -52,7 +46,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
     pageIndicatorPoints[1].x = LV_HOR_RES - 1;
     pageIndicatorPoints[1].y = indicatorPos + indicatorSize;
 
-    pageIndicator = lv_line_create(lv_scr_act(), NULL);
+    pageIndicator = lv_line_create(lv_scr_act(), nullptr);
     lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
     lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
     lv_line_set_points(pageIndicator, pageIndicatorPoints.data(), 2);
@@ -89,7 +83,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
       lv_obj_set_event_cb(cbOption[i], event_handler);
       SetRadioButtonStyle(cbOption[i]);
 
-      if (static_cast<unsigned int>((settingsController.*GetOptionIndex)() - MaxItems * screenID) == i) {
+      if (static_cast<unsigned int>(originalValue - MaxItems * screenID) == i) {
         lv_checkbox_set_checked(cbOption[i], true);
       }
     }
@@ -98,6 +92,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
 
 CheckboxList::~CheckboxList() {
   lv_obj_clean(lv_scr_act());
+  OnValueChanged(newValue);
 }
 
 void CheckboxList::UpdateSelected(lv_obj_t* object, lv_event_t event) {
@@ -106,7 +101,7 @@ void CheckboxList::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       if (strcmp(options[i], "")) {
         if (object == cbOption[i]) {
           lv_checkbox_set_checked(cbOption[i], true);
-          (settingsController.*SetOptionIndex)(MaxItems * screenID + i);
+          newValue = MaxItems * screenID + i;
         } else {
           lv_checkbox_set_checked(cbOption[i], false);
         }
