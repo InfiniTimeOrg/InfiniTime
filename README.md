@@ -28,6 +28,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
 - [Tips on designing an app UI](doc/ui_guidelines.md)
 - [Bootloader, OTA and DFU](bootloader/README.md)
+- [External resources](doc/ExternalResources.md)
 - [Versioning](doc/versioning.md)
 - [Project branches](doc/branches.md)
 - [Files included in the release notes](doc/filesInReleaseNotes.md)

@@ -123,6 +123,14 @@ namespace Pinetime {
         appMenu = menu;
       };
 
+      void SetWatchfacesMenu(uint8_t menu) {
+        watchFacesMenu = menu;
+      };
+
+      uint8_t GetWatchfacesMenu() const {
+        return watchFacesMenu;
+      };
+
       uint8_t GetAppMenu() const {
         return appMenu;
       };
@@ -132,14 +140,6 @@ namespace Pinetime {
       };
       uint8_t GetSettingsMenu() const {
         return settingsMenu;
-      };
-
-      void SetWatchfacesMenu(uint8_t menu) {
-        watchFacesMenu = menu;
-      };
-
-      uint8_t GetWatchfacesMenu() const {
-        return watchFacesMenu;
       };
 
       void SetClockType(ClockType clocktype) {

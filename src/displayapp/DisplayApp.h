@@ -121,6 +121,7 @@ namespace Pinetime {
       Apps nextApp = Apps::None;
       DisplayApp::FullRefreshDirections nextDirection;
       System::BootErrors bootError;
+      void ApplyBrightness();
     };
   }
 }
