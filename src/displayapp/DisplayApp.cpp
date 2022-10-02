@@ -127,7 +127,7 @@ void DisplayApp::Process(void* instance) {
 
 void DisplayApp::InitHw() {
   brightnessController.Init();
-  brightnessController.Set(settingsController.GetBrightness());
+  ApplyBrightness();
 }
 
 void DisplayApp::Refresh() {
@@ -158,7 +158,7 @@ void DisplayApp::Refresh() {
         brightnessController.Set(Controllers::BrightnessController::Levels::Low);
         break;
       case Messages::RestoreBrightness:
-        brightnessController.Set(settingsController.GetBrightness());
+        ApplyBrightness();
         break;
       case Messages::GoToSleep:
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
@@ -169,7 +169,7 @@ void DisplayApp::Refresh() {
         state = States::Idle;
         break;
       case Messages::GoToRunning:
-        brightnessController.Set(settingsController.GetBrightness());
+        ApplyBrightness();
         state = States::Running;
         break;
       case Messages::UpdateTimeOut:
@@ -303,7 +303,7 @@ void DisplayApp::ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction
 
 void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) {
   touchHandler.CancelTap();
-  brightnessController.Set(settingsController.GetBrightness());
+  ApplyBrightness();
 
   currentScreen.reset(nullptr);
   SetFullRefresh(direction);
@@ -529,4 +529,13 @@ void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
 
 void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
+}
+void DisplayApp::ApplyBrightness() {
+  auto brightness = settingsController.GetBrightness();
+  if(brightness != Controllers::BrightnessController::Levels::Low &&
+      brightness != Controllers::BrightnessController::Levels::Medium &&
+      brightness != Controllers::BrightnessController::Levels::High) {
+    brightness = Controllers::BrightnessController::Levels::High;
+  }
+  brightnessController.Set(brightness);
 }
