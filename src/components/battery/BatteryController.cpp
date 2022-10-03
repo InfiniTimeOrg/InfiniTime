@@ -88,8 +88,14 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
 
     if ((isPowerPresent && newPercent > percentRemaining) || (!isPowerPresent && newPercent < percentRemaining) || firstMeasurement) {
       firstMeasurement = false;
+      lastPercentRemaining = percentRemaining;
       percentRemaining = newPercent;
       systemTask->PushMessage(System::Messages::BatteryPercentageUpdated);
+    }
+
+    constexpr uint8_t lowBatteryThreshold {50};
+    if (!isPowerPresent && lastPercentRemaining >= lowBatteryThreshold && percentRemaining < lowBatteryThreshold) {
+      systemTask->PushMessage(System::Messages::LowBattery);
     }
 
     nrfx_saadc_uninit();
