@@ -7,53 +7,34 @@ using namespace Pinetime::Applications::Screens;
 
 Twos::Twos(Pinetime::Applications::DisplayApp* app) : Screen(app) {
 
-  // create styles to apply to different valued tiles
-  lv_style_init(&style_cell1);
-  lv_style_init(&style_cell2);
-  lv_style_init(&style_cell3);
-  lv_style_init(&style_cell4);
-  lv_style_init(&style_cell5);
+  struct colorPair {
+    lv_color_t bg;
+    lv_color_t fg;
+  };
 
-  lv_style_set_border_color(&style_cell1, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
-  lv_style_set_border_width(&style_cell1, LV_STATE_DEFAULT, 3);
-  lv_style_set_bg_opa(&style_cell1, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_cell1, LV_STATE_DEFAULT, lv_color_hex(0xcdc0b4));
-  lv_style_set_pad_top(&style_cell1, LV_STATE_DEFAULT, 29);
-  lv_style_set_text_color(&style_cell1, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-
-  lv_style_set_border_color(&style_cell2, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
-  lv_style_set_border_width(&style_cell2, LV_STATE_DEFAULT, 3);
-  lv_style_set_bg_opa(&style_cell2, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_cell2, LV_STATE_DEFAULT, lv_color_hex(0xefdfc6));
-  lv_style_set_pad_top(&style_cell2, LV_STATE_DEFAULT, 29);
-  lv_style_set_text_color(&style_cell2, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-
-  lv_style_set_border_color(&style_cell3, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
-  lv_style_set_border_width(&style_cell3, LV_STATE_DEFAULT, 3);
-  lv_style_set_bg_opa(&style_cell3, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_cell3, LV_STATE_DEFAULT, lv_color_hex(0xef9263));
-  lv_style_set_pad_top(&style_cell3, LV_STATE_DEFAULT, 29);
-
-  lv_style_set_border_color(&style_cell4, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
-  lv_style_set_border_width(&style_cell4, LV_STATE_DEFAULT, 3);
-  lv_style_set_bg_opa(&style_cell4, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_cell4, LV_STATE_DEFAULT, lv_color_hex(0xf76142));
-  lv_style_set_pad_top(&style_cell4, LV_STATE_DEFAULT, 29);
-
-  lv_style_set_border_color(&style_cell5, LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
-  lv_style_set_border_width(&style_cell5, LV_STATE_DEFAULT, 3);
-  lv_style_set_bg_opa(&style_cell5, LV_STATE_DEFAULT, LV_OPA_COVER);
-  lv_style_set_bg_color(&style_cell5, LV_STATE_DEFAULT, lv_color_hex(0x007dc5));
-  lv_style_set_pad_top(&style_cell5, LV_STATE_DEFAULT, 29);
-
-  // format grid display
+  static constexpr colorPair colors[nColors] = {
+    {LV_COLOR_MAKE(0xcd, 0xc0, 0xb4), LV_COLOR_BLACK},
+    {LV_COLOR_MAKE(0xef, 0xdf, 0xc6), LV_COLOR_BLACK},
+    {LV_COLOR_MAKE(0xef, 0x92, 0x63), LV_COLOR_WHITE},
+    {LV_COLOR_MAKE(0xf7, 0x61, 0x42), LV_COLOR_WHITE},
+    {LV_COLOR_MAKE(0x00, 0x7d, 0xc5), LV_COLOR_WHITE},
+  };
 
   gridDisplay = lv_table_create(lv_scr_act(), nullptr);
-  lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL1, &style_cell1);
-  lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL2, &style_cell2);
-  lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL3, &style_cell3);
-  lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL4, &style_cell4);
-  lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL4 + 1, &style_cell5);
+
+  for (size_t i = 0; i < nColors; i++) {
+    lv_style_init(&cellStyles[i]);
+
+    lv_style_set_border_color(&cellStyles[i], LV_STATE_DEFAULT, lv_color_hex(0xbbada0));
+    lv_style_set_border_width(&cellStyles[i], LV_STATE_DEFAULT, 3);
+    lv_style_set_bg_opa(&cellStyles[i], LV_STATE_DEFAULT, LV_OPA_COVER);
+    lv_style_set_bg_color(&cellStyles[i], LV_STATE_DEFAULT, colors[i].bg);
+    lv_style_set_pad_top(&cellStyles[i], LV_STATE_DEFAULT, 29);
+    lv_style_set_text_color(&cellStyles[i], LV_STATE_DEFAULT, colors[i].fg);
+
+    lv_obj_add_style(gridDisplay, LV_TABLE_PART_CELL1 + i, &cellStyles[i]);
+  }
+
   lv_table_set_col_cnt(gridDisplay, nCols);
   lv_table_set_row_cnt(gridDisplay, nRows);
   for (int col = 0; col < nCols; col++) {
@@ -83,11 +64,9 @@ Twos::Twos(Pinetime::Applications::DisplayApp* app) : Screen(app) {
 }
 
 Twos::~Twos() {
-  lv_style_reset(&style_cell1);
-  lv_style_reset(&style_cell2);
-  lv_style_reset(&style_cell3);
-  lv_style_reset(&style_cell4);
-  lv_style_reset(&style_cell5);
+  for (lv_style_t cellStyle : cellStyles) {
+    lv_style_reset(&cellStyle);
+  }
   lv_obj_clean(lv_scr_act());
 }
 

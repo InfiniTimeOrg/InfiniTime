@@ -131,7 +131,8 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               timerController,
                                               alarmController,
                                               brightnessController,
-                                              touchHandler);
+                                              touchHandler,
+                                              fs);
 
 Pinetime::System::SystemTask systemTask(spi,
                                         lcd,

@@ -21,6 +21,7 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
 
         lv_obj_t* btnSetTime;
+        lv_obj_t* lblSetTime;
 
         Widgets::Counter dayCounter = Widgets::Counter(1, 31, jetbrains_mono_bold_20);
         Widgets::Counter monthCounter = Widgets::Counter(1, 12, jetbrains_mono_bold_20);
