@@ -109,7 +109,7 @@ Pinetime::Controllers::DateTime dateTimeController {settingsController};
 Pinetime::Drivers::Watchdog watchdog;
 Pinetime::Drivers::WatchdogView watchdogView(watchdog);
 Pinetime::Controllers::NotificationManager notificationManager;
-Pinetime::Controllers::MotionController motionController;
+Pinetime::Controllers::MotionController motionController {motionSensor};
 Pinetime::Controllers::TimerController timerController;
 Pinetime::Controllers::AlarmController alarmController {dateTimeController};
 Pinetime::Controllers::TouchHandler touchHandler(touchPanel, lvgl);

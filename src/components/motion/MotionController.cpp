@@ -1,28 +1,38 @@
 #include "components/motion/MotionController.h"
 #include "os/os_cputime.h"
+
 using namespace Pinetime::Controllers;
 
-void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps) {
-  if (this->nbSteps != nbSteps && service != nullptr) {
+MotionController::MotionController(Pinetime::Drivers::Bma421& motionSensor)
+  : motionSensor {motionSensor} {
+}
+
+void MotionController::Update() {
+  isSensorOk = motionSensor.IsOk();
+
+  if (stepCounterMustBeReset) {
+    motionSensor.ResetStepCounter();
+    stepCounterMustBeReset = false;
+  }
+
+  auto motionValues = motionSensor.Process();
+
+  if (nbSteps != motionValues.steps && service != nullptr) {
     service->OnNewStepCountValue(nbSteps);
   }
 
-  if (service != nullptr && (this->x != x || this->y != y || this->z != z)) {
-    service->OnNewMotionValues(x, y, z);
+  if (service != nullptr && (x != motionValues.x || y != motionValues.y || z != motionValues.z)) {
+    service->OnNewMotionValues(motionValues.x, motionValues.y, motionValues.z);
   }
 
-  this->x = x;
-  this->y = y;
-  this->z = z;
-  int32_t deltaSteps = nbSteps - this->nbSteps;
-  this->nbSteps = nbSteps;
+  x = motionValues.x;
+  y = motionValues.y;
+  z = motionValues.z;
+  int32_t deltaSteps = motionValues.steps - nbSteps;
   if (deltaSteps > 0) {
     currentTripSteps += deltaSteps;
   }
-
-  // We ignore stepCountMustBeReset in this function and trust the nbSteps value.
-  // Overwriting nbSteps here invalidates stepCounterMustBeReset, so we set it to false.
-  stepCounterMustBeReset = false;
+  nbSteps = motionValues.steps;
 }
 
 bool MotionController::Should_RaiseWake(bool isSleeping) {
@@ -70,9 +80,6 @@ int32_t MotionController::currentShakeSpeed() {
   return accumulatedspeed;
 }
 
-void MotionController::IsSensorOk(bool isOk) {
-  isSensorOk = isOk;
-}
 void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
   switch (types) {
     case Drivers::Bma421::DeviceTypes::BMA421:

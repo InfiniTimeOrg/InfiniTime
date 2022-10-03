@@ -14,7 +14,9 @@ namespace Pinetime {
         BMA425,
       };
 
-      void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps);
+      MotionController(Pinetime::Drivers::Bma421& motionSensor);
+
+      void Update();
 
       int16_t X() const {
         return x;
@@ -40,17 +42,14 @@ namespace Pinetime {
         return currentTripSteps;
       }
 
-      bool GetStepCounterMustBeReset() const {
-        return stepCounterMustBeReset;
-      }
-      void SetStepCounterMustBeReset(bool reset) {
-        stepCounterMustBeReset = reset;
+      void ResetSteps() {
+        stepCounterMustBeReset = true;
       }
 
       bool Should_ShakeWake(uint16_t thresh);
       bool Should_RaiseWake(bool isSleeping);
       int32_t currentShakeSpeed();
-      void IsSensorOk(bool isOk);
+
       bool IsSensorOk() const {
         return isSensorOk;
       }
@@ -73,6 +72,7 @@ namespace Pinetime {
       bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
       Pinetime::Controllers::MotionService* service = nullptr;
+      Pinetime::Drivers::Bma421& motionSensor;
 
       int16_t lastXForShake = 0;
       int16_t lastYForShake = 0;
