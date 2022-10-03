@@ -85,6 +85,11 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     if (!isFull) {
       newPercent = std::min(aprox.GetValue(voltage), isCharging ? uint8_t {99} : uint8_t {100});
     }
+    // quick hack for better values
+    // rescale the percentages between 35 and 100
+    constexpr uint8_t realMin = 35;
+    newPercent = std::max(newPercent, realMin);
+    newPercent = (newPercent - realMin) * 100 / (100 - realMin);
 
     if ((isPowerPresent && newPercent > percentRemaining) || (!isPowerPresent && newPercent < percentRemaining) || firstMeasurement) {
       firstMeasurement = false;
@@ -93,7 +98,8 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
       systemTask->PushMessage(System::Messages::BatteryPercentageUpdated);
     }
 
-    constexpr uint8_t lowBatteryThreshold {50};
+    // warn at 20% battery (wrt. rescaling above)
+    constexpr uint8_t lowBatteryThreshold {20};
     if (!isPowerPresent && lastPercentRemaining >= lowBatteryThreshold && percentRemaining < lowBatteryThreshold) {
       systemTask->PushMessage(System::Messages::LowBattery);
     }
