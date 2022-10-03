@@ -3,8 +3,7 @@
 
 using namespace Pinetime::Controllers;
 
-MotionController::MotionController(Pinetime::Drivers::Bma421& motionSensor)
-  : motionSensor {motionSensor} {
+MotionController::MotionController(Pinetime::Drivers::Bma421& motionSensor) : motionSensor {motionSensor} {
 }
 
 void MotionController::Update() {
