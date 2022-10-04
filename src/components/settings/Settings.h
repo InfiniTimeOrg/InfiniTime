@@ -62,14 +62,14 @@ namespace Pinetime {
       void Init();
       void SaveSettings();
 
-      void SetClockFace(Pinetime::Applications::WatchFace face) {
-        if (face != settings.clockFace) {
+      void SetWatchFace(Pinetime::Applications::WatchFace face) {
+        if (face != settings.watchFace) {
           settingsChanged = true;
         }
-        settings.clockFace = face;
+        settings.watchFace = face;
       };
-      Pinetime::Applications::WatchFace GetClockFace() const {
-        return settings.clockFace;
+      Pinetime::Applications::WatchFace GetWatchFace() const {
+        return settings.watchFace;
       };
 
       void SetChimeOption(ChimesOption chimeOption) {
@@ -276,7 +276,7 @@ namespace Pinetime {
         ClockType clockType = ClockType::H24;
         Notification notificationStatus = Notification::On;
 
-        Pinetime::Applications::WatchFace clockFace = Pinetime::Applications::WatchFace::Digital;
+        Pinetime::Applications::WatchFace watchFace = Pinetime::Applications::WatchFace::Digital;
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;

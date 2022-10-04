@@ -1,6 +1,7 @@
 #include "displayapp/screens/settings/SettingWatchFace.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
+#include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/Screen.h"
 #include "components/settings/Settings.h"
 

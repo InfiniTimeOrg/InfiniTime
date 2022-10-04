@@ -34,7 +34,7 @@ Clock::Clock(Controllers::DateTime& dateTimeController,
     motionController {motionController},
     filesystem {filesystem},
     screen {[this, &settingsController]() {
-      switch (settingsController.GetClockFace()) {
+      switch (settingsController.GetWatchFace()) {
         case WatchFace::Digital:
           return WatchFaceDigitalScreen();
           break;
