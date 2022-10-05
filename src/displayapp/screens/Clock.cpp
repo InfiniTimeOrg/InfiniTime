@@ -90,7 +90,9 @@ std::unique_ptr<Screen> Clock::WatchFaceAnalogScreen() {
                                                     batteryController,
                                                     bleController,
                                                     notificationManager,
-                                                    settingsController);
+                                                    settingsController,
+                                                    heartRateController,
+                                                    motionController);
 }
 
 std::unique_ptr<Screen> Clock::WatchFacePineTimeStyleScreen() {
