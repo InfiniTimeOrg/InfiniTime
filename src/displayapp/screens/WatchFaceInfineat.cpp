@@ -274,7 +274,8 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_obj_set_size(btnClose, 60, 60);
   lv_obj_align(btnClose, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
   lv_obj_set_style_local_bg_opa(btnClose, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_70);
-  lv_obj_set_style_local_value_str(btnClose, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "X");
+  lv_obj_t* lblClose = lv_label_create(btnClose, nullptr);
+  lv_label_set_text_static(lblClose, "X");
   lv_obj_set_event_cb(btnClose, event_handler);
   lv_obj_set_hidden(btnClose, true);
 
@@ -283,7 +284,8 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_obj_set_size(btnNextColor, 60, 60);
   lv_obj_align(btnNextColor, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -15, 0);
   lv_obj_set_style_local_bg_opa(btnNextColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_70);
-  lv_obj_set_style_local_value_str(btnNextColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, ">");
+  lv_obj_t* lblNextColor = lv_label_create(btnNextColor, nullptr);
+  lv_label_set_text_static(lblNextColor, ">");
   lv_obj_set_event_cb(btnNextColor, event_handler);
   lv_obj_set_hidden(btnNextColor, true);
 
@@ -292,7 +294,8 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_obj_set_size(btnPrevColor, 60, 60);
   lv_obj_align(btnPrevColor, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 15, 0);
   lv_obj_set_style_local_bg_opa(btnPrevColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_70);
-  lv_obj_set_style_local_value_str(btnPrevColor, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "<");
+  lv_obj_t* lblPrevColor = lv_label_create(btnPrevColor, nullptr);
+  lv_label_set_text_static(lblPrevColor, "<");
   lv_obj_set_event_cb(btnPrevColor, event_handler);
   lv_obj_set_hidden(btnPrevColor, true);
 
@@ -302,7 +305,8 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_obj_align(btnToggleCover, lv_scr_act(), LV_ALIGN_CENTER, 0, 80);
   lv_obj_set_style_local_bg_opa(btnToggleCover, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_70);
   const char* labelToggle = settingsController.GetInfineatShowSideCover() ? "ON" : "OFF";
-  lv_obj_set_style_local_value_str(btnToggleCover, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, labelToggle);
+  lblToggle = lv_label_create(btnToggleCover, nullptr);
+  lv_label_set_text_static(lblToggle, labelToggle);
   lv_obj_set_event_cb(btnToggleCover, event_handler);
   lv_obj_set_hidden(btnToggleCover, true);
 
@@ -406,7 +410,7 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       lv_obj_set_hidden(btnNextColor, showSideCover);
       lv_obj_set_hidden(btnPrevColor, showSideCover);
       const char* labelToggle = showSideCover ? "OFF" : "ON";
-      lv_obj_set_style_local_value_str(btnToggleCover, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, labelToggle);
+      lv_label_set_text_static(lblToggle, labelToggle);
     }
     if (object == btnNextColor) {
       colorIndex = (colorIndex + 1) % nColors;

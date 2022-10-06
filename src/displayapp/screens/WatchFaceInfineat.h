@@ -112,6 +112,7 @@ namespace Pinetime {
         lv_obj_t* btnPrevColor;
         lv_obj_t* btnSettings;
         lv_obj_t* labelBtnSettings;
+        lv_obj_t* lblToggle;
 
         static constexpr int nLines = 9;
         static constexpr int nColors = 7; // must match number of colors in InfineatColors
