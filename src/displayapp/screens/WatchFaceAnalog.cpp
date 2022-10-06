@@ -272,9 +272,13 @@ void WatchFaceAnalog::Refresh() {
   stepCount = motionController.NbSteps();
   motionSensorOk = motionController.IsSensorOk();
   if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
-    lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
+    uint32_t steps = stepCount.Get();
+    if (steps < 1000) {
+      lv_label_set_text_fmt(stepValue, "%lu", steps);
+    } else {
+      lv_label_set_text_fmt(stepValue, "%luK", steps/1000);
+    }
     lv_obj_realign(stepValue);
-    lv_obj_realign(stepIcon);
   }
 
 }
