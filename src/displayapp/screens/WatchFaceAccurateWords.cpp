@@ -132,7 +132,7 @@ void WatchFaceAccurateWords::Refresh() {
                                            "twenty to ",
                                            "quarter to ",
                                            "ten to ",
-                                           "five to "
+                                           "five to ",
                                            "--"};
     const char* minutes_accurate_array[6] = {"--", "just gone ", "a little after ", "coming up to ", "almost "};
     const char* days_array[9] = {"--", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
