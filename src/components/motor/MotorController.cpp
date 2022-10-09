@@ -19,7 +19,7 @@ void MotorController::Ring(TimerHandle_t xTimer) {
 }
 
 void MotorController::RunForDuration(uint8_t motorDuration) {
-  if (xTimerChangePeriod(shortVib, pdMS_TO_TICKS(motorDuration), 0) == pdPASS && xTimerStart(shortVib, 0) == pdPASS) {
+  if (motorDuration > 0 && xTimerChangePeriod(shortVib, pdMS_TO_TICKS(motorDuration), 0) == pdPASS && xTimerStart(shortVib, 0) == pdPASS) {
     nrf_gpio_pin_clear(PinMap::Motor);
   }
 }

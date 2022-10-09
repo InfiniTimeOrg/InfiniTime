@@ -25,10 +25,11 @@ namespace Pinetime {
               Controllers::DateTime& dateTimeController,
               Controllers::Battery& batteryController,
               Controllers::Ble& bleController,
-              Controllers::NotificationManager& notificatioManager,
+              Controllers::NotificationManager& notificationManager,
               Controllers::Settings& settingsController,
               Controllers::HeartRateController& heartRateController,
-              Controllers::MotionController& motionController);
+              Controllers::MotionController& motionController,
+              Controllers::FS& filesystem);
         ~Clock() override;
 
         bool OnTouchEvent(TouchEvents event) override;
@@ -38,16 +39,19 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
-        Controllers::NotificationManager& notificatioManager;
+        Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
+        Controllers::FS& filesystem;
 
         std::unique_ptr<Screen> screen;
         std::unique_ptr<Screen> WatchFaceDigitalScreen();
         std::unique_ptr<Screen> WatchFaceAnalogScreen();
         std::unique_ptr<Screen> WatchFacePineTimeStyleScreen();
         std::unique_ptr<Screen> WatchFaceTerminalScreen();
+        std::unique_ptr<Screen> WatchFaceInfineatScreen();
+        std::unique_ptr<Screen> WatchFaceCasioStyleG7710();
       };
     }
   }

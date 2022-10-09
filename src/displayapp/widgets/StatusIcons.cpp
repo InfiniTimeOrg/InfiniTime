@@ -15,11 +15,9 @@ void StatusIcons::Create() {
   lv_obj_set_style_local_bg_opa(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
 
   bleIcon = lv_label_create(container, nullptr);
-  lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x0082FC));
   lv_label_set_text_static(bleIcon, Screens::Symbols::bluetooth);
 
   batteryPlug = lv_label_create(container, nullptr);
-  lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   lv_label_set_text_static(batteryPlug, Screens::Symbols::plug);
 
   batteryIcon.Create(container);
