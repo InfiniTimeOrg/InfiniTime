@@ -99,7 +99,7 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
 
       // warn at 20% battery (wrt. rescaling above)
       if (!isPowerPresent && BatteryIsLow() && lastPercentRemaining > lowBatteryThreshold) {
-          systemTask->PushMessage(System::Messages::LowBattery);
+        systemTask->PushMessage(System::Messages::LowBattery);
       }
     }
 
