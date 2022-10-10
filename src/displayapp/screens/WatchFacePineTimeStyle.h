@@ -28,7 +28,7 @@ namespace Pinetime {
                                Controllers::DateTime& dateTimeController,
                                Controllers::Battery& batteryController,
                                Controllers::Ble& bleController,
-                               Controllers::NotificationManager& notificatioManager,
+                               Controllers::NotificationManager& notificationManager,
                                Controllers::Settings& settingsController,
                                Controllers::MotionController& motionController);
         ~WatchFacePineTimeStyle() override;
@@ -43,6 +43,7 @@ namespace Pinetime {
       private:
         uint8_t displayedHour = -1;
         uint8_t displayedMinute = -1;
+        uint8_t displayedSecond = -1;
 
         uint16_t currentYear = 1970;
         Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
@@ -71,10 +72,12 @@ namespace Pinetime {
         lv_obj_t* btnReset;
         lv_obj_t* btnRandom;
         lv_obj_t* btnClose;
+        lv_obj_t* btnSteps;
         lv_obj_t* timebar;
         lv_obj_t* sidebar;
         lv_obj_t* timeDD1;
         lv_obj_t* timeDD2;
+        lv_obj_t* timeDD3;
         lv_obj_t* timeAMPM;
         lv_obj_t* dateDayOfWeek;
         lv_obj_t* dateDay;
@@ -89,8 +92,12 @@ namespace Pinetime {
         lv_obj_t* calendarCrossBar2;
         lv_obj_t* notificationIcon;
         lv_obj_t* stepGauge;
-        lv_obj_t* btnSet;
-        lv_obj_t* lbl_btnSet;
+        lv_obj_t* btnSetColor;
+        lv_obj_t* btnSetOpts;
+        lv_obj_t* lbl_btnSetColor;
+        lv_obj_t* lbl_btnSetOpts;
+        lv_obj_t* stepIcon;
+        lv_obj_t* stepValue;
         lv_color_t needle_colors[1];
 
         BatteryIcon batteryIcon;
@@ -98,7 +105,7 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
-        Controllers::NotificationManager& notificatioManager;
+        Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;
 
