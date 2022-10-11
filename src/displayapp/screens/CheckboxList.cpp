@@ -22,8 +22,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
   : Screen(app),
     screenID {screenID},
     OnValueChanged{std::move(OnValueChanged)},
-    options {options},
-    newValue{originalValue} {
+    options {options}, value {originalValue} {
   // Set the background to Black
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
@@ -92,7 +91,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
 
 CheckboxList::~CheckboxList() {
   lv_obj_clean(lv_scr_act());
-  OnValueChanged(newValue);
+  OnValueChanged(value);
 }
 
 void CheckboxList::UpdateSelected(lv_obj_t* object, lv_event_t event) {
@@ -101,7 +100,7 @@ void CheckboxList::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       if (strcmp(options[i], "")) {
         if (object == cbOption[i]) {
           lv_checkbox_set_checked(cbOption[i], true);
-          newValue = MaxItems * screenID + i;
+          value = MaxItems * screenID + i;
         } else {
           lv_checkbox_set_checked(cbOption[i], false);
         }
