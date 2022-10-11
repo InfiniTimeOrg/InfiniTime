@@ -34,7 +34,7 @@ namespace Pinetime {
         std::array<lv_point_t, 2> pageIndicatorPoints;
         lv_obj_t* pageIndicatorBase;
         lv_obj_t* pageIndicator;
-        uint32_t newValue;
+        uint32_t value;
       };
     }
   }
