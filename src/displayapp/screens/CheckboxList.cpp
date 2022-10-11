@@ -18,7 +18,7 @@ CheckboxList::CheckboxList(const uint8_t screenID,
                            const char* optionsSymbol,
                            uint32_t originalValue,
                            std::function<void(uint32_t)> OnValueChanged,
-                           std::array<const char*, MaxItems> options)
+                           std::array<Item, MaxItems> options)
   : Screen(app), screenID {screenID}, OnValueChanged {std::move(OnValueChanged)}, options {options}, value {originalValue} {
   // Set the background to Black
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
@@ -72,9 +72,12 @@ CheckboxList::CheckboxList(const uint8_t screenID,
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
   for (unsigned int i = 0; i < options.size(); i++) {
-    if (strcmp(options[i], "")) {
+    if (strcmp(options[i].name, "")) {
       cbOption[i] = lv_checkbox_create(container1, nullptr);
-      lv_checkbox_set_text(cbOption[i], options[i]);
+      lv_checkbox_set_text(cbOption[i], options[i].name);
+      if (!options[i].enabled) {
+        lv_checkbox_set_disabled(cbOption[i]);
+      }
       cbOption[i]->user_data = this;
       lv_obj_set_event_cb(cbOption[i], event_handler);
       SetRadioButtonStyle(cbOption[i]);
@@ -94,12 +97,15 @@ CheckboxList::~CheckboxList() {
 void CheckboxList::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
     for (unsigned int i = 0; i < options.size(); i++) {
-      if (strcmp(options[i], "")) {
+      if (strcmp(options[i].name, "")) {
         if (object == cbOption[i]) {
           lv_checkbox_set_checked(cbOption[i], true);
           value = MaxItems * screenID + i;
         } else {
           lv_checkbox_set_checked(cbOption[i], false);
+        }
+        if (!options[i].enabled) {
+          lv_checkbox_set_disabled(cbOption[i]);
         }
       }
     }

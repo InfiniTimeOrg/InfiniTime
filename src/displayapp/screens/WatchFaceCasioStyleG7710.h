@@ -37,6 +37,8 @@ namespace Pinetime {
 
         void Refresh() override;
 
+        static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
+
       private:
         uint8_t displayedHour = -1;
         uint8_t displayedMinute = -1;

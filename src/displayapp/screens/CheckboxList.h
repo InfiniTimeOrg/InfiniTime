@@ -14,6 +14,11 @@ namespace Pinetime {
       class CheckboxList : public Screen {
       public:
         static constexpr size_t MaxItems = 4;
+        struct Item {
+          const char* name;
+          bool enabled;
+        };
+
         CheckboxList(const uint8_t screenID,
                      const uint8_t numScreens,
                      DisplayApp* app,
@@ -21,14 +26,14 @@ namespace Pinetime {
                      const char* optionsSymbol,
                      uint32_t originalValue,
                      std::function<void(uint32_t)> OnValueChanged,
-                     std::array<const char*, MaxItems> options);
+                     std::array<Item, MaxItems> options);
         ~CheckboxList() override;
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
       private:
         const uint8_t screenID;
         std::function<void(uint32_t)> OnValueChanged;
-        std::array<const char*, MaxItems> options;
+        std::array<Item, MaxItems> options;
         std::array<lv_obj_t*, MaxItems> cbOption;
         std::array<lv_point_t, 2> pageIndicatorBasePoints;
         std::array<lv_point_t, 2> pageIndicatorPoints;

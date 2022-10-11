@@ -390,7 +390,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::QuickSettings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SettingWatchFace:
-      currentScreen = std::make_unique<Screens::SettingWatchFace>(this, settingsController);
+      currentScreen = std::make_unique<Screens::SettingWatchFace>(this, settingsController, filesystem);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SettingTimeFormat:

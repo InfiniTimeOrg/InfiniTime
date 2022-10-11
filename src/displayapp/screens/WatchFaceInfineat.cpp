@@ -609,3 +609,21 @@ void WatchFaceInfineat::ToggleBatteryIndicatorColor(bool showSideCover) {
                                     lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 7]));
   }
 }
+
+bool WatchFaceInfineat::IsAvailable(Pinetime::Controllers::FS& filesystem) {
+  lfs_file file = {};
+
+  if (filesystem.FileOpen(&file, "/fonts/teko.bin", LFS_O_RDONLY) < 0) {
+    return false;
+  }
+
+  if (filesystem.FileOpen(&file, "/fonts/bebas.bin", LFS_O_RDONLY) < 0) {
+    return false;
+  }
+
+  if (filesystem.FileOpen(&file, "/images/pine_small.bin", LFS_O_RDONLY) < 0) {
+    return false;
+  }
+
+  return true;
+}

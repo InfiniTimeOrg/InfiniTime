@@ -333,3 +333,20 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_obj_realign(stepIcon);
   }
 }
+bool WatchFaceCasioStyleG7710::IsAvailable(Pinetime::Controllers::FS& filesystem) {
+  lfs_file file = {};
+
+  if (filesystem.FileOpen(&file, "/fonts/lv_font_dots_40.bin", LFS_O_RDONLY) < 0) {
+    return false;
+  }
+
+  if (filesystem.FileOpen(&file, "/fonts/7segments_40.bin", LFS_O_RDONLY) < 0) {
+    return false;
+  }
+
+  if (filesystem.FileOpen(&file, "/fonts/7segments_115.bin", LFS_O_RDONLY) < 0) {
+    return false;
+  }
+
+  return true;
+}
