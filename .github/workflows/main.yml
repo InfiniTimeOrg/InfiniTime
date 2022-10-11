@@ -48,6 +48,11 @@ jobs:
         with:
           name: InfiniTime MCUBoot image ${{ github.head_ref }}
           path: ./build/output/pinetime-mcuboot-app-image-*.bin
+      - name: Upload resources artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: InfiniTime resources ${{ github.head_ref }}
+          path: ./build/output/infinitime-resources-*.zip
 
   build-simulator:
     runs-on: ubuntu-latest
