@@ -17,12 +17,9 @@ CheckboxList::CheckboxList(const uint8_t screenID,
                            const char* optionsTitle,
                            const char* optionsSymbol,
                            uint32_t originalValue,
-                           std::function<void(uint32_t)>OnValueChanged,
+                           std::function<void(uint32_t)> OnValueChanged,
                            std::array<const char*, MaxItems> options)
-  : Screen(app),
-    screenID {screenID},
-    OnValueChanged{std::move(OnValueChanged)},
-    options {options}, value {originalValue} {
+  : Screen(app), screenID {screenID}, OnValueChanged {std::move(OnValueChanged)}, options {options}, value {originalValue} {
   // Set the background to Black
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
