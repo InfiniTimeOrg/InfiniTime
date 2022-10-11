@@ -20,14 +20,14 @@ namespace Pinetime {
                      const char* optionsTitle,
                      const char* optionsSymbol,
                      uint32_t originalValue,
-                     std::function<void(uint32_t)>OnValueChanged,
+                     std::function<void(uint32_t)> OnValueChanged,
                      std::array<const char*, MaxItems> options);
         ~CheckboxList() override;
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
       private:
         const uint8_t screenID;
-        std::function<void(uint32_t)>OnValueChanged;
+        std::function<void(uint32_t)> OnValueChanged;
         std::array<const char*, MaxItems> options;
         std::array<lv_obj_t*, MaxItems> cbOption;
         std::array<lv_point_t, 2> pageIndicatorBasePoints;
