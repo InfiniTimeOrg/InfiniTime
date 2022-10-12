@@ -276,9 +276,8 @@ void WatchFaceAnalog::Refresh() {
     if (steps < 1000) {
       lv_label_set_text_fmt(stepValue, "%lu", steps);
     } else {
-      lv_label_set_text_fmt(stepValue, "%luK", steps/1000);
+      lv_label_set_text_fmt(stepValue, "%luK", steps / 1000);
     }
     lv_obj_realign(stepValue);
   }
-
 }
