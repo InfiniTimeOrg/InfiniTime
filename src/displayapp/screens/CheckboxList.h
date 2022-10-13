@@ -7,6 +7,7 @@
 #include <functional>
 #include <lvgl/lvgl.h>
 #include <memory>
+#include "displayapp/widgets/PageIndicator.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -35,11 +36,9 @@ namespace Pinetime {
         std::function<void(uint32_t)> OnValueChanged;
         std::array<Item, MaxItems> options;
         std::array<lv_obj_t*, MaxItems> cbOption;
-        std::array<lv_point_t, 2> pageIndicatorBasePoints;
-        std::array<lv_point_t, 2> pageIndicatorPoints;
-        lv_obj_t* pageIndicatorBase;
-        lv_obj_t* pageIndicator;
         uint32_t value;
+
+        Widgets::PageIndicator pageIndicator;
       };
     }
   }
