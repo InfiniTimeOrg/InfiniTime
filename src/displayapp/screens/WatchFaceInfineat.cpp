@@ -617,13 +617,16 @@ bool WatchFaceInfineat::IsAvailable(Pinetime::Controllers::FS& filesystem) {
     return false;
   }
 
+  filesystem.FileClose(&file);
   if (filesystem.FileOpen(&file, "/fonts/bebas.bin", LFS_O_RDONLY) < 0) {
     return false;
   }
 
+  filesystem.FileClose(&file);
   if (filesystem.FileOpen(&file, "/images/pine_small.bin", LFS_O_RDONLY) < 0) {
     return false;
   }
 
+  filesystem.FileClose(&file);
   return true;
 }

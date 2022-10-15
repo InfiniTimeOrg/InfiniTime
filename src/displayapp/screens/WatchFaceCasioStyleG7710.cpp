@@ -340,13 +340,16 @@ bool WatchFaceCasioStyleG7710::IsAvailable(Pinetime::Controllers::FS& filesystem
     return false;
   }
 
+  filesystem.FileClose(&file);
   if (filesystem.FileOpen(&file, "/fonts/7segments_40.bin", LFS_O_RDONLY) < 0) {
     return false;
   }
 
+  filesystem.FileClose(&file);
   if (filesystem.FileOpen(&file, "/fonts/7segments_115.bin", LFS_O_RDONLY) < 0) {
     return false;
   }
 
+  filesystem.FileClose(&file);
   return true;
 }
