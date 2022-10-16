@@ -1,6 +1,7 @@
 #pragma once
 
 #include "components/motion/MotionController.h"
+#include "components/motor/MotorController.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"
 #include "systemtask/SystemTask.h"
@@ -13,7 +14,7 @@
 namespace Pinetime::Applications::Screens {
   class Dice : public Screen {
   public:
-    Dice(DisplayApp* app, Controllers::MotionController& motionController);
+    Dice(DisplayApp* app, Controllers::MotionController& motion, Controllers::MotorController& motor);
     ~Dice() override;
     void Roll();
 
@@ -31,5 +32,9 @@ namespace Pinetime::Applications::Screens {
 
     Widgets::Counter nCounter = Widgets::Counter(1, 9, jetbrains_mono_42);
     Widgets::Counter dCounter = Widgets::Counter(2, 99, jetbrains_mono_42);
+
+    bool openingRoll = true;
+
+    Controllers::MotorController& motor;
   };
 }

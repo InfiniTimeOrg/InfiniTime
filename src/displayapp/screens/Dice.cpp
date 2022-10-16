@@ -39,11 +39,11 @@ namespace {
   }
 }
 
-Dice::Dice(DisplayApp* app, Controllers::MotionController& motionController) : Screen(app) {
+Dice::Dice(DisplayApp* app, Controllers::MotionController& motion, Controllers::MotorController& motor) : Screen(app), motor {motor} {
   std::seed_seq sseq {static_cast<uint32_t>(xTaskGetTickCount()),
-                      static_cast<uint32_t>(motionController.X()),
-                      static_cast<uint32_t>(motionController.Y()),
-                      static_cast<uint32_t>(motionController.Z())};
+                      static_cast<uint32_t>(motion.X()),
+                      static_cast<uint32_t>(motion.Y()),
+                      static_cast<uint32_t>(motion.Z())};
   gen.seed(sseq);
 
   nCounter.Create();
@@ -90,6 +90,7 @@ Dice::Dice(DisplayApp* app, Controllers::MotionController& motionController) : S
                                     10);
 
   Roll();
+  openingRoll = false;
 
   btnRoll = lv_btn_create(lv_scr_act(), nullptr);
   btnRoll->user_data = this;
@@ -130,7 +131,10 @@ void Dice::Roll() {
   }
 
   lv_label_set_text_fmt(resultTotalLabel, "%d", resultTotal);
-  NextColor();
+  if (openingRoll == false) {
+    motor.RunForDuration(30);
+    NextColor();
+  }
 }
 
 void Dice::NextColor() {
