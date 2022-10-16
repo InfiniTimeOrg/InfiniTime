@@ -115,6 +115,11 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_label_set_align(txtRemainingTime, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtRemainingTime, LV_HOR_RES);
 
+  swipeIndicatorLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(swipeIndicatorLabel, Symbols::swipeDownIndicator);
+  lv_label_set_align(swipeIndicatorLabel, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(swipeIndicatorLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, 33);
+
   constexpr uint8_t FONT_HEIGHT = 12;
   constexpr uint8_t LINE_PAD = 15;
   constexpr int8_t MIDDLE_OFFSET = -25;
@@ -274,14 +279,19 @@ bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
       lv_obj_set_hidden(btnNext, true);
       lv_obj_set_hidden(btnPrev, true);
+
+      lv_label_set_text_static(swipeIndicatorLabel, Symbols::swipeUpIndicator);
       return true;
     }
     case TouchEvents::SwipeDown: {
       if (lv_obj_get_hidden(btnNext)) {
         lv_obj_set_hidden(btnNext, false);
         lv_obj_set_hidden(btnPrev, false);
+
         lv_obj_set_hidden(btnVolDown, true);
         lv_obj_set_hidden(btnVolUp, true);
+
+        lv_label_set_text_static(swipeIndicatorLabel, Symbols::swipeDownIndicator);
         return true;
       }
       return false;

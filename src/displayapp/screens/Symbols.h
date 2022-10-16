@@ -27,6 +27,8 @@ namespace Pinetime {
         static constexpr const char* volumDown = "\xEF\x80\xA7";
         static constexpr const char* stepForward = "\xEF\x81\x91";
         static constexpr const char* stepBackward = "\xEF\x81\x88";
+        static constexpr const char* swipeDownIndicator = "\xEF\x84\x87";
+        static constexpr const char* swipeUpIndicator = "\xEF\x84\x86";
         static constexpr const char* play = "\xEF\x81\x8B";
         static constexpr const char* pause = "\xEF\x81\x8C";
         static constexpr const char* stop = "\xEF\x81\x8D";
