@@ -425,6 +425,15 @@ void SystemTask::Work() {
         case Messages::BatteryPercentageUpdated:
           nimbleController.NotifyBatteryLevel(batteryController.PercentRemaining());
           break;
+        case Messages::LowBattery: {
+          Pinetime::Controllers::NotificationManager::Notification notif;
+          std::array<char, 101> message {"Low Battery\0Charge your watch to prevent data loss\0"};
+          notif.message = message;
+          notif.size = 52;
+          notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+          notificationManager.Push(std::move(notif));
+          PushMessage(Messages::OnNewNotification);
+        } break;
         case Messages::OnPairing:
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();

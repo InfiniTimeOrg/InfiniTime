@@ -18,6 +18,10 @@ namespace Pinetime {
         return percentRemaining;
       }
 
+      bool BatteryIsLow() const {
+        return percentRemaining <= lowBatteryThreshold;
+      }
+
       uint16_t Voltage() const {
         return voltage;
       }
@@ -39,6 +43,7 @@ namespace Pinetime {
       static constexpr nrf_saadc_input_t batteryVoltageAdcInput = NRF_SAADC_INPUT_AIN7;
       uint16_t voltage = 0;
       uint8_t percentRemaining = 0;
+      uint8_t lastPercentRemaining = 0;
 
       bool isFull = false;
       bool isCharging = false;
@@ -50,6 +55,8 @@ namespace Pinetime {
       void SaadcEventHandler(nrfx_saadc_evt_t const* p_event);
       static void AdcCallbackStatic(nrfx_saadc_evt_t const* event);
       static uint8_t GetBatteryPercentageFromVoltage(uint16_t voltage);
+
+      static constexpr uint8_t lowBatteryThreshold {20};
 
       bool isReading = false;
 
