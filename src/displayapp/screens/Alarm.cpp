@@ -199,7 +199,7 @@ void Alarm::UpdateAlarmTime() {
 void Alarm::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
   lv_obj_set_hidden(btnStop, false);
-  taskStopAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(60 * 1000), LV_TASK_PRIO_MID, this);
+  taskStopAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(180 * 1000), LV_TASK_PRIO_MID, this);
   systemTask.PushMessage(System::Messages::DisableSleeping);
 }
 
