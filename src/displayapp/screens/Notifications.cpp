@@ -278,18 +278,18 @@ Notifications::NotificationItem::NotificationItem(const char* title,
 
   subject_container = lv_cont_create(container, nullptr);
   lv_obj_set_style_local_bg_color(subject_container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  lv_obj_set_style_local_pad_all(subject_container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
+  lv_obj_set_style_local_pad_all(subject_container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
   lv_obj_set_style_local_pad_inner(subject_container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
   lv_obj_set_style_local_border_width(subject_container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
-  lv_obj_set_pos(subject_container, 0, 50);
-  lv_obj_set_size(subject_container, LV_HOR_RES, LV_VER_RES - 50);
+  lv_obj_set_pos(subject_container, 0, 26);
+  lv_obj_set_size(subject_container, LV_HOR_RES, LV_VER_RES - 26);
   lv_cont_set_layout(subject_container, LV_LAYOUT_COLUMN_LEFT);
   lv_cont_set_fit(subject_container, LV_FIT_NONE);
 
   lv_obj_t* alert_count = lv_label_create(container, nullptr);
-  lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
-  lv_obj_align(alert_count, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
+  lv_label_set_text_fmt(alert_count, "|%i/%i", notifNr, notifNb);
+  lv_obj_align(alert_count, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 2);
 
   lv_obj_t* alert_type = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
@@ -306,8 +306,8 @@ Notifications::NotificationItem::NotificationItem(const char* title,
     lv_label_refr_text(alert_type);
   }
   lv_label_set_long_mode(alert_type, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_set_width(alert_type, 180);
-  lv_obj_align(alert_type, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 16);
+  lv_obj_set_width(alert_type, 197);
+  lv_obj_align(alert_type, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 2);
 
   lv_obj_t* alert_subject = lv_label_create(subject_container, nullptr);
   lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
