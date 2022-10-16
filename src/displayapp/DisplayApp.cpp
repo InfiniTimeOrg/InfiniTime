@@ -55,7 +55,7 @@ using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
 
 namespace {
-  static inline bool in_isr(void) {
+  inline bool in_isr() {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
   }
 }
@@ -390,7 +390,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::QuickSettings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SettingWatchFace:
-      currentScreen = std::make_unique<Screens::SettingWatchFace>(this, settingsController);
+      currentScreen = std::make_unique<Screens::SettingWatchFace>(this, settingsController, filesystem);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SettingTimeFormat:
