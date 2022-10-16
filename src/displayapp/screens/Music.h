@@ -56,6 +56,7 @@ namespace Pinetime {
         lv_obj_t* imgDisc;
         lv_obj_t* imgDiscAnim;
         lv_obj_t* txtTrackDuration;
+        lv_obj_t* txtRemainingTime;
 
         lv_style_t btn_style;
 

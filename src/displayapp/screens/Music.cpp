@@ -109,6 +109,12 @@ Music::Music(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Mus
   lv_label_set_align(txtTrackDuration, LV_ALIGN_IN_LEFT_MID);
   lv_obj_set_width(txtTrackDuration, LV_HOR_RES);
 
+  txtRemainingTime = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(txtRemainingTime, nullptr, LV_ALIGN_IN_TOP_LEFT, 12, 45);
+  lv_label_set_text_static(txtRemainingTime, "-0:00");
+  lv_label_set_align(txtRemainingTime, LV_ALIGN_IN_LEFT_MID);
+  lv_obj_set_width(txtRemainingTime, LV_HOR_RES);
+
   constexpr uint8_t FONT_HEIGHT = 12;
   constexpr uint8_t LINE_PAD = 15;
   constexpr int8_t MIDDLE_OFFSET = -25;
@@ -218,6 +224,18 @@ void Music::UpdateLength() {
                           (currentPosition % 60) % 100,
                           (totalLength / 60) % 100,
                           (totalLength % 60) % 100);
+  }
+
+  if((totalLength - currentPosition) > 0) {
+    lv_label_set_text_fmt(txtRemainingTime,
+                          "-%02d:%02d",
+                          ((totalLength - currentPosition) / 60) % 100,
+                          ((totalLength - currentPosition) % 60) % 100);
+  } else {
+    lv_label_set_text_fmt(txtRemainingTime,
+                          "-0:00",
+                          ((totalLength - currentPosition) / 60) % 100,
+                          ((totalLength - currentPosition) % 60) % 100);
   }
 }
 
