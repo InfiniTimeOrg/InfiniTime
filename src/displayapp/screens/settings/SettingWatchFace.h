@@ -16,13 +16,14 @@ namespace Pinetime {
 
       class SettingWatchFace : public Screen {
       public:
-        SettingWatchFace(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
+        SettingWatchFace(DisplayApp* app, Pinetime::Controllers::Settings& settingsController, Pinetime::Controllers::FS& filesystem);
         ~SettingWatchFace() override;
 
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
         Controllers::Settings& settingsController;
+        Pinetime::Controllers::FS& filesystem;
         ScreenList<2> screens;
 
         static constexpr const char* title = "Watch face";

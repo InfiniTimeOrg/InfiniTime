@@ -245,7 +245,7 @@ void* __wrap_malloc(size_t size) {
 
 Now, your function `__wrap_malloc()` will be called instead of `malloc()`. You can call the actual malloc from the stdlib by calling `__real_malloc()`.
 
-Using this technique, I was able to trace all malloc calls at boot (boot -> digital watchface):
+Using this technique, I was able to trace all malloc calls at boot (boot -> digital watch face):
 
 - system task = 3464 bytes (SystemTask could potentially be declared as a global variable to avoid heap allocation here)
 - string music = 31 (maybe we should not use std::string when not needed, as it does heap allocation)

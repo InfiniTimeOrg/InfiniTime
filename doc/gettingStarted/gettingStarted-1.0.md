@@ -8,7 +8,7 @@ It is highly recommended to update the firmware to the latest version when you r
 
 ### Setting the time
 
-By default, InfiniTime starts on the digital watchface. It'll probably display the epoch time (1 Jan 1970, 00:00).
+By default, InfiniTime starts on the digital watch face. It'll probably display the epoch time (1 Jan 1970, 00:00).
 
 You can sync the time using companion apps.
 

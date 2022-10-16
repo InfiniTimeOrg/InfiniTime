@@ -39,6 +39,8 @@ namespace Pinetime {
 
         void Refresh() override;
 
+        static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
+
       private:
         char displayedChar[5] {};
 
