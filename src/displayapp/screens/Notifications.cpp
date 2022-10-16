@@ -79,9 +79,12 @@ void Notifications::Refresh() {
       timeoutLinePoints[1].x = pos;
       lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
     }
-  }
 
-  if (dismissingNotification) {
+  } else if (mode == Modes::Preview && dismissingNotification) {
+    running = false;
+    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+
+  } else if (dismissingNotification) {
     dismissingNotification = false;
     auto notification = notificationManager.Get(currentId);
     if (!notification.valid) {
@@ -126,11 +129,33 @@ void Notifications::OnPreviewInteraction() {
   }
 }
 
+void Notifications::DismissToBlack() {
+  currentItem.reset(nullptr);
+  app->SetFullRefresh(DisplayApp::FullRefreshDirections::RightAnim);
+  // create black transition screen to let the notification dismiss to blackness
+  lv_obj_t* blackBox = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(blackBox, LV_HOR_RES, LV_VER_RES);
+  lv_obj_set_style_local_bg_color(blackBox, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  dismissingNotification = true;
+}
+
+void Notifications::OnPreviewDismiss() {
+  notificationManager.Dismiss(currentId);
+  if (timeoutLine != nullptr) {
+    lv_obj_del(timeoutLine);
+    timeoutLine = nullptr;
+  }
+  DismissToBlack();
+}
+
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   if (mode != Modes::Normal) {
     if (!interacted && event == TouchEvents::Tap) {
       interacted = true;
       OnPreviewInteraction();
+      return true;
+    } else if (event == Pinetime::Applications::TouchEvents::SwipeRight) {
+      OnPreviewDismiss();
       return true;
     }
     return false;
@@ -156,13 +181,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
         } else {
           // don't update id, won't be found be refresh and try to load latest message or no message box
         }
-        currentItem.reset(nullptr);
-        app->SetFullRefresh(DisplayApp::FullRefreshDirections::RightAnim);
-        // create black transition screen to let the notification dismiss to blackness
-        lv_obj_t* blackBox = lv_obj_create(lv_scr_act(), nullptr);
-        lv_obj_set_size(blackBox, LV_HOR_RES, LV_VER_RES);
-        lv_obj_set_style_local_bg_color(blackBox, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-        dismissingNotification = true;
+        DismissToBlack();
         return true;
       }
       return false;
