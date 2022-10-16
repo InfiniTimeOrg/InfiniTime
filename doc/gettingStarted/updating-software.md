@@ -4,7 +4,7 @@ If you just want to flash or upgrade InfiniTime on your PineTime, this page is f
 
 ## Checking the version of InfiniTime
 
-You can check the InfiniTime version by first swiping right on the watchface to open quick settings, tapping the cogwheel to open settings, swipe up until you find an entry named "About" and tap on it.
+You can check the InfiniTime version by first swiping right on the watch face to open quick settings, tapping the cogwheel to open settings, swipe up until you find an entry named "About" and tap on it.
 
 ![InfiniTime 1.0 version](version-1.0.jpg)
 
@@ -26,8 +26,8 @@ To update the firmware, you need to download the DFU of the firmware version tha
 
 We have prepared instructions for flashing InfiniTime with Gadgetbridge and NRFConnect.
 
- - [Updating with Gadgetbridge](/doc/gettingStarted/ota-gadgetbridge.md)
- - [Updating with NRFConnect](/doc/gettingStarted/ota-nrfconnect.md)
+- [Updating with Gadgetbridge](/doc/gettingStarted/ota-gadgetbridge.md)
+- [Updating with NRFConnect](/doc/gettingStarted/ota-nrfconnect.md)
 
 ## Firmware validation
 
@@ -35,7 +35,39 @@ Firmware updates must be manually validated. If the firmware isn't validated and
 
 You can validate your updated firmware on InfiniTime >= 1.0 by following this simple procedure:
 
- - From the watchface, swipe **right** to display the *quick settings menu*
- - Open settings by tapping the cogwheel on the bottom right
- - Swipe up until you find an entry named **Firmware** and tap on it
- - If the firmware is not validated yet, you can either validate the running firmware, or reset and revert to the previous firmware version
+- From the watch face, swipe **right** to display the *quick settings menu*
+- Open settings by tapping the cogwheel on the bottom right
+- Swipe up until you find an entry named **Firmware** and tap on it
+- If the firmware is not validated yet, you can either validate the running firmware, or reset and revert to the previous firmware version
+
+# Updating resources
+
+Since InfiniTime 1.11 apps and watchfaces can take benefit of the external flash memory to store their pictures and fonts. 
+This external memory is a lot bigger (4MB) than the internal memory where the firmware is flashed (512KB). 
+Since those resources are not part of the firmware, they need to be flashed and updated separately. 
+
+Resources are packaged into a single .zip file named `infinitime-resources-x.y.z.zip` (where `x`, `y` and `z` are the version numbers of InfiniTime). 
+You can use the companion app of your choice to flash the resources.
+
+**Note : at the time of writing this page, [Amazfish](https://github.com/piggz/harbour-amazfish) and [ITD](https://gitea.arsenm.dev/Arsen6331/itd) have already integrated this functionality. Other companion apps will hopefully implement it soon!*
+
+## Amazfish
+Use the `Download file` functionality of Amazfish. 
+
+![Update resources with Amazfish - Download file](amazfish-external-resources-1.png)
+
+Amazfish automatically detects the file type (firmware or resources) and apply the corresponding flash procedure when you hit the button **Send file**.
+
+![Update resources with Amazfish](amazfish-external-resources-2.png)
+
+## ITD
+
+Run `itctl` with the `res` command:
+
+```
+itctl res load infinitime-resources-1.10.0.zip
+```
+
+Example:
+
+![Update resources using itctl](itd-external-resources.png)

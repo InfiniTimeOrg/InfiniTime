@@ -31,6 +31,7 @@ namespace Pinetime {
         lv_obj_t *bpmArc, *bpmTap, *bpmValue;
         lv_obj_t *bpbDropdown, *currentBpbText;
         lv_obj_t* playPause;
+        lv_obj_t* lblPlayPause;
 
         lv_task_t* taskRefresh;
       };

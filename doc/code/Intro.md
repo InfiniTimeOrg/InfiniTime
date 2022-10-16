@@ -1,7 +1,9 @@
 # Introduction to the code
+
 This page is meant to guide you through the source code, so you can find the relevant files for what you're working on.
 
 ## FreeRTOS
+
 Infinitime is based on FreeRTOS, a real-time operating system.
 FreeRTOS provides several quality of life abstractions (for example easy software timers)
 and most importantly supports multiple tasks.
@@ -12,6 +14,7 @@ The task scheduler is responsible for giving every task enough cpu time.
 As there is only one core on the SoC of the PineTime, real concurrency is impossible and the scheduler has to swap tasks in and out to emulate it.
 
 ### Tasks
+
 Tasks are created by calling `xTaskCreate` and passing a function with the signature `void functionName(void*)`.
 For more info on task creation see the [FreeRTOS Documentation](https://www.freertos.org/a00125.html).
 In our case, main calls `systemTask.Start()`, which creates the **"MAIN" task**.
@@ -29,6 +32,7 @@ it will need instead of just typing in a large-ish number.
 You can use `configMINIMAL_STACK_SIZE` which is currently set to 120 words.
 
 ## Controllers
+
 Controllers in InfiniTime are singleton objects that can provide access to certain resources to apps.
 Some of them interface with drivers, others are the driver for the resource.
 The resources provided don't have to be hardware-based.
@@ -37,7 +41,9 @@ Some controllers can be passed by reference to apps that need access to the reso
 They reside in [components/](/src/components/) inside their own subfolder.
 
 ## Apps
+
 For more detail see the [Apps page](./Apps.md)
 
 ## Bluetooth
+
 Header files with short documentation for the functions are inside [libs/mynewt-nimble/nimble/host/include/host/](/src/libs/mynewt-nimble/nimble/host/include/host/).

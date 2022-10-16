@@ -37,6 +37,7 @@
 #else
 #include "core_cm4.h"
 #endif
+#include <legacy/nrf_drv_clock.h>
 
 #if MYNEWT_VAL(BLE_LL_CFG_FEAT_LE_CODED_PHY)
 #if !MYNEWT_VAL_CHOICE(MCU_TARGET, nRF52840) && !MYNEWT_VAL_CHOICE(MCU_TARGET, nRF52811)
@@ -2101,7 +2102,7 @@ ble_phy_rfclk_enable(void)
 #if MYNEWT
     nrf52_clock_hfxo_request();
 #else
-    NRF_CLOCK->TASKS_HFCLKSTART = 1;
+    nrf_drv_clock_hfclk_request(NULL);
 #endif
 }
 
@@ -2111,6 +2112,6 @@ ble_phy_rfclk_disable(void)
 #if MYNEWT
     nrf52_clock_hfxo_release();
 #else
-    NRF_CLOCK->TASKS_HFCLKSTOP = 1;
+    nrf_drv_clock_hfclk_release();
 #endif
 }

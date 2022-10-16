@@ -17,7 +17,7 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
                                      Controllers::DateTime& dateTimeController,
                                      Controllers::Battery& batteryController,
                                      Controllers::Ble& bleController,
-                                     Controllers::NotificationManager& notificatioManager,
+                                     Controllers::NotificationManager& notificationManager,
                                      Controllers::Settings& settingsController,
                                      Controllers::HeartRateController& heartRateController,
                                      Controllers::MotionController& motionController)
@@ -26,7 +26,7 @@ WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
-    notificatioManager {notificatioManager},
+    notificationManager {notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController} {
@@ -100,7 +100,7 @@ void WatchFaceTerminal::Refresh() {
     }
   }
 
-  notificationState = notificatioManager.AreNewNotificationsAvailable();
+  notificationState = notificationManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     if (notificationState.Get()) {
       lv_label_set_text_static(notificationIcon, "You have mail.");
@@ -149,7 +149,7 @@ void WatchFaceTerminal::Refresh() {
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      lv_label_set_text_fmt(label_date, "[DATE]#007fff %04d.%02d.%02d#", short(year), char(month), char(day));
+      lv_label_set_text_fmt(label_date, "[DATE]#007fff %04d-%02d-%02d#", short(year), char(month), char(day));
 
       currentYear = year;
       currentMonth = month;

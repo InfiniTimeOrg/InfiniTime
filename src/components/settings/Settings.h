@@ -9,7 +9,7 @@ namespace Pinetime {
     class Settings {
     public:
       enum class ClockType : uint8_t { H24, H12 };
-      enum class Notification : uint8_t { ON, OFF };
+      enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t {
         SingleTap = 0,
@@ -34,15 +34,28 @@ namespace Pinetime {
         Navy,
         Magenta,
         Purple,
-        Orange
+        Orange,
+        Pink
       };
+      enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
+
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
         Colors ColorBar = Colors::Teal;
         Colors ColorBG = Colors::Black;
+        PTSGaugeStyle gaugeStyle = PTSGaugeStyle::Full;
+      };
+      struct WatchFaceInfineat {
+        bool showSideCover = true;
+        int colorIndex = 0;
       };
 
       Settings(Pinetime::Controllers::FS& fs);
+
+      Settings(const Settings&) = delete;
+      Settings& operator=(const Settings&) = delete;
+      Settings(Settings&&) = delete;
+      Settings& operator=(Settings&&) = delete;
 
       void Init();
       void SaveSettings();
@@ -92,6 +105,35 @@ namespace Pinetime {
       };
       Colors GetPTSColorBG() const {
         return settings.PTS.ColorBG;
+      };
+
+      void SetInfineatShowSideCover(bool show) {
+        if (show != settings.watchFaceInfineat.showSideCover) {
+          settings.watchFaceInfineat.showSideCover = show;
+          settingsChanged = true;
+        }
+      };
+      bool GetInfineatShowSideCover() const {
+        return settings.watchFaceInfineat.showSideCover;
+      };
+
+      void SetInfineatColorIndex(int index) {
+        if (index != settings.watchFaceInfineat.colorIndex) {
+          settings.watchFaceInfineat.colorIndex = index;
+          settingsChanged = true;
+        }
+      };
+      int GetInfineatColorIndex() const {
+        return settings.watchFaceInfineat.colorIndex;
+      };
+
+      void SetPTSGaugeStyle(PTSGaugeStyle gaugeStyle) {
+        if (gaugeStyle != settings.PTS.gaugeStyle)
+          settingsChanged = true;
+        settings.PTS.gaugeStyle = gaugeStyle;
+      };
+      PTSGaugeStyle GetPTSGaugeStyle() const {
+        return settings.PTS.gaugeStyle;
       };
 
       void SetAppMenu(uint8_t menu) {
@@ -212,19 +254,21 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0003;
+      static constexpr uint32_t settingsVersion = 0x0004;
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
         uint32_t screenTimeOut = 15000;
 
         ClockType clockType = ClockType::H24;
-        Notification notificationStatus = Notification::ON;
+        Notification notificationStatus = Notification::On;
 
         uint8_t clockFace = 0;
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
+
+        WatchFaceInfineat watchFaceInfineat;
 
         std::bitset<4> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
@@ -236,6 +280,7 @@ namespace Pinetime {
 
       uint8_t appMenu = 0;
       uint8_t settingsMenu = 0;
+      uint8_t watchFacesMenu = 0;
       /* ble state is intentionally not saved with the other watch settings and initialized
        * to off (false) on every boot because we always want ble to be enabled on startup
        */
