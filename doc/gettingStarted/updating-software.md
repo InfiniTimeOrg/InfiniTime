@@ -4,7 +4,7 @@ If you just want to flash or upgrade InfiniTime on your PineTime, this page is f
 
 ## Checking the version of InfiniTime
 
-You can check the InfiniTime version by first swiping right on the watchface to open quick settings, tapping the cogwheel to open settings, swipe up until you find an entry named "About" and tap on it.
+You can check the InfiniTime version by first swiping right on the watch face to open quick settings, tapping the cogwheel to open settings, swipe up until you find an entry named "About" and tap on it.
 
 ![InfiniTime 1.0 version](version-1.0.jpg)
 
@@ -35,7 +35,7 @@ Firmware updates must be manually validated. If the firmware isn't validated and
 
 You can validate your updated firmware on InfiniTime >= 1.0 by following this simple procedure:
 
-- From the watchface, swipe **right** to display the *quick settings menu*
+- From the watch face, swipe **right** to display the *quick settings menu*
 - Open settings by tapping the cogwheel on the bottom right
 - Swipe up until you find an entry named **Firmware** and tap on it
 - If the firmware is not validated yet, you can either validate the running firmware, or reset and revert to the previous firmware version

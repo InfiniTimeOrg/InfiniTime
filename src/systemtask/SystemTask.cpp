@@ -22,7 +22,7 @@
 using namespace Pinetime::System;
 
 namespace {
-  static inline bool in_isr(void) {
+  inline bool in_isr() {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
   }
 }

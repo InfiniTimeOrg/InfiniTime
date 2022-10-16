@@ -3,20 +3,23 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/Screen.h"
-#include "displayapp/screens/Styles.h"
-#include "displayapp/screens/Symbols.h"
 #include "components/settings/Settings.h"
+#include "displayapp/screens/WatchFaceInfineat.h"
+#include "displayapp/screens/WatchFaceCasioStyleG7710.h"
 
 using namespace Pinetime::Applications::Screens;
 
 constexpr const char* SettingWatchFace::title;
 constexpr const char* SettingWatchFace::symbol;
 
-SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
+SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app,
+                                   Pinetime::Controllers::Settings& settingsController,
+                                   Pinetime::Controllers::FS& filesystem)
   : Screen(app),
     settingsController {settingsController},
+    filesystem {filesystem},
     screens {app,
-             settingsController.GetWatchfacesMenu(),
+             0,
              {[this]() -> std::unique_ptr<Screen> {
                 return CreateScreen1();
               },
@@ -28,7 +31,6 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pine
 
 SettingWatchFace::~SettingWatchFace() {
   lv_obj_clean(lv_scr_act());
-  settingsController.SaveSettings();
 }
 
 bool SettingWatchFace::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
@@ -36,27 +38,38 @@ bool SettingWatchFace::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 std::unique_ptr<Screen> SettingWatchFace::CreateScreen1() {
-  std::array<const char*, 4> watchfaces {"Digital face", "Analog face", "PineTimeStyle", "Terminal"};
-  return std::make_unique<Screens::CheckboxList>(0,
-                                                 2,
-                                                 app,
-                                                 settingsController,
-                                                 title,
-                                                 symbol,
-                                                 &Controllers::Settings::SetClockFace,
-                                                 &Controllers::Settings::GetClockFace,
-                                                 watchfaces);
+  std::array<Screens::CheckboxList::Item, 4> watchfaces {
+    {{"Digital face", true}, {"Analog face", true}, {"PineTimeStyle", true}, {"Terminal", true}}};
+  return std::make_unique<Screens::CheckboxList>(
+    0,
+    2,
+    app,
+    title,
+    symbol,
+    settingsController.GetClockFace(),
+    [&settings = settingsController](uint32_t clockFace) {
+      settings.SetClockFace(clockFace);
+      settings.SaveSettings();
+    },
+    watchfaces);
 }
 
 std::unique_ptr<Screen> SettingWatchFace::CreateScreen2() {
-  std::array<const char*, 4> watchfaces {"Infineat face", "Casio G7710", "", ""};
-  return std::make_unique<Screens::CheckboxList>(1,
-                                                 2,
-                                                 app,
-                                                 settingsController,
-                                                 title,
-                                                 symbol,
-                                                 &Controllers::Settings::SetClockFace,
-                                                 &Controllers::Settings::GetClockFace,
-                                                 watchfaces);
+  std::array<Screens::CheckboxList::Item, 4> watchfaces {
+    {{"Infineat face", Applications::Screens::WatchFaceInfineat::IsAvailable(filesystem)},
+     {"Casio G7710", Applications::Screens::WatchFaceCasioStyleG7710::IsAvailable(filesystem)},
+     {"", false},
+     {"", false}}};
+  return std::make_unique<Screens::CheckboxList>(
+    1,
+    2,
+    app,
+    title,
+    symbol,
+    settingsController.GetClockFace(),
+    [&settings = settingsController](uint32_t clockFace) {
+      settings.SetClockFace(clockFace);
+      settings.SaveSettings();
+    },
+    watchfaces);
 }

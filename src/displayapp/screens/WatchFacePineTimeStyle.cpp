@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * PineTimeStyle watchface for Infinitime created by Kieran Cawthray
+ * PineTimeStyle watch face for Infinitime created by Kieran Cawthray
  * Based on WatchFaceDigital
  * Style/layout copied from TimeStyle for Pebble by Dan Tilden (github.com/tilden)
  */
@@ -327,7 +327,8 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
   lv_obj_set_size(btnSteps, 160, 60);
   lv_obj_align(btnSteps, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_local_bg_opa(btnSteps, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_set_style_local_value_str(btnSteps, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Steps style");
+  lv_obj_t* lblSteps = lv_label_create(btnSteps, nullptr);
+  lv_label_set_text_static(lblSteps, "Steps style");
   lv_obj_set_event_cb(btnSteps, event_handler);
   lv_obj_set_hidden(btnSteps, true);
 
