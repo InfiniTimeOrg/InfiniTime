@@ -9,7 +9,7 @@ namespace Pinetime {
     namespace Screens {
       class ImageView : public Screen {
       public:
-        ImageView(DisplayApp* app);
+        ImageView(DisplayApp* app, const char *path);
         ~ImageView() override;
       };
     }
