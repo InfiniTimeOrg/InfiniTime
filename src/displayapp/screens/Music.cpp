@@ -295,9 +295,9 @@ void Music::UpdateButtons() {
       lv_obj_set_hidden(btnForward, false);
       lv_obj_set_hidden(btnRewind, false);
       lv_obj_set_hidden(btnVolDown, true);
-     lv_obj_set_hidden(btnVolUp, true);
-     lv_obj_set_hidden(btnNext, true);
-     lv_obj_set_hidden(btnPrev, true);
+      lv_obj_set_hidden(btnVolUp, true);
+      lv_obj_set_hidden(btnNext, true);
+      lv_obj_set_hidden(btnPrev, true);
       break;
     default:
       lv_obj_set_hidden(btnForward, true);
