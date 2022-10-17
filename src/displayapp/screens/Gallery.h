@@ -7,15 +7,17 @@
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
-      class ImageView : public Screen {
+      class Gallery : public Screen {
       public:
         static constexpr const char* directory = "/gallery";
 
-        ImageView(DisplayApp* app, Pinetime::Controllers::FS& filesystem);
-        ~ImageView() override;
+        Gallery(DisplayApp* app, Pinetime::Controllers::FS& filesystem);
+        ~Gallery() override;
       private:
         Pinetime::Controllers::FS& filesystem;
+
         void listdir();
+        void open(int n);
         int nScreens;
       };
     }
