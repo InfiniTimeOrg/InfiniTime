@@ -65,5 +65,11 @@ bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
 
   assert(filesystem.FileClose(&f) == 0);
 
+  if (current != nullptr) {
+    current.reset(nullptr);
+    app->SetFullRefresh(direction);
+  }
+  current = std::make_unique<ImageView>(app, info.name);
+
   return true;
 }
