@@ -24,6 +24,16 @@ Gallery::~Gallery() {
   lv_obj_clean(lv_scr_act());
 }
 
+bool Gallery::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  switch (event) {
+    case Pinetime::Applications::TouchEvents::SwipeRight:
+      return open(index - 1, DisplayApp::FullRefreshDirections::Right);
+    case Pinetime::Applications::TouchEvents::SwipeLeft:
+      return open(index + 1, DisplayApp::FullRefreshDirections::Left);
+  }
+  return false;
+}
+
 void Gallery::listdir() {
   lfs_dir_t dir = {0};
   lfs_info info = {0};
@@ -45,6 +55,8 @@ void Gallery::listdir() {
 bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
   if ( (n < 0) || (n >= nScreens) )
     return false;
+
+  index = n;
 
   lfs_dir_t dir = {0};
   lfs_info info = {0};

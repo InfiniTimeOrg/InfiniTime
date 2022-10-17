@@ -14,6 +14,7 @@ namespace Pinetime {
 
         Gallery(DisplayApp* app, Pinetime::Controllers::FS& filesystem);
         ~Gallery() override;
+        bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
       private:
         Pinetime::Controllers::FS& filesystem;
         std::unique_ptr<ImageView> current;
@@ -21,6 +22,7 @@ namespace Pinetime {
         void listdir();
         bool open(int n, DisplayApp::FullRefreshDirections direction);
         int nScreens;
+        int index;
       };
     }
   }
