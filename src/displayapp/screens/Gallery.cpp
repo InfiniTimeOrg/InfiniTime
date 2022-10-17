@@ -52,18 +52,14 @@ bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
     NRF_LOG_INFO("[Gallery] can't find directory");
     return false;
   }
-  while (filesystem.DirRead(&dir, &info) && n > 0) {
+  int i = 0;
+  while (filesystem.DirRead(&dir, &info)) {
     if(info.type == LFS_TYPE_DIR)
       continue;
-    n--;
+    if (n == i) break;
+    i++;
   }
   assert(filesystem.DirClose(&dir) == 0);
-
-  lfs_file f = {0};
-  if (filesystem.FileOpen(&f, info.name, LFS_O_RDONLY) != LFS_ERR_OK)
-    return false;
-
-  assert(filesystem.FileClose(&f) == 0);
 
   if (current != nullptr) {
     current.reset(nullptr);
