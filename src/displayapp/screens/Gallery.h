@@ -1,6 +1,7 @@
 #pragma once
 
 #include "displayapp/screens/Screen.h"
+#include "displayapp/screens/ImageView.h"
 #include "displayapp/DisplayApp.h"
 #include <lvgl/lvgl.h>
 
@@ -15,6 +16,7 @@ namespace Pinetime {
         ~Gallery() override;
       private:
         Pinetime::Controllers::FS& filesystem;
+        std::unique_ptr<ImageView> current;
 
         void listdir();
         bool open(int n, DisplayApp::FullRefreshDirections direction);
