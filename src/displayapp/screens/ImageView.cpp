@@ -33,6 +33,8 @@ void ImageView::listdir() {
     return;
   }
   while (filesystem.DirRead(&dir, &info)) {
+    if(info.type == LFS_TYPE_DIR)
+      continue;
     nScreens++;
   }
   assert(filesystem.DirClose(&dir) == 0);
