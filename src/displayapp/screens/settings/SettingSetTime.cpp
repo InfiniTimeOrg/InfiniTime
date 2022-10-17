@@ -67,13 +67,15 @@ SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
   btnSetTime->user_data = this;
   lv_obj_set_size(btnSetTime, 120, 50);
   lv_obj_align(btnSetTime, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_obj_set_style_local_value_str(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Set");
+  lblSetTime = lv_label_create(btnSetTime, nullptr);
+  lv_label_set_text_static(lblSetTime, "Set");
   lv_obj_set_style_local_bg_color(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  lv_obj_set_style_local_value_color(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DISABLED, LV_COLOR_GRAY);
+  lv_obj_set_style_local_text_color(lblSetTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, LV_COLOR_GRAY);
   lv_obj_set_event_cb(btnSetTime, SetTimeEventHandler);
 
   UpdateScreen();
   lv_obj_set_state(btnSetTime, LV_STATE_DISABLED);
+  lv_obj_set_state(lblSetTime, LV_STATE_DISABLED);
 }
 
 SettingSetTime::~SettingSetTime() {
@@ -89,6 +91,7 @@ void SettingSetTime::UpdateScreen() {
     }
   }
   lv_obj_set_state(btnSetTime, LV_STATE_DEFAULT);
+  lv_obj_set_state(lblSetTime, LV_STATE_DEFAULT);
 }
 
 void SettingSetTime::SetTime() {
@@ -104,4 +107,5 @@ void SettingSetTime::SetTime() {
                              0,
                              nrf_rtc_counter_get(portNRF_RTC_REG));
   lv_obj_set_state(btnSetTime, LV_STATE_DISABLED);
+  lv_obj_set_state(lblSetTime, LV_STATE_DISABLED);
 }

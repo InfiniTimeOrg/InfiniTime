@@ -28,7 +28,7 @@ namespace Pinetime {
                          Controllers::DateTime& dateTimeController,
                          Controllers::Battery& batteryController,
                          Controllers::Ble& bleController,
-                         Controllers::NotificationManager& notificatioManager,
+                         Controllers::NotificationManager& notificationManager,
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
                          Controllers::MotionController& motionController);
@@ -66,7 +66,7 @@ namespace Pinetime {
         lv_obj_t* notificationIcon;
 
         Controllers::DateTime& dateTimeController;
-        Controllers::NotificationManager& notificatioManager;
+        Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;

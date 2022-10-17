@@ -396,6 +396,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Motion.cpp
         displayapp/screens/FlashLight.cpp
         displayapp/screens/List.cpp
+        displayapp/screens/CheckboxList.cpp
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
@@ -426,8 +427,10 @@ list(APPEND SOURCE_FILES
         displayapp/icons/bg_clock.c
         displayapp/screens/WatchFaceAnalog.cpp
         displayapp/screens/WatchFaceDigital.cpp
+        displayapp/screens/WatchFaceInfineat.cpp
         displayapp/screens/WatchFaceTerminal.cpp
         displayapp/screens/WatchFacePineTimeStyle.cpp
+        displayapp/screens/WatchFaceCasioStyleG7710.cpp
 
         ##
 
@@ -602,6 +605,7 @@ set(INCLUDE_FILES
         displayapp/screens/FirmwareUpdate.h
         displayapp/screens/FirmwareValidation.h
         displayapp/screens/ApplicationList.h
+        displayapp/screens/CheckboxList.h
         displayapp/Apps.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
@@ -940,6 +944,10 @@ add_custom_command(TARGET ${EXECUTABLE_NAME}
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_FILE_NAME}.out "${EXECUTABLE_FILE_NAME}.hex"
         COMMENT "post build steps for ${EXECUTABLE_FILE_NAME}")
 
+if(BUILD_RESOURCES)
+  add_dependencies(${EXECUTABLE_NAME} GenerateResources)
+endif()
+
 # Build binary intended to be used by bootloader
 set(EXECUTABLE_MCUBOOT_NAME "pinetime-mcuboot-app")
 set(EXECUTABLE_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
@@ -972,6 +980,10 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
         COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_FILE_NAME}.bin ${IMAGE_MCUBOOT_FILE_NAME_BIN}
         COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_FILE_NAME}"
         )
+
+if(BUILD_RESOURCES)
+  add_dependencies(${EXECUTABLE_MCUBOOT_NAME} GenerateResources)
+endif()
 
 if(BUILD_DFU)
   add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
@@ -1127,68 +1139,7 @@ if(BUILD_DFU)
           )
 endif()
 
+if(BUILD_RESOURCES)
+  add_subdirectory(resources)
+endif()
 
-# FLASH
-if (USE_JLINK)
-  add_custom_target(FLASH_ERASE
-          COMMAND ${NRFJPROG} --eraseall -f ${NRF_TARGET}
-          COMMENT "erasing flashing"
-          )
-  add_custom_target("FLASH_${EXECUTABLE_NAME}"
-          DEPENDS ${EXECUTABLE_NAME}
-          COMMAND ${NRFJPROG} --program ${EXECUTABLE_FILE_NAME}.hex -f ${NRF_TARGET} --sectorerase
-          COMMAND sleep 0.5s
-          COMMAND ${NRFJPROG} --reset -f ${NRF_TARGET}
-          COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
-          )
-
-elseif (USE_GDB_CLIENT)
-  add_custom_target(FLASH_ERASE
-          COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'mon erase_mass'
-          COMMENT "erasing flashing"
-          )
-  add_custom_target("FLASH_${EXECUTABLE_NAME}"
-          DEPENDS ${EXECUTABLE_NAME}
-          COMMAND ${GDB_CLIENT_BIN_PATH} -nx --batch -ex 'target extended-remote ${GDB_CLIENT_TARGET_REMOTE}' -ex 'monitor swdp_scan' -ex 'attach 1' -ex 'load' -ex 'kill' ${EXECUTABLE_FILE_NAME}.hex
-          COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
-          )
-elseif (USE_OPENOCD)
-  if (USE_CMSIS_DAP)
-    add_custom_target(FLASH_ERASE
-            COMMAND ${OPENOCD_BIN_PATH} -c 'source [find interface/cmsis-dap.cfg]' -c 'transport select swd'
-            -c 'source [find target/nrf52.cfg]'
-            -c 'init'
-            -c 'halt'
-            -c 'nrf5 mass_erase'
-            -c 'halt'
-            -c 'reset'
-            -c 'exit'
-            COMMENT "erasing flashing"
-            )
-    add_custom_target("FLASH_${EXECUTABLE_NAME}"
-            DEPENDS ${EXECUTABLE_NAME}
-            COMMAND ${OPENOCD_BIN_PATH}
-            -c 'tcl_port disabled'
-            -c 'gdb_port 3333'
-            -c 'telnet_port 4444'
-            -c 'source [find interface/cmsis-dap.cfg]'
-            -c 'transport select swd'
-            -c 'source [find target/nrf52.cfg]'
-            -c 'halt'
-            -c "program \"${EXECUTABLE_FILE_NAME}.hex\""
-            -c 'reset'
-            -c 'shutdown'
-            COMMENT "flashing ${EXECUTABLE_BIN_NAME}.hex"
-            )
-  else ()
-    add_custom_target(FLASH_ERASE
-            COMMAND ${OPENOCD_BIN_PATH} -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c init -c halt -c 'nrf5 mass_erase' -c reset -c shutdown
-            COMMENT "erasing flashing"
-            )
-    add_custom_target("FLASH_${EXECUTABLE_NAME}"
-            DEPENDS ${EXECUTABLE_NAME}
-            COMMAND ${OPENOCD_BIN_PATH} -c "tcl_port disabled" -c "gdb_port 3333" -c "telnet_port 4444" -f interface/stlink.cfg -c 'transport select hla_swd' -f target/nrf52.cfg -c "program \"${EXECUTABLE_FILE_NAME}.hex\"" -c reset -c shutdown
-            COMMENT "flashing ${EXECUTABLE_FILE_NAME}.hex"
-            )
-  endif ()
-endif ()

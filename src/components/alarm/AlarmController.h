@@ -36,7 +36,7 @@ namespace Pinetime {
       void ScheduleAlarm();
       void DisableAlarm();
       void SetOffAlarmNow();
-      uint32_t SecondsToAlarm();
+      uint32_t SecondsToAlarm() const;
       void StopAlerting();
       enum class AlarmState { Not_Set, Set, Alerting };
       enum class RecurType { None, Daily, Weekdays };

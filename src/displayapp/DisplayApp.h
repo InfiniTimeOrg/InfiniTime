@@ -62,7 +62,8 @@ namespace Pinetime {
                  Pinetime::Controllers::TimerController& timerController,
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
-                 Pinetime::Controllers::TouchHandler& touchHandler);
+                 Pinetime::Controllers::TouchHandler& touchHandler,
+                 Pinetime::Controllers::FS& filesystem);
       void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
 
@@ -90,6 +91,7 @@ namespace Pinetime {
       Pinetime::Controllers::AlarmController& alarmController;
       Pinetime::Controllers::BrightnessController& brightnessController;
       Pinetime::Controllers::TouchHandler& touchHandler;
+      Pinetime::Controllers::FS& filesystem;
 
       Pinetime::Controllers::FirmwareValidator validator;
 
@@ -119,6 +121,7 @@ namespace Pinetime {
       Apps nextApp = Apps::None;
       DisplayApp::FullRefreshDirections nextDirection;
       System::BootErrors bootError;
+      void ApplyBrightness();
     };
   }
 }

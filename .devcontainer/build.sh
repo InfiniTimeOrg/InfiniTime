@@ -60,7 +60,6 @@ CmakeGenerate() {
 
   cmake -G "Unix Makefiles" \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-    -DUSE_OPENOCD=1 \
     -DARM_NONE_EABI_TOOLCHAIN_PATH="$TOOLS_DIR/$GCC_ARM_VER" \
     -DNRF5_SDK_PATH="$TOOLS_DIR/$NRF_SDK_VER" \
     "$SOURCES_DIR"
