@@ -522,7 +522,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::Twos>();
       break;
     case Apps::ImageView:
-      currentScreen = std::make_unique<Screens::ImageView>(this);
+      currentScreen = std::make_unique<Screens::ImageView>(this, filesystem);
       break;
     case Apps::Paint:
       currentScreen = std::make_unique<Screens::InfiniPaint>(lvgl, motorController);
