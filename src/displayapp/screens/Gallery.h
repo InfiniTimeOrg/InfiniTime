@@ -10,7 +10,7 @@ namespace Pinetime {
     namespace Screens {
       class Gallery : public Screen {
       public:
-        static constexpr const char* directory = "/gallery";
+        static constexpr const char* directory = "/gallery/";
 
         Gallery(DisplayApp* app, Pinetime::Controllers::FS& filesystem);
         ~Gallery() override;

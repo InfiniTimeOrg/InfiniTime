@@ -67,7 +67,12 @@ bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
     current.reset(nullptr);
     app->SetFullRefresh(direction);
   }
-  current = std::make_unique<ImageView>(app, info.name);
+
+  char fullname[LFS_NAME_MAX] = "F:";
+  strncat(fullname, directory, sizeof(fullname) - 2 - 1);
+  strncat(fullname, info.name,
+             sizeof(fullname) - strlen(directory) - 2 - 1);
+  current = std::make_unique<ImageView>(app, fullname);
 
   return true;
 }
