@@ -39,3 +39,31 @@ void Gallery::listdir() {
   }
   assert(filesystem.DirClose(&dir) == 0);
 }
+
+bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
+  if ( (n < 0) || (n >= nScreens) )
+    return false;
+
+  lfs_dir_t dir = {0};
+  lfs_info info = {0};
+
+  int res = filesystem.DirOpen(directory, &dir);
+  if (res != 0) {
+    NRF_LOG_INFO("[Gallery] can't find directory");
+    return false;
+  }
+  while (filesystem.DirRead(&dir, &info) && n > 0) {
+    if(info.type == LFS_TYPE_DIR)
+      continue;
+    n--;
+  }
+  assert(filesystem.DirClose(&dir) == 0);
+
+  lfs_file f = {0};
+  if (filesystem.FileOpen(&f, info.name, LFS_O_RDONLY) != LFS_ERR_OK)
+    return false;
+
+  assert(filesystem.FileClose(&f) == 0);
+
+  return true;
+}

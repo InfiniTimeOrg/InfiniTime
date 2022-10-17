@@ -17,7 +17,7 @@ namespace Pinetime {
         Pinetime::Controllers::FS& filesystem;
 
         void listdir();
-        void open(int n);
+        bool open(int n, DisplayApp::FullRefreshDirections direction);
         int nScreens;
       };
     }
