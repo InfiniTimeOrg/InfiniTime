@@ -16,7 +16,7 @@ namespace Pinetime {
       FlashLight,
       BatteryInfo,
       Music,
-      ImageView,
+      Gallery,
       Paint,
       Paddle,
       Twos,
