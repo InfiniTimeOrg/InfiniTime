@@ -8,13 +8,13 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  void event_handler(lv_obj_t* obj, lv_event_t event) {
+  void onFrequencyChange(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingChimes*>(obj->user_data);
-    screen->UpdateSelected(obj, event);
+    screen->UpdateFrequency(obj, event);
   }
 }
 
-constexpr std::array<SettingChimes::Option, 3> SettingChimes::options;
+constexpr std::array<SettingChimes::Option, 4> SettingChimes::frequencyOptions;
 
 SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
@@ -42,15 +42,16 @@ SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
-  for (unsigned int i = 0; i < options.size(); i++) {
-    cbOption[i] = lv_checkbox_create(container1, nullptr);
-    lv_checkbox_set_text(cbOption[i], options[i].name);
-    if (settingsController.GetChimeOption() == options[i].chimesOption) {
-      lv_checkbox_set_checked(cbOption[i], true);
+  uint8_t selectedFrequency = settingsController.GetChimesFrequency();
+  for (unsigned int i = 0; i < frequencyOptions.size(); i++) {
+    frequencyCheckBoxes[i] = lv_checkbox_create(container1, nullptr);
+    lv_checkbox_set_text(frequencyCheckBoxes[i], frequencyOptions[i].label);
+    if (selectedFrequency == frequencyOptions[i].value) {
+      lv_checkbox_set_checked(frequencyCheckBoxes[i], true);
     }
-    cbOption[i]->user_data = this;
-    lv_obj_set_event_cb(cbOption[i], event_handler);
-    SetRadioButtonStyle(cbOption[i]);
+    frequencyCheckBoxes[i]->user_data = this;
+    lv_obj_set_event_cb(frequencyCheckBoxes[i], onFrequencyChange);
+    SetRadioButtonStyle(frequencyCheckBoxes[i]);
   }
 }
 
@@ -59,14 +60,14 @@ SettingChimes::~SettingChimes() {
   settingsController.SaveSettings();
 }
 
-void SettingChimes::UpdateSelected(lv_obj_t* object, lv_event_t event) {
+void SettingChimes::UpdateFrequency(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
-    for (uint8_t i = 0; i < options.size(); i++) {
-      if (object == cbOption[i]) {
-        lv_checkbox_set_checked(cbOption[i], true);
-        settingsController.SetChimeOption(options[i].chimesOption);
+    for (uint8_t i = 0; i < frequencyOptions.size(); i++) {
+      if (object == frequencyCheckBoxes[i]) {
+        lv_checkbox_set_checked(frequencyCheckBoxes[i], true);
+        settingsController.SetChimesFrequency(frequencyOptions[i].value);
       } else {
-        lv_checkbox_set_checked(cbOption[i], false);
+        lv_checkbox_set_checked(frequencyCheckBoxes[i], false);
       }
     }
   }
