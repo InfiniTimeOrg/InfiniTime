@@ -6,6 +6,7 @@
 #include "components/settings/Settings.h"
 #include "displayapp/screens/WatchFaceInfineat.h"
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
+#include "displayapp/screens/WatchFaceDigistyle.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -58,7 +59,7 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen2() {
   std::array<Screens::CheckboxList::Item, 4> watchfaces {
     {{"Infineat face", Applications::Screens::WatchFaceInfineat::IsAvailable(filesystem)},
      {"Casio G7710", Applications::Screens::WatchFaceCasioStyleG7710::IsAvailable(filesystem)},
-     {"", false},
+     {"Digistyle", Applications::Screens::WatchFaceDigistyle::IsAvailable(filesystem)},
      {"", false}}};
   return std::make_unique<Screens::CheckboxList>(
     1,
