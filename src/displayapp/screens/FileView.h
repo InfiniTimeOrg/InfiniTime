@@ -30,6 +30,11 @@ namespace Pinetime {
       public:
         ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path);
       };
+
+      class TextView : public FileView {
+      public:
+        TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path);
+      };
     }
   }
 }
