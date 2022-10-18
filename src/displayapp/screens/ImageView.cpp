@@ -27,6 +27,34 @@ ImageView::ImageView(DisplayApp* app, const char *path)
   ShowInfo();
 }
 
+void ImageView::ShowInfo() {
+  if(label != nullptr) {
+    return;
+  }
+  label = lv_btn_create(lv_scr_act(), nullptr);
+  label->user_data = this;
+
+  lv_obj_set_height(label, 20);
+  lv_obj_set_width(label, LV_HOR_RES);
+  lv_obj_align(label, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+
+  lv_obj_t *txtMessage = lv_label_create(label, nullptr);
+  lv_obj_set_style_local_bg_color(label, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
+  lv_label_set_text_static(txtMessage, name);
+}
+
+void ImageView::HideInfo() {
+  lv_obj_del(label);
+  label = nullptr;
+}
+
+void ImageView::ToggleInfo() {
+  if (label == nullptr)
+    ShowInfo();
+  else
+    HideInfo();
+}
+
 ImageView::~ImageView() {
   lv_obj_clean(lv_scr_act());
 }
