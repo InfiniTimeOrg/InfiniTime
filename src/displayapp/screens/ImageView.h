@@ -11,6 +11,8 @@ namespace Pinetime {
       public:
         ImageView(DisplayApp* app, const char *path);
         ~ImageView() override;
+      private:
+        char name[LFS_NAME_MAX];
       };
     }
   }
