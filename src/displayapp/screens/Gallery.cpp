@@ -30,6 +30,10 @@ bool Gallery::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       return open(index - 1, DisplayApp::FullRefreshDirections::Right);
     case Pinetime::Applications::TouchEvents::SwipeLeft:
       return open(index + 1, DisplayApp::FullRefreshDirections::Left);
+    case Pinetime::Applications::TouchEvents::LongTap:
+    case Pinetime::Applications::TouchEvents::DoubleTap:
+      current->ToggleInfo();
+      return true;
   }
   return false;
 }
