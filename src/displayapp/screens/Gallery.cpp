@@ -88,7 +88,21 @@ bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
   strncat(fullname, directory, sizeof(fullname) - 2 - 1);
   strncat(fullname, info.name,
              sizeof(fullname) - strlen(directory) - 2 - 1);
-  current = std::make_unique<ImageView>(n, nScreens, app, fullname);
+
+  if (string_ends_with(fullname, ".bin")) {
+    current = std::make_unique<ImageView>(n, nScreens, app, fullname);
+  } else {
+    return false;
+  }
 
   return true;
+}
+
+int Gallery::string_ends_with(const char * str, const char * suffix) {
+  int str_len = strlen(str);
+  int suffix_len = strlen(suffix);
+
+  return
+    (str_len >= suffix_len) &&
+    (0 == strcmp(str + (str_len-suffix_len), suffix));
 }
