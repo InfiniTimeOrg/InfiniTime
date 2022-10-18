@@ -9,7 +9,7 @@ namespace Pinetime {
     namespace Screens {
       class ImageView : public Screen {
       public:
-        ImageView(DisplayApp* app, const char *path);
+        ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path);
         ~ImageView() override;
 
         void ShowInfo();
@@ -18,6 +18,8 @@ namespace Pinetime {
       private:
         char name[LFS_NAME_MAX];
         lv_obj_t *label;
+
+        uint8_t screenID, nScreens;
       };
     }
   }

@@ -4,8 +4,10 @@
 
 using namespace Pinetime::Applications::Screens;
 
-ImageView::ImageView(DisplayApp* app, const char *path)
-    : Screen(app)
+ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path)
+    : screenID(screenID),
+      nScreens(nScreens),
+      Screen(app)
 {
   label = nullptr;
 
