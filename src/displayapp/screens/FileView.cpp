@@ -95,7 +95,7 @@ ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const 
   lv_obj_align(image, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 }
 
-TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path)
+TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path, Pinetime::Controllers::FS& fs)
     : FileView(screenID, nScreens, app, path) {
 
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
@@ -103,8 +103,28 @@ TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const ch
   lv_obj_set_width(label, LV_HOR_RES);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 
-  //lv_label_set_text(label, buf);
+  lfs_info info = {0};
+  if (fs.Stat(path+2, &info) != LFS_ERR_OK && info.type != LFS_TYPE_DIR) {
+    lv_label_set_text_static(label, "could not open file");
+    return;
+  }
 
+  char *buf =  (char *)lv_mem_alloc(info.size);
+  if (buf == nullptr) {
+    lv_label_set_text_static(label, "could not open file");
+    return;
+  }
+
+  lfs_file_t fp;
+  if (fs.FileOpen(&fp, path+2, LFS_O_RDONLY) != LFS_ERR_OK) {
+    lv_label_set_text_static(label, "could not open file");
+    lv_mem_free(buf);
+    return;
+  }
+
+  fs.FileRead(&fp, reinterpret_cast<uint8_t*>(buf), info.size);
+  lv_label_set_text(label, buf);
   lv_mem_free(buf);
 
+  fs.FileClose(&fp);
 }
