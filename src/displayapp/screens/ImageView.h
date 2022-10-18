@@ -19,6 +19,10 @@ namespace Pinetime {
         char name[LFS_NAME_MAX];
         lv_obj_t *label;
 
+        lv_obj_t *pageIndicatorBase;
+        lv_obj_t *pageIndicator;
+        lv_point_t pageIndicatorBasePoints[2];
+        lv_point_t pageIndicatorPoints[2];
         uint8_t screenID, nScreens;
       };
     }
