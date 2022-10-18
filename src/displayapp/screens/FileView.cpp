@@ -1,5 +1,5 @@
 #include <nrf_log.h>
-#include "displayapp/screens/ImageView.h"
+#include "displayapp/screens/FileView.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/InfiniTimeTheme.h"
 
