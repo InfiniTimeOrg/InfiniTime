@@ -5,7 +5,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path)
+FileView::FileView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path)
     : screenID(screenID),
       nScreens(nScreens),
       Screen(app)
@@ -13,10 +13,6 @@ ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const 
   label = nullptr;
   pageIndicatorBase = nullptr;
   pageIndicator = nullptr;
-
-  lv_obj_t* image = lv_img_create(lv_scr_act(), nullptr);
-  lv_img_set_src(image, path);
-  lv_obj_align(image, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 
   const char *c = strrchr(path, '/') + 1;
   if (c == nullptr)
@@ -45,7 +41,7 @@ ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const 
   ShowInfo();
 }
 
-void ImageView::ShowInfo() {
+void FileView::ShowInfo() {
   if(label != nullptr) {
     return;
   }
@@ -71,7 +67,7 @@ void ImageView::ShowInfo() {
   lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
 }
 
-void ImageView::HideInfo() {
+void FileView::HideInfo() {
   lv_obj_del(label);
   lv_obj_del(pageIndicatorBase);
   lv_obj_del(pageIndicator);
@@ -81,13 +77,20 @@ void ImageView::HideInfo() {
   pageIndicator = nullptr;
 }
 
-void ImageView::ToggleInfo() {
+void FileView::ToggleInfo() {
   if (label == nullptr)
     ShowInfo();
   else
     HideInfo();
 }
 
-ImageView::~ImageView() {
+FileView::~FileView() {
   lv_obj_clean(lv_scr_act());
+}
+
+ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path)
+    : FileView(screenID, nScreens, app, path) {
+  lv_obj_t* image = lv_img_create(lv_scr_act(), nullptr);
+  lv_img_set_src(image, path);
+  lv_obj_align(image, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 }
