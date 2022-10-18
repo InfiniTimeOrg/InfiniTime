@@ -16,6 +16,8 @@ namespace Pinetime {
         ~Gallery() override;
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
       private:
+        int string_ends_with(const char * str, const char * suffix);
+
         Pinetime::Controllers::FS& filesystem;
         std::unique_ptr<FileView> current;
 
