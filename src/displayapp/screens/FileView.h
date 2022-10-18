@@ -7,10 +7,10 @@
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
-      class ImageView : public Screen {
+      class FileView : public Screen {
       public:
-        ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path);
-        ~ImageView() override;
+        FileView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path);
+        ~FileView() override;
 
         void ShowInfo();
         void HideInfo();
@@ -24,6 +24,11 @@ namespace Pinetime {
         lv_point_t pageIndicatorBasePoints[2];
         lv_point_t pageIndicatorPoints[2];
         uint8_t screenID, nScreens;
+      };
+
+      class ImageView : public FileView {
+      public:
+        ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path);
       };
     }
   }
