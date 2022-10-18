@@ -94,3 +94,17 @@ ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const 
   lv_img_set_src(image, path);
   lv_obj_align(image, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 }
+
+TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path)
+    : FileView(screenID, nScreens, app, path) {
+
+  lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_long_mode(label, LV_LABEL_LONG_BREAK);
+  lv_obj_set_width(label, LV_HOR_RES);
+  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+
+  //lv_label_set_text(label, buf);
+
+  lv_mem_free(buf);
+
+}
