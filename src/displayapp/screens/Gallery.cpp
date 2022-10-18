@@ -92,7 +92,7 @@ bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
   if (string_ends_with(fullname, ".bin")) {
     current = std::make_unique<ImageView>(n, nScreens, app, fullname);
   } else if (string_ends_with(fullname, ".txt")) {
-    current = std::make_unique<TextView>(n, nScreens, app, fullname);
+    current = std::make_unique<TextView>(n, nScreens, app, fullname, filesystem);
   } else {
     return false;
   }

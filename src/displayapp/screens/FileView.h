@@ -33,7 +33,7 @@ namespace Pinetime {
 
       class TextView : public FileView {
       public:
-        TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path);
+        TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path, Pinetime::Controllers::FS& fs);
       };
     }
   }
