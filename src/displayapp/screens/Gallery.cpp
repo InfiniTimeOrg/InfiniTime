@@ -88,7 +88,7 @@ bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
   strncat(fullname, directory, sizeof(fullname) - 2 - 1);
   strncat(fullname, info.name,
              sizeof(fullname) - strlen(directory) - 2 - 1);
-  current = std::make_unique<ImageView>(app, fullname);
+  current = std::make_unique<ImageView>(n, nScreens, app, fullname);
 
   return true;
 }
