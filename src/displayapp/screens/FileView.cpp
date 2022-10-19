@@ -37,8 +37,6 @@ FileView::FileView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const ch
   pageIndicatorPoints[0].y = 1;
   pageIndicatorPoints[1].x = indicatorPos + indicatorSize;
   pageIndicatorPoints[1].y = 1;
-
-  ShowInfo();
 }
 
 void FileView::ShowInfo() {
@@ -93,6 +91,8 @@ ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const 
   lv_obj_t* image = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_src(image, path);
   lv_obj_align(image, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+
+  ShowInfo();
 }
 
 TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path, Pinetime::Controllers::FS& fs)
@@ -127,4 +127,6 @@ TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const ch
   lv_mem_free(buf);
 
   fs.FileClose(&fp);
+
+  ShowInfo();
 }
