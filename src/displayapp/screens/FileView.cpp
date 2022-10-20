@@ -5,21 +5,18 @@
 
 using namespace Pinetime::Applications::Screens;
 
-FileView::FileView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path)
-    : screenID(screenID),
-      nScreens(nScreens),
-      Screen(app)
-{
+FileView::FileView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char* path)
+  : screenID(screenID), nScreens(nScreens), Screen(app) {
   label = nullptr;
   pageIndicatorBase = nullptr;
   pageIndicator = nullptr;
 
-  const char *c = strrchr(path, '/') + 1;
+  const char* c = strrchr(path, '/') + 1;
   if (c == nullptr)
     c = path;
 
-  strncpy(name, c, LFS_NAME_MAX-1);
-  char *pchar = strchr(name, '_');
+  strncpy(name, c, LFS_NAME_MAX - 1);
+  char* pchar = strchr(name, '_');
   while (pchar != nullptr) {
     *pchar = ' ';
     pchar = strchr(pchar + 1, '_');
@@ -40,7 +37,7 @@ FileView::FileView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const ch
 }
 
 void FileView::ShowInfo() {
-  if(label != nullptr) {
+  if (label != nullptr) {
     return;
   }
   label = lv_btn_create(lv_scr_act(), nullptr);
@@ -50,7 +47,7 @@ void FileView::ShowInfo() {
   lv_obj_set_width(label, LV_HOR_RES);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
-  lv_obj_t *txtMessage = lv_label_create(label, nullptr);
+  lv_obj_t* txtMessage = lv_label_create(label, nullptr);
   lv_obj_set_style_local_bg_color(label, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
   lv_label_set_text_static(txtMessage, name);
 
@@ -86,8 +83,7 @@ FileView::~FileView() {
   lv_obj_clean(lv_scr_act());
 }
 
-ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path)
-    : FileView(screenID, nScreens, app, path) {
+ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char* path) : FileView(screenID, nScreens, app, path) {
   lv_obj_t* image = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_src(image, path);
   lv_obj_align(image, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
@@ -95,8 +91,8 @@ ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const 
   ShowInfo();
 }
 
-TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char *path, Pinetime::Controllers::FS& fs)
-    : FileView(screenID, nScreens, app, path) {
+TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char* path, Pinetime::Controllers::FS& fs)
+  : FileView(screenID, nScreens, app, path) {
 
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(label, LV_LABEL_LONG_BREAK);
@@ -104,19 +100,19 @@ TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const ch
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 
   lfs_info info = {0};
-  if (fs.Stat(path+2, &info) != LFS_ERR_OK && info.type != LFS_TYPE_DIR) {
+  if (fs.Stat(path + 2, &info) != LFS_ERR_OK && info.type != LFS_TYPE_DIR) {
     lv_label_set_text_static(label, "could not open file");
     return;
   }
 
-  char *buf =  (char *)lv_mem_alloc(info.size);
+  char* buf = (char*) lv_mem_alloc(info.size);
   if (buf == nullptr) {
     lv_label_set_text_static(label, "could not open file");
     return;
   }
 
   lfs_file_t fp;
-  if (fs.FileOpen(&fp, path+2, LFS_O_RDONLY) != LFS_ERR_OK) {
+  if (fs.FileOpen(&fp, path + 2, LFS_O_RDONLY) != LFS_ERR_OK) {
     lv_label_set_text_static(label, "could not open file");
     lv_mem_free(buf);
     return;
