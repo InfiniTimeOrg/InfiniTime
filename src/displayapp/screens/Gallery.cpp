@@ -4,10 +4,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Gallery::Gallery(DisplayApp* app, Pinetime::Controllers::FS& filesystem)
-    : Screen(app),
-      filesystem(filesystem)
-{
+Gallery::Gallery(DisplayApp* app, Pinetime::Controllers::FS& filesystem) : Screen(app), filesystem(filesystem) {
   listdir();
 
   if (nScreens == 0) {
@@ -49,7 +46,7 @@ void Gallery::listdir() {
     return;
   }
   while (filesystem.DirRead(&dir, &info)) {
-    if(info.type == LFS_TYPE_DIR)
+    if (info.type == LFS_TYPE_DIR)
       continue;
     nScreens++;
   }
@@ -57,7 +54,7 @@ void Gallery::listdir() {
 }
 
 bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
-  if ( (n < 0) || (n >= nScreens) )
+  if ((n < 0) || (n >= nScreens))
     return false;
 
   index = n;
@@ -72,9 +69,10 @@ bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
   }
   int i = 0;
   while (filesystem.DirRead(&dir, &info)) {
-    if(info.type == LFS_TYPE_DIR)
+    if (info.type == LFS_TYPE_DIR)
       continue;
-    if (n == i) break;
+    if (n == i)
+      break;
     i++;
   }
   assert(filesystem.DirClose(&dir) == 0);
@@ -86,8 +84,7 @@ bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
 
   char fullname[LFS_NAME_MAX] = "F:";
   strncat(fullname, directory, sizeof(fullname) - 2 - 1);
-  strncat(fullname, info.name,
-             sizeof(fullname) - strlen(directory) - 2 - 1);
+  strncat(fullname, info.name, sizeof(fullname) - strlen(directory) - 2 - 1);
 
   if (string_ends_with(fullname, ".bin")) {
     current = std::make_unique<ImageView>(n, nScreens, app, fullname);
@@ -100,11 +97,9 @@ bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
   return true;
 }
 
-int Gallery::string_ends_with(const char * str, const char * suffix) {
+int Gallery::string_ends_with(const char* str, const char* suffix) {
   int str_len = strlen(str);
   int suffix_len = strlen(suffix);
 
-  return
-    (str_len >= suffix_len) &&
-    (0 == strcmp(str + (str_len-suffix_len), suffix));
+  return (str_len >= suffix_len) && (0 == strcmp(str + (str_len - suffix_len), suffix));
 }
