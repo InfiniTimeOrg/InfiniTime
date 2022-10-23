@@ -444,7 +444,7 @@ void WatchFacePineTimeStyle::Refresh() {
   }
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
-  notificationNbState = notificatioManager.NbNotifications() > 0;
+  notificationNbState = notificationManager.NbNotifications() > 0;
   if (notificationState.IsUpdated() || notificationNbState.IsUpdated()) {
     if (notificationState.Get()) {
       lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFFFFFF));
