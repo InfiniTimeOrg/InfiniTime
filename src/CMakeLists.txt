@@ -384,6 +384,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Label.cpp
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
+        displayapp/screens/MyApp.cpp
         displayapp/screens/Weather.cpp
         displayapp/screens/Navigation.cpp
         displayapp/screens/Metronome.cpp
@@ -834,7 +835,7 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   # add_definitions(-DCLOCK_CONFIG_LOG_LEVEL=4)
   # add_definitions(-DRTC_CONFIG_LOG_ENABLED=1)
   # add_definitions(-DRTC_CONFIG_LOG_LEVEL=4)
-  
+
   # Nimble Logging
   add_definitions(-DMYNEWT_VAL_NEWT_FEATURE_LOGCFG=1)
   # add_definitions(-DMYNEWT_VAL_LOG_LEVEL=0)
@@ -1142,4 +1143,3 @@ endif()
 if(BUILD_RESOURCES)
   add_subdirectory(resources)
 endif()
-
