@@ -1,16 +1,16 @@
-#include "drivers/SpiNorFlash.h"
+#include "drivers/spiFlash/SpiNorFlash.h"
 #include <hal/nrf_gpio.h>
 #include <libraries/delay/nrf_delay.h>
 #include <libraries/log/nrf_log.h>
 #include "drivers/Spi.h"
 
-using namespace Pinetime::Drivers;
+using namespace Pinetime::Drivers::SpiFlash;
 
-SpiNorFlash::SpiNorFlash(Spi& spi) : spi {spi} {
+SpiNorFlash::SpiNorFlash(Pinetime::Drivers::Nrf52::Spi& spi) : spi {spi} {
 }
 
 void SpiNorFlash::Init() {
-  device_id = ReadIdentificaion();
+  device_id = ReadIdentification();
   NRF_LOG_INFO("[SpiNorFlash] Manufacturer : %d, Memory type : %d, memory density : %d",
                device_id.manufacturer,
                device_id.type,
@@ -32,7 +32,7 @@ void SpiNorFlash::Wakeup() {
   uint8_t cmd[cmdSize] = {static_cast<uint8_t>(Commands::ReleaseFromDeepPowerDown), 0x01, 0x02, 0x03};
   uint8_t id = 0;
   spi.Read(reinterpret_cast<uint8_t*>(&cmd), cmdSize, &id, 1);
-  auto devId = device_id = ReadIdentificaion();
+  auto devId = device_id = ReadIdentification();
   if (devId.type != device_id.type) {
     NRF_LOG_INFO("[SpiNorFlash] ID on Wakeup: Failed");
   } else {
@@ -41,7 +41,7 @@ void SpiNorFlash::Wakeup() {
   NRF_LOG_INFO("[SpiNorFlash] Wakeup")
 }
 
-SpiNorFlash::Identification SpiNorFlash::ReadIdentificaion() {
+SpiNorFlash::Identification SpiNorFlash::ReadIdentification() {
   auto cmd = static_cast<uint8_t>(Commands::ReadIdentification);
   Identification identification;
   spi.Read(&cmd, 1, reinterpret_cast<uint8_t*>(&identification), sizeof(Identification));

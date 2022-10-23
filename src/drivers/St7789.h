@@ -1,10 +1,12 @@
 #pragma once
+#include "Spi.h"
 #include <cstddef>
 #include <cstdint>
+#include "port/infinitime.h"
 
 namespace Pinetime {
   namespace Drivers {
-    class Spi;
+
     class St7789 {
     public:
       explicit St7789(Spi& spi, uint8_t pinDataCommand);

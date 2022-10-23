@@ -27,6 +27,7 @@
 #include <timers.h>
 #include <drivers/Hrs3300.h>
 #include <drivers/Bma421.h>
+#include <drivers/SpiMaster.h>
 
 #include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
@@ -37,8 +38,8 @@
 #include "components/datetime/DateTimeController.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/fs/FS.h"
-#include "drivers/Spi.h"
-#include "drivers/SpiMaster.h"
+#include "drivers/nrf52/Spi.h"
+#include "drivers/nrf52/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
 #include "drivers/St7789.h"
 #include "drivers/TwiMaster.h"
@@ -57,23 +58,31 @@ Pinetime::Logging::NrfLogger logger;
 Pinetime::Logging::DummyLogger logger;
 #endif
 
+#include "port/infinitime.h"
+
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
 static constexpr uint8_t motionSensorTwiAddress = 0x18;
 static constexpr uint8_t heartRateSensorTwiAddress = 0x44;
 
-Pinetime::Drivers::SpiMaster spi {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,
-                                  {Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
-                                   Pinetime::Drivers::SpiMaster::Modes::Mode3,
-                                   Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
+Pinetime::Drivers::Nrf52::SpiMaster spiImpl {Pinetime::Drivers::Nrf52::SpiMaster::SpiModule::SPI0,
+                                  {Pinetime::Drivers::Nrf52::SpiMaster::BitOrder::Msb_Lsb,
+                                   Pinetime::Drivers::Nrf52::SpiMaster::Modes::Mode3,
+                                   Pinetime::Drivers::Nrf52::SpiMaster::Frequencies::Freq8Mhz,
                                    Pinetime::PinMap::SpiSck,
                                    Pinetime::PinMap::SpiMosi,
                                    Pinetime::PinMap::SpiMiso}};
 
-Pinetime::Drivers::Spi lcdSpi {spi, Pinetime::PinMap::SpiLcdCsn};
+Pinetime::Drivers::SpiMaster spi {spiImpl};
+
+Pinetime::Drivers::Nrf52::Spi lcdSpiIpmpl {spiImpl, Pinetime::PinMap::SpiLcdCsn};
+Pinetime::Drivers::Spi lcdSpi {lcdSpiIpmpl};
 Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
 
-Pinetime::Drivers::Spi flashSpi {spi, Pinetime::PinMap::SpiFlashCsn};
-Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
+Pinetime::Drivers::Nrf52::Spi flashSpiImpl {spiImpl, Pinetime::PinMap::SpiFlashCsn};
+Pinetime::Drivers::Spi flashSpi {flashSpiImpl};
+
+Pinetime::Drivers::SpiFlash::SpiNorFlash spiNorFlashImpl{flashSpiImpl};
+Pinetime::Drivers::SpiNorFlash spiNorFlash {spiNorFlashImpl};
 
 // The TWI device should work @ up to 400Khz but there is a HW bug which prevent it from
 // respecting correct timings. According to erratas heet, this magic value makes it run

@@ -25,10 +25,6 @@
 #include "components/fs/FS.h"
 
 namespace Pinetime {
-  namespace Drivers {
-    class SpiNorFlash;
-  }
-
   namespace System {
     class SystemTask;
   }

@@ -436,9 +436,9 @@ list(APPEND SOURCE_FILES
 
         main.cpp
         drivers/St7789.cpp
-        drivers/SpiNorFlash.cpp
-        drivers/SpiMaster.cpp
-        drivers/Spi.cpp
+        drivers/nrf52/SpiMaster.cpp
+        drivers/nrf52/Spi.cpp
+        drivers/spiFlash/SpiNorFlash.cpp
         drivers/Watchdog.cpp
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
@@ -503,9 +503,8 @@ list(APPEND RECOVERY_SOURCE_FILES
 
         main.cpp
         drivers/St7789.cpp
-        drivers/SpiNorFlash.cpp
-        drivers/SpiMaster.cpp
-        drivers/Spi.cpp
+        drivers/nrf52/SpiMaster.cpp
+        drivers/nrf52/Spi.cpp
         drivers/Watchdog.cpp
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
@@ -566,9 +565,8 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
         FreeRTOS/port_cmsis_systick.c
         FreeRTOS/port_cmsis.c
 
-        drivers/SpiNorFlash.cpp
-        drivers/SpiMaster.cpp
-        drivers/Spi.cpp
+        drivers/nrf52/SpiMaster.cpp
+        drivers/nrf52/Spi.cpp
         logging/NrfLogger.cpp
 
         components/rle/RleDecoder.cpp
@@ -587,6 +585,7 @@ set(INCLUDE_FILES
         BootloaderVersion.h
         logging/Logger.h
         logging/NrfLogger.h
+        port/infinitime.h
         displayapp/DisplayApp.h
         displayapp/Messages.h
         displayapp/TouchEvents.h
@@ -619,8 +618,9 @@ set(INCLUDE_FILES
         displayapp/widgets/StatusIcons.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
-        drivers/SpiMaster.h
-        drivers/Spi.h
+        drivers/nrf52/SpiMaster.h
+        drivers/nrf52/Spi.h
+        drivers/spiFlash/SpiNorFlash.h
         drivers/Watchdog.h
         drivers/DebugPins.h
         drivers/InternalFlash.h
@@ -687,6 +687,7 @@ include_directories(
         .
         ../
         libs/
+        port/
         FreeRTOS/
         libs/date/include
         libs/mynewt-nimble/porting/npl/freertos/include

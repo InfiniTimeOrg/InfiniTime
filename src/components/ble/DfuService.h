@@ -9,12 +9,12 @@
 #undef max
 #undef min
 
+#include <drivers/SpiNorFlash.h>
+#include "infinitime.h"
+
 namespace Pinetime {
   namespace System {
     class SystemTask;
-  }
-  namespace Drivers {
-    class SpiNorFlash;
   }
   namespace Controllers {
     class Ble;

@@ -11,6 +11,7 @@
 #include <drivers/Bma421.h>
 #include <drivers/PinMap.h>
 #include <components/motion/MotionController.h>
+#include <drivers/SpiMaster.h>
 
 #include "systemtask/SystemMonitor.h"
 #include "components/ble/NimbleController.h"
@@ -34,13 +35,12 @@
 
 #include "drivers/Watchdog.h"
 #include "systemtask/Messages.h"
+#include "port/infinitime.h"
 
 extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
 namespace Pinetime {
   namespace Drivers {
     class Cst816S;
-    class SpiMaster;
-    class SpiNorFlash;
     class St7789;
     class TwiMaster;
     class Hrs3300;
