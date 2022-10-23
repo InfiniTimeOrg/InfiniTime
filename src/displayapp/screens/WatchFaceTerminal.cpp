@@ -105,7 +105,7 @@ void WatchFaceTerminal::Refresh() {
     if (notificationState.Get()) {
       lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
       lv_label_set_text_static(notificationIcon, "You have mail.");
-    } else if (notificatioManager.NbNotifications() > 0) {
+    } else if (notificationManager.NbNotifications() > 0) {
       lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFFFFFF));
       lv_label_set_text_static(notificationIcon, "You have mail.");
     } else {
