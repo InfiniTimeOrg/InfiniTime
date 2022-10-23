@@ -14,33 +14,34 @@ namespace Pinetime {
     namespace Screens {
       class SettingSetDateTime : public Screen {
       public:
-        SettingSetDateTime(DisplayApp* app, Pinetime::Controllers::DateTime& dateTimeController,
-        Pinetime::Controllers::Settings& settingsController);
+        SettingSetDateTime(DisplayApp* app,
+                           Pinetime::Controllers::DateTime& dateTimeController,
+                           Pinetime::Controllers::Settings& settingsController);
         ~SettingSetDateTime() override;
 
         bool OnTouchEvent(TouchEvents event) override;
-        //SettingSetDate void
+        // SettingSetDate void
         void HandleButtonPress();
         void CheckDay();
-        //SettingSetTime void
+        // SettingSetTime void
         void SetTime();
         void UpdateScreen();
 
       private:
         Controllers::DateTime& dateTimeController;
         Controllers::Settings& settingsController;
-        //SettingSetDate labels
+        // SettingSetDate labels
         lv_obj_t* btnSetDate;
         lv_obj_t* lblSetDate;
-        //SettingSetTime labels 
+        // SettingSetTime labels
         lv_obj_t* lblampm;
         lv_obj_t* btnSetTime;
         lv_obj_t* lblSetTime;
-        //SettingSetDate Widgets
+        // SettingSetDate Widgets
         Widgets::Counter dayCounter = Widgets::Counter(1, 31, jetbrains_mono_bold_20);
         Widgets::Counter monthCounter = Widgets::Counter(1, 12, jetbrains_mono_bold_20);
         Widgets::Counter yearCounter = Widgets::Counter(1970, 9999, jetbrains_mono_bold_20);
-        //SettingSetTime Widgets
+        // SettingSetTime Widgets
         Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_42);
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_42);
 
