@@ -13,6 +13,7 @@ namespace Pinetime {
       Notifications,
       Timer,
       Alarm,
+      Morse,
       FlashLight,
       BatteryInfo,
       Music,
