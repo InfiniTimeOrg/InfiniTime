@@ -3,6 +3,7 @@
 #include <array>
 #include <memory>
 
+#include "displayapp/AvailableApps.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/ScreenList.h"
 #include "components/datetime/DateTimeController.h"
@@ -36,7 +37,32 @@ namespace Pinetime {
         static constexpr int appsPerScreen = 6;
 
         // Increment this when more space is needed
-        static constexpr int nScreens = 2;
+        constexpr int nApps = 
+          #ifdef APP_METRONOME
+            APP_METRONOME +
+          #endif
+          #ifdef APP_MUSIC
+            APP_MUSIC +
+          #endif
+          #ifdef APP_NAVIGATION
+            APP_NAVIGATION +
+          #endif
+          #ifdef APP_PADDLE
+            APP_PADDLE +
+          #endif
+          #ifdef APP_PAINT
+            APP_PAINT +
+          #endif
+          #ifdef APP_TWOS
+            APP_TWOS +
+          #endif
+          #ifdef APP_MOTION
+            APP_MOTION +
+          #endif
+          // core apps: Alarm, HeartRate, Steps, Stopwatch, Timer
+          5;
+
+        static constexpr int nScreens = nApps / 6 + (nApps % 6 == 0 ? 0 : 1); 
 
         static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
           {Symbols::stopWatch, Apps::StopWatch},

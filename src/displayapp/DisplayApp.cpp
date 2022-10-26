@@ -1,7 +1,10 @@
 #include "displayapp/DisplayApp.h"
 #include <libraries/log/nrf_log.h>
+#include "displayapp/AvailableApps.h"
 #include "displayapp/screens/HeartRate.h"
-#include "displayapp/screens/Motion.h"
+#ifdef APP_MOTION
+    #include "displayapp/screens/Motion.h"
+#endif
 #include "displayapp/screens/Timer.h"
 #include "displayapp/screens/Alarm.h"
 #include "components/battery/BatteryController.h"
@@ -14,16 +17,28 @@
 #include "displayapp/screens/Clock.h"
 #include "displayapp/screens/FirmwareUpdate.h"
 #include "displayapp/screens/FirmwareValidation.h"
-#include "displayapp/screens/InfiniPaint.h"
-#include "displayapp/screens/Paddle.h"
+#ifdef APP_PAINT
+    #include "displayapp/screens/InfiniPaint.h"
+#endif
+#ifdef APP_PADDLE
+    #include "displayapp/screens/Paddle.h"
+#endif
 #include "displayapp/screens/StopWatch.h"
-#include "displayapp/screens/Metronome.h"
-#include "displayapp/screens/Music.h"
-#include "displayapp/screens/Navigation.h"
+#ifdef APP_METRONOME
+    #include "displayapp/screens/Metronome.h"
+#endif
+#ifdef APP_MUSIC
+    #include "displayapp/screens/Music.h"
+#endif
+#ifdef APP_NAVIGATION
+    #include "displayapp/screens/Navigation.h"
+#endif
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/screens/SystemInfo.h"
 #include "displayapp/screens/Tile.h"
-#include "displayapp/screens/Twos.h"
+#ifdef APP_TWOS
+    #include "displayapp/screens/Twos.h"
+#endif
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
 #include "displayapp/screens/Steps.h"
@@ -451,31 +466,45 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
     case Apps::StopWatch:
       currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask);
       break;
+#ifdef APP_TWOS
     case Apps::Twos:
       currentScreen = std::make_unique<Screens::Twos>(this);
       break;
+#endif
+#ifdef APP_PAINT
     case Apps::Paint:
       currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl, motorController);
       break;
+#endif
+#ifdef APP_PADDLE
     case Apps::Paddle:
       currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
       break;
+#endif
+#ifdef APP_MUSIC
     case Apps::Music:
       currentScreen = std::make_unique<Screens::Music>(this, systemTask->nimble().music());
       break;
+#endif
+#ifdef APP_NAVIGATION
     case Apps::Navigation:
       currentScreen = std::make_unique<Screens::Navigation>(this, systemTask->nimble().navigation());
       break;
+#endif
     case Apps::HeartRate:
       currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, *systemTask);
       break;
+#ifdef APP_METRONOME
     case Apps::Metronome:
       currentScreen = std::make_unique<Screens::Metronome>(this, motorController, *systemTask);
       ReturnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::None);
       break;
+#endif
+#ifdef APP_MOTION
     case Apps::Motion:
       currentScreen = std::make_unique<Screens::Motion>(this, motionController);
       break;
+#endif
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
