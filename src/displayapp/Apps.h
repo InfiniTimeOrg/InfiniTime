@@ -16,7 +16,7 @@ namespace Pinetime {
       FlashLight,
       BatteryInfo,
       Music,
-      MyApp,
+      PlaceholderApp,
       Paint,
       Paddle,
       Twos,
