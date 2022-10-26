@@ -58,8 +58,8 @@ FlashLight::~FlashLight() {
 }
 
 void FlashLight::SetColors() {
-  lv_color_t bgColor = isOn ? LV_COLOR_WHITE : LV_COLOR_BLACK;
-  lv_color_t fgColor = isOn ? Colors::lightGray : LV_COLOR_WHITE;
+  lv_color_t bgColor = isOn ? LV_COLOR_RED : LV_COLOR_BLACK;
+  lv_color_t fgColor = LV_COLOR_RED;//isOn ? Colors::lightGray : LV_COLOR_RED;
 
   lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, bgColor);
   lv_obj_set_style_local_text_color(flashLight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, fgColor);
