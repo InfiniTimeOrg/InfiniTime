@@ -17,6 +17,7 @@ namespace Pinetime {
       BatteryInfo,
       Music,
       PlaceholderApp,
+      LucidDreamer,
       Paint,
       Paddle,
       Twos,

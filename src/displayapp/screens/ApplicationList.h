@@ -43,7 +43,7 @@ namespace Pinetime {
           {Symbols::clock, Apps::Alarm},
           {Symbols::hourGlass, Apps::Timer},
           {Symbols::shoe, Apps::Steps},
-          {"--", Apps::PlaceholderApp},
+          {"LD", Apps::LucidDreamer},
           {"--", Apps::PlaceholderApp},
 
           {Symbols::paintbrush, Apps::Paint},

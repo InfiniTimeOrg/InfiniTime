@@ -20,6 +20,7 @@
 #include "displayapp/screens/Metronome.h"
 #include "displayapp/screens/Music.h"
 #include "displayapp/screens/PlaceholderApp.h"
+#include "displayapp/screens/LucidDreamer.h"
 #include "displayapp/screens/Navigation.h"
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/screens/SystemInfo.h"
@@ -466,6 +467,9 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::PlaceholderApp:
       currentScreen = std::make_unique<Screens::PlaceholderApp>(this);
+      break;
+    case Apps::LucidDreamer:
+      currentScreen = std::make_unique<Screens::LucidDreamer>(this);
       break;
     case Apps::Navigation:
       currentScreen = std::make_unique<Screens::Navigation>(this, systemTask->nimble().navigation());
