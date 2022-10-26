@@ -8,8 +8,7 @@ namespace Pinetime {
     namespace Screens {
       class PlaceholderApp : public Screen {
       public:
-        PlaceholderApp(DisplayApp* app,
-          Pinetime::Controllers::MotorController& motorController);
+        PlaceholderApp(DisplayApp* app);
         ~PlaceholderApp() override;
       };
     }
