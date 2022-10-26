@@ -37,32 +37,11 @@ namespace Pinetime {
         static constexpr int appsPerScreen = 6;
 
         // Increment this when more space is needed
-        constexpr int nApps = 
-          #ifdef APP_METRONOME
-            APP_METRONOME +
-          #endif
-          #ifdef APP_MUSIC
-            APP_MUSIC +
-          #endif
-          #ifdef APP_NAVIGATION
-            APP_NAVIGATION +
-          #endif
-          #ifdef APP_PADDLE
-            APP_PADDLE +
-          #endif
-          #ifdef APP_PAINT
-            APP_PAINT +
-          #endif
-          #ifdef APP_TWOS
-            APP_TWOS +
-          #endif
-          #ifdef APP_MOTION
-            APP_MOTION +
-          #endif
-          // core apps: Alarm, HeartRate, Steps, Stopwatch, Timer
-          5;
+        #define N_APPS 5 + APP_METRONOME + APP_MUSIC + APP_NAVIGATION + APP_PADDLE + APP_PAINT + APP_TWOS + APP_MOTION
+        #define N_SCREENS N_APPS / 6 + (N_APPS % 6 == 0 ? 0 : 1)
+        #define SLOTS_FREE 6 - N_APPS % 6
 
-        static constexpr int nScreens = nApps / 6 + (nApps % 6 == 0 ? 0 : 1); 
+        static constexpr int nScreens = N_SCREENS; 
 
         static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
           {Symbols::stopWatch, Apps::StopWatch},
@@ -70,14 +49,43 @@ namespace Pinetime {
           {Symbols::hourGlass, Apps::Timer},
           {Symbols::shoe, Apps::Steps},
           {Symbols::heartBeat, Apps::HeartRate},
+#if APP_MUSIC
           {Symbols::music, Apps::Music},
-
+#endif
+#if APP_PAINT
           {Symbols::paintbrush, Apps::Paint},
+#endif
+#if APP_PADDLE
           {Symbols::paddle, Apps::Paddle},
+#endif
+#if APP_TWOS
           {"2", Apps::Twos},
+#endif
+#if APP_MOTION
           {Symbols::chartLine, Apps::Motion},
+#endif
+#if APP_METRONOME
           {Symbols::drum, Apps::Metronome},
+#endif
+#if APP_NAVIGATION
           {Symbols::map, Apps::Navigation},
+#endif
+
+#if SLOTS_FREE
+          {nullptr, Apps::None},
+#endif
+#if SLOTS_FREE > 1
+          {nullptr, Apps::None},
+#endif
+#if SLOTS_FREE > 2
+          {nullptr, Apps::None},
+#endif
+#if SLOTS_FREE > 3
+          {nullptr, Apps::None},
+#endif
+#if SLOTS_FREE > 4
+          {nullptr, Apps::None},
+#endif
         }};
         ScreenList<nScreens> screens;
       };

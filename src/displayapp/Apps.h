@@ -16,31 +16,31 @@ namespace Pinetime {
       Alarm,
       FlashLight,
       BatteryInfo,
-#ifdef APP_MUSIC
+#if APP_MUSIC
       Music,
 #endif
-#ifdef APP_PAINT
+#if APP_PAINT
       Paint,
 #endif
-#ifdef APP_PADDLE
+#if APP_PADDLE
       Paddle,
 #endif
-#ifdef APP_TWOS
+#if APP_TWOS
       Twos,
 #endif
       HeartRate,
-#ifdef APP_NAVIGATION
+#if APP_NAVIGATION
       Navigation,
 #endif
       StopWatch,
-#ifdef APP_METRONOME
+#if APP_METRONOME
       Metronome,
 #endif
-#ifdef APP_MOTION
+#if APP_MOTION
       Motion,
 #endif
       Steps,
-#ifdef APP_WEATHER
+#if APP_WEATHER
       Weather,
 #endif
       PassKey,
