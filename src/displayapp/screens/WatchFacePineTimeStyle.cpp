@@ -443,7 +443,7 @@ void WatchFacePineTimeStyle::Refresh() {
     AlignIcons();
   }
 
-  notificationState = notificatioManager.AreNewNotificationsAvailable();
+  notificationState = notificationManager.AreNewNotificationsAvailable();
   notificationNbState = notificationManager.NbNotifications() > 0;
   if (notificationState.IsUpdated() || notificationNbState.IsUpdated()) {
     if (notificationState.Get()) {
