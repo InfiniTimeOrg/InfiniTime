@@ -58,5 +58,29 @@
       "size": 115,
       "format": "bin",
       "target_path": "/fonts/"
-   }
+   },
+  "pinecone_28" : {
+    "sources": [
+      {
+        "file": "fonts/Pinecone-Regular.ttf",
+        "symbols": "0123456789MONTUEWDHFRISAJBPYLGCV"
+      }
+    ],
+    "bpp": 1,
+    "size": 28,
+    "format": "bin",
+    "target_path": "/fonts/"
+  },
+  "pinecone_70" : {
+    "sources": [
+      {
+        "file": "fonts/Pinecone-Regular.ttf",
+        "symbols": "0123456789"
+      }
+    ],
+    "bpp": 1,
+    "size": 70,
+    "format": "bin",
+    "target_path": "/fonts/"
+  }
 }
