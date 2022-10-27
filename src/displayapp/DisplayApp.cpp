@@ -469,7 +469,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::PlaceholderApp>(this);
       break;
     case Apps::LucidDreamer:
-      currentScreen = std::make_unique<Screens::LucidDreamer>(this);
+      currentScreen = std::make_unique<Screens::LucidDreamer>(this, motorController);
       break;
     case Apps::Navigation:
       currentScreen = std::make_unique<Screens::Navigation>(this, systemTask->nimble().navigation());
