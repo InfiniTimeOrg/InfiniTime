@@ -47,10 +47,38 @@ void MotorController::StartTune() {
   step = 0;
 }
 
+/*
+Some explaining for my future self:
+
+The "shortVib" variable is a timer. We activate/deactivate the motor for
+stretches of time based on this timer. If you want the watch to vibrates, you
+call:
+`nrf_gpio_pin_clear(PinMap::Motor)` (turns vibrator on)
+then `xTimerStart(shortVib, 0)` (starts the timer).
+
+When initialized, the shortVib variable had a `Vibrate` function attached to it.
+This function includes a call to `nrf_gpio_pin_set(PinMap::Motor)`, which turns
+the vibrator off. The timer calls this function when it completes, and thus
+the vibrator is only on for the duration of the timer. Vibrate includes other
+stuff, but for the standard `RunForDuration` above it skips all that and just
+ends the vibration.
+
+However, in this function, I activate the other segments of the `Vibrate`
+function. I basically have the timer end/start the vibrator, then start another
+timer, then end/start the vibrator, etc., giving it a staggered on/off vibration
+pattern. It does this ~6 times in rapid succession. I start it off with a longer
+vibration, so the effect is a long vibration followed by several short
+vibrations. Once the number of repeats exceeds a certain amount, it just kills
+the vibrator.
+
+The repeats are tracked with the `step` variable. When doing a customized
+vibration I set this to 0, then increment it with each pass until it exceeds
+a given amount. For `RunForDuration` I just initialize `step` to a large number
+so it defaults to just ending the vibration.
+*/
 void MotorController::VibrateTune() {
   StartTune();
   ScheduleVibrateTimer(250, true);
-  //RunForDuration(5);
 }
 
 
