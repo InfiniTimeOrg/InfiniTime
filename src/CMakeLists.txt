@@ -1157,3 +1157,26 @@ if(BUILD_RESOURCES)
   add_subdirectory(resources)
 endif()
 
+# skip files, which currently cause problems when turning on CMake untiy build 
+set_source_files_properties(
+        "${NRF5_SDK_PATH}/integration/nrfx/legacy/nrf_drv_clock.c"
+        "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_saadc.c"
+        ${CMAKE_CURRENT_SOURCE_DIR}/components/ble/AlertNotificationClient.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/components/ble/NavigationService.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/components/ble/NavigationService.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/displayapp/screens/settings/SettingChimes.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/displayapp/screens/settings/SettingDisplay.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/displayapp/screens/settings/SettingSetDate.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/displayapp/screens/settings/SettingSetTime.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/displayapp/screens/settings/SettingShakeThreshold.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/displayapp/screens/settings/SettingSteps.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/displayapp/screens/settings/SettingWakeUp.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/displayapp/screens/WatchFaceInfineat.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/displayapp/screens/WatchFacePineTimeStyle.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/lvgl/src/lv_core/lv_obj.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/mynewt-nimble/ext/tinycrypt/src/ecc_dh.c
+        PROPERTIES
+        SKIP_UNITY_BUILD_INCLUSION
+        ON
+        )
+

@@ -32,6 +32,12 @@ foreach(FONT ${FONTS})
    add_custom_target(infinitime_fonts_${FONT}
       DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${FONT}.c
    )
+
+# skip files, which currently cause problems when turning on CMake untiy build 
+   set_source_files_properties(
+      ${FONT}.c PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON
+   )
+
    target_sources(infinitime_fonts PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/${FONT}.c")
    add_dependencies(infinitime_fonts infinitime_fonts_${FONT})
 endforeach()
