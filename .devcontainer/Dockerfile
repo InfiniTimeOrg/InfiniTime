@@ -1,65 +1,38 @@
-FROM ubuntu:latest
+# devcontainer-specific docker container.
+#
+# We essentially "wrap" the main docker image so that devcontainers
+# can make any customisations required without affecting the main
+# dockerfile (which the CI/CD system might rely on), and to avoid
+# duplicating the main docker file (and maintaining that copy).
 
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -qq \
-    && apt-get install -y \
-# x86_64 / generic packages
-      bash \
-      build-essential \
-      cmake \
-      git \
-      make \
-      python3 \
-      python3-pip \
-      tar \
-      unzip \
-      wget \ 
-      curl \
-      dos2unix \
-      clang-format-12 \
-      clang-tidy \
-      locales \
-      libncurses5 \
-# aarch64 packages
-      libffi-dev \
-      libssl-dev \
-      python3-dev \ 
-      rustc \
-    && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
-    
-#SET LOCALE 
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8 
+# You can let the local system build your own infinitime-build container,
+# or you can have it download one from the infinitime repo on dockerhub.
 
-RUN pip3 install adafruit-nrfutil
-# required for McuBoot
-RUN pip3 install setuptools_rust
+FROM infinitime/infinitime-build:latest
+#FROM infinitime-build:latest
 
-WORKDIR /opt/
-# build.sh knows how to compile but it problimatic on Win10
-COPY build.sh .
-RUN chmod +x build.sh
-# create_build_openocd.sh uses cmake to crate to build directory
-COPY create_build_openocd.sh .
-RUN chmod +x create_build_openocd.sh
-# Lets get each in a separate docker layer for better downloads
-# GCC
-# RUN bash -c "source /opt/build.sh; GetGcc;"
-RUN wget https://developer.arm.com/-/media/Files/downloads/gnu-rm/9-2020q2/gcc-arm-none-eabi-9-2020-q2-update-x86_64-linux.tar.bz2 -O - | tar -xj -C /opt
-# NrfSdk
-# RUN bash -c "source /opt/build.sh; GetNrfSdk;"
-RUN wget -q "https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip" -O /tmp/nRF5_SDK_15.3.0_59ac345
-RUN unzip -q /tmp/nRF5_SDK_15.3.0_59ac345 -d /opt
-RUN rm /tmp/nRF5_SDK_15.3.0_59ac345
-# McuBoot
-# RUN bash -c "source /opt/build.sh; GetMcuBoot;"
-RUN git clone https://github.com/mcu-tools/mcuboot.git
-RUN pip3 install -r ./mcuboot/scripts/requirements.txt
+# Add the infinitime user so that devcontainer can set our UID
+# to ensure bind mounts have the right permissions on them.
+# Also create and chown the mountpoints.
+RUN \
+    adduser infinitime && \
+    mkdir -p /home/infinitime/.vscode-server/extensions && \
+    mkdir -p /home/infinitime/.vscode-server-insiders/extensions && \
+    chown -R infinitime:infinitime /home/infinitime/.vscode* && \
+    # Get required vars into the local env at "login"
+    echo "source /opt/build.sh" >> /home/infinitime/.bashrc && \
+    # Undo the exit-on-error and PS4-echo flags set in build.sh
+    echo "set +e" >> /home/infinitime/.bashrc && \
+    echo "set +x" >> /home/infinitime/.bashrc && \
+    # symlink the crosscompiler path so that the intellisense extension
+    # can find it in a predictable location. Future builder containers
+    # will already have this link. FIXME: This is very hacky and should be
+    # removed once fixed in the published image.
+    if  [ ! -h /opt/gcc-arm-none-eabi ]; then ln -s $(ls -d1 /opt/gcc-arm-none-eabi-* | tail -1 ) /opt/gcc-arm-none-eabi; fi
 
-RUN adduser infinitime
 
-ENV NRF5_SDK_PATH /opt/nRF5_SDK_15.3.0_59ac345
-ENV ARM_NONE_EABI_TOOLCHAIN_PATH /opt/gcc-arm-none-eabi-9-2020-q2-update
-ENV SOURCES_DIR /workspaces/InfiniTime
+USER infinitime
+
+RUN bash -c "source /opt/build.sh; "
+
+CMD ["/opt/build.sh"]

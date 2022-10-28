@@ -1,38 +1,48 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
-// https://github.com/microsoft/vscode-dev-containers/tree/v0.154.2/containers/cpp
+// This file defines how vscode will work with a docker container to
+// present your build environment.
+// Info at https://containers.dev/implementors/json_reference/
+// 
 {
-	// "name": "Pinetime",
-	// "image": "feabhas/pinetime-dev"
+	"name": "infinitime_devcontainer",
 	"build": {
-		"dockerfile": "Dockerfile",
-		// Update 'VARIANT' to pick an Debian / Ubuntu OS version: debian-10, debian-9, ubuntu-20.04, ubuntu-18.04
-		// "args": { "VARIANT": "ubuntu-20.04" }
+		// This refers to the dockerfile in this directory.
+		"dockerfile": "Dockerfile"
 	},
-	"runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined"],
-
+	// Security options required to enable cpp debugging
+	"capAdd": [
+		"SYS_PTRACE"
+	],
+	"securityOpt": [
+		"seccomp=unconfined"
+	],
+	// Mount the repository into /sources in the container
+	"workspaceMount": "source=${localWorkspaceFolder},target=/sources,type=bind",
+	"workspaceFolder": "/sources",
+	"mounts": [
+		// These volumes store the vscode-specific stuff, and allow us
+		// to persist them across sessions rather than reinstalling them
+		// every time.
+		"source=vscode-devcon-infinitime,target=/home/infinitime/.vscode-server/extensions,type=volume",
+		"source=vscode-devcon-infinitime-insiders,target=/home/infinitime/.vscode-server-insiders/extensions,type=volume",
+		// Bind-mount the current build.sh in case it's newer than the one in the builder image.
+		"source=${localWorkspaceFolder}/docker/build.sh,target=/opt/,type=bind"
+	],
 	// Set *default* container specific settings.json values on container create.
-	"settings": { 
+	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash",
 		"editor.formatOnSave": true,
 		"clang-format.executable": "clang-format-12"
 	},
-
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"ms-vscode.cpptools",
-		"ms-vscode.cmake-tools",
+		// this gets in the way of build.sh: "ms-vscode.cmake-tools",
 		"marus25.cortex-debug",
 		"notskm.clang-tidy",
 		"mjohns.clang-format"
 	],
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "bash /opt/create_build_openocd.sh",
-
-	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	// "remoteUser": "vscode"
-	"remoteUser": "infinitime"
+	// For linux we need to ensure the UID is mapped to match the local user
+	// so that files created during the build end up belonging to the local user.
+	"containerUser": "infinitime",
+	"updateRemoteUserUID": true
 }

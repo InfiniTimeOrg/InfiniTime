@@ -39,6 +39,12 @@
 				"create openocd build"
 			],
 			"problemMatcher": []
+		},
+		{
+			"label": "Docker build",
+			"type": "shell",
+			"command": "/opt/build.sh",
+			"problemMatcher": []
 		}
 	]
 }

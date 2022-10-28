@@ -8,7 +8,9 @@
                 "${workspaceFolder}/src"
             ],
             "defines": [],
-            "compilerPath": "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gcc",
+            // This should point to the path (indide the devcontainer). See
+            // the Dockerfile and build.sh
+            "compilerPath": "/opt/gcc-arm-none-eabi/bin/arm-none-eabi-gcc",
             "cStandard": "c11",
             "cppStandard": "c++14",
             "intelliSenseMode": "linux-gcc-arm",

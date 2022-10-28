@@ -1,16 +1,16 @@
-  {
+{
     "version": "0.1.0",
     "configurations": [
         {
             "name": "Debug - Openocd docker Remote",
-            "type":"cortex-debug",
-            "cortex-debug.armToolchainPath":"${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin",
+            "type": "cortex-debug",
+            "armToolchainPath": "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin",
             "cwd": "${workspaceRoot}",
             "executable": "${command:cmake.launchTargetPath}",
             "request": "launch",
             "servertype": "external",
             // This may need to be arm-none-eabi-gdb depending on your system
-            "gdbPath" : "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gdb",
+            "gdbPath": "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gdb",
             // Connect to an already running OpenOCD instance
             "gdbTarget": "host.docker.internal:3333",
             "svdFile": "${workspaceRoot}/nrf52.svd",
@@ -23,14 +23,14 @@
         },
         {
             "name": "Debug - Openocd Local",
-            "type":"cortex-debug",
-            "cortex-debug.armToolchainPath":"${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin",
+            "type": "cortex-debug",
+            "armToolchainPath": "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin",
             "cwd": "${workspaceRoot}",
             "executable": "${command:cmake.launchTargetPath}",
             "request": "launch",
             "servertype": "openocd",
             // This may need to be arm-none-eabi-gdb depending on your system
-            "gdbPath" : "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gdb",
+            "gdbPath": "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gdb",
             // Connect to an already running OpenOCD instance
             "gdbTarget": "localhost:3333",
             "svdFile": "${workspaceRoot}/nrf52.svd",
@@ -48,7 +48,7 @@
             "name": "Debug OpenOCD ST-LINK pinetime-app-1.3.0.out",
             "request": "launch",
             "type": "cortex-debug",
-            "showDevDebugOutput": false,
+            "showDevDebugOutput": "none",
             "servertype": "openocd",
             "runToMain": true,
             // Only use armToolchainPath if your arm-none-eabi-gdb is not in your path (some GCC packages does not contain arm-none-eabi-gdb)
@@ -59,6 +59,5 @@
                 "target/nrf52.cfg"
             ],
         }
-
     ]
 }
