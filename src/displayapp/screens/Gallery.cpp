@@ -5,7 +5,7 @@
 using namespace Pinetime::Applications::Screens;
 
 Gallery::Gallery(DisplayApp* app, Pinetime::Controllers::FS& filesystem) : Screen(app), filesystem(filesystem) {
-  listdir();
+  ListDir();
 
   if (nScreens == 0) {
     lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
@@ -13,7 +13,7 @@ Gallery::Gallery(DisplayApp* app, Pinetime::Controllers::FS& filesystem) : Scree
     lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
     lv_obj_align(title, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   } else {
-    open(0, DisplayApp::FullRefreshDirections::None);
+    Open(0, DisplayApp::FullRefreshDirections::None);
   }
 }
 
@@ -24,9 +24,9 @@ Gallery::~Gallery() {
 bool Gallery::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   switch (event) {
     case Pinetime::Applications::TouchEvents::SwipeRight:
-      return open(index - 1, DisplayApp::FullRefreshDirections::Right);
+      return Open(index - 1, DisplayApp::FullRefreshDirections::Right);
     case Pinetime::Applications::TouchEvents::SwipeLeft:
-      return open(index + 1, DisplayApp::FullRefreshDirections::Left);
+      return Open(index + 1, DisplayApp::FullRefreshDirections::Left);
     case Pinetime::Applications::TouchEvents::LongTap:
     case Pinetime::Applications::TouchEvents::DoubleTap:
       current->ToggleInfo();
@@ -35,7 +35,7 @@ bool Gallery::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return false;
 }
 
-void Gallery::listdir() {
+void Gallery::ListDir() {
   lfs_dir_t dir = {0};
   lfs_info info = {0};
   nScreens = 0;
@@ -53,7 +53,7 @@ void Gallery::listdir() {
   assert(filesystem.DirClose(&dir) == 0);
 }
 
-bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
+bool Gallery::Open(int n, DisplayApp::FullRefreshDirections direction) {
   if ((n < 0) || (n >= nScreens))
     return false;
 
@@ -86,9 +86,9 @@ bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
   strncat(fullname, directory, sizeof(fullname) - 2 - 1);
   strncat(fullname, info.name, sizeof(fullname) - strlen(directory) - 2 - 1);
 
-  if (string_ends_with(fullname, ".bin")) {
+  if (StringEndsWith(fullname, ".bin")) {
     current = std::make_unique<ImageView>(n, nScreens, app, fullname);
-  } else if (string_ends_with(fullname, ".txt")) {
+  } else if (StringEndsWith(fullname, ".txt")) {
     current = std::make_unique<TextView>(n, nScreens, app, fullname, filesystem);
   } else {
     return false;
@@ -97,7 +97,7 @@ bool Gallery::open(int n, DisplayApp::FullRefreshDirections direction) {
   return true;
 }
 
-int Gallery::string_ends_with(const char* str, const char* suffix) {
+int Gallery::StringEndsWith(const char* str, const char* suffix) {
   int str_len = strlen(str);
   int suffix_len = strlen(suffix);
 

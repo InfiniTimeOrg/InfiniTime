@@ -17,13 +17,13 @@ namespace Pinetime {
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
       private:
-        int string_ends_with(const char* str, const char* suffix);
+        int StringEndsWith(const char* str, const char* suffix);
 
         Pinetime::Controllers::FS& filesystem;
         std::unique_ptr<FileView> current;
 
-        void listdir();
-        bool open(int n, DisplayApp::FullRefreshDirections direction);
+        void ListDir();
+        bool Open(int n, DisplayApp::FullRefreshDirections direction);
         int nScreens;
         int index;
       };
