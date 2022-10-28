@@ -1,7 +1,6 @@
 #pragma once
 
-#include <array>    // for std::array
-#include <utility>  // for std::pair
+#include <array>
 
 namespace Pinetime {
   namespace Utility {
