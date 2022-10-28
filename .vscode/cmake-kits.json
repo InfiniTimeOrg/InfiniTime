@@ -1,0 +1,10 @@
+[
+    {
+        "name": "Infinitime buildimage kit",
+        "preferredGenerator": {},
+        "compilers": {
+            "CC": "/opt/gcc-arm-none-eabi/bin/arm-none-eabi-gcc",
+            "CXX": "/opt/gcc-arm-none-eabi/bin/arm-none-eabi-g++"
+        }
+    }
+]
