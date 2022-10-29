@@ -1,7 +1,7 @@
 // This file defines how vscode will work with a docker container to
 // present your build environment.
 // Info at https://containers.dev/implementors/json_reference/
-// 
+//
 {
 	"name": "infinitime_devcontainer",
 	"build": {
@@ -25,7 +25,7 @@
 		"source=vscode-devcon-infinitime,target=/home/infinitime/.vscode-server/extensions,type=volume",
 		"source=vscode-devcon-infinitime-insiders,target=/home/infinitime/.vscode-server-insiders/extensions,type=volume",
 		// Bind-mount the current build.sh in case it's newer than the one in the builder image.
-		"source=${localWorkspaceFolder}/docker/build.sh,target=/opt/,type=bind"
+		"source=${localWorkspaceFolder}/docker/build.sh,target=/opt/build.sh,type=bind"
 	],
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
@@ -33,6 +33,7 @@
 		"editor.formatOnSave": true,
 		"clang-format.executable": "clang-format-12"
 	},
+
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"ms-vscode.cpptools",
