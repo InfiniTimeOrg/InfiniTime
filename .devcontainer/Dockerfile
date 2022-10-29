@@ -1,12 +1,17 @@
 # devcontainer-specific docker container.
 #
-# We essentially "wrap" the main docker image so that devcontainers
-# can make any customisations required without affecting the main
-# dockerfile (which the CI/CD system might rely on), and to avoid
-# duplicating the main docker file (and maintaining that copy).
+# Infinitime has a "build" container which is created by the files in
+# /docker/build/. This container can be built locally and is also built
+# automatically by the github workflow.
+#
+# We essentially "wrap" this main docker image so that devcontainers
+# can make any customisations required without duplicating the main
+# dockerfile or altering it in ways that might break the CI/CD build
+# system.
 
-# You can let the local system build your own infinitime-build container,
-# or you can have it download one from the infinitime repo on dockerhub.
+# You can use your own locally-built infinitime-build container (see
+# `/docker/README.md), or you can let it download the latest container
+# from dockerhub.
 
 FROM infinitime/infinitime-build:latest
 #FROM infinitime-build:latest
@@ -29,7 +34,12 @@ RUN \
     # will already have this link. FIXME: This is very hacky and should be
     # removed once fixed in the published image.
     if  [ ! -h /opt/gcc-arm-none-eabi ]; then ln -s $(ls -d1 /opt/gcc-arm-none-eabi-* | tail -1 ) /opt/gcc-arm-none-eabi; fi
+    if  [ ! -h /opt/nRF5_SDK          ]; then ln -s $(ls -d1 /opt/nRF5_SDK_*          | tail -1 ) /opt/nRF5_SDK; fi
 
+# Setup envars used in vscode settings to symlinks created by build.sh in the build container
+ENV NRF5_SDK_PATH /opt/nRF5_SDK
+ENV ARM_NONE_EABI_TOOLCHAIN_PATH /opt/gcc-arm-none-eabi
+ENV SOURCES_DIR /sources
 
 USER infinitime
 
