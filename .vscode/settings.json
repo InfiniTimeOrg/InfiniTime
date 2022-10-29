@@ -1,4 +1,6 @@
 {
+    // *actual* text files end with empty newlines.
+    "files.insertFinalNewline": true,
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "cmake.configureArgs": [
         "-DARM_NONE_EABI_TOOLCHAIN_PATH=${env:ARM_NONE_EABI_TOOLCHAIN_PATH}",

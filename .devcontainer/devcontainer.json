@@ -33,7 +33,6 @@
 		"editor.formatOnSave": true,
 		"clang-format.executable": "clang-format-12"
 	},
-
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
 		"ms-vscode.cpptools",
