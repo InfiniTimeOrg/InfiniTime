@@ -33,7 +33,7 @@ RUN \
     # can find it in a predictable location. Future builder containers
     # will already have this link. FIXME: This is very hacky and should be
     # removed once fixed in the published image.
-    if  [ ! -h /opt/gcc-arm-none-eabi ]; then ln -s $(ls -d1 /opt/gcc-arm-none-eabi-* | tail -1 ) /opt/gcc-arm-none-eabi; fi
+    if  [ ! -h /opt/gcc-arm-none-eabi ]; then ln -s $(ls -d1 /opt/gcc-arm-none-eabi-* | tail -1 ) /opt/gcc-arm-none-eabi; fi && \
     if  [ ! -h /opt/nRF5_SDK          ]; then ln -s $(ls -d1 /opt/nRF5_SDK_*          | tail -1 ) /opt/nRF5_SDK; fi
 
 # Setup envars used in vscode settings to symlinks created by build.sh in the build container
