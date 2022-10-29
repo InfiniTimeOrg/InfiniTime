@@ -407,6 +407,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Styles.cpp
         displayapp/Colors.cpp
         displayapp/widgets/Counter.cpp
+        displayapp/widgets/2DigitCounter.cpp
         displayapp/widgets/PageIndicator.cpp
         displayapp/widgets/StatusIcons.cpp
 
@@ -617,6 +618,7 @@ set(INCLUDE_FILES
 	displayapp/screens/MTGLifePoints.h
         displayapp/Colors.h
         displayapp/widgets/Counter.h
+        displayapp/widgets/2DigitCounter.h
         displayapp/widgets/PageIndicator.h
         displayapp/widgets/StatusIcons.h
         drivers/St7789.h
