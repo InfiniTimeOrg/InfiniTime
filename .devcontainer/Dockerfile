@@ -31,10 +31,10 @@ RUN \
     echo "set +x" >> /home/infinitime/.bashrc && \
     # symlink the crosscompiler path so that the intellisense extension
     # can find it in a predictable location. Future builder containers
-    # will already have this link. FIXME: This is very hacky and should be
-    # removed once fixed in the published image.
-    if  [ ! -h /opt/gcc-arm-none-eabi ]; then ln -s $(ls -d1 /opt/gcc-arm-none-eabi-* | tail -1 ) /opt/gcc-arm-none-eabi; fi && \
-    if  [ ! -h /opt/nRF5_SDK          ]; then ln -s $(ls -d1 /opt/nRF5_SDK_*          | tail -1 ) /opt/nRF5_SDK; fi
+    # will already have this link. FIXME: This should be removed once
+    # fixed in the published image so that we aren't version-tied here.
+    if  [ ! -h /opt/gcc-arm-none-eabi ]; then ln -s /opt/gcc-arm-none-eabi-10.3-2021.10 /opt/gcc-arm-none-eabi; fi && \
+    if  [ ! -h /opt/nRF5_SDK          ]; then ln -s /opt/nRF5_SDK_15.3.0_59ac345 /opt/nRF5_SDK; fi
 
 # Setup envars used in vscode settings to symlinks created by build.sh in the build container
 ENV NRF5_SDK_PATH /opt/nRF5_SDK
