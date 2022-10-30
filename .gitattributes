@@ -1,5 +1,16 @@
-# Set the default behavior, in case people don't have core.autocrlf set.
-* text=auto
+# By default treat line-endings as posix-style LF so that windows
+# machines can check out a version that will build OK in a
+# docker container.
+
+* text=auto eol=lf
+
+# Windows-specific files (.bat, .cmd) will require cr/lf endings
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
+
+# TODO: Do the rest of these entries need to be here? Does the eol=lf
+# option defeat these anyway, or break anything? The binary ones seem
+# superfluous, but maybe there is relevant context.
 
 # Explicitly declare text files you want to always be normalized and converted
 # to native line endings on checkout.
