@@ -23,11 +23,9 @@ namespace Pinetime {
           Controllers::Settings::ChimesOption chimesOption;
           const char* name;
         };
-        static constexpr std::array<Option, 3> options = {{
-          {Controllers::Settings::ChimesOption::None, "Off"},
-          {Controllers::Settings::ChimesOption::Hours, "Every hour"},
-          {Controllers::Settings::ChimesOption::HalfHours, "Every 30 mins"}
-        }};
+        static constexpr std::array<Option, 3> options = {{{Controllers::Settings::ChimesOption::None, "Off"},
+                                                           {Controllers::Settings::ChimesOption::Hours, "Every hour"},
+                                                           {Controllers::Settings::ChimesOption::HalfHours, "Every 30 mins"}}};
 
         std::array<lv_obj_t*, options.size()> cbOption;
 
