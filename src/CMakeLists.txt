@@ -403,9 +403,11 @@ list(APPEND SOURCE_FILES
         displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
+	displayapp/screens/YugiohLifePoints.cpp
         displayapp/screens/Styles.cpp
         displayapp/Colors.cpp
         displayapp/widgets/Counter.cpp
+	displayapp/widgets/FourDigitCounter.cpp
         displayapp/widgets/PageIndicator.cpp
         displayapp/widgets/StatusIcons.cpp
 
@@ -613,8 +615,10 @@ set(INCLUDE_FILES
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
         displayapp/screens/Alarm.h
+	displayapp/screens/YugiohLifePoints.h
         displayapp/Colors.h
         displayapp/widgets/Counter.h
+	displayapp/widgets/FourDigitCounter.h
         displayapp/widgets/PageIndicator.h
         displayapp/widgets/StatusIcons.h
         drivers/St7789.h

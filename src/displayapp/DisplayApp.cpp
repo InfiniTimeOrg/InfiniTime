@@ -29,6 +29,7 @@
 #include "displayapp/screens/Steps.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
+#include "displayapp/screens/YugiohLifePoints.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -372,6 +373,9 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::Alarm:
       currentScreen = std::make_unique<Screens::Alarm>(this, alarmController, settingsController.GetClockType(), *systemTask);
+      break;
+    case Apps::YugiohLifePoints:
+      currentScreen = std::make_unique<Screens::YugiohLifePoints>(this);
       break;
 
     // Settings
