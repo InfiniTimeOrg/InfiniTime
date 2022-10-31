@@ -8,9 +8,11 @@
 *.{cmd,[cC][mM][dD]} text eol=crlf
 *.{bat,[bB][aA][tT]} text eol=crlf
 
-# TODO: Do the rest of these entries need to be here? Does the eol=lf
-# option defeat these anyway, or break anything? The binary ones seem
-# superfluous, but maybe there is relevant context.
+# If one is working on getting bare-metal windows builds to work,
+# the following might assist, and you may wish to start by checking
+# out your repo with `--config core.eol=crlf`. Note that a repo checked-
+# out this way won't build in a docker container due to line-endings
+# being being dos-style (CRLF) rather than everything-else style (LF).
 
 # Explicitly declare text files you want to always be normalized and converted
 # to native line endings on checkout.
