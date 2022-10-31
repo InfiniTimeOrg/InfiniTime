@@ -11,7 +11,11 @@ namespace Pinetime {
         public:
           YugiohLifePoints(DisplayApp* app);
           ~YugiohLifePoints() override;
+
+        private:
+          Widgets::FourDigitCounter lifeCounter = Widgets::FourDigitCounter(0, 59, jetbrains_mono_76);
       };
     }
   }
 }
+
