@@ -82,11 +82,6 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     } else {
       newPercent = std::min((voltage - battery_min) * 100 / (battery_max - battery_min), isCharging ? 99 : 100);
     }
-    // quick hack for better values
-    // rescale the percentages between 35 and 100
-    constexpr uint8_t realMin = 35;
-    newPercent = std::max(newPercent, realMin);
-    newPercent = (newPercent - realMin) * 100 / (100 - realMin);
 
     if ((isPowerPresent && newPercent > percentRemaining) || (!isPowerPresent && newPercent < percentRemaining) || firstMeasurement) {
       firstMeasurement = false;
