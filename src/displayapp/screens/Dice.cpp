@@ -121,12 +121,17 @@ void Dice::Roll() {
 
   lv_label_set_text(resultIndividualLabel, "");
 
-  for (uint8_t i = 0; i < nCounter.GetValue(); i++) {
-    resultIndividual = distrib(gen);
-    resultTotal += resultIndividual;
-    lv_label_ins_text(resultIndividualLabel, LV_LABEL_POS_LAST, std::to_string(resultIndividual).c_str());
-    if (i < (nCounter.GetValue() - 1)) {
-      lv_label_ins_text(resultIndividualLabel, LV_LABEL_POS_LAST, "+");
+  if (nCounter.GetValue() == 1) {
+    resultTotal = distrib(gen);
+  }
+  else {
+    for (uint8_t i = 0; i < nCounter.GetValue(); i++) {
+      resultIndividual = distrib(gen);
+      resultTotal += resultIndividual;
+      lv_label_ins_text(resultIndividualLabel, LV_LABEL_POS_LAST, std::to_string(resultIndividual).c_str());
+      if (i < (nCounter.GetValue() - 1)) {
+        lv_label_ins_text(resultIndividualLabel, LV_LABEL_POS_LAST, "+");
+      }
     }
   }
 
