@@ -45,7 +45,7 @@ namespace Pinetime {
                     
                     int min;
                     int max;
-                    static inline int value = 40;
+                    static inline int value = 40; //initially set to 40, as this is the starting life total in Commander, the MTG format I play.
                     lv_font_t& font;
 
                     void* userData = nullptr;
