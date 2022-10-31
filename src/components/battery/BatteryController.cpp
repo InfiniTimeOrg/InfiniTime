@@ -61,11 +61,12 @@ void Battery::SaadcInit() {
 }
 
 void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
-  static const Utility::LinearApproximation<uint16_t, uint8_t, 5> aprox {{{
+  static const Utility::LinearApproximation<uint16_t, uint8_t, 6> aprox {{{
     {3200, 0},  // minimum voltage of battery before shutdown ( depends on the battery )
     {3600, 10}, // keen point corresponded to 10% of battery
     {3700, 25},
-    {3800, 50},
+    {3750, 50},
+    {3900, 75},
     {4180, 100} // maximum voltage of battery ( max charging voltage is 4.21 )
   }}};
 

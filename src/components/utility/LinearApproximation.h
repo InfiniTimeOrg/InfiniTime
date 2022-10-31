@@ -14,8 +14,9 @@ namespace Pinetime {
       };
 
     public:
-      LinearApproximation(const std::array<Point, Size> &&points)
-        : points{points} {}
+      LinearApproximation(const std::array<Point, Size>&& sorted_points)
+        : points{sorted_points} {
+      }
 
       Value GetValue(Key key) const {
         if (key <= points[0].key) {
@@ -23,8 +24,11 @@ namespace Pinetime {
         }
 
         for (size_t i = 1; i < Size; i++) {
-          if (key < points[i].key) {
-            return points[i-1].value + (key - points[i-1].key) * (points[i].value - points[i-1].value) / (points[i].key - points[i-1].key);
+          const auto& p = points[i];
+          const auto& p_prev = points[i - 1];
+
+          if (key < p.key) {
+            return p_prev.value + (key - p_prev.key) * (p.value - p_prev.value) / (p.key - p_prev.key);
           }
         }
 
