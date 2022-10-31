@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <array>
 
 namespace Pinetime {
@@ -23,7 +24,7 @@ namespace Pinetime {
           return points[0].value;
         }
 
-        for (size_t i = 1; i < Size; i++) {
+        for (std::size_t i = 1; i < Size; i++) {
           const auto& p = points[i];
           const auto& p_prev = points[i - 1];
 
