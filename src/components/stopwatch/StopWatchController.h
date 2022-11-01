@@ -1,5 +1,6 @@
 #pragma once
 
+#include <FreeRTOS.h>
 #include <timers.h>
 
 #define LAP_CAPACITY 2
