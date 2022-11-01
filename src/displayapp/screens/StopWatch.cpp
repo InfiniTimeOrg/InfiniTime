@@ -67,7 +67,7 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask,
 
   // Figure out what the current state of the stopwatch is and select the correct display
   if (stopWatchController.IsCleared()) {
-    Reset();
+    DisplayReset();
   } else  {
     if (stopWatchController.GetLapCount() > 0) {
       updateLaps();
@@ -77,11 +77,11 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask,
     if (stopWatchController.IsRunning()) {
       lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
       lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
-      Start();
+      DisplayStart();
     } else if (stopWatchController.IsPaused()) {
       lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
       lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
-      Pause();
+      DisplayPause();
     }
   }
 }
@@ -92,7 +92,7 @@ StopWatch::~StopWatch() {
   lv_obj_clean(lv_scr_act());
 }
 
-void StopWatch::Reset() {  // TODO: rename?
+void StopWatch::DisplayReset() {
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
@@ -104,7 +104,7 @@ void StopWatch::Reset() {  // TODO: rename?
   lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
 }
 
-void StopWatch::Start() {  // TODO: rename?
+void StopWatch::DisplayStart() {
   lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
   lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
@@ -114,7 +114,7 @@ void StopWatch::Start() {  // TODO: rename?
   systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
 }
 
-void StopWatch::Pause() {  // TODO: rename?
+void StopWatch::DisplayPause() {
   lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
   lv_label_set_text_static(txtPlayPause, Symbols::play);
   lv_label_set_text_static(txtStopLap, Symbols::stop);
@@ -157,10 +157,10 @@ void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
   }
   if (stopWatchController.IsCleared() || stopWatchController.IsPaused()) {
     stopWatchController.Start();
-    Start();
+    DisplayStart();
   } else if (stopWatchController.IsRunning()) {
     stopWatchController.Pause();
-    Pause();
+    DisplayPause();
   }
 }
 
@@ -175,14 +175,14 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
     updateLaps();
   } else if (stopWatchController.IsPaused()) {
     stopWatchController.Clear();
-    Reset();
+    DisplayReset();
   }
 }
 
 bool StopWatch::OnButtonPushed() {
   if (stopWatchController.IsRunning()) {
     stopWatchController.Pause();
-    Pause();
+    DisplayPause();
     return true;
   }
   return false;
