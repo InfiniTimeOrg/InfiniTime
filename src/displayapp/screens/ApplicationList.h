@@ -38,7 +38,9 @@ namespace Pinetime {
 
 #define N_APPS     5 + APP_METRONOME + APP_MUSIC + APP_NAVIGATION + APP_PADDLE + APP_PAINT + APP_TWOS + APP_MOTION
 #define N_SCREENS  ((N_APPS - N_APPS % 6) / 6) + (N_APPS % 6 == 0 ? 0 : 1)
+#if 0
 #define SLOTS_FREE 6 - N_APPS % 6
+#endif
 
         static constexpr int nScreens = N_SCREENS;
 
@@ -70,6 +72,7 @@ namespace Pinetime {
           {Symbols::map, Apps::Navigation},
 #endif
 
+#if 0
 #if SLOTS_FREE > 0
           {nullptr, Apps::None},
 #endif
@@ -84,6 +87,7 @@ namespace Pinetime {
 #endif
 #if SLOTS_FREE > 4
           {nullptr, Apps::None},
+#endif
 #endif
         }};
         ScreenList<nScreens> screens;
