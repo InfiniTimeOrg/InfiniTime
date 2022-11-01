@@ -3,7 +3,7 @@
 #include "displayapp/AvailableApps.h"
 #include "displayapp/screens/HeartRate.h"
 #if APP_MOTION
-    #include "displayapp/screens/Motion.h"
+  #include "displayapp/screens/Motion.h"
 #endif
 #include "displayapp/screens/Timer.h"
 #include "displayapp/screens/Alarm.h"
@@ -18,26 +18,26 @@
 #include "displayapp/screens/FirmwareUpdate.h"
 #include "displayapp/screens/FirmwareValidation.h"
 #if APP_PAINT
-    #include "displayapp/screens/InfiniPaint.h"
+  #include "displayapp/screens/InfiniPaint.h"
 #endif
 #if APP_PADDLE
-    #include "displayapp/screens/Paddle.h"
+  #include "displayapp/screens/Paddle.h"
 #endif
 #include "displayapp/screens/StopWatch.h"
 #if APP_METRONOME
-    #include "displayapp/screens/Metronome.h"
+  #include "displayapp/screens/Metronome.h"
 #endif
 #if APP_MUSIC
-    #include "displayapp/screens/Music.h"
+  #include "displayapp/screens/Music.h"
 #endif
 #if APP_NAVIGATION
-    #include "displayapp/screens/Navigation.h"
+  #include "displayapp/screens/Navigation.h"
 #endif
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/screens/SystemInfo.h"
 #include "displayapp/screens/Tile.h"
 #if APP_TWOS
-    #include "displayapp/screens/Twos.h"
+  #include "displayapp/screens/Twos.h"
 #endif
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
@@ -391,13 +391,8 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
 
     // Settings
     case Apps::QuickSettings:
-      currentScreen = std::make_unique<Screens::QuickSettings>(this,
-                                                               batteryController,
-                                                               dateTimeController,
-                                                               brightnessController,
-                                                               motorController,
-                                                               settingsController,
-                                                               bleController);
+      currentScreen = std::make_unique<Screens::QuickSettings>(
+        this, batteryController, dateTimeController, brightnessController, motorController, settingsController, bleController);
       ReturnApp(Apps::Clock, FullRefreshDirections::LeftAnim, TouchEvents::SwipeLeft);
       break;
     case Apps::Settings:
@@ -449,14 +444,8 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::SysInfo:
-      currentScreen = std::make_unique<Screens::SystemInfo>(this,
-                                                            dateTimeController,
-                                                            batteryController,
-                                                            brightnessController,
-                                                            bleController,
-                                                            watchdog,
-                                                            motionController,
-                                                            touchPanel);
+      currentScreen = std::make_unique<Screens::SystemInfo>(
+        this, dateTimeController, batteryController, brightnessController, bleController, watchdog, motionController, touchPanel);
       ReturnApp(Apps::Settings, FullRefreshDirections::Down, TouchEvents::SwipeDown);
       break;
     case Apps::FlashLight:
@@ -561,8 +550,7 @@ void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
 }
 void DisplayApp::ApplyBrightness() {
   auto brightness = settingsController.GetBrightness();
-  if(brightness != Controllers::BrightnessController::Levels::Low &&
-      brightness != Controllers::BrightnessController::Levels::Medium &&
+  if (brightness != Controllers::BrightnessController::Levels::Low && brightness != Controllers::BrightnessController::Levels::Medium &&
       brightness != Controllers::BrightnessController::Levels::High) {
     brightness = Controllers::BrightnessController::Levels::High;
   }
