@@ -3,14 +3,10 @@
 #include "displayapp/screens/Screen.h"
 #include <lvgl/lvgl.h>
 
-#include <FreeRTOS.h>
-#include "portmacro_cmsis.h"
-
+#include "components/stopwatch/StopWatchController.h"
 #include "systemtask/SystemTask.h"
 
 namespace Pinetime::Applications::Screens {
-
-  enum class States { Init, Running, Halted };
 
   struct TimeSeparated_t {
     int mins;
@@ -20,7 +16,8 @@ namespace Pinetime::Applications::Screens {
 
   class StopWatch : public Screen {
   public:
-    StopWatch(DisplayApp* app, System::SystemTask& systemTask);
+    StopWatch(DisplayApp* app, System::SystemTask& systemTask,
+              Controllers::StopWatchController& stopWatchController);
     ~StopWatch() override;
     void Refresh() override;
 
@@ -34,16 +31,15 @@ namespace Pinetime::Applications::Screens {
 
   private:
     Pinetime::System::SystemTask& systemTask;
-    States currentState = States::Init;
-    TickType_t startTime;
-    TickType_t oldTimeElapsed = 0;
-    static constexpr int maxLapCount = 20;
-    TickType_t laps[maxLapCount + 1];
+    Controllers::StopWatchController& stopWatchController;
     static constexpr int displayedLaps = 2;
-    int lapsDone = 0;
+    TickType_t timeElapsed;
     lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
     lv_obj_t* lapText;
 
     lv_task_t* taskRefresh;
+
+    void updateTime();
+    void updateLaps();
   };
 }

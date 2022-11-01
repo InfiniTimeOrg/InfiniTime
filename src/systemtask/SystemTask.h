@@ -18,6 +18,7 @@
 #include "components/motor/MotorController.h"
 #include "components/timer/TimerController.h"
 #include "components/alarm/AlarmController.h"
+#include "components/stopwatch/StopWatchController.h"
 #include "components/fs/FS.h"
 #include "touchhandler/TouchHandler.h"
 #include "buttonhandler/ButtonHandler.h"
@@ -65,6 +66,7 @@ namespace Pinetime {
                  Controllers::DateTime& dateTimeController,
                  Controllers::TimerController& timerController,
                  Controllers::AlarmController& alarmController,
+                 Controllers::StopWatchController& stopWatchController,
                  Drivers::Watchdog& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::MotorController& motorController,
@@ -110,6 +112,7 @@ namespace Pinetime {
       Pinetime::Controllers::DateTime& dateTimeController;
       Pinetime::Controllers::TimerController& timerController;
       Pinetime::Controllers::AlarmController& alarmController;
+      Pinetime::Controllers::StopWatchController& stopWatchController;
       QueueHandle_t systemTasksMsgQueue;
       Pinetime::Drivers::Watchdog& watchdog;
       Pinetime::Controllers::NotificationManager& notificationManager;
