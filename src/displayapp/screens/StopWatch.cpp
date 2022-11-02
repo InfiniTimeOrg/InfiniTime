@@ -19,12 +19,12 @@ namespace {
 
   void play_pause_event_handler(lv_obj_t* obj, lv_event_t event) {
     auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
-    stopWatch->playPauseBtnEventHandler(event);
+    stopWatch->PlayPauseBtnEventHandler(event);
   }
 
   void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
     auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
-    stopWatch->stopLapBtnEventHandler(event);
+    stopWatch->StopLapBtnEventHandler(event);
   }
 }
 
@@ -70,9 +70,9 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask,
     DisplayReset();
   } else  {
     if (stopWatchController.GetLapCount() > 0) {
-      updateLaps();
+      UpdateLaps();
     }
-    updateTime();
+    UpdateTime();
 
     if (stopWatchController.IsRunning()) {
       lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
@@ -123,18 +123,18 @@ void StopWatch::DisplayPause() {
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
-void StopWatch::updateTime() {
+void StopWatch::UpdateTime() {
   TimeSeparated_t currentTimeSeparated = convertTicksToTimeSegments(stopWatchController.GetElapsedTime());
 
   lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
   lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
 }
 
-void StopWatch::updateLaps() {
+void StopWatch::UpdateLaps() {
   lv_label_set_text(lapText, "");
 
   for (int i = 0; i < displayedLaps; i++) {
-    Pinetime::Controllers::LapInfo_t* lap = stopWatchController.LastLap(i);
+    LapInfo* lap = stopWatchController.LastLap(i);
 
     if (lap->count != 0) {
       TimeSeparated_t laptime = convertTicksToTimeSegments(lap->time);
@@ -147,11 +147,11 @@ void StopWatch::updateLaps() {
 
 void StopWatch::Refresh() {
   if (stopWatchController.IsRunning()) {
-    updateTime();
+    UpdateTime();
   }
 }
 
-void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
+void StopWatch::PlayPauseBtnEventHandler(lv_event_t event) {
   if (event != LV_EVENT_CLICKED) {
     return;
   }
@@ -164,7 +164,7 @@ void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
   }
 }
 
-void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
+void StopWatch::StopLapBtnEventHandler(lv_event_t event) {
   if (event != LV_EVENT_CLICKED) {
     return;
   }
@@ -172,7 +172,7 @@ void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
   if (stopWatchController.IsRunning()) {
     stopWatchController.PushLap();
 
-    updateLaps();
+    UpdateLaps();
   } else if (stopWatchController.IsPaused()) {
     stopWatchController.Clear();
     DisplayReset();

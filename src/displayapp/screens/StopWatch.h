@@ -21,8 +21,8 @@ namespace Pinetime::Applications::Screens {
     ~StopWatch() override;
     void Refresh() override;
 
-    void playPauseBtnEventHandler(lv_event_t event);
-    void stopLapBtnEventHandler(lv_event_t event);
+    void PlayPauseBtnEventHandler(lv_event_t event);
+    void StopLapBtnEventHandler(lv_event_t event);
     bool OnButtonPushed() override;
 
     void DisplayReset();

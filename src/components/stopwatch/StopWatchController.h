@@ -13,7 +13,7 @@ namespace Pinetime {
 
     enum class StopWatchStates { Cleared, Running, Paused };
 
-    struct LapInfo_t {
+    struct LapInfo {
       int count = 0;       // Used to label the lap
       TickType_t time = 0; // Delta time from beginning of stopwatch
     };
@@ -43,7 +43,7 @@ namespace Pinetime {
       /// Indexes into lap history, with 0 being the latest lap.
       /// If the lap is unavailable, count and time will be 0. If there is a
       /// real value, count should be above 0
-      LapInfo_t* LastLap(int lap = 0);
+      LapInfo* LastLap(int lap = 0);
 
       bool IsRunning();
       bool IsCleared();
@@ -57,8 +57,8 @@ namespace Pinetime {
       // How much time was elapsed before current duration
       TickType_t timeElapsedPreviously = 0;
       // Stores lap times
-      LapInfo_t laps[LAP_CAPACITY];
-      LapInfo_t emptyLapInfo = {.count = 0, .time = 0};
+      LapInfo laps[LAP_CAPACITY];
+      LapInfo emptyLapInfo = {.count = 0, .time = 0};
       int lapCount = 0;
       int lapHead = 0;
     };

@@ -3,7 +3,7 @@
 using namespace Pinetime::Controllers;
 
 namespace {
-  TickType_t calculateDelta(const TickType_t startTime, const TickType_t currentTime) {
+  TickType_t CalculateDelta(const TickType_t startTime, const TickType_t currentTime) {
     TickType_t delta = 0;
     // Take care of overflow
     if (startTime > currentTime) {
@@ -29,7 +29,7 @@ void StopWatchController::Start() {
 
 void StopWatchController::Pause() {
   currentState = StopWatchStates::Paused;
-  timeElapsedPreviously += calculateDelta(startTime, xTaskGetTickCount());
+  timeElapsedPreviously += CalculateDelta(startTime, xTaskGetTickCount());
 }
 
 void StopWatchController::Clear() {
@@ -69,13 +69,13 @@ int Wrap(int index) {
   return ((index % LAP_CAPACITY) + LAP_CAPACITY) % LAP_CAPACITY;
 }
 
-LapInfo_t* StopWatchController::LastLap(int lap) {
+LapInfo* StopWatchController::LastLap(int lap) {
   if (lap >= LAP_CAPACITY || lap > lapCount || lapCount == 0) {
     // Return "empty" LapInfo_t
     return &emptyLapInfo;
   }
   // Index backwards
-  int index = wrap(lapHead - lap);
+  int index = Wrap(lapHead - lap);
   return &laps[index];
 }
 
@@ -85,7 +85,7 @@ TickType_t StopWatchController::GetElapsedTime() {
   if (!IsRunning()) {
     return timeElapsedPreviously;
   }
-  return timeElapsedPreviously + calculateDelta(startTime, xTaskGetTickCount());
+  return timeElapsedPreviously + CalculateDelta(startTime, xTaskGetTickCount());
 }
 
 bool StopWatchController::IsRunning() {
