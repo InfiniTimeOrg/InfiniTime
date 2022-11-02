@@ -40,6 +40,6 @@ namespace Pinetime::Applications::Screens {
     lv_task_t* taskRefresh;
 
     void UpdateTime();
-    void updateLaps();
+    void UpdateLaps();
   };
 }
