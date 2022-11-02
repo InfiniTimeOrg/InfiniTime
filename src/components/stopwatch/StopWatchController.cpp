@@ -1,4 +1,4 @@
-#include "StopWatchController.h"
+#include "components/stopwatch/StopWatchController.h"
 
 using namespace Pinetime::Controllers;
 
