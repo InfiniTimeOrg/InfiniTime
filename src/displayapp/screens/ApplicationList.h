@@ -37,7 +37,7 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
 
         static constexpr int appsPerScreen {6};
-        static constexpr int nScreens {(N_APPS / 6) + ((N_APPS % 6) != 0)};
+        static constexpr int nScreens {(N_APPS / appsPerScreen) + ((N_APPS % appsPerScreen) != 0)};
 
         static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
           {Symbols::stopWatch, Apps::StopWatch},
