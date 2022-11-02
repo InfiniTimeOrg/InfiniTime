@@ -123,8 +123,7 @@ void Dice::Roll() {
 
   if (nCounter.GetValue() == 1) {
     resultTotal = distrib(gen);
-  }
-  else {
+  } else {
     for (uint8_t i = 0; i < nCounter.GetValue(); i++) {
       resultIndividual = distrib(gen);
       resultTotal += resultIndividual;
