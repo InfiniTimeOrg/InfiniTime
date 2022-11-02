@@ -65,7 +65,7 @@ int StopWatchController::GetLapCount() {
   return lapCount;
 }
 
-int wrap(int index) {
+int Wrap(int index) {
   return ((index % LAP_CAPACITY) + LAP_CAPACITY) % LAP_CAPACITY;
 }
 
