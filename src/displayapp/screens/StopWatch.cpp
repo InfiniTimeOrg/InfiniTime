@@ -7,14 +7,14 @@ using namespace Pinetime::Applications::Screens;
 using namespace Pinetime::Controllers;
 
 namespace {
-  TimeSeparated_t convertTicksToTimeSegments(const TickType_t timeElapsed) {
+  TimeSeparated convertTicksToTimeSegments(const TickType_t timeElapsed) {
     // Centiseconds
     const int timeElapsedCentis = timeElapsed * 100 / configTICK_RATE_HZ;
 
     const int hundredths = (timeElapsedCentis % 100);
     const int secs = (timeElapsedCentis / 100) % 60;
     const int mins = (timeElapsedCentis / 100) / 60;
-    return TimeSeparated_t {mins, secs, hundredths};
+    return TimeSeparated {mins, secs, hundredths};
   }
 
   void play_pause_event_handler(lv_obj_t* obj, lv_event_t event) {
@@ -124,7 +124,7 @@ void StopWatch::DisplayPause() {
 }
 
 void StopWatch::UpdateTime() {
-  TimeSeparated_t currentTimeSeparated = convertTicksToTimeSegments(stopWatchController.GetElapsedTime());
+  TimeSeparated currentTimeSeparated = convertTicksToTimeSegments(stopWatchController.GetElapsedTime());
 
   lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
   lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
@@ -137,7 +137,7 @@ void StopWatch::UpdateLaps() {
     LapInfo* lap = stopWatchController.LastLap(i);
 
     if (lap->count != 0) {
-      TimeSeparated_t laptime = convertTicksToTimeSegments(lap->time);
+      TimeSeparated laptime = convertTicksToTimeSegments(lap->time);
       char buffer[16];
       sprintf(buffer, "#%2d   %2d:%02d.%02d\n", lap->count, laptime.mins, laptime.secs, laptime.hundredths);
       lv_label_ins_text(lapText, LV_LABEL_POS_LAST, buffer);

@@ -8,7 +8,7 @@
 
 namespace Pinetime::Applications::Screens {
 
-  struct TimeSeparated_t {
+  struct TimeSeparated {
     int mins;
     int secs;
     int hundredths;
