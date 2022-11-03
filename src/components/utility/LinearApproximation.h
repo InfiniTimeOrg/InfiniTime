@@ -7,16 +7,14 @@ namespace Pinetime {
   namespace Utility {
 
     // based on: https://github.com/SHristov92/LinearApproximation/blob/main/Linear.h
-    template <typename Key, typename Value, std::size_t Size>
-    class LinearApproximation {
+    template <typename Key, typename Value, std::size_t Size> class LinearApproximation {
       using Point = struct {
         Key key;
         Value value;
       };
 
     public:
-      LinearApproximation(const std::array<Point, Size>&& sorted_points)
-        : points{sorted_points} {
+      LinearApproximation(const std::array<Point, Size>&& sorted_points) : points {sorted_points} {
       }
 
       Value GetValue(Key key) const {
