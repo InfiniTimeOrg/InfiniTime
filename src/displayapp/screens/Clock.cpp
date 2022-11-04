@@ -50,7 +50,7 @@ Clock::Clock(Controllers::DateTime& dateTimeController,
         case WatchFace::Infineat:
           return WatchFaceInfineatScreen();
           break;
-        case 5:
+        case WatchFace::CasioStyleG7710:
           return WatchFaceCasioStyleG7710();
           break;
       }

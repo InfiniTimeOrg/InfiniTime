@@ -1,12 +1,8 @@
 #include "displayapp/screens/settings/SettingWatchFace.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
-#include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/Screen.h"
 #include "components/settings/Settings.h"
-
-#include "displayapp/screens/WatchFaceInfineat.h"
-#include "displayapp/screens/WatchFaceCasioStyleG7710.h"
 #include "displayapp/WatchFaces.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -52,9 +48,9 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen(unsigned int screenNum) c
     nScreens,
     title,
     symbol,
-    settingsController.GetClockFace(),
-    [&settings = settingsController](uint32_t clockFace) {
-      settings.SetClockFace(clockFace);
+    static_cast<uint32_t>(settingsController.GetWatchFace()),
+    [&settings = settingsController](uint32_t watchFace) {
+      settings.SetWatchFace(static_cast<WatchFace>(watchFace));
       settings.SaveSettings();
     },
     watchfacesOnThisScreen);
