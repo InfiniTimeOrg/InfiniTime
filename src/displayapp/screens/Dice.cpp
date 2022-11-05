@@ -123,6 +123,16 @@ void Dice::Roll() {
 
   if (nCounter.GetValue() == 1) {
     resultTotal = distrib(gen);
+    if (dCounter.GetValue() == 2) {
+      switch (resultTotal) {
+        case 1:
+          lv_label_set_text(resultIndividualLabel, "HEADS");
+          break;
+        case 2:
+          lv_label_set_text(resultIndividualLabel, "TAILS");
+          break;
+      }
+    }
   } else {
     for (uint8_t i = 0; i < nCounter.GetValue(); i++) {
       resultIndividual = distrib(gen);
