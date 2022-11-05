@@ -9,8 +9,6 @@ FileView::FileView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const ch
   : screenID(screenID), nScreens(nScreens), Screen(app), pageIndicator(screenID, nScreens) {
   label = nullptr;
 
-  pageIndicator.CreateHorizontal();
-
   const char* c = strrchr(path, '/') + 1;
   if (c == nullptr)
     c = path;
@@ -37,11 +35,13 @@ void FileView::ShowInfo() {
   lv_obj_t* txtMessage = lv_label_create(label, nullptr);
   lv_obj_set_style_local_bg_color(label, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
   lv_label_set_text_static(txtMessage, name);
+
+  pageIndicator.CreateHorizontal();
 }
 
 void FileView::HideInfo() {
   lv_obj_del(label);
-  // TODO: delete page indicator
+  pageIndicator.Hide();
 
   label = nullptr;
 }
