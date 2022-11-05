@@ -6,10 +6,10 @@
 using namespace Pinetime::Applications::Screens;
 
 FileView::FileView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char* path)
-  : screenID(screenID), nScreens(nScreens), Screen(app) {
+  : screenID(screenID), nScreens(nScreens), Screen(app), pageIndicator(screenID, nScreens) {
   label = nullptr;
-  pageIndicatorBase = nullptr;
-  pageIndicator = nullptr;
+
+  pageIndicator.CreateHorizontal();
 
   const char* c = strrchr(path, '/') + 1;
   if (c == nullptr)
@@ -21,19 +21,6 @@ FileView::FileView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const ch
     *pchar = ' ';
     pchar = strchr(pchar + 1, '_');
   }
-
-  pageIndicatorBasePoints[0].x = 0;
-  pageIndicatorBasePoints[0].y = 1;
-  pageIndicatorBasePoints[1].x = LV_HOR_RES - 1;
-  pageIndicatorBasePoints[1].y = 1;
-
-  const int16_t indicatorSize = LV_HOR_RES / nScreens;
-  const int16_t indicatorPos = indicatorSize * screenID;
-
-  pageIndicatorPoints[0].x = indicatorPos;
-  pageIndicatorPoints[0].y = 1;
-  pageIndicatorPoints[1].x = indicatorPos + indicatorSize;
-  pageIndicatorPoints[1].y = 1;
 }
 
 void FileView::ShowInfo() {
@@ -50,26 +37,13 @@ void FileView::ShowInfo() {
   lv_obj_t* txtMessage = lv_label_create(label, nullptr);
   lv_obj_set_style_local_bg_color(label, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
   lv_label_set_text_static(txtMessage, name);
-
-  pageIndicatorBase = lv_line_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_line_width(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-  lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
-  lv_line_set_points(pageIndicatorBase, pageIndicatorBasePoints, 2);
-
-  pageIndicator = lv_line_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
-  lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
 }
 
 void FileView::HideInfo() {
   lv_obj_del(label);
-  lv_obj_del(pageIndicatorBase);
-  lv_obj_del(pageIndicator);
+  // TODO: delete page indicator
 
   label = nullptr;
-  pageIndicatorBase = nullptr;
-  pageIndicator = nullptr;
 }
 
 void FileView::ToggleInfo() {
