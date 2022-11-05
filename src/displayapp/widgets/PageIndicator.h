@@ -10,6 +10,7 @@ namespace Pinetime {
         void Create();
         void SetPageIndicatorPosition(uint8_t position);
         void CreateHorizontal();
+        void Hide();
 
       private:
         uint8_t nCurrentScreen;
