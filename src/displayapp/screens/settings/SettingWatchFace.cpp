@@ -49,8 +49,8 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen(unsigned int screenNum) c
     title,
     symbol,
     static_cast<uint32_t>(settingsController.GetWatchFace()),
-    [&settings = settingsController](uint32_t watchFace) {
-      settings.SetWatchFace(static_cast<WatchFace>(watchFace));
+    [&settings = settingsController](uint32_t index) {
+      settings.SetWatchFace(static_cast<WatchFace>(index));
       settings.SaveSettings();
     },
     watchfacesOnThisScreen);
