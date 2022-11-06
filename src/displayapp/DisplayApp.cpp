@@ -2,9 +2,7 @@
 #include <libraries/log/nrf_log.h>
 #include "displayapp/AvailableApps.h"
 #include "displayapp/screens/HeartRate.h"
-#if APP_MOTION
-  #include "displayapp/screens/Motion.h"
-#endif
+#include "displayapp/screens/Motion.h"
 #include "displayapp/screens/Timer.h"
 #include "displayapp/screens/Alarm.h"
 #include "components/battery/BatteryController.h"
@@ -17,28 +15,16 @@
 #include "displayapp/screens/Clock.h"
 #include "displayapp/screens/FirmwareUpdate.h"
 #include "displayapp/screens/FirmwareValidation.h"
-#if APP_PAINT
-  #include "displayapp/screens/InfiniPaint.h"
-#endif
-#if APP_PADDLE
-  #include "displayapp/screens/Paddle.h"
-#endif
+#include "displayapp/screens/InfiniPaint.h"
+#include "displayapp/screens/Paddle.h"
 #include "displayapp/screens/StopWatch.h"
-#if APP_METRONOME
-  #include "displayapp/screens/Metronome.h"
-#endif
-#if APP_MUSIC
-  #include "displayapp/screens/Music.h"
-#endif
-#if APP_NAVIGATION
-  #include "displayapp/screens/Navigation.h"
-#endif
+#include "displayapp/screens/Metronome.h"
+#include "displayapp/screens/Music.h"
+#include "displayapp/screens/Navigation.h"
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/screens/SystemInfo.h"
 #include "displayapp/screens/Tile.h"
-#if APP_TWOS
-  #include "displayapp/screens/Twos.h"
-#endif
+#include "displayapp/screens/Twos.h"
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
 #include "displayapp/screens/Steps.h"
