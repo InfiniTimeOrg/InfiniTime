@@ -52,6 +52,11 @@ namespace Pinetime {
 
       Settings(Pinetime::Controllers::FS& fs);
 
+      Settings(const Settings&) = delete;
+      Settings& operator=(const Settings&) = delete;
+      Settings(Settings&&) = delete;
+      Settings& operator=(Settings&&) = delete;
+
       void Init();
       void SaveSettings();
 
@@ -133,14 +138,6 @@ namespace Pinetime {
 
       void SetAppMenu(uint8_t menu) {
         appMenu = menu;
-      };
-
-      void SetWatchfacesMenu(uint8_t menu) {
-        watchFacesMenu = menu;
-      };
-
-      uint8_t GetWatchfacesMenu() const {
-        return watchFacesMenu;
       };
 
       uint8_t GetAppMenu() const {
