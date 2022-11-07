@@ -12,7 +12,6 @@
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/Tile.h"
 
-#define N_APPS (5 + APP_METRONOME + APP_MUSIC + APP_NAVIGATION + APP_PADDLE + APP_PAINT + APP_TWOS + APP_MOTION)
 
 namespace Pinetime {
   namespace Applications {
@@ -37,7 +36,8 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
 
         static constexpr int appsPerScreen {6};
-        static constexpr int nScreens {(N_APPS / appsPerScreen) + ((N_APPS % appsPerScreen) != 0)};
+        static constexpr int nApps {5 + APP_METRONOME + APP_MUSIC + APP_NAVIGATION + APP_PADDLE + APP_PAINT + APP_TWOS + APP_MOTION};
+        static constexpr int nScreens {(nApps / appsPerScreen) + ((nApps % appsPerScreen) != 0)};
 
         static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
           {Symbols::stopWatch, Apps::StopWatch},
