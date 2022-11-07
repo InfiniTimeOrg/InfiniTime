@@ -45,27 +45,13 @@ namespace Pinetime {
           {Symbols::hourGlass, Apps::Timer},
           {Symbols::shoe, Apps::Steps},
           {Symbols::heartBeat, Apps::HeartRate},
-#if APP_MUSIC
-          {Symbols::music, Apps::Music},
-#endif
-#if APP_PAINT
-          {Symbols::paintbrush, Apps::Paint},
-#endif
-#if APP_PADDLE
-          {Symbols::paddle, Apps::Paddle},
-#endif
-#if APP_TWOS
-          {"2", Apps::Twos},
-#endif
-#if APP_MOTION
-          {Symbols::chartLine, Apps::Motion},
-#endif
-#if APP_METRONOME
-          {Symbols::drum, Apps::Metronome},
-#endif
-#if APP_NAVIGATION
-          {Symbols::map, Apps::Navigation},
-#endif
+          APP_MUSIC ? (Tile::Applications) {Symbols::music, Apps::Music} : (Tile::Applications) {nullptr, Apps::None},
+          APP_PAINT ? (Tile::Applications) {Symbols::paintbrush, Apps::Paint} : (Tile::Applications) {nullptr, Apps::None},
+          APP_PADDLE ? (Tile::Applications) {Symbols::paddle, Apps::Paddle} : (Tile::Applications) {nullptr, Apps::None},
+          APP_TWOS ? (Tile::Applications) {"2", Apps::Twos} : (Tile::Applications) {nullptr, Apps::None},
+          APP_MOTION ? (Tile::Applications) {Symbols::chartLine, Apps::Motion} : (Tile::Applications) {nullptr, Apps::None},
+          APP_METRONOME ? (Tile::Applications) {Symbols::drum, Apps::Metronome} : (Tile::Applications) {nullptr, Apps::None},
+          APP_NAVIGATION ? (Tile::Applications) {Symbols::map, Apps::Navigation} : (Tile::Applications) {nullptr, Apps::None},
         }};
         ScreenList<nScreens> screens;
       };
