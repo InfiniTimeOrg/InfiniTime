@@ -85,7 +85,7 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     if (isFull) {
       newPercent = 100;
     } else {
-      newPercent = std::min(aprox.GetValue(voltage), (isCharging ? uint8_t {99} : uint8_t {100}));
+      newPercent = std::min(aprox.GetValue(voltage), isCharging ? uint8_t {99} : uint8_t {100});
     }
 
     if ((isPowerPresent && newPercent > percentRemaining) || (!isPowerPresent && newPercent < percentRemaining) || firstMeasurement) {
