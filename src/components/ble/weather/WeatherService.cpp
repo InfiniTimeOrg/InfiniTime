@@ -552,8 +552,8 @@ namespace Pinetime {
 
     int16_t WeatherService::GetTodayMinTemp() const {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      uint64_t currentDayEnd = currentTimestamp - ((24 - dateTimeController.Hours()) * 60 * 60) -
-                               ((60 - dateTimeController.Minutes()) * 60) - (60 - dateTimeController.Seconds());
+      uint64_t currentDayEnd = currentTimestamp + ((24 - dateTimeController.Hours()) * 60 * 60) +
+                               ((60 - dateTimeController.Minutes()) * 60) + (60 - dateTimeController.Seconds());
       int16_t result = -32768;
       for (auto&& header : this->timeline) {
         if (header->eventType == WeatherData::eventtype::Temperature && IsEventStillValid(header, currentTimestamp) &&
@@ -575,8 +575,8 @@ namespace Pinetime {
 
     int16_t WeatherService::GetTodayMaxTemp() const {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      uint64_t currentDayEnd = currentTimestamp - ((24 - dateTimeController.Hours()) * 60 * 60) -
-                               ((60 - dateTimeController.Minutes()) * 60) - (60 - dateTimeController.Seconds());
+      uint64_t currentDayEnd = currentTimestamp + ((24 - dateTimeController.Hours()) * 60 * 60) +
+                               ((60 - dateTimeController.Minutes()) * 60) + (60 - dateTimeController.Seconds());
       int16_t result = -32768;
       for (auto&& header : this->timeline) {
         if (header->eventType == WeatherData::eventtype::Temperature && IsEventStillValid(header, currentTimestamp) &&
