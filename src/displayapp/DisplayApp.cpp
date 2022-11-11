@@ -442,27 +442,27 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask);
       break;
     case Apps::Twos:
-      if (APP_TWOS) {
+      if constexpr(APP_TWOS) {
         currentScreen = std::make_unique<Screens::Twos>(this);
       }
       break;
     case Apps::Paint:
-      if (APP_PAINT) {
+      if constexpr(APP_PAINT) {
         currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl, motorController);
       }
       break;
     case Apps::Paddle:
-      if (APP_PADDLE) {
+      if constexpr(APP_PADDLE) {
         currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
       }
       break;
     case Apps::Music:
-      if (APP_MUSIC) {
+      if constexpr(APP_MUSIC) {
         currentScreen = std::make_unique<Screens::Music>(this, systemTask->nimble().music());
       }
       break;
     case Apps::Navigation:
-      if (APP_NAVIGATION) {
+      if constexpr(APP_NAVIGATION) {
         currentScreen = std::make_unique<Screens::Navigation>(this, systemTask->nimble().navigation());
       }
       break;
@@ -470,13 +470,13 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, *systemTask);
       break;
     case Apps::Metronome:
-      if (APP_METRONOME) {
+      if constexpr(APP_METRONOME) {
         currentScreen = std::make_unique<Screens::Metronome>(this, motorController, *systemTask);
         ReturnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::None);
       }
       break;
     case Apps::Motion:
-      if (APP_MOTION) {
+      if constexpr(APP_MOTION) {
         currentScreen = std::make_unique<Screens::Motion>(this, motionController);
       }
       break;
