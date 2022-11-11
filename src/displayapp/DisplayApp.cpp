@@ -441,45 +441,45 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
     case Apps::StopWatch:
       currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask);
       break;
-#if APP_TWOS
     case Apps::Twos:
-      currentScreen = std::make_unique<Screens::Twos>(this);
+      if (APP_TWOS) {
+        currentScreen = std::make_unique<Screens::Twos>(this);
+      }
       break;
-#endif
-#if APP_PAINT
     case Apps::Paint:
-      currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl, motorController);
+      if (APP_PAINT) {
+        currentScreen = std::make_unique<Screens::InfiniPaint>(this, lvgl, motorController);
+      }
       break;
-#endif
-#if APP_PADDLE
     case Apps::Paddle:
-      currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
+      if (APP_PADDLE) {
+        currentScreen = std::make_unique<Screens::Paddle>(this, lvgl);
+      }
       break;
-#endif
-#if APP_MUSIC
     case Apps::Music:
-      currentScreen = std::make_unique<Screens::Music>(this, systemTask->nimble().music());
+      if (APP_MUSIC) {
+        currentScreen = std::make_unique<Screens::Music>(this, systemTask->nimble().music());
+      }
       break;
-#endif
-#if APP_NAVIGATION
     case Apps::Navigation:
-      currentScreen = std::make_unique<Screens::Navigation>(this, systemTask->nimble().navigation());
+      if (APP_NAVIGATION) {
+        currentScreen = std::make_unique<Screens::Navigation>(this, systemTask->nimble().navigation());
+      }
       break;
-#endif
     case Apps::HeartRate:
       currentScreen = std::make_unique<Screens::HeartRate>(this, heartRateController, *systemTask);
       break;
-#if APP_METRONOME
     case Apps::Metronome:
-      currentScreen = std::make_unique<Screens::Metronome>(this, motorController, *systemTask);
-      ReturnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::None);
+      if (APP_METRONOME) {
+        currentScreen = std::make_unique<Screens::Metronome>(this, motorController, *systemTask);
+        ReturnApp(Apps::Launcher, FullRefreshDirections::Down, TouchEvents::None);
+      }
       break;
-#endif
-#if APP_MOTION
     case Apps::Motion:
-      currentScreen = std::make_unique<Screens::Motion>(this, motionController);
+      if (APP_MOTION) {
+        currentScreen = std::make_unique<Screens::Motion>(this, motionController);
+      }
       break;
-#endif
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
