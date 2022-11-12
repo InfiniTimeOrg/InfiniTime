@@ -79,6 +79,12 @@ void Notifications::Refresh() {
       timeoutLinePoints[1].x = pos;
       lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
     }
+
+    if(!this->scrolling && tick >= timeoutTickCountStart + timeoutStartScrolling){
+        this->scrolling = true;
+        lv_label_set_long_mode(currentItem->alert_type, LV_LABEL_LONG_SROLL_CIRC);
+    }
+
   }
 
   if (dismissingNotification) {
@@ -127,13 +133,18 @@ void Notifications::OnPreviewInteraction() {
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  if (mode != Modes::Normal) {
+  /*if (mode != Modes::Normal) {
     if (!interacted && event == TouchEvents::Tap) {
       interacted = true;
       OnPreviewInteraction();
       return true;
     }
     return false;
+  }*/
+
+  if(mode == Modes::Preview){
+    interacted=true;
+    OnPreviewInteraction();
   }
 
   switch (event) {
@@ -272,7 +283,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
   lv_obj_align(alert_count, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
 
-  lv_obj_t* alert_type = lv_label_create(container, nullptr);
+  alert_type = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
   if (title == nullptr) {
     lv_label_set_text_static(alert_type, "Notification");
@@ -286,7 +297,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
     }
     lv_label_refr_text(alert_type);
   }
-  lv_label_set_long_mode(alert_type, LV_LABEL_LONG_SROLL_CIRC);
+  lv_label_set_long_mode(alert_type, LV_LABEL_LONG_CROP);
   lv_obj_set_width(alert_type, 180);
   lv_obj_align(alert_type, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 16);
 
