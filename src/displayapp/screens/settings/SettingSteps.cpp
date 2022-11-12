@@ -69,7 +69,7 @@ SettingSteps::~SettingSteps() {
 void SettingSteps::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   uint32_t value = settingsController.GetStepsGoal();
   if (object == btnPlus && (event == LV_EVENT_PRESSED)) {
-    value += 1000;
+    value += 500;
     if (value <= 500000) {
       settingsController.SetStepsGoal(value);
       lv_label_set_text_fmt(stepValue, "%lu", settingsController.GetStepsGoal());
@@ -78,8 +78,8 @@ void SettingSteps::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   }
 
   if (object == btnMinus && (event == LV_EVENT_PRESSED)) {
-    value -= 1000;
-    if (value >= 1000) {
+    value -= 500;
+    if (value >= 500) {
       settingsController.SetStepsGoal(value);
       lv_label_set_text_fmt(stepValue, "%lu", settingsController.GetStepsGoal());
       lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
