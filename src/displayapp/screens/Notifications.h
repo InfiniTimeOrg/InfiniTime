@@ -47,7 +47,6 @@ namespace Pinetime {
             return running;
           }
           void OnCallButtonEvent(lv_obj_t*, lv_event_t event);
-          lv_obj_t *alert_type;
 
         private:
           lv_obj_t* container;
@@ -81,9 +80,7 @@ namespace Pinetime {
         TickType_t timeoutTickCountStart;
 
         static const TickType_t timeoutLength = pdMS_TO_TICKS(7000);
-        static const TickType_t timeoutStartScrolling = pdMS_TO_TICKS(1000);
         bool interacted = true;
-        bool scrolling = false;
 
         bool dismissingNotification = false;
 
