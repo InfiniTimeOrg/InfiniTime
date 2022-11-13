@@ -80,9 +80,9 @@ void Notifications::Refresh() {
       lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
     }
 
-    if(!this->scrolling && tick >= timeoutTickCountStart + timeoutStartScrolling){
-        this->scrolling = true;
-        lv_label_set_long_mode(currentItem->alert_type, LV_LABEL_LONG_SROLL_CIRC);
+    if(!this->isTitleScrolling && tick >= timeoutTickCountStart + timeoutStartScrolling){
+    	currentItem->StartTitleScroll();
+        this->isTitleScrolling = true;
     }
 
   }
@@ -133,20 +133,14 @@ void Notifications::OnPreviewInteraction() {
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  /*if (mode != Modes::Normal) {
+  if (mode != Modes::Normal) {
     if (!interacted && event == TouchEvents::Tap) {
       interacted = true;
       OnPreviewInteraction();
       return true;
     }
     return false;
-  }*/
-
-  if(mode == Modes::Preview){
-    interacted=true;
-    OnPreviewInteraction();
   }
-
   switch (event) {
     case Pinetime::Applications::TouchEvents::SwipeRight:
       if (validDisplay) {
@@ -369,4 +363,8 @@ void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_
 
 Notifications::NotificationItem::~NotificationItem() {
   lv_obj_clean(lv_scr_act());
+}
+
+void Notifications::NotificationItem::StartTitleScroll(){
+  lv_label_set_long_mode(this->alert_type, LV_LABEL_LONG_SROLL_CIRC);
 }

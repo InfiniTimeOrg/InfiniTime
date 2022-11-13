@@ -47,7 +47,7 @@ namespace Pinetime {
             return running;
           }
           void OnCallButtonEvent(lv_obj_t*, lv_event_t event);
-          lv_obj_t *alert_type;
+	  void StartTitleScroll();
 
         private:
           lv_obj_t* container;
@@ -58,6 +58,7 @@ namespace Pinetime {
           lv_obj_t* label_accept;
           lv_obj_t* label_mute;
           lv_obj_t* label_reject;
+          lv_obj_t *alert_type;
           
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           Pinetime::Controllers::MotorController& motorController;
@@ -81,9 +82,9 @@ namespace Pinetime {
         TickType_t timeoutTickCountStart;
 
         static const TickType_t timeoutLength = pdMS_TO_TICKS(7000);
-        static const TickType_t timeoutStartScrolling = pdMS_TO_TICKS(1000);
+        static const TickType_t timeoutStartTitleScrolling = pdMS_TO_TICKS(1000);
         bool interacted = true;
-        bool scrolling = false;
+        bool isTitleScrolling = false;
 
         bool dismissingNotification = false;
 
