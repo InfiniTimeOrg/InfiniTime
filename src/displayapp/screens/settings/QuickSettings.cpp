@@ -10,8 +10,12 @@ using namespace Pinetime::Applications::Screens;
 namespace {
   void ButtonEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<QuickSettings*>(obj->user_data);
-    if (event == LV_EVENT_CLICKED) {
-      screen->OnButtonEvent(obj);
+    static lv_obj_t* pressedObj = nullptr;
+    if (event == LV_EVENT_PRESSED) {
+      if(pressedObj == nullptr) pressedObj = obj;
+    }else if(event == LV_EVENT_RELEASED){
+      if(obj == pressedObj) screen->OnButtonEvent(pressedObj);
+      pressedObj = nullptr;
     }
   }
 
