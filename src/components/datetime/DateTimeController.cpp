@@ -36,7 +36,6 @@ void DateTime::SetTime(uint16_t year,
     /* .tm_mon  = */ month - 1,
     /* .tm_year = */ year - 1900,
   };
-
   tm.tm_isdst = -1; // Use DST value from local time zone
   currentDateTime = std::chrono::system_clock::from_time_t(std::mktime(&tm));
 
@@ -49,11 +48,6 @@ void DateTime::SetTime(uint16_t year,
   NRF_LOG_INFO("* %d %d %d ", this->day, this->month, this->year);
 
   systemTask->PushMessage(System::Messages::OnNewTime);
-}
-
-void DateTime::SetTimeZone(uint8_t timezone, uint8_t dst) {
-  tzOffset = timezone;
-  dstOffset = dst;
 }
 
 void DateTime::UpdateTime(uint32_t systickCounter) {
