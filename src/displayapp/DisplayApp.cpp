@@ -165,18 +165,15 @@ void DisplayApp::Refresh() {
           brightnessController.Lower();
           vTaskDelay(100);
         }
-
         PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
         state = States::Idle;
         break;
       case Messages::GoToRunning:
         ApplyBrightness();
-
         // reload main display app if we are notifications or quicksettings or app menu
         if(currentApp == Apps::Launcher || currentApp == Apps::Notifications || currentApp == Apps::QuickSettings){
           LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::Up);
         }
-
         state = States::Running;
         break;
       case Messages::UpdateTimeOut:
@@ -309,7 +306,6 @@ void DisplayApp::ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction
 }
 
 void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) {
-  NRF_LOG_INFO("Loading app...")
   touchHandler.CancelTap();
   ApplyBrightness();
 
@@ -327,7 +323,6 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       break;
     case Apps::None:
     case Apps::Clock:
-      NRF_LOG_INFO("Loading clock")
       currentScreen = std::make_unique<Screens::Clock>(this,
                                                        dateTimeController,
                                                        batteryController,
@@ -337,7 +332,7 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
                                                        heartRateController,
                                                        motionController,
                                                        filesystem);
-      ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown);
+      ReturnApp(Apps::Clock, FullRefreshDirections::Down, TouchEvents::SwipeDown); // We don't want to load a different app when in the clock
       break;
 
     case Apps::Error:

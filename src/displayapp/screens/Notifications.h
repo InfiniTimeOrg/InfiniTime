@@ -57,7 +57,6 @@ namespace Pinetime {
           lv_obj_t* label_accept;
           lv_obj_t* label_mute;
           lv_obj_t* label_reject;
-          
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           Pinetime::Controllers::MotorController& motorController;
 
