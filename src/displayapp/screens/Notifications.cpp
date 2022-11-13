@@ -80,7 +80,7 @@ void Notifications::Refresh() {
       lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
     }
 
-    if(!this->isTitleScrolling && tick >= timeoutTickCountStart + timeoutStartScrolling){
+    if(!this->isTitleScrolling && tick >= timeoutTickCountStart + timeoutStartTitleScrolling){
     	currentItem->StartTitleScroll();
         this->isTitleScrolling = true;
     }

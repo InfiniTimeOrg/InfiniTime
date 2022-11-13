@@ -47,7 +47,7 @@ namespace Pinetime {
             return running;
           }
           void OnCallButtonEvent(lv_obj_t*, lv_event_t event);
-	  void StartTitleScroll();
+	        void StartTitleScroll();
 
         private:
           lv_obj_t* container;
