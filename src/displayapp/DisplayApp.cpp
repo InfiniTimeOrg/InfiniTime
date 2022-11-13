@@ -485,7 +485,6 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
       currentScreen = std::make_unique<Screens::Steps>(this, motionController, settingsController);
       break;
   }
-  NRF_LOG_INFO("DONE")
   currentApp = app;
 }
 
