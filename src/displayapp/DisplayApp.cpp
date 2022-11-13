@@ -180,7 +180,7 @@ void DisplayApp::Refresh() {
         //        Screens::Clock::BleConnectionStates::NotConnected);
         break;
       case Messages::NewNotification:
-        LoadApp(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
+        LoadApp(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Up);
         break;
       case Messages::TimerDone:
         if (currentApp == Apps::Timer) {
