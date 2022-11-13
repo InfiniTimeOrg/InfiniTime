@@ -58,5 +58,29 @@
       "size": 115,
       "format": "bin",
       "target_path": "/fonts/"
+   },
+   "SquareRegular_72": {
+      "sources": [
+         {
+            "file": "fonts/SquareRegular.ttf",
+            "symbols": "0123456789:/amp "
+         }
+      ],
+      "bpp": 1,
+      "size": 72,
+      "format": "bin",
+      "target_path": "/fonts/"
+   },
+   "SquareRegular_20": {
+      "sources": [
+         {
+            "file": "fonts/SquareRegular.ttf",
+            "symbols": "0123456789:--ADFJMNOPSabceglnoprtuvy "
+         }
+      ],
+      "bpp": 2,
+      "size": 20,
+      "format": "bin",
+      "target_path": "/fonts/"
    }
 }
