@@ -20,6 +20,7 @@ namespace Pinetime {
       private:
         Controllers::Settings& settingsController;
 
+        static constexpr uint32_t stepSize {500};
         lv_obj_t* stepValue;
         lv_obj_t* btnPlus;
         lv_obj_t* btnMinus;
