@@ -135,6 +135,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
     }
     return false;
   }
+  
   switch (event) {
     case Pinetime::Applications::TouchEvents::SwipeRight:
       if (validDisplay) {
