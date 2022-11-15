@@ -79,12 +79,6 @@ void Notifications::Refresh() {
       timeoutLinePoints[1].x = pos;
       lv_line_set_points(timeoutLine, timeoutLinePoints, 2);
     }
-
-    if(!this->isTitleScrolling && tick >= timeoutTickCountStart + timeoutStartTitleScrolling){
-    	currentItem->StartTitleScroll();
-        this->isTitleScrolling = true;
-    }
-
   }
 
   if (dismissingNotification) {
@@ -141,6 +135,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
     }
     return false;
   }
+
   switch (event) {
     case Pinetime::Applications::TouchEvents::SwipeRight:
       if (validDisplay) {
@@ -341,6 +336,15 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_set_style_local_bg_color(bt_mute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
     } break;
   }
+  refreshTask = lv_task_create(Notifications::NotificationItem::Refresh, 1000, LV_TASK_PRIO_MID, this);
+  //lv_task_once(refreshTask); // The documentation says it exists, but I was unable to compile
+}
+
+void Notifications::NotificationItem::Refresh(lv_task_t* tsk) {
+  static_cast<Notifications::NotificationItem*>(tsk->user_data)->StartTitleScroll();
+  lv_task_del(tsk); // This substitutes the call to lv_task_once
+  // This method can be updated in the future for implementing other features.
+  // For now it is executed one single time after 1 second and then deleted.
 }
 
 void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_t event) {
@@ -363,6 +367,7 @@ void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_
 
 Notifications::NotificationItem::~NotificationItem() {
   lv_obj_clean(lv_scr_act());
+  lv_task_del(refreshTask);
 }
 
 void Notifications::NotificationItem::StartTitleScroll(){
