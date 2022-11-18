@@ -434,7 +434,7 @@ void SystemTask::Work() {
           break;
         case Messages::BleDisconnect:
           {
-            if (settingsController.GetBleDisconnectAlertOption() == Controllers::Settings::BleDisconnectAlertOption::On) {
+            if (settingsController.GetBleDisconnectAlertOption() != Controllers::Settings::BleDisconnectAlertOption::Off) {
               Pinetime::Controllers::NotificationManager::Notification notif;
               std::array<char, 101> message {"Disconnected\0Bluetooth connection lost\0"};
               notif.message = message;
@@ -442,6 +442,9 @@ void SystemTask::Work() {
               notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
               notificationManager.Push(std::move(notif));
               PushMessage(Messages::OnNewNotification);
+            }
+            if (settingsController.GetBleDisconnectAlertOption() == Controllers::Settings::BleDisconnectAlertOption::Once) {
+              settingsController.SetBleDisconnectAlertOption(Controllers::Settings::BleDisconnectAlertOption::Off);
             }
           }
           break;

@@ -23,9 +23,10 @@ namespace Pinetime {
           Controllers::Settings::BleDisconnectAlertOption bleDisconnectAlertOption;
           const char* name;
         };
-        static constexpr std::array<Option, 2> options = {{
+        static constexpr std::array<Option, 3> options = {{
           {Controllers::Settings::BleDisconnectAlertOption::Off, " never"},
           {Controllers::Settings::BleDisconnectAlertOption::On, " always"},
+          {Controllers::Settings::BleDisconnectAlertOption::Once, " only once"},
         }};
 
         std::array<lv_obj_t*, options.size()> cbOption;

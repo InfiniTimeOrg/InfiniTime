@@ -11,7 +11,7 @@ namespace Pinetime {
       enum class ClockType : uint8_t { H24, H12 };
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
-      enum class BleDisconnectAlertOption : uint8_t { Off, On };
+      enum class BleDisconnectAlertOption : uint8_t { Off, On, Once };
       enum class WakeUpMode : uint8_t {
         SingleTap = 0,
         DoubleTap = 1,
