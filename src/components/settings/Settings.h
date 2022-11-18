@@ -11,6 +11,7 @@ namespace Pinetime {
       enum class ClockType : uint8_t { H24, H12 };
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
+      enum class BleDisconnectAlertOption : uint8_t { Off, On };
       enum class WakeUpMode : uint8_t {
         SingleTap = 0,
         DoubleTap = 1,
@@ -78,6 +79,16 @@ namespace Pinetime {
       };
       ChimesOption GetChimeOption() const {
         return settings.chimesOption;
+      };
+
+      void SetBleDisconnectAlertOption(BleDisconnectAlertOption bleDisconnectAlertOption) {
+        if (bleDisconnectAlertOption != settings.bleDisconnectAlertOption) {
+          settingsChanged = true;
+        }
+        settings.bleDisconnectAlertOption = bleDisconnectAlertOption;
+      };
+      BleDisconnectAlertOption GetBleDisconnectAlertOption() const {
+        return settings.bleDisconnectAlertOption;
       };
 
       void SetPTSColorTime(Colors colorTime) {
@@ -265,6 +276,8 @@ namespace Pinetime {
 
         uint8_t clockFace = 0;
         ChimesOption chimesOption = ChimesOption::None;
+
+        BleDisconnectAlertOption bleDisconnectAlertOption = BleDisconnectAlertOption::Off;
 
         PineTimeStyle PTS;
 

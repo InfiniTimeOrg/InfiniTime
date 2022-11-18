@@ -432,6 +432,19 @@ void SystemTask::Work() {
           motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
           break;
+        case Messages::BleDisconnectAlert:
+          {
+            if (settingsController.GetBleDisconnectAlertOption() == Controllers::Settings::BleDisconnectAlertOption::On) {
+              Pinetime::Controllers::NotificationManager::Notification notif;
+              std::array<char, 101> message {"Disconnected\0Bluetooth connection lost\0"};
+              notif.message = message;
+              notif.size = 40;
+              notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+              notificationManager.Push(std::move(notif));
+              PushMessage(Messages::OnNewNotification);
+            }
+          }
+          break;
         case Messages::BleRadioEnableToggle:
           if (settingsController.GetBleRadioEnabled()) {
             nimbleController.EnableRadio();
