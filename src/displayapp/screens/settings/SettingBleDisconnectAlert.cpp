@@ -16,7 +16,8 @@ namespace {
 
 constexpr std::array<SettingBleDisconnectAlert::Option, 3> SettingBleDisconnectAlert::options;
 
-SettingBleDisconnectAlert::SettingBleDisconnectAlert(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
+SettingBleDisconnectAlert::SettingBleDisconnectAlert(Pinetime::Applications::DisplayApp* app,
+                                                     Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
 
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);

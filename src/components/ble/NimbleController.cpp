@@ -229,7 +229,6 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
         StartAdvertising();
 
         systemTask.PushMessage(Pinetime::System::Messages::BleDisconnect);
-
       }
       break;
 
