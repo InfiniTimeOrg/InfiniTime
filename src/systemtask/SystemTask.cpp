@@ -432,7 +432,7 @@ void SystemTask::Work() {
           motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
           break;
-        case Messages::BleDisconnectAlert:
+        case Messages::BleDisconnect:
           {
             if (settingsController.GetBleDisconnectAlertOption() == Controllers::Settings::BleDisconnectAlertOption::On) {
               Pinetime::Controllers::NotificationManager::Notification notif;

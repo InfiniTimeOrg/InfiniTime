@@ -31,7 +31,7 @@ namespace Pinetime {
       BatteryPercentageUpdated,
       StartFileTransfer,
       StopFileTransfer,
-      BleDisconnectAlert,
+      BleDisconnect,
       BleRadioEnableToggle
     };
   }
