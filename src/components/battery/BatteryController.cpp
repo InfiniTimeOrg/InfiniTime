@@ -95,7 +95,6 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
       percentRemaining = newPercent;
       systemTask->PushMessage(System::Messages::BatteryPercentageUpdated);
 
-
       // warn about low battery when not charging and below threshold
       if (BatteryIsLow() && !isPowerPresent && !batteryLowNotified) {
         systemTask->PushMessage(System::Messages::LowBattery);
