@@ -249,7 +249,7 @@ lv_font_navi_80.c
 
 ## Creating a stopwatch in PineTime 
 
-[This article](https://pankajraghav.com/2021/04/03/PINETIME-STOPCLOCK.html) from
+[This article](https://blog.pankajraghav.com/2021/04/03/PINETIME-STOPCLOCK.html) from
 Pankaj Raghav describes in details how to create a stopwatch app in InfiniTime.
 
 ## Tips on designing an app UI
