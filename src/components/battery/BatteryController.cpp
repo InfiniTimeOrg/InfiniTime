@@ -86,15 +86,20 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
       newPercent = std::min(aprox.GetValue(voltage), isCharging ? uint8_t {99} : uint8_t {100});
     }
 
+    if (isPowerPresent) {
+      batteryLowNotified = false;
+    }
+
     if ((isPowerPresent && newPercent > percentRemaining) || (!isPowerPresent && newPercent < percentRemaining) || firstMeasurement) {
       firstMeasurement = false;
-      lastPercentRemaining = percentRemaining;
       percentRemaining = newPercent;
       systemTask->PushMessage(System::Messages::BatteryPercentageUpdated);
 
+
       // warn about low battery when not charging and below threshold
-      if (!isPowerPresent && BatteryIsLow() && lastPercentRemaining > lowBatteryThreshold) {
+      if (BatteryIsLow() && !isPowerPresent && !batteryLowNotified) {
         systemTask->PushMessage(System::Messages::LowBattery);
+        batteryLowNotified = true;
       }
     }
 
