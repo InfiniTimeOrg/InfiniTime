@@ -38,6 +38,18 @@ namespace Pinetime {
                    uint8_t minute,
                    uint8_t second,
                    uint32_t systickCounter);
+
+      /*
+       * setter corresponding to the BLE Set Local Time characteristic.
+       *
+       * used to update difference between utc and local time (see UtcOffset())
+       *
+       * parameters are in quarters of an our. Following the BLE CTS specification,
+       * timezone is expected to be constant over DST which will be reported in
+       * dst field.
+       */
+      void SetTimeZone(uint8_t timezone, uint8_t dst);
+
       void UpdateTime(uint32_t systickCounter);
       uint16_t Year() const {
         return year;
@@ -61,6 +73,42 @@ namespace Pinetime {
         return second;
       }
 
+      /*
+       * returns the offset between local time and UTC in quarters of an hour
+       *
+       * Availability of this field depends on wether the companion app
+       * supports the BLE CTS Local Time Characteristic. Expect it to be 0
+       * if not.
+       */
+      uint8_t UtcOffset() const {
+        return tzOffset + dstOffset;
+      }
+
+      /*
+       * returns the offset between the (dst independent) local time zone and UTC
+       * in quarters of an hour
+       *
+       * Availability of this field depends on wether the companion app
+       * supports the BLE CTS Local Time Characteristic. Expect it to be 0
+       * if not.
+       */
+      uint8_t TzOffset() const {
+        return tzOffset;
+      }
+
+      /*
+       * returns the offset between the local time zone and local time
+       * in quarters of an hour
+       * if != 0, DST is in effect, if == 0 not.
+       *
+       * Availability of this field depends on wether the companion app
+       * supports the BLE CTS Local Time Characteristic. Expect it to be 0
+       * if not.
+       */
+      uint8_t DstOffset() const {
+        return dstOffset;
+      }
+
       const char* MonthShortToString() const;
       const char* DayOfWeekShortToString() const;
       static const char* MonthShortToStringLow(Months month);
@@ -68,6 +116,9 @@ namespace Pinetime {
 
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const {
         return currentDateTime;
+      }
+      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> UTCDateTime() const {
+        return currentDateTime - std::chrono::seconds((tzOffset + dstOffset) * 15 * 60);
       }
       std::chrono::seconds Uptime() const {
         return uptime;
@@ -85,6 +136,8 @@ namespace Pinetime {
       uint8_t hour = 0;
       uint8_t minute = 0;
       uint8_t second = 0;
+      uint8_t tzOffset = 0;
+      uint8_t dstOffset = 0;
 
       uint32_t previousSystickCounter = 0;
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> currentDateTime;
