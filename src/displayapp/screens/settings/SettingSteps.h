@@ -4,6 +4,7 @@
 #include <lvgl/lvgl.h>
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
+#include <string>
 
 namespace Pinetime {
 
@@ -23,6 +24,10 @@ namespace Pinetime {
         lv_obj_t* stepValue;
         lv_obj_t* btnPlus;
         lv_obj_t* btnMinus;
+        lv_obj_t* btnReset;
+        static constexpr uint32_t stepSize {500};
+        static constexpr uint32_t stepDefault {10000};
+
       };
     }
   }

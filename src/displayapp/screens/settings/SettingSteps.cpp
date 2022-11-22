@@ -2,6 +2,7 @@
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
+#include <string> 
 
 using namespace Pinetime::Applications::Screens;
 
@@ -14,6 +15,8 @@ namespace {
 
 SettingSteps::SettingSteps(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
+
+  
 
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
 
@@ -42,23 +45,32 @@ SettingSteps::SettingSteps(Pinetime::Applications::DisplayApp* app, Pinetime::Co
   lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_label_set_text_fmt(stepValue, "%lu", settingsController.GetStepsGoal());
   lv_label_set_align(stepValue, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
-
+  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 15);
+ 
   btnPlus = lv_btn_create(lv_scr_act(), nullptr);
   btnPlus->user_data = this;
   lv_obj_set_size(btnPlus, 80, 50);
-  lv_obj_align(btnPlus, lv_scr_act(), LV_ALIGN_CENTER, 55, 80);
+  lv_obj_align(btnPlus, lv_scr_act(), LV_ALIGN_CENTER, 55, 75);
   lv_obj_t* lblPlus = lv_label_create(btnPlus, nullptr);
-  lv_label_set_text_static(lblPlus, "+");
+  lv_label_set_text(lblPlus, "+500");
   lv_obj_set_event_cb(btnPlus, event_handler);
 
   btnMinus = lv_btn_create(lv_scr_act(), nullptr);
   btnMinus->user_data = this;
   lv_obj_set_size(btnMinus, 80, 50);
   lv_obj_set_event_cb(btnMinus, event_handler);
-  lv_obj_align(btnMinus, lv_scr_act(), LV_ALIGN_CENTER, -55, 80);
+  lv_obj_align(btnMinus, lv_scr_act(), LV_ALIGN_CENTER, -55, 75);
   lv_obj_t* lblMinus = lv_label_create(btnMinus, nullptr);
-  lv_label_set_text_static(lblMinus, "-");
+  lv_label_set_text(lblMinus, "-500");
+
+  btnReset = lv_btn_create(lv_scr_act(), nullptr);
+  btnReset->user_data = this;
+  lv_obj_set_size(btnReset, 80, 50);
+  lv_obj_set_event_cb(btnReset, event_handler);
+  lv_obj_align(btnReset, lv_scr_act(), LV_ALIGN_CENTER, 0, -45);
+  lv_obj_t* lblReset = lv_label_create(btnReset, nullptr);
+  lv_label_set_text(lblReset, "10 000");
+
 }
 
 SettingSteps::~SettingSteps() {
@@ -68,21 +80,26 @@ SettingSteps::~SettingSteps() {
 
 void SettingSteps::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   uint32_t value = settingsController.GetStepsGoal();
-  if (object == btnPlus && (event == LV_EVENT_PRESSED)) {
-    value += 1000;
-    if (value <= 500000) {
-      settingsController.SetStepsGoal(value);
-      lv_label_set_text_fmt(stepValue, "%lu", settingsController.GetStepsGoal());
-      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
+  
+  if (event == LV_EVENT_CLICKED ) {
+    if ( object == btnPlus ) {
+      value += stepSize;
+    }
+    else if ( object == btnMinus ) {
+      value -= stepSize;
     }
   }
 
-  if (object == btnMinus && (event == LV_EVENT_PRESSED)) {
-    value -= 1000;
-    if (value >= 1000) {
-      settingsController.SetStepsGoal(value);
-      lv_label_set_text_fmt(stepValue, "%lu", settingsController.GetStepsGoal());
-      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
+  if (event == LV_EVENT_LONG_PRESSED ) {
+    if ( object == btnReset ) {
+      value = stepDefault;
     }
   }
+
+  if (value <= 500000 && value >= 500 && value != settingsController.GetStepsGoal() ) {
+    settingsController.SetStepsGoal(value);
+    lv_label_set_text_fmt(stepValue, "%lu", settingsController.GetStepsGoal());
+    lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_CENTER, 0, 15);
+  } 
+    
 }
