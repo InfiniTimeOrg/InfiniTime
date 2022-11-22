@@ -51,7 +51,7 @@ SettingSteps::SettingSteps(Pinetime::Applications::DisplayApp* app, Pinetime::Co
   lv_obj_set_size(btnPlus, 80, 50);
   lv_obj_align(btnPlus, lv_scr_act(), LV_ALIGN_CENTER, 55, 75);
   lv_obj_t* lblPlus = lv_label_create(btnPlus, nullptr);
-  lv_label_set_text(lblPlus, "+500");
+  lv_label_set_text_static(lblPlus, "+500");
   lv_obj_set_event_cb(btnPlus, event_handler);
 
   btnMinus = lv_btn_create(lv_scr_act(), nullptr);
@@ -60,7 +60,7 @@ SettingSteps::SettingSteps(Pinetime::Applications::DisplayApp* app, Pinetime::Co
   lv_obj_set_event_cb(btnMinus, event_handler);
   lv_obj_align(btnMinus, lv_scr_act(), LV_ALIGN_CENTER, -55, 75);
   lv_obj_t* lblMinus = lv_label_create(btnMinus, nullptr);
-  lv_label_set_text(lblMinus, "-500");
+  lv_label_set_text_static(lblMinus, "-500");
 
   btnReset = lv_btn_create(lv_scr_act(), nullptr);
   btnReset->user_data = this;
@@ -68,7 +68,7 @@ SettingSteps::SettingSteps(Pinetime::Applications::DisplayApp* app, Pinetime::Co
   lv_obj_set_event_cb(btnReset, event_handler);
   lv_obj_align(btnReset, lv_scr_act(), LV_ALIGN_CENTER, 0, -45);
   lv_obj_t* lblReset = lv_label_create(btnReset, nullptr);
-  lv_label_set_text(lblReset, "10 000");
+  lv_label_set_text_static(lblReset, "10 000");
 
 }
 
