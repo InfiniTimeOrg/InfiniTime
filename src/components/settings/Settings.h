@@ -91,6 +91,13 @@ namespace Pinetime {
         return settings.bleDisconnectAlertOption;
       };
 
+      void SetBleDisconnectAlertVibrateOnly(bool vibrate) {
+        settings.bleDisconnectAlertVibrateOnly = vibrate;
+      };
+      bool GetBleDisconnectAlertVibrateOnly() const {
+        return settings.bleDisconnectAlertVibrateOnly;
+      };
+
       void SetPTSColorTime(Colors colorTime) {
         if (colorTime != settings.PTS.ColorTime)
           settingsChanged = true;
@@ -278,6 +285,7 @@ namespace Pinetime {
         ChimesOption chimesOption = ChimesOption::None;
 
         BleDisconnectAlertOption bleDisconnectAlertOption = BleDisconnectAlertOption::Off;
+        bool bleDisconnectAlertVibrateOnly = false;
 
         PineTimeStyle PTS;
 

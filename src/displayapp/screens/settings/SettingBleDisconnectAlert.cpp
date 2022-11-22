@@ -27,9 +27,9 @@ SettingBleDisconnectAlert::SettingBleDisconnectAlert(Pinetime::Applications::Dis
   lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
   lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
-  lv_obj_set_pos(container1, 10, 60);
+  lv_obj_set_pos(container1, 10, 40);
   lv_obj_set_width(container1, LV_HOR_RES - 20);
-  lv_obj_set_height(container1, LV_VER_RES - 50);
+  lv_obj_set_height(container1, LV_VER_RES - 30);
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
@@ -42,6 +42,14 @@ SettingBleDisconnectAlert::SettingBleDisconnectAlert(Pinetime::Applications::Dis
   lv_label_set_text_static(icon, Symbols::bluetooth);
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
+
+  btnVibrateOnly = lv_btn_create(container1, nullptr);
+  btnVibrateOnly->user_data = this;
+  lv_obj_set_event_cb(btnVibrateOnly, event_handler);
+  lv_obj_set_size(btnVibrateOnly, LV_HOR_RES - 40, 35);
+  txtVibrateOnly = lv_label_create(btnVibrateOnly, nullptr);
+  ShowVibrateOnlyButtonState();
+  lv_label_set_align(txtVibrateOnly, LV_LABEL_ALIGN_CENTER);
 
   for (unsigned int i = 0; i < options.size(); i++) {
     cbOption[i] = lv_checkbox_create(container1, nullptr);
@@ -70,5 +78,20 @@ void SettingBleDisconnectAlert::UpdateSelected(lv_obj_t* object, lv_event_t even
         lv_checkbox_set_checked(cbOption[i], false);
       }
     }
+  }
+  if (event == LV_EVENT_CLICKED) {
+    if (object == btnVibrateOnly) {
+      bool vibrateOnly = settingsController.GetBleDisconnectAlertVibrateOnly();
+      settingsController.SetBleDisconnectAlertVibrateOnly(!vibrateOnly);
+      SettingBleDisconnectAlert::ShowVibrateOnlyButtonState();
+    }
+  }
+}
+
+void SettingBleDisconnectAlert::ShowVibrateOnlyButtonState() {
+  if (settingsController.GetBleDisconnectAlertVibrateOnly()) {
+    lv_label_set_text_static(txtVibrateOnly, "Vibrate Only");
+  } else {
+    lv_label_set_text_static(txtVibrateOnly, "Notification");
   }
 }

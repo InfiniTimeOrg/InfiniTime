@@ -17,6 +17,7 @@ namespace Pinetime {
         ~SettingBleDisconnectAlert() override;
 
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
+        void ShowVibrateOnlyButtonState();
 
       private:
         struct Option {
@@ -30,6 +31,7 @@ namespace Pinetime {
         }};
 
         std::array<lv_obj_t*, options.size()> cbOption;
+        lv_obj_t *btnVibrateOnly, *txtVibrateOnly;
 
         Controllers::Settings& settingsController;
       };
