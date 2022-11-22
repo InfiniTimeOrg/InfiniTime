@@ -2,7 +2,6 @@
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
-#include <string> 
 
 using namespace Pinetime::Applications::Screens;
 

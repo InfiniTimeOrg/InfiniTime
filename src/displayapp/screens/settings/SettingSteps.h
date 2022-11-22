@@ -4,7 +4,6 @@
 #include <lvgl/lvgl.h>
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
-#include <string>
 
 namespace Pinetime {
 
