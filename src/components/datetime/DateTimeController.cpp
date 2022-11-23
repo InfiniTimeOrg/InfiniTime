@@ -51,7 +51,7 @@ void DateTime::SetTime(uint16_t year,
   systemTask->PushMessage(System::Messages::OnNewTime);
 }
 
-void DateTime::SetTimeZone(uint8_t timezone, uint8_t dst) {
+void DateTime::SetTimeZone(int8_t timezone, int8_t dst) {
   tzOffset = timezone;
   dstOffset = dst;
 }
