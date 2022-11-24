@@ -594,7 +594,7 @@ namespace Pinetime {
           }
         }
       }
-      
+
       return result;
     }
 
