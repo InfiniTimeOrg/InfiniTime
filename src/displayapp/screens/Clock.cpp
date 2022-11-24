@@ -25,6 +25,7 @@ Clock::Clock(DisplayApp* app,
              Controllers::Settings& settingsController,
              Controllers::HeartRateController& heartRateController,
              Controllers::MotionController& motionController,
+             Controllers::WeatherService& weather,
              Controllers::FS& filesystem)
   : Screen(app),
     dateTimeController {dateTimeController},
@@ -34,6 +35,7 @@ Clock::Clock(DisplayApp* app,
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
+    weatherService(weather),
     filesystem {filesystem},
     screen {[this, &settingsController]() {
       switch (settingsController.GetClockFace()) {
@@ -100,7 +102,8 @@ std::unique_ptr<Screen> Clock::WatchFacePineTimeStyleScreen() {
                                                            bleController,
                                                            notificationManager,
                                                            settingsController,
-                                                           motionController);
+                                                           motionController,
+                                                           weatherService);
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceTerminalScreen() {
