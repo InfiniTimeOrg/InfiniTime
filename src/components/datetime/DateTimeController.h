@@ -30,6 +30,8 @@ namespace Pinetime {
         December
       };
 
+      static const uint8_t NUMBER_OF_WORLD_TIMES = 4;
+
       void SetTime(uint16_t year,
                    uint8_t month,
                    uint8_t day,
@@ -48,7 +50,10 @@ namespace Pinetime {
        * timezone is expected to be constant over DST which will be reported in
        * dst field.
        */
+      // TODO test negative zones
       void SetTimeZone(uint8_t timezone, uint8_t dst);
+
+      void updateWorldTime(uint8_t index, int8_t offset, const char* description);
 
       void UpdateTime(uint32_t systickCounter);
       uint16_t Year() const {
@@ -109,6 +114,10 @@ namespace Pinetime {
         return dstOffset;
       }
 
+      int8_t worldOffset(uint8_t index) const;
+      bool isWorldTimeEnabled(uint8_t index) const;
+      const char* worldDescription(uint8_t index) const;
+
       const char* MonthShortToString() const;
       const char* DayOfWeekShortToString() const;
       static const char* MonthShortToStringLow(Months month);
@@ -117,9 +126,15 @@ namespace Pinetime {
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const {
         return currentDateTime;
       }
+
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> UTCDateTime() const {
         return currentDateTime - std::chrono::seconds((tzOffset + dstOffset) * 15 * 60);
       }
+
+      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> WorldDateTime(uint8_t index) const {
+        return UTCDateTime() + std::chrono::seconds(worldOffset(index) * 15 * 60);
+      }
+
       std::chrono::seconds Uptime() const {
         return uptime;
       }
@@ -138,6 +153,13 @@ namespace Pinetime {
       uint8_t second = 0;
       uint8_t tzOffset = 0;
       uint8_t dstOffset = 0;
+
+      struct WorldTimeData {
+        int8_t offset;
+        char description[9];
+      };
+
+      WorldTimeData worldTimeData[NUMBER_OF_WORLD_TIMES];
 
       uint32_t previousSystickCounter = 0;
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> currentDateTime;

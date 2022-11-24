@@ -8,6 +8,14 @@ constexpr ble_uuid16_t CurrentTimeService::ctsUuid;
 constexpr ble_uuid16_t CurrentTimeService::ctsCtChrUuid;
 constexpr ble_uuid16_t CurrentTimeService::ctsLtChrUuid;
 
+// 0005yyxx-78fc-48fe-8e23-433b3a1942d0
+constexpr ble_uuid128_t CharUuid(uint8_t x, uint8_t y) {
+  return ble_uuid128_t {.u = {.type = BLE_UUID_TYPE_128},
+                        .value = {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, y, x, 0x05, 0x00}};
+}
+
+constexpr ble_uuid128_t ctsWorldTimeChrUuid {CharUuid(0x00, 0x01)};
+
 int CTSCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   auto cts = static_cast<CurrentTimeService*>(arg);
 
@@ -20,6 +28,9 @@ int CurrentTimeService::OnCurrentTimeServiceAccessed(uint16_t conn_handle, uint1
       return OnCurrentTimeAccessed(conn_handle, attr_handle, ctxt);
     case ctsLocalTimeCharId:
       return OnLocalTimeAccessed(conn_handle, attr_handle, ctxt);
+  }
+  if (ble_uuid_cmp(ctxt->chr->uuid, &ctsWorldTimeChrUuid.u) == 0) {
+    return OnWorldTimeAccessed(conn_handle, attr_handle, ctxt);
   }
   return -1; // Unknown characteristic
 }
@@ -99,6 +110,25 @@ int CurrentTimeService::OnLocalTimeAccessed(uint16_t conn_handle, uint16_t attr_
   return 0;
 }
 
+int CurrentTimeService::OnWorldTimeAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+  NRF_LOG_INFO("Setting world time...");
+
+  if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
+    int res = os_mbuf_copydata(ctxt->om, 0, sizeof(worldTimeData), &worldTimeData);
+
+    if (res < 0) {
+      NRF_LOG_ERROR("Error reading BLE Data writing to CTS Local Time (too little data)")
+      return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+    }
+
+    for (size_t i = 0; i < DateTime::NUMBER_OF_WORLD_TIMES; i++) {
+      m_dateTimeController.updateWorldTime(i, worldTimeData[i].offsetUtc, worldTimeData[i].description);
+    }
+  }
+
+  return 0;
+}
+
 CurrentTimeService::CurrentTimeService(DateTime& dateTimeController)
   : characteristicDefinition {
 
@@ -111,6 +141,11 @@ CurrentTimeService::CurrentTimeService(DateTime& dateTimeController)
                                .access_cb = CTSCallback,
                                .arg = this,
                                .flags = BLE_GATT_CHR_F_WRITE | BLE_GATT_CHR_F_READ},
+
+                               {.uuid = &ctsWorldTimeChrUuid.u,
+                               .access_cb = CTSCallback,
+                               .arg = this,
+                               .flags = BLE_GATT_CHR_F_WRITE},
 
                                {0}},
     serviceDefinition {

@@ -13,6 +13,11 @@ namespace {
 }
 
 DateTime::DateTime(Controllers::Settings& settingsController) : settingsController {settingsController} {
+  for (size_t i = 0; i < NUMBER_OF_WORLD_TIMES; i++) {
+    worldTimeData[i].offset = -128;
+    worldTimeData[i].description[0] = '-';
+    worldTimeData[i].description[1] = 0;
+  }
 }
 
 void DateTime::SetCurrentTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> t) {
@@ -119,6 +124,38 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   } else if (hour != 0) {
     isMidnightAlreadyNotified = false;
   }
+}
+
+int8_t DateTime::worldOffset(uint8_t index) const {
+  if (index >= NUMBER_OF_WORLD_TIMES) {
+    return -128;
+  }
+  return worldTimeData[index].offset;
+}
+
+bool DateTime::isWorldTimeEnabled(uint8_t index) const {
+  if (index >= NUMBER_OF_WORLD_TIMES) {
+    return false;
+  }
+  return worldTimeData[index].offset != -128;
+}
+
+const char* DateTime::worldDescription(uint8_t index) const {
+  if (index >= NUMBER_OF_WORLD_TIMES) {
+    return "-";
+  }
+  return worldTimeData[index].description;
+}
+
+void DateTime::updateWorldTime(uint8_t index, int8_t offset, const char* description) {
+  if (index >= NUMBER_OF_WORLD_TIMES) {
+    return;
+  }
+
+  worldTimeData[index].offset = offset;
+  memcpy(worldTimeData[index].description, description, 8);
+  // safeguard against bad data
+  worldTimeData[index].description[8] = 0;
 }
 
 const char* DateTime::MonthShortToString() const {

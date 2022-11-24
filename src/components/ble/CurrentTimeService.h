@@ -19,6 +19,7 @@ namespace Pinetime {
       int OnCurrentTimeServiceAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
       int OnCurrentTimeAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
       int OnLocalTimeAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
+      int OnWorldTimeAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
 
     private:
       static constexpr uint16_t ctsId {0x1805};
@@ -30,7 +31,7 @@ namespace Pinetime {
       static constexpr ble_uuid16_t ctsCtChrUuid {.u {.type = BLE_UUID_TYPE_16}, .value = ctsCurrentTimeCharId};
       static constexpr ble_uuid16_t ctsLtChrUuid {.u {.type = BLE_UUID_TYPE_16}, .value = ctsLocalTimeCharId};
 
-      struct ble_gatt_chr_def characteristicDefinition[3];
+      struct ble_gatt_chr_def characteristicDefinition[4];
       struct ble_gatt_svc_def serviceDefinition[2];
 
       typedef struct __attribute__((packed)) {
@@ -50,6 +51,13 @@ namespace Pinetime {
         uint8_t timezone;
         uint8_t dst;
       } CtsLocalTimeData;
+
+      typedef struct __attribute__((packed)) {
+        int8_t offsetUtc;    // quarter hours; -128 means disabled
+        char description[9]; // null terminated string
+      } CtsWorldTimeData;
+
+      CtsWorldTimeData worldTimeData[DateTime::NUMBER_OF_WORLD_TIMES];
 
       DateTime& m_dateTimeController;
     };
