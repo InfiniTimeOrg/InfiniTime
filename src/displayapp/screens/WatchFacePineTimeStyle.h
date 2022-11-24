@@ -7,7 +7,7 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/Colors.h"
 #include "components/datetime/DateTimeController.h"
-#include <components/ble/weather/WeatherService.h>
+#include "components/ble/weather/WeatherService.h"
 #include "components/ble/BleController.h"
 #include <displayapp/screens/BatteryIcon.h>
 
@@ -62,8 +62,6 @@ namespace Pinetime {
         DirtyValue<uint32_t> stepCount {};
         DirtyValue<bool> notificationState {};
         DirtyValue<int16_t> nowTemp {};
-        int16_t minTemp = 0;
-        int16_t maxTemp = 0;
         int16_t clouds = 0;
         int16_t precip = 0;
 
@@ -91,12 +89,7 @@ namespace Pinetime {
         lv_obj_t* dateDay;
         lv_obj_t* dateMonth;
         lv_obj_t* weatherIcon;
-        lv_obj_t* tempHighLbl;
-        lv_obj_t* tempLowLbl;
-        lv_obj_t* tempLbl;
-        lv_obj_t* tempSlash;
-        lv_obj_t* precipLbl;
-        lv_obj_t* cloudsLbl;
+        lv_obj_t* temperature;
         lv_obj_t* plugIcon;
         lv_obj_t* bleIcon;
         lv_obj_t* calendarOuter;

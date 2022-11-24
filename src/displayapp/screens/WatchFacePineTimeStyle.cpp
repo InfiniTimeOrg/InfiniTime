@@ -34,7 +34,7 @@
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
-#include <components/ble/weather/WeatherService.h>
+#include "components/ble/weather/WeatherService.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -126,39 +126,14 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
     lv_obj_set_hidden(weatherIcon, true);
   }
 
-  tempHighLbl = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_letter_space(tempHighLbl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, -1);
-  lv_obj_set_style_local_text_color(tempHighLbl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_align(tempHighLbl, timebar, LV_ALIGN_IN_LEFT_MID, 0, -40);
-
-  tempSlash = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(tempSlash, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_align(tempSlash, sidebar, LV_ALIGN_IN_TOP_MID, 0, 65);
+  temperature = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_align(temperature, sidebar, LV_ALIGN_IN_TOP_MID, 0, 65);
   if (settingsController.GetPTSWeather() == Pinetime::Controllers::Settings::PTSWeather::On) {
-    lv_obj_set_hidden(tempSlash, false);
+    lv_obj_set_hidden(temperature, false);
   } else {
-    lv_obj_set_hidden(tempSlash, true);
+    lv_obj_set_hidden(temperature, true);
   }
-
-  tempLowLbl = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_letter_space(tempLowLbl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, -1);
-  lv_obj_set_style_local_text_color(tempLowLbl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_obj_align(tempLowLbl, timebar, LV_ALIGN_IN_LEFT_MID, 0, -20);
-
-  tempLbl = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_letter_space(tempLbl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, -1);
-  lv_obj_set_style_local_text_color(tempLbl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_obj_align(tempLbl, timebar, LV_ALIGN_IN_LEFT_MID, 0, 0);
-
-  precipLbl = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_letter_space(precipLbl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, -1);
-  lv_obj_set_style_local_text_color(precipLbl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_obj_align(precipLbl, timebar, LV_ALIGN_IN_LEFT_MID, 0, 20);
-
-  cloudsLbl = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_letter_space(cloudsLbl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, -1);
-  lv_obj_set_style_local_text_color(cloudsLbl, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
-  lv_obj_align(cloudsLbl, timebar, LV_ALIGN_IN_LEFT_MID, 0, 40);
 
   // Calendar icon
   calendarOuter = lv_obj_create(lv_scr_act(), nullptr);
@@ -572,36 +547,25 @@ void WatchFacePineTimeStyle::Refresh() {
     }
   }
 
-  minTemp = (weatherService.GetTodayMinTemp() / 100);
-  maxTemp = (weatherService.GetTodayMaxTemp() / 100);
   nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100);
-  clouds = (weatherService.GetCurrentClouds()->amount);
-  precip = (weatherService.GetCurrentPrecipitation()->amount);
-
   if (nowTemp.IsUpdated()) {
-    lv_label_set_text_fmt(tempHighLbl, "%d°", maxTemp);
-    lv_label_set_text_fmt(tempLowLbl, "%d°", minTemp);
-    lv_label_set_text_fmt(tempLbl, "%d°", nowTemp.Get());
-    lv_label_set_text_fmt(tempSlash, "%d°", nowTemp.Get());
-    lv_label_set_text_fmt(precipLbl, "%d", precip);
-    lv_label_set_text_fmt(cloudsLbl, "C %d", clouds);
+    clouds = (weatherService.GetCurrentClouds()->amount);
+    precip = (weatherService.GetCurrentPrecipitation()->amount);
+    lv_label_set_text_fmt(temperature, "%d°", nowTemp.Get());
 
     if ((clouds <= 30) && (precip = 0)) {
       lv_label_set_text(weatherIcon, Symbols::sun);
-    } else if ((clouds > 70) && (precip >= 1)) {
+    } else if ((clouds >= 70) && (clouds <= 90) && (precip = 1)) {
+      lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
+    } else if ((clouds > 90) && (precip = 0)) {
       lv_label_set_text(weatherIcon, Symbols::cloud);
-    } else if ((clouds > 70) && (precip >= 1)) {
+    } else if ((clouds > 70) && (precip >= 2)) {
       lv_label_set_text(weatherIcon, Symbols::cloudShowersHeavy);
     } else {
       lv_label_set_text(weatherIcon, Symbols::cloudSun);
     };
 
-    lv_obj_realign(tempHighLbl);
-    lv_obj_realign(tempLowLbl);
-    lv_obj_realign(tempLbl);
-    lv_obj_realign(tempSlash);
-    lv_obj_realign(precipLbl);
-    lv_obj_realign(cloudsLbl);
+    lv_obj_realign(temperature);
     lv_obj_realign(weatherIcon);
   }
 
@@ -754,7 +718,7 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
       if (lv_obj_get_hidden(weatherIcon)) {
         // show weather icon and temperature
         lv_obj_set_hidden(weatherIcon, false);
-        lv_obj_set_hidden(tempSlash, false);
+        lv_obj_set_hidden(temperature, false);
         lv_obj_align(calendarOuter, sidebar, LV_ALIGN_CENTER, 0, 20);
         lv_obj_realign(calendarInner);
         lv_obj_realign(calendarBar1);
@@ -768,7 +732,7 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
       } else {
         // hide weather
         lv_obj_set_hidden(weatherIcon, true);
-        lv_obj_set_hidden(tempSlash, true);
+        lv_obj_set_hidden(temperature, true);
         lv_obj_align(calendarOuter, sidebar, LV_ALIGN_CENTER, 0, 0);
         lv_obj_realign(calendarInner);
         lv_obj_realign(calendarBar1);

@@ -7,8 +7,7 @@
 #include <components/heartrate/HeartRateController.h>
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
-#include <components/ble/weather/WeatherService.h>
-#include "displayapp/screens/Weather.h"
+#include "components/ble/weather/WeatherService.h"
 
 namespace Pinetime {
   namespace Controllers {
