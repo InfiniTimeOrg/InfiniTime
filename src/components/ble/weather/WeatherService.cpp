@@ -557,7 +557,7 @@ namespace Pinetime {
       uint64_t currentDayStart = currentDayEnd - 86400;
       int16_t result = -32768;
       for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Temperature && header->timestamp > currentDayStart &&
+        if (header->eventType == WeatherData::eventtype::Temperature && header->timestamp >= currentDayStart &&
             header->timestamp < currentDayEnd &&
             reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature != -32768) {
           int16_t temperature = reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature;
@@ -570,6 +570,7 @@ namespace Pinetime {
           }
         }
       }
+
       return result;
     }
 
@@ -580,7 +581,7 @@ namespace Pinetime {
       uint64_t currentDayStart = currentDayEnd - 86400;
       int16_t result = -32768;
       for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Temperature && header->timestamp > currentDayStart &&
+        if (header->eventType == WeatherData::eventtype::Temperature && header->timestamp >= currentDayStart &&
             header->timestamp < currentDayEnd &&
             reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature != -32768) {
           int16_t temperature = reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature;
@@ -593,6 +594,7 @@ namespace Pinetime {
           }
         }
       }
+      
       return result;
     }
 
