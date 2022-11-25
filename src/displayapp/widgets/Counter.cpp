@@ -1,6 +1,7 @@
 #include "displayapp/widgets/Counter.h"
 #include "components/datetime/DateTimeController.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "lv_i18n/lv_i18n.h"
 
 using namespace Pinetime::Applications::Widgets;
 
@@ -127,7 +128,7 @@ void Counter::Create() {
   lv_obj_align(number, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_auto_realign(number, true);
   if (monthMode) {
-    lv_label_set_text_static(number, "Jan");
+    lv_label_set_text_static(number, _("Jan"));
   } else {
     lv_label_set_text_fmt(number, "%d", max);
   }

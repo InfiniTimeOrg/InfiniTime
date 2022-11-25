@@ -1,11 +1,18 @@
 #include "displayapp/screens/settings/SettingWatchFace.h"
 #include <lvgl/lvgl.h>
+#include "lv_i18n/lv_i18n.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/Screen.h"
 #include "components/settings/Settings.h"
 #include "displayapp/screens/WatchFaceInfineat.h"
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
+
+#if 0
+  _("Digital face");
+  _("Analog face");
+  _("Terminal");
+#endif
 
 using namespace Pinetime::Applications::Screens;
 
@@ -39,12 +46,12 @@ bool SettingWatchFace::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
 std::unique_ptr<Screen> SettingWatchFace::CreateScreen1() {
   std::array<Screens::CheckboxList::Item, 4> watchfaces {
-    {{"Digital face", true}, {"Analog face", true}, {"PineTimeStyle", true}, {"Terminal", true}}};
+    {{_("Digital face"), true}, {_("Analog face"), true}, {"PineTimeStyle", true}, {_("Terminal"), true}}};
   return std::make_unique<Screens::CheckboxList>(
     0,
     2,
     app,
-    title,
+    _(title),
     symbol,
     settingsController.GetClockFace(),
     [&settings = settingsController](uint32_t clockFace) {
@@ -64,7 +71,7 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen2() {
     1,
     2,
     app,
-    title,
+    _(title),
     symbol,
     settingsController.GetClockFace(),
     [&settings = settingsController](uint32_t clockFace) {

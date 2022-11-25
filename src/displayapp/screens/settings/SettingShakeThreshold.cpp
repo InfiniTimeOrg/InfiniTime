@@ -1,5 +1,6 @@
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include <lvgl/lvgl.h>
+#include "lv_i18n/lv_i18n.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
@@ -21,7 +22,7 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
   : Screen(app), settingsController {settingsController}, motionController {motionController}, systemTask {systemTask} {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Wake Sensitivity");
+  lv_label_set_text_static(title, _("Wake Sensitivity"));
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
 
@@ -58,7 +59,7 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
   lv_obj_align(calButton, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   lv_btn_set_checkable(calButton, true);
   calLabel = lv_label_create(calButton, NULL);
-  lv_label_set_text_static(calLabel, "Calibrate");
+  lv_label_set_text_static(calLabel, _("Calibrate"));
 
   lv_arc_set_value(positionArc, settingsController.GetShakeThreshold());
 
@@ -92,7 +93,7 @@ void SettingShakeThreshold::Refresh() {
       calibrating = 2;
       lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_RED);
       lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_RED);
-      lv_label_set_text_static(calLabel, "Shake!");
+      lv_label_set_text_static(calLabel, _("Shake!"));
     }
   }
   if (calibrating == 2) {
@@ -122,13 +123,13 @@ void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
           lv_arc_set_value(positionArc, 0);
           calibrating = 1;
           vCalTime = xTaskGetTickCount();
-          lv_label_set_text_static(calLabel, "Ready!");
+          lv_label_set_text_static(calLabel, _("Ready!"));
           lv_obj_set_click(positionArc, false);
           lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, Colors::highlight);
         } else if (lv_btn_get_state(calButton) == LV_BTN_STATE_RELEASED) {
           calibrating = 0;
           lv_obj_set_click(positionArc, true);
-          lv_label_set_text_static(calLabel, "Calibrate");
+          lv_label_set_text_static(calLabel, _("Calibrate"));
         }
         break;
       }

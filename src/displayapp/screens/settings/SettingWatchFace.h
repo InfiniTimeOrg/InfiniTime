@@ -26,6 +26,9 @@ namespace Pinetime {
         Pinetime::Controllers::FS& filesystem;
         ScreenList<2> screens;
 
+#if 0
+          _("Watch face");
+#endif
         static constexpr const char* title = "Watch face";
         static constexpr const char* symbol = Symbols::home;
         std::unique_ptr<Screen> CreateScreen1();

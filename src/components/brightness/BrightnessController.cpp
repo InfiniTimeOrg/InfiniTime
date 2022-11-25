@@ -2,6 +2,7 @@
 #include <hal/nrf_gpio.h>
 #include "displayapp/screens/Symbols.h"
 #include "drivers/PinMap.h"
+
 using namespace Pinetime::Controllers;
 
 void BrightnessController::Init() {
@@ -102,6 +103,9 @@ const char* BrightnessController::GetIcon() {
   return Applications::Screens::Symbols::brightnessLow;
 }
 
+// Note: These strings are intentionally not i18ned
+// as they are part of the recovery loader which
+//  does not support i18n
 const char* BrightnessController::ToString() {
   switch (level) {
     case Levels::Off:

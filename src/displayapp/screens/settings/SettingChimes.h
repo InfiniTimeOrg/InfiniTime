@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <lvgl/lvgl.h>
+#include "lv_i18n/lv_i18n.h"
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
 #include <array>
@@ -23,6 +24,13 @@ namespace Pinetime {
           Controllers::Settings::ChimesOption chimesOption;
           const char* name;
         };
+
+#if 0
+        _("Off");
+        _("Every hour");
+        _("Every 30 mins");
+#endif
+
         static constexpr std::array<Option, 3> options = {{{Controllers::Settings::ChimesOption::None, "Off"},
                                                            {Controllers::Settings::ChimesOption::Hours, "Every hour"},
                                                            {Controllers::Settings::ChimesOption::HalfHours, "Every 30 mins"}}};

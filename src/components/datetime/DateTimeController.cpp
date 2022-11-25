@@ -2,8 +2,51 @@
 #include <date/date.h>
 #include <libraries/log/nrf_log.h>
 #include <systemtask/SystemTask.h>
+#include "lv_i18n/lv_i18n.h"
 
 using namespace Pinetime::Controllers;
+
+#if 0
+  _("--");
+  _("MON");
+  _("TUE");
+  _("WED");
+  _("THU");
+  _("FRI");
+  _("SAT");
+  _("SUN");
+  _("Mon");
+  _("Tue");
+  _("Wed");
+  _("Thu");
+  _("Fri");
+  _("Sat");
+  _("Sun");
+  _("JAN");
+  _("FEB");
+  _("MAR");
+  _("APR");
+  _("MAY");
+  _("JUN");
+  _("JUL");
+  _("AUG");
+  _("SEP");
+  _("OCT");
+  _("NOV");
+  _("DEC");
+  _("Jan");
+  _("Feb");
+  _("Mar");
+  _("Apr");
+  _("May");
+  _("Jun");
+  _("Jul");
+  _("Aug");
+  _("Sep");
+  _("Oct");
+  _("Nov");
+  _("Dec");
+#endif
 
 namespace {
   char const* DaysStringShort[] = {"--", "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
@@ -122,19 +165,19 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
 }
 
 const char* DateTime::MonthShortToString() const {
-  return MonthsString[static_cast<uint8_t>(month)];
+  return _(MonthsString[static_cast<uint8_t>(month)]);
 }
 
 const char* DateTime::DayOfWeekShortToString() const {
-  return DaysStringShort[static_cast<uint8_t>(dayOfWeek)];
+  return _(DaysStringShort[static_cast<uint8_t>(dayOfWeek)]);
 }
 
 const char* DateTime::MonthShortToStringLow(Months month) {
-  return MonthsStringLow[static_cast<uint8_t>(month)];
+  return _(MonthsStringLow[static_cast<uint8_t>(month)]);
 }
 
 const char* DateTime::DayOfWeekShortToStringLow() const {
-  return DaysStringShortLow[static_cast<uint8_t>(dayOfWeek)];
+  return _(DaysStringShortLow[static_cast<uint8_t>(dayOfWeek)]);
 }
 
 void DateTime::Register(Pinetime::System::SystemTask* systemTask) {

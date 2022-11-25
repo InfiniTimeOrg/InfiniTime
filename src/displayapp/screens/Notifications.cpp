@@ -5,6 +5,7 @@
 #include "displayapp/screens/Symbols.h"
 #include <algorithm>
 #include "displayapp/InfiniTimeTheme.h"
+#include "lv_i18n/lv_i18n.h"
 
 using namespace Pinetime::Applications::Screens;
 extern lv_font_t jetbrains_mono_extrabold_compressed;
@@ -233,8 +234,8 @@ namespace {
 
 Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                                   Pinetime::Controllers::MotorController& motorController)
-  : NotificationItem("Notification",
-                     "No notification to display",
+  : NotificationItem(_("Notification"),
+                     _("No notification to display"),
                      0,
                      Controllers::NotificationManager::Categories::Unknown,
                      0,
@@ -275,7 +276,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_t* alert_type = lv_label_create(container, nullptr);
   lv_obj_set_style_local_text_color(alert_type, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
   if (title == nullptr) {
-    lv_label_set_text_static(alert_type, "Notification");
+    lv_label_set_text_static(alert_type, _("Notification"));
   } else {
     // copy title to label and replace newlines with spaces
     lv_label_set_text(alert_type, title);
@@ -300,7 +301,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       break;
     case Controllers::NotificationManager::Categories::IncomingCall: {
       lv_obj_set_height(subject_container, 108);
-      lv_label_set_text_static(alert_subject, "Incoming call from");
+      lv_label_set_text_static(alert_subject, _("Incoming call from"));
 
       lv_obj_t* alert_caller = lv_label_create(subject_container, nullptr);
       lv_obj_align(alert_caller, alert_subject, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 0);
