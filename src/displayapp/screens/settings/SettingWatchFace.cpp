@@ -56,9 +56,9 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen1() {
 
 std::unique_ptr<Screen> SettingWatchFace::CreateScreen2() {
   std::array<Screens::CheckboxList::Item, 4> watchfaces {
-    {{"Infineat face", Applications::Screens::WatchFaceInfineat::IsAvailable(filesystem)},
+    {{"World Clocks", true},
+     {"Infineat face", Applications::Screens::WatchFaceInfineat::IsAvailable(filesystem)},
      {"Casio G7710", Applications::Screens::WatchFaceCasioStyleG7710::IsAvailable(filesystem)},
-     {"", false},
      {"", false}}};
   return std::make_unique<Screens::CheckboxList>(
     1,
