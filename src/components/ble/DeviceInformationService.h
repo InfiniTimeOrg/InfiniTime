@@ -24,6 +24,7 @@ namespace Pinetime {
       static constexpr uint16_t fwRevisionId {0x2a26};
       static constexpr uint16_t hwRevisionId {0x2a27};
       static constexpr uint16_t swRevisionId {0x2a28};
+      static constexpr uint16_t languageId {0x2aa2};
 
       static constexpr const char* manufacturerName = "PINE64";
       static constexpr const char* modelNumber = "PineTime";
@@ -46,7 +47,9 @@ namespace Pinetime {
 
       static constexpr ble_uuid16_t swRevisionUuid {.u {.type = BLE_UUID_TYPE_16}, .value = swRevisionId};
 
-      struct ble_gatt_chr_def characteristicDefinition[7];
+      static constexpr ble_uuid16_t languageUuid {.u {.type = BLE_UUID_TYPE_16}, .value = languageId};
+
+      struct ble_gatt_chr_def characteristicDefinition[8];
       struct ble_gatt_svc_def serviceDefinition[2];
     };
   }
