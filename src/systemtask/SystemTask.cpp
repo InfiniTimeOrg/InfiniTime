@@ -438,7 +438,8 @@ void SystemTask::Work() {
               motorController.RunForDuration(50);
             } else {
               Pinetime::Controllers::NotificationManager::Notification notif;
-              std::array<char, 101> message {"Disconnected\0Bluetooth connection lost\0"};
+              std::array<char, Pinetime::Controllers::NotificationManager::MessageSize + 1> message {
+                "Disconnected\0Bluetooth connection lost\0"};
               notif.message = message;
               notif.size = 40;
               notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
