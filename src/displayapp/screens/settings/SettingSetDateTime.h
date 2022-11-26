@@ -14,15 +14,16 @@ namespace Pinetime {
     namespace Screens {
       class SettingSetDateTime : public Screen {
       public:
-        SettingSetDateTime(DisplayApp* app, Pinetime::Controllers::DateTime& dateTimeController,
-        Pinetime::Controllers::Settings& settingsController);
+        SettingSetDateTime(DisplayApp* app,
+                           Pinetime::Controllers::DateTime& dateTimeController,
+                           Pinetime::Controllers::Settings& settingsController);
         ~SettingSetDateTime() override;
 
         bool OnTouchEvent(TouchEvents event) override;
 
         void SetDate();
         void SetTime();
-        void UpdateDate();        
+        void UpdateDate();
         void UpdateTime();
 
       private:
@@ -34,7 +35,7 @@ namespace Pinetime {
         lv_obj_t* lblampm;
         lv_obj_t* btnSetTime;
         lv_obj_t* lblSetTime;
-   
+
         Widgets::Counter dayCounter = Widgets::Counter(1, 31, jetbrains_mono_bold_20);
         Widgets::Counter monthCounter = Widgets::Counter(1, 12, jetbrains_mono_bold_20);
         Widgets::Counter yearCounter = Widgets::Counter(1970, 9999, jetbrains_mono_bold_20);

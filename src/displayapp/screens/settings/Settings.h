@@ -46,10 +46,10 @@ namespace Pinetime {
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
           {Symbols::list, "About", Apps::SysInfo},
 
-         // {Symbols::none, "None", Apps::None},
-         // {Symbols::none, "None", Apps::None},
-         // {Symbols::none, "None", Apps::None},
-         // {Symbols::none, "None", Apps::None},
+          // {Symbols::none, "None", Apps::None},
+          // {Symbols::none, "None", Apps::None},
+          // {Symbols::none, "None", Apps::None},
+          // {Symbols::none, "None", Apps::None},
 
         }};
         ScreenList<nScreens> screens;
