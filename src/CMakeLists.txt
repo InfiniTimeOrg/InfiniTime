@@ -399,6 +399,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/CheckboxList.cpp
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
+        displayapp/screens/Notepad.cpp
         displayapp/screens/Timer.cpp
         displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
@@ -611,6 +612,7 @@ set(INCLUDE_FILES
         displayapp/screens/HeartRate.h
         displayapp/screens/Metronome.h
         displayapp/screens/Motion.h
+        displayapp/screens/Notepad.h
         displayapp/screens/Timer.h
         displayapp/screens/Alarm.h
         displayapp/Colors.h
