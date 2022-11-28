@@ -219,7 +219,7 @@ void Notepad::on_touch_event(lv_obj_t* obj, lv_event_t event) {
         update_textarea();
         return;
       }
-      if (tpos + gpos >= 50) {
+      if (tpos + gpos >= 70) {
         eol = '!';
         update_textarea();
         return;
