@@ -32,16 +32,19 @@ Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}
   bma.intf_ptr = this;
   bma.delay_us = user_delay;
   bma.read_write_len = 16;
+  bma.resolution = 12;
 }
 
 void Bma421::Init() {
-  if (not isResetOk)
+  if (!isResetOk)
     return; // Call SoftReset (and reset TWI device) first!
 
+  // Initialize interface
   auto ret = bma423_init(&bma);
   if (ret != BMA4_OK)
     return;
 
+  // Identify chip by ID. The driver code has been modified to handle BMA421 as BMA423
   switch (bma.chip_id) {
     case BMA423_CHIP_ID:
       deviceType = DeviceTypes::BMA421;
@@ -54,14 +57,12 @@ void Bma421::Init() {
       break;
   }
 
+  // Load proprietary firmware blob required for step counting engine
   ret = bma423_write_config_file(&bma);
   if (ret != BMA4_OK)
     return;
 
-  ret = bma4_set_interrupt_mode(BMA4_LATCH_MODE, &bma);
-  if (ret != BMA4_OK)
-    return;
-
+  // Enable step counter and accelerometer, disable step detector
   ret = bma423_feature_enable(BMA423_STEP_CNTR, 1, &bma);
   if (ret != BMA4_OK)
     return;
@@ -74,11 +75,21 @@ void Bma421::Init() {
   if (ret != BMA4_OK)
     return;
 
+  // Configure FIFO
+  ret = bma4_set_fifo_config(BMA4_FIFO_ACCEL, 1, &bma);
+  if (ret != BMA4_OK)
+    return;
+  fifo_frame.data = (uint8_t*) &fifo;
+  fifo_frame.length = sizeof(fifo);
+  fifo_frame.fifo_data_enable = BMA4_FIFO_A_ENABLE;
+  fifo_frame.fifo_header_enable = 0;
+
+  // Configure accelerometer
   struct bma4_accel_config accel_conf;
-  accel_conf.odr = BMA4_OUTPUT_DATA_RATE_100HZ;
+  accel_conf.odr = BMA4_OUTPUT_DATA_RATE_200HZ;
   accel_conf.range = BMA4_ACCEL_RANGE_2G;
   accel_conf.bandwidth = BMA4_ACCEL_NORMAL_AVG4;
-  accel_conf.perf_mode = BMA4_CIC_AVG_MODE;
+  accel_conf.perf_mode = BMA4_CONTINUOUS_MODE;
   ret = bma4_set_accel_config(&accel_conf, &bma);
   if (ret != BMA4_OK)
     return;
@@ -102,22 +113,42 @@ void Bma421::Write(uint8_t registerAddress, const uint8_t* data, size_t size) {
 Bma421::Values Bma421::Process() {
   if (not isOk)
     return {};
-  struct bma4_accel data;
-  bma4_read_accel_xyz(&data, &bma);
 
+  // Dump entire FIFO into buffer
+  bma4_read_fifo_data(&fifo_frame, &bma);
+  // Decode FIFO frames in-place sequentially
+  uint16_t length = 32; // Should be about 20 (200 Hz ODR / 10 Hz main loop)
+  bma4_extract_accel((bma4_accel*) fifo, &length, &fifo_frame, &bma);
+
+  // Read step counter engine
   uint32_t steps = 0;
   bma423_step_counter_output(&steps, &bma);
 
-  int32_t temperature;
+  // Read temperature sensor
+  int32_t temperature = 0;
   bma4_get_temperature(&temperature, BMA4_DEG, &bma);
   temperature = temperature / 1000;
 
+  // Read sport activity mode
   uint8_t activity = 0;
   bma423_activity_output(&activity, &bma);
 
-  // X and Y axis are swapped because of the way the sensor is mounted in the PineTime
-  return {steps, data.y, data.x, data.z};
+  // Compute averages of FIFO
+  int16_t avgs[3] = {0};
+  for (uint8_t i = 0; i < length; i++) {
+    // X and Y axis are swapped because of the way the sensor is mounted in the PineTime
+    int16_t swap = fifo[i][0];
+    fifo[i][0] = fifo[i][1];
+    fifo[i][1] = swap;
+    for (uint8_t j = 0; j < 3; j++)
+      avgs[j] += fifo[i][j];
+  }
+  for (uint8_t j = 0; j < 3; j++)
+    avgs[j] /= length;
+
+  return {steps, avgs[0], avgs[1], avgs[2]};
 }
+
 bool Bma421::IsOk() const {
   return isOk;
 }
