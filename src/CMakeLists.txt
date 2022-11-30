@@ -443,9 +443,11 @@ list(APPEND SOURCE_FILES
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
         drivers/Hrs3300.cpp
+        drivers/AccelerationSensor.cpp
         drivers/Bma421.cpp
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c
+        drivers/SC7A20.cpp
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
         components/ble/NotificationManager.cpp
@@ -510,9 +512,11 @@ list(APPEND RECOVERY_SOURCE_FILES
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
         drivers/Hrs3300.cpp
+        drivers/AccelerationSensor.cpp
         drivers/Bma421.cpp
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c
+        drivers/SC7A20.cpp
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
         components/ble/NotificationManager.cpp
@@ -626,9 +630,12 @@ set(INCLUDE_FILES
         drivers/InternalFlash.h
         drivers/Hrs3300.h
         drivers/PinMap.h
+        drivers/AccelerationSensor.h
         drivers/Bma421.h
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c
+        drivers/SC7A20.h
+        drivers/SC7A20_registers.h
         components/battery/BatteryController.h
         components/ble/BleController.h
         components/ble/NotificationManager.h
@@ -799,20 +806,24 @@ add_definitions(-DTARGET_DEVICE_NAME="${TARGET_DEVICE}")
 if(TARGET_DEVICE STREQUAL "PINETIME")
   add_definitions(-DDRIVER_PINMAP_PINETIME)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=1) # XTAL
+  add_definitions(-DDRIVER_ACC_BMA421)
   add_definitions(-DDRIVER_TOUCH_DYNAMIC)
 elseif(TARGET_DEVICE STREQUAL "MOY-TFK5") # P8a
   add_definitions(-DDRIVER_PINMAP_P8)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=1) # XTAL
+  add_definitions(-DDRIVER_ACC_BMA421)
   add_definitions(-DDRIVER_TOUCH_GESTURE)
 elseif(TARGET_DEVICE STREQUAL "MOY-TIN5") # P8a variant 2
   add_definitions(-DDRIVER_PINMAP_P8)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=1) # XTAL
+  add_definitions(-DDRIVER_ACC_SC7A20)
   add_definitions(-DDRIVER_TOUCH_GESTURE)
 elseif(TARGET_DEVICE STREQUAL "MOY-TON5") # P8b
   add_definitions(-DDRIVER_PINMAP_P8)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=0) # RC
   add_definitions(-DMYNEWT_VAL_BLE_LL_SCA=500)
   add_definitions(-DCLOCK_CONFIG_LF_CAL_ENABLED=1)
+  add_definitions(-DDRIVER_ACC_SC7A20)
   add_definitions(-DDRIVER_TOUCH_REPORT)
 elseif(TARGET_DEVICE STREQUAL "MOY-UNK") # P8b mirrored
   add_definitions(-DDRIVER_PINMAP_P8)
@@ -820,6 +831,7 @@ elseif(TARGET_DEVICE STREQUAL "MOY-UNK") # P8b mirrored
   add_definitions(-DMYNEWT_VAL_BLE_LL_SCA=500)
   add_definitions(-DCLOCK_CONFIG_LF_CAL_ENABLED=1)
   add_definitions(-DDRIVER_DISPLAY_MIRROR)
+  add_definitions(-DDRIVER_ACC_SC7A20)
   add_definitions(-DDRIVER_TOUCH_REPORT)
 else()
   message(FATAL_ERROR "Invalid TARGET_DEVICE")
