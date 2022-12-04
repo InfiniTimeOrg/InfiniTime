@@ -33,6 +33,10 @@ main() {
   [[ ! -d "$TOOLS_DIR/$NRF_SDK_VER" ]] && GetNrfSdk
   [[ ! -d "$TOOLS_DIR/mcuboot" ]] && GetMcuBoot
 
+  # Symlink the toolchain and SDK paths so vscode has predictable locations for them
+  [[ ! -h "$TOOLS_DIR/gcc-arm-none-eabi" ]] && ln -s $TOOLS_DIR/$GCC_ARM_PATH $TOOLS_DIR/gcc-arm-none-eabi
+  [[ ! -h "$TOOLS_DIR/nRF5_SDK"          ]] && ln -s $TOOLS_DIR/$NRF_SDK_VER  $TOOLS_DIR/nRF5_SDK
+
   mkdir -p "$BUILD_DIR"
 
   CmakeGenerate

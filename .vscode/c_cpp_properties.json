@@ -8,6 +8,8 @@
                 "${workspaceFolder}/src"
             ],
             "defines": [],
+            // This should point to the path (inside the devcontainer). See
+            // the Dockerfile and build.sh
             "compilerPath": "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gcc",
             "cStandard": "c11",
             "cppStandard": "c++14",

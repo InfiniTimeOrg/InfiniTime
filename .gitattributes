@@ -1,5 +1,18 @@
-# Set the default behavior, in case people don't have core.autocrlf set.
-* text=auto
+# By default treat line-endings as posix-style LF so that windows
+# machines can check out a version that will build OK in a
+# docker container.
+
+* text=auto eol=lf
+
+# Windows-specific files (.bat, .cmd) will require cr/lf endings
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf
+
+# If one is working on getting bare-metal windows builds to work,
+# the following might assist, and you may wish to start by checking
+# out your repo with `--config core.eol=crlf`. Note that a repo checked-
+# out this way won't build in a docker container due to line-endings
+# being being dos-style (CRLF) rather than everything-else style (LF).
 
 # Explicitly declare text files you want to always be normalized and converted
 # to native line endings on checkout.
