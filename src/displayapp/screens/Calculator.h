@@ -22,8 +22,10 @@ namespace Pinetime {
 
           void Eval();
 
-          int value = 0;
-          int result = 0;
+          static constexpr FIXED_POINT_OFFSET = 1000;
+
+          long int value = 0;
+          long int result = 0;
           char operation = ' ';
       };
     }
