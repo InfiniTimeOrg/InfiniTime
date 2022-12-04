@@ -200,6 +200,7 @@ void SettingSetDateTime::SetDate() {
                              nrf_rtc_counter_get(portNRF_RTC_REG));
   lv_btn_set_state(btnSetDate, LV_BTN_STATE_DISABLED);
   lv_obj_set_state(lblSetDate, LV_STATE_DISABLED);
+  screens.OnTouchEvent(Pinetime::Applications::TouchEvents::SwipeUp);
 }
 
 void SettingSetDateTime::SetTime() {
@@ -216,6 +217,7 @@ void SettingSetDateTime::SetTime() {
                              nrf_rtc_counter_get(portNRF_RTC_REG));
   lv_obj_set_state(btnSetTime, LV_STATE_DISABLED);
   lv_obj_set_state(lblSetTime, LV_STATE_DISABLED);
+  running = false;
 }
 
 void SettingSetDateTime::UpdateDate() {
