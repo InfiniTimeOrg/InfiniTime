@@ -107,7 +107,7 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           break;
 
         case '<':
-          if (value > 0) {
+          if (value != 0) {
             value = 0;
           } else {
             result = 0;
