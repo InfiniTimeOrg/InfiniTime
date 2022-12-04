@@ -185,9 +185,18 @@ void Calculator::Eval() {
         value = 0;
       }
       break;
-    // TODO pow is totally broken with fixed point numbers
+
+    // we use floats here because pow with fixed point numbers is weird
     case '^':
-      result = pow(result, value);
+      float tmp_value = (float)value;
+      tmp_value /= FIXED_POINT_OFFSET;
+
+      float tmp_result = (float)result;
+      tmp_result /= FIXED_POINT_OFFSET;
+
+      tmp_result = pow(tmp_result, tmp_value);
+      result = (long) (tmp_result * FIXED_POINT_OFFSET);
+
       value = 0;
       break;
   }
