@@ -22,7 +22,8 @@ namespace Pinetime {
 
           void Eval();
 
-          static constexpr FIXED_POINT_OFFSET = 1000;
+          static constexpr int FIXED_POINT_OFFSET = 1000;
+          int offset = FIXED_POINT_OFFSET;
 
           long int value = 0;
           long int result = 0;

@@ -1,5 +1,6 @@
 #include "Calculator.h"
 #include <cmath>
+#include <libraries/log/nrf_log.h>
 
 
 using namespace Pinetime::Applications::Screens;
@@ -25,19 +26,19 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
   resultLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(resultLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(resultLabel, LV_LABEL_ALIGN_RIGHT);
-  lv_label_set_text(resultLabel, "0");
+  lv_label_set_text_fmt(resultLabel, "%d", result);
   lv_obj_set_size(resultLabel, 190, 20);
   lv_obj_set_pos(resultLabel, 10, 10);
 
   valueLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(valueLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(valueLabel, LV_LABEL_ALIGN_RIGHT);
-  lv_label_set_text(valueLabel, "0");
+  lv_label_set_text_fmt(valueLabel, "%d", value);
   lv_obj_set_size(valueLabel, 190, 20);
   lv_obj_set_pos(valueLabel, 10, 40);
 
   operationLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(operationLabel, "");
+  lv_label_set_text_static(operationLabel, &operation);
   lv_obj_set_size(operationLabel, 20, 20);
   lv_obj_set_pos(operationLabel, 210, 40);
 
@@ -66,17 +67,32 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         case '7':
         case '8':
         case '9':
+          // if this is true, we already pressed the . button
+          if (offset < FIXED_POINT_OFFSET) {
+            value += offset * (*buttonText - '0');
+            offset /= 10;
+          } else {
+            value *= 10;
+            value += offset * (*buttonText - '0');
+          }
           // *buttonText is the first char in buttonText
           // "- '0'" results in the int value of the char
-          // *10 shifts the value one digit to the left so we can add the new digit
-          value = (value * 10) + (*buttonText - '0');
+          NRF_LOG_INFO(". offset: %d", offset);
+          NRF_LOG_INFO(". value: %d", value);
+          NRF_LOG_INFO(". result: %d", result);
           break;
 
         case '.':
+          if (offset == FIXED_POINT_OFFSET) {
+            offset /= 10;
+          }
+          NRF_LOG_INFO(". offset: %d", offset);
+          NRF_LOG_INFO(". value: %d", value);
+          NRF_LOG_INFO(". result: %d", result);
           break;
 
         // for every operator we:
-        // - eval the current operator if value > 0
+        // - eval the current operator if value > FIXED_POINT_OFFSET
         // - then set the new operator
         // - + and - as well as * and / cycle on the same button
         case '+':
@@ -119,9 +135,23 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           operation = ' ';
           break;
       }
-    lv_label_set_text_fmt(valueLabel, "%d", value);
-    lv_label_set_text_fmt(resultLabel, "%d", result);
-    lv_label_set_text(operationLabel, &operation);
+    
+    // show values, spare . if no remainder
+    int valueRemainder = value % FIXED_POINT_OFFSET;
+    if (valueRemainder || offset < FIXED_POINT_OFFSET) {
+      lv_label_set_text_fmt(valueLabel, "%d.%d", value / FIXED_POINT_OFFSET, valueRemainder);
+    } else {
+      lv_label_set_text_fmt(valueLabel, "%d", value / FIXED_POINT_OFFSET);
+    }
+    int resultRemainder = result % FIXED_POINT_OFFSET;
+    if (resultRemainder) {
+      lv_label_set_text_fmt(resultLabel, "%d.%d", result / FIXED_POINT_OFFSET, resultRemainder);
+    } else {
+      lv_label_set_text_fmt(resultLabel, "%d", result / FIXED_POINT_OFFSET);
+    }
+
+    // show operation
+    lv_label_set_text_static(operationLabel, &operation);
     }
   }
 }
@@ -143,18 +173,24 @@ void Calculator::Eval() {
       break;
     case '*':
       result *= value;
+      // fixed point offset was multiplied too
+      result /= FIXED_POINT_OFFSET;
       value = 0;
       break;
     case '/':
-      if (value != 0) {
+      if (value != FIXED_POINT_OFFSET) {
+        // fixed point offset will be divided too
+        result *= FIXED_POINT_OFFSET;
         result /= value;
         value = 0;
       }
       break;
+    // TODO pow is totally broken with fixed point numbers
     case '^':
       result = pow(result, value);
       value = 0;
       break;
   }
   operation = ' ';
+  offset = FIXED_POINT_OFFSET;
 }
