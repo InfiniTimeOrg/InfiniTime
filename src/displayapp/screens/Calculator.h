@@ -21,9 +21,13 @@ namespace Pinetime {
           lv_obj_t* operationLabel;
 
           void Eval();
+          void UpdateLabel(lv_obj_t* label, long int number);
 
-          static constexpr int FIXED_POINT_OFFSET = 1000;
-          int offset = FIXED_POINT_OFFSET;
+          // offset is the current offset for new digits
+          // standard is FIXED_POINT_OFFSET for 3 decimal places
+          // after typing a . this gets divided by 10 with each input
+          static constexpr long int FIXED_POINT_OFFSET = 1000;
+          long int offset = FIXED_POINT_OFFSET;
 
           long int value = 0;
           long int result = 0;

@@ -27,26 +27,27 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
   lv_label_set_long_mode(resultLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(resultLabel, LV_LABEL_ALIGN_RIGHT);
   lv_label_set_text_fmt(resultLabel, "%d", result);
-  lv_obj_set_size(resultLabel, 190, 20);
+  lv_obj_set_size(resultLabel, 142, 20);
   lv_obj_set_pos(resultLabel, 10, 10);
 
   valueLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(valueLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(valueLabel, LV_LABEL_ALIGN_RIGHT);
   lv_label_set_text_fmt(valueLabel, "%d", value);
-  lv_obj_set_size(valueLabel, 190, 20);
+  lv_obj_set_size(valueLabel, 142, 20);
   lv_obj_set_pos(valueLabel, 10, 40);
 
   operationLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(operationLabel, &operation);
   lv_obj_set_size(operationLabel, 20, 20);
-  lv_obj_set_pos(operationLabel, 210, 40);
+  lv_obj_set_pos(operationLabel, 195, 40);
 
   buttonMatrix = lv_btnmatrix_create(lv_scr_act(), nullptr);
   buttonMatrix->user_data = this;
   lv_obj_set_event_cb(buttonMatrix, eventHandler);
   lv_btnmatrix_set_map(buttonMatrix, buttonMap);
-  lv_obj_set_size(buttonMatrix, 240, 180);
+  lv_obj_set_size(buttonMatrix, 238, 180);
+  lv_obj_set_style_local_pad_inner(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
   lv_obj_align(buttonMatrix, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 }
 
@@ -69,14 +70,16 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         case '9':
           // if this is true, we already pressed the . button
           if (offset < FIXED_POINT_OFFSET) {
+            // *buttonText is the first char in buttonText
+            // "- '0'" results in the int value of the char
             value += offset * (*buttonText - '0');
             offset /= 10;
           } else {
             value *= 10;
             value += offset * (*buttonText - '0');
           }
-          // *buttonText is the first char in buttonText
-          // "- '0'" results in the int value of the char
+          UpdateLabel(valueLabel, value);
+
           NRF_LOG_INFO(". offset: %d", offset);
           NRF_LOG_INFO(". value: %d", value);
           NRF_LOG_INFO(". result: %d", result);
@@ -86,6 +89,8 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           if (offset == FIXED_POINT_OFFSET) {
             offset /= 10;
           }
+          UpdateLabel(valueLabel, value);
+
           NRF_LOG_INFO(". offset: %d", offset);
           NRF_LOG_INFO(". value: %d", value);
           NRF_LOG_INFO(". result: %d", result);
@@ -104,6 +109,7 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           } else {
             operation = '+';
           }
+          lv_label_refr_text(operationLabel);
           break;
         case '*':
           if (value != 0) {
@@ -114,45 +120,65 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           } else {
             operation = '*';
           }
+          lv_label_refr_text(operationLabel);
           break;
         case '^':
           if (value != 0) {
             Eval();
           }
           operation = '^';
+          lv_label_refr_text(operationLabel);
           break;
 
         case '<':
+          offset = FIXED_POINT_OFFSET;
           if (value != 0) {
             value = 0;
           } else {
             result = 0;
+            UpdateLabel(resultLabel, result);
           }
+          UpdateLabel(valueLabel, value);
+
           operation = ' ';
+          lv_label_refr_text(operationLabel);
           break;
         case '=':
           Eval();
           operation = ' ';
+          lv_label_refr_text(operationLabel);
           break;
       }
-    
-    // show values, spare . if no remainder
-    int valueRemainder = value % FIXED_POINT_OFFSET;
-    if (valueRemainder || offset < FIXED_POINT_OFFSET) {
-      lv_label_set_text_fmt(valueLabel, "%d.%d", value / FIXED_POINT_OFFSET, valueRemainder);
-    } else {
-      lv_label_set_text_fmt(valueLabel, "%d", value / FIXED_POINT_OFFSET);
     }
-    int resultRemainder = result % FIXED_POINT_OFFSET;
-    if (resultRemainder) {
-      lv_label_set_text_fmt(resultLabel, "%d.%d", result / FIXED_POINT_OFFSET, resultRemainder);
-    } else {
-      lv_label_set_text_fmt(resultLabel, "%d", result / FIXED_POINT_OFFSET);
-    }
+  }
+}
 
-    // show operation
-    lv_label_set_text_static(operationLabel, &operation);
+void Calculator::UpdateLabel(lv_obj_t* label, long int number) {
+  long int remainder = number % FIXED_POINT_OFFSET;
+  // remove sign from remainder
+  if (remainder < 0) {
+    remainder *= -1;
+  }
+
+  // remove trailing zeros because its more beautiful
+  long int printRemainder = remainder;
+  while (printRemainder > 0 && printRemainder % 10 == 0) {
+    printRemainder /= 10;
+  }
+
+  // we have to print a . and leading zeros in some cases
+  if (remainder || (offset < FIXED_POINT_OFFSET)) {
+    if (remainder == 0) {
+      lv_label_set_text_fmt(label, "%d.", number / FIXED_POINT_OFFSET);
+    } else if (remainder < 10) {
+      lv_label_set_text_fmt(label, "%d.00%d", number / FIXED_POINT_OFFSET, printRemainder);
+    } else if (remainder < 100) {
+      lv_label_set_text_fmt(label, "%d.0%d", number / FIXED_POINT_OFFSET, printRemainder);
+    } else {
+      lv_label_set_text_fmt(label, "%d.%d", number / FIXED_POINT_OFFSET, printRemainder);
     }
+  } else {
+    lv_label_set_text_fmt(label, "%d", number / FIXED_POINT_OFFSET);
   }
 }
 
@@ -188,18 +214,21 @@ void Calculator::Eval() {
 
     // we use floats here because pow with fixed point numbers is weird
     case '^':
-      float tmp_value = (float)value;
+      float tmp_value = (float) value;
       tmp_value /= FIXED_POINT_OFFSET;
 
-      float tmp_result = (float)result;
+      float tmp_result = (float) result;
       tmp_result /= FIXED_POINT_OFFSET;
 
       tmp_result = pow(tmp_result, tmp_value);
-      result = (long) (tmp_result * FIXED_POINT_OFFSET);
+      result = (long int) (tmp_result * FIXED_POINT_OFFSET);
 
       value = 0;
       break;
   }
   operation = ' ';
   offset = FIXED_POINT_OFFSET;
+
+  UpdateLabel(valueLabel, value);
+  UpdateLabel(resultLabel, result);
 }
