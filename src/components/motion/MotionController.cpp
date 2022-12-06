@@ -26,10 +26,9 @@ bool MotionController::Should_RaiseWake(bool isSleeping) {
     if (not isSleeping) {
       if (y <= 0) {
         return false;
-      } else {
-        lastYForWakeUp = 0;
-        return false;
       }
+      lastYForWakeUp = 0;
+      return false;
     }
 
     if (y >= 0) {

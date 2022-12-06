@@ -12,9 +12,9 @@ namespace Pinetime {
     public:
       Ppg();
       int8_t Preprocess(float spl);
-      float HeartRate();
+      int HeartRate();
 
-      void SetOffset(uint16_t i);
+      void SetOffset(uint16_t offset);
       void Reset();
 
     private:
@@ -25,7 +25,7 @@ namespace Pinetime {
       Ptagc agc;
       Biquad lpf;
 
-      float ProcessHeartRate();
+      int ProcessHeartRate();
     };
   }
 }

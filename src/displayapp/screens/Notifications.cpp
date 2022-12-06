@@ -139,15 +139,9 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   switch (event) {
     case Pinetime::Applications::TouchEvents::SwipeRight:
       if (validDisplay) {
-        Controllers::NotificationManager::Notification previousNotification;
         auto previousMessage = notificationManager.GetPrevious(currentId);
         auto nextMessage = notificationManager.GetNext(currentId);
-        if (!previousMessage.valid) {
-          // dismissed last message (like 5/5), need to go one message down (like 4/4)
-          afterDismissNextMessageFromAbove = false; // show next message coming from below
-        } else {
-          afterDismissNextMessageFromAbove = true; // show next message coming from above
-        }
+        afterDismissNextMessageFromAbove = previousMessage.valid;
         notificationManager.Dismiss(currentId);
         if (previousMessage.valid) {
           currentId = previousMessage.id;

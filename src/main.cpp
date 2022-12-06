@@ -265,8 +265,9 @@ struct ble_npl_eventq* nimble_port_get_dflt_eventq(void) {
 }
 
 void nimble_port_run(void) {
+  struct ble_npl_event* event;
   while (true) {
-    struct ble_npl_event* event = ble_npl_eventq_get(&g_eventq_dflt, BLE_NPL_TIME_FOREVER);
+    event = ble_npl_eventq_get(&g_eventq_dflt, BLE_NPL_TIME_FOREVER);
     ble_npl_event_run(event);
   }
 }

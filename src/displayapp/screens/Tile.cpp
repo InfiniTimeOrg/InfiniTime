@@ -51,8 +51,9 @@ Tile::Tile(uint8_t screenID,
 
   uint8_t btIndex = 0;
   for (uint8_t i = 0; i < 6; i++) {
-    if (i == 3)
+    if (i == 3) {
       btnmMap[btIndex++] = "\n";
+    }
     if (applications[i].application == Apps::None) {
       btnmMap[btIndex] = " ";
     } else {
@@ -102,8 +103,9 @@ void Tile::UpdateScreen() {
 }
 
 void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId) {
-  if (obj != btnm1)
+  if (obj != btnm1) {
     return;
+  }
 
   app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up);
   running = false;
