@@ -25,13 +25,13 @@ namespace Pinetime {
       class WatchFaceBinary : public Screen {
       public:
         WatchFaceBinary(DisplayApp* app,
-                         Controllers::DateTime& dateTimeController,
-                         Controllers::Battery& batteryController,
-                         Controllers::Ble& bleController,
-                         Controllers::NotificationManager& notificationManager,
-                         Controllers::Settings& settingsController,
-                         Controllers::HeartRateController& heartRateController,
-                         Controllers::MotionController& motionController);
+                        Controllers::DateTime& dateTimeController,
+                        Controllers::Battery& batteryController,
+                        Controllers::Ble& bleController,
+                        Controllers::NotificationManager& notificationManager,
+                        Controllers::Settings& settingsController,
+                        Controllers::HeartRateController& heartRateController,
+                        Controllers::MotionController& motionController);
         ~WatchFaceBinary() override;
 
         void Refresh() override;
@@ -55,7 +55,7 @@ namespace Pinetime {
         DirtyValue<bool> heartbeatRunning {};
         DirtyValue<bool> notificationState {};
 
-        lv_obj_t* time_leds[4*6];
+        lv_obj_t* time_leds[4 * 6];
         lv_obj_t* label_date;
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;

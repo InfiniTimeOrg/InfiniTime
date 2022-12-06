@@ -14,13 +14,13 @@
 using namespace Pinetime::Applications::Screens;
 
 WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
-                                   Controllers::DateTime& dateTimeController,
-                                   Controllers::Battery& batteryController,
-                                   Controllers::Ble& bleController,
-                                   Controllers::NotificationManager& notificationManager,
-                                   Controllers::Settings& settingsController,
-                                   Controllers::HeartRateController& heartRateController,
-                                   Controllers::MotionController& motionController)
+                                 Controllers::DateTime& dateTimeController,
+                                 Controllers::Battery& batteryController,
+                                 Controllers::Ble& bleController,
+                                 Controllers::NotificationManager& notificationManager,
+                                 Controllers::Settings& settingsController,
+                                 Controllers::HeartRateController& heartRateController,
+                                 Controllers::MotionController& motionController)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -41,19 +41,24 @@ WatchFaceBinary::WatchFaceBinary(DisplayApp* app,
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
   lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
 
-  for (int x=0;x<6;x++) {
-     for (int y=0;y<4;y++) {
-        if ((x==0) && (y==0)) {
-           time_leds[x*4 + y] = lv_label_create(lv_scr_act(), nullptr);
-           lv_label_set_text_static(time_leds[x*4 + y], Symbols::square);
-           lv_obj_set_style_local_text_color(time_leds[x*4+y], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x112211));
-        } else {
-           time_leds[x*4 + y] = lv_label_create(lv_scr_act(), time_leds[0]);
-        }
-        lv_obj_align(time_leds[x*4 + y], lv_scr_act(), LV_ALIGN_CENTER, (x-3)*22 + 11, (1-y)*18);
-     }
+  int xpos = -(31 * 3) - 6 + 30 / 2;
+  for (int x = 0; x < 6; x++) {
+    for (int y = 0; y < 4; y++) {
+      if ((x == 0) && (y == 0)) {
+        time_leds[x * 4 + y] = lv_label_create(lv_scr_act(), nullptr);
+        lv_label_set_text_static(time_leds[x * 4 + y], Symbols::square);
+        lv_obj_set_style_local_text_color(time_leds[x * 4 + y], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x112211));
+        lv_obj_set_style_local_text_font(time_leds[x * 4 + y], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_28);
+      } else {
+        time_leds[x * 4 + y] = lv_label_create(lv_scr_act(), time_leds[0]);
+      }
+      lv_obj_align(time_leds[x * 4 + y], lv_scr_act(), LV_ALIGN_CENTER, xpos, (1 - y) * 28);
+    }
+    xpos += 31;
+    if (x && (x % 2)) {
+      xpos += 7;
+    }
   }
-
 
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
@@ -110,46 +115,59 @@ void WatchFaceBinary::Refresh() {
     int minute = time.minutes().count();
     int second = time.seconds().count();
 
-    uint8_t digits[6] ;
+    uint8_t digits[6];
 
     digits[5] = second % 10;
-    digits[4] = (second/10) % 10;
+    digits[4] = (second / 10) % 10;
     digits[3] = minute % 10;
-    digits[2] = (minute/10) % 10;
+    digits[2] = (minute / 10) % 10;
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-       int hour12 = hour % 12;
-       if (!hour12) {hour12 = 12;};
-       digits[1] = (hour12) % 10;
-       digits[0] = ((hour12/10) % 10) | ((hour/12)<<3);
+      int hour12 = hour % 12;
+      if (!hour12) {
+        hour12 = 12;
+      };
+      digits[1] = (hour12) % 10;
+      digits[0] = ((hour12 / 10) % 10) | ((hour / 12) << 3);
     } else {
-       digits[1] = hour % 10;
-       digits[0] = (hour/10) % 10;
+      digits[1] = hour % 10;
+      digits[0] = (hour / 10) % 10;
     }
 
-
-    for (int d=0;d<6;d++) {
-       if (digits[d] == displayedDigits[d]) { continue; }
-       displayedDigits[d] = digits[d];
-       uint8_t x = digits[d];
-       for (int bit=0;bit<4;bit++) {
-          if (x%2) {
-             if ((d==0)&&(bit==3)&&(settingsController.GetClockType() == Controllers::Settings::ClockType::H12)) {
-                lv_obj_set_style_local_text_color(time_leds[4*d + bit], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x22AA99));
-             } else {
-                lv_obj_set_style_local_text_color(time_leds[4*d + bit], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x22FF22));
-             }
+    for (int d = 0; d < 6; d++) {
+      if (digits[d] == displayedDigits[d]) {
+        continue;
+      }
+      displayedDigits[d] = digits[d];
+      uint8_t x = digits[d];
+      for (int bit = 0; bit < 4; bit++) {
+        if (x % 2) {
+          if ((d == 0) && (bit == 3) && (settingsController.GetClockType() == Controllers::Settings::ClockType::H12)) {
+            lv_obj_set_style_local_text_color(time_leds[4 * d + bit], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x22AA99));
           } else {
-             lv_obj_set_style_local_text_color(time_leds[4*d + bit], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x112211));
+            lv_obj_set_style_local_text_color(time_leds[4 * d + bit], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x22FF22));
           }
-          x >>= 1;
-       }
+        } else {
+          lv_obj_set_style_local_text_color(time_leds[4 * d + bit], LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x112211));
+        }
+        x >>= 1;
+      }
     }
 
     if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        lv_label_set_text_fmt(label_date, "%s %d %s %d", dateTimeController.DayOfWeekShortToString(), day, dateTimeController.MonthShortToString(), year);
+        lv_label_set_text_fmt(label_date,
+                              "%s %d %s %d",
+                              dateTimeController.DayOfWeekShortToString(),
+                              day,
+                              dateTimeController.MonthShortToString(),
+                              year);
       } else {
-        lv_label_set_text_fmt(label_date, "%s %s %d %d", dateTimeController.DayOfWeekShortToString(), dateTimeController.MonthShortToString(), day, year);
+        lv_label_set_text_fmt(label_date,
+                              "%s %s %d %d",
+                              dateTimeController.DayOfWeekShortToString(),
+                              dateTimeController.MonthShortToString(),
+                              day,
+                              year);
       }
       lv_obj_realign(label_date);
 

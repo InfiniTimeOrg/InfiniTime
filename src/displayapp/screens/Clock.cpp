@@ -143,11 +143,11 @@ std::unique_ptr<Screen> Clock::WatchFaceCasioStyleG7710() {
 
 std::unique_ptr<Screen> Clock::WatchFaceBinaryScreen() {
   return std::make_unique<Screens::WatchFaceBinary>(app,
-                                                     dateTimeController,
-                                                     batteryController,
-                                                     bleController,
-                                                     notificationManager,
-                                                     settingsController,
-                                                     heartRateController,
-                                                     motionController);
+                                                    dateTimeController,
+                                                    batteryController,
+                                                    bleController,
+                                                    notificationManager,
+                                                    settingsController,
+                                                    heartRateController,
+                                                    motionController);
 }
