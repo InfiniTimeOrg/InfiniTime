@@ -108,7 +108,7 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
       if (obj == bpmTap) {
         TickType_t delta = xTaskGetTickCount() - tappedTime;
         if (tappedTime != 0 && delta < configTICK_RATE_HZ * 3) {
-          bpm = configTICK_RATE_HZ * 60 / delta;
+          bpm = getMovingAverageBpm(configTICK_RATE_HZ * 60 / delta);
           lv_arc_set_value(bpmArc, bpm);
           lv_label_set_text_fmt(bpmValue, "%03d", bpm);
         }
@@ -149,4 +149,15 @@ bool Metronome::OnTouchEvent(TouchEvents event) {
     return true;
   }
   return false;
+}
+
+int16_t Metronome::getMovingAverageBpm(int16_t currentMeasurement) {
+  bpmHistory[bpmHistoryIndex++] = currentMeasurement;
+  if (bpmHistoryIndex == BPM_WINDOW_SIZE)
+    bpmHistoryIndex = 0;
+  uint8_t i = 0;
+  uint16_t bpm = 0;
+  for (; i < BPM_WINDOW_SIZE && bpmHistory[i] != 0; i++)
+    bpm += bpmHistory[i];
+  return bpm / i;
 }

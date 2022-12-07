@@ -4,6 +4,8 @@
 #include "components/motor/MotorController.h"
 #include "displayapp/screens/Screen.h"
 
+static constexpr uint8_t BPM_WINDOW_SIZE = 3;
+
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
@@ -21,7 +23,12 @@ namespace Pinetime {
         TickType_t tappedTime = 0;
         Controllers::MotorController& motorController;
         System::SystemTask& systemTask;
+
         int16_t bpm = 120;
+        int16_t bpmHistory[BPM_WINDOW_SIZE];
+        uint8_t bpmHistoryIndex = 0;
+        int16_t getMovingAverageBpm(int16_t currentMeasurement);
+
         uint8_t bpb = 4;
         uint8_t counter = 1;
 
