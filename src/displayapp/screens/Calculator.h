@@ -21,7 +21,8 @@ namespace Pinetime {
           lv_obj_t* operationLabel;
 
           void Eval();
-          void UpdateLabel(lv_obj_t* label, long int number);
+          void UpdateValueLabel();
+          void UpdateResultLabel();
 
           // offset is the current offset for new digits
           // standard is FIXED_POINT_OFFSET for 3 decimal places
@@ -31,7 +32,7 @@ namespace Pinetime {
 
           long int value = 0;
           long int result = 0;
-          char operation = ' ';
+          char operation[2] {" "};
       };
     }
   }
