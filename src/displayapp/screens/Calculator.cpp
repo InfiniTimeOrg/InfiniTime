@@ -27,20 +27,20 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
   lv_label_set_long_mode(resultLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(resultLabel, LV_LABEL_ALIGN_RIGHT);
   lv_label_set_text_fmt(resultLabel, "%d", result);
-  lv_obj_set_size(resultLabel, 142, 20);
-  lv_obj_set_pos(resultLabel, 10, 10);
+  lv_obj_set_size(resultLabel, 145, 20);
+  lv_obj_set_pos(resultLabel, 10, 5);
 
   valueLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(valueLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(valueLabel, LV_LABEL_ALIGN_RIGHT);
   lv_label_set_text_fmt(valueLabel, "%d", value);
-  lv_obj_set_size(valueLabel, 142, 20);
-  lv_obj_set_pos(valueLabel, 10, 40);
+  lv_obj_set_size(valueLabel, 145, 20);
+  lv_obj_set_pos(valueLabel, 10, 35);
 
   operationLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(operationLabel, &operation);
   lv_obj_set_size(operationLabel, 20, 20);
-  lv_obj_set_pos(operationLabel, 195, 40);
+  lv_obj_set_pos(operationLabel, 203, 35);
 
   buttonMatrix = lv_btnmatrix_create(lv_scr_act(), nullptr);
   buttonMatrix->user_data = this;
@@ -48,6 +48,10 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
   lv_btnmatrix_set_map(buttonMatrix, buttonMap);
   lv_obj_set_size(buttonMatrix, 238, 180);
   lv_obj_set_style_local_pad_inner(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
+  lv_obj_set_style_local_pad_top(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
+  lv_obj_set_style_local_pad_bottom(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
+  lv_obj_set_style_local_pad_left(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
+  lv_obj_set_style_local_pad_right(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
   lv_obj_align(buttonMatrix, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 }
 
