@@ -2,9 +2,7 @@
 #include <cmath>
 #include <libraries/log/nrf_log.h>
 
-
 using namespace Pinetime::Applications::Screens;
-
 
 static void eventHandler(lv_obj_t* obj, lv_event_t event) {
   auto app = static_cast<Calculator*>(obj->user_data);
@@ -15,12 +13,7 @@ Calculator::~Calculator() {
   lv_obj_clean(lv_scr_act());
 }
 
-static const char* buttonMap[] = {
-  "7", "8", "9", "<", "\n",
-  "4", "5", "6", "+-", "\n",
-  "1", "2", "3", "*/", "\n",
-  ".", "0", "=", "^", ""
-};
+static const char* buttonMap[] = {"7", "8", "9", "<", "\n", "4", "5", "6", "+-", "\n", "1", "2", "3", "*/", "\n", ".", "0", "=", "^", ""};
 
 Calculator::Calculator(DisplayApp* app) : Screen(app) {
   resultLabel = lv_label_create(lv_scr_act(), nullptr);
@@ -186,13 +179,7 @@ void Calculator::UpdateResultLabel() {
     padding++;
   }
 
-  lv_label_set_text_fmt(
-    resultLabel, 
-    "%ld.%0*u", 
-    integer, 
-    padding, 
-    printRemainder
-  );
+  lv_label_set_text_fmt(resultLabel, "%ld.%0*u", integer, padding, printRemainder);
 }
 
 void Calculator::UpdateValueLabel() {
@@ -201,19 +188,19 @@ void Calculator::UpdateValueLabel() {
 
   long int printRemainder;
   int padding;
-  
+
   if (offset == 0) {
     printRemainder = remainder;
     padding = 3;
   } else {
-    printRemainder = remainder / (10*offset);
+    printRemainder = remainder / (10 * offset);
     padding = 0;
 
     // calculate the padding length as the length difference
     // between FIXED_POINT_OFFSET and offset
-    long int tmp = FIXED_POINT_OFFSET / (10*offset);
+    long int tmp = FIXED_POINT_OFFSET / (10 * offset);
     while (tmp > 1) {
-      padding ++;
+      padding++;
       tmp /= 10;
     }
   }
@@ -223,13 +210,7 @@ void Calculator::UpdateValueLabel() {
   } else if ((offset == FIXED_POINT_OFFSET / 10) && (remainder == 0)) {
     lv_label_set_text_fmt(valueLabel, "%ld.", integer);
   } else {
-    lv_label_set_text_fmt(
-      valueLabel, 
-      "%ld.%0*u", 
-      integer, 
-      padding,
-      printRemainder 
-    );
+    lv_label_set_text_fmt(valueLabel, "%ld.%0*u", integer, padding, printRemainder);
   }
 }
 
