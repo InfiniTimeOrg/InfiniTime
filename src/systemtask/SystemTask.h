@@ -14,7 +14,7 @@
 
 #include "systemtask/SystemMonitor.h"
 #include "components/ble/NimbleController.h"
-#include "components/ble/NotificationManager.h"
+#include "components/notifications/NotificationManager.h"
 #include "components/motor/MotorController.h"
 #include "components/timer/TimerController.h"
 #include "components/alarm/AlarmController.h"

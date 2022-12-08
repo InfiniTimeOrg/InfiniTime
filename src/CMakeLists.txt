@@ -448,7 +448,7 @@ list(APPEND SOURCE_FILES
         drivers/Bma421_C/bma423.c
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
-        components/ble/NotificationManager.cpp
+        components/notifications/NotificationManager.cpp
         components/datetime/DateTimeController.cpp
         components/brightness/BrightnessController.cpp
         components/motion/MotionController.cpp
@@ -515,7 +515,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         drivers/Bma421_C/bma423.c
         components/battery/BatteryController.cpp
         components/ble/BleController.cpp
-        components/ble/NotificationManager.cpp
+        components/notifications/NotificationManager.cpp
         components/datetime/DateTimeController.cpp
         components/brightness/BrightnessController.cpp
         components/motion/MotionController.cpp
@@ -631,13 +631,13 @@ set(INCLUDE_FILES
         drivers/Bma421_C/bma423.c
         components/battery/BatteryController.h
         components/ble/BleController.h
-        components/ble/NotificationManager.h
+        components/notifications/NotificationManager.h
         components/datetime/DateTimeController.h
         components/brightness/BrightnessController.h
         components/motion/MotionController.h
         components/firmwarevalidator/FirmwareValidator.h
         components/ble/BleController.h
-        components/ble/NotificationManager.h
+        components/notifications/NotificationManager.h
         components/ble/NimbleController.h
         components/ble/DeviceInformationService.h
         components/ble/CurrentTimeClient.h

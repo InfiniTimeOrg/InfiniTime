@@ -1,4 +1,4 @@
-#include "components/ble/NotificationManager.h"
+#include "components/notifications/NotificationManager.h"
 #include <cstring>
 #include <algorithm>
 #include <cassert>

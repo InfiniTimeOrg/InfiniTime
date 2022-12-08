@@ -2,7 +2,7 @@
 #include <hal/nrf_rtc.h>
 #include <cstring>
 #include <algorithm>
-#include "components/ble/NotificationManager.h"
+#include "components/notifications/NotificationManager.h"
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;

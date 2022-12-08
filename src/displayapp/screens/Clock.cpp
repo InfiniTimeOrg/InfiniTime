@@ -5,7 +5,7 @@
 #include "components/battery/BatteryController.h"
 #include "components/motion/MotionController.h"
 #include "components/ble/BleController.h"
-#include "components/ble/NotificationManager.h"
+#include "components/notifications/NotificationManager.h"
 #include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/WatchFaceDigital.h"

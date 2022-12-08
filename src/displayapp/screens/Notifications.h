@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <memory>
 #include "displayapp/screens/Screen.h"
-#include "components/ble/NotificationManager.h"
+#include "components/notifications/NotificationManager.h"
 #include "components/motor/MotorController.h"
 #include "systemtask/SystemTask.h"
 

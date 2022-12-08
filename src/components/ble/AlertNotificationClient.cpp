@@ -1,6 +1,6 @@
 #include "components/ble/AlertNotificationClient.h"
 #include <algorithm>
-#include "components/ble/NotificationManager.h"
+#include "components/notifications/NotificationManager.h"
 #include "systemtask/SystemTask.h"
 #include <nrf_log.h>
 

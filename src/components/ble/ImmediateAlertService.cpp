@@ -1,6 +1,6 @@
 #include "components/ble/ImmediateAlertService.h"
 #include <cstring>
-#include "components/ble/NotificationManager.h"
+#include "components/notifications/NotificationManager.h"
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
