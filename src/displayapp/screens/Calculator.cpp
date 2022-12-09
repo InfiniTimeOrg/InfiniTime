@@ -1,5 +1,6 @@
 #include "Calculator.h"
 #include <cmath>
+#include <cinttypes>
 #include <libraries/log/nrf_log.h>
 
 using namespace Pinetime::Applications::Screens;
@@ -19,14 +20,14 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
   resultLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(resultLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(resultLabel, LV_LABEL_ALIGN_RIGHT);
-  lv_label_set_text_fmt(resultLabel, "%d", result);
+  lv_label_set_text_fmt(resultLabel, "%" PRId64, result);
   lv_obj_set_size(resultLabel, 145, 20);
   lv_obj_set_pos(resultLabel, 10, 5);
 
   valueLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(valueLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(valueLabel, LV_LABEL_ALIGN_RIGHT);
-  lv_label_set_text_fmt(valueLabel, "%d", value);
+  lv_label_set_text_fmt(valueLabel, "%" PRId64, value);
   lv_obj_set_size(valueLabel, 145, 20);
   lv_obj_set_pos(valueLabel, 10, 35);
 
@@ -81,9 +82,9 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           }
           UpdateValueLabel();
 
-          NRF_LOG_INFO(". offset: %d", offset);
-          NRF_LOG_INFO(". value: %d", value);
-          NRF_LOG_INFO(". result: %d", result);
+          NRF_LOG_INFO(". offset: %" PRId64, offset);
+          NRF_LOG_INFO(". value: %" PRId64, value);
+          NRF_LOG_INFO(". result: %" PRId64, result);
           break;
 
         case '.':
@@ -92,9 +93,9 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           }
           UpdateValueLabel();
 
-          NRF_LOG_INFO(". offset: %d", offset);
-          NRF_LOG_INFO(". value: %d", value);
-          NRF_LOG_INFO(". result: %d", result);
+          NRF_LOG_INFO(". offset: %" PRId64, offset);
+          NRF_LOG_INFO(". value: %" PRId64, value);
+          NRF_LOG_INFO(". result: %" PRId64, result);
           break;
 
         // for every operator we:
@@ -157,36 +158,36 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 void Calculator::UpdateResultLabel() {
   NRF_LOG_INFO("update result label");
 
-  long int integer = result / FIXED_POINT_OFFSET;
-  long int remainder = result % FIXED_POINT_OFFSET;
+  int64_t integer = result / FIXED_POINT_OFFSET;
+  int64_t remainder = result % FIXED_POINT_OFFSET;
 
   // todo zero padding
   if (remainder == 0) {
-    lv_label_set_text_fmt(resultLabel, "%ld", integer);
+    lv_label_set_text_fmt(resultLabel, "%" PRId64, integer);
     return;
   }
 
-  long int printRemainder = remainder;
+  int64_t printRemainder = remainder;
   while ((printRemainder > 0) && (printRemainder % 10 == 0)) {
-    NRF_LOG_INFO("pr: %ld", printRemainder);
+    NRF_LOG_INFO("pr: %" PRId64, printRemainder);
     printRemainder /= 10;
   }
 
   int padding = 0;
-  long int tmp = FIXED_POINT_OFFSET;
+  int64_t tmp = FIXED_POINT_OFFSET;
   while (tmp > remainder) {
     tmp /= 10;
     padding++;
   }
 
-  lv_label_set_text_fmt(resultLabel, "%ld.%0*u", integer, padding, printRemainder);
+  lv_label_set_text_fmt(resultLabel, "%" PRId64 ".%0*u", integer, padding, printRemainder);
 }
 
 void Calculator::UpdateValueLabel() {
-  long int integer = value / FIXED_POINT_OFFSET;
-  long int remainder = value % FIXED_POINT_OFFSET;
+  int64_t integer = value / FIXED_POINT_OFFSET;
+  int64_t remainder = value % FIXED_POINT_OFFSET;
 
-  long int printRemainder;
+  int64_t printRemainder;
   int padding;
 
   if (offset == 0) {
@@ -198,7 +199,7 @@ void Calculator::UpdateValueLabel() {
 
     // calculate the padding length as the length difference
     // between FIXED_POINT_OFFSET and offset
-    long int tmp = FIXED_POINT_OFFSET / (10 * offset);
+    int64_t tmp = FIXED_POINT_OFFSET / (10 * offset);
     while (tmp > 1) {
       padding++;
       tmp /= 10;
@@ -206,11 +207,11 @@ void Calculator::UpdateValueLabel() {
   }
 
   if (offset == FIXED_POINT_OFFSET) {
-    lv_label_set_text_fmt(valueLabel, "%ld", integer);
+    lv_label_set_text_fmt(valueLabel, "%" PRId64, integer);
   } else if ((offset == FIXED_POINT_OFFSET / 10) && (remainder == 0)) {
-    lv_label_set_text_fmt(valueLabel, "%ld.", integer);
+    lv_label_set_text_fmt(valueLabel, "%" PRId64 ".", integer);
   } else {
-    lv_label_set_text_fmt(valueLabel, "%ld.%0*u", integer, padding, printRemainder);
+    lv_label_set_text_fmt(valueLabel, "%" PRId64 ".%0*u", integer, padding, printRemainder);
   }
 }
 
@@ -253,7 +254,7 @@ void Calculator::Eval() {
       tmp_result /= FIXED_POINT_OFFSET;
 
       tmp_result = pow(tmp_result, tmp_value);
-      result = (long int) (tmp_result * FIXED_POINT_OFFSET);
+      result = (int64_t) (tmp_result * FIXED_POINT_OFFSET);
 
       value = 0;
       break;

@@ -29,8 +29,8 @@ namespace Pinetime {
         static constexpr long int FIXED_POINT_OFFSET = 1000;
         long int offset = FIXED_POINT_OFFSET;
 
-        long int value = 0;
-        long int result = 0;
+        int64_t value = 0;
+        int64_t result = 0;
         char operation[2] {" "};
       };
     }
