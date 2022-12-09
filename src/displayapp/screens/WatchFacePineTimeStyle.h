@@ -8,6 +8,7 @@
 #include "displayapp/Colors.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/BleController.h"
+#include "components/notifications/NotificationManager.h"
 #include <displayapp/screens/BatteryIcon.h>
 
 namespace Pinetime {
