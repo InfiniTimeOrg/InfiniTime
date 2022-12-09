@@ -247,14 +247,15 @@ void Calculator::Eval() {
 
     // we use floats here because pow with fixed point numbers is weird
     case '^':
-      float tmp_value = (float) value;
+      double tmp_value = (double) value;
       tmp_value /= FIXED_POINT_OFFSET;
 
-      float tmp_result = (float) result;
+      double tmp_result = (double) result;
       tmp_result /= FIXED_POINT_OFFSET;
 
       tmp_result = pow(tmp_result, tmp_value);
-      result = (int64_t) (tmp_result * FIXED_POINT_OFFSET);
+      tmp_result *= FIXED_POINT_OFFSET;
+      result = (int64_t) tmp_result;
 
       value = 0;
       break;
