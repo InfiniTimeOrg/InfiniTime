@@ -329,8 +329,13 @@ void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction)
 }
 
 void DisplayApp::LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction) {
-  returnAppStack.Push(currentApp);
-  appStackDirections.Push(direction);
+  // Don't add the same screen to the stack back to back.
+  // This is mainly to fix an issue with receiving two notifications at the same time
+  // and shouldn't happen otherwise.
+  if (app != currentApp) {
+    returnAppStack.Push(currentApp);
+    appStackDirections.Push(direction);
+  }
   LoadScreen(app, direction);
 }
 
