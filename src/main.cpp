@@ -242,7 +242,8 @@ void npl_freertos_hw_set_isr(int irqn, void (*addr)()) {
     case RTC0_IRQn:
       rtc0_isr_addr = addr;
       break;
-    default:;
+    default:
+      break;
   }
 }
 
