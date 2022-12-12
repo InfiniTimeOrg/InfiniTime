@@ -11,7 +11,9 @@
 #include "components/ble/BleController.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
+#include "components/notifications/NotificationManager.h"
 #include "components/settings/Settings.h"
+
 using namespace Pinetime::Applications::Screens;
 
 WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,

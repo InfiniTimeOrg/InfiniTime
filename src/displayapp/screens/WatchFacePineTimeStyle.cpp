@@ -31,6 +31,7 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/motion/MotionController.h"
+#include "components/notifications/NotificationManager.h"
 #include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
 

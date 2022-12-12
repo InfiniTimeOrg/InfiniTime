@@ -5,6 +5,7 @@
 #include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/NotificationIcon.h"
+#include "components/notifications/NotificationManager.h"
 #include "components/settings/Settings.h"
 #include "displayapp/InfiniTimeTheme.h"
 

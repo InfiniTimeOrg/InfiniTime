@@ -9,6 +9,7 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/motion/MotionController.h"
+#include "components/notifications/NotificationManager.h"
 
 using namespace Pinetime::Applications::Screens;
 

@@ -7,7 +7,6 @@
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/BleController.h"
-#include "components/notifications/NotificationManager.h"
 #include "displayapp/widgets/StatusIcons.h"
 
 namespace Pinetime {

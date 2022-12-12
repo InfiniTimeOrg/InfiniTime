@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <memory>
 #include "displayapp/screens/Screen.h"
-#include "components/notifications/NotificationManager.h"
 #include "components/datetime/DateTimeController.h"
 
 namespace Pinetime {
