@@ -488,10 +488,10 @@ list(APPEND SOURCE_FILES
         drivers/TwiMaster.cpp
 
         heartratetask/HeartRateTask.cpp
-        components/heartrate/Ppg.cpp
-        components/heartrate/Biquad.cpp
-        components/heartrate/Ptagc.cpp
         components/heartrate/HeartRateController.cpp
+        components/heartrate/Ppg.cpp
+	libs/Arduino-Interpolation/InterpolationLib.cpp
+	libs/arduinoFFT/arduinoFFT.cpp
 
         buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
@@ -552,8 +552,9 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/heartrate/HeartRateController.cpp
         heartratetask/HeartRateTask.cpp
         components/heartrate/Ppg.cpp
-        components/heartrate/Biquad.cpp
-        components/heartrate/Ptagc.cpp
+	libs/Arduino-Interpolation/InterpolationLib.cpp
+	libs/arduinoFFT/arduinoFFT.cpp
+
         components/motor/MotorController.cpp
         components/fs/FS.cpp
         buttonhandler/ButtonHandler.cpp
@@ -666,9 +667,9 @@ set(INCLUDE_FILES
         drivers/TwiMaster.h
         heartratetask/HeartRateTask.h
         components/heartrate/Ppg.h
-        components/heartrate/Biquad.h
-        components/heartrate/Ptagc.h
         components/heartrate/HeartRateController.h
+	libs/Arduino-Interpolation/InterpolationLib.h
+	libs/arduinoFFT/arduinoFFT.h
         components/motor/MotorController.h
         buttonhandler/ButtonHandler.h
         touchhandler/TouchHandler.h
