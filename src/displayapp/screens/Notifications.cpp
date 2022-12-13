@@ -269,7 +269,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_cont_set_fit(subject_container, LV_FIT_NONE);
 
   lv_obj_t* alert_count = lv_label_create(container, nullptr);
-  lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
+  lv_label_set_text_fmt(alert_count, "|%i/%i", notifNr, notifNb);
   lv_obj_align(alert_count, NULL, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
 
   lv_obj_t* alert_type = lv_label_create(container, nullptr);
@@ -287,7 +287,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
     lv_label_refr_text(alert_type);
   }
   lv_label_set_long_mode(alert_type, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_set_width(alert_type, 180);
+  lv_obj_set_width(alert_type, 197);
   lv_obj_align(alert_type, NULL, LV_ALIGN_IN_TOP_LEFT, 0, 16);
 
   lv_obj_t* alert_subject = lv_label_create(subject_container, nullptr);
