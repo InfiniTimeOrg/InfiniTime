@@ -18,6 +18,7 @@
 #include "components/ble/MusicService.h"
 #include "systemtask/SystemTask.h"
 #include <cstring>
+#include <lv_i18n/lv_i18n.h>
 
 namespace {
   // 0000yyxx-78fc-48fe-8e23-433b3a1942d0
@@ -111,6 +112,9 @@ Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask& 
 
   serviceDefinition[0] = {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = &msUuid.u, .characteristics = characteristicDefinition};
   serviceDefinition[1] = {0};
+
+  artistName = _("Waiting for");
+  trackName = _("track information..");
 }
 
 void Pinetime::Controllers::MusicService::Init() {

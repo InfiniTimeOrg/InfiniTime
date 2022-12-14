@@ -1,5 +1,6 @@
 #include "displayapp/screens/settings/SettingSetDate.h"
 #include <lvgl/lvgl.h>
+#include "lv_i18n/lv_i18n.h"
 #include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #include "displayapp/DisplayApp.h"
@@ -47,7 +48,7 @@ namespace {
 SettingSetDate::SettingSetDate(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::DateTime& dateTimeController)
   : Screen(app), dateTimeController {dateTimeController} {
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Set current date");
+  lv_label_set_text_static(title, _("Set current date"));
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 
@@ -80,7 +81,7 @@ SettingSetDate::SettingSetDate(Pinetime::Applications::DisplayApp* app, Pinetime
   lv_obj_align(btnSetTime, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   lv_obj_set_style_local_bg_color(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_MAKE(0x38, 0x38, 0x38));
   lblSetTime = lv_label_create(btnSetTime, nullptr);
-  lv_label_set_text_static(lblSetTime, "Set");
+  lv_label_set_text_static(lblSetTime, _("Set"));
   lv_obj_set_event_cb(btnSetTime, event_handler);
   lv_btn_set_state(btnSetTime, LV_BTN_STATE_DISABLED);
   lv_obj_set_state(lblSetTime, LV_STATE_DISABLED);

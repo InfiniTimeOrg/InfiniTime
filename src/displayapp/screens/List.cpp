@@ -1,6 +1,7 @@
 #include "displayapp/screens/List.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
+#include "lv_i18n/lv_i18n.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -59,7 +60,7 @@ List::List(uint8_t screenID,
       lv_label_set_text_static(labelBtIco, applications[i].icon);
 
       labelBt = lv_label_create(itemApps[i], nullptr);
-      lv_label_set_text_fmt(labelBt, " %s", applications[i].name);
+      lv_label_set_text_fmt(labelBt, " %s", _(applications[i].name));
     }
   }
 }

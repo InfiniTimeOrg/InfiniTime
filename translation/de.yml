@@ -1,0 +1,116 @@
+de:
+  Display: Anzeige
+  Wake Up: Aufwecken
+  Display timeout: Anzeigedauer
+  Bluetooth: Bluetooth
+  ' Enabled': ' Aktiv'
+  ' Disabled': ' Inaktiv'
+  Chimes: Glockenschlag
+  'Off': Aus
+  Every hour: Stuendlich
+  Every 30 mins: Halbstuendl.
+  Time format: Zeitformat
+  Watch face: Ziffernblatt
+  Steps: Schritte
+  Set date: Datum setzen
+  Set time: Zeit setzen
+  Battery: Batterie
+  Shake Calib.: Schuettel Kal.
+  Firmware: Firmware
+  About: Ueber
+  Set current date: Datum setzen
+  Set: Setzen
+  Set current time: Zeit setzen
+  Wake Sensitivity: Empfindlichkeit
+  Calibrate: Kalibrieren
+  Shake!: Schuettel!
+  Ready!: Fertig!
+  Daily steps goal: Taegliches\nSchrittziel
+  12-hour: 12-Stunden
+  24-hour: 24-Stunden
+  Single Tap: Einfachtap
+  Double Tap: Doppeltap
+  Raise Wrist: Hand heben
+  Shake Wake: Schuetteln
+  '--': '--'
+  MON: Mo.
+  TUE: Di.
+  WED: Mi.
+  THU: Do.
+  FRI: Fr.
+  SAT: Sa.
+  SUN: So.
+  Mon: Mo.
+  Tue: Di.
+  Wed: Mi.
+  Thu: Do.
+  Fri: Fr.
+  Sat: Sa.
+  Sun: So.
+  JAN: JAN
+  FEB: FEB
+  MAR: MRZ
+  APR: APR
+  MAY: MAI
+  JUN: JUN
+  JUL: JUL
+  AUG: AUG
+  SEP: SEP
+  OCT: OKT
+  NOV: NOV
+  DEC: DEZ
+  Jan: Jan
+  Feb: Feb
+  Mar: Mrz
+  Apr: Apr
+  May: Mai
+  Jun: Jun
+  Jul: Jul
+  Aug: Aug
+  Sep: Sep
+  Oct: Okt
+  Nov: Nov
+  Dec: Dez
+  Reading Battery status: Lese Batteriestatus
+  volts: Volt
+  Charging: Lade
+  Fully charged: Geladen
+  Battery low: Batteriespannung niedrig
+  Discharging: Entlade
+  Firmware update: Firmware Update
+  Waiting...: Warte...
+  Notification: Benachrichtigung
+  No notification to display: Keine Benachrichtigung
+  Incoming call from: 'Anruf von:'
+  Goal: Ziel
+  Reset: Reset
+  Trip: Trip
+  Start: Start
+  Pause: Pause
+  Waiting for: Warte auf
+  track information..: Titelinformation
+  'Time to\nalarm:\n%2lu Days\n%2lu Hours\n%2lu Minutes\n%2lu Seconds': 'Zeit bis\nAlarm:\n%2lu Tage\n%2lu Stunden\n%2lu Minuten\n%2lu Sekunden'
+  Alarm\nis not\nset.: Alarm\nist nicht\ngesetzt.
+  ONCE: EINML
+  DAILY: TAEGL
+  MON-FRI: MO-FR
+  Version: Version
+  ShortRef: ShortRef
+  You have already\n#00ff00 validated# this firmware#: Du hast diese\nFirmware bereits\n#00ff00 validiert#
+  'Please #00ff00 Validate# this version or\n#ff0000 Reset# to rollback to the previous version.': >-
+    Bitte #00ff00 validiere# diese Version oder\nsetze sie #ff0000 zurueck# auf
+    die vorherige Version.
+  Validate: Valide
+  'Not enough data,\nplease wait...': 'Nicht genug Daten,\nbitte warten...'
+  No touch detected: Keine Beruehrung erkannt
+  Measuring...: Messe...
+  Stopped: Gestoppt
+  Heart rate BPM: Puls BPM
+  Stop: Stopp
+  Steps ---: Schritte ---
+  Artist Name: Künstler
+  This is a very long getTrack name: Das ist ein langer Titel
+  Digital face: Digitaluhr
+  Terminal: Konsole
+  Analog face: Analoguhr
+  Reset FW: Zurueck

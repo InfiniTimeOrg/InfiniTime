@@ -494,6 +494,8 @@ list(APPEND SOURCE_FILES
 
         buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
+
+        lv_i18n/lv_i18n.c
         )
 
 list(APPEND RECOVERY_SOURCE_FILES
@@ -558,6 +560,8 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/fs/FS.cpp
         buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
+
+        lv_i18n/lv_i18n.c
         )
 
 list(APPEND RECOVERYLOADER_SOURCE_FILES

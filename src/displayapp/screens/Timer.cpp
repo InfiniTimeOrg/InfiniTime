@@ -3,6 +3,7 @@
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/InfiniTimeTheme.h"
 #include <lvgl/lvgl.h>
+#include "lv_i18n/lv_i18n.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -86,7 +87,7 @@ void Timer::MaskReset() {
   // A click event is processed before a release event,
   // so the release event would override the "Pause" text without this check
   if (!timerController.IsRunning()) {
-    lv_label_set_text_static(txtPlayPause, "Start");
+    lv_label_set_text_static(txtPlayPause, _("Start"));
   }
   maskPosition = 0;
   UpdateMask();
@@ -108,7 +109,7 @@ void Timer::Refresh() {
     minuteCounter.SetValue(seconds / 60);
     secondCounter.SetValue(seconds % 60);
   } else if (buttonPressing && xTaskGetTickCount() > pressTime + pdMS_TO_TICKS(150)) {
-    lv_label_set_text_static(txtPlayPause, "Reset");
+    lv_label_set_text_static(txtPlayPause, _("Reset"));
     maskPosition += 15;
     if (maskPosition > 240) {
       MaskReset();
@@ -122,13 +123,13 @@ void Timer::Refresh() {
 void Timer::SetTimerRunning() {
   minuteCounter.HideControls();
   secondCounter.HideControls();
-  lv_label_set_text_static(txtPlayPause, "Pause");
+  lv_label_set_text_static(txtPlayPause, _("Pause"));
 }
 
 void Timer::SetTimerStopped() {
   minuteCounter.ShowControls();
   secondCounter.ShowControls();
-  lv_label_set_text_static(txtPlayPause, "Start");
+  lv_label_set_text_static(txtPlayPause, _("Start"));
 }
 
 void Timer::ToggleRunning() {

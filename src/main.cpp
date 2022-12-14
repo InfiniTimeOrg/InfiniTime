@@ -57,6 +57,8 @@ Pinetime::Logging::NrfLogger logger;
 Pinetime::Logging::DummyLogger logger;
 #endif
 
+#include "lv_i18n/lv_i18n.h"
+
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
 static constexpr uint8_t motionSensorTwiAddress = 0x18;
 static constexpr uint8_t heartRateSensorTwiAddress = 0x44;
@@ -354,6 +356,12 @@ int main(void) {
   }
 
   lvgl.Init();
+
+  /* Load translations & default locale*/
+  lv_i18n_init(lv_i18n_language_pack);
+
+  /* Set active locale (can be switched anytime) */
+  lv_i18n_set_locale("en");
 
   systemTask.Start();
 

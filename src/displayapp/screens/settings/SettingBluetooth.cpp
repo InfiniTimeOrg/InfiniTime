@@ -1,5 +1,6 @@
 #include "displayapp/screens/settings/SettingBluetooth.h"
 #include <lvgl/lvgl.h>
+#include "lv_i18n/lv_i18n.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/Messages.h"
 #include "displayapp/screens/Styles.h"
@@ -36,7 +37,7 @@ SettingBluetooth::SettingBluetooth(Pinetime::Applications::DisplayApp* app, Pine
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Bluetooth");
+  lv_label_set_text_static(title, _("Bluetooth"));
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 
@@ -47,13 +48,13 @@ SettingBluetooth::SettingBluetooth(Pinetime::Applications::DisplayApp* app, Pine
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
   cbEnabled = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text(cbEnabled, " Enabled");
+  lv_checkbox_set_text(cbEnabled, _(" Enabled"));
   cbEnabled->user_data = this;
   lv_obj_set_event_cb(cbEnabled, OnBluetoothEnabledEvent);
   SetRadioButtonStyle(cbEnabled);
 
   cbDisabled = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text(cbDisabled, " Disabled");
+  lv_checkbox_set_text(cbDisabled, _(" Disabled"));
   cbDisabled->user_data = this;
   lv_obj_set_event_cb(cbDisabled, OnBluetoothDisabledEvent);
   SetRadioButtonStyle(cbDisabled);

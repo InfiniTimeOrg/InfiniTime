@@ -19,6 +19,7 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "lv_i18n/lv_i18n.h"
 
 using namespace Pinetime::Applications::Screens;
 using Pinetime::Controllers::AlarmController;
@@ -250,13 +251,13 @@ void Alarm::ShowInfo() {
     auto secToAlarm = timeToAlarm % 60;
 
     lv_label_set_text_fmt(txtMessage,
-                          "Time to\nalarm:\n%2lu Days\n%2lu Hours\n%2lu Minutes\n%2lu Seconds",
+                          _("Time to\nalarm:\n%2lu Days\n%2lu Hours\n%2lu Minutes\n%2lu Seconds"),
                           daysToAlarm,
                           hrsToAlarm,
                           minToAlarm,
                           secToAlarm);
   } else {
-    lv_label_set_text_static(txtMessage, "Alarm\nis not\nset.");
+    lv_label_set_text_static(txtMessage, _("Alarm\nis not\nset."));
   }
 }
 
@@ -270,13 +271,13 @@ void Alarm::SetRecurButtonState() {
   using Pinetime::Controllers::AlarmController;
   switch (alarmController.Recurrence()) {
     case AlarmController::RecurType::None:
-      lv_label_set_text_static(txtRecur, "ONCE");
+      lv_label_set_text_static(txtRecur, _("ONCE"));
       break;
     case AlarmController::RecurType::Daily:
-      lv_label_set_text_static(txtRecur, "DAILY");
+      lv_label_set_text_static(txtRecur, _("DAILY"));
       break;
     case AlarmController::RecurType::Weekdays:
-      lv_label_set_text_static(txtRecur, "MON-FRI");
+      lv_label_set_text_static(txtRecur, _("MON-FRI"));
   }
 }
 

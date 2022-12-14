@@ -1,5 +1,6 @@
 #include "displayapp/screens/settings/SettingTimeFormat.h"
 #include <lvgl/lvgl.h>
+#include "lv_i18n/lv_i18n.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
@@ -32,7 +33,7 @@ SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pi
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Time format");
+  lv_label_set_text_static(title, _("Time format"));
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 
@@ -44,7 +45,7 @@ SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pi
 
   for (unsigned int i = 0; i < options.size(); i++) {
     cbOption[i] = lv_checkbox_create(container1, nullptr);
-    lv_checkbox_set_text(cbOption[i], options[i]);
+    lv_checkbox_set_text(cbOption[i], _(options[i]));
     cbOption[i]->user_data = this;
     lv_obj_set_event_cb(cbOption[i], event_handler);
     SetRadioButtonStyle(cbOption[i]);

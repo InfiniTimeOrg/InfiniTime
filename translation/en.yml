@@ -1,0 +1,114 @@
+en:
+  Waiting for: ~
+  track information..: ~
+  'Off': ~
+  '--': ~
+  MON: ~
+  TUE: ~
+  WED: ~
+  THU: ~
+  FRI: ~
+  SAT: ~
+  SUN: ~
+  Mon: ~
+  Tue: ~
+  Wed: ~
+  Thu: ~
+  Fri: ~
+  Sat: ~
+  Sun: ~
+  JAN: ~
+  FEB: ~
+  MAR: ~
+  APR: ~
+  MAY: ~
+  JUN: ~
+  JUL: ~
+  AUG: ~
+  SEP: ~
+  OCT: ~
+  NOV: ~
+  DEC: ~
+  Jan: ~
+  Feb: ~
+  Mar: ~
+  Apr: ~
+  May: ~
+  Jun: ~
+  Jul: ~
+  Aug: ~
+  Sep: ~
+  Oct: ~
+  Nov: ~
+  Dec: ~
+  'Time to\nalarm:\n%2lu Days\n%2lu Hours\n%2lu Minutes\n%2lu Seconds': ~
+  Alarm\nis not\nset.: ~
+  ONCE: ~
+  DAILY: ~
+  MON-FRI: ~
+  Reading Battery status: ~
+  volts: ~
+  Charging: ~
+  Fully charged: ~
+  Battery low: ~
+  Discharging: ~
+  Firmware update: ~
+  Waiting...: ~
+  Version: ~
+  ShortRef: ~
+  You have already\n#00ff00 validated# this firmware#: ~
+  'Please #00ff00 Validate# this version or\n#ff0000 Reset# to rollback to the previous version.': ~
+  Validate: ~
+  Reset: ~
+  'Not enough data,\nplease wait...': ~
+  No touch detected: ~
+  Measuring...: ~
+  Stopped: ~
+  Heart rate BPM: ~
+  Stop: ~
+  Start: ~
+  Steps ---: ~
+  Steps: ~
+  Artist Name: ~
+  This is a very long getTrack name: ~
+  Notification: ~
+  No notification to display: ~
+  Incoming call from: ~
+  Bluetooth: ~
+  ' Enabled': ~
+  ' Disabled': ~
+  Chimes: ~
+  Every hour: ~
+  Every 30 mins: ~
+  Display timeout: ~
+  Display: ~
+  Wake Up: ~
+  Time format: ~
+  Watch face: ~
+  Set date: ~
+  Set time: ~
+  Battery: ~
+  Shake Calib.: ~
+  Firmware: ~
+  About: ~
+  Set current date: ~
+  Set: ~
+  Set current time: ~
+  Wake Sensitivity: ~
+  Calibrate: ~
+  Shake!: ~
+  Ready!: ~
+  Daily steps goal: ~
+  12-hour: ~
+  24-hour: ~
+  Single Tap: ~
+  Double Tap: ~
+  Raise Wrist: ~
+  Shake Wake: ~
+  Digital face: ~
+  Analog face: ~
+  Terminal: ~
+  Goal: ~
+  Trip: ~
+  Pause: ~
+  Reset FW: Reset
