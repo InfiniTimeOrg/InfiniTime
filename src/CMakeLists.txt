@@ -381,6 +381,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/BleIcon.cpp
         displayapp/screens/NotificationIcon.cpp
         displayapp/screens/SystemInfo.cpp
+        displayapp/screens/DotLabel.cpp
         displayapp/screens/Label.cpp
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
@@ -407,6 +408,7 @@ list(APPEND SOURCE_FILES
         displayapp/Colors.cpp
         displayapp/widgets/Counter.cpp
         displayapp/widgets/PageIndicator.cpp
+        displayapp/widgets/DotIndicator.cpp
         displayapp/widgets/StatusIcons.cpp
 
         ## Settings
@@ -600,6 +602,7 @@ set(INCLUDE_FILES
         displayapp/screens/NotificationIcon.h
         displayapp/screens/SystemInfo.h
         displayapp/screens/ScreenList.h
+        displayapp/screens/DotLabel.h
         displayapp/screens/Label.h
         displayapp/screens/FirmwareUpdate.h
         displayapp/screens/FirmwareValidation.h
@@ -615,6 +618,7 @@ set(INCLUDE_FILES
         displayapp/Colors.h
         displayapp/widgets/Counter.h
         displayapp/widgets/PageIndicator.h
+        displayapp/widgets/DotIndicator.h
         displayapp/widgets/StatusIcons.h
         drivers/St7789.h
         drivers/SpiNorFlash.h

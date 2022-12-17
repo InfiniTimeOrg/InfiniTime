@@ -5,7 +5,7 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/ScreenList.h"
-#include "displayapp/screens/Label.h"
+#include "displayapp/screens/DotLabel.h"
 #include "components/settings/Settings.h"
 #include "displayapp/InfiniTimeTheme.h"
 
@@ -123,7 +123,7 @@ std::unique_ptr<Screen> SettingSetDateTime::CreateScreen1() {
   lv_btn_set_state(btnSetDate, LV_BTN_STATE_DISABLED);
   lv_obj_set_state(lblSetDate, LV_STATE_DISABLED);
 
-  return std::make_unique<Screens::Label>(0, 2, app, title);
+  return std::make_unique<Screens::DotLabel>(0, 2, app, title);
 }
 
 std::unique_ptr<Screen> SettingSetDateTime::CreateScreen2() {
@@ -178,7 +178,7 @@ std::unique_ptr<Screen> SettingSetDateTime::CreateScreen2() {
   lv_obj_set_state(btnSetTime, LV_STATE_DISABLED);
   lv_obj_set_state(lblSetTime, LV_STATE_DISABLED);
 
-  return std::make_unique<Screens::Label>(1, 2, app, title);
+  return std::make_unique<Screens::DotLabel>(1, 2, app, title);
 }
 
 SettingSetDateTime::~SettingSetDateTime() {
