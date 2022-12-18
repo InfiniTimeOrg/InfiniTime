@@ -12,8 +12,6 @@ namespace Pinetime {
       private:
         uint8_t nCurrentScreen;
         uint8_t nScreens;
-
-        lv_obj_t* dotIndicator[4];
       };
     }
   }

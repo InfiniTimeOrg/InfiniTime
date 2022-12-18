@@ -74,15 +74,15 @@ SettingSetDateTime::SettingSetDateTime(Pinetime::Applications::DisplayApp* app,
     screens {app,
              0,
              {[this]() -> std::unique_ptr<Screen> {
-                return CreateScreen1();
+                return screenSetDate();
               },
               [this]() -> std::unique_ptr<Screen> {
-                return CreateScreen2();
+                return screenSetTime();
               }},
              Screens::ScreenListModes::UpDown} {
 }
 
-std::unique_ptr<Screen> SettingSetDateTime::CreateScreen1() {
+std::unique_ptr<Screen> SettingSetDateTime::screenSetDate() {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Set current date");
@@ -126,7 +126,7 @@ std::unique_ptr<Screen> SettingSetDateTime::CreateScreen1() {
   return std::make_unique<Screens::DotLabel>(0, 2, app, title);
 }
 
-std::unique_ptr<Screen> SettingSetDateTime::CreateScreen2() {
+std::unique_ptr<Screen> SettingSetDateTime::screenSetTime() {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Set current time");
