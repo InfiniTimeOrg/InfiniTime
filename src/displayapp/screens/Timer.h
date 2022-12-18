@@ -26,7 +26,6 @@ namespace Pinetime::Applications::Screens {
     void UpdateMask();
     Controllers::TimerController& timerController;
 
-    lv_obj_t* msecTime;
     lv_obj_t* btnPlayPause;
     lv_obj_t* txtPlayPause;
 
@@ -40,7 +39,7 @@ namespace Pinetime::Applications::Screens {
     Widgets::Counter secondCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
 
     bool buttonPressing = false;
-    int maskPosition = 0;
-    TickType_t pressTime;
+    lv_coord_t maskPosition = 0;
+    TickType_t pressTime = 0;
   };
 }

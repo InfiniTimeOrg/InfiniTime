@@ -32,16 +32,16 @@ FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, 
   lv_label_set_long_mode(labelIsValidated, LV_LABEL_LONG_BREAK);
   lv_obj_set_width(labelIsValidated, 240);
 
-  if (validator.IsValidated())
+  if (validator.IsValidated()) {
     lv_label_set_text_static(labelIsValidated, "You have already\n#00ff00 validated# this firmware#");
-  else {
+  } else {
     lv_label_set_text_static(labelIsValidated,
                              "Please #00ff00 Validate# this version or\n#ff0000 Reset# to rollback to the previous version.");
 
     buttonValidate = lv_btn_create(lv_scr_act(), nullptr);
     buttonValidate->user_data = this;
     lv_obj_set_size(buttonValidate, 115, 50);
-    lv_obj_align(buttonValidate, NULL, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+    lv_obj_align(buttonValidate, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
     lv_obj_set_event_cb(buttonValidate, ButtonEventHandler);
     lv_obj_set_style_local_bg_color(buttonValidate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
 
