@@ -5,10 +5,10 @@
 #include <cstdint>
 #include <memory>
 #include "displayapp/screens/Screen.h"
+#include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/Colors.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/BleController.h"
-#include <displayapp/screens/BatteryIcon.h>
 
 namespace Pinetime {
   namespace Controllers {

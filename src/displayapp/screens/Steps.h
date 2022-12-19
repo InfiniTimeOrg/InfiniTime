@@ -29,7 +29,6 @@ namespace Pinetime {
         uint32_t currentTripSteps = 0;
 
         lv_obj_t* lSteps;
-        lv_obj_t* lStepsIcon;
         lv_obj_t* stepsArc;
         lv_obj_t* resetBtn;
         lv_obj_t* resetButtonLabel;
