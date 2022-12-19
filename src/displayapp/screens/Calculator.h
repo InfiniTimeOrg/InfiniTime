@@ -26,8 +26,8 @@ namespace Pinetime {
         // offset is the current offset for new digits
         // standard is FIXED_POINT_OFFSET for 3 decimal places
         // after typing a . this gets divided by 10 with each input
-        static constexpr long int FIXED_POINT_OFFSET = 1000;
-        long int offset = FIXED_POINT_OFFSET;
+        static constexpr int64_t FIXED_POINT_OFFSET = 1000;
+        int64_t offset = FIXED_POINT_OFFSET;
 
         int64_t value = 0;
         int64_t result = 0;

@@ -167,13 +167,13 @@ void Calculator::UpdateResultLabel() {
     return;
   }
 
-  int64_t printRemainder = remainder;
+  int64_t printRemainder = remainder < 0 ? -remainder : remainder;
   while ((printRemainder > 0) && (printRemainder % 10 == 0)) {
     NRF_LOG_INFO("pr: %" PRId64, printRemainder);
     printRemainder /= 10;
   }
 
-  int padding = 0;
+  uint8_t padding = 0;
   int64_t tmp = FIXED_POINT_OFFSET;
   while (tmp > remainder) {
     tmp /= 10;
@@ -187,14 +187,13 @@ void Calculator::UpdateValueLabel() {
   int64_t integer = value / FIXED_POINT_OFFSET;
   int64_t remainder = value % FIXED_POINT_OFFSET;
 
-  int64_t printRemainder;
-  int padding;
+  int64_t printRemainder = remainder < 0 ? -remainder : remainder;
+  uint8_t padding;
 
   if (offset == 0) {
-    printRemainder = remainder;
     padding = 3;
   } else {
-    printRemainder = remainder / (10 * offset);
+    printRemainder /= (10 * offset);
     padding = 0;
 
     // calculate the padding length as the length difference
@@ -247,15 +246,15 @@ void Calculator::Eval() {
 
     // we use floats here because pow with fixed point numbers is weird
     case '^':
-      double tmp_value = (double) value;
+      double tmp_value = static_cast<double>(value);
       tmp_value /= FIXED_POINT_OFFSET;
 
-      double tmp_result = (double) result;
+      double tmp_result = static_cast<double>(result);
       tmp_result /= FIXED_POINT_OFFSET;
 
       tmp_result = pow(tmp_result, tmp_value);
       tmp_result *= FIXED_POINT_OFFSET;
-      result = (int64_t) tmp_result;
+      result = static_cast<int64_t>(tmp_result);
 
       value = 0;
       break;
