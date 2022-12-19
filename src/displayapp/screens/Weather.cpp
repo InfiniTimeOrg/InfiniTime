@@ -27,7 +27,6 @@ using namespace Pinetime::Applications::Screens;
 
 Weather::Weather(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::WeatherService& weather)
   : Screen(app),
-    dateTimeController {dateTimeController},
     weatherService(weather),
     screens {app,
              0,

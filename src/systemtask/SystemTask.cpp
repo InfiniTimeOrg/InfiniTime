@@ -30,14 +30,14 @@ namespace {
 void DimTimerCallback(TimerHandle_t xTimer) {
 
   NRF_LOG_INFO("DimTimerCallback");
-  auto sysTask = static_cast<SystemTask*>(pvTimerGetTimerID(xTimer));
+  auto* sysTask = static_cast<SystemTask*>(pvTimerGetTimerID(xTimer));
   sysTask->OnDim();
 }
 
 void IdleTimerCallback(TimerHandle_t xTimer) {
 
   NRF_LOG_INFO("IdleTimerCallback");
-  auto sysTask = static_cast<SystemTask*>(pvTimerGetTimerID(xTimer));
+  auto* sysTask = static_cast<SystemTask*>(pvTimerGetTimerID(xTimer));
   sysTask->OnIdle();
 }
 
@@ -208,10 +208,9 @@ void SystemTask::Work() {
   while (true) {
     UpdateMotion();
 
-    uint8_t msg;
-    if (xQueueReceive(systemTasksMsgQueue, &msg, 100)) {
-      Messages message = static_cast<Messages>(msg);
-      switch (message) {
+    Messages msg;
+    if (xQueueReceive(systemTasksMsgQueue, &msg, 100) == pdTRUE) {
+      switch (msg) {
         case Messages::EnableSleeping:
           // Make sure that exiting an app doesn't enable sleeping,
           // if the exiting was caused by a firmware update
@@ -348,7 +347,7 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
         case Messages::HandleButtonEvent: {
-          Controllers::ButtonActions action;
+          Controllers::ButtonActions action = Controllers::ButtonActions::None;
           if (nrf_gpio_pin_read(Pinetime::PinMap::Button) == 0) {
             action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Release);
           } else {
@@ -459,7 +458,7 @@ void SystemTask::Work() {
     uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
     dateTimeController.UpdateTime(systick_counter);
     NoInit_BackUpTime = dateTimeController.CurrentDateTime();
-    if (!nrf_gpio_pin_read(PinMap::Button)) {
+    if (nrf_gpio_pin_read(PinMap::Button) == 0) {
       watchdog.Kick();
     }
   }
@@ -552,10 +551,9 @@ void SystemTask::PushMessage(System::Messages msg) {
   }
 
   if (in_isr()) {
-    BaseType_t xHigherPriorityTaskWoken;
-    xHigherPriorityTaskWoken = pdFALSE;
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(systemTasksMsgQueue, &msg, &xHigherPriorityTaskWoken);
-    if (xHigherPriorityTaskWoken) {
+    if (xHigherPriorityTaskWoken == pdTRUE) {
       /* Actual macro used here is port specific. */
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }

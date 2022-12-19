@@ -552,11 +552,12 @@ namespace Pinetime {
 
     int16_t WeatherService::GetTodayMinTemp() const {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      uint64_t currentDayEnd = currentTimestamp - ((24 - dateTimeController.Hours()) * 60 * 60) -
-                               ((60 - dateTimeController.Minutes()) * 60) - (60 - dateTimeController.Seconds());
+      uint64_t currentDayEnd = currentTimestamp + ((24 - dateTimeController.Hours()) * 60 * 60) +
+                               ((60 - dateTimeController.Minutes()) * 60) + (60 - dateTimeController.Seconds());
+      uint64_t currentDayStart = currentDayEnd - 86400;
       int16_t result = -32768;
       for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Temperature && IsEventStillValid(header, currentTimestamp) &&
+        if (header->eventType == WeatherData::eventtype::Temperature && header->timestamp >= currentDayStart &&
             header->timestamp < currentDayEnd &&
             reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature != -32768) {
           int16_t temperature = reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature;
@@ -575,11 +576,12 @@ namespace Pinetime {
 
     int16_t WeatherService::GetTodayMaxTemp() const {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      uint64_t currentDayEnd = currentTimestamp - ((24 - dateTimeController.Hours()) * 60 * 60) -
-                               ((60 - dateTimeController.Minutes()) * 60) - (60 - dateTimeController.Seconds());
+      uint64_t currentDayEnd = currentTimestamp + ((24 - dateTimeController.Hours()) * 60 * 60) +
+                               ((60 - dateTimeController.Minutes()) * 60) + (60 - dateTimeController.Seconds());
+      uint64_t currentDayStart = currentDayEnd - 86400;
       int16_t result = -32768;
       for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Temperature && IsEventStillValid(header, currentTimestamp) &&
+        if (header->eventType == WeatherData::eventtype::Temperature && header->timestamp >= currentDayStart &&
             header->timestamp < currentDayEnd &&
             reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature != -32768) {
           int16_t temperature = reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature;

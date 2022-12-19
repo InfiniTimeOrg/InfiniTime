@@ -28,7 +28,7 @@ namespace {
   }
 }
 
-Counter::Counter(int min, int max, lv_font_t& font) : min {min}, max {max}, value {min}, font {font}, leadingZeroCount {digitCount(max)} {
+Counter::Counter(int min, int max, lv_font_t& font) : min {min}, max {max}, value {min}, leadingZeroCount {digitCount(max)}, font {font} {
 }
 
 void Counter::UpBtnPressed() {

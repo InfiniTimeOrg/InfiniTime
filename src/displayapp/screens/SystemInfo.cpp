@@ -99,7 +99,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   auto batteryPercent = batteryController.PercentRemaining();
-  auto resetReason = [this]() {
+  const auto* resetReason = [this]() {
     switch (watchdog.ResetReason()) {
       case Drivers::Watchdog::ResetReasons::Watchdog:
         return "wtdg";
@@ -182,7 +182,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
 
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
-  auto& bleAddr = bleController.Address();
+  const auto& bleAddr = bleController.Address();
   lv_label_set_text_fmt(label,
                         "#808080 BLE MAC#\n"
                         " %02x:%02x:%02x:%02x:%02x:%02x"
