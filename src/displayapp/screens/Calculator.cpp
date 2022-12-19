@@ -156,31 +156,27 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 void Calculator::UpdateResultLabel() {
-  NRF_LOG_INFO("update result label");
-
   int64_t integer = result / FIXED_POINT_OFFSET;
   int64_t remainder = result % FIXED_POINT_OFFSET;
 
-  // todo zero padding
   if (remainder == 0) {
     lv_label_set_text_fmt(resultLabel, "%" PRId64, integer);
     return;
   }
 
-  int64_t printRemainder = remainder < 0 ? -remainder : remainder;
-  while ((printRemainder > 0) && (printRemainder % 10 == 0)) {
-    NRF_LOG_INFO("pr: %" PRId64, printRemainder);
-    printRemainder /= 10;
+  if (remainder < 0) {
+    remainder = -remainder;
   }
 
-  uint8_t padding = 0;
-  int64_t tmp = FIXED_POINT_OFFSET;
-  while (tmp > remainder) {
-    tmp /= 10;
-    padding++;
+  uint8_t min_width = N_DECIMALS;
+
+  // cut "0"-digits on the right
+  while ((remainder > 0) && (remainder % 10 == 0)) {
+    remainder /= 10;
+    min_width--;
   }
 
-  lv_label_set_text_fmt(resultLabel, "%" PRId64 ".%0*u", integer, padding, printRemainder);
+  lv_label_set_text_fmt(resultLabel, "%" PRId64 ".%0*" PRId64, integer, min_width, remainder);
 }
 
 void Calculator::UpdateValueLabel() {
@@ -188,29 +184,31 @@ void Calculator::UpdateValueLabel() {
   int64_t remainder = value % FIXED_POINT_OFFSET;
 
   int64_t printRemainder = remainder < 0 ? -remainder : remainder;
-  uint8_t padding;
 
-  if (offset == 0) {
-    padding = 3;
-  } else {
-    printRemainder /= (10 * offset);
-    padding = 0;
+  uint8_t min_width = 0;
+  int64_t tmp_offset = offset;
 
-    // calculate the padding length as the length difference
-    // between FIXED_POINT_OFFSET and offset
-    int64_t tmp = FIXED_POINT_OFFSET / (10 * offset);
-    while (tmp > 1) {
-      padding++;
-      tmp /= 10;
-    }
+  // TODO there has to be a simpler way to do this
+  if (tmp_offset == 0) {
+    tmp_offset = 1;
+    min_width = 1;
+  }
+  while (tmp_offset < FIXED_POINT_OFFSET) {
+    tmp_offset *= 10;
+    min_width++;
+  }
+  min_width--;
+
+  for (uint8_t i = min_width; i < N_DECIMALS; i++) {
+    printRemainder /= 10;
   }
 
   if (offset == FIXED_POINT_OFFSET) {
     lv_label_set_text_fmt(valueLabel, "%" PRId64, integer);
-  } else if ((offset == FIXED_POINT_OFFSET / 10) && (remainder == 0)) {
+  } else if ((offset == (FIXED_POINT_OFFSET / 10)) && (remainder == 0)) {
     lv_label_set_text_fmt(valueLabel, "%" PRId64 ".", integer);
   } else {
-    lv_label_set_text_fmt(valueLabel, "%" PRId64 ".%0*u", integer, padding, printRemainder);
+    lv_label_set_text_fmt(valueLabel, "%" PRId64 ".%0*" PRId64, integer, min_width, printRemainder);
   }
 }
 
@@ -247,13 +245,13 @@ void Calculator::Eval() {
     // we use floats here because pow with fixed point numbers is weird
     case '^':
       double tmp_value = static_cast<double>(value);
-      tmp_value /= FIXED_POINT_OFFSET;
+      tmp_value /= static_cast<double>(FIXED_POINT_OFFSET);
 
       double tmp_result = static_cast<double>(result);
-      tmp_result /= FIXED_POINT_OFFSET;
+      tmp_result /= static_cast<double>(FIXED_POINT_OFFSET);
 
       tmp_result = pow(tmp_result, tmp_value);
-      tmp_result *= FIXED_POINT_OFFSET;
+      tmp_result *= static_cast<double>(FIXED_POINT_OFFSET);
       result = static_cast<int64_t>(tmp_result);
 
       value = 0;
