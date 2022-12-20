@@ -1,7 +1,8 @@
-#include "Calculator.h"
 #include <cmath>
 #include <cinttypes>
 #include <libraries/log/nrf_log.h>
+#include "Calculator.h"
+#include "Symbols.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -14,7 +15,7 @@ Calculator::~Calculator() {
   lv_obj_clean(lv_scr_act());
 }
 
-static const char* buttonMap[] = {"7", "8", "9", "<", "\n", "4", "5", "6", "+-", "\n", "1", "2", "3", "*/", "\n", ".", "0", "=", "^", ""};
+static const char* buttonMap[] = {"7", "8", "9", Symbols::backspace, "\n", "4", "5", "6", "+-", "\n", "1", "2", "3", "*/", "\n", ".", "0", "=", "^", ""};
 
 Calculator::Calculator(DisplayApp* app) : Screen(app) {
   resultLabel = lv_label_create(lv_scr_act(), nullptr);
@@ -132,15 +133,38 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           lv_label_refr_text(operationLabel);
           break;
 
-        case '<':
-          offset = FIXED_POINT_OFFSET;
+        // this is a little hacky because it matches only the first char
+        case Symbols::backspace[0]:
           if (value != 0) {
-            value = 0;
+            // delete one value digit
+
+            if (offset < FIXED_POINT_OFFSET) {
+              if (offset == 0) {
+                offset = 1;
+              } else {
+                offset *= 10;
+              }
+            } else {
+              value /= 10;
+            }
+
+            if (offset < FIXED_POINT_OFFSET) {
+              value -= value % (10 * offset);
+            } else {
+              value -= value % offset;
+            }
+
+            UpdateValueLabel();
           } else {
+            // reset the result
+
             result = 0;
             UpdateResultLabel();
           }
-          UpdateValueLabel();
+
+          NRF_LOG_INFO(". offset: %" PRId64, offset);
+          NRF_LOG_INFO(". value: %" PRId64, value);
+          NRF_LOG_INFO(". result: %" PRId64, result);
 
           *operation = ' ';
           lv_label_refr_text(operationLabel);
