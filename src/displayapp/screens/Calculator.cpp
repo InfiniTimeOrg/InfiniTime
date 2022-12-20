@@ -15,7 +15,8 @@ Calculator::~Calculator() {
   lv_obj_clean(lv_scr_act());
 }
 
-static const char* buttonMap[] = {"7", "8", "9", Symbols::backspace, "\n", "4", "5", "6", "+-", "\n", "1", "2", "3", "*/", "\n", ".", "0", "=", "^", ""};
+static const char* buttonMap[] = {"7", "8", "9", Symbols::backspace, "\n", "4", "5", "6", "+-", "\n", "1", "2", "3", "*/", "\n", ".", "0",
+                                  "=", "^", ""};
 
 Calculator::Calculator(DisplayApp* app) : Screen(app) {
   resultLabel = lv_label_create(lv_scr_act(), nullptr);
@@ -273,8 +274,7 @@ void Calculator::Eval() {
 
     case '+':
       // check for overflow
-      if (((result > 0) && (value > (MAX_VALUE - result))) ||
-          ((result < 0) && (value < (MIN_VALUE - result)))) {
+      if (((result > 0) && (value > (MAX_VALUE - result))) || ((result < 0) && (value < (MIN_VALUE - result)))) {
         break;
       }
 
@@ -282,8 +282,7 @@ void Calculator::Eval() {
       break;
     case '-':
       // check for overflow
-      if (((result < 0) && (value > (MAX_VALUE + result))) ||
-          ((result > 0) && (value < (MIN_VALUE + result)))) {
+      if (((result < 0) && (value > (MAX_VALUE + result))) || ((result > 0) && (value < (MIN_VALUE + result)))) {
         break;
       }
 
