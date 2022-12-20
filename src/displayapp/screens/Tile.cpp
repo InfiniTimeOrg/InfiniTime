@@ -51,8 +51,9 @@ Tile::Tile(uint8_t screenID,
 
   uint8_t btIndex = 0;
   for (uint8_t i = 0; i < 6; i++) {
-    if (i == 3)
+    if (i == 3) {
       btnmMap[btIndex++] = "\n";
+    }
     if (applications[i].application == Apps::None) {
       btnmMap[btIndex] = " ";
     } else {
@@ -66,7 +67,7 @@ Tile::Tile(uint8_t screenID,
   btnm1 = lv_btnmatrix_create(lv_scr_act(), nullptr);
   lv_btnmatrix_set_map(btnm1, btnmMap);
   lv_obj_set_size(btnm1, LV_HOR_RES - 16, LV_VER_RES - 60);
-  lv_obj_align(btnm1, NULL, LV_ALIGN_CENTER, 0, 10);
+  lv_obj_align(btnm1, nullptr, LV_ALIGN_CENTER, 0, 10);
 
   lv_obj_set_style_local_radius(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, 20);
   lv_obj_set_style_local_bg_opa(btnm1, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, LV_OPA_50);
@@ -102,8 +103,9 @@ void Tile::UpdateScreen() {
 }
 
 void Tile::OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId) {
-  if (obj != btnm1)
+  if (obj != btnm1) {
     return;
+  }
 
   app->StartApp(apps[buttonId], DisplayApp::FullRefreshDirections::Up);
   running = false;

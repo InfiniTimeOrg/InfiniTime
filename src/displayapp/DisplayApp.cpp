@@ -152,7 +152,7 @@ void DisplayApp::Refresh() {
   }
 
   Messages msg;
-  if (xQueueReceive(msgQueue, &msg, queueTimeout)) {
+  if (xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE) {
     switch (msg) {
       case Messages::DimScreen:
         brightnessController.Set(Controllers::BrightnessController::Levels::Low);
@@ -485,10 +485,9 @@ void DisplayApp::LoadApp(Apps app, DisplayApp::FullRefreshDirections direction) 
 
 void DisplayApp::PushMessage(Messages msg) {
   if (in_isr()) {
-    BaseType_t xHigherPriorityTaskWoken;
-    xHigherPriorityTaskWoken = pdFALSE;
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
-    if (xHigherPriorityTaskWoken) {
+    if (xHigherPriorityTaskWoken == pdTRUE) {
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
   } else {
@@ -532,8 +531,7 @@ void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
 }
 void DisplayApp::ApplyBrightness() {
   auto brightness = settingsController.GetBrightness();
-  if(brightness != Controllers::BrightnessController::Levels::Low &&
-      brightness != Controllers::BrightnessController::Levels::Medium &&
+  if (brightness != Controllers::BrightnessController::Levels::Low && brightness != Controllers::BrightnessController::Levels::Medium &&
       brightness != Controllers::BrightnessController::Levels::High) {
     brightness = Controllers::BrightnessController::Levels::High;
   }

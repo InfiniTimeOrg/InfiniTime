@@ -40,7 +40,7 @@ namespace {
   constexpr ble_uuid128_t navProgressCharUuid {CharUuid(0x04, 0x00)};
 
   int NAVCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
-    auto navService = static_cast<Pinetime::Controllers::NavigationService*>(arg);
+    auto* navService = static_cast<Pinetime::Controllers::NavigationService*>(arg);
     return navService->OnCommand(conn_handle, attr_handle, ctxt);
   }
 } // namespace

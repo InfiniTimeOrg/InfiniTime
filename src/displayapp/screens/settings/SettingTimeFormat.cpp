@@ -14,7 +14,7 @@ namespace {
   }
 }
 
-constexpr std::array<const char*, 2> SettingTimeFormat::options;
+constexpr std::array<SettingTimeFormat::Option, 2> SettingTimeFormat::options;
 
 SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : Screen(app), settingsController {settingsController} {
@@ -44,7 +44,7 @@ SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pi
 
   for (unsigned int i = 0; i < options.size(); i++) {
     cbOption[i] = lv_checkbox_create(container1, nullptr);
-    lv_checkbox_set_text(cbOption[i], options[i]);
+    lv_checkbox_set_text(cbOption[i], options[i].name);
     cbOption[i]->user_data = this;
     lv_obj_set_event_cb(cbOption[i], event_handler);
     SetRadioButtonStyle(cbOption[i]);
@@ -67,14 +67,7 @@ void SettingTimeFormat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     for (unsigned int i = 0; i < options.size(); i++) {
       if (object == cbOption[i]) {
         lv_checkbox_set_checked(cbOption[i], true);
-
-        if (i == 0) {
-          settingsController.SetClockType(Controllers::Settings::ClockType::H12);
-        };
-        if (i == 1) {
-          settingsController.SetClockType(Controllers::Settings::ClockType::H24);
-        };
-
+        settingsController.SetClockType(options[i].clockType);
       } else {
         lv_checkbox_set_checked(cbOption[i], false);
       }
