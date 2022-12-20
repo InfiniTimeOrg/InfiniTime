@@ -31,6 +31,7 @@ namespace Pinetime {
         lv_obj_t* operationLabel;
 
         void Eval();
+        void ResetInput();
         void UpdateValueLabel();
         void UpdateResultLabel();
 

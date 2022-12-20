@@ -106,36 +106,57 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
         case '+':
           if (value != 0) {
             Eval();
+            ResetInput();
+
+            UpdateValueLabel();
+            UpdateResultLabel();
           }
+
           if (*operation == '+') {
             *operation = '-';
           } else {
             *operation = '+';
           }
+
           lv_label_refr_text(operationLabel);
           break;
+
         case '*':
           if (value != 0) {
             Eval();
+            ResetInput();
+
+            UpdateValueLabel();
+            UpdateResultLabel();
           }
+
           if (*operation == '*') {
             *operation = '/';
           } else {
             *operation = '*';
           }
+
           lv_label_refr_text(operationLabel);
           break;
+
         case '^':
           if (value != 0) {
             Eval();
+            ResetInput();
+
+            UpdateValueLabel();
+            UpdateResultLabel();
           }
           *operation = '^';
+
           lv_label_refr_text(operationLabel);
           break;
 
         // this is a little hacky because it matches only the first char
         case Symbols::backspace[0]:
-          if (value != 0) {
+          if (*operation != ' ') {
+            *operation = ' ';
+          } else if (value != 0) {
             // delete one value digit
 
             if (offset < FIXED_POINT_OFFSET) {
@@ -171,12 +192,19 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
           break;
         case '=':
           Eval();
-          *operation = ' ';
-          lv_label_refr_text(operationLabel);
+
+          UpdateValueLabel();
+          UpdateResultLabel();
           break;
       }
     }
   }
+}
+
+void Calculator::ResetInput() {
+  value = 0;
+  offset = FIXED_POINT_OFFSET;
+  *operation = ' ';
 }
 
 void Calculator::UpdateResultLabel() {
@@ -236,13 +264,13 @@ void Calculator::UpdateValueLabel() {
   }
 }
 
+// update the result based on value and operation
 void Calculator::Eval() {
   switch (*operation) {
     case ' ':
-    case '=':
       result = value;
-      value = 0;
       break;
+
     case '+':
       // check for overflow
       if (((result > 0) && (value > (MAX_VALUE - result))) ||
@@ -251,7 +279,6 @@ void Calculator::Eval() {
       }
 
       result += value;
-      value = 0;
       break;
     case '-':
       // check for overflow
@@ -261,7 +288,6 @@ void Calculator::Eval() {
       }
 
       result -= value;
-      value = 0;
       break;
     case '*':
       // check for overflow
@@ -275,19 +301,17 @@ void Calculator::Eval() {
       result *= value;
       // fixed point offset was multiplied too
       result /= FIXED_POINT_OFFSET;
-      value = 0;
       break;
     case '/':
       if (value != 0) {
         // fixed point offset will be divided too
         result *= FIXED_POINT_OFFSET;
         result /= value;
-        value = 0;
       }
       break;
 
     // we use floats here because pow with fixed point numbers is weird
-    case '^':
+    case '^': {
       double tmp_value = static_cast<double>(value);
       tmp_value /= static_cast<double>(FIXED_POINT_OFFSET);
 
@@ -297,13 +321,10 @@ void Calculator::Eval() {
       tmp_result = pow(tmp_result, tmp_value);
       tmp_result *= static_cast<double>(FIXED_POINT_OFFSET);
       result = static_cast<int64_t>(tmp_result);
+      break;
+    }
 
-      value = 0;
+    default:
       break;
   }
-  *operation = ' ';
-  offset = FIXED_POINT_OFFSET;
-
-  UpdateValueLabel();
-  UpdateResultLabel();
 }
