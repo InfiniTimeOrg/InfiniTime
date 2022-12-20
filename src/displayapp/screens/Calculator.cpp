@@ -176,10 +176,9 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
               value -= value % offset;
             }
 
-            if ((value == 0) && (offset < FIXED_POINT_OFFSET)) {
-              offset = FIXED_POINT_OFFSET;
-            }
-
+            UpdateValueLabel();
+          } else if (offset < FIXED_POINT_OFFSET) {
+            offset *= 10;
             UpdateValueLabel();
           } else {
             // reset the result
