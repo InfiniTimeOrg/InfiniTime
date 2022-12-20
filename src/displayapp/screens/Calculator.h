@@ -41,6 +41,12 @@ namespace Pinetime {
         // this is the current offset, may wary after pressing '.'
         int64_t offset = FIXED_POINT_OFFSET;
 
+        // the screen can show 12 chars
+        // but two are needed for '.' and '-'
+        static constexpr uint8_t MAX_DIGITS = 10;
+        static constexpr int64_t MAX_VALUE = powi(10, MAX_DIGITS) - 1;
+        static constexpr int64_t MIN_VALUE = -MAX_VALUE;
+
         int64_t value = 0;
         int64_t result = 0;
         // this has length 2 because it must be a string

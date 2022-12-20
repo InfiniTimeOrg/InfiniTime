@@ -76,7 +76,7 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
             // "- '0'" results in the int value of the char
             value += offset * (*buttonText - '0');
             offset /= 10;
-          } else {
+          } else if (value <= MAX_VALUE / 10) {
             value *= 10;
             value += offset * (*buttonText - '0');
           }
@@ -220,21 +220,41 @@ void Calculator::Eval() {
       value = 0;
       break;
     case '+':
+      // check for overflow
+      if (((result > 0) && (value > (MAX_VALUE - result))) ||
+          ((result < 0) && (value < (MIN_VALUE - result)))) {
+        break;
+      }
+
       result += value;
       value = 0;
       break;
     case '-':
+      // check for overflow
+      if (((result < 0) && (value > (MAX_VALUE + result))) ||
+          ((result > 0) && (value < (MIN_VALUE + result)))) {
+        break;
+      }
+
       result -= value;
       value = 0;
       break;
     case '*':
+      // check for overflow
+      // while dividing we eliminate the fixed point offset
+      // therefore we have to multiply it again for the comparison with value
+      if (((result != 0) && (value > (FIXED_POINT_OFFSET * (MAX_VALUE / result)))) ||
+          ((result != 0) && (value < (FIXED_POINT_OFFSET * (MIN_VALUE / result))))) {
+        break;
+      }
+
       result *= value;
       // fixed point offset was multiplied too
       result /= FIXED_POINT_OFFSET;
       value = 0;
       break;
     case '/':
-      if (value != FIXED_POINT_OFFSET) {
+      if (value != 0) {
         // fixed point offset will be divided too
         result *= FIXED_POINT_OFFSET;
         result /= value;
