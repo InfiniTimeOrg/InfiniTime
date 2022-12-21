@@ -127,13 +127,9 @@ void Notifications::OnPreviewInteraction() {
 }
 
 bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  if (mode != Modes::Normal) {
-    if (!interacted && event == TouchEvents::Tap) {
-      interacted = true;
-      OnPreviewInteraction();
-      return true;
-    }
-    return false;
+  if(mode == Modes::Preview){
+    interacted=true;
+    OnPreviewInteraction();
   }
 
   switch (event) {
