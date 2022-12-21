@@ -65,7 +65,6 @@ void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
-
 void Calculator::HandleInput() {
   const char* buttonText = lv_btnmatrix_get_active_btn_text(buttonMatrix);
 
