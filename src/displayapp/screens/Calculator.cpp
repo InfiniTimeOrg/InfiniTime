@@ -48,161 +48,172 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
   lv_obj_set_style_local_pad_bottom(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_pad_left(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_pad_right(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
+  lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_FOCUSED, LV_COLOR_BLUE);
   lv_obj_align(buttonMatrix, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 }
 
 void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
-  if (event == LV_EVENT_CLICKED) {
-    if (obj == buttonMatrix) {
-      const char* buttonText = lv_btnmatrix_get_active_btn_text(obj);
-
-      if (buttonText == nullptr) {
-        return;
-      }
-
-      // we only compare the first char because it is enough
-      switch (*buttonText) {
-        case '0':
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-          // if this is true, we already pressed the . button
-          if (offset < FIXED_POINT_OFFSET) {
-            // *buttonText is the first char in buttonText
-            // "- '0'" results in the int value of the char
-            value += offset * (*buttonText - '0');
-            offset /= 10;
-          } else if (value <= MAX_VALUE / 10) {
-            value *= 10;
-            value += offset * (*buttonText - '0');
-          }
-          UpdateValueLabel();
-
-          NRF_LOG_INFO(". offset: %" PRId64, offset);
-          NRF_LOG_INFO(". value: %" PRId64, value);
-          NRF_LOG_INFO(". result: %" PRId64, result);
-          break;
-
-        case '.':
-          if (offset == FIXED_POINT_OFFSET) {
-            offset /= 10;
-          }
-          UpdateValueLabel();
-
-          NRF_LOG_INFO(". offset: %" PRId64, offset);
-          NRF_LOG_INFO(". value: %" PRId64, value);
-          NRF_LOG_INFO(". result: %" PRId64, result);
-          break;
-
-        // for every operator we:
-        // - eval the current operator if value > FIXED_POINT_OFFSET
-        // - then set the new operator
-        // - + and - as well as * and / cycle on the same button
-        case '+':
-          if (value != 0) {
-            Eval();
-            ResetInput();
-
-            UpdateValueLabel();
-            UpdateResultLabel();
-          }
-
-          if (*operation == '+') {
-            *operation = '-';
-          } else {
-            *operation = '+';
-          }
-
-          lv_label_refr_text(operationLabel);
-          break;
-
-        case '*':
-          if (value != 0) {
-            Eval();
-            ResetInput();
-
-            UpdateValueLabel();
-            UpdateResultLabel();
-          }
-
-          if (*operation == '*') {
-            *operation = '/';
-          } else {
-            *operation = '*';
-          }
-
-          lv_label_refr_text(operationLabel);
-          break;
-
-        case '^':
-          if (value != 0) {
-            Eval();
-            ResetInput();
-
-            UpdateValueLabel();
-            UpdateResultLabel();
-          }
-          *operation = '^';
-
-          lv_label_refr_text(operationLabel);
-          break;
-
-        // this is a little hacky because it matches only the first char
-        case Symbols::backspace[0]:
-          if (*operation != ' ') {
-            *operation = ' ';
-          } else if (value != 0) {
-            // delete one value digit
-
-            if (offset < FIXED_POINT_OFFSET) {
-              if (offset == 0) {
-                offset = 1;
-              } else {
-                offset *= 10;
-              }
-            } else {
-              value /= 10;
-            }
-
-            if (offset < FIXED_POINT_OFFSET) {
-              value -= value % (10 * offset);
-            } else {
-              value -= value % offset;
-            }
-
-            UpdateValueLabel();
-          } else if (offset < FIXED_POINT_OFFSET) {
-            offset *= 10;
-            UpdateValueLabel();
-          } else {
-            // reset the result
-
-            result = 0;
-            UpdateResultLabel();
-          }
-
-          NRF_LOG_INFO(". offset: %" PRId64, offset);
-          NRF_LOG_INFO(". value: %" PRId64, value);
-          NRF_LOG_INFO(". result: %" PRId64, result);
-
-          *operation = ' ';
-          lv_label_refr_text(operationLabel);
-          break;
-
-        case '=':
-          Eval();
-
-          UpdateValueLabel();
-          UpdateResultLabel();
-          break;
-      }
+  if (obj == buttonMatrix) {
+    if ((event == LV_EVENT_PRESSED) || (event == LV_EVENT_PRESSING)) {
+      uint16_t activeButton = lv_btnmatrix_get_active_btn(buttonMatrix);
+      lv_btnmatrix_set_focused_btn(buttonMatrix, activeButton);
     }
+    if (event == LV_EVENT_RELEASED) {
+      HandleInput();
+      lv_btnmatrix_set_focused_btn(buttonMatrix, LV_BTNMATRIX_BTN_NONE);
+    }
+  }
+}
+
+
+void Calculator::HandleInput() {
+  const char* buttonText = lv_btnmatrix_get_active_btn_text(buttonMatrix);
+
+  if (buttonText == nullptr) {
+    return;
+  }
+
+  // we only compare the first char because it is enough
+  switch (*buttonText) {
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+      // if this is true, we already pressed the . button
+      if (offset < FIXED_POINT_OFFSET) {
+        // *buttonText is the first char in buttonText
+        // "- '0'" results in the int value of the char
+        value += offset * (*buttonText - '0');
+        offset /= 10;
+      } else if (value <= MAX_VALUE / 10) {
+        value *= 10;
+        value += offset * (*buttonText - '0');
+      }
+      UpdateValueLabel();
+
+      NRF_LOG_INFO(". offset: %" PRId64, offset);
+      NRF_LOG_INFO(". value: %" PRId64, value);
+      NRF_LOG_INFO(". result: %" PRId64, result);
+      break;
+
+    case '.':
+      if (offset == FIXED_POINT_OFFSET) {
+        offset /= 10;
+      }
+      UpdateValueLabel();
+
+      NRF_LOG_INFO(". offset: %" PRId64, offset);
+      NRF_LOG_INFO(". value: %" PRId64, value);
+      NRF_LOG_INFO(". result: %" PRId64, result);
+      break;
+
+    // for every operator we:
+    // - eval the current operator if value > FIXED_POINT_OFFSET
+    // - then set the new operator
+    // - + and - as well as * and / cycle on the same button
+    case '+':
+      if (value != 0) {
+        Eval();
+        ResetInput();
+
+        UpdateValueLabel();
+        UpdateResultLabel();
+      }
+
+      if (*operation == '+') {
+        *operation = '-';
+      } else {
+        *operation = '+';
+      }
+
+      lv_label_refr_text(operationLabel);
+      break;
+
+    case '*':
+      if (value != 0) {
+        Eval();
+        ResetInput();
+
+        UpdateValueLabel();
+        UpdateResultLabel();
+      }
+
+      if (*operation == '*') {
+        *operation = '/';
+      } else {
+        *operation = '*';
+      }
+
+      lv_label_refr_text(operationLabel);
+      break;
+
+    case '^':
+      if (value != 0) {
+        Eval();
+        ResetInput();
+
+        UpdateValueLabel();
+        UpdateResultLabel();
+      }
+      *operation = '^';
+
+      lv_label_refr_text(operationLabel);
+      break;
+
+    // this is a little hacky because it matches only the first char
+    case Symbols::backspace[0]:
+      if (*operation != ' ') {
+        *operation = ' ';
+      } else if (value != 0) {
+        // delete one value digit
+
+        if (offset < FIXED_POINT_OFFSET) {
+          if (offset == 0) {
+            offset = 1;
+          } else {
+            offset *= 10;
+          }
+        } else {
+          value /= 10;
+        }
+
+        if (offset < FIXED_POINT_OFFSET) {
+          value -= value % (10 * offset);
+        } else {
+          value -= value % offset;
+        }
+
+        UpdateValueLabel();
+      } else if (offset < FIXED_POINT_OFFSET) {
+        offset *= 10;
+        UpdateValueLabel();
+      } else {
+        // reset the result
+
+        result = 0;
+        UpdateResultLabel();
+      }
+
+      NRF_LOG_INFO(". offset: %" PRId64, offset);
+      NRF_LOG_INFO(". value: %" PRId64, value);
+      NRF_LOG_INFO(". result: %" PRId64, result);
+
+      *operation = ' ';
+      lv_label_refr_text(operationLabel);
+      break;
+
+    case '=':
+      Eval();
+
+      UpdateValueLabel();
+      UpdateResultLabel();
+      break;
   }
 }
 

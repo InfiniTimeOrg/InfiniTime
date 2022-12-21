@@ -32,6 +32,7 @@ namespace Pinetime {
 
         void Eval();
         void ResetInput();
+        void HandleInput();
         void UpdateValueLabel();
         void UpdateResultLabel();
 
