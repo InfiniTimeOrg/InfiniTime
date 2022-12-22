@@ -36,15 +36,22 @@ SettingSetDateTime::SettingSetDateTime(Pinetime::Applications::DisplayApp* app,
 
 std::unique_ptr<Screen> SettingSetDateTime::screenSetDate() {
 
-  return std::make_unique<Screens::SettingSetDate>(0, 2, app, dateTimeController);
+  return std::make_unique<Screens::SettingSetDate>(0, 2, app, dateTimeController, *this);
 }
 
 std::unique_ptr<Screen> SettingSetDateTime::screenSetTime() {
 
-  return std::make_unique<Screens::SettingSetTime>(1, 2, app, dateTimeController, settingsController);
+  return std::make_unique<Screens::SettingSetTime>(1, 2, app, dateTimeController, settingsController, *this);
 }
 
 SettingSetDateTime::~SettingSetDateTime() {
   lv_obj_clean(lv_scr_act());
 }
 
+void SettingSetDateTime::Advance() {
+  screens.OnTouchEvent(Pinetime::Applications::TouchEvents::SwipeUp);
+}
+
+void SettingSetDateTime::Quit() {
+  running = false;
+}

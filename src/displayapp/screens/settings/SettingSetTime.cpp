@@ -28,8 +28,13 @@ SettingSetTime::SettingSetTime(uint8_t screenID,
                                uint8_t numScreens,
                                Pinetime::Applications::DisplayApp* app,
                                Pinetime::Controllers::DateTime& dateTimeController,
-                               Pinetime::Controllers::Settings& settingsController)
-  : Screen(app), dotIndicator(screenID, numScreens), dateTimeController {dateTimeController}, settingsController {settingsController} {
+                               Pinetime::Controllers::Settings& settingsController,
+                               Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime)
+  : Screen(app),
+    dotIndicator(screenID, numScreens),
+    dateTimeController {dateTimeController},
+    settingsController {settingsController},
+    settingSetDateTime {settingSetDateTime} {
 
   dotIndicator.Create();
 
@@ -110,4 +115,5 @@ void SettingSetTime::SetTime() {
                              nrf_rtc_counter_get(portNRF_RTC_REG));
   lv_obj_set_state(btnSetTime, LV_STATE_DISABLED);
   lv_obj_set_state(lblSetTime, LV_STATE_DISABLED);
+  settingSetDateTime.Quit();
 }

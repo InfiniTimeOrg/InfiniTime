@@ -1,4 +1,5 @@
 #include "displayapp/screens/settings/SettingSetDate.h"
+#include "displayapp/screens/settings/SettingSetDateTime.h"
 #include <lvgl/lvgl.h>
 #include <hal/nrf_rtc.h>
 #include <nrf_log.h>
@@ -47,8 +48,9 @@ namespace {
 SettingSetDate::SettingSetDate(uint8_t screenID,
                                uint8_t numScreens,
                                Pinetime::Applications::DisplayApp* app,
-                               Pinetime::Controllers::DateTime& dateTimeController)
-  : Screen(app), dotIndicator(screenID, numScreens), dateTimeController {dateTimeController} {
+                               Pinetime::Controllers::DateTime& dateTimeController,
+                               Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime)
+  : Screen(app), dotIndicator(screenID, numScreens), dateTimeController {dateTimeController}, settingSetDateTime {settingSetDateTime} {
 
   dotIndicator.Create();
 
@@ -111,6 +113,7 @@ void SettingSetDate::HandleButtonPress() {
                              nrf_rtc_counter_get(portNRF_RTC_REG));
   lv_btn_set_state(btnSetTime, LV_BTN_STATE_DISABLED);
   lv_obj_set_state(lblSetTime, LV_STATE_DISABLED);
+  settingSetDateTime.Advance();
 }
 
 void SettingSetDate::CheckDay() {
