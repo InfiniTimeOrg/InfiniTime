@@ -44,8 +44,14 @@ namespace {
   }
 }
 
-SettingSetDate::SettingSetDate(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::DateTime& dateTimeController)
-  : Screen(app), dateTimeController {dateTimeController} {
+SettingSetDate::SettingSetDate(uint8_t screenID,
+                               uint8_t numScreens,
+                               Pinetime::Applications::DisplayApp* app,
+                               Pinetime::Controllers::DateTime& dateTimeController)
+  : Screen(app), dotIndicator(screenID, numScreens), dateTimeController {dateTimeController} {
+
+  dotIndicator.Create();
+
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Set current date");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
@@ -82,8 +88,8 @@ SettingSetDate::SettingSetDate(Pinetime::Applications::DisplayApp* app, Pinetime
   lblSetTime = lv_label_create(btnSetTime, nullptr);
   lv_label_set_text_static(lblSetTime, "Set");
   lv_obj_set_event_cb(btnSetTime, event_handler);
-  lv_btn_set_state(btnSetTime, LV_BTN_STATE_DISABLED);
-  lv_obj_set_state(lblSetTime, LV_STATE_DISABLED);
+  lv_btn_set_state(btnSetTime, LV_STATE_DEFAULT);
+  lv_obj_set_state(lblSetTime, LV_STATE_DEFAULT);
 }
 
 SettingSetDate::~SettingSetDate() {
@@ -110,6 +116,4 @@ void SettingSetDate::HandleButtonPress() {
 void SettingSetDate::CheckDay() {
   const int maxDay = MaximumDayOfMonth(monthCounter.GetValue(), yearCounter.GetValue());
   dayCounter.SetMax(maxDay);
-  lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
-  lv_obj_set_state(lblSetTime, LV_STATE_DEFAULT);
 }

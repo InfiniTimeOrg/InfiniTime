@@ -36,12 +36,12 @@ SettingSetDateTime::SettingSetDateTime(Pinetime::Applications::DisplayApp* app,
 
 std::unique_ptr<Screen> SettingSetDateTime::screenSetDate() {
 
-  return std::make_unique<Screens::SettingSetDate>(app, dateTimeController);
+  return std::make_unique<Screens::SettingSetDate>(0, 2, app, dateTimeController);
 }
 
 std::unique_ptr<Screen> SettingSetDateTime::screenSetTime() {
 
-  return std::make_unique<Screens::SettingSetTime>(app, dateTimeController, settingsController);
+  return std::make_unique<Screens::SettingSetTime>(1, 2, app, dateTimeController, settingsController);
 }
 
 SettingSetDateTime::~SettingSetDateTime() {
