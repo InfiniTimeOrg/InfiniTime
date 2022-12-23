@@ -381,7 +381,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/BleIcon.cpp
         displayapp/screens/NotificationIcon.cpp
         displayapp/screens/SystemInfo.cpp
-        displayapp/screens/DotLabel.cpp
         displayapp/screens/Label.cpp
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
@@ -604,7 +603,6 @@ set(INCLUDE_FILES
         displayapp/screens/NotificationIcon.h
         displayapp/screens/SystemInfo.h
         displayapp/screens/ScreenList.h
-        displayapp/screens/DotLabel.h
         displayapp/screens/Label.h
         displayapp/screens/FirmwareUpdate.h
         displayapp/screens/FirmwareValidation.h
