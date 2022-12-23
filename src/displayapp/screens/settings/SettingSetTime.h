@@ -14,9 +14,7 @@ namespace Pinetime {
     namespace Screens {
       class SettingSetTime : public Screen {
       public:
-        SettingSetTime(uint8_t screenID,
-                       uint8_t numScreens,
-                       DisplayApp* app,
+        SettingSetTime(DisplayApp* app,
                        Pinetime::Controllers::DateTime& dateTimeController,
                        Pinetime::Controllers::Settings& settingsController,
                        Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime);
@@ -35,7 +33,6 @@ namespace Pinetime {
         lv_obj_t* lblSetTime;
         Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_42);
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_42);
-        Widgets::DotIndicator dotIndicator;
       };
     }
   }

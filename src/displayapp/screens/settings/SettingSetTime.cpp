@@ -24,19 +24,11 @@ namespace {
   }
 }
 
-SettingSetTime::SettingSetTime(uint8_t screenID,
-                               uint8_t numScreens,
-                               Pinetime::Applications::DisplayApp* app,
+SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
                                Pinetime::Controllers::DateTime& dateTimeController,
                                Pinetime::Controllers::Settings& settingsController,
                                Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime)
-  : Screen(app),
-    dotIndicator(screenID, numScreens),
-    dateTimeController {dateTimeController},
-    settingsController {settingsController},
-    settingSetDateTime {settingSetDateTime} {
-
-  dotIndicator.Create();
+  : Screen(app), dateTimeController {dateTimeController}, settingsController {settingsController}, settingSetDateTime {settingSetDateTime} {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Set current time");

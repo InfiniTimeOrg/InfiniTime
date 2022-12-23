@@ -5,10 +5,9 @@
 #include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #include "displayapp/DisplayApp.h"
-#include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/ScreenList.h"
 #include "components/settings/Settings.h"
-#include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/widgets/DotIndicator.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -34,13 +33,15 @@ SettingSetDateTime::SettingSetDateTime(Pinetime::Applications::DisplayApp* app,
 }
 
 std::unique_ptr<Screen> SettingSetDateTime::screenSetDate() {
-
-  return std::make_unique<Screens::SettingSetDate>(0, 2, app, dateTimeController, *this);
+  Widgets::DotIndicator dotIndicator(0, 2);
+  dotIndicator.Create();
+  return std::make_unique<Screens::SettingSetDate>(app, dateTimeController, *this);
 }
 
 std::unique_ptr<Screen> SettingSetDateTime::screenSetTime() {
-
-  return std::make_unique<Screens::SettingSetTime>(1, 2, app, dateTimeController, settingsController, *this);
+  Widgets::DotIndicator dotIndicator(1, 2);
+  dotIndicator.Create();
+  return std::make_unique<Screens::SettingSetTime>(app, dateTimeController, settingsController, *this);
 }
 
 SettingSetDateTime::~SettingSetDateTime() {

@@ -13,9 +13,7 @@ namespace Pinetime {
     namespace Screens {
       class SettingSetDate : public Screen {
       public:
-        SettingSetDate(uint8_t screenID,
-                       uint8_t numScreens,
-                       DisplayApp* app,
+        SettingSetDate(DisplayApp* app,
                        Pinetime::Controllers::DateTime& dateTimeController,
                        Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime);
         ~SettingSetDate() override;
@@ -33,7 +31,6 @@ namespace Pinetime {
         Widgets::Counter dayCounter = Widgets::Counter(1, 31, jetbrains_mono_bold_20);
         Widgets::Counter monthCounter = Widgets::Counter(1, 12, jetbrains_mono_bold_20);
         Widgets::Counter yearCounter = Widgets::Counter(1970, 9999, jetbrains_mono_bold_20);
-        Widgets::DotIndicator dotIndicator;
       };
     }
   }
