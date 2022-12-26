@@ -426,10 +426,10 @@ void SystemTask::Work() {
           break;
         case Messages::LowBattery: {
           Pinetime::Controllers::NotificationManager::Notification notif;
-          std::array<char, Pinetime::Controllers::NotificationManager::MessageSize + 1> message {
-            "Low Battery\0Charge your watch to prevent data loss.\0"};
-          notif.message = std::move(message);
-          notif.size = 53;
+          constexpr char message[] = "Low Battery\0Charge your watch to prevent data loss.\0";
+          constexpr size_t messageSize = std::min(sizeof(message), Pinetime::Controllers::NotificationManager::MaximumMessageSize());
+          std::memcpy(notif.message.data(), message, messageSize);
+          notif.size = messageSize;
           notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
           notificationManager.Push(std::move(notif));
           PushMessage(Messages::OnNewNotification);
