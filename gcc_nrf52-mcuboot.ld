@@ -22,6 +22,7 @@ GROUP(-lgcc -lc -lnosys)
 
 MCUBOOT_SIZE = 0x8000;
 SCRATCH_SIZE = 0x1000;
+TLV_SIZE =  0x28; /* Metadata added by imgtool at the end of the image */
 SCRATCH_OFFSET = 0x7c000;
 MCUBOOT_APP_IMAGE_HEADER_SIZE = 0x20;
 MCUBOOT_APP_IMAGE_TRAILER_SIZE = 0x1b0;
