@@ -6,8 +6,8 @@
 
 namespace Pinetime {
   namespace Drivers {
-    template <typename T>
-    concept IsFlashMemory = requires(T memory, uint32_t address, uint8_t* buffer, const uint8_t* constBuffer, size_t size) {
+    template <typename MemoryImpl>
+    concept IsFlashMemory = requires(MemoryImpl memory, uint32_t address, uint8_t* buffer, const uint8_t* constBuffer, size_t size) {
                               { memory.ReadIdentification() };
                               { memory.ReadStatusRegister() } -> std::same_as<uint8_t>;
                               { memory.ReadConfigurationRegister() } -> std::same_as<uint8_t>;

@@ -1,5 +1,5 @@
 #pragma once
-#include "Spi.h"
+#include "drivers/Spi.h"
 #include <cstddef>
 #include <cstdint>
 #include "port/infinitime.h"

@@ -10,7 +10,6 @@
 #include <drivers/spiFlash/SpiNorFlash.h>
 #endif
 
-// #error "Do not include this"
 namespace Pinetime {
   namespace Drivers {
 #ifdef TARGET_DEVICE_PINETIME

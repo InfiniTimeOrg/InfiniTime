@@ -6,8 +6,8 @@
 
 namespace Pinetime {
   namespace Drivers {
-    template <typename T>
-    concept IsSpi = requires(T s, const uint8_t* constData, uint8_t* data, const uint8_t* constCommand, uint8_t* command, size_t size) {
+    template <typename SpiImpl>
+    concept IsSpi = requires(SpiImpl s, const uint8_t* constData, uint8_t* data, const uint8_t* constCommand, uint8_t* command, size_t size) {
                       { s.Write(constData, size) } -> std::same_as<bool>;
                       { s.Read(command, size, data, size) } -> std::same_as<bool>;
                     };
