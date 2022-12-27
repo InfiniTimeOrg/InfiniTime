@@ -52,7 +52,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
                                                Controllers::NotificationManager& notificationManager,
                                                Controllers::Settings& settingsController,
                                                Controllers::MotionController& motionController,
-                                               Controllers::WeatherService& weather)
+                                               Controllers::WeatherService& weatherService)
   : Screen(app),
     currentDateTime {{}},
     dateTimeController {dateTimeController},
@@ -61,7 +61,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
     notificationManager {notificationManager},
     settingsController {settingsController},
     motionController {motionController},
-    weatherService(weather) {
+    weatherService {weatherService} {
 
   // Create a 200px wide background rectangle
   timebar = lv_obj_create(lv_scr_act(), nullptr);
