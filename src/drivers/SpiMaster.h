@@ -1,65 +1,70 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-
-#include <FreeRTOS.h>
-#include <semphr.h>
-#include <task.h>
+#include <algorithm>
 
 namespace Pinetime {
   namespace Drivers {
-    class SpiMaster {
-    public:
-      enum class SpiModule : uint8_t { SPI0, SPI1 };
-      enum class BitOrder : uint8_t { Msb_Lsb, Lsb_Msb };
-      enum class Modes : uint8_t { Mode0, Mode1, Mode2, Mode3 };
-      enum class Frequencies : uint8_t { Freq8Mhz };
-      struct Parameters {
-        BitOrder bitOrder;
-        Modes mode;
-        Frequencies Frequency;
-        uint8_t pinSCK;
-        uint8_t pinMOSI;
-        uint8_t pinMISO;
+    template <typename SpiImpl>
+    concept IsSpiMaster =
+      requires(SpiImpl spi, uint8_t pin, const uint8_t* constData, uint8_t* data, const uint8_t* constCommand, uint8_t* command, size_t size) {
+        { spi.Init() } -> std::same_as<bool>;
+        { spi.Write(pin, constData, size) } -> std::same_as<bool>;
+        { spi.Read(pin, command, size, data, size) } -> std::same_as<bool>;
+        { spi.WriteCmdAndBuffer(pin, constCommand, size, constData, size) } -> std::same_as<bool>;
+        { spi.OnStartedEvent() };
+        { spi.OnEndEvent() };
+        { spi.Sleep() };
+        { spi.Wakeup() };
       };
 
-      SpiMaster(const SpiModule spi, const Parameters& params);
-      SpiMaster(const SpiMaster&) = delete;
-      SpiMaster& operator=(const SpiMaster&) = delete;
-      SpiMaster(SpiMaster&&) = delete;
-      SpiMaster& operator=(SpiMaster&&) = delete;
+    namespace Interface {
+      template <class T>
+        requires IsSpiMaster<T>
+      class SpiMaster {
+      public:
+        SpiMaster(T& spiMaster) : impl {spiMaster} {
+        }
+        SpiMaster(const SpiMaster&) = delete;
+        SpiMaster& operator=(const SpiMaster&) = delete;
+        SpiMaster(SpiMaster&&) = delete;
+        SpiMaster& operator=(SpiMaster&&) = delete;
 
-      bool Init();
-      bool Write(uint8_t pinCsn, const uint8_t* data, size_t size);
-      bool Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize);
+        bool Init() {
+          return impl.Init();
+        }
 
-      bool WriteCmdAndBuffer(uint8_t pinCsn, const uint8_t* cmd, size_t cmdSize, const uint8_t* data, size_t dataSize);
+        bool Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
+          return impl.Write(pinCsn, data, size);
+        }
 
-      void OnStartedEvent();
-      void OnEndEvent();
+        bool Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize) {
+          return impl.Read(pinCsn, cmd, cmdSize, data, dataSize);
+        }
 
-      void Sleep();
-      void Wakeup();
+        bool WriteCmdAndBuffer(uint8_t pinCsn, const uint8_t* cmd, size_t cmdSize, const uint8_t* data, size_t dataSize) {
+          return impl.WriteCmdAndBuffer(pinCsn, cmd, cmdSize, data, dataSize);
+        }
 
-    private:
-      void SetupWorkaroundForFtpan58(NRF_SPIM_Type* spim, uint32_t ppi_channel, uint32_t gpiote_channel);
-      void DisableWorkaroundForFtpan58(NRF_SPIM_Type* spim, uint32_t ppi_channel, uint32_t gpiote_channel);
-      void PrepareTx(const volatile uint32_t bufferAddress, const volatile size_t size);
-      void PrepareRx(const volatile uint32_t cmdAddress,
-                     const volatile size_t cmdSize,
-                     const volatile uint32_t bufferAddress,
-                     const volatile size_t size);
+        void OnStartedEvent() {
+          impl.OnStartedEvent();
+        }
 
-      NRF_SPIM_Type* spiBaseAddress;
-      uint8_t pinCsn;
+        void OnEndEvent() {
+          impl.OnEndEvent();
+        }
 
-      SpiMaster::SpiModule spi;
-      SpiMaster::Parameters params;
+        void Sleep() {
+          impl.Sleep();
+        }
 
-      volatile uint32_t currentBufferAddr = 0;
-      volatile size_t currentBufferSize = 0;
-      volatile TaskHandle_t taskToNotify;
-      SemaphoreHandle_t mutex = nullptr;
-    };
+        void Wakeup() {
+          impl.Wakeup();
+        }
+
+      private:
+        T& impl;
+      };
+    }
   }
 }

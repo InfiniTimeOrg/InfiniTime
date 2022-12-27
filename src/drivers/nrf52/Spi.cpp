@@ -1,8 +1,8 @@
-#include "drivers/Spi.h"
+#include "drivers/nrf52/Spi.h"
 #include <hal/nrf_gpio.h>
 #include <nrfx_log.h>
 
-using namespace Pinetime::Drivers;
+using namespace Pinetime::Drivers::Nrf52;
 
 Spi::Spi(SpiMaster& spiMaster, uint8_t pinCsn) : spiMaster {spiMaster}, pinCsn {pinCsn} {
   nrf_gpio_cfg_output(pinCsn);

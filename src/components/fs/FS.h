@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include "drivers/SpiNorFlash.h"
+#include "port/infinitime.h"
 #include <littlefs/lfs.h>
 
 namespace Pinetime {

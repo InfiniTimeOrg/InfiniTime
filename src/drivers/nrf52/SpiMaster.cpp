@@ -1,10 +1,10 @@
-#include "drivers/SpiMaster.h"
+#include "SpiMaster.h"
 #include <hal/nrf_gpio.h>
 #include <hal/nrf_spim.h>
 #include <nrfx_log.h>
 #include <algorithm>
 
-using namespace Pinetime::Drivers;
+using namespace Pinetime::Drivers::Nrf52;
 
 SpiMaster::SpiMaster(const SpiMaster::SpiModule spi, const SpiMaster::Parameters& params) : spi {spi}, params {params} {
 }
