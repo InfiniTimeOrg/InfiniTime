@@ -18,6 +18,8 @@
 #include "BootErrors.h"
 
 #include <memory>
+#include <algorithm>
+#include <cstring>
 
 using namespace Pinetime::System;
 
