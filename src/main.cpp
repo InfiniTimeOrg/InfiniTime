@@ -26,7 +26,6 @@
 #include <task.h>
 #include <timers.h>
 #include <drivers/Hrs3300.h>
-#include <drivers/Bma421.h>
 
 #include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
@@ -57,7 +56,6 @@ Pinetime::Logging::DummyLogger logger;
 #endif
 
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
-static constexpr uint8_t motionSensorTwiAddress = 0x18;
 static constexpr uint8_t heartRateSensorTwiAddress = 0x44;
 
 Pinetime::Drivers::SpiMaster spi {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,
@@ -89,7 +87,17 @@ Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
 #endif
 Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 
+#if (defined DRIVER_ACC_SC7A20)
+  #include <drivers/SC7A20.h>
+static constexpr uint8_t motionSensorTwiAddress = 0x18;
+Pinetime::Drivers::SC7A20 motionSensor {twiMaster, motionSensorTwiAddress};
+#else
+// Assume PineTime (DRIVER_ACC_BMA421)
+  #include <drivers/Bma421.h>
+static constexpr uint8_t motionSensorTwiAddress = 0x18;
 Pinetime::Drivers::Bma421 motionSensor {twiMaster, motionSensorTwiAddress};
+#endif
+
 Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
 
 TimerHandle_t debounceTimer;
