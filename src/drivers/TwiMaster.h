@@ -1,41 +1,55 @@
 #pragma once
-#include <FreeRTOS.h>
-#include <semphr.h>
-#include <drivers/include/nrfx_twi.h> // NRF_TWIM_Type
+#include <concepts>
+#include <cstddef>
 #include <cstdint>
 
 namespace Pinetime {
   namespace Drivers {
-    class TwiMaster {
-    public:
-      enum class ErrorCodes { NoError, TransactionFailed };
+    template <typename TwiImpl>
+      concept IsTwi = requires(TwiImpl twi, uint8_t deviceAddress, uint8_t registerAddress, uint8_t* data, const uint8_t* constData, size_t size) {
+                      { twi.Init() };
+                      { twi.Write(deviceAddress, registerAddress, constData, size) };
+                      { twi.Read(deviceAddress, registerAddress, data, size) };
+                      { twi.Sleep() };
+                      { twi.Wakeup() };
+                    };
 
-      TwiMaster(NRF_TWIM_Type* module, uint32_t frequency, uint8_t pinSda, uint8_t pinScl);
+    namespace Interface {
+      template <class T>
+        requires IsTwi<T>
+      class TwiMaster {
+      public:
+        explicit TwiMaster(T& impl) : impl {impl} {}
+        TwiMaster(const TwiMaster&) = delete;
+        TwiMaster& operator=(const TwiMaster&) = delete;
+        TwiMaster(TwiMaster&&) = delete;
+        TwiMaster& operator=(TwiMaster&&) = delete;
 
-      void Init();
-      ErrorCodes Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t* buffer, size_t size);
-      ErrorCodes Write(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t* data, size_t size);
+        enum class ErrorCodes { NoError, TransactionFailed };
 
-      void Sleep();
-      void Wakeup();
+        void Init() {
+          impl.Init();
+        }
 
-    private:
-      ErrorCodes Read(uint8_t deviceAddress, uint8_t* buffer, size_t size, bool stop);
-      ErrorCodes Write(uint8_t deviceAddress, const uint8_t* data, size_t size, bool stop);
-      void FixHwFreezed();
-      void ConfigurePins() const;
+        ErrorCodes Read(uint8_t deviceAddress, uint8_t registerAddress, uint8_t* buffer, size_t size) {
+          return static_cast<ErrorCodes>(impl.Read(deviceAddress, registerAddress, buffer, size));
+        }
 
-      NRF_TWIM_Type* twiBaseAddress;
-      SemaphoreHandle_t mutex = nullptr;
-      NRF_TWIM_Type* module;
-      uint32_t frequency;
-      uint8_t pinSda;
-      uint8_t pinScl;
-      static constexpr uint8_t maxDataSize {16};
-      static constexpr uint8_t registerSize {1};
-      uint8_t internalBuffer[maxDataSize + registerSize];
-      uint32_t txStartedCycleCount = 0;
-      static constexpr uint32_t HwFreezedDelay {161000};
-    };
+        ErrorCodes Write(uint8_t deviceAddress, uint8_t registerAddress, const uint8_t* data, size_t size) {
+          return static_cast<ErrorCodes>(impl.Write(deviceAddress, registerAddress, data, size));
+        }
+
+        void Sleep() {
+          impl.Sleep();
+        }
+
+        void Wakeup() {
+          impl.WakeUp();
+        }
+
+      private:
+        T& impl;
+      };
+    }
   }
 }

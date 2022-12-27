@@ -42,7 +42,6 @@ namespace Pinetime {
   namespace Drivers {
     class Cst816S;
     class St7789;
-    class TwiMaster;
     class Hrs3300;
   }
   namespace Controllers {

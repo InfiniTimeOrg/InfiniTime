@@ -1,9 +1,9 @@
-#include "drivers/TwiMaster.h"
+#include "drivers/nrf52/TwiMaster.h"
 #include <cstring>
 #include <hal/nrf_gpio.h>
 #include <nrfx_log.h>
 
-using namespace Pinetime::Drivers;
+using namespace Pinetime::Drivers::Nrf52;
 
 // TODO use shortcut to automatically send STOP when receive LastTX, for example
 // TODO use DMA/IRQ

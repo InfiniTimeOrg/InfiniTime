@@ -23,8 +23,7 @@ namespace Pinetime {
         requires IsSpiMaster<T>
       class SpiMaster {
       public:
-        SpiMaster(T& spiMaster) : impl {spiMaster} {
-        }
+        explicit SpiMaster(T& spiMaster) : impl {spiMaster} { }
         SpiMaster(const SpiMaster&) = delete;
         SpiMaster& operator=(const SpiMaster&) = delete;
         SpiMaster(SpiMaster&&) = delete;

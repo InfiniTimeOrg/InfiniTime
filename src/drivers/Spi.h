@@ -17,8 +17,7 @@ namespace Pinetime {
         requires IsSpi<T>
       class Spi {
       public:
-        Spi(T& spi) : impl {spi} {
-        }
+        explicit Spi(T& spi) : impl {spi} { }
         Spi(const Spi&) = delete;
         Spi& operator=(const Spi&) = delete;
         Spi(Spi&&) = delete;

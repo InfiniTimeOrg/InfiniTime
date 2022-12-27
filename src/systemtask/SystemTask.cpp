@@ -8,16 +8,10 @@
 #include "displayapp/TouchEvents.h"
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
-#include "drivers/InternalFlash.h"
-#include "drivers/SpiMaster.h"
-#include "drivers/SpiNorFlash.h"
-#include "drivers/TwiMaster.h"
 #include "drivers/Hrs3300.h"
 #include "drivers/PinMap.h"
 #include "main.h"
 #include "BootErrors.h"
-
-#include <memory>
 
 using namespace Pinetime::System;
 

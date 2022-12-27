@@ -1,9 +1,10 @@
 #pragma once
+#include "drivers/TwiMaster.h"
+#include "port/infinitime.h"
 #include <drivers/Bma421_C/bma4_defs.h>
 
 namespace Pinetime {
   namespace Drivers {
-    class TwiMaster;
     class Bma421 {
     public:
       enum class DeviceTypes : uint8_t { Unknown, BMA421, BMA425 };

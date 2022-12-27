@@ -438,6 +438,7 @@ list(APPEND SOURCE_FILES
         drivers/St7789.cpp
         drivers/nrf52/SpiMaster.cpp
         drivers/nrf52/Spi.cpp
+        drivers/nrf52/TwiMaster.cpp
         drivers/spiFlash/SpiNorFlash.cpp
         drivers/Watchdog.cpp
         drivers/DebugPins.cpp
@@ -484,7 +485,6 @@ list(APPEND SOURCE_FILES
 
         systemtask/SystemTask.cpp
         systemtask/SystemMonitor.cpp
-        drivers/TwiMaster.cpp
 
         heartratetask/HeartRateTask.cpp
         components/heartrate/Ppg.cpp
@@ -505,6 +505,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         drivers/St7789.cpp
         drivers/nrf52/SpiMaster.cpp
         drivers/nrf52/Spi.cpp
+        drivers/nrf52/TwiMaster.cpp
         drivers/Watchdog.cpp
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
@@ -545,7 +546,6 @@ list(APPEND RECOVERY_SOURCE_FILES
 
         systemtask/SystemTask.cpp
         systemtask/SystemMonitor.cpp
-        drivers/TwiMaster.cpp
         components/gfx/Gfx.cpp
         components/rle/RleDecoder.cpp
         components/heartrate/HeartRateController.cpp
@@ -567,6 +567,7 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
 
         drivers/nrf52/SpiMaster.cpp
         drivers/nrf52/Spi.cpp
+        drivers/nrf52/TwiMaster.cpp
         logging/NrfLogger.cpp
 
         components/rle/RleDecoder.cpp
@@ -620,6 +621,7 @@ set(INCLUDE_FILES
         drivers/SpiNorFlash.h
         drivers/nrf52/SpiMaster.h
         drivers/nrf52/Spi.h
+        drivers/nrf52/TwiMaster.h
         drivers/spiFlash/SpiNorFlash.h
         drivers/Watchdog.h
         drivers/DebugPins.h
