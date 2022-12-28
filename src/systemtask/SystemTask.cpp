@@ -6,8 +6,6 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "displayapp/TouchEvents.h"
-#include "drivers/St7789.h"
-#include "drivers/heartRateSensors/Hrs3300.h"
 #include "drivers/PinMap.h"
 #include "main.h"
 #include "BootErrors.h"
@@ -40,7 +38,7 @@ void MeasureBatteryTimerCallback(TimerHandle_t xTimer) {
 }
 
 SystemTask::SystemTask(Drivers::SpiMaster& spi,
-                       Drivers::St7789& lcd,
+                       Drivers::Display& lcd,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                        Drivers::TwiMaster& twiMaster,
                        Pinetime::Drivers::TouchPanel& touchPanel,

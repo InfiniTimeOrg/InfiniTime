@@ -11,7 +11,7 @@
 #include <hal/nrf_wdt.h>
 #include <cstring>
 #include <components/gfx/Gfx.h>
-#include <drivers/St7789.h>
+#include <drivers/displays/St7789.h>
 #include <components/brightness/BrightnessController.h>
 #include <algorithm>
 #include "recoveryImage.h"
@@ -51,7 +51,7 @@ Pinetime::Drivers::SpiMaster spi {spiImpl};
 
 Pinetime::Drivers::Nrf52::Spi lcdSpiIpmpl {spiImpl, Pinetime::PinMap::SpiLcdCsn};
 Pinetime::Drivers::Spi lcdSpi {lcdSpiIpmpl};
-Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
+Pinetime::Drivers::Displays::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
 
 Pinetime::Drivers::Nrf52::Spi flashSpiImpl {spiImpl, Pinetime::PinMap::SpiFlashCsn};
 Pinetime::Drivers::Spi flashSpi {flashSpiImpl};

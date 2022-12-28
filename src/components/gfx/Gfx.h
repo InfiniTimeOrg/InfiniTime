@@ -8,12 +8,14 @@
 
 namespace Pinetime {
   namespace Drivers {
-    class St7789;
+    namespace Displays {
+      class St7789;
+    }
   }
   namespace Components {
     class Gfx : public Pinetime::Drivers::BufferProvider {
     public:
-      explicit Gfx(Drivers::St7789& lcd);
+      explicit Gfx(Drivers::Displays::St7789& lcd);
       void Init();
       void ClearScreen();
       void DrawString(uint8_t x, uint8_t y, uint16_t color, const char* text, const FONT_INFO* p_font, bool wrap);
@@ -49,7 +51,7 @@ namespace Pinetime {
       volatile State state;
 
       uint16_t buffer[width]; // 1 line buffer
-      Drivers::St7789& lcd;
+      Drivers::Displays::St7789& lcd;
 
       void SetBackgroundColor(uint16_t color);
       void WaitTransferFinished() const;

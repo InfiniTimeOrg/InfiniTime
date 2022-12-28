@@ -4,7 +4,6 @@
 #include <FreeRTOS.h>
 #include <task.h>
 //#include <projdefs.h>
-#include "drivers/St7789.h"
 
 using namespace Pinetime::Components;
 
@@ -30,7 +29,7 @@ bool touchpad_read(lv_indev_drv_t* indev_drv, lv_indev_data_t* data) {
   return lvgl->GetTouchPadInfo(data);
 }
 
-LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::TouchPanel& touchPanel) : lcd {lcd}, touchPanel {touchPanel} {
+LittleVgl::LittleVgl(Pinetime::Drivers::Display& lcd, Pinetime::Drivers::TouchPanel& touchPanel) : lcd {lcd}, touchPanel {touchPanel} {
 }
 
 void LittleVgl::Init() {

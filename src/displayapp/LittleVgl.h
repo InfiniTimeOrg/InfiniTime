@@ -2,17 +2,14 @@
 
 #include <lvgl/lvgl.h>
 #include "port/TouchPanel.h"
+#include "port/Display.h"
 
 namespace Pinetime {
-  namespace Drivers {
-    class St7789;
-  }
-
   namespace Components {
     class LittleVgl {
     public:
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
-      LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::TouchPanel& touchPanel);
+      LittleVgl(Pinetime::Drivers::Display& lcd, Pinetime::Drivers::TouchPanel& touchPanel);
 
       LittleVgl(const LittleVgl&) = delete;
       LittleVgl& operator=(const LittleVgl&) = delete;
@@ -39,7 +36,7 @@ namespace Pinetime {
       void InitTouchpad();
       void InitTheme();
 
-      Pinetime::Drivers::St7789& lcd;
+      Pinetime::Drivers::Display& lcd;
       Pinetime::Drivers::TouchPanel& touchPanel;
 
       lv_disp_buf_t disp_buf_2;

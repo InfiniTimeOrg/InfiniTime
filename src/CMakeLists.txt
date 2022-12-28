@@ -435,7 +435,7 @@ list(APPEND SOURCE_FILES
         ##
 
         main.cpp
-        drivers/St7789.cpp
+        drivers/displays/St7789.cpp
         drivers/nrf52/SpiMaster.cpp
         drivers/nrf52/Spi.cpp
         drivers/nrf52/TwiMaster.cpp
@@ -502,7 +502,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         displayapp/DisplayAppRecovery.cpp
 
         main.cpp
-        drivers/St7789.cpp
+        drivers/displays/St7789.cpp
         drivers/nrf52/SpiMaster.cpp
         drivers/nrf52/Spi.cpp
         drivers/nrf52/TwiMaster.cpp
@@ -575,7 +575,7 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
         components/rle/RleDecoder.cpp
 
         components/gfx/Gfx.cpp
-        drivers/St7789.cpp
+        drivers/displays/St7789.cpp
         components/brightness/BrightnessController.cpp
 
         recoveryLoader.cpp
@@ -618,7 +618,7 @@ set(INCLUDE_FILES
         displayapp/widgets/Counter.h
         displayapp/widgets/PageIndicator.h
         displayapp/widgets/StatusIcons.h
-        drivers/St7789.h
+        drivers/displays/St7789.h
         drivers/SpiNorFlash.h
         drivers/nrf52/SpiMaster.h
         drivers/nrf52/Spi.h

@@ -40,7 +40,7 @@
 #include "drivers/nrf52/Spi.h"
 #include "drivers/nrf52/SpiMaster.h"
 #include "drivers/SpiNorFlash.h"
-#include "drivers/St7789.h"
+#include "drivers/displays/St7789.h"
 #include "drivers/TwiMaster.h"
 #include "drivers/touchpanels/Cst816s.h"
 #include "drivers/PinMap.h"
@@ -63,6 +63,7 @@ Pinetime::Logging::DummyLogger logger;
 #include "port/MotionSensor.h"
 #include "port/HeartRateSensor.h"
 #include "port/Watchdog.h"
+#include "port/Display.h"
 
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
 static constexpr uint8_t motionSensorTwiAddress = 0x18;
@@ -80,7 +81,8 @@ Pinetime::Drivers::SpiMaster spi {spiImpl};
 
 Pinetime::Drivers::Nrf52::Spi lcdSpiIpmpl {spiImpl, Pinetime::PinMap::SpiLcdCsn};
 Pinetime::Drivers::Spi lcdSpi {lcdSpiIpmpl};
-Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
+Pinetime::Drivers::Displays::St7789 lcdImpl {lcdSpi, Pinetime::PinMap::LcdDataCommand};
+Pinetime::Drivers::Display lcd{lcdImpl};
 
 Pinetime::Drivers::Nrf52::Spi flashSpiImpl {spiImpl, Pinetime::PinMap::SpiFlashCsn};
 Pinetime::Drivers::Spi flashSpi {flashSpiImpl};

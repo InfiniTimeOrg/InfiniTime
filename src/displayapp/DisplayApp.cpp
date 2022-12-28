@@ -30,8 +30,6 @@
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
 
-#include "drivers/St7789.h"
-#include "drivers/Watchdog.h"
 #include "systemtask/SystemTask.h"
 #include "systemtask/Messages.h"
 
@@ -59,7 +57,7 @@ namespace {
   }
 }
 
-DisplayApp::DisplayApp(Drivers::St7789& lcd,
+DisplayApp::DisplayApp(Drivers::Display& lcd,
                        Components::LittleVgl& lvgl,
                        Pinetime::Drivers::TouchPanel& touchPanel,
                        Controllers::Battery& batteryController,

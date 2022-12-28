@@ -1,7 +1,6 @@
 #pragma once
 #include <FreeRTOS.h>
 #include <task.h>
-#include <drivers/St7789.h>
 #include <drivers/SpiMaster.h>
 #include <bits/unique_ptr.h>
 #include <queue.h>
@@ -15,10 +14,10 @@
 #include "displayapp/Messages.h"
 #include "displayapp/DummyLittleVgl.h"
 #include "port/TouchPanel.h"
+#include "port/Display.h"
 
 namespace Pinetime {
   namespace Drivers {
-    class St7789;
     class WatchdogView;
   }
   namespace Controllers {
@@ -44,7 +43,7 @@ namespace Pinetime {
   namespace Applications {
     class DisplayApp {
     public:
-      DisplayApp(Drivers::St7789& lcd,
+      DisplayApp(Drivers::Display& lcd,
                  Components::LittleVgl& lvgl,
                  Drivers::TouchPanel&,
                  Controllers::Battery& batteryController,
@@ -75,7 +74,7 @@ namespace Pinetime {
       void DisplayOtaProgress(uint8_t percent, uint16_t color);
       void InitHw();
       void Refresh();
-      Pinetime::Drivers::St7789& lcd;
+      Pinetime::Drivers::Display& lcd;
       Controllers::Ble& bleController;
 
       static constexpr uint8_t queueSize = 10;

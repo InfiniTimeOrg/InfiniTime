@@ -3,15 +3,16 @@
 #include <lvgl/src/lv_core/lv_style.h>
 #include <lvgl/src/lv_themes/lv_theme.h>
 #include <lvgl/src/lv_hal/lv_hal.h>
-#include <drivers/St7789.h>
+
 #include "port/TouchPanel.h"
+#include "port/Display.h"
 
 namespace Pinetime {
   namespace Components {
     class LittleVgl {
     public:
       enum class FullRefreshDirections { None, Up, Down };
-      LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::TouchPanel & touchPanel) {
+      LittleVgl(Pinetime::Drivers::Display& lcd, Pinetime::Drivers::TouchPanel & touchPanel) {
       }
 
       LittleVgl(const LittleVgl&) = delete;

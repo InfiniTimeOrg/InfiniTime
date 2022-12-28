@@ -1,10 +1,10 @@
-#include "drivers/St7789.h"
+#include "St7789.h"
 #include <hal/nrf_gpio.h>
 #include <libraries/delay/nrf_delay.h>
 #include <nrfx_log.h>
 #include "drivers/Spi.h"
 
-using namespace Pinetime::Drivers;
+using namespace Pinetime::Drivers::Displays;
 
 St7789::St7789(Spi& spi, uint8_t pinDataCommand) : spi {spi}, pinDataCommand {pinDataCommand} {
 }

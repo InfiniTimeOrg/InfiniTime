@@ -39,12 +39,10 @@
 #include "port/MotionSensor.h"
 #include "port/HeartRateSensor.h"
 #include "port/Watchdog.h"
+#include "port/Display.h"
 
 extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
 namespace Pinetime {
-  namespace Drivers {
-    class St7789;
-  }
   namespace Controllers {
     class Battery;
     class TouchHandler;
@@ -55,7 +53,7 @@ namespace Pinetime {
     public:
       enum class SystemTaskState { Sleeping, Running, GoingToSleep, WakingUp };
       SystemTask(Drivers::SpiMaster& spi,
-                 Drivers::St7789& lcd,
+                 Drivers::Display& lcd,
                  Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                  Drivers::TwiMaster& twiMaster,
                  Pinetime::Drivers::TouchPanel& touchPanel,
@@ -99,7 +97,7 @@ namespace Pinetime {
       TaskHandle_t taskHandle;
 
       Pinetime::Drivers::SpiMaster& spi;
-      Pinetime::Drivers::St7789& lcd;
+      Pinetime::Drivers::Display& lcd;
       Pinetime::Drivers::SpiNorFlash& spiNorFlash;
       Pinetime::Drivers::TwiMaster& twiMaster;
       Pinetime::Drivers::TouchPanel& touchPanel;
