@@ -19,6 +19,7 @@ namespace Pinetime::Applications::Screens {
     void ToggleRunning();
     void ButtonPressed();
     void MaskReset();
+    void SetTimerAlerting();
 
   private:
     void SetTimerRunning();
@@ -26,7 +27,6 @@ namespace Pinetime::Applications::Screens {
     void UpdateMask();
     Controllers::TimerController& timerController;
 
-    lv_obj_t* msecTime;
     lv_obj_t* btnPlayPause;
     lv_obj_t* txtPlayPause;
 
