@@ -6,7 +6,6 @@
 #include <bits/unique_ptr.h>
 #include <queue.h>
 #include "components/gfx/Gfx.h"
-#include "drivers/Cst816s.h"
 #include <date/date.h>
 #include <drivers/Watchdog.h>
 #include <components/motor/MotorController.h>
@@ -15,11 +14,11 @@
 #include "displayapp/Apps.h"
 #include "displayapp/Messages.h"
 #include "displayapp/DummyLittleVgl.h"
+#include "port/TouchPanel.h"
 
 namespace Pinetime {
   namespace Drivers {
     class St7789;
-    class Cst816S;
     class WatchdogView;
   }
   namespace Controllers {
@@ -47,7 +46,7 @@ namespace Pinetime {
     public:
       DisplayApp(Drivers::St7789& lcd,
                  Components::LittleVgl& lvgl,
-                 Drivers::Cst816S&,
+                 Drivers::TouchPanel&,
                  Controllers::Battery& batteryController,
                  Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,

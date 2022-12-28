@@ -9,30 +9,30 @@ using namespace Pinetime::Controllers;
 using namespace Pinetime::Applications;
 
 namespace {
-  TouchEvents ConvertGesture(Pinetime::Drivers::Cst816S::Gestures gesture) {
+  TouchEvents ConvertGesture(Pinetime::Drivers::TouchPanels::Gestures gesture) {
     switch (gesture) {
-      case Pinetime::Drivers::Cst816S::Gestures::SingleTap:
+      case Pinetime::Drivers::TouchPanels::Gestures::SingleTap:
         return TouchEvents::Tap;
-      case Pinetime::Drivers::Cst816S::Gestures::LongPress:
+      case Pinetime::Drivers::TouchPanels::Gestures::LongPress:
         return TouchEvents::LongTap;
-      case Pinetime::Drivers::Cst816S::Gestures::DoubleTap:
+      case Pinetime::Drivers::TouchPanels::Gestures::DoubleTap:
         return TouchEvents::DoubleTap;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideRight:
+      case Pinetime::Drivers::TouchPanels::Gestures::SlideRight:
         return TouchEvents::SwipeRight;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideLeft:
+      case Pinetime::Drivers::TouchPanels::Gestures::SlideLeft:
         return TouchEvents::SwipeLeft;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideDown:
+      case Pinetime::Drivers::TouchPanels::Gestures::SlideDown:
         return TouchEvents::SwipeDown;
-      case Pinetime::Drivers::Cst816S::Gestures::SlideUp:
+      case Pinetime::Drivers::TouchPanels::Gestures::SlideUp:
         return TouchEvents::SwipeUp;
-      case Pinetime::Drivers::Cst816S::Gestures::None:
+      case Pinetime::Drivers::TouchPanels::Gestures::None:
       default:
         return TouchEvents::None;
     }
   }
 }
 
-TouchHandler::TouchHandler(Drivers::Cst816S& touchPanel, Components::LittleVgl& lvgl) : touchPanel {touchPanel}, lvgl {lvgl} {
+TouchHandler::TouchHandler(Pinetime::Drivers::TouchPanel& touchPanel, Components::LittleVgl& lvgl) : touchPanel {touchPanel}, lvgl {lvgl} {
 }
 
 void TouchHandler::CancelTap() {
@@ -55,13 +55,13 @@ bool TouchHandler::GetNewTouchInfo() {
     return false;
   }
 
-  if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
+  if (info.gesture != Pinetime::Drivers::TouchPanels::Gestures::None) {
     if (gestureReleased) {
-      if (info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideDown ||
-          info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideLeft ||
-          info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideUp ||
-          info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideRight ||
-          info.gesture == Pinetime::Drivers::Cst816S::Gestures::LongPress) {
+      if (info.gesture == Pinetime::Drivers::TouchPanels::Gestures::SlideDown ||
+          info.gesture == Pinetime::Drivers::TouchPanels::Gestures::SlideLeft ||
+          info.gesture == Pinetime::Drivers::TouchPanels::Gestures::SlideUp ||
+          info.gesture == Pinetime::Drivers::TouchPanels::Gestures::SlideRight ||
+          info.gesture == Pinetime::Drivers::TouchPanels::Gestures::LongPress) {
         if (info.touching) {
           gesture = ConvertGesture(info.gesture);
           gestureReleased = false;

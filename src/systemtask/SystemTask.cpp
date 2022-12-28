@@ -6,7 +6,6 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "displayapp/TouchEvents.h"
-#include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 #include "drivers/Hrs3300.h"
 #include "drivers/PinMap.h"
@@ -44,7 +43,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Drivers::St7789& lcd,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                        Drivers::TwiMaster& twiMaster,
-                       Drivers::Cst816S& touchPanel,
+                       Pinetime::Drivers::TouchPanel& touchPanel,
                        Components::LittleVgl& lvgl,
                        Controllers::Battery& batteryController,
                        Controllers::Ble& bleController,

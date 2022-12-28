@@ -1,11 +1,11 @@
-#include "drivers/Cst816s.h"
+#include "Cst816s.h"
 #include <FreeRTOS.h>
 #include <legacy/nrf_drv_gpiote.h>
 #include <nrfx_log.h>
 #include <task.h>
 #include "drivers/PinMap.h"
 
-using namespace Pinetime::Drivers;
+using namespace Pinetime::Drivers::TouchPanels;
 
 /* References :
  * This implementation is based on this article :
@@ -59,8 +59,8 @@ bool Cst816S::Init() {
   return true;
 }
 
-Cst816S::TouchInfos Cst816S::GetTouchInfo() {
-  Cst816S::TouchInfos info;
+TouchInfos Cst816S::GetTouchInfo() {
+  TouchInfos info;
   uint8_t touchData[7];
 
   auto ret = twiMaster.Read(twiAddress, 0, touchData, sizeof(touchData));
@@ -77,7 +77,7 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
   uint8_t yHigh = touchData[touchYHighIndex] & 0x0f;
   uint8_t yLow = touchData[touchYLowIndex];
   uint16_t y = (yHigh << 8) | yLow;
-  Gestures gesture = static_cast<Gestures>(touchData[gestureIndex]);
+  auto gesture = static_cast<Gestures>(touchData[gestureIndex]);
 
   // Validity check
   if (x >= maxX || y >= maxY ||

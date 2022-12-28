@@ -40,7 +40,6 @@
 extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
 namespace Pinetime {
   namespace Drivers {
-    class Cst816S;
     class St7789;
     class Hrs3300;
   }
@@ -57,7 +56,7 @@ namespace Pinetime {
                  Drivers::St7789& lcd,
                  Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                  Drivers::TwiMaster& twiMaster,
-                 Drivers::Cst816S& touchPanel,
+                 Pinetime::Drivers::TouchPanel& touchPanel,
                  Components::LittleVgl& lvgl,
                  Controllers::Battery& batteryController,
                  Controllers::Ble& bleController,
@@ -101,7 +100,7 @@ namespace Pinetime {
       Pinetime::Drivers::St7789& lcd;
       Pinetime::Drivers::SpiNorFlash& spiNorFlash;
       Pinetime::Drivers::TwiMaster& twiMaster;
-      Pinetime::Drivers::Cst816S& touchPanel;
+      Pinetime::Drivers::TouchPanel& touchPanel;
       Pinetime::Components::LittleVgl& lvgl;
       Pinetime::Controllers::Battery& batteryController;
 

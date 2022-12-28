@@ -37,7 +37,7 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
                        Pinetime::Controllers::Ble& bleController,
                        Pinetime::Drivers::WatchdogView& watchdog,
                        Pinetime::Controllers::MotionController& motionController,
-                       Pinetime::Drivers::Cst816S& touchPanel)
+                       Pinetime::Drivers::TouchPanel& touchPanel)
   : Screen(app),
     dateTimeController {dateTimeController},
     batteryController {batteryController},

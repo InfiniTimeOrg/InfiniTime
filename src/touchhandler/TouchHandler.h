@@ -1,18 +1,16 @@
 #pragma once
-#include "drivers/Cst816s.h"
+#include "port/TouchPanel.h"
 #include "displayapp/TouchEvents.h"
 
 namespace Pinetime {
   namespace Components {
     class LittleVgl;
   }
-  namespace Drivers {
-    class Cst816S;
-  }
+
   namespace Controllers {
     class TouchHandler {
     public:
-      explicit TouchHandler(Drivers::Cst816S&, Components::LittleVgl&);
+      explicit TouchHandler(Pinetime::Drivers::TouchPanel&, Components::LittleVgl&);
       void CancelTap();
       bool GetNewTouchInfo();
       void UpdateLvglTouchPoint();
@@ -29,8 +27,8 @@ namespace Pinetime {
       Pinetime::Applications::TouchEvents GestureGet();
 
     private:
-      Pinetime::Drivers::Cst816S::TouchInfos info;
-      Pinetime::Drivers::Cst816S& touchPanel;
+      Pinetime::Drivers::TouchPanels::TouchInfos info;
+      Pinetime::Drivers::TouchPanel& touchPanel;
       Pinetime::Components::LittleVgl& lvgl;
       Pinetime::Applications::TouchEvents gesture;
       bool isCancelled = false;

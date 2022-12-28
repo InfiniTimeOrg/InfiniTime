@@ -1,10 +1,10 @@
 #pragma once
 
 #include <lvgl/lvgl.h>
+#include "port/TouchPanel.h"
 
 namespace Pinetime {
   namespace Drivers {
-    class Cst816S;
     class St7789;
   }
 
@@ -12,7 +12,7 @@ namespace Pinetime {
     class LittleVgl {
     public:
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
-      LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel);
+      LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::TouchPanel& touchPanel);
 
       LittleVgl(const LittleVgl&) = delete;
       LittleVgl& operator=(const LittleVgl&) = delete;
@@ -40,7 +40,7 @@ namespace Pinetime {
       void InitTheme();
 
       Pinetime::Drivers::St7789& lcd;
-      Pinetime::Drivers::Cst816S& touchPanel;
+      Pinetime::Drivers::TouchPanel& touchPanel;
 
       lv_disp_buf_t disp_buf_2;
       lv_color_t buf2_1[LV_HOR_RES_MAX * 4];

@@ -43,7 +43,7 @@
 #include "drivers/SpiNorFlash.h"
 #include "drivers/St7789.h"
 #include "drivers/TwiMaster.h"
-#include "drivers/Cst816s.h"
+#include "drivers/touchpanels/Cst816s.h"
 #include "drivers/PinMap.h"
 #include "systemtask/SystemTask.h"
 #include "drivers/PinMap.h"
@@ -59,6 +59,7 @@ Pinetime::Logging::DummyLogger logger;
 #endif
 
 #include "port/infinitime.h"
+#include "port/TouchPanel.h"
 
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
 static constexpr uint8_t motionSensorTwiAddress = 0x18;
@@ -90,7 +91,8 @@ Pinetime::Drivers::SpiNorFlash spiNorFlash {spiNorFlashImpl};
 static constexpr uint32_t MaxTwiFrequencyWithoutHardwareBug {0x06200000};
 Pinetime::Drivers::Nrf52::TwiMaster twiMasterImpl {NRF_TWIM1, MaxTwiFrequencyWithoutHardwareBug, Pinetime::PinMap::TwiSda, Pinetime::PinMap::TwiScl};
 Pinetime::Drivers::TwiMaster twiMaster{twiMasterImpl};
-Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
+Pinetime::Drivers::TouchPanels::Cst816S touchPanelImpl {twiMaster, touchPanelTwiAddress};
+Pinetime::Drivers::TouchPanel touchPanel {touchPanelImpl};
 #ifdef PINETIME_IS_RECOVERY
   #include "displayapp/DummyLittleVgl.h"
   #include "displayapp/DisplayAppRecovery.h"

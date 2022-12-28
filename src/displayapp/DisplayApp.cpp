@@ -30,7 +30,6 @@
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
 
-#include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 #include "drivers/Watchdog.h"
 #include "systemtask/SystemTask.h"
@@ -62,7 +61,7 @@ namespace {
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Components::LittleVgl& lvgl,
-                       Drivers::Cst816S& touchPanel,
+                       Pinetime::Drivers::TouchPanel& touchPanel,
                        Controllers::Battery& batteryController,
                        Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,
