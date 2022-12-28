@@ -1,11 +1,11 @@
 #include "heartratetask/HeartRateTask.h"
-#include <drivers/Hrs3300.h>
+#include <drivers/heartRateSensors/Hrs3300.h>
 #include <components/heartrate/HeartRateController.h>
 #include <nrf_log.h>
 
 using namespace Pinetime::Applications;
 
-HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor, Controllers::HeartRateController& controller)
+HeartRateTask::HeartRateTask(Drivers::HeartRateSensor & heartRateSensor, Controllers::HeartRateController& controller)
   : heartRateSensor {heartRateSensor}, controller {controller}, ppg {} {
 }
 

@@ -8,7 +8,7 @@
 #include <timers.h>
 #include <heartratetask/HeartRateTask.h>
 #include <components/settings/Settings.h>
-#include <drivers/Bma421.h>
+#include <drivers/motionSensors/Bma421.h>
 #include <drivers/PinMap.h>
 #include <components/motion/MotionController.h>
 #include <drivers/SpiMaster.h>
@@ -37,12 +37,13 @@
 #include "systemtask/Messages.h"
 #include "port/SpiMaster.h"
 #include "port/MotionSensor.h"
+#include "port/HeartRateSensor.h"
+#include "port/Watchdog.h"
 
 extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
 namespace Pinetime {
   namespace Drivers {
     class St7789;
-    class Hrs3300;
   }
   namespace Controllers {
     class Battery;
@@ -67,7 +68,7 @@ namespace Pinetime {
                  Drivers::Watchdog& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::MotorController& motorController,
-                 Pinetime::Drivers::Hrs3300& heartRateSensor,
+                 Pinetime::Drivers::HeartRateSensor& heartRateSensor,
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Drivers::MotionSensor& motionSensor,
                  Controllers::Settings& settingsController,
@@ -113,7 +114,7 @@ namespace Pinetime {
       Pinetime::Drivers::Watchdog& watchdog;
       Pinetime::Controllers::NotificationManager& notificationManager;
       Pinetime::Controllers::MotorController& motorController;
-      Pinetime::Drivers::Hrs3300& heartRateSensor;
+      Pinetime::Drivers::HeartRateSensor& heartRateSensor;
       Pinetime::Drivers::MotionSensor& motionSensor;
       Pinetime::Controllers::Settings& settingsController;
       Pinetime::Controllers::HeartRateController& heartRateController;

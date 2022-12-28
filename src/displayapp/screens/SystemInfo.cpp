@@ -11,7 +11,7 @@
 #include "components/brightness/BrightnessController.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/motion/MotionController.h"
-#include "drivers/Watchdog.h"
+#include "drivers/WatchdogView.h"
 #include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -101,23 +101,23 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   auto batteryPercent = batteryController.PercentRemaining();
   auto resetReason = [this]() {
     switch (watchdog.ResetReason()) {
-      case Drivers::Watchdog::ResetReasons::Watchdog:
+      case Drivers::Watchdogs::ResetReasons::Watchdog:
         return "wtdg";
-      case Drivers::Watchdog::ResetReasons::HardReset:
+      case Drivers::Watchdogs::ResetReasons::HardReset:
         return "hardr";
-      case Drivers::Watchdog::ResetReasons::NFC:
+      case Drivers::Watchdogs::ResetReasons::NFC:
         return "nfc";
-      case Drivers::Watchdog::ResetReasons::SoftReset:
+      case Drivers::Watchdogs::ResetReasons::SoftReset:
         return "softr";
-      case Drivers::Watchdog::ResetReasons::CpuLockup:
+      case Drivers::Watchdogs::ResetReasons::CpuLockup:
         return "cpulock";
-      case Drivers::Watchdog::ResetReasons::SystemOff:
+      case Drivers::Watchdogs::ResetReasons::SystemOff:
         return "off";
-      case Drivers::Watchdog::ResetReasons::LpComp:
+      case Drivers::Watchdogs::ResetReasons::LpComp:
         return "lpcomp";
-      case Drivers::Watchdog::ResetReasons::DebugInterface:
+      case Drivers::Watchdogs::ResetReasons::DebugInterface:
         return "dbg";
-      case Drivers::Watchdog::ResetReasons::ResetPin:
+      case Drivers::Watchdogs::ResetReasons::ResetPin:
         return "rst";
       default:
         return "?";

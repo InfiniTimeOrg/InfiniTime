@@ -1,14 +1,14 @@
 #pragma once
-#include "drivers/MotionSensor.h"
+#include "drivers/Watchdog.h"
 
 #ifdef TARGET_DEVICE_PINETIME
-  #include <drivers/motionSensors/Bma421.h>
+  #include <drivers/nrf52//Watchdog.h>
 #endif
 
 namespace Pinetime {
   namespace Drivers {
 #ifdef TARGET_DEVICE_PINETIME
-    using MotionSensor = Interface::MotionSensor<Pinetime::Drivers::MotionSensors::Bma421>;
+    using Watchdog = Interface::Watchdog<Pinetime::Drivers::Nrf52::Watchdog>;
 #else
   #error "No target device specified!"
 #endif

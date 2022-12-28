@@ -7,7 +7,7 @@
 #include "components/ble/BleController.h"
 #include "displayapp/TouchEvents.h"
 #include "drivers/St7789.h"
-#include "drivers/Hrs3300.h"
+#include "drivers/heartRateSensors/Hrs3300.h"
 #include "drivers/PinMap.h"
 #include "main.h"
 #include "BootErrors.h"
@@ -53,7 +53,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Drivers::Watchdog& watchdog,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::MotorController& motorController,
-                       Pinetime::Drivers::Hrs3300& heartRateSensor,
+                       Pinetime::Drivers::HeartRateSensor& heartRateSensor,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Drivers::MotionSensor& motionSensor,
                        Controllers::Settings& settingsController,

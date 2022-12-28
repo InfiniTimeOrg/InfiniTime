@@ -440,11 +440,11 @@ list(APPEND SOURCE_FILES
         drivers/nrf52/Spi.cpp
         drivers/nrf52/TwiMaster.cpp
         drivers/spiFlash/SpiNorFlash.cpp
-        drivers/Watchdog.cpp
+        drivers/nrf52/Watchdog.cpp
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
-        drivers/Hrs3300.cpp
-        drivers/Bma421.cpp
+        drivers/heartRateSensors/Hrs3300.cpp
+        drivers/motionSensors/Bma421.cpp
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c
         components/battery/BatteryController.cpp
@@ -507,11 +507,11 @@ list(APPEND RECOVERY_SOURCE_FILES
         drivers/nrf52/Spi.cpp
         drivers/nrf52/TwiMaster.cpp
         drivers/spiFlash/SpiNorFlash.cpp
-        drivers/Watchdog.cpp
+        drivers/nrf52/Watchdog.cpp
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
-        drivers/Hrs3300.cpp
-        drivers/Bma421.cpp
+        drivers/heartRateSensors/Hrs3300.cpp
+        drivers/motionSensors/Bma421.cpp
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c
         components/battery/BatteryController.cpp
@@ -627,9 +627,9 @@ set(INCLUDE_FILES
         drivers/Watchdog.h
         drivers/DebugPins.h
         drivers/InternalFlash.h
-        drivers/Hrs3300.h
+        drivers/heartRateSensors/Hrs3300.h
         drivers/PinMap.h
-        drivers/Bma421.h
+        drivers/motionSensors/Bma421.h
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c
         components/battery/BatteryController.h

@@ -4,7 +4,7 @@
   C++ port Copyright (C) 2021 Jean-François Milants
 */
 
-#include "drivers/Hrs3300.h"
+#include "Hrs3300.h"
 #include <algorithm>
 #include <nrf_gpio.h>
 
@@ -12,7 +12,7 @@
 #include <task.h>
 #include <nrf_log.h>
 
-using namespace Pinetime::Drivers;
+using namespace Pinetime::Drivers::HeartRateSensors;
 /** Driver for the HRS3300 heart rate sensor.
  * Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/drivers/hrs3300.py
  */

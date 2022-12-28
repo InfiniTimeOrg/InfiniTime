@@ -25,9 +25,8 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <timers.h>
-#include <drivers/Hrs3300.h>
-#include <drivers/Bma421.h>
-#include <drivers/SpiMaster.h>
+#include <drivers/heartRateSensors/Hrs3300.h>
+#include <drivers/motionSensors/Bma421.h>
 
 #include "BootloaderVersion.h"
 #include "components/battery/BatteryController.h"
@@ -47,6 +46,8 @@
 #include "drivers/PinMap.h"
 #include "systemtask/SystemTask.h"
 #include "drivers/PinMap.h"
+#include "drivers/Watchdog.h"
+#include "drivers/WatchdogView.h"
 #include "touchhandler/TouchHandler.h"
 #include "buttonhandler/ButtonHandler.h"
 
@@ -60,6 +61,8 @@ Pinetime::Logging::DummyLogger logger;
 
 #include "port/TouchPanel.h"
 #include "port/MotionSensor.h"
+#include "port/HeartRateSensor.h"
+#include "port/Watchdog.h"
 
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
 static constexpr uint8_t motionSensorTwiAddress = 0x18;
@@ -104,7 +107,9 @@ Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 
 Pinetime::Drivers::MotionSensors::Bma421 motionSensorImpl {twiMaster, motionSensorTwiAddress};
 Pinetime::Drivers::MotionSensor motionSensor {motionSensorImpl};
-Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
+
+Pinetime::Drivers::HeartRateSensors::Hrs3300 heartRateSensorImpl {twiMaster, heartRateSensorTwiAddress};
+Pinetime::Drivers::HeartRateSensor heartRateSensor{heartRateSensorImpl};
 
 TimerHandle_t debounceTimer;
 TimerHandle_t debounceChargeTimer;
@@ -119,8 +124,9 @@ Pinetime::Controllers::Settings settingsController {fs};
 Pinetime::Controllers::MotorController motorController {};
 
 Pinetime::Controllers::DateTime dateTimeController {settingsController};
-Pinetime::Drivers::Watchdog watchdog;
-Pinetime::Drivers::WatchdogView watchdogView(watchdog);
+Pinetime::Drivers::Nrf52::Watchdog watchdogImpl;
+Pinetime::Drivers::Watchdog watchdog{watchdogImpl};
+Pinetime::Drivers::WatchdogView watchdogView{watchdog};
 Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
 Pinetime::Controllers::TimerController timerController;

@@ -1,4 +1,4 @@
-#include "drivers/Bma421.h"
+#include "Bma421.h"
 #include <libraries/delay/nrf_delay.h>
 #include <libraries/log/nrf_log.h>
 #include "drivers/TwiMaster.h"
