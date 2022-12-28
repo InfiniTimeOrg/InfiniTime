@@ -16,24 +16,35 @@ void TimerController::Init(Pinetime::System::SystemTask* systemTask) {
 void TimerController::StartTimer(uint32_t duration) {
   xTimerChangePeriod(timer, pdMS_TO_TICKS(duration), 0);
   xTimerStart(timer, 0);
+  state = TimerState::Running;
 }
 
 uint32_t TimerController::GetTimeRemaining() {
-  if (IsRunning()) {
-    TickType_t remainingTime = xTimerGetExpiryTime(timer) - xTaskGetTickCount();
-    return (remainingTime * 1000 / configTICK_RATE_HZ);
+  TickType_t remainingTime = 0;
+  switch (state) {
+    case TimerState::Not_Running:
+      break;
+    case TimerState::Running:
+      remainingTime = xTimerGetExpiryTime(timer) - xTaskGetTickCount();
+      break;
+    case TimerState::Alerting:
+      remainingTime = xTaskGetTickCount() - xTimerGetExpiryTime(timer);
+      break;
   }
-  return 0;
+  return (remainingTime * 1000 / configTICK_RATE_HZ);
 }
 
 void TimerController::StopTimer() {
   xTimerStop(timer, 0);
-}
-
-bool TimerController::IsRunning() {
-  return (xTimerIsTimerActive(timer) == pdTRUE);
+  state = TimerState::Not_Running;
 }
 
 void TimerController::OnTimerEnd() {
+  state = TimerState::Alerting;
   systemTask->PushMessage(System::Messages::OnTimerDone);
+}
+
+void TimerController::StopAlerting() {
+  state = TimerState::Not_Running;
+  systemTask->PushMessage(System::Messages::StopRinging);
 }

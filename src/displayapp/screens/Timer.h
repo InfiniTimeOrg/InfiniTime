@@ -19,6 +19,7 @@ namespace Pinetime::Applications::Screens {
     void ToggleRunning();
     void ButtonPressed();
     void MaskReset();
+    void SetTimerAlerting();
 
   private:
     void SetTimerRunning();

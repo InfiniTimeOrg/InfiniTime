@@ -20,6 +20,7 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
 Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : Screen(app), timerController {timerController} {
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_label_set_text_static(colonLabel, ":");
@@ -62,10 +63,16 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : S
   txtPlayPause = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(txtPlayPause, btnPlayPause, LV_ALIGN_CENTER, 0, 0);
 
-  if (timerController.IsRunning()) {
-    SetTimerRunning();
-  } else {
-    SetTimerStopped();
+  switch (timerController.State()) {
+    case Controllers::TimerController::TimerState::Running:
+      SetTimerRunning();
+      break;
+    case Controllers::TimerController::TimerState::Not_Running:
+      SetTimerStopped();
+      break;
+    case Controllers::TimerController::TimerState::Alerting:
+      SetTimerAlerting();
+      break;
   }
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
@@ -85,7 +92,7 @@ void Timer::MaskReset() {
   buttonPressing = false;
   // A click event is processed before a release event,
   // so the release event would override the "Pause" text without this check
-  if (!timerController.IsRunning()) {
+  if (timerController.State() == Controllers::TimerController::TimerState::Not_Running) {
     lv_label_set_text_static(txtPlayPause, "Start");
   }
   maskPosition = 0;
@@ -103,19 +110,25 @@ void Timer::UpdateMask() {
 }
 
 void Timer::Refresh() {
-  if (timerController.IsRunning()) {
-    uint32_t seconds = timerController.GetTimeRemaining() / 1000;
-    minuteCounter.SetValue(seconds / 60);
-    secondCounter.SetValue(seconds % 60);
-  } else if (buttonPressing && xTaskGetTickCount() > pressTime + pdMS_TO_TICKS(150)) {
-    lv_label_set_text_static(txtPlayPause, "Reset");
-    maskPosition += 15;
-    if (maskPosition > 240) {
-      MaskReset();
-      Reset();
-    } else {
-      UpdateMask();
-    }
+  switch (timerController.State()) {
+    case Controllers::TimerController::TimerState::Running:
+    case Controllers::TimerController::TimerState::Alerting: {
+      uint32_t seconds = timerController.GetTimeRemaining() / 1000;
+      minuteCounter.SetValue(seconds / 60);
+      secondCounter.SetValue(seconds % 60);
+    } break;
+    case Controllers::TimerController::TimerState::Not_Running:
+      if (buttonPressing && xTaskGetTickCount() > pressTime + pdMS_TO_TICKS(150)) {
+        lv_label_set_text_static(txtPlayPause, "Reset");
+        maskPosition += 15;
+        if (maskPosition > 240) {
+          MaskReset();
+          Reset();
+        } else {
+          UpdateMask();
+        }
+      }
+      break;
   }
 }
 
@@ -123,25 +136,45 @@ void Timer::SetTimerRunning() {
   minuteCounter.HideControls();
   secondCounter.HideControls();
   lv_label_set_text_static(txtPlayPause, "Pause");
+  MaskReset();
+  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+}
+
+void Timer::SetTimerAlerting() {
+  minuteCounter.HideControls();
+  secondCounter.HideControls();
+  lv_label_set_text_static(txtPlayPause, "Reset");
+  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
 }
 
 void Timer::SetTimerStopped() {
   minuteCounter.ShowControls();
   secondCounter.ShowControls();
   lv_label_set_text_static(txtPlayPause, "Start");
+  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 }
 
 void Timer::ToggleRunning() {
-  if (timerController.IsRunning()) {
-    uint32_t seconds = timerController.GetTimeRemaining() / 1000;
-    minuteCounter.SetValue(seconds / 60);
-    secondCounter.SetValue(seconds % 60);
-    timerController.StopTimer();
-    SetTimerStopped();
-  } else if (secondCounter.GetValue() + minuteCounter.GetValue() > 0) {
-    timerController.StartTimer((secondCounter.GetValue() + minuteCounter.GetValue() * 60) * 1000);
-    Refresh();
-    SetTimerRunning();
+  switch (timerController.State()) {
+    case Controllers::TimerController::TimerState::Running: {
+      uint32_t seconds = timerController.GetTimeRemaining() / 1000;
+      minuteCounter.SetValue(seconds / 60);
+      secondCounter.SetValue(seconds % 60);
+    }
+      timerController.StopTimer();
+      SetTimerStopped();
+      break;
+    case Controllers::TimerController::TimerState::Alerting:
+      timerController.StopAlerting();
+      Reset();
+      break;
+    case Controllers::TimerController::TimerState::Not_Running:
+      if (secondCounter.GetValue() + minuteCounter.GetValue() > 0) {
+        timerController.StartTimer((secondCounter.GetValue() + minuteCounter.GetValue() * 60) * 1000);
+        Refresh();
+        SetTimerRunning();
+      }
+      break;
   }
 }
 

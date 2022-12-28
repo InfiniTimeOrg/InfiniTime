@@ -22,13 +22,20 @@ namespace Pinetime {
 
       uint32_t GetTimeRemaining();
 
-      bool IsRunning();
-
       void OnTimerEnd();
+
+      void StopAlerting();
+
+      enum class TimerState { Not_Running, Running, Alerting };
+
+      TimerState State() const {
+        return state;
+      }
 
     private:
       System::SystemTask* systemTask = nullptr;
       TimerHandle_t timer;
+      TimerState state = TimerState::Not_Running;
     };
   }
 }
