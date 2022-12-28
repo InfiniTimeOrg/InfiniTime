@@ -35,18 +35,25 @@ static constexpr uint8_t bytesPerPixel = 2;
 static constexpr uint16_t colorWhite = 0xFFFF;
 static constexpr uint16_t colorGreen = 0xE007;
 
-Pinetime::Drivers::SpiMaster spi {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,
-                                  {Pinetime::Drivers::SpiMaster::BitOrder::Msb_Lsb,
-                                   Pinetime::Drivers::SpiMaster::Modes::Mode3,
-                                   Pinetime::Drivers::SpiMaster::Frequencies::Freq8Mhz,
-                                   Pinetime::PinMap::SpiSck,
-                                   Pinetime::PinMap::SpiMosi,
-                                   Pinetime::PinMap::SpiMiso}};
-Pinetime::Drivers::Spi flashSpi {spi, Pinetime::PinMap::SpiFlashCsn};
-Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
+Pinetime::Drivers::Nrf52::SpiMaster spiImpl {Pinetime::Drivers::Nrf52::SpiMaster::SpiModule::SPI0,
+                                             {Pinetime::Drivers::Nrf52::SpiMaster::BitOrder::Msb_Lsb,
+                                              Pinetime::Drivers::Nrf52::SpiMaster::Modes::Mode3,
+                                              Pinetime::Drivers::Nrf52::SpiMaster::Frequencies::Freq8Mhz,
+                                              Pinetime::PinMap::SpiSck,
+                                              Pinetime::PinMap::SpiMosi,
+                                              Pinetime::PinMap::SpiMiso}};
 
-Pinetime::Drivers::Spi lcdSpi {spi, Pinetime::PinMap::SpiLcdCsn};
+Pinetime::Drivers::SpiMaster spi {spiImpl};
+
+Pinetime::Drivers::Nrf52::Spi lcdSpiIpmpl {spiImpl, Pinetime::PinMap::SpiLcdCsn};
+Pinetime::Drivers::Spi lcdSpi {lcdSpiIpmpl};
 Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
+
+Pinetime::Drivers::Nrf52::Spi flashSpiImpl {spiImpl, Pinetime::PinMap::SpiFlashCsn};
+Pinetime::Drivers::Spi flashSpi {flashSpiImpl};
+
+Pinetime::Drivers::SpiFlash::SpiNorFlash spiNorFlashImpl{flashSpiImpl};
+Pinetime::Drivers::SpiNorFlash spiNorFlash {spiNorFlashImpl};
 
 Pinetime::Components::Gfx gfx {lcd};
 Pinetime::Controllers::BrightnessController brightnessController;

@@ -506,6 +506,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         drivers/nrf52/SpiMaster.cpp
         drivers/nrf52/Spi.cpp
         drivers/nrf52/TwiMaster.cpp
+        drivers/spiFlash/SpiNorFlash.cpp
         drivers/Watchdog.cpp
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
@@ -568,6 +569,7 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
         drivers/nrf52/SpiMaster.cpp
         drivers/nrf52/Spi.cpp
         drivers/nrf52/TwiMaster.cpp
+        drivers/spiFlash/SpiNorFlash.cpp
         logging/NrfLogger.cpp
 
         components/rle/RleDecoder.cpp
