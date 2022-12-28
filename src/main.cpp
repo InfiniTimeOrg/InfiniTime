@@ -59,6 +59,7 @@ Pinetime::Logging::DummyLogger logger;
 #endif
 
 #include "port/TouchPanel.h"
+#include "port/MotionSensor.h"
 
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
 static constexpr uint8_t motionSensorTwiAddress = 0x18;
@@ -101,7 +102,8 @@ Pinetime::Drivers::TouchPanel touchPanel {touchPanelImpl};
 #endif
 Pinetime::Components::LittleVgl lvgl {lcd, touchPanel};
 
-Pinetime::Drivers::Bma421 motionSensor {twiMaster, motionSensorTwiAddress};
+Pinetime::Drivers::MotionSensors::Bma421 motionSensorImpl {twiMaster, motionSensorTwiAddress};
+Pinetime::Drivers::MotionSensor motionSensor {motionSensorImpl};
 Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
 
 TimerHandle_t debounceTimer;

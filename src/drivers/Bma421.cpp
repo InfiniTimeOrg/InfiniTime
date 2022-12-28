@@ -4,7 +4,7 @@
 #include "drivers/TwiMaster.h"
 #include <drivers/Bma421_C/bma423.h>
 
-using namespace Pinetime::Drivers;
+using namespace Pinetime::Drivers::MotionSensors;
 
 namespace {
   int8_t user_i2c_read(uint8_t reg_addr, uint8_t* reg_data, uint32_t length, void* intf_ptr) {
@@ -44,13 +44,13 @@ void Bma421::Init() {
 
   switch (bma.chip_id) {
     case BMA423_CHIP_ID:
-      deviceType = DeviceTypes::BMA421;
+      deviceType = MotionSensors::DeviceTypes::BMA421;
       break;
     case BMA425_CHIP_ID:
-      deviceType = DeviceTypes::BMA425;
+      deviceType = MotionSensors::DeviceTypes::BMA425;
       break;
     default:
-      deviceType = DeviceTypes::Unknown;
+      deviceType = MotionSensors::DeviceTypes::Unknown;
       break;
   }
 
@@ -99,7 +99,7 @@ void Bma421::Write(uint8_t registerAddress, const uint8_t* data, size_t size) {
   twiMaster.Write(deviceAddress, registerAddress, data, size);
 }
 
-Bma421::Values Bma421::Process() {
+Pinetime::Drivers::MotionSensors::Values Bma421::Process() {
   if (not isOk)
     return {};
   struct bma4_accel data;
@@ -133,6 +133,6 @@ void Bma421::SoftReset() {
     nrf_delay_ms(1);
   }
 }
-Bma421::DeviceTypes Bma421::DeviceType() const {
+Pinetime::Drivers::MotionSensors::DeviceTypes Bma421::DeviceType() const {
   return deviceType;
 }

@@ -69,12 +69,12 @@ int32_t MotionController::currentShakeSpeed() {
 void MotionController::IsSensorOk(bool isOk) {
   isSensorOk = isOk;
 }
-void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
+void MotionController::Init(Pinetime::Drivers::MotionSensors::DeviceTypes types) {
   switch (types) {
-    case Drivers::Bma421::DeviceTypes::BMA421:
+    case Drivers::MotionSensors::DeviceTypes::BMA421:
       this->deviceType = DeviceTypes::BMA421;
       break;
-    case Drivers::Bma421::DeviceTypes::BMA425:
+    case Drivers::MotionSensors::DeviceTypes::BMA425:
       this->deviceType = DeviceTypes::BMA425;
       break;
     default:
