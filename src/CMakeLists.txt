@@ -588,7 +588,6 @@ set(INCLUDE_FILES
         BootloaderVersion.h
         logging/Logger.h
         logging/NrfLogger.h
-        port/infinitime.h
         displayapp/DisplayApp.h
         displayapp/Messages.h
         displayapp/TouchEvents.h

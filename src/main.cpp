@@ -58,7 +58,6 @@ Pinetime::Logging::NrfLogger logger;
 Pinetime::Logging::DummyLogger logger;
 #endif
 
-#include "port/infinitime.h"
 #include "port/TouchPanel.h"
 
 static constexpr uint8_t touchPanelTwiAddress = 0x15;
@@ -82,7 +81,7 @@ Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
 Pinetime::Drivers::Nrf52::Spi flashSpiImpl {spiImpl, Pinetime::PinMap::SpiFlashCsn};
 Pinetime::Drivers::Spi flashSpi {flashSpiImpl};
 
-Pinetime::Drivers::SpiFlash::SpiNorFlash spiNorFlashImpl{flashSpiImpl};
+Pinetime::Drivers::SpiFlash::SpiNorFlash spiNorFlashImpl{flashSpi};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {spiNorFlashImpl};
 
 // The TWI device should work @ up to 400Khz but there is a HW bug which prevent it from

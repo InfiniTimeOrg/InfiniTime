@@ -35,7 +35,7 @@
 
 #include "drivers/Watchdog.h"
 #include "systemtask/Messages.h"
-#include "port/infinitime.h"
+#include "port/SpiMaster.h"
 
 extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
 namespace Pinetime {

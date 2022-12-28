@@ -28,6 +28,10 @@ Pinetime::Logging::NrfLogger logger;
 Pinetime::Logging::DummyLogger logger;
 #endif
 
+#include "port/SpiMaster.h"
+#include "port/SpiNorFlash.h"
+#include "port/Spi.h"
+
 static constexpr uint8_t displayWidth = 240;
 static constexpr uint8_t displayHeight = 240;
 static constexpr uint8_t bytesPerPixel = 2;
@@ -52,7 +56,7 @@ Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
 Pinetime::Drivers::Nrf52::Spi flashSpiImpl {spiImpl, Pinetime::PinMap::SpiFlashCsn};
 Pinetime::Drivers::Spi flashSpi {flashSpiImpl};
 
-Pinetime::Drivers::SpiFlash::SpiNorFlash spiNorFlashImpl{flashSpiImpl};
+Pinetime::Drivers::SpiFlash::SpiNorFlash spiNorFlashImpl{flashSpi};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {spiNorFlashImpl};
 
 Pinetime::Components::Gfx gfx {lcd};

@@ -9,8 +9,7 @@
 #undef max
 #undef min
 
-#include "drivers/SpiNorFlash.h"
-#include "port/infinitime.h"
+#include "port/SpiNorFlash.h"
 
 namespace Pinetime {
   namespace System {

@@ -2,7 +2,7 @@
 #include "drivers/Spi.h"
 #include <cstddef>
 #include <cstdint>
-#include "port/infinitime.h"
+#include "port/Spi.h"
 
 namespace Pinetime {
   namespace Drivers {

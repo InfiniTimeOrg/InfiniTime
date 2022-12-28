@@ -1,5 +1,6 @@
 #pragma once
-#include "drivers/nrf52/Spi.h"
+#include "drivers/Spi.h"
+#include "port/Spi.h"
 #include <cstddef>
 #include <cstdint>
 
@@ -8,7 +9,7 @@ namespace Pinetime {
     namespace SpiFlash {
       class SpiNorFlash {
       public:
-        explicit SpiNorFlash(Pinetime::Drivers::Nrf52::Spi& spi);
+        explicit SpiNorFlash(Pinetime::Drivers::Spi& spi);
         SpiNorFlash(const SpiNorFlash&) = delete;
         SpiNorFlash& operator=(const SpiNorFlash&) = delete;
         SpiNorFlash(SpiNorFlash&&) = delete;
@@ -54,7 +55,7 @@ namespace Pinetime {
         };
         static constexpr uint16_t pageSize = 256;
 
-        Pinetime::Drivers::Nrf52::Spi& spi;
+        Pinetime::Drivers::Spi& spi;
         Identification device_id;
       };
     }

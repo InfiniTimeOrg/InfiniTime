@@ -1,6 +1,6 @@
 #pragma once
 #include "drivers/TwiMaster.h"
-#include "port/infinitime.h"
+#include "port/TwiMaster.h"
 #include <drivers/Bma421_C/bma4_defs.h>
 
 namespace Pinetime {
