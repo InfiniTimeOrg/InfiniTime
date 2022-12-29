@@ -120,13 +120,15 @@ void Counter::SetValueChangedEventCallback(void* userData, void (*handler)(void*
   this->ValueChangedHandler = handler;
 }
 
+void Counter::SetTextColor(lv_color_t color) {
+  lv_obj_set_style_local_text_color(number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color);
+}
+
 void Counter::Create() {
-  lv_style_init(&labelStyle);
   counterContainer = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(counterContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
 
   number = lv_label_create(counterContainer, nullptr);
-  lv_obj_add_style(number, LV_LABEL_PART_MAIN, &labelStyle);
   lv_obj_set_style_local_text_font(number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &font);
   lv_obj_align(number, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_auto_realign(number, true);

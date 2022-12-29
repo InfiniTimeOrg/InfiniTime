@@ -18,6 +18,7 @@ namespace Pinetime {
         void EnableMonthMode();
         void SetMax(int newMax);
         void SetValueChangedEventCallback(void* userData, void (*handler)(void* userData));
+        void SetTextColor(lv_color_t color);
 
         int GetValue() const {
           return value;
@@ -26,10 +27,6 @@ namespace Pinetime {
         lv_obj_t* GetObject() const {
           return counterContainer;
         };
-
-        lv_style_t* GetLabelStyle() {
-          return &labelStyle;
-        }
 
       private:
         void UpdateLabel();
@@ -49,7 +46,6 @@ namespace Pinetime {
         bool twelveHourMode = false;
         bool monthMode = false;
         lv_font_t& font;
-        lv_style_t labelStyle;
 
         void* userData = nullptr;
       };

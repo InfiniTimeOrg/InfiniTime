@@ -26,7 +26,7 @@ namespace Pinetime {
 
       void StopAlerting();
 
-      enum class TimerState { Not_Running, Running, Alerting };
+      enum class TimerState { Stopped, Running, Alerting };
 
       TimerState State() const {
         return state;
@@ -35,7 +35,7 @@ namespace Pinetime {
     private:
       System::SystemTask* systemTask = nullptr;
       TimerHandle_t timer;
-      TimerState state = TimerState::Not_Running;
+      TimerState state = TimerState::Stopped;
     };
   }
 }

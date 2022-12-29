@@ -22,7 +22,7 @@ void TimerController::StartTimer(uint32_t duration) {
 uint32_t TimerController::GetTimeRemaining() {
   TickType_t remainingTime = 0;
   switch (state) {
-    case TimerState::Not_Running:
+    case TimerState::Stopped:
       break;
     case TimerState::Running:
       remainingTime = xTimerGetExpiryTime(timer) - xTaskGetTickCount();
@@ -36,7 +36,7 @@ uint32_t TimerController::GetTimeRemaining() {
 
 void TimerController::StopTimer() {
   xTimerStop(timer, 0);
-  state = TimerState::Not_Running;
+  state = TimerState::Stopped;
 }
 
 void TimerController::OnTimerEnd() {
@@ -45,6 +45,6 @@ void TimerController::OnTimerEnd() {
 }
 
 void TimerController::StopAlerting() {
-  state = TimerState::Not_Running;
+  state = TimerState::Stopped;
   systemTask->PushMessage(System::Messages::StopRinging);
 }

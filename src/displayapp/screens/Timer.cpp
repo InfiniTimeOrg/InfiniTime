@@ -65,7 +65,7 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : S
     case Controllers::TimerController::TimerState::Running:
       SetTimerRunning();
       break;
-    case Controllers::TimerController::TimerState::Not_Running:
+    case Controllers::TimerController::TimerState::Stopped:
       SetTimerStopped();
       break;
     case Controllers::TimerController::TimerState::Alerting:
@@ -90,7 +90,7 @@ void Timer::MaskReset() {
   buttonPressing = false;
   // A click event is processed before a release event,
   // so the release event would override the "Pause" text without this check
-  if (timerController.State() == Controllers::TimerController::TimerState::Not_Running) {
+  if (timerController.State() == Controllers::TimerController::TimerState::Stopped) {
     lv_label_set_text_static(txtPlayPause, "Start");
   }
   maskPosition = 0;
@@ -115,7 +115,7 @@ void Timer::Refresh() {
       minuteCounter.SetValue(seconds / 60);
       secondCounter.SetValue(seconds % 60);
     } break;
-    case Controllers::TimerController::TimerState::Not_Running:
+    case Controllers::TimerController::TimerState::Stopped:
       if (buttonPressing && xTaskGetTickCount() > pressTime + pdMS_TO_TICKS(150)) {
         lv_label_set_text_static(txtPlayPause, "Reset");
         maskPosition += 15;
@@ -133,10 +133,8 @@ void Timer::Refresh() {
 void Timer::UpdateColor() {
   lv_color_t color = timerController.State() == Controllers::TimerController::TimerState::Alerting ? LV_COLOR_RED : LV_COLOR_WHITE;
   lv_obj_set_style_local_text_color(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color);
-  lv_style_set_text_color(minuteCounter.GetLabelStyle(), LV_STATE_DEFAULT, color);
-  lv_obj_refresh_style(minuteCounter.GetObject(), LV_OBJ_PART_MAIN, LV_STYLE_TEXT_COLOR);
-  lv_style_set_text_color(secondCounter.GetLabelStyle(), LV_STATE_DEFAULT, color);
-  lv_obj_refresh_style(secondCounter.GetObject(), LV_OBJ_PART_MAIN, LV_STYLE_TEXT_COLOR);
+  minuteCounter.SetTextColor(color);
+  secondCounter.SetTextColor(color);
 }
 
 void Timer::SetTimerRunning() {
@@ -150,7 +148,7 @@ void Timer::SetTimerRunning() {
 void Timer::SetTimerAlerting() {
   minuteCounter.HideControls();
   secondCounter.HideControls();
-  lv_label_set_text_static(txtPlayPause, "Reset");
+  lv_label_set_text_static(txtPlayPause, "Stop");
   UpdateColor();
 }
 
@@ -175,7 +173,7 @@ void Timer::ToggleRunning() {
       timerController.StopAlerting();
       Reset();
       break;
-    case Controllers::TimerController::TimerState::Not_Running:
+    case Controllers::TimerController::TimerState::Stopped:
       if (secondCounter.GetValue() + minuteCounter.GetValue() > 0) {
         timerController.StartTimer((secondCounter.GetValue() + minuteCounter.GetValue() * 60) * 1000);
         Refresh();
