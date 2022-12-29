@@ -23,10 +23,9 @@ namespace Pinetime {
       uint32_t GetTimeRemaining();
 
       void OnTimerEnd();
+      void StopRinging();
 
-      void StopAlerting();
-
-      enum class TimerState { Stopped, Running, Alerting };
+      enum class TimerState { Stopped, Running, Finished };
 
       TimerState State() const {
         return state;
@@ -36,6 +35,8 @@ namespace Pinetime {
       System::SystemTask* systemTask = nullptr;
       TimerHandle_t timer;
       TimerState state = TimerState::Stopped;
+      TimerHandle_t stopRingingTimer;
+      bool ringing = false;
     };
   }
 }

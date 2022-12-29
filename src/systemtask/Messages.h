@@ -10,6 +10,7 @@ namespace Pinetime {
       OnNewTime,
       OnNewNotification,
       OnTimerDone,
+      OnTimerDoneRinging,
       OnNewCall,
       BleConnected,
       UpdateTimeOut,

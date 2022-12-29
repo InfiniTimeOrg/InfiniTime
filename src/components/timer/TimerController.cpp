@@ -8,9 +8,15 @@ void TimerCallback(TimerHandle_t xTimer) {
   controller->OnTimerEnd();
 }
 
+void SetTimerToStopRingingCallback(TimerHandle_t xTimer) {
+  auto* controller = static_cast<TimerController*>(pvTimerGetTimerID(xTimer));
+  controller->StopRinging();
+}
+
 void TimerController::Init(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
   timer = xTimerCreate("Timer", 1, pdFALSE, this, TimerCallback);
+  stopRingingTimer = xTimerCreate("StopRingingTimer", 1, pdFALSE, this, SetTimerToStopRingingCallback);
 }
 
 void TimerController::StartTimer(uint32_t duration) {
@@ -27,7 +33,7 @@ uint32_t TimerController::GetTimeRemaining() {
     case TimerState::Running:
       remainingTime = xTimerGetExpiryTime(timer) - xTaskGetTickCount();
       break;
-    case TimerState::Alerting:
+    case TimerState::Finished:
       remainingTime = xTaskGetTickCount() - xTimerGetExpiryTime(timer);
       break;
   }
@@ -36,15 +42,23 @@ uint32_t TimerController::GetTimeRemaining() {
 
 void TimerController::StopTimer() {
   xTimerStop(timer, 0);
+  if (state == TimerState::Finished) {
+    StopRinging();
+  }
   state = TimerState::Stopped;
 }
 
 void TimerController::OnTimerEnd() {
-  state = TimerState::Alerting;
+  state = TimerState::Finished;
   systemTask->PushMessage(System::Messages::OnTimerDone);
+  ringing = true;
+  xTimerChangePeriod(stopRingingTimer, pdMS_TO_TICKS(10000), 0);
+  xTimerStart(stopRingingTimer, 0);
 }
 
-void TimerController::StopAlerting() {
-  state = TimerState::Stopped;
-  systemTask->PushMessage(System::Messages::StopRinging);
+void TimerController::StopRinging() {
+  if (ringing) {
+    systemTask->PushMessage(System::Messages::OnTimerDoneRinging);
+    ringing = false;
+  }
 }

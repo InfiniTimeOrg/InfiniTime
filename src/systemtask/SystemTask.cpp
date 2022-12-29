@@ -297,6 +297,11 @@ void SystemTask::Work() {
           }
           motorController.StartRinging();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
+          PushMessage(Messages::DisableSleeping);
+          break;
+        case Messages::OnTimerDoneRinging:
+          motorController.StopRinging();
+          PushMessage(Messages::EnableSleeping);
           break;
         case Messages::SetOffAlarm:
           if (state == SystemTaskState::Sleeping) {

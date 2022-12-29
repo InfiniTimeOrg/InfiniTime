@@ -5,6 +5,7 @@
 #include <lvgl/lvgl.h>
 
 using namespace Pinetime::Applications::Screens;
+using Pinetime::Controllers::TimerController;
 
 static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<Timer*>(obj->user_data);
@@ -17,7 +18,7 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
-Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : Screen(app), timerController {timerController} {
+Timer::Timer(DisplayApp* app, TimerController& timerController) : Screen(app), timerController {timerController} {
   colonLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
@@ -62,14 +63,14 @@ Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : S
   lv_obj_align(txtPlayPause, btnPlayPause, LV_ALIGN_CENTER, 0, 0);
 
   switch (timerController.State()) {
-    case Controllers::TimerController::TimerState::Running:
+    case TimerController::TimerState::Running:
       SetTimerRunning();
       break;
-    case Controllers::TimerController::TimerState::Stopped:
+    case TimerController::TimerState::Stopped:
       SetTimerStopped();
       break;
-    case Controllers::TimerController::TimerState::Alerting:
-      SetTimerAlerting();
+    case TimerController::TimerState::Finished:
+      SetTimerFinished();
       break;
   }
 
@@ -90,7 +91,7 @@ void Timer::MaskReset() {
   buttonPressing = false;
   // A click event is processed before a release event,
   // so the release event would override the "Pause" text without this check
-  if (timerController.State() == Controllers::TimerController::TimerState::Stopped) {
+  if (timerController.State() == TimerController::TimerState::Stopped) {
     lv_label_set_text_static(txtPlayPause, "Start");
   }
   maskPosition = 0;
@@ -109,13 +110,13 @@ void Timer::UpdateMask() {
 
 void Timer::Refresh() {
   switch (timerController.State()) {
-    case Controllers::TimerController::TimerState::Running:
-    case Controllers::TimerController::TimerState::Alerting: {
+    case TimerController::TimerState::Running:
+    case TimerController::TimerState::Finished: {
       uint32_t seconds = timerController.GetTimeRemaining() / 1000;
       minuteCounter.SetValue(seconds / 60);
       secondCounter.SetValue(seconds % 60);
     } break;
-    case Controllers::TimerController::TimerState::Stopped:
+    case TimerController::TimerState::Stopped:
       if (buttonPressing && xTaskGetTickCount() > pressTime + pdMS_TO_TICKS(150)) {
         lv_label_set_text_static(txtPlayPause, "Reset");
         maskPosition += 15;
@@ -131,7 +132,7 @@ void Timer::Refresh() {
 }
 
 void Timer::UpdateColor() {
-  lv_color_t color = timerController.State() == Controllers::TimerController::TimerState::Alerting ? LV_COLOR_RED : LV_COLOR_WHITE;
+  lv_color_t color = timerController.State() == TimerController::TimerState::Finished ? LV_COLOR_RED : LV_COLOR_WHITE;
   lv_obj_set_style_local_text_color(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color);
   minuteCounter.SetTextColor(color);
   secondCounter.SetTextColor(color);
@@ -145,7 +146,7 @@ void Timer::SetTimerRunning() {
   UpdateColor();
 }
 
-void Timer::SetTimerAlerting() {
+void Timer::SetTimerFinished() {
   minuteCounter.HideControls();
   secondCounter.HideControls();
   lv_label_set_text_static(txtPlayPause, "Stop");
@@ -161,7 +162,7 @@ void Timer::SetTimerStopped() {
 
 void Timer::ToggleRunning() {
   switch (timerController.State()) {
-    case Controllers::TimerController::TimerState::Running: {
+    case TimerController::TimerState::Running: {
       uint32_t seconds = timerController.GetTimeRemaining() / 1000;
       minuteCounter.SetValue(seconds / 60);
       secondCounter.SetValue(seconds % 60);
@@ -169,11 +170,11 @@ void Timer::ToggleRunning() {
       timerController.StopTimer();
       SetTimerStopped();
       break;
-    case Controllers::TimerController::TimerState::Alerting:
-      timerController.StopAlerting();
+    case TimerController::TimerState::Finished:
+      timerController.StopTimer();
       Reset();
       break;
-    case Controllers::TimerController::TimerState::Stopped:
+    case TimerController::TimerState::Stopped:
       if (secondCounter.GetValue() + minuteCounter.GetValue() > 0) {
         timerController.StartTimer((secondCounter.GetValue() + minuteCounter.GetValue() * 60) * 1000);
         Refresh();

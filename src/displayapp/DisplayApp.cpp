@@ -203,7 +203,7 @@ void DisplayApp::Refresh() {
       case Messages::TimerDone:
         if (currentApp == Apps::Timer) {
           auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
-          timer->SetTimerAlerting();
+          timer->SetTimerFinished();
         } else {
           LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Up);
         }
