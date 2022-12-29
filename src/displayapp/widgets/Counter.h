@@ -27,6 +27,10 @@ namespace Pinetime {
           return counterContainer;
         };
 
+        lv_style_t* GetLabelStyle() {
+          return &labelStyle;
+        }
+
       private:
         void UpdateLabel();
         void (*ValueChangedHandler)(void* userData) = nullptr;
@@ -45,6 +49,7 @@ namespace Pinetime {
         bool twelveHourMode = false;
         bool monthMode = false;
         lv_font_t& font;
+        lv_style_t labelStyle;
 
         void* userData = nullptr;
       };

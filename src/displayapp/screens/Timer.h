@@ -25,6 +25,7 @@ namespace Pinetime::Applications::Screens {
     void SetTimerRunning();
     void SetTimerStopped();
     void UpdateMask();
+    void UpdateColor();
     Controllers::TimerController& timerController;
 
     lv_obj_t* btnPlayPause;
@@ -37,6 +38,7 @@ namespace Pinetime::Applications::Screens {
 
     lv_task_t* taskRefresh;
     Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
+    lv_obj_t* colonLabel;
     Widgets::Counter secondCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
 
     bool buttonPressing = false;

@@ -18,9 +18,7 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
 }
 
 Timer::Timer(DisplayApp* app, Controllers::TimerController& timerController) : Screen(app), timerController {timerController} {
-
-  lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  colonLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_obj_set_style_local_text_color(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_label_set_text_static(colonLabel, ":");
@@ -132,26 +130,35 @@ void Timer::Refresh() {
   }
 }
 
+void Timer::UpdateColor() {
+  lv_color_t color = timerController.State() == Controllers::TimerController::TimerState::Alerting ? LV_COLOR_RED : LV_COLOR_WHITE;
+  lv_obj_set_style_local_text_color(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color);
+  lv_style_set_text_color(minuteCounter.GetLabelStyle(), LV_STATE_DEFAULT, color);
+  lv_obj_refresh_style(minuteCounter.GetObject(), LV_OBJ_PART_MAIN, LV_STYLE_TEXT_COLOR);
+  lv_style_set_text_color(secondCounter.GetLabelStyle(), LV_STATE_DEFAULT, color);
+  lv_obj_refresh_style(secondCounter.GetObject(), LV_OBJ_PART_MAIN, LV_STYLE_TEXT_COLOR);
+}
+
 void Timer::SetTimerRunning() {
   minuteCounter.HideControls();
   secondCounter.HideControls();
   lv_label_set_text_static(txtPlayPause, "Pause");
   MaskReset();
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  UpdateColor();
 }
 
 void Timer::SetTimerAlerting() {
   minuteCounter.HideControls();
   secondCounter.HideControls();
   lv_label_set_text_static(txtPlayPause, "Reset");
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  UpdateColor();
 }
 
 void Timer::SetTimerStopped() {
   minuteCounter.ShowControls();
   secondCounter.ShowControls();
   lv_label_set_text_static(txtPlayPause, "Start");
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  UpdateColor();
 }
 
 void Timer::ToggleRunning() {
