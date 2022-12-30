@@ -99,7 +99,6 @@ void SettingSetTime::SetTime() {
   dateTimeController.SetTime(dateTimeController.Year(),
                              static_cast<uint8_t>(dateTimeController.Month()),
                              dateTimeController.Day(),
-                             static_cast<uint8_t>(dateTimeController.DayOfWeek()),
                              static_cast<uint8_t>(hoursValue),
                              static_cast<uint8_t>(minutesValue),
                              0,

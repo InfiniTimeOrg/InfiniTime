@@ -14,7 +14,7 @@ namespace Pinetime {
       DeviceInformationService();
       void Init();
 
-      int OnDeviceInfoRequested(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
+      int OnDeviceInfoRequested(struct ble_gatt_access_ctxt* ctxt);
 
     private:
       static constexpr uint16_t deviceInfoId {0x180a};

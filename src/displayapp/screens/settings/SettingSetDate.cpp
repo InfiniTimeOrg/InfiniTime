@@ -100,7 +100,6 @@ void SettingSetDate::HandleButtonPress() {
   dateTimeController.SetTime(yearValue,
                              monthValue,
                              dayValue,
-                             0,
                              dateTimeController.Hours(),
                              dateTimeController.Minutes(),
                              dateTimeController.Seconds(),
