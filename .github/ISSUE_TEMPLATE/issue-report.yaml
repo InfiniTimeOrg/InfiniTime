@@ -1,5 +1,5 @@
 name: Issue report
-description: Report an issue
+description: Something's not good enough
 body:
 - type: checkboxes
   attributes:
@@ -11,7 +11,7 @@ body:
 - type: textarea
   attributes:
     label: Introduce the issue
-    description: This can be anything that is suboptimal or lacking. Explain why it is an issue if necessary.
+    description: Explain why it is an issue if necessary.
   validations:
     required: true
 - type: textarea
