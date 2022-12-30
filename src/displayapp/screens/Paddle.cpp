@@ -79,11 +79,11 @@ void Paddle::Refresh() {
   lv_label_set_text_fmt(points, "%04d", score);
 }
 
-bool Paddle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+bool Paddle::OnTouchEvent(Pinetime::Applications::TouchEvents /*event*/) {
   return true;
 }
 
-bool Paddle::OnTouchEvent(uint16_t x, uint16_t y) {
+bool Paddle::OnTouchEvent(uint16_t /*x*/, uint16_t y) {
   // sets the center paddle pos. (30px offset) with the the y_coordinate of the finger
   // but clamp it such that the paddle never clips off screen
   if (y < 31) {

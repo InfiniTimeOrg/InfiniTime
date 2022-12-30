@@ -18,12 +18,12 @@ namespace Pinetime {
     public:
       MotionService(Pinetime::System::SystemTask& system, Controllers::MotionController& motionController);
       void Init();
-      int OnStepCountRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context);
+      int OnStepCountRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context);
       void OnNewStepCountValue(uint32_t stepCount);
       void OnNewMotionValues(int16_t x, int16_t y, int16_t z);
 
-      void SubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle);
-      void UnsubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle);
+      void SubscribeNotification(uint16_t attributeHandle);
+      void UnsubscribeNotification(uint16_t attributeHandle);
 
     private:
       Pinetime::System::SystemTask& system;

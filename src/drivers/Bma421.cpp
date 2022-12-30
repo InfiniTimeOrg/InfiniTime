@@ -19,7 +19,7 @@ namespace {
     return 0;
   }
 
-  void user_delay(uint32_t period_us, void* intf_ptr) {
+  void user_delay(uint32_t period_us, void* /*intf_ptr*/) {
     nrf_delay_us(period_us);
   }
 }

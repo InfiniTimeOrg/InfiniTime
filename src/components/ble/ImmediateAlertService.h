@@ -19,7 +19,7 @@ namespace Pinetime {
 
       ImmediateAlertService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::NotificationManager& notificationManager);
       void Init();
-      int OnAlertLevelChanged(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context);
+      int OnAlertLevelChanged(uint16_t attributeHandle, ble_gatt_access_ctxt* context);
 
     private:
       Pinetime::System::SystemTask& systemTask;

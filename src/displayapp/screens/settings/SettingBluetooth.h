@@ -17,8 +17,8 @@ namespace Pinetime {
         SettingBluetooth(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingBluetooth() override;
 
-        void OnBluetoothEnabled(lv_obj_t* object, lv_event_t event);
-        void OnBluetoothDisabled(lv_obj_t* object, lv_event_t event);
+        void OnBluetoothEnabled(lv_event_t event);
+        void OnBluetoothDisabled(lv_event_t event);
 
       private:
         Controllers::Settings& settingsController;

@@ -11,12 +11,12 @@ using namespace Pinetime::Applications::Screens;
 namespace {
   void OnBluetoothDisabledEvent(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingBluetooth*>(obj->user_data);
-    screen->OnBluetoothDisabled(obj, event);
+    screen->OnBluetoothDisabled(event);
   }
 
   void OnBluetoothEnabledEvent(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingBluetooth*>(obj->user_data);
-    screen->OnBluetoothEnabled(obj, event);
+    screen->OnBluetoothEnabled(event);
   }
 }
 
@@ -75,7 +75,7 @@ SettingBluetooth::~SettingBluetooth() {
   }
 }
 
-void SettingBluetooth::OnBluetoothDisabled(lv_obj_t* object, lv_event_t event) {
+void SettingBluetooth::OnBluetoothDisabled(lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
     lv_checkbox_set_checked(cbEnabled, false);
     lv_checkbox_set_checked(cbDisabled, true);
@@ -83,7 +83,7 @@ void SettingBluetooth::OnBluetoothDisabled(lv_obj_t* object, lv_event_t event) {
   }
 }
 
-void SettingBluetooth::OnBluetoothEnabled(lv_obj_t* object, lv_event_t event) {
+void SettingBluetooth::OnBluetoothEnabled(lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
     lv_checkbox_set_checked(cbEnabled, true);
     lv_checkbox_set_checked(cbDisabled, false);
