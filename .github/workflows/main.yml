@@ -62,6 +62,10 @@ jobs:
         sudo apt-get update
         sudo apt-get -y install libsdl2-dev
 
+    - name: Install Ninja
+      run:  |
+        sudo apt-get -y install ninja-build
+
     - name: Install lv_font_conv
       run:
         npm i -g lv_font_conv@1.5.2
