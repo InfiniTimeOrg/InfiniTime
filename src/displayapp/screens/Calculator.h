@@ -25,16 +25,16 @@ namespace Pinetime {
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
 
       private:
-        lv_obj_t* buttonMatrix;
-        lv_obj_t* valueLabel;
-        lv_obj_t* resultLabel;
+        lv_obj_t* buttonMatrix {};
+        lv_obj_t* valueLabel {};
+        lv_obj_t* resultLabel {};
 
         void Eval();
         void ResetInput();
         void HandleInput();
         void UpdateValueLabel();
-        void UpdateResultLabel();
-        void UpdateOperation();
+        void UpdateResultLabel() const;
+        void UpdateOperation() const;
 
         // change this if you want to change the number of decimals
         static constexpr uint8_t N_DECIMALS = 4;

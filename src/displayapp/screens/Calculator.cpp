@@ -219,7 +219,7 @@ void Calculator::HandleInput() {
   UpdateResultLabel();
 }
 
-void Calculator::UpdateOperation() {
+void Calculator::UpdateOperation() const {
   lv_btnmatrix_clear_btn_ctrl(buttonMatrix, 7, LV_BTNMATRIX_CTRL_CHECK_STATE);
   lv_btnmatrix_clear_btn_ctrl(buttonMatrix, 11, LV_BTNMATRIX_CTRL_CHECK_STATE);
   lv_btnmatrix_clear_btn_ctrl(buttonMatrix, 15, LV_BTNMATRIX_CTRL_CHECK_STATE);
@@ -260,7 +260,7 @@ void Calculator::ResetInput() {
   error = Error::None;
 }
 
-void Calculator::UpdateResultLabel() {
+void Calculator::UpdateResultLabel() const {
   int64_t integer = result / FIXED_POINT_OFFSET;
   int64_t remainder = result % FIXED_POINT_OFFSET;
 
@@ -381,10 +381,10 @@ void Calculator::Eval() {
 
     // we use floats here because pow with fixed point numbers is weird
     case '^': {
-      double tmp_value = static_cast<double>(value);
+      auto tmp_value = static_cast<double>(value);
       tmp_value /= static_cast<double>(FIXED_POINT_OFFSET);
 
-      double tmp_result = static_cast<double>(result);
+      auto tmp_result = static_cast<double>(result);
       tmp_result /= static_cast<double>(FIXED_POINT_OFFSET);
 
       // check for overflow
