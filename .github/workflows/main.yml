@@ -27,7 +27,7 @@ jobs:
       - name: Workaround permission issues
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Checkout source files
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
       - name: Build
@@ -55,11 +55,8 @@ jobs:
           path: ./build/output/infinitime-resources-*.zip
 
   build-simulator:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-    - name: Install cmake
-      uses: lukka/get-cmake@v3.18.3
-
     - name: Install SDL2 development package
       run:  |
         sudo apt-get update
@@ -70,7 +67,7 @@ jobs:
         npm i -g lv_font_conv@1.5.2
 
     - name: Checkout source files
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: recursive
 
