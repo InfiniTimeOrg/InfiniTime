@@ -28,13 +28,13 @@ namespace Pinetime {
         lv_obj_t* buttonMatrix;
         lv_obj_t* valueLabel;
         lv_obj_t* resultLabel;
-        lv_obj_t* operationLabel;
 
         void Eval();
         void ResetInput();
         void HandleInput();
         void UpdateValueLabel();
         void UpdateResultLabel();
+        void UpdateOperation();
 
         // change this if you want to change the number of decimals
         static constexpr uint8_t N_DECIMALS = 4;
@@ -45,18 +45,22 @@ namespace Pinetime {
 
         // the screen can show 12 chars
         // but two are needed for '.' and '-'
-        static constexpr uint8_t MAX_DIGITS = 10;
+        static constexpr uint8_t MAX_DIGITS = 15;
         static constexpr int64_t MAX_VALUE = powi(10, MAX_DIGITS) - 1;
         static constexpr int64_t MIN_VALUE = -MAX_VALUE;
 
         int64_t value = 0;
         int64_t result = 0;
-        // this has length 2 because it must be a string
-        // because we also use it as the buffer for the operationLabel
-        // the second char is always \0
-        // we only care about the first char
-        char operation[2] {" "};
+        char operation = ' ';
         bool equalSignPressed = false;
+
+        enum Error {
+          TooLarge,
+          ZeroDivision,
+          None,
+        };
+        
+        Error error = Error::None;
       };
     }
   }

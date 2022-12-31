@@ -15,7 +15,7 @@ Calculator::~Calculator() {
   lv_obj_clean(lv_scr_act());
 }
 
-static const char* buttonMap[] = {"7", "8", "9", Symbols::backspace, "\n", "4", "5", "6", "+-", "\n", "1", "2", "3", "*/", "\n", ".", "0",
+static const char* buttonMap[] = {"7", "8", "9", Symbols::backspace, "\n", "4", "5", "6", "+ -", "\n", "1", "2", "3", "* /", "\n", ".", "0",
                                   "=", "^", ""};
 
 Calculator::Calculator(DisplayApp* app) : Screen(app) {
@@ -23,20 +23,15 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
   lv_label_set_long_mode(resultLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(resultLabel, LV_LABEL_ALIGN_RIGHT);
   lv_label_set_text_fmt(resultLabel, "%" PRId64, result);
-  lv_obj_set_size(resultLabel, 145, 20);
+  lv_obj_set_size(resultLabel, 200, 20);
   lv_obj_set_pos(resultLabel, 10, 5);
 
   valueLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(valueLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(valueLabel, LV_LABEL_ALIGN_RIGHT);
   lv_label_set_text_fmt(valueLabel, "%" PRId64, value);
-  lv_obj_set_size(valueLabel, 145, 20);
+  lv_obj_set_size(valueLabel, 200, 20);
   lv_obj_set_pos(valueLabel, 10, 35);
-
-  operationLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(operationLabel, operation);
-  lv_obj_set_size(operationLabel, 20, 20);
-  lv_obj_set_pos(operationLabel, 203, 35);
 
   buttonMatrix = lv_btnmatrix_create(lv_scr_act(), nullptr);
   buttonMatrix->user_data = this;
@@ -50,6 +45,10 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
   lv_obj_set_style_local_pad_right(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_FOCUSED, LV_COLOR_BLUE);
   lv_obj_align(buttonMatrix, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  
+  lv_obj_set_style_local_bg_opa(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_OPA_COVER);
+  lv_obj_set_style_local_bg_grad_stop(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, 128);
+  lv_obj_set_style_local_bg_main_stop(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, 128);
 }
 
 void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
@@ -72,6 +71,11 @@ void Calculator::HandleInput() {
     return;
   }
 
+  if ((equalSignPressed && (*buttonText != '=')) || (error != Error::None)) {
+    ResetInput();
+    UpdateOperation();
+  }
+
   // we only compare the first char because it is enough
   switch (*buttonText) {
     case '0':
@@ -84,10 +88,6 @@ void Calculator::HandleInput() {
     case '7':
     case '8':
     case '9':
-      if (equalSignPressed) {
-        ResetInput();
-      }
-
       // if this is true, we already pressed the . button
       if (offset < FIXED_POINT_OFFSET) {
         // *buttonText is the first char in buttonText
@@ -105,10 +105,6 @@ void Calculator::HandleInput() {
       break;
 
     case '.':
-      if (equalSignPressed) {
-        ResetInput();
-      }
-
       if (offset == FIXED_POINT_OFFSET) {
         offset /= 10;
       }
@@ -123,60 +119,57 @@ void Calculator::HandleInput() {
     // - then set the new operator
     // - + and - as well as * and / cycle on the same button
     case '+':
-      if (equalSignPressed) {
-        ResetInput();
-      }
-
       if (value != 0) {
         Eval();
         ResetInput();
       }
 
-      if (*operation == '+') {
-        *operation = '-';
-      } else {
-        *operation = '+';
+      switch (operation) {
+        case '+':
+          operation = '-';
+          break;
+        case '-':
+          operation = ' ';
+          break;
+        default:
+          operation = '+';
+          break;
       }
+      UpdateOperation();
       break;
 
     case '*':
-      if (equalSignPressed) {
-        ResetInput();
-      }
-
       if (value != 0) {
         Eval();
         ResetInput();
       }
 
-      if (*operation == '*') {
-        *operation = '/';
-      } else {
-        *operation = '*';
+      switch (operation) {
+        case '*':
+          operation = '/';
+          break;
+        case '/':
+          operation = ' ';
+          break;
+        default:
+          operation = '*';
+          break;
       }
+      UpdateOperation();
       break;
 
     case '^':
-      if (equalSignPressed) {
-        ResetInput();
-      }
-
       if (value != 0) {
         Eval();
         ResetInput();
       }
-      *operation = '^';
+      operation = '^';
+      UpdateOperation();
       break;
 
     // this is a little hacky because it matches only the first char
     case Symbols::backspace[0]:
-      if (equalSignPressed) {
-        ResetInput();
-      }
-
-      if (*operation != ' ') {
-        *operation = ' ';
-      } else if (value != 0) {
+      if (value != 0) {
         // delete one value digit
         if (offset < FIXED_POINT_OFFSET) {
           if (offset == 0) {
@@ -193,7 +186,11 @@ void Calculator::HandleInput() {
           value -= value % offset;
         }
       } else if (offset < FIXED_POINT_OFFSET) {
-        offset *= 10;
+        if (offset == 0) {
+          offset = 1;
+        } else {
+          offset *= 10;
+        }
       } else {
         // reset the result
         result = 0;
@@ -203,7 +200,7 @@ void Calculator::HandleInput() {
       NRF_LOG_INFO(". value: %" PRId64, value);
       NRF_LOG_INFO(". result: %" PRId64, result);
 
-      *operation = ' ';
+      operation = ' ';
       break;
 
     case '=':
@@ -211,17 +208,50 @@ void Calculator::HandleInput() {
       Eval();
       break;
   }
-
+  
   UpdateValueLabel();
   UpdateResultLabel();
-  lv_label_refr_text(operationLabel);
+}
+
+void Calculator::UpdateOperation() {
+  lv_btnmatrix_clear_btn_ctrl(buttonMatrix, 7, LV_BTNMATRIX_CTRL_CHECK_STATE);
+  lv_btnmatrix_clear_btn_ctrl(buttonMatrix, 11, LV_BTNMATRIX_CTRL_CHECK_STATE);
+  lv_btnmatrix_clear_btn_ctrl(buttonMatrix, 15, LV_BTNMATRIX_CTRL_CHECK_STATE);
+
+  if (operation == '+') {
+    lv_obj_set_style_local_bg_grad_dir(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_GRAD_DIR_HOR);
+    lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_COLOR_RED);
+    lv_obj_set_style_local_bg_grad_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_COLOR_GRAY);
+    lv_btnmatrix_set_btn_ctrl(buttonMatrix, 7, LV_BTNMATRIX_CTRL_CHECK_STATE);
+  } else if (operation == '-') {
+    lv_obj_set_style_local_bg_grad_dir(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_GRAD_DIR_HOR);
+    lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_COLOR_GRAY);
+    lv_obj_set_style_local_bg_grad_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_COLOR_RED);
+    lv_btnmatrix_set_btn_ctrl(buttonMatrix, 7, LV_BTNMATRIX_CTRL_CHECK_STATE);
+  }
+  if (operation == '*') {
+    lv_obj_set_style_local_bg_grad_dir(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_GRAD_DIR_HOR);
+    lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_COLOR_RED);
+    lv_obj_set_style_local_bg_grad_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_COLOR_GRAY);
+    lv_btnmatrix_set_btn_ctrl(buttonMatrix, 11, LV_BTNMATRIX_CTRL_CHECK_STATE);
+  } else if (operation == '/') {
+    lv_obj_set_style_local_bg_grad_dir(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_GRAD_DIR_HOR);
+    lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_COLOR_GRAY);
+    lv_obj_set_style_local_bg_grad_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_COLOR_RED);
+    lv_btnmatrix_set_btn_ctrl(buttonMatrix, 11, LV_BTNMATRIX_CTRL_CHECK_STATE);
+  } else if (operation == '^') {
+    lv_obj_set_style_local_bg_grad_dir(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_GRAD_DIR_NONE);
+    lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_COLOR_RED);
+    lv_btnmatrix_set_btn_ctrl(buttonMatrix, 15, LV_BTNMATRIX_CTRL_CHECK_STATE);
+  }
 }
 
 void Calculator::ResetInput() {
   value = 0;
   offset = FIXED_POINT_OFFSET;
-  *operation = ' ';
+  operation = ' ';
   equalSignPressed = false;
+  error = Error::None;
 }
 
 void Calculator::UpdateResultLabel() {
@@ -249,41 +279,53 @@ void Calculator::UpdateResultLabel() {
 }
 
 void Calculator::UpdateValueLabel() {
-  int64_t integer = value / FIXED_POINT_OFFSET;
-  int64_t remainder = value % FIXED_POINT_OFFSET;
+  switch (error) {
+    case Error::TooLarge:
+      lv_label_set_text_static(valueLabel, "too large");
+      break;
+    case Error::ZeroDivision:
+      lv_label_set_text_static(valueLabel, "zero division");
+      break;
+    case Error::None:
+    default: {
+      int64_t integer = value / FIXED_POINT_OFFSET;
+      int64_t remainder = value % FIXED_POINT_OFFSET;
 
-  int64_t printRemainder = remainder < 0 ? -remainder : remainder;
+      int64_t printRemainder = remainder < 0 ? -remainder : remainder;
 
-  uint8_t min_width = 0;
-  int64_t tmp_offset = offset;
+      uint8_t min_width = 0;
+      int64_t tmp_offset = offset;
 
-  // TODO there has to be a simpler way to do this
-  if (tmp_offset == 0) {
-    tmp_offset = 1;
-    min_width = 1;
-  }
-  while (tmp_offset < FIXED_POINT_OFFSET) {
-    tmp_offset *= 10;
-    min_width++;
-  }
-  min_width--;
+      // TODO there has to be a simpler way to do this
+      if (tmp_offset == 0) {
+        tmp_offset = 1;
+        min_width = 1;
+      }
+      while (tmp_offset < FIXED_POINT_OFFSET) {
+        tmp_offset *= 10;
+        min_width++;
+      }
+      min_width--;
 
-  for (uint8_t i = min_width; i < N_DECIMALS; i++) {
-    printRemainder /= 10;
-  }
+      for (uint8_t i = min_width; i < N_DECIMALS; i++) {
+        printRemainder /= 10;
+      }
 
-  if (offset == FIXED_POINT_OFFSET) {
-    lv_label_set_text_fmt(valueLabel, "%" PRId64, integer);
-  } else if ((offset == (FIXED_POINT_OFFSET / 10)) && (remainder == 0)) {
-    lv_label_set_text_fmt(valueLabel, "%" PRId64 ".", integer);
-  } else {
-    lv_label_set_text_fmt(valueLabel, "%" PRId64 ".%0*" PRId64, integer, min_width, printRemainder);
+      if (offset == FIXED_POINT_OFFSET) {
+        lv_label_set_text_fmt(valueLabel, "%" PRId64, integer);
+      } else if ((offset == (FIXED_POINT_OFFSET / 10)) && (remainder == 0)) {
+        lv_label_set_text_fmt(valueLabel, "%" PRId64 ".", integer);
+      } else {
+        lv_label_set_text_fmt(valueLabel, "%" PRId64 ".%0*" PRId64, integer, min_width, printRemainder);
+      }
+    }
+    break;
   }
 }
 
 // update the result based on value and operation
 void Calculator::Eval() {
-  switch (*operation) {
+  switch (operation) {
     case ' ':
       result = value;
       break;
@@ -291,6 +333,7 @@ void Calculator::Eval() {
     case '+':
       // check for overflow
       if (((result > 0) && (value > (MAX_VALUE - result))) || ((result < 0) && (value < (MIN_VALUE - result)))) {
+        error = Error::TooLarge;
         break;
       }
 
@@ -299,6 +342,7 @@ void Calculator::Eval() {
     case '-':
       // check for overflow
       if (((result < 0) && (value > (MAX_VALUE + result))) || ((result > 0) && (value < (MIN_VALUE + result)))) {
+        error = Error::TooLarge;
         break;
       }
 
@@ -310,6 +354,7 @@ void Calculator::Eval() {
       // therefore we have to multiply it again for the comparison with value
       if (((result != 0) && (value > (FIXED_POINT_OFFSET * (MAX_VALUE / result)))) ||
           ((result != 0) && (value < (FIXED_POINT_OFFSET * (MIN_VALUE / result))))) {
+        error = Error::TooLarge;
         break;
       }
 
@@ -320,6 +365,7 @@ void Calculator::Eval() {
     case '/':
       // check for zero division
       if (value == 0) {
+        error = Error::ZeroDivision;
         break;
       }
 
@@ -340,7 +386,8 @@ void Calculator::Eval() {
       // result^value > MAX_VALUE iff 
       // log2(result^value) > log2(MAX_VALUE) iff
       // value * log2(result) > log2(MAX_VALUE)
-      if ((value * log2(result)) > log2(MAX_VALUE)) {
+      if ((tmp_value * log2(std::abs(tmp_result))) > log2(static_cast<double>(MAX_VALUE))) {
+        error = Error::TooLarge;
         break;
       }
 
