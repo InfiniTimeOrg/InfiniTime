@@ -59,7 +59,7 @@ namespace Pinetime {
           ZeroDivision,
           None,
         };
-        
+
         Error error = Error::None;
       };
     }

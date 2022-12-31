@@ -45,7 +45,7 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
   lv_obj_set_style_local_pad_right(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_FOCUSED, LV_COLOR_BLUE);
   lv_obj_align(buttonMatrix, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  
+
   lv_obj_set_style_local_bg_opa(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_OPA_COVER);
   lv_obj_set_style_local_bg_grad_stop(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, 128);
   lv_obj_set_style_local_bg_main_stop(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, 128);
@@ -214,7 +214,7 @@ void Calculator::HandleInput() {
       }
       break;
   }
-  
+
   UpdateValueLabel();
   UpdateResultLabel();
 }
@@ -324,8 +324,7 @@ void Calculator::UpdateValueLabel() {
       } else {
         lv_label_set_text_fmt(valueLabel, "%" PRId64 ".%0*" PRId64, integer, min_width, printRemainder);
       }
-    }
-    break;
+    } break;
   }
 }
 
@@ -389,7 +388,7 @@ void Calculator::Eval() {
       tmp_result /= static_cast<double>(FIXED_POINT_OFFSET);
 
       // check for overflow
-      // result^value > MAX_VALUE iff 
+      // result^value > MAX_VALUE iff
       // log2(result^value) > log2(MAX_VALUE) iff
       // value * log2(result) > log2(MAX_VALUE)
       if ((tmp_value * log2(std::abs(tmp_result))) > log2(static_cast<double>(MAX_VALUE))) {
