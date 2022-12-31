@@ -206,6 +206,12 @@ void Calculator::HandleInput() {
     case '=':
       equalSignPressed = true;
       Eval();
+      // If the operation is ' ' then we move the value to the result.
+      // We reset the input after this.
+      // This seems more convenient.
+      if (operation == ' ') {
+        ResetInput();
+      }
       break;
   }
   
