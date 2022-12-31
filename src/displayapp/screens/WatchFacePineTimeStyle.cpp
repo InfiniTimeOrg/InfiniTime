@@ -50,6 +50,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
                                                Controllers::Settings& settingsController,
                                                Controllers::MotionController& motionController)
   : currentDateTime {{}},
+    batteryIcon(false),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
