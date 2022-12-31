@@ -79,7 +79,7 @@ TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const ch
     return;
   }
 
-  char* buf = (char*) lv_mem_alloc(info.size);
+  buf = (char*) lv_mem_alloc(info.size);
   if (buf == nullptr) {
     lv_label_set_text_static(label, "could not open file");
     return;
@@ -93,10 +93,15 @@ TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const ch
   }
 
   fs.FileRead(&fp, reinterpret_cast<uint8_t*>(buf), info.size);
-  lv_label_set_text(label, buf);
-  lv_mem_free(buf);
+  lv_label_set_text_static(label, buf);
 
   fs.FileClose(&fp);
 
   ShowInfo();
+}
+
+TextView::~TextView() {
+  if (buf != nullptr)
+    lv_mem_free(buf);
+  lv_obj_clean(lv_scr_act());
 }
