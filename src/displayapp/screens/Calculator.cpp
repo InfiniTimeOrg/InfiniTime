@@ -84,6 +84,10 @@ void Calculator::HandleInput() {
     case '7':
     case '8':
     case '9':
+      if (equalSignPressed) {
+        ResetInput();
+      }
+
       // if this is true, we already pressed the . button
       if (offset < FIXED_POINT_OFFSET) {
         // *buttonText is the first char in buttonText
@@ -94,7 +98,6 @@ void Calculator::HandleInput() {
         value *= 10;
         value += offset * (*buttonText - '0');
       }
-      UpdateValueLabel();
 
       NRF_LOG_INFO(". offset: %" PRId64, offset);
       NRF_LOG_INFO(". value: %" PRId64, value);
@@ -102,10 +105,13 @@ void Calculator::HandleInput() {
       break;
 
     case '.':
+      if (equalSignPressed) {
+        ResetInput();
+      }
+
       if (offset == FIXED_POINT_OFFSET) {
         offset /= 10;
       }
-      UpdateValueLabel();
 
       NRF_LOG_INFO(". offset: %" PRId64, offset);
       NRF_LOG_INFO(". value: %" PRId64, value);
@@ -117,12 +123,13 @@ void Calculator::HandleInput() {
     // - then set the new operator
     // - + and - as well as * and / cycle on the same button
     case '+':
+      if (equalSignPressed) {
+        ResetInput();
+      }
+
       if (value != 0) {
         Eval();
         ResetInput();
-
-        UpdateValueLabel();
-        UpdateResultLabel();
       }
 
       if (*operation == '+') {
@@ -130,17 +137,16 @@ void Calculator::HandleInput() {
       } else {
         *operation = '+';
       }
-
-      lv_label_refr_text(operationLabel);
       break;
 
     case '*':
+      if (equalSignPressed) {
+        ResetInput();
+      }
+
       if (value != 0) {
         Eval();
         ResetInput();
-
-        UpdateValueLabel();
-        UpdateResultLabel();
       }
 
       if (*operation == '*') {
@@ -148,30 +154,30 @@ void Calculator::HandleInput() {
       } else {
         *operation = '*';
       }
-
-      lv_label_refr_text(operationLabel);
       break;
 
     case '^':
+      if (equalSignPressed) {
+        ResetInput();
+      }
+
       if (value != 0) {
         Eval();
         ResetInput();
-
-        UpdateValueLabel();
-        UpdateResultLabel();
       }
       *operation = '^';
-
-      lv_label_refr_text(operationLabel);
       break;
 
     // this is a little hacky because it matches only the first char
     case Symbols::backspace[0]:
+      if (equalSignPressed) {
+        ResetInput();
+      }
+
       if (*operation != ' ') {
         *operation = ' ';
       } else if (value != 0) {
         // delete one value digit
-
         if (offset < FIXED_POINT_OFFSET) {
           if (offset == 0) {
             offset = 1;
@@ -181,22 +187,16 @@ void Calculator::HandleInput() {
         } else {
           value /= 10;
         }
-
         if (offset < FIXED_POINT_OFFSET) {
           value -= value % (10 * offset);
         } else {
           value -= value % offset;
         }
-
-        UpdateValueLabel();
       } else if (offset < FIXED_POINT_OFFSET) {
         offset *= 10;
-        UpdateValueLabel();
       } else {
         // reset the result
-
         result = 0;
-        UpdateResultLabel();
       }
 
       NRF_LOG_INFO(". offset: %" PRId64, offset);
@@ -204,22 +204,24 @@ void Calculator::HandleInput() {
       NRF_LOG_INFO(". result: %" PRId64, result);
 
       *operation = ' ';
-      lv_label_refr_text(operationLabel);
       break;
 
     case '=':
+      equalSignPressed = true;
       Eval();
-
-      UpdateValueLabel();
-      UpdateResultLabel();
       break;
   }
+
+  UpdateValueLabel();
+  UpdateResultLabel();
+  lv_label_refr_text(operationLabel);
 }
 
 void Calculator::ResetInput() {
   value = 0;
   offset = FIXED_POINT_OFFSET;
   *operation = ' ';
+  equalSignPressed = false;
 }
 
 void Calculator::UpdateResultLabel() {
@@ -316,11 +318,14 @@ void Calculator::Eval() {
       result /= FIXED_POINT_OFFSET;
       break;
     case '/':
-      if (value != 0) {
-        // fixed point offset will be divided too
-        result *= FIXED_POINT_OFFSET;
-        result /= value;
+      // check for zero division
+      if (value == 0) {
+        break;
       }
+
+      // fixed point offset will be divided too
+      result *= FIXED_POINT_OFFSET;
+      result /= value;
       break;
 
     // we use floats here because pow with fixed point numbers is weird
@@ -330,6 +335,14 @@ void Calculator::Eval() {
 
       double tmp_result = static_cast<double>(result);
       tmp_result /= static_cast<double>(FIXED_POINT_OFFSET);
+
+      // check for overflow
+      // result^value > MAX_VALUE iff 
+      // log2(result^value) > log2(MAX_VALUE) iff
+      // value * log2(result) > log2(MAX_VALUE)
+      if ((value * log2(result)) > log2(MAX_VALUE)) {
+        break;
+      }
 
       tmp_result = pow(tmp_result, tmp_value);
       tmp_result *= static_cast<double>(FIXED_POINT_OFFSET);

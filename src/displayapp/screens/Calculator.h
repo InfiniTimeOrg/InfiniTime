@@ -56,6 +56,7 @@ namespace Pinetime {
         // the second char is always \0
         // we only care about the first char
         char operation[2] {" "};
+        bool equalSignPressed = false;
       };
     }
   }
