@@ -29,7 +29,6 @@ namespace Pinetime {
       SetOffAlarm,
       MeasureBatteryTimerExpired,
       BatteryPercentageUpdated,
-      LowBattery,
       StartFileTransfer,
       StopFileTransfer,
       BleRadioEnableToggle
