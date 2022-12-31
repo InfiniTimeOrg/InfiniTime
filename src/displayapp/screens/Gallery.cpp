@@ -5,7 +5,7 @@
 using namespace Pinetime::Applications::Screens;
 
 Gallery::Gallery(DisplayApp* app, Pinetime::Controllers::FS& filesystem) : Screen(app), filesystem(filesystem) {
-  ListDir();
+  nScreens = CountFiles();
 
   if (nScreens == 0) {
     lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
@@ -35,22 +35,13 @@ bool Gallery::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return false;
 }
 
-void Gallery::ListDir() {
-  lfs_dir_t dir = {0};
+uint8_t Gallery::CountFiles() {
   lfs_info info = {0};
-  nScreens = 0;
-
-  int res = filesystem.DirOpen(directory, &dir);
-  if (res != 0) {
-    NRF_LOG_INFO("[Gallery] can't find directory");
-    return;
+  if (filesystem.Stat(index_file, &info) != LFS_ERR_OK) {
+    NRF_LOG_INFO("[Gallery] can't stat index");
+    return 0;
   }
-  while (filesystem.DirRead(&dir, &info)) {
-    if (info.type == LFS_TYPE_DIR)
-      continue;
-    nScreens++;
-  }
-  assert(filesystem.DirClose(&dir) == 0);
+  return info.size / LFS_NAME_MAX;
 }
 
 bool Gallery::Open(int n, DisplayApp::FullRefreshDirections direction) {
@@ -59,32 +50,32 @@ bool Gallery::Open(int n, DisplayApp::FullRefreshDirections direction) {
 
   index = n;
 
-  lfs_dir_t dir = {0};
-  lfs_info info = {0};
+  char fullname[LFS_NAME_MAX+2] = "F:";
 
-  int res = filesystem.DirOpen(directory, &dir);
-  if (res != 0) {
-    NRF_LOG_INFO("[Gallery] can't find directory");
+  lfs_file_t fp;
+  int res = filesystem.FileOpen(&fp, index_file, LFS_O_RDONLY);
+  if (res != LFS_ERR_OK) {
+    NRF_LOG_INFO("[Gallery] can't open index");
     return false;
   }
-  int i = 0;
-  while (filesystem.DirRead(&dir, &info)) {
-    if (info.type == LFS_TYPE_DIR)
-      continue;
-    if (n == i)
-      break;
-    i++;
+  res = filesystem.FileSeek(&fp, n * LFS_NAME_MAX);
+  if (res != n * LFS_NAME_MAX) {
+    filesystem.FileClose(&fp);
+    NRF_LOG_INFO("[Gallery] can't seek index");
+    return false;
   }
-  assert(filesystem.DirClose(&dir) == 0);
+  res = filesystem.FileRead(&fp, reinterpret_cast<uint8_t*>(fullname)+2, LFS_NAME_MAX);
+  if (res != LFS_NAME_MAX) {
+    NRF_LOG_INFO("[Gallery] can't read index");
+    filesystem.FileClose(&fp);
+    return false;
+  }
+  filesystem.FileClose(&fp);
 
   if (current != nullptr) {
     current.reset(nullptr);
     app->SetFullRefresh(direction);
   }
-
-  char fullname[LFS_NAME_MAX] = "F:";
-  strncat(fullname, directory, sizeof(fullname) - 2 - 1);
-  strncat(fullname, info.name, sizeof(fullname) - strlen(directory) - 2 - 1);
 
   if (StringEndsWith(fullname, ".bin")) {
     current = std::make_unique<ImageView>(n, nScreens, app, fullname);
