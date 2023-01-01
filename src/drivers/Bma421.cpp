@@ -1,11 +1,9 @@
 #include "drivers/Bma421.h"
-#include <libraries/delay/nrf_delay.h>
-#include <libraries/log/nrf_log.h>
 #include "drivers/TwiMaster.h"
 #include <drivers/Bma421_C/bma423.h>
+#include <libraries/delay/nrf_delay.h>
 
 using namespace Pinetime::Drivers;
-
 namespace {
   int8_t user_i2c_read(uint8_t reg_addr, uint8_t* reg_data, uint32_t length, void* intf_ptr) {
     auto bma421 = static_cast<Bma421*>(intf_ptr);
@@ -24,7 +22,7 @@ namespace {
   }
 }
 
-Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}, deviceAddress {twiAddress} {
+Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : AccelerationSensor(twiMaster, twiAddress) {
   bma.intf = BMA4_I2C_INTF;
   bma.bus_read = user_i2c_read;
   bma.bus_write = user_i2c_write;
@@ -35,45 +33,44 @@ Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}
 }
 
 void Bma421::Init() {
-  if (not isResetOk)
+  if (!isResetOk)
     return; // Call SoftReset (and reset TWI device) first!
 
+  // Initialize interface
   auto ret = bma423_init(&bma);
   if (ret != BMA4_OK)
     return;
 
+  // Identify chip by ID. The driver code has been modified to handle BMA421 as BMA423
   switch (bma.chip_id) {
     case BMA423_CHIP_ID:
-      deviceType = DeviceTypes::BMA421;
+      deviceType = AccelerationDeviceTypes::BMA421;
       break;
     case BMA425_CHIP_ID:
-      deviceType = DeviceTypes::BMA425;
+      deviceType = AccelerationDeviceTypes::BMA425;
       break;
     default:
-      deviceType = DeviceTypes::Unknown;
+      deviceType = AccelerationDeviceTypes::Unknown;
       break;
   }
 
+  // Load proprietary firmware blob required for step counting engine
   ret = bma423_write_config_file(&bma);
   if (ret != BMA4_OK)
     return;
 
-  ret = bma4_set_interrupt_mode(BMA4_LATCH_MODE, &bma);
-  if (ret != BMA4_OK)
-    return;
-
+  // Enable step counter and accelerometer, disable step detector
   ret = bma423_feature_enable(BMA423_STEP_CNTR, 1, &bma);
   if (ret != BMA4_OK)
     return;
-
   ret = bma423_step_detector_enable(0, &bma);
   if (ret != BMA4_OK)
     return;
-
   ret = bma4_set_accel_enable(1, &bma);
   if (ret != BMA4_OK)
     return;
 
+  // Configure accelerometer
   struct bma4_accel_config accel_conf;
   accel_conf.odr = BMA4_OUTPUT_DATA_RATE_100HZ;
   accel_conf.range = BMA4_ACCEL_RANGE_2G;
@@ -83,25 +80,13 @@ void Bma421::Init() {
   if (ret != BMA4_OK)
     return;
 
-  isOk = true;
+  isInitialized = true;
 }
 
-void Bma421::Reset() {
-  uint8_t data = 0xb6;
-  twiMaster.Write(deviceAddress, 0x7E, &data, 1);
-}
-
-void Bma421::Read(uint8_t registerAddress, uint8_t* buffer, size_t size) {
-  twiMaster.Read(deviceAddress, registerAddress, buffer, size);
-}
-
-void Bma421::Write(uint8_t registerAddress, const uint8_t* data, size_t size) {
-  twiMaster.Write(deviceAddress, registerAddress, data, size);
-}
-
-Bma421::Values Bma421::Process() {
-  if (not isOk)
+AccelerationValues Bma421::Process() {
+  if (!isInitialized)
     return {};
+
   struct bma4_accel data;
   bma4_read_accel_xyz(&data, &bma);
 
@@ -116,10 +101,7 @@ Bma421::Values Bma421::Process() {
   bma423_activity_output(&activity, &bma);
 
   // X and Y axis are swapped because of the way the sensor is mounted in the PineTime
-  return {steps, data.y, data.x, data.z};
-}
-bool Bma421::IsOk() const {
-  return isOk;
+  return {steps, data.y, data.x, data.z, (int16_t*) fifo, 0};
 }
 
 void Bma421::ResetStepCounter() {
@@ -132,7 +114,4 @@ void Bma421::SoftReset() {
     isResetOk = true;
     nrf_delay_ms(1);
   }
-}
-Bma421::DeviceTypes Bma421::DeviceType() const {
-  return deviceType;
 }

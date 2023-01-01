@@ -90,20 +90,22 @@ void MotionService::OnNewStepCountValue(uint32_t stepCount) {
 
   ble_gattc_notify_custom(connectionHandle, stepCountHandle, om);
 }
-void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
+
+void MotionService::OnNewMotionValues(int16_t* samples, uint16_t samples_length) {
   if (!motionValuesNoficationEnabled)
     return;
 
-  int16_t buffer[3] = {motionController.X(), motionController.Y(), motionController.Z()};
-  auto* om = ble_hs_mbuf_from_flat(buffer, 3 * sizeof(int16_t));
+  if (samples_length > 0 && samples != nullptr) {
+    auto* om = ble_hs_mbuf_from_flat(samples, samples_length * 3 * sizeof(int16_t));
 
-  uint16_t connectionHandle = system.nimble().connHandle();
+    uint16_t connectionHandle = system.nimble().connHandle();
 
-  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
-    return;
+    if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+      return;
+    }
+
+    ble_gattc_notify_custom(connectionHandle, motionValuesHandle, om);
   }
-
-  ble_gattc_notify_custom(connectionHandle, motionValuesHandle, om);
 }
 
 void MotionService::SubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) {

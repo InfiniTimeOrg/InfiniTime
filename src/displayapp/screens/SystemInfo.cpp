@@ -17,13 +17,15 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  const char* ToString(const Pinetime::Controllers::MotionController::DeviceTypes deviceType) {
+  const char* ToString(const Pinetime::Drivers::AccelerationDeviceTypes deviceType) {
     switch (deviceType) {
-      case Pinetime::Controllers::MotionController::DeviceTypes::BMA421:
+      case Pinetime::Drivers::AccelerationDeviceTypes::BMA421:
         return "BMA421";
-      case Pinetime::Controllers::MotionController::DeviceTypes::BMA425:
+      case Pinetime::Drivers::AccelerationDeviceTypes::BMA425:
         return "BMA425";
-      case Pinetime::Controllers::MotionController::DeviceTypes::Unknown:
+      case Pinetime::Drivers::AccelerationDeviceTypes::SC7A20:
+        return "SC7A20";
+      case Pinetime::Drivers::AccelerationDeviceTypes::Unknown:
         return "???";
     }
     return "???";
