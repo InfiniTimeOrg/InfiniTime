@@ -163,7 +163,12 @@ void Calculator::HandleInput() {
         Eval();
         ResetInput();
       }
-      operation = '^';
+
+      if (operation == '^') {
+        operation = ' ';
+      } else {
+        operation = '^';
+      }
       UpdateOperation();
       break;
 
