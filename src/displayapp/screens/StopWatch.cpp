@@ -1,6 +1,4 @@
 #include "displayapp/screens/StopWatch.h"
-
-#include "displayapp/screens/Symbols.h"
 #include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -18,12 +16,16 @@ namespace {
 
   void play_pause_event_handler(lv_obj_t* obj, lv_event_t event) {
     auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
-    stopWatch->playPauseBtnEventHandler(event);
+    if (event == LV_EVENT_CLICKED) {
+      stopWatch->playPauseBtnEventHandler();
+    }
   }
 
   void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
     auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
-    stopWatch->stopLapBtnEventHandler(event);
+    if (event == LV_EVENT_CLICKED) {
+      stopWatch->stopLapBtnEventHandler();
+    }
   }
 }
 
@@ -31,13 +33,10 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask) : Screen(a
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   lv_label_set_text_static(time, "00:00");
   lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -45);
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
-  // lv_obj_set_style_local_text_font(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   lv_label_set_text_static(msecTime, "00");
   lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_CENTER, 0, 3);
 
@@ -47,7 +46,6 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask) : Screen(a
   lv_obj_set_size(btnPlayPause, 115, 50);
   lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
-  lv_label_set_text_static(txtPlayPause, Symbols::play);
 
   btnStopLap = lv_btn_create(lv_scr_act(), nullptr);
   btnStopLap->user_data = this;
@@ -55,14 +53,15 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask) : Screen(a
   lv_obj_set_size(btnStopLap, 115, 50);
   lv_obj_align(btnStopLap, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   txtStopLap = lv_label_create(btnStopLap, nullptr);
-  lv_label_set_text_static(txtStopLap, Symbols::stop);
   lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
   lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
 
   lapText = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(lapText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+  lv_obj_set_style_local_text_color(lapText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   lv_obj_align(lapText, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 50, 30);
   lv_label_set_text_static(lapText, "");
+
+  SetInterfaceStopped();
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
@@ -73,42 +72,61 @@ StopWatch::~StopWatch() {
   lv_obj_clean(lv_scr_act());
 }
 
-void StopWatch::Reset() {
-  currentState = States::Init;
-  oldTimeElapsed = 0;
+void StopWatch::SetInterfacePaused() {
+  lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
+  lv_label_set_text_static(txtPlayPause, "Resume");
+  lv_label_set_text_static(txtStopLap, "Clear");
+}
+
+void StopWatch::SetInterfaceRunning() {
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+
+  lv_label_set_text_static(txtPlayPause, "Pause");
+  lv_label_set_text_static(txtStopLap, "Lap");
+
+  lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
+  lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
+}
+
+void StopWatch::SetInterfaceStopped() {
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
 
   lv_label_set_text_static(time, "00:00");
   lv_label_set_text_static(msecTime, "00");
 
   lv_label_set_text_static(lapText, "");
-  lapsDone = 0;
+  lv_label_set_text_static(txtPlayPause, "Start");
+  lv_label_set_text_static(txtStopLap, "Lap");
   lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
   lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
 }
 
+void StopWatch::Reset() {
+  SetInterfaceStopped();
+  currentState = States::Init;
+  oldTimeElapsed = 0;
+  lapsDone = 0;
+}
+
 void StopWatch::Start() {
-  lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
-  lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
-  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
-  lv_label_set_text_static(txtPlayPause, Symbols::pause);
-  lv_label_set_text_static(txtStopLap, Symbols::lapsFlag);
+  SetInterfaceRunning();
   startTime = xTaskGetTickCount();
   currentState = States::Running;
   systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
 }
 
 void StopWatch::Pause() {
+  SetInterfacePaused();
   startTime = 0;
   // Store the current time elapsed in cache
   oldTimeElapsed = laps[lapsDone];
   currentState = States::Halted;
-  lv_label_set_text_static(txtPlayPause, Symbols::play);
-  lv_label_set_text_static(txtStopLap, Symbols::stop);
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
@@ -122,23 +140,15 @@ void StopWatch::Refresh() {
   }
 }
 
-void StopWatch::playPauseBtnEventHandler(lv_event_t event) {
-  if (event != LV_EVENT_CLICKED) {
-    return;
-  }
-  if (currentState == States::Init) {
+void StopWatch::playPauseBtnEventHandler() {
+  if (currentState == States::Init || currentState == States::Halted) {
     Start();
   } else if (currentState == States::Running) {
     Pause();
-  } else if (currentState == States::Halted) {
-    Start();
   }
 }
 
-void StopWatch::stopLapBtnEventHandler(lv_event_t event) {
-  if (event != LV_EVENT_CLICKED) {
-    return;
-  }
+void StopWatch::stopLapBtnEventHandler() {
   // If running, then this button is used to save laps
   if (currentState == States::Running) {
     lv_label_set_text(lapText, "");
