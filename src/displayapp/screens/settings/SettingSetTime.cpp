@@ -75,8 +75,6 @@ SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_event_cb(btnSetTime, SetTimeEventHandler);
 
   UpdateScreen();
-  lv_obj_set_state(btnSetTime, LV_STATE_DEFAULT);
-  lv_obj_set_state(lblSetTime, LV_STATE_DEFAULT);
 }
 
 SettingSetTime::~SettingSetTime() {
@@ -105,7 +103,5 @@ void SettingSetTime::SetTime() {
                              static_cast<uint8_t>(minutesValue),
                              0,
                              nrf_rtc_counter_get(portNRF_RTC_REG));
-  lv_obj_set_state(btnSetTime, LV_STATE_DISABLED);
-  lv_obj_set_state(lblSetTime, LV_STATE_DISABLED);
   settingSetDateTime.Quit();
 }

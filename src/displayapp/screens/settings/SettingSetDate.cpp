@@ -86,8 +86,6 @@ SettingSetDate::SettingSetDate(Pinetime::Applications::DisplayApp* app,
   lblSetTime = lv_label_create(btnSetTime, nullptr);
   lv_label_set_text_static(lblSetTime, "Set");
   lv_obj_set_event_cb(btnSetTime, event_handler);
-  lv_btn_set_state(btnSetTime, LV_STATE_DEFAULT);
-  lv_obj_set_state(lblSetTime, LV_STATE_DEFAULT);
 }
 
 SettingSetDate::~SettingSetDate() {
@@ -107,8 +105,6 @@ void SettingSetDate::HandleButtonPress() {
                              dateTimeController.Minutes(),
                              dateTimeController.Seconds(),
                              nrf_rtc_counter_get(portNRF_RTC_REG));
-  lv_btn_set_state(btnSetTime, LV_BTN_STATE_DISABLED);
-  lv_obj_set_state(lblSetTime, LV_STATE_DISABLED);
   settingSetDateTime.Advance();
 }
 
