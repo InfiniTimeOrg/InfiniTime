@@ -412,6 +412,7 @@ list(APPEND SOURCE_FILES
         ## Settings
         displayapp/screens/settings/QuickSettings.cpp
         displayapp/screens/settings/Settings.cpp
+        displayapp/screens/settings/SettingScreenBase.cpp
         displayapp/screens/settings/SettingWatchFace.cpp
         displayapp/screens/settings/SettingTimeFormat.cpp
         displayapp/screens/settings/SettingWakeUp.cpp
