@@ -49,6 +49,7 @@ int BatteryInformationService::OnBatteryServiceRequested(uint16_t connectionHand
   }
   return 0;
 }
+
 void BatteryInformationService::NotifyBatteryLevel(uint16_t connectionHandle, uint8_t level) {
   auto* om = ble_hs_mbuf_from_flat(&level, 1);
   ble_gattc_notify_custom(connectionHandle, batteryLevelHandle, om);

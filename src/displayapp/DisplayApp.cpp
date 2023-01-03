@@ -529,6 +529,7 @@ void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
 void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
 }
+
 void DisplayApp::ApplyBrightness() {
   auto brightness = settingsController.GetBrightness();
   if (brightness != Controllers::BrightnessController::Levels::Low && brightness != Controllers::BrightnessController::Levels::Medium &&
