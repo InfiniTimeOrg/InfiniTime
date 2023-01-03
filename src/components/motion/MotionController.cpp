@@ -61,6 +61,7 @@ bool MotionController::Should_ShakeWake(uint16_t thresh) {
   lastZForShake = z;
   return wake;
 }
+
 int32_t MotionController::currentShakeSpeed() {
   return accumulatedspeed;
 }
@@ -68,6 +69,7 @@ int32_t MotionController::currentShakeSpeed() {
 void MotionController::IsSensorOk(bool isOk) {
   isSensorOk = isOk;
 }
+
 void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
   switch (types) {
     case Drivers::Bma421::DeviceTypes::BMA421:
@@ -81,6 +83,7 @@ void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
       break;
   }
 }
+
 void MotionController::SetService(Pinetime::Controllers::MotionService* service) {
   this->service = service;
 }
