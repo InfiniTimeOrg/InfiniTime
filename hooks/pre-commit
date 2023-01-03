@@ -1,25 +1,8 @@
-#!/bin/bash
-if clang-format --version | grep -q 'version 11\.'; then
-   CLANG_FORMAT_EXECUTABLE="clang-format"
-else
-   CLANG_FORMAT_EXECUTABLE="clang-format-11"
-fi
+#!/bin/sh
 
-if ! command -v $CLANG_FORMAT_EXECUTABLE &> /dev/null
-then
-    echo $CLANG_FORMAT_EXECUTABLE does not exist, make sure to install it
-    exit 1
-fi
+changedFiles="$(git clang-format --extensions cpp,h --style file --staged -q --diffstat -- ':!src/FreeRTOS' ':!src/libs')"
+git clang-format --extensions cpp,h --style file --staged -q -- ':!src/FreeRTOS' ':!src/libs'
 
-for FILE in $(git diff --cached --name-only)
-do
-	if [[ "$FILE" =~ src/[A-Za-z0-9\ \-]+*\.(c|h|cpp|cc)$ ]]; then
-		echo Autoformatting $FILE with $CLANG_FORMAT_EXECUTABLE
-		$CLANG_FORMAT_EXECUTABLE -style=file -i -- $FILE
-		git add -- $FILE
-	elif [[ "$FILE" =~ src/(components|displayapp|drivers|heartratetask|logging|systemtask)/.*\.(c|h|cpp|cc)$ ]]; then
-		echo Autoformatting $FILE with $CLANG_FORMAT_EXECUTABLE
-		$CLANG_FORMAT_EXECUTABLE -style=file -i -- $FILE
-		git add -- $FILE
-	fi
+echo "$changedFiles" | head -n -1 | cut -d ' ' -f 1 | while read -r file; do
+  git add -- "$file"
 done
