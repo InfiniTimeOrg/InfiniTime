@@ -2,7 +2,7 @@
     "env": {
         // TODO: This is a duplication of the configuration set in /docker/build.sh!
         "TOOLS_DIR": "/opt",
-        "GCC_ARM_PATH": "gcc-arm-none-eabi-10.3-2021.10"
+        "GCC_ARM_PATH": "arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi"
     },
     "configurations": [
         {

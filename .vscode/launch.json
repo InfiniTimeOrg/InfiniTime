@@ -53,7 +53,7 @@
                 "continue"
             ],
             // Only use armToolchainPath if your arm-none-eabi-gdb is not in your path (some GCC packages does not contain arm-none-eabi-gdb)
-            "armToolchainPath": "${workspaceRoot}/../gcc-arm-none-eabi-10.3-2021.10/bin",
+            "armToolchainPath": "${workspaceRoot}/../arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi/bin",
             "svdFile": "${workspaceRoot}/nrf52.svd",
             "configFiles": [
                 "interface/stlink.cfg",
@@ -68,7 +68,7 @@
             "request": "launch",
             "servertype": "external",
             // FIXME: This is hardcoded. I have no idea how to use the values set in build.sh here
-            "gdbPath": "/opt/gcc-arm-none-eabi-10.3-2021.10/bin/arm-none-eabi-gdb",
+            "gdbPath": "/opt/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi/bin/arm-none-eabi-gdb",
             // Connect to an already running OpenOCD instance
             "gdbTarget": "host.docker.internal:3333",
             "svdFile": "${workspaceRoot}/nrf52.svd",

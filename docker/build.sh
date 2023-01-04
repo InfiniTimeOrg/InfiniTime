@@ -16,7 +16,7 @@ export NPM_DIR="$BUILD_DIR/npm"
 export npm_config_cache="${NPM_DIR}"
 
 export BUILD_TYPE=${BUILD_TYPE:=Release}
-export GCC_ARM_VER=${GCC_ARM_VER:="10.3-2021.10"}
+export GCC_ARM_VER=${GCC_ARM_VER:="14.3.rel1"}
 export NRF_SDK_VER=${NRF_SDK_VER:="nRF5_SDK_15.3.0_59ac345"}
 # convert to lower case and remove _ and . character
 # the download URL uses the SLUG, but the extracted folder is named like the original value
@@ -26,7 +26,7 @@ export NRF_SDK_VER_SLUG=${NRF_SDK_VER_SLUG//[_.]/}
 MACHINE="$(uname -m)"
 [ "$MACHINE" = "arm64" ] && MACHINE="aarch64"
 
-export GCC_ARM_PATH="gcc-arm-none-eabi-$GCC_ARM_VER"
+export GCC_ARM_PATH="arm-gnu-toolchain-$GCC_ARM_VER-$MACHINE-arm-none-eabi"
 
 main() {
   local target="$1"
@@ -50,7 +50,7 @@ main() {
 }
 
 GetGcc() {
-  wget -q https://developer.arm.com/-/media/Files/downloads/gnu-rm/$GCC_ARM_VER/$GCC_ARM_PATH-$MACHINE-linux.tar.bz2 -O - | tar -xj -C $TOOLS_DIR/
+  wget -q https://developer.arm.com/-/media/Files/downloads/gnu/$GCC_ARM_VER/binrel/$GCC_ARM_PATH.tar.xz -O - | tar -xJ -C $TOOLS_DIR/
   if [ ! -d "$TOOLS_DIR/$GCC_ARM_PATH" ]; then
     echo "missing GCC path: $TOOLS_DIR/$GCC_ARM_PATH"
     return 1
