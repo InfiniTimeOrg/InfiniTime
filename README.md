@@ -23,7 +23,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 ## Development
 
 - [InfiniTime Vision](doc/InfiniTimeVision.md)
-- [Rough structure of the code](doc/code/Intro.md)
+- [Introduction to the code](doc/code/Intro.md)
 - [How to implement an application](doc/code/Apps.md)
 - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
 - [Tips on designing an app UI](doc/ui_guidelines.md)

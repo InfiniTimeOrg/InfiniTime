@@ -47,3 +47,88 @@ For more detail see the [Apps page](./Apps.md)
 ## Bluetooth
 
 Header files with short documentation for the functions are inside [libs/mynewt-nimble/nimble/host/include/host/](/src/libs/mynewt-nimble/nimble/host/include/host/).
+
+## Hardware abstraction and device drivers
+
+Until version 1.12, InfiniTime did not provide any kind of hardware abstraction : the drivers were written specifically for the PineTime, and there was no easy way to provide any alternative implementation to support variants of the PineTime or for the integration in [InfiniSim](https://github.com/InfiniTimeOrg/InfiniSim).
+
+In [InfiniTime 1.12](https://github.com/InfiniTimeOrg/InfiniTime/releases/tag/1.12.0), we implemented a new design that allows to easily choose **at build time** a specific implementation for multiple device drivers (Display, heart rate sensor, motion sensor, SPI, flash memory, touch panel, TWI and Watchdog).
+
+This new design makes the code much cleaner in InfiniSim and allows the port of InfiniTime on other hardware (ex : many PineTime variants like the Colmi P8) more easily.
+
+This hardware abstraction is based on C++ `concepts` and a proxy object that enables 'static polymorphism'. It means that the actual implementations of the drivers are known at **build time** and that there's no `virtual` calls at runtime. 
+
+Here's an overview of the design :
+
+```c++
+namespace Pinetime {
+  namespace Drivers  {
+    template <typename DeviceImpl>
+    concept IsDevice = { /* ... */ };
+    
+    namespace Interface {
+      template <class T>
+        requires IsDevice<T>
+      class Device {
+      public:
+         explicit Device(T& impl) : impl {impl} {}
+      /* ... */
+      private:
+        T& impl;
+      };
+    }
+
+    using Device = Interface::Device<Pinetime::Drivers::SomeDevice::Device>;
+  }
+}
+
+int main() {
+  /* ... */
+  
+  Pinetime::Drivers::Category::Device deviceImpl { /* ctor arguments specific to this implementation of Device */ };
+  Pinetime::Drivers::Device device {deviceImpl};
+  
+  /* ... */
+}
+
+```
+
+The concept `Pinetime::Drivers::IsDevice` describes the interface a class that implements a `Device` must expose.
+
+The template class `Pinetime::Drivers::Interface::Device` is the "proxy" objects that allows the build time polymorphism.
+
+`Pinetime::Drivers::Device` is aliased to `Pinetime::Drivers::Interface::Device`. This allows to remove the template argument so that the rest of the application does not need to handle it. Those aliases are defined in header files located in `port/`. This is the only place where `#ifdef`s are needed.
+
+The actual drivers are implemented in specific namespaces (`Pinetime::Drivers::MCU::Device` or `Pinetime::Drivers::Category::Device`).
+
+To declare a new driver in the code, you'll first need to instantiate an actual implementation of the driver and then give the reference to this instance to the corresponding proxy object. Here is an example with the display driver:
+
+```c++
+// Actual implementation of the SPI bus for the NRF52 MCU
+Pinetime::Drivers::Nrf52::SpiMaster spiImpl {Pinetime::Drivers::Nrf52::SpiMaster::SpiModule::SPI0,
+                                  {Pinetime::Drivers::Nrf52::SpiMaster::BitOrder::Msb_Lsb,
+                                   Pinetime::Drivers::Nrf52::SpiMaster::Modes::Mode3,
+                                   Pinetime::Drivers::Nrf52::SpiMaster::Frequencies::Freq8Mhz,
+                                   Pinetime::PinMap::SpiSck,
+                                   Pinetime::PinMap::SpiMosi,
+                                   Pinetime::PinMap::SpiMiso}};
+
+// Proxy object 
+Pinetime::Drivers::SpiMaster spi {spiImpl};
+
+// Actual implementation of the SpiMaster drivers (it handles the chip select pin)
+Pinetime::Drivers::Nrf52::Spi lcdSpiIpmpl {spiImpl, Pinetime::PinMap::SpiLcdCsn};
+
+// Proxy object
+Pinetime::Drivers::Spi lcdSpi {lcdSpiIpmpl};
+
+// Actual implementation of the display driver (ST7789 display controller)
+Pinetime::Drivers::Displays::St7789 lcdImpl {lcdSpi, Pinetime::PinMap::LcdDataCommand};
+
+// Proxy object
+Pinetime::Drivers::Display lcd{lcdImpl};
+
+Pinetime::System::SystemTask systemTask(spi, lcd /* ... */);
+```
+
+Once the initialization is done, the application does not need to know the actual implementation of the drivers, all calls to the drivers will go through the proxy objects. 
