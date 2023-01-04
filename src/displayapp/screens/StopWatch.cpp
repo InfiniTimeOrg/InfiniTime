@@ -27,6 +27,8 @@ namespace {
       stopWatch->stopLapBtnEventHandler();
     }
   }
+
+  constexpr TickType_t blinkInterval = pdMS_TO_TICKS(500);
 }
 
 StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask) : Screen(app), systemTask {systemTask} {
@@ -35,10 +37,12 @@ StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask) : Screen(a
   lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
   lv_label_set_text_static(time, "00:00");
   lv_obj_align(time, lv_scr_act(), LV_ALIGN_CENTER, 0, -45);
+  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
 
   msecTime = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(msecTime, "00");
   lv_obj_align(msecTime, lv_scr_act(), LV_ALIGN_CENTER, 0, 3);
+  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
 
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
@@ -80,8 +84,8 @@ void StopWatch::SetInterfacePaused() {
 }
 
 void StopWatch::SetInterfaceRunning() {
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_set_state(time, LV_STATE_DEFAULT);
+  lv_obj_set_state(msecTime, LV_STATE_DEFAULT);
   lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
 
@@ -93,8 +97,8 @@ void StopWatch::SetInterfaceRunning() {
 }
 
 void StopWatch::SetInterfaceStopped() {
-  lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_state(time, LV_STATE_DISABLED);
+  lv_obj_set_state(msecTime, LV_STATE_DISABLED);
   lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
 
   lv_label_set_text_static(time, "00:00");
@@ -126,6 +130,7 @@ void StopWatch::Pause() {
   startTime = 0;
   // Store the current time elapsed in cache
   oldTimeElapsed = laps[lapsDone];
+  blinkTime = xTaskGetTickCount() + blinkInterval;
   currentState = States::Halted;
   systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
@@ -137,6 +142,17 @@ void StopWatch::Refresh() {
     TimeSeparated_t currentTimeSeparated = convertTicksToTimeSegments(laps[lapsDone]);
     lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
     lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
+  } else if (currentState == States::Halted) {
+    if (xTaskGetTickCount() > blinkTime) {
+      blinkTime += blinkInterval;
+      if (lv_obj_get_state(time, LV_LABEL_PART_MAIN) == LV_STATE_DEFAULT) {
+        lv_obj_set_state(time, LV_STATE_DISABLED);
+        lv_obj_set_state(msecTime, LV_STATE_DISABLED);
+      } else {
+        lv_obj_set_state(time, LV_STATE_DEFAULT);
+        lv_obj_set_state(msecTime, LV_STATE_DEFAULT);
+      }
+    }
   }
 }
 
