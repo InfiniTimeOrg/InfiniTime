@@ -46,7 +46,7 @@ main() {
 }
 
 GetGcc() {
-  wget -q https://developer.arm.com/-/media/Files/downloads/gnu/$GCC_ARM_VER/binrel/arm-gnu-toolchain-$GCC_ARM_VER-$MACHINE-arm-none-eabi.tar.xz -O - | tar -xJ -C $TOOLS_DIR/
+  wget -q https://developer.arm.com/-/media/Files/downloads/gnu/$GCC_ARM_VER/binrel/$GCC_ARM_PATH.tar.xz -O - | tar -xJ -C $TOOLS_DIR/
 }
 
 GetMcuBoot() {
