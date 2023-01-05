@@ -32,6 +32,7 @@ namespace Pinetime {
       LowBattery,
       StartFileTransfer,
       StopFileTransfer,
+      BleDisconnect,
       BleRadioEnableToggle
     };
   }
