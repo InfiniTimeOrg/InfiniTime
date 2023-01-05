@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <drivers/include/nrfx_saadc.h>
 #include <systemtask/SystemTask.h>
+#include "components/utility/SimpleLowPassFilter.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -38,6 +39,7 @@ namespace Pinetime {
     private:
       static Battery* instance;
       nrf_saadc_value_t saadc_value;
+      Utility::SimpleLowPassFilter<uint16_t, 5> filter;
 
       static constexpr nrf_saadc_input_t batteryVoltageAdcInput = NRF_SAADC_INPUT_AIN7;
       uint16_t voltage = 0;

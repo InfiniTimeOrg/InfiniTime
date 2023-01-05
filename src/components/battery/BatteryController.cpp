@@ -62,12 +62,12 @@ void Battery::SaadcInit() {
 
 void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
   static const Utility::LinearApproximation<uint16_t, uint8_t, 6> aprox {{{
-    {3500, 0},  // Minimum voltage before shutdown (depends on the battery)
+    {3200, 0},  // Minimum voltage before shutdown (depends on the battery)
     {3600, 10}, // Keen point that corresponds to 10%
     {3700, 25},
     {3750, 50},
     {3900, 75},
-    {4180, 100} // Maximum voltage during charging is 4.21V
+    {4150, 100} // Maximum voltage during charging is 4.21V
   }}};
 
   if (p_event->type == NRFX_SAADC_EVT_DONE) {
@@ -80,10 +80,13 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     // reference_voltage is 600mV
     // p_event->data.done.p_buffer[0] = (adc_voltage / reference_voltage) * 1024
     voltage = p_event->data.done.p_buffer[0] * (8 * 600) / 1024;
+    if (firstMeasurement) {
+      filter.Reset(voltage);
+    }
 
     uint8_t newPercent = 100;
     if (!isFull) {
-      newPercent = std::min(aprox.GetValue(voltage), isCharging ? uint8_t {99} : uint8_t {100});
+      newPercent = std::min(aprox.GetValue(filter.GetValue(voltage)), isCharging ? uint8_t {99} : uint8_t {100});
     }
 
     if (isPowerPresent) {
