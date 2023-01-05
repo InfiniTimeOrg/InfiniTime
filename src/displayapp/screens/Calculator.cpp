@@ -44,7 +44,6 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
   lv_obj_set_style_local_pad_bottom(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_pad_left(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
   lv_obj_set_style_local_pad_right(buttonMatrix, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 1);
-  lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_FOCUSED, LV_COLOR_BLUE);
   lv_obj_align(buttonMatrix, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   lv_obj_set_style_local_bg_opa(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_OPA_COVER);
@@ -53,15 +52,8 @@ Calculator::Calculator(DisplayApp* app) : Screen(app) {
 }
 
 void Calculator::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
-  if (obj == buttonMatrix) {
-    if ((event == LV_EVENT_PRESSED) || (event == LV_EVENT_PRESSING)) {
-      uint16_t activeButton = lv_btnmatrix_get_active_btn(buttonMatrix);
-      lv_btnmatrix_set_focused_btn(buttonMatrix, activeButton);
-    }
-    if (event == LV_EVENT_RELEASED) {
-      HandleInput();
-      lv_btnmatrix_set_focused_btn(buttonMatrix, LV_BTNMATRIX_BTN_NONE);
-    }
+  if ((obj == buttonMatrix) && (event == LV_EVENT_PRESSED)) {
+    HandleInput();
   }
 }
 
