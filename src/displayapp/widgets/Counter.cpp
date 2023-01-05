@@ -18,6 +18,7 @@ namespace {
       widget->DownBtnPressed();
     }
   }
+
   constexpr int digitCount(int number) {
     int digitCount = 0;
     while (number > 0) {
@@ -67,6 +68,7 @@ void Counter::HideControls() {
   lv_obj_set_hidden(lowerLine, true);
   lv_obj_set_style_local_bg_opa(counterContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
 }
+
 void Counter::ShowControls() {
   lv_obj_set_hidden(upBtn, false);
   lv_obj_set_hidden(downBtn, false);

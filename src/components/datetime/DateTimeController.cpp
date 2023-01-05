@@ -142,6 +142,7 @@ void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
 }
 
 using ClockType = Pinetime::Controllers::Settings::ClockType;
+
 std::string DateTime::FormattedTime() {
   // Return time as a string in 12- or 24-hour format
   char buff[9];

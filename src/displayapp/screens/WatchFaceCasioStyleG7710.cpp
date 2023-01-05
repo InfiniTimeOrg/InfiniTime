@@ -334,6 +334,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_obj_realign(stepIcon);
   }
 }
+
 bool WatchFaceCasioStyleG7710::IsAvailable(Pinetime::Controllers::FS& filesystem) {
   lfs_file file = {};
 

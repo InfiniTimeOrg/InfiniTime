@@ -118,6 +118,7 @@ Bma421::Values Bma421::Process() {
   // X and Y axis are swapped because of the way the sensor is mounted in the PineTime
   return {steps, data.y, data.x, data.z};
 }
+
 bool Bma421::IsOk() const {
   return isOk;
 }
@@ -133,6 +134,7 @@ void Bma421::SoftReset() {
     nrf_delay_ms(1);
   }
 }
+
 Bma421::DeviceTypes Bma421::DeviceType() const {
   return deviceType;
 }
