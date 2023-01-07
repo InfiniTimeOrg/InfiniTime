@@ -13,12 +13,19 @@ on:
       - 'doc/**'
       - '**.md'
 
-
 jobs:
   build-firmware:
     runs-on: ubuntu-latest
     container:
       image: infinitime/infinitime-build
+    outputs:
+      text_size: ${{ steps.output-sizes.outputs.text_size }}
+      data_size: ${{ steps.output-sizes.outputs.data_size }}
+      bss_size: ${{ steps.output-sizes.outputs.bss_size }}
+    env:
+      # InfiniTime sources are downloaded to the current directory.
+      # Override SOURCES_DIR in build.sh
+      SOURCES_DIR: .
     steps:
       - name: Checkout source files
         uses: actions/checkout@v3
@@ -26,9 +33,12 @@ jobs:
           submodules: recursive
       - name: Build
         shell: bash
-        env:
-          SOURCES_DIR: .
         run: /opt/build.sh all
+      - name: Output build size
+        id: output-sizes
+        run: |
+          . /opt/build.sh
+          .github/workflows/getSize.sh "$BUILD_DIR"/src/pinetime-app-*.out >> $GITHUB_OUTPUT
       # Unzip the package because Upload Artifact will zip up the files
       - name: Unzip DFU package
         run: unzip ./build/output/pinetime-mcuboot-app-dfu-*.zip -d ./build/output/pinetime-mcuboot-app-dfu
@@ -87,3 +97,93 @@ jobs:
       with:
         name: infinisim-${{ github.head_ref }}
         path: build_lv_sim/infinisim
+
+  get-base-ref-size:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-22.04
+    container:
+      image: infinitime/infinitime-build
+    outputs:
+      text_size: ${{ steps.output-sizes.outputs.text_size }}
+      data_size: ${{ steps.output-sizes.outputs.data_size }}
+      bss_size: ${{ steps.output-sizes.outputs.bss_size }}
+    env:
+      # InfiniTime sources are downloaded to the current directory.
+      # Override SOURCES_DIR in build.sh
+      SOURCES_DIR: .
+    steps:
+    - name: Cache sources
+      id: cache-sources
+      uses: actions/cache@v3
+      with:
+        path: .
+        key: source-files-${{ github.event.pull_request.base.sha }}
+
+    - if: ${{ steps.cache-sources.outputs.cache-hit != 'true' }}
+      name: Checkout source files
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.base_ref }}
+        submodules: recursive
+
+    - if: ${{ steps.cache-sources.outputs.cache-hit != 'true' }}
+      name: Build
+      shell: bash
+      # Only pinetime-app target is needed, but post_build.sh fails
+      run: /opt/build.sh all
+
+    - name: Output build size
+      id: output-sizes
+      run: |
+        . /opt/build.sh
+        .github/workflows/getSize.sh "$BUILD_DIR"/src/pinetime-app-*.out >> $GITHUB_OUTPUT
+
+  leave-build-size-comment:
+    if: github.event_name == 'pull_request'
+    needs: [build-firmware, get-base-ref-size]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Compare build size
+      id: output-sizes-diff
+      run: |
+        TEXT_SIZE=${{ needs.build-firmware.outputs.text_size }}
+        DATA_SIZE=${{ needs.build-firmware.outputs.data_size }}
+        BSS_SIZE=${{ needs.build-firmware.outputs.bss_size }}
+
+        echo "text_size=$TEXT_SIZE" >> $GITHUB_OUTPUT
+        echo "data_size=$DATA_SIZE" >> $GITHUB_OUTPUT
+        echo "bss_size=$BSS_SIZE" >> $GITHUB_OUTPUT
+
+        TEXT_SIZE_BASE=${{ needs.get-base-ref-size.outputs.text_size }}
+        DATA_SIZE_BASE=${{ needs.get-base-ref-size.outputs.data_size }}
+        BSS_SIZE_BASE=${{ needs.get-base-ref-size.outputs.bss_size }}
+
+        TEXT_SIZE_DIFF=$((TEXT_SIZE - TEXT_SIZE_BASE))
+        DATA_SIZE_DIFF=$((DATA_SIZE - DATA_SIZE_BASE))
+        BSS_SIZE_DIFF=$((BSS_SIZE - BSS_SIZE_BASE))
+
+        echo "text_diff=$TEXT_SIZE_DIFF" >> $GITHUB_OUTPUT
+        echo "data_diff=$DATA_SIZE_DIFF" >> $GITHUB_OUTPUT
+        echo "bss_diff=$BSS_SIZE_DIFF" >> $GITHUB_OUTPUT
+
+    - name: Find Comment
+      uses: peter-evans/find-comment@v2
+      id: build-size-comment
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'github-actions[bot]'
+        body-includes: Build size and comparison to
+
+    - name: Create or update comment
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        comment-id: ${{ steps.build-size-comment.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          Build size and comparison to ${{ github.base_ref }}:
+          | Section | Size | Difference |
+          | ------- | ---- | ---------- |
+          | text    | ${{ needs.build-firmware.outputs.text_size }}B | ${{ steps.output-sizes-diff.outputs.text_diff }}B |
+          | data    | ${{ needs.build-firmware.outputs.data_size }}B | ${{ steps.output-sizes-diff.outputs.data_diff }}B |
+          | bss     | ${{ needs.build-firmware.outputs.bss_size }}B  | ${{ steps.output-sizes-diff.outputs.bss_diff }}B  |
+        edit-mode: replace
