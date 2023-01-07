@@ -150,6 +150,10 @@ jobs:
         DATA_SIZE=${{ needs.build-firmware.outputs.data_size }}
         BSS_SIZE=${{ needs.build-firmware.outputs.bss_size }}
 
+        echo "text_size=$TEXT_SIZE"
+        echo "data_size=$DATA_SIZE"
+        echo "bss_size=$BSS_SIZE"
+
         echo "text_size=$TEXT_SIZE" >> $GITHUB_OUTPUT
         echo "data_size=$DATA_SIZE" >> $GITHUB_OUTPUT
         echo "bss_size=$BSS_SIZE" >> $GITHUB_OUTPUT
@@ -161,6 +165,10 @@ jobs:
         TEXT_SIZE_DIFF=$((TEXT_SIZE - TEXT_SIZE_BASE))
         DATA_SIZE_DIFF=$((DATA_SIZE - DATA_SIZE_BASE))
         BSS_SIZE_DIFF=$((BSS_SIZE - BSS_SIZE_BASE))
+
+        echo "text_diff=$TEXT_SIZE_DIFF"
+        echo "data_diff=$DATA_SIZE_DIFF"
+        echo "bss_diff=$BSS_SIZE_DIFF"
 
         echo "text_diff=$TEXT_SIZE_DIFF" >> $GITHUB_OUTPUT
         echo "data_diff=$DATA_SIZE_DIFF" >> $GITHUB_OUTPUT
