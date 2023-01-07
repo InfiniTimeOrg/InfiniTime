@@ -15,6 +15,7 @@ namespace Pinetime {
       class CheckboxList : public Screen {
       public:
         static constexpr size_t MaxItems = 4;
+
         struct Item {
           const char* name;
           bool enabled;

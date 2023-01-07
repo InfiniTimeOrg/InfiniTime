@@ -15,9 +15,11 @@ namespace Pinetime {
         StatusIcons(Controllers::Battery& batteryController, Controllers::Ble& bleController);
         void Align();
         void Create();
+
         lv_obj_t* GetObject() {
           return container;
         }
+
         void Update();
 
       private:

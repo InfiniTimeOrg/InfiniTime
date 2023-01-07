@@ -19,12 +19,15 @@ namespace Pinetime {
       bool OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_svc* service);
       int OnCharacteristicDiscoveryEvent(uint16_t conn_handle, const ble_gatt_error* error, const ble_gatt_chr* characteristic);
       int OnCurrentTimeReadResult(uint16_t conn_handle, const ble_gatt_error* error, const ble_gatt_attr* attribute);
+
       static constexpr const ble_uuid16_t* Uuid() {
         return &CurrentTimeClient::ctsServiceUuid;
       }
+
       static constexpr const ble_uuid16_t* CurrentTimeCharacteristicUuid() {
         return &CurrentTimeClient::currentTimeCharacteristicUuid;
       }
+
       void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
 
     private:

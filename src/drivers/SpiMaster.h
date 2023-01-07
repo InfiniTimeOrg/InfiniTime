@@ -14,6 +14,7 @@ namespace Pinetime {
       enum class BitOrder : uint8_t { Msb_Lsb, Lsb_Msb };
       enum class Modes : uint8_t { Mode0, Mode1, Mode2, Mode3 };
       enum class Frequencies : uint8_t { Freq8Mhz };
+
       struct Parameters {
         BitOrder bitOrder;
         Modes mode;
