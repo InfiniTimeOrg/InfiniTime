@@ -20,14 +20,8 @@ jobs:
     container:
       image: infinitime/infinitime-build
     steps:
-      # This workaround fixes the error "unsafe repository (REPO is owned by someone else)".
-      # See https://github.com/actions/checkout/issues/760 and https://github.com/actions/checkout/issues/766
-      # The fix in "actions/checkout@v2" was not sufficient as the build process also uses git (to get the current
-      # commit hash, for example).
-      - name: Workaround permission issues
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Checkout source files
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
       - name: Build
