@@ -10,8 +10,10 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
     class MotionController;
+
     class MotionService {
     public:
       MotionService(Pinetime::System::SystemTask& system, Controllers::MotionController& motionController);

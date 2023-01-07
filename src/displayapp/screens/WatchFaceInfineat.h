@@ -118,6 +118,7 @@ namespace Pinetime {
 
         static constexpr int nLines = 9;
         static constexpr int nColors = 7; // must match number of colors in InfineatColors
+
         struct InfineatColors {
           int orange[nLines] = {0xfd872b, 0xdb3316, 0x6f1000, 0xfd7a0a, 0xffffff, 0xffffff, 0xffffff, 0xe85102, 0xea1c00};
           int blue[nLines] = {0xe7f8ff, 0x2232d0, 0x182a8b, 0xe7f8ff, 0xffffff, 0xffffff, 0xffffff, 0x5991ff, 0x1636ff};

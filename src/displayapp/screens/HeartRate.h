@@ -11,6 +11,7 @@ namespace Pinetime {
   namespace Controllers {
     class HeartRateController;
   }
+
   namespace Applications {
     namespace Screens {
 

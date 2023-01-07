@@ -9,8 +9,10 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
     class NotificationManager;
+
     class ImmediateAlertService {
     public:
       enum class Levels : uint8_t { NoAlert = 0, MildAlert = 1, HighAlert = 2 };

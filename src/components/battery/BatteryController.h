@@ -17,6 +17,7 @@ namespace Pinetime {
       uint8_t PercentRemaining() const {
         return percentRemaining;
       }
+
       bool BatteryIsLow() const {
         return percentRemaining <= lowBatteryThreshold;
       }

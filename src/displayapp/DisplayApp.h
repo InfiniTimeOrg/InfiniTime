@@ -29,6 +29,7 @@ namespace Pinetime {
     class Cst816S;
     class WatchdogView;
   }
+
   namespace Controllers {
     class Settings;
     class Battery;
@@ -43,6 +44,7 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   };
+
   namespace Applications {
     class DisplayApp {
     public:
