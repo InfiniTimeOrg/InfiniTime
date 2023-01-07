@@ -7,7 +7,7 @@ on:
     paths-ignore:
       - 'doc/**'
       - '**.md'
-  pull_request:
+  pull_request_target:
     branches: [ develop ]
     paths-ignore:
       - 'doc/**'
@@ -99,7 +99,7 @@ jobs:
         path: build_lv_sim/infinisim
 
   get-base-ref-size:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request_target'
     runs-on: ubuntu-22.04
     container:
       image: infinitime/infinitime-build
@@ -139,7 +139,7 @@ jobs:
         .github/workflows/getSize.sh "$BUILD_DIR"/src/pinetime-app-*.out >> $GITHUB_OUTPUT
 
   leave-build-size-comment:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request_target'
     needs: [build-firmware, get-base-ref-size]
     runs-on: ubuntu-latest
     steps:
