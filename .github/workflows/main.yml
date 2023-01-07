@@ -138,7 +138,7 @@ jobs:
         . /opt/build.sh
         .github/workflows/getSize.sh "$BUILD_DIR"/src/pinetime-app-*.out >> $GITHUB_OUTPUT
 
-  leave-build-size-comment:
+  compare-build-size:
     if: github.event_name == 'pull_request'
     needs: [build-firmware, get-base-ref-size]
     runs-on: ubuntu-latest
@@ -167,6 +167,9 @@ jobs:
         echo "bss_diff=$BSS_SIZE_DIFF" >> $GITHUB_OUTPUT
 
     - name: Find Comment
+      # Due to a security concern, comments can only be created in the context of branches in the repo.
+      # PRs from forks can't get the comment.
+      if: github.event.pull_request.head.repo.full_name == github.repository
       uses: peter-evans/find-comment@v2
       id: build-size-comment
       with:
@@ -175,6 +178,7 @@ jobs:
         body-includes: Build size and comparison to
 
     - name: Create or update comment
+      if: github.event.pull_request.head.repo.full_name == github.repository
       uses: peter-evans/create-or-update-comment@v2
       with:
         comment-id: ${{ steps.build-size-comment.outputs.comment-id }}
