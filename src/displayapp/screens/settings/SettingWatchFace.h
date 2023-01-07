@@ -8,6 +8,9 @@
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/CheckboxList.h"
+#include "displayapp/screens/WatchFaceInfineat.h"
+#include "displayapp/screens/WatchFaceCasioStyleG7710.h"
 
 namespace Pinetime {
 
@@ -22,14 +25,30 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
+        auto CreateScreenList() const;
+        std::unique_ptr<Screen> CreateScreen(unsigned int screenNum) const;
+
         Controllers::Settings& settingsController;
         Pinetime::Controllers::FS& filesystem;
-        ScreenList<2> screens;
 
         static constexpr const char* title = "Watch face";
         static constexpr const char* symbol = Symbols::home;
-        std::unique_ptr<Screen> CreateScreen1();
-        std::unique_ptr<Screen> CreateScreen2();
+
+        static constexpr int settingsPerScreen = 4;
+
+        // Increment this when more space is needed
+        static constexpr int nScreens = 2;
+
+        std::array<Screens::CheckboxList::Item, settingsPerScreen * nScreens> watchfaces {
+          {{"Digital face", true},
+           {"Analog face", true},
+           {"PineTimeStyle", true},
+           {"Terminal", true},
+           {"Infineat face", Applications::Screens::WatchFaceInfineat::IsAvailable(filesystem)},
+           {"Casio G7710", Applications::Screens::WatchFaceCasioStyleG7710::IsAvailable(filesystem)},
+           {"", false},
+           {"", false}}};
+        ScreenList<nScreens> screens;
       };
     }
   }

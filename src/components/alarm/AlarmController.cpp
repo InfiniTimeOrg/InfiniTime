@@ -28,7 +28,7 @@ AlarmController::AlarmController(Controllers::DateTime& dateTimeController) : da
 
 namespace {
   void SetOffAlarm(TimerHandle_t xTimer) {
-    auto controller = static_cast<Pinetime::Controllers::AlarmController*>(pvTimerGetTimerID(xTimer));
+    auto* controller = static_cast<Pinetime::Controllers::AlarmController*>(pvTimerGetTimerID(xTimer));
     controller->SetOffAlarmNow();
   }
 }

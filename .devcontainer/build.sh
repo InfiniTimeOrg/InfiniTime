@@ -35,6 +35,8 @@ main() {
   if [ "$DISABLE_POSTBUILD" != "true" -a "$BUILD_RESULT" == 0 ]; then
     source "$BUILD_DIR/post_build.sh"
   fi
+  # assuming post_build.sh will never fail on a successful build
+  return $BUILD_RESULT
 }
 
 GetGcc() {
@@ -74,4 +76,12 @@ CmakeBuild() {
   fi
 }
 
-[[ $SOURCED == "false" ]] && main "$@" || echo "Sourced!"
+if [[ $SOURCED == "false" ]]; then
+  # It is important to return exit code of main
+  # To be future-proof, this is handled explicitely
+  main "$@"
+  BUILD_RESULT=$?
+  exit $BUILD_RESULT
+else
+  echo "Sourced!"
+fi

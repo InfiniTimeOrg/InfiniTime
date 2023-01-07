@@ -89,18 +89,23 @@ int FS::DirClose(lfs_dir_t* lfs_dir) {
 int FS::DirRead(lfs_dir_t* dir, lfs_info* info) {
   return lfs_dir_read(&lfs, dir, info);
 }
+
 int FS::DirRewind(lfs_dir_t* dir) {
   return lfs_dir_rewind(&lfs, dir);
 }
+
 int FS::DirCreate(const char* path) {
   return lfs_mkdir(&lfs, path);
 }
+
 int FS::Rename(const char* oldPath, const char* newPath) {
   return lfs_rename(&lfs, oldPath, newPath);
 }
+
 int FS::Stat(const char* path, lfs_info* info) {
   return lfs_stat(&lfs, path, info);
 }
+
 lfs_ssize_t FS::GetFSSize() {
   return lfs_fs_size(&lfs);
 }

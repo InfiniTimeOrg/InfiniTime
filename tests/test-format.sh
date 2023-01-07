@@ -20,7 +20,7 @@ do
   *.cpp|*.h)
     echo Checking "$file"
     PATCH="$(basename "$file").patch"
-    git clang-format-12 -q --style file --diff "$GITHUB_BASE_REF" "$file" > "$PATCH"
+    git clang-format-14 -q --style file --diff "$GITHUB_BASE_REF" "$file" > "$PATCH"
     if [ -s "$PATCH" ]
     then
       printf "\033[31mError:\033[0m Formatting error in %s\n" "$file"
