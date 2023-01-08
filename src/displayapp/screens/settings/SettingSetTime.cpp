@@ -18,6 +18,7 @@ namespace {
       screen->SetTime();
     }
   }
+
   void ValueChangedHandler(void* userData) {
     auto* screen = static_cast<SettingSetTime*>(userData);
     screen->UpdateScreen();

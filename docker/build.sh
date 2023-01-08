@@ -20,7 +20,7 @@ export GCC_ARM_VER=${GCC_ARM_VER:="10.3-2021.10"}
 export NRF_SDK_VER=${NRF_SDK_VER:="nRF5_SDK_15.3.0_59ac345"}
 
 MACHINE="$(uname -m)"
-[[ "$MACHINE" == "arm64" ]] && MACHINE="aarch64"
+[ "$MACHINE" = "arm64" ] && MACHINE="aarch64"
 
 export GCC_ARM_PATH="gcc-arm-none-eabi-$GCC_ARM_VER"
 
@@ -29,9 +29,9 @@ main() {
 
   mkdir -p "$TOOLS_DIR"
 
-  [[ ! -d "$TOOLS_DIR/$GCC_ARM_PATH" ]] && GetGcc
-  [[ ! -d "$TOOLS_DIR/$NRF_SDK_VER" ]] && GetNrfSdk
-  [[ ! -d "$TOOLS_DIR/mcuboot" ]] && GetMcuBoot
+  [ ! -d "$TOOLS_DIR/$GCC_ARM_PATH" ] && GetGcc
+  [ ! -d "$TOOLS_DIR/$NRF_SDK_VER" ] && GetNrfSdk
+  [ ! -d "$TOOLS_DIR/mcuboot" ] && GetMcuBoot
 
   mkdir -p "$BUILD_DIR"
 
@@ -73,13 +73,13 @@ CmakeGenerate() {
 
 CmakeBuild() {
   local target="$1"
-  [[ -n "$target" ]] && target="--target $target"
-  if cmake --build "$BUILD_DIR" --config $BUILD_TYPE $target -- -j$(nproc)
-    then return 0; else return 1; 
-  fi
+  [ -n "$target" ] && target="--target $target"
+  cmake --build "$BUILD_DIR" --config $BUILD_TYPE $target -- -j$(nproc)
+  BUILD_RESULT=$?
+  return $BUILD_RESULT
 }
 
-if [[ $SOURCED == "false" ]]; then
+if [ $SOURCED = "false" ]; then
   # It is important to return exit code of main
   # To be future-proof, this is handled explicitely
   main "$@"

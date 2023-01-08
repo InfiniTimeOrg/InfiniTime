@@ -90,6 +90,7 @@ void MotionService::OnNewStepCountValue(uint32_t stepCount) {
 
   ble_gattc_notify_custom(connectionHandle, stepCountHandle, om);
 }
+
 void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
   if (!motionValuesNoficationEnabled)
     return;

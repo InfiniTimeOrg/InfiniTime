@@ -17,7 +17,7 @@ do
   src/libs/*|src/FreeRTOS/*) continue ;;
   *.cpp|*.h)
     echo "::group::$file"
-    clang-tidy-12 -p build "$file" || true
+    clang-tidy-14 -p build "$file" || true
     echo "::endgroup::"
   esac
 done
