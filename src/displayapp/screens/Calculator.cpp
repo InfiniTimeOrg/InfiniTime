@@ -16,8 +16,8 @@ Calculator::~Calculator() {
   lv_obj_clean(lv_scr_act());
 }
 
-static const char* buttonMap[] = {"7", "8", "9", Symbols::backspace, "\n", "4", "5", "6", "+ -", "\n", "1", "2", "3", "* /", "\n", ".", "0",
-                                  "=", "^", ""};
+static const char* buttonMap[] = {"7", "8", "9", Symbols::backspace, "\n", "4", "5", "6", "+ -", "\n", "1", "2", "3", "* /", "\n", "0", ".",
+                                  "(-)", "=", ""};
 
 Calculator::Calculator(DisplayApp* app) : Screen(app) {
   resultLabel = lv_label_create(lv_scr_act(), nullptr);
@@ -99,6 +99,11 @@ void Calculator::HandleInput() {
       NRF_LOG_INFO(". result: %" PRId64, result);
       break;
 
+    // unary minus
+    case '(':
+      value = -value;
+      break;
+
     case '.':
       if (offset == FIXED_POINT_OFFSET) {
         offset /= 10;
@@ -153,20 +158,6 @@ void Calculator::HandleInput() {
       UpdateOperation();
       break;
 
-    case '^':
-      if (value != 0) {
-        Eval();
-        ResetInput();
-      }
-
-      if (operation == '^') {
-        operation = ' ';
-      } else {
-        operation = '^';
-      }
-      UpdateOperation();
-      break;
-
     // this is a little hacky because it matches only the first char
     case Symbols::backspace[0]:
       if (value != 0) {
@@ -201,6 +192,7 @@ void Calculator::HandleInput() {
       NRF_LOG_INFO(". result: %" PRId64, result);
 
       operation = ' ';
+      UpdateOperation();
       break;
 
     case '=':
@@ -244,11 +236,6 @@ void Calculator::UpdateOperation() const {
       lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::bgAlt);
       lv_obj_set_style_local_bg_grad_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::deepOrange);
       lv_btnmatrix_set_btn_ctrl(buttonMatrix, 11, LV_BTNMATRIX_CTRL_CHECK_STATE);
-      break;
-    case '^':
-      lv_obj_set_style_local_bg_grad_dir(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, LV_GRAD_DIR_NONE);
-      lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_CHECKED, Colors::deepOrange);
-      lv_btnmatrix_set_btn_ctrl(buttonMatrix, 15, LV_BTNMATRIX_CTRL_CHECK_STATE);
       break;
     default:
       lv_btnmatrix_clear_btn_ctrl_all(buttonMatrix, LV_BTNMATRIX_CTRL_CHECK_STATE);
@@ -382,29 +369,6 @@ void Calculator::Eval() {
       result *= FIXED_POINT_OFFSET;
       result /= value;
       break;
-
-    // we use floats here because pow with fixed point numbers is weird
-    case '^': {
-      auto tmp_value = static_cast<double>(value);
-      tmp_value /= static_cast<double>(FIXED_POINT_OFFSET);
-
-      auto tmp_result = static_cast<double>(result);
-      tmp_result /= static_cast<double>(FIXED_POINT_OFFSET);
-
-      // check for overflow
-      // result^value > MAX_VALUE iff
-      // log2(result^value) > log2(MAX_VALUE) iff
-      // value * log2(result) > log2(MAX_VALUE)
-      if ((tmp_value * log2(std::abs(tmp_result))) > log2(static_cast<double>(MAX_VALUE))) {
-        error = Error::TooLarge;
-        break;
-      }
-
-      tmp_result = pow(tmp_result, tmp_value);
-      tmp_result *= static_cast<double>(FIXED_POINT_OFFSET);
-      result = static_cast<int64_t>(tmp_result);
-      break;
-    }
 
     default:
       break;
