@@ -113,7 +113,7 @@ Alarm::Alarm(DisplayApp* app,
 
   UpdateAlarmTime();
 
-  if (alarmController.State() == Controllers::AlarmController::AlarmState::Alerting) {
+  if (alarmController.IsAlerting()) {
     SetAlerting();
   } else {
     SetSwitchState(LV_ANIM_OFF);
@@ -121,14 +121,15 @@ Alarm::Alarm(DisplayApp* app,
 }
 
 Alarm::~Alarm() {
-  if (alarmController.State() == AlarmController::AlarmState::Alerting) {
+  if (alarmController.IsAlerting()) {
     StopAlerting();
   }
   lv_obj_clean(lv_scr_act());
+  alarmController.SaveAlarm();
 }
 
 void Alarm::DisableAlarm() {
-  if (alarmController.State() == AlarmController::AlarmState::Set) {
+  if (alarmController.IsEnabled()) {
     alarmController.DisableAlarm();
     lv_switch_off(enableSwitch, LV_ANIM_ON);
   }
@@ -168,7 +169,7 @@ bool Alarm::OnButtonPushed() {
     HideInfo();
     return true;
   }
-  if (alarmController.State() == AlarmController::AlarmState::Alerting) {
+  if (alarmController.IsAlerting()) {
     StopAlerting();
     return true;
   }
@@ -177,7 +178,7 @@ bool Alarm::OnButtonPushed() {
 
 bool Alarm::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   // Don't allow closing the screen by swiping while the alarm is alerting
-  return alarmController.State() == AlarmController::AlarmState::Alerting && event == TouchEvents::SwipeDown;
+  return alarmController.IsAlerting() && event == TouchEvents::SwipeDown;
 }
 
 void Alarm::OnValueChanged() {
@@ -216,15 +217,10 @@ void Alarm::StopAlerting() {
 }
 
 void Alarm::SetSwitchState(lv_anim_enable_t anim) {
-  switch (alarmController.State()) {
-    case AlarmController::AlarmState::Set:
-      lv_switch_on(enableSwitch, anim);
-      break;
-    case AlarmController::AlarmState::Not_Set:
-      lv_switch_off(enableSwitch, anim);
-      break;
-    default:
-      break;
+  if (alarmController.IsEnabled()) {
+    lv_switch_on(enableSwitch, anim);
+  } else {
+    lv_switch_off(enableSwitch, anim);
   }
 }
 
@@ -241,7 +237,7 @@ void Alarm::ShowInfo() {
   txtMessage = lv_label_create(btnMessage, nullptr);
   lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
 
-  if (alarmController.State() == AlarmController::AlarmState::Set) {
+  if (alarmController.IsEnabled()) {
     auto timeToAlarm = alarmController.SecondsToAlarm();
 
     auto daysToAlarm = timeToAlarm / 86400;
