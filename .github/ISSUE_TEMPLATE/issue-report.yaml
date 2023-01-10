@@ -28,9 +28,4 @@ body:
       If you are running directly from git, specify the branch or the commit hash directly.
     placeholder: Ex. v1.6.0 or develop or fc922b60
   validations:
-    required: true
-- type: input
-  attributes:
-    label: Companion app
-    description: Which companion app are you using (if relevant)?
-    placeholder: Ex. Gadgetbridge v0.60.0, Siglo v0.9.4
+    required: false
