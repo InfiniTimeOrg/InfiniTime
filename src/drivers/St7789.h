@@ -5,6 +5,7 @@
 namespace Pinetime {
   namespace Drivers {
     class Spi;
+
     class St7789 {
     public:
       explicit St7789(Spi& spi, uint8_t pinDataCommand);

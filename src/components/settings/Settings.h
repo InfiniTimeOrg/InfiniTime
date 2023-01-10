@@ -45,6 +45,7 @@ namespace Pinetime {
         Colors ColorBG = Colors::Black;
         PTSGaugeStyle gaugeStyle = PTSGaugeStyle::Full;
       };
+
       struct WatchFaceInfineat {
         bool showSideCover = true;
         int colorIndex = 0;
@@ -66,6 +67,7 @@ namespace Pinetime {
         }
         settings.clockFace = face;
       };
+
       uint8_t GetClockFace() const {
         return settings.clockFace;
       };
@@ -76,6 +78,7 @@ namespace Pinetime {
         }
         settings.chimesOption = chimeOption;
       };
+
       ChimesOption GetChimeOption() const {
         return settings.chimesOption;
       };
@@ -85,6 +88,7 @@ namespace Pinetime {
           settingsChanged = true;
         settings.PTS.ColorTime = colorTime;
       };
+
       Colors GetPTSColorTime() const {
         return settings.PTS.ColorTime;
       };
@@ -94,6 +98,7 @@ namespace Pinetime {
           settingsChanged = true;
         settings.PTS.ColorBar = colorBar;
       };
+
       Colors GetPTSColorBar() const {
         return settings.PTS.ColorBar;
       };
@@ -103,6 +108,7 @@ namespace Pinetime {
           settingsChanged = true;
         settings.PTS.ColorBG = colorBG;
       };
+
       Colors GetPTSColorBG() const {
         return settings.PTS.ColorBG;
       };
@@ -113,6 +119,7 @@ namespace Pinetime {
           settingsChanged = true;
         }
       };
+
       bool GetInfineatShowSideCover() const {
         return settings.watchFaceInfineat.showSideCover;
       };
@@ -123,6 +130,7 @@ namespace Pinetime {
           settingsChanged = true;
         }
       };
+
       int GetInfineatColorIndex() const {
         return settings.watchFaceInfineat.colorIndex;
       };
@@ -132,6 +140,7 @@ namespace Pinetime {
           settingsChanged = true;
         settings.PTS.gaugeStyle = gaugeStyle;
       };
+
       PTSGaugeStyle GetPTSGaugeStyle() const {
         return settings.PTS.gaugeStyle;
       };
@@ -147,6 +156,7 @@ namespace Pinetime {
       void SetSettingsMenu(uint8_t menu) {
         settingsMenu = menu;
       };
+
       uint8_t GetSettingsMenu() const {
         return settingsMenu;
       };
@@ -157,6 +167,7 @@ namespace Pinetime {
         }
         settings.clockType = clocktype;
       };
+
       ClockType GetClockType() const {
         return settings.clockType;
       };
@@ -167,6 +178,7 @@ namespace Pinetime {
         }
         settings.notificationStatus = status;
       };
+
       Notification GetNotificationStatus() const {
         return settings.notificationStatus;
       };
@@ -255,6 +267,7 @@ namespace Pinetime {
       Pinetime::Controllers::FS& fs;
 
       static constexpr uint32_t settingsVersion = 0x0004;
+
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;

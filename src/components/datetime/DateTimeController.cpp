@@ -51,7 +51,7 @@ void DateTime::SetTime(uint16_t year,
   systemTask->PushMessage(System::Messages::OnNewTime);
 }
 
-void DateTime::SetTimeZone(uint8_t timezone, uint8_t dst) {
+void DateTime::SetTimeZone(int8_t timezone, int8_t dst) {
   tzOffset = timezone;
   dstOffset = dst;
 }
@@ -142,6 +142,7 @@ void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
 }
 
 using ClockType = Pinetime::Controllers::Settings::ClockType;
+
 std::string DateTime::FormattedTime() {
   // Return time as a string in 12- or 24-hour format
   char buff[9];

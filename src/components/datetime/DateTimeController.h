@@ -9,6 +9,7 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
     class DateTime {
     public:
@@ -48,27 +49,34 @@ namespace Pinetime {
        * timezone is expected to be constant over DST which will be reported in
        * dst field.
        */
-      void SetTimeZone(uint8_t timezone, uint8_t dst);
+      void SetTimeZone(int8_t timezone, int8_t dst);
 
       void UpdateTime(uint32_t systickCounter);
+
       uint16_t Year() const {
         return year;
       }
+
       Months Month() const {
         return month;
       }
+
       uint8_t Day() const {
         return day;
       }
+
       Days DayOfWeek() const {
         return dayOfWeek;
       }
+
       uint8_t Hours() const {
         return hour;
       }
+
       uint8_t Minutes() const {
         return minute;
       }
+
       uint8_t Seconds() const {
         return second;
       }
@@ -80,7 +88,7 @@ namespace Pinetime {
        * supports the BLE CTS Local Time Characteristic. Expect it to be 0
        * if not.
        */
-      uint8_t UtcOffset() const {
+      int8_t UtcOffset() const {
         return tzOffset + dstOffset;
       }
 
@@ -92,7 +100,7 @@ namespace Pinetime {
        * supports the BLE CTS Local Time Characteristic. Expect it to be 0
        * if not.
        */
-      uint8_t TzOffset() const {
+      int8_t TzOffset() const {
         return tzOffset;
       }
 
@@ -105,7 +113,7 @@ namespace Pinetime {
        * supports the BLE CTS Local Time Characteristic. Expect it to be 0
        * if not.
        */
-      uint8_t DstOffset() const {
+      int8_t DstOffset() const {
         return dstOffset;
       }
 
@@ -117,9 +125,11 @@ namespace Pinetime {
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const {
         return currentDateTime;
       }
+
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> UTCDateTime() const {
         return currentDateTime - std::chrono::seconds((tzOffset + dstOffset) * 15 * 60);
       }
+
       std::chrono::seconds Uptime() const {
         return uptime;
       }
@@ -136,8 +146,8 @@ namespace Pinetime {
       uint8_t hour = 0;
       uint8_t minute = 0;
       uint8_t second = 0;
-      uint8_t tzOffset = 0;
-      uint8_t dstOffset = 0;
+      int8_t tzOffset = 0;
+      int8_t dstOffset = 0;
 
       uint32_t previousSystickCounter = 0;
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> currentDateTime;

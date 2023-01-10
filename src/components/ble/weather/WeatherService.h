@@ -39,6 +39,7 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
 
     class WeatherService {

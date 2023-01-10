@@ -23,7 +23,7 @@ jobs:
       - name: Install clang-format
         run: |
           sudo apt-get update
-          sudo apt-get -y install clang-format-12
+          sudo apt-get -y install clang-format-14
 
       - name: Check formatting
         run: tests/test-format.sh
@@ -55,7 +55,7 @@ jobs:
     - name: Install clang-tidy
       run: |
         apt-get update
-        apt-get -y install clang-tidy-12
+        apt-get -y install clang-tidy-14
     - name: Prepare environment
       shell: bash
       env:

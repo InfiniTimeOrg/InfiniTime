@@ -6,9 +6,11 @@ namespace Pinetime {
   namespace Components {
     class LittleVgl;
   }
+
   namespace Drivers {
     class Cst816S;
   }
+
   namespace Controllers {
     class TouchHandler {
     public:
@@ -20,12 +22,15 @@ namespace Pinetime {
       bool IsTouching() const {
         return info.touching;
       }
+
       uint8_t GetX() const {
         return info.x;
       }
+
       uint8_t GetY() const {
         return info.y;
       }
+
       Pinetime::Applications::TouchEvents GestureGet();
 
     private:

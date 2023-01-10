@@ -16,8 +16,8 @@ Battery::Battery() {
 }
 
 void Battery::ReadPowerState() {
-  isCharging = !nrf_gpio_pin_read(PinMap::Charging);
-  isPowerPresent = !nrf_gpio_pin_read(PinMap::PowerPresent);
+  isCharging = (nrf_gpio_pin_read(PinMap::Charging) == 0);
+  isPowerPresent = (nrf_gpio_pin_read(PinMap::PowerPresent) == 0);
 
   if (isPowerPresent && !isCharging) {
     isFull = true;
@@ -81,17 +81,25 @@ void Battery::SaadcEventHandler(nrfx_saadc_evt_t const* p_event) {
     // p_event->data.done.p_buffer[0] = (adc_voltage / reference_voltage) * 1024
     voltage = p_event->data.done.p_buffer[0] * (8 * 600) / 1024;
 
-    uint8_t newPercent;
-    if (isFull) {
-      newPercent = 100;
-    } else {
+    uint8_t newPercent = 100;
+    if (!isFull) {
       newPercent = std::min(aprox.GetValue(voltage), isCharging ? uint8_t {99} : uint8_t {100});
+    }
+
+    if (isPowerPresent) {
+      batteryLowNotified = false;
     }
 
     if ((isPowerPresent && newPercent > percentRemaining) || (!isPowerPresent && newPercent < percentRemaining) || firstMeasurement) {
       firstMeasurement = false;
       percentRemaining = newPercent;
       systemTask->PushMessage(System::Messages::BatteryPercentageUpdated);
+
+      // warn about low battery when not charging and below threshold
+      if (BatteryIsLow() && !isPowerPresent && !batteryLowNotified) {
+        systemTask->PushMessage(System::Messages::LowBattery);
+        batteryLowNotified = true;
+      }
     }
 
     nrfx_saadc_uninit();
