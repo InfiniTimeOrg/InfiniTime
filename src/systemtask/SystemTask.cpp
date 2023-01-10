@@ -281,6 +281,12 @@ void SystemTask::Work() {
             alarmController.ScheduleAlarm();
           }
           break;
+        case Messages::GoToClock:
+          if (state == SystemTaskState::Sleeping) {
+            GoToRunning();
+          }
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToClock);
+          break;
         case Messages::OnNewNotification:
           if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::On) {
             if (state == SystemTaskState::Sleeping) {
@@ -297,11 +303,6 @@ void SystemTask::Work() {
           }
           motorController.StartRinging();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
-          PushMessage(Messages::DisableSleeping);
-          break;
-        case Messages::OnTimerDoneRinging:
-          motorController.StopRinging();
-          PushMessage(Messages::EnableSleeping);
           break;
         case Messages::SetOffAlarm:
           if (state == SystemTaskState::Sleeping) {
