@@ -202,7 +202,7 @@ void DisplayApp::Refresh() {
         break;
       case Messages::GoToClock:
         if (currentApp != Apps::Clock) {
-          LoadApp(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+          LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         }
         break;
       case Messages::TimerDone:
