@@ -24,6 +24,7 @@ namespace Pinetime {
           Controllers::Settings::ClockType clockType;
           const char* name;
         };
+
         static constexpr std::array<Option, 2> options = {{
           {Controllers::Settings::ClockType::H12, "12-hour"},
           {Controllers::Settings::ClockType::H24, "24-hour"},

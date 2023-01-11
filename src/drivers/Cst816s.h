@@ -16,6 +16,7 @@ namespace Pinetime {
         DoubleTap = 0x0B,
         LongPress = 0x0C
       };
+
       struct TouchInfos {
         uint16_t x = 0;
         uint16_t y = 0;
@@ -38,9 +39,11 @@ namespace Pinetime {
       uint8_t GetChipId() const {
         return chipId;
       }
+
       uint8_t GetVendorId() const {
         return vendorId;
       }
+
       uint8_t GetFwVersion() const {
         return fwVersion;
       }

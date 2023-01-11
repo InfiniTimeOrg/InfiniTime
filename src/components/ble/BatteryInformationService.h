@@ -9,8 +9,10 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
     class Battery;
+
     class BatteryInformationService {
     public:
       BatteryInformationService(Controllers::Battery& batteryController);

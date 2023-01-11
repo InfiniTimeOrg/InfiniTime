@@ -10,8 +10,10 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
     class HeartRateController;
+
     class HeartRateService {
     public:
       HeartRateService(Pinetime::System::SystemTask& system, Controllers::HeartRateController& heartRateController);

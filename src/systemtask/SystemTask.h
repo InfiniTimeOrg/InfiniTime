@@ -37,6 +37,7 @@
 #include "systemtask/Messages.h"
 
 extern std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoInit_BackUpTime;
+
 namespace Pinetime {
   namespace Drivers {
     class Cst816S;
@@ -46,11 +47,13 @@ namespace Pinetime {
     class TwiMaster;
     class Hrs3300;
   }
+
   namespace Controllers {
     class Battery;
     class TouchHandler;
     class ButtonHandler;
   }
+
   namespace System {
     class SystemTask {
     public:
