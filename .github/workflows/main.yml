@@ -59,22 +59,23 @@ jobs:
           path: ./build/output/infinitime-resources-*.zip
 
   build-simulator:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
-    - name: Install cmake
-      uses: lukka/get-cmake@v3.18.3
-
     - name: Install SDL2 development package
       run:  |
         sudo apt-get update
         sudo apt-get -y install libsdl2-dev
+
+    - name: Install Ninja
+      run:  |
+        sudo apt-get -y install ninja-build
 
     - name: Install lv_font_conv
       run:
         npm i -g lv_font_conv@1.5.2
 
     - name: Checkout source files
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         submodules: recursive
 
