@@ -2,6 +2,7 @@
 
 #include "displayapp/screens/Screen.h"
 #include "components/brightness/BrightnessController.h"
+#include "components/settings/Settings.h"
 #include "systemtask/SystemTask.h"
 #include <cstdint>
 #include <lvgl/lvgl.h>
@@ -13,7 +14,7 @@ namespace Pinetime {
 
       class FlashLight : public Screen {
       public:
-        FlashLight(DisplayApp* app, System::SystemTask& systemTask, Controllers::BrightnessController& brightness);
+        FlashLight(DisplayApp* app, System::SystemTask& systemTask, Controllers::BrightnessController& brightness, Pinetime::Controllers::Settings& settingsController);
         ~FlashLight() override;
 
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
@@ -25,6 +26,7 @@ namespace Pinetime {
 
         Pinetime::System::SystemTask& systemTask;
         Controllers::BrightnessController& brightnessController;
+        Controllers::Settings& settingsController;
 
         Controllers::BrightnessController::Levels brightnessLevel = Controllers::BrightnessController::Levels::High;
 
@@ -32,6 +34,7 @@ namespace Pinetime {
         lv_obj_t* backgroundAction;
         lv_obj_t* indicators[3];
         bool isOn = false;
+        bool notificationsStatus = false;
       };
     }
   }

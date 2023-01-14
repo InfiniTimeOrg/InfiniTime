@@ -459,7 +459,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                             touchPanel);
       break;
     case Apps::FlashLight:
-      currentScreen = std::make_unique<Screens::FlashLight>(this, *systemTask, brightnessController);
+      currentScreen = std::make_unique<Screens::FlashLight>(this, *systemTask, brightnessController, settingsController);
       break;
     case Apps::StopWatch:
       currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask);
