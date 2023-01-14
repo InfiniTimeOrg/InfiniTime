@@ -6,6 +6,8 @@
 #include "components/settings/Settings.h"
 #include "displayapp/widgets/Counter.h"
 #include "displayapp/screens/Screen.h"
+#include "displayapp/widgets/DotIndicator.h"
+#include "displayapp/screens/settings/SettingSetDateTime.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -14,7 +16,8 @@ namespace Pinetime {
       public:
         SettingSetTime(DisplayApp* app,
                        Pinetime::Controllers::DateTime& dateTimeController,
-                       Pinetime::Controllers::Settings& settingsController);
+                       Pinetime::Controllers::Settings& settingsController,
+                       Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime);
         ~SettingSetTime() override;
 
         void SetTime();
@@ -23,6 +26,7 @@ namespace Pinetime {
       private:
         Controllers::DateTime& dateTimeController;
         Controllers::Settings& settingsController;
+        Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime;
 
         lv_obj_t* lblampm;
         lv_obj_t* btnSetTime;

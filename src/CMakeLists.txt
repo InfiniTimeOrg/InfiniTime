@@ -407,6 +407,7 @@ list(APPEND SOURCE_FILES
         displayapp/Colors.cpp
         displayapp/widgets/Counter.cpp
         displayapp/widgets/PageIndicator.cpp
+        displayapp/widgets/DotIndicator.cpp
         displayapp/widgets/StatusIcons.cpp
 
         ## Settings
@@ -417,6 +418,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingWakeUp.cpp
         displayapp/screens/settings/SettingDisplay.cpp
         displayapp/screens/settings/SettingSteps.cpp
+        displayapp/screens/settings/SettingSetDateTime.cpp
         displayapp/screens/settings/SettingSetDate.cpp
         displayapp/screens/settings/SettingSetTime.cpp
         displayapp/screens/settings/SettingChimes.cpp
@@ -616,6 +618,7 @@ set(INCLUDE_FILES
         displayapp/Colors.h
         displayapp/widgets/Counter.h
         displayapp/widgets/PageIndicator.h
+        displayapp/widgets/DotIndicator.h
         displayapp/widgets/StatusIcons.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
