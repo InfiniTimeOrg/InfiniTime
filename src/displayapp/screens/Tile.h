@@ -16,6 +16,8 @@ namespace Pinetime {
     namespace Screens {
       class Tile : public Screen {
       public:
+        static constexpr uint8_t maxTileItems = 6;
+
         struct Applications {
           const char* icon;
           Pinetime::Applications::Apps application;
@@ -46,8 +48,9 @@ namespace Pinetime {
         Widgets::PageIndicator pageIndicator;
         Widgets::StatusIcons statusIcons;
 
-        const char* btnmMap[8];
-        Pinetime::Applications::Apps apps[6];
+        static constexpr uint8_t nRows = 2;
+        const char* btnmMap[maxTileItems + (nRows - 1) + 1];
+        Pinetime::Applications::Apps apps[maxTileItems];
       };
     }
   }

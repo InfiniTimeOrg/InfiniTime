@@ -31,7 +31,7 @@ Tile::Tile(uint8_t screenID,
            Controllers::Battery& batteryController,
            Controllers::Ble& bleController,
            Controllers::DateTime& dateTimeController,
-           std::array<Applications, 6>& applications)
+           std::array<Applications, maxTileItems>& applications)
   : Screen(app),
     dateTimeController {dateTimeController},
     pageIndicator(screenID, numScreens),
@@ -50,8 +50,9 @@ Tile::Tile(uint8_t screenID,
   pageIndicator.Create();
 
   uint8_t btIndex = 0;
-  for (uint8_t i = 0; i < 6; i++) {
-    if (i == 3) {
+  for (uint8_t i = 0; i < maxTileItems; i++) {
+    static constexpr uint8_t entriesPerRow = maxTileItems / nRows;
+    if ((btIndex + 1) % (entriesPerRow + 1) == 0) {
       btnmMap[btIndex++] = "\n";
     }
     if (applications[i].application == Apps::None) {
@@ -77,7 +78,7 @@ Tile::Tile(uint8_t screenID,
   lv_obj_set_style_local_pad_all(btnm1, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_pad_inner(btnm1, LV_BTNMATRIX_PART_BG, LV_STATE_DEFAULT, 10);
 
-  for (uint8_t i = 0; i < 6; i++) {
+  for (uint8_t i = 0; i < maxTileItems; i++) {
     lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_CLICK_TRIG);
     if (applications[i].application == Apps::None) {
       lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_DISABLED);

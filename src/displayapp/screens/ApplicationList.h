@@ -33,26 +33,23 @@ namespace Pinetime {
         Pinetime::Controllers::Ble& bleController;
         Controllers::DateTime& dateTimeController;
 
-        static constexpr int appsPerScreen = 6;
-
-        // Increment this when more space is needed
-        static constexpr int nScreens = 2;
-
-        static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
+        static constexpr Tile::Applications applications[] {
           {Symbols::stopWatch, Apps::StopWatch},
           {Symbols::clock, Apps::Alarm},
           {Symbols::hourGlass, Apps::Timer},
           {Symbols::shoe, Apps::Steps},
           {Symbols::heartBeat, Apps::HeartRate},
           {Symbols::music, Apps::Music},
-
           {Symbols::paintbrush, Apps::Paint},
           {Symbols::paddle, Apps::Paddle},
           {"2", Apps::Twos},
           {Symbols::chartLine, Apps::Motion},
           {Symbols::drum, Apps::Metronome},
           {Symbols::map, Apps::Navigation},
-        }};
+        };
+        static constexpr size_t nEntries = sizeof(applications) / sizeof(applications[0]);
+        static constexpr size_t nScreens = (nEntries + Tile::maxTileItems - 1) / Tile::maxTileItems;
+
         ScreenList<nScreens> screens;
       };
     }

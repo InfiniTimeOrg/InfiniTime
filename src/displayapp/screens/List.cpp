@@ -16,11 +16,8 @@ List::List(uint8_t screenID,
            uint8_t numScreens,
            DisplayApp* app,
            Controllers::Settings& settingsController,
-           std::array<Applications, MAXLISTITEMS>& applications)
+           std::array<Applications, maxListItems>& applications)
   : Screen(app), settingsController {settingsController}, pageIndicator(screenID, numScreens) {
-
-  // Set the background to Black
-  lv_obj_set_style_local_bg_color(lv_scr_act(), LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, lv_color_make(0, 0, 0));
 
   settingsController.SetSettingsMenu(screenID);
 
@@ -38,11 +35,11 @@ List::List(uint8_t screenID,
   lv_obj_set_height(container, LV_VER_RES);
   lv_cont_set_layout(container, LV_LAYOUT_COLUMN_LEFT);
 
-  for (int i = 0; i < MAXLISTITEMS; i++) {
+  for (int i = 0; i < maxListItems; i++) {
     apps[i] = applications[i].application;
     if (applications[i].application != Apps::None) {
 
-      static constexpr int btnHeight = (LV_HOR_RES_MAX - ((MAXLISTITEMS - 1) * innerPad)) / MAXLISTITEMS;
+      static constexpr int btnHeight = (LV_HOR_RES_MAX - ((maxListItems - 1) * innerPad)) / maxListItems;
       itemApps[i] = lv_btn_create(container, nullptr);
       lv_obj_set_style_local_radius(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, btnHeight / 3);
       lv_obj_set_style_local_bg_color(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
@@ -74,7 +71,7 @@ List::~List() {
 
 void List::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    for (int i = 0; i < MAXLISTITEMS; i++) {
+    for (int i = 0; i < maxListItems; i++) {
       if (apps[i] != Apps::None && object == itemApps[i]) {
         app->StartApp(apps[i], DisplayApp::FullRefreshDirections::Up);
         running = false;
