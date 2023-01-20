@@ -1,6 +1,6 @@
 # Getting started with InfiniTime
 
-On April 22 2021, InfiniTime and Pine64 [announced the release of InfiniTime 1.0.0](https://www.pine64.org/2021/04/22/its-time-infinitime-1-0/) and the availability of PineTime smartwatches as an *enthusiast grade end-user product*. This page aims to guide you with your first step with your new PineTime.
+On April 22, 2021, InfiniTime and Pine64 [announced the release of InfiniTime 1.0.0](https://www.pine64.org/2021/04/22/its-time-infinitime-1-0/) and the availability of PineTime smartwatches as an *enthusiast grade end-user product*. This page aims to guide you with your first step with your new PineTime.
 
 It is highly recommended to update the firmware to the latest version when you receive your watch and when a new InfiniTime version is released. More information on updating the firmware [here](/doc/gettingStarted/updating-software.md).
 
@@ -28,15 +28,15 @@ This is what the default digital watch face looks like. You can change watch fac
 
 The indicator on the top left is visible if you have unread notifications
 
-On the top right there are status icons
+On the top right, there are status icons
 
 - The battery icon shows roughly how much charge is remaining
 - The Bluetooth icon is visible when the watch is connected to a companion app
 - A plug icon is shown when the watch is plugged into a charger.
 
-On the bottom left you can see your heart rate if you have the measurement enabled in the heart rate app.
+On the bottom left, you can see your heart rate if you have the measurement enabled in the heart rate app.
 
-On the bottom right you can see how many steps you have taken today.
+On the bottom right, you can see how many steps you have taken today.
 
 ### Navigation in the menu
 
