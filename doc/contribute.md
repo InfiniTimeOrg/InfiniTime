@@ -1,11 +1,20 @@
 # How to contribute?
 
-- [Report bugs](https://github.com/InfiniTimeOrg/InfiniTime/issues/new?assignees=&labels=bug&template=bug-report.yaml)
-- Write and improve documentation
-  - Documentation might be incomplete, or not clear enough, and it is always possible to improve it with better wording, pictures, videos,...
-  - As the documentation is part of the source code, you can submit changes to the documentation by creating a pull request (see below)
-- Fix bugs, add functionalities and improve the code
-  - See *How to create a pull request* below
+Here are things you can do to help.
+
+- [Report bugs or issues](https://github.com/InfiniTimeOrg/InfiniTime/issues/new/choose)
+- [Write and improve documentation](#documentation)
+- [Fix bugs, add functionalities and improve the code](#how-to-create-a-pull-request)
+- Participate in the discussions within issues and PRs. Your feedback is appreciated!
+- Review pull requests. Follow the instructions [here](maintainer-guide.md#reviewing-prs)
+
+## Documentation
+
+Documentation might be incomplete,
+or not clear enough,
+and it is always possible to improve it with better wording, pictures, videos,...
+As the documentation is part of the source code,
+you can submit changes to the documentation by creating a [pull request](#how-to-create-a-pull-request)
 
 ## How to create a pull request?
 
