@@ -48,8 +48,6 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   }
 
   // Side Cover
-  lineBattery = lv_line_create(lv_scr_act(), nullptr);
-
   static constexpr lv_point_t linePoints[nLines][2] = {{{30, 25}, {68, -8}},
                                                        {{26, 167}, {43, 216}},
                                                        {{27, 40}, {27, 196}},
@@ -76,13 +74,13 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_img_set_src(logoPine, "F:/images/pine_small.bin");
   lv_obj_set_pos(logoPine, 15, 106);
 
-  lv_style_init(&lineBatteryStyle);
-  lv_style_set_line_width(&lineBatteryStyle, LV_STATE_DEFAULT, 24);
-  lv_style_set_line_color(&lineBatteryStyle,
-                          LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 4]));
-  lv_style_set_line_opa(&lineBatteryStyle, LV_STATE_DEFAULT, 190);
-  lv_obj_add_style(lineBattery, LV_LINE_PART_MAIN, &lineBatteryStyle);
+  lineBattery = lv_line_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_line_width(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 24);
+  lv_obj_set_style_local_line_color(lineBattery,
+                                    LV_LINE_PART_MAIN,
+                                    LV_STATE_DEFAULT,
+                                    lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 4]));
+  lv_obj_set_style_local_line_opa(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 190);
   lineBatteryPoints[0] = {27, 105};
   lineBatteryPoints[1] = {27, 106};
   lv_line_set_points(lineBattery, lineBatteryPoints, 2);
@@ -240,8 +238,6 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
 WatchFaceInfineat::~WatchFaceInfineat() {
   lv_task_del(taskRefresh);
-
-  lv_style_reset(&lineBatteryStyle);
 
   if (font_bebas != nullptr) {
     lv_font_free(font_bebas);
