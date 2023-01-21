@@ -54,106 +54,29 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   lv_obj_align(background, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   // Side Cover
-  line0 = lv_line_create(lv_scr_act(), nullptr);
-  line1 = lv_line_create(lv_scr_act(), nullptr);
-  line2 = lv_line_create(lv_scr_act(), nullptr);
-  line3 = lv_line_create(lv_scr_act(), nullptr);
-  line4 = lv_line_create(lv_scr_act(), nullptr);
-  line5 = lv_line_create(lv_scr_act(), nullptr);
-  line6 = lv_line_create(lv_scr_act(), nullptr);
-  line7 = lv_line_create(lv_scr_act(), nullptr);
-  line8 = lv_line_create(lv_scr_act(), nullptr);
   lineBattery = lv_line_create(lv_scr_act(), nullptr);
 
-  lv_style_init(&line0Style);
-  lv_style_set_line_width(&line0Style, LV_STATE_DEFAULT, 18);
-  lv_style_set_line_color(&line0Style,
-                          LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines]));
-  lv_obj_add_style(line0, LV_LINE_PART_MAIN, &line0Style);
-  line0Points[0] = {30, 25};
-  line0Points[1] = {68, -8};
-  lv_line_set_points(line0, line0Points, 2);
+  static constexpr lv_point_t linePoints[nLines][2] = {{{30, 25}, {68, -8}},
+                                                       {{26, 167}, {43, 216}},
+                                                       {{27, 40}, {27, 196}},
+                                                       {{12, 182}, {65, 249}},
+                                                       {{17, 99}, {17, 144}},
+                                                       {{14, 81}, {40, 127}},
+                                                       {{14, 163}, {40, 118}},
+                                                       {{-20, 124}, {25, -11}},
+                                                       {{-29, 89}, {27, 254}}};
 
-  lv_style_init(&line1Style);
-  lv_style_set_line_width(&line1Style, LV_STATE_DEFAULT, 15);
-  lv_style_set_line_color(&line1Style,
-                          LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 1]));
-  lv_obj_add_style(line1, LV_LINE_PART_MAIN, &line1Style);
-  line1Points[0] = {26, 167};
-  line1Points[1] = {43, 216};
-  lv_line_set_points(line1, line1Points, 2);
+  static constexpr lv_style_int_t lineWidths[nLines] = {18, 15, 14, 22, 20, 18, 18, 52, 48};
 
-  lv_style_init(&line2Style);
-  lv_style_set_line_width(&line2Style, LV_STATE_DEFAULT, 14);
-  lv_style_set_line_color(&line2Style,
-                          LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 2]));
-  lv_obj_add_style(line2, LV_LINE_PART_MAIN, &line2Style);
-  line2Points[0] = {27, 40};
-  line2Points[1] = {27, 196};
-  lv_line_set_points(line2, line2Points, 2);
-
-  lv_style_init(&line3Style);
-  lv_style_set_line_width(&line3Style, LV_STATE_DEFAULT, 22);
-  lv_style_set_line_color(&line3Style,
-                          LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 3]));
-  lv_obj_add_style(line3, LV_LINE_PART_MAIN, &line3Style);
-  line3Points[0] = {12, 182};
-  line3Points[1] = {65, 249};
-  lv_line_set_points(line3, line3Points, 2);
-
-  lv_style_init(&line4Style);
-  lv_style_set_line_width(&line4Style, LV_STATE_DEFAULT, 20);
-  lv_style_set_line_color(&line4Style,
-                          LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 4]));
-  lv_obj_add_style(line4, LV_LINE_PART_MAIN, &line4Style);
-  line4Points[0] = {17, 99};
-  line4Points[1] = {17, 144};
-  lv_line_set_points(line4, line4Points, 2);
-
-  lv_style_init(&line5Style);
-  lv_style_set_line_width(&line5Style, LV_STATE_DEFAULT, 18);
-  lv_style_set_line_color(&line5Style,
-                          LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 5]));
-  lv_obj_add_style(line5, LV_LINE_PART_MAIN, &line5Style);
-  line5Points[0] = {14, 81};
-  line5Points[1] = {40, 127};
-  lv_line_set_points(line5, line5Points, 2);
-
-  lv_style_init(&line6Style);
-  lv_style_set_line_width(&line6Style, LV_STATE_DEFAULT, 18);
-  lv_style_set_line_color(&line6Style,
-                          LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 6]));
-  lv_obj_add_style(line6, LV_LINE_PART_MAIN, &line6Style);
-  line6Points[0] = {14, 163};
-  line6Points[1] = {40, 118};
-  lv_line_set_points(line6, line6Points, 2);
-
-  lv_style_init(&line7Style);
-  lv_style_set_line_width(&line7Style, LV_STATE_DEFAULT, 52);
-  lv_style_set_line_color(&line7Style,
-                          LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 7]));
-  lv_obj_add_style(line7, LV_LINE_PART_MAIN, &line7Style);
-  line7Points[0] = {-20, 124};
-  line7Points[1] = {25, -11};
-  lv_line_set_points(line7, line7Points, 2);
-
-  lv_style_init(&line8Style);
-  lv_style_set_line_width(&line8Style, LV_STATE_DEFAULT, 48);
-  lv_style_set_line_color(&line8Style,
-                          LV_STATE_DEFAULT,
-                          lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + 8]));
-  lv_obj_add_style(line8, LV_LINE_PART_MAIN, &line8Style);
-  line8Points[0] = {-29, 89};
-  line8Points[1] = {27, 254};
-  lv_line_set_points(line8, line8Points, 2);
+  for (int i = 0; i < nLines; i++) {
+    lines[i] = lv_line_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_line_width(lines[i], LV_LINE_PART_MAIN, LV_STATE_DEFAULT, lineWidths[i]);
+    lv_obj_set_style_local_line_color(lines[i],
+                                      LV_LINE_PART_MAIN,
+                                      LV_STATE_DEFAULT,
+                                      lv_color_hex(infineatColors.orange[settingsController.GetInfineatColorIndex() * nLines + i]));
+    lv_line_set_points(lines[i], linePoints[i], 2);
+  }
 
   logoPine = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_src(logoPine, "F:/images/pine_small.bin");
@@ -182,15 +105,9 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   if (!settingsController.GetInfineatShowSideCover()) {
     ToggleBatteryIndicatorColor(false);
-    lv_obj_set_hidden(line0, true);
-    lv_obj_set_hidden(line1, true);
-    lv_obj_set_hidden(line2, true);
-    lv_obj_set_hidden(line3, true);
-    lv_obj_set_hidden(line4, true);
-    lv_obj_set_hidden(line5, true);
-    lv_obj_set_hidden(line6, true);
-    lv_obj_set_hidden(line7, true);
-    lv_obj_set_hidden(line8, true);
+    for (auto& line : lines) {
+      lv_obj_set_hidden(line, true);
+    }
   }
 
   timeContainer = lv_obj_create(lv_scr_act(), nullptr);
@@ -330,15 +247,6 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 WatchFaceInfineat::~WatchFaceInfineat() {
   lv_task_del(taskRefresh);
 
-  lv_style_reset(&line0Style);
-  lv_style_reset(&line1Style);
-  lv_style_reset(&line2Style);
-  lv_style_reset(&line3Style);
-  lv_style_reset(&line4Style);
-  lv_style_reset(&line5Style);
-  lv_style_reset(&line6Style);
-  lv_style_reset(&line7Style);
-  lv_style_reset(&line8Style);
   lv_style_reset(&lineBatteryStyle);
 
   if (font_bebas != nullptr) {
@@ -398,15 +306,9 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     if (object == btnToggleCover) {
       settingsController.SetInfineatShowSideCover(!showSideCover);
       ToggleBatteryIndicatorColor(!showSideCover);
-      lv_obj_set_hidden(line0, showSideCover);
-      lv_obj_set_hidden(line1, showSideCover);
-      lv_obj_set_hidden(line2, showSideCover);
-      lv_obj_set_hidden(line3, showSideCover);
-      lv_obj_set_hidden(line4, showSideCover);
-      lv_obj_set_hidden(line5, showSideCover);
-      lv_obj_set_hidden(line6, showSideCover);
-      lv_obj_set_hidden(line7, showSideCover);
-      lv_obj_set_hidden(line8, showSideCover);
+      for (auto& line : lines) {
+        lv_obj_set_hidden(line, showSideCover);
+      }
       lv_obj_set_hidden(btnNextColor, showSideCover);
       lv_obj_set_hidden(btnPrevColor, showSideCover);
       const char* labelToggle = showSideCover ? "OFF" : "ON";
@@ -423,42 +325,12 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       settingsController.SetInfineatColorIndex(colorIndex);
     }
     if (object == btnNextColor || object == btnPrevColor) {
-      lv_obj_set_style_local_line_color(line0,
-                                        LV_LINE_PART_MAIN,
-                                        LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 0]));
-      lv_obj_set_style_local_line_color(line1,
-                                        LV_LINE_PART_MAIN,
-                                        LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 1]));
-      lv_obj_set_style_local_line_color(line2,
-                                        LV_LINE_PART_MAIN,
-                                        LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 2]));
-      lv_obj_set_style_local_line_color(line3,
-                                        LV_LINE_PART_MAIN,
-                                        LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 3]));
-      lv_obj_set_style_local_line_color(line4,
-                                        LV_LINE_PART_MAIN,
-                                        LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 4]));
-      lv_obj_set_style_local_line_color(line5,
-                                        LV_LINE_PART_MAIN,
-                                        LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 5]));
-      lv_obj_set_style_local_line_color(line6,
-                                        LV_LINE_PART_MAIN,
-                                        LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 6]));
-      lv_obj_set_style_local_line_color(line7,
-                                        LV_LINE_PART_MAIN,
-                                        LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 7]));
-      lv_obj_set_style_local_line_color(line8,
-                                        LV_LINE_PART_MAIN,
-                                        LV_STATE_DEFAULT,
-                                        lv_color_hex(infineatColors.orange[colorIndex * nLines + 8]));
+      for (int i = 0; i < nLines; i++) {
+        lv_obj_set_style_local_line_color(lines[i],
+                                          LV_LINE_PART_MAIN,
+                                          LV_STATE_DEFAULT,
+                                          lv_color_hex(infineatColors.orange[colorIndex * nLines + i]));
+      }
       lv_obj_set_style_local_line_color(lineBattery,
                                         LV_LINE_PART_MAIN,
                                         LV_STATE_DEFAULT,

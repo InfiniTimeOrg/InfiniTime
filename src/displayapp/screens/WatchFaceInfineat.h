@@ -63,37 +63,10 @@ namespace Pinetime {
         lv_obj_t* background;
 
         // Lines making up the side cover
-        lv_obj_t* line0;
-        lv_obj_t* line1;
-        lv_obj_t* line2;
-        lv_obj_t* line3;
-        lv_obj_t* line4;
-        lv_obj_t* line5;
-        lv_obj_t* line6;
-        lv_obj_t* line7;
-        lv_obj_t* line8;
         lv_obj_t* lineBattery;
 
-        lv_style_t line0Style;
-        lv_style_t line1Style;
-        lv_style_t line2Style;
-        lv_style_t line3Style;
-        lv_style_t line4Style;
-        lv_style_t line5Style;
-        lv_style_t line6Style;
-        lv_style_t line7Style;
-        lv_style_t line8Style;
         lv_style_t lineBatteryStyle;
 
-        lv_point_t line0Points[2];
-        lv_point_t line1Points[2];
-        lv_point_t line2Points[2];
-        lv_point_t line3Points[2];
-        lv_point_t line4Points[2];
-        lv_point_t line5Points[2];
-        lv_point_t line6Points[2];
-        lv_point_t line7Points[2];
-        lv_point_t line8Points[2];
         lv_point_t lineBatteryPoints[2];
 
         lv_obj_t* logoPine;
@@ -118,6 +91,8 @@ namespace Pinetime {
 
         static constexpr int nLines = 9;
         static constexpr int nColors = 7; // must match number of colors in InfineatColors
+
+        lv_obj_t* lines[nLines];
 
         struct InfineatColors {
           int orange[nLines] = {0xfd872b, 0xdb3316, 0x6f1000, 0xfd7a0a, 0xffffff, 0xffffff, 0xffffff, 0xe85102, 0xea1c00};
