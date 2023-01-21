@@ -60,8 +60,6 @@ namespace Pinetime {
         DirtyValue<uint32_t> stepCount {};
         DirtyValue<bool> notificationState {};
 
-        lv_obj_t* background;
-
         // Lines making up the side cover
         lv_obj_t* lineBattery;
 
