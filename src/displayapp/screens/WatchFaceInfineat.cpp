@@ -47,12 +47,6 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
     font_bebas = lv_font_load("F:/fonts/bebas.bin");
   }
 
-  // Black background covering the whole screen
-  background = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(background, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_set_size(background, 240, 240);
-  lv_obj_align(background, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
-
   // Side Cover
   lineBattery = lv_line_create(lv_scr_act(), nullptr);
 
