@@ -114,7 +114,7 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
 
   labelHour = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
-  lv_label_set_text(labelHour, "01");
+  lv_label_set_text_static(labelHour, "01");
   if (font_bebas != nullptr) {
     lv_obj_set_style_local_text_font(labelHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_bebas);
     lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
@@ -129,7 +129,7 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
   } else {
     lv_obj_set_style_local_text_font(labelMinutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
   }
-  lv_label_set_text(labelMinutes, "00");
+  lv_label_set_text_static(labelMinutes, "00");
   lv_obj_align(labelMinutes, timeContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
   labelTimeAmPm = lv_label_create(lv_scr_act(), nullptr);
@@ -139,7 +139,7 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
     lv_obj_set_style_local_text_font(labelTimeAmPm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   }
 
-  lv_label_set_text(labelTimeAmPm, "");
+  lv_label_set_text_static(labelTimeAmPm, "");
   lv_obj_align(labelTimeAmPm, timeContainer, LV_ALIGN_OUT_RIGHT_TOP, 0, 15);
 
   dateContainer = lv_obj_create(lv_scr_act(), nullptr);
@@ -155,11 +155,11 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
     lv_obj_set_style_local_text_font(labelDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   }
   lv_obj_align(labelDate, dateContainer, LV_ALIGN_IN_TOP_MID, 0, 0);
-  lv_label_set_text(labelDate, "Mon 01");
+  lv_label_set_text_static(labelDate, "Mon 01");
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  lv_label_set_text(bleIcon, Symbols::bluetooth);
+  lv_label_set_text_static(bleIcon, Symbols::bluetooth);
   lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
@@ -170,11 +170,11 @@ WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
     lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   }
   lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 10, 0);
-  lv_label_set_text(stepValue, "0");
+  lv_label_set_text_static(stepValue, "0");
 
   stepIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  lv_label_set_text(stepIcon, Symbols::shoe);
+  lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   // Setting buttons
@@ -427,7 +427,7 @@ void WatchFaceInfineat::Refresh() {
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated()) {
-    lv_label_set_text(bleIcon, BleIcon::GetIcon(bleState.Get()));
+    lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
     lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 3);
   }
 
