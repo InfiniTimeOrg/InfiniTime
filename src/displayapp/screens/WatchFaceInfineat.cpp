@@ -409,17 +409,13 @@ void WatchFaceInfineat::Refresh() {
 
   batteryPercentRemaining = batteryController.PercentRemaining();
   isCharging = batteryController.IsCharging();
-  // We store if battery and charging are updated before calling Get(),
-  // since Get() sets isUpdated to false.
-  bool isBatteryUpdated = batteryPercentRemaining.IsUpdated();
-  bool isChargingUpdated = isCharging.IsUpdated();
-  if (isCharging.Get()) { // Charging battery animation
+  if (batteryController.IsCharging()) { // Charging battery animation
     chargingBatteryPercent += 1;
     if (chargingBatteryPercent > 100) {
       chargingBatteryPercent = batteryPercentRemaining.Get();
     }
     SetBatteryLevel(chargingBatteryPercent);
-  } else if (isChargingUpdated || isBatteryUpdated) {
+  } else if (isCharging.IsUpdated() || batteryPercentRemaining.IsUpdated()) {
     chargingBatteryPercent = batteryPercentRemaining.Get();
     SetBatteryLevel(chargingBatteryPercent);
   }
