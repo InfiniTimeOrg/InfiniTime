@@ -70,6 +70,10 @@ namespace Pinetime {
 
         BatteryIcon batteryIcon;
 
+        lv_obj_t* bg;
+        bool bgLoaded = false;
+        bool doNotLoadBg = true;
+
         const Controllers::DateTime& dateTimeController;
         Controllers::Battery& batteryController;
         Controllers::Ble& bleController;

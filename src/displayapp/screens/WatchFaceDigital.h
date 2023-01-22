@@ -64,6 +64,9 @@ namespace Pinetime {
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
+        lv_obj_t* bg;
+        bool bgLoaded = false;
+        bool doNotLoadBg = true;
 
         Controllers::DateTime& dateTimeController;
         Controllers::NotificationManager& notificationManager;

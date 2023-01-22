@@ -61,9 +61,8 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   sMinute = 99;
   sSecond = 99;
 
-  lv_obj_t* bg_clock_img = lv_img_create(lv_scr_act(), NULL);
-  lv_img_set_src(bg_clock_img, &bg_clock);
-  lv_obj_align(bg_clock_img, NULL, LV_ALIGN_CENTER, 0, 0);
+  bg = lv_img_create(lv_scr_act(), nullptr);
+  lv_obj_align(bg, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   batteryIcon.Create(lv_scr_act());
   lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
@@ -124,6 +123,7 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 
   Refresh();
+  doNotLoadBg = false;
 }
 
 WatchFaceAnalog::~WatchFaceAnalog() {
@@ -186,6 +186,11 @@ void WatchFaceAnalog::SetBatteryIcon() {
 }
 
 void WatchFaceAnalog::Refresh() {
+  if(!bgLoaded && !doNotLoadBg) {
+    lv_img_set_src(bg, "F:/images/fosdem.bin");
+    bgLoaded = true;
+  }
+
   isCharging = batteryController.IsCharging();
   if (isCharging.IsUpdated()) {
     if (isCharging.Get()) {

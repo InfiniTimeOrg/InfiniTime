@@ -31,6 +31,9 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
     motionController {motionController},
     statusIcons(batteryController, bleController) {
 
+  bg = lv_img_create(lv_scr_act(), nullptr);
+  lv_obj_align(bg, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+
   statusIcons.Create();
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
@@ -73,6 +76,7 @@ WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
+  doNotLoadBg = false;
 }
 
 WatchFaceDigital::~WatchFaceDigital() {
@@ -81,6 +85,11 @@ WatchFaceDigital::~WatchFaceDigital() {
 }
 
 void WatchFaceDigital::Refresh() {
+  if(!bgLoaded && !doNotLoadBg) {
+    lv_img_set_src(bg, "F:/images/fosdem.bin");
+    bgLoaded = true;
+  }
+
   statusIcons.Update();
 
   notificationState = notificationManager.AreNewNotificationsAvailable();
