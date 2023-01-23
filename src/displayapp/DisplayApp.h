@@ -15,6 +15,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/timer/TimerController.h"
 #include "components/alarm/AlarmController.h"
+#include "components/alert/AlertController.h"
 #include "touchhandler/TouchHandler.h"
 
 #include "displayapp/Messages.h"
@@ -65,6 +66,7 @@ namespace Pinetime {
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::TimerController& timerController,
                  Pinetime::Controllers::AlarmController& alarmController,
+                 Pinetime::Controllers::AlertController& alertController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
                  Pinetime::Controllers::TouchHandler& touchHandler,
                  Pinetime::Controllers::FS& filesystem);
@@ -93,6 +95,7 @@ namespace Pinetime {
       Pinetime::Controllers::MotionController& motionController;
       Pinetime::Controllers::TimerController& timerController;
       Pinetime::Controllers::AlarmController& alarmController;
+      Pinetime::Controllers::AlertController& alertController;
       Pinetime::Controllers::BrightnessController& brightnessController;
       Pinetime::Controllers::TouchHandler& touchHandler;
       Pinetime::Controllers::FS& filesystem;

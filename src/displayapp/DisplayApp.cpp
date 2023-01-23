@@ -73,6 +73,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::TimerController& timerController,
                        Pinetime::Controllers::AlarmController& alarmController,
+                       Pinetime::Controllers::AlertController& alertController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
                        Pinetime::Controllers::FS& filesystem)
@@ -90,6 +91,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     motionController {motionController},
     timerController {timerController},
     alarmController {alarmController},
+    alertController {alertController},
     brightnessController {brightnessController},
     touchHandler {touchHandler},
     filesystem {filesystem} {
@@ -383,6 +385,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                notificationManager,
                                                                systemTask->nimble().alertService(),
                                                                motorController,
+                                                               alertController,
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Normal);
       break;
@@ -391,6 +394,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                notificationManager,
                                                                systemTask->nimble().alertService(),
                                                                motorController,
+                                                               alertController,
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Preview);
       break;

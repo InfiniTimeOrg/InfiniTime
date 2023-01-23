@@ -14,12 +14,14 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Pinetime::Controllers::MotorController& motorController,
+                             Pinetime::Controllers::AlertController& alertController,
                              System::SystemTask& systemTask,
                              Modes mode)
   : Screen(app),
     notificationManager {notificationManager},
     alertNotificationService {alertNotificationService},
     motorController {motorController},
+    alertController {alertController},
     systemTask {systemTask},
     mode {mode} {
 
@@ -33,18 +35,19 @@ Notifications::Notifications(DisplayApp* app,
                                                      notification.category,
                                                      notificationManager.NbNotifications(),
                                                      alertNotificationService,
-                                                     motorController);
+                                                     motorController,
+                                                     alertController);
     validDisplay = true;
   } else {
-    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController, alertController);
     validDisplay = false;
   }
   if (mode == Modes::Preview) {
     systemTask.PushMessage(System::Messages::DisableSleeping);
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
-      motorController.StartRinging();
+      alertController.ActivatePhoneCall();
     } else {
-      motorController.RunForDuration(35);
+      alertController.ActivateNotification();
     }
 
     timeoutLine = lv_line_create(lv_scr_act(), nullptr);
@@ -63,8 +66,6 @@ Notifications::Notifications(DisplayApp* app,
 
 Notifications::~Notifications() {
   lv_task_del(taskRefresh);
-  // make sure we stop any vibrations before exiting
-  motorController.StopRinging();
   systemTask.PushMessage(System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }
@@ -111,9 +112,10 @@ void Notifications::Refresh() {
                                                        notification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       alertController);
     } else {
-      currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+      currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController, alertController);
     }
   }
 
@@ -122,7 +124,6 @@ void Notifications::Refresh() {
 
 void Notifications::OnPreviewInteraction() {
   systemTask.PushMessage(System::Messages::EnableSleeping);
-  motorController.StopRinging();
   if (timeoutLine != nullptr) {
     lv_obj_del(timeoutLine);
     timeoutLine = nullptr;
@@ -202,7 +203,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        previousNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       alertController);
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeUp: {
@@ -229,7 +231,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        nextNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       alertController);
     }
       return true;
     default:
@@ -245,14 +248,16 @@ namespace {
 }
 
 Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController)
+                                                  Pinetime::Controllers::MotorController& motorController,
+                                                  Pinetime::Controllers::AlertController& alertController)
   : NotificationItem("Notification",
                      "No notification to display",
                      0,
                      Controllers::NotificationManager::Categories::Unknown,
                      0,
                      alertNotificationService,
-                     motorController) {
+                     motorController,
+                     alertController) {
 }
 
 Notifications::NotificationItem::NotificationItem(const char* title,
@@ -261,8 +266,9 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Controllers::NotificationManager::Categories category,
                                                   uint8_t notifNb,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController)
-  : alertNotificationService {alertNotificationService}, motorController {motorController} {
+                                                  Pinetime::Controllers::MotorController& motorController,
+                                                  Pinetime::Controllers::AlertController& alertController)
+  : alertNotificationService {alertNotificationService}, motorController {motorController}, alertController {alertController} {
   container = lv_cont_create(lv_scr_act(), nullptr);
   lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_style_local_bg_color(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
@@ -356,7 +362,7 @@ void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_
     return;
   }
 
-  motorController.StopRinging();
+  alertController.DeactivatePhoneCall();
 
   if (obj == bt_accept) {
     alertNotificationService.AcceptIncomingCall();

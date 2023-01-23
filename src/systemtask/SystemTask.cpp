@@ -58,7 +58,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,
                        Controllers::TimerController& timerController,
-                       Controllers::AlarmController& alarmController,
+                       Pinetime::Controllers::AlarmController& alarmController,
+                       Pinetime::Controllers::AlertController& alertController,
                        Drivers::Watchdog& watchdog,
                        Pinetime::Controllers::NotificationManager& notificationManager,
                        Pinetime::Controllers::MotorController& motorController,
@@ -83,6 +84,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     dateTimeController {dateTimeController},
     timerController {timerController},
     alarmController {alarmController},
+    alertController {alertController},
     watchdog {watchdog},
     notificationManager {notificationManager},
     motorController {motorController},
@@ -209,6 +211,9 @@ void SystemTask::Work() {
 #pragma ide diagnostic ignored "EndlessLoop"
   while (true) {
     UpdateMotion();
+    if (alertController.Update()) {
+      displayApp.PushMessage(alertController.DisplayMessage());
+    }
 
     Messages msg;
     if (xQueueReceive(systemTasksMsgQueue, &msg, 100) == pdTRUE) {
@@ -295,18 +300,18 @@ void SystemTask::Work() {
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
           }
-          motorController.RunForDuration(35);
+          alertController.ActivateTimer();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
         case Messages::SetOffAlarm:
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
           }
-          motorController.StartRinging();
+          alertController.ActivateAlarm();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
           break;
-        case Messages::StopRinging:
-          motorController.StopRinging();
+        case Messages::StopAlarm:
+          alertController.DeactivateAlarm();
           break;
         case Messages::BleConnected:
           ReloadIdleTimer();
@@ -397,7 +402,7 @@ void SystemTask::Work() {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
             }
-            motorController.RunForDuration(35);
+            motorController.SingleVibration(35);
           }
           break;
         case Messages::OnNewHalfHour:
@@ -409,12 +414,12 @@ void SystemTask::Work() {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
             }
-            motorController.RunForDuration(35);
+            motorController.SingleVibration(35);
           }
           break;
         case Messages::OnChargingEvent:
           batteryController.ReadPowerState();
-          motorController.RunForDuration(15);
+          motorController.SingleVibration(15);
           ReloadIdleTimer();
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
@@ -440,7 +445,7 @@ void SystemTask::Work() {
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
           }
-          motorController.RunForDuration(35);
+          motorController.SingleVibration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
           break;
         case Messages::BleRadioEnableToggle:
