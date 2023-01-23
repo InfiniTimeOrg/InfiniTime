@@ -73,6 +73,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Controllers::TimerController& timerController,
                        Pinetime::Controllers::AlarmController& alarmController,
+                       Pinetime::Controllers::StopWatchController& stopWatchController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
                        Pinetime::Controllers::FS& filesystem)
@@ -90,6 +91,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     motionController {motionController},
     timerController {timerController},
     alarmController {alarmController},
+    stopWatchController {stopWatchController},
     brightnessController {brightnessController},
     touchHandler {touchHandler},
     filesystem {filesystem} {
@@ -458,7 +460,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::FlashLight>(this, *systemTask, brightnessController);
       break;
     case Apps::StopWatch:
-      currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask);
+      currentScreen = std::make_unique<Screens::StopWatch>(this, *systemTask, stopWatchController);
       break;
     case Apps::Twos:
       currentScreen = std::make_unique<Screens::Twos>(this);
