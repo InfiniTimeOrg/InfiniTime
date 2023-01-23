@@ -1,4 +1,17 @@
 #include "displayapp/InfiniTimeTheme.h"
+#include <algorithm>
+
+// Replace LV_DPX with a constexpr version using a constant LV_DPI
+#undef LV_DPX
+
+namespace {
+  constexpr int LV_DPX(int n) {
+    if (n == 0) {
+      return 0;
+    }
+    return std::max(((LV_DPI * n + 80) / 160), 1); /*+80 for rounding*/
+  }
+}
 
 static void theme_apply(lv_obj_t* obj, lv_theme_style_t name);
 
