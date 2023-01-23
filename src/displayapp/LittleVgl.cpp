@@ -3,13 +3,17 @@
 
 #include <FreeRTOS.h>
 #include <task.h>
-//#include <projdefs.h>
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 
 using namespace Pinetime::Components;
 
-lv_style_t* LabelBigStyle = nullptr;
+namespace {
+  void InitTheme() {
+    lv_theme_t* theme = lv_pinetime_theme_init();
+    lv_theme_set_act(theme);
+  }
+}
 
 static void disp_flush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p) {
   auto* lvgl = static_cast<LittleVgl*>(disp_drv->user_data);
@@ -191,11 +195,4 @@ bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
     ptr->state = LV_INDEV_STATE_REL;
   }
   return false;
-}
-
-void LittleVgl::InitTheme() {
-
-  lv_theme_t* th = lv_pinetime_theme_init();
-
-  lv_theme_set_act(th);
 }
