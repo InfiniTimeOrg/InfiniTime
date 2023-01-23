@@ -236,20 +236,14 @@ static void basic_init() {
  * @param font_title pointer to a extra large font
  * @return a pointer to reference this theme later
  */
-lv_theme_t* lv_pinetime_theme_init(lv_color_t color_primary,
-                                   lv_color_t color_secondary,
-                                   uint32_t flags,
-                                   const lv_font_t* font_small,
-                                   const lv_font_t* font_normal,
-                                   const lv_font_t* font_subtitle,
-                                   const lv_font_t* font_title) {
-  theme.color_primary = color_primary;
-  theme.color_secondary = color_secondary;
-  theme.font_small = font_small;
-  theme.font_normal = font_normal;
-  theme.font_subtitle = font_subtitle;
-  theme.font_title = font_title;
-  theme.flags = flags;
+lv_theme_t* lv_pinetime_theme_init() {
+  theme.color_primary = LV_COLOR_WHITE;
+  theme.color_secondary = LV_COLOR_GRAY;
+  theme.font_small = &jetbrains_mono_bold_20;
+  theme.font_normal = &jetbrains_mono_bold_20;
+  theme.font_subtitle = &jetbrains_mono_bold_20;
+  theme.font_title = &jetbrains_mono_bold_20;
+  theme.flags = 0;
 
   basic_init();
 
