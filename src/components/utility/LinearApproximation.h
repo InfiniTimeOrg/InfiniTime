@@ -7,7 +7,8 @@ namespace Pinetime {
   namespace Utility {
 
     // based on: https://github.com/SHristov92/LinearApproximation/blob/main/Linear.h
-    template <typename Key, typename Value, std::size_t Size> class LinearApproximation {
+    template <typename Key, typename Value, std::size_t Size>
+    class LinearApproximation {
       using Point = struct {
         Key key;
         Value value;

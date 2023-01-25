@@ -10,7 +10,8 @@ namespace Pinetime {
 
     namespace Screens {
 
-      template <class T> class DirtyValue {
+      template <class T>
+      class DirtyValue {
       public:
         DirtyValue() = default; // Use NSDMI
 

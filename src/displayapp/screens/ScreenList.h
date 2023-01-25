@@ -12,7 +12,8 @@ namespace Pinetime {
 
       enum class ScreenListModes { UpDown, RightLeft, LongPress };
 
-      template <size_t N> class ScreenList : public Screen {
+      template <size_t N>
+      class ScreenList : public Screen {
       public:
         ScreenList(DisplayApp* app,
                    uint8_t initScreen,
