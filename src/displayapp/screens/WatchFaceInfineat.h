@@ -21,6 +21,7 @@ namespace Pinetime {
 
       class WatchFaceInfineat : public Screen {
       public:
+        static constexpr int nLines = 9;
         WatchFaceInfineat(Controllers::DateTime& dateTimeController,
                           const Controllers::Battery& batteryController,
                           const Controllers::Ble& bleController,
@@ -84,20 +85,7 @@ namespace Pinetime {
         lv_obj_t* labelBtnSettings;
         lv_obj_t* lblToggle;
 
-        static constexpr int nLines = 9;
-        static constexpr int nColors = 7; // must match number of colors in InfineatColors
-
         lv_obj_t* lines[nLines];
-
-        struct InfineatColors {
-          int orange[nLines] = {0xfd872b, 0xdb3316, 0x6f1000, 0xfd7a0a, 0xffffff, 0xffffff, 0xffffff, 0xe85102, 0xea1c00};
-          int blue[nLines] = {0xe7f8ff, 0x2232d0, 0x182a8b, 0xe7f8ff, 0xffffff, 0xffffff, 0xffffff, 0x5991ff, 0x1636ff};
-          int green[nLines] = {0xb8ff9b, 0x088608, 0x004a00, 0xb8ff9b, 0xffffff, 0xffffff, 0xffffff, 0x62d515, 0x007400};
-          int rainbow[nLines] = {0x2da400, 0xac09c4, 0xfe0303, 0x0d57ff, 0xffffff, 0xffffff, 0xffffff, 0xe0b900, 0xe85102};
-          int gray[nLines] = {0xeeeeee, 0x98959b, 0x191919, 0xeeeeee, 0xffffff, 0xffffff, 0xffffff, 0x919191, 0x3a3a3a};
-          int nordBlue[nLines] = {0xc3daf2, 0x4d78ce, 0x153451, 0xc3daf2, 0xffffff, 0xffffff, 0xffffff, 0x5d8ad2, 0x21518a};
-          int nordGreen[nLines] = {0xd5f0e9, 0x238373, 0x1d413f, 0xd5f0e9, 0xffffff, 0xffffff, 0xffffff, 0x2fb8a2, 0x11705a};
-        } infineatColors;
 
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
