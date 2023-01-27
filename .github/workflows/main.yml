@@ -113,21 +113,27 @@ jobs:
       # Override SOURCES_DIR in build.sh
       SOURCES_DIR: .
     steps:
-    - name: Cache sources
-      id: cache-sources
-      uses: actions/cache@v3
-      with:
-        path: .
-        key: source-files-${{ github.event.pull_request.base.sha }}
-
-    - if: ${{ steps.cache-sources.outputs.cache-hit != 'true' }}
-      name: Checkout source files
+    - name: Checkout current base branch files
       uses: actions/checkout@v3
       with:
         ref: ${{ github.base_ref }}
         submodules: recursive
 
-    - if: ${{ steps.cache-sources.outputs.cache-hit != 'true' }}
+    - name: Get base branch SHA
+      id: get-base-sha
+      run: |
+        # Fix for "detected dubious ownership in repository at '/__w/InfiniTime/InfiniTime'"
+        git config --global --add safe.directory /__w/InfiniTime/InfiniTime
+        echo base_sha=$(git rev-parse HEAD) >> $GITHUB_OUTPUT
+
+    - name: Cache build
+      id: cache-build
+      uses: actions/cache@v3
+      with:
+        path: ./build
+        key: build-files-${{ steps.get-base-sha.outputs.base_sha }}
+
+    - if: ${{ steps.cache-build.outputs.cache-hit != 'true' }}
       name: Build
       shell: bash
       # Only pinetime-app target is needed, but post_build.sh fails
