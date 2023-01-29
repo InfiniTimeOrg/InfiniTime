@@ -63,6 +63,12 @@ bool TouchHandler::ProcessTouchInfo(Drivers::Cst816S::TouchInfos info) {
 #elif defined(DRIVER_TOUCH_GESTURE)
   if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
     gesture = ConvertGesture(info.gesture);
+    // A new variant configuration behaves in a way such that it generates a gesture event at the start of a physical gesture,
+    // but does not set the info.touching flag at all. Since gestures are handled separately, special behaviour is only needed
+    // for the tap event. For the original P8b, which always sets info.touching = true, this operation is idempotent.
+    if (gesture == TouchEvents::Tap) {
+      info.touching = true;
+    }
   }
 #elif defined(DRIVER_TOUCH_DYNAMIC)
   if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
