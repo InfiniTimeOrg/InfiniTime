@@ -82,22 +82,25 @@ void Calculator::HandleInput() {
     case '6':
     case '7':
     case '8':
-    case '9':
+    case '9': {
+      // *buttonText is the first char in buttonText
+      // "- '0'" results in the int value of the char
+      auto digit = (*buttonText) - '0';
+      auto sign = (value < 0) ? -1 : 1;
+
       // if this is true, we already pressed the . button
       if (offset < FIXED_POINT_OFFSET) {
-        // *buttonText is the first char in buttonText
-        // "- '0'" results in the int value of the char
-        value += offset * (*buttonText - '0');
+        value += sign * offset * digit;
         offset /= 10;
       } else if (value <= MAX_VALUE / 10) {
         value *= 10;
-        value += offset * (*buttonText - '0');
+        value += sign * offset * digit;
       }
 
       NRF_LOG_INFO(". offset: %" PRId64, offset);
       NRF_LOG_INFO(". value: %" PRId64, value);
       NRF_LOG_INFO(". result: %" PRId64, result);
-      break;
+    } break;
 
     // unary minus
     case '(':
