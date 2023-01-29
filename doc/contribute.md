@@ -45,3 +45,17 @@ for what maintainers will look at in PRs.
 - Commits that fix mistakes from previous commits must be squashed
 - Conflicts must be resolved by rebasing,
   instead of merging
+
+### Commit format
+
+The preferred format for commits is the following:
+
+```
+module: Short description
+
+A more thorough description of all changes in this commit if necessary.
+```
+
+where module can be the name of the file,
+with or without extension,
+or a single word explaining the scope of the changes.
