@@ -833,6 +833,13 @@ elseif(TARGET_DEVICE STREQUAL "MOY_UNK") # P8b mirrored
   add_definitions(-DDRIVER_DISPLAY_MIRROR)
   add_definitions(-DDRIVER_ACC_SC7A20)
   add_definitions(-DDRIVER_TOUCH_REPORT)
+elseif(TARGET_DEVICE STREQUAL "MOY_UNK2") # P8b variant
+  add_definitions(-DDRIVER_PINMAP_P8)
+  add_definitions(-DCLOCK_CONFIG_LF_SRC=0) # RC
+  add_definitions(-DMYNEWT_VAL_BLE_LL_SCA=500)
+  add_definitions(-DCLOCK_CONFIG_LF_CAL_ENABLED=1)
+  add_definitions(-DDRIVER_ACC_SC7A20)
+  add_definitions(-DDRIVER_TOUCH_GESTURE)
 else()
   message(FATAL_ERROR "Invalid TARGET_DEVICE")
 endif()
