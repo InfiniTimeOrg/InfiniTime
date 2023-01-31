@@ -37,7 +37,6 @@ namespace Pinetime {
     private:
       void InitDisplay();
       void InitTouchpad();
-      void InitTheme();
 
       Pinetime::Drivers::St7789& lcd;
       Pinetime::Drivers::Cst816S& touchPanel;
