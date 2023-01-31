@@ -25,10 +25,4 @@ namespace Colors {
  * @param font_title pointer to a extra large font
  * @return a pointer to reference this theme later
  */
-lv_theme_t* lv_pinetime_theme_init(lv_color_t color_primary,
-                                   lv_color_t color_secondary,
-                                   uint32_t flags,
-                                   const lv_font_t* font_small,
-                                   const lv_font_t* font_normal,
-                                   const lv_font_t* font_subtitle,
-                                   const lv_font_t* font_title);
+lv_theme_t* lv_pinetime_theme_init();

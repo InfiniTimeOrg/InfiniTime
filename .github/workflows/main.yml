@@ -15,7 +15,7 @@ on:
 
 jobs:
   build-firmware:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     container:
       image: infinitime/infinitime-build
     outputs:
@@ -113,21 +113,27 @@ jobs:
       # Override SOURCES_DIR in build.sh
       SOURCES_DIR: .
     steps:
-    - name: Cache sources
-      id: cache-sources
-      uses: actions/cache@v3
-      with:
-        path: .
-        key: source-files-${{ github.event.pull_request.base.sha }}
-
-    - if: ${{ steps.cache-sources.outputs.cache-hit != 'true' }}
-      name: Checkout source files
+    - name: Checkout current base branch files
       uses: actions/checkout@v3
       with:
         ref: ${{ github.base_ref }}
         submodules: recursive
 
-    - if: ${{ steps.cache-sources.outputs.cache-hit != 'true' }}
+    - name: Get base branch SHA
+      id: get-base-sha
+      run: |
+        # Fix for "detected dubious ownership in repository at '/__w/InfiniTime/InfiniTime'"
+        git config --global --add safe.directory /__w/InfiniTime/InfiniTime
+        echo base_sha=$(git rev-parse HEAD) >> $GITHUB_OUTPUT
+
+    - name: Cache build
+      id: cache-build
+      uses: actions/cache@v3
+      with:
+        path: ./build
+        key: build-files-${{ steps.get-base-sha.outputs.base_sha }}
+
+    - if: ${{ steps.cache-build.outputs.cache-hit != 'true' }}
       name: Build
       shell: bash
       # Only pinetime-app target is needed, but post_build.sh fails
@@ -141,6 +147,7 @@ jobs:
 
   compare-build-size:
     if: github.event_name == 'pull_request'
+    name: 'Compare build size'
     needs: [build-firmware, get-base-ref-size]
     runs-on: ubuntu-latest
     steps:
@@ -175,28 +182,19 @@ jobs:
         echo "data_diff=$DATA_SIZE_DIFF" >> $GITHUB_OUTPUT
         echo "bss_diff=$BSS_SIZE_DIFF" >> $GITHUB_OUTPUT
 
-    - name: Find Comment
-      # Due to a security concern, comments can only be created in the context of branches in the repo.
-      # PRs from forks can't get the comment.
-      if: github.event.pull_request.head.repo.full_name == github.repository
-      uses: peter-evans/find-comment@v2
-      id: build-size-comment
-      with:
-        issue-number: ${{ github.event.pull_request.number }}
-        comment-author: 'github-actions[bot]'
-        body-includes: Build size and comparison to
+    - name: Write comment information to files
+      run: |
+        tee comment << EOF
+        Build size and comparison to ${{ github.base_ref }}:
+        | Section | Size | Difference |
+        | ------- | ---- | ---------- |
+        | text    | ${{ needs.build-firmware.outputs.text_size }}B | ${{ steps.output-sizes-diff.outputs.text_diff }}B |
+        | data    | ${{ needs.build-firmware.outputs.data_size }}B | ${{ steps.output-sizes-diff.outputs.data_diff }}B |
+        | bss     | ${{ needs.build-firmware.outputs.bss_size }}B  | ${{ steps.output-sizes-diff.outputs.bss_diff }}B  |
+        EOF
 
-    - name: Create or update comment
-      if: github.event.pull_request.head.repo.full_name == github.repository
-      uses: peter-evans/create-or-update-comment@v2
+    - name: Upload comment
+      uses: actions/upload-artifact@v3
       with:
-        comment-id: ${{ steps.build-size-comment.outputs.comment-id }}
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          Build size and comparison to ${{ github.base_ref }}:
-          | Section | Size | Difference |
-          | ------- | ---- | ---------- |
-          | text    | ${{ needs.build-firmware.outputs.text_size }}B | ${{ steps.output-sizes-diff.outputs.text_diff }}B |
-          | data    | ${{ needs.build-firmware.outputs.data_size }}B | ${{ steps.output-sizes-diff.outputs.data_diff }}B |
-          | bss     | ${{ needs.build-firmware.outputs.bss_size }}B  | ${{ steps.output-sizes-diff.outputs.bss_diff }}B  |
-        edit-mode: replace
+        name: comment
+        path: comment
