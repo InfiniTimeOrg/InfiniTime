@@ -23,6 +23,7 @@ namespace Pinetime {
           Controllers::Settings::WakeUpMode wakeUpMode;
           const char* name;
         };
+
         Controllers::Settings& settingsController;
         static constexpr std::array<Option, 4> options = {{
           {Controllers::Settings::WakeUpMode::SingleTap, "Single Tap"},

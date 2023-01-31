@@ -16,6 +16,7 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
     class NotificationManager;
 
@@ -24,7 +25,7 @@ namespace Pinetime {
       AlertNotificationService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::NotificationManager& notificationManager);
       void Init();
 
-      int OnAlert(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
+      int OnAlert(struct ble_gatt_access_ctxt* ctxt);
 
       void AcceptIncomingCall();
       void RejectIncomingCall();

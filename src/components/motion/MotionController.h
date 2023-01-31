@@ -19,12 +19,15 @@ namespace Pinetime {
       int16_t X() const {
         return x;
       }
+
       int16_t Y() const {
         return y;
       }
+
       int16_t Z() const {
         return z;
       }
+
       uint32_t NbSteps() const {
         return nbSteps;
       }
@@ -32,6 +35,7 @@ namespace Pinetime {
       void ResetTrip() {
         currentTripSteps = 0;
       }
+
       uint32_t GetTripSteps() const {
         return currentTripSteps;
       }
@@ -40,6 +44,7 @@ namespace Pinetime {
       bool Should_RaiseWake(bool isSleeping);
       int32_t currentShakeSpeed();
       void IsSensorOk(bool isOk);
+
       bool IsSensorOk() const {
         return isSensorOk;
       }
