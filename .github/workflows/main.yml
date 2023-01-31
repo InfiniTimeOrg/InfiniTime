@@ -15,7 +15,7 @@ on:
 
 jobs:
   build-firmware:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     container:
       image: infinitime/infinitime-build
     outputs:
@@ -147,7 +147,6 @@ jobs:
 
   compare-build-size:
     if: github.event_name == 'pull_request'
-    name: 'Compare build size'
     needs: [build-firmware, get-base-ref-size]
     runs-on: ubuntu-latest
     steps:
@@ -182,19 +181,28 @@ jobs:
         echo "data_diff=$DATA_SIZE_DIFF" >> $GITHUB_OUTPUT
         echo "bss_diff=$BSS_SIZE_DIFF" >> $GITHUB_OUTPUT
 
-    - name: Write comment information to files
-      run: |
-        tee comment << EOF
-        Build size and comparison to ${{ github.base_ref }}:
-        | Section | Size | Difference |
-        | ------- | ---- | ---------- |
-        | text    | ${{ needs.build-firmware.outputs.text_size }}B | ${{ steps.output-sizes-diff.outputs.text_diff }}B |
-        | data    | ${{ needs.build-firmware.outputs.data_size }}B | ${{ steps.output-sizes-diff.outputs.data_diff }}B |
-        | bss     | ${{ needs.build-firmware.outputs.bss_size }}B  | ${{ steps.output-sizes-diff.outputs.bss_diff }}B  |
-        EOF
-
-    - name: Upload comment
-      uses: actions/upload-artifact@v3
+    - name: Find Comment
+      # Due to a security concern, comments can only be created in the context of branches in the repo.
+      # PRs from forks can't get the comment.
+      if: github.event.pull_request.head.repo.full_name == github.repository
+      uses: peter-evans/find-comment@v2
+      id: build-size-comment
       with:
-        name: comment
-        path: comment
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'github-actions[bot]'
+        body-includes: Build size and comparison to
+
+    - name: Create or update comment
+      if: github.event.pull_request.head.repo.full_name == github.repository
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        comment-id: ${{ steps.build-size-comment.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          Build size and comparison to ${{ github.base_ref }}:
+          | Section | Size | Difference |
+          | ------- | ---- | ---------- |
+          | text    | ${{ needs.build-firmware.outputs.text_size }}B | ${{ steps.output-sizes-diff.outputs.text_diff }}B |
+          | data    | ${{ needs.build-firmware.outputs.data_size }}B | ${{ steps.output-sizes-diff.outputs.data_diff }}B |
+          | bss     | ${{ needs.build-firmware.outputs.bss_size }}B  | ${{ steps.output-sizes-diff.outputs.bss_diff }}B  |
+        edit-mode: replace
