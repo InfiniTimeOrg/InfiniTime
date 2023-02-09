@@ -10,8 +10,8 @@ on:
     branches: [ develop ]
     paths-ignore:
       - 'doc/**'
-  # Allows you to run this workflow manually from the Actions tab
-  # this can be useful for running workflows for other branches than develop
+  # Allows to manually run the workflow from the Github Actions tab, optionally on another branch
+  #More information: https://github.blog/changelog/2020-07-06-github-actions-manual-triggers-with-workflow_dispatch/
   workflow_dispatch:
     
 jobs:
