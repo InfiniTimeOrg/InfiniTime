@@ -64,6 +64,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 - [Versioning](doc/versioning.md)
 - [Project branches](doc/branches.md)
 - [Files included in the release notes](doc/filesInReleaseNotes.md)
+- [Files needed by the factory](doc/files-needed-by-factory.md)
 
 ## Licenses
 
