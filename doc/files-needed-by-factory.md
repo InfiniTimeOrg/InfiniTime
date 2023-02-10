@@ -4,7 +4,7 @@ These files are needed by the Pine64 factory to flash InfiniTime as the default 
 
 Two files are needed: an **HEX (.hex)** file that contains the content of the internal flash memory (bootloader + InfiniTime) and a **binary (.bin)** file that contains the content of the external flash memory (recovery firmware).
 
-#### merged-internal.hex
+## merged-internal.hex
 
 First, convert the bootloader to hex:
 
@@ -32,6 +32,6 @@ Finally, merge them together with **mergehex**:
 
 This file must be flashed at offset **0x00** of the internal memory of the NRF52832.
 
-#### spinor.bin
+## spinor.bin
 
 This file is the MCUBoot image of the last stable version of the recovery firmware. It must be flashed at offset **0x00** of the external SPINOR flash memory.
