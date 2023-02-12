@@ -75,7 +75,7 @@ If you just want to build the project and run it on the Pinetime, using *pinetim
 Build:
 
 ```
-make -j pinetime-app
+make -j4 pinetime-app
 ```
 
 List of files generated:
@@ -86,6 +86,6 @@ Binary files are generated into the folder `src`:
 - **pinetime-mcuboot-app.bin, .hex and .out** : firmware with bootloader support in bin, hex and out formats.
 - **pinetime-mcuboot-app.map** : map file
 - **pinetime-mcuboot-app-image** : MCUBoot image of the firmware
-- **pinetime-mcuboot-ap-dfu** : DFU file of the firmware
+- **pinetime-mcuboot-app-dfu** : DFU file of the firmware
 
 The same files are generated for **pinetime-recovery** and **pinetime-recoveryloader**
