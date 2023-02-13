@@ -18,11 +18,44 @@ you can submit changes to the documentation by creating a [pull request](#how-to
 
 ## How to create a pull request?
 
-1. Fork the project, create a [feature branch](branches.md) from develop and give it a short name that explains the topic of your changes
-   - Any feature branch should focus on one topic only
-2. Make changes in this branch
-   - Write code that satisfies the [coding conventions](/doc/coding-convention.md)
-   - Test your changes on a PineTime or the [InfiniTime simulator](https://github.com/InfiniTimeOrg/InfiniSim)
-3. Create a pull request, participate in the discussion and make more changes to the feature branch if necessary
+The workflow is based on [GitHub flow](https://docs.github.com/en/get-started/quickstart/github-flow).
 
-Your contributions are more than welcome!
+To create a pull request,
+you need a [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/about-forks) of the repo.
+Create a new [branch](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-branches) from develop,
+make changes in this branch,
+[commit](https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/about-commits) them,
+and create a [pull request](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request).
+
+### PR checklist
+
+When making changes to the firmware:
+
+- Consider if your feature aligns with the [InfiniTime vision](InfiniTimeVision.md)
+- Test your changes on a PineTime or InfiniSim
+- Make sure the code conforms to the [coding conventions](coding-convention.md)
+
+You can also check the [maintainer's guide](maintainer-guide.md)
+for what maintainers will look at in PRs.
+
+### Commit conventions
+
+- Every commit must contain a title and description,
+  that sufficiently explains all the changes in the commit
+- Commits that fix mistakes from previous commits must be squashed
+- Conflicts must be resolved by rebasing,
+  instead of merging
+
+### Commit format
+
+The preferred format for commits is the following:
+
+```
+module: Short description
+
+A more thorough description of all changes in this commit if necessary.
+```
+
+where module can be the name of the file,
+with or without extension,
+or a single word explaining the scope of the changes.

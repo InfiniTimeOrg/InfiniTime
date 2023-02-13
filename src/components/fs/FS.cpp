@@ -115,7 +115,7 @@ lfs_ssize_t FS::GetFSSize() {
     ----------- Interface between littlefs and SpiNorFlash -----------
 
 */
-int FS::SectorSync(const struct lfs_config* c) {
+int FS::SectorSync(const struct lfs_config* /*c*/) {
   return 0;
 }
 
@@ -147,7 +147,7 @@ int FS::SectorRead(const struct lfs_config* c, lfs_block_t block, lfs_off_t off,
 */
 
 namespace {
-  lv_fs_res_t lvglOpen(lv_fs_drv_t* drv, void* file_p, const char* path, lv_fs_mode_t mode) {
+  lv_fs_res_t lvglOpen(lv_fs_drv_t* drv, void* file_p, const char* path, lv_fs_mode_t /*mode*/) {
     lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
     FS* filesys = static_cast<FS*>(drv->user_data);
     int res = filesys->FileOpen(file, path, LFS_O_RDONLY);

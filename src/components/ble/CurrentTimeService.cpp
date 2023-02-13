@@ -8,18 +8,18 @@ constexpr ble_uuid16_t CurrentTimeService::ctsUuid;
 constexpr ble_uuid16_t CurrentTimeService::ctsCtChrUuid;
 constexpr ble_uuid16_t CurrentTimeService::ctsLtChrUuid;
 
-int CTSCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+int CTSCallback(uint16_t /*conn_handle*/, uint16_t /*attr_handle*/, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   auto cts = static_cast<CurrentTimeService*>(arg);
 
-  return cts->OnCurrentTimeServiceAccessed(conn_handle, attr_handle, ctxt);
+  return cts->OnCurrentTimeServiceAccessed(ctxt);
 }
 
-int CurrentTimeService::OnCurrentTimeServiceAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+int CurrentTimeService::OnCurrentTimeServiceAccessed(struct ble_gatt_access_ctxt* ctxt) {
   switch (ble_uuid_u16(ctxt->chr->uuid)) {
     case ctsCurrentTimeCharId:
-      return OnCurrentTimeAccessed(conn_handle, attr_handle, ctxt);
+      return OnCurrentTimeAccessed(ctxt);
     case ctsLocalTimeCharId:
-      return OnLocalTimeAccessed(conn_handle, attr_handle, ctxt);
+      return OnLocalTimeAccessed(ctxt);
   }
   return -1; // Unknown characteristic
 }
@@ -34,7 +34,7 @@ void CurrentTimeService::Init() {
   ASSERT(res == 0);
 }
 
-int CurrentTimeService::OnCurrentTimeAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+int CurrentTimeService::OnCurrentTimeAccessed(struct ble_gatt_access_ctxt* ctxt) {
 
   NRF_LOG_INFO("Setting time...");
 
@@ -51,7 +51,7 @@ int CurrentTimeService::OnCurrentTimeAccessed(uint16_t conn_handle, uint16_t att
     NRF_LOG_INFO("Received data: %d-%d-%d %d:%d:%d", year, result.month, result.dayofmonth, result.hour, result.minute, result.second);
 
     m_dateTimeController
-      .SetTime(year, result.month, result.dayofmonth, 0, result.hour, result.minute, result.second, nrf_rtc_counter_get(portNRF_RTC_REG));
+      .SetTime(year, result.month, result.dayofmonth, result.hour, result.minute, result.second, nrf_rtc_counter_get(portNRF_RTC_REG));
 
   } else if (ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR) {
     CtsCurrentTimeData currentDateTime;
@@ -71,7 +71,7 @@ int CurrentTimeService::OnCurrentTimeAccessed(uint16_t conn_handle, uint16_t att
   return 0;
 }
 
-int CurrentTimeService::OnLocalTimeAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+int CurrentTimeService::OnLocalTimeAccessed(struct ble_gatt_access_ctxt* ctxt) {
   NRF_LOG_INFO("Setting timezone...");
 
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
