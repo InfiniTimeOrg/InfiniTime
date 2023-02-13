@@ -95,7 +95,7 @@ in the compilation by adding it to [CMakeLists.txt](/CMakeLists.txt).
 The next step to making it launchable is to give your app an id.
 To do this, add an entry in the enum class `Pinetime::Applications::Apps` ([displayapp/Apps.h](/src/displayapp/Apps.h)).
 Name this entry after your app. Add `#include "displayapp/screens/MyApp.h"` to the file [displayapp/DisplayApp.cpp](/src/displayapp/DisplayApp.cpp).
-Now, go to the function `DisplayApp::LoadApp` and add another case to the switch statement.
+Now, go to the function `DisplayApp::LoadScreen` and add another case to the switch statement.
 The case will be the id you gave your app earlier.
 If your app needs any additional arguments, this is the place to pass them.
 

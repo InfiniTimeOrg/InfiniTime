@@ -1,10 +1,7 @@
 #include "displayapp/screens/settings/SettingWatchFace.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
-#include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/Screen.h"
-#include "displayapp/screens/Styles.h"
-#include "displayapp/screens/Symbols.h"
 #include "components/settings/Settings.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -12,51 +9,49 @@ using namespace Pinetime::Applications::Screens;
 constexpr const char* SettingWatchFace::title;
 constexpr const char* SettingWatchFace::symbol;
 
-SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
+auto SettingWatchFace::CreateScreenList() const {
+  std::array<std::function<std::unique_ptr<Screen>()>, nScreens> screens;
+  for (size_t i = 0; i < screens.size(); i++) {
+    screens[i] = [this, i]() -> std::unique_ptr<Screen> {
+      return CreateScreen(i);
+    };
+  }
+  return screens;
+}
+
+SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app,
+                                   Pinetime::Controllers::Settings& settingsController,
+                                   Pinetime::Controllers::FS& filesystem)
   : Screen(app),
     settingsController {settingsController},
-    screens {app,
-             settingsController.GetWatchfacesMenu(),
-             {[this]() -> std::unique_ptr<Screen> {
-                return CreateScreen1();
-              },
-              [this]() -> std::unique_ptr<Screen> {
-                return CreateScreen2();
-              }},
-             Screens::ScreenListModes::UpDown} {
+    filesystem {filesystem},
+    screens {app, 0, CreateScreenList(), Screens::ScreenListModes::UpDown} {
 }
 
 SettingWatchFace::~SettingWatchFace() {
   lv_obj_clean(lv_scr_act());
-  settingsController.SaveSettings();
 }
 
 bool SettingWatchFace::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return screens.OnTouchEvent(event);
 }
 
-std::unique_ptr<Screen> SettingWatchFace::CreateScreen1() {
-  std::array<const char*, 4> watchfaces {"Digital face", "Analog face", "PineTimeStyle", "Terminal"};
-  return std::make_unique<Screens::CheckboxList>(0,
-                                                 2,
-                                                 app,
-                                                 settingsController,
-                                                 title,
-                                                 symbol,
-                                                 &Controllers::Settings::SetClockFace,
-                                                 &Controllers::Settings::GetClockFace,
-                                                 watchfaces);
-}
+std::unique_ptr<Screen> SettingWatchFace::CreateScreen(unsigned int screenNum) const {
+  std::array<Screens::CheckboxList::Item, settingsPerScreen> watchfacesOnThisScreen;
+  for (int i = 0; i < settingsPerScreen; i++) {
+    watchfacesOnThisScreen[i] = watchfaces[screenNum * settingsPerScreen + i];
+  }
 
-std::unique_ptr<Screen> SettingWatchFace::CreateScreen2() {
-  std::array<const char*, 4> watchfaces {"Infineat face", "", "", ""};
-  return std::make_unique<Screens::CheckboxList>(1,
-                                                 2,
-                                                 app,
-                                                 settingsController,
-                                                 title,
-                                                 symbol,
-                                                 &Controllers::Settings::SetClockFace,
-                                                 &Controllers::Settings::GetClockFace,
-                                                 watchfaces);
+  return std::make_unique<Screens::CheckboxList>(
+    screenNum,
+    nScreens,
+    app,
+    title,
+    symbol,
+    settingsController.GetClockFace(),
+    [&settings = settingsController](uint32_t clockFace) {
+      settings.SetClockFace(clockFace);
+      settings.SaveSettings();
+    },
+    watchfacesOnThisScreen);
 }

@@ -20,14 +20,7 @@ void DateTime::SetCurrentTime(std::chrono::time_point<std::chrono::system_clock,
   UpdateTime(previousSystickCounter); // Update internal state without updating the time
 }
 
-void DateTime::SetTime(uint16_t year,
-                       uint8_t month,
-                       uint8_t day,
-                       uint8_t dayOfWeek,
-                       uint8_t hour,
-                       uint8_t minute,
-                       uint8_t second,
-                       uint32_t systickCounter) {
+void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second, uint32_t systickCounter) {
   std::tm tm = {
     /* .tm_sec  = */ second,
     /* .tm_min  = */ minute,
@@ -36,6 +29,7 @@ void DateTime::SetTime(uint16_t year,
     /* .tm_mon  = */ month - 1,
     /* .tm_year = */ year - 1900,
   };
+
   tm.tm_isdst = -1; // Use DST value from local time zone
   currentDateTime = std::chrono::system_clock::from_time_t(std::mktime(&tm));
 
@@ -48,6 +42,11 @@ void DateTime::SetTime(uint16_t year,
   NRF_LOG_INFO("* %d %d %d ", this->day, this->month, this->year);
 
   systemTask->PushMessage(System::Messages::OnNewTime);
+}
+
+void DateTime::SetTimeZone(int8_t timezone, int8_t dst) {
+  tzOffset = timezone;
+  dstOffset = dst;
 }
 
 void DateTime::UpdateTime(uint32_t systickCounter) {
@@ -136,6 +135,7 @@ void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
 }
 
 using ClockType = Pinetime::Controllers::Settings::ClockType;
+
 std::string DateTime::FormattedTime() {
   // Return time as a string in 12- or 24-hour format
   char buff[9];

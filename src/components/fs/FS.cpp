@@ -89,18 +89,23 @@ int FS::DirClose(lfs_dir_t* lfs_dir) {
 int FS::DirRead(lfs_dir_t* dir, lfs_info* info) {
   return lfs_dir_read(&lfs, dir, info);
 }
+
 int FS::DirRewind(lfs_dir_t* dir) {
   return lfs_dir_rewind(&lfs, dir);
 }
+
 int FS::DirCreate(const char* path) {
   return lfs_mkdir(&lfs, path);
 }
+
 int FS::Rename(const char* oldPath, const char* newPath) {
   return lfs_rename(&lfs, oldPath, newPath);
 }
+
 int FS::Stat(const char* path, lfs_info* info) {
   return lfs_stat(&lfs, path, info);
 }
+
 lfs_ssize_t FS::GetFSSize() {
   return lfs_fs_size(&lfs);
 }
@@ -110,7 +115,7 @@ lfs_ssize_t FS::GetFSSize() {
     ----------- Interface between littlefs and SpiNorFlash -----------
 
 */
-int FS::SectorSync(const struct lfs_config* c) {
+int FS::SectorSync(const struct lfs_config* /*c*/) {
   return 0;
 }
 
@@ -142,7 +147,7 @@ int FS::SectorRead(const struct lfs_config* c, lfs_block_t block, lfs_off_t off,
 */
 
 namespace {
-  lv_fs_res_t lvglOpen(lv_fs_drv_t* drv, void* file_p, const char* path, lv_fs_mode_t mode) {
+  lv_fs_res_t lvglOpen(lv_fs_drv_t* drv, void* file_p, const char* path, lv_fs_mode_t /*mode*/) {
     lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
     FS* filesys = static_cast<FS*>(drv->user_data);
     int res = filesys->FileOpen(file, path, LFS_O_RDONLY);

@@ -1,6 +1,7 @@
 #include "displayapp/screens/List.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -25,41 +26,44 @@ List::List(uint8_t screenID,
 
   pageIndicator.Create();
 
-  lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
+  lv_obj_t* container = lv_cont_create(lv_scr_act(), nullptr);
 
-  lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 4);
-  lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_bg_opa(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  static constexpr int innerPad = 4;
+  lv_obj_set_style_local_pad_inner(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, innerPad);
+  lv_obj_set_style_local_border_width(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
-  lv_obj_set_pos(container1, 0, 0);
-  lv_obj_set_width(container1, LV_HOR_RES - 8);
-  lv_obj_set_height(container1, LV_VER_RES);
-  lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
-
-  lv_obj_t* labelBt;
-  lv_obj_t* labelBtIco;
+  lv_obj_set_pos(container, 0, 0);
+  lv_obj_set_width(container, LV_HOR_RES - 8);
+  lv_obj_set_height(container, LV_VER_RES);
+  lv_cont_set_layout(container, LV_LAYOUT_COLUMN_LEFT);
 
   for (int i = 0; i < MAXLISTITEMS; i++) {
     apps[i] = applications[i].application;
     if (applications[i].application != Apps::None) {
 
-      itemApps[i] = lv_btn_create(container1, nullptr);
-      lv_obj_set_style_local_bg_opa(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-      lv_obj_set_style_local_radius(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 57);
-      lv_obj_set_style_local_bg_color(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
-
+      static constexpr int btnHeight = (LV_HOR_RES_MAX - ((MAXLISTITEMS - 1) * innerPad)) / MAXLISTITEMS;
+      itemApps[i] = lv_btn_create(container, nullptr);
+      lv_obj_set_style_local_radius(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, btnHeight / 3);
+      lv_obj_set_style_local_bg_color(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
       lv_obj_set_width(itemApps[i], LV_HOR_RES - 8);
-      lv_obj_set_height(itemApps[i], 57);
+      lv_obj_set_height(itemApps[i], btnHeight);
       lv_obj_set_event_cb(itemApps[i], ButtonEventHandler);
-      lv_btn_set_layout(itemApps[i], LV_LAYOUT_ROW_MID);
+      lv_btn_set_layout(itemApps[i], LV_LAYOUT_OFF);
       itemApps[i]->user_data = this;
+      lv_obj_set_style_local_clip_corner(itemApps[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, true);
 
-      labelBtIco = lv_label_create(itemApps[i], nullptr);
-      lv_obj_set_style_local_text_color(labelBtIco, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
-      lv_label_set_text_static(labelBtIco, applications[i].icon);
+      lv_obj_t* icon = lv_label_create(itemApps[i], nullptr);
+      lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
+      lv_label_set_text_static(icon, applications[i].icon);
+      lv_label_set_long_mode(icon, LV_LABEL_LONG_CROP);
+      lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
+      lv_obj_set_width(icon, btnHeight);
+      lv_obj_align(icon, nullptr, LV_ALIGN_IN_LEFT_MID, 0, 0);
 
-      labelBt = lv_label_create(itemApps[i], nullptr);
-      lv_label_set_text_fmt(labelBt, " %s", applications[i].name);
+      lv_obj_t* text = lv_label_create(itemApps[i], nullptr);
+      lv_label_set_text_fmt(text, "%s", applications[i].name);
+      lv_obj_align(text, icon, LV_ALIGN_OUT_RIGHT_MID, 0, 0);
     }
   }
 }

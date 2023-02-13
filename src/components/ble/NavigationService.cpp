@@ -39,9 +39,9 @@ namespace {
   constexpr ble_uuid128_t navManDistCharUuid {CharUuid(0x03, 0x00)};
   constexpr ble_uuid128_t navProgressCharUuid {CharUuid(0x04, 0x00)};
 
-  int NAVCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
-    auto navService = static_cast<Pinetime::Controllers::NavigationService*>(arg);
-    return navService->OnCommand(conn_handle, attr_handle, ctxt);
+  int NAVCallback(uint16_t /*conn_handle*/, uint16_t /*attr_handle*/, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+    auto* navService = static_cast<Pinetime::Controllers::NavigationService*>(arg);
+    return navService->OnCommand(ctxt);
   }
 } // namespace
 
@@ -81,7 +81,7 @@ void Pinetime::Controllers::NavigationService::Init() {
   ASSERT(res == 0);
 }
 
-int Pinetime::Controllers::NavigationService::OnCommand(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+int Pinetime::Controllers::NavigationService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
 
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     size_t notifSize = OS_MBUF_PKTLEN(ctxt->om);

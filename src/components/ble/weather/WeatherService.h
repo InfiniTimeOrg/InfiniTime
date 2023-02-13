@@ -39,6 +39,7 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
 
     class WeatherService {
@@ -47,7 +48,7 @@ namespace Pinetime {
 
       void Init();
 
-      int OnCommand(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_access_ctxt* ctxt);
+      int OnCommand(struct ble_gatt_access_ctxt* ctxt);
 
       /*
        * Helper functions for quick access to currently valid data
