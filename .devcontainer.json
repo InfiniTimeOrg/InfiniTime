@@ -7,7 +7,7 @@
 		"dockerfile": "docker/Dockerfile",
 		// Update 'VARIANT' to pick an Debian / Ubuntu OS version: debian-10, debian-9, ubuntu-20.04, ubuntu-18.04
 		"args": {
-			"devcontainer": "true"
+			"DEVCONTAINER": "true"
 		}
 	},
 	"runArgs": [
