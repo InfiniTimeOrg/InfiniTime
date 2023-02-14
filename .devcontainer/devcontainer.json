@@ -19,7 +19,8 @@
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash",
 		"editor.formatOnSave": true,
-		"clang-format.executable": "clang-format-12"
+		// FIXME: This and the Dockerfile might get out of sync
+		"clang-format.executable": "clang-format-14"
 	},
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [

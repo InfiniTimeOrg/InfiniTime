@@ -41,7 +41,7 @@ RUN apt-get update -qq \
 RUN if [[ "$devcontainer" == "true" ]] ; then \
     apt-get update -qq \
         && apt-get install -y \
-            clang-format-12 \
+            clang-format-14 \
             clang-tidy; fi
 
 # TODO: Do I need to set the locales for the devcontainer?
