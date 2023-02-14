@@ -8,7 +8,7 @@
                 "${workspaceFolder}/src"
             ],
             "defines": [],
-            "compilerPath": "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gcc",
+            "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
             "cppStandard": "c++20",
             "intelliSenseMode": "linux-gcc-arm",

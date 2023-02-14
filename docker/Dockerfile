@@ -37,6 +37,15 @@ RUN apt-get update -qq \
       libpangocairo-1.0-0 \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
+# Add the necessary apt-gets for devcontainer if this is a devcontainer FIXME: This currently does not work
+RUN if [[ "$devcontainer" == "true" ]] ; then \
+    apt-get update -qq \
+        && apt-get install -y \
+            clang-format-12 \
+            clang-tidy; fi
+
+# TODO: Do I need to set the locales for the devcontainer?
+
 # Git needed for PROJECT_GIT_COMMIT_HASH variable setting
 
 RUN pip3 install adafruit-nrfutil
@@ -55,5 +64,12 @@ RUN bash -c "source /opt/build.sh; GetNrfSdk;"
 # McuBoot
 RUN bash -c "source /opt/build.sh; GetMcuBoot;"
 
+# FIXME: Currently the conditional statement doesnt seem to work properly?!?
+RUN adduser infinitime
+
+# If we are a devcontainer add the infinitime user
+RUN if [[ "$devcontainer" == "true" ]] ; then \
+    adduser infinitime; fi
+    
 ENV SOURCES_DIR /sources
 CMD ["/opt/build.sh"]

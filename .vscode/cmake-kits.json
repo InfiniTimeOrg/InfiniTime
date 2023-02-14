@@ -1,0 +1,10 @@
+[
+    {
+        "name": "InfiniTime Compiler",
+        "environmentSetupScript": "${workspaceFolder}/docker/build.sh",
+        "compilers": {
+            "CC": "/usr/bin/gcc",
+            "CXX": "/usr/bin/g++"
+        }
+    }
+]

@@ -1,8 +1,9 @@
 {
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "cmake.configureArgs": [
-        "-DARM_NONE_EABI_TOOLCHAIN_PATH=${env:ARM_NONE_EABI_TOOLCHAIN_PATH}",
-        "-DNRF5_SDK_PATH=${env:NRF5_SDK_PATH}",
+        // FIXME: This is a duplicate of /docker/build.sh. This could lead to some weird behaviour if build.sh is changed but this is not! No clue if this can be avoided though
+        "-DARM_NONE_EABI_TOOLCHAIN_PATH=${env:TOOLS_DIR}/${env:GCC_ARM_PATH}",
+        "-DNRF5_SDK_PATH=${env:TOOLS_DIR}/${env:NRF_SDK_VER}",
     ],
     "cmake.generator": "Unix Makefiles",
     "clang-tidy.buildPath": "build/compile_commands.json",
