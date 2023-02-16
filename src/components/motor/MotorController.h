@@ -15,10 +15,13 @@ namespace Pinetime {
       void RunForDuration(uint8_t motorDuration);
       void StartRinging();
       void StopRinging();
+      void PatternFinished();
+      bool StartPattern();
 
     private:
       static void Ring(TimerHandle_t xTimer);
       static void StopMotor(TimerHandle_t xTimer);
+      bool patternPlaying;
       TimerHandle_t shortVib;
       TimerHandle_t longVib;
     };
