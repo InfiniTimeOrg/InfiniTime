@@ -17,14 +17,6 @@
 				"panel": "shared"
 			},
 			"problemMatcher": []
-		},
-		{
-			"label": "BuildInit",
-			"dependsOn": [
-				"update submodules",
-				"create openocd build"
-			],
-			"problemMatcher": []
 		}
 	]
 }
