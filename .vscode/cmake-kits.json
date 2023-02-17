@@ -3,8 +3,7 @@
         "name": "InfiniTime Compiler",
         "environmentSetupScript": "${workspaceFolder}/docker/build.sh",
         "compilers": {
-            "CC": "/usr/bin/gcc",
-            "CXX": "/usr/bin/g++"
+            "CC": "${env:TOOLS_DIR}/${env:GCC_ARM_PATH}"
         }
     }
 ]
