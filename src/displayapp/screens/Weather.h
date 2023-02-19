@@ -25,7 +25,6 @@ namespace Pinetime {
       private:
         bool running = true;
 
-        Pinetime::Controllers::DateTime& dateTimeController;
         Controllers::WeatherService& weatherService;
 
         ScreenList<5> screens;

@@ -81,7 +81,8 @@ void RefreshWatchdog() {
 }
 
 uint8_t displayBuffer[displayWidth * bytesPerPixel];
-void Process(void* instance) {
+
+void Process(void* /*instance*/) {
   RefreshWatchdog();
   APP_GPIOTE_INIT(2);
 

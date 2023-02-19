@@ -1,8 +1,9 @@
 #pragma once
+#include <cstdint>
 
 namespace Pinetime {
   namespace System {
-    enum class Messages {
+    enum class Messages : uint8_t {
       GoToSleep,
       GoToRunning,
       TouchWakeUp,
@@ -29,6 +30,7 @@ namespace Pinetime {
       StopRinging,
       MeasureBatteryTimerExpired,
       BatteryPercentageUpdated,
+      LowBattery,
       StartFileTransfer,
       StopFileTransfer,
       BleRadioEnableToggle

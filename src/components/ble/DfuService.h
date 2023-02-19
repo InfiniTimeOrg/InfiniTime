@@ -13,9 +13,11 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Drivers {
     class SpiNorFlash;
   }
+
   namespace Controllers {
     class Ble;
 
@@ -46,10 +48,12 @@ namespace Pinetime {
         void OnNotificationTimer();
         void Reset();
       };
+
       class DfuImage {
       public:
         DfuImage(Pinetime::Drivers::SpiNorFlash& spiNorFlash) : spiNorFlash {spiNorFlash} {
         }
+
         void Init(size_t chunkSize, size_t totalSize, uint16_t expectedCrc);
         void Erase();
         void Append(uint8_t* data, size_t size);

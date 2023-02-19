@@ -20,6 +20,8 @@
 #include "displayapp/Messages.h"
 #include "BootErrors.h"
 
+#include "StaticStack.h"
+
 namespace Pinetime {
 
   namespace Drivers {
@@ -27,6 +29,7 @@ namespace Pinetime {
     class Cst816S;
     class WatchdogView;
   }
+
   namespace Controllers {
     class Settings;
     class Battery;
@@ -41,6 +44,7 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   };
+
   namespace Applications {
     class DisplayApp {
     public:
@@ -114,14 +118,18 @@ namespace Pinetime {
       static void Process(void* instance);
       void InitHw();
       void Refresh();
-      void ReturnApp(Apps app, DisplayApp::FullRefreshDirections direction, TouchEvents touchEvent);
-      void LoadApp(Apps app, DisplayApp::FullRefreshDirections direction);
+      void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
+      void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void PushMessageToSystemTask(Pinetime::System::Messages message);
 
       Apps nextApp = Apps::None;
       DisplayApp::FullRefreshDirections nextDirection;
       System::BootErrors bootError;
       void ApplyBrightness();
+
+      static constexpr size_t returnAppStackSize = 10;
+      StaticStack<Apps, returnAppStackSize> returnAppStack;
+      StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
     };
   }
 }

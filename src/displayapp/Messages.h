@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+
 namespace Pinetime {
   namespace Applications {
     namespace Display {
