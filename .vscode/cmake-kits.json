@@ -1,9 +1,6 @@
 [
     {
         "name": "InfiniTime Compiler",
-        "environmentSetupScript": "${workspaceFolder}/docker/build.sh",
-        "compilers": {
-            "CC": "${env:TOOLS_DIR}/${env:GCC_ARM_PATH}"
-        }
+        "environmentSetupScript": "${workspaceFolder}/docker/build.sh"
     }
 ]
