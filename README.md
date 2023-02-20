@@ -35,7 +35,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 
 ### Contributing
 
-- [How to contribute?](doc/contribute.md)
+- [How to contribute?](CONTRIBUTING.md)
 - [Coding conventions](doc/coding-convention.md)
 
 ### Build, flash and debug
