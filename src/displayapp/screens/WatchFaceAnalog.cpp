@@ -72,6 +72,10 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   lv_label_set_text_static(plugIcon, Symbols::plug);
   lv_obj_align(plugIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
+  bleIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(bleIcon, "");
+  lv_obj_align(bleIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, -30, 0);
+
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
@@ -201,6 +205,15 @@ void WatchFaceAnalog::Refresh() {
     batteryPercentRemaining = batteryController.PercentRemaining();
     if (batteryPercentRemaining.IsUpdated()) {
       SetBatteryIcon();
+    }
+  }
+
+  bleState = bleController.IsConnected();
+  if (bleState.IsUpdated()) {
+    if (bleState.Get()) {
+      lv_label_set_text_static(bleIcon, Symbols::bluetooth);
+    } else {
+      lv_label_set_text_static(bleIcon, "");
     }
   }
 
