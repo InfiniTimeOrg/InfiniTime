@@ -69,7 +69,6 @@ void SettingDisplay::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       if (object == cbOption[i]) {
         lv_checkbox_set_checked(cbOption[i], true);
         settingsController.SetScreenTimeOut(options[i]);
-        app->PushMessage(Applications::Display::Messages::UpdateTimeOut);
       } else {
         lv_checkbox_set_checked(cbOption[i], false);
       }
