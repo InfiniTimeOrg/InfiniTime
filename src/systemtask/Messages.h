@@ -12,7 +12,6 @@ namespace Pinetime {
       OnTimerDone,
       OnNewCall,
       BleConnected,
-      UpdateTimeOut,
       BleFirmwareUpdateStarted,
       BleFirmwareUpdateFinished,
       OnTouchEvent,

@@ -84,6 +84,10 @@ namespace Pinetime {
       void OnIdle();
       void OnDim();
 
+      bool IsSleepDisabled() {
+        return doNotGoToSleep;
+      }
+
       Pinetime::Controllers::NimbleController& nimble() {
         return nimbleController;
       };
@@ -123,14 +127,10 @@ namespace Pinetime {
 
       static void Process(void* instance);
       void Work();
-      void ReloadIdleTimer();
       bool isBleDiscoveryTimerRunning = false;
       uint8_t bleDiscoveryTimer = 0;
-      TimerHandle_t dimTimer;
-      TimerHandle_t idleTimer;
       TimerHandle_t measureBatteryTimer;
       bool doNotGoToSleep = false;
-      bool isDimmed = false;
       SystemTaskState state = SystemTaskState::Running;
 
       void HandleButtonAction(Controllers::ButtonActions action);
