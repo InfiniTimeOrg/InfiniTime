@@ -23,7 +23,7 @@ ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp* app,
                                  const Pinetime::Controllers::Battery& batteryController,
                                  const Pinetime::Controllers::Ble& bleController,
                                  Controllers::DateTime& dateTimeController)
-  : Screen(app),
+  : app {app},
     settingsController {settingsController},
     batteryController {batteryController},
     bleController {bleController},

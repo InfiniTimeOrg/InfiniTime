@@ -32,6 +32,7 @@ namespace Pinetime {
         void UpdateScreen();
 
       private:
+        DisplayApp* app;
         Controllers::DateTime& dateTimeController;
         Controllers::BrightnessController& brightness;
         Controllers::MotorController& motorController;

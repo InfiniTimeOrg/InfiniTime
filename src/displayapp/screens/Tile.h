@@ -36,6 +36,7 @@ namespace Pinetime {
         void OnValueChangedEvent(lv_obj_t* obj, uint32_t buttonId);
 
       private:
+        DisplayApp* app;
         Controllers::DateTime& dateTimeController;
 
         lv_task_t* taskUpdate;

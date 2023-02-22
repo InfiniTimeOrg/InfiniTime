@@ -34,6 +34,7 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
+        DisplayApp* app;
         Pinetime::Controllers::DateTime& dateTimeController;
         const Pinetime::Controllers::Battery& batteryController;
         Pinetime::Controllers::BrightnessController& brightnessController;

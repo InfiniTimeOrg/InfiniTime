@@ -19,6 +19,7 @@ namespace Pinetime {
         ~SettingBluetooth() override;
 
       private:
+        DisplayApp* app;
         CheckboxList checkboxList;
       };
     }

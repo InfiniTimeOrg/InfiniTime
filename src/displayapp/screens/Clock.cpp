@@ -26,7 +26,7 @@ Clock::Clock(DisplayApp* app,
              Controllers::HeartRateController& heartRateController,
              Controllers::MotionController& motionController,
              Controllers::FS& filesystem)
-  : Screen(app),
+  : app {app},
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},

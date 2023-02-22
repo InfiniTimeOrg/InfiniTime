@@ -22,7 +22,7 @@ auto SettingWatchFace::CreateScreenList() const {
 SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app,
                                    Pinetime::Controllers::Settings& settingsController,
                                    Pinetime::Controllers::FS& filesystem)
-  : Screen(app),
+  : app {app},
     settingsController {settingsController},
     filesystem {filesystem},
     screens {app, 0, CreateScreenList(), Screens::ScreenListModes::UpDown} {

@@ -19,7 +19,7 @@ namespace Pinetime {
                    uint8_t initScreen,
                    const std::array<std::function<std::unique_ptr<Screen>()>, N>&& screens,
                    ScreenListModes mode)
-          : Screen(app),
+          : app {app},
             initScreen {initScreen},
             screens {std::move(screens)},
             mode {mode},
@@ -102,6 +102,7 @@ namespace Pinetime {
         }
 
       private:
+        DisplayApp* app;
         uint8_t initScreen = 0;
         const std::array<std::function<std::unique_ptr<Screen>()>, N> screens;
         ScreenListModes mode = ScreenListModes::UpDown;

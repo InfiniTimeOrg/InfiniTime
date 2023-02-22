@@ -50,8 +50,10 @@ namespace Pinetime {
         }
 
       public:
-        explicit Screen(DisplayApp* app) : app {app} {
+        explicit Screen(DisplayApp* app) {
         }
+
+        explicit Screen() = default;
 
         virtual ~Screen() = default;
 
@@ -77,7 +79,6 @@ namespace Pinetime {
         }
 
       protected:
-        DisplayApp* app;
         bool running = true;
       };
     }
