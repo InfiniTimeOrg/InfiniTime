@@ -38,7 +38,7 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
                        Pinetime::Drivers::WatchdogView& watchdog,
                        Pinetime::Controllers::MotionController& motionController,
                        const Pinetime::Drivers::Cst816S& touchPanel)
-  : Screen(app),
+  : app {app},
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     brightnessController {brightnessController},
@@ -94,7 +94,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
                         BootloaderVersion::VersionString());
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(0, 5, app, label);
+  return std::make_unique<Screens::Label>(0, 5, label);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
@@ -173,7 +173,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         touchPanel.GetFwVersion(),
                         TARGET_DEVICE_NAME);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(1, 5, app, label);
+  return std::make_unique<Screens::Label>(1, 5, label);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
@@ -204,7 +204,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         mon.frag_pct,
                         static_cast<int>(mon.free_biggest_size));
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(2, 5, app, label);
+  return std::make_unique<Screens::Label>(2, 5, label);
 }
 
 bool SystemInfo::sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
@@ -265,7 +265,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
     }
     lv_table_set_cell_value(infoTask, i + 1, 3, buffer);
   }
-  return std::make_unique<Screens::Label>(3, 5, app, infoTask);
+  return std::make_unique<Screens::Label>(3, 5, infoTask);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
@@ -282,5 +282,5 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
                            "#FFFF00 InfiniTime#");
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(4, 5, app, label);
+  return std::make_unique<Screens::Label>(4, 5, label);
 }

@@ -34,7 +34,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
                              Controllers::MotorController& motorController,
                              Pinetime::Controllers::Settings& settingsController,
                              const Controllers::Ble& bleController)
-  : Screen(app),
+  : app {app},
     dateTimeController {dateTimeController},
     brightness {brightness},
     motorController {motorController},

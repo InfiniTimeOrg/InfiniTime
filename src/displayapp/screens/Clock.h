@@ -36,6 +36,7 @@ namespace Pinetime {
         bool OnButtonPushed() override;
 
       private:
+        DisplayApp* app;
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
         const Controllers::Ble& bleController;

@@ -15,7 +15,7 @@ bool SettingSetDateTime::OnTouchEvent(Pinetime::Applications::TouchEvents event)
 SettingSetDateTime::SettingSetDateTime(Pinetime::Applications::DisplayApp* app,
                                        Pinetime::Controllers::DateTime& dateTimeController,
                                        Pinetime::Controllers::Settings& settingsController)
-  : Screen(app),
+  : app {app},
     dateTimeController {dateTimeController},
     settingsController {settingsController},
     screens {app,

@@ -2,8 +2,8 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Label::Label(uint8_t screenID, uint8_t numScreens, Pinetime::Applications::DisplayApp* app, lv_obj_t* labelText)
-  : Screen(app), labelText {labelText}, pageIndicator(screenID, numScreens) {
+Label::Label(uint8_t screenID, uint8_t numScreens, lv_obj_t* labelText)
+  : labelText {labelText}, pageIndicator(screenID, numScreens) {
 
   pageIndicator.Create();
 }

@@ -69,6 +69,7 @@ namespace Pinetime {
         };
 
       private:
+        DisplayApp* app;
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::AlertNotificationService& alertNotificationService;
         Pinetime::Controllers::MotorController& motorController;

@@ -20,6 +20,7 @@ namespace Pinetime {
         void Quit();
 
       private:
+        DisplayApp* app;
         Controllers::DateTime& dateTimeController;
         Controllers::Settings& settingsController;
 
