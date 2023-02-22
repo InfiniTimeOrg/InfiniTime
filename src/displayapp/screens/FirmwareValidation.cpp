@@ -15,7 +15,7 @@ namespace {
 }
 
 FirmwareValidation::FirmwareValidation(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::FirmwareValidator& validator)
-  : Screen {app}, validator {validator} {
+  : validator {validator} {
   labelVersion = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(labelVersion,
                         "Version : %lu.%lu.%lu\n"

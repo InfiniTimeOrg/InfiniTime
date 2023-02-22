@@ -48,7 +48,7 @@ namespace {
 SettingSetDate::SettingSetDate(Pinetime::Applications::DisplayApp* app,
                                Pinetime::Controllers::DateTime& dateTimeController,
                                Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime)
-  : Screen(app), dateTimeController {dateTimeController}, settingSetDateTime {settingSetDateTime} {
+  : dateTimeController {dateTimeController}, settingSetDateTime {settingSetDateTime} {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Set current date");

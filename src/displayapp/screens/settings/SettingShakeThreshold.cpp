@@ -18,7 +18,7 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
                                              Controllers::Settings& settingsController,
                                              Controllers::MotionController& motionController,
                                              System::SystemTask& systemTask)
-  : Screen(app), settingsController {settingsController}, motionController {motionController}, systemTask {systemTask} {
+  : settingsController {settingsController}, motionController {motionController}, systemTask {systemTask} {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Wake Sensitivity");

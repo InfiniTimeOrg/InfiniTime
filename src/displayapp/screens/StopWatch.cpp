@@ -33,7 +33,7 @@ namespace {
   constexpr TickType_t blinkInterval = pdMS_TO_TICKS(1000);
 }
 
-StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask) : Screen(app), systemTask {systemTask} {
+StopWatch::StopWatch(DisplayApp* app, System::SystemTask& systemTask) : systemTask {systemTask} {
   static constexpr uint8_t btnWidth = 115;
   static constexpr uint8_t btnHeight = 80;
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);

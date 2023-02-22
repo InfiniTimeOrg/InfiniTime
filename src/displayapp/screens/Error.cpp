@@ -9,7 +9,7 @@ namespace {
   }
 }
 
-Error::Error(Pinetime::Applications::DisplayApp* app, System::BootErrors error) : Screen(app) {
+Error::Error(Pinetime::Applications::DisplayApp* app, System::BootErrors error) {
 
   lv_obj_t* warningLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(warningLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);

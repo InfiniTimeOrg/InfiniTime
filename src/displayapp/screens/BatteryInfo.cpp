@@ -6,7 +6,7 @@
 using namespace Pinetime::Applications::Screens;
 
 BatteryInfo::BatteryInfo(Pinetime::Applications::DisplayApp* app, const Pinetime::Controllers::Battery& batteryController)
-  : Screen(app), batteryController {batteryController} {
+  : batteryController {batteryController} {
 
   batteryPercent = batteryController.PercentRemaining();
   batteryVoltage = batteryController.Voltage();

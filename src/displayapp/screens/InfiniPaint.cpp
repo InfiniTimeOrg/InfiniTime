@@ -10,7 +10,7 @@ using namespace Pinetime::Applications::Screens;
 InfiniPaint::InfiniPaint(Pinetime::Applications::DisplayApp* app,
                          Pinetime::Components::LittleVgl& lvgl,
                          Pinetime::Controllers::MotorController& motor)
-  : Screen(app), lvgl {lvgl}, motor {motor} {
+  : lvgl {lvgl}, motor {motor} {
   std::fill(b, b + bufferSize, selectColor);
 }
 
