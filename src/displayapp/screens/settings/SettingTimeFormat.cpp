@@ -43,8 +43,7 @@ namespace {
 }
 
 SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
-  : Screen(app),
-    checkboxList(
+  : checkboxList(
       0,
       1,
       app,

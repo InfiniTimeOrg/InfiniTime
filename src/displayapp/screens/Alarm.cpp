@@ -45,7 +45,7 @@ Alarm::Alarm(DisplayApp* app,
              Controllers::Settings::ClockType clockType,
              System::SystemTask& systemTask,
              Controllers::MotorController& motorController)
-  : Screen(app), alarmController {alarmController}, systemTask {systemTask}, motorController {motorController} {
+  : alarmController {alarmController}, systemTask {systemTask}, motorController {motorController} {
 
   hourCounter.Create();
   lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);

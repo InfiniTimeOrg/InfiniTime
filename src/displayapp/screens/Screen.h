@@ -50,9 +50,6 @@ namespace Pinetime {
         }
 
       public:
-        explicit Screen(DisplayApp* app) {
-        }
-
         explicit Screen() = default;
 
         virtual ~Screen() = default;
