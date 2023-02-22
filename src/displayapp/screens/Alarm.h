@@ -28,8 +28,7 @@ namespace Pinetime {
     namespace Screens {
       class Alarm : public Screen {
       public:
-        Alarm(DisplayApp* app,
-              Controllers::AlarmController& alarmController,
+        Alarm(Controllers::AlarmController& alarmController,
               Controllers::Settings::ClockType clockType,
               System::SystemTask& systemTask,
               Controllers::MotorController& motorController);

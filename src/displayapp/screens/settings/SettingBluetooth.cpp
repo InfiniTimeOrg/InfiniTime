@@ -39,7 +39,6 @@ SettingBluetooth::SettingBluetooth(Pinetime::Applications::DisplayApp* app, Pine
     checkboxList(
       0,
       1,
-      app,
       "Bluetooth",
       Symbols::bluetooth,
       settingsController.GetBleRadioEnabled() ? 0 : 1,

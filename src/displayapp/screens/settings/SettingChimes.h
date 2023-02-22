@@ -14,7 +14,7 @@ namespace Pinetime {
 
       class SettingChimes : public Screen {
       public:
-        SettingChimes(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
+        SettingChimes(Pinetime::Controllers::Settings& settingsController);
         ~SettingChimes() override;
 
         void UpdateSelected(lv_obj_t* object, lv_event_t event);

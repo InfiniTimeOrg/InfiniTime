@@ -15,8 +15,7 @@
 #include "components/settings/Settings.h"
 using namespace Pinetime::Applications::Screens;
 
-WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
-                                                   Controllers::DateTime& dateTimeController,
+WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTimeController,
                                                    const Controllers::Battery& batteryController,
                                                    const Controllers::Ble& bleController,
                                                    Controllers::NotificationManager& notificatioManager,

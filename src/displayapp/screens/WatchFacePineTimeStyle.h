@@ -24,8 +24,7 @@ namespace Pinetime {
     namespace Screens {
       class WatchFacePineTimeStyle : public Screen {
       public:
-        WatchFacePineTimeStyle(DisplayApp* app,
-                               Controllers::DateTime& dateTimeController,
+        WatchFacePineTimeStyle(Controllers::DateTime& dateTimeController,
                                const Controllers::Battery& batteryController,
                                const Controllers::Ble& bleController,
                                Controllers::NotificationManager& notificationManager,

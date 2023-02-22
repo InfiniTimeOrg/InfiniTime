@@ -23,7 +23,6 @@ namespace Pinetime {
 
         CheckboxList(const uint8_t screenID,
                      const uint8_t numScreens,
-                     DisplayApp* app,
                      const char* optionsTitle,
                      const char* optionsSymbol,
                      uint32_t originalValue,

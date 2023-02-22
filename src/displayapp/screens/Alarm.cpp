@@ -40,8 +40,7 @@ static void StopAlarmTaskCallback(lv_task_t* task) {
   screen->StopAlerting();
 }
 
-Alarm::Alarm(DisplayApp* app,
-             Controllers::AlarmController& alarmController,
+Alarm::Alarm(Controllers::AlarmController& alarmController,
              Controllers::Settings::ClockType clockType,
              System::SystemTask& systemTask,
              Controllers::MotorController& motorController)

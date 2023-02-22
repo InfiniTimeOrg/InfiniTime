@@ -14,9 +14,7 @@ namespace {
   }
 }
 
-FlashLight::FlashLight(Pinetime::Applications::DisplayApp* app,
-                       System::SystemTask& systemTask,
-                       Controllers::BrightnessController& brightnessController)
+FlashLight::FlashLight(System::SystemTask& systemTask, Controllers::BrightnessController& brightnessController)
   : systemTask {systemTask}, brightnessController {brightnessController} {
 
   brightnessController.Set(Controllers::BrightnessController::Levels::Low);

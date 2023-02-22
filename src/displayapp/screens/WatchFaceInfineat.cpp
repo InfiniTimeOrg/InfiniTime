@@ -20,8 +20,7 @@ namespace {
   }
 }
 
-WatchFaceInfineat::WatchFaceInfineat(DisplayApp* app,
-                                     Controllers::DateTime& dateTimeController,
+WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
                                      const Controllers::Battery& batteryController,
                                      const Controllers::Ble& bleController,
                                      Controllers::NotificationManager& notificationManager,

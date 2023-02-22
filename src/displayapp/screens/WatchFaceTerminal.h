@@ -22,8 +22,7 @@ namespace Pinetime {
 
       class WatchFaceTerminal : public Screen {
       public:
-        WatchFaceTerminal(DisplayApp* app,
-                          Controllers::DateTime& dateTimeController,
+        WatchFaceTerminal(Controllers::DateTime& dateTimeController,
                           const Controllers::Battery& batteryController,
                           const Controllers::Ble& bleController,
                           Controllers::NotificationManager& notificationManager,

@@ -25,8 +25,7 @@ namespace {
   }
 }
 
-SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
-                               Pinetime::Controllers::DateTime& dateTimeController,
+SettingSetTime::SettingSetTime(Pinetime::Controllers::DateTime& dateTimeController,
                                Pinetime::Controllers::Settings& settingsController,
                                Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime)
   : dateTimeController {dateTimeController}, settingsController {settingsController}, settingSetDateTime {settingSetDateTime} {

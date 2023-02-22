@@ -24,8 +24,7 @@ namespace Pinetime {
 
       class WatchFaceCasioStyleG7710 : public Screen {
       public:
-        WatchFaceCasioStyleG7710(DisplayApp* app,
-                                 Controllers::DateTime& dateTimeController,
+        WatchFaceCasioStyleG7710(Controllers::DateTime& dateTimeController,
                                  const Controllers::Battery& batteryController,
                                  const Controllers::Ble& bleController,
                                  Controllers::NotificationManager& notificatioManager,

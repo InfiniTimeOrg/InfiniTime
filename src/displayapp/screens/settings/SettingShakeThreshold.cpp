@@ -14,8 +14,7 @@ namespace {
   }
 }
 
-SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
-                                             Controllers::Settings& settingsController,
+SettingShakeThreshold::SettingShakeThreshold(Controllers::Settings& settingsController,
                                              Controllers::MotionController& motionController,
                                              System::SystemTask& systemTask)
   : settingsController {settingsController}, motionController {motionController}, systemTask {systemTask} {

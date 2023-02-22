@@ -21,7 +21,7 @@ namespace {
   }
 }
 
-Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorController, System::SystemTask& systemTask)
+Metronome::Metronome(Controllers::MotorController& motorController, System::SystemTask& systemTask)
   : motorController {motorController}, systemTask {systemTask} {
 
   bpmArc = lv_arc_create(lv_scr_act(), nullptr);

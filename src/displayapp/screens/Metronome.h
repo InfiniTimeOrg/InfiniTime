@@ -10,7 +10,7 @@ namespace Pinetime {
 
       class Metronome : public Screen {
       public:
-        Metronome(DisplayApp* app, Controllers::MotorController& motorController, System::SystemTask& systemTask);
+        Metronome(Controllers::MotorController& motorController, System::SystemTask& systemTask);
         ~Metronome() override;
         void Refresh() override;
         void OnEvent(lv_obj_t* obj, lv_event_t event);

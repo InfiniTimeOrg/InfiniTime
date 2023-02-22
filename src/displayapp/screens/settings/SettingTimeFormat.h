@@ -15,7 +15,7 @@ namespace Pinetime {
 
       class SettingTimeFormat : public Screen {
       public:
-        SettingTimeFormat(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
+        SettingTimeFormat(Pinetime::Controllers::Settings& settingsController);
         ~SettingTimeFormat() override;
 
       private:

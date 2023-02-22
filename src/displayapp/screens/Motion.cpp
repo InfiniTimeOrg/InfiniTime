@@ -5,8 +5,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Motion::Motion(Pinetime::Applications::DisplayApp* app, Controllers::MotionController& motionController)
-  : motionController {motionController} {
+Motion::Motion(Controllers::MotionController& motionController) : motionController {motionController} {
   chart = lv_chart_create(lv_scr_act(), nullptr);
   lv_obj_set_size(chart, 240, 240);
   lv_obj_align(chart, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);

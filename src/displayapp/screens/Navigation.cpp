@@ -129,8 +129,7 @@ namespace {
  * Navigation watchapp
  *
  */
-Navigation::Navigation(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::NavigationService& nav)
-  : navService(nav) {
+Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navService(nav) {
 
   imgFlag = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(imgFlag, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_navi_80);
