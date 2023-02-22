@@ -24,8 +24,7 @@ namespace Pinetime {
 
       class WatchFaceAnalog : public Screen {
       public:
-        WatchFaceAnalog(DisplayApp* app,
-                        Controllers::DateTime& dateTimeController,
+        WatchFaceAnalog(Controllers::DateTime& dateTimeController,
                         const Controllers::Battery& batteryController,
                         const Controllers::Ble& bleController,
                         Controllers::NotificationManager& notificationManager,

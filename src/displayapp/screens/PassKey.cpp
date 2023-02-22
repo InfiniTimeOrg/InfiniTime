@@ -3,7 +3,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-PassKey::PassKey(Pinetime::Applications::DisplayApp* app, uint32_t key) {
+PassKey::PassKey(uint32_t key) {
   passkeyLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(passkeyLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
   lv_obj_set_style_local_text_font(passkeyLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);

@@ -7,9 +7,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-InfiniPaint::InfiniPaint(Pinetime::Applications::DisplayApp* app,
-                         Pinetime::Components::LittleVgl& lvgl,
-                         Pinetime::Controllers::MotorController& motor)
+InfiniPaint::InfiniPaint(Pinetime::Components::LittleVgl& lvgl, Pinetime::Controllers::MotorController& motor)
   : lvgl {lvgl}, motor {motor} {
   std::fill(b, b + bufferSize, selectColor);
 }

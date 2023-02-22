@@ -28,9 +28,7 @@ namespace {
   }
 }
 
-HeartRate::HeartRate(Pinetime::Applications::DisplayApp* app,
-                     Controllers::HeartRateController& heartRateController,
-                     System::SystemTask& systemTask)
+HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, System::SystemTask& systemTask)
   : heartRateController {heartRateController}, systemTask {systemTask} {
   bool isHrRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
   label_hr = lv_label_create(lv_scr_act(), nullptr);

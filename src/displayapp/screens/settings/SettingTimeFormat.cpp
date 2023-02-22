@@ -42,11 +42,10 @@ namespace {
   }
 }
 
-SettingTimeFormat::SettingTimeFormat(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
+SettingTimeFormat::SettingTimeFormat(Pinetime::Controllers::Settings& settingsController)
   : checkboxList(
       0,
       1,
-      app,
       "Time format",
       Symbols::clock,
       GetDefaultOption(settingsController.GetClockType()),

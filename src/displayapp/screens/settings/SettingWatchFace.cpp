@@ -45,7 +45,6 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen(unsigned int screenNum) c
   return std::make_unique<Screens::CheckboxList>(
     screenNum,
     nScreens,
-    app,
     title,
     symbol,
     settingsController.GetClockFace(),

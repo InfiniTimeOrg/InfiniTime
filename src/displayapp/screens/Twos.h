@@ -13,7 +13,7 @@ namespace Pinetime {
     namespace Screens {
       class Twos : public Screen {
       public:
-        Twos(DisplayApp* app);
+        Twos();
         ~Twos() override;
 
         bool OnTouchEvent(TouchEvents event) override;

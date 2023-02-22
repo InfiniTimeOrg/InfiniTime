@@ -44,8 +44,7 @@ namespace {
   }
 }
 
-WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
-                                               Controllers::DateTime& dateTimeController,
+WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeController,
                                                const Controllers::Battery& batteryController,
                                                const Controllers::Ble& bleController,
                                                Controllers::NotificationManager& notificationManager,

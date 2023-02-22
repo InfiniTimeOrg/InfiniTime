@@ -14,7 +14,7 @@ namespace Pinetime {
 
       class FirmwareUpdate : public Screen {
       public:
-        FirmwareUpdate(DisplayApp* app, const Pinetime::Controllers::Ble& bleController);
+        FirmwareUpdate(const Pinetime::Controllers::Ble& bleController);
         ~FirmwareUpdate() override;
 
         void Refresh() override;

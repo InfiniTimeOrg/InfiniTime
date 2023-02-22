@@ -14,7 +14,7 @@ namespace Pinetime {
 
       class BatteryInfo : public Screen {
       public:
-        BatteryInfo(DisplayApp* app, const Pinetime::Controllers::Battery& batteryController);
+        BatteryInfo(const Pinetime::Controllers::Battery& batteryController);
         ~BatteryInfo() override;
 
         void Refresh() override;

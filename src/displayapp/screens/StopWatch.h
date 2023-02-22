@@ -20,7 +20,7 @@ namespace Pinetime::Applications::Screens {
 
   class StopWatch : public Screen {
   public:
-    StopWatch(DisplayApp* app, System::SystemTask& systemTask);
+    explicit StopWatch(System::SystemTask& systemTask);
     ~StopWatch() override;
     void Refresh() override;
 

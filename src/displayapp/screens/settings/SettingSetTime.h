@@ -14,8 +14,7 @@ namespace Pinetime {
     namespace Screens {
       class SettingSetTime : public Screen {
       public:
-        SettingSetTime(DisplayApp* app,
-                       Pinetime::Controllers::DateTime& dateTimeController,
+        SettingSetTime(Pinetime::Controllers::DateTime& dateTimeController,
                        Pinetime::Controllers::Settings& settingsController,
                        Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime);
         ~SettingSetTime() override;
