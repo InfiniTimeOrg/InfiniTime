@@ -61,7 +61,7 @@ namespace {
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Components::LittleVgl& lvgl,
-                       Drivers::Cst816S& touchPanel,
+                       const Drivers::Cst816S& touchPanel,
                        const Controllers::Battery& batteryController,
                        Controllers::Ble& bleController,
                        Controllers::DateTime& dateTimeController,

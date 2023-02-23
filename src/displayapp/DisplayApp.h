@@ -53,7 +53,7 @@ namespace Pinetime {
 
       DisplayApp(Drivers::St7789& lcd,
                  Components::LittleVgl& lvgl,
-                 Drivers::Cst816S&,
+                 const Drivers::Cst816S&,
                  const Controllers::Battery& batteryController,
                  Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
@@ -80,7 +80,7 @@ namespace Pinetime {
     private:
       Pinetime::Drivers::St7789& lcd;
       Pinetime::Components::LittleVgl& lvgl;
-      Pinetime::Drivers::Cst816S& touchPanel;
+      const Pinetime::Drivers::Cst816S& touchPanel;
       const Pinetime::Controllers::Battery& batteryController;
       Pinetime::Controllers::Ble& bleController;
       Pinetime::Controllers::DateTime& dateTimeController;
