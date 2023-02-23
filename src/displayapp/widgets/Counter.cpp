@@ -120,6 +120,10 @@ void Counter::SetValueChangedEventCallback(void* userData, void (*handler)(void*
   this->ValueChangedHandler = handler;
 }
 
+void Counter::SetTextColor(lv_color_t color) {
+  lv_obj_set_style_local_text_color(number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color);
+}
+
 void Counter::Create() {
   counterContainer = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(counterContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);

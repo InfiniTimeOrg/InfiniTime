@@ -20,15 +20,20 @@ namespace Pinetime {
 
       void StopTimer();
 
-      uint32_t GetTimeRemaining();
-
-      bool IsRunning();
+      uint32_t GetTimeRemainingMs();
 
       void OnTimerEnd();
+
+      enum class TimerState { Stopped, Running, Finished };
+
+      TimerState State() const {
+        return state;
+      }
 
     private:
       System::SystemTask* systemTask = nullptr;
       TimerHandle_t timer;
+      TimerState state = TimerState::Stopped;
     };
   }
 }

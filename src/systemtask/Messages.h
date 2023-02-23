@@ -6,6 +6,7 @@ namespace Pinetime {
     enum class Messages : uint8_t {
       GoToSleep,
       GoToRunning,
+      GoToClock,
       TouchWakeUp,
       OnNewTime,
       OnNewNotification,

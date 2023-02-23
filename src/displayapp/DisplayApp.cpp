@@ -199,10 +199,15 @@ void DisplayApp::Refresh() {
       case Messages::NewNotification:
         LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
         break;
+      case Messages::GoToClock:
+        if (currentApp != Apps::Clock) {
+          LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+        }
+        break;
       case Messages::TimerDone:
         if (currentApp == Apps::Timer) {
           auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
-          timer->Reset();
+          timer->SetTimerFinished();
         } else {
           LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Up);
         }
@@ -395,7 +400,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                Screens::Notifications::Modes::Preview);
       break;
     case Apps::Timer:
-      currentScreen = std::make_unique<Screens::Timer>(this, timerController);
+      currentScreen = std::make_unique<Screens::Timer>(this, timerController, *systemTask);
       break;
     case Apps::Alarm:
       currentScreen = std::make_unique<Screens::Alarm>(this, alarmController, settingsController.GetClockType(), *systemTask);

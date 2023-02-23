@@ -18,6 +18,7 @@ namespace Pinetime {
         void EnableMonthMode();
         void SetMax(int newMax);
         void SetValueChangedEventCallback(void* userData, void (*handler)(void* userData));
+        void SetTextColor(lv_color_t color);
 
         int GetValue() const {
           return value;
