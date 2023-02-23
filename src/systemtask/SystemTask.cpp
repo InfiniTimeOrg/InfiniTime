@@ -343,10 +343,9 @@ void SystemTask::Work() {
           break;
         case Messages::OnTouchEvent:
           if (touchHandler.GetNewTouchInfo()) {
-            touchHandler.UpdateLvglTouchPoint();
+            ReloadIdleTimer();
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           }
-          ReloadIdleTimer();
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           break;
         case Messages::HandleButtonEvent: {
           Controllers::ButtonActions action = Controllers::ButtonActions::None;
