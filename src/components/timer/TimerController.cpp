@@ -13,17 +13,17 @@ void TimerController::Init(Pinetime::System::SystemTask* systemTask) {
   timer = xTimerCreate("Timer", 1, pdFALSE, this, TimerCallback);
 }
 
-void TimerController::StartTimer(uint32_t duration) {
-  xTimerChangePeriod(timer, pdMS_TO_TICKS(duration), 0);
+void TimerController::StartTimer(std::chrono::milliseconds duration) {
+  xTimerChangePeriod(timer, pdMS_TO_TICKS(duration.count()), 0);
   xTimerStart(timer, 0);
 }
 
-uint32_t TimerController::GetTimeRemaining() {
+std::chrono::milliseconds TimerController::GetTimeRemaining() {
   if (IsRunning()) {
     TickType_t remainingTime = xTimerGetExpiryTime(timer) - xTaskGetTickCount();
-    return (remainingTime * 1000 / configTICK_RATE_HZ);
+    return std::chrono::milliseconds(remainingTime * 1000 / configTICK_RATE_HZ);
   }
-  return 0;
+  return std::chrono::milliseconds(0);
 }
 
 void TimerController::StopTimer() {
