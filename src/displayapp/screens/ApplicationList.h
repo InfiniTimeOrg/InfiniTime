@@ -18,7 +18,7 @@ namespace Pinetime {
       public:
         explicit ApplicationList(DisplayApp* app,
                                  Pinetime::Controllers::Settings& settingsController,
-                                 Pinetime::Controllers::Battery& batteryController,
+                                 const Pinetime::Controllers::Battery& batteryController,
                                  Pinetime::Controllers::Ble& bleController,
                                  Controllers::DateTime& dateTimeController);
         ~ApplicationList() override;
@@ -29,7 +29,7 @@ namespace Pinetime {
         std::unique_ptr<Screen> CreateScreen(unsigned int screenNum) const;
 
         Controllers::Settings& settingsController;
-        Pinetime::Controllers::Battery& batteryController;
+        const Pinetime::Controllers::Battery& batteryController;
         Pinetime::Controllers::Ble& bleController;
         Controllers::DateTime& dateTimeController;
 

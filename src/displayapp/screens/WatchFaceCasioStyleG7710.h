@@ -26,7 +26,7 @@ namespace Pinetime {
       public:
         WatchFaceCasioStyleG7710(DisplayApp* app,
                                  Controllers::DateTime& dateTimeController,
-                                 Controllers::Battery& batteryController,
+                                 const Controllers::Battery& batteryController,
                                  Controllers::Ble& bleController,
                                  Controllers::NotificationManager& notificatioManager,
                                  Controllers::Settings& settingsController,
@@ -94,7 +94,7 @@ namespace Pinetime {
         BatteryIcon batteryIcon;
 
         Controllers::DateTime& dateTimeController;
-        Controllers::Battery& batteryController;
+        const Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificatioManager;
         Controllers::Settings& settingsController;

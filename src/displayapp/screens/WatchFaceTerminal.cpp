@@ -15,7 +15,7 @@ using namespace Pinetime::Applications::Screens;
 
 WatchFaceTerminal::WatchFaceTerminal(DisplayApp* app,
                                      Controllers::DateTime& dateTimeController,
-                                     Controllers::Battery& batteryController,
+                                     const Controllers::Battery& batteryController,
                                      Controllers::Ble& bleController,
                                      Controllers::NotificationManager& notificationManager,
                                      Controllers::Settings& settingsController,
