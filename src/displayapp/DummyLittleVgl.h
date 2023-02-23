@@ -4,7 +4,6 @@
 #include <lvgl/src/lv_themes/lv_theme.h>
 #include <lvgl/src/lv_hal/lv_hal.h>
 #include <drivers/St7789.h>
-#include <drivers/Cst816s.h>
 
 namespace Pinetime {
   namespace Components {
@@ -12,7 +11,7 @@ namespace Pinetime {
     public:
       enum class FullRefreshDirections { None, Up, Down };
 
-      LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel) {
+      LittleVgl(Pinetime::Drivers::St7789& lcd) {
       }
 
       LittleVgl(const LittleVgl&) = delete;
