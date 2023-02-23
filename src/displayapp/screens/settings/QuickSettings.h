@@ -18,7 +18,7 @@ namespace Pinetime {
       class QuickSettings : public Screen {
       public:
         QuickSettings(DisplayApp* app,
-                      Pinetime::Controllers::Battery& batteryController,
+                      const Pinetime::Controllers::Battery& batteryController,
                       Controllers::DateTime& dateTimeController,
                       Controllers::BrightnessController& brightness,
                       Controllers::MotorController& motorController,

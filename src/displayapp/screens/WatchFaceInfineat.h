@@ -23,7 +23,7 @@ namespace Pinetime {
       public:
         WatchFaceInfineat(DisplayApp* app,
                           Controllers::DateTime& dateTimeController,
-                          Controllers::Battery& batteryController,
+                          const Controllers::Battery& batteryController,
                           Controllers::Ble& bleController,
                           Controllers::NotificationManager& notificationManager,
                           Controllers::Settings& settingsController,
@@ -101,7 +101,7 @@ namespace Pinetime {
         } infineatColors;
 
         Controllers::DateTime& dateTimeController;
-        Controllers::Battery& batteryController;
+        const Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;

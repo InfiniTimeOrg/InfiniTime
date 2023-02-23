@@ -26,7 +26,7 @@ namespace Pinetime {
       public:
         WatchFacePineTimeStyle(DisplayApp* app,
                                Controllers::DateTime& dateTimeController,
-                               Controllers::Battery& batteryController,
+                               const Controllers::Battery& batteryController,
                                Controllers::Ble& bleController,
                                Controllers::NotificationManager& notificationManager,
                                Controllers::Settings& settingsController,
@@ -103,7 +103,7 @@ namespace Pinetime {
         BatteryIcon batteryIcon;
 
         Controllers::DateTime& dateTimeController;
-        Controllers::Battery& batteryController;
+        const Controllers::Battery& batteryController;
         Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;

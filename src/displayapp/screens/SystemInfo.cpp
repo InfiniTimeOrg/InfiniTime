@@ -32,7 +32,7 @@ namespace {
 
 SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
                        Pinetime::Controllers::DateTime& dateTimeController,
-                       Pinetime::Controllers::Battery& batteryController,
+                       const Pinetime::Controllers::Battery& batteryController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::Ble& bleController,
                        Pinetime::Drivers::WatchdogView& watchdog,

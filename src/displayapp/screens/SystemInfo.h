@@ -24,7 +24,7 @@ namespace Pinetime {
       public:
         explicit SystemInfo(DisplayApp* app,
                             Pinetime::Controllers::DateTime& dateTimeController,
-                            Pinetime::Controllers::Battery& batteryController,
+                            const Pinetime::Controllers::Battery& batteryController,
                             Pinetime::Controllers::BrightnessController& brightnessController,
                             Pinetime::Controllers::Ble& bleController,
                             Pinetime::Drivers::WatchdogView& watchdog,
@@ -35,7 +35,7 @@ namespace Pinetime {
 
       private:
         Pinetime::Controllers::DateTime& dateTimeController;
-        Pinetime::Controllers::Battery& batteryController;
+        const Pinetime::Controllers::Battery& batteryController;
         Pinetime::Controllers::BrightnessController& brightnessController;
         Pinetime::Controllers::Ble& bleController;
         Pinetime::Drivers::WatchdogView& watchdog;
