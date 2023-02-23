@@ -28,6 +28,7 @@ namespace {
   int MaximumDayOfMonth(uint8_t month, uint16_t year) {
     switch (month) {
       case 2: {
+        // TODO: When we start using C++20, use std::chrono::year::is_leap
         if ((((year % 4) == 0) && ((year % 100) != 0)) || ((year % 400) == 0)) {
           return 29;
         }
