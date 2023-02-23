@@ -26,7 +26,7 @@ namespace Pinetime {
                             Pinetime::Controllers::DateTime& dateTimeController,
                             const Pinetime::Controllers::Battery& batteryController,
                             Pinetime::Controllers::BrightnessController& brightnessController,
-                            Pinetime::Controllers::Ble& bleController,
+                            const Pinetime::Controllers::Ble& bleController,
                             Pinetime::Drivers::WatchdogView& watchdog,
                             Pinetime::Controllers::MotionController& motionController,
                             const Pinetime::Drivers::Cst816S& touchPanel);
@@ -37,7 +37,7 @@ namespace Pinetime {
         Pinetime::Controllers::DateTime& dateTimeController;
         const Pinetime::Controllers::Battery& batteryController;
         Pinetime::Controllers::BrightnessController& brightnessController;
-        Pinetime::Controllers::Ble& bleController;
+        const Pinetime::Controllers::Ble& bleController;
         Pinetime::Drivers::WatchdogView& watchdog;
         Pinetime::Controllers::MotionController& motionController;
         const Pinetime::Drivers::Cst816S& touchPanel;

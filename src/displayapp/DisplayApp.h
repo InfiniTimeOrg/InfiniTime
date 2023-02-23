@@ -55,7 +55,7 @@ namespace Pinetime {
                  Components::LittleVgl& lvgl,
                  const Drivers::Cst816S&,
                  const Controllers::Battery& batteryController,
-                 Controllers::Ble& bleController,
+                 const Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
                  Drivers::WatchdogView& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
@@ -82,7 +82,7 @@ namespace Pinetime {
       Pinetime::Components::LittleVgl& lvgl;
       const Pinetime::Drivers::Cst816S& touchPanel;
       const Pinetime::Controllers::Battery& batteryController;
-      Pinetime::Controllers::Ble& bleController;
+      const Pinetime::Controllers::Ble& bleController;
       Pinetime::Controllers::DateTime& dateTimeController;
       Pinetime::Drivers::WatchdogView& watchdog;
       Pinetime::System::SystemTask* systemTask = nullptr;

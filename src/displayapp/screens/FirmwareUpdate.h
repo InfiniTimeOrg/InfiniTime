@@ -14,14 +14,14 @@ namespace Pinetime {
 
       class FirmwareUpdate : public Screen {
       public:
-        FirmwareUpdate(DisplayApp* app, Pinetime::Controllers::Ble& bleController);
+        FirmwareUpdate(DisplayApp* app, const Pinetime::Controllers::Ble& bleController);
         ~FirmwareUpdate() override;
 
         void Refresh() override;
 
       private:
         enum class States { Idle, Running, Validated, Error };
-        Pinetime::Controllers::Ble& bleController;
+        const Pinetime::Controllers::Ble& bleController;
         lv_obj_t* bar1;
         lv_obj_t* percentLabel;
         lv_obj_t* titleLabel;

@@ -26,7 +26,7 @@ namespace Pinetime {
                       DisplayApp* app,
                       Controllers::Settings& settingsController,
                       const Controllers::Battery& batteryController,
-                      Controllers::Ble& bleController,
+                      const Controllers::Ble& bleController,
                       Controllers::DateTime& dateTimeController,
                       std::array<Applications, 6>& applications);
 
