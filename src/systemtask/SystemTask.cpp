@@ -250,7 +250,7 @@ void SystemTask::Work() {
           isDimmed = false;
           break;
         case Messages::TouchWakeUp: {
-          if (touchHandler.GetNewTouchInfo()) {
+          if (touchHandler.ProcessTouchInfo(touchPanel.GetTouchInfo())) {
             auto gesture = touchHandler.GestureGet();
             if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
                 gesture != Pinetime::Applications::TouchEvents::None &&
@@ -342,7 +342,7 @@ void SystemTask::Work() {
           // TODO add intent of fs access icon or something
           break;
         case Messages::OnTouchEvent:
-          if (touchHandler.GetNewTouchInfo()) {
+          if (touchHandler.ProcessTouchInfo(touchPanel.GetTouchInfo())) {
             ReloadIdleTimer();
             displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
           }

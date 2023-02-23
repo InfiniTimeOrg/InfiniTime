@@ -27,18 +27,13 @@ namespace {
   }
 }
 
-TouchHandler::TouchHandler(Drivers::Cst816S& touchPanel) : touchPanel {touchPanel} {
-}
-
 Pinetime::Applications::TouchEvents TouchHandler::GestureGet() {
   auto returnGesture = gesture;
   gesture = Pinetime::Applications::TouchEvents::None;
   return returnGesture;
 }
 
-bool TouchHandler::GetNewTouchInfo() {
-  info = touchPanel.GetTouchInfo();
-
+bool TouchHandler::ProcessTouchInfo(Drivers::Cst816S::TouchInfos info) {
   if (!info.isValid) {
     return false;
   }
@@ -64,6 +59,8 @@ bool TouchHandler::GetNewTouchInfo() {
   if (!info.touching) {
     gestureReleased = true;
   }
+
+  currentTouchPoint = {info.x, info.y, info.touching};
 
   return true;
 }
