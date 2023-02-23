@@ -13,7 +13,7 @@ namespace Pinetime {
   }
 
   namespace Drivers {
-    class WatchdogView;
+    class Watchdog;
   }
 
   namespace Applications {
@@ -27,7 +27,7 @@ namespace Pinetime {
                             const Pinetime::Controllers::Battery& batteryController,
                             Pinetime::Controllers::BrightnessController& brightnessController,
                             const Pinetime::Controllers::Ble& bleController,
-                            Pinetime::Drivers::WatchdogView& watchdog,
+                            const Pinetime::Drivers::Watchdog& watchdog,
                             Pinetime::Controllers::MotionController& motionController,
                             const Pinetime::Drivers::Cst816S& touchPanel);
         ~SystemInfo() override;
@@ -39,7 +39,7 @@ namespace Pinetime {
         const Pinetime::Controllers::Battery& batteryController;
         Pinetime::Controllers::BrightnessController& brightnessController;
         const Pinetime::Controllers::Ble& bleController;
-        Pinetime::Drivers::WatchdogView& watchdog;
+        const Pinetime::Drivers::Watchdog& watchdog;
         Pinetime::Controllers::MotionController& motionController;
         const Pinetime::Drivers::Cst816S& touchPanel;
 

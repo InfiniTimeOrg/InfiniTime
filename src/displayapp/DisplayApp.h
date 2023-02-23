@@ -27,7 +27,7 @@ namespace Pinetime {
   namespace Drivers {
     class St7789;
     class Cst816S;
-    class WatchdogView;
+    class Watchdog;
   }
 
   namespace Controllers {
@@ -57,7 +57,7 @@ namespace Pinetime {
                  const Controllers::Battery& batteryController,
                  const Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
-                 Drivers::WatchdogView& watchdog,
+                 const Drivers::Watchdog& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Controllers::Settings& settingsController,
@@ -84,7 +84,7 @@ namespace Pinetime {
       const Pinetime::Controllers::Battery& batteryController;
       const Pinetime::Controllers::Ble& bleController;
       Pinetime::Controllers::DateTime& dateTimeController;
-      Pinetime::Drivers::WatchdogView& watchdog;
+      const Pinetime::Drivers::Watchdog& watchdog;
       Pinetime::System::SystemTask* systemTask = nullptr;
       Pinetime::Controllers::NotificationManager& notificationManager;
       Pinetime::Controllers::HeartRateController& heartRateController;
