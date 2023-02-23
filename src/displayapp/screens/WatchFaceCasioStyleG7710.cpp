@@ -18,7 +18,7 @@ using namespace Pinetime::Applications::Screens;
 WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
                                                    Controllers::DateTime& dateTimeController,
                                                    const Controllers::Battery& batteryController,
-                                                   Controllers::Ble& bleController,
+                                                   const Controllers::Ble& bleController,
                                                    Controllers::NotificationManager& notificatioManager,
                                                    Controllers::Settings& settingsController,
                                                    Controllers::HeartRateController& heartRateController,

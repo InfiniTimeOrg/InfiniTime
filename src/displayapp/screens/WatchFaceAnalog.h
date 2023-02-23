@@ -27,7 +27,7 @@ namespace Pinetime {
         WatchFaceAnalog(DisplayApp* app,
                         Controllers::DateTime& dateTimeController,
                         const Controllers::Battery& batteryController,
-                        Controllers::Ble& bleController,
+                        const Controllers::Ble& bleController,
                         Controllers::NotificationManager& notificationManager,
                         Controllers::Settings& settingsController);
 
@@ -75,7 +75,7 @@ namespace Pinetime {
 
         const Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
-        Controllers::Ble& bleController;
+        const Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
 

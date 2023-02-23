@@ -12,7 +12,7 @@ namespace Pinetime {
     namespace Widgets {
       class StatusIcons {
       public:
-        StatusIcons(const Controllers::Battery& batteryController, Controllers::Ble& bleController);
+        StatusIcons(const Controllers::Battery& batteryController, const Controllers::Ble& bleController);
         void Align();
         void Create();
 
@@ -25,7 +25,7 @@ namespace Pinetime {
       private:
         Screens::BatteryIcon batteryIcon;
         const Pinetime::Controllers::Battery& batteryController;
-        Controllers::Ble& bleController;
+        const Controllers::Ble& bleController;
 
         Screens::DirtyValue<uint8_t> batteryPercentRemaining {};
         Screens::DirtyValue<bool> powerPresent {};

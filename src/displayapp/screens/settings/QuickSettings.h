@@ -23,7 +23,7 @@ namespace Pinetime {
                       Controllers::BrightnessController& brightness,
                       Controllers::MotorController& motorController,
                       Pinetime::Controllers::Settings& settingsController,
-                      Controllers::Ble& bleController);
+                      const Controllers::Ble& bleController);
 
         ~QuickSettings() override;
 

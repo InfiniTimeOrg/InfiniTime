@@ -5,7 +5,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-FirmwareUpdate::FirmwareUpdate(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Ble& bleController)
+FirmwareUpdate::FirmwareUpdate(Pinetime::Applications::DisplayApp* app, const Pinetime::Controllers::Ble& bleController)
   : Screen(app), bleController {bleController} {
 
   titleLabel = lv_label_create(lv_scr_act(), nullptr);
