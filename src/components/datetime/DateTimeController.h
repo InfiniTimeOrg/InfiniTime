@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <chrono>
+#include <ctime>
 #include <string>
 #include "components/settings/Settings.h"
 
@@ -47,31 +48,35 @@ namespace Pinetime {
       void UpdateTime(uint32_t systickCounter);
 
       uint16_t Year() const {
-        return year;
+        return 1900 + localTime.tm_year;
       }
 
       Months Month() const {
-        return month;
+        return static_cast<Months>(localTime.tm_mon + 1);
       }
 
       uint8_t Day() const {
-        return day;
+        return localTime.tm_mday;
       }
 
       Days DayOfWeek() const {
-        return dayOfWeek;
+        int daysSinceSunday = localTime.tm_wday;
+        if (daysSinceSunday == 0) {
+          return Days::Sunday;
+        }
+        return static_cast<Days>(daysSinceSunday);
       }
 
       uint8_t Hours() const {
-        return hour;
+        return localTime.tm_hour;
       }
 
       uint8_t Minutes() const {
-        return minute;
+        return localTime.tm_min;
       }
 
       uint8_t Seconds() const {
-        return second;
+        return localTime.tm_sec;
       }
 
       /*
@@ -132,13 +137,7 @@ namespace Pinetime {
       std::string FormattedTime();
 
     private:
-      uint16_t year = 0;
-      Months month = Months::Unknown;
-      uint8_t day = 0;
-      Days dayOfWeek = Days::Unknown;
-      uint8_t hour = 0;
-      uint8_t minute = 0;
-      uint8_t second = 0;
+      std::tm localTime;
       int8_t tzOffset = 0;
       int8_t dstOffset = 0;
 
