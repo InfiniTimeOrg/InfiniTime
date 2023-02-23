@@ -1,6 +1,5 @@
 #include "displayapp/screens/Clock.h"
 
-#include <date/date.h>
 #include <lvgl/lvgl.h>
 #include "components/battery/BatteryController.h"
 #include "components/motion/MotionController.h"

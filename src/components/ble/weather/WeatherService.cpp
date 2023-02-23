@@ -15,6 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+#include <algorithm>
 #include <qcbor/qcbor_spiffy_decode.h>
 #include "WeatherService.h"
 #include "libs/QCBOR/inc/qcbor/qcbor.h"

@@ -7,7 +7,6 @@
 #include <queue.h>
 #include "components/gfx/Gfx.h"
 #include "drivers/Cst816s.h"
-#include <date/date.h>
 #include <drivers/Watchdog.h>
 #include <components/motor/MotorController.h>
 #include "BootErrors.h"

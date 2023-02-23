@@ -1,6 +1,5 @@
 #include "displayapp/screens/WatchFaceInfineat.h"
 
-#include <date/date.h>
 #include <lvgl/lvgl.h>
 #include <cstdio>
 #include "displayapp/screens/Symbols.h"
@@ -314,19 +313,12 @@ void WatchFaceInfineat::Refresh() {
   currentDateTime = dateTimeController.CurrentDateTime();
 
   if (currentDateTime.IsUpdated()) {
-    auto newDateTime = currentDateTime.Get();
-
-    auto dp = date::floor<date::days>(newDateTime);
-    auto time = date::make_time(newDateTime - dp);
-    auto yearMonthDay = date::year_month_day(dp);
-
-    auto year = static_cast<int>(yearMonthDay.year());
-    auto month = static_cast<Pinetime::Controllers::DateTime::Months>(static_cast<unsigned>(yearMonthDay.month()));
-    auto day = static_cast<unsigned>(yearMonthDay.day());
-    auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
-
-    int hour = time.hours().count();
-    auto minute = time.minutes().count();
+    auto hour = dateTimeController.Hours();
+    auto minute = dateTimeController.Minutes();
+    auto year = dateTimeController.Year();
+    auto month = dateTimeController.Month();
+    auto dayOfWeek = dateTimeController.DayOfWeek();
+    auto day = dateTimeController.Day();
 
     char minutesChar[3];
     sprintf(minutesChar, "%02d", static_cast<int>(minute));
