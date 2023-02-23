@@ -1,5 +1,4 @@
 #include "components/datetime/DateTimeController.h"
-#include <date/date.h>
 #include <libraries/log/nrf_log.h>
 #include <systemtask/SystemTask.h>
 
@@ -37,8 +36,6 @@ void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, 
   NRF_LOG_INFO("%d %d %d ", hour, minute, second);
 
   UpdateTime(previousSystickCounter);
-  NRF_LOG_INFO("* %d %d %d ", this->hour, this->minute, this->second);
-  NRF_LOG_INFO("* %d %d %d ", this->day, this->month, this->year);
 
   systemTask->PushMessage(System::Messages::OnNewTime);
 }
@@ -72,18 +69,11 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   currentDateTime += std::chrono::seconds(correctedDelta);
   uptime += std::chrono::seconds(correctedDelta);
 
-  auto dp = date::floor<date::days>(currentDateTime);
-  auto time = date::make_time(currentDateTime - dp);
-  auto yearMonthDay = date::year_month_day(dp);
+  std::time_t currentTime = std::chrono::system_clock::to_time_t(currentDateTime);
+  localTime = *std::localtime(&currentTime);
 
-  year = static_cast<int>(yearMonthDay.year());
-  month = static_cast<Months>(static_cast<unsigned>(yearMonthDay.month()));
-  day = static_cast<unsigned>(yearMonthDay.day());
-  dayOfWeek = static_cast<Days>(date::weekday(yearMonthDay).iso_encoding());
-
-  hour = time.hours().count();
-  minute = time.minutes().count();
-  second = time.seconds().count();
+  auto minute = Minutes();
+  auto hour = Hours();
 
   if (minute == 0 && !isHourAlreadyNotified) {
     isHourAlreadyNotified = true;
@@ -114,11 +104,11 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
 }
 
 const char* DateTime::MonthShortToString() const {
-  return MonthsString[static_cast<uint8_t>(month)];
+  return MonthsString[static_cast<uint8_t>(Month())];
 }
 
 const char* DateTime::DayOfWeekShortToString() const {
-  return DaysStringShort[static_cast<uint8_t>(dayOfWeek)];
+  return DaysStringShort[static_cast<uint8_t>(DayOfWeek())];
 }
 
 const char* DateTime::MonthShortToStringLow(Months month) {
@@ -126,7 +116,7 @@ const char* DateTime::MonthShortToStringLow(Months month) {
 }
 
 const char* DateTime::DayOfWeekShortToStringLow() const {
-  return DaysStringShortLow[static_cast<uint8_t>(dayOfWeek)];
+  return DaysStringShortLow[static_cast<uint8_t>(DayOfWeek())];
 }
 
 void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
@@ -136,6 +126,8 @@ void DateTime::Register(Pinetime::System::SystemTask* systemTask) {
 using ClockType = Pinetime::Controllers::Settings::ClockType;
 
 std::string DateTime::FormattedTime() {
+  auto hour = Hours();
+  auto minute = Minutes();
   // Return time as a string in 12- or 24-hour format
   char buff[9];
   if (settingsController.GetClockType() == ClockType::H12) {
