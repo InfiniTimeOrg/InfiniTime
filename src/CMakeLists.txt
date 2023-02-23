@@ -658,14 +658,6 @@ set(INCLUDE_FILES
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
-        libs/date/include/date/tz.h
-        libs/date/include/date/chrono_io.h
-        libs/date/include/date/date.h
-        libs/date/include/date/islamic.h
-        libs/date/include/date/iso_week.h
-        libs/date/include/date/julian.h
-        libs/date/include/date/ptz.h
-        libs/date/include/date/tz_private.h
         displayapp/LittleVgl.h
         displayapp/InfiniTimeTheme.h
         systemtask/SystemTask.h
@@ -690,7 +682,6 @@ include_directories(
 include_directories(SYSTEM
         libs/
         FreeRTOS/
-        libs/date/include
         libs/mynewt-nimble/porting/npl/freertos/include
         libs/mynewt-nimble/nimble/include
         libs/mynewt-nimble/porting/nimble/include

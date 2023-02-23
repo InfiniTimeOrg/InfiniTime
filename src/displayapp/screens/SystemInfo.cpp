@@ -1,4 +1,5 @@
 #include <FreeRTOS.h>
+#include <algorithm>
 #include <task.h>
 #include "displayapp/screens/SystemInfo.h"
 #include <lvgl/lvgl.h>

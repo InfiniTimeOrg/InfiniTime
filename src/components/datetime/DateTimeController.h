@@ -67,6 +67,10 @@ namespace Pinetime {
         return static_cast<Days>(daysSinceSunday);
       }
 
+      uint8_t DayOfYear() const {
+        return localTime.tm_yday + 1;
+      }
+
       uint8_t Hours() const {
         return localTime.tm_hour;
       }
