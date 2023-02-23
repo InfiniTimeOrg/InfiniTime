@@ -222,6 +222,7 @@ void DisplayApp::Refresh() {
         if (state != States::Running) {
           break;
         }
+        lvgl.SetNewTouchPoint(touchHandler.GetX(), touchHandler.GetY(), touchHandler.IsTouching());
         auto gesture = touchHandler.GestureGet();
         if (gesture == TouchEvents::None) {
           break;
@@ -261,7 +262,7 @@ void DisplayApp::Refresh() {
             LoadPreviousScreen();
           }
         } else {
-          touchHandler.CancelTap();
+          lvgl.CancelTap();
         }
       } break;
       case Messages::ButtonPushed:
@@ -339,7 +340,7 @@ void DisplayApp::LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direc
 }
 
 void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction) {
-  touchHandler.CancelTap();
+  lvgl.CancelTap();
   ApplyBrightness();
 
   currentScreen.reset(nullptr);

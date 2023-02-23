@@ -1,9 +1,4 @@
 #include "touchhandler/TouchHandler.h"
-#ifdef PINETIME_IS_RECOVERY
-  #include "displayapp/DummyLittleVgl.h"
-#else
-  #include "displayapp/LittleVgl.h"
-#endif
 
 using namespace Pinetime::Controllers;
 using namespace Pinetime::Applications;
@@ -32,14 +27,7 @@ namespace {
   }
 }
 
-TouchHandler::TouchHandler(Drivers::Cst816S& touchPanel, Components::LittleVgl& lvgl) : touchPanel {touchPanel}, lvgl {lvgl} {
-}
-
-void TouchHandler::CancelTap() {
-  if (info.touching) {
-    isCancelled = true;
-    lvgl.SetNewTouchPoint(-1, -1, true);
-  }
+TouchHandler::TouchHandler(Drivers::Cst816S& touchPanel) : touchPanel {touchPanel} {
 }
 
 Pinetime::Applications::TouchEvents TouchHandler::GestureGet() {
@@ -55,6 +43,7 @@ bool TouchHandler::GetNewTouchInfo() {
     return false;
   }
 
+  // Only a single gesture per touch
   if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
     if (gestureReleased) {
       if (info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideDown ||
@@ -77,19 +66,4 @@ bool TouchHandler::GetNewTouchInfo() {
   }
 
   return true;
-}
-
-void TouchHandler::UpdateLvglTouchPoint() {
-  if (info.touching) {
-    if (!isCancelled) {
-      lvgl.SetNewTouchPoint(info.x, info.y, true);
-    }
-  } else {
-    if (isCancelled) {
-      lvgl.SetNewTouchPoint(-1, -1, false);
-      isCancelled = false;
-    } else {
-      lvgl.SetNewTouchPoint(info.x, info.y, false);
-    }
-  }
 }

@@ -3,10 +3,6 @@
 #include "displayapp/TouchEvents.h"
 
 namespace Pinetime {
-  namespace Components {
-    class LittleVgl;
-  }
-
   namespace Drivers {
     class Cst816S;
   }
@@ -14,10 +10,9 @@ namespace Pinetime {
   namespace Controllers {
     class TouchHandler {
     public:
-      explicit TouchHandler(Drivers::Cst816S&, Components::LittleVgl&);
-      void CancelTap();
+      explicit TouchHandler(Drivers::Cst816S&);
+
       bool GetNewTouchInfo();
-      void UpdateLvglTouchPoint();
 
       bool IsTouching() const {
         return info.touching;
@@ -36,7 +31,6 @@ namespace Pinetime {
     private:
       Pinetime::Drivers::Cst816S::TouchInfos info;
       Pinetime::Drivers::Cst816S& touchPanel;
-      Pinetime::Components::LittleVgl& lvgl;
       Pinetime::Applications::TouchEvents gesture;
       bool isCancelled = false;
       bool gestureReleased = true;
