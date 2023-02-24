@@ -1,5 +1,4 @@
 // nrf
-#include <hal/nrf_rtc.h>
 #include <hal/nrf_wdt.h>
 #include <legacy/nrf_drv_clock.h>
 #include <libraries/gpiote/app_gpiote.h>

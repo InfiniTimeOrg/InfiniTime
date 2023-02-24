@@ -20,7 +20,7 @@ void DateTime::SetCurrentTime(std::chrono::time_point<std::chrono::system_clock,
   UpdateTime(previousSystickCounter); // Update internal state without updating the time
 }
 
-void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second, uint32_t systickCounter) {
+void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second) {
   std::tm tm = {
     /* .tm_sec  = */ second,
     /* .tm_min  = */ minute,
@@ -35,9 +35,8 @@ void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, 
 
   NRF_LOG_INFO("%d %d %d ", day, month, year);
   NRF_LOG_INFO("%d %d %d ", hour, minute, second);
-  previousSystickCounter = systickCounter;
 
-  UpdateTime(systickCounter);
+  UpdateTime(previousSystickCounter);
   NRF_LOG_INFO("* %d %d %d ", this->hour, this->minute, this->second);
   NRF_LOG_INFO("* %d %d %d ", this->day, this->month, this->year);
 
@@ -63,7 +62,7 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
    * 1000 ms = 1024 ticks
    */
   auto correctedDelta = systickDelta / 1024;
-  auto rest = (systickDelta - (correctedDelta * 1024));
+  auto rest = systickDelta % 1024;
   if (systickCounter >= rest) {
     previousSystickCounter = systickCounter - rest;
   } else {

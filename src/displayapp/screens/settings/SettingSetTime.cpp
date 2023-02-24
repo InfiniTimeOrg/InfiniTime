@@ -1,6 +1,5 @@
 #include "displayapp/screens/settings/SettingSetTime.h"
 #include <lvgl/lvgl.h>
-#include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
@@ -100,7 +99,6 @@ void SettingSetTime::SetTime() {
                              dateTimeController.Day(),
                              static_cast<uint8_t>(hoursValue),
                              static_cast<uint8_t>(minutesValue),
-                             0,
-                             nrf_rtc_counter_get(portNRF_RTC_REG));
+                             0);
   settingSetDateTime.Quit();
 }

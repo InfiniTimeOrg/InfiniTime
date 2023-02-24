@@ -1,5 +1,4 @@
 #include "components/ble/CurrentTimeClient.h"
-#include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #include "components/datetime/DateTimeController.h"
 
@@ -88,8 +87,7 @@ int CurrentTimeClient::OnCurrentTimeReadResult(uint16_t conn_handle, const ble_g
     uint16_t year = ((uint16_t) result.year_MSO << 8) + result.year_LSO;
 
     NRF_LOG_INFO("Received data: %d-%d-%d %d:%d:%d", year, result.month, result.dayofmonth, result.hour, result.minute, result.second);
-    dateTimeController
-      .SetTime(year, result.month, result.dayofmonth, result.hour, result.minute, result.second, nrf_rtc_counter_get(portNRF_RTC_REG));
+    dateTimeController.SetTime(year, result.month, result.dayofmonth, result.hour, result.minute, result.second);
   } else {
     NRF_LOG_INFO("Error retrieving current time: %d", error->status);
   }
