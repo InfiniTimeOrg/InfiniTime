@@ -31,7 +31,7 @@ namespace Pinetime {
         December
       };
 
-      void SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second, uint32_t systickCounter);
+      void SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second);
 
       /*
        * setter corresponding to the BLE Set Local Time characteristic.
