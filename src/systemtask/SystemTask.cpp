@@ -49,7 +49,6 @@ void MeasureBatteryTimerCallback(TimerHandle_t xTimer) {
 }
 
 SystemTask::SystemTask(Drivers::SpiMaster& spi,
-                       Drivers::St7789& lcd,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                        Drivers::TwiMaster& twiMaster,
                        Drivers::Cst816S& touchPanel,
@@ -72,7 +71,6 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Pinetime::Controllers::TouchHandler& touchHandler,
                        Pinetime::Controllers::ButtonHandler& buttonHandler)
   : spi {spi},
-    lcd {lcd},
     spiNorFlash {spiNorFlash},
     twiMaster {twiMaster},
     touchPanel {touchPanel},
@@ -133,7 +131,6 @@ void SystemTask::Work() {
   fs.Init();
 
   nimbleController.Init();
-  lcd.Init();
 
   twiMaster.Init();
   /*
@@ -234,7 +231,6 @@ void SystemTask::Work() {
 
           xTimerStart(dimTimer, 0);
           spiNorFlash.Wakeup();
-          lcd.Wakeup();
 
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
@@ -364,7 +360,6 @@ void SystemTask::Work() {
             // if it's in sleep mode. Avoid bricked device by disabling sleep mode on these versions.
             spiNorFlash.Sleep();
           }
-          lcd.Sleep();
           spi.Sleep();
 
           // Double Tap needs the touch screen to be in normal mode

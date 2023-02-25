@@ -128,6 +128,7 @@ void DisplayApp::InitHw() {
   brightnessController.Init();
   ApplyBrightness();
   motorController.Init();
+  lcd.Init();
 }
 
 void DisplayApp::Refresh() {
@@ -183,10 +184,12 @@ void DisplayApp::Refresh() {
           brightnessController.Lower();
           vTaskDelay(100);
         }
+        lcd.Sleep();
         PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
         state = States::Idle;
         break;
       case Messages::GoToRunning:
+        lcd.Wakeup();
         ApplyBrightness();
         state = States::Running;
         break;
