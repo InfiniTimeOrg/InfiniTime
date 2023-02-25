@@ -60,7 +60,6 @@ namespace {
 }
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
-                       Components::LittleVgl& lvgl,
                        const Drivers::Cst816S& touchPanel,
                        const Controllers::Battery& batteryController,
                        const Controllers::Ble& bleController,
@@ -77,7 +76,6 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::TouchHandler& touchHandler,
                        Pinetime::Controllers::FS& filesystem)
   : lcd {lcd},
-    lvgl {lvgl},
     touchPanel {touchPanel},
     batteryController {batteryController},
     bleController {bleController},
@@ -92,13 +90,16 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     alarmController {alarmController},
     brightnessController {brightnessController},
     touchHandler {touchHandler},
-    filesystem {filesystem} {
+    filesystem {filesystem},
+    lvgl {lcd} {
 }
 
 void DisplayApp::Start(System::BootErrors error) {
   msgQueue = xQueueCreate(queueSize, itemSize);
 
   bootError = error;
+
+  lvgl.Init();
 
   if (error == System::BootErrors::TouchController) {
     LoadNewScreen(Apps::Error, DisplayApp::FullRefreshDirections::None);

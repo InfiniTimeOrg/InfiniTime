@@ -11,7 +11,6 @@
 using namespace Pinetime::Applications;
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
-                       Components::LittleVgl& /*lvgl*/,
                        const Drivers::Cst816S& /*touchPanel*/,
                        const Controllers::Battery& /*batteryController*/,
                        const Controllers::Ble& bleController,
