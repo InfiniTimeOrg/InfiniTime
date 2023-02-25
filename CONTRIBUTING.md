@@ -6,7 +6,7 @@ Here are things you can do to help.
 - [Write and improve documentation](#documentation)
 - [Fix bugs, add functionalities and improve the code](#how-to-create-a-pull-request)
 - Participate in the discussions within issues and PRs. Your feedback is appreciated!
-- Review pull requests. Follow the instructions [here](maintainer-guide.md#reviewing-prs)
+- Review pull requests. Follow the instructions [here](doc/maintainer-guide.md#reviewing-prs)
 
 ## Documentation
 
@@ -31,11 +31,11 @@ and create a [pull request](https://docs.github.com/en/pull-requests/collaborati
 
 When making changes to the firmware:
 
-- Consider if your feature aligns with the [InfiniTime vision](InfiniTimeVision.md)
+- Consider if your feature aligns with the [InfiniTime vision](doc/InfiniTimeVision.md)
 - Test your changes on a PineTime or InfiniSim
-- Make sure the code conforms to the [coding conventions](coding-convention.md)
+- Make sure the code conforms to the [coding conventions](doc/coding-convention.md)
 
-You can also check the [maintainer's guide](maintainer-guide.md)
+You can also check the [maintainer's guide](doc/maintainer-guide.md)
 for what maintainers will look at in PRs.
 
 ### Commit conventions
