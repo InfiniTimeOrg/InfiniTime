@@ -14,7 +14,6 @@
 #include "displayapp/TouchEvents.h"
 #include "displayapp/Apps.h"
 #include "displayapp/Messages.h"
-#include "displayapp/DummyLittleVgl.h"
 
 namespace Pinetime {
   namespace Drivers {
@@ -47,7 +46,6 @@ namespace Pinetime {
     class DisplayApp {
     public:
       DisplayApp(Drivers::St7789& lcd,
-                 Components::LittleVgl& lvgl,
                  const Drivers::Cst816S&,
                  const Controllers::Battery& batteryController,
                  const Controllers::Ble& bleController,

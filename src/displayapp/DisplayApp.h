@@ -52,7 +52,6 @@ namespace Pinetime {
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
 
       DisplayApp(Drivers::St7789& lcd,
-                 Components::LittleVgl& lvgl,
                  const Drivers::Cst816S&,
                  const Controllers::Battery& batteryController,
                  const Controllers::Ble& bleController,
@@ -79,7 +78,6 @@ namespace Pinetime {
 
     private:
       Pinetime::Drivers::St7789& lcd;
-      Pinetime::Components::LittleVgl& lvgl;
       const Pinetime::Drivers::Cst816S& touchPanel;
       const Pinetime::Controllers::Battery& batteryController;
       const Pinetime::Controllers::Ble& bleController;
@@ -98,6 +96,7 @@ namespace Pinetime {
       Pinetime::Controllers::FS& filesystem;
 
       Pinetime::Controllers::FirmwareValidator validator;
+      Pinetime::Components::LittleVgl lvgl;
 
       TaskHandle_t taskHandle;
 

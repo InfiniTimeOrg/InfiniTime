@@ -81,14 +81,10 @@ static constexpr uint32_t MaxTwiFrequencyWithoutHardwareBug {0x06200000};
 Pinetime::Drivers::TwiMaster twiMaster {NRF_TWIM1, MaxTwiFrequencyWithoutHardwareBug, Pinetime::PinMap::TwiSda, Pinetime::PinMap::TwiScl};
 Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
 #ifdef PINETIME_IS_RECOVERY
-  #include "displayapp/DummyLittleVgl.h"
   #include "displayapp/DisplayAppRecovery.h"
 #else
-  #include "displayapp/LittleVgl.h"
   #include "displayapp/DisplayApp.h"
 #endif
-Pinetime::Components::LittleVgl lvgl {lcd};
-
 Pinetime::Drivers::Bma421 motionSensor {twiMaster, motionSensorTwiAddress};
 Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
 
@@ -115,7 +111,6 @@ Pinetime::Controllers::ButtonHandler buttonHandler;
 Pinetime::Controllers::BrightnessController brightnessController {};
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
-                                              lvgl,
                                               touchPanel,
                                               batteryController,
                                               bleController,
@@ -137,7 +132,6 @@ Pinetime::System::SystemTask systemTask(spi,
                                         spiNorFlash,
                                         twiMaster,
                                         touchPanel,
-                                        lvgl,
                                         batteryController,
                                         bleController,
                                         dateTimeController,
@@ -349,8 +343,6 @@ int main() {
     memset(&__start_noinit_data, 0, (uintptr_t) &__stop_noinit_data - (uintptr_t) &__start_noinit_data);
     NoInit_MagicWord = NoInit_MagicValue;
   }
-
-  lvgl.Init();
 
   systemTask.Start();
 

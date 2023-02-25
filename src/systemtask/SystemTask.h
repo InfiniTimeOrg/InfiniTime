@@ -24,11 +24,9 @@
 
 #ifdef PINETIME_IS_RECOVERY
   #include "displayapp/DisplayAppRecovery.h"
-  #include "displayapp/DummyLittleVgl.h"
 #else
   #include "components/settings/Settings.h"
   #include "displayapp/DisplayApp.h"
-  #include "displayapp/LittleVgl.h"
 #endif
 
 #include "drivers/Watchdog.h"
@@ -61,7 +59,6 @@ namespace Pinetime {
                  Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                  Drivers::TwiMaster& twiMaster,
                  Drivers::Cst816S& touchPanel,
-                 Components::LittleVgl& lvgl,
                  Controllers::Battery& batteryController,
                  Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
@@ -104,7 +101,6 @@ namespace Pinetime {
       Pinetime::Drivers::SpiNorFlash& spiNorFlash;
       Pinetime::Drivers::TwiMaster& twiMaster;
       Pinetime::Drivers::Cst816S& touchPanel;
-      Pinetime::Components::LittleVgl& lvgl;
       Pinetime::Controllers::Battery& batteryController;
 
       Pinetime::Controllers::Ble& bleController;
