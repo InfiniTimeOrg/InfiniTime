@@ -55,7 +55,6 @@ namespace Pinetime {
     public:
       enum class SystemTaskState { Sleeping, Running, GoingToSleep, WakingUp };
       SystemTask(Drivers::SpiMaster& spi,
-                 Drivers::St7789& lcd,
                  Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                  Drivers::TwiMaster& twiMaster,
                  Drivers::Cst816S& touchPanel,
@@ -97,7 +96,6 @@ namespace Pinetime {
       TaskHandle_t taskHandle;
 
       Pinetime::Drivers::SpiMaster& spi;
-      Pinetime::Drivers::St7789& lcd;
       Pinetime::Drivers::SpiNorFlash& spiNorFlash;
       Pinetime::Drivers::TwiMaster& twiMaster;
       Pinetime::Drivers::Cst816S& touchPanel;

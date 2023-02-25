@@ -128,7 +128,6 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               fs);
 
 Pinetime::System::SystemTask systemTask(spi,
-                                        lcd,
                                         spiNorFlash,
                                         twiMaster,
                                         touchPanel,
