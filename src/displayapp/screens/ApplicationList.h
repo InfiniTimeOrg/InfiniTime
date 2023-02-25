@@ -36,7 +36,7 @@ namespace Pinetime {
         static constexpr int appsPerScreen = 6;
 
         // Increment this when more space is needed
-        static constexpr int nScreens = 2;
+        static constexpr int nScreens = 3;
 
         static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
           {Symbols::stopWatch, Apps::StopWatch},
@@ -44,6 +44,7 @@ namespace Pinetime {
           {Symbols::hourGlass, Apps::Timer},
           {Symbols::shoe, Apps::Steps},
           {Symbols::heartBeat, Apps::HeartRate},
+          {"N", Apps::Notepad},
           {Symbols::music, Apps::Music},
 
           {Symbols::paintbrush, Apps::Paint},
@@ -52,6 +53,7 @@ namespace Pinetime {
           {Symbols::chartLine, Apps::Motion},
           {Symbols::drum, Apps::Metronome},
           {Symbols::map, Apps::Navigation},
+
         }};
         ScreenList<nScreens> screens;
       };

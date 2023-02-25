@@ -2,6 +2,7 @@
 #include <libraries/log/nrf_log.h>
 #include "displayapp/screens/HeartRate.h"
 #include "displayapp/screens/Motion.h"
+#include "displayapp/screens/Notepad.h"
 #include "displayapp/screens/Timer.h"
 #include "displayapp/screens/Alarm.h"
 #include "components/battery/BatteryController.h"
@@ -405,6 +406,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       break;
     case Apps::Timer:
       currentScreen = std::make_unique<Screens::Timer>(this, timerController);
+      break;
+    case Apps::Notepad:
+      currentScreen = std::make_unique<Screens::Notepad>(this, settingsController.GetNotepadText());
       break;
     case Apps::Alarm:
       currentScreen =

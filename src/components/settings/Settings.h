@@ -51,6 +51,8 @@ namespace Pinetime {
         int colorIndex = 0;
       };
 
+      char NotepadText[71] = "";
+
       Settings(Pinetime::Controllers::FS& fs);
 
       Settings(const Settings&) = delete;
@@ -261,6 +263,10 @@ namespace Pinetime {
 
       bool GetBleRadioEnabled() const {
         return bleRadioEnabled;
+      };
+
+      char* GetNotepadText() {
+        return NotepadText;
       };
 
     private:
