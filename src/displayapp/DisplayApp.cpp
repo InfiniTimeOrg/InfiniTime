@@ -127,6 +127,7 @@ void DisplayApp::Process(void* instance) {
 void DisplayApp::InitHw() {
   brightnessController.Init();
   ApplyBrightness();
+  motorController.Init();
 }
 
 void DisplayApp::Refresh() {
@@ -206,6 +207,7 @@ void DisplayApp::Refresh() {
         } else {
           LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Up);
         }
+        motorController.RunForDuration(35);
         break;
       case Messages::AlarmTriggered:
         if (currentApp == Apps::Alarm) {
@@ -217,6 +219,7 @@ void DisplayApp::Refresh() {
         break;
       case Messages::ShowPairingKey:
         LoadNewScreen(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
+        motorController.RunForDuration(35);
         break;
       case Messages::TouchEvent: {
         if (state != States::Running) {
@@ -307,8 +310,12 @@ void DisplayApp::Refresh() {
         // Added to remove warning
         // What should happen here?
         break;
-      case Messages::Clock:
+      case Messages::Chime:
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+        motorController.RunForDuration(35);
+        break;
+      case Messages::OnChargingEvent:
+        motorController.RunForDuration(15);
         break;
     }
   }
@@ -342,6 +349,7 @@ void DisplayApp::LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direc
 void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction) {
   lvgl.CancelTap();
   ApplyBrightness();
+  motorController.StopRinging();
 
   currentScreen.reset(nullptr);
   SetFullRefresh(direction);
@@ -399,7 +407,8 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::Timer>(this, timerController);
       break;
     case Apps::Alarm:
-      currentScreen = std::make_unique<Screens::Alarm>(this, alarmController, settingsController.GetClockType(), *systemTask);
+      currentScreen =
+        std::make_unique<Screens::Alarm>(this, alarmController, settingsController.GetClockType(), *systemTask, motorController);
       break;
 
     // Settings
