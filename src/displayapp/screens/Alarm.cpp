@@ -43,8 +43,9 @@ static void StopAlarmTaskCallback(lv_task_t* task) {
 Alarm::Alarm(DisplayApp* app,
              Controllers::AlarmController& alarmController,
              Controllers::Settings::ClockType clockType,
-             System::SystemTask& systemTask)
-  : Screen(app), alarmController {alarmController}, systemTask {systemTask} {
+             System::SystemTask& systemTask,
+             Controllers::MotorController& motorController)
+  : Screen(app), alarmController {alarmController}, systemTask {systemTask}, motorController {motorController} {
 
   hourCounter.Create();
   lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
@@ -200,11 +201,13 @@ void Alarm::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
   lv_obj_set_hidden(btnStop, false);
   taskStopAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(60 * 1000), LV_TASK_PRIO_MID, this);
+  motorController.StartRinging();
   systemTask.PushMessage(System::Messages::DisableSleeping);
 }
 
 void Alarm::StopAlerting() {
   alarmController.StopAlerting();
+  motorController.StopRinging();
   SetSwitchState(LV_ANIM_OFF);
   if (taskStopAlarm != nullptr) {
     lv_task_del(taskStopAlarm);

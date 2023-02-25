@@ -61,7 +61,6 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Controllers::AlarmController& alarmController,
                        Drivers::Watchdog& watchdog,
                        Pinetime::Controllers::NotificationManager& notificationManager,
-                       Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Drivers::Hrs3300& heartRateSensor,
                        Pinetime::Controllers::MotionController& motionController,
                        Pinetime::Drivers::Bma421& motionSensor,
@@ -85,7 +84,6 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     alarmController {alarmController},
     watchdog {watchdog},
     notificationManager {notificationManager},
-    motorController {motorController},
     heartRateSensor {heartRateSensor},
     motionSensor {motionSensor},
     settingsController {settingsController},
@@ -149,7 +147,6 @@ void SystemTask::Work() {
   touchPanel.Init();
   dateTimeController.Register(this);
   batteryController.Register(this);
-  motorController.Init();
   motionSensor.SoftReset();
   timerController.Init(this);
   alarmController.Init(this);
@@ -295,18 +292,13 @@ void SystemTask::Work() {
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
           }
-          motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
         case Messages::SetOffAlarm:
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
           }
-          motorController.StartRinging();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
-          break;
-        case Messages::StopRinging:
-          motorController.StopRinging();
           break;
         case Messages::BleConnected:
           ReloadIdleTimer();
@@ -394,9 +386,8 @@ void SystemTask::Work() {
               alarmController.State() != AlarmController::AlarmState::Alerting) {
             if (state == SystemTaskState::Sleeping) {
               GoToRunning();
-              displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
+              displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
             }
-            motorController.RunForDuration(35);
           }
           break;
         case Messages::OnNewHalfHour:
@@ -406,14 +397,13 @@ void SystemTask::Work() {
               alarmController.State() != AlarmController::AlarmState::Alerting) {
             if (state == SystemTaskState::Sleeping) {
               GoToRunning();
-              displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
+              displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
             }
-            motorController.RunForDuration(35);
           }
           break;
         case Messages::OnChargingEvent:
           batteryController.ReadPowerState();
-          motorController.RunForDuration(15);
+          displayApp.PushMessage(Applications::Display::Messages::OnChargingEvent);
           ReloadIdleTimer();
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
@@ -439,7 +429,6 @@ void SystemTask::Work() {
           if (state == SystemTaskState::Sleeping) {
             GoToRunning();
           }
-          motorController.RunForDuration(35);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
           break;
         case Messages::BleRadioEnableToggle:
