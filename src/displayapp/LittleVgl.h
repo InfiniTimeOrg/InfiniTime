@@ -1,6 +1,7 @@
 #pragma once
 
 #include <lvgl/lvgl.h>
+#include <components/fs/FS.h>
 
 namespace Pinetime {
   namespace Drivers {
@@ -11,7 +12,7 @@ namespace Pinetime {
     class LittleVgl {
     public:
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
-      LittleVgl(Pinetime::Drivers::St7789& lcd);
+      LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Controllers::FS& filesystem);
 
       LittleVgl(const LittleVgl&) = delete;
       LittleVgl& operator=(const LittleVgl&) = delete;
@@ -37,8 +38,10 @@ namespace Pinetime {
     private:
       void InitDisplay();
       void InitTouchpad();
+      void InitFileSystem();
 
       Pinetime::Drivers::St7789& lcd;
+      Pinetime::Controllers::FS& filesystem;
 
       lv_disp_buf_t disp_buf_2;
       lv_color_t buf2_1[LV_HOR_RES_MAX * 4];

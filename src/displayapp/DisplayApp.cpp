@@ -91,7 +91,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     brightnessController {brightnessController},
     touchHandler {touchHandler},
     filesystem {filesystem},
-    lvgl {lcd} {
+    lvgl {lcd, filesystem} {
 }
 
 void DisplayApp::Start(System::BootErrors error) {
