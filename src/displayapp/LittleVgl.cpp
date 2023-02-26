@@ -4,6 +4,8 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include "drivers/St7789.h"
+#include "littlefs/lfs.h"
+#include "components/fs/FS.h"
 
 using namespace Pinetime::Components;
 
@@ -11,6 +13,43 @@ namespace {
   void InitTheme() {
     lv_theme_t* theme = lv_pinetime_theme_init();
     lv_theme_set_act(theme);
+  }
+
+  lv_fs_res_t lvglOpen(lv_fs_drv_t* drv, void* file_p, const char* path, lv_fs_mode_t /*mode*/) {
+    lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
+    Pinetime::Controllers::FS* filesys = static_cast<Pinetime::Controllers::FS*>(drv->user_data);
+    int res = filesys->FileOpen(file, path, LFS_O_RDONLY);
+    if (res == 0) {
+      if (file->type == 0) {
+        return LV_FS_RES_FS_ERR;
+      } else {
+        return LV_FS_RES_OK;
+      }
+    }
+    return LV_FS_RES_NOT_EX;
+  }
+
+  lv_fs_res_t lvglClose(lv_fs_drv_t* drv, void* file_p) {
+    Pinetime::Controllers::FS* filesys = static_cast<Pinetime::Controllers::FS*>(drv->user_data);
+    lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
+    filesys->FileClose(file);
+
+    return LV_FS_RES_OK;
+  }
+
+  lv_fs_res_t lvglRead(lv_fs_drv_t* drv, void* file_p, void* buf, uint32_t btr, uint32_t* br) {
+    Pinetime::Controllers::FS* filesys = static_cast<Pinetime::Controllers::FS*>(drv->user_data);
+    lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
+    filesys->FileRead(file, static_cast<uint8_t*>(buf), btr);
+    *br = btr;
+    return LV_FS_RES_OK;
+  }
+
+  lv_fs_res_t lvglSeek(lv_fs_drv_t* drv, void* file_p, uint32_t pos) {
+    Pinetime::Controllers::FS* filesys = static_cast<Pinetime::Controllers::FS*>(drv->user_data);
+    lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
+    filesys->FileSeek(file, pos);
+    return LV_FS_RES_OK;
   }
 }
 
@@ -34,7 +73,7 @@ bool touchpad_read(lv_indev_drv_t* indev_drv, lv_indev_data_t* data) {
   return lvgl->GetTouchPadInfo(data);
 }
 
-LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd) : lcd {lcd} {
+LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Controllers::FS& filesystem) : lcd {lcd}, filesystem {filesystem} {
 }
 
 void LittleVgl::Init() {
@@ -42,6 +81,7 @@ void LittleVgl::Init() {
   InitTheme();
   InitDisplay();
   InitTouchpad();
+  InitFileSystem();
 }
 
 void LittleVgl::InitDisplay() {
@@ -73,6 +113,22 @@ void LittleVgl::InitTouchpad() {
   indev_drv.read_cb = touchpad_read;
   indev_drv.user_data = this;
   lv_indev_drv_register(&indev_drv);
+}
+
+void LittleVgl::InitFileSystem() {
+  lv_fs_drv_t fs_drv;
+  lv_fs_drv_init(&fs_drv);
+
+  fs_drv.file_size = sizeof(lfs_file_t);
+  fs_drv.letter = 'F';
+  fs_drv.open_cb = lvglOpen;
+  fs_drv.close_cb = lvglClose;
+  fs_drv.read_cb = lvglRead;
+  fs_drv.seek_cb = lvglSeek;
+
+  fs_drv.user_data = &filesystem;
+
+  lv_fs_drv_register(&fs_drv);
 }
 
 void LittleVgl::SetFullRefresh(FullRefreshDirections direction) {
