@@ -1,4 +1,17 @@
 #include "displayapp/InfiniTimeTheme.h"
+#include <algorithm>
+
+// Replace LV_DPX with a constexpr version using a constant LV_DPI
+#undef LV_DPX
+
+namespace {
+  constexpr int LV_DPX(int n) {
+    if (n == 0) {
+      return 0;
+    }
+    return std::max(((LV_DPI * n + 80) / 160), 1); /*+80 for rounding*/
+  }
+}
 
 static void theme_apply(lv_obj_t* obj, lv_theme_style_t name);
 
@@ -47,7 +60,6 @@ static void basic_init() {
   style_init_reset(&style_box);
   lv_style_set_bg_opa(&style_box, LV_STATE_DEFAULT, LV_OPA_COVER);
   lv_style_set_radius(&style_box, LV_STATE_DEFAULT, 10);
-  lv_style_set_value_color(&style_box, LV_STATE_DEFAULT, Colors::bg);
   lv_style_set_value_font(&style_box, LV_STATE_DEFAULT, theme.font_normal);
 
   style_init_reset(&style_label_white);
@@ -60,25 +72,12 @@ static void basic_init() {
   lv_style_set_bg_color(&style_btn, LV_STATE_DEFAULT, Colors::bg);
   lv_style_set_bg_color(&style_btn, LV_STATE_CHECKED, Colors::highlight);
   lv_style_set_bg_color(&style_btn, LV_STATE_DISABLED, Colors::bgDark);
-  lv_style_set_border_color(&style_btn, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_style_set_border_width(&style_btn, LV_STATE_DEFAULT, 0);
 
   lv_style_set_text_color(&style_btn, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_style_set_text_color(&style_btn, LV_STATE_DISABLED, LV_COLOR_GRAY);
 
-  lv_style_set_value_color(&style_btn, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_style_set_value_color(&style_btn, LV_STATE_DISABLED, LV_COLOR_GRAY);
-
-  lv_style_set_pad_left(&style_btn, LV_STATE_DEFAULT, LV_DPX(20));
-  lv_style_set_pad_right(&style_btn, LV_STATE_DEFAULT, LV_DPX(20));
-  lv_style_set_pad_top(&style_btn, LV_STATE_DEFAULT, LV_DPX(20));
-  lv_style_set_pad_bottom(&style_btn, LV_STATE_DEFAULT, LV_DPX(20));
+  lv_style_set_pad_all(&style_btn, LV_STATE_DEFAULT, LV_DPX(20));
   lv_style_set_pad_inner(&style_btn, LV_STATE_DEFAULT, LV_DPX(15));
-  lv_style_set_outline_width(&style_btn, LV_STATE_DEFAULT, LV_DPX(2));
-  lv_style_set_outline_opa(&style_btn, LV_STATE_DEFAULT, LV_OPA_0);
-  lv_style_set_outline_color(&style_btn, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_style_set_transition_time(&style_btn, LV_STATE_DEFAULT, 0);
-  lv_style_set_transition_delay(&style_btn, LV_STATE_DEFAULT, 0);
 
   style_init_reset(&style_icon);
   lv_style_set_text_color(&style_icon, LV_STATE_DEFAULT, LV_COLOR_WHITE);
@@ -132,10 +131,7 @@ static void basic_init() {
   lv_style_set_bg_color(&style_sw_knob, LV_STATE_DEFAULT, LV_COLOR_SILVER);
   lv_style_set_bg_color(&style_sw_knob, LV_STATE_CHECKED, LV_COLOR_WHITE);
   lv_style_set_radius(&style_sw_knob, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_style_set_pad_top(&style_sw_knob, LV_STATE_DEFAULT, -4);
-  lv_style_set_pad_bottom(&style_sw_knob, LV_STATE_DEFAULT, -4);
-  lv_style_set_pad_left(&style_sw_knob, LV_STATE_DEFAULT, -4);
-  lv_style_set_pad_right(&style_sw_knob, LV_STATE_DEFAULT, -4);
+  lv_style_set_pad_all(&style_sw_knob, LV_STATE_DEFAULT, -4);
 
   style_init_reset(&style_slider_knob);
   lv_style_set_bg_opa(&style_slider_knob, LV_STATE_DEFAULT, LV_OPA_COVER);
@@ -143,14 +139,8 @@ static void basic_init() {
   lv_style_set_border_color(&style_slider_knob, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_style_set_border_width(&style_slider_knob, LV_STATE_DEFAULT, 6);
   lv_style_set_radius(&style_slider_knob, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_style_set_pad_top(&style_slider_knob, LV_STATE_DEFAULT, 10);
-  lv_style_set_pad_bottom(&style_slider_knob, LV_STATE_DEFAULT, 10);
-  lv_style_set_pad_left(&style_slider_knob, LV_STATE_DEFAULT, 10);
-  lv_style_set_pad_right(&style_slider_knob, LV_STATE_DEFAULT, 10);
-  lv_style_set_pad_top(&style_slider_knob, LV_STATE_PRESSED, 14);
-  lv_style_set_pad_bottom(&style_slider_knob, LV_STATE_PRESSED, 14);
-  lv_style_set_pad_left(&style_slider_knob, LV_STATE_PRESSED, 14);
-  lv_style_set_pad_right(&style_slider_knob, LV_STATE_PRESSED, 14);
+  lv_style_set_pad_all(&style_slider_knob, LV_STATE_DEFAULT, 10);
+  lv_style_set_pad_all(&style_slider_knob, LV_STATE_PRESSED, 14);
 
   style_init_reset(&style_arc_indic);
   lv_style_set_line_color(&style_arc_indic, LV_STATE_DEFAULT, Colors::lightGray);
@@ -180,10 +170,7 @@ static void basic_init() {
 
   style_init_reset(&style_pad_small);
   lv_style_int_t pad_small_value = 10;
-  lv_style_set_pad_left(&style_pad_small, LV_STATE_DEFAULT, pad_small_value);
-  lv_style_set_pad_right(&style_pad_small, LV_STATE_DEFAULT, pad_small_value);
-  lv_style_set_pad_top(&style_pad_small, LV_STATE_DEFAULT, pad_small_value);
-  lv_style_set_pad_bottom(&style_pad_small, LV_STATE_DEFAULT, pad_small_value);
+  lv_style_set_pad_all(&style_pad_small, LV_STATE_DEFAULT, pad_small_value);
   lv_style_set_pad_inner(&style_pad_small, LV_STATE_DEFAULT, pad_small_value);
 
   style_init_reset(&style_lmeter);
@@ -209,20 +196,12 @@ static void basic_init() {
   lv_style_reset(&style_cb_bg);
   lv_style_set_radius(&style_cb_bg, LV_STATE_DEFAULT, LV_DPX(4));
   lv_style_set_pad_inner(&style_cb_bg, LV_STATE_DEFAULT, 18);
-  lv_style_set_outline_color(&style_cb_bg, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_style_set_outline_width(&style_cb_bg, LV_STATE_DEFAULT, LV_DPX(2));
-  lv_style_set_outline_pad(&style_cb_bg, LV_STATE_DEFAULT, LV_DPX(20));
-  lv_style_set_transition_time(&style_cb_bg, LV_STATE_DEFAULT, 0);
-  lv_style_set_transition_prop_6(&style_cb_bg, LV_STATE_DEFAULT, LV_STYLE_OUTLINE_OPA);
 
   lv_style_reset(&style_cb_bullet);
   lv_style_set_radius(&style_cb_bullet, LV_STATE_DEFAULT, LV_DPX(4));
   lv_style_set_pattern_image(&style_cb_bullet, LV_STATE_CHECKED, LV_SYMBOL_OK);
   lv_style_set_pattern_recolor(&style_cb_bullet, LV_STATE_CHECKED, LV_COLOR_WHITE);
-  lv_style_set_pad_left(&style_cb_bullet, LV_STATE_DEFAULT, LV_DPX(8));
-  lv_style_set_pad_right(&style_cb_bullet, LV_STATE_DEFAULT, LV_DPX(8));
-  lv_style_set_pad_top(&style_cb_bullet, LV_STATE_DEFAULT, LV_DPX(8));
-  lv_style_set_pad_bottom(&style_cb_bullet, LV_STATE_DEFAULT, LV_DPX(8));
+  lv_style_set_pad_all(&style_cb_bullet, LV_STATE_DEFAULT, LV_DPX(8));
 }
 
 /**
@@ -236,20 +215,14 @@ static void basic_init() {
  * @param font_title pointer to a extra large font
  * @return a pointer to reference this theme later
  */
-lv_theme_t* lv_pinetime_theme_init(lv_color_t color_primary,
-                                   lv_color_t color_secondary,
-                                   uint32_t flags,
-                                   const lv_font_t* font_small,
-                                   const lv_font_t* font_normal,
-                                   const lv_font_t* font_subtitle,
-                                   const lv_font_t* font_title) {
-  theme.color_primary = color_primary;
-  theme.color_secondary = color_secondary;
-  theme.font_small = font_small;
-  theme.font_normal = font_normal;
-  theme.font_subtitle = font_subtitle;
-  theme.font_title = font_title;
-  theme.flags = flags;
+lv_theme_t* lv_pinetime_theme_init() {
+  theme.color_primary = LV_COLOR_WHITE;
+  theme.color_secondary = LV_COLOR_GRAY;
+  theme.font_small = &jetbrains_mono_bold_20;
+  theme.font_normal = &jetbrains_mono_bold_20;
+  theme.font_subtitle = &jetbrains_mono_bold_20;
+  theme.font_title = &jetbrains_mono_bold_20;
+  theme.flags = 0;
 
   basic_init();
 

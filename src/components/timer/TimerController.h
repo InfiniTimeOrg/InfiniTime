@@ -3,6 +3,8 @@
 #include <FreeRTOS.h>
 #include <timers.h>
 
+#include <chrono>
+
 namespace Pinetime {
   namespace System {
     class SystemTask;
@@ -16,11 +18,11 @@ namespace Pinetime {
 
       void Init(System::SystemTask* systemTask);
 
-      void StartTimer(uint32_t duration);
+      void StartTimer(std::chrono::milliseconds duration);
 
       void StopTimer();
 
-      uint32_t GetTimeRemaining();
+      std::chrono::milliseconds GetTimeRemaining();
 
       bool IsRunning();
 

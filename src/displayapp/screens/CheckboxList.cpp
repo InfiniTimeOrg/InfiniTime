@@ -13,14 +13,12 @@ namespace {
 
 CheckboxList::CheckboxList(const uint8_t screenID,
                            const uint8_t numScreens,
-                           DisplayApp* app,
                            const char* optionsTitle,
                            const char* optionsSymbol,
                            uint32_t originalValue,
                            std::function<void(uint32_t)> OnValueChanged,
                            std::array<Item, MaxItems> options)
-  : Screen(app),
-    screenID {screenID},
+  : screenID {screenID},
     OnValueChanged {std::move(OnValueChanged)},
     options {options},
     value {originalValue},

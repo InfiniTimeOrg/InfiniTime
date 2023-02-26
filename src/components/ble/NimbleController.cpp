@@ -1,7 +1,6 @@
 #include "components/ble/NimbleController.h"
 #include <cstring>
 
-#include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #define min // workaround: nimble's min/max macros conflict with libstdc++
 #define max

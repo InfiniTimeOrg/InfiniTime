@@ -3,13 +3,16 @@
 
 #include <FreeRTOS.h>
 #include <task.h>
-//#include <projdefs.h>
-#include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 
 using namespace Pinetime::Components;
 
-lv_style_t* LabelBigStyle = nullptr;
+namespace {
+  void InitTheme() {
+    lv_theme_t* theme = lv_pinetime_theme_init();
+    lv_theme_set_act(theme);
+  }
+}
 
 static void disp_flush(lv_disp_drv_t* disp_drv, const lv_area_t* area, lv_color_t* color_p) {
   auto* lvgl = static_cast<LittleVgl*>(disp_drv->user_data);
@@ -31,7 +34,7 @@ bool touchpad_read(lv_indev_drv_t* indev_drv, lv_indev_data_t* data) {
   return lvgl->GetTouchPadInfo(data);
 }
 
-LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel) : lcd {lcd}, touchPanel {touchPanel} {
+LittleVgl::LittleVgl(Pinetime::Drivers::St7789& lcd) : lcd {lcd} {
 }
 
 void LittleVgl::Init() {
@@ -176,32 +179,38 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   lv_disp_flush_ready(&disp_drv);
 }
 
-void LittleVgl::SetNewTouchPoint(uint16_t x, uint16_t y, bool contact) {
-  tap_x = x;
-  tap_y = y;
-  tapped = contact;
+void LittleVgl::SetNewTouchPoint(int16_t x, int16_t y, bool contact) {
+  if (contact) {
+    if (!isCancelled) {
+      touchPoint = {x, y};
+      tapped = true;
+    }
+  } else {
+    if (isCancelled) {
+      touchPoint = {-1, -1};
+      tapped = false;
+      isCancelled = false;
+    } else {
+      touchPoint = {x, y};
+      tapped = false;
+    }
+  }
+}
+
+void LittleVgl::CancelTap() {
+  if (tapped) {
+    isCancelled = true;
+    touchPoint = {-1, -1};
+  }
 }
 
 bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
-  ptr->point.x = tap_x;
-  ptr->point.y = tap_y;
+  ptr->point.x = touchPoint.x;
+  ptr->point.y = touchPoint.y;
   if (tapped) {
     ptr->state = LV_INDEV_STATE_PR;
   } else {
     ptr->state = LV_INDEV_STATE_REL;
   }
   return false;
-}
-
-void LittleVgl::InitTheme() {
-
-  lv_theme_t* th = lv_pinetime_theme_init(LV_COLOR_WHITE,
-                                          LV_COLOR_SILVER,
-                                          0,
-                                          &jetbrains_mono_bold_20,
-                                          &jetbrains_mono_bold_20,
-                                          &jetbrains_mono_bold_20,
-                                          &jetbrains_mono_bold_20);
-
-  lv_theme_set_act(th);
 }

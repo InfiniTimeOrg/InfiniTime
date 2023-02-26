@@ -1,6 +1,5 @@
 #pragma once
 #include <FreeRTOS.h>
-#include <date/date.h>
 #include <queue.h>
 #include <task.h>
 #include <memory>
@@ -27,7 +26,7 @@ namespace Pinetime {
   namespace Drivers {
     class St7789;
     class Cst816S;
-    class WatchdogView;
+    class Watchdog;
   }
 
   namespace Controllers {
@@ -52,12 +51,11 @@ namespace Pinetime {
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
 
       DisplayApp(Drivers::St7789& lcd,
-                 Components::LittleVgl& lvgl,
-                 Drivers::Cst816S&,
-                 Controllers::Battery& batteryController,
-                 Controllers::Ble& bleController,
+                 const Drivers::Cst816S&,
+                 const Controllers::Battery& batteryController,
+                 const Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
-                 Drivers::WatchdogView& watchdog,
+                 const Drivers::Watchdog& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Controllers::Settings& settingsController,
@@ -79,12 +77,11 @@ namespace Pinetime {
 
     private:
       Pinetime::Drivers::St7789& lcd;
-      Pinetime::Components::LittleVgl& lvgl;
-      Pinetime::Drivers::Cst816S& touchPanel;
-      Pinetime::Controllers::Battery& batteryController;
-      Pinetime::Controllers::Ble& bleController;
+      const Pinetime::Drivers::Cst816S& touchPanel;
+      const Pinetime::Controllers::Battery& batteryController;
+      const Pinetime::Controllers::Ble& bleController;
       Pinetime::Controllers::DateTime& dateTimeController;
-      Pinetime::Drivers::WatchdogView& watchdog;
+      const Pinetime::Drivers::Watchdog& watchdog;
       Pinetime::System::SystemTask* systemTask = nullptr;
       Pinetime::Controllers::NotificationManager& notificationManager;
       Pinetime::Controllers::HeartRateController& heartRateController;
@@ -98,6 +95,7 @@ namespace Pinetime {
       Pinetime::Controllers::FS& filesystem;
 
       Pinetime::Controllers::FirmwareValidator validator;
+      Pinetime::Components::LittleVgl lvgl;
 
       TaskHandle_t taskHandle;
 

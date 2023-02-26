@@ -20,18 +20,5 @@ namespace Pinetime {
       ResetReasons resetReason;
       ResetReasons ActualResetReason() const;
     };
-
-    class WatchdogView {
-    public:
-      WatchdogView(const Watchdog& watchdog) : watchdog {watchdog} {
-      }
-
-      Watchdog::ResetReasons ResetReason() const {
-        return watchdog.ResetReason();
-      }
-
-    private:
-      const Watchdog& watchdog;
-    };
   }
 }

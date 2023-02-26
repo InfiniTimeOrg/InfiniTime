@@ -32,7 +32,7 @@ namespace Pinetime {
     namespace Screens {
       class Navigation : public Screen {
       public:
-        Navigation(DisplayApp* app, Pinetime::Controllers::NavigationService& nav);
+        Navigation(Pinetime::Controllers::NavigationService& nav);
         ~Navigation() override;
 
         void Refresh() override;

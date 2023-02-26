@@ -21,10 +21,9 @@ namespace Pinetime {
 
       class WatchFaceInfineat : public Screen {
       public:
-        WatchFaceInfineat(DisplayApp* app,
-                          Controllers::DateTime& dateTimeController,
-                          Controllers::Battery& batteryController,
-                          Controllers::Ble& bleController,
+        WatchFaceInfineat(Controllers::DateTime& dateTimeController,
+                          const Controllers::Battery& batteryController,
+                          const Controllers::Ble& bleController,
                           Controllers::NotificationManager& notificationManager,
                           Controllers::Settings& settingsController,
                           Controllers::MotionController& motionController,
@@ -60,40 +59,9 @@ namespace Pinetime {
         DirtyValue<uint32_t> stepCount {};
         DirtyValue<bool> notificationState {};
 
-        lv_obj_t* background;
-
         // Lines making up the side cover
-        lv_obj_t* line0;
-        lv_obj_t* line1;
-        lv_obj_t* line2;
-        lv_obj_t* line3;
-        lv_obj_t* line4;
-        lv_obj_t* line5;
-        lv_obj_t* line6;
-        lv_obj_t* line7;
-        lv_obj_t* line8;
         lv_obj_t* lineBattery;
 
-        lv_style_t line0Style;
-        lv_style_t line1Style;
-        lv_style_t line2Style;
-        lv_style_t line3Style;
-        lv_style_t line4Style;
-        lv_style_t line5Style;
-        lv_style_t line6Style;
-        lv_style_t line7Style;
-        lv_style_t line8Style;
-        lv_style_t lineBatteryStyle;
-
-        lv_point_t line0Points[2];
-        lv_point_t line1Points[2];
-        lv_point_t line2Points[2];
-        lv_point_t line3Points[2];
-        lv_point_t line4Points[2];
-        lv_point_t line5Points[2];
-        lv_point_t line6Points[2];
-        lv_point_t line7Points[2];
-        lv_point_t line8Points[2];
         lv_point_t lineBatteryPoints[2];
 
         lv_obj_t* logoPine;
@@ -119,6 +87,8 @@ namespace Pinetime {
         static constexpr int nLines = 9;
         static constexpr int nColors = 7; // must match number of colors in InfineatColors
 
+        lv_obj_t* lines[nLines];
+
         struct InfineatColors {
           int orange[nLines] = {0xfd872b, 0xdb3316, 0x6f1000, 0xfd7a0a, 0xffffff, 0xffffff, 0xffffff, 0xe85102, 0xea1c00};
           int blue[nLines] = {0xe7f8ff, 0x2232d0, 0x182a8b, 0xe7f8ff, 0xffffff, 0xffffff, 0xffffff, 0x5991ff, 0x1636ff};
@@ -130,8 +100,8 @@ namespace Pinetime {
         } infineatColors;
 
         Controllers::DateTime& dateTimeController;
-        Controllers::Battery& batteryController;
-        Controllers::Ble& bleController;
+        const Controllers::Battery& batteryController;
+        const Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;

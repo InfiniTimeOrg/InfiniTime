@@ -19,7 +19,7 @@ auto Settings::CreateScreenList() const {
 }
 
 Settings::Settings(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
-  : Screen(app),
+  : app {app},
     settingsController {settingsController},
     screens {app, settingsController.GetSettingsMenu(), CreateScreenList(), Screens::ScreenListModes::UpDown} {
 }

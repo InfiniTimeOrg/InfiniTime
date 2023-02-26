@@ -7,6 +7,3 @@
 [submodule "src/libs/QCBOR"]
 	path = src/libs/QCBOR
 	url = https://github.com/laurencelundblade/QCBOR.git
-[submodule "src/libs/date"]
-	path = src/libs/date
-	url = https://github.com/HowardHinnant/date.git

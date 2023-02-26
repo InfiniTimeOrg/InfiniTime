@@ -11,12 +11,11 @@
 using namespace Pinetime::Applications;
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
-                       Components::LittleVgl& /*lvgl*/,
-                       Drivers::Cst816S& /*touchPanel*/,
-                       Controllers::Battery& /*batteryController*/,
-                       Controllers::Ble& bleController,
+                       const Drivers::Cst816S& /*touchPanel*/,
+                       const Controllers::Battery& /*batteryController*/,
+                       const Controllers::Ble& bleController,
                        Controllers::DateTime& /*dateTimeController*/,
-                       Drivers::WatchdogView& /*watchdog*/,
+                       const Drivers::Watchdog& /*watchdog*/,
                        Pinetime::Controllers::NotificationManager& /*notificationManager*/,
                        Pinetime::Controllers::HeartRateController& /*heartRateController*/,
                        Controllers::Settings& /*settingsController*/,
