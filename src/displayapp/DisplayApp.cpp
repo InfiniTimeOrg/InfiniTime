@@ -47,6 +47,7 @@
 #include "displayapp/screens/settings/SettingChimes.h"
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include "displayapp/screens/settings/SettingBluetooth.h"
+#include "displayapp/screens/settings/SettingPeriodicAlert.h"
 
 #include "libs/lv_conf.h"
 
@@ -455,6 +456,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       break;
     case Apps::SettingBluetooth:
       currentScreen = std::make_unique<Screens::SettingBluetooth>(this, settingsController);
+      break;
+    case Apps::SettingPeriodicAlert:
+      currentScreen = std::make_unique<Screens::SettingPeriodicAlert>(settingsController);
       break;
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(batteryController);

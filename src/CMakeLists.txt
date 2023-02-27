@@ -424,6 +424,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingChimes.cpp
         displayapp/screens/settings/SettingShakeThreshold.cpp
         displayapp/screens/settings/SettingBluetooth.cpp
+        displayapp/screens/settings/SettingPeriodicAlert.cpp
 
         ## Watch faces
         displayapp/icons/bg_clock.c
