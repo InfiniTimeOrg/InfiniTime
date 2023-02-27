@@ -14,6 +14,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/timer/TimerController.h"
 #include "components/alarm/AlarmController.h"
+#include "components/periodic_alert/PeriodicAlertController.h"
 #include "touchhandler/TouchHandler.h"
 
 #include "displayapp/Messages.h"
@@ -65,7 +66,8 @@ namespace Pinetime {
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
                  Pinetime::Controllers::TouchHandler& touchHandler,
-                 Pinetime::Controllers::FS& filesystem);
+                 Pinetime::Controllers::FS& filesystem,
+                 Pinetime::Controllers::PeriodicAlertController& periodicAlert);
       void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
 
@@ -93,6 +95,7 @@ namespace Pinetime {
       Pinetime::Controllers::BrightnessController& brightnessController;
       Pinetime::Controllers::TouchHandler& touchHandler;
       Pinetime::Controllers::FS& filesystem;
+      Pinetime::Controllers::PeriodicAlertController& periodicAlertController;
 
       Pinetime::Controllers::FirmwareValidator validator;
       Pinetime::Components::LittleVgl lvgl;

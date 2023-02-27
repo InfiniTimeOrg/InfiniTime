@@ -63,6 +63,7 @@ namespace Pinetime {
                  Controllers::DateTime& dateTimeController,
                  Controllers::TimerController& timerController,
                  Controllers::AlarmController& alarmController,
+                 Controllers::PeriodicAlertController& PeriodicAlertController,
                  Drivers::Watchdog& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
                  Pinetime::Drivers::Hrs3300& heartRateSensor,
@@ -105,6 +106,7 @@ namespace Pinetime {
       Pinetime::Controllers::DateTime& dateTimeController;
       Pinetime::Controllers::TimerController& timerController;
       Pinetime::Controllers::AlarmController& alarmController;
+      Pinetime::Controllers::PeriodicAlertController& periodicAlertController;
       QueueHandle_t systemTasksMsgQueue;
       Pinetime::Drivers::Watchdog& watchdog;
       Pinetime::Controllers::NotificationManager& notificationManager;

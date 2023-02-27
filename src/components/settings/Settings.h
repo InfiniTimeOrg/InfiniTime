@@ -263,10 +263,30 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
+      bool GetPeriodicAlertEnabled() const {
+        return settings.periodicAlertMinute < 60;
+      }
+
+      uint8_t GetPeriodicAlertMinute() const {
+        return settings.periodicAlertMinute;
+      }
+
+      void SetPerioidcAlertMinute(uint8_t minute) {
+        if (settings.periodicAlertMinute != minute)
+          settingsChanged = true;
+        settings.periodicAlertMinute = minute; 
+      }
+
+      void DisablePeriodicAlertMinute() {
+        if (60 != settings.periodicAlertMinute)
+          settingsChanged = true;
+        settings.periodicAlertMinute = 60;
+      }
+
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0004;
+      static constexpr uint32_t settingsVersion = 0x0005;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -286,6 +306,7 @@ namespace Pinetime {
         std::bitset<4> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+        uint8_t periodicAlertMinute = 60;
       };
 
       SettingsData settings;

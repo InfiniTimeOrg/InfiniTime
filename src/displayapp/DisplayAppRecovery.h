@@ -9,6 +9,7 @@
 #include "drivers/Cst816s.h"
 #include <drivers/Watchdog.h>
 #include <components/motor/MotorController.h>
+#include "components/periodic_alert/PeriodicAlertController.h"
 #include "BootErrors.h"
 #include "displayapp/TouchEvents.h"
 #include "displayapp/Apps.h"
@@ -59,7 +60,8 @@ namespace Pinetime {
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
                  Pinetime::Controllers::TouchHandler& touchHandler,
-                 Pinetime::Controllers::FS& filesystem);
+                 Pinetime::Controllers::FS& filesystem,
+                 Pinetime::Controllers::PeriodicAlertController&);
       void Start();
 
       void Start(Pinetime::System::BootErrors) {

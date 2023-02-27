@@ -75,7 +75,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::AlarmController& alarmController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
-                       Pinetime::Controllers::FS& filesystem)
+                       Pinetime::Controllers::FS& filesystem,
+                       Pinetime::Controllers::PeriodicAlertController& periodicAlertController)
   : lcd {lcd},
     touchPanel {touchPanel},
     batteryController {batteryController},
@@ -92,6 +93,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     brightnessController {brightnessController},
     touchHandler {touchHandler},
     filesystem {filesystem},
+    periodicAlertController {periodicAlertController},
     lvgl {lcd, filesystem} {
 }
 
@@ -458,7 +460,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::SettingBluetooth>(this, settingsController);
       break;
     case Apps::SettingPeriodicAlert:
-      currentScreen = std::make_unique<Screens::SettingPeriodicAlert>(settingsController);
+      currentScreen = std::make_unique<Screens::SettingPeriodicAlert>(settingsController, periodicAlertController);
       break;
     case Apps::BatteryInfo:
       currentScreen = std::make_unique<Screens::BatteryInfo>(batteryController);
