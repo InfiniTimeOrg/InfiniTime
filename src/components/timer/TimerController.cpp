@@ -1,16 +1,9 @@
 #include "components/timer/TimerController.h"
-#include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
 
-void TimerCallback(TimerHandle_t xTimer) {
-  auto* controller = static_cast<TimerController*>(pvTimerGetTimerID(xTimer));
-  controller->OnTimerEnd();
-}
-
-void TimerController::Init(Pinetime::System::SystemTask* systemTask) {
-  this->systemTask = systemTask;
-  timer = xTimerCreate("Timer", 1, pdFALSE, this, TimerCallback);
+TimerController::TimerController(void* const timerData, TimerCallbackFunction_t timerCallbackFunction) {
+  timer = xTimerCreate("Timer", 1, pdFALSE, timerData, timerCallbackFunction);
 }
 
 void TimerController::StartTimer(std::chrono::milliseconds duration) {
@@ -32,8 +25,4 @@ void TimerController::StopTimer() {
 
 bool TimerController::IsRunning() {
   return (xTimerIsTimerActive(timer) == pdTRUE);
-}
-
-void TimerController::OnTimerEnd() {
-  systemTask->PushMessage(System::Messages::OnTimerDone);
 }
