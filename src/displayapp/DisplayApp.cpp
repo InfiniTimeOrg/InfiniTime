@@ -57,6 +57,11 @@ namespace {
   inline bool in_isr() {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
   }
+
+  void TimerCallback(TimerHandle_t xTimer) {
+    auto* dispApp = static_cast<DisplayApp*>(pvTimerGetTimerID(xTimer));
+    dispApp->PushMessage(Display::Messages::TimerDone);
+  }
 }
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
@@ -70,7 +75,6 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Controllers::MotionController& motionController,
-                       Pinetime::Controllers::TimerController& timerController,
                        Pinetime::Controllers::AlarmController& alarmController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
@@ -86,12 +90,12 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     settingsController {settingsController},
     motorController {motorController},
     motionController {motionController},
-    timerController {timerController},
     alarmController {alarmController},
     brightnessController {brightnessController},
     touchHandler {touchHandler},
     filesystem {filesystem},
-    lvgl {lcd, filesystem} {
+    lvgl {lcd, filesystem},
+    timerController(this, TimerCallback) {
 }
 
 void DisplayApp::Start(System::BootErrors error) {
@@ -238,6 +242,9 @@ void DisplayApp::Refresh() {
         LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
         break;
       case Messages::TimerDone:
+        if (state != States::Running) {
+          PushMessageToSystemTask(System::Messages::GoToRunning);
+        }
         if (currentApp == Apps::Timer) {
           lv_disp_trig_activity(nullptr);
           auto* timer = static_cast<Screens::Timer*>(currentScreen.get());

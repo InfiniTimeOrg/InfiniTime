@@ -9,7 +9,6 @@ namespace Pinetime {
       TouchWakeUp,
       OnNewTime,
       OnNewNotification,
-      OnTimerDone,
       OnNewCall,
       BleConnected,
       BleFirmwareUpdateStarted,
