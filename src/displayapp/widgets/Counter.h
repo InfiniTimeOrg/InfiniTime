@@ -7,6 +7,7 @@ namespace Pinetime {
       class Counter {
       public:
         Counter(int min, int max, lv_font_t& font);
+        ~Counter();
 
         void Create();
         void UpBtnPressed();

@@ -185,3 +185,7 @@ void Counter::Create() {
   lowerLine = LineCreate();
   lv_obj_align(lowerLine, downBtn, LV_ALIGN_OUT_TOP_MID, 0, -1);
 }
+
+Counter::~Counter() {
+  lv_obj_del(counterContainer);
+}
