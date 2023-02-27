@@ -6,17 +6,16 @@ Timer::Timer(void* const timerData, TimerCallbackFunction_t timerCallbackFunctio
   timer = xTimerCreate("Timer", 1, pdFALSE, timerData, timerCallbackFunction);
 }
 
-void Timer::StartTimer(std::chrono::milliseconds duration) {
-  xTimerChangePeriod(timer, pdMS_TO_TICKS(duration.count()), 0);
+void Timer::StartTimer(ticks duration) {
+  xTimerChangePeriod(timer, duration.count(), 0);
   xTimerStart(timer, 0);
 }
 
-std::chrono::milliseconds Timer::GetTimeRemaining() {
+Timer::ticks Timer::GetTimeRemaining() {
   if (IsRunning()) {
-    TickType_t remainingTime = xTimerGetExpiryTime(timer) - xTaskGetTickCount();
-    return std::chrono::milliseconds(remainingTime * 1000 / configTICK_RATE_HZ);
+    return ticks(xTimerGetExpiryTime(timer) - xTaskGetTickCount());
   }
-  return std::chrono::milliseconds(0);
+  return ticks(0);
 }
 
 void Timer::StopTimer() {

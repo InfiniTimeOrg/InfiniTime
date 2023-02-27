@@ -9,13 +9,14 @@ namespace Pinetime {
   namespace Controllers {
     class Timer {
     public:
+      using ticks = std::chrono::duration<TickType_t, std::ratio<1, configTICK_RATE_HZ>>;
       Timer(void* timerData, TimerCallbackFunction_t timerCallbackFunction);
 
-      void StartTimer(std::chrono::milliseconds duration);
+      void StartTimer(ticks duration);
 
       void StopTimer();
 
-      std::chrono::milliseconds GetTimeRemaining();
+      ticks GetTimeRemaining();
 
       bool IsRunning();
 
