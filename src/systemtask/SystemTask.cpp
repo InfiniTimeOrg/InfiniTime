@@ -294,6 +294,12 @@ void SystemTask::Work() {
           }
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
           break;
+        case Messages::StartTimerAlert:
+          if (state == SystemTaskState::Sleeping) {
+            GoToRunning();
+          }
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerAlerting);
+          break;
         case Messages::BleConnected:
           ReloadIdleTimer();
           isBleDiscoveryTimerRunning = true;
@@ -374,9 +380,11 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewHour:
           using Pinetime::Controllers::AlarmController;
+          using Pinetime::Controllers::TimerController;
           if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
               settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours &&
-              alarmController.State() != AlarmController::AlarmState::Alerting) {
+              alarmController.State() != AlarmController::AlarmState::Alerting &&
+              timerController.State() != TimerController::TimerState::Alerting) {
             if (state == SystemTaskState::Sleeping) {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
@@ -385,9 +393,11 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewHalfHour:
           using Pinetime::Controllers::AlarmController;
+          using Pinetime::Controllers::TimerController;
           if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
               settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours &&
-              alarmController.State() != AlarmController::AlarmState::Alerting) {
+              alarmController.State() != AlarmController::AlarmState::Alerting &&
+              timerController.State() != TimerController::TimerState::Alerting) {
             if (state == SystemTaskState::Sleeping) {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);

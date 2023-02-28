@@ -5,19 +5,28 @@
 #include <lvgl/lvgl.h>
 
 using namespace Pinetime::Applications::Screens;
+using Pinetime::Controllers::TimerController;
 
 static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<Timer*>(obj->user_data);
   if (event == LV_EVENT_PRESSED) {
-    screen->ButtonPressed();
+    screen->ButtonPressed(obj);
   } else if (event == LV_EVENT_RELEASED || event == LV_EVENT_PRESS_LOST) {
-    screen->MaskReset();
+    screen->ButtonReleased(obj);
   } else if (event == LV_EVENT_SHORT_CLICKED) {
-    screen->ToggleRunning();
+    screen->ButtonShortClicked(obj);
   }
 }
 
-Timer::Timer(Controllers::TimerController& timerController) : timerController {timerController} {
+static void SnoozeAlertTaskCallback(lv_task_t* task) {
+  auto* screen = static_cast<Timer*>(task->user_data);
+  screen->SnoozeAlert();
+}
+
+Timer::Timer(Controllers::TimerController& timerController,
+             System::SystemTask& systemTask,
+             Controllers::MotorController& motorController)
+  : timerController {timerController}, systemTask {systemTask}, motorController {motorController} {
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -25,10 +34,11 @@ Timer::Timer(Controllers::TimerController& timerController) : timerController {t
   lv_label_set_text_static(colonLabel, ":");
   lv_obj_align(colonLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
 
+  hourCounter.Create();
   minuteCounter.Create();
-  secondCounter.Create();
-  lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
-  lv_obj_align(secondCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  
+  lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+  lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
   highlightObjectMask = lv_objmask_create(lv_scr_act(), nullptr);
   lv_obj_set_size(highlightObjectMask, 240, 50);
@@ -59,26 +69,98 @@ Timer::Timer(Controllers::TimerController& timerController) : timerController {t
   lv_obj_set_event_cb(btnPlayPause, btnEventHandler);
   lv_obj_set_size(btnPlayPause, LV_HOR_RES, 50);
 
-  txtPlayPause = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(txtPlayPause, btnPlayPause, LV_ALIGN_CENTER, 0, 0);
+  txtPlayPause = lv_label_create(btnPlayPause, nullptr);
 
-  if (timerController.IsRunning()) {
-    SetTimerRunning();
-  } else {
-    SetTimerStopped();
+  btnStop = lv_btn_create(lv_scr_act(), nullptr);
+  btnStop->user_data = this;
+  lv_obj_set_event_cb(btnStop, btnEventHandler);
+  lv_obj_set_size(btnStop, 115, 50);
+  lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_set_style_local_bg_color(btnStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  lv_obj_set_hidden(btnStop, true);
+  
+  txtStop = lv_label_create(btnStop, nullptr);
+  lv_label_set_text_static(txtStop, Symbols::stop);
+
+  btnSnooze = lv_btn_create(lv_scr_act(), nullptr);
+  btnSnooze->user_data = this;
+  lv_obj_set_event_cb(btnSnooze, btnEventHandler);
+  lv_obj_set_size(btnSnooze, 115, 50);
+  lv_obj_align(btnSnooze, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lv_obj_set_style_local_bg_color(btnSnooze, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLUE);
+  lv_obj_set_hidden(btnSnooze, true);
+  
+  txtSnooze = lv_label_create(btnSnooze, nullptr);
+
+  switch (timerController.State()){
+    case TimerController::TimerState::Dormant:
+      Reset();
+      break;
+    case TimerController::TimerState::Running:
+      ShowTimerRunning();
+      break;
+    case TimerController::TimerState::Alerting:
+      SetAlerting();
+      break;
+    case TimerController::TimerState::Snoozed:
+      ShowSnoozed();
+      break;
   }
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Timer::~Timer() {
+  if (timerController.State() == TimerController::TimerState::Alerting) {
+    StopAlerting();
+  }
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
 }
 
-void Timer::ButtonPressed() {
-  pressTime = xTaskGetTickCount();
-  buttonPressing = true;
+void Timer::ButtonPressed(lv_obj_t* obj) {
+  if(obj == btnPlayPause) {
+    pressTime = xTaskGetTickCount();
+    buttonPressing = true;
+    return;
+  }
+}
+
+void Timer::ButtonReleased(lv_obj_t* obj) {
+  if(obj == btnPlayPause){
+    MaskReset();
+    return;
+  }
+}
+
+void Timer::ButtonShortClicked(lv_obj_t* obj) {
+  if(obj == btnPlayPause){
+    ToggleRunning();
+    return;
+  }
+  if(obj == btnSnooze){
+    if(timerController.State() == TimerController::TimerState::Snoozed) return;
+    SnoozeAlert();
+    return;
+  }
+  if(obj == btnStop){
+    StopAlerting();
+    return;
+  }
+}
+
+// Pysical side button
+bool Timer::OnButtonPushed() {
+  if (timerController.State() == TimerController::TimerState::Alerting) {
+    SnoozeAlert();
+    return true;
+  }
+  return false;
+}
+
+bool Timer::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  // Don't allow closing the screen by swiping while the timer is alerting
+  return event == TouchEvents::SwipeDown && timerController.State() == TimerController::TimerState::Alerting;
 }
 
 void Timer::MaskReset() {
@@ -104,9 +186,10 @@ void Timer::UpdateMask() {
 
 void Timer::Refresh() {
   if (timerController.IsRunning()) {
-    auto secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timerController.GetTimeRemaining());
-    minuteCounter.SetValue(secondsRemaining.count() / 60);
-    secondCounter.SetValue(secondsRemaining.count() % 60);
+    auto minutesRemaining = std::chrono::duration_cast<std::chrono::minutes>(timerController.GetTimeRemaining());
+    auto hoursRemaining = std::chrono::duration_cast<std::chrono::hours>(minutesRemaining);
+    hourCounter.SetValue(hoursRemaining.count());
+    minuteCounter.SetValue(minutesRemaining.count() % 60);
   } else if (buttonPressing && xTaskGetTickCount() > pressTime + pdMS_TO_TICKS(150)) {
     lv_label_set_text_static(txtPlayPause, "Reset");
     maskPosition += 15;
@@ -119,35 +202,86 @@ void Timer::Refresh() {
   }
 }
 
-void Timer::SetTimerRunning() {
+void Timer::ShowTimerRunning() {
+  hourCounter.HideControls();
   minuteCounter.HideControls();
-  secondCounter.HideControls();
   lv_label_set_text_static(txtPlayPause, "Pause");
 }
 
-void Timer::SetTimerStopped() {
+void Timer::ShowTimerStopped() {
+  hourCounter.ShowControls();
   minuteCounter.ShowControls();
-  secondCounter.ShowControls();
   lv_label_set_text_static(txtPlayPause, "Start");
 }
 
 void Timer::ToggleRunning() {
   if (timerController.IsRunning()) {
-    auto secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timerController.GetTimeRemaining());
-    minuteCounter.SetValue(secondsRemaining.count() / 60);
-    secondCounter.SetValue(secondsRemaining.count() % 60);
+    auto minutesRemaining = std::chrono::duration_cast<std::chrono::minutes>(timerController.GetTimeRemaining());
+    auto hoursRemaining = std::chrono::duration_cast<std::chrono::hours>(minutesRemaining);
+    hourCounter.SetValue(hoursRemaining.count());
+    minuteCounter.SetValue(minutesRemaining.count() % 60);
     timerController.StopTimer();
-    SetTimerStopped();
-  } else if (secondCounter.GetValue() + minuteCounter.GetValue() > 0) {
-    auto timerDuration = std::chrono::minutes(minuteCounter.GetValue()) + std::chrono::seconds(secondCounter.GetValue());
-    timerController.StartTimer(timerDuration);
+    ShowTimerStopped();
+  } else if (hourCounter.GetValue() + minuteCounter.GetValue() > 0) {
+    timerController.StartTimer(std::chrono::hours(hourCounter.GetValue()), std::chrono::minutes(minuteCounter.GetValue()));
     Refresh();
-    SetTimerRunning();
+    ShowTimerRunning();
   }
 }
 
 void Timer::Reset() {
-  minuteCounter.SetValue(0);
-  secondCounter.SetValue(0);
-  SetTimerStopped();
+  hourCounter.SetValue(timerController.Hours().count());
+  minuteCounter.SetValue(timerController.Minutes().count());
+  ShowTimerStopped();
+}
+
+void Timer::ShowAlertingButtons() {
+  ShowTimerRunning();
+  lv_obj_set_hidden(btnPlayPause, true);
+  lv_obj_set_hidden(btnStop, false);
+  lv_obj_set_hidden(btnSnooze, false);
+}
+
+void Timer::SetAlerting() {
+  ShowAlertingButtons();
+  lv_label_set_text_static(txtSnooze, "zZ");
+
+  taskStopAlert = lv_task_create(SnoozeAlertTaskCallback, pdMS_TO_TICKS(alertTime.count()), LV_TASK_PRIO_MID, this);
+  motorController.StartRinging();
+  systemTask.PushMessage(System::Messages::DisableSleeping);
+}
+
+void Timer::ShowSnoozed(){
+  ShowAlertingButtons();
+
+  lv_label_set_text_static(txtSnooze, "Snoozed");
+  lv_obj_set_state(btnSnooze, LV_STATE_DISABLED);
+  lv_obj_set_state(txtSnooze, LV_STATE_DISABLED);
+}
+
+void Timer::SnoozeAlert() {
+  ShowSnoozed();
+
+  timerController.SnoozeAlert();
+  motorController.StopRinging();
+
+  if (taskStopAlert != nullptr) {
+    lv_task_del(taskStopAlert);
+    taskStopAlert = nullptr;
+  }
+  systemTask.PushMessage(System::Messages::EnableSleeping);
+}
+
+void Timer::StopAlerting() {
+  timerController.StopAlerting();
+  motorController.StopRinging();
+  if (taskStopAlert != nullptr) {
+    lv_task_del(taskStopAlert);
+    taskStopAlert = nullptr;
+  }
+  systemTask.PushMessage(System::Messages::EnableSleeping);
+  lv_obj_set_hidden(btnStop, true);
+  lv_obj_set_hidden(btnSnooze, true);
+  lv_obj_set_hidden(btnPlayPause, false);
+  Reset();
 }
