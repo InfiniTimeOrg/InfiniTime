@@ -33,6 +33,7 @@ namespace Pinetime::Applications::Screens {
     void ShowTimerRunning();
     void ShowTimerStopped();
     void ShowAlertingButtons();
+    void ShowAlerting();
     void ShowSnoozed();
     void UpdateMask();
 

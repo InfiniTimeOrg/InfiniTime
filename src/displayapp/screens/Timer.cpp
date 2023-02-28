@@ -139,7 +139,6 @@ void Timer::ButtonShortClicked(lv_obj_t* obj) {
     return;
   }
   if(obj == btnSnooze){
-    if(timerController.State() == TimerController::TimerState::Snoozed) return;
     SnoozeAlert();
     return;
   }
@@ -242,9 +241,15 @@ void Timer::ShowAlertingButtons() {
   lv_obj_set_hidden(btnSnooze, false);
 }
 
-void Timer::SetAlerting() {
+void Timer::ShowAlerting() {
   ShowAlertingButtons();
   lv_label_set_text_static(txtSnooze, "zZ");
+  lv_obj_set_state(btnSnooze, LV_STATE_DEFAULT);
+  lv_obj_set_state(txtSnooze, LV_STATE_DEFAULT);
+}
+
+void Timer::SetAlerting() {
+  ShowAlerting();
 
   taskStopAlert = lv_task_create(SnoozeAlertTaskCallback, pdMS_TO_TICKS(alertTime.count()), LV_TASK_PRIO_MID, this);
   motorController.StartRinging();
