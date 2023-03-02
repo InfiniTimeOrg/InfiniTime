@@ -124,7 +124,7 @@ void Bma421::Write(uint8_t registerAddress, const uint8_t* data, size_t size) {
 }
 
 Bma421::Values Bma421::Process() {
-  if (not isOk) {
+  if (!isOk) {
     return {};
   }
 

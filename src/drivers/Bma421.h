@@ -42,7 +42,7 @@ namespace Pinetime {
         return tmp;
       }
 
-      void clearWristTiltInterrupt() {
+      void ClearWristTiltInterrupt() {
         wristTiltInterrupt = false;
       }
 
