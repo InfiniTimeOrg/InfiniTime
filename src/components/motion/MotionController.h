@@ -82,9 +82,7 @@ namespace Pinetime {
       // Using std::function will allow for changing the algorithm during runtime. This is better than having many if statements select the
       // correct algorithm.
       // Currently, this will be overridden if the BMA chip is a BMA425
-      std::function<bool()> callbackShouldRaiseWake = [this]() -> bool {
-        return Should_RaiseWake();
-      };
+      std::function<bool()> callbackShouldRaiseWake = std::bind(&Pinetime::Controllers::MotionController::Should_RaiseWake, this);
 
       bool Should_RaiseWake();
       bool BMA425ShouldRaiseWake() const;

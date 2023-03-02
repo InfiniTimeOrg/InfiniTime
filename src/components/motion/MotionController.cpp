@@ -24,15 +24,10 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
 bool MotionController::Should_RaiseWake() {
   bool isSleeping = true;
   if ((-x + 335) <= 670 && -z < 0) {
-    if (not isSleeping) {
+    if (!isSleeping) {
       if (-y <= 0) {
         return false;
       }
-      lastYForWakeUp = 0;
-      return false;
-    }
-
-    if (-y >= 0) {
       lastYForWakeUp = 0;
       return false;
     }
@@ -49,11 +44,10 @@ bool MotionController::Should_RaiseWake() {
   return false;
 }
 
-// Use the hardware interrupt for raise-to-wake
-// This is just a call back, and will hopefully not be used on anything other than a BMA425.
+// This is a callback function which uses the wrist-tilt interrupt in the BMA425 chip.
 // See MotionController::Init()
 bool MotionController::BMA425ShouldRaiseWake() const {
-  return bmaDriver->getAndClearWristTiltInterrupt();
+  return bmaDriver->GetAndClearWristTiltInterrupt() && (std::abs(this->y) > 300);
 }
 
 bool MotionController::Should_ShakeWake(uint16_t thresh) {
@@ -92,9 +86,7 @@ void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types, Pineti
     case Drivers::Bma421::DeviceTypes::BMA425:
       this->deviceType = DeviceTypes::BMA425;
       // Update callback to use an interrupt for raise-to-wake
-      callbackShouldRaiseWake = [this]() -> bool {
-        return BMA425ShouldRaiseWake();
-      };
+      callbackShouldRaiseWake = std::bind(&Pinetime::Controllers::MotionController::BMA425ShouldRaiseWake, this);
       break;
     default:
       this->deviceType = DeviceTypes::Unknown;

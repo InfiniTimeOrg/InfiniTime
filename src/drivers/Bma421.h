@@ -36,7 +36,7 @@ namespace Pinetime {
       bool IsOk() const;
       DeviceTypes DeviceType() const;
 
-      bool getAndClearWristTiltInterrupt() {
+      bool GetAndClearWristTiltInterrupt() {
         bool tmp = wristTiltInterrupt;
         wristTiltInterrupt = false;
         return tmp;
@@ -51,7 +51,9 @@ namespace Pinetime {
 
       TwiMaster& twiMaster;
       uint8_t deviceAddress = 0x18;
+
       struct bma4_dev bma {};
+
       bool isOk = false;
       bool isResetOk = false;
       bool wristTiltInterrupt = false;
