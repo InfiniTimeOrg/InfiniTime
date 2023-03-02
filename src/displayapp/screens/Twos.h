@@ -9,20 +9,18 @@ namespace Pinetime {
       bool merged = false;
       unsigned int value = 0;
     };
+
     namespace Screens {
       class Twos : public Screen {
       public:
-        Twos(DisplayApp* app);
+        Twos();
         ~Twos() override;
 
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
-        lv_style_t style_cell1;
-        lv_style_t style_cell2;
-        lv_style_t style_cell3;
-        lv_style_t style_cell4;
-        lv_style_t style_cell5;
+        static constexpr int nColors = 5;
+        lv_style_t cellStyles[nColors];
 
         lv_obj_t* scoreText;
         lv_obj_t* gridDisplay;

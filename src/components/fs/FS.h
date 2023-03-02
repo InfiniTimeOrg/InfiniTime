@@ -11,7 +11,6 @@ namespace Pinetime {
       FS(Pinetime::Drivers::SpiNorFlash&);
 
       void Init();
-      void LVGLFileSystemInit();
 
       int FileOpen(lfs_file_t* file_p, const char* fileName, const int flags);
       int FileClose(lfs_file_t* file_p);
@@ -35,6 +34,7 @@ namespace Pinetime {
       static size_t getSize() {
         return size;
       }
+
       static size_t getBlockSize() {
         return blockSize;
       }

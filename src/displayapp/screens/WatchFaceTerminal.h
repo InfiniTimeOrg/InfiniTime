@@ -22,11 +22,10 @@ namespace Pinetime {
 
       class WatchFaceTerminal : public Screen {
       public:
-        WatchFaceTerminal(DisplayApp* app,
-                          Controllers::DateTime& dateTimeController,
-                          Controllers::Battery& batteryController,
-                          Controllers::Ble& bleController,
-                          Controllers::NotificationManager& notificatioManager,
+        WatchFaceTerminal(Controllers::DateTime& dateTimeController,
+                          const Controllers::Battery& batteryController,
+                          const Controllers::Ble& bleController,
+                          Controllers::NotificationManager& notificationManager,
                           Controllers::Settings& settingsController,
                           Controllers::HeartRateController& heartRateController,
                           Controllers::MotionController& motionController);
@@ -66,9 +65,9 @@ namespace Pinetime {
         lv_obj_t* connectState;
 
         Controllers::DateTime& dateTimeController;
-        Controllers::Battery& batteryController;
-        Controllers::Ble& bleController;
-        Controllers::NotificationManager& notificatioManager;
+        const Controllers::Battery& batteryController;
+        const Controllers::Ble& bleController;
+        Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;

@@ -1,15 +1,11 @@
 name: Bug Report
-description: File a bug report
+description: Something is broken
 labels: ["bug"]
 body:
-  - type: markdown
-    attributes:
-      value: |
-        **Thanks for taking the time to fill out this bug report!**
-        *Please, before opening a bug report, check if similar issues already exist. In that case, use those issues to provide your feedback instead.*
   - type: checkboxes
     attributes:
       label: Verification
+      description: Before submitting a bug report, check if similar issues already exist and use those issues to provide your feedback instead.
       options:
       - label: I searched for similar bug reports and found none was relevant.
         required: true
@@ -45,10 +41,10 @@ body:
     attributes:
       label: Version
       description: |
-        What [version of the firmware](https://github.com/JF002/InfiniTime/blob/develop/doc/gettingStarted/gettingStarted-1.0.md#how-to-check-the-version-of-infinitime-and-the-bootloader) are you running?
-        If you are running an older version, please consider [updating to the latest firmware](https://github.com/JF002/InfiniTime/blob/develop/doc/gettingStarted/gettingStarted-1.0.md#how-to-update-your-pinetime).
+        What [version of the firmware](https://github.com/InfiniTimeOrg/InfiniTime/blob/main/doc/gettingStarted/updating-software.md#checking-the-version-of-infinitime) are you running?
+        If you are running an older version, please consider [updating to the latest firmware](https://github.com/InfiniTimeOrg/InfiniTime/blob/main/doc/gettingStarted/updating-software.md#updating-with-companion-apps).
         If you are running directly from git, specify the branch or the commit hash directly.
-      placeholder: "Ex. v1.6.0 or develop or fc922b60"
+      placeholder: "Ex. v1.11.0 or main or fc922b60"
     validations:
       required: true
   - type: input

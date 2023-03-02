@@ -31,6 +31,7 @@ namespace Pinetime {
         void OnButtonEvent(lv_obj_t* object, lv_event_t event);
 
       private:
+        DisplayApp* app;
         Controllers::Settings& settingsController;
         Pinetime::Applications::Apps apps[MAXLISTITEMS];
 

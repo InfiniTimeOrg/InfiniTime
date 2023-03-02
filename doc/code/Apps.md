@@ -95,11 +95,11 @@ in the compilation by adding it to [CMakeLists.txt](/CMakeLists.txt).
 The next step to making it launchable is to give your app an id.
 To do this, add an entry in the enum class `Pinetime::Applications::Apps` ([displayapp/Apps.h](/src/displayapp/Apps.h)).
 Name this entry after your app. Add `#include "displayapp/screens/MyApp.h"` to the file [displayapp/DisplayApp.cpp](/src/displayapp/DisplayApp.cpp).
-Now, go to the function `DisplayApp::LoadApp` and add another case to the switch statement.
+Now, go to the function `DisplayApp::LoadScreen` and add another case to the switch statement.
 The case will be the id you gave your app earlier.
 If your app needs any additional arguments, this is the place to pass them.
 
-If you want to add your app in the app launcher, add your app in [displayapp/screens/ApplicationList.cpp](/src/displayapp/screens/ApplicationList.cpp) to one of the `CreateScreen` functions, or add another `CreateScreen` function if there are no empty spaces for your app. If your app is a setting, do the same procedure in [displayapp/screens/settings/Settings.cpp](/src/displayapp/screens/settings/Settings.cpp).
+If you want to add your app in the app launcher, add your app in [displayapp/screens/ApplicationList.h](/src/displayapp/screens/ApplicationList.h) to the array containing the applications and their corresponding symbol. If your app is a setting, do the same procedure in [displayapp/screens/settings/Settings.h](/src/displayapp/screens/settings/Settings.h).
 
 You should now be able to [build](../buildAndProgram.md) the firmware
 and flash it to your PineTime. Yay!

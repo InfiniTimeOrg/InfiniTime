@@ -10,6 +10,7 @@ namespace Pinetime {
   namespace Drivers {
     class St7789;
   }
+
   namespace Components {
     class Gfx : public Pinetime::Drivers::BufferProvider {
     public:
@@ -33,9 +34,11 @@ namespace Pinetime {
       static constexpr uint8_t height = 240;
 
       enum class Action { None, FillRectangle, DrawChar };
+
       struct State {
         State() : busy {false}, action {Action::None}, remainingIterations {0}, currentIteration {0} {
         }
+
         volatile bool busy;
         volatile Action action;
         volatile uint16_t remainingIterations;

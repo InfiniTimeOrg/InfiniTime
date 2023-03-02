@@ -36,6 +36,11 @@ bool MotionController::Should_RaiseWake() {
       lastYForWakeUp = 0;
       return false;
     }
+
+    if (-y >= 0) {
+      lastYForWakeUp = 0;
+      return false;
+    }
     if (-y + 230 < lastYForWakeUp) {
       lastYForWakeUp = -y;
       return true;
@@ -69,6 +74,7 @@ bool MotionController::Should_ShakeWake(uint16_t thresh) {
   lastZForShake = -z;
   return wake;
 }
+
 int32_t MotionController::currentShakeSpeed() const {
   return accumulatedspeed;
 }
@@ -76,6 +82,7 @@ int32_t MotionController::currentShakeSpeed() const {
 void MotionController::IsSensorOk(bool isOk) {
   isSensorOk = isOk;
 }
+
 void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types, Pinetime::Drivers::Bma421* bmaDriver) {
   this->bmaDriver = bmaDriver;
   switch (types) {
@@ -94,6 +101,7 @@ void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types, Pineti
       break;
   }
 }
+
 void MotionController::SetService(Pinetime::Controllers::MotionService* service) {
   this->service = service;
 }

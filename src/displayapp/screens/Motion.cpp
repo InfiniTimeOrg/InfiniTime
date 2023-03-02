@@ -5,11 +5,10 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Motion::Motion(Pinetime::Applications::DisplayApp* app, Controllers::MotionController& motionController)
-  : Screen(app), motionController {motionController} {
-  chart = lv_chart_create(lv_scr_act(), NULL);
+Motion::Motion(Controllers::MotionController& motionController) : motionController {motionController} {
+  chart = lv_chart_create(lv_scr_act(), nullptr);
   lv_obj_set_size(chart, 240, 240);
-  lv_obj_align(chart, NULL, LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_obj_align(chart, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
   lv_chart_set_type(chart, LV_CHART_TYPE_LINE); /*Show lines and points too*/
   // lv_chart_set_series_opa(chart, LV_OPA_70);                            /*Opacity of the data series*/
   // lv_chart_set_series_width(chart, 4);                                  /*Line width and point radious*/

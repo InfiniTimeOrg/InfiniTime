@@ -21,8 +21,8 @@ namespace {
   }
 }
 
-Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorController, System::SystemTask& systemTask)
-  : Screen(app), motorController {motorController}, systemTask {systemTask} {
+Metronome::Metronome(Controllers::MotorController& motorController, System::SystemTask& systemTask)
+  : motorController {motorController}, systemTask {systemTask} {
 
   bpmArc = lv_arc_create(lv_scr_act(), nullptr);
   bpmArc->user_data = this;
@@ -64,7 +64,8 @@ Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorControl
   lv_obj_set_event_cb(playPause, eventHandler);
   lv_obj_set_size(playPause, 115, 50);
   lv_obj_align(playPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  lv_obj_set_style_local_value_str(playPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Symbols::play);
+  lblPlayPause = lv_label_create(playPause, nullptr);
+  lv_label_set_text_static(lblPlayPause, Symbols::play);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
@@ -126,12 +127,12 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
       if (obj == playPause) {
         metronomeStarted = !metronomeStarted;
         if (metronomeStarted) {
-          lv_obj_set_style_local_value_str(playPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Symbols::pause);
+          lv_label_set_text_static(lblPlayPause, Symbols::pause);
           systemTask.PushMessage(System::Messages::DisableSleeping);
           startTime = xTaskGetTickCount();
           counter = 1;
         } else {
-          lv_obj_set_style_local_value_str(playPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Symbols::play);
+          lv_label_set_text_static(lblPlayPause, Symbols::play);
           systemTask.PushMessage(System::Messages::EnableSleeping);
         }
       }
@@ -145,7 +146,6 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
 bool Metronome::OnTouchEvent(TouchEvents event) {
   if (event == TouchEvents::SwipeDown && allowExit) {
     running = false;
-    return true;
   }
-  return false;
+  return true;
 }

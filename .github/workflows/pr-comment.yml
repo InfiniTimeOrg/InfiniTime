@@ -1,0 +1,50 @@
+# THIS WORKFLOW HAS WRITE PERMISSIONS TO THE REPO.
+# MAKE SURE IT NEVER RUNS ANY CODE FROM THE FORK
+
+name: PR comment
+
+on:
+  pull_request_target:
+    branches: [ main ]
+    paths-ignore:
+      - 'doc/**'
+      - '**.md'
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Wait for builds to finish
+      id: wait-for-build
+      uses: fountainhead/action-wait-for-check@297be350cf8393728ea4d4b39435c7d7ae167c93
+      with:
+        checkName: 'Compare build size'
+        token: ${{ secrets.GITHUB_TOKEN }}
+        ref: ${{ github.event.pull_request.head.sha }}
+
+    - if: steps.wait-for-build.outputs.conclusion != 'success'
+      run: exit 1
+
+    - name: Download artifact
+      uses: dawidd6/action-download-artifact@bd10f381a96414ce2b13a11bfa89902ba7cea07f
+      with:
+        workflow: main.yml
+        workflow_conclusion:
+        pr: ${{ github.event.pull_request.number }}
+        name: comment
+
+    - name: Find Comment
+      id: find-comment
+      uses: peter-evans/find-comment@81e2da3af01c92f83cb927cf3ace0e085617c556
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'github-actions[bot]'
+        body-includes: Build size and comparison to
+
+    - name: Create or update comment
+      uses: peter-evans/create-or-update-comment@5adcb0bb0f9fb3f95ef05400558bdb3f329ee808
+      with:
+        comment-id: ${{ steps.find-comment.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body-file: comment
+        edit-mode: replace

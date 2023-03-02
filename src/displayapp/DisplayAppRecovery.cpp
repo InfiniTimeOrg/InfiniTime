@@ -2,6 +2,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <libraries/log/nrf_log.h>
+#include "components/fs/FS.h"
 #include "components/rle/RleDecoder.h"
 #include "touchhandler/TouchHandler.h"
 #include "displayapp/icons/infinitime/infinitime-nb.c"
@@ -10,21 +11,21 @@
 using namespace Pinetime::Applications;
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
-                       Components::LittleVgl& lvgl,
-                       Drivers::Cst816S& touchPanel,
-                       Controllers::Battery& batteryController,
-                       Controllers::Ble& bleController,
-                       Controllers::DateTime& dateTimeController,
-                       Drivers::WatchdogView& watchdog,
-                       Pinetime::Controllers::NotificationManager& notificationManager,
-                       Pinetime::Controllers::HeartRateController& heartRateController,
-                       Controllers::Settings& settingsController,
-                       Pinetime::Controllers::MotorController& motorController,
-                       Pinetime::Controllers::MotionController& motionController,
-                       Pinetime::Controllers::TimerController& timerController,
-                       Pinetime::Controllers::AlarmController& alarmController,
-                       Pinetime::Controllers::BrightnessController& brightnessController,
-                       Pinetime::Controllers::TouchHandler& touchHandler)
+                       const Drivers::Cst816S& /*touchPanel*/,
+                       const Controllers::Battery& /*batteryController*/,
+                       const Controllers::Ble& bleController,
+                       Controllers::DateTime& /*dateTimeController*/,
+                       const Drivers::Watchdog& /*watchdog*/,
+                       Pinetime::Controllers::NotificationManager& /*notificationManager*/,
+                       Pinetime::Controllers::HeartRateController& /*heartRateController*/,
+                       Controllers::Settings& /*settingsController*/,
+                       Pinetime::Controllers::MotorController& /*motorController*/,
+                       Pinetime::Controllers::MotionController& /*motionController*/,
+                       Pinetime::Controllers::TimerController& /*timerController*/,
+                       Pinetime::Controllers::AlarmController& /*alarmController*/,
+                       Pinetime::Controllers::BrightnessController& /*brightnessController*/,
+                       Pinetime::Controllers::TouchHandler& /*touchHandler*/,
+                       Pinetime::Controllers::FS& /*filesystem*/)
   : lcd {lcd}, bleController {bleController} {
 }
 
@@ -119,5 +120,5 @@ void DisplayApp::PushMessage(Display::Messages msg) {
   }
 }
 
-void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
+void DisplayApp::Register(Pinetime::System::SystemTask* /*systemTask*/) {
 }

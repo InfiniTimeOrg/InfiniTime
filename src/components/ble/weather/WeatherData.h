@@ -239,7 +239,7 @@ namespace Pinetime {
        * In order to represent bursts of wind instead of constant wind,
        * you have minimum and maximum speeds.
        *
-       * As direction can fluctuate wildly and some watchfaces might wish to display it nicely,
+       * As direction can fluctuate wildly and some watch faces might wish to display it nicely,
        * we're following the aerospace industry weather report option of specifying a range.
        */
       class Wind : public TimelineHeader {
@@ -283,7 +283,7 @@ namespace Pinetime {
        * as it usually is, but it could change during a trip for ex.
        * so we allow changing it dynamically.
        *
-       * Location info can be for some kind of map watchface
+       * Location info can be for some kind of map watch face
        * or daylight calculations, should those be required.
        *
        */
@@ -331,7 +331,7 @@ namespace Pinetime {
        *
        * These events are a bit more complex because the topic is not simple,
        * the intention is to heavy-lift the annoying preprocessing from the watch
-       * this allows watchface or watchapp makers to generate accurate alerts and graphics
+       * this allows watch face or watchapp makers to generate accurate alerts and graphics
        *
        * If this needs further enforced standardization, pull requests are welcome
        */
