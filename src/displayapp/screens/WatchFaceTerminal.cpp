@@ -104,45 +104,33 @@ void WatchFaceTerminal::Refresh() {
     }
   }
 
-  currentDateTime = dateTimeController.CurrentDateTime();
-
+  currentDateTime = std::chrono::time_point_cast<std::chrono::seconds>(dateTimeController.CurrentDateTime());
   if (currentDateTime.IsUpdated()) {
-    auto hour = dateTimeController.Hours();
-    auto minute = dateTimeController.Minutes();
-    auto second = dateTimeController.Seconds();
-    auto year = dateTimeController.Year();
-    auto month = dateTimeController.Month();
-    auto dayOfWeek = dateTimeController.DayOfWeek();
-    auto day = dateTimeController.Day();
+    uint8_t hour = dateTimeController.Hours();
+    uint8_t minute = dateTimeController.Minutes();
+    uint8_t second = dateTimeController.Seconds();
 
-    if (displayedHour != hour || displayedMinute != minute || displayedSecond != second) {
-      displayedHour = hour;
-      displayedMinute = minute;
-      displayedSecond = second;
-
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-        char ampmChar[3] = "AM";
-        if (hour == 0) {
-          hour = 12;
-        } else if (hour == 12) {
-          ampmChar[0] = 'P';
-        } else if (hour > 12) {
-          hour = hour - 12;
-          ampmChar[0] = 'P';
-        }
-        lv_label_set_text_fmt(label_time, "[TIME]#11cc55 %02d:%02d:%02d %s#", hour, minute, second, ampmChar);
-      } else {
-        lv_label_set_text_fmt(label_time, "[TIME]#11cc55 %02d:%02d:%02d", hour, minute, second);
+    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+      char ampmChar[3] = "AM";
+      if (hour == 0) {
+        hour = 12;
+      } else if (hour == 12) {
+        ampmChar[0] = 'P';
+      } else if (hour > 12) {
+        hour = hour - 12;
+        ampmChar[0] = 'P';
       }
+      lv_label_set_text_fmt(label_time, "[TIME]#11cc55 %02d:%02d:%02d %s#", hour, minute, second, ampmChar);
+    } else {
+      lv_label_set_text_fmt(label_time, "[TIME]#11cc55 %02d:%02d:%02d", hour, minute, second);
     }
 
-    if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
+    currentDate = std::chrono::time_point_cast<days>(currentDateTime.Get());
+    if (currentDate.IsUpdated()) {
+      uint16_t year = dateTimeController.Year();
+      Controllers::DateTime::Months month = dateTimeController.Month();
+      uint8_t day = dateTimeController.Day();
       lv_label_set_text_fmt(label_date, "[DATE]#007fff %04d-%02d-%02d#", short(year), char(month), char(day));
-
-      currentYear = year;
-      currentMonth = month;
-      currentDayOfWeek = dayOfWeek;
-      currentDay = day;
     }
   }
 
