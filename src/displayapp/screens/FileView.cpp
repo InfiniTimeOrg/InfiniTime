@@ -71,7 +71,6 @@ TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const ch
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(label, LV_LABEL_LONG_BREAK);
   lv_obj_set_width(label, LV_HOR_RES);
-  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 
   lfs_info info = {0};
   if (fs.Stat(path + 2, &info) != LFS_ERR_OK) {
