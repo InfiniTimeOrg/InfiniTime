@@ -446,16 +446,13 @@ void WatchFacePineTimeStyle::Refresh() {
     AlignIcons();
   }
 
-  currentDateTime = dateTimeController.CurrentDateTime();
+  currentDateTime = std::chrono::time_point_cast<std::chrono::seconds>(dateTimeController.CurrentDateTime());
   if (currentDateTime.IsUpdated()) {
-    auto hour = dateTimeController.Hours();
-    auto minute = dateTimeController.Minutes();
-    auto second = dateTimeController.Seconds();
-    auto year = dateTimeController.Year();
-    auto month = dateTimeController.Month();
-    auto dayOfWeek = dateTimeController.DayOfWeek();
-    auto day = dateTimeController.Day();
+    uint8_t second = dateTimeController.Seconds();
+    lv_label_set_text_fmt(timeDD3, ":%02d", second);
 
+    uint8_t hour = dateTimeController.Hours();
+    uint8_t minute = dateTimeController.Minutes();
     if (displayedHour != hour || displayedMinute != minute) {
       displayedHour = hour;
       displayedMinute = minute;
@@ -480,21 +477,13 @@ void WatchFacePineTimeStyle::Refresh() {
       }
     }
 
-    if (displayedSecond != second) {
-      displayedSecond = second;
-      lv_label_set_text_fmt(timeDD3, ":%02d", second);
-    }
-
-    if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
+    currentDate = std::chrono::time_point_cast<days>(currentDateTime.Get());
+    if (currentDate.IsUpdated()) {
       lv_label_set_text_static(dateDayOfWeek, dateTimeController.DayOfWeekShortToString());
+      uint8_t day = dateTimeController.Day();
       lv_label_set_text_fmt(dateDay, "%d", day);
       lv_obj_realign(dateDay);
       lv_label_set_text_static(dateMonth, dateTimeController.MonthShortToString());
-
-      currentYear = year;
-      currentMonth = month;
-      currentDayOfWeek = dayOfWeek;
-      currentDay = day;
     }
   }
 
