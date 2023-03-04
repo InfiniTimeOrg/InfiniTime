@@ -16,8 +16,6 @@ namespace Pinetime {
       bool Write(const uint8_t* data, size_t size);
       bool Read(uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize);
       bool WriteCmdAndBuffer(const uint8_t* cmd, size_t cmdSize, const uint8_t* data, size_t dataSize);
-      void Sleep();
-      void Wakeup();
 
     private:
       SpiMaster& spiMaster;
