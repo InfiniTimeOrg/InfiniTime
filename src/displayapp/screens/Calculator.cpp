@@ -347,7 +347,7 @@ void Calculator::Eval() {
 
       result -= value;
       break;
-    case '*': 
+    case '*':
       // check for overflow
       // while dividing we eliminate the fixed point offset
       // therefore we have to multiply it again for the comparison with value
