@@ -68,6 +68,7 @@ namespace Pinetime {
         }
         settings.watchFace = face;
       };
+
       Pinetime::Applications::WatchFace GetWatchFace() const {
         return settings.watchFace;
       };
