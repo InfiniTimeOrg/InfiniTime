@@ -347,12 +347,12 @@ void Calculator::Eval() {
 
       result -= value;
       break;
-    case '*':
+    case '*': 
       // check for overflow
       // while dividing we eliminate the fixed point offset
       // therefore we have to multiply it again for the comparison with value
-      if (((result != 0) && (value > (FIXED_POINT_OFFSET * (MAX_VALUE / result)))) ||
-          ((result != 0) && (value < (FIXED_POINT_OFFSET * (MIN_VALUE / result))))) {
+      // we also assume here that MAX_VALUE == -MIN_VALUE
+      if ((result != 0) && (std::abs(value) > (FIXED_POINT_OFFSET * (MAX_VALUE / std::abs(result))))) {
         error = Error::TooLarge;
         break;
       }

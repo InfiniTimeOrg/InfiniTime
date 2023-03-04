@@ -47,6 +47,7 @@ namespace Pinetime {
         // but two are needed for '.' and '-'
         static constexpr uint8_t MAX_DIGITS = 15;
         static constexpr int64_t MAX_VALUE = powi(10, MAX_DIGITS) - 1;
+        // this is assumed in the multiplication overflow!
         static constexpr int64_t MIN_VALUE = -MAX_VALUE;
 
         int64_t value = 0;
