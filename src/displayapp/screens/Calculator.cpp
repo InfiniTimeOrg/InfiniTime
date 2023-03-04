@@ -19,7 +19,7 @@ Calculator::~Calculator() {
 static const char* buttonMap[] = {
   "7", "8", "9", Symbols::backspace, "\n", "4", "5", "6", "+ -", "\n", "1", "2", "3", "* /", "\n", "0", ".", "(-)", "=", ""};
 
-Calculator::Calculator(DisplayApp* app) : Screen(app) {
+Calculator::Calculator() {
   resultLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(resultLabel, LV_LABEL_LONG_CROP);
   lv_label_set_align(resultLabel, LV_LABEL_ALIGN_RIGHT);

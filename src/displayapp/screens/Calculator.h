@@ -20,7 +20,7 @@ namespace Pinetime {
       public:
         ~Calculator() override;
 
-        Calculator(DisplayApp* app);
+        Calculator();
 
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
 
