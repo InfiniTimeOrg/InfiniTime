@@ -105,6 +105,11 @@ void Calculator::HandleInput() {
     // unary minus
     case '(':
       value = -value;
+
+      NRF_LOG_INFO(". offset: %" PRId64, offset);
+      NRF_LOG_INFO(". value: %" PRId64, value);
+      NRF_LOG_INFO(". result: %" PRId64, result);
+
       break;
 
     case '.':
@@ -207,6 +212,11 @@ void Calculator::HandleInput() {
       if (operation == ' ') {
         ResetInput();
       }
+
+      NRF_LOG_INFO(". offset: %" PRId64, offset);
+      NRF_LOG_INFO(". value: %" PRId64, value);
+      NRF_LOG_INFO(". result: %" PRId64, result);
+
       break;
   }
 
@@ -257,6 +267,7 @@ void Calculator::ResetInput() {
 void Calculator::UpdateResultLabel() const {
   int64_t integer = result / FIXED_POINT_OFFSET;
   int64_t remainder = result % FIXED_POINT_OFFSET;
+  bool negative = (remainder < 0);
 
   if (remainder == 0) {
     lv_label_set_text_fmt(resultLabel, "%" PRId64, integer);
@@ -275,7 +286,11 @@ void Calculator::UpdateResultLabel() const {
     min_width--;
   }
 
-  lv_label_set_text_fmt(resultLabel, "%" PRId64 ".%0*" PRId64, integer, min_width, remainder);
+  if ((integer == 0) && negative) {
+    lv_label_set_text_fmt(resultLabel, "-0.%0*" PRId64, min_width, remainder);
+  } else {
+    lv_label_set_text_fmt(resultLabel, "%" PRId64 ".%0*" PRId64, integer, min_width, remainder);
+  }
 }
 
 void Calculator::UpdateValueLabel() {
@@ -290,6 +305,7 @@ void Calculator::UpdateValueLabel() {
     default: {
       int64_t integer = value / FIXED_POINT_OFFSET;
       int64_t remainder = value % FIXED_POINT_OFFSET;
+      bool negative = (remainder < 0);
 
       int64_t printRemainder = remainder < 0 ? -remainder : remainder;
 
@@ -311,7 +327,9 @@ void Calculator::UpdateValueLabel() {
         printRemainder /= 10;
       }
 
-      if (offset == FIXED_POINT_OFFSET) {
+      if ((integer == 0) && negative) {
+        lv_label_set_text_fmt(valueLabel, "-0.%0*" PRId64, min_width, printRemainder);
+      } else if (offset == FIXED_POINT_OFFSET) {
         lv_label_set_text_fmt(valueLabel, "%" PRId64, integer);
       } else if ((offset == (FIXED_POINT_OFFSET / 10)) && (remainder == 0)) {
         lv_label_set_text_fmt(valueLabel, "%" PRId64 ".", integer);
