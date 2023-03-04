@@ -26,11 +26,6 @@ bool Spi::WriteCmdAndBuffer(const uint8_t* cmd, size_t cmdSize, const uint8_t* d
   return spiMaster.WriteCmdAndBuffer(pinCsn, cmd, cmdSize, data, dataSize);
 }
 
-bool Spi::Init() {
-  nrf_gpio_pin_set(pinCsn); /* disable Set slave select (inactive high) */
-  return true;
-}
-
 void Spi::Wakeup() {
   nrf_gpio_cfg_output(pinCsn);
   nrf_gpio_pin_set(pinCsn);
