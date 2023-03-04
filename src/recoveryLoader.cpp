@@ -42,11 +42,10 @@ Pinetime::Drivers::SpiMaster spi {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,
                                    Pinetime::PinMap::SpiSck,
                                    Pinetime::PinMap::SpiMosi,
                                    Pinetime::PinMap::SpiMiso}};
-Pinetime::Drivers::Spi flashSpi {spi, Pinetime::PinMap::SpiFlashCsn};
-Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
 
-Pinetime::Drivers::Spi lcdSpi {spi, Pinetime::PinMap::SpiLcdCsn};
-Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
+Pinetime::Drivers::SpiNorFlash spiNorFlash {Pinetime::Drivers::Spi {spi, Pinetime::PinMap::SpiFlashCsn}};
+
+Pinetime::Drivers::St7789 lcd {Pinetime::Drivers::Spi {spi, Pinetime::PinMap::SpiLcdCsn}, Pinetime::PinMap::LcdDataCommand};
 
 Pinetime::Components::Gfx gfx {lcd};
 Pinetime::Controllers::BrightnessController brightnessController;

@@ -6,7 +6,7 @@
 
 using namespace Pinetime::Drivers;
 
-St7789::St7789(Spi& spi, uint8_t pinDataCommand) : spi {spi}, pinDataCommand {pinDataCommand} {
+St7789::St7789(Spi&& spi, uint8_t pinDataCommand) : spi {spi}, pinDataCommand {pinDataCommand} {
 }
 
 void St7789::Init() {
