@@ -1,6 +1,5 @@
 #include "components/motion/MotionController.h"
 
-#include <FreeRTOS.h>
 #include <task.h>
 
 using namespace Pinetime::Controllers;
@@ -13,6 +12,9 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   if (service != nullptr && (this->x != x || this->y != y || this->z != z)) {
     service->OnNewMotionValues(x, y, z);
   }
+
+  lastTime = time;
+  time = xTaskGetTickCount();
 
   this->x = x;
   lastY = this->y;
@@ -50,10 +52,8 @@ bool MotionController::Should_RaiseWake(bool isSleeping) {
 }
 
 bool MotionController::ShouldShakeWake(uint16_t thresh) {
-  auto diff = xTaskGetTickCount() - lastShakeTime;
-  lastShakeTime = xTaskGetTickCount();
   /* Currently Polling at 10hz, If this ever goes faster scalar and EMA might need adjusting */
-  int32_t speed = std::abs(z + (y / 2) + (x / 4) - lastY / 2 - lastZ) / diff * 100;
+  int32_t speed = std::abs(z + (y / 2) + (x / 4) - lastY / 2 - lastZ) / (time - lastTime) * 100;
   //(.2 * speed) + ((1 - .2) * accumulatedSpeed);
   // implemented without floats as .25Alpha
   accumulatedSpeed = (speed / 5) + ((accumulatedSpeed / 5) * 4);

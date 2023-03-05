@@ -2,6 +2,8 @@
 
 #include <cstdint>
 
+#include <FreeRTOS.h>
+
 #include "drivers/Bma421.h"
 #include "components/ble/MotionService.h"
 
@@ -65,19 +67,20 @@ namespace Pinetime {
       uint32_t nbSteps;
       uint32_t currentTripSteps = 0;
 
+      TickType_t lastTime = 0;
+      TickType_t time = 0;
+
       int16_t x;
       int16_t lastYForWakeUp = 0;
       int16_t lastY = 0;
       int16_t y;
       int16_t lastZ = 0;
       int16_t z;
+      int32_t accumulatedSpeed = 0;
 
       bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
       Pinetime::Controllers::MotionService* service = nullptr;
-
-      int32_t accumulatedSpeed = 0;
-      uint32_t lastShakeTime = 0;
     };
   }
 }
