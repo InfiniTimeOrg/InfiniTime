@@ -363,9 +363,6 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen =
         std::make_unique<Screens::ApplicationList>(this, settingsController, batteryController, bleController, dateTimeController);
       break;
-    case Apps::Motion:
-      // currentScreen = std::make_unique<Screens::Motion>(motionController);
-      // break;
     case Apps::None:
     case Apps::Clock:
       currentScreen = std::make_unique<Screens::Clock>(dateTimeController,
@@ -476,25 +473,42 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::StopWatch>(*systemTask);
       break;
     case Apps::Twos:
-      currentScreen = std::make_unique<Screens::Twos>();
+      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Twos))) {
+        currentScreen = std::make_unique<Screens::Twos>();
+      }
       break;
     case Apps::Paint:
-      currentScreen = std::make_unique<Screens::InfiniPaint>(lvgl, motorController);
+      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Paint))) {
+        currentScreen = std::make_unique<Screens::InfiniPaint>(lvgl, motorController);
+      }
       break;
     case Apps::Paddle:
-      currentScreen = std::make_unique<Screens::Paddle>(lvgl);
+      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Paddle))) {
+        currentScreen = std::make_unique<Screens::Paddle>(lvgl);
+      }
       break;
     case Apps::Music:
-      currentScreen = std::make_unique<Screens::Music>(systemTask->nimble().music());
+      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Music))) {
+        currentScreen = std::make_unique<Screens::Music>(systemTask->nimble().music());
+      }
       break;
     case Apps::Navigation:
-      currentScreen = std::make_unique<Screens::Navigation>(systemTask->nimble().navigation());
+      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Navigation))) {
+        currentScreen = std::make_unique<Screens::Navigation>(systemTask->nimble().navigation());
+      }
       break;
     case Apps::HeartRate:
       currentScreen = std::make_unique<Screens::HeartRate>(heartRateController, *systemTask);
       break;
     case Apps::Metronome:
-      currentScreen = std::make_unique<Screens::Metronome>(motorController, *systemTask);
+      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Metronome))) {
+        currentScreen = std::make_unique<Screens::Metronome>(motorController, *systemTask);
+      }
+      break;
+    case Apps::Motion:
+      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Motion))) {
+        currentScreen = std::make_unique<Screens::Motion>(motionController);
+      }
       break;
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);

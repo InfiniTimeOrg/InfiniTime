@@ -786,6 +786,10 @@ add_definitions(-D__STACK_SIZE=1024)
 add_definitions(-D__HEAP_SIZE=4096)
 add_definitions(-DMYNEWT_VAL_BLE_LL_RFMGMT_ENABLE_TIME=1500)
 
+if(DISABLED_APPS)
+  add_definitions(-DDISABLED_APPS=${DISABLED_APPS})
+endif()
+
 # Note: Only use this for debugging
 # Derive the low frequency clock from the main clock (SYNT)
 # add_definitions(-DCLOCK_CONFIG_LF_SRC=2)
