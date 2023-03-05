@@ -43,27 +43,23 @@ bool MotionController::Should_RaiseWake(bool isSleeping) {
   return false;
 }
 
-bool MotionController::Should_ShakeWake(uint16_t thresh) {
+bool MotionController::ShouldShakeWake(uint16_t thresh) {
   bool wake = false;
   auto diff = xTaskGetTickCount() - lastShakeTime;
   lastShakeTime = xTaskGetTickCount();
   /* Currently Polling at 10hz, If this ever goes faster scalar and EMA might need adjusting */
   int32_t speed = std::abs(z + (y / 2) + (x / 4) - lastYForShake - lastZForShake) / diff * 100;
-  //(.2 * speed) + ((1 - .2) * accumulatedspeed);
+  //(.2 * speed) + ((1 - .2) * accumulatedSpeed);
   // implemented without floats as .25Alpha
-  accumulatedspeed = (speed / 5) + ((accumulatedspeed / 5) * 4);
+  accumulatedSpeed = (speed / 5) + ((accumulatedSpeed / 5) * 4);
 
-  if (accumulatedspeed > thresh) {
+  if (accumulatedSpeed > thresh) {
     wake = true;
   }
   lastXForShake = x / 4;
   lastYForShake = y / 2;
   lastZForShake = z;
   return wake;
-}
-
-int32_t MotionController::currentShakeSpeed() {
-  return accumulatedspeed;
 }
 
 void MotionController::IsSensorOk(bool isOk) {

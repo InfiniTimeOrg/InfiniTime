@@ -40,9 +40,13 @@ namespace Pinetime {
         return currentTripSteps;
       }
 
-      bool Should_ShakeWake(uint16_t thresh);
+      bool ShouldShakeWake(uint16_t thresh);
       bool Should_RaiseWake(bool isSleeping);
-      int32_t currentShakeSpeed();
+
+      int32_t CurrentShakeSpeed() const {
+        return accumulatedSpeed;
+      }
+
       void IsSensorOk(bool isOk);
 
       bool IsSensorOk() const {
@@ -70,7 +74,7 @@ namespace Pinetime {
       int16_t lastXForShake = 0;
       int16_t lastYForShake = 0;
       int16_t lastZForShake = 0;
-      int32_t accumulatedspeed = 0;
+      int32_t accumulatedSpeed = 0;
       uint32_t lastShakeTime = 0;
     };
   }
