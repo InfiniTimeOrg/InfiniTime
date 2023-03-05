@@ -96,16 +96,16 @@ void SettingShakeThreshold::Refresh() {
   }
   if (calibrating == 2) {
 
-    if ((motionController.currentShakeSpeed() - 300) > lv_arc_get_value(positionArc)) {
-      lv_arc_set_value(positionArc, (int16_t) motionController.currentShakeSpeed() - 300);
+    if ((motionController.CurrentShakeSpeed() - 300) > lv_arc_get_value(positionArc)) {
+      lv_arc_set_value(positionArc, (int16_t) motionController.CurrentShakeSpeed() - 300);
     }
     if (xTaskGetTickCount() - vCalTime > pdMS_TO_TICKS(7500)) {
       lv_btn_set_state(calButton, LV_STATE_DEFAULT);
       lv_event_send(calButton, LV_EVENT_VALUE_CHANGED, nullptr);
     }
   }
-  if (motionController.currentShakeSpeed() - 300 > lv_arc_get_value(animArc)) {
-    lv_arc_set_value(animArc, (uint16_t) motionController.currentShakeSpeed() - 300);
+  if (motionController.CurrentShakeSpeed() - 300 > lv_arc_get_value(animArc)) {
+    lv_arc_set_value(animArc, (uint16_t) motionController.CurrentShakeSpeed() - 300);
     vDecay = xTaskGetTickCount();
   } else if ((xTaskGetTickCount() - vDecay) > pdMS_TO_TICKS(1500)) {
     lv_arc_set_value(animArc, lv_arc_get_value(animArc) - 25);
