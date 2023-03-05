@@ -90,16 +90,12 @@ smartphone or a computer, and are paired to the PineTime, are required.
 
 There are multiple Companion apps available:
 
-- Smartphones:
-  - Android: [GadgetBridge](https://gadgetbridge.org/)
-  - SailfishOS: [Amazfish](https://openrepos.net/content/piggz/amazfish/)
-  - iOS: [InfiniLink](https://github.com/xan-m/InfiniLink)
-  - PinePhone (Linux phone): [Siglo](https://github.com/alexr4535/siglo)
-- Linux Computer:
-  - [Amazfish](https://openrepos.net/content/piggz/amazfish/) and
-    [Siglo](https://github.com/alexr4535/siglo) will also work, but may require
-    some manual installation.
-  - [ITD](https://gitea.arsenm.dev/Arsen6331/itd/) 
+- [Gadgetbridge](https://gadgetbridge.org/) (Android)
+- [AmazFish](https://openrepos.net/content/piggz/amazfish/) (SailfishOS)
+- [Siglo](https://github.com/alexr4535/siglo) (Linux)
+- [InfiniLink](https://github.com/InfiniTimeOrg/InfiniLink) (iOS) **[Looking for a new maintainer]**
+- [ITD](https://gitea.arsenm.dev/Arsen6331/itd) (Linux)
+- [WatchMate](https://github.com/azymohliad/watchmate) (Linux)
 
 ### The InfiniTime UI
 
