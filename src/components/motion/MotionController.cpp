@@ -1,5 +1,8 @@
 #include "components/motion/MotionController.h"
-#include "os/os_cputime.h"
+
+#include <FreeRTOS.h>
+#include <task.h>
+
 using namespace Pinetime::Controllers;
 
 void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps) {
@@ -12,8 +15,11 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   }
 
   this->x = x;
+  lastY = this->y;
   this->y = y;
+  lastZ = this->z;
   this->z = z;
+
   int32_t deltaSteps = nbSteps - this->nbSteps;
   this->nbSteps = nbSteps;
   if (deltaSteps > 0) {
@@ -48,7 +54,7 @@ bool MotionController::ShouldShakeWake(uint16_t thresh) {
   auto diff = xTaskGetTickCount() - lastShakeTime;
   lastShakeTime = xTaskGetTickCount();
   /* Currently Polling at 10hz, If this ever goes faster scalar and EMA might need adjusting */
-  int32_t speed = std::abs(z + (y / 2) + (x / 4) - lastYForShake - lastZForShake) / diff * 100;
+  int32_t speed = std::abs(z + (y / 2) + (x / 4) - lastY / 2 - lastZ) / diff * 100;
   //(.2 * speed) + ((1 - .2) * accumulatedSpeed);
   // implemented without floats as .25Alpha
   accumulatedSpeed = (speed / 5) + ((accumulatedSpeed / 5) * 4);
@@ -56,9 +62,6 @@ bool MotionController::ShouldShakeWake(uint16_t thresh) {
   if (accumulatedSpeed > thresh) {
     wake = true;
   }
-  lastXForShake = x / 4;
-  lastYForShake = y / 2;
-  lastZForShake = z;
   return wake;
 }
 

@@ -1,8 +1,9 @@
 #pragma once
 
 #include <cstdint>
-#include <drivers/Bma421.h>
-#include <components/ble/MotionService.h>
+
+#include "drivers/Bma421.h"
+#include "components/ble/MotionService.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -63,17 +64,18 @@ namespace Pinetime {
     private:
       uint32_t nbSteps;
       uint32_t currentTripSteps = 0;
+
       int16_t x;
-      int16_t y;
-      int16_t z;
       int16_t lastYForWakeUp = 0;
+      int16_t lastY = 0;
+      int16_t y;
+      int16_t lastZ = 0;
+      int16_t z;
+
       bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
       Pinetime::Controllers::MotionService* service = nullptr;
 
-      int16_t lastXForShake = 0;
-      int16_t lastYForShake = 0;
-      int16_t lastZForShake = 0;
       int32_t accumulatedSpeed = 0;
       uint32_t lastShakeTime = 0;
     };
