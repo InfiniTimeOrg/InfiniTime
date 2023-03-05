@@ -31,7 +31,7 @@ namespace Pinetime {
     namespace Screens {
       class Music : public Screen {
       public:
-        Music(DisplayApp* app, Pinetime::Controllers::MusicService& music);
+        Music(Pinetime::Controllers::MusicService& music);
 
         ~Music() override;
 

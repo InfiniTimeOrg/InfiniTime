@@ -13,6 +13,7 @@ namespace Pinetime {
   namespace Controllers {
     class AlertNotificationService;
   }
+
   namespace Applications {
     namespace Screens {
 
@@ -29,7 +30,9 @@ namespace Pinetime {
 
         void Refresh() override;
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
+        void DismissToBlack();
         void OnPreviewInteraction();
+        void OnPreviewDismiss();
 
         class NotificationItem {
         public:
@@ -43,9 +46,11 @@ namespace Pinetime {
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                            Pinetime::Controllers::MotorController& motorController);
           ~NotificationItem();
+
           bool IsRunning() const {
             return running;
           }
+
           void OnCallButtonEvent(lv_obj_t*, lv_event_t event);
 
         private:
@@ -64,6 +69,7 @@ namespace Pinetime {
         };
 
       private:
+        DisplayApp* app;
         Pinetime::Controllers::NotificationManager& notificationManager;
         Pinetime::Controllers::AlertNotificationService& alertNotificationService;
         Pinetime::Controllers::MotorController& motorController;

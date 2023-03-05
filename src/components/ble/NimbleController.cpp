@@ -1,7 +1,6 @@
 #include "components/ble/NimbleController.h"
 #include <cstring>
 
-#include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #define min // workaround: nimble's min/max macros conflict with libstdc++
 #define max
@@ -322,14 +321,14 @@ int NimbleController::OnGAPEvent(ble_gap_event* event) {
                    event->subscribe.prev_indicate);
 
       if (event->subscribe.reason == BLE_GAP_SUBSCRIBE_REASON_TERM) {
-        heartRateService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
-        motionService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+        heartRateService.UnsubscribeNotification(event->subscribe.attr_handle);
+        motionService.UnsubscribeNotification(event->subscribe.attr_handle);
       } else if (event->subscribe.prev_notify == 0 && event->subscribe.cur_notify == 1) {
-        heartRateService.SubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
-        motionService.SubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+        heartRateService.SubscribeNotification(event->subscribe.attr_handle);
+        motionService.SubscribeNotification(event->subscribe.attr_handle);
       } else if (event->subscribe.prev_notify == 1 && event->subscribe.cur_notify == 0) {
-        heartRateService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
-        motionService.UnsubscribeNotification(event->subscribe.conn_handle, event->subscribe.attr_handle);
+        heartRateService.UnsubscribeNotification(event->subscribe.attr_handle);
+        motionService.UnsubscribeNotification(event->subscribe.attr_handle);
       }
       break;
 

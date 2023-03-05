@@ -58,12 +58,15 @@ namespace Pinetime {
       Pinetime::Controllers::MusicService& music() {
         return musicService;
       };
+
       Pinetime::Controllers::NavigationService& navigation() {
         return navService;
       };
+
       Pinetime::Controllers::AlertNotificationService& alertService() {
         return anService;
       };
+
       Pinetime::Controllers::WeatherService& weather() {
         return weatherService;
       };

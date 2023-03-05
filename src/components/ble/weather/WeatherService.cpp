@@ -15,13 +15,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+#include <algorithm>
 #include <qcbor/qcbor_spiffy_decode.h>
 #include "WeatherService.h"
 #include "libs/QCBOR/inc/qcbor/qcbor.h"
 #include "systemtask/SystemTask.h"
 
-int WeatherCallback(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
-  return static_cast<Pinetime::Controllers::WeatherService*>(arg)->OnCommand(connHandle, attrHandle, ctxt);
+int WeatherCallback(uint16_t /*connHandle*/, uint16_t /*attrHandle*/, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+  return static_cast<Pinetime::Controllers::WeatherService*>(arg)->OnCommand(ctxt);
 }
 
 namespace Pinetime {
@@ -41,7 +42,7 @@ namespace Pinetime {
       ASSERT(res == 0);
     }
 
-    int WeatherService::OnCommand(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_access_ctxt* ctxt) {
+    int WeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
       if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
         const uint8_t packetLen = OS_MBUF_PKTLEN(ctxt->om); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         if (packetLen <= 0) {
@@ -552,11 +553,12 @@ namespace Pinetime {
 
     int16_t WeatherService::GetTodayMinTemp() const {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      uint64_t currentDayEnd = currentTimestamp - ((24 - dateTimeController.Hours()) * 60 * 60) -
-                               ((60 - dateTimeController.Minutes()) * 60) - (60 - dateTimeController.Seconds());
+      uint64_t currentDayEnd = currentTimestamp + ((24 - dateTimeController.Hours()) * 60 * 60) +
+                               ((60 - dateTimeController.Minutes()) * 60) + (60 - dateTimeController.Seconds());
+      uint64_t currentDayStart = currentDayEnd - 86400;
       int16_t result = -32768;
       for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Temperature && IsEventStillValid(header, currentTimestamp) &&
+        if (header->eventType == WeatherData::eventtype::Temperature && header->timestamp >= currentDayStart &&
             header->timestamp < currentDayEnd &&
             reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature != -32768) {
           int16_t temperature = reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature;
@@ -575,11 +577,12 @@ namespace Pinetime {
 
     int16_t WeatherService::GetTodayMaxTemp() const {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      uint64_t currentDayEnd = currentTimestamp - ((24 - dateTimeController.Hours()) * 60 * 60) -
-                               ((60 - dateTimeController.Minutes()) * 60) - (60 - dateTimeController.Seconds());
+      uint64_t currentDayEnd = currentTimestamp + ((24 - dateTimeController.Hours()) * 60 * 60) +
+                               ((60 - dateTimeController.Minutes()) * 60) + (60 - dateTimeController.Seconds());
+      uint64_t currentDayStart = currentDayEnd - 86400;
       int16_t result = -32768;
       for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Temperature && IsEventStillValid(header, currentTimestamp) &&
+        if (header->eventType == WeatherData::eventtype::Temperature && header->timestamp >= currentDayStart &&
             header->timestamp < currentDayEnd &&
             reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature != -32768) {
           int16_t temperature = reinterpret_cast<const std::unique_ptr<WeatherData::Temperature>&>(header)->temperature;

@@ -163,10 +163,7 @@ void SpiMaster::PrepareTx(const volatile uint32_t bufferAddress, const volatile 
   spiBaseAddress->EVENTS_END = 0;
 }
 
-void SpiMaster::PrepareRx(const volatile uint32_t cmdAddress,
-                          const volatile size_t cmdSize,
-                          const volatile uint32_t bufferAddress,
-                          const volatile size_t size) {
+void SpiMaster::PrepareRx(const volatile uint32_t bufferAddress, const volatile size_t size) {
   spiBaseAddress->TXD.PTR = 0;
   spiBaseAddress->TXD.MAXCNT = 0;
   spiBaseAddress->TXD.LIST = 0;
@@ -234,7 +231,7 @@ bool SpiMaster::Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t* data
   while (spiBaseAddress->EVENTS_END == 0)
     ;
 
-  PrepareRx((uint32_t) cmd, cmdSize, (uint32_t) data, dataSize);
+  PrepareRx((uint32_t) data, dataSize);
   spiBaseAddress->TASKS_START = 1;
 
   while (spiBaseAddress->EVENTS_END == 0)

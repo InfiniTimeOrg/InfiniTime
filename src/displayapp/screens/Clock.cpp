@@ -1,6 +1,5 @@
 #include "displayapp/screens/Clock.h"
 
-#include <date/date.h>
 #include <lvgl/lvgl.h>
 #include "components/battery/BatteryController.h"
 #include "components/motion/MotionController.h"
@@ -17,17 +16,15 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Clock::Clock(DisplayApp* app,
-             Controllers::DateTime& dateTimeController,
-             Controllers::Battery& batteryController,
-             Controllers::Ble& bleController,
+Clock::Clock(Controllers::DateTime& dateTimeController,
+             const Controllers::Battery& batteryController,
+             const Controllers::Ble& bleController,
              Controllers::NotificationManager& notificationManager,
              Controllers::Settings& settingsController,
              Controllers::HeartRateController& heartRateController,
              Controllers::MotionController& motionController,
              Controllers::FS& filesystem)
-  : Screen(app),
-    dateTimeController {dateTimeController},
+  : dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
     notificationManager {notificationManager},
@@ -74,8 +71,7 @@ bool Clock::OnButtonPushed() {
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceDigitalScreen() {
-  return std::make_unique<Screens::WatchFaceDigital>(app,
-                                                     dateTimeController,
+  return std::make_unique<Screens::WatchFaceDigital>(dateTimeController,
                                                      batteryController,
                                                      bleController,
                                                      notificationManager,
@@ -85,8 +81,7 @@ std::unique_ptr<Screen> Clock::WatchFaceDigitalScreen() {
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceAnalogScreen() {
-  return std::make_unique<Screens::WatchFaceAnalog>(app,
-                                                    dateTimeController,
+  return std::make_unique<Screens::WatchFaceAnalog>(dateTimeController,
                                                     batteryController,
                                                     bleController,
                                                     notificationManager,
@@ -94,8 +89,7 @@ std::unique_ptr<Screen> Clock::WatchFaceAnalogScreen() {
 }
 
 std::unique_ptr<Screen> Clock::WatchFacePineTimeStyleScreen() {
-  return std::make_unique<Screens::WatchFacePineTimeStyle>(app,
-                                                           dateTimeController,
+  return std::make_unique<Screens::WatchFacePineTimeStyle>(dateTimeController,
                                                            batteryController,
                                                            bleController,
                                                            notificationManager,
@@ -104,8 +98,7 @@ std::unique_ptr<Screen> Clock::WatchFacePineTimeStyleScreen() {
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceTerminalScreen() {
-  return std::make_unique<Screens::WatchFaceTerminal>(app,
-                                                      dateTimeController,
+  return std::make_unique<Screens::WatchFaceTerminal>(dateTimeController,
                                                       batteryController,
                                                       bleController,
                                                       notificationManager,
@@ -115,8 +108,7 @@ std::unique_ptr<Screen> Clock::WatchFaceTerminalScreen() {
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceInfineatScreen() {
-  return std::make_unique<Screens::WatchFaceInfineat>(app,
-                                                      dateTimeController,
+  return std::make_unique<Screens::WatchFaceInfineat>(dateTimeController,
                                                       batteryController,
                                                       bleController,
                                                       notificationManager,
@@ -126,8 +118,7 @@ std::unique_ptr<Screen> Clock::WatchFaceInfineatScreen() {
 }
 
 std::unique_ptr<Screen> Clock::WatchFaceCasioStyleG7710() {
-  return std::make_unique<Screens::WatchFaceCasioStyleG7710>(app,
-                                                             dateTimeController,
+  return std::make_unique<Screens::WatchFaceCasioStyleG7710>(dateTimeController,
                                                              batteryController,
                                                              bleController,
                                                              notificationManager,

@@ -1,7 +1,5 @@
 # [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
 
-[![Build PineTime Firmware](https://github.com/InfiniTimeOrg/InfiniTime/workflows/Build%20PineTime%20Firmware/badge.svg?branch=master)](https://github.com/InfiniTimeOrg/InfiniTime/actions)
-
 ![InfiniTime logo](doc/logo/infinitime-logo-small.jpg "InfiniTime Logo")
 
 Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/pinetime/) with many features, written in modern C++.
@@ -19,6 +17,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 - [Siglo](https://github.com/alexr4535/siglo) (Linux)
 - [InfiniLink](https://github.com/InfiniTimeOrg/InfiniLink) (iOS) **[Looking for a new maintainer]**
 - [ITD](https://gitea.arsenm.dev/Arsen6331/itd) (Linux)
+- [WatchMate](https://github.com/azymohliad/watchmate) (Linux)
 
 ***Note** : We removed mentions to NRFConnect as this app is closed source and recent versions do not work anymore with InfiniTime (the last version known to work is 4.24.3). If you used NRFConnect in the past, we recommend you switch to [Gadgetbridge](https://gadgetbridge.org/).*
 
@@ -31,13 +30,10 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 - [Tips on designing an app UI](doc/ui_guidelines.md)
 - [Bootloader, OTA and DFU](bootloader/README.md)
 - [External resources](doc/ExternalResources.md)
-- [Versioning](doc/versioning.md)
-- [Project branches](doc/branches.md)
-- [Files included in the release notes](doc/filesInReleaseNotes.md)
 
 ### Contributing
 
-- [How to contribute?](doc/contribute.md)
+- [How to contribute?](CONTRIBUTING.md)
 - [Coding conventions](doc/coding-convention.md)
 
 ### Build, flash and debug
@@ -60,6 +56,14 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 
 - [Memory analysis](doc/MemoryAnalysis.md)
 
+### Project management
+
+- [Maintainer's guide](doc/maintainer-guide.md)
+- [Versioning](doc/versioning.md)
+- [Project branches](doc/branches.md)
+- [Files included in the release notes](doc/filesInReleaseNotes.md)
+- [Files needed by the factory](doc/files-needed-by-factory.md)
+
 ## Licenses
 
 This project is released under the GNU General Public License version 3 or, at your option, any later version.
@@ -73,7 +77,7 @@ It integrates the following projects:
 
 ## Credits
 
-I’m not working alone on this project. First, many people create PR for this projects. Then, there is the whole #pinetime community : a lot of people all around the world who are hacking, searching, experimenting and programming the Pinetime. We exchange our ideas, experiments and code in the chat rooms and forums.
+I’m not working alone on this project. First, many people create PR for this project. Then, there is the whole #pinetime community : a lot of people all around the world who are hacking, searching, experimenting and programming the Pinetime. We exchange our ideas, experiments and code in the chat rooms and forums.
 
 Here are some people I would like to highlight:
 

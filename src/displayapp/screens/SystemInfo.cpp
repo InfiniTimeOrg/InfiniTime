@@ -1,4 +1,5 @@
 #include <FreeRTOS.h>
+#include <algorithm>
 #include <task.h>
 #include "displayapp/screens/SystemInfo.h"
 #include <lvgl/lvgl.h>
@@ -32,13 +33,13 @@ namespace {
 
 SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
                        Pinetime::Controllers::DateTime& dateTimeController,
-                       Pinetime::Controllers::Battery& batteryController,
+                       const Pinetime::Controllers::Battery& batteryController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
-                       Pinetime::Controllers::Ble& bleController,
-                       Pinetime::Drivers::WatchdogView& watchdog,
+                       const Pinetime::Controllers::Ble& bleController,
+                       const Pinetime::Drivers::Watchdog& watchdog,
                        Pinetime::Controllers::MotionController& motionController,
-                       Pinetime::Drivers::Cst816S& touchPanel)
-  : Screen(app),
+                       const Pinetime::Drivers::Cst816S& touchPanel)
+  : app {app},
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     brightnessController {brightnessController},
@@ -94,12 +95,12 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
                         BootloaderVersion::VersionString());
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(0, 5, app, label);
+  return std::make_unique<Screens::Label>(0, 5, label);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   auto batteryPercent = batteryController.PercentRemaining();
-  auto resetReason = [this]() {
+  const auto* resetReason = [this]() {
     switch (watchdog.ResetReason()) {
       case Drivers::Watchdog::ResetReasons::Watchdog:
         return "wtdg";
@@ -173,7 +174,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         touchPanel.GetFwVersion(),
                         TARGET_DEVICE_NAME);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(1, 5, app, label);
+  return std::make_unique<Screens::Label>(1, 5, label);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
@@ -182,7 +183,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
 
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
-  auto& bleAddr = bleController.Address();
+  const auto& bleAddr = bleController.Address();
   lv_label_set_text_fmt(label,
                         "#808080 BLE MAC#\n"
                         " %02x:%02x:%02x:%02x:%02x:%02x"
@@ -204,7 +205,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         mon.frag_pct,
                         static_cast<int>(mon.free_biggest_size));
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(2, 5, app, label);
+  return std::make_unique<Screens::Label>(2, 5, label);
 }
 
 bool SystemInfo::sortById(const TaskStatus_t& lhs, const TaskStatus_t& rhs) {
@@ -265,7 +266,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen4() {
     }
     lv_table_set_cell_value(infoTask, i + 1, 3, buffer);
   }
-  return std::make_unique<Screens::Label>(3, 5, app, infoTask);
+  return std::make_unique<Screens::Label>(3, 5, infoTask);
 }
 
 std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
@@ -282,5 +283,5 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen5() {
                            "#FFFF00 InfiniTime#");
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::make_unique<Screens::Label>(4, 5, app, label);
+  return std::make_unique<Screens::Label>(4, 5, label);
 }

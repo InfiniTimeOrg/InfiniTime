@@ -16,7 +16,7 @@ namespace Pinetime {
 
       class Steps : public Screen {
       public:
-        Steps(DisplayApp* app, Controllers::MotionController& motionController, Controllers::Settings& settingsController);
+        Steps(Controllers::MotionController& motionController, Controllers::Settings& settingsController);
         ~Steps() override;
 
         void Refresh() override;
@@ -29,7 +29,6 @@ namespace Pinetime {
         uint32_t currentTripSteps = 0;
 
         lv_obj_t* lSteps;
-        lv_obj_t* lStepsIcon;
         lv_obj_t* stepsArc;
         lv_obj_t* resetBtn;
         lv_obj_t* resetButtonLabel;
