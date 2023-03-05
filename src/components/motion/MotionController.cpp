@@ -29,22 +29,22 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   this->nbSteps = nbSteps;
 }
 
-bool MotionController::Should_RaiseWake(bool isSleeping) {
+bool MotionController::ShouldRaiseWake(bool isSleeping) {
   if ((x + 335) <= 670 && z < 0) {
-    if (not isSleeping) {
+    if (!isSleeping) {
       if (y <= 0) {
         return false;
       }
-      lastYForWakeUp = 0;
+      lastYForRaiseWake = 0;
       return false;
     }
 
     if (y >= 0) {
-      lastYForWakeUp = 0;
+      lastYForRaiseWake = 0;
       return false;
     }
-    if (y + 230 < lastYForWakeUp) {
-      lastYForWakeUp = y;
+    if (y + 230 < lastYForRaiseWake) {
+      lastYForRaiseWake = y;
       return true;
     }
   }
