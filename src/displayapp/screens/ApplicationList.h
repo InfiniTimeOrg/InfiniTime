@@ -45,21 +45,14 @@ namespace Pinetime {
           {Symbols::hourGlass, Apps::Timer},
           {Symbols::shoe, Apps::Steps},
           {Symbols::heartBeat, Apps::HeartRate},
-          {disabledApps & static_cast<uint64_t>(Apps::Music) ? Symbols::none : Symbols::music,
-           disabledApps& static_cast<uint64_t>(Apps::Music) ? Apps::None : Apps::Music},
+          {isDisabled(Apps::Music) ? Symbols::none : Symbols::music, isDisabled(Apps::Music) ? Apps::None : Apps::Music},
 
-          {disabledApps & static_cast<uint64_t>(Apps::Paint) ? Symbols::none : Symbols::paintbrush,
-           disabledApps& static_cast<uint64_t>(Apps::Paint) ? Apps::None : Apps::Paint},
-          {disabledApps & static_cast<uint64_t>(Apps::Paddle) ? Symbols::none : Symbols::paddle,
-           disabledApps& static_cast<uint64_t>(Apps::Paddle) ? Apps::None : Apps::Paddle},
-          {disabledApps & static_cast<uint64_t>(Apps::Twos) ? Symbols::none : "2",
-           disabledApps& static_cast<uint64_t>(Apps::Twos) ? Apps::None : Apps::Twos},
-          {disabledApps & static_cast<uint64_t>(Apps::Metronome) ? Symbols::none : Symbols::drum,
-           disabledApps& static_cast<uint64_t>(Apps::Metronome) ? Apps::None : Apps::Metronome},
-          {disabledApps & static_cast<uint64_t>(Apps::Navigation) ? Symbols::none : Symbols::map,
-           disabledApps& static_cast<uint64_t>(Apps::Navigation) ? Apps::None : Apps::Navigation},
-          {disabledApps & static_cast<uint64_t>(Apps::Motion) ? Symbols::none : "M",
-           disabledApps& static_cast<uint64_t>(Apps::Motion) ? Apps::None : Apps::Motion},
+          {isDisabled(Apps::Paint) ? Symbols::none : Symbols::paintbrush, isDisabled(Apps::Paint) ? Apps::None : Apps::Paint},
+          {isDisabled(Apps::Paddle) ? Symbols::none : Symbols::paddle, isDisabled(Apps::Paddle) ? Apps::None : Apps::Paddle},
+          {isDisabled(Apps::Twos) ? Symbols::none : "2", isDisabled(Apps::Twos) ? Apps::None : Apps::Twos},
+          {isDisabled(Apps::Metronome) ? Symbols::none : Symbols::drum, isDisabled(Apps::Metronome) ? Apps::None : Apps::Metronome},
+          {isDisabled(Apps::Navigation) ? Symbols::none : Symbols::map, isDisabled(Apps::Navigation) ? Apps::None : Apps::Navigation},
+          {isDisabled(Apps::Motion) ? Symbols::none : "M", isDisabled(Apps::Motion) ? Apps::None : Apps::Motion},
         }};
         ScreenList<nScreens> screens;
       };

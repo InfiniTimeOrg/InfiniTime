@@ -1,4 +1,5 @@
 #include "displayapp/DisplayApp.h"
+#include <displayapp/Apps.h>
 #include <libraries/log/nrf_log.h>
 #include "displayapp/screens/HeartRate.h"
 #include "displayapp/screens/Motion.h"
@@ -478,22 +479,22 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       }
       break;
     case Apps::Paint:
-      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Paint))) {
+      if constexpr (!isDisabled(Apps::Paint)) {
         currentScreen = std::make_unique<Screens::InfiniPaint>(lvgl, motorController);
       }
       break;
     case Apps::Paddle:
-      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Paddle))) {
+      if constexpr (!isDisabled(Apps::Paddle)) {
         currentScreen = std::make_unique<Screens::Paddle>(lvgl);
       }
       break;
     case Apps::Music:
-      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Music))) {
+      if constexpr (!isDisabled(Apps::Music)) {
         currentScreen = std::make_unique<Screens::Music>(systemTask->nimble().music());
       }
       break;
     case Apps::Navigation:
-      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Navigation))) {
+      if constexpr (!isDisabled(Apps::Navigation)) {
         currentScreen = std::make_unique<Screens::Navigation>(systemTask->nimble().navigation());
       }
       break;
@@ -501,12 +502,12 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::HeartRate>(heartRateController, *systemTask);
       break;
     case Apps::Metronome:
-      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Metronome))) {
+      if constexpr (!isDisabled(Apps::Metronome)) {
         currentScreen = std::make_unique<Screens::Metronome>(motorController, *systemTask);
       }
       break;
     case Apps::Motion:
-      if constexpr (!(disabledApps & static_cast<uint64_t>(Apps::Motion))) {
+      if constexpr (!isDisabled(Apps::Motion)) {
         currentScreen = std::make_unique<Screens::Motion>(motionController);
       }
       break;
