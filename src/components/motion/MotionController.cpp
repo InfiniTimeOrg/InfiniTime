@@ -21,26 +21,33 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
   }
 }
 
-bool MotionController::Should_RaiseWake(bool isSleeping) {
-  if ((x + 335) <= 670 && z < 0) {
-    if (not isSleeping) {
-      if (y <= 0) {
+bool MotionController::Should_RaiseWake() {
+  bool isSleeping = true;
+  if ((-x + 335) <= 670 && -z < 0) {
+    if (!isSleeping) {
+      if (-y <= 0) {
         return false;
       }
       lastYForWakeUp = 0;
       return false;
     }
 
-    if (y >= 0) {
+    if (-y >= 0) {
       lastYForWakeUp = 0;
       return false;
     }
-    if (y + 230 < lastYForWakeUp) {
-      lastYForWakeUp = y;
+    if (-y + 230 < lastYForWakeUp) {
+      lastYForWakeUp = -y;
       return true;
     }
   }
   return false;
+}
+
+// This is a callback function which uses the wrist-tilt interrupt in the BMA425 chip.
+// See MotionController::Init()
+bool MotionController::BMA425ShouldRaiseWake() const {
+  return bmaDriver->GetAndClearWristTiltInterrupt() && (std::abs(this->y) > 300);
 }
 
 bool MotionController::Should_ShakeWake(uint16_t thresh) {
@@ -48,7 +55,7 @@ bool MotionController::Should_ShakeWake(uint16_t thresh) {
   auto diff = xTaskGetTickCount() - lastShakeTime;
   lastShakeTime = xTaskGetTickCount();
   /* Currently Polling at 10hz, If this ever goes faster scalar and EMA might need adjusting */
-  int32_t speed = std::abs(z + (y / 2) + (x / 4) - lastYForShake - lastZForShake) / diff * 100;
+  int32_t speed = std::abs(-z + (-y / 2) + (-x / 4) - lastYForShake - lastZForShake) / diff * 100;
   //(.2 * speed) + ((1 - .2) * accumulatedspeed);
   // implemented without floats as .25Alpha
   accumulatedspeed = (speed / 5) + ((accumulatedspeed / 5) * 4);
@@ -56,13 +63,13 @@ bool MotionController::Should_ShakeWake(uint16_t thresh) {
   if (accumulatedspeed > thresh) {
     wake = true;
   }
-  lastXForShake = x / 4;
-  lastYForShake = y / 2;
-  lastZForShake = z;
+  lastXForShake = -x / 4;
+  lastYForShake = -y / 2;
+  lastZForShake = -z;
   return wake;
 }
 
-int32_t MotionController::currentShakeSpeed() {
+int32_t MotionController::currentShakeSpeed() const {
   return accumulatedspeed;
 }
 
@@ -70,13 +77,16 @@ void MotionController::IsSensorOk(bool isOk) {
   isSensorOk = isOk;
 }
 
-void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
+void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types, Pinetime::Drivers::Bma421* bmaDriver) {
+  this->bmaDriver = bmaDriver;
   switch (types) {
     case Drivers::Bma421::DeviceTypes::BMA421:
       this->deviceType = DeviceTypes::BMA421;
       break;
     case Drivers::Bma421::DeviceTypes::BMA425:
       this->deviceType = DeviceTypes::BMA425;
+      // Update callback to use an interrupt for raise-to-wake
+      callbackShouldRaiseWake = std::bind(&Pinetime::Controllers::MotionController::BMA425ShouldRaiseWake, this);
       break;
     default:
       this->deviceType = DeviceTypes::Unknown;
