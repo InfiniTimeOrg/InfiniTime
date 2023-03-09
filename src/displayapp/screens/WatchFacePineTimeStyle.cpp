@@ -364,13 +364,13 @@ WatchFacePineTimeStyle::~WatchFacePineTimeStyle() {
 }
 
 bool WatchFacePineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnRandom)) {
+  if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnClose)) {
     lv_obj_set_hidden(btnSetColor, false);
     lv_obj_set_hidden(btnSetOpts, false);
     savedTick = lv_tick_get();
     return true;
   }
-  if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && (lv_obj_get_hidden(btnRandom) == false)) {
+  if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && (lv_obj_get_hidden(btnClose) == false)) {
     return true;
   }
   return false;
