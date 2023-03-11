@@ -33,8 +33,8 @@ namespace Pinetime {
 
       uint16_t stepCountHandle;
       uint16_t motionValuesHandle;
-      bool stepCountNoficationEnabled {false};
-      bool motionValuesNoficationEnabled {false};
+      bool stepCountNotificationEnabled {false};
+      bool motionValuesNotificationEnabled {false};
     };
   }
 }

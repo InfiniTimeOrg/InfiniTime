@@ -76,7 +76,7 @@ int MotionService::OnStepCountRequested(uint16_t attributeHandle, ble_gatt_acces
 }
 
 void MotionService::OnNewStepCountValue(uint32_t stepCount) {
-  if (!stepCountNoficationEnabled)
+  if (!stepCountNotificationEnabled)
     return;
 
   uint32_t buffer = stepCount;
@@ -92,7 +92,7 @@ void MotionService::OnNewStepCountValue(uint32_t stepCount) {
 }
 
 void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
-  if (!motionValuesNoficationEnabled)
+  if (!motionValuesNotificationEnabled)
     return;
 
   int16_t buffer[3] = {x, y, z};
@@ -109,14 +109,14 @@ void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
 
 void MotionService::SubscribeNotification(uint16_t attributeHandle) {
   if (attributeHandle == stepCountHandle)
-    stepCountNoficationEnabled = true;
+    stepCountNotificationEnabled = true;
   else if (attributeHandle == motionValuesHandle)
-    motionValuesNoficationEnabled = true;
+    motionValuesNotificationEnabled = true;
 }
 
 void MotionService::UnsubscribeNotification(uint16_t attributeHandle) {
   if (attributeHandle == stepCountHandle)
-    stepCountNoficationEnabled = false;
+    stepCountNotificationEnabled = false;
   else if (attributeHandle == motionValuesHandle)
-    motionValuesNoficationEnabled = false;
+    motionValuesNotificationEnabled = false;
 }
