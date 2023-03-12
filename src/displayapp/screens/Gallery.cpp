@@ -50,7 +50,11 @@ void Gallery::ListDir() {
       continue;
     nScreens++;
   }
-  assert(filesystem.DirClose(&dir) == 0);
+  res = filesystem.DirClose(&dir);
+  if (res != 0) {
+    NRF_LOG_INFO("[Gallery] DirClose failed");
+    return;
+  }
 }
 
 bool Gallery::Open(int n, DisplayApp::FullRefreshDirections direction) {
@@ -75,7 +79,11 @@ bool Gallery::Open(int n, DisplayApp::FullRefreshDirections direction) {
       break;
     i++;
   }
-  assert(filesystem.DirClose(&dir) == 0);
+  res = filesystem.DirClose(&dir);
+  if (res != 0) {
+    NRF_LOG_INFO("[Gallery] DirClose failed");
+    return;
+  }
 
   if (current != nullptr) {
     current.reset(nullptr);
