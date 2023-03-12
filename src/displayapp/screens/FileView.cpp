@@ -6,7 +6,7 @@
 using namespace Pinetime::Applications::Screens;
 
 FileView::FileView(uint8_t screenID, uint8_t nScreens, const char* path)
-  : screenID(screenID), nScreens(nScreens), Screen(), pageIndicator(screenID, nScreens) {
+  : Screen(), pageIndicator(screenID, nScreens), screenID(screenID), nScreens(nScreens) {
   label = nullptr;
 
   const char* c = strrchr(path, '/') + 1;
