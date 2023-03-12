@@ -10,7 +10,7 @@ namespace Pinetime {
     namespace Screens {
       class Gallery : public Screen {
       public:
-        static constexpr const char* index_file = "/gallery/index";
+        static constexpr const char* directory = "/gallery/";
 
         Gallery(DisplayApp* app, Pinetime::Controllers::FS& filesystem);
         ~Gallery() override;
@@ -22,7 +22,7 @@ namespace Pinetime {
         Pinetime::Controllers::FS& filesystem;
         std::unique_ptr<FileView> current;
 
-        uint8_t CountFiles();
+        void ListDir();
         bool Open(int n, DisplayApp::FullRefreshDirections direction);
         int nScreens;
         int index;
