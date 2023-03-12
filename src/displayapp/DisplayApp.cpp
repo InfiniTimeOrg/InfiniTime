@@ -57,6 +57,66 @@ namespace {
   inline bool in_isr() {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
   }
+
+  void ScreenGestureEventHandlerCallback(lv_obj_t* obj, lv_event_t event) {
+    if (event == LV_EVENT_GESTURE) {
+      lv_gesture_dir_t dir = lv_indev_get_gesture_dir(lv_indev_get_act());
+      auto* displayApp = static_cast<DisplayApp*>(obj->user_data);
+      displayApp->HandleScreenGesture(dir);
+    }
+  }
+
+  TouchEvents LvGestureDirToTouchEvents(lv_gesture_dir_t dir) {
+    switch (dir) {
+      case LV_GESTURE_DIR_TOP:
+        return TouchEvents::SwipeUp;
+      case LV_GESTURE_DIR_BOTTOM:
+        return TouchEvents::SwipeDown;
+      case LV_GESTURE_DIR_RIGHT:
+        return TouchEvents::SwipeRight;
+      case LV_GESTURE_DIR_LEFT:
+        return TouchEvents::SwipeLeft;
+      default:
+        return TouchEvents::None;
+    }
+  }
+}
+
+void DisplayApp::HandleScreenGesture(lv_gesture_dir_t dir) {
+  auto LoadDirToReturnSwipe = [](DisplayApp::FullRefreshDirections refreshDirection) {
+    switch (refreshDirection) {
+      default:
+      case DisplayApp::FullRefreshDirections::Up:
+        return TouchEvents::SwipeDown;
+      case DisplayApp::FullRefreshDirections::Down:
+        return TouchEvents::SwipeUp;
+      case DisplayApp::FullRefreshDirections::LeftAnim:
+        return TouchEvents::SwipeRight;
+      case DisplayApp::FullRefreshDirections::RightAnim:
+        return TouchEvents::SwipeLeft;
+    }
+  };
+  if (!currentScreen->OnTouchEvent(LvGestureDirToTouchEvents(dir))) {
+    if (currentApp == Apps::Clock) {
+      switch (dir) {
+        case LV_GESTURE_DIR_TOP:
+          LoadNewScreen(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
+          break;
+        case LV_GESTURE_DIR_BOTTOM:
+          LoadNewScreen(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
+          break;
+        case LV_GESTURE_DIR_RIGHT:
+          LoadNewScreen(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
+          break;
+        default:
+          break;
+      }
+    } else if (LvGestureDirToTouchEvents(dir) == LoadDirToReturnSwipe(appStackDirections.Top())) {
+      LoadPreviousScreen();
+    }
+  } else {
+    lvgl.CancelTap();
+  }
 }
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
@@ -93,6 +153,28 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     filesystem {filesystem},
     lvgl {lcd, filesystem} {
 }
+
+void DisplayApp::LoadPreviousScreen() {
+  FullRefreshDirections returnDirection;
+  switch (appStackDirections.Pop()) {
+    case FullRefreshDirections::Up:
+      returnDirection = FullRefreshDirections::Down;
+      break;
+    case FullRefreshDirections::Down:
+      returnDirection = FullRefreshDirections::Up;
+      break;
+    case FullRefreshDirections::LeftAnim:
+      returnDirection = FullRefreshDirections::RightAnim;
+      break;
+    case FullRefreshDirections::RightAnim:
+      returnDirection = FullRefreshDirections::LeftAnim;
+      break;
+    default:
+      returnDirection = FullRefreshDirections::None;
+      break;
+  }
+  LoadScreen(returnAppStack.Pop(), returnDirection);
+};
 
 void DisplayApp::Start(System::BootErrors error) {
   msgQueue = xQueueCreate(queueSize, itemSize);
@@ -133,28 +215,6 @@ void DisplayApp::InitHw() {
 }
 
 void DisplayApp::Refresh() {
-  auto LoadPreviousScreen = [this]() {
-    FullRefreshDirections returnDirection;
-    switch (appStackDirections.Pop()) {
-      case FullRefreshDirections::Up:
-        returnDirection = FullRefreshDirections::Down;
-        break;
-      case FullRefreshDirections::Down:
-        returnDirection = FullRefreshDirections::Up;
-        break;
-      case FullRefreshDirections::LeftAnim:
-        returnDirection = FullRefreshDirections::RightAnim;
-        break;
-      case FullRefreshDirections::RightAnim:
-        returnDirection = FullRefreshDirections::LeftAnim;
-        break;
-      default:
-        returnDirection = FullRefreshDirections::None;
-        break;
-    }
-    LoadScreen(returnAppStack.Pop(), returnDirection);
-  };
-
   TickType_t queueTimeout;
   switch (state) {
     case States::Idle:
@@ -230,47 +290,6 @@ void DisplayApp::Refresh() {
           break;
         }
         lvgl.SetNewTouchPoint(touchHandler.GetX(), touchHandler.GetY(), touchHandler.IsTouching());
-        auto gesture = touchHandler.GestureGet();
-        if (gesture == TouchEvents::None) {
-          break;
-        }
-        auto LoadDirToReturnSwipe = [](DisplayApp::FullRefreshDirections refreshDirection) {
-          switch (refreshDirection) {
-            default:
-            case DisplayApp::FullRefreshDirections::Up:
-              return TouchEvents::SwipeDown;
-            case DisplayApp::FullRefreshDirections::Down:
-              return TouchEvents::SwipeUp;
-            case DisplayApp::FullRefreshDirections::LeftAnim:
-              return TouchEvents::SwipeRight;
-            case DisplayApp::FullRefreshDirections::RightAnim:
-              return TouchEvents::SwipeLeft;
-          }
-        };
-        if (!currentScreen->OnTouchEvent(gesture)) {
-          if (currentApp == Apps::Clock) {
-            switch (gesture) {
-              case TouchEvents::SwipeUp:
-                LoadNewScreen(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
-                break;
-              case TouchEvents::SwipeDown:
-                LoadNewScreen(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
-                break;
-              case TouchEvents::SwipeRight:
-                LoadNewScreen(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
-                break;
-              case TouchEvents::DoubleTap:
-                PushMessageToSystemTask(System::Messages::GoToSleep);
-                break;
-              default:
-                break;
-            }
-          } else if (gesture == LoadDirToReturnSwipe(appStackDirections.Top())) {
-            LoadPreviousScreen();
-          }
-        } else {
-          lvgl.CancelTap();
-        }
       } break;
       case Messages::ButtonPushed:
         if (!currentScreen->OnButtonPushed()) {
@@ -354,6 +373,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
   lvgl.CancelTap();
   ApplyBrightness();
   motorController.StopRinging();
+
+  lv_scr_act()->user_data = this;
+  lv_obj_set_event_cb(lv_scr_act(), ScreenGestureEventHandlerCallback);
 
   currentScreen.reset(nullptr);
   SetFullRefresh(direction);
