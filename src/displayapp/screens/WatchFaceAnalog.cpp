@@ -161,7 +161,7 @@ void WatchFaceAnalog::UpdateClock() {
   if (sHour != hour || sMinute != minute) {
     sHour = hour;
     sMinute = minute;
-    auto const angle = (hour * 30 + minute / 2);
+    auto const angle = (hour * 30);// + minute / 2);
 
     hour_point[0] = CoordinateRelocate(30, angle);
     hour_point[1] = CoordinateRelocate(HourLength, angle);
