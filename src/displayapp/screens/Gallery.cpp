@@ -4,7 +4,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Gallery::Gallery(DisplayApp* app, Pinetime::Controllers::FS& filesystem) : Screen(app), filesystem(filesystem) {
+Gallery::Gallery(Pinetime::Controllers::FS& filesystem) : Screen(), filesystem(filesystem) {
   ListDir();
 
   if (nScreens == 0) {
@@ -94,9 +94,9 @@ bool Gallery::Open(int n) {
   strncat(fullname, info.name, sizeof(fullname) - strlen(directory) - 2 - 1);
 
   if (StringEndsWith(fullname, ".bin")) {
-    current = std::make_unique<ImageView>(n, nScreens, app, fullname);
+    current = std::make_unique<ImageView>(n, nScreens, fullname);
   } else if (StringEndsWith(fullname, ".txt")) {
-    current = std::make_unique<TextView>(n, nScreens, app, fullname, filesystem);
+    current = std::make_unique<TextView>(n, nScreens, fullname, filesystem);
   } else {
     return false;
   }
