@@ -10,7 +10,7 @@ namespace Pinetime {
     namespace Screens {
       class FileView : public Screen {
       public:
-        FileView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char* path);
+        FileView(uint8_t screenID, uint8_t nScreens, const char* path);
         ~FileView() override;
 
         void ShowInfo();
@@ -27,12 +27,12 @@ namespace Pinetime {
 
       class ImageView : public FileView {
       public:
-        ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char* path);
+        ImageView(uint8_t screenID, uint8_t nScreens, const char* path);
       };
 
       class TextView : public FileView {
       public:
-        TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char* path, Pinetime::Controllers::FS& fs);
+        TextView(uint8_t screenID, uint8_t nScreens, const char* path, Pinetime::Controllers::FS& fs);
         ~TextView() override;
 
       private:

@@ -5,8 +5,8 @@
 
 using namespace Pinetime::Applications::Screens;
 
-FileView::FileView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char* path)
-  : screenID(screenID), nScreens(nScreens), Screen(app), pageIndicator(screenID, nScreens) {
+FileView::FileView(uint8_t screenID, uint8_t nScreens, const char* path)
+  : screenID(screenID), nScreens(nScreens), Screen(), pageIndicator(screenID, nScreens) {
   label = nullptr;
 
   const char* c = strrchr(path, '/') + 1;
@@ -57,7 +57,7 @@ FileView::~FileView() {
   lv_obj_clean(lv_scr_act());
 }
 
-ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char* path) : FileView(screenID, nScreens, app, path) {
+ImageView::ImageView(uint8_t screenID, uint8_t nScreens, const char* path) : FileView(screenID, nScreens, path) {
   lv_obj_t* image = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_src(image, path);
   lv_obj_align(image, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
@@ -65,8 +65,8 @@ ImageView::ImageView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const 
   ShowInfo();
 }
 
-TextView::TextView(uint8_t screenID, uint8_t nScreens, DisplayApp* app, const char* path, Pinetime::Controllers::FS& fs)
-  : FileView(screenID, nScreens, app, path) {
+TextView::TextView(uint8_t screenID, uint8_t nScreens, const char* path, Pinetime::Controllers::FS& fs)
+  : FileView(screenID, nScreens, path) {
 
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(label, LV_LABEL_LONG_BREAK);

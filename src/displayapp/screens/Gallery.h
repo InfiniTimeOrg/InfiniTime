@@ -12,7 +12,7 @@ namespace Pinetime {
       public:
         static constexpr const char* directory = "/gallery/";
 
-        Gallery(DisplayApp* app, Pinetime::Controllers::FS& filesystem);
+        Gallery(Pinetime::Controllers::FS& filesystem);
         ~Gallery() override;
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
 
