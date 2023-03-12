@@ -23,7 +23,7 @@ namespace Pinetime {
         std::unique_ptr<FileView> current;
 
         void ListDir();
-        bool Open(int n, DisplayApp::FullRefreshDirections direction);
+        bool Open(int n);
         int nScreens;
         int index;
       };

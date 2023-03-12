@@ -13,7 +13,7 @@ Gallery::Gallery(DisplayApp* app, Pinetime::Controllers::FS& filesystem) : Scree
     lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
     lv_obj_align(title, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   } else {
-    Open(0, DisplayApp::FullRefreshDirections::None);
+    Open(0);
   }
 }
 
@@ -24,9 +24,9 @@ Gallery::~Gallery() {
 bool Gallery::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   switch (event) {
     case Pinetime::Applications::TouchEvents::SwipeRight:
-      return Open(index - 1, DisplayApp::FullRefreshDirections::Right);
+      return Open(index - 1);
     case Pinetime::Applications::TouchEvents::SwipeLeft:
-      return Open(index + 1, DisplayApp::FullRefreshDirections::Left);
+      return Open(index + 1);
     case Pinetime::Applications::TouchEvents::LongTap:
     case Pinetime::Applications::TouchEvents::DoubleTap:
       current->ToggleInfo();
@@ -57,7 +57,7 @@ void Gallery::ListDir() {
   }
 }
 
-bool Gallery::Open(int n, DisplayApp::FullRefreshDirections direction) {
+bool Gallery::Open(int n) {
   if ((n < 0) || (n >= nScreens))
     return false;
 
@@ -82,12 +82,11 @@ bool Gallery::Open(int n, DisplayApp::FullRefreshDirections direction) {
   res = filesystem.DirClose(&dir);
   if (res != 0) {
     NRF_LOG_INFO("[Gallery] DirClose failed");
-    return;
+    return false;
   }
 
   if (current != nullptr) {
     current.reset(nullptr);
-    app->SetFullRefresh(direction);
   }
 
   char fullname[LFS_NAME_MAX] = "F:";
