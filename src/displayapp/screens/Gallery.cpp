@@ -31,6 +31,11 @@ bool Gallery::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
     case Pinetime::Applications::TouchEvents::DoubleTap:
       current->ToggleInfo();
       return true;
+    case Pinetime::Applications::TouchEvents::None:
+    case Pinetime::Applications::TouchEvents::Tap:
+    case Pinetime::Applications::TouchEvents::SwipeUp:
+    case Pinetime::Applications::TouchEvents::SwipeDown:
+      return false;
   }
   return false;
 }
