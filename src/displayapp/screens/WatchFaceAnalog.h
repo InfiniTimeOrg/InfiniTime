@@ -47,6 +47,9 @@ namespace Pinetime {
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
         DirtyValue<bool> notificationState {false};
 
+        lv_obj_t* backdropmain;
+        lv_style_t backdrop;
+        
         lv_obj_t* hour_body;
         lv_obj_t* hour_body_trace;
         lv_obj_t* minute_body;
