@@ -18,6 +18,7 @@
 #include "BootErrors.h"
 
 #include <memory>
+#include <cstring>
 
 using namespace Pinetime::System;
 
@@ -51,7 +52,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Pinetime::Applications::HeartRateTask& heartRateApp,
                        Pinetime::Controllers::FS& fs,
                        Pinetime::Controllers::TouchHandler& touchHandler,
-                       Pinetime::Controllers::ButtonHandler& buttonHandler)
+                       Pinetime::Controllers::ButtonHandler& buttonHandler,
+                       Controllers::ActivityController& activityController)
   : spi {spi},
     spiNorFlash {spiNorFlash},
     twiMaster {twiMaster},
@@ -72,6 +74,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     fs {fs},
     touchHandler {touchHandler},
     buttonHandler {buttonHandler},
+    activityController {activityController},
     nimbleController(*this,
                      bleController,
                      dateTimeController,
@@ -179,6 +182,22 @@ void SystemTask::Work() {
 #pragma ide diagnostic ignored "EndlessLoop"
   while (true) {
     UpdateMotion();
+
+    activityController.UpdateSteps(motionController.NbSteps(), dateTimeController.Minutes());
+    if (activityController.ShouldNotify(settingsController.GetActivityThresh()) &&
+        settingsController.GetActivity() == Controllers::Settings::Activity::On &&
+        settingsController.GetNotificationStatus() == Controllers::Settings::Notification::On) {
+      NRF_LOG_INFO("activity");
+      Controllers::NotificationManager::Notification notif;
+      constexpr char message[] = "Low activity\0Fewer steps than threshold in last hour. Try walking around.";
+      constexpr size_t messageSize = std::min(sizeof message - 1, Controllers::NotificationManager::MaximumMessageSize());
+      std::memcpy(notif.message.data(), message, messageSize);
+      notif.message[messageSize] = '\0';
+      notif.size = messageSize;
+      notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+      notificationManager.Push(std::move(notif));
+      PushMessage(Messages::OnNewNotification);
+    }
 
     Messages msg;
     if (xQueueReceive(systemTasksMsgQueue, &msg, 100) == pdTRUE) {
