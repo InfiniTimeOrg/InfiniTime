@@ -60,11 +60,12 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   sMinute = 99;
   sSecond = 99;
 
+      backdropmain = lv_line_create(lv_scr_act(), nullptr);
   lv_style_init(&backdrop);
   lv_style_set_line_width(&backdrop, LV_STATE_DEFAULT, 100);
-  lv_style_set_line_color(&backdrop, LV_STATE_DEFAULT, LV_COLOR_RED);
+  lv_style_set_line_color(&backdrop, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_style_set_line_rounded(&backdrop, LV_STATE_DEFAULT, true);
-  lv_obj_add_style(second_body, LV_LINE_PART_MAIN, &backdrop);
+  lv_obj_add_style(backdropmain, LV_LINE_PART_MAIN, &backdrop);
       
   lv_obj_t* bg_clock_img = lv_img_create(lv_scr_act(), nullptr);
   lv_img_set_src(bg_clock_img, &bg_clock);
@@ -143,6 +144,7 @@ WatchFaceAnalog::~WatchFaceAnalog() {
   lv_style_reset(&minute_line_style);
   lv_style_reset(&minute_line_style_trace);
   lv_style_reset(&second_line_style);
+  lv_style_reset(&backdrop);
 
   lv_obj_clean(lv_scr_act());
 }
