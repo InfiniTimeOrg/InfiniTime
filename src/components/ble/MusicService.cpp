@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 #include "components/ble/MusicService.h"
-#include "systemtask/SystemTask.h"
+#include "components/ble/NimbleController.h"
 #include <cstring>
 
 namespace {
@@ -53,7 +53,7 @@ namespace {
   }
 }
 
-Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask& system) : m_system(system) {
+Pinetime::Controllers::MusicService::MusicService(Pinetime::Controllers::NimbleController& nimble) : nimble(nimble) {
   characteristicDefinition[0] = {.uuid = &msEventCharUuid.u,
                                  .access_cb = MusicCallback,
                                  .arg = this,
@@ -212,7 +212,7 @@ int Pinetime::Controllers::MusicService::getTrackLength() const {
 void Pinetime::Controllers::MusicService::event(char event) {
   auto* om = ble_hs_mbuf_from_flat(&event, 1);
 
-  uint16_t connectionHandle = m_system.nimble().connHandle();
+  uint16_t connectionHandle = nimble.connHandle();
 
   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
     return;
