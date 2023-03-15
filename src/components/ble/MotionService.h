@@ -7,16 +7,13 @@
 #undef min
 
 namespace Pinetime {
-  namespace System {
-    class SystemTask;
-  }
-
   namespace Controllers {
+    class NimbleController;
     class MotionController;
 
     class MotionService {
     public:
-      MotionService(Pinetime::System::SystemTask& system, Controllers::MotionController& motionController);
+      MotionService(NimbleController& nimble, Controllers::MotionController& motionController);
       void Init();
       int OnStepCountRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context);
       void OnNewStepCountValue(uint32_t stepCount);
@@ -26,7 +23,7 @@ namespace Pinetime {
       void UnsubscribeNotification(uint16_t attributeHandle);
 
     private:
-      Pinetime::System::SystemTask& system;
+      NimbleController& nimble;
       Controllers::MotionController& motionController;
 
       struct ble_gatt_chr_def characteristicDefinition[3];
