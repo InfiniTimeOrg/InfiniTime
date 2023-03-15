@@ -36,15 +36,11 @@
 int WeatherCallback(uint16_t connHandle, uint16_t attrHandle, struct ble_gatt_access_ctxt* ctxt, void* arg);
 
 namespace Pinetime {
-  namespace System {
-    class SystemTask;
-  }
-
   namespace Controllers {
 
     class WeatherService {
     public:
-      explicit WeatherService(System::SystemTask& system, DateTime& dateTimeController);
+      explicit WeatherService(DateTime& dateTimeController);
 
       void Init();
 
@@ -133,7 +129,6 @@ namespace Pinetime {
 
       uint16_t eventHandle {};
 
-      Pinetime::System::SystemTask& system;
       Pinetime::Controllers::DateTime& dateTimeController;
 
       std::vector<std::unique_ptr<WeatherData::TimelineHeader>> timeline;

@@ -19,7 +19,6 @@
 #include <qcbor/qcbor_spiffy_decode.h>
 #include "WeatherService.h"
 #include "libs/QCBOR/inc/qcbor/qcbor.h"
-#include "systemtask/SystemTask.h"
 
 int WeatherCallback(uint16_t /*connHandle*/, uint16_t /*attrHandle*/, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   return static_cast<Pinetime::Controllers::WeatherService*>(arg)->OnCommand(ctxt);
@@ -27,8 +26,7 @@ int WeatherCallback(uint16_t /*connHandle*/, uint16_t /*attrHandle*/, struct ble
 
 namespace Pinetime {
   namespace Controllers {
-    WeatherService::WeatherService(System::SystemTask& system, DateTime& dateTimeController)
-      : system(system), dateTimeController(dateTimeController) {
+    WeatherService::WeatherService(DateTime& dateTimeController) : dateTimeController(dateTimeController) {
       nullHeader = &nullTimelineheader;
       nullTimelineheader->timestamp = 0;
     }
