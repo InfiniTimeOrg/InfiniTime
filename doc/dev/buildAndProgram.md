@@ -6,7 +6,7 @@ To build this project, you'll need:
 
 - A cross-compiler : [ARM-GCC (10.3-2021.10)](https://developer.arm.com/downloads/-/gnu-rm)
 - The NRF52 SDK 15.3.0 : [nRF-SDK v15.3.0](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip)
-- The Python 3 modules `cbor`, `intelhex`, `click` and `cryptography` modules for the `mcuboot` tool (see [requirements.txt](../tools/mcuboot/requirements.txt))
+- The Python 3 modules `cbor`, `intelhex`, `click` and `cryptography` modules for the `mcuboot` tool (see [requirements.txt](/tools/mcuboot/requirements.txt))
   - To keep the system clean, you can install python modules into a python virtual environment (`venv`)
     ```sh
     python -m venv .venv
@@ -70,7 +70,7 @@ During the project generation, CMake created the following targets:
 - **pinetime-mcuboot-recovery** : build pinetime-recovery with bootloader support
 - **pinetime-mcuboot-recovery-loader** : build pinetime-recovery-loader with bootloader support
 
-If you just want to build the project and run it on the Pinetime, using *pinetime-app* is recommended. See [this page](../bootloader/README.md) for more info about bootloader support.
+If you just want to build the project and run it on the Pinetime, using *pinetime-app* is recommended. See [this page](/bootloader/README.md) for more info about bootloader support.
 
 Build:
 

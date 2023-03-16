@@ -1,6 +1,6 @@
 # Build the project using Docker
 
-A [Docker image (Dockerfile)](../docker) containing all the build environment is available for X86_64 and ARM64 architectures.
+A [Docker image (Dockerfile)](/docker) containing all the build environment is available for X86_64 and ARM64 architectures.
 These images make the build of the firmware and the generation of the DFU file for OTA quite easy, as well as preventing clashes with any other toolchains or development environments you may have installed.
 
 Based on Ubuntu 22.04 with the following build dependencies:
@@ -19,7 +19,7 @@ The default `CMD` will compile sources found in `/sources`, so you need only mou
 Before continuing, make sure you first build the image as indicated in the [Build the image](#build-the-image) section, or check the [Using the image from Docker Hub](#using-the-image-from-docker-hub) section if you prefer to use a pre-made image.
 
 This example will build the firmware, generate the MCUBoot image and generate the DFU file.
-For cloning the repo, see [these instructions](../doc/buildAndProgram.md#clone-the-repo). Outputs will be written to **<project_root>/build/output**:
+For cloning the repo, see [these instructions](/doc/dev/buildAndProgram.md#clone-the-repo). Outputs will be written to **<project_root>/build/output**:
 
 ```bash
 cd <project_root> # e.g. cd ./work/Pinetime

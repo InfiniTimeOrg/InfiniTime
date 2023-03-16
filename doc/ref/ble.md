@@ -304,3 +304,4 @@ This characteristic expects a particular format:
 - Binary 0001 (`uint8`)
 
 Write all of these together, encoded as little-endian, to the current time characteristic.
+

@@ -1,14 +1,14 @@
 # [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
 
-![InfiniTime logo](doc/logo/infinitime-logo-small.jpg "InfiniTime Logo")
+![InfiniTime logo](doc/ref/logo/infinitime-logo-small.jpg "InfiniTime Logo")
 
 Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/pinetime/) with many features, written in modern C++.
 
 ## New to InfiniTime?
 
-- [Getting started with InfiniTime](doc/gettingStarted/gettingStarted-1.0.md)
-- [Updating the software](doc/gettingStarted/updating-software.md)
-- [About the firmware and bootloader](doc/gettingStarted/about-software.md)
+- [Getting started with InfiniTime](doc/user/gettingStarted/gettingStarted-1.0.md)
+- [Updating the software](doc/user/gettingStarted/updating-software.md)
+- [About the firmware and bootloader](doc/user/gettingStarted/about-software.md)
 
 ### Companion apps
 
@@ -23,46 +23,46 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 
 ## Development
 
-- [InfiniTime Vision](doc/InfiniTimeVision.md)
-- [Rough structure of the code](doc/code/Intro.md)
-- [How to implement an application](doc/code/Apps.md)
+- [InfiniTime Vision](doc/dev/InfiniTimeVision.md)
+- [Rough structure of the code](doc/dev/code/Intro.md)
+- [How to implement an application](doc/dev/code/Apps.md)
 - [Generate the fonts and symbols](src/displayapp/fonts/README.md)
-- [Tips on designing an app UI](doc/ui_guidelines.md)
+- [Tips on designing an app UI](doc/dev/ui_guidelines.md)
 - [Bootloader, OTA and DFU](bootloader/README.md)
-- [External resources](doc/ExternalResources.md)
+- [External resources](doc/ref/ExternalResources.md)
 
 ### Contributing
 
 - [How to contribute?](CONTRIBUTING.md)
-- [Coding conventions](doc/coding-convention.md)
+- [Coding conventions](doc/dev/coding-convention.md)
 
 ### Build, flash and debug
 
 - [InfiniTime simulator](https://github.com/InfiniTimeOrg/InfiniSim)
-- [Build the project](doc/buildAndProgram.md)
-- [Build the project with Docker](doc/buildWithDocker.md)
-- [Build the project with VSCode](doc/buildWithVScode.md)
-- [Flash the firmware using OpenOCD and STLinkV2](doc/openOCD.md)
-- [Flash the firmware using SWD interface](doc/SWD.md)
-- [Flash the firmware using JLink](doc/jlink.md)
-- [Flash the firmware using GDB](doc/gdb.md)
-- [Stub using NRF52-DK](doc/PinetimeStubWithNrf52DK.md)
+- [Build the project](doc/dev/buildAndProgram.md)
+- [Build the project with Docker](doc/dev/buildWithDocker.md)
+- [Build the project with VSCode](doc/dev/buildWithVScode.md)
+- [Flash the firmware using OpenOCD and STLinkV2](doc/ref/openOCD.md)
+- [Flash the firmware using SWD interface](doc/ref/SWD.md)
+- [Flash the firmware using JLink](doc/ref/jlink.md)
+- [Flash the firmware using GDB](doc/ref/gdb.md)
+- [Stub using NRF52-DK](doc/ref/PinetimeStubWithNrf52DK.md)
 
 ### API
 
-- [BLE implementation and API](doc/ble.md)
+- [BLE implementation and API](doc/ref/ble.md)
 
 ### Architecture and technical topics
 
-- [Memory analysis](doc/MemoryAnalysis.md)
+- [Memory analysis](doc/ref/MemoryAnalysis.md)
 
 ### Project management
 
-- [Maintainer's guide](doc/maintainer-guide.md)
-- [Versioning](doc/versioning.md)
-- [Project branches](doc/branches.md)
-- [Files included in the release notes](doc/filesInReleaseNotes.md)
-- [Files needed by the factory](doc/files-needed-by-factory.md)
+- [Maintainer's guide](doc/dev/maintainer-guide.md)
+- [Versioning](doc/dev/versioning.md)
+- [Project branches](doc/dev/branches.md)
+- [Files included in the release notes](doc/dev/filesInReleaseNotes.md)
+- [Files needed by the factory](doc/ref/files-needed-by-factory.md)
 
 ## Licenses
 

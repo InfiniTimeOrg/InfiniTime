@@ -166,3 +166,4 @@ This section describes the differences between Adafruit's spec and InfiniTime's 
 The status codes returned by InfiniTime are a signed 8-bit integer, rather than an unsigned one as described in the spec.
 
 InfiniTime uses LittleFS error codes rather than the ones described in the spec. Those codes can be found in [lfs.h](https://github.com/littlefs-project/littlefs/blob/master/lfs.h#L70).
+
