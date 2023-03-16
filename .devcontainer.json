@@ -1,11 +1,8 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.154.2/containers/cpp
 {
-	// "name": "Pinetime",
-	// "image": "feabhas/pinetime-dev"
 	"build": {
 		"dockerfile": "docker/Dockerfile",
-		// Update 'VARIANT' to pick an Debian / Ubuntu OS version: debian-10, debian-9, ubuntu-20.04, ubuntu-18.04
 		"args": {
 			"DEVCONTAINER": "true"
 		}
@@ -15,26 +12,31 @@
 		"--security-opt",
 		"seccomp=unconfined"
 	],
-	// Set *default* container specific settings.json values on container create.
-	"settings": {
-		"terminal.integrated.shell.linux": "/bin/bash",
-		"editor.formatOnSave": true,
-		// FIXME: This and the Dockerfile might get out of sync
-		"clang-format.executable": "clang-format-14"
+	"customizations": {
+		"vscode": {
+			"settings": {
+				// Set *default* container specific settings.json values on container create.
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "/bin/bash"
+					}
+				},
+				"terminal.integrated.defaultProfile.linux": "bash",
+				"editor.formatOnSave": true,
+				// FIXME: This and the Dockerfile might get out of sync
+				"clang-format.executable": "clang-format-14"
+			},
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cmake-tools",
+				"marus25.cortex-debug",
+				"notskm.clang-tidy",
+				"mjohns.clang-format"
+			]
+		}
 	},
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [
-		"ms-vscode.cpptools",
-		"ms-vscode.cmake-tools",
-		"marus25.cortex-debug",
-		"notskm.clang-tidy",
-		"mjohns.clang-format"
-	],
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "",
-	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	// "remoteUser": "vscode"
 	"remoteUser": "infinitime"
 }
