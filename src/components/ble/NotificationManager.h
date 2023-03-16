@@ -30,7 +30,7 @@ namespace Pinetime {
         Id id = 0;
         bool valid = false;
         uint8_t size;
-        std::array<char, MessageSize + 1> message;
+        std::array<char, MessageSize + 1> message {};
         Categories category = Categories::Unknown;
 
         const char* Message() const;
