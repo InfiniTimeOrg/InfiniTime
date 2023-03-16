@@ -6,6 +6,7 @@
 #include <memory>
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
+#include "utility/DirtyValue.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -51,14 +52,14 @@ namespace Pinetime {
         uint32_t savedTick = 0;
         uint8_t chargingBatteryPercent = 101; // not a mistake ;)
 
-        DirtyValue<uint8_t> batteryPercentRemaining {};
-        DirtyValue<bool> isCharging {};
-        DirtyValue<bool> bleState {};
-        DirtyValue<bool> bleRadioEnabled {};
-        DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
-        DirtyValue<bool> motionSensorOk {};
-        DirtyValue<uint32_t> stepCount {};
-        DirtyValue<bool> notificationState {};
+        Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
+        Utility::DirtyValue<bool> isCharging {};
+        Utility::DirtyValue<bool> bleState {};
+        Utility::DirtyValue<bool> bleRadioEnabled {};
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
+        Utility::DirtyValue<bool> motionSensorOk {};
+        Utility::DirtyValue<uint32_t> stepCount {};
+        Utility::DirtyValue<bool> notificationState {};
 
         // Lines making up the side cover
         lv_obj_t* lineBattery;

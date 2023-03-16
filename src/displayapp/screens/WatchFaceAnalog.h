@@ -9,7 +9,8 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
-#include <displayapp/screens/BatteryIcon.h>
+#include "displayapp/screens/BatteryIcon.h"
+#include "utility/DirtyValue.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -37,13 +38,13 @@ namespace Pinetime {
       private:
         uint8_t sHour, sMinute, sSecond;
 
-        DirtyValue<uint8_t> batteryPercentRemaining {0};
-        DirtyValue<bool> isCharging {};
-        DirtyValue<bool> bleState {};
-        DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
-        DirtyValue<bool> notificationState {false};
+        Utility::DirtyValue<uint8_t> batteryPercentRemaining {0};
+        Utility::DirtyValue<bool> isCharging {};
+        Utility::DirtyValue<bool> bleState {};
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
+        Utility::DirtyValue<bool> notificationState {false};
         using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
-        DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
 
         lv_obj_t* hour_body;
         lv_obj_t* hour_body_trace;
