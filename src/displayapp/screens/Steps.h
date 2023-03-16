@@ -16,7 +16,7 @@ namespace Pinetime {
 
       class Steps : public Screen {
       public:
-        Steps(DisplayApp* app, Controllers::MotionController& motionController, Controllers::Settings& settingsController);
+        Steps(Controllers::MotionController& motionController, Controllers::Settings& settingsController);
         ~Steps() override;
 
         void Refresh() override;

@@ -44,12 +44,10 @@ namespace {
   }
 }
 
-SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
-  : Screen(app),
-    checkboxList(
+SettingChimes::SettingChimes(Pinetime::Controllers::Settings& settingsController)
+  : checkboxList(
       0,
       1,
-      app,
       "Chimes",
       Symbols::clock,
       GetDefaultOption(settingsController.GetChimeOption()),

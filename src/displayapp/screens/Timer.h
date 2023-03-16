@@ -12,7 +12,7 @@
 namespace Pinetime::Applications::Screens {
   class Timer : public Screen {
   public:
-    Timer(DisplayApp* app, Controllers::TimerController& timerController);
+    Timer(Controllers::TimerController& timerController);
     ~Timer() override;
     void Refresh() override;
     void Reset();

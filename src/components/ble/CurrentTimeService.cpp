@@ -1,5 +1,4 @@
 #include "components/ble/CurrentTimeService.h"
-#include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 
 using namespace Pinetime::Controllers;
@@ -50,8 +49,7 @@ int CurrentTimeService::OnCurrentTimeAccessed(struct ble_gatt_access_ctxt* ctxt)
 
     NRF_LOG_INFO("Received data: %d-%d-%d %d:%d:%d", year, result.month, result.dayofmonth, result.hour, result.minute, result.second);
 
-    m_dateTimeController
-      .SetTime(year, result.month, result.dayofmonth, result.hour, result.minute, result.second, nrf_rtc_counter_get(portNRF_RTC_REG));
+    m_dateTimeController.SetTime(year, result.month, result.dayofmonth, result.hour, result.minute, result.second);
 
   } else if (ctxt->op == BLE_GATT_ACCESS_OP_READ_CHR) {
     CtsCurrentTimeData currentDateTime;

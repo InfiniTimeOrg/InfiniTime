@@ -660,14 +660,6 @@ set(INCLUDE_FILES
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
-        libs/date/include/date/tz.h
-        libs/date/include/date/chrono_io.h
-        libs/date/include/date/date.h
-        libs/date/include/date/islamic.h
-        libs/date/include/date/iso_week.h
-        libs/date/include/date/julian.h
-        libs/date/include/date/ptz.h
-        libs/date/include/date/tz_private.h
         displayapp/LittleVgl.h
         displayapp/InfiniTimeTheme.h
         systemtask/SystemTask.h
@@ -692,7 +684,6 @@ include_directories(
 include_directories(SYSTEM
         libs/
         FreeRTOS/
-        libs/date/include
         libs/mynewt-nimble/porting/npl/freertos/include
         libs/mynewt-nimble/nimble/include
         libs/mynewt-nimble/porting/nimble/include
@@ -783,7 +774,7 @@ link_directories(
 
 
 set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -ftree-vrp -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin -fshort-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -fstack-usage -fno-exceptions -fno-non-call-exceptions)
-set(WARNING_FLAGS -Wall -Wextra -Warray-bounds=2 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-nonliteral -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-expansion-to-defined -Wreturn-type -Werror=return-type)
+set(WARNING_FLAGS -Wall -Wextra -Warray-bounds=2 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-nonliteral -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-expansion-to-defined -Wreturn-type -Werror=return-type -Werror)
 set(DEBUG_FLAGS -Og -g3)
 set(RELEASE_FLAGS -Os)
 set(CXX_FLAGS -fno-rtti)

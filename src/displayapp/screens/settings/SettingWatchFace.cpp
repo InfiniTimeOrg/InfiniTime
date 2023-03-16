@@ -22,7 +22,7 @@ auto SettingWatchFace::CreateScreenList() const {
 SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app,
                                    Pinetime::Controllers::Settings& settingsController,
                                    Pinetime::Controllers::FS& filesystem)
-  : Screen(app),
+  : app {app},
     settingsController {settingsController},
     filesystem {filesystem},
     screens {app, 0, CreateScreenList(), Screens::ScreenListModes::UpDown} {
@@ -45,7 +45,6 @@ std::unique_ptr<Screen> SettingWatchFace::CreateScreen(unsigned int screenNum) c
   return std::make_unique<Screens::CheckboxList>(
     screenNum,
     nScreens,
-    app,
     title,
     symbol,
     settingsController.GetClockFace(),

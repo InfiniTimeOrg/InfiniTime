@@ -1,7 +1,8 @@
 #include <array>
 #include <cstddef>
 
-template <typename T, size_t N> class StaticStack {
+template <typename T, size_t N>
+class StaticStack {
 public:
   T Pop();
   void Push(T element);
@@ -15,24 +16,28 @@ private:
 };
 
 // Returns random data when popping from empty array.
-template <typename T, size_t N> T StaticStack<T, N>::Pop() {
+template <typename T, size_t N>
+T StaticStack<T, N>::Pop() {
   if (stackPointer > 0) {
     stackPointer--;
   }
   return elementArray[stackPointer];
 }
 
-template <typename T, size_t N> void StaticStack<T, N>::Push(T element) {
+template <typename T, size_t N>
+void StaticStack<T, N>::Push(T element) {
   if (stackPointer < elementArray.size()) {
     elementArray[stackPointer] = element;
     stackPointer++;
   }
 }
 
-template <typename T, size_t N> void StaticStack<T, N>::Reset() {
+template <typename T, size_t N>
+void StaticStack<T, N>::Reset() {
   stackPointer = 0;
 }
 
-template <typename T, size_t N> T StaticStack<T, N>::Top() {
+template <typename T, size_t N>
+T StaticStack<T, N>::Top() {
   return elementArray[stackPointer - 1];
 }

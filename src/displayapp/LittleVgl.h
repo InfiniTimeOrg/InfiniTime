@@ -1,10 +1,10 @@
 #pragma once
 
 #include <lvgl/lvgl.h>
+#include <components/fs/FS.h>
 
 namespace Pinetime {
   namespace Drivers {
-    class Cst816S;
     class St7789;
   }
 
@@ -12,7 +12,7 @@ namespace Pinetime {
     class LittleVgl {
     public:
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
-      LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Drivers::Cst816S& touchPanel);
+      LittleVgl(Pinetime::Drivers::St7789& lcd, Pinetime::Controllers::FS& filesystem);
 
       LittleVgl(const LittleVgl&) = delete;
       LittleVgl& operator=(const LittleVgl&) = delete;
@@ -24,7 +24,8 @@ namespace Pinetime {
       void FlushDisplay(const lv_area_t* area, lv_color_t* color_p);
       bool GetTouchPadInfo(lv_indev_data_t* ptr);
       void SetFullRefresh(FullRefreshDirections direction);
-      void SetNewTouchPoint(uint16_t x, uint16_t y, bool contact);
+      void SetNewTouchPoint(int16_t x, int16_t y, bool contact);
+      void CancelTap();
 
       bool GetFullRefresh() {
         bool returnValue = fullRefresh;
@@ -37,9 +38,10 @@ namespace Pinetime {
     private:
       void InitDisplay();
       void InitTouchpad();
+      void InitFileSystem();
 
       Pinetime::Drivers::St7789& lcd;
-      Pinetime::Drivers::Cst816S& touchPanel;
+      Pinetime::Controllers::FS& filesystem;
 
       lv_disp_buf_t disp_buf_2;
       lv_color_t buf2_1[LV_HOR_RES_MAX * 4];
@@ -60,9 +62,9 @@ namespace Pinetime {
       uint16_t writeOffset = 0;
       uint16_t scrollOffset = 0;
 
-      uint16_t tap_x = 0;
-      uint16_t tap_y = 0;
+      lv_point_t touchPoint = {};
       bool tapped = false;
+      bool isCancelled = false;
     };
   }
 }

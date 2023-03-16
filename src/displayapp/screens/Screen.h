@@ -10,7 +10,8 @@ namespace Pinetime {
 
     namespace Screens {
 
-      template <class T> class DirtyValue {
+      template <class T>
+      class DirtyValue {
       public:
         DirtyValue() = default; // Use NSDMI
 
@@ -49,8 +50,7 @@ namespace Pinetime {
         }
 
       public:
-        explicit Screen(DisplayApp* app) : app {app} {
-        }
+        explicit Screen() = default;
 
         virtual ~Screen() = default;
 
@@ -76,7 +76,6 @@ namespace Pinetime {
         }
 
       protected:
-        DisplayApp* app;
         bool running = true;
       };
     }

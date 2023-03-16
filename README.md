@@ -1,7 +1,5 @@
 # [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
 
-[![Build PineTime Firmware](https://github.com/InfiniTimeOrg/InfiniTime/workflows/Build%20PineTime%20Firmware/badge.svg?branch=master)](https://github.com/InfiniTimeOrg/InfiniTime/actions)
-
 ![InfiniTime logo](doc/logo/infinitime-logo-small.jpg "InfiniTime Logo")
 
 Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/pinetime/) with many features, written in modern C++.
@@ -19,6 +17,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 - [Siglo](https://github.com/alexr4535/siglo) (Linux)
 - [InfiniLink](https://github.com/InfiniTimeOrg/InfiniLink) (iOS) **[Looking for a new maintainer]**
 - [ITD](https://gitea.arsenm.dev/Arsen6331/itd) (Linux)
+- [WatchMate](https://github.com/azymohliad/watchmate) (Linux)
 
 ***Note** : We removed mentions to NRFConnect as this app is closed source and recent versions do not work anymore with InfiniTime (the last version known to work is 4.24.3). If you used NRFConnect in the past, we recommend you switch to [Gadgetbridge](https://gadgetbridge.org/).*
 
@@ -34,7 +33,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 
 ### Contributing
 
-- [How to contribute?](doc/contribute.md)
+- [How to contribute?](CONTRIBUTING.md)
 - [Coding conventions](doc/coding-convention.md)
 
 ### Build, flash and debug
@@ -63,6 +62,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 - [Versioning](doc/versioning.md)
 - [Project branches](doc/branches.md)
 - [Files included in the release notes](doc/filesInReleaseNotes.md)
+- [Files needed by the factory](doc/files-needed-by-factory.md)
 
 ## Licenses
 

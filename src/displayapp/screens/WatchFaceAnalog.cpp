@@ -43,14 +43,13 @@ namespace {
 
 }
 
-WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
-                                 Controllers::DateTime& dateTimeController,
-                                 Controllers::Battery& batteryController,
-                                 Controllers::Ble& bleController,
+WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
+                                 const Controllers::Battery& batteryController,
+                                 const Controllers::Ble& bleController,
                                  Controllers::NotificationManager& notificationManager,
                                  Controllers::Settings& settingsController)
-  : Screen(app),
-    currentDateTime {{}},
+  : currentDateTime {{}},
+    batteryIcon(true),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
@@ -71,6 +70,10 @@ WatchFaceAnalog::WatchFaceAnalog(Pinetime::Applications::DisplayApp* app,
   plugIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(plugIcon, Symbols::plug);
   lv_obj_align(plugIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+
+  bleIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(bleIcon, "");
+  lv_obj_align(bleIcon, nullptr, LV_ALIGN_IN_TOP_RIGHT, -30, 0);
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
@@ -204,6 +207,15 @@ void WatchFaceAnalog::Refresh() {
     }
   }
 
+  bleState = bleController.IsConnected();
+  if (bleState.IsUpdated()) {
+    if (bleState.Get()) {
+      lv_label_set_text_static(bleIcon, Symbols::bluetooth);
+    } else {
+      lv_label_set_text_static(bleIcon, "");
+    }
+  }
+
   notificationState = notificationManager.AreNewNotificationsAvailable();
 
   if (notificationState.IsUpdated()) {
@@ -211,20 +223,12 @@ void WatchFaceAnalog::Refresh() {
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();
-
   if (currentDateTime.IsUpdated()) {
-    Pinetime::Controllers::DateTime::Months month = dateTimeController.Month();
-    uint8_t day = dateTimeController.Day();
-    Pinetime::Controllers::DateTime::Days dayOfWeek = dateTimeController.DayOfWeek();
-
     UpdateClock();
 
-    if ((month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
-      lv_label_set_text_fmt(label_date_day, "%s\n%02i", dateTimeController.DayOfWeekShortToString(), day);
-
-      currentMonth = month;
-      currentDayOfWeek = dayOfWeek;
-      currentDay = day;
+    currentDate = std::chrono::time_point_cast<days>(currentDateTime.Get());
+    if (currentDate.IsUpdated()) {
+      lv_label_set_text_fmt(label_date_day, "%s\n%02i", dateTimeController.DayOfWeekShortToString(), dateTimeController.Day());
     }
   }
 }

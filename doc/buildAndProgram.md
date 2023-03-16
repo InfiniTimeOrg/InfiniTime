@@ -48,7 +48,7 @@ CMake configures the project according to variables you specify the command line
 #### (\*) Note about **CMAKE_BUILD_TYPE**
 By default, this variable is set to *Release*. It compiles the code with size and speed optimizations. We use this value for all the binaries we publish when we [release](https://github.com/InfiniTimeOrg/InfiniTime/releases) new versions of InfiniTime.
 
-The *Debug* mode disables all optimizations, which makes the code easier to debug. However, the binary size will likely be too big to fit in the internal flash memory. If you want to build and debug a *Debug* binary, you'll need to disable some parts of the code. For example, the icons for the **Navigation** app use a lot of memory space. You can comment the content of `m_iconMap` in the [Navigation](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/displayapp/screens/Navigation.h#L148) application to free some memory.
+The *Debug* mode disables all optimizations, which makes the code easier to debug. However, the binary size will likely be too big to fit in the internal flash memory. If you want to build and debug a *Debug* binary, you'll need to disable some parts of the code. For example, the icons for the **Navigation** app use a lot of memory space. You can comment the content of `m_iconMap` in the [Navigation](https://github.com/InfiniTimeOrg/InfiniTime/blob/main/src/displayapp/screens/Navigation.h#L148) application to free some memory.
 
 #### (\*\*) Note about **BUILD_DFU**
 DFU files are the files you'll need to install your build of InfiniTime using OTA (over-the-air) mechanism. To generate the DFU file, the Python tool [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil) is needed on your system. Check that this tool is properly installed before enabling this option.
@@ -75,7 +75,7 @@ If you just want to build the project and run it on the Pinetime, using *pinetim
 Build:
 
 ```
-make -j pinetime-app
+make -j4 pinetime-app
 ```
 
 List of files generated:
@@ -86,44 +86,6 @@ Binary files are generated into the folder `src`:
 - **pinetime-mcuboot-app.bin, .hex and .out** : firmware with bootloader support in bin, hex and out formats.
 - **pinetime-mcuboot-app.map** : map file
 - **pinetime-mcuboot-app-image** : MCUBoot image of the firmware
-- **pinetime-mcuboot-ap-dfu** : DFU file of the firmware
+- **pinetime-mcuboot-app-dfu** : DFU file of the firmware
 
 The same files are generated for **pinetime-recovery** and **pinetime-recoveryloader**
-
-### How to generate files needed by the factory
-
-These files are needed by the Pine64 factory to flash InfiniTime as the default firmware on the PineTimes.
-
-Two files are needed: an **HEX (.hex)** file that contains the content of the internal flash memory (bootloader + InfiniTime) and a **binary (.bin)** file that contains the content of the external flash memory (recovery firmware).
-
-#### merged-internal.hex
-
-First, convert the bootloader to hex:
-
-```
-<ARM TOOLCHAIN>/bin/arm-none-eabi-objcopy -I binary -O ihex ./bootloader.bin ./bootloader.hex
-```
-
-where `bootloader.bin` is the [last stable version](https://github.com/JF002/pinetime-mcuboot-bootloader/releases) of the [bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader).
-
-Then, convert the MCUBoot image of InfiniTime:
-
-```
-<ARM TOOLCHAIN>/bin/arm-none-eabi-objcopy -I binary -O ihex --change-addresses 0x8000 ./pinetime-mcuboot-app-image-1.6.0.bin ./pinetime-mcuboot-app-image-1.6.0.hex
-```
-
-where `pinetime-mcuboot-app-image-1.6.0.bin` is [the bin of the last MCUBoot image](https://github.com/InfiniTimeOrg/InfiniTime/releases) of [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime).
-
-Pay attention to the parameter `--change-addresses 0x8000`. It's needed to ensure the image will be flashed at the offset expected by the bootloader (0x8000).
-
-Finally, merge them together with **mergehex**:
-
-```
-/opt/mergehex/mergehex -m ./bootloader.hex ./pinetime-mcuboot-app-image-1.6.0.hex  -o merged-internal.hex
-```
-
-This file must be flashed at offset **0x00** of the internal memory of the NRF52832.
-
-#### spinor.bin
-
-This file is the MCUBoot image of the last stable version of the recovery firmware. It must be flashed at offset **0x00** of the external SPINOR flash memory.

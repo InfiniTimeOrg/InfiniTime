@@ -5,7 +5,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Twos::Twos(Pinetime::Applications::DisplayApp* app) : Screen(app) {
+Twos::Twos() {
 
   struct colorPair {
     lv_color_t bg;

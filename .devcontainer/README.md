@@ -24,7 +24,7 @@ In order to build InfiniTime we need to run the initial submodule init and CMake
 
 #### Manually
 
-You can use the VS Code terminal to run the CMake commands as outlined in the [build instructions](blob/develop/doc/buildAndProgram.md)
+You can use the VS Code terminal to run the CMake commands as outlined in the [build instructions](https://github.com/InfiniTimeOrg/InfiniTime/blob/main/doc/buildAndProgram.md)
 
 #### Script
 
