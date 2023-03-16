@@ -38,12 +38,11 @@ RUN apt-get update -qq \
       libpangocairo-1.0-0 \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
-# Add the necessary apt-gets for devcontainer if this is a devcontainer
-RUN if [ -n "$DEVCONTAINER" ] ; then \
-    apt-get update -qq \
-        && apt-get install -y \
-            clang-format-14 \
-            clang-tidy; fi
+# Add the necessary apt-gets for the devcontainer
+RUN apt-get update -qq \
+    && apt-get install -y \
+        clang-format-14 \
+        clang-tidy
 
 # TODO: Do I need to set the locales for the devcontainer?
 
@@ -65,8 +64,8 @@ RUN bash -c "source /opt/build.sh; GetNrfSdk;"
 # McuBoot
 RUN bash -c "source /opt/build.sh; GetMcuBoot;"
 
-# If we are a devcontainer add the infinitime user
-RUN if [ -n "$DEVCONTAINER" ] ; then adduser infinitime ; fi
+# Add the infinitime user for connecting devcontainer
+RUN adduser infinitime
     
 ENV SOURCES_DIR /sources
 CMD ["/opt/build.sh"]
