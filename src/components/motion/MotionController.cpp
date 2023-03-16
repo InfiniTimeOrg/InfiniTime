@@ -54,7 +54,7 @@ bool MotionController::ShouldRaiseWake(bool isSleeping) {
 
 bool MotionController::ShouldShakeWake(uint16_t thresh) {
   /* Currently Polling at 10hz, If this ever goes faster scalar and EMA might need adjusting */
-  int32_t speed = std::abs(z + (y / 2) + (x / 4) - (lastY / 2) - (lastX / 4) - lastZ) / (time - lastTime) * 100;
+  int32_t speed = std::abs(z - lastZ + (y / 2) - (lastY / 2) + (x / 4) - (lastX / 4)) / (time - lastTime) * 100;
   // implemented without floats as .25Alpha
   accumulatedSpeed = (speed / 5) + ((accumulatedSpeed / 5) * 4);
 
