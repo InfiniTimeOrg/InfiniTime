@@ -74,6 +74,7 @@ namespace Pinetime {
       void SetFullRefresh(FullRefreshDirections direction);
 
       void Register(Pinetime::System::SystemTask* systemTask);
+      void HandleScreenGesture(lv_gesture_dir_t dir);
 
     private:
       Pinetime::Drivers::St7789& lcd;
@@ -116,6 +117,7 @@ namespace Pinetime {
       static void Process(void* instance);
       void InitHw();
       void Refresh();
+      void LoadPreviousScreen();
       void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);
       void PushMessageToSystemTask(Pinetime::System::Messages message);

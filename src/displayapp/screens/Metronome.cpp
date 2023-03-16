@@ -34,6 +34,7 @@ Metronome::Metronome(Controllers::MotorController& motorController, System::Syst
   lv_obj_set_size(bpmArc, 210, 210);
   lv_arc_set_adjustable(bpmArc, true);
   lv_obj_align(bpmArc, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_obj_set_gesture_parent(bpmArc, false);
 
   bpmValue = createLabel("120", bpmArc, LV_ALIGN_IN_TOP_MID, &jetbrains_mono_76, 0, 55);
   createLabel("bpm", bpmValue, LV_ALIGN_OUT_BOTTOM_MID, &jetbrains_mono_bold_20, 0, 0);
@@ -113,16 +114,9 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
           lv_label_set_text_fmt(bpmValue, "%03d", bpm);
         }
         tappedTime = xTaskGetTickCount();
-        allowExit = true;
       }
       break;
     }
-    case LV_EVENT_RELEASED:
-    case LV_EVENT_PRESS_LOST:
-      if (obj == bpmTap) {
-        allowExit = false;
-      }
-      break;
     case LV_EVENT_CLICKED: {
       if (obj == playPause) {
         metronomeStarted = !metronomeStarted;
@@ -141,11 +135,4 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
     default:
       break;
   }
-}
-
-bool Metronome::OnTouchEvent(TouchEvents event) {
-  if (event == TouchEvents::SwipeDown && allowExit) {
-    running = false;
-  }
-  return true;
 }
