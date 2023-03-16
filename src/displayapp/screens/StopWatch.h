@@ -13,6 +13,7 @@ namespace Pinetime::Applications::Screens {
   enum class States { Init, Running, Halted };
 
   struct TimeSeparated_t {
+    int hours;
     int mins;
     int secs;
     int hundredths;

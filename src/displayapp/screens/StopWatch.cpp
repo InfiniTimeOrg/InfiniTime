@@ -13,7 +13,8 @@ namespace {
     const int hundredths = (timeElapsedCentis % 100);
     const int secs = (timeElapsedCentis / 100) % 60;
     const int mins = (timeElapsedCentis / 100) / 60;
-    return TimeSeparated_t {mins, secs, hundredths};
+    const int hours = ((timeElapsedCentis / 100) / 60) / 60;
+    return TimeSeparated_t {hours, mins, secs, hundredths};
   }
 
   void play_pause_event_handler(lv_obj_t* obj, lv_event_t event) {
@@ -146,8 +147,14 @@ void StopWatch::Refresh() {
     laps[lapsDone] = oldTimeElapsed + xTaskGetTickCount() - startTime;
 
     TimeSeparated_t currentTimeSeparated = convertTicksToTimeSegments(laps[lapsDone]);
-    lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
-    lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
+    if (currentTimeSeparated.hours == 0) {
+      lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
+      lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
+    } else {
+      lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.hours, currentTimeSeparated.mins);
+      lv_label_set_text_fmt(msecTime, "%02d:%02d", currentTimeSeparated.secs, currentTimeSeparated.hundredths);
+      lv_obj_align(msecTime, lapText, LV_ALIGN_OUT_TOP_MID, 0, 0);
+    }
   } else if (currentState == States::Halted) {
     const TickType_t currentTime = xTaskGetTickCount();
     if (currentTime > blinkTime) {
@@ -183,7 +190,11 @@ void StopWatch::stopLapBtnEventHandler() {
       }
       TimeSeparated_t times = convertTicksToTimeSegments(laps[i]);
       char buffer[16];
-      sprintf(buffer, "#%2d   %2d:%02d.%02d\n", i + 1, times.mins, times.secs, times.hundredths);
+      if (times.hours == 0) {
+        sprintf(buffer, "#%2d   %2d:%02d.%02d\n", i + 1, times.mins, times.secs, times.hundredths);
+      } else {
+        sprintf(buffer, "#%2d %2d:%02d:%02d.%02d\n", i + 1, times.hours, times.mins, times.secs, times.hundredths);
+      }
       lv_label_ins_text(lapText, LV_LABEL_POS_LAST, buffer);
     }
   } else if (currentState == States::Halted) {
