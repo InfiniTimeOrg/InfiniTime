@@ -31,7 +31,5 @@
 			]
 		}
 	},
-	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "",
 	"remoteUser": "infinitime"
 }
