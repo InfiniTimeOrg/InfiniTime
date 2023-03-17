@@ -63,7 +63,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Pinetime::Applications::DisplayApp& displayApp,
-                       Pinetime::Applications::HeartRateTask& heartRateApp,
+                       Pinetime::Applications::HeartRateTask& heartRateTask,
                        Pinetime::Controllers::FS& fs,
                        Pinetime::Controllers::TouchHandler& touchHandler,
                        Pinetime::Controllers::ButtonHandler& buttonHandler)
@@ -84,7 +84,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
     heartRateController {heartRateController},
     motionController {motionController},
     displayApp {displayApp},
-    heartRateApp(heartRateApp),
+    heartRateTask(heartRateTask),
     fs {fs},
     touchHandler {touchHandler},
     buttonHandler {buttonHandler},
@@ -157,7 +157,7 @@ void SystemTask::Work() {
 
   heartRateSensor.Init();
   heartRateSensor.Disable();
-  heartRateApp.Start();
+  heartRateTask.Start();
 
   buttonHandler.Init(this);
 
@@ -229,7 +229,7 @@ void SystemTask::Work() {
           spiNorFlash.Wakeup();
 
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
-          heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
+          heartRateTask.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
 
           if (bleController.IsRadioEnabled() && !bleController.IsConnected()) {
             nimbleController.RestartFastAdv();
@@ -261,7 +261,7 @@ void SystemTask::Work() {
           xTimerStop(idleTimer, 0);
           xTimerStop(dimTimer, 0);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
-          heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
+          heartRateTask.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
           break;
         case Messages::OnNewTime:
           ReloadIdleTimer();

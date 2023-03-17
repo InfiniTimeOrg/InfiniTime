@@ -144,7 +144,7 @@ void WatchFaceDigital::Refresh() {
   }
 
   heartbeat = heartRateController.HeartRate();
-  heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
+  heartbeatRunning = heartRateController.IsRunning();
   if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
     if (heartbeatRunning.Get()) {
       lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xCE1B1B));

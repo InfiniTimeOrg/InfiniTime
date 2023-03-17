@@ -62,18 +62,7 @@ int HeartRateService::OnAtributeRequested(uint16_t attributeHandle, ble_gatt_acc
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
 
   } else if (attributeHandle == runningCharHandle && context->op == BLE_GATT_ACCESS_OP_READ_CHR) {
-    uint8_t running;
-    switch (heartRateController.State()) {
-      case HeartRateController::States::Stopped:
-      case HeartRateController::States::NoTouch:
-        running = 0;
-        break;
-      case HeartRateController::States::NotEnoughData:
-      case HeartRateController::States::Running:
-        running = 1;
-        break;
-    }
-
+    uint8_t running = static_cast<uint8_t>(heartRateController.IsRunning());
     int res = os_mbuf_append(context->om, &running, 1);
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
 
@@ -83,10 +72,10 @@ int HeartRateService::OnAtributeRequested(uint16_t attributeHandle, ble_gatt_acc
     }
 
     uint8_t enable = context->om->om_data[0];
-    if (enable) {
-      heartRateController.Start();
-    } else {
-      heartRateController.Stop();
+    if (enable == 1) {
+      heartRateController.Start(true);
+    } else if (enable == 0) {
+      heartRateController.Stop(true);
     }
     return 0;
   }

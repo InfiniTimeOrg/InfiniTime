@@ -16,8 +16,11 @@ namespace Pinetime {
   namespace Applications {
     class HeartRateTask {
     public:
-      enum class Messages : uint8_t { GoToSleep, WakeUp, StartMeasurement, StopMeasurement };
-      enum class States { Idle, Running };
+      enum class Messages : uint8_t {
+          GoToSleep, WakeUp,
+          StartMeasurementAwake, StopMeasurementAwake,
+          StartMeasurementAlways, StopMeasurementAlways
+      };
 
       explicit HeartRateTask(Drivers::Hrs3300& heartRateSensor, Controllers::HeartRateController& controller);
       void Start();
@@ -31,11 +34,13 @@ namespace Pinetime {
 
       TaskHandle_t taskHandle;
       QueueHandle_t messageQueue;
-      States state = States::Running;
       Drivers::Hrs3300& heartRateSensor;
       Controllers::HeartRateController& controller;
       Controllers::Ppg ppg;
-      bool measurementStarted = false;
+      bool sleeping = false;
+      bool measuring = false;
+      bool measureWhenAwake = false;
+      bool measureAlways = false;
     };
 
   }
