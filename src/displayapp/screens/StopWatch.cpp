@@ -12,7 +12,7 @@ namespace {
 
     const int hundredths = (timeElapsedCentis % 100);
     const int secs = (timeElapsedCentis / 100) % 60;
-    const int mins = (((timeElapsedCentis / 100)) / 60) % 60;
+    const int mins = ((timeElapsedCentis / 100) / 60) % 60;
     const int hours = ((timeElapsedCentis / 100) / 60) / 60;
     return TimeSeparated_t {hours, mins, secs, hundredths};
   }
