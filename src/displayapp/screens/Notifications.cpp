@@ -1,4 +1,5 @@
 #include "displayapp/screens/Notifications.h"
+#include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/DisplayApp.h"
 #include "components/ble/MusicService.h"
 #include "components/ble/AlertNotificationService.h"
@@ -287,7 +288,8 @@ Notifications::NotificationItem::NotificationItem(const char* title,
     if (i+1 == notifNr) { //currently selected should be orange
       lv_obj_set_style_local_text_color(alert_icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
     }
-    lv_label_set_text_fmt(alert_icon, Symbols::info);
+    //TODO: get categories for the other notifications
+    lv_label_set_text_fmt(alert_icon, NotificationIcon::GetCategoryIcon(category));
     lv_obj_align(alert_icon, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -22*i);
   }
 

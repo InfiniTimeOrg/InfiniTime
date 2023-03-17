@@ -8,3 +8,12 @@ const char* NotificationIcon::GetIcon(bool newNotificationAvailable) {
   else
     return "";
 }
+
+//TODO: does this really belong here?
+const char* NotificationIcon::GetCategoryIcon(Pinetime::Controllers::NotificationManager::Categories category) {
+  switch (category) {
+    //TODO add symbols for each category
+    default:
+      return Symbols::info;
+  }  
+}
