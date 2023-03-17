@@ -1,32 +1,34 @@
 #include "displayapp/screens/settings/SettingSetTime.h"
 #include <lvgl/lvgl.h>
-#include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
 #include "components/settings/Settings.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  constexpr int16_t POS_X_HOURS = -72;
-  constexpr int16_t POS_X_MINUTES = 0;
-  constexpr int16_t POS_X_SECONDS = 72;
-  constexpr int16_t POS_Y_PLUS = -50;
-  constexpr int16_t POS_Y_TEXT = -6;
-  constexpr int16_t POS_Y_MINUS = 40;
-  constexpr int16_t OFS_Y_COLON = -2;
+  constexpr int16_t POS_Y_TEXT = -7;
 
-  void event_handler(lv_obj_t* obj, lv_event_t event) {
+  void SetTimeEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingSetTime*>(obj->user_data);
-    screen->HandleButtonPress(obj, event);
+    if (event == LV_EVENT_CLICKED) {
+      screen->SetTime();
+    }
+  }
+
+  void ValueChangedHandler(void* userData) {
+    auto* screen = static_cast<SettingSetTime*>(userData);
+    screen->UpdateScreen();
   }
 }
 
-SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
-                               Pinetime::Controllers::DateTime& dateTimeController,
-                               Pinetime::Controllers::Settings& settingsController)
-  : Screen(app), dateTimeController {dateTimeController}, settingsController {settingsController} {
+SettingSetTime::SettingSetTime(Pinetime::Controllers::DateTime& dateTimeController,
+                               Pinetime::Controllers::Settings& settingsController,
+                               Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime)
+  : dateTimeController {dateTimeController}, settingsController {settingsController}, settingSetDateTime {settingSetDateTime} {
+
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Set current time");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
@@ -34,160 +36,69 @@ SettingSetTime::SettingSetTime(Pinetime::Applications::DisplayApp* app,
 
   lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
-
   lv_label_set_text_static(icon, Symbols::clock);
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
-  hoursValue = static_cast<int>(dateTimeController.Hours());
-  lblHours = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(lblHours, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
-  lv_label_set_align(lblHours, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(lblHours, lv_scr_act(), LV_ALIGN_CENTER, POS_X_HOURS, POS_Y_TEXT);
-  lv_obj_set_auto_realign(lblHours, true);
+  lv_obj_t* staticLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(staticLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+  lv_label_set_text_static(staticLabel, "00:00:00");
+  lv_obj_align(staticLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, POS_Y_TEXT);
 
-  lv_obj_t* lblColon1 = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(lblColon1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text_static(lblColon1, ":");
-  lv_label_set_align(lblColon1, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(lblColon1, lv_scr_act(), LV_ALIGN_CENTER, (POS_X_HOURS + POS_X_MINUTES) / 2, POS_Y_TEXT + OFS_Y_COLON);
+  hourCounter.Create();
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+    hourCounter.EnableTwelveHourMode();
+  }
+  hourCounter.SetValue(dateTimeController.Hours());
+  lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_CENTER, -75, POS_Y_TEXT);
+  hourCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
-  minutesValue = static_cast<int>(dateTimeController.Minutes());
-  lblMinutes = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(lblMinutes, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text_fmt(lblMinutes, "%02d", minutesValue);
-  lv_label_set_align(lblMinutes, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(lblMinutes, lv_scr_act(), LV_ALIGN_CENTER, POS_X_MINUTES, POS_Y_TEXT);
-  lv_obj_set_auto_realign(lblMinutes, true);
-
-  lv_obj_t* lblColon2 = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(lblColon2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text_static(lblColon2, ":");
-  lv_label_set_align(lblColon2, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(lblColon2, lv_scr_act(), LV_ALIGN_CENTER, (POS_X_MINUTES + POS_X_SECONDS) / 2, POS_Y_TEXT + OFS_Y_COLON);
-
-  lv_obj_t* lblSeconds = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(lblSeconds, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text_static(lblSeconds, "00");
-  lv_label_set_align(lblSeconds, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(lblSeconds, lv_scr_act(), LV_ALIGN_CENTER, POS_X_SECONDS, POS_Y_TEXT);
+  minuteCounter.Create();
+  minuteCounter.SetValue(dateTimeController.Minutes());
+  lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_CENTER, 0, POS_Y_TEXT);
+  minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   lblampm = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
   lv_label_set_text_static(lblampm, "  ");
-  lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, POS_X_SECONDS, POS_Y_PLUS);
-
-  btnHoursPlus = lv_btn_create(lv_scr_act(), nullptr);
-  btnHoursPlus->user_data = this;
-  lv_obj_set_size(btnHoursPlus, 50, 40);
-  lv_obj_align(btnHoursPlus, lv_scr_act(), LV_ALIGN_CENTER, -72, -50);
-  lv_obj_set_style_local_value_str(btnHoursPlus, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "+");
-  lv_obj_set_event_cb(btnHoursPlus, event_handler);
-
-  btnHoursMinus = lv_btn_create(lv_scr_act(), nullptr);
-  btnHoursMinus->user_data = this;
-  lv_obj_set_size(btnHoursMinus, 50, 40);
-  lv_obj_align(btnHoursMinus, lv_scr_act(), LV_ALIGN_CENTER, -72, 40);
-  lv_obj_set_style_local_value_str(btnHoursMinus, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "-");
-  lv_obj_set_event_cb(btnHoursMinus, event_handler);
-
-  btnMinutesPlus = lv_btn_create(lv_scr_act(), nullptr);
-  btnMinutesPlus->user_data = this;
-  lv_obj_set_size(btnMinutesPlus, 50, 40);
-  lv_obj_align(btnMinutesPlus, lv_scr_act(), LV_ALIGN_CENTER, 0, -50);
-  lv_obj_set_style_local_value_str(btnMinutesPlus, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "+");
-  lv_obj_set_event_cb(btnMinutesPlus, event_handler);
-
-  btnMinutesMinus = lv_btn_create(lv_scr_act(), nullptr);
-  btnMinutesMinus->user_data = this;
-  lv_obj_set_size(btnMinutesMinus, 50, 40);
-  lv_obj_align(btnMinutesMinus, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
-  lv_obj_set_style_local_value_str(btnMinutesMinus, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "-");
-  lv_obj_set_event_cb(btnMinutesMinus, event_handler);
+  lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 75, -50);
 
   btnSetTime = lv_btn_create(lv_scr_act(), nullptr);
   btnSetTime->user_data = this;
-  lv_obj_set_size(btnSetTime, 120, 48);
+  lv_obj_set_size(btnSetTime, 120, 50);
   lv_obj_align(btnSetTime, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  lv_obj_set_style_local_value_str(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, "Set");
-  lv_obj_set_event_cb(btnSetTime, event_handler);
+  lblSetTime = lv_label_create(btnSetTime, nullptr);
+  lv_label_set_text_static(lblSetTime, "Set");
+  lv_obj_set_style_local_bg_color(btnSetTime, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  lv_obj_set_style_local_text_color(lblSetTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, LV_COLOR_GRAY);
+  lv_obj_set_event_cb(btnSetTime, SetTimeEventHandler);
 
-  SetHourLabels();
+  UpdateScreen();
 }
 
 SettingSetTime::~SettingSetTime() {
   lv_obj_clean(lv_scr_act());
 }
 
-void SettingSetTime::SetHourLabels() {
+void SettingSetTime::UpdateScreen() {
   if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-    switch (hoursValue) {
-      case 0:
-        lv_label_set_text_static(lblHours, "12");
-        lv_label_set_text_static(lblampm, "AM");
-        break;
-      case 1 ... 11:
-        lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
-        lv_label_set_text_static(lblampm, "AM");
-        break;
-      case 12:
-        lv_label_set_text_static(lblHours, "12");
-        lv_label_set_text_static(lblampm, "PM");
-        break;
-      case 13 ... 23:
-        lv_label_set_text_fmt(lblHours, "%02d", hoursValue - 12);
-        lv_label_set_text_static(lblampm, "PM");
-        break;
+    if (hourCounter.GetValue() >= 12) {
+      lv_label_set_text_static(lblampm, "PM");
+    } else {
+      lv_label_set_text_static(lblampm, "AM");
     }
-  } else {
-    lv_label_set_text_fmt(lblHours, "%02d", hoursValue);
   }
 }
 
-void SettingSetTime::HandleButtonPress(lv_obj_t* object, lv_event_t event) {
-  if (event != LV_EVENT_CLICKED)
-    return;
-
-  if (object == btnHoursPlus) {
-    hoursValue++;
-    if (hoursValue > 23) {
-      hoursValue = 0;
-    }
-    SetHourLabels();
-    lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
-  } else if (object == btnHoursMinus) {
-    hoursValue--;
-    if (hoursValue < 0) {
-      hoursValue = 23;
-    }
-    SetHourLabels();
-    lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
-  } else if (object == btnMinutesPlus) {
-    minutesValue++;
-    if (minutesValue > 59) {
-      minutesValue = 0;
-    }
-    lv_label_set_text_fmt(lblMinutes, "%02d", minutesValue);
-    lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
-  } else if (object == btnMinutesMinus) {
-    minutesValue--;
-    if (minutesValue < 0) {
-      minutesValue = 59;
-    }
-    lv_label_set_text_fmt(lblMinutes, "%02d", minutesValue);
-    lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
-  } else if (object == btnSetTime) {
-    NRF_LOG_INFO("Setting time (manually) to %02d:%02d:00", hoursValue, minutesValue);
-    dateTimeController.SetTime(dateTimeController.Year(),
-                               static_cast<uint8_t>(dateTimeController.Month()),
-                               dateTimeController.Day(),
-                               static_cast<uint8_t>(dateTimeController.DayOfWeek()),
-                               static_cast<uint8_t>(hoursValue),
-                               static_cast<uint8_t>(minutesValue),
-                               0,
-                               nrf_rtc_counter_get(portNRF_RTC_REG));
-    lv_btn_set_state(btnSetTime, LV_BTN_STATE_DISABLED);
-  }
+void SettingSetTime::SetTime() {
+  const int hoursValue = hourCounter.GetValue();
+  const int minutesValue = minuteCounter.GetValue();
+  NRF_LOG_INFO("Setting time (manually) to %02d:%02d:00", hoursValue, minutesValue);
+  dateTimeController.SetTime(dateTimeController.Year(),
+                             static_cast<uint8_t>(dateTimeController.Month()),
+                             dateTimeController.Day(),
+                             static_cast<uint8_t>(hoursValue),
+                             static_cast<uint8_t>(minutesValue),
+                             0);
+  settingSetDateTime.Quit();
 }

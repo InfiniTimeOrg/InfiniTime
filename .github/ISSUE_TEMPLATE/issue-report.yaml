@@ -1,0 +1,31 @@
+name: Issue report
+description: Something's not good enough
+body:
+- type: checkboxes
+  attributes:
+    label: Verification
+    description: Before submitting an issue, check if similar issues already exist and use those issues to provide your feedback instead.
+    options:
+      - label: I searched for similar issues and found none was relevant.
+        required: true
+- type: textarea
+  attributes:
+    label: Introduce the issue
+    description: Explain why it is an issue if necessary.
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Preferred solution
+    description: You can suggest a solution to the issue here.
+    placeholder: Optional
+- type: input
+  attributes:
+    label: Version
+    description: |
+      What [version of the firmware](https://github.com/InfiniTimeOrg/InfiniTime/blob/main/doc/gettingStarted/updating-software.md#checking-the-version-of-infinitime) are you running?
+      If you are running an older version, please consider [updating to the latest firmware](https://github.com/InfiniTimeOrg/InfiniTime/blob/main/doc/gettingStarted/updating-software.md#updating-with-companion-apps).
+      If you are running directly from git, specify the branch or the commit hash directly.
+    placeholder: Ex. v1.11.0 or main or fc922b60
+  validations:
+    required: false

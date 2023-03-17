@@ -13,7 +13,7 @@ namespace Pinetime {
 
       class Motion : public Screen {
       public:
-        Motion(DisplayApp* app, Controllers::MotionController& motionController);
+        Motion(Controllers::MotionController& motionController);
         ~Motion() override;
 
         void Refresh() override;

@@ -9,28 +9,29 @@ namespace Pinetime {
       bool merged = false;
       unsigned int value = 0;
     };
+
     namespace Screens {
       class Twos : public Screen {
       public:
-        Twos(DisplayApp* app);
+        Twos();
         ~Twos() override;
 
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
-        lv_style_t style_cell1;
-        lv_style_t style_cell2;
-        lv_style_t style_cell3;
-        lv_style_t style_cell4;
-        lv_style_t style_cell5;
+        static constexpr int nColors = 5;
+        lv_style_t cellStyles[nColors];
 
         lv_obj_t* scoreText;
         lv_obj_t* gridDisplay;
-        TwosTile grid[4][4];
+        static constexpr int nCols = 4;
+        static constexpr int nRows = 4;
+        static constexpr int nCells = nCols * nRows;
+        TwosTile grid[nRows][nCols];
         unsigned int score = 0;
-        void updateGridDisplay(TwosTile grid[][4]);
-        bool tryMerge(TwosTile grid[][4], int& newRow, int& newCol, int oldRow, int oldCol);
-        bool tryMove(TwosTile grid[][4], int newRow, int newCol, int oldRow, int oldCol);
+        void updateGridDisplay();
+        bool tryMerge(int newRow, int newCol, int oldRow, int oldCol);
+        bool tryMove(int newRow, int newCol, int oldRow, int oldCol);
         bool placeNewTile();
       };
     }

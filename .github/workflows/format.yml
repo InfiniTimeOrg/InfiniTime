@@ -2,7 +2,7 @@ name: Code formatting
 
 on:
   pull_request:
-    branches: [ master, develop ]
+    branches: [ main ]
     paths:
       - '**.cpp'
       - '**.h'
@@ -17,14 +17,13 @@ jobs:
         with:
           fetch-depth: 1000
 
-      - name: Configure git
-        run: |
-          git fetch origin "$GITHUB_BASE_REF":"$GITHUB_BASE_REF" --depth=1000
+      - name: Fetch base branch
+        run: git fetch origin "$GITHUB_BASE_REF":"$GITHUB_BASE_REF"
 
       - name: Install clang-format
         run: |
           sudo apt-get update
-          sudo apt-get -y install clang-format-12
+          sudo apt-get -y install clang-format-14
 
       - name: Check formatting
         run: tests/test-format.sh
@@ -35,3 +34,37 @@ jobs:
         with:
           name: Patches
           path: ./*.patch
+  test-clang-tidy:
+    runs-on: ubuntu-latest
+    container:
+      image: infinitime/infinitime-build
+    steps:
+    # This workaround fixes the error "unsafe repository (REPO is owned by someone else)".
+    # See https://github.com/actions/checkout/issues/760 and https://github.com/actions/checkout/issues/766
+    # The fix in "actions/checkout@v2" was not sufficient as the build process also uses git (to get the current
+    # commit hash, for example).
+    - name: Workaround permission issues
+      run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+    - name: Checkout source files
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+        fetch-depth: 1000
+    - name: Fetch base branch
+      run: git fetch origin "$GITHUB_BASE_REF":"$GITHUB_BASE_REF"
+    - name: Install clang-tidy
+      run: |
+        apt-get update
+        apt-get -y install clang-tidy-14
+    - name: Prepare environment
+      shell: bash
+      env:
+        SOURCES_DIR: .
+      run: |
+        . docker/build.sh
+        GetGcc
+        # I guess these already exist inside the docker?
+        #GetNrfSdk
+        #GetMcuBoot
+        CmakeGenerate
+    - run: tests/test-tidy.sh

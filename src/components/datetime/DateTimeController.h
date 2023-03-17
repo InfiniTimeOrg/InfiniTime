@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <chrono>
+#include <ctime>
 #include <string>
 #include "components/settings/Settings.h"
 
@@ -9,6 +10,7 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
     class DateTime {
     public:
@@ -30,44 +32,106 @@ namespace Pinetime {
         December
       };
 
-      void SetTime(uint16_t year,
-                   uint8_t month,
-                   uint8_t day,
-                   uint8_t dayOfWeek,
-                   uint8_t hour,
-                   uint8_t minute,
-                   uint8_t second,
-                   uint32_t systickCounter);
+      void SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second);
+
+      /*
+       * setter corresponding to the BLE Set Local Time characteristic.
+       *
+       * used to update difference between utc and local time (see UtcOffset())
+       *
+       * parameters are in quarters of an our. Following the BLE CTS specification,
+       * timezone is expected to be constant over DST which will be reported in
+       * dst field.
+       */
+      void SetTimeZone(int8_t timezone, int8_t dst);
+
       void UpdateTime(uint32_t systickCounter);
+
       uint16_t Year() const {
-        return year;
+        return 1900 + localTime.tm_year;
       }
+
       Months Month() const {
-        return month;
+        return static_cast<Months>(localTime.tm_mon + 1);
       }
+
       uint8_t Day() const {
-        return day;
+        return localTime.tm_mday;
       }
+
       Days DayOfWeek() const {
-        return dayOfWeek;
+        int daysSinceSunday = localTime.tm_wday;
+        if (daysSinceSunday == 0) {
+          return Days::Sunday;
+        }
+        return static_cast<Days>(daysSinceSunday);
       }
+
+      int DayOfYear() const {
+        return localTime.tm_yday + 1;
+      }
+
       uint8_t Hours() const {
-        return hour;
+        return localTime.tm_hour;
       }
+
       uint8_t Minutes() const {
-        return minute;
+        return localTime.tm_min;
       }
+
       uint8_t Seconds() const {
-        return second;
+        return localTime.tm_sec;
+      }
+
+      /*
+       * returns the offset between local time and UTC in quarters of an hour
+       *
+       * Availability of this field depends on wether the companion app
+       * supports the BLE CTS Local Time Characteristic. Expect it to be 0
+       * if not.
+       */
+      int8_t UtcOffset() const {
+        return tzOffset + dstOffset;
+      }
+
+      /*
+       * returns the offset between the (dst independent) local time zone and UTC
+       * in quarters of an hour
+       *
+       * Availability of this field depends on wether the companion app
+       * supports the BLE CTS Local Time Characteristic. Expect it to be 0
+       * if not.
+       */
+      int8_t TzOffset() const {
+        return tzOffset;
+      }
+
+      /*
+       * returns the offset between the local time zone and local time
+       * in quarters of an hour
+       * if != 0, DST is in effect, if == 0 not.
+       *
+       * Availability of this field depends on wether the companion app
+       * supports the BLE CTS Local Time Characteristic. Expect it to be 0
+       * if not.
+       */
+      int8_t DstOffset() const {
+        return dstOffset;
       }
 
       const char* MonthShortToString() const;
       const char* DayOfWeekShortToString() const;
       static const char* MonthShortToStringLow(Months month);
+      const char* DayOfWeekShortToStringLow() const;
 
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const {
         return currentDateTime;
       }
+
+      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> UTCDateTime() const {
+        return currentDateTime - std::chrono::seconds((tzOffset + dstOffset) * 15 * 60);
+      }
+
       std::chrono::seconds Uptime() const {
         return uptime;
       }
@@ -77,13 +141,9 @@ namespace Pinetime {
       std::string FormattedTime();
 
     private:
-      uint16_t year = 0;
-      Months month = Months::Unknown;
-      uint8_t day = 0;
-      Days dayOfWeek = Days::Unknown;
-      uint8_t hour = 0;
-      uint8_t minute = 0;
-      uint8_t second = 0;
+      std::tm localTime;
+      int8_t tzOffset = 0;
+      int8_t dstOffset = 0;
 
       uint32_t previousSystickCounter = 0;
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> currentDateTime;

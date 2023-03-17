@@ -13,7 +13,7 @@ namespace Pinetime {
   }
 
   namespace Drivers {
-    class WatchdogView;
+    class Watchdog;
   }
 
   namespace Applications {
@@ -24,23 +24,24 @@ namespace Pinetime {
       public:
         explicit SystemInfo(DisplayApp* app,
                             Pinetime::Controllers::DateTime& dateTimeController,
-                            Pinetime::Controllers::Battery& batteryController,
+                            const Pinetime::Controllers::Battery& batteryController,
                             Pinetime::Controllers::BrightnessController& brightnessController,
-                            Pinetime::Controllers::Ble& bleController,
-                            Pinetime::Drivers::WatchdogView& watchdog,
+                            const Pinetime::Controllers::Ble& bleController,
+                            const Pinetime::Drivers::Watchdog& watchdog,
                             Pinetime::Controllers::MotionController& motionController,
-                            Pinetime::Drivers::Cst816S& touchPanel);
+                            const Pinetime::Drivers::Cst816S& touchPanel);
         ~SystemInfo() override;
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
+        DisplayApp* app;
         Pinetime::Controllers::DateTime& dateTimeController;
-        Pinetime::Controllers::Battery& batteryController;
+        const Pinetime::Controllers::Battery& batteryController;
         Pinetime::Controllers::BrightnessController& brightnessController;
-        Pinetime::Controllers::Ble& bleController;
-        Pinetime::Drivers::WatchdogView& watchdog;
+        const Pinetime::Controllers::Ble& bleController;
+        const Pinetime::Drivers::Watchdog& watchdog;
         Pinetime::Controllers::MotionController& motionController;
-        Pinetime::Drivers::Cst816S& touchPanel;
+        const Pinetime::Drivers::Cst816S& touchPanel;
 
         ScreenList<5> screens;
 

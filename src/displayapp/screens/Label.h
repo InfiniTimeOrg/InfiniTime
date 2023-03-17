@@ -1,6 +1,7 @@
 #pragma once
 
 #include "displayapp/screens/Screen.h"
+#include "displayapp/widgets/PageIndicator.h"
 #include <lvgl/lvgl.h>
 
 namespace Pinetime {
@@ -9,15 +10,12 @@ namespace Pinetime {
 
       class Label : public Screen {
       public:
-        Label(uint8_t screenID, uint8_t numScreens, DisplayApp* app, lv_obj_t* labelText);
+        Label(uint8_t screenID, uint8_t numScreens, lv_obj_t* labelText);
         ~Label() override;
 
       private:
         lv_obj_t* labelText = nullptr;
-        lv_point_t pageIndicatorBasePoints[2];
-        lv_point_t pageIndicatorPoints[2];
-        lv_obj_t* pageIndicatorBase;
-        lv_obj_t* pageIndicator;
+        Widgets::PageIndicator pageIndicator;
       };
     }
   }

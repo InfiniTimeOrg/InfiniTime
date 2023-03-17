@@ -1,8 +1,8 @@
-# Bluetooth Low-Energy : 
-## Introduction
-This page describes the BLE implementation and API built in this firmware.
+# Bluetooth Low-Energy :
 
-**Note**: I'm a beginner in BLE related technologies and the information in this document reflects my current knowledge and understanding of the BLE stack. This information might be erroneous or incomplete. Feel free to submit a PR if you think you can improve it.
+## Introduction
+
+This page describes the BLE implementation and API built in this firmware.
 
 ---
 
@@ -40,6 +40,7 @@ This page describes the BLE implementation and API built in this firmware.
 ---
 
 ## BLE Connection
+
 When starting, the firmware starts BLE advertising. It sends small messages that can be received by any *central* device in range. This allows the device to announce its presence to other devices.
 
 A companion application (running on a PC, Raspberry Pi, smartphone, etc.) which receives this advertising packet can request a connection to the device. This connection procedure allows the 2 devices to negotiate communication parameters, security keys, etc.
@@ -60,7 +61,8 @@ The documentation for BLE FS can be found here:
 ---
 
 ## BLE UUIDs
-When possible, InfiniTime tries to implement BLE services defined by the BLE specification. 
+
+When possible, InfiniTime tries to implement BLE services defined by the BLE specification.
 
 When the service does not exist in the BLE specification, InfiniTime implements custom services. Custom services are identified by a UUID, as are all BLE services. Here is how to define the UUID of custom services in InfiniTime:
 
@@ -72,24 +74,25 @@ When the service does not exist in the BLE specification, InfiniTime implements 
 
 The following custom services are implemented in InfiniTime:
 
- - Since InfiniTime 0.8:
-    * Music Service : 00000000-78fc-48fe-8e23-433b3a1942d0
- 
+- Since InfiniTime 0.8:
 
- - Since InfiniTime 0.11:
-     * [Navigation Service](NavigationService.md) : 00010000-78fc-48fe-8e23-433b3a1942d0
+  - Music Service : `00000000-78fc-48fe-8e23-433b3a1942d0`
 
+- Since InfiniTime 0.11:
+
+  - [Navigation Service](NavigationService.md) : `00010000-78fc-48fe-8e23-433b3a1942d0`
 
 - Since InfiniTime 0.13
-    * Call characteristic (extension to the Alert Notification Service): 00020001-78fc-48fe-8e23-433b3a1942d0
 
+  - Call characteristic (extension to the Alert Notification Service): `00020001-78fc-48fe-8e23-433b3a1942d0`
 
 - Since InfiniTime 1.7:
-    * [Motion Service](MotionService.md): 00030000-78fc-48fe-8e23-433b3a1942d0
 
+  - [Motion Service](MotionService.md): `00030000-78fc-48fe-8e23-433b3a1942d0`
 
 - Since InfiniTime 1.8:
-    * [Weather Service](/src/components/ble/weather/WeatherService.h): 00040000-78fc-48fe-8e23-433b3a1942d0
+
+  - [Weather Service](/src/components/ble/weather/WeatherService.h): `00040000-78fc-48fe-8e23-433b3a1942d0`
 
 
 - Development:
@@ -97,12 +100,15 @@ The following custom services are implemented in InfiniTime:
 ---
 
 ## BLE services
+
 [List of standard BLE services](https://www.bluetooth.com/specifications/gatt/services/)
 
 ### CTS
+
 [Current Time Service](https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Services/org.bluetooth.service.current_time.xml)
 
 ### ANS
+
 [Alert Notification Service](https://www.bluetooth.com/wp-content/uploads/Sitecore-Media-Library/Gatt/Xml/Services/org.bluetooth.service.alert_notification.xml)
 
 ![ANS sequence diagram](./ble/ans_sequence.png "ANS sequence diagram")

@@ -21,9 +21,9 @@ namespace {
   constexpr ble_uuid128_t stepCountCharUuid {CharUuid(0x01, 0x00)};
   constexpr ble_uuid128_t motionValuesCharUuid {CharUuid(0x02, 0x00)};
 
-  int MotionServiceCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+  int MotionServiceCallback(uint16_t /*conn_handle*/, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
     auto* motionService = static_cast<MotionService*>(arg);
-    return motionService->OnStepCountRequested(conn_handle, attr_handle, ctxt);
+    return motionService->OnStepCountRequested(attr_handle, ctxt);
   }
 }
 
@@ -59,7 +59,7 @@ void MotionService::Init() {
   ASSERT(res == 0);
 }
 
-int MotionService::OnStepCountRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
+int MotionService::OnStepCountRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
   if (attributeHandle == stepCountHandle) {
     NRF_LOG_INFO("Motion-stepcount : handle = %d", stepCountHandle);
     uint32_t buffer = motionController.NbSteps();
@@ -90,11 +90,12 @@ void MotionService::OnNewStepCountValue(uint32_t stepCount) {
 
   ble_gattc_notify_custom(connectionHandle, stepCountHandle, om);
 }
+
 void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
   if (!motionValuesNoficationEnabled)
     return;
 
-  int16_t buffer[3] = {motionController.X(), motionController.Y(), motionController.Z()};
+  int16_t buffer[3] = {x, y, z};
   auto* om = ble_hs_mbuf_from_flat(buffer, 3 * sizeof(int16_t));
 
   uint16_t connectionHandle = system.nimble().connHandle();
@@ -106,14 +107,14 @@ void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
   ble_gattc_notify_custom(connectionHandle, motionValuesHandle, om);
 }
 
-void MotionService::SubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) {
+void MotionService::SubscribeNotification(uint16_t attributeHandle) {
   if (attributeHandle == stepCountHandle)
     stepCountNoficationEnabled = true;
   else if (attributeHandle == motionValuesHandle)
     motionValuesNoficationEnabled = true;
 }
 
-void MotionService::UnsubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) {
+void MotionService::UnsubscribeNotification(uint16_t attributeHandle) {
   if (attributeHandle == stepCountHandle)
     stepCountNoficationEnabled = false;
   else if (attributeHandle == motionValuesHandle)

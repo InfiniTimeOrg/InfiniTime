@@ -1,6 +1,5 @@
 #pragma once
 
-#include <displayapp/screens/BatteryIcon.h>
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <chrono>
 #include <cstdint>
@@ -8,6 +7,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/BleController.h"
+#include "displayapp/widgets/StatusIcons.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -24,11 +24,10 @@ namespace Pinetime {
 
       class WatchFaceDigital : public Screen {
       public:
-        WatchFaceDigital(DisplayApp* app,
-                         Controllers::DateTime& dateTimeController,
-                         Controllers::Battery& batteryController,
-                         Controllers::Ble& bleController,
-                         Controllers::NotificationManager& notificatioManager,
+        WatchFaceDigital(Controllers::DateTime& dateTimeController,
+                         const Controllers::Battery& batteryController,
+                         const Controllers::Ble& bleController,
+                         Controllers::NotificationManager& notificationManager,
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
                          Controllers::MotionController& motionController);
@@ -59,25 +58,20 @@ namespace Pinetime {
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;
         lv_obj_t* label_date;
-        lv_obj_t* bleIcon;
-        lv_obj_t* batteryPlug;
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
 
-        BatteryIcon batteryIcon;
-
         Controllers::DateTime& dateTimeController;
-        Controllers::Battery& batteryController;
-        Controllers::Ble& bleController;
-        Controllers::NotificationManager& notificatioManager;
+        Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
 
         lv_task_t* taskRefresh;
+        Widgets::StatusIcons statusIcons;
       };
     }
   }

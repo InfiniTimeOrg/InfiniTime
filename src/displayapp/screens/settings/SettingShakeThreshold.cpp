@@ -3,6 +3,7 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -13,11 +14,10 @@ namespace {
   }
 }
 
-SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
-                                             Controllers::Settings& settingsController,
+SettingShakeThreshold::SettingShakeThreshold(Controllers::Settings& settingsController,
                                              Controllers::MotionController& motionController,
                                              System::SystemTask& systemTask)
-  : Screen(app), settingsController {settingsController}, motionController {motionController}, systemTask {systemTask} {
+  : settingsController {settingsController}, motionController {motionController}, systemTask {systemTask} {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Wake Sensitivity");
@@ -56,7 +56,7 @@ SettingShakeThreshold::SettingShakeThreshold(DisplayApp* app,
   lv_obj_set_width(calButton, 200);
   lv_obj_align(calButton, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   lv_btn_set_checkable(calButton, true);
-  calLabel = lv_label_create(calButton, NULL);
+  calLabel = lv_label_create(calButton, nullptr);
   lv_label_set_text_static(calLabel, "Calibrate");
 
   lv_arc_set_value(positionArc, settingsController.GetShakeThreshold());
@@ -96,16 +96,16 @@ void SettingShakeThreshold::Refresh() {
   }
   if (calibrating == 2) {
 
-    if ((motionController.currentShakeSpeed() - 300) > lv_arc_get_value(positionArc)) {
-      lv_arc_set_value(positionArc, (int16_t) motionController.currentShakeSpeed() - 300);
+    if ((motionController.CurrentShakeSpeed() - 300) > lv_arc_get_value(positionArc)) {
+      lv_arc_set_value(positionArc, (int16_t) motionController.CurrentShakeSpeed() - 300);
     }
     if (xTaskGetTickCount() - vCalTime > pdMS_TO_TICKS(7500)) {
       lv_btn_set_state(calButton, LV_STATE_DEFAULT);
-      lv_event_send(calButton, LV_EVENT_VALUE_CHANGED, NULL);
+      lv_event_send(calButton, LV_EVENT_VALUE_CHANGED, nullptr);
     }
   }
-  if (motionController.currentShakeSpeed() - 300 > lv_arc_get_value(animArc)) {
-    lv_arc_set_value(animArc, (uint16_t) motionController.currentShakeSpeed() - 300);
+  if (motionController.CurrentShakeSpeed() - 300 > lv_arc_get_value(animArc)) {
+    lv_arc_set_value(animArc, (uint16_t) motionController.CurrentShakeSpeed() - 300);
     vDecay = xTaskGetTickCount();
   } else if ((xTaskGetTickCount() - vDecay) > pdMS_TO_TICKS(1500)) {
     lv_arc_set_value(animArc, lv_arc_get_value(animArc) - 25);
@@ -123,8 +123,7 @@ void SettingShakeThreshold::UpdateSelected(lv_obj_t* object, lv_event_t event) {
           vCalTime = xTaskGetTickCount();
           lv_label_set_text_static(calLabel, "Ready!");
           lv_obj_set_click(positionArc, false);
-          lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
-          lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, LV_COLOR_MAKE(0x0, 0xb0, 0x0));
+          lv_obj_set_style_local_bg_color(calButton, LV_BTN_PART_MAIN, LV_STATE_CHECKED, Colors::highlight);
         } else if (lv_btn_get_state(calButton) == LV_BTN_STATE_RELEASED) {
           calibrating = 0;
           lv_obj_set_click(positionArc, true);

@@ -1,4 +1,6 @@
 #include "displayapp/widgets/Counter.h"
+#include "components/datetime/DateTimeController.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Widgets;
 
@@ -6,35 +8,52 @@ namespace {
   void upBtnEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* widget = static_cast<Counter*>(obj->user_data);
     if (event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_LONG_PRESSED_REPEAT) {
-      widget->Increment();
+      widget->UpBtnPressed();
     }
   }
 
   void downBtnEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* widget = static_cast<Counter*>(obj->user_data);
     if (event == LV_EVENT_SHORT_CLICKED || event == LV_EVENT_LONG_PRESSED_REPEAT) {
-      widget->Decrement();
+      widget->DownBtnPressed();
     }
+  }
+
+  constexpr int digitCount(int number) {
+    int digitCount = 0;
+    while (number > 0) {
+      digitCount++;
+      number /= 10;
+    }
+    return digitCount;
   }
 }
 
-Counter::Counter(int min, int max) : min {min}, max {max} {
+Counter::Counter(int min, int max, lv_font_t& font) : min {min}, max {max}, value {min}, leadingZeroCount {digitCount(max)}, font {font} {
 }
 
-void Counter::Increment() {
+void Counter::UpBtnPressed() {
   value++;
   if (value > max) {
     value = min;
   }
   UpdateLabel();
+
+  if (ValueChangedHandler != nullptr) {
+    ValueChangedHandler(userData);
+  }
 };
 
-void Counter::Decrement() {
+void Counter::DownBtnPressed() {
   value--;
   if (value < min) {
     value = max;
   }
   UpdateLabel();
+
+  if (ValueChangedHandler != nullptr) {
+    ValueChangedHandler(userData);
+  }
 };
 
 void Counter::SetValue(int newValue) {
@@ -49,6 +68,7 @@ void Counter::HideControls() {
   lv_obj_set_hidden(lowerLine, true);
   lv_obj_set_style_local_bg_opa(counterContainer, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
 }
+
 void Counter::ShowControls() {
   lv_obj_set_hidden(upBtn, false);
   lv_obj_set_hidden(downBtn, false);
@@ -58,23 +78,64 @@ void Counter::ShowControls() {
 }
 
 void Counter::UpdateLabel() {
-  lv_label_set_text_fmt(number, "%.2i", value);
+  if (twelveHourMode) {
+    if (value == 0) {
+      lv_label_set_text_static(number, "12");
+    } else if (value <= 12) {
+      lv_label_set_text_fmt(number, "%.*i", leadingZeroCount, value);
+    } else {
+      lv_label_set_text_fmt(number, "%.*i", leadingZeroCount, value - 12);
+    }
+  } else if (monthMode) {
+    lv_label_set_text(number, Controllers::DateTime::MonthShortToStringLow(static_cast<Controllers::DateTime::Months>(value)));
+  } else {
+    lv_label_set_text_fmt(number, "%.*i", leadingZeroCount, value);
+  }
+}
+
+// Value is kept between 0 and 23, but the displayed value is converted to 12-hour.
+// Make sure to set the max and min values to 0 and 23. Otherwise behaviour is undefined
+void Counter::EnableTwelveHourMode() {
+  twelveHourMode = true;
+}
+
+// Value is kept between 1 and 12, but the displayed value is the corresponding month
+// Make sure to set the max and min values to 1 and 12. Otherwise behaviour is undefined
+void Counter::EnableMonthMode() {
+  monthMode = true;
+}
+
+// Counter cannot be resized after creation,
+// so the newMax value must have the same number of digits as the old one
+void Counter::SetMax(int newMax) {
+  max = newMax;
+  if (value > max) {
+    value = max;
+    UpdateLabel();
+  }
+}
+
+void Counter::SetValueChangedEventCallback(void* userData, void (*handler)(void* userData)) {
+  this->userData = userData;
+  this->ValueChangedHandler = handler;
 }
 
 void Counter::Create() {
-  constexpr lv_color_t bgColor = LV_COLOR_MAKE(0x38, 0x38, 0x38);
-
   counterContainer = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_bg_color(counterContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+  lv_obj_set_style_local_bg_color(counterContainer, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
 
   number = lv_label_create(counterContainer, nullptr);
-  lv_obj_set_style_local_text_font(number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_obj_set_style_local_text_font(number, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &font);
   lv_obj_align(number, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_auto_realign(number, true);
-  lv_label_set_text_static(number, "00");
+  if (monthMode) {
+    lv_label_set_text_static(number, "Jan");
+  } else {
+    lv_label_set_text_fmt(number, "%d", max);
+  }
 
   static constexpr uint8_t padding = 5;
-  const uint8_t width = lv_obj_get_width(number) + padding * 2;
+  const uint8_t width = std::max(lv_obj_get_width(number) + padding * 2, 58);
   static constexpr uint8_t btnHeight = 50;
   const uint8_t containerHeight = btnHeight * 2 + lv_obj_get_height(number) + padding * 2;
 
@@ -83,7 +144,7 @@ void Counter::Create() {
   UpdateLabel();
 
   upBtn = lv_btn_create(counterContainer, nullptr);
-  lv_obj_set_style_local_bg_color(upBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+  lv_obj_set_style_local_bg_color(upBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_set_size(upBtn, width, btnHeight);
   lv_obj_align(upBtn, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
   upBtn->user_data = this;
@@ -95,7 +156,7 @@ void Counter::Create() {
   lv_obj_align(upLabel, nullptr, LV_ALIGN_CENTER, 0, 0);
 
   downBtn = lv_btn_create(counterContainer, nullptr);
-  lv_obj_set_style_local_bg_color(downBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+  lv_obj_set_style_local_bg_color(downBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_set_size(downBtn, width, btnHeight);
   lv_obj_align(downBtn, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   downBtn->user_data = this;

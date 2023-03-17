@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+
 namespace Pinetime {
   namespace Applications {
     namespace Display {
@@ -21,8 +22,9 @@ namespace Pinetime {
         RestoreBrightness,
         ShowPairingKey,
         AlarmTriggered,
-        Clock,
-        BleRadioEnableToggle
+        Chime,
+        BleRadioEnableToggle,
+        OnChargingEvent,
       };
     }
   }

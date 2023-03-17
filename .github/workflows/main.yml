@@ -1,37 +1,44 @@
-# GitHub Actions Workflow to build FreeRTOS Firmware for PineTime Smart Watch
-# See https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud
-# Based on https://github.com/JF002/InfiniTime/blob/master/doc/buildAndProgram.md
-# and https://github.com/JF002/InfiniTime/blob/master/bootloader/README.md
+name: CI
 
-name: Build PineTime Firmware
-
+# Run this workflow whenever the build may be affected
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ main ]
+    paths-ignore:
+      - 'doc/**'
+      - '**.md'
   pull_request:
-    branches: [ master, develop ]
+    branches: [ main ]
+    paths-ignore:
+      - 'doc/**'
+      - '**.md'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-firmware:
+    runs-on: ubuntu-22.04
     container:
       image: infinitime/infinitime-build
+    outputs:
+      text_size: ${{ steps.output-sizes.outputs.text_size }}
+      data_size: ${{ steps.output-sizes.outputs.data_size }}
+      bss_size: ${{ steps.output-sizes.outputs.bss_size }}
+    env:
+      # InfiniTime sources are downloaded to the current directory.
+      # Override SOURCES_DIR in build.sh
+      SOURCES_DIR: .
     steps:
-      # This workaround fixes the error "unsafe repository (REPO is owned by someone else)".
-      # See https://github.com/actions/checkout/issues/760 and https://github.com/actions/checkout/issues/766
-      # The fix in "actions/checkout@v2" was not sufficient as the build process also uses git (to get the current
-      # commit hash, for example).
-      - name: Workaround permission issues
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Checkout source files
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: recursive
       - name: Build
         shell: bash
-        env:
-          SOURCES_DIR: .
         run: /opt/build.sh all
+      - name: Output build size
+        id: output-sizes
+        run: |
+          . /opt/build.sh
+          .github/workflows/getSize.sh "$BUILD_DIR"/src/pinetime-app-*.out >> $GITHUB_OUTPUT
       # Unzip the package because Upload Artifact will zip up the files
       - name: Unzip DFU package
         run: unzip ./build/output/pinetime-mcuboot-app-dfu-*.zip -d ./build/output/pinetime-mcuboot-app-dfu
@@ -45,3 +52,149 @@ jobs:
         with:
           name: InfiniTime MCUBoot image ${{ github.head_ref }}
           path: ./build/output/pinetime-mcuboot-app-image-*.bin
+      - name: Upload resources artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: InfiniTime resources ${{ github.head_ref }}
+          path: ./build/output/infinitime-resources-*.zip
+
+  build-simulator:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: Install SDL2 development package
+      run:  |
+        sudo apt-get update
+        sudo apt-get -y install libsdl2-dev
+
+    - name: Install Ninja
+      run:  |
+        sudo apt-get -y install ninja-build
+
+    - name: Install lv_font_conv
+      run:
+        npm i -g lv_font_conv@1.5.2
+
+    - name: Checkout source files
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Get InfiniSim repo
+      run:  |
+        git clone https://github.com/InfiniTimeOrg/InfiniSim.git --depth 1 --branch main
+        git -C InfiniSim submodule update --init lv_drivers libpng
+
+    - name: CMake
+      # disable BUILD_RESOURCES as this is already done when building the firmware
+      run:  |
+        cmake -G Ninja -S InfiniSim -B build_lv_sim -DInfiniTime_DIR="${PWD}" -DBUILD_RESOURCES=OFF
+
+    - name: Build simulator executable
+      run:  |
+        cmake --build build_lv_sim
+
+    - name: Upload simulator executable
+      uses: actions/upload-artifact@v3
+      with:
+        name: infinisim-${{ github.head_ref }}
+        path: build_lv_sim/infinisim
+
+  get-base-ref-size:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-22.04
+    container:
+      image: infinitime/infinitime-build
+    outputs:
+      text_size: ${{ steps.output-sizes.outputs.text_size }}
+      data_size: ${{ steps.output-sizes.outputs.data_size }}
+      bss_size: ${{ steps.output-sizes.outputs.bss_size }}
+    env:
+      # InfiniTime sources are downloaded to the current directory.
+      # Override SOURCES_DIR in build.sh
+      SOURCES_DIR: .
+    steps:
+    - name: Checkout current base branch files
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.base_ref }}
+        submodules: recursive
+
+    - name: Get base branch SHA
+      id: get-base-sha
+      run: |
+        # Fix for "detected dubious ownership in repository at '/__w/InfiniTime/InfiniTime'"
+        git config --global --add safe.directory /__w/InfiniTime/InfiniTime
+        echo base_sha=$(git rev-parse HEAD) >> $GITHUB_OUTPUT
+
+    - name: Cache build
+      id: cache-build
+      uses: actions/cache@v3
+      with:
+        path: ./build
+        key: build-files-${{ steps.get-base-sha.outputs.base_sha }}
+
+    - if: ${{ steps.cache-build.outputs.cache-hit != 'true' }}
+      name: Build
+      shell: bash
+      # Only pinetime-app target is needed, but post_build.sh fails
+      run: /opt/build.sh all
+
+    - name: Output build size
+      id: output-sizes
+      run: |
+        . /opt/build.sh
+        .github/workflows/getSize.sh "$BUILD_DIR"/src/pinetime-app-*.out >> $GITHUB_OUTPUT
+
+  compare-build-size:
+    if: github.event_name == 'pull_request'
+    name: 'Compare build size'
+    needs: [build-firmware, get-base-ref-size]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Compare build size
+      id: output-sizes-diff
+      run: |
+        TEXT_SIZE=${{ needs.build-firmware.outputs.text_size }}
+        DATA_SIZE=${{ needs.build-firmware.outputs.data_size }}
+        BSS_SIZE=${{ needs.build-firmware.outputs.bss_size }}
+
+        echo "text_size=$TEXT_SIZE"
+        echo "data_size=$DATA_SIZE"
+        echo "bss_size=$BSS_SIZE"
+
+        echo "text_size=$TEXT_SIZE" >> $GITHUB_OUTPUT
+        echo "data_size=$DATA_SIZE" >> $GITHUB_OUTPUT
+        echo "bss_size=$BSS_SIZE" >> $GITHUB_OUTPUT
+
+        TEXT_SIZE_BASE=${{ needs.get-base-ref-size.outputs.text_size }}
+        DATA_SIZE_BASE=${{ needs.get-base-ref-size.outputs.data_size }}
+        BSS_SIZE_BASE=${{ needs.get-base-ref-size.outputs.bss_size }}
+
+        TEXT_SIZE_DIFF=$((TEXT_SIZE - TEXT_SIZE_BASE))
+        DATA_SIZE_DIFF=$((DATA_SIZE - DATA_SIZE_BASE))
+        BSS_SIZE_DIFF=$((BSS_SIZE - BSS_SIZE_BASE))
+
+        echo "text_diff=$TEXT_SIZE_DIFF"
+        echo "data_diff=$DATA_SIZE_DIFF"
+        echo "bss_diff=$BSS_SIZE_DIFF"
+
+        echo "text_diff=$TEXT_SIZE_DIFF" >> $GITHUB_OUTPUT
+        echo "data_diff=$DATA_SIZE_DIFF" >> $GITHUB_OUTPUT
+        echo "bss_diff=$BSS_SIZE_DIFF" >> $GITHUB_OUTPUT
+
+    - name: Write comment information to files
+      run: |
+        tee comment << EOF
+        Build size and comparison to ${{ github.base_ref }}:
+        | Section | Size | Difference |
+        | ------- | ---- | ---------- |
+        | text    | ${{ needs.build-firmware.outputs.text_size }}B | ${{ steps.output-sizes-diff.outputs.text_diff }}B |
+        | data    | ${{ needs.build-firmware.outputs.data_size }}B | ${{ steps.output-sizes-diff.outputs.data_diff }}B |
+        | bss     | ${{ needs.build-firmware.outputs.bss_size }}B  | ${{ steps.output-sizes-diff.outputs.bss_diff }}B  |
+        EOF
+
+    - name: Upload comment
+      uses: actions/upload-artifact@v3
+      with:
+        name: comment
+        path: comment

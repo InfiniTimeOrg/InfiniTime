@@ -9,9 +9,9 @@ constexpr ble_uuid16_t ImmediateAlertService::immediateAlertServiceUuid;
 constexpr ble_uuid16_t ImmediateAlertService::alertLevelUuid;
 
 namespace {
-  int AlertLevelCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+  int AlertLevelCallback(uint16_t /*conn_handle*/, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
     auto* immediateAlertService = static_cast<ImmediateAlertService*>(arg);
-    return immediateAlertService->OnAlertLevelChanged(conn_handle, attr_handle, ctxt);
+    return immediateAlertService->OnAlertLevelChanged(attr_handle, ctxt);
   }
 
   const char* ToString(ImmediateAlertService::Levels level) {
@@ -56,7 +56,7 @@ void ImmediateAlertService::Init() {
   ASSERT(res == 0);
 }
 
-int ImmediateAlertService::OnAlertLevelChanged(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
+int ImmediateAlertService::OnAlertLevelChanged(uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
   if (attributeHandle == alertLevelHandle) {
     if (context->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
       auto alertLevel = static_cast<Levels>(context->om->om_data[0]);

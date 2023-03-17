@@ -10,9 +10,9 @@ constexpr ble_uuid16_t HeartRateService::heartRateMeasurementUuid;
 constexpr ble_uuid128_t HeartRateService::runningCharUuid;
 
 namespace {
-  int HeartRateServiceCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+  int HeartRateServiceCallback(uint16_t /*conn_handle*/, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
     auto* heartRateService = static_cast<HeartRateService*>(arg);
-    return heartRateService->OnAtributeRequested(conn_handle, attr_handle, ctxt);
+    return heartRateService->OnAtributeRequested(attr_handle, ctxt);
   }
 }
 
@@ -53,7 +53,7 @@ void HeartRateService::Init() {
   ASSERT(res == 0);
 }
 
-int HeartRateService::OnAtributeRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
+int HeartRateService::OnAtributeRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
   if (attributeHandle == heartRateMeasurementHandle) {
     NRF_LOG_INFO("HEARTRATE : handle = %d", heartRateMeasurementHandle);
     uint8_t buffer[2] = {0, heartRateController.HeartRate()}; // [0] = flags, [1] = hr value
@@ -97,7 +97,7 @@ void HeartRateService::OnNewHeartRateValue(uint8_t heartRateValue) {
   if (!heartRateMeasurementNotificationEnable)
     return;
 
-  uint8_t buffer[2] = {0, heartRateController.HeartRate()}; // [0] = flags, [1] = hr value
+  uint8_t buffer[2] = {0, heartRateValue}; // [0] = flags, [1] = hr value
   auto* om = ble_hs_mbuf_from_flat(buffer, 2);
 
   uint16_t connectionHandle = system.nimble().connHandle();
@@ -109,12 +109,12 @@ void HeartRateService::OnNewHeartRateValue(uint8_t heartRateValue) {
   ble_gattc_notify_custom(connectionHandle, heartRateMeasurementHandle, om);
 }
 
-void HeartRateService::SubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) {
+void HeartRateService::SubscribeNotification(uint16_t attributeHandle) {
   if (attributeHandle == heartRateMeasurementHandle)
     heartRateMeasurementNotificationEnable = true;
 }
 
-void HeartRateService::UnsubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle) {
+void HeartRateService::UnsubscribeNotification(uint16_t attributeHandle) {
   if (attributeHandle == heartRateMeasurementHandle)
     heartRateMeasurementNotificationEnable = false;
 }

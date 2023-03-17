@@ -1,5 +1,7 @@
 # Apps
+
 This page will teach you:
+
 - what screens and apps are in InfiniTime
 - how to implement your own app
 
@@ -14,6 +16,7 @@ Apps are responsible for everything drawn on the screen when they are running.
 By default, apps only do something (as in a function is executed) when they are created or when a touch event is detected.
 
 ## Interface
+
 Every app class has to be inside the namespace `Pinetime::Applications::Screens` and inherit from `Screen`.
 The constructor should have at least one parameter `DisplayApp* app`, which it needs for the constructor of its parent class Screen.
 Other parameters should be references to controllers that the app needs.
@@ -24,10 +27,12 @@ it does not need to override any of these functions, as LVGL can also handle tou
 If you have any doubts, you can always look at how the other apps function for reference.
 
 ### Continuous updating
+
 If your app needs to be updated continuously, you can do so by overriding the `Refresh()` function in your class
 and calling `lv_task_create` inside the constructor.
 
 An example call could look like this:
+
 ```cpp
 taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 ```
@@ -37,9 +42,11 @@ Remember to delete the task again using `lv_task_del`.
 The function `RefreshTaskCallback` is inherited from `Screen` and just calls your `Refresh` function.
 
 ## Creating your own app
+
 A minimal app could look like this:
 
 MyApp.h:
+
 ```cpp
 #pragma once
 
@@ -60,6 +67,7 @@ namespace Pinetime {
 ```
 
 MyApp.cpp:
+
 ```cpp
 #include "displayapp/screens/MyApp.h"
 #include "displayapp/DisplayApp.h"
@@ -77,6 +85,7 @@ MyApp::~MyApp() {
   lv_obj_clean(lv_scr_act());
 }
 ```
+
 Both of these files should be in [displayapp/screens/](/src/displayapp/screens/)
 or [displayapp/screens/settings/](/src/displayapp/screens/settings/) if it's a setting app.
 
@@ -86,11 +95,11 @@ in the compilation by adding it to [CMakeLists.txt](/CMakeLists.txt).
 The next step to making it launchable is to give your app an id.
 To do this, add an entry in the enum class `Pinetime::Applications::Apps` ([displayapp/Apps.h](/src/displayapp/Apps.h)).
 Name this entry after your app. Add `#include "displayapp/screens/MyApp.h"` to the file [displayapp/DisplayApp.cpp](/src/displayapp/DisplayApp.cpp).
-Now, go to the function `DisplayApp::LoadApp` and add another case to the switch statement.
+Now, go to the function `DisplayApp::LoadScreen` and add another case to the switch statement.
 The case will be the id you gave your app earlier.
 If your app needs any additional arguments, this is the place to pass them.
 
-If you want to add your app in the app launcher, add your app in [displayapp/screens/ApplicationList.cpp](/src/displayapp/screens/ApplicationList.cpp) to one of the `CreateScreen` functions, or add another `CreateScreen` function if there are no empty spaces for your app. If your app is a setting, do the same procedure in [displayapp/screens/settings/Settings.cpp](/src/displayapp/screens/settings/Settings.cpp).
+If you want to add your app in the app launcher, add your app in [displayapp/screens/ApplicationList.h](/src/displayapp/screens/ApplicationList.h) to the array containing the applications and their corresponding symbol. If your app is a setting, do the same procedure in [displayapp/screens/settings/Settings.h](/src/displayapp/screens/settings/Settings.h).
 
 You should now be able to [build](../buildAndProgram.md) the firmware
 and flash it to your PineTime. Yay!

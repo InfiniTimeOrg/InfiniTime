@@ -1,8 +1,11 @@
 #pragma once
 
 #include <cstdint>
-#include <drivers/Bma421.h>
-#include <components/ble/MotionService.h>
+
+#include <FreeRTOS.h>
+
+#include "drivers/Bma421.h"
+#include "components/ble/MotionService.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -19,12 +22,15 @@ namespace Pinetime {
       int16_t X() const {
         return x;
       }
+
       int16_t Y() const {
         return y;
       }
+
       int16_t Z() const {
         return z;
       }
+
       uint32_t NbSteps() const {
         return nbSteps;
       }
@@ -32,14 +38,22 @@ namespace Pinetime {
       void ResetTrip() {
         currentTripSteps = 0;
       }
+
       uint32_t GetTripSteps() const {
         return currentTripSteps;
       }
 
-      bool Should_ShakeWake(uint16_t thresh);
-      bool Should_RaiseWake(bool isSleeping);
-      int32_t currentShakeSpeed();
-      void IsSensorOk(bool isOk);
+      bool ShouldShakeWake(uint16_t thresh);
+      bool ShouldRaiseWake(bool isSleeping);
+
+      int32_t CurrentShakeSpeed() const {
+        return accumulatedSpeed;
+      }
+
+      void IsSensorOk(bool isOk) {
+        isSensorOk = isOk;
+      }
+
       bool IsSensorOk() const {
         return isSensorOk;
       }
@@ -49,24 +63,29 @@ namespace Pinetime {
       }
 
       void Init(Pinetime::Drivers::Bma421::DeviceTypes types);
-      void SetService(Pinetime::Controllers::MotionService* service);
+
+      void SetService(Pinetime::Controllers::MotionService* service) {
+        this->service = service;
+      }
 
     private:
-      uint32_t nbSteps;
+      uint32_t nbSteps = 0;
       uint32_t currentTripSteps = 0;
-      int16_t x;
-      int16_t y;
-      int16_t z;
-      int16_t lastYForWakeUp = 0;
+
+      TickType_t lastTime = 0;
+      TickType_t time = 0;
+
+      int16_t x = 0;
+      int16_t lastYForRaiseWake = 0;
+      int16_t lastY = 0;
+      int16_t y = 0;
+      int16_t lastZ = 0;
+      int16_t z = 0;
+      int32_t accumulatedSpeed = 0;
+
       bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
       Pinetime::Controllers::MotionService* service = nullptr;
-
-      int16_t lastXForShake = 0;
-      int16_t lastYForShake = 0;
-      int16_t lastZForShake = 0;
-      int32_t accumulatedspeed = 0;
-      uint32_t lastShakeTime = 0;
     };
   }
 }

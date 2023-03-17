@@ -19,6 +19,7 @@
 #include <cstdint>
 #include "displayapp/DisplayApp.h"
 #include "components/ble/NavigationService.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -128,8 +129,7 @@ namespace {
  * Navigation watchapp
  *
  */
-Navigation::Navigation(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::NavigationService& nav)
-  : Screen(app), navService(nav) {
+Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navService(nav) {
 
   imgFlag = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(imgFlag, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_navi_80);
@@ -192,7 +192,7 @@ void Navigation::Refresh() {
     if (progress > 90) {
       lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_RED);
     } else {
-      lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xff, 0xb0, 0x0));
+      lv_obj_set_style_local_bg_color(barProgress, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, Colors::orange);
     }
   }
 }

@@ -1,13 +1,13 @@
 # Python nRF5 OTA DFU Controller
 
 So... this is my fork of dingara's fork of astronomer80's fork of
-foldedtoad's Python OTA DFU utility. 
+foldedtoad's Python OTA DFU utility.
 
-My own contribution is little more than a brute force conversion to 
-python3. It is sparsely tested so there are likely to be a few 
+My own contribution is little more than a brute force conversion to
+python3. It is sparsely tested so there are likely to be a few
 remaining bytes versus string bugs remaining in the places I didn't test
 . I used it primarily as part of
-[wasp-os](https://github.com/daniel-thompson/wasp-os) as a way to 
+[wasp-os](https://github.com/daniel-thompson/wasp-os) as a way to
 deliver OTA updates to nRF52-based smart watches, especially the
 [Pine64 PineTime](https://www.pine64.org/pinetime/).
 
@@ -17,24 +17,24 @@ This is a Python program that uses `gatttool` (provided with the Linux BlueZ dri
 
 ### Main features:
 
-* Perform OTA DFU to an nRF5 peripheral without an external USB BLE dongle.
-* Ability to detect if the peripheral is running in application mode or bootloader, and automatically switch if needed (buttonless).
-* Support for both Legacy (SDK <= 11) and Secure (SDK >= 12) bootloader.
+- Perform OTA DFU to an nRF5 peripheral without an external USB BLE dongle.
+- Ability to detect if the peripheral is running in application mode or bootloader, and automatically switch if needed (buttonless).
+- Support for both Legacy (SDK <= 11) and Secure (SDK >= 12) bootloader.
 
 Before using this utility the nRF5 peripheral device needs to be programmed with a DFU bootloader (see Nordic Semiconductor documentation/examples for instructions on that).
 
 ## Prerequisites
 
-* BlueZ 5.4 or above
-* Python 3.6
-* Python `pexpect` module (available via pip)
-* Python `intelhex` module (available via pip)
+- BlueZ 5.4 or above
+- Python 3.6
+- Python `pexpect` module (available via pip)
+- Python `intelhex` module (available via pip)
 
 ## Firmware Build Requirement
 
-* Your nRF5 peripheral firmware build method will produce  a firmware file ending with either `*.hex` or `*.bin`.
-* Your nRF5 firmware build method will produce an Init file ending with `.dat`.
-* The typical naming convention is `application.bin` and `application.dat`, but this utility will accept other names.
+- Your nRF5 peripheral firmware build method will produce a firmware file ending with either `*.hex` or `*.bin`.
+- Your nRF5 firmware build method will produce an Init file ending with `.dat`.
+- The typical naming convention is `application.bin` and `application.dat`, but this utility will accept other names.
 
 ## Generating init files
 
@@ -75,14 +75,13 @@ You can use the `hcitool lescan` to figure out the address of a DFU target, for 
     CD:E3:4A:47:1C:E4 <TARGET_NAME>
     CD:E3:4A:47:1C:E4 (unknown)
 
-
 ## Example Output
 
         ================================
         ==                            ==
         ==         DFU Server         ==
         ==                            ==
-        ================================ 
+        ================================
 
     Sending file application.bin to CD:E3:4A:47:1C:E4
     bin array size:  60788
@@ -105,14 +104,14 @@ You can use the `hcitool lescan` to figure out the address of a DFU target, for 
 
 ## TODO:
 
-* Implement link-loss procedure for Legacy Controller.
-* Update example output in readme.
-* Add makefile examples.
-* More code cleanup.
+- Implement link-loss procedure for Legacy Controller.
+- Update example output in readme.
+- Add makefile examples.
+- More code cleanup.
 
 ## Info & References
 
-* [Nordic Legacy DFU Service](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v11.0.0/bledfu_transport_bleservice.html?cp=4_0_3_4_3_1_4_1)
-* [Nordic Legacy DFU sequence diagrams](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v11.0.0/bledfu_transport_bleprofile.html?cp=4_0_3_4_3_1_4_0_1_6#ota_profile_pkt_rcpt_notif)
-* [Nordic Secure DFU bootloader](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v12.2.0/lib_dfu_transport_ble.html?cp=4_0_1_3_5_2_2)
-* [nrfutil](https://github.com/NordicSemiconductor/pc-nrfutil)
+- [Nordic Legacy DFU Service](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v11.0.0/bledfu_transport_bleservice.html?cp=4_0_3_4_3_1_4_1)
+- [Nordic Legacy DFU sequence diagrams](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v11.0.0/bledfu_transport_bleprofile.html?cp=4_0_3_4_3_1_4_0_1_6#ota_profile_pkt_rcpt_notif)
+- [Nordic Secure DFU bootloader](http://infocenter.nordicsemi.com/topic/com.nordic.infocenter.sdk5.v12.2.0/lib_dfu_transport_ble.html?cp=4_0_1_3_5_2_2)
+- [nrfutil](https://github.com/NordicSemiconductor/pc-nrfutil)

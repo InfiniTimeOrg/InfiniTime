@@ -14,13 +14,15 @@ Ptagc::Ptagc(float start, float decay, float threshold) : peak {start}, decay {d
 }
 
 float Ptagc::Step(float spl) {
-  if (std::abs(spl) > peak)
+  if (std::abs(spl) > peak) {
     peak *= boost;
-  else
+  } else {
     peak *= decay;
+  }
 
-  if ((spl > (peak * threshold)) || (spl < (peak * -threshold)))
+  if ((spl > (peak * threshold)) || (spl < (peak * -threshold))) {
     return 0.0f;
+  }
 
   spl = 100.0f * spl / (2.0f * peak);
   return spl;

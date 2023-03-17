@@ -10,17 +10,19 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
     class HeartRateController;
+
     class HeartRateService {
     public:
       HeartRateService(Pinetime::System::SystemTask& system, Controllers::HeartRateController& heartRateController);
       void Init();
-      int OnAtributeRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context);
+      int OnAtributeRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context);
       void OnNewHeartRateValue(uint8_t hearRateValue);
 
-      void SubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle);
-      void UnsubscribeNotification(uint16_t connectionHandle, uint16_t attributeHandle);
+      void SubscribeNotification(uint16_t attributeHandle);
+      void UnsubscribeNotification(uint16_t attributeHandle);
 
     private:
       Pinetime::System::SystemTask& system;

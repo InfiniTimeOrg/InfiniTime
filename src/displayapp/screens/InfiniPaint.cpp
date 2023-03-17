@@ -1,15 +1,14 @@
 #include "displayapp/screens/InfiniPaint.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/LittleVgl.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 #include <algorithm> // std::fill
 
 using namespace Pinetime::Applications::Screens;
 
-InfiniPaint::InfiniPaint(Pinetime::Applications::DisplayApp* app,
-                         Pinetime::Components::LittleVgl& lvgl,
-                         Pinetime::Controllers::MotorController& motor)
-  : Screen(app), lvgl {lvgl}, motor {motor} {
+InfiniPaint::InfiniPaint(Pinetime::Components::LittleVgl& lvgl, Pinetime::Controllers::MotorController& motor)
+  : lvgl {lvgl}, motor {motor} {
   std::fill(b, b + bufferSize, selectColor);
 }
 
@@ -26,7 +25,7 @@ bool InfiniPaint::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
           selectColor = LV_COLOR_MAGENTA;
           break;
         case 1:
-          selectColor = LV_COLOR_MAKE(0x0, 0xb0, 0x0);
+          selectColor = Colors::green;
           break;
         case 2:
           selectColor = LV_COLOR_WHITE;

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <array>
 #include "displayapp/screens/Screen.h"
+#include "displayapp/widgets/PageIndicator.h"
 #include "displayapp/Apps.h"
 #include "components/settings/Settings.h"
 
@@ -30,15 +31,13 @@ namespace Pinetime {
         void OnButtonEvent(lv_obj_t* object, lv_event_t event);
 
       private:
+        DisplayApp* app;
         Controllers::Settings& settingsController;
         Pinetime::Applications::Apps apps[MAXLISTITEMS];
 
         lv_obj_t* itemApps[MAXLISTITEMS];
 
-        lv_point_t pageIndicatorBasePoints[2];
-        lv_point_t pageIndicatorPoints[2];
-        lv_obj_t* pageIndicatorBase;
-        lv_obj_t* pageIndicator;
+        Widgets::PageIndicator pageIndicator;
       };
     }
   }

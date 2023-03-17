@@ -6,6 +6,7 @@
 
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
+#include "displayapp/screens/CheckboxList.h"
 
 namespace Pinetime {
 
@@ -17,14 +18,9 @@ namespace Pinetime {
         SettingBluetooth(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
         ~SettingBluetooth() override;
 
-        void OnBluetoothEnabled(lv_obj_t* object, lv_event_t event);
-        void OnBluetoothDisabled(lv_obj_t* object, lv_event_t event);
-
       private:
-        Controllers::Settings& settingsController;
-        lv_obj_t* cbEnabled;
-        lv_obj_t* cbDisabled;
-        bool priorMode;
+        DisplayApp* app;
+        CheckboxList checkboxList;
       };
     }
   }

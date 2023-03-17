@@ -28,7 +28,7 @@ AlarmController::AlarmController(Controllers::DateTime& dateTimeController) : da
 
 namespace {
   void SetOffAlarm(TimerHandle_t xTimer) {
-    auto controller = static_cast<Pinetime::Controllers::AlarmController*>(pvTimerGetTimerID(xTimer));
+    auto* controller = static_cast<Pinetime::Controllers::AlarmController*>(pvTimerGetTimerID(xTimer));
     controller->SetOffAlarmNow();
   }
 }
@@ -82,7 +82,7 @@ void AlarmController::ScheduleAlarm() {
   state = AlarmState::Set;
 }
 
-uint32_t AlarmController::SecondsToAlarm() {
+uint32_t AlarmController::SecondsToAlarm() const {
   return std::chrono::duration_cast<std::chrono::seconds>(alarmTime - dateTimeController.CurrentDateTime()).count();
 }
 
@@ -104,5 +104,4 @@ void AlarmController::StopAlerting() {
     // set next instance
     ScheduleAlarm();
   }
-  systemTask->PushMessage(System::Messages::StopRinging);
 }

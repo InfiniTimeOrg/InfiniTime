@@ -4,19 +4,22 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
 #include "components/settings/Settings.h"
+#include "displayapp/screens/Styles.h"
 
 using namespace Pinetime::Applications::Screens;
+
+constexpr std::array<SettingWakeUp::Option, 4> SettingWakeUp::options;
 
 namespace {
   void event_handler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingWakeUp*>(obj->user_data);
-    screen->UpdateSelected(obj, event);
+    if (event == LV_EVENT_VALUE_CHANGED) {
+      screen->UpdateSelected(obj);
+    }
   }
 }
 
-SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
-  : Screen(app), settingsController {settingsController} {
-  ignoringEvents = false;
+SettingWakeUp::SettingWakeUp(Pinetime::Controllers::Settings& settingsController) : settingsController {settingsController} {
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
 
   lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
@@ -40,39 +43,15 @@ SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
-  optionsTotal = 0;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Single Tap");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
+  for (unsigned int i = 0; i < options.size(); i++) {
+    cbOption[i] = lv_checkbox_create(container1, nullptr);
+    lv_checkbox_set_text(cbOption[i], options[i].name);
+    if (settingsController.isWakeUpModeOn(static_cast<Controllers::Settings::WakeUpMode>(i))) {
+      lv_checkbox_set_checked(cbOption[i], true);
+    }
+    cbOption[i]->user_data = this;
+    lv_obj_set_event_cb(cbOption[i], event_handler);
   }
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Double Tap");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Raise Wrist");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist)) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
-  optionsTotal++;
-  cbOption[optionsTotal] = lv_checkbox_create(container1, nullptr);
-  lv_checkbox_set_text_static(cbOption[optionsTotal], " Shake Wake");
-  cbOption[optionsTotal]->user_data = this;
-  lv_obj_set_event_cb(cbOption[optionsTotal], event_handler);
-  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake)) {
-    lv_checkbox_set_checked(cbOption[optionsTotal], true);
-  }
-  optionsTotal++;
 }
 
 SettingWakeUp::~SettingWakeUp() {
@@ -80,32 +59,21 @@ SettingWakeUp::~SettingWakeUp() {
   settingsController.SaveSettings();
 }
 
-void SettingWakeUp::UpdateSelected(lv_obj_t* object, lv_event_t event) {
-  using WakeUpMode = Pinetime::Controllers::Settings::WakeUpMode;
-  if (event == LV_EVENT_VALUE_CHANGED && !ignoringEvents) {
-    ignoringEvents = true;
-
-    // Find the index of the checkbox that triggered the event
-    int index = 0;
-    for (; index < optionsTotal; ++index) {
-      if (cbOption[index] == object) {
-        break;
-      }
+void SettingWakeUp::UpdateSelected(lv_obj_t* object) {
+  // Find the index of the checkbox that triggered the event
+  for (size_t i = 0; i < options.size(); i++) {
+    if (cbOption[i] == object) {
+      bool currentState = settingsController.isWakeUpModeOn(options[i].wakeUpMode);
+      settingsController.setWakeUpMode(options[i].wakeUpMode, !currentState);
+      break;
     }
+  }
 
-    // Toggle needed wakeup mode
-    auto mode = static_cast<WakeUpMode>(index);
-    auto currentState = settingsController.isWakeUpModeOn(mode);
-    settingsController.setWakeUpMode(mode, !currentState);
-
-    // Update checkbox according to current wakeup modes.
-    // This is needed because we can have extra logic when setting or unsetting wakeup modes,
-    // for example, when setting SingleTap, DoubleTap is unset and vice versa.
-    auto modes = settingsController.getWakeUpModes();
-    for (int i = 0; i < optionsTotal; ++i) {
-      lv_checkbox_set_checked(cbOption[i], modes[i]);
-    }
-
-    ignoringEvents = false;
+  // Update checkbox according to current wakeup modes.
+  // This is needed because we can have extra logic when setting or unsetting wakeup modes,
+  // for example, when setting SingleTap, DoubleTap is unset and vice versa.
+  auto modes = settingsController.getWakeUpModes();
+  for (size_t i = 0; i < options.size(); ++i) {
+    lv_checkbox_set_checked(cbOption[i], modes[i]);
   }
 }

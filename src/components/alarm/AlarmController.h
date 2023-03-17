@@ -26,6 +26,7 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
     class AlarmController {
     public:
@@ -36,22 +37,27 @@ namespace Pinetime {
       void ScheduleAlarm();
       void DisableAlarm();
       void SetOffAlarmNow();
-      uint32_t SecondsToAlarm();
+      uint32_t SecondsToAlarm() const;
       void StopAlerting();
       enum class AlarmState { Not_Set, Set, Alerting };
       enum class RecurType { None, Daily, Weekdays };
+
       uint8_t Hours() const {
         return hours;
       }
+
       uint8_t Minutes() const {
         return minutes;
       }
+
       AlarmState State() const {
         return state;
       }
+
       RecurType Recurrence() const {
         return recurrence;
       }
+
       void SetRecurrence(RecurType recurType) {
         recurrence = recurType;
       }
