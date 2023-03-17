@@ -296,7 +296,7 @@ Notifications::NotificationItem::NotificationItem(const char* title,
       lv_obj_set_style_local_text_color(alert_icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
     }
     //TODO: get categories for the other notifications
-    lv_label_set_text_fmt(alert_icon, NotificationIcon::GetCategoryIcon(category));
+    lv_label_set_text_fmt(alert_icon, NotificationIcon::GetCategoryIcon(notificationManager.CategoryAt(i)));
     lv_obj_align(alert_icon, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -22*i);
   }
 

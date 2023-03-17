@@ -61,6 +61,13 @@ NotificationManager::Notification::Idx NotificationManager::IndexOf(Notification
   return size;
 }
 
+NotificationManager::Categories NotificationManager::CategoryAt(Notification::Idx idx) const {
+  if (idx < 0 || idx >= this->size) {
+    return NotificationManager::Categories::Unknown;
+  }
+  return this->At(idx).category;
+}
+
 NotificationManager::Notification NotificationManager::Get(NotificationManager::Notification::Id id) const {
   NotificationManager::Notification::Idx idx = this->IndexOf(id);
   if (idx == this->size) {
