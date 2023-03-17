@@ -143,24 +143,22 @@ int AlertNotificationClient::OnDescriptorDiscoveryEventCallback(uint16_t connect
 
 void AlertNotificationClient::OnNotification(ble_gap_event* event) {
   if (event->notify_rx.attr_handle == newAlertHandle) {
-    constexpr size_t stringTerminatorSize = 1; // end of string '\0'
-    constexpr size_t headerSize = 3;
-    const auto maxMessageSize {NotificationManager::MaximumMessageSize()};
-    const auto maxBufferSize {maxMessageSize + headerSize};
+    constexpr uint32_t headerSize = 3;
+    constexpr uint32_t maxMessageSize = NotificationManager::MaximumMessageSize();
 
     // Ignore notifications with empty message
-    const auto packetLen = OS_MBUF_PKTLEN(event->notify_rx.om);
-    if (packetLen <= headerSize)
+    const uint32_t packetLen = OS_MBUF_PKTLEN(event->notify_rx.om);
+    if (packetLen <= headerSize) {
       return;
+    }
 
-    size_t bufferSize = std::min(packetLen + stringTerminatorSize, maxBufferSize);
-    auto messageSize = std::min(maxMessageSize, (bufferSize - headerSize));
+    const uint32_t messageSize = std::min(maxMessageSize, packetLen - headerSize);
 
     NotificationManager::Notification notif;
-    os_mbuf_copydata(event->notify_rx.om, headerSize, messageSize - 1, notif.message.data());
-    notif.message[messageSize - 1] = '\0';
+    os_mbuf_copydata(event->notify_rx.om, headerSize, messageSize, notif.message.data());
+    notif.message[messageSize] = '\0';
     notif.size = messageSize;
-    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    notif.category = NotificationManager::Categories::SimpleAlert;
     notificationManager.Push(std::move(notif));
 
     systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
