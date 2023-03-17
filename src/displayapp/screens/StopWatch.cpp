@@ -12,7 +12,7 @@ namespace {
 
     const int hundredths = (timeElapsedCentis % 100);
     const int secs = (timeElapsedCentis / 100) % 60;
-    const int mins = ((timeElapsedCentis / 100) / 60) % 60;
+    const int mins = (((timeElapsedCentis / 100)) / 60) % 60;
     const int hours = ((timeElapsedCentis / 100) / 60) / 60;
     return TimeSeparated_t {hours, mins, secs, hundredths};
   }
@@ -149,12 +149,12 @@ void StopWatch::Refresh() {
     TimeSeparated_t currentTimeSeparated = convertTicksToTimeSegments(laps[lapsDone]);
     if (currentTimeSeparated.hours == 0) {
       lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
-      lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
     } else {
-      lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.hours, currentTimeSeparated.mins);
-      lv_label_set_text_fmt(msecTime, "%02d:%02d", currentTimeSeparated.secs, currentTimeSeparated.hundredths);
-      lv_obj_align(msecTime, lapText, LV_ALIGN_OUT_TOP_MID, 0, 0);
+      lv_label_set_text_fmt(time, "%02d:%02d:%02d", currentTimeSeparated.hours, currentTimeSeparated.mins, currentTimeSeparated.secs);
+      lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+      lv_obj_align(time, msecTime, LV_ALIGN_OUT_TOP_MID, 0, 0);
     }
+    lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
   } else if (currentState == States::Halted) {
     const TickType_t currentTime = xTaskGetTickCount();
     if (currentTime > blinkTime) {
