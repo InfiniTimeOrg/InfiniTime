@@ -37,14 +37,16 @@ namespace Pinetime {
         class NotificationItem {
         public:
           NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                           Pinetime::Controllers::MotorController& motorController);
+                           Pinetime::Controllers::MotorController& motorController,
+                           Pinetime::Controllers::NotificationManager& notificationManager);
           NotificationItem(const char* title,
                            const char* msg,
                            uint8_t notifNr,
                            Controllers::NotificationManager::Categories,
                            uint8_t notifNb,
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                           Pinetime::Controllers::MotorController& motorController);
+                           Pinetime::Controllers::MotorController& motorController,
+                           Pinetime::Controllers::NotificationManager& notificationManager);
           ~NotificationItem();
 
           bool IsRunning() const {
@@ -64,6 +66,7 @@ namespace Pinetime {
           lv_obj_t* label_reject;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           Pinetime::Controllers::MotorController& motorController;
+          Pinetime::Controllers::NotificationManager& notificationManager;
 
           bool running = true;
         };
