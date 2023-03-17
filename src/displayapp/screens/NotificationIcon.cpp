@@ -9,10 +9,9 @@ const char* NotificationIcon::GetIcon(bool newNotificationAvailable) {
     return "";
 }
 
-//TODO: does this really belong here?
+// TODO: does this really belong here?
 const char* NotificationIcon::GetCategoryIcon(Pinetime::Controllers::NotificationManager::Categories category) {
   switch (category) {
-    //TODO add symbols for each category
     case Pinetime::Controllers::NotificationManager::Categories::SimpleAlert:
       return Symbols::bell;
     case Pinetime::Controllers::NotificationManager::Categories::Email:
@@ -36,5 +35,5 @@ const char* NotificationIcon::GetCategoryIcon(Pinetime::Controllers::Notificatio
     case Pinetime::Controllers::NotificationManager::Categories::Unknown:
     default:
       return Symbols::questionCircle;
-  }  
+  }
 }
