@@ -281,6 +281,16 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_cont_set_layout(subject_container, LV_LAYOUT_COLUMN_LEFT);
   lv_cont_set_fit(subject_container, LV_FIT_NONE);
 
+  // draw notification stack
+  for (int i = 0; i < notifNb; i++) {
+    lv_obj_t* alert_icon = lv_label_create(container, nullptr);
+    if (i+1 == notifNr) { //currently selected should be orange
+      lv_obj_set_style_local_text_color(alert_icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
+    }
+    lv_label_set_text_fmt(alert_icon, Symbols::info);
+    lv_obj_align(alert_icon, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -22*i);
+  }
+
   lv_obj_t* alert_count = lv_label_create(container, nullptr);
   lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);
   lv_obj_align(alert_count, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 16);
