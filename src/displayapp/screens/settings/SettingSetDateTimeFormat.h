@@ -23,8 +23,14 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime;
 
-        lv_obj_t* btnSetTime;
-        lv_obj_t* lblSetTime;
+        lv_obj_t* btnTime12hr;
+        lv_obj_t* btnTime24hr;
+
+        lv_obj_t* btnDateDmy;
+        lv_obj_t* btnDateMdy;
+
+        void HandleButtonPress(lv_obj_t* buttonPressed);
+        void SetSelectedColors();
       };
     }
   }
