@@ -24,9 +24,10 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
         Controllers::Settings& settingsController;
 
-        ScreenList<2> screens;
+        ScreenList<3> screens;
         std::unique_ptr<Screen> screenSetDate();
         std::unique_ptr<Screen> screenSetTime();
+        std::unique_ptr<Screen> screenSetFormat();
       };
     }
   }
