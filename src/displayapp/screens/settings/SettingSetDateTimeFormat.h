@@ -14,9 +14,12 @@ namespace Pinetime {
       class SettingSetDateTimeFormat : public Screen {
       public:
         SettingSetDateTimeFormat(Pinetime::Controllers::DateTime& dateTimeController,
-                        Pinetime::Controllers::Settings& settingsController,
-                       Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime);
+                                 Pinetime::Controllers::Settings& settingsController,
+                                 Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime);
         ~SettingSetDateTimeFormat() override;
+
+        void HandleButtonPress(lv_obj_t* buttonPressed);
+        void SetSelectedColors();
 
       private:
         Controllers::DateTime& dateTimeController;
@@ -28,9 +31,6 @@ namespace Pinetime {
 
         lv_obj_t* btnDateDmy;
         lv_obj_t* btnDateMdy;
-
-        void HandleButtonPress(lv_obj_t* buttonPressed);
-        void SetSelectedColors();
       };
     }
   }
