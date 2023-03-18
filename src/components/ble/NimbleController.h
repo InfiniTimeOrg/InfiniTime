@@ -48,7 +48,6 @@ namespace Pinetime {
                        Battery& batteryController,
                        Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                        HeartRateController& heartRateController,
-                       MotionController& motionController,
                        FS& fs);
       void Init();
       void StartAdvertising();
@@ -73,6 +72,8 @@ namespace Pinetime {
 
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);
+      void NotifyStepCount(uint32_t stepCount);
+      void NotifyMotionValues(int16_t x, int16_t y, int16_t z);
 
       void RestartFastAdv() {
         fastAdvCount = 0;

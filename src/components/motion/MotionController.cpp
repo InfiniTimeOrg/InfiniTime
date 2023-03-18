@@ -1,18 +1,11 @@
 #include "components/motion/MotionController.h"
 
+#include <cmath>
 #include <task.h>
 
 using namespace Pinetime::Controllers;
 
 void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps) {
-  if (this->nbSteps != nbSteps && service != nullptr) {
-    service->OnNewStepCountValue(nbSteps);
-  }
-
-  if (service != nullptr && (this->x != x || this->y != y || this->z != z)) {
-    service->OnNewMotionValues(x, y, z);
-  }
-
   lastTime = time;
   time = xTaskGetTickCount();
 
@@ -59,18 +52,4 @@ bool MotionController::ShouldShakeWake(uint16_t thresh) {
   accumulatedSpeed = (speed / 5) + ((accumulatedSpeed / 5) * 4);
 
   return accumulatedSpeed > thresh;
-}
-
-void MotionController::Init(Pinetime::Drivers::Bma421::DeviceTypes types) {
-  switch (types) {
-    case Drivers::Bma421::DeviceTypes::BMA421:
-      this->deviceType = DeviceTypes::BMA421;
-      break;
-    case Drivers::Bma421::DeviceTypes::BMA425:
-      this->deviceType = DeviceTypes::BMA425;
-      break;
-    default:
-      this->deviceType = DeviceTypes::Unknown;
-      break;
-  }
 }

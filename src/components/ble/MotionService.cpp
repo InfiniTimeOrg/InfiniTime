@@ -27,10 +27,8 @@ namespace {
   }
 }
 
-// TODO Refactoring - remove dependency to SystemTask
-MotionService::MotionService(NimbleController& nimble, Controllers::MotionController& motionController)
+MotionService::MotionService(NimbleController& nimble)
   : nimble {nimble},
-    motionController {motionController},
     characteristicDefinition {{.uuid = &stepCountCharUuid.u,
                                .access_cb = MotionServiceCallback,
                                .arg = this,
@@ -46,8 +44,6 @@ MotionService::MotionService(NimbleController& nimble, Controllers::MotionContro
       {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = &motionServiceUuid.u, .characteristics = characteristicDefinition},
       {0},
     } {
-  // TODO refactor to prevent this loop dependency (service depends on controller and controller depends on service)
-  motionController.SetService(this);
 }
 
 void MotionService::Init() {
@@ -62,12 +58,12 @@ void MotionService::Init() {
 int MotionService::OnStepCountRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
   if (attributeHandle == stepCountHandle) {
     NRF_LOG_INFO("Motion-stepcount : handle = %d", stepCountHandle);
-    uint32_t buffer = motionController.NbSteps();
+    uint32_t buffer = stepCount;
 
     int res = os_mbuf_append(context->om, &buffer, 4);
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
   } else if (attributeHandle == motionValuesHandle) {
-    int16_t buffer[3] = {motionController.X(), motionController.Y(), motionController.Z()};
+    int16_t buffer[3] = {accelerometerValues.x, accelerometerValues.y, accelerometerValues.z};
 
     int res = os_mbuf_append(context->om, buffer, 3 * sizeof(int16_t));
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
@@ -76,11 +72,17 @@ int MotionService::OnStepCountRequested(uint16_t attributeHandle, ble_gatt_acces
 }
 
 void MotionService::OnNewStepCountValue(uint32_t stepCount) {
-  if (!stepCountNoficationEnabled)
+  if (this->stepCount == stepCount) {
     return;
+  }
 
-  uint32_t buffer = stepCount;
-  auto* om = ble_hs_mbuf_from_flat(&buffer, 4);
+  this->stepCount = stepCount;
+
+  if (!stepCountNoficationEnabled) {
+    return;
+  }
+
+  auto* om = ble_hs_mbuf_from_flat(&stepCount, 4);
 
   uint16_t connectionHandle = nimble.connHandle();
 
@@ -92,6 +94,10 @@ void MotionService::OnNewStepCountValue(uint32_t stepCount) {
 }
 
 void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
+  accelerometerValues.x = x;
+  accelerometerValues.y = y;
+  accelerometerValues.z = z;
+
   if (!motionValuesNoficationEnabled)
     return;
 
