@@ -1,13 +1,11 @@
 #include "drivers/Watchdog.h"
 #include <mdk/nrf.h>
+#include <nrf_wdt.h>
+
 using namespace Pinetime::Drivers;
 
 void Watchdog::Setup(uint8_t timeoutSeconds) {
-  NRF_WDT->CONFIG &= ~(WDT_CONFIG_SLEEP_Msk << WDT_CONFIG_SLEEP_Pos);
-  NRF_WDT->CONFIG |= (WDT_CONFIG_HALT_Run << WDT_CONFIG_SLEEP_Pos);
-
-  NRF_WDT->CONFIG &= ~(WDT_CONFIG_HALT_Msk << WDT_CONFIG_HALT_Pos);
-  NRF_WDT->CONFIG |= (WDT_CONFIG_HALT_Pause << WDT_CONFIG_HALT_Pos);
+  nrf_wdt_behaviour_set(NRF_WDT_BEHAVIOUR_RUN_SLEEP);
 
   /* timeout (s) = (CRV + 1) / 32768 */
   // JF : 7500 = 7.5s
