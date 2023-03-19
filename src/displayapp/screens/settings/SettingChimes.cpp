@@ -4,13 +4,34 @@
 #include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
+#include <array>
 
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  void event_handler(lv_obj_t* obj, lv_event_t event) {
-    auto* screen = static_cast<SettingChimes*>(obj->user_data);
-    screen->UpdateSelected(obj, event);
+  struct Option {
+    Pinetime::Controllers::Settings::ChimesOption chimesOption;
+    const char* name;
+  };
+
+  constexpr std::array<Option, 3> options = {{
+    {Pinetime::Controllers::Settings::ChimesOption::None, "Off"},
+    {Pinetime::Controllers::Settings::ChimesOption::Hours, "Every hour"},
+    {Pinetime::Controllers::Settings::ChimesOption::HalfHours, "Every 30 mins"},
+  }};
+
+  std::array<CheckboxList::Item, CheckboxList::MaxItems> CreateOptionArray() {
+    std::array<Pinetime::Applications::Screens::CheckboxList::Item, CheckboxList::MaxItems> optionArray;
+    for (size_t i = 0; i < CheckboxList::MaxItems; i++) {
+      if (i >= options.size()) {
+        optionArray[i].name = "";
+        optionArray[i].enabled = false;
+      } else {
+        optionArray[i].name = options[i].name;
+        optionArray[i].enabled = true;
+      }
+    }
+    return optionArray;
   }
 }
 
@@ -36,38 +57,30 @@ SettingChimes::SettingChimes(Pinetime::Applications::DisplayApp* app, Pinetime::
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 10, 15);
 
-  lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
-  lv_label_set_text_static(icon, Symbols::clock);
-  lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
-
-  for (unsigned int i = 0; i < options.size(); i++) {
-    cbOption[i] = lv_checkbox_create(container1, nullptr);
-    lv_checkbox_set_text(cbOption[i], options[i].name);
-    if (settingsController.GetChimeOption() == options[i].chimesOption) {
-      lv_checkbox_set_checked(cbOption[i], true);
+  uint32_t GetDefaultOption(Pinetime::Controllers::Settings::ChimesOption currentOption) {
+    for (size_t i = 0; i < options.size(); i++) {
+      if (options[i].chimesOption == currentOption) {
+        return i;
+      }
     }
-    cbOption[i]->user_data = this;
-    lv_obj_set_event_cb(cbOption[i], event_handler);
-    SetRadioButtonStyle(cbOption[i]);
+    return 0;
   }
+}
+
+SettingChimes::SettingChimes(Pinetime::Controllers::Settings& settingsController)
+  : checkboxList(
+      0,
+      1,
+      "Chimes",
+      Symbols::clock,
+      GetDefaultOption(settingsController.GetChimeOption()),
+      [&settings = settingsController](uint32_t index) {
+        settings.SetChimeOption(options[index].chimesOption);
+        settings.SaveSettings();
+      },
+      CreateOptionArray()) {
 }
 
 SettingChimes::~SettingChimes() {
   lv_obj_clean(lv_scr_act());
-  settingsController.SaveSettings();
-}
-
-void SettingChimes::UpdateSelected(lv_obj_t* object, lv_event_t event) {
-  if (event == LV_EVENT_VALUE_CHANGED) {
-    for (uint8_t i = 0; i < options.size(); i++) {
-      if (object == cbOption[i]) {
-        lv_checkbox_set_checked(cbOption[i], true);
-        settingsController.SetChimeOption(options[i].chimesOption);
-      } else {
-        lv_checkbox_set_checked(cbOption[i], false);
-      }
-    }
-  }
 }

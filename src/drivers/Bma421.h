@@ -4,15 +4,18 @@
 namespace Pinetime {
   namespace Drivers {
     class TwiMaster;
+
     class Bma421 {
     public:
       enum class DeviceTypes : uint8_t { Unknown, BMA421, BMA425 };
+
       struct Values {
         uint32_t steps;
         int16_t x;
         int16_t y;
         int16_t z;
       };
+
       Bma421(TwiMaster& twiMaster, uint8_t twiAddress);
       Bma421(const Bma421&) = delete;
       Bma421& operator=(const Bma421&) = delete;

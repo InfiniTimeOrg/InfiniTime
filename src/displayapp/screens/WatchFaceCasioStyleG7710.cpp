@@ -1,6 +1,5 @@
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
 
-#include <date/date.h>
 #include <lvgl/lvgl.h>
 #include <cstdio>
 #include "displayapp/screens/BatteryIcon.h"
@@ -15,17 +14,16 @@
 #include "components/settings/Settings.h"
 using namespace Pinetime::Applications::Screens;
 
-WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(DisplayApp* app,
-                                                   Controllers::DateTime& dateTimeController,
-                                                   Controllers::Battery& batteryController,
-                                                   Controllers::Ble& bleController,
+WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTimeController,
+                                                   const Controllers::Battery& batteryController,
+                                                   const Controllers::Ble& bleController,
                                                    Controllers::NotificationManager& notificatioManager,
                                                    Controllers::Settings& settingsController,
                                                    Controllers::HeartRateController& heartRateController,
                                                    Controllers::MotionController& motionController,
                                                    Controllers::FS& filesystem)
-  : Screen(app),
-    currentDateTime {{}},
+  : currentDateTime {{}},
+    batteryIcon(false),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
@@ -227,19 +225,14 @@ void WatchFaceCasioStyleG7710::Refresh() {
   currentDateTime = dateTimeController.CurrentDateTime();
 
   if (currentDateTime.IsUpdated()) {
-    auto newDateTime = currentDateTime.Get();
+    auto hour = dateTimeController.Hours();
+    auto minute = dateTimeController.Minutes();
+    auto year = dateTimeController.Year();
+    auto month = dateTimeController.Month();
+    auto dayOfWeek = dateTimeController.DayOfWeek();
+    auto day = dateTimeController.Day();
+    auto dayOfYear = dateTimeController.DayOfYear();
 
-    auto dp = date::floor<date::days>(newDateTime);
-    auto time = date::make_time(newDateTime - dp);
-    auto yearMonthDay = date::year_month_day(dp);
-
-    auto year = static_cast<int>(yearMonthDay.year());
-    auto month = static_cast<Pinetime::Controllers::DateTime::Months>(static_cast<unsigned>(yearMonthDay.month()));
-    auto day = static_cast<unsigned>(yearMonthDay.day());
-    auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
-
-    uint8_t hour = time.hours().count();
-    uint8_t minute = time.minutes().count();
     auto weekNumberFormat = "%V";
 
     if (displayedHour != hour || displayedMinute != minute) {
@@ -280,22 +273,20 @@ void WatchFaceCasioStyleG7710::Refresh() {
                                  // first day of week 1; days in the new year before this are in week 0. [ tm_year, tm_wday, tm_yday]
       }
 
-      uint8_t weekNumber;
-      uint16_t dayOfYearNumber, daysTillEndOfYearNumber;
-
       time_t ttTime =
         std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::system_clock::duration>(currentDateTime.Get()));
       tm* tmTime = std::localtime(&ttTime);
 
-      dayOfYearNumber = tmTime->tm_yday + 1; //  tm_yday  day of year [0,365] => yday+1
-      daysTillEndOfYearNumber = (yearMonthDay.year().is_leap() ? 366 : 365) - dayOfYearNumber;
+      // TODO: When we start using C++20, use std::chrono::year::is_leap
+      int daysInCurrentYear = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 ? 366 : 365;
+      uint16_t daysTillEndOfYearNumber = daysInCurrentYear - dayOfYear;
 
       char buffer[8];
       strftime(buffer, 8, weekNumberFormat, tmTime);
-      weekNumber = atoi(buffer);
+      uint8_t weekNumber = atoi(buffer);
 
       lv_label_set_text_fmt(label_day_of_week, "%s", dateTimeController.DayOfWeekShortToString());
-      lv_label_set_text_fmt(label_day_of_year, "%3d-%3d", dayOfYearNumber, daysTillEndOfYearNumber);
+      lv_label_set_text_fmt(label_day_of_year, "%3d-%3d", dayOfYear, daysTillEndOfYearNumber);
       lv_label_set_text_fmt(label_week_number, "WK%02d", weekNumber);
 
       lv_obj_realign(label_day_of_week);
@@ -333,6 +324,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_obj_realign(stepIcon);
   }
 }
+
 bool WatchFaceCasioStyleG7710::IsAvailable(Pinetime::Controllers::FS& filesystem) {
   lfs_file file = {};
 

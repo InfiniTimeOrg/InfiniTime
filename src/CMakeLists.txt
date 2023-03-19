@@ -409,6 +409,7 @@ list(APPEND SOURCE_FILES
         displayapp/Colors.cpp
         displayapp/widgets/Counter.cpp
         displayapp/widgets/PageIndicator.cpp
+        displayapp/widgets/DotIndicator.cpp
         displayapp/widgets/StatusIcons.cpp
 
         ## Settings
@@ -419,6 +420,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingWakeUp.cpp
         displayapp/screens/settings/SettingDisplay.cpp
         displayapp/screens/settings/SettingSteps.cpp
+        displayapp/screens/settings/SettingSetDateTime.cpp
         displayapp/screens/settings/SettingSetDate.cpp
         displayapp/screens/settings/SettingSetTime.cpp
         displayapp/screens/settings/SettingChimes.cpp
@@ -442,7 +444,6 @@ list(APPEND SOURCE_FILES
         drivers/SpiMaster.cpp
         drivers/Spi.cpp
         drivers/Watchdog.cpp
-        drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
         drivers/Hrs3300.cpp
         drivers/Bma421.cpp
@@ -509,7 +510,6 @@ list(APPEND RECOVERY_SOURCE_FILES
         drivers/SpiMaster.cpp
         drivers/Spi.cpp
         drivers/Watchdog.cpp
-        drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
         drivers/Hrs3300.cpp
         drivers/Bma421.cpp
@@ -618,13 +618,13 @@ set(INCLUDE_FILES
         displayapp/Colors.h
         displayapp/widgets/Counter.h
         displayapp/widgets/PageIndicator.h
+        displayapp/widgets/DotIndicator.h
         displayapp/widgets/StatusIcons.h
         drivers/St7789.h
         drivers/SpiNorFlash.h
         drivers/SpiMaster.h
         drivers/Spi.h
         drivers/Watchdog.h
-        drivers/DebugPins.h
         drivers/InternalFlash.h
         drivers/Hrs3300.h
         drivers/PinMap.h
@@ -660,14 +660,6 @@ set(INCLUDE_FILES
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
-        libs/date/include/date/tz.h
-        libs/date/include/date/chrono_io.h
-        libs/date/include/date/date.h
-        libs/date/include/date/islamic.h
-        libs/date/include/date/iso_week.h
-        libs/date/include/date/julian.h
-        libs/date/include/date/ptz.h
-        libs/date/include/date/tz_private.h
         displayapp/LittleVgl.h
         displayapp/InfiniTimeTheme.h
         systemtask/SystemTask.h
@@ -688,9 +680,10 @@ include_directories(
         ${CMAKE_BINARY_DIR}/src # include generated files like Version.h
         .
         ../
+)
+include_directories(SYSTEM
         libs/
         FreeRTOS/
-        libs/date/include
         libs/mynewt-nimble/porting/npl/freertos/include
         libs/mynewt-nimble/nimble/include
         libs/mynewt-nimble/porting/nimble/include
@@ -780,7 +773,12 @@ link_directories(
 )
 
 
-set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -Wall -Wextra -Warray-bounds=2 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-nonliteral -ftree-vrp -Wno-unused-parameter -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-expansion-to-defined -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -Wreturn-type -Werror=return-type -fstack-usage -fno-exceptions -fno-non-call-exceptions)
+set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -ftree-vrp -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin -fshort-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -fstack-usage -fno-exceptions -fno-non-call-exceptions)
+set(WARNING_FLAGS -Wall -Wextra -Warray-bounds=2 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-nonliteral -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-expansion-to-defined -Wreturn-type -Werror=return-type -Werror)
+set(DEBUG_FLAGS -Og -g3)
+set(RELEASE_FLAGS -Os)
+set(CXX_FLAGS -fno-rtti)
+set(ASM_FLAGS -x assembler-with-cpp)
 add_definitions(-DCONFIG_GPIO_AS_PINRESET)
 add_definitions(-DNIMBLE_CFG_CONTROLLER)
 add_definitions(-DOS_CPUTIME_FREQ)
@@ -845,11 +843,11 @@ endif()
 
 add_subdirectory(displayapp/fonts)
 target_compile_options(infinitime_fonts PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        ${COMMON_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
 
 # NRF SDK
@@ -857,11 +855,12 @@ add_library(nrf-sdk STATIC ${SDK_SOURCE_FILES})
 target_include_directories(nrf-sdk SYSTEM PUBLIC . ../)
 target_include_directories(nrf-sdk SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(nrf-sdk PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wno-expansion-to-defined -Og -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wno-expansion-to-defined -O3>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wno-expansion-to-defined -Og -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wno-expansion-to-defined -O3 -fno-rtti>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        ${COMMON_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
+        -O3
         )
 
 # NimBLE
@@ -869,11 +868,11 @@ add_library(nimble STATIC ${NIMBLE_SRC} ${TINYCRYPT_SRC})
 target_include_directories(nimble SYSTEM PUBLIC . ../)
 target_include_directories(nimble SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(nimble PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -Wno-unused-but-set-variable -Wno-maybe-uninitialized>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-rtti>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        ${COMMON_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
 
 # lvgl
@@ -881,11 +880,11 @@ add_library(lvgl STATIC ${LVGL_SRC})
 target_include_directories(lvgl SYSTEM PUBLIC . ../)
 target_include_directories(lvgl SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(lvgl PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        ${COMMON_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
 
 # QCBOR
@@ -902,9 +901,11 @@ target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_UNCOMMON_TAGS)
 target_compile_definitions(QCBOR PUBLIC USEFULBUF_CONFIG_LITTLE_ENDIAN)
 set_target_properties(QCBOR PROPERTIES LINKER_LANGUAGE C)
 target_compile_options(QCBOR PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -O0 -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -O3>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        ${COMMON_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
+        -O3
         )
 
 # LITTLEFS_SRC
@@ -912,11 +913,11 @@ add_library(littlefs STATIC ${LITTLEFS_SRC})
 target_include_directories(littlefs SYSTEM PUBLIC . ../)
 target_include_directories(littlefs SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(littlefs PRIVATE
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wno-unused-function -Og -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wno-unused-function -Os>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wno-unused-function -Og -g3 -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wno-unused-function -Os -fno-rtti>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        ${COMMON_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
 
 # Build autonomous binary (without support for bootloader)
@@ -927,11 +928,12 @@ add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_FILE_NAME})
 target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs QCBOR infinitime_fonts)
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wextra -Wformat -Wno-missing-field-initializers -Wno-unused-parameter -Og -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wextra -Wformat -Wno-missing-field-initializers -Wno-unused-parameter -Os>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Wextra -Wformat -Wno-missing-field-initializers -Wno-unused-parameter -Og -g3 -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Wextra -Wformat -Wno-missing-field-initializers -Wno-unused-parameter -Os -fno-rtti>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        ${COMMON_FLAGS}
+        ${WARNING_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
 
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES
@@ -961,11 +963,12 @@ add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES})
 target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs QCBOR infinitime_fonts)
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        ${COMMON_FLAGS}
+        ${WARNING_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
 
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES
@@ -978,8 +981,8 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_NAME}
         COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_MCUBOOT_FILE_NAME}.out
         COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_FILE_NAME}.bin"
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_FILE_NAME}.hex"
-        COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_FILE_NAME}.hex ${IMAGE_MCUBOOT_FILE_NAME_HEX}
-        COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_FILE_NAME}.bin ${IMAGE_MCUBOOT_FILE_NAME_BIN}
+        COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 1 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_FILE_NAME}.hex ${IMAGE_MCUBOOT_FILE_NAME_HEX}
+        COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 1 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_FILE_NAME}.bin ${IMAGE_MCUBOOT_FILE_NAME_BIN}
         COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_FILE_NAME}"
         )
 
@@ -1003,11 +1006,12 @@ target_link_libraries(${EXECUTABLE_RECOVERY_NAME} nimble nrf-sdk littlefs QCBOR 
 set_target_properties(${EXECUTABLE_RECOVERY_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERY_FILE_NAME})
 target_compile_definitions(${EXECUTABLE_RECOVERY_NAME} PUBLIC "PINETIME_IS_RECOVERY")
 target_compile_options(${EXECUTABLE_RECOVERY_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        ${COMMON_FLAGS}
+        ${WARNING_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
 
 set_target_properties(${EXECUTABLE_RECOVERY_NAME} PROPERTIES
@@ -1034,11 +1038,12 @@ target_link_libraries(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} nimble nrf-sdk littlef
 set_target_properties(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME})
 target_compile_definitions(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC "PINETIME_IS_RECOVERY")
 target_compile_options(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        ${COMMON_FLAGS}
+        ${WARNING_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
 
 set_target_properties(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PROPERTIES
@@ -1051,7 +1056,7 @@ add_custom_command(TARGET ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}
         COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.out
         COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.bin"
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.out "${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.hex"
-        COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.hex ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME_HEX}
+        COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 1 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}.hex ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME_HEX}
         COMMAND ${CMAKE_OBJCOPY} -I ihex -O binary ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME_HEX} "${IMAGE_RECOVERY_MCUBOOT_FILE_NAME}.bin"
         COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME}.bin recoveryImage > recoveryImage.h
         COMMENT "post build steps for ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME}"
@@ -1072,11 +1077,12 @@ add_executable(${EXECUTABLE_RECOVERYLOADER_NAME} ${RECOVERYLOADER_SOURCE_FILES})
 target_link_libraries(${EXECUTABLE_RECOVERYLOADER_NAME} nrf-sdk QCBOR infinitime_fonts)
 set_target_properties(${EXECUTABLE_RECOVERYLOADER_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERYLOADER_FILE_NAME})
 target_compile_options(${EXECUTABLE_RECOVERYLOADER_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        ${COMMON_FLAGS}
+        ${WARNING_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
 target_include_directories(${EXECUTABLE_RECOVERYLOADER_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
@@ -1106,11 +1112,12 @@ add_executable(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} ${RECOVERYLOADER_SOURCE
 target_link_libraries(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} nrf-sdk QCBOR infinitime_fonts)
 set_target_properties(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PUBLIC
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3>
-        $<$<AND:$<COMPILE_LANGUAGE:C>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:DEBUG>>: ${COMMON_FLAGS} -Og -g3 -fno-rtti>
-        $<$<AND:$<COMPILE_LANGUAGE:CXX>,$<CONFIG:RELEASE>>: ${COMMON_FLAGS} -Os -fno-rtti>
-        $<$<COMPILE_LANGUAGE:ASM>: -MP -MD -x assembler-with-cpp>
+        ${COMMON_FLAGS}
+        ${WARNING_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
 target_include_directories(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PUBLIC
         $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/src>
@@ -1127,7 +1134,7 @@ add_custom_command(TARGET ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}
         COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.out
         COMMAND ${CMAKE_OBJCOPY} -O binary ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.bin"
         COMMAND ${CMAKE_OBJCOPY} -O ihex ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.out "${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.hex"
-        COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.hex ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME_HEX}
+        COMMAND ${CMAKE_SOURCE_DIR}/tools/mcuboot/imgtool.py create --align 1 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.hex ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME_HEX}
         COMMAND ${CMAKE_OBJCOPY} -I ihex -O binary ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME_HEX} "${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.bin"
         COMMAND python3 ${CMAKE_SOURCE_DIR}/tools/bin2c.py ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.bin recoveryLoaderImage > recoveryLoaderImage.h
         COMMENT "post build steps for ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME}"

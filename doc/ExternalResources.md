@@ -6,7 +6,7 @@ This page describes how the resources are integrated in InfiniTime from a develo
 
 ## Resources generation
 
-Resources are generated at build time via the [CMake target `Generate  Resources`](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/resources/CMakeLists.txt#L19). 
+Resources are generated at build time via the [CMake target `Generate  Resources`](https://github.com/InfiniTimeOrg/InfiniTime/blob/main/src/resources/CMakeLists.txt#L19). 
 It runs 3 Python scripts that respectively convert the fonts to binary format, convert the images to binary format and package everything in a .zip file.
 
 The resulting file `infinitime-resources-x.y.z.zip` contains the images and fonts converted in binary `.bin` files and a JSON file `resources.json`. 

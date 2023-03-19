@@ -93,6 +93,7 @@ void MotorController::ScheduleVibrateTimer(uint8_t motorDuration, bool vibrate) 
 }
 
 void MotorController::StopMotor(TimerHandle_t xTimer) {
+
   nrf_gpio_pin_set(PinMap::Motor);
 }
 

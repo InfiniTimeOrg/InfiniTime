@@ -29,8 +29,9 @@ namespace {
     auto z1 = CompareShift(d, mn - 1, size);
     for (int i = mn; i < mx + 1; i++) {
       auto z = CompareShift(d, i, size);
-      if (z2 > z1 && z1 < z)
+      if (z2 > z1 && z1 < z) {
         return i;
+      }
       z2 = z1;
       z1 = z;
     }
@@ -52,41 +53,48 @@ int8_t Ppg::Preprocess(float spl) {
 
   auto spl_int = static_cast<int8_t>(spl);
 
-  if (dataIndex < 200)
+  if (dataIndex < 200) {
     data[dataIndex++] = spl_int;
+  }
   return spl_int;
 }
 
-float Ppg::HeartRate() {
-  if (dataIndex < 200)
+int Ppg::HeartRate() {
+  if (dataIndex < 200) {
     return 0;
+  }
 
   NRF_LOG_INFO("PREPROCESS, offset = %d", offset);
   auto hr = ProcessHeartRate();
   dataIndex = 0;
   return hr;
 }
-float Ppg::ProcessHeartRate() {
-  auto t0 = Trough(data.data(), dataIndex, 7, 48);
-  if (t0 < 0)
-    return 0;
 
-  float t1 = t0 * 2;
+int Ppg::ProcessHeartRate() {
+  int t0 = Trough(data.data(), dataIndex, 7, 48);
+  if (t0 < 0) {
+    return 0;
+  }
+
+  int t1 = t0 * 2;
   t1 = Trough(data.data(), dataIndex, t1 - 5, t1 + 5);
-  if (t1 < 0)
+  if (t1 < 0) {
     return 0;
+  }
 
-  float t2 = static_cast<int>(t1 * 3) / 2;
+  int t2 = (t1 * 3) / 2;
   t2 = Trough(data.data(), dataIndex, t2 - 5, t2 + 5);
-  if (t2 < 0)
+  if (t2 < 0) {
     return 0;
+  }
 
-  float t3 = static_cast<int>(t2 * 4) / 3;
+  int t3 = (t2 * 4) / 3;
   t3 = Trough(data.data(), dataIndex, t3 - 4, t3 + 4);
-  if (t3 < 0)
-    return static_cast<int>(60 * 24 * 3) / static_cast<int>(t2);
+  if (t3 < 0) {
+    return (60 * 24 * 3) / t2;
+  }
 
-  return static_cast<int>(60 * 24 * 4) / static_cast<int>(t3);
+  return (60 * 24 * 4) / t3;
 }
 
 void Ppg::SetOffset(uint16_t offset) {

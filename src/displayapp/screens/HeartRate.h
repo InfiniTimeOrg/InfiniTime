@@ -11,12 +11,13 @@ namespace Pinetime {
   namespace Controllers {
     class HeartRateController;
   }
+
   namespace Applications {
     namespace Screens {
 
       class HeartRate : public Screen {
       public:
-        HeartRate(DisplayApp* app, Controllers::HeartRateController& HeartRateController, System::SystemTask& systemTask);
+        HeartRate(Controllers::HeartRateController& HeartRateController, System::SystemTask& systemTask);
         ~HeartRate() override;
 
         void Refresh() override;

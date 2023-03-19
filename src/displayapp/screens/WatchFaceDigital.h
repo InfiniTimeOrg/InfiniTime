@@ -24,10 +24,9 @@ namespace Pinetime {
 
       class WatchFaceDigital : public Screen {
       public:
-        WatchFaceDigital(DisplayApp* app,
-                         Controllers::DateTime& dateTimeController,
-                         Controllers::Battery& batteryController,
-                         Controllers::Ble& bleController,
+        WatchFaceDigital(Controllers::DateTime& dateTimeController,
+                         const Controllers::Battery& batteryController,
+                         const Controllers::Ble& bleController,
                          Controllers::NotificationManager& notificationManager,
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,

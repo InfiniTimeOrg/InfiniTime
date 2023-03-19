@@ -18,15 +18,15 @@ namespace Pinetime {
     class Ble;
     class NotificationManager;
   }
+
   namespace Applications {
     namespace Screens {
 
       class WatchFaceAnalog : public Screen {
       public:
-        WatchFaceAnalog(DisplayApp* app,
-                        Controllers::DateTime& dateTimeController,
-                        Controllers::Battery& batteryController,
-                        Controllers::Ble& bleController,
+        WatchFaceAnalog(Controllers::DateTime& dateTimeController,
+                        const Controllers::Battery& batteryController,
+                        const Controllers::Ble& bleController,
                         Controllers::NotificationManager& notificationManager,
                         Controllers::Settings& settingsController);
 
@@ -37,14 +37,13 @@ namespace Pinetime {
       private:
         uint8_t sHour, sMinute, sSecond;
 
-        Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
-        Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
-        uint8_t currentDay = 0;
-
         DirtyValue<uint8_t> batteryPercentRemaining {0};
         DirtyValue<bool> isCharging {};
+        DirtyValue<bool> bleState {};
         DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
         DirtyValue<bool> notificationState {false};
+        using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
+        DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
 
         lv_obj_t* hour_body;
         lv_obj_t* hour_body_trace;
@@ -67,12 +66,13 @@ namespace Pinetime {
         lv_obj_t* label_date_day;
         lv_obj_t* plugIcon;
         lv_obj_t* notificationIcon;
+        lv_obj_t* bleIcon;
 
         BatteryIcon batteryIcon;
 
         const Controllers::DateTime& dateTimeController;
-        Controllers::Battery& batteryController;
-        Controllers::Ble& bleController;
+        const Controllers::Battery& batteryController;
+        const Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
 
