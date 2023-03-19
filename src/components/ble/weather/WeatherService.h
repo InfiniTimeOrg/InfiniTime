@@ -40,7 +40,7 @@ namespace Pinetime {
 
     class WeatherService {
     public:
-      explicit WeatherService(DateTime& dateTimeController);
+      explicit WeatherService(const DateTime& dateTimeController);
 
       void Init();
 
@@ -129,7 +129,7 @@ namespace Pinetime {
 
       uint16_t eventHandle {};
 
-      Pinetime::Controllers::DateTime& dateTimeController;
+      const Pinetime::Controllers::DateTime& dateTimeController;
 
       std::vector<std::unique_ptr<WeatherData::TimelineHeader>> timeline;
       std::unique_ptr<WeatherData::TimelineHeader> nullTimelineheader = std::make_unique<WeatherData::TimelineHeader>();

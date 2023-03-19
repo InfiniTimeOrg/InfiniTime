@@ -26,7 +26,7 @@ int WeatherCallback(uint16_t /*connHandle*/, uint16_t /*attrHandle*/, struct ble
 
 namespace Pinetime {
   namespace Controllers {
-    WeatherService::WeatherService(DateTime& dateTimeController) : dateTimeController(dateTimeController) {
+    WeatherService::WeatherService(const DateTime& dateTimeController) : dateTimeController(dateTimeController) {
       nullHeader = &nullTimelineheader;
       nullTimelineheader->timestamp = 0;
     }
