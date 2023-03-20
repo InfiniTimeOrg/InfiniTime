@@ -44,8 +44,6 @@ RUN apt-get update -qq \
         clang-format-14 \
         clang-tidy
 
-# TODO: Do I need to set the locales for the devcontainer?
-
 # Git needed for PROJECT_GIT_COMMIT_HASH variable setting
 
 RUN pip3 install adafruit-nrfutil
