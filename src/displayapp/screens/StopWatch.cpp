@@ -107,6 +107,7 @@ void StopWatch::SetInterfaceStopped() {
   lv_obj_set_state(time, LV_STATE_DISABLED);
   lv_obj_set_state(msecTime, LV_STATE_DISABLED);
   lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
+  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
 
   lv_label_set_text_static(time, "00:00");
   lv_label_set_text_static(msecTime, "00");
