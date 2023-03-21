@@ -49,6 +49,7 @@ namespace Pinetime::Applications::Screens {
     int lapsDone = 0;
     lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
     lv_obj_t* lapText;
+    bool isHoursLabelUpdated = false;
 
     lv_task_t* taskRefresh;
   };

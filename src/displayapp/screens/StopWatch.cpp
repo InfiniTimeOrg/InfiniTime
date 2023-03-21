@@ -107,7 +107,11 @@ void StopWatch::SetInterfaceStopped() {
   lv_obj_set_state(time, LV_STATE_DISABLED);
   lv_obj_set_state(msecTime, LV_STATE_DISABLED);
   lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
-  lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  if (isHoursLabelUpdated) {
+    lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+    lv_obj_realign(time);
+    isHoursLabelUpdated = false;
+  }
 
   lv_label_set_text_static(time, "00:00");
   lv_label_set_text_static(msecTime, "00");
@@ -152,8 +156,11 @@ void StopWatch::Refresh() {
       lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
     } else {
       lv_label_set_text_fmt(time, "%02d:%02d:%02d", currentTimeSeparated.hours, currentTimeSeparated.mins, currentTimeSeparated.secs);
-      lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-      lv_obj_realign(time);
+      if (!isHoursLabelUpdated) {
+        lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
+        lv_obj_realign(time);
+        isHoursLabelUpdated = true;
+      }
     }
     lv_label_set_text_fmt(msecTime, "%02d", currentTimeSeparated.hundredths);
   } else if (currentState == States::Halted) {
