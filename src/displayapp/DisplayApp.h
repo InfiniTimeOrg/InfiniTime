@@ -128,6 +128,8 @@ namespace Pinetime {
       static constexpr size_t returnAppStackSize = 10;
       StaticStack<Apps, returnAppStackSize> returnAppStack;
       StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
+
+      bool isDimmed = false;
     };
   }
 }

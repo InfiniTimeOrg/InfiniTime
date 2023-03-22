@@ -1,6 +1,6 @@
 #include "components/ble/MotionService.h"
 #include "components/motion/MotionController.h"
-#include "systemtask/SystemTask.h"
+#include "components/ble/NimbleController.h"
 #include <nrf_log.h>
 
 using namespace Pinetime::Controllers;
@@ -28,8 +28,8 @@ namespace {
 }
 
 // TODO Refactoring - remove dependency to SystemTask
-MotionService::MotionService(Pinetime::System::SystemTask& system, Controllers::MotionController& motionController)
-  : system {system},
+MotionService::MotionService(NimbleController& nimble, Controllers::MotionController& motionController)
+  : nimble {nimble},
     motionController {motionController},
     characteristicDefinition {{.uuid = &stepCountCharUuid.u,
                                .access_cb = MotionServiceCallback,
@@ -82,7 +82,7 @@ void MotionService::OnNewStepCountValue(uint32_t stepCount) {
   uint32_t buffer = stepCount;
   auto* om = ble_hs_mbuf_from_flat(&buffer, 4);
 
-  uint16_t connectionHandle = system.nimble().connHandle();
+  uint16_t connectionHandle = nimble.connHandle();
 
   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
     return;
@@ -98,7 +98,7 @@ void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
   int16_t buffer[3] = {x, y, z};
   auto* om = ble_hs_mbuf_from_flat(buffer, 3 * sizeof(int16_t));
 
-  uint16_t connectionHandle = system.nimble().connHandle();
+  uint16_t connectionHandle = nimble.connHandle();
 
   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
     return;

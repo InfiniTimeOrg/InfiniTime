@@ -18,8 +18,6 @@
 
 #include "components/ble/NavigationService.h"
 
-#include "systemtask/SystemTask.h"
-
 namespace {
   // 0001yyxx-78fc-48fe-8e23-433b3a1942d0
   constexpr ble_uuid128_t CharUuid(uint8_t x, uint8_t y) {
@@ -45,7 +43,7 @@ namespace {
   }
 } // namespace
 
-Pinetime::Controllers::NavigationService::NavigationService(Pinetime::System::SystemTask& system) : m_system(system) {
+Pinetime::Controllers::NavigationService::NavigationService() {
   characteristicDefinition[0] = {.uuid = &navFlagCharUuid.u,
                                  .access_cb = NAVCallback,
                                  .arg = this,
