@@ -23,9 +23,16 @@ jobs:
         ref: ${{ github.event.pull_request.head.sha }}
 
     - if: steps.wait-for-build.outputs.conclusion != 'success'
-      run: exit 1
+      run: |
+        tee comment << EOF
+        Build checks have not completed. Possible reasons for this are:
+        1. The checks need to be approved by a maintainer
+        2. The branch has conflicts
+        3. The firmware build has failed
+        EOF
 
-    - name: Download artifact
+    - if: steps.wait-for-build.outputs.conclusion == 'success'
+      name: Download artifact
       uses: dawidd6/action-download-artifact@bd10f381a96414ce2b13a11bfa89902ba7cea07f
       with:
         workflow: main.yml
@@ -39,7 +46,6 @@ jobs:
       with:
         issue-number: ${{ github.event.pull_request.number }}
         comment-author: 'github-actions[bot]'
-        body-includes: Build size and comparison to
 
     - name: Create or update comment
       uses: peter-evans/create-or-update-comment@5adcb0bb0f9fb3f95ef05400558bdb3f329ee808
