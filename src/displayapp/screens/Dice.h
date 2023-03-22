@@ -14,7 +14,7 @@
 namespace Pinetime::Applications::Screens {
   class Dice : public Screen {
   public:
-    Dice(DisplayApp* app, Controllers::MotionController& motion, Controllers::MotorController& motor);
+    Dice(Controllers::MotionController& motion, Controllers::MotorController& motor);
     ~Dice() override;
     void Roll();
 

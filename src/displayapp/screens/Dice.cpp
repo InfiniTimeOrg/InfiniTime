@@ -39,7 +39,7 @@ namespace {
   }
 }
 
-Dice::Dice(DisplayApp* app, Controllers::MotionController& motion, Controllers::MotorController& motor) : Screen(app), motor {motor} {
+Dice::Dice(Controllers::MotionController& motion, Controllers::MotorController& motor) : motor {motor} {
   std::seed_seq sseq {static_cast<uint32_t>(xTaskGetTickCount()),
                       static_cast<uint32_t>(motion.X()),
                       static_cast<uint32_t>(motion.Y()),
