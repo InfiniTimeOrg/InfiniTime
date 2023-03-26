@@ -46,7 +46,6 @@ set(SDK_SOURCE_FILES
         # FreeRTOS
         ${NRF5_SDK_PATH}/external/freertos/source/croutine.c
         ${NRF5_SDK_PATH}/external/freertos/source/event_groups.c
-        ${NRF5_SDK_PATH}/external/freertos/source/portable/MemMang/heap_4.c
         ${NRF5_SDK_PATH}/external/freertos/source/list.c
         ${NRF5_SDK_PATH}/external/freertos/source/queue.c
         ${NRF5_SDK_PATH}/external/freertos/source/stream_buffer.c
@@ -368,6 +367,7 @@ list(APPEND IMAGE_FILES
         displayapp/icons/battery/batteryicon.c
         )
 list(APPEND SOURCE_FILES
+        FreeRTOS/heap_4_infinitime.c
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
@@ -496,6 +496,8 @@ list(APPEND SOURCE_FILES
         )
 
 list(APPEND RECOVERY_SOURCE_FILES
+        FreeRTOS/heap_4_infinitime.c
+
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayAppRecovery.cpp
@@ -558,6 +560,8 @@ list(APPEND RECOVERY_SOURCE_FILES
         )
 
 list(APPEND RECOVERYLOADER_SOURCE_FILES
+        FreeRTOS/heap_4_infinitime.c
+
         # FreeRTOS
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
