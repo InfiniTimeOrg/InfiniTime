@@ -83,6 +83,7 @@ Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
   #include "displayapp/DisplayAppRecovery.h"
 #else
   #include "displayapp/DisplayApp.h"
+  #include "main.h"
 #endif
 Pinetime::Drivers::Bma421 motionSensor {twiMaster, motionSensorTwiAddress};
 Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
@@ -144,7 +145,17 @@ Pinetime::System::SystemTask systemTask(spi,
                                         fs,
                                         touchHandler,
                                         buttonHandler);
+int mallocFailedCount = 0;
+int stackOverflowCount = 0;
+extern "C" {
+void vApplicationMallocFailedHook() {
+  mallocFailedCount++;
+}
 
+void vApplicationStackOverflowHook(TaskHandle_t /*xTask*/, char */*pcTaskName*/) {
+  stackOverflowCount++;
+}
+}
 /* Variable Declarations for variables in noinit SRAM
    Increment NoInit_MagicValue upon adding variables to this area
 */

@@ -139,6 +139,18 @@ void DisplayProgressBar(uint8_t percent, uint16_t color) {
   }
 }
 
+int mallocFailedCount = 0;
+int stackOverflowCount = 0;
+extern "C" {
+void vApplicationMallocFailedHook() {
+  mallocFailedCount++;
+}
+
+void vApplicationStackOverflowHook(TaskHandle_t /*xTask*/, char */*pcTaskName*/) {
+  stackOverflowCount++;
+}
+}
+
 int main(void) {
   TaskHandle_t taskHandle;
   RefreshWatchdog();
