@@ -27,14 +27,12 @@
 #undef min
 
 namespace Pinetime {
-  namespace System {
-    class SystemTask;
-  }
-
   namespace Controllers {
+    class NimbleController;
+
     class MusicService {
     public:
-      explicit MusicService(Pinetime::System::SystemTask& system);
+      explicit MusicService(NimbleController& nimble);
 
       void Init();
 
@@ -89,7 +87,7 @@ namespace Pinetime {
       bool repeat {false};
       bool shuffle {false};
 
-      Pinetime::System::SystemTask& m_system;
+      NimbleController& nimble;
     };
   }
 }

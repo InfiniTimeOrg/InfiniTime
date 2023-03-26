@@ -155,6 +155,29 @@ void DisplayApp::Refresh() {
     LoadScreen(returnAppStack.Pop(), returnDirection);
   };
 
+  auto DimScreen = [this]() {
+    if (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
+      isDimmed = true;
+      brightnessController.Set(Controllers::BrightnessController::Levels::Low);
+    }
+  };
+
+  auto RestoreBrightness = [this]() {
+    if (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
+      isDimmed = false;
+      lv_disp_trig_activity(nullptr);
+      ApplyBrightness();
+    }
+  };
+
+  auto IsPastDimTime = [this]() -> bool {
+    return lv_disp_get_inactive_time(nullptr) >= pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000);
+  };
+
+  auto IsPastSleepTime = [this]() -> bool {
+    return lv_disp_get_inactive_time(nullptr) >= pdMS_TO_TICKS(settingsController.GetScreenTimeOut());
+  };
+
   TickType_t queueTimeout;
   switch (state) {
     case States::Idle:
@@ -165,6 +188,18 @@ void DisplayApp::Refresh() {
         LoadPreviousScreen();
       }
       queueTimeout = lv_task_handler();
+
+      if (!systemTask->IsSleepDisabled() && IsPastDimTime()) {
+        if (!isDimmed) {
+          DimScreen();
+        }
+        if (IsPastSleepTime()) {
+          systemTask->PushMessage(System::Messages::GoToSleep);
+          state = States::Idle;
+        }
+      } else if (isDimmed) {
+        RestoreBrightness();
+      }
       break;
     default:
       queueTimeout = portMAX_DELAY;
@@ -175,10 +210,10 @@ void DisplayApp::Refresh() {
   if (xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE) {
     switch (msg) {
       case Messages::DimScreen:
-        brightnessController.Set(Controllers::BrightnessController::Levels::Low);
+        DimScreen();
         break;
       case Messages::RestoreBrightness:
-        ApplyBrightness();
+        RestoreBrightness();
         break;
       case Messages::GoToSleep:
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
@@ -191,11 +226,9 @@ void DisplayApp::Refresh() {
         break;
       case Messages::GoToRunning:
         lcd.Wakeup();
+        lv_disp_trig_activity(nullptr);
         ApplyBrightness();
         state = States::Running;
-        break;
-      case Messages::UpdateTimeOut:
-        PushMessageToSystemTask(System::Messages::UpdateTimeOut);
         break;
       case Messages::UpdateBleConnection:
         //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
@@ -206,6 +239,7 @@ void DisplayApp::Refresh() {
         break;
       case Messages::TimerDone:
         if (currentApp == Apps::Timer) {
+          lv_disp_trig_activity(nullptr);
           auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
           timer->Reset();
         } else {
@@ -319,6 +353,7 @@ void DisplayApp::Refresh() {
         motorController.RunForDuration(35);
         break;
       case Messages::OnChargingEvent:
+        RestoreBrightness();
         motorController.RunForDuration(15);
         break;
     }
@@ -352,7 +387,7 @@ void DisplayApp::LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direc
 
 void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction) {
   lvgl.CancelTap();
-  ApplyBrightness();
+  lv_disp_trig_activity(nullptr);
   motorController.StopRinging();
 
   currentScreen.reset(nullptr);
