@@ -31,10 +31,14 @@
 * (coalescences) adjacent memory blocks as they are freed, and in so doing
 * limits memory fragmentation.
 *
+* This implementation is based on heap_4.c and add the function pvPortRealloc()
+* to the original implementation.
+*
 * See heap_1.c, heap_2.c and heap_3.c for alternative implementations, and the
 * memory management pages of http://www.FreeRTOS.org for more information.
 */
 #include <stdlib.h>
+#include <string.h>
 
 /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
 all the API functions to use the MPU wrappers.  That should only be done when
@@ -442,3 +446,72 @@ static void prvInsertBlockIntoFreeList( BlockLink_t *pxBlockToInsert )
  }
 }
 
+/*-----------------------------------------------------------*/
+
+void *pvPortRealloc( void *pv, size_t xWantedSize )
+{
+ size_t move_size;
+ size_t block_size;
+ BlockLink_t* pxLink;
+ void* pvReturn = NULL;
+ uint8_t* puc = (uint8_t*) pv;
+
+ if (xWantedSize > 0)
+ {
+   if (pv != NULL)
+   {
+     // The memory being freed will have an BlockLink_t structure immediately before it.
+     puc -= xHeapStructSize;
+
+     // This casting is to keep the compiler from issuing warnings.
+     pxLink = (void*) puc;
+
+     // Check allocate block
+     if ((pxLink->xBlockSize & xBlockAllocatedBit) != 0)
+     {
+       // The block is being returned to the heap - it is no longer allocated.
+       block_size = (pxLink->xBlockSize & ~xBlockAllocatedBit) - xHeapStructSize;
+
+       // Allocate a new buffer
+       pvReturn = pvPortMalloc(xWantedSize);
+
+       // Check creation and determine the data size to be copied to the new buffer
+       if (pvReturn != NULL)
+       {
+         if (block_size < xWantedSize)
+         {
+           move_size = block_size;
+         }
+         else
+         {
+           move_size = xWantedSize;
+         }
+
+         // Copy the data from the old buffer to the new one
+         memcpy(pvReturn, pv, move_size);
+
+         // Free the old buffer
+         vPortFree(pv);
+       }
+     }
+     else
+     {
+       // pv does not point to a valid memory buffer. Allocate a new one
+       pvReturn = pvPortMalloc(xWantedSize);
+     }
+   }
+   else
+   {
+     // pv points to NULL. Allocate a new buffer.
+     pvReturn = pvPortMalloc(xWantedSize);
+   }
+ }
+ else
+ {
+   // Zero bytes requested, do nothing (according to libc, this behavior implementation defined)
+   pvReturn = NULL;
+ }
+
+  // Exit with memory block
+  return pvReturn;
+}
