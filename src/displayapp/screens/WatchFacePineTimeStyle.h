@@ -42,22 +42,19 @@ namespace Pinetime {
       private:
         uint8_t displayedHour = -1;
         uint8_t displayedMinute = -1;
-        uint8_t displayedSecond = -1;
 
-        uint16_t currentYear = 1970;
-        Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
-        Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
-        uint8_t currentDay = 0;
         uint32_t savedTick = 0;
 
         DirtyValue<uint8_t> batteryPercentRemaining {};
         DirtyValue<bool> isCharging {};
         DirtyValue<bool> bleState {};
         DirtyValue<bool> bleRadioEnabled {};
-        DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
+        DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>> currentDateTime {};
         DirtyValue<bool> motionSensorOk {};
         DirtyValue<uint32_t> stepCount {};
         DirtyValue<bool> notificationState {};
+        using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
+        DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
 
         static Pinetime::Controllers::Settings::Colors GetNext(Controllers::Settings::Colors color);
         static Pinetime::Controllers::Settings::Colors GetPrevious(Controllers::Settings::Colors color);
