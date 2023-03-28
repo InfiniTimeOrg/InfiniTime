@@ -11,8 +11,10 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
     class Ble;
+
     class FSService {
     public:
       FSService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::FS& fs);
@@ -71,6 +73,7 @@ namespace Pinetime {
       FSState state;
       char filepath[maxpathlen]; // TODO ..ugh fixed filepath len
       int fileSize;
+
       using ReadHeader = struct __attribute__((packed)) {
         commands command;
         uint8_t padding;
@@ -89,6 +92,7 @@ namespace Pinetime {
         uint32_t chunklen;
         uint8_t chunk[];
       };
+
       using ReadPacing = struct __attribute__((packed)) {
         commands command;
         uint8_t status;
@@ -124,6 +128,7 @@ namespace Pinetime {
         uint32_t dataSize;
         uint8_t data[];
       };
+
       using ListDirHeader = struct __attribute__((packed)) {
         commands command;
         uint8_t padding;
@@ -171,6 +176,7 @@ namespace Pinetime {
         commands command;
         uint8_t status;
       };
+
       using MoveHeader = struct __attribute__((packed)) {
         commands command;
         uint8_t padding;

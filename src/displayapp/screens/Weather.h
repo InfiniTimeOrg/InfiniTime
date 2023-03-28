@@ -23,9 +23,9 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
+        DisplayApp* app;
         bool running = true;
 
-        Pinetime::Controllers::DateTime& dateTimeController;
         Controllers::WeatherService& weatherService;
 
         ScreenList<5> screens;

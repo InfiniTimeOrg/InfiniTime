@@ -1,6 +1,6 @@
 #include "displayapp/screens/settings/SettingSetDate.h"
+#include "displayapp/screens/settings/SettingSetDateTime.h"
 #include <lvgl/lvgl.h>
-#include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
@@ -28,6 +28,7 @@ namespace {
   int MaximumDayOfMonth(uint8_t month, uint16_t year) {
     switch (month) {
       case 2: {
+        // TODO: When we start using C++20, use std::chrono::year::is_leap
         if ((((year % 4) == 0) && ((year % 100) != 0)) || ((year % 400) == 0)) {
           return 29;
         }
@@ -44,8 +45,10 @@ namespace {
   }
 }
 
-SettingSetDate::SettingSetDate(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::DateTime& dateTimeController)
-  : Screen(app), dateTimeController {dateTimeController} {
+SettingSetDate::SettingSetDate(Pinetime::Controllers::DateTime& dateTimeController,
+                               Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime)
+  : dateTimeController {dateTimeController}, settingSetDateTime {settingSetDateTime} {
+
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Set current date");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
@@ -82,8 +85,6 @@ SettingSetDate::SettingSetDate(Pinetime::Applications::DisplayApp* app, Pinetime
   lblSetTime = lv_label_create(btnSetTime, nullptr);
   lv_label_set_text_static(lblSetTime, "Set");
   lv_obj_set_event_cb(btnSetTime, event_handler);
-  lv_btn_set_state(btnSetTime, LV_BTN_STATE_DISABLED);
-  lv_obj_set_state(lblSetTime, LV_STATE_DISABLED);
 }
 
 SettingSetDate::~SettingSetDate() {
@@ -95,21 +96,12 @@ void SettingSetDate::HandleButtonPress() {
   const uint8_t monthValue = monthCounter.GetValue();
   const uint8_t dayValue = dayCounter.GetValue();
   NRF_LOG_INFO("Setting date (manually) to %04d-%02d-%02d", yearValue, monthValue, dayValue);
-  dateTimeController.SetTime(yearValue,
-                             monthValue,
-                             dayValue,
-                             0,
-                             dateTimeController.Hours(),
-                             dateTimeController.Minutes(),
-                             dateTimeController.Seconds(),
-                             nrf_rtc_counter_get(portNRF_RTC_REG));
-  lv_btn_set_state(btnSetTime, LV_BTN_STATE_DISABLED);
-  lv_obj_set_state(lblSetTime, LV_STATE_DISABLED);
+  dateTimeController
+    .SetTime(yearValue, monthValue, dayValue, dateTimeController.Hours(), dateTimeController.Minutes(), dateTimeController.Seconds());
+  settingSetDateTime.Advance();
 }
 
 void SettingSetDate::CheckDay() {
   const int maxDay = MaximumDayOfMonth(monthCounter.GetValue(), yearCounter.GetValue());
   dayCounter.SetMax(maxDay);
-  lv_btn_set_state(btnSetTime, LV_BTN_STATE_RELEASED);
-  lv_obj_set_state(lblSetTime, LV_STATE_DEFAULT);
 }

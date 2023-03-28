@@ -21,8 +21,8 @@ namespace {
   }
 }
 
-Metronome::Metronome(DisplayApp* app, Controllers::MotorController& motorController, System::SystemTask& systemTask)
-  : Screen(app), motorController {motorController}, systemTask {systemTask} {
+Metronome::Metronome(Controllers::MotorController& motorController, System::SystemTask& systemTask)
+  : motorController {motorController}, systemTask {systemTask} {
 
   bpmArc = lv_arc_create(lv_scr_act(), nullptr);
   bpmArc->user_data = this;
@@ -146,7 +146,6 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
 bool Metronome::OnTouchEvent(TouchEvents event) {
   if (event == TouchEvents::SwipeDown && allowExit) {
     running = false;
-    return true;
   }
-  return false;
+  return true;
 }

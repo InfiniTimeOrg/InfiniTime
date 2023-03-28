@@ -16,9 +16,9 @@ namespace Pinetime {
       CurrentTimeService(DateTime& dateTimeController);
       void Init();
 
-      int OnCurrentTimeServiceAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
-      int OnCurrentTimeAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
-      int OnLocalTimeAccessed(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt);
+      int OnCurrentTimeServiceAccessed(struct ble_gatt_access_ctxt* ctxt);
+      int OnCurrentTimeAccessed(struct ble_gatt_access_ctxt* ctxt);
+      int OnLocalTimeAccessed(struct ble_gatt_access_ctxt* ctxt);
 
     private:
       static constexpr uint16_t ctsId {0x1805};
@@ -47,8 +47,8 @@ namespace Pinetime {
       } CtsCurrentTimeData;
 
       typedef struct __attribute__((packed)) {
-        uint8_t timezone;
-        uint8_t dst;
+        int8_t timezone;
+        int8_t dst;
       } CtsLocalTimeData;
 
       DateTime& m_dateTimeController;

@@ -1,6 +1,6 @@
 # Build the project using Docker
 
-A [Docker image (Dockerfile)](../docker) containing all the build environment is available for X86_64 and AMD64 architectures.
+A [Docker image (Dockerfile)](../docker) containing all the build environment is available for X86_64 and ARM64 architectures.
 These images make the build of the firmware and the generation of the DFU file for OTA quite easy, as well as preventing clashes with any other toolchains or development environments you may have installed.
 
 Based on Ubuntu 22.04 with the following build dependencies:

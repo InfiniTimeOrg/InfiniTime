@@ -10,12 +10,13 @@ namespace Pinetime {
   namespace Components {
     class LittleVgl;
   }
+
   namespace Applications {
     namespace Screens {
 
       class InfiniPaint : public Screen {
       public:
-        InfiniPaint(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl, Controllers::MotorController& motor);
+        InfiniPaint(Pinetime::Components::LittleVgl& lvgl, Controllers::MotorController& motor);
 
         ~InfiniPaint() override;
 

@@ -18,8 +18,6 @@
 
 #include "components/ble/NavigationService.h"
 
-#include "systemtask/SystemTask.h"
-
 namespace {
   // 0001yyxx-78fc-48fe-8e23-433b3a1942d0
   constexpr ble_uuid128_t CharUuid(uint8_t x, uint8_t y) {
@@ -39,13 +37,13 @@ namespace {
   constexpr ble_uuid128_t navManDistCharUuid {CharUuid(0x03, 0x00)};
   constexpr ble_uuid128_t navProgressCharUuid {CharUuid(0x04, 0x00)};
 
-  int NAVCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
-    auto navService = static_cast<Pinetime::Controllers::NavigationService*>(arg);
-    return navService->OnCommand(conn_handle, attr_handle, ctxt);
+  int NAVCallback(uint16_t /*conn_handle*/, uint16_t /*attr_handle*/, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+    auto* navService = static_cast<Pinetime::Controllers::NavigationService*>(arg);
+    return navService->OnCommand(ctxt);
   }
 } // namespace
 
-Pinetime::Controllers::NavigationService::NavigationService(Pinetime::System::SystemTask& system) : m_system(system) {
+Pinetime::Controllers::NavigationService::NavigationService() {
   characteristicDefinition[0] = {.uuid = &navFlagCharUuid.u,
                                  .access_cb = NAVCallback,
                                  .arg = this,
@@ -81,7 +79,7 @@ void Pinetime::Controllers::NavigationService::Init() {
   ASSERT(res == 0);
 }
 
-int Pinetime::Controllers::NavigationService::OnCommand(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+int Pinetime::Controllers::NavigationService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
 
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     size_t notifSize = OS_MBUF_PKTLEN(ctxt->om);

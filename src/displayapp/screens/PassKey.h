@@ -9,7 +9,7 @@ namespace Pinetime {
 
       class PassKey : public Screen {
       public:
-        PassKey(DisplayApp* app, uint32_t key);
+        explicit PassKey(uint32_t key);
         ~PassKey() override;
 
       private:

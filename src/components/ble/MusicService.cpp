@@ -16,7 +16,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 #include "components/ble/MusicService.h"
-#include "systemtask/SystemTask.h"
+#include "components/ble/NimbleController.h"
 #include <cstring>
 
 namespace {
@@ -48,12 +48,12 @@ namespace {
 
   constexpr uint8_t MaxStringSize {40};
 
-  int MusicCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
-    return static_cast<Pinetime::Controllers::MusicService*>(arg)->OnCommand(conn_handle, attr_handle, ctxt);
+  int MusicCallback(uint16_t /*conn_handle*/, uint16_t /*attr_handle*/, struct ble_gatt_access_ctxt* ctxt, void* arg) {
+    return static_cast<Pinetime::Controllers::MusicService*>(arg)->OnCommand(ctxt);
   }
 }
 
-Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask& system) : m_system(system) {
+Pinetime::Controllers::MusicService::MusicService(Pinetime::Controllers::NimbleController& nimble) : nimble(nimble) {
   characteristicDefinition[0] = {.uuid = &msEventCharUuid.u,
                                  .access_cb = MusicCallback,
                                  .arg = this,
@@ -122,7 +122,7 @@ void Pinetime::Controllers::MusicService::Init() {
   ASSERT(res == 0);
 }
 
-int Pinetime::Controllers::MusicService::OnCommand(uint16_t conn_handle, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt) {
+int Pinetime::Controllers::MusicService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     size_t notifSize = OS_MBUF_PKTLEN(ctxt->om);
     size_t bufferSize = notifSize;
@@ -212,7 +212,7 @@ int Pinetime::Controllers::MusicService::getTrackLength() const {
 void Pinetime::Controllers::MusicService::event(char event) {
   auto* om = ble_hs_mbuf_from_flat(&event, 1);
 
-  uint16_t connectionHandle = m_system.nimble().connHandle();
+  uint16_t connectionHandle = nimble.connHandle();
 
   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
     return;

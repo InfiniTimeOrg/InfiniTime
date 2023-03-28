@@ -8,12 +8,13 @@ namespace Pinetime {
   namespace Components {
     class LittleVgl;
   }
+
   namespace Applications {
     namespace Screens {
 
       class Paddle : public Screen {
       public:
-        Paddle(DisplayApp* app, Pinetime::Components::LittleVgl& lvgl);
+        Paddle(Pinetime::Components::LittleVgl& lvgl);
         ~Paddle() override;
 
         void Refresh() override;

@@ -18,19 +18,20 @@ namespace Pinetime {
       public:
         explicit ApplicationList(DisplayApp* app,
                                  Pinetime::Controllers::Settings& settingsController,
-                                 Pinetime::Controllers::Battery& batteryController,
-                                 Pinetime::Controllers::Ble& bleController,
+                                 const Pinetime::Controllers::Battery& batteryController,
+                                 const Pinetime::Controllers::Ble& bleController,
                                  Controllers::DateTime& dateTimeController);
         ~ApplicationList() override;
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
+        DisplayApp* app;
         auto CreateScreenList() const;
         std::unique_ptr<Screen> CreateScreen(unsigned int screenNum) const;
 
         Controllers::Settings& settingsController;
-        Pinetime::Controllers::Battery& batteryController;
-        Pinetime::Controllers::Ble& bleController;
+        const Pinetime::Controllers::Battery& batteryController;
+        const Pinetime::Controllers::Ble& bleController;
         Controllers::DateTime& dateTimeController;
 
         static constexpr int appsPerScreen = 6;
@@ -49,9 +50,11 @@ namespace Pinetime {
           {Symbols::paintbrush, Apps::Paint},
           {Symbols::paddle, Apps::Paddle},
           {"2", Apps::Twos},
-          {Symbols::chartLine, Apps::Motion},
           {Symbols::drum, Apps::Metronome},
           {Symbols::map, Apps::Navigation},
+          {Symbols::none, Apps::None},
+
+          // {"M", Apps::Motion},
         }};
         ScreenList<nScreens> screens;
       };
