@@ -113,8 +113,8 @@ namespace Pinetime {
         const Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
-        Controllers::WeatherService& weatherService;
         Controllers::MotionController& motionController;
+        Controllers::WeatherService& weatherService;
 
         void SetBatteryIcon();
         void CloseMenu();

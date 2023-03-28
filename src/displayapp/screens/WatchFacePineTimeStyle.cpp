@@ -538,24 +538,30 @@ void WatchFacePineTimeStyle::Refresh() {
     }
   }
 
-  nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100);
-  if (nowTemp.IsUpdated()) {
+  if (weatherService.GetCurrentTemperature()->timestamp != 0 && weatherService.GetCurrentClouds()->timestamp != 0 &&
+      weatherService.GetCurrentPrecipitation()->timestamp != 0) {
+    nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100);
     clouds = (weatherService.GetCurrentClouds()->amount);
     precip = (weatherService.GetCurrentPrecipitation()->amount);
-    lv_label_set_text_fmt(temperature, "%d°", nowTemp.Get());
-
-    if ((clouds <= 30) && (precip == 0)) {
-      lv_label_set_text(weatherIcon, Symbols::sun);
-    } else if ((clouds >= 70) && (clouds <= 90) && (precip == 1)) {
-      lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
-    } else if ((clouds > 90) && (precip == 0)) {
-      lv_label_set_text(weatherIcon, Symbols::cloud);
-    } else if ((clouds > 70) && (precip >= 2)) {
-      lv_label_set_text(weatherIcon, Symbols::cloudShowersHeavy);
-    } else {
-      lv_label_set_text(weatherIcon, Symbols::cloudSun);
-    };
-
+    if (nowTemp.IsUpdated()) {
+      lv_label_set_text_fmt(temperature, "%d°", nowTemp.Get());
+      if ((clouds <= 30) && (precip == 0)) {
+        lv_label_set_text(weatherIcon, Symbols::sun);
+      } else if ((clouds >= 70) && (clouds <= 90) && (precip == 1)) {
+        lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
+      } else if ((clouds > 90) && (precip == 0)) {
+        lv_label_set_text(weatherIcon, Symbols::cloud);
+      } else if ((clouds > 70) && (precip >= 2)) {
+        lv_label_set_text(weatherIcon, Symbols::cloudShowersHeavy);
+      } else {
+        lv_label_set_text(weatherIcon, Symbols::cloudSun);
+      };
+      lv_obj_realign(temperature);
+      lv_obj_realign(weatherIcon);
+    }
+  } else {
+    lv_label_set_text_static(temperature, "--");
+    lv_label_set_text(weatherIcon, Symbols::ban);
     lv_obj_realign(temperature);
     lv_obj_realign(weatherIcon);
   }

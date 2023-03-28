@@ -44,8 +44,8 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
-        Controllers::FS& filesystem;
         Controllers::WeatherService& weatherService;
+        Controllers::FS& filesystem;
 
         std::unique_ptr<Screen> screen;
         std::unique_ptr<Screen> WatchFaceDigitalScreen();
