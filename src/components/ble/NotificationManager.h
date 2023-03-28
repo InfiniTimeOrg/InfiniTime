@@ -4,6 +4,7 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include "utility/StaticVector.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -38,12 +39,12 @@ namespace Pinetime {
       };
 
       void Push(Notification&& notif);
-      Notification GetLastNotification() const;
+      Notification GetNewestNotification() const;
       Notification Get(Notification::Id id) const;
       Notification GetNext(Notification::Id id) const;
       Notification GetPrevious(Notification::Id id) const;
       // Return the index of the notification with the specified id, if not found return NbNotifications()
-      Notification::Idx IndexOf(Notification::Id id) const;
+      Notification::Idx NotificationPosition(Notification::Id id) const;
       bool ClearNewNotificationFlag();
       bool AreNewNotificationsAvailable() const;
       void Dismiss(Notification::Id id);
@@ -53,22 +54,21 @@ namespace Pinetime {
       };
 
       bool IsEmpty() const {
-        return size == 0;
+        return NbNotifications() == 0;
       }
 
-      size_t NbNotifications() const;
+      size_t NbNotifications() const {
+        return notifications.Size();
+      };
 
     private:
       Notification::Id nextId {0};
       Notification::Id GetNextId();
-      const Notification& At(Notification::Idx idx) const;
-      Notification& At(Notification::Idx idx);
       void DismissIdx(Notification::Idx idx);
+      Notification::Idx IndexOf(Notification::Id id) const;
 
       static constexpr uint8_t TotalNbNotifications = 5;
-      std::array<Notification, TotalNbNotifications> notifications;
-      size_t beginIdx = TotalNbNotifications - 1; // index of the newest notification
-      size_t size = 0;                            // number of valid notifications in buffer
+      Utility::StaticVector<Notification, TotalNbNotifications> notifications;
 
       std::atomic<bool> newNotification {false};
     };
