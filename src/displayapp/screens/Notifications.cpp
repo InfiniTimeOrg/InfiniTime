@@ -82,7 +82,6 @@ void Notifications::Refresh() {
 
   } else if (mode == Modes::Preview && dismissingNotification) {
     running = false;
-    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
 
   } else if (dismissingNotification) {
     dismissingNotification = false;
@@ -113,11 +112,11 @@ void Notifications::Refresh() {
                                                        alertNotificationService,
                                                        motorController);
     } else {
-      currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+      running = false;
     }
   }
 
-  running = currentItem->IsRunning() && running;
+  running = running && currentItem->IsRunning();
 }
 
 void Notifications::OnPreviewInteraction() {
@@ -173,7 +172,9 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
         } else if (nextMessage.valid) {
           currentId = nextMessage.id;
         } else {
-          // don't update id, won't be found be refresh and try to load latest message or no message box
+          // don't update id, notification manager will try to fetch
+          // but not find it. Refresh will try to load latest message
+          // or dismiss to watchface
         }
         DismissToBlack();
         return true;
