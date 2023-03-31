@@ -148,7 +148,7 @@ int HeartRateTask::CurrentTaskDelay() {
       case States::Running:
         return 100;
       case States::BackgroundWaiting:
-        return 500;
+        return 10000;
       default:
         return portMAX_DELAY;
     }
