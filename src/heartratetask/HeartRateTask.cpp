@@ -24,78 +24,59 @@ void HeartRateTask::Process(void* instance) {
 }
 
 void HeartRateTask::Work() {
-  int lastBpm = 0;
-  while (true) {
-    Messages msg;
-    uint32_t delay;
-    if (state == States::Running) {
-      if (measurementStarted) {
-        delay = ppg.deltaTms;
-      } else {
-        delay = 100;
-      }
-    } else {
-      delay = portMAX_DELAY;
-    }
+  lastBpm = 0;
 
-    if (xQueueReceive(messageQueue, &msg, delay)) {
+  while (true) {
+    auto delay = CurrentTaskDelay();
+    Messages msg;
+
+    if (xQueueReceive(messageQueue, &msg, delay) == pdTRUE) {
       switch (msg) {
         case Messages::GoToSleep:
-          StopMeasurement();
-          state = States::Idle;
+          if (state == States::Running) {
+            state = States::Idle;
+          } else if (state == States::Measuring) {
+            state = States::BackgroundWaiting;
+            backgroundMeasurementWaitingStart = xTaskGetTickCount();
+            StopMeasurement();
+          }
           break;
         case Messages::WakeUp:
-          state = States::Running;
-          if (measurementStarted) {
-            lastBpm = 0;
+          if (state == States::Idle) {
+            state = States::Running;
+          } else if (state == States::BackgroundMeasuring) {
+            state = States::Measuring;
+          } else if (state == States::BackgroundWaiting) {
+            state = States::Measuring;
             StartMeasurement();
           }
           break;
         case Messages::StartMeasurement:
-          if (measurementStarted) {
+          if (state == States::Measuring || state == States::BackgroundMeasuring) {
             break;
           }
+          state = States::Measuring;
           lastBpm = 0;
           StartMeasurement();
-          measurementStarted = true;
           break;
         case Messages::StopMeasurement:
-          if (!measurementStarted) {
+          if (state == States::Running || state == States::Idle) {
             break;
           }
+          if (state == States::Measuring) {
+            state = States::Running;
+          } else if (state == States::BackgroundMeasuring) {
+            state = States::Idle;
+          }
           StopMeasurement();
-          measurementStarted = false;
           break;
       }
     }
 
-    if (measurementStarted) {
-      int8_t ambient = ppg.Preprocess(heartRateSensor.ReadHrs(), heartRateSensor.ReadAls());
-      int bpm = ppg.HeartRate();
-
-      // If ambient light detected or a reset requested (bpm < 0)
-      if (ambient > 0) {
-        // Reset all DAQ buffers
-        ppg.Reset(true);
-        // Force state to NotEnoughData (below)
-        lastBpm = 0;
-        bpm = 0;
-      } else if (bpm < 0) {
-        // Reset all DAQ buffers except HRS buffer
-        ppg.Reset(false);
-        // Set HR to zero and update
-        bpm = 0;
-        controller.Update(Controllers::HeartRateController::States::Running, bpm);
-      }
-
-      if (lastBpm == 0 && bpm == 0) {
-        controller.Update(Controllers::HeartRateController::States::NotEnoughData, bpm);
-      }
-
-      if (bpm != 0) {
-        lastBpm = bpm;
-        controller.Update(Controllers::HeartRateController::States::Running, lastBpm);
-      }
+    if (state == States::BackgroundWaiting) {
+      HandleBackgroundWaiting();
+    } else if (state == States::BackgroundMeasuring || state == States::Measuring) {
+      HandleSensorData();
     }
   }
 }
@@ -116,4 +97,59 @@ void HeartRateTask::StopMeasurement() {
   heartRateSensor.Disable();
   ppg.Reset(true);
   vTaskDelay(100);
+}
+
+void HeartRateTask::HandleBackgroundWaiting() {
+  if (xTaskGetTickCount() - backgroundMeasurementWaitingStart >= DURATION_BETWEEN_BACKGROUND_MEASUREMENTS) {
+    state = States::BackgroundMeasuring;
+    StartMeasurement();
+  }
+}
+
+void HeartRateTask::HandleSensorData() {
+  int8_t ambient = ppg.Preprocess(heartRateSensor.ReadHrs(), heartRateSensor.ReadAls());
+  int bpm = ppg.HeartRate();
+
+  // If ambient light detected or a reset requested (bpm < 0)
+  if (ambient > 0) {
+    // Reset all DAQ buffers
+    ppg.Reset(true);
+    // Force state to NotEnoughData (below)
+    lastBpm = 0;
+    bpm = 0;
+  } else if (bpm < 0) {
+    // Reset all DAQ buffers except HRS buffer
+    ppg.Reset(false);
+    // Set HR to zero and update
+    bpm = 0;
+    controller.Update(Controllers::HeartRateController::States::Running, bpm);
+  }
+
+  if (lastBpm == 0 && bpm == 0) {
+    controller.Update(Controllers::HeartRateController::States::NotEnoughData, bpm);
+  }
+
+  if (bpm != 0) {
+    lastBpm = bpm;
+    controller.Update(Controllers::HeartRateController::States::Running, lastBpm);
+    if (state == States::BackgroundMeasuring) {
+      StopMeasurement();
+      state = States::BackgroundWaiting;
+      backgroundMeasurementWaitingStart = xTaskGetTickCount();
+    }
+  }
+}
+
+int HeartRateTask::CurrentTaskDelay() {
+    switch (state) {
+      case States::Measuring:
+      case States::BackgroundMeasuring:
+        return ppg.deltaTms;
+      case States::Running:
+        return 100;
+      case States::BackgroundWaiting:
+        return 500;
+      default:
+        return portMAX_DELAY;
+    }
 }
