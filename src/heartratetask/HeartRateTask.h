@@ -7,6 +7,8 @@
 
 #define DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED 30 * 1000 // 30 seconds assuming 1 Hz
 
+#define DURATION_BETWEEN_BACKGROUND_MEASUREMENTS 5 * 60 * 1000 // 5 Minutes assuming 1 Hz
+
 namespace Pinetime {
   namespace Drivers {
     class Hrs3300;
@@ -42,6 +44,10 @@ namespace Pinetime {
       uint32_t GetHeartRateBackgroundMeasurementIntervalInTicks();
       bool IsContinuosModeActivated();
       bool IsBackgroundMeasurementActivated();
+
+      void HandleBackgroundWaiting();
+      void HandleSensorData();
+      int CurrentTaskDelay();
 
       TaskHandle_t taskHandle;
       QueueHandle_t messageQueue;
