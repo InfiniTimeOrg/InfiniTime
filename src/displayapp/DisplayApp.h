@@ -19,7 +19,7 @@
 #include "displayapp/Messages.h"
 #include "BootErrors.h"
 
-#include "StaticStack.h"
+#include "utility/StaticStack.h"
 
 namespace Pinetime {
 
@@ -126,8 +126,8 @@ namespace Pinetime {
       void ApplyBrightness();
 
       static constexpr size_t returnAppStackSize = 10;
-      StaticStack<Apps, returnAppStackSize> returnAppStack;
-      StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
+      Utility::StaticStack<Apps, returnAppStackSize> returnAppStack;
+      Utility::StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
 
       bool isDimmed = false;
     };
