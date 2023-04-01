@@ -101,24 +101,24 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
 std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
   auto batteryPercent = batteryController.PercentRemaining();
   const auto* resetReason = [this]() {
-    switch (watchdog.ResetReason()) {
-      case Drivers::Watchdog::ResetReasons::Watchdog:
+    switch (watchdog.GetResetReason()) {
+      case Drivers::Watchdog::ResetReason::Watchdog:
         return "wtdg";
-      case Drivers::Watchdog::ResetReasons::HardReset:
+      case Drivers::Watchdog::ResetReason::HardReset:
         return "hardr";
-      case Drivers::Watchdog::ResetReasons::NFC:
+      case Drivers::Watchdog::ResetReason::NFC:
         return "nfc";
-      case Drivers::Watchdog::ResetReasons::SoftReset:
+      case Drivers::Watchdog::ResetReason::SoftReset:
         return "softr";
-      case Drivers::Watchdog::ResetReasons::CpuLockup:
+      case Drivers::Watchdog::ResetReason::CpuLockup:
         return "cpulock";
-      case Drivers::Watchdog::ResetReasons::SystemOff:
+      case Drivers::Watchdog::ResetReason::SystemOff:
         return "off";
-      case Drivers::Watchdog::ResetReasons::LpComp:
+      case Drivers::Watchdog::ResetReason::LpComp:
         return "lpcomp";
-      case Drivers::Watchdog::ResetReasons::DebugInterface:
+      case Drivers::Watchdog::ResetReason::DebugInterface:
         return "dbg";
-      case Drivers::Watchdog::ResetReasons::ResetPin:
+      case Drivers::Watchdog::ResetReason::ResetPin:
         return "rst";
       default:
         return "?";

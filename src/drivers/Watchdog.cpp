@@ -12,10 +12,10 @@ namespace {
   ///
   /// @param sleepBehaviour Configure the watchdog to either be paused, or kept running, while the CPU is sleeping
   /// @param haltBehaviour Configure the watchdog to either be paused, or kept running, while the CPU is halted by the debugger
-  void SetBehaviours(Watchdog::SleepBehaviours sleepBehaviour, Watchdog::HaltBehaviours haltBehaviour) {
-    // NRF_WDT->CONFIG : only the 1st and 3rd bits are relevant.
+  void SetBehaviours(Watchdog::SleepBehaviour sleepBehaviour, Watchdog::HaltBehaviour haltBehaviour) {
+    // NRF_WDT->CONFIG : only the 1st and 4th bits are relevant.
     // Bit 0 : Behavior when the CPU is sleeping
-    // Bit 1 : Behavior when the CPU is halted by the debugger
+    // Bit 3 : Behavior when the CPU is halted by the debugger
     // O means that the CPU is paused during sleep/halt, 1 means that the watchdog is kept running
     NRF_WDT->CONFIG = static_cast<uint32_t>(sleepBehaviour) | static_cast<uint32_t>(haltBehaviour);
   }
@@ -45,7 +45,7 @@ namespace {
   }
 
   /// Returns the reset reason provided by the POWER subsystem
-  Watchdog::ResetReasons GetResetReason() {
+  Watchdog::ResetReason GetResetReason() {
     /* NRF_POWER->RESETREAS
      * -------------------------------------------------------------------------------------------------------------------- *
      * Bit | Reason (if bit is set to 1)
@@ -64,54 +64,54 @@ namespace {
 
     uint32_t value = reason & 0x01; // avoid implicit conversion to bool using this temporary variable.
     if(value != 0) {
-      return Watchdog::ResetReasons::ResetPin;
+      return Watchdog::ResetReason::ResetPin;
     }
 
     value = (reason >> 1u) & 0x01u;
     if(value != 0) {
-      return Watchdog::ResetReasons::Watchdog;
+      return Watchdog::ResetReason::Watchdog;
     }
 
     value = (reason >> 2u) & 0x01u;
     if (value != 0) {
-      return Watchdog::ResetReasons::SoftReset;
+      return Watchdog::ResetReason::SoftReset;
     }
 
     value = (reason >> 3u) & 0x01u;
     if (value != 0) {
-      return Watchdog::ResetReasons::CpuLockup;
+      return Watchdog::ResetReason::CpuLockup;
     }
 
     value = (reason >> 16u) & 0x01u;
     if(value != 0) {
-      return Watchdog::ResetReasons::SystemOff;
+      return Watchdog::ResetReason::SystemOff;
     }
 
     value = (reason >> 17u) & 0x01u;
     if(value != 0) {
-      return Watchdog::ResetReasons::LpComp;
+      return Watchdog::ResetReason::LpComp;
     }
 
     value = (reason >> 18u) & 0x01u;
     if(value != 0) {
-      return Watchdog::ResetReasons::DebugInterface;
+      return Watchdog::ResetReason::DebugInterface;
     }
 
     value = (reason >> 19u) & 0x01u;
     if(value != 0) {
-      return Watchdog::ResetReasons::NFC;
+      return Watchdog::ResetReason::NFC;
     }
 
-    return Watchdog::ResetReasons::HardReset;
+    return Watchdog::ResetReason::HardReset;
   }
 }
 
-void Watchdog::Setup(uint8_t timeoutSeconds, SleepBehaviours sleepBehaviour, HaltBehaviours haltBehaviour) {
+void Watchdog::Setup(uint8_t timeoutSeconds, SleepBehaviour sleepBehaviour, HaltBehaviour haltBehaviour) {
   SetBehaviours(sleepBehaviour, haltBehaviour);
   SetTimeout(timeoutSeconds);
   EnableFirstReloadRegister();
 
-  resetReason = GetResetReason();
+  resetReason = ::GetResetReason();
 }
 
 void Watchdog::Start() {
@@ -125,25 +125,25 @@ void Watchdog::Reload() {
   NRF_WDT->RR[0] = ReloadValue;
 }
 
-const char* Pinetime::Drivers::ResetReasonToString(Watchdog::ResetReasons reason) {
+const char* Pinetime::Drivers::ResetReasonToString(Watchdog::ResetReason reason) {
   switch (reason) {
-    case Watchdog::ResetReasons::ResetPin:
+    case Watchdog::ResetReason::ResetPin:
       return "Reset pin";
-    case Watchdog::ResetReasons::Watchdog:
+    case Watchdog::ResetReason::Watchdog:
       return "Watchdog";
-    case Watchdog::ResetReasons::DebugInterface:
+    case Watchdog::ResetReason::DebugInterface:
       return "Debug interface";
-    case Watchdog::ResetReasons::LpComp:
+    case Watchdog::ResetReason::LpComp:
       return "LPCOMP";
-    case Watchdog::ResetReasons::SystemOff:
+    case Watchdog::ResetReason::SystemOff:
       return "System OFF";
-    case Watchdog::ResetReasons::CpuLockup:
+    case Watchdog::ResetReason::CpuLockup:
       return "CPU Lock-up";
-    case Watchdog::ResetReasons::SoftReset:
+    case Watchdog::ResetReason::SoftReset:
       return "Soft reset";
-    case Watchdog::ResetReasons::NFC:
+    case Watchdog::ResetReason::NFC:
       return "NFC";
-    case Watchdog::ResetReasons::HardReset:
+    case Watchdog::ResetReason::HardReset:
       return "Hard reset";
     default:
       return "Unknown";

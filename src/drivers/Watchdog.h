@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <nrf52_bitfields.h>
 
 namespace Pinetime {
   namespace Drivers {
@@ -18,29 +19,29 @@ namespace Pinetime {
     class Watchdog {
     public:
       /// Indicates the reasons of a reset of the MCU
-      enum class ResetReasons { ResetPin, Watchdog, SoftReset, CpuLockup, SystemOff, LpComp, DebugInterface, NFC, HardReset };
+      enum class ResetReason { ResetPin, Watchdog, SoftReset, CpuLockup, SystemOff, LpComp, DebugInterface, NFC, HardReset };
 
       /// Behaviours of the watchdog when the CPU is sleeping
-      enum class SleepBehaviours : uint8_t {
+      enum class SleepBehaviour : uint8_t {
         /// Pause watchdog while the CPU is sleeping
-        Pause = 0,
+        Pause = 0 << WDT_CONFIG_SLEEP_Pos,
         /// Keep the watchdog running while the CPU is sleeping
-        Run = 1
+        Run = 1 << WDT_CONFIG_SLEEP_Pos
       };
 
       /// Behaviours of the watchdog when the CPU is halted by the debugger
-      enum class HaltBehaviours : uint8_t {
+      enum class HaltBehaviour : uint8_t {
         /// Pause watchdog while the CPU is halted by the debugger
-        Pause = 0 << 3,
+        Pause = 0 << WDT_CONFIG_HALT_Pos,
         /// Keep the watchdog running while the CPU is halted by the debugger
-        Run = 1 << 3
+        Run = 1 << WDT_CONFIG_HALT_Pos
       };
 
       /// Configures the watchdog with a specific timeout, behaviour when sleeping and when halted by the debugger
       ///
       /// @param sleepBehaviour Configure the watchdog to either be paused, or kept running, while the CPU is sleeping
       /// @param haltBehaviour Configure the watchdog to either be paused, or kept running, while the CPU is halted by the debugger
-      void Setup(uint8_t timeoutSeconds, SleepBehaviours sleepBehaviour, HaltBehaviours haltBehaviour);
+      void Setup(uint8_t timeoutSeconds, SleepBehaviour sleepBehaviour, HaltBehaviour haltBehaviour);
 
       /// Starts the watchdog. The watchdog will reset the MCU when the timeout period is elapsed unless you call
       /// Watchdog::Kick before the end of the period
@@ -53,15 +54,15 @@ namespace Pinetime {
       void Reload();
 
       /// Returns the reason of the last reset
-      ResetReasons ResetReason() const {
+      ResetReason GetResetReason() const {
         return resetReason;
       }
 
     private:
-      ResetReasons resetReason;
+      ResetReason resetReason;
     };
 
     /// Converts a reset reason to a human readable string
-    const char* ResetReasonToString(Watchdog::ResetReasons reason);
+    const char* ResetReasonToString(Watchdog::ResetReason reason);
   }
 }
