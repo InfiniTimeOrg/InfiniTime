@@ -28,7 +28,7 @@ namespace {
     //  Clock = 32768
     //  timeout [s] = ( CRV + 1 ) / Clock
     //  -> CRV = (timeout [s] * Clock) -1
-    NRF_WDT->CRV = (timeoutSeconds * ClockFrequency) -1;
+    NRF_WDT->CRV = (timeoutSeconds * ClockFrequency) - 1;
   }
 
   /// Enables the first reload register
@@ -63,12 +63,12 @@ namespace {
     NRF_POWER->RESETREAS = 0xffffffff;
 
     uint32_t value = reason & 0x01; // avoid implicit conversion to bool using this temporary variable.
-    if(value != 0) {
+    if (value != 0) {
       return Watchdog::ResetReason::ResetPin;
     }
 
     value = (reason >> 1u) & 0x01u;
-    if(value != 0) {
+    if (value != 0) {
       return Watchdog::ResetReason::Watchdog;
     }
 
@@ -83,22 +83,22 @@ namespace {
     }
 
     value = (reason >> 16u) & 0x01u;
-    if(value != 0) {
+    if (value != 0) {
       return Watchdog::ResetReason::SystemOff;
     }
 
     value = (reason >> 17u) & 0x01u;
-    if(value != 0) {
+    if (value != 0) {
       return Watchdog::ResetReason::LpComp;
     }
 
     value = (reason >> 18u) & 0x01u;
-    if(value != 0) {
+    if (value != 0) {
       return Watchdog::ResetReason::DebugInterface;
     }
 
     value = (reason >> 19u) & 0x01u;
-    if(value != 0) {
+    if (value != 0) {
       return Watchdog::ResetReason::NFC;
     }
 
