@@ -1,10 +1,3 @@
-/*
-  SPDX-License-Identifier: LGPL-3.0-or-later
-  Original work Copyright (C) 2020 Daniel Thompson
-  C++ port Copyright (C) 2021 Jean-François Milants
-  Modified to use frequency space pulse rate metrics and ALS sensor monitoring Copyright (C) 2022 Ceimour
-*/
-
 #include "components/heartrate/Ppg.h"
 #include <nrf_log.h>
 #include <vector>
@@ -12,17 +5,36 @@
 using namespace Pinetime::Controllers;
 
 namespace {
+  float LinearInterpolation(const float* xValues, const float* yValues, int length, float pointX) {
+    if (pointX > xValues[length - 1]) {
+      return yValues[length - 1];
+    } else if (pointX <= xValues[0]) {
+      return yValues[0];
+    }
+    int index = 0;
+    while (pointX > xValues[index] && index < length - 1) {
+      index++;
+    }
+    float pointX0 = xValues[index - 1];
+    float pointX1 = xValues[index];
+    float pointY0 = yValues[index - 1];
+    float pointY1 = yValues[index];
+    float mu = (pointX - pointX0) / (pointX1 - pointX0);
+
+    return (pointY0 * (1 - mu) + pointY1 * mu);
+  }
+
   float PeakSearch(float* xVals, float* yVals, float threshold, float& width, float start, float end, int length) {
     int peaks = 0;
     bool enabled = false;
     float minBin = 0.0f;
     float maxBin = 0.0f;
     float peakCenter = 0.0f;
-    float prevValue = Interpolation::CatmullSpline(xVals, yVals, length, start - 0.01f, true);
-    float currValue = Interpolation::CatmullSpline(xVals, yVals, length, start, true);
+    float prevValue = LinearInterpolation(xVals, yVals, length, start - 0.01f);
+    float currValue = LinearInterpolation(xVals, yVals, length, start);
     float idx = start;
     while (idx < end) {
-      float nextValue = Interpolation::CatmullSpline(xVals, yVals, length, idx + 0.01f, true);
+      float nextValue = LinearInterpolation(xVals, yVals, length, idx + 0.01f);
       if (currValue < threshold) {
         enabled = true;
       }
@@ -114,8 +126,9 @@ namespace {
     }
   }
 
-  // Hanning Coefficients
-  // Note: Harcoded and must be updated if dataLength changes.
+  // Hanning Coefficients from numpy: python -c 'import numpy;print(numpy.hanning(64))'
+  // Note: Harcoded and must be updated if constexpr dataLength is changed. Prevents the need to
+  // use cosf() which results in an extra ~5KB in storage.
   // This data is symetrical so just using the first half (saves 128B when dataLength is 64).
   static constexpr float hanning[Ppg::dataLength >> 1] {
     0.0f,        0.00248461f, 0.00991376f, 0.0222136f,  0.03926189f, 0.06088921f, 0.08688061f, 0.11697778f,
@@ -187,8 +200,10 @@ int Ppg::ProcessHeartRate(bool init) {
     }
   }
   // Compute in place power spectrum
-  FFT.Compute(vReal.data(), vImag.data(), static_cast<uint16_t>(dataLength), FFT_FORWARD);
-  FFT.ComplexToMagnitude(vReal.data(), vImag.data(), static_cast<uint16_t>(dataLength));
+  ArduinoFFT<float> FFT = ArduinoFFT<float>(vReal.data(), vImag.data(), dataLength, sampleFreq);
+  FFT.compute(FFTDirection::Forward);
+  FFT.complexToMagnitude();
+  FFT.~ArduinoFFT();
   SpectrumAverage(vReal.data(), spectrum.data(), spectrum.size(), init);
   peakLocation = 0.0f;
   float threshold = peakDetectionThreshold;

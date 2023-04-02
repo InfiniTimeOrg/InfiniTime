@@ -28,21 +28,20 @@ void Hrs3300::Init() {
   Disable();
   vTaskDelay(100);
 
-  // HRS disabled, 12.5 ms wait time between cycles, (partly) 20mA drive
-  // Wait time changed to zero and current to 12.5mA - Ceimour
-  WriteRegister(static_cast<uint8_t>(Registers::Enable), 0x70);
+  // HRS disabled, 50ms wait time between ADC conversion period, current 12.5mA
+  WriteRegister(static_cast<uint8_t>(Registers::Enable), 0x50);
 
-  // (partly) 20mA drive, power on, "magic" (datasheet says both
-  // "reserved" and "set low nibble to 8" but 0xe gives better results
-  // and is used by at least two other HRS3300 drivers
-  // Current 12.5mA and more magic (low nibble 0xF) - Ceimour
+  // Current 12.5mA and low nibble 0xF.
+  // Note: Setting low nibble to 0x8 per the datasheet results in
+  // modulated LED driver output. Setting to 0xF results in clean,
+  // steady output during the ADC conversion period.
   WriteRegister(static_cast<uint8_t>(Registers::PDriver), 0x2f);
 
-  // HRS and ALS both in 16-bit mode
-  WriteRegister(static_cast<uint8_t>(Registers::Res), 0x88);
+  // HRS and ALS both in 15-bit mode results in ~50ms LED drive period
+  // and presumably ~50ms ADC conversion period.
+  WriteRegister(static_cast<uint8_t>(Registers::Res), 0x77);
 
-  // 8x gain, non default, reduced value for better readings
-  // Gain set to 1x to improve signal/noise - Ceimour
+  // Gain set to 1x
   WriteRegister(static_cast<uint8_t>(Registers::Hgain), 0x00);
 }
 
