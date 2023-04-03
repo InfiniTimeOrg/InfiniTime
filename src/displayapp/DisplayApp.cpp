@@ -247,6 +247,14 @@ void DisplayApp::Refresh() {
         }
         motorController.RunForDuration(35);
         break;
+      case Messages::TimerAlerting:
+        if (currentApp == Apps::Timer) {
+          auto* Timer = static_cast<Screens::Timer*>(currentScreen.get());
+          Timer->SetAlerting();
+        } else {
+          LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::None);
+        }
+        break;
       case Messages::AlarmTriggered:
         if (currentApp == Apps::Alarm) {
           auto* alarm = static_cast<Screens::Alarm*>(currentScreen.get());
@@ -445,7 +453,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                Screens::Notifications::Modes::Preview);
       break;
     case Apps::Timer:
-      currentScreen = std::make_unique<Screens::Timer>(timerController);
+      currentScreen = std::make_unique<Screens::Timer>(timerController, *systemTask, motorController);
       break;
     case Apps::Alarm:
       currentScreen = std::make_unique<Screens::Alarm>(alarmController, settingsController.GetClockType(), *systemTask, motorController);
