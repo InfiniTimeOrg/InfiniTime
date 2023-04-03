@@ -42,7 +42,7 @@ namespace Pinetime {
       Controllers::HeartRateController& controller;
       Controllers::Ppg ppg;
       int lastBpm = 0;
-      TickType_t backgroundMeasurementWaitingStart;
+      TickType_t backgroundMeasurementWaitingStart = 0;
     };
 
   }

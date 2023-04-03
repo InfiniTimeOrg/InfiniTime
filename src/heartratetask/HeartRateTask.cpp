@@ -37,7 +37,6 @@ void HeartRateTask::Work() {
             state = States::Idle;
           } else if (state == States::Measuring) {
             state = States::BackgroundWaiting;
-            backgroundMeasurementWaitingStart = xTaskGetTickCount();
             StopMeasurement();
           }
           break;
