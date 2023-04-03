@@ -25,7 +25,6 @@ namespace Pinetime {
       Metronome,
       Motion,
       Steps,
-      Weather,
       PassKey,
       QuickSettings,
       Settings,

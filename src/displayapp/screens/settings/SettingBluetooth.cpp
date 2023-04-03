@@ -35,11 +35,10 @@ namespace {
 }
 
 SettingBluetooth::SettingBluetooth(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
-  : Screen(app),
+  : app {app},
     checkboxList(
       0,
       1,
-      app,
       "Bluetooth",
       Symbols::bluetooth,
       settingsController.GetBleRadioEnabled() ? 0 : 1,

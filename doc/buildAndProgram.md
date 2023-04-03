@@ -48,7 +48,7 @@ CMake configures the project according to variables you specify the command line
 #### (\*) Note about **CMAKE_BUILD_TYPE**
 By default, this variable is set to *Release*. It compiles the code with size and speed optimizations. We use this value for all the binaries we publish when we [release](https://github.com/InfiniTimeOrg/InfiniTime/releases) new versions of InfiniTime.
 
-The *Debug* mode disables all optimizations, which makes the code easier to debug. However, the binary size will likely be too big to fit in the internal flash memory. If you want to build and debug a *Debug* binary, you'll need to disable some parts of the code. For example, the icons for the **Navigation** app use a lot of memory space. You can comment the content of `m_iconMap` in the [Navigation](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/displayapp/screens/Navigation.h#L148) application to free some memory.
+The *Debug* mode disables all optimizations, which makes the code easier to debug. However, the binary size will likely be too big to fit in the internal flash memory. If you want to build and debug a *Debug* binary, you'll need to disable some parts of the code. For example, the icons for the **Navigation** app use a lot of memory space. You can comment the content of `m_iconMap` in the [Navigation](https://github.com/InfiniTimeOrg/InfiniTime/blob/main/src/displayapp/screens/Navigation.h#L148) application to free some memory.
 
 #### (\*\*) Note about **BUILD_DFU**
 DFU files are the files you'll need to install your build of InfiniTime using OTA (over-the-air) mechanism. To generate the DFU file, the Python tool [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil) is needed on your system. Check that this tool is properly installed before enabling this option.
@@ -75,7 +75,7 @@ If you just want to build the project and run it on the Pinetime, using *pinetim
 Build:
 
 ```
-make -j pinetime-app
+make -j4 pinetime-app
 ```
 
 List of files generated:
@@ -86,6 +86,6 @@ Binary files are generated into the folder `src`:
 - **pinetime-mcuboot-app.bin, .hex and .out** : firmware with bootloader support in bin, hex and out formats.
 - **pinetime-mcuboot-app.map** : map file
 - **pinetime-mcuboot-app-image** : MCUBoot image of the firmware
-- **pinetime-mcuboot-ap-dfu** : DFU file of the firmware
+- **pinetime-mcuboot-app-dfu** : DFU file of the firmware
 
 The same files are generated for **pinetime-recovery** and **pinetime-recoveryloader**

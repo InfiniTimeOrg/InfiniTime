@@ -13,7 +13,7 @@ namespace Pinetime {
 
       class SettingWakeUp : public Screen {
       public:
-        SettingWakeUp(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
+        SettingWakeUp(Pinetime::Controllers::Settings& settingsController);
         ~SettingWakeUp() override;
 
         void UpdateSelected(lv_obj_t* object);

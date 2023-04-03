@@ -26,7 +26,7 @@
 using namespace Pinetime::Applications::Screens;
 
 Weather::Weather(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::WeatherService& weather)
-  : Screen(app),
+  : app {app},
     weatherService(weather),
     screens {app,
              0,
@@ -97,7 +97,7 @@ std::unique_ptr<Screen> Weather::CreateScreenTemperature() {
   }
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::unique_ptr<Screen>(new Screens::Label(0, 5, app, label));
+  return std::unique_ptr<Screen>(new Screens::Label(0, 5, label));
 }
 
 std::unique_ptr<Screen> Weather::CreateScreenAir() {
@@ -130,7 +130,7 @@ std::unique_ptr<Screen> Weather::CreateScreenAir() {
   }
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::unique_ptr<Screen>(new Screens::Label(0, 5, app, label));
+  return std::unique_ptr<Screen>(new Screens::Label(0, 5, label));
 }
 
 std::unique_ptr<Screen> Weather::CreateScreenClouds() {
@@ -159,7 +159,7 @@ std::unique_ptr<Screen> Weather::CreateScreenClouds() {
   }
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::unique_ptr<Screen>(new Screens::Label(0, 5, app, label));
+  return std::unique_ptr<Screen>(new Screens::Label(0, 5, label));
 }
 
 std::unique_ptr<Screen> Weather::CreateScreenPrecipitation() {
@@ -188,7 +188,7 @@ std::unique_ptr<Screen> Weather::CreateScreenPrecipitation() {
   }
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::unique_ptr<Screen>(new Screens::Label(0, 5, app, label));
+  return std::unique_ptr<Screen>(new Screens::Label(0, 5, label));
 }
 
 std::unique_ptr<Screen> Weather::CreateScreenHumidity() {
@@ -217,5 +217,5 @@ std::unique_ptr<Screen> Weather::CreateScreenHumidity() {
   }
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  return std::unique_ptr<Screen>(new Screens::Label(0, 5, app, label));
+  return std::unique_ptr<Screen>(new Screens::Label(0, 5, label));
 }

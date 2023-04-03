@@ -12,7 +12,6 @@ namespace Pinetime {
       OnTimerDone,
       OnNewCall,
       BleConnected,
-      UpdateTimeOut,
       BleFirmwareUpdateStarted,
       BleFirmwareUpdateFinished,
       OnTouchEvent,
@@ -27,10 +26,8 @@ namespace Pinetime {
       OnChargingEvent,
       OnPairing,
       SetOffAlarm,
-      StopRinging,
       MeasureBatteryTimerExpired,
       BatteryPercentageUpdated,
-      LowBattery,
       StartFileTransfer,
       StopFileTransfer,
       BleRadioEnableToggle

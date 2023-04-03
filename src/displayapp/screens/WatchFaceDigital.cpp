@@ -1,6 +1,5 @@
 #include "displayapp/screens/WatchFaceDigital.h"
 
-#include <date/date.h>
 #include <lvgl/lvgl.h>
 #include <cstdio>
 #include "displayapp/screens/NotificationIcon.h"
@@ -14,16 +13,14 @@
 
 using namespace Pinetime::Applications::Screens;
 
-WatchFaceDigital::WatchFaceDigital(DisplayApp* app,
-                                   Controllers::DateTime& dateTimeController,
-                                   Controllers::Battery& batteryController,
-                                   Controllers::Ble& bleController,
+WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
+                                   const Controllers::Battery& batteryController,
+                                   const Controllers::Ble& bleController,
                                    Controllers::NotificationManager& notificationManager,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
                                    Controllers::MotionController& motionController)
-  : Screen(app),
-    currentDateTime {{}},
+  : currentDateTime {{}},
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
     settingsController {settingsController},
@@ -88,47 +85,34 @@ void WatchFaceDigital::Refresh() {
     lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
 
-  currentDateTime = dateTimeController.CurrentDateTime();
+  currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
 
   if (currentDateTime.IsUpdated()) {
-    auto newDateTime = currentDateTime.Get();
+    uint8_t hour = dateTimeController.Hours();
+    uint8_t minute = dateTimeController.Minutes();
 
-    auto dp = date::floor<date::days>(newDateTime);
-    auto time = date::make_time(newDateTime - dp);
-    auto yearMonthDay = date::year_month_day(dp);
-
-    auto year = static_cast<int>(yearMonthDay.year());
-    auto month = static_cast<Pinetime::Controllers::DateTime::Months>(static_cast<unsigned>(yearMonthDay.month()));
-    auto day = static_cast<unsigned>(yearMonthDay.day());
-    auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
-
-    uint8_t hour = time.hours().count();
-    uint8_t minute = time.minutes().count();
-
-    if (displayedHour != hour || displayedMinute != minute) {
-      displayedHour = hour;
-      displayedMinute = minute;
-
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-        char ampmChar[3] = "AM";
-        if (hour == 0) {
-          hour = 12;
-        } else if (hour == 12) {
-          ampmChar[0] = 'P';
-        } else if (hour > 12) {
-          hour = hour - 12;
-          ampmChar[0] = 'P';
-        }
-        lv_label_set_text(label_time_ampm, ampmChar);
-        lv_label_set_text_fmt(label_time, "%2d:%02d", hour, minute);
-        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
-      } else {
-        lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
-        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+      char ampmChar[3] = "AM";
+      if (hour == 0) {
+        hour = 12;
+      } else if (hour == 12) {
+        ampmChar[0] = 'P';
+      } else if (hour > 12) {
+        hour = hour - 12;
+        ampmChar[0] = 'P';
       }
+      lv_label_set_text(label_time_ampm, ampmChar);
+      lv_label_set_text_fmt(label_time, "%2d:%02d", hour, minute);
+      lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
+    } else {
+      lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
+      lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
     }
 
-    if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
+    currentDate = std::chrono::time_point_cast<days>(currentDateTime.Get());
+    if (currentDate.IsUpdated()) {
+      uint16_t year = dateTimeController.Year();
+      uint8_t day = dateTimeController.Day();
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
         lv_label_set_text_fmt(label_date,
                               "%s %d %s %d",
@@ -145,11 +129,6 @@ void WatchFaceDigital::Refresh() {
                               year);
       }
       lv_obj_realign(label_date);
-
-      currentYear = year;
-      currentMonth = month;
-      currentDayOfWeek = dayOfWeek;
-      currentDay = day;
     }
   }
 

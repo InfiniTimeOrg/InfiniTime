@@ -16,7 +16,7 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::MotorController& motorController,
                              System::SystemTask& systemTask,
                              Modes mode)
-  : Screen(app),
+  : app {app},
     notificationManager {notificationManager},
     alertNotificationService {alertNotificationService},
     motorController {motorController},

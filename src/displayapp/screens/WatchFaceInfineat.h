@@ -6,6 +6,7 @@
 #include <memory>
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
+#include "utility/DirtyValue.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -21,10 +22,10 @@ namespace Pinetime {
 
       class WatchFaceInfineat : public Screen {
       public:
-        WatchFaceInfineat(DisplayApp* app,
-                          Controllers::DateTime& dateTimeController,
-                          Controllers::Battery& batteryController,
-                          Controllers::Ble& bleController,
+        static constexpr int nLines = 9;
+        WatchFaceInfineat(Controllers::DateTime& dateTimeController,
+                          const Controllers::Battery& batteryController,
+                          const Controllers::Ble& bleController,
                           Controllers::NotificationManager& notificationManager,
                           Controllers::Settings& settingsController,
                           Controllers::MotionController& motionController,
@@ -42,23 +43,19 @@ namespace Pinetime {
         static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
 
       private:
-        char displayedChar[5] {};
-
-        uint16_t currentYear = 1970;
-        Pinetime::Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
-        Pinetime::Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
-        uint8_t currentDay = 0;
         uint32_t savedTick = 0;
         uint8_t chargingBatteryPercent = 101; // not a mistake ;)
 
-        DirtyValue<uint8_t> batteryPercentRemaining {};
-        DirtyValue<bool> isCharging {};
-        DirtyValue<bool> bleState {};
-        DirtyValue<bool> bleRadioEnabled {};
-        DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
-        DirtyValue<bool> motionSensorOk {};
-        DirtyValue<uint32_t> stepCount {};
-        DirtyValue<bool> notificationState {};
+        Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
+        Utility::DirtyValue<bool> isCharging {};
+        Utility::DirtyValue<bool> bleState {};
+        Utility::DirtyValue<bool> bleRadioEnabled {};
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
+        Utility::DirtyValue<bool> motionSensorOk {};
+        Utility::DirtyValue<uint32_t> stepCount {};
+        Utility::DirtyValue<bool> notificationState {};
+        using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
 
         // Lines making up the side cover
         lv_obj_t* lineBattery;
@@ -85,24 +82,11 @@ namespace Pinetime {
         lv_obj_t* labelBtnSettings;
         lv_obj_t* lblToggle;
 
-        static constexpr int nLines = 9;
-        static constexpr int nColors = 7; // must match number of colors in InfineatColors
-
         lv_obj_t* lines[nLines];
 
-        struct InfineatColors {
-          int orange[nLines] = {0xfd872b, 0xdb3316, 0x6f1000, 0xfd7a0a, 0xffffff, 0xffffff, 0xffffff, 0xe85102, 0xea1c00};
-          int blue[nLines] = {0xe7f8ff, 0x2232d0, 0x182a8b, 0xe7f8ff, 0xffffff, 0xffffff, 0xffffff, 0x5991ff, 0x1636ff};
-          int green[nLines] = {0xb8ff9b, 0x088608, 0x004a00, 0xb8ff9b, 0xffffff, 0xffffff, 0xffffff, 0x62d515, 0x007400};
-          int rainbow[nLines] = {0x2da400, 0xac09c4, 0xfe0303, 0x0d57ff, 0xffffff, 0xffffff, 0xffffff, 0xe0b900, 0xe85102};
-          int gray[nLines] = {0xeeeeee, 0x98959b, 0x191919, 0xeeeeee, 0xffffff, 0xffffff, 0xffffff, 0x919191, 0x3a3a3a};
-          int nordBlue[nLines] = {0xc3daf2, 0x4d78ce, 0x153451, 0xc3daf2, 0xffffff, 0xffffff, 0xffffff, 0x5d8ad2, 0x21518a};
-          int nordGreen[nLines] = {0xd5f0e9, 0x238373, 0x1d413f, 0xd5f0e9, 0xffffff, 0xffffff, 0xffffff, 0x2fb8a2, 0x11705a};
-        } infineatColors;
-
         Controllers::DateTime& dateTimeController;
-        Controllers::Battery& batteryController;
-        Controllers::Ble& bleController;
+        const Controllers::Battery& batteryController;
+        const Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;

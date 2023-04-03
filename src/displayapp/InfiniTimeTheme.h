@@ -3,6 +3,7 @@
 #include <lvgl/lvgl.h>
 
 namespace Colors {
+  static constexpr lv_color_t deepOrange = LV_COLOR_MAKE(0xff, 0x40, 0x0);
   static constexpr lv_color_t orange = LV_COLOR_MAKE(0xff, 0xb0, 0x0);
   static constexpr lv_color_t green = LV_COLOR_MAKE(0x0, 0xb0, 0x0);
   static constexpr lv_color_t blue = LV_COLOR_MAKE(0x0, 0x50, 0xff);

@@ -1,7 +1,6 @@
 #include "components/ble/NimbleController.h"
 #include <cstring>
 
-#include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #define min // workaround: nimble's min/max macros conflict with libstdc++
 #define max
@@ -43,13 +42,12 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     anService {systemTask, notificationManager},
     alertNotificationClient {systemTask, notificationManager},
     currentTimeService {dateTimeController},
-    musicService {systemTask},
-    weatherService {systemTask, dateTimeController},
-    navService {systemTask},
+    musicService {*this},
+    weatherService {dateTimeController},
     batteryInformationService {batteryController},
     immediateAlertService {systemTask, notificationManager},
-    heartRateService {systemTask, heartRateController},
-    motionService {systemTask, motionController},
+    heartRateService {*this, heartRateController},
+    motionService {*this, motionController},
     fsService {systemTask, fs},
     serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
 }

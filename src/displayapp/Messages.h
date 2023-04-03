@@ -17,13 +17,13 @@ namespace Pinetime {
         NewNotification,
         TimerDone,
         BleFirmwareUpdateStarted,
-        UpdateTimeOut,
         DimScreen,
         RestoreBrightness,
         ShowPairingKey,
         AlarmTriggered,
-        Clock,
-        BleRadioEnableToggle
+        Chime,
+        BleRadioEnableToggle,
+        OnChargingEvent,
       };
     }
   }

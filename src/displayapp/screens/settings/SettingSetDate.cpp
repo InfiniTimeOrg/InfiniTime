@@ -1,7 +1,6 @@
 #include "displayapp/screens/settings/SettingSetDate.h"
 #include "displayapp/screens/settings/SettingSetDateTime.h"
 #include <lvgl/lvgl.h>
-#include <hal/nrf_rtc.h>
 #include <nrf_log.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Symbols.h"
@@ -29,6 +28,7 @@ namespace {
   int MaximumDayOfMonth(uint8_t month, uint16_t year) {
     switch (month) {
       case 2: {
+        // TODO: When we start using C++20, use std::chrono::year::is_leap
         if ((((year % 4) == 0) && ((year % 100) != 0)) || ((year % 400) == 0)) {
           return 29;
         }
@@ -45,10 +45,9 @@ namespace {
   }
 }
 
-SettingSetDate::SettingSetDate(Pinetime::Applications::DisplayApp* app,
-                               Pinetime::Controllers::DateTime& dateTimeController,
+SettingSetDate::SettingSetDate(Pinetime::Controllers::DateTime& dateTimeController,
                                Pinetime::Applications::Screens::SettingSetDateTime& settingSetDateTime)
-  : Screen(app), dateTimeController {dateTimeController}, settingSetDateTime {settingSetDateTime} {
+  : dateTimeController {dateTimeController}, settingSetDateTime {settingSetDateTime} {
 
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Set current date");
@@ -97,13 +96,8 @@ void SettingSetDate::HandleButtonPress() {
   const uint8_t monthValue = monthCounter.GetValue();
   const uint8_t dayValue = dayCounter.GetValue();
   NRF_LOG_INFO("Setting date (manually) to %04d-%02d-%02d", yearValue, monthValue, dayValue);
-  dateTimeController.SetTime(yearValue,
-                             monthValue,
-                             dayValue,
-                             dateTimeController.Hours(),
-                             dateTimeController.Minutes(),
-                             dateTimeController.Seconds(),
-                             nrf_rtc_counter_get(portNRF_RTC_REG));
+  dateTimeController
+    .SetTime(yearValue, monthValue, dayValue, dateTimeController.Hours(), dateTimeController.Minutes(), dateTimeController.Seconds());
   settingSetDateTime.Advance();
 }
 

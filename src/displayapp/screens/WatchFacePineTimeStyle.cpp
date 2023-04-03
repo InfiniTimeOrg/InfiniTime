@@ -20,7 +20,6 @@
  */
 
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
-#include <date/date.h>
 #include <lvgl/lvgl.h>
 #include <cstdio>
 #include <displayapp/Colors.h>
@@ -44,15 +43,14 @@ namespace {
   }
 }
 
-WatchFacePineTimeStyle::WatchFacePineTimeStyle(DisplayApp* app,
-                                               Controllers::DateTime& dateTimeController,
-                                               Controllers::Battery& batteryController,
-                                               Controllers::Ble& bleController,
+WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeController,
+                                               const Controllers::Battery& batteryController,
+                                               const Controllers::Ble& bleController,
                                                Controllers::NotificationManager& notificationManager,
                                                Controllers::Settings& settingsController,
                                                Controllers::MotionController& motionController)
-  : Screen(app),
-    currentDateTime {{}},
+  : currentDateTime {{}},
+    batteryIcon(false),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
@@ -366,13 +364,13 @@ WatchFacePineTimeStyle::~WatchFacePineTimeStyle() {
 }
 
 bool WatchFacePineTimeStyle::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnRandom)) {
+  if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnClose)) {
     lv_obj_set_hidden(btnSetColor, false);
     lv_obj_set_hidden(btnSetOpts, false);
     savedTick = lv_tick_get();
     return true;
   }
-  if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && (lv_obj_get_hidden(btnRandom) == false)) {
+  if ((event == Pinetime::Applications::TouchEvents::DoubleTap) && (lv_obj_get_hidden(btnClose) == false)) {
     return true;
   }
   return false;
@@ -450,20 +448,13 @@ void WatchFacePineTimeStyle::Refresh() {
 
   currentDateTime = dateTimeController.CurrentDateTime();
   if (currentDateTime.IsUpdated()) {
-    auto newDateTime = currentDateTime.Get();
-
-    auto dp = date::floor<date::days>(newDateTime);
-    auto time = date::make_time(newDateTime - dp);
-    auto yearMonthDay = date::year_month_day(dp);
-
-    auto year = static_cast<int>(yearMonthDay.year());
-    auto month = static_cast<Pinetime::Controllers::DateTime::Months>(static_cast<unsigned>(yearMonthDay.month()));
-    auto day = static_cast<unsigned>(yearMonthDay.day());
-    auto dayOfWeek = static_cast<Pinetime::Controllers::DateTime::Days>(date::weekday(yearMonthDay).iso_encoding());
-
-    uint8_t hour = time.hours().count();
-    uint8_t minute = time.minutes().count();
-    uint8_t second = time.seconds().count();
+    auto hour = dateTimeController.Hours();
+    auto minute = dateTimeController.Minutes();
+    auto second = dateTimeController.Seconds();
+    auto year = dateTimeController.Year();
+    auto month = dateTimeController.Month();
+    auto dayOfWeek = dateTimeController.DayOfWeek();
+    auto day = dateTimeController.Day();
 
     if (displayedHour != hour || displayedMinute != minute) {
       displayedHour = hour;

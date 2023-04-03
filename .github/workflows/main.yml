@@ -3,12 +3,12 @@ name: CI
 # Run this workflow whenever the build may be affected
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ main ]
     paths-ignore:
       - 'doc/**'
       - '**.md'
   pull_request:
-    branches: [ develop ]
+    branches: [ main ]
     paths-ignore:
       - 'doc/**'
       - '**.md'

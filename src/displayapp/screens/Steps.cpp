@@ -10,10 +10,8 @@ static void lap_event_handler(lv_obj_t* obj, lv_event_t event) {
   steps->lapBtnEventHandler(event);
 }
 
-Steps::Steps(Pinetime::Applications::DisplayApp* app,
-             Controllers::MotionController& motionController,
-             Controllers::Settings& settingsController)
-  : Screen(app), motionController {motionController}, settingsController {settingsController} {
+Steps::Steps(Controllers::MotionController& motionController, Controllers::Settings& settingsController)
+  : motionController {motionController}, settingsController {settingsController} {
 
   stepsArc = lv_arc_create(lv_scr_act(), nullptr);
 

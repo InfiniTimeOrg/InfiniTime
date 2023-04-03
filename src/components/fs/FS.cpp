@@ -45,7 +45,6 @@ void FS::Init() {
 
 #ifndef PINETIME_IS_RECOVERY
   VerifyResource();
-  LVGLFileSystemInit();
 #endif
 }
 
@@ -138,66 +137,4 @@ int FS::SectorRead(const struct lfs_config* c, lfs_block_t block, lfs_off_t off,
   const size_t address = startAddress + (block * blockSize) + off;
   lfs.flashDriver.Read(address, static_cast<uint8_t*>(buffer), size);
   return 0;
-}
-
-/*
-
-    ----------- LVGL filesystem integration -----------
-
-*/
-
-namespace {
-  lv_fs_res_t lvglOpen(lv_fs_drv_t* drv, void* file_p, const char* path, lv_fs_mode_t /*mode*/) {
-    lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
-    FS* filesys = static_cast<FS*>(drv->user_data);
-    int res = filesys->FileOpen(file, path, LFS_O_RDONLY);
-    if (res == 0) {
-      if (file->type == 0) {
-        return LV_FS_RES_FS_ERR;
-      } else {
-        return LV_FS_RES_OK;
-      }
-    }
-    return LV_FS_RES_NOT_EX;
-  }
-
-  lv_fs_res_t lvglClose(lv_fs_drv_t* drv, void* file_p) {
-    FS* filesys = static_cast<FS*>(drv->user_data);
-    lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
-    filesys->FileClose(file);
-
-    return LV_FS_RES_OK;
-  }
-
-  lv_fs_res_t lvglRead(lv_fs_drv_t* drv, void* file_p, void* buf, uint32_t btr, uint32_t* br) {
-    FS* filesys = static_cast<FS*>(drv->user_data);
-    lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
-    filesys->FileRead(file, static_cast<uint8_t*>(buf), btr);
-    *br = btr;
-    return LV_FS_RES_OK;
-  }
-
-  lv_fs_res_t lvglSeek(lv_fs_drv_t* drv, void* file_p, uint32_t pos) {
-    FS* filesys = static_cast<FS*>(drv->user_data);
-    lfs_file_t* file = static_cast<lfs_file_t*>(file_p);
-    filesys->FileSeek(file, pos);
-    return LV_FS_RES_OK;
-  }
-}
-
-void FS::LVGLFileSystemInit() {
-
-  lv_fs_drv_t fs_drv;
-  lv_fs_drv_init(&fs_drv);
-
-  fs_drv.file_size = sizeof(lfs_file_t);
-  fs_drv.letter = 'F';
-  fs_drv.open_cb = lvglOpen;
-  fs_drv.close_cb = lvglClose;
-  fs_drv.read_cb = lvglRead;
-  fs_drv.seek_cb = lvglSeek;
-
-  fs_drv.user_data = this;
-
-  lv_fs_drv_register(&fs_drv);
 }
