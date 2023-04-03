@@ -16,41 +16,54 @@ namespace {
     return TimeSeparated_t {mins, secs, hundredths};
   }
 
-  void play_pause_event_handler(lv_obj_t* obj, lv_event_t event) {
+  void PlayButtonEvent(lv_obj_t* obj, lv_event_t event) {
     auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
     if (event == LV_EVENT_CLICKED) {
-      stopWatch->playPauseBtnEventHandler();
+      stopWatch->PlayButtonEventHandler();
     }
   }
 
-  void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
+  void PauseButtonEvent(lv_obj_t* obj, lv_event_t event) {
     auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
     if (event == LV_EVENT_CLICKED) {
-      stopWatch->stopLapBtnEventHandler();
+      stopWatch->PauseButtonEventHandler();
+    }
+  }
+
+  void StopButtonEvent(lv_obj_t* obj, lv_event_t event) {
+    auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
+    if (event == LV_EVENT_CLICKED) {
+      stopWatch->StopButtonEventHandler();
+    }
+  }
+
+  void LapButtonEvent(lv_obj_t* obj, lv_event_t event) {
+    auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
+    if (event == LV_EVENT_CLICKED) {
+      stopWatch->LapButtonEventHandler();
     }
   }
 
   constexpr TickType_t blinkInterval = pdMS_TO_TICKS(1000);
+
+  std::array<Pinetime::Applications::Widgets::MultiPurposeButton<2>::ButtonData, 2> playPauseButtonData = {
+    {{PlayButtonEvent, Symbols::play, Colors::blue}, {PauseButtonEvent, Symbols::pause, Colors::bgAlt}},
+  };
+  std::array<Pinetime::Applications::Widgets::MultiPurposeButton<2>::ButtonData, 2> stopLapButtonData = {
+    {{StopButtonEvent, Symbols::stop, LV_COLOR_RED}, {LapButtonEvent, Symbols::lapsFlag, Colors::bgAlt}},
+  };
 }
 
-StopWatch::StopWatch(System::SystemTask& systemTask) : systemTask {systemTask} {
+StopWatch::StopWatch(System::SystemTask& systemTask)
+  : systemTask {systemTask}, btnPlayPause(playPauseButtonData, this), btnStopLap(stopLapButtonData, this) {
   static constexpr uint8_t btnWidth = 115;
   static constexpr uint8_t btnHeight = 80;
-  btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
-  btnPlayPause->user_data = this;
-  lv_obj_set_event_cb(btnPlayPause, play_pause_event_handler);
-  lv_obj_set_size(btnPlayPause, btnWidth, btnHeight);
-  lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  txtPlayPause = lv_label_create(btnPlayPause, nullptr);
+  lv_obj_set_size(btnPlayPause.GetObject(), btnWidth, btnHeight);
+  lv_obj_align(btnPlayPause.GetObject(), lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
 
-  btnStopLap = lv_btn_create(lv_scr_act(), nullptr);
-  btnStopLap->user_data = this;
-  lv_obj_set_event_cb(btnStopLap, stop_lap_event_handler);
-  lv_obj_set_size(btnStopLap, btnWidth, btnHeight);
-  lv_obj_align(btnStopLap, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
-  txtStopLap = lv_label_create(btnStopLap, nullptr);
-  lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
-  lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
+  lv_obj_set_size(btnStopLap.GetObject(), btnWidth, btnHeight);
+  lv_obj_align(btnStopLap.GetObject(), lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  btnStopLap.Disable();
 
   lapText = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lapText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
@@ -83,38 +96,30 @@ StopWatch::~StopWatch() {
 }
 
 void StopWatch::SetInterfacePaused() {
-  lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
-  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
-  lv_label_set_text_static(txtPlayPause, Symbols::play);
-  lv_label_set_text_static(txtStopLap, Symbols::stop);
+  btnPlayPause.SetActiveButton(0);
+  btnStopLap.SetActiveButton(0);
 }
 
 void StopWatch::SetInterfaceRunning() {
   lv_obj_set_state(time, LV_STATE_DEFAULT);
   lv_obj_set_state(msecTime, LV_STATE_DEFAULT);
-  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
-  lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
+  btnPlayPause.SetActiveButton(1);
+  btnStopLap.SetActiveButton(1);
 
-  lv_label_set_text_static(txtPlayPause, Symbols::pause);
-  lv_label_set_text_static(txtStopLap, Symbols::lapsFlag);
-
-  lv_obj_set_state(btnStopLap, LV_STATE_DEFAULT);
-  lv_obj_set_state(txtStopLap, LV_STATE_DEFAULT);
+  btnStopLap.Enable();
 }
 
 void StopWatch::SetInterfaceStopped() {
   lv_obj_set_state(time, LV_STATE_DISABLED);
   lv_obj_set_state(msecTime, LV_STATE_DISABLED);
-  lv_obj_set_style_local_bg_color(btnPlayPause, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
 
+  btnPlayPause.SetActiveButton(0);
   lv_label_set_text_static(time, "00:00");
   lv_label_set_text_static(msecTime, "00");
 
   lv_label_set_text_static(lapText, "");
-  lv_label_set_text_static(txtPlayPause, Symbols::play);
-  lv_label_set_text_static(txtStopLap, Symbols::lapsFlag);
-  lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
-  lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
+  btnStopLap.SetActiveButton(1);
+  btnStopLap.Disable();
 }
 
 void StopWatch::Reset() {
@@ -163,32 +168,31 @@ void StopWatch::Refresh() {
   }
 }
 
-void StopWatch::playPauseBtnEventHandler() {
-  if (currentState == States::Init || currentState == States::Halted) {
-    Start();
-  } else if (currentState == States::Running) {
-    Pause();
+void StopWatch::PlayButtonEventHandler() {
+  Start();
+}
+
+void StopWatch::PauseButtonEventHandler() {
+  Pause();
+}
+
+void StopWatch::LapButtonEventHandler() {
+  lv_label_set_text(lapText, "");
+  lapsDone = std::min(lapsDone + 1, maxLapCount);
+  for (int i = lapsDone - displayedLaps; i < lapsDone; i++) {
+    if (i < 0) {
+      lv_label_ins_text(lapText, LV_LABEL_POS_LAST, "\n");
+      continue;
+    }
+    TimeSeparated_t times = convertTicksToTimeSegments(laps[i]);
+    char buffer[16];
+    sprintf(buffer, "#%2d   %2d:%02d.%02d\n", i + 1, times.mins, times.secs, times.hundredths);
+    lv_label_ins_text(lapText, LV_LABEL_POS_LAST, buffer);
   }
 }
 
-void StopWatch::stopLapBtnEventHandler() {
-  // If running, then this button is used to save laps
-  if (currentState == States::Running) {
-    lv_label_set_text(lapText, "");
-    lapsDone = std::min(lapsDone + 1, maxLapCount);
-    for (int i = lapsDone - displayedLaps; i < lapsDone; i++) {
-      if (i < 0) {
-        lv_label_ins_text(lapText, LV_LABEL_POS_LAST, "\n");
-        continue;
-      }
-      TimeSeparated_t times = convertTicksToTimeSegments(laps[i]);
-      char buffer[16];
-      sprintf(buffer, "#%2d   %2d:%02d.%02d\n", i + 1, times.mins, times.secs, times.hundredths);
-      lv_label_ins_text(lapText, LV_LABEL_POS_LAST, buffer);
-    }
-  } else if (currentState == States::Halted) {
-    Reset();
-  }
+void StopWatch::StopButtonEventHandler() {
+  Reset();
 }
 
 bool StopWatch::OnButtonPushed() {

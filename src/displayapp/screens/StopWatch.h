@@ -8,6 +8,8 @@
 
 #include "systemtask/SystemTask.h"
 
+#include "displayapp/widgets/MultiPurposeButton.h"
+
 namespace Pinetime::Applications::Screens {
 
   enum class States { Init, Running, Halted };
@@ -24,8 +26,10 @@ namespace Pinetime::Applications::Screens {
     ~StopWatch() override;
     void Refresh() override;
 
-    void playPauseBtnEventHandler();
-    void stopLapBtnEventHandler();
+    void PlayButtonEventHandler();
+    void PauseButtonEventHandler();
+    void StopButtonEventHandler();
+    void LapButtonEventHandler();
     bool OnButtonPushed() override;
 
   private:
@@ -46,8 +50,10 @@ namespace Pinetime::Applications::Screens {
     TickType_t laps[maxLapCount + 1];
     static constexpr int displayedLaps = 2;
     int lapsDone = 0;
-    lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
+    lv_obj_t *time, *msecTime;
     lv_obj_t* lapText;
+    Widgets::MultiPurposeButton<2> btnPlayPause;
+    Widgets::MultiPurposeButton<2> btnStopLap;
 
     lv_task_t* taskRefresh;
   };
