@@ -2,7 +2,7 @@
 
 namespace Pinetime {
   namespace Applications {
-    enum class WatchFace : uint32_t {
+    enum class WatchFace : uint8_t {
       Digital,
       Analog,
       PineTimeStyle,
