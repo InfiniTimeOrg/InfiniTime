@@ -51,7 +51,6 @@ namespace Pinetime {
         Utility::DirtyValue<bool> bleState {};
         Utility::DirtyValue<bool> bleRadioEnabled {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
-        Utility::DirtyValue<bool> motionSensorOk {};
         Utility::DirtyValue<uint32_t> stepCount {};
         Utility::DirtyValue<bool> notificationState {};
         using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
