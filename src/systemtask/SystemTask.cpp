@@ -435,7 +435,6 @@ void SystemTask::UpdateMotion() {
 
   auto motionValues = motionSensor.Process();
 
-  motionController.IsSensorOk(motionSensor.IsOk());
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
 
   if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep) {
