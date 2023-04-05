@@ -222,43 +222,36 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
 
-  currentDateTime = dateTimeController.CurrentDateTime();
-
+  currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
   if (currentDateTime.IsUpdated()) {
-    auto hour = dateTimeController.Hours();
-    auto minute = dateTimeController.Minutes();
-    auto year = dateTimeController.Year();
-    auto month = dateTimeController.Month();
-    auto dayOfWeek = dateTimeController.DayOfWeek();
-    auto day = dateTimeController.Day();
-    auto dayOfYear = dateTimeController.DayOfYear();
+    uint8_t hour = dateTimeController.Hours();
+    uint8_t minute = dateTimeController.Minutes();
 
-    auto weekNumberFormat = "%V";
-
-    if (displayedHour != hour || displayedMinute != minute) {
-      displayedHour = hour;
-      displayedMinute = minute;
-
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-        char ampmChar[2] = "A";
-        if (hour == 0) {
-          hour = 12;
-        } else if (hour == 12) {
-          ampmChar[0] = 'P';
-        } else if (hour > 12) {
-          hour = hour - 12;
-          ampmChar[0] = 'P';
-        }
-        lv_label_set_text(label_time_ampm, ampmChar);
-        lv_label_set_text_fmt(label_time, "%2d:%02d", hour, minute);
-        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
-      } else {
-        lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
-        lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
+    if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+      char ampmChar[2] = "A";
+      if (hour == 0) {
+        hour = 12;
+      } else if (hour == 12) {
+        ampmChar[0] = 'P';
+      } else if (hour > 12) {
+        hour = hour - 12;
+        ampmChar[0] = 'P';
       }
+      lv_label_set_text(label_time_ampm, ampmChar);
+      lv_label_set_text_fmt(label_time, "%2d:%02d", hour, minute);
+    } else {
+      lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
     }
+    lv_obj_realign(label_time);
 
-    if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
+    currentDate = std::chrono::time_point_cast<days>(currentDateTime.Get());
+    if (currentDate.IsUpdated()) {
+      const char* weekNumberFormat = "%V";
+
+      uint16_t year = dateTimeController.Year();
+      Controllers::DateTime::Months month = dateTimeController.Month();
+      uint8_t day = dateTimeController.Day();
+      int dayOfYear = dateTimeController.DayOfYear();
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
         // 24h mode: ddmmyyyy, first DOW=Monday;
         lv_label_set_text_fmt(label_date, "%3d-%2d", day, month);
@@ -293,11 +286,6 @@ void WatchFaceCasioStyleG7710::Refresh() {
       lv_obj_realign(label_day_of_year);
       lv_obj_realign(label_week_number);
       lv_obj_realign(label_date);
-
-      currentYear = year;
-      currentMonth = month;
-      currentDayOfWeek = dayOfWeek;
-      currentDay = day;
     }
   }
 
