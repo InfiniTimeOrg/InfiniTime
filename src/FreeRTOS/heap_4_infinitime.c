@@ -448,70 +448,55 @@ static void prvInsertBlockIntoFreeList( BlockLink_t *pxBlockToInsert )
 
 /*-----------------------------------------------------------*/
 
-void *pvPortRealloc( void *pv, size_t xWantedSize )
-{
+void* pvPortRealloc(void* pv, size_t xWantedSize) {
  size_t move_size;
  size_t block_size;
  BlockLink_t* pxLink;
  void* pvReturn = NULL;
  uint8_t* puc = (uint8_t*) pv;
 
- if (xWantedSize > 0)
- {
-   if (pv != NULL)
-   {
-     // The memory being freed will have an BlockLink_t structure immediately before it.
-     puc -= xHeapStructSize;
-
-     // This casting is to keep the compiler from issuing warnings.
-     pxLink = (void*) puc;
-
-     // Check allocate block
-     if ((pxLink->xBlockSize & xBlockAllocatedBit) != 0)
-     {
-       // The block is being returned to the heap - it is no longer allocated.
-       block_size = (pxLink->xBlockSize & ~xBlockAllocatedBit) - xHeapStructSize;
-
-       // Allocate a new buffer
-       pvReturn = pvPortMalloc(xWantedSize);
-
-       // Check creation and determine the data size to be copied to the new buffer
-       if (pvReturn != NULL)
-       {
-         if (block_size < xWantedSize)
-         {
-           move_size = block_size;
-         }
-         else
-         {
-           move_size = xWantedSize;
-         }
-
-         // Copy the data from the old buffer to the new one
-         memcpy(pvReturn, pv, move_size);
-
-         // Free the old buffer
-         vPortFree(pv);
-       }
-     }
-     else
-     {
-       // pv does not point to a valid memory buffer. Allocate a new one
-       pvReturn = pvPortMalloc(xWantedSize);
-     }
-   }
-   else
-   {
-     // pv points to NULL. Allocate a new buffer.
-     pvReturn = pvPortMalloc(xWantedSize);
-   }
- }
- else
- {
+ if (xWantedSize == 0) {
    // Zero bytes requested, do nothing (according to libc, this behavior implementation defined)
-   pvReturn = NULL;
+   return NULL;
  }
 
-  // Exit with memory block
-  return pvReturn;
+ if (pv == NULL) {
+   // pv points to NULL. Allocate a new buffer.
+   return pvPortMalloc(xWantedSize);
+ }
+
+ // The memory being freed will have an BlockLink_t structure immediately before it.
+ puc -= xHeapStructSize;
+
+ // This casting is to keep the compiler from issuing warnings.
+ pxLink = (void*) puc;
+
+ // Check allocate block
+ if ((pxLink->xBlockSize & xBlockAllocatedBit) != 0) {
+   // The block is being returned to the heap - it is no longer allocated.
+   block_size = (pxLink->xBlockSize & ~xBlockAllocatedBit) - xHeapStructSize;
+
+   // Allocate a new buffer
+   pvReturn = pvPortMalloc(xWantedSize);
+
+   // Check creation and determine the data size to be copied to the new buffer
+   if (pvReturn != NULL) {
+     if (block_size < xWantedSize) {
+       move_size = block_size;
+     } else {
+       move_size = xWantedSize;
+     }
+
+     // Copy the data from the old buffer to the new one
+     memcpy(pvReturn, pv, move_size);
+
+     // Free the old buffer
+     vPortFree(pv);
+   }
+ } else {
+   // pv does not point to a valid memory buffer. Allocate a new one
+   pvReturn = pvPortMalloc(xWantedSize);
+ }
+
+ return pvReturn;
 }
