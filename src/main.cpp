@@ -155,7 +155,7 @@ void vApplicationMallocFailedHook() {
   mallocFailedCount++;
 }
 
-void vApplicationStackOverflowHook(TaskHandle_t /*xTask*/, char */*pcTaskName*/) {
+void vApplicationStackOverflowHook(TaskHandle_t /*xTask*/, char* /*pcTaskName*/) {
   stackOverflowCount++;
 }
 }

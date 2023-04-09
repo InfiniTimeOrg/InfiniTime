@@ -205,8 +205,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
                         xPortGetFreeHeapSize(),
                         xPortGetMinimumEverFreeHeapSize(),
                         mallocFailedCount,
-                        stackOverflowCount
-                        );
+                        stackOverflowCount);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(2, 5, label);
 }
