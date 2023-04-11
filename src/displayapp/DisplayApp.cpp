@@ -95,7 +95,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     touchHandler {touchHandler},
     filesystem {filesystem},
     lvgl {lcd, filesystem},
-    timerController(this, TimerCallback) {
+    timer(this, TimerCallback) {
 }
 
 void DisplayApp::Start(System::BootErrors error) {
@@ -452,7 +452,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                Screens::Notifications::Modes::Preview);
       break;
     case Apps::Timer:
-      currentScreen = std::make_unique<Screens::Timer>(timerController);
+      currentScreen = std::make_unique<Screens::Timer>(timer);
       break;
     case Apps::Alarm:
       currentScreen = std::make_unique<Screens::Alarm>(alarmController, settingsController.GetClockType(), *systemTask, motorController);
