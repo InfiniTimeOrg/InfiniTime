@@ -1,17 +1,17 @@
-#include "components/timer/TimerController.h"
+#include "components/timer/Timer.h"
 
 using namespace Pinetime::Controllers;
 
-TimerController::TimerController(void* const timerData, TimerCallbackFunction_t timerCallbackFunction) {
+Timer::Timer(void* const timerData, TimerCallbackFunction_t timerCallbackFunction) {
   timer = xTimerCreate("Timer", 1, pdFALSE, timerData, timerCallbackFunction);
 }
 
-void TimerController::StartTimer(std::chrono::milliseconds duration) {
+void Timer::StartTimer(std::chrono::milliseconds duration) {
   xTimerChangePeriod(timer, pdMS_TO_TICKS(duration.count()), 0);
   xTimerStart(timer, 0);
 }
 
-std::chrono::milliseconds TimerController::GetTimeRemaining() {
+std::chrono::milliseconds Timer::GetTimeRemaining() {
   if (IsRunning()) {
     TickType_t remainingTime = xTimerGetExpiryTime(timer) - xTaskGetTickCount();
     return std::chrono::milliseconds(remainingTime * 1000 / configTICK_RATE_HZ);
@@ -19,10 +19,10 @@ std::chrono::milliseconds TimerController::GetTimeRemaining() {
   return std::chrono::milliseconds(0);
 }
 
-void TimerController::StopTimer() {
+void Timer::StopTimer() {
   xTimerStop(timer, 0);
 }
 
-bool TimerController::IsRunning() {
+bool Timer::IsRunning() {
   return (xTimerIsTimerActive(timer) == pdTRUE);
 }

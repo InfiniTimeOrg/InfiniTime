@@ -17,7 +17,7 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
-Timer::Timer(Controllers::TimerController& timerController) : timerController {timerController} {
+Timer::Timer(Controllers::Timer& timerController) : timer {timerController} {
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -85,7 +85,7 @@ void Timer::MaskReset() {
   buttonPressing = false;
   // A click event is processed before a release event,
   // so the release event would override the "Pause" text without this check
-  if (!timerController.IsRunning()) {
+  if (!timer.IsRunning()) {
     lv_label_set_text_static(txtPlayPause, "Start");
   }
   maskPosition = 0;
@@ -103,8 +103,8 @@ void Timer::UpdateMask() {
 }
 
 void Timer::Refresh() {
-  if (timerController.IsRunning()) {
-    auto secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timerController.GetTimeRemaining());
+  if (timer.IsRunning()) {
+    auto secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
     minuteCounter.SetValue(secondsRemaining.count() / 60);
     secondCounter.SetValue(secondsRemaining.count() % 60);
   } else if (buttonPressing && xTaskGetTickCount() > pressTime + pdMS_TO_TICKS(150)) {
@@ -132,15 +132,15 @@ void Timer::SetTimerStopped() {
 }
 
 void Timer::ToggleRunning() {
-  if (timerController.IsRunning()) {
-    auto secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timerController.GetTimeRemaining());
+  if (timer.IsRunning()) {
+    auto secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
     minuteCounter.SetValue(secondsRemaining.count() / 60);
     secondCounter.SetValue(secondsRemaining.count() % 60);
-    timerController.StopTimer();
+    timer.StopTimer();
     SetTimerStopped();
   } else if (secondCounter.GetValue() + minuteCounter.GetValue() > 0) {
     auto timerDuration = std::chrono::minutes(minuteCounter.GetValue()) + std::chrono::seconds(secondCounter.GetValue());
-    timerController.StartTimer(timerDuration);
+    timer.StartTimer(timerDuration);
     Refresh();
     SetTimerRunning();
   }

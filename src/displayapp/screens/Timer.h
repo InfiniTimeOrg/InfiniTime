@@ -7,12 +7,12 @@
 #include "displayapp/widgets/Counter.h"
 #include <lvgl/lvgl.h>
 
-#include "components/timer/TimerController.h"
+#include "components/timer/Timer.h"
 
 namespace Pinetime::Applications::Screens {
   class Timer : public Screen {
   public:
-    Timer(Controllers::TimerController& timerController);
+    Timer(Controllers::Timer& timerController);
     ~Timer() override;
     void Refresh() override;
     void Reset();
@@ -24,7 +24,7 @@ namespace Pinetime::Applications::Screens {
     void SetTimerRunning();
     void SetTimerStopped();
     void UpdateMask();
-    Controllers::TimerController& timerController;
+    Controllers::Timer& timer;
 
     lv_obj_t* btnPlayPause;
     lv_obj_t* txtPlayPause;

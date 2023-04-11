@@ -12,7 +12,7 @@
 #include "components/firmwarevalidator/FirmwareValidator.h"
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
-#include "components/timer/TimerController.h"
+#include "components/timer/Timer.h"
 #include "components/alarm/AlarmController.h"
 #include "touchhandler/TouchHandler.h"
 
@@ -94,7 +94,7 @@ namespace Pinetime {
 
       Pinetime::Controllers::FirmwareValidator validator;
       Pinetime::Components::LittleVgl lvgl;
-      Pinetime::Controllers::TimerController timerController;
+      Pinetime::Controllers::Timer timer;
 
       TaskHandle_t taskHandle;
 
