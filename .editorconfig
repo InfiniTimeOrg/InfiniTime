@@ -1,0 +1,18 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+insert_final_newline = true
+
+[src/**.{cpp,h,py,sh,yml}]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+max_line_length = 140
+
+[{src/libs,src/FreeRTOS}/**]
+indent_style = unset
+indent_size = unset
+trim_trailing_whitespace = unset
+max_line_length = unset
