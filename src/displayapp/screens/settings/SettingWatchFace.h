@@ -11,6 +11,7 @@
 #include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/WatchFaceInfineat.h"
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
+#include "displayapp/screens/WatchFacePineBoy.h"
 
 namespace Pinetime {
 
@@ -47,7 +48,7 @@ namespace Pinetime {
            {"Terminal", true},
            {"Infineat face", Applications::Screens::WatchFaceInfineat::IsAvailable(filesystem)},
            {"Casio G7710", Applications::Screens::WatchFaceCasioStyleG7710::IsAvailable(filesystem)},
-           {"", false},
+           {"Pine Boy", true},
            {"", false}}};
         ScreenList<nScreens> screens;
       };
