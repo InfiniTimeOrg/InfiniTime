@@ -473,7 +473,7 @@ list(APPEND SOURCE_FILES
         components/firmwarevalidator/FirmwareValidator.cpp
         components/motor/MotorController.cpp
         components/settings/Settings.cpp
-        components/timer/TimerController.cpp
+        components/timer/Timer.cpp
         components/alarm/AlarmController.cpp
         components/fs/FS.cpp
         drivers/Cst816s.cpp
@@ -538,7 +538,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/MotionService.cpp
         components/firmwarevalidator/FirmwareValidator.cpp
         components/settings/Settings.cpp
-        components/timer/TimerController.cpp
+        components/timer/Timer.cpp
         components/alarm/AlarmController.cpp
         drivers/Cst816s.cpp
         FreeRTOS/port.c
@@ -655,7 +655,7 @@ set(INCLUDE_FILES
         components/ble/MotionService.h
         components/ble/weather/WeatherService.h
         components/settings/Settings.h
-        components/timer/TimerController.h
+        components/timer/Timer.h
         components/alarm/AlarmController.h
         drivers/Cst816s.h
         FreeRTOS/portmacro.h
