@@ -16,7 +16,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 - [AmazFish](https://openrepos.net/content/piggz/amazfish/) (SailfishOS)
 - [Siglo](https://github.com/alexr4535/siglo) (Linux)
 - [InfiniLink](https://github.com/InfiniTimeOrg/InfiniLink) (iOS) **[Looking for a new maintainer]**
-- [ITD](https://gitea.arsenm.dev/Arsen6331/itd) (Linux)
+- [ITD](https://gitea.elara.ws/Elara6331/itd) (Linux)
 - [WatchMate](https://github.com/azymohliad/watchmate) (Linux)
 
 ***Note** : We removed mentions to NRFConnect as this app is closed source and recent versions do not work anymore with InfiniTime (the last version known to work is 4.24.3). If you used NRFConnect in the past, we recommend you switch to [Gadgetbridge](https://gadgetbridge.org/).*
