@@ -12,8 +12,10 @@ namespace {
     switch (s) {
       case Pinetime::Controllers::HeartRateController::States::NotEnoughData:
         return "Not enough data,\nplease wait...";
-      case Pinetime::Controllers::HeartRateController::States::NoTouch:
-        return "No touch detected";
+      case Pinetime::Controllers::HeartRateController::States::PausedBySleep:
+        // Should never occur since we cannot show a screen while sleeping.
+        // Included for completeness.
+        return "Paused by sleep";
       case Pinetime::Controllers::HeartRateController::States::Running:
         return "Measuring...";
       case Pinetime::Controllers::HeartRateController::States::Stopped:
@@ -30,7 +32,7 @@ namespace {
 
 HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, System::SystemTask& systemTask)
   : heartRateController {heartRateController}, systemTask {systemTask} {
-  bool isHrRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
+  bool isHrRunning = heartRateController.IsRunning();
   label_hr = lv_label_create(lv_scr_act(), nullptr);
 
   lv_obj_set_style_local_text_font(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
@@ -79,7 +81,7 @@ void HeartRate::Refresh() {
 
   auto state = heartRateController.State();
   switch (state) {
-    case Controllers::HeartRateController::States::NoTouch:
+    case Controllers::HeartRateController::States::PausedBySleep:
     case Controllers::HeartRateController::States::NotEnoughData:
       // case Controllers::HeartRateController::States::Stopped:
       lv_label_set_text_static(label_hr, "000");
@@ -94,14 +96,14 @@ void HeartRate::Refresh() {
 
 void HeartRate::OnStartStopEvent(lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    if (heartRateController.State() == Controllers::HeartRateController::States::Stopped) {
-      heartRateController.Start();
-      UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
+    if (!heartRateController.IsRunning()) {
+      heartRateController.Start(false);
+      UpdateStartStopButton(heartRateController.IsRunning());
       systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
       lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
     } else {
-      heartRateController.Stop();
-      UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
+      heartRateController.Stop(false);
+      UpdateStartStopButton(heartRateController.IsRunning());
       systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
       lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
     }

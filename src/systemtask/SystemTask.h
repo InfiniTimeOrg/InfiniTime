@@ -116,7 +116,7 @@ namespace Pinetime {
       Pinetime::Controllers::MotionController& motionController;
 
       Pinetime::Applications::DisplayApp& displayApp;
-      Pinetime::Applications::HeartRateTask& heartRateApp;
+      Pinetime::Applications::HeartRateTask& heartRateTask;
       Pinetime::Controllers::FS& fs;
       Pinetime::Controllers::TouchHandler& touchHandler;
       Pinetime::Controllers::ButtonHandler& buttonHandler;

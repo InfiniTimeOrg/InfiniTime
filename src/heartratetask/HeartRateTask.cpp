@@ -27,49 +27,43 @@ void HeartRateTask::Work() {
   int lastBpm = 0;
   while (true) {
     auto delay = portMAX_DELAY;
-    if (state == States::Running) {
-      if (measurementStarted) {
-        delay = 40;
-      } else {
-        delay = 100;
-      }
-    } else {
-      delay = portMAX_DELAY;
+    if (measuring) {
+      delay = 40;
     }
 
     Messages msg;
     if (xQueueReceive(messageQueue, &msg, delay) == pdTRUE) {
       switch (msg) {
         case Messages::GoToSleep:
-          StopMeasurement();
-          state = States::Idle;
+          sleeping = true;
           break;
         case Messages::WakeUp:
-          state = States::Running;
-          if (measurementStarted) {
-            lastBpm = 0;
-            StartMeasurement();
-          }
+          sleeping = false;
           break;
-        case Messages::StartMeasurement:
-          if (measurementStarted) {
-            break;
-          }
-          lastBpm = 0;
-          StartMeasurement();
-          measurementStarted = true;
+        case Messages::StartMeasurementAwake:
+          measureWhenAwake = true;
           break;
-        case Messages::StopMeasurement:
-          if (!measurementStarted) {
-            break;
-          }
-          StopMeasurement();
-          measurementStarted = false;
+        case Messages::StopMeasurementAwake:
+          measureWhenAwake = false;
+          break;
+        case Messages::StartMeasurementAlways:
+          measureAlways = true;
+          break;
+        case Messages::StopMeasurementAlways:
+          measureAlways = false;
           break;
       }
     }
 
-    if (measurementStarted) {
+    bool shouldMeasure = measureAlways || (measureWhenAwake && !sleeping);
+    if (shouldMeasure && !measuring) {
+      lastBpm = 0;
+      StartMeasurement();
+    } else if (!shouldMeasure && measuring) {
+      StopMeasurement();
+    }
+
+    if (measuring) {
       ppg.Preprocess(static_cast<float>(heartRateSensor.ReadHrs()));
       auto bpm = ppg.HeartRate();
 
@@ -80,6 +74,10 @@ void HeartRateTask::Work() {
         lastBpm = bpm;
         controller.Update(Controllers::HeartRateController::States::Running, lastBpm);
       }
+    } else if (measureWhenAwake && sleeping) {
+        controller.Update(Controllers::HeartRateController::States::PausedBySleep, 0);
+    } else {
+        controller.Update(Controllers::HeartRateController::States::Stopped, 0);
     }
   }
 }
@@ -94,12 +92,14 @@ void HeartRateTask::PushMessage(HeartRateTask::Messages msg) {
 }
 
 void HeartRateTask::StartMeasurement() {
+  measuring = true;
   heartRateSensor.Enable();
   vTaskDelay(100);
   ppg.SetOffset(heartRateSensor.ReadHrs());
 }
 
 void HeartRateTask::StopMeasurement() {
+  measuring = false;
   heartRateSensor.Disable();
   vTaskDelay(100);
 }
