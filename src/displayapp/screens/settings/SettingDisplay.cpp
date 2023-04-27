@@ -43,7 +43,7 @@ SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
-  char buffer[12];
+  char buffer[4];
   for (unsigned int i = 0; i < options.size(); i++) {
     cbOption[i] = lv_checkbox_create(container1, nullptr);
     snprintf(buffer, sizeof(buffer), "%2" PRIu16 "s", options[i] / 1000);
