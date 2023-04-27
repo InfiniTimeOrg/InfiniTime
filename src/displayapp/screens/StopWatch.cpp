@@ -200,7 +200,7 @@ void StopWatch::stopLapBtnEventHandler() {
       TimeSeparated_t times = convertTicksToTimeSegments(laps[i]);
       char buffer[17];
       if (times.hours == 0) {
-        snprintf(buffer, sizeof(buffer), "#%2d   %2d:%02d.%02d\n", i + 1, times.mins, times.secs, times.hundredths);
+        snprintf(buffer, sizeof(buffer), "#%2d    %2d:%02d.%02d\n", i + 1, times.mins, times.secs, times.hundredths);
       } else {
         snprintf(buffer, sizeof(buffer), "#%2d %2d:%02d:%02d.%02d\n", i + 1, times.hours, times.mins, times.secs, times.hundredths);
       }
