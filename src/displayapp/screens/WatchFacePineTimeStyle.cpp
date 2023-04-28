@@ -499,8 +499,7 @@ void WatchFacePineTimeStyle::Refresh() {
   }
 
   stepCount = motionController.NbSteps();
-  motionSensorOk = motionController.IsSensorOk();
-  if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
+  if (stepCount.IsUpdated()) {
     lv_gauge_set_value(stepGauge, 0, (stepCount.Get() / (settingsController.GetStepsGoal() / 100)) % 100);
     lv_obj_realign(stepGauge);
     lv_label_set_text_fmt(stepValue, "%luK", (stepCount.Get() / 1000));

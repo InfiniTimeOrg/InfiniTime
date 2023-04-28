@@ -50,14 +50,6 @@ namespace Pinetime {
         return accumulatedSpeed;
       }
 
-      void IsSensorOk(bool isOk) {
-        isSensorOk = isOk;
-      }
-
-      bool IsSensorOk() const {
-        return isSensorOk;
-      }
-
       DeviceTypes DeviceType() const {
         return deviceType;
       }
@@ -83,7 +75,6 @@ namespace Pinetime {
       int16_t z = 0;
       int32_t accumulatedSpeed = 0;
 
-      bool isSensorOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
       Pinetime::Controllers::MotionService* service = nullptr;
     };

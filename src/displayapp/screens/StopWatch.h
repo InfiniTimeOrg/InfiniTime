@@ -13,6 +13,7 @@ namespace Pinetime::Applications::Screens {
   enum class States { Init, Running, Halted };
 
   struct TimeSeparated_t {
+    int hours;
     int mins;
     int secs;
     int hundredths;
@@ -48,6 +49,7 @@ namespace Pinetime::Applications::Screens {
     int lapsDone = 0;
     lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
     lv_obj_t* lapText;
+    bool isHoursLabelUpdated = false;
 
     lv_task_t* taskRefresh;
   };
