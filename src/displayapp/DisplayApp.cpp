@@ -476,6 +476,12 @@ void DisplayApp::Refresh() {
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(35);
         break;
+      case Messages::ShowIgnoreTouchPopup:
+        popupMessage.SetHidden(false);
+        break;
+      case Messages::HideIgnoreTouchPopup:
+        popupMessage.SetHidden(true);
+        break;
     }
   }
 
