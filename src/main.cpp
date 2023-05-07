@@ -304,7 +304,12 @@ void calibrate_lf_clock_rc(nrf_drv_clock_evt_type_t /*event*/) {
   nrf_drv_clock_calibration_start(16, calibrate_lf_clock_rc);
 }
 
+void enable_dcdc_regulator() {
+  NRF_POWER->DCDCEN = 1;
+}
+
 int main() {
+  enable_dcdc_regulator();
   logger.Init();
 
   nrf_drv_clock_init();
