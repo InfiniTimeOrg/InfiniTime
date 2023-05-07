@@ -187,10 +187,13 @@ void St7789::HardwareReset() {
 void St7789::Sleep() {
   SleepIn();
   nrf_gpio_cfg_default(pinDataCommand);
+  nrf_gpio_cfg_default(26);
+  spi.Sleep();
   NRF_LOG_INFO("[LCD] Sleep");
 }
 
 void St7789::Wakeup() {
+  spi.Wakeup();
   nrf_gpio_cfg_output(pinDataCommand);
   SleepOut();
   VerticalScrollStartAddress(verticalScrollingStartAddress);
