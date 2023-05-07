@@ -14,6 +14,10 @@
 
 using namespace Pinetime::Drivers;
 
+namespace {
+  static constexpr uint8_t ledDriveCurrentValue = 0x2f;
+}
+
 /** Driver for the HRS3300 heart rate sensor.
  * Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/drivers/hrs3300.py
  *
@@ -35,7 +39,7 @@ void Hrs3300::Init() {
   // Note: Setting low nibble to 0x8 per the datasheet results in
   // modulated LED driver output. Setting to 0xF results in clean,
   // steady output during the ADC conversion period.
-  WriteRegister(static_cast<uint8_t>(Registers::PDriver), 0x2f);
+  WriteRegister(static_cast<uint8_t>(Registers::PDriver), ledDriveCurrentValue);
 
   // HRS and ALS both in 15-bit mode results in ~50ms LED drive period
   // and presumably ~50ms ADC conversion period.
@@ -50,6 +54,8 @@ void Hrs3300::Enable() {
   auto value = ReadRegister(static_cast<uint8_t>(Registers::Enable));
   value |= 0x80;
   WriteRegister(static_cast<uint8_t>(Registers::Enable), value);
+
+  WriteRegister(static_cast<uint8_t>(Registers::PDriver), ledDriveCurrentValue);
 }
 
 void Hrs3300::Disable() {
@@ -57,6 +63,8 @@ void Hrs3300::Disable() {
   auto value = ReadRegister(static_cast<uint8_t>(Registers::Enable));
   value &= ~0x80;
   WriteRegister(static_cast<uint8_t>(Registers::Enable), value);
+
+  WriteRegister(static_cast<uint8_t>(Registers::PDriver), 0);
 }
 
 uint32_t Hrs3300::ReadHrs() {
