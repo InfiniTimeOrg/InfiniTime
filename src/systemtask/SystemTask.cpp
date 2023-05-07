@@ -181,7 +181,7 @@ void SystemTask::Work() {
     UpdateMotion();
 
     Messages msg;
-    if (xQueueReceive(systemTasksMsgQueue, &msg, 100) == pdTRUE) {
+    if (xQueueReceive(systemTasksMsgQueue, &msg, 4000) == pdTRUE) {
       switch (msg) {
         case Messages::EnableSleeping:
           // Make sure that exiting an app doesn't enable sleeping,
