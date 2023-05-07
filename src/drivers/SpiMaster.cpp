@@ -204,6 +204,9 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
       ;
     nrf_gpio_pin_set(this->pinCsn);
     currentBufferAddr = 0;
+
+    DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
+
     xSemaphoreGive(mutex);
   }
 
