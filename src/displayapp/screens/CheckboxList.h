@@ -1,6 +1,5 @@
 #pragma once
 
-#include "displayapp/Apps.h"
 #include "displayapp/screens/Screen.h"
 #include <array>
 #include <cstdint>

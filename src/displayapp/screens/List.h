@@ -5,7 +5,7 @@
 #include <array>
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/PageIndicator.h"
-#include "displayapp/Apps.h"
+#include "displayapp/ScreenIds.h"
 #include "components/settings/Settings.h"
 
 #define MAXLISTITEMS 4
@@ -18,7 +18,7 @@ namespace Pinetime {
         struct Applications {
           const char* icon;
           const char* name;
-          Pinetime::Applications::Apps application;
+          Pinetime::Applications::ScreenId application;
         };
 
         explicit List(uint8_t screenID,
@@ -33,7 +33,7 @@ namespace Pinetime {
       private:
         DisplayApp* app;
         Controllers::Settings& settingsController;
-        Pinetime::Applications::Apps apps[MAXLISTITEMS];
+        Pinetime::Applications::ScreenId apps[MAXLISTITEMS];
 
         lv_obj_t* itemApps[MAXLISTITEMS];
 

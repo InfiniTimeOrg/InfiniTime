@@ -2,7 +2,7 @@
 
 namespace Pinetime {
   namespace Applications {
-    enum class Apps {
+    enum class ScreenId {
       None,
       Launcher,
       Clock,

@@ -603,8 +603,8 @@ set(INCLUDE_FILES
         displayapp/screens/FirmwareValidation.h
         displayapp/screens/ApplicationList.h
         displayapp/screens/CheckboxList.h
-        displayapp/Apps.h
         displayapp/WatchFaces.h
+        displayapp/ScreenIds.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
         displayapp/screens/Metronome.h

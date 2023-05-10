@@ -2,6 +2,7 @@
 
 #include <array>
 #include <memory>
+#include "displayapp/ScreenIds.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/ScreenList.h"
 #include "displayapp/screens/Symbols.h"
@@ -32,25 +33,25 @@ namespace Pinetime {
         static constexpr int nScreens = 3;
 
         static constexpr std::array<List::Applications, entriesPerScreen * nScreens> entries {{
-          {Symbols::sun, "Display", Apps::SettingDisplay},
-          {Symbols::eye, "Wake Up", Apps::SettingWakeUp},
-          {Symbols::clock, "Time format", Apps::SettingTimeFormat},
-          {Symbols::home, "Watch face", Apps::SettingWatchFace},
+          {Symbols::sun, "Display", ScreenId::SettingDisplay},
+          {Symbols::eye, "Wake Up", ScreenId::SettingWakeUp},
+          {Symbols::clock, "Time format", ScreenId::SettingTimeFormat},
+          {Symbols::home, "Watch face", ScreenId::SettingWatchFace},
 
-          {Symbols::shoe, "Steps", Apps::SettingSteps},
-          {Symbols::clock, "Date&Time", Apps::SettingSetDateTime},
-          {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
-          {Symbols::clock, "Chimes", Apps::SettingChimes},
+          {Symbols::shoe, "Steps", ScreenId::SettingSteps},
+          {Symbols::clock, "Date&Time", ScreenId::SettingSetDateTime},
+          {Symbols::batteryHalf, "Battery", ScreenId::BatteryInfo},
+          {Symbols::clock, "Chimes", ScreenId::SettingChimes},
 
-          {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
-          {Symbols::check, "Firmware", Apps::FirmwareValidation},
-          {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
-          {Symbols::list, "About", Apps::SysInfo},
+          {Symbols::tachometer, "Shake Calib.", ScreenId::SettingShakeThreshold},
+          {Symbols::check, "Firmware", ScreenId::FirmwareValidation},
+          {Symbols::bluetooth, "Bluetooth", ScreenId::SettingBluetooth},
+          {Symbols::list, "About", ScreenId::SysInfo},
 
-          // {Symbols::none, "None", Apps::None},
-          // {Symbols::none, "None", Apps::None},
-          // {Symbols::none, "None", Apps::None},
-          // {Symbols::none, "None", Apps::None},
+          // {Symbols::none, "None", ScreenId::None},
+          // {Symbols::none, "None", ScreenId::None},
+          // {Symbols::none, "None", ScreenId::None},
+          // {Symbols::none, "None", ScreenId::None},
 
         }};
         ScreenList<nScreens> screens;

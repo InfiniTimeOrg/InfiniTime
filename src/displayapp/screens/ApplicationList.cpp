@@ -1,7 +1,6 @@
 #include "displayapp/screens/ApplicationList.h"
 #include <lvgl/lvgl.h>
 #include <functional>
-#include "displayapp/Apps.h"
 #include "displayapp/DisplayApp.h"
 
 using namespace Pinetime::Applications::Screens;

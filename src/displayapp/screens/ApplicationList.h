@@ -3,6 +3,7 @@
 #include <array>
 #include <memory>
 
+#include "displayapp/ScreenIds.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/ScreenList.h"
 #include "components/datetime/DateTimeController.h"
@@ -40,21 +41,21 @@ namespace Pinetime {
         static constexpr int nScreens = 2;
 
         static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
-          {Symbols::stopWatch, Apps::StopWatch},
-          {Symbols::clock, Apps::Alarm},
-          {Symbols::hourGlass, Apps::Timer},
-          {Symbols::shoe, Apps::Steps},
-          {Symbols::heartBeat, Apps::HeartRate},
-          {Symbols::music, Apps::Music},
+          {Symbols::stopWatch, ScreenId::StopWatch},
+          {Symbols::clock, ScreenId::Alarm},
+          {Symbols::hourGlass, ScreenId::Timer},
+          {Symbols::shoe, ScreenId::Steps},
+          {Symbols::heartBeat, ScreenId::HeartRate},
+          {Symbols::music, ScreenId::Music},
 
-          {Symbols::paintbrush, Apps::Paint},
-          {Symbols::paddle, Apps::Paddle},
-          {"2", Apps::Twos},
-          {Symbols::drum, Apps::Metronome},
-          {Symbols::map, Apps::Navigation},
-          {Symbols::none, Apps::None},
+          {Symbols::paintbrush, ScreenId::Paint},
+          {Symbols::paddle, ScreenId::Paddle},
+          {"2", ScreenId::Twos},
+          {Symbols::drum, ScreenId::Metronome},
+          {Symbols::map, ScreenId::Navigation},
+          {Symbols::none, ScreenId::None},
 
-          // {"M", Apps::Motion},
+          // {"M", ScreenId::Motion},
         }};
         ScreenList<nScreens> screens;
       };

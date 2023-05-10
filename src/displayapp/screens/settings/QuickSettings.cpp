@@ -4,6 +4,7 @@
 #include "displayapp/screens/BatteryIcon.h"
 #include "components/ble/BleController.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "displayapp/ScreenIds.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -137,7 +138,7 @@ void QuickSettings::UpdateScreen() {
 
 void QuickSettings::OnButtonEvent(lv_obj_t* object) {
   if (object == btn2) {
-    app->StartApp(Apps::FlashLight, DisplayApp::FullRefreshDirections::Up);
+    app->StartApp(ScreenId::FlashLight, DisplayApp::FullRefreshDirections::Up);
   } else if (object == btn1) {
 
     brightness.Step();
@@ -163,6 +164,6 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object) {
 
   } else if (object == btn4) {
     settingsController.SetSettingsMenu(0);
-    app->StartApp(Apps::Settings, DisplayApp::FullRefreshDirections::Up);
+    app->StartApp(ScreenId::Settings, DisplayApp::FullRefreshDirections::Up);
   }
 }

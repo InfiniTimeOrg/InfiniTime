@@ -40,7 +40,7 @@ List::List(uint8_t screenID,
 
   for (int i = 0; i < MAXLISTITEMS; i++) {
     apps[i] = applications[i].application;
-    if (applications[i].application != Apps::None) {
+    if (applications[i].application != ScreenId::None) {
 
       static constexpr int btnHeight = (LV_HOR_RES_MAX - ((MAXLISTITEMS - 1) * innerPad)) / MAXLISTITEMS;
       itemApps[i] = lv_btn_create(container, nullptr);
@@ -75,7 +75,7 @@ List::~List() {
 void List::OnButtonEvent(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     for (int i = 0; i < MAXLISTITEMS; i++) {
-      if (apps[i] != Apps::None && object == itemApps[i]) {
+      if (apps[i] != ScreenId::None && object == itemApps[i]) {
         app->StartApp(apps[i], DisplayApp::FullRefreshDirections::Up);
         running = false;
         return;

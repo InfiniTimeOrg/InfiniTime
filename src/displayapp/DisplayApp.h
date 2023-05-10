@@ -4,7 +4,6 @@
 #include <task.h>
 #include <memory>
 #include <systemtask/Messages.h>
-#include "displayapp/Apps.h"
 #include "displayapp/LittleVgl.h"
 #include "displayapp/TouchEvents.h"
 #include "components/brightness/BrightnessController.h"
@@ -13,6 +12,7 @@
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
 #include "components/timer/Timer.h"
+#include "displayapp/ScreenIds.h"
 #include "components/alarm/AlarmController.h"
 #include "touchhandler/TouchHandler.h"
 
@@ -68,7 +68,7 @@ namespace Pinetime {
       void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
 
-      void StartApp(Apps app, DisplayApp::FullRefreshDirections direction);
+      void StartApp(ScreenId app, DisplayApp::FullRefreshDirections direction);
 
       void SetFullRefresh(FullRefreshDirections direction);
 
@@ -106,8 +106,8 @@ namespace Pinetime {
 
       std::unique_ptr<Screens::Screen> currentScreen;
 
-      Apps currentApp = Apps::None;
-      Apps returnToApp = Apps::None;
+      ScreenId currentApp = ScreenId::None;
+      ScreenId returnToApp = ScreenId::None;
       FullRefreshDirections returnDirection = FullRefreshDirections::None;
       TouchEvents returnTouchEvent = TouchEvents::None;
 
@@ -115,17 +115,17 @@ namespace Pinetime {
       static void Process(void* instance);
       void InitHw();
       void Refresh();
-      void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
-      void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);
+      void LoadNewScreen(ScreenId app, DisplayApp::FullRefreshDirections direction);
+      void LoadScreen(ScreenId app, DisplayApp::FullRefreshDirections direction);
       void PushMessageToSystemTask(Pinetime::System::Messages message);
 
-      Apps nextApp = Apps::None;
+      ScreenId nextApp = ScreenId::None;
       DisplayApp::FullRefreshDirections nextDirection;
       System::BootErrors bootError;
       void ApplyBrightness();
 
       static constexpr size_t returnAppStackSize = 10;
-      Utility::StaticStack<Apps, returnAppStackSize> returnAppStack;
+      Utility::StaticStack<ScreenId, returnAppStackSize> returnAppStack;
       Utility::StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
 
       bool isDimmed = false;
