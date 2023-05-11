@@ -24,7 +24,7 @@ void HeartRateTask::Process(void* instance) {
 }
 
 void HeartRateTask::Work() {
-  lastBpm = 0;
+  int lastBpm = 0;
 
   while (true) {
     auto delay = CurrentTaskDelay();
@@ -75,7 +75,7 @@ void HeartRateTask::Work() {
     if (state == States::BackgroundWaiting) {
       HandleBackgroundWaiting();
     } else if (state == States::BackgroundMeasuring || state == States::Measuring) {
-      HandleSensorData();
+      HandleSensorData(&lastBpm);
     }
   }
 }
@@ -105,7 +105,7 @@ void HeartRateTask::HandleBackgroundWaiting() {
   }
 }
 
-void HeartRateTask::HandleSensorData() {
+void HeartRateTask::HandleSensorData(int* lastBpm) {
   int8_t ambient = ppg.Preprocess(heartRateSensor.ReadHrs(), heartRateSensor.ReadAls());
   int bpm = ppg.HeartRate();
 
@@ -113,24 +113,20 @@ void HeartRateTask::HandleSensorData() {
   if (ambient > 0) {
     // Reset all DAQ buffers
     ppg.Reset(true);
-    // Force state to NotEnoughData (below)
-    lastBpm = 0;
-    bpm = 0;
   } else if (bpm < 0) {
     // Reset all DAQ buffers except HRS buffer
     ppg.Reset(false);
     // Set HR to zero and update
     bpm = 0;
-    controller.Update(Controllers::HeartRateController::States::Running, bpm);
   }
 
-  if (lastBpm == 0 && bpm == 0) {
+  if (*lastBpm == 0 && bpm == 0) {
     controller.Update(Controllers::HeartRateController::States::NotEnoughData, bpm);
   }
 
   if (bpm != 0) {
-    lastBpm = bpm;
-    controller.Update(Controllers::HeartRateController::States::Running, lastBpm);
+    *lastBpm = bpm;
+    controller.Update(Controllers::HeartRateController::States::Running, bpm);
     if (state == States::BackgroundMeasuring) {
       StopMeasurement();
       state = States::BackgroundWaiting;
