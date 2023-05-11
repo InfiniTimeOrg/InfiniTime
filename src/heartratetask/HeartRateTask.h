@@ -46,7 +46,7 @@ namespace Pinetime {
       bool IsBackgroundMeasurementActivated();
 
       void HandleBackgroundWaiting();
-      void HandleSensorData();
+      void HandleSensorData(int* lastBpm);
       int CurrentTaskDelay();
 
       TaskHandle_t taskHandle;
