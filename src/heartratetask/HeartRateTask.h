@@ -32,7 +32,7 @@ namespace Pinetime {
       void StopMeasurement();
 
       void HandleBackgroundWaiting();
-      void HandleSensorData();
+      void HandleSensorData(int* lastBpm);
       int CurrentTaskDelay();
 
       TaskHandle_t taskHandle;
@@ -41,7 +41,6 @@ namespace Pinetime {
       Drivers::Hrs3300& heartRateSensor;
       Controllers::HeartRateController& controller;
       Controllers::Ppg ppg;
-      int lastBpm = 0;
       TickType_t backgroundMeasurementWaitingStart = 0;
     };
 
