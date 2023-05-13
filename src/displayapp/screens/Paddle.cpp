@@ -6,7 +6,9 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Paddle::Paddle(Pinetime::Components::LittleVgl& lvgl) : lvgl {lvgl} {
+Paddle::Paddle(Pinetime::Components::LittleVgl& lvgl, 
+               Pinetime::Controllers::MotorController& motor) 
+  : lvgl {lvgl}, motor {motor} {
   background = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(background, LV_HOR_RES + 1, LV_VER_RES);
   lv_obj_set_pos(background, -1, 0);
@@ -74,6 +76,7 @@ void Paddle::Refresh() {
       ballX = (LV_HOR_RES - ballSize) / 2;
       ballY = (LV_VER_RES - ballSize) / 2;
       score = 0;
+      motor.RunForDuration(35);
     }
   }
   lv_label_set_text_fmt(points, "%04d", score);
