@@ -10,7 +10,6 @@ St7789::St7789(Spi& spi, uint8_t pinDataCommand) : spi {spi}, pinDataCommand {pi
 }
 
 void St7789::Init() {
-  spi.Init();
   nrf_gpio_cfg_output(pinDataCommand);
   nrf_gpio_cfg_output(26);
   nrf_gpio_pin_set(26);
@@ -188,12 +187,10 @@ void St7789::Sleep() {
   SleepIn();
   nrf_gpio_cfg_default(pinDataCommand);
   nrf_gpio_cfg_default(26);
-  spi.Sleep();
   NRF_LOG_INFO("[LCD] Sleep");
 }
 
 void St7789::Wakeup() {
-  spi.Wakeup();
   nrf_gpio_cfg_output(pinDataCommand);
   SleepOut();
   VerticalScrollStartAddress(verticalScrollingStartAddress);
