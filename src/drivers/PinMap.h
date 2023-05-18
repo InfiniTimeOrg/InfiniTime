@@ -34,6 +34,7 @@ namespace Pinetime {
     static constexpr uint8_t SpiFlashCsn = 5;
     static constexpr uint8_t SpiLcdCsn = 25;
     static constexpr uint8_t LcdDataCommand = 18;
+    static constexpr uint8_t LcdReset = 26;
 
     static constexpr uint8_t TwiScl = 7;
     static constexpr uint8_t TwiSda = 6;
