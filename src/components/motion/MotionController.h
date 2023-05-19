@@ -45,7 +45,7 @@ namespace Pinetime {
       }
 
       bool ShouldShakeWake(uint16_t thresh);
-      bool ShouldRaiseWake(bool isSleeping);
+      bool ShouldRaiseWake() const;
 
       int32_t CurrentShakeSpeed() const {
         return accumulatedSpeed;
@@ -86,7 +86,6 @@ namespace Pinetime {
 
       int16_t lastX = 0;
       int16_t x = 0;
-      int16_t lastYForRaiseWake = 0;
       static constexpr uint8_t histSize = 8;
       Utility::CircularBuffer<int16_t, histSize> yHistory = {};
       Utility::CircularBuffer<int16_t, histSize> zHistory = {};

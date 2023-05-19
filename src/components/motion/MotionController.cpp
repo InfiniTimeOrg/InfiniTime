@@ -87,26 +87,22 @@ MotionController::AccelStats MotionController::GetAccelStats() const {
   return stats;
 }
 
-bool MotionController::ShouldRaiseWake(bool isSleeping) {
-  if ((x + 335) <= 670 && zHistory[0] < 0) {
-    if (!isSleeping) {
-      if (yHistory[0] <= 0) {
-        return false;
-      }
-      lastYForRaiseWake = 0;
-      return false;
-    }
+bool MotionController::ShouldRaiseWake() const {
+  constexpr uint32_t varianceThresh = 56 * 56;
+  constexpr int16_t xThresh = 384;
+  constexpr int16_t yThresh = -64;
+  constexpr int16_t rollDegreesThresh = -45;
 
-    if (yHistory[0] >= 0) {
-      lastYForRaiseWake = 0;
-      return false;
-    }
-    if (yHistory[0] + 230 < lastYForRaiseWake) {
-      lastYForRaiseWake = yHistory[0];
-      return true;
-    }
+  if (x < -xThresh || x > xThresh) {
+    return false;
   }
-  return false;
+
+  // if the variance is below the threshold, the accelerometer values can be considered to be from acceleration due to gravity
+  if (stats.yVariance > varianceThresh || (stats.yMean < -724 && stats.zVariance > varianceThresh) || stats.yMean > yThresh) {
+    return false;
+  }
+
+  return DegreesRolled(stats.yMean, stats.zMean, stats.prevYMean, stats.prevZMean) < rollDegreesThresh;
 }
 
 bool MotionController::ShouldShakeWake(uint16_t thresh) {
