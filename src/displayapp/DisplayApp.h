@@ -115,11 +115,11 @@ namespace Pinetime {
       static void Process(void* instance);
       void InitHw();
       void Refresh();
-      void LoadNewScreen(ScreenId app, DisplayApp::FullRefreshDirections direction);
-      void LoadScreen(ScreenId app, DisplayApp::FullRefreshDirections direction);
+      void LoadNewScreen(ScreenId screenId, DisplayApp::FullRefreshDirections direction);
+      void LoadScreen(ScreenId screenId, DisplayApp::FullRefreshDirections direction);
       void PushMessageToSystemTask(Pinetime::System::Messages message);
 
-      ScreenId nextApp = ScreenId::None;
+      ScreenId nextScreenId = ScreenId::None;
       DisplayApp::FullRefreshDirections nextDirection;
       System::BootErrors bootError;
       void ApplyBrightness();
