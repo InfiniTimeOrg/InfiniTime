@@ -139,7 +139,7 @@ void DisplayApp::InitHw() {
 void DisplayApp::Refresh() {
   auto LoadPreviousScreen = [this]() {
     FullRefreshDirections returnDirection;
-    switch (appStackDirections.Pop()) {
+    switch (stackDirections.Pop()) {
       case FullRefreshDirections::Up:
         returnDirection = FullRefreshDirections::Down;
         break;
@@ -156,7 +156,7 @@ void DisplayApp::Refresh() {
         returnDirection = FullRefreshDirections::None;
         break;
     }
-    LoadScreen(returnAppStack.Pop(), returnDirection);
+    LoadScreen(returnStack.Pop(), returnDirection);
   };
 
   auto DimScreen = [this]() {
@@ -245,7 +245,7 @@ void DisplayApp::Refresh() {
         if (state != States::Running) {
           PushMessageToSystemTask(System::Messages::GoToRunning);
         }
-        if (currentApp == ScreenId::Timer) {
+        if (currentScreenId == ScreenId::Timer) {
           lv_disp_trig_activity(nullptr);
           auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
           timer->Reset();
@@ -255,7 +255,7 @@ void DisplayApp::Refresh() {
         motorController.RunForDuration(35);
         break;
       case Messages::AlarmTriggered:
-        if (currentApp == ScreenId::Alarm) {
+        if (currentScreenId == ScreenId::Alarm) {
           auto* alarm = static_cast<Screens::Alarm*>(currentScreen.get());
           alarm->SetAlerting();
         } else {
@@ -289,7 +289,7 @@ void DisplayApp::Refresh() {
           }
         };
         if (!currentScreen->OnTouchEvent(gesture)) {
-          if (currentApp == ScreenId::Clock) {
+          if (currentScreenId == ScreenId::Clock) {
             switch (gesture) {
               case TouchEvents::SwipeUp:
                 LoadNewScreen(ScreenId::Launcher, DisplayApp::FullRefreshDirections::Up);
@@ -306,7 +306,7 @@ void DisplayApp::Refresh() {
               default:
                 break;
             }
-          } else if (gesture == LoadDirToReturnSwipe(appStackDirections.Top())) {
+          } else if (gesture == LoadDirToReturnSwipe(stackDirections.Top())) {
             LoadPreviousScreen();
           }
         } else {
@@ -315,7 +315,7 @@ void DisplayApp::Refresh() {
       } break;
       case Messages::ButtonPushed:
         if (!currentScreen->OnButtonPushed()) {
-          if (currentApp == ScreenId::Clock) {
+          if (currentScreenId == ScreenId::Clock) {
             PushMessageToSystemTask(System::Messages::GoToSleep);
           } else {
             LoadPreviousScreen();
@@ -323,16 +323,16 @@ void DisplayApp::Refresh() {
         }
         break;
       case Messages::ButtonLongPressed:
-        if (currentApp != ScreenId::Clock) {
-          if (currentApp == ScreenId::Notifications) {
+        if (currentScreenId != ScreenId::Clock) {
+          if (currentScreenId == ScreenId::Notifications) {
             LoadNewScreen(ScreenId::Clock, DisplayApp::FullRefreshDirections::Up);
-          } else if (currentApp == ScreenId::QuickSettings) {
+          } else if (currentScreenId == ScreenId::QuickSettings) {
             LoadNewScreen(ScreenId::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
           } else {
             LoadNewScreen(ScreenId::Clock, DisplayApp::FullRefreshDirections::Down);
           }
-          appStackDirections.Reset();
-          returnAppStack.Reset();
+          stackDirections.Reset();
+          returnStack.Reset();
         }
         break;
       case Messages::ButtonLongerPressed:
@@ -340,7 +340,7 @@ void DisplayApp::Refresh() {
         LoadNewScreen(ScreenId::SysInfo, DisplayApp::FullRefreshDirections::Up);
         break;
       case Messages::ButtonDoubleClicked:
-        if (currentApp != ScreenId::Notifications && currentApp != ScreenId::NotificationsPreview) {
+        if (currentScreenId != ScreenId::Notifications && currentScreenId != ScreenId::NotificationsPreview) {
           LoadNewScreen(ScreenId::Notifications, DisplayApp::FullRefreshDirections::Down);
         }
         break;
@@ -370,29 +370,29 @@ void DisplayApp::Refresh() {
     currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
   }
 
-  if (nextApp != ScreenId::None) {
-    LoadNewScreen(nextApp, nextDirection);
-    nextApp = ScreenId::None;
+  if (nextScreenId != ScreenId::None) {
+    LoadNewScreen(nextScreenId, nextDirection);
+    nextScreenId = ScreenId::None;
   }
 }
 
-void DisplayApp::StartApp(ScreenId app, DisplayApp::FullRefreshDirections direction) {
-  nextApp = app;
+void DisplayApp::StartApp(ScreenId screenId, DisplayApp::FullRefreshDirections direction) {
+  nextScreenId = screenId;
   nextDirection = direction;
 }
 
-void DisplayApp::LoadNewScreen(ScreenId app, DisplayApp::FullRefreshDirections direction) {
+void DisplayApp::LoadNewScreen(ScreenId screenId, DisplayApp::FullRefreshDirections direction) {
   // Don't add the same screen to the stack back to back.
   // This is mainly to fix an issue with receiving two notifications at the same time
   // and shouldn't happen otherwise.
-  if (app != currentApp) {
-    returnAppStack.Push(currentApp);
-    appStackDirections.Push(direction);
+  if (screenId != currentScreenId) {
+    returnStack.Push(currentScreenId);
+    stackDirections.Push(direction);
   }
-  LoadScreen(app, direction);
+  LoadScreen(screenId, direction);
 }
 
-void DisplayApp::LoadScreen(ScreenId app, DisplayApp::FullRefreshDirections direction) {
+void DisplayApp::LoadScreen(ScreenId screenId, DisplayApp::FullRefreshDirections direction) {
   lvgl.CancelTap();
   lv_disp_trig_activity(nullptr);
   motorController.StopRinging();
@@ -400,7 +400,7 @@ void DisplayApp::LoadScreen(ScreenId app, DisplayApp::FullRefreshDirections dire
   currentScreen.reset(nullptr);
   SetFullRefresh(direction);
 
-  switch (app) {
+  switch (screenId) {
     case ScreenId::Launcher:
       currentScreen =
         std::make_unique<Screens::ApplicationList>(this, settingsController, batteryController, bleController, dateTimeController);
@@ -542,7 +542,7 @@ void DisplayApp::LoadScreen(ScreenId app, DisplayApp::FullRefreshDirections dire
       currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);
       break;
   }
-  currentApp = app;
+  currentScreenId = screenId;
 }
 
 void DisplayApp::PushMessage(Messages msg) {
