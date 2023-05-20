@@ -68,7 +68,7 @@ namespace Pinetime {
       void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
 
-      void StartApp(ScreenId app, DisplayApp::FullRefreshDirections direction);
+      void StartApp(ScreenId screenId, DisplayApp::FullRefreshDirections direction);
 
       void SetFullRefresh(FullRefreshDirections direction);
 
@@ -106,8 +106,8 @@ namespace Pinetime {
 
       std::unique_ptr<Screens::Screen> currentScreen;
 
-      ScreenId currentApp = ScreenId::None;
-      ScreenId returnToApp = ScreenId::None;
+      ScreenId currentScreenId = ScreenId::None;
+      ScreenId returnToScreenId = ScreenId::None;
       FullRefreshDirections returnDirection = FullRefreshDirections::None;
       TouchEvents returnTouchEvent = TouchEvents::None;
 
@@ -124,9 +124,9 @@ namespace Pinetime {
       System::BootErrors bootError;
       void ApplyBrightness();
 
-      static constexpr size_t returnAppStackSize = 10;
-      Utility::StaticStack<ScreenId, returnAppStackSize> returnAppStack;
-      Utility::StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
+      static constexpr size_t returnStackSize = 10;
+      Utility::StaticStack<ScreenId, returnStackSize> returnStack;
+      Utility::StaticStack<FullRefreshDirections, returnStackSize> StackDirections;
 
       bool isDimmed = false;
     };
