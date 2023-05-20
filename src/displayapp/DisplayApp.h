@@ -126,7 +126,7 @@ namespace Pinetime {
 
       static constexpr size_t returnStackSize = 10;
       Utility::StaticStack<ScreenId, returnStackSize> returnStack;
-      Utility::StaticStack<FullRefreshDirections, returnStackSize> StackDirections;
+      Utility::StaticStack<FullRefreshDirections, returnStackSize> stackDirections;
 
       bool isDimmed = false;
     };
