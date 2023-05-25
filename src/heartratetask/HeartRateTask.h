@@ -4,7 +4,8 @@
 #include <queue.h>
 #include <components/heartrate/Ppg.h>
 
-#define DURATION_BETWEEN_BACKGROUND_MEASUREMENTS 5 * 60 * 1000 // 5 Minutes assuming 1 Hz
+#define DURATION_BETWEEN_BACKGROUND_MEASUREMENTS 5 * 60 * 1000 // 5 minutes assuming 1 Hz
+#define DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED 30 * 1000 // 30 seconds assuming 1 Hz
 
 namespace Pinetime {
   namespace Drivers {
@@ -30,6 +31,7 @@ namespace Pinetime {
       static void Process(void* instance);
       void StartMeasurement();
       void StopMeasurement();
+      void StartWaiting();
 
       void HandleBackgroundWaiting();
       void HandleSensorData(int* lastBpm);
@@ -41,7 +43,8 @@ namespace Pinetime {
       Drivers::Hrs3300& heartRateSensor;
       Controllers::HeartRateController& controller;
       Controllers::Ppg ppg;
-      TickType_t backgroundMeasurementWaitingStart = 0;
+      TickType_t backgroundWaitingStart = 0;
+      TickType_t measurementStart = 0;
     };
 
   }
