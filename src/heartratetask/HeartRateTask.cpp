@@ -37,7 +37,7 @@ void HeartRateTask::Work() {
             state = States::Idle;
           } else if (state == States::Measuring) {
             state = States::BackgroundWaiting;
-            StopMeasurement();
+            StartWaiting();
           }
           break;
         case Messages::WakeUp:
@@ -93,6 +93,7 @@ void HeartRateTask::StartMeasurement() {
   heartRateSensor.Enable();
   ppg.Reset(true);
   vTaskDelay(100);
+  measurementStart = xTaskGetTickCount();
 }
 
 void HeartRateTask::StopMeasurement() {
@@ -101,8 +102,13 @@ void HeartRateTask::StopMeasurement() {
   vTaskDelay(100);
 }
 
+void HeartRateTask::StartWaiting() {
+    StopMeasurement();
+    backgroundWaitingStart = xTaskGetTickCount();
+}
+
 void HeartRateTask::HandleBackgroundWaiting() {
-  if (xTaskGetTickCount() - backgroundMeasurementWaitingStart >= DURATION_BETWEEN_BACKGROUND_MEASUREMENTS) {
+  if (xTaskGetTickCount() - backgroundWaitingStart >= DURATION_BETWEEN_BACKGROUND_MEASUREMENTS) {
     state = States::BackgroundMeasuring;
     StartMeasurement();
   }
@@ -131,10 +137,13 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
     *lastBpm = bpm;
     controller.Update(Controllers::HeartRateController::States::Running, bpm);
     if (state == States::BackgroundMeasuring) {
-      StopMeasurement();
       state = States::BackgroundWaiting;
-      backgroundMeasurementWaitingStart = xTaskGetTickCount();
+      StartWaiting();
     }
+  }
+  if (bpm == 0 && state == States::BackgroundMeasuring && xTaskGetTickCount() - measurementStart >= DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED) {
+    state = States::BackgroundWaiting;
+    StartWaiting();
   }
 }
 
