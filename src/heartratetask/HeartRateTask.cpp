@@ -154,6 +154,10 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
     state = States::BackgroundWaiting;
     StartWaiting();
   }
+  if (bpm == 0 && state == States::BackgroundMeasuring && xTaskGetTickCount() - measurementStart >= DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED) {
+    state = States::BackgroundWaiting;
+    StartWaiting();
+  }
 }
 
 int HeartRateTask::CurrentTaskDelay() {
