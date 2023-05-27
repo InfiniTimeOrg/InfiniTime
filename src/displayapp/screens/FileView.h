@@ -36,7 +36,7 @@ namespace Pinetime {
         ~TextView() override;
 
       private:
-        char *buf;
+        char* buf;
       };
     }
   }
