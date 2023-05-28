@@ -7,3 +7,6 @@
 [submodule "src/libs/QCBOR"]
 	path = src/libs/QCBOR
 	url = https://github.com/laurencelundblade/QCBOR.git
+[submodule "src/libs/arduinoFFT"]
+	path = src/libs/arduinoFFT
+	url = https://github.com/kosme/arduinoFFT.git
