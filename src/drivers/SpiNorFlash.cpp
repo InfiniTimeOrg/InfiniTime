@@ -6,7 +6,7 @@
 
 using namespace Pinetime::Drivers;
 
-SpiNorFlash::SpiNorFlash(Spi& spi) : spi {spi} {
+SpiNorFlash::SpiNorFlash(Spi&& spi) : spi {spi} {
 }
 
 void SpiNorFlash::Init() {
