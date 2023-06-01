@@ -404,9 +404,11 @@ list(APPEND SOURCE_FILES
         displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
+	displayapp/screens/MTGLifePoints.cpp
         displayapp/screens/Styles.cpp
         displayapp/Colors.cpp
         displayapp/widgets/Counter.cpp
+        displayapp/widgets/TwoDigitCounter.cpp
         displayapp/widgets/PageIndicator.cpp
         displayapp/widgets/DotIndicator.cpp
         displayapp/widgets/StatusIcons.cpp
@@ -618,8 +620,10 @@ set(INCLUDE_FILES
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
         displayapp/screens/Alarm.h
+	displayapp/screens/MTGLifePoints.h
         displayapp/Colors.h
         displayapp/widgets/Counter.h
+        displayapp/widgets/TwoDigitCounter.h
         displayapp/widgets/PageIndicator.h
         displayapp/widgets/DotIndicator.h
         displayapp/widgets/StatusIcons.h
