@@ -2,7 +2,7 @@
 Since InfiniTime 1.11 apps and watchfaces can benefit from the external flash memory to store images and fonts. 
 This external memory is a lot bigger (4MB) than the internal memory that contains the firmware (512KB).
 
-This page describes how the resources are integrated in InfiniTime from a developer perspective. [This page](gettingStarted/updating-software.md) explains how to install and update the external resources using companion apps.
+This page describes how the resources are integrated in InfiniTime from a developer perspective. [This page](/doc/user/gettingStarted/updating-software.md) explains how to install and update the external resources using companion apps.
 
 ## Resources generation
 
