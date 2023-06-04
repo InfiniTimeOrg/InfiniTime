@@ -9,6 +9,8 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 - [Getting started with InfiniTime](doc/gettingStarted/gettingStarted-1.0.md)
 - [Updating the software](doc/gettingStarted/updating-software.md)
 - [About the firmware and bootloader](doc/gettingStarted/about-software.md)
+- [PineTimeStyle Watch face](https://wiki.pine64.org/wiki/PineTimeStyle)
+  - [Weather integration](https://wiki.pine64.org/wiki/Infinitime-Weather)
 
 ### Companion apps
 
