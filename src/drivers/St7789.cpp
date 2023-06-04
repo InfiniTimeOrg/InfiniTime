@@ -186,7 +186,6 @@ void St7789::HardwareReset() {
 void St7789::Sleep() {
   SleepIn();
   nrf_gpio_cfg_default(pinDataCommand);
-  nrf_gpio_cfg_default(pinReset);
   NRF_LOG_INFO("[LCD] Sleep");
 }
 
