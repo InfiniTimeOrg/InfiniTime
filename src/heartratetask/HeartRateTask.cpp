@@ -26,10 +26,11 @@ void HeartRateTask::Process(void* instance) {
 void HeartRateTask::Work() {
   int lastBpm = 0;
   while (true) {
-    auto delay = portMAX_DELAY;
+    Messages msg;
+    uint32_t delay;
     if (state == States::Running) {
       if (measurementStarted) {
-        delay = 40;
+        delay = ppg.deltaTms;
       } else {
         delay = 100;
       }
@@ -37,8 +38,7 @@ void HeartRateTask::Work() {
       delay = portMAX_DELAY;
     }
 
-    Messages msg;
-    if (xQueueReceive(messageQueue, &msg, delay) == pdTRUE) {
+    if (xQueueReceive(messageQueue, &msg, delay)) {
       switch (msg) {
         case Messages::GoToSleep:
           StopMeasurement();
@@ -70,12 +70,28 @@ void HeartRateTask::Work() {
     }
 
     if (measurementStarted) {
-      ppg.Preprocess(static_cast<float>(heartRateSensor.ReadHrs()));
-      auto bpm = ppg.HeartRate();
+      int8_t ambient = ppg.Preprocess(heartRateSensor.ReadHrs(), heartRateSensor.ReadAls());
+      int bpm = ppg.HeartRate();
+
+      // If ambient light detected or a reset requested (bpm < 0)
+      if (ambient > 0) {
+        // Reset all DAQ buffers
+        ppg.Reset(true);
+        // Force state to NotEnoughData (below)
+        lastBpm = 0;
+        bpm = 0;
+      } else if (bpm < 0) {
+        // Reset all DAQ buffers except HRS buffer
+        ppg.Reset(false);
+        // Set HR to zero and update
+        bpm = 0;
+        controller.Update(Controllers::HeartRateController::States::Running, bpm);
+      }
 
       if (lastBpm == 0 && bpm == 0) {
-        controller.Update(Controllers::HeartRateController::States::NotEnoughData, 0);
+        controller.Update(Controllers::HeartRateController::States::NotEnoughData, bpm);
       }
+
       if (bpm != 0) {
         lastBpm = bpm;
         controller.Update(Controllers::HeartRateController::States::Running, lastBpm);
@@ -87,7 +103,7 @@ void HeartRateTask::Work() {
 void HeartRateTask::PushMessage(HeartRateTask::Messages msg) {
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   xQueueSendFromISR(messageQueue, &msg, &xHigherPriorityTaskWoken);
-  if (xHigherPriorityTaskWoken == pdTRUE) {
+  if (xHigherPriorityTaskWoken) {
     /* Actual macro used here is port specific. */
     // TODO : should I do something here?
   }
@@ -95,11 +111,12 @@ void HeartRateTask::PushMessage(HeartRateTask::Messages msg) {
 
 void HeartRateTask::StartMeasurement() {
   heartRateSensor.Enable();
+  ppg.Reset(true);
   vTaskDelay(100);
-  ppg.SetOffset(heartRateSensor.ReadHrs());
 }
 
 void HeartRateTask::StopMeasurement() {
   heartRateSensor.Disable();
+  ppg.Reset(true);
   vTaskDelay(100);
 }

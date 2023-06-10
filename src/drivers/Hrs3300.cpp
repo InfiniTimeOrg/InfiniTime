@@ -14,8 +14,14 @@
 
 using namespace Pinetime::Drivers;
 
+namespace {
+  static constexpr uint8_t ledDriveCurrentValue = 0x2f;
+}
+
 /** Driver for the HRS3300 heart rate sensor.
  * Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/drivers/hrs3300.py
+ *
+ * Experimentaly derived changes to improve signal/noise (see comments below) - Ceimour
  */
 Hrs3300::Hrs3300(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}, twiAddress {twiAddress} {
 }
@@ -26,19 +32,21 @@ void Hrs3300::Init() {
   Disable();
   vTaskDelay(100);
 
-  // HRS disabled, 12.5 ms wait time between cycles, (partly) 20mA drive
-  WriteRegister(static_cast<uint8_t>(Registers::Enable), 0x60);
+  // HRS disabled, 50ms wait time between ADC conversion period, current 12.5mA
+  WriteRegister(static_cast<uint8_t>(Registers::Enable), 0x50);
 
-  // (partly) 20mA drive, power on, "magic" (datasheet says both
-  // "reserved" and "set low nibble to 8" but 0xe gives better results
-  // and is used by at least two other HRS3300 drivers
-  WriteRegister(static_cast<uint8_t>(Registers::PDriver), 0x6E);
+  // Current 12.5mA and low nibble 0xF.
+  // Note: Setting low nibble to 0x8 per the datasheet results in
+  // modulated LED driver output. Setting to 0xF results in clean,
+  // steady output during the ADC conversion period.
+  WriteRegister(static_cast<uint8_t>(Registers::PDriver), ledDriveCurrentValue);
 
-  // HRS and ALS both in 16-bit mode
-  WriteRegister(static_cast<uint8_t>(Registers::Res), 0x88);
+  // HRS and ALS both in 15-bit mode results in ~50ms LED drive period
+  // and presumably ~50ms ADC conversion period.
+  WriteRegister(static_cast<uint8_t>(Registers::Res), 0x77);
 
-  // 8x gain, non default, reduced value for better readings
-  WriteRegister(static_cast<uint8_t>(Registers::Hgain), 0xc);
+  // Gain set to 1x
+  WriteRegister(static_cast<uint8_t>(Registers::Hgain), 0x00);
 }
 
 void Hrs3300::Enable() {
@@ -46,6 +54,8 @@ void Hrs3300::Enable() {
   auto value = ReadRegister(static_cast<uint8_t>(Registers::Enable));
   value |= 0x80;
   WriteRegister(static_cast<uint8_t>(Registers::Enable), value);
+
+  WriteRegister(static_cast<uint8_t>(Registers::PDriver), ledDriveCurrentValue);
 }
 
 void Hrs3300::Disable() {
@@ -53,6 +63,8 @@ void Hrs3300::Disable() {
   auto value = ReadRegister(static_cast<uint8_t>(Registers::Enable));
   value &= ~0x80;
   WriteRegister(static_cast<uint8_t>(Registers::Enable), value);
+
+  WriteRegister(static_cast<uint8_t>(Registers::PDriver), 0);
 }
 
 uint32_t Hrs3300::ReadHrs() {

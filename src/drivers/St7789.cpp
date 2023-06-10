@@ -6,14 +6,13 @@
 
 using namespace Pinetime::Drivers;
 
-St7789::St7789(Spi& spi, uint8_t pinDataCommand) : spi {spi}, pinDataCommand {pinDataCommand} {
+St7789::St7789(Spi& spi, uint8_t pinDataCommand, uint8_t pinReset) : spi {spi}, pinDataCommand {pinDataCommand}, pinReset {pinReset} {
 }
 
 void St7789::Init() {
-  spi.Init();
   nrf_gpio_cfg_output(pinDataCommand);
-  nrf_gpio_cfg_output(26);
-  nrf_gpio_pin_set(26);
+  nrf_gpio_cfg_output(pinReset);
+  nrf_gpio_pin_set(pinReset);
   HardwareReset();
   SoftwareReset();
   SleepOut();
@@ -179,9 +178,9 @@ void St7789::DrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height,
 }
 
 void St7789::HardwareReset() {
-  nrf_gpio_pin_clear(26);
+  nrf_gpio_pin_clear(pinReset);
   nrf_delay_ms(10);
-  nrf_gpio_pin_set(26);
+  nrf_gpio_pin_set(pinReset);
 }
 
 void St7789::Sleep() {
