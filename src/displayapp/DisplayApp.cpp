@@ -29,6 +29,7 @@
 #include "displayapp/screens/Steps.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
+#include "displayapp/screens/Weather.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -417,6 +418,7 @@ void DisplayApp::LoadScreen(ScreenId screenId, DisplayApp::FullRefreshDirections
                                                        settingsController,
                                                        heartRateController,
                                                        motionController,
+                                                       systemTask->nimble().weather(),
                                                        filesystem);
       break;
 
@@ -538,6 +540,11 @@ void DisplayApp::LoadScreen(ScreenId screenId, DisplayApp::FullRefreshDirections
     case ScreenId::Metronome:
       currentScreen = std::make_unique<Screens::Metronome>(motorController, *systemTask);
       break;
+    /* Weather debug app
+    case ScreenId::Weather:
+      currentScreen = std::make_unique<Screens::Weather>(this, systemTask->nimble().weather());
+      break;
+    */
     case ScreenId::Steps:
       currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);
       break;
