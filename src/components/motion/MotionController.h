@@ -67,6 +67,7 @@ namespace Pinetime {
       TickType_t lastTime = 0;
       TickType_t time = 0;
 
+      int16_t lastX = 0;
       int16_t x = 0;
       int16_t lastYForRaiseWake = 0;
       int16_t lastY = 0;
