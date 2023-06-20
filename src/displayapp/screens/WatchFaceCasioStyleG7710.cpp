@@ -48,14 +48,14 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
     font_segment115 = lv_font_load("F:/fonts/7segments_115.bin");
   }
 
-  label_battery_vallue = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_battery_vallue, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-  lv_obj_set_style_local_text_color(label_battery_vallue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  lv_label_set_text_static(label_battery_vallue, "00%");
+  label_battery_value = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(label_battery_value, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  lv_obj_set_style_local_text_color(label_battery_value, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_label_set_text_static(label_battery_value, "00%");
 
   batteryIcon.Create(lv_scr_act());
   batteryIcon.SetColor(color_text);
-  lv_obj_align(batteryIcon.GetObject(), label_battery_vallue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align(batteryIcon.GetObject(), label_battery_value, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   batteryPlug = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
@@ -203,7 +203,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
   if (batteryPercentRemaining.IsUpdated()) {
     auto batteryPercent = batteryPercentRemaining.Get();
     batteryIcon.SetBatteryPercentage(batteryPercent);
-    lv_label_set_text_fmt(label_battery_vallue, "%d%%", batteryPercent);
+    lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
   }
 
   bleState = bleController.IsConnected();
@@ -211,7 +211,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
   }
-  lv_obj_realign(label_battery_vallue);
+  lv_obj_realign(label_battery_value);
   lv_obj_realign(batteryIcon.GetObject());
   lv_obj_realign(batteryPlug);
   lv_obj_realign(bleIcon);
