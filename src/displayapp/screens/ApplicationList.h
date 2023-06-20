@@ -10,6 +10,7 @@
 #include "components/battery/BatteryController.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/Tile.h"
+#include "displayapp/screens/Twos.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -49,7 +50,7 @@ namespace Pinetime {
 
           {Symbols::paintbrush, Apps::Paint},
           {Symbols::paddle, Apps::Paddle},
-          {"2", Apps::Twos},
+          {Twos::GetSymbol(), Apps::Twos},
           {Symbols::drum, Apps::Metronome},
           {Symbols::map, Apps::Navigation},
           {Symbols::none, Apps::None},

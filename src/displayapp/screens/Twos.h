@@ -1,7 +1,8 @@
 #pragma once
 
 #include <lvgl/src/lv_core/lv_obj.h>
-#include "displayapp/screens/Screen.h"
+#include <memory>
+#include "displayapp/screens/App.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -11,12 +12,20 @@ namespace Pinetime {
     };
 
     namespace Screens {
-      class Twos : public Screen {
+      class Twos : public App {
       public:
         Twos();
         ~Twos() override;
 
         bool OnTouchEvent(TouchEvents event) override;
+
+        static std::unique_ptr<Pinetime::Applications::Screens::Screen> Get(AppInterface appInterface) {
+          return std::make_unique<Twos>();
+        };
+
+        static constexpr char* GetSymbol() {
+          return "2";
+        };
 
       private:
         static constexpr int nColors = 5;
