@@ -1,6 +1,7 @@
 
 find_program(LV_FONT_CONV "lv_font_conv" NO_CACHE REQUIRED
-    HINTS "${CMAKE_SOURCE_DIR}/node_modules/.bin")
+    HINTS "${CMAKE_SOURCE_DIR}/node_modules/.bin"
+    HINTS "${InfiniTime_DIR}/node_modules/.bin")
 message(STATUS "Using ${LV_FONT_CONV} to generate font files")
 
 find_program(LV_IMG_CONV "lv_img_conv.py" NO_CACHE REQUIRED
