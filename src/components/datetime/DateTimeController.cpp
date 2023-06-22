@@ -89,6 +89,16 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
     if (systemTask != nullptr) {
       systemTask->PushMessage(System::Messages::OnNewHalfHour);
     }
+    Controllers::Settings::QuietHour* quietHour = settingsController.GetQuietHour();
+    uint8_t now = hour * 2 + minute / 30;
+    // Quiet Hour Start
+    if (quietHour[0].auto_toggle && quietHour[0].time == now) {
+      settingsController.SetNotificationStatus(Controllers::Settings::Notification::Sleep);
+    }
+    // Quiet Hour Stop
+    if (quietHour[1].auto_toggle && quietHour[1].time == now) {
+      settingsController.SetNotificationStatus(settingsController.GetPrevNotificationStatus());
+    }
   } else if (minute != 0 && minute != 30) {
     isHalfHourAlreadyNotified = false;
   }

@@ -41,6 +41,7 @@ namespace Pinetime {
           {Symbols::clock, "Date&Time", Apps::SettingSetDateTime},
           {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
           {Symbols::clock, "Chimes", Apps::SettingChimes},
+          {Symbols::clock, "Quiet Hour", Apps::SettingQuietHour},
 
           {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
           {Symbols::check, "Firmware", Apps::FirmwareValidation},
