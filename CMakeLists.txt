@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose Debug or Release")
 
+# Override the default system to cross-compile for ARM processors
+set(CMAKE_SYSTEM_NAME Linux)
+set(CMAKE_SYSTEM_PROCESSOR ARM)
+
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
 project(pinetime VERSION 1.12.0 LANGUAGES C CXX ASM)
 
 set(CMAKE_C_STANDARD 99)
@@ -13,6 +19,10 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Generate source level debug information
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 set(NRF_TARGET "nrf52")
 
