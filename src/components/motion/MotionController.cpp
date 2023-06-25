@@ -9,7 +9,7 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
     service->OnNewStepCountValue(nbSteps);
   }
 
-  if (service != nullptr && (this->x != x || this->y != y || this->z != z)) {
+  if (service != nullptr && (this->x != x || yHistory[0] != y || zHistory[0] != z)) {
     service->OnNewMotionValues(x, y, z);
   }
 
@@ -18,10 +18,10 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
 
   lastX = this->x;
   this->x = x;
-  lastY = this->y;
-  this->y = y;
-  lastZ = this->z;
-  this->z = z;
+  yHistory++;
+  yHistory[0] = y;
+  zHistory++;
+  zHistory[0] = z;
 
   int32_t deltaSteps = nbSteps - this->nbSteps;
   if (deltaSteps > 0) {
@@ -31,21 +31,21 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
 }
 
 bool MotionController::ShouldRaiseWake(bool isSleeping) {
-  if ((x + 335) <= 670 && z < 0) {
+  if ((x + 335) <= 670 && zHistory[0] < 0) {
     if (!isSleeping) {
-      if (y <= 0) {
+      if (yHistory[0] <= 0) {
         return false;
       }
       lastYForRaiseWake = 0;
       return false;
     }
 
-    if (y >= 0) {
+    if (yHistory[0] >= 0) {
       lastYForRaiseWake = 0;
       return false;
     }
-    if (y + 230 < lastYForRaiseWake) {
-      lastYForRaiseWake = y;
+    if (yHistory[0] + 230 < lastYForRaiseWake) {
+      lastYForRaiseWake = yHistory[0];
       return true;
     }
   }
@@ -54,7 +54,8 @@ bool MotionController::ShouldRaiseWake(bool isSleeping) {
 
 bool MotionController::ShouldShakeWake(uint16_t thresh) {
   /* Currently Polling at 10hz, If this ever goes faster scalar and EMA might need adjusting */
-  int32_t speed = std::abs(z - lastZ + (y - lastY) / 2 + (x - lastX) / 4) * 100 / (time - lastTime);
+  int32_t speed =
+    std::abs(zHistory[0] - zHistory[histSize - 1] + (yHistory[0] - yHistory[histSize - 1]) / 2 + (x - lastX) / 4) * 100 / (time - lastTime);
   // (.2 * speed) + ((1 - .2) * accumulatedSpeed);
   accumulatedSpeed = speed / 5 + accumulatedSpeed * 4 / 5;
 

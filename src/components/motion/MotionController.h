@@ -6,6 +6,7 @@
 
 #include "drivers/Bma421.h"
 #include "components/ble/MotionService.h"
+#include "utility/CircularBuffer.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -24,11 +25,11 @@ namespace Pinetime {
       }
 
       int16_t Y() const {
-        return y;
+        return yHistory[0];
       }
 
       int16_t Z() const {
-        return z;
+        return zHistory[0];
       }
 
       uint32_t NbSteps() const {
@@ -70,10 +71,9 @@ namespace Pinetime {
       int16_t lastX = 0;
       int16_t x = 0;
       int16_t lastYForRaiseWake = 0;
-      int16_t lastY = 0;
-      int16_t y = 0;
-      int16_t lastZ = 0;
-      int16_t z = 0;
+      static constexpr uint8_t histSize = 8;
+      Utility::CircularBuffer<int16_t, histSize> yHistory = {};
+      Utility::CircularBuffer<int16_t, histSize> zHistory = {};
       int32_t accumulatedSpeed = 0;
 
       DeviceTypes deviceType = DeviceTypes::Unknown;
