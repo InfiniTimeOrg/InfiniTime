@@ -68,6 +68,22 @@ namespace Pinetime {
       TickType_t lastTime = 0;
       TickType_t time = 0;
 
+      struct AccelStats {
+        static constexpr uint8_t numHistory = 2;
+
+        int16_t yMean = 0;
+        int16_t zMean = 0;
+        int16_t prevYMean = 0;
+        int16_t prevZMean = 0;
+
+        uint32_t yVariance = 0;
+        uint32_t zVariance = 0;
+      };
+
+      AccelStats GetAccelStats() const;
+
+      AccelStats stats = {};
+
       int16_t lastX = 0;
       int16_t x = 0;
       int16_t lastYForRaiseWake = 0;
