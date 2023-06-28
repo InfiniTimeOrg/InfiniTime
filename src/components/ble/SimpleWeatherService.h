@@ -104,6 +104,10 @@ namespace Pinetime {
       std::optional<CurrentWeather> Current() const;
       std::optional<Forecast> GetForecast() const;
 
+      static int16_t CelsiusToFahrenheit(int16_t celsius) {
+        return celsius * 9 / 5 + 3200;
+      }
+
     private:
       // 00050000-78fc-48fe-8e23-433b3a1942d0
       static constexpr ble_uuid128_t BaseUuid() {
