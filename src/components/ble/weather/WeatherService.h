@@ -70,6 +70,12 @@ namespace Pinetime {
        */
       int16_t GetTodayMinTemp() const;
 
+      /**
+       * Converts the temperature in degrees Celsius to degrees Fahrenheit
+       * @return -32768 if there's no data, degrees Fahrenheit times 100 otherwise
+       */
+      int16_t GetTempFahrenheit(int16_t temp) const;
+
       /*
        * Management functions
        */

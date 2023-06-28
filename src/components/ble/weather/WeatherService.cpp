@@ -606,6 +606,13 @@ namespace Pinetime {
       return result;
     }
 
+    int16_t WeatherService::GetTempFahrenheit(int16_t temp) const {
+      if (temp == -32768) {
+        return -32768;
+      }
+      return temp * 9 / 5 + 3200;
+    }
+
     void WeatherService::CleanUpQcbor(QCBORDecodeContext* decodeContext) {
       QCBORDecode_ExitMap(decodeContext);
       QCBORDecode_Finish(decodeContext);
