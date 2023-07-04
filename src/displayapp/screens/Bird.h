@@ -20,7 +20,7 @@ namespace Pinetime {
 
       class Bird : public Screen {
       public:
-        Bird(Pinetime::Components::LittleVgl& lvgl);
+        Bird();
         ~Bird() override;
 
         void Refresh() override;
@@ -31,7 +31,6 @@ namespace Pinetime {
       private:
         void GameOver();
         void MovePipe();
-        Pinetime::Components::LittleVgl& lvgl;
 
         bool is_stopped = true;
         bool is_ascending = false;

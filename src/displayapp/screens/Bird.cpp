@@ -7,7 +7,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Bird::Bird(Pinetime::Components::LittleVgl& lvgl) : lvgl {lvgl} {
+Bird::Bird() {
 
   lv_obj_t* background = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(background, LV_HOR_RES, LV_VER_RES);
@@ -110,9 +110,10 @@ void Bird::Refresh() {
 }
 
 void Bird::GameOver() {
+  is_stopped = true;
   lv_label_set_text_static(info, "Game Over");
   lv_obj_align(info, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 40);
-  is_stopped = true;
+  lv_obj_set_style_local_text_color(bird, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   return;
 }
 
@@ -122,6 +123,7 @@ bool Bird::OnTouchEvent(Pinetime::Applications::TouchEvents /*event*/) {
       pos = 120;
       lv_label_set_text_static(info, "Touch to Start");
       lv_obj_align(info, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 40);
+      lv_obj_set_style_local_text_color(bird, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_YELLOW);
       return true;
     }
     // reset
