@@ -3,6 +3,7 @@
 #include <bitset>
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
+#include "displayapp/WatchFaces.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -38,12 +39,14 @@ namespace Pinetime {
         Pink
       };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
+      enum class PTSWeather : uint8_t { On, Off };
 
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
         Colors ColorBar = Colors::Teal;
         Colors ColorBG = Colors::Black;
         PTSGaugeStyle gaugeStyle = PTSGaugeStyle::Full;
+        PTSWeather weatherEnable = PTSWeather::Off;
       };
 
       struct WatchFaceInfineat {
@@ -61,15 +64,15 @@ namespace Pinetime {
       void Init();
       void SaveSettings();
 
-      void SetClockFace(uint8_t face) {
-        if (face != settings.clockFace) {
+      void SetWatchFace(Pinetime::Applications::WatchFace face) {
+        if (face != settings.watchFace) {
           settingsChanged = true;
         }
-        settings.clockFace = face;
+        settings.watchFace = face;
       };
 
-      uint8_t GetClockFace() const {
-        return settings.clockFace;
+      Pinetime::Applications::WatchFace GetWatchFace() const {
+        return settings.watchFace;
       };
 
       void SetChimeOption(ChimesOption chimeOption) {
@@ -143,6 +146,16 @@ namespace Pinetime {
 
       PTSGaugeStyle GetPTSGaugeStyle() const {
         return settings.PTS.gaugeStyle;
+      };
+
+      void SetPTSWeather(PTSWeather weatherEnable) {
+        if (weatherEnable != settings.PTS.weatherEnable)
+          settingsChanged = true;
+        settings.PTS.weatherEnable = weatherEnable;
+      };
+
+      PTSWeather GetPTSWeather() const {
+        return settings.PTS.weatherEnable;
       };
 
       void SetAppMenu(uint8_t menu) {
@@ -266,7 +279,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0004;
+      static constexpr uint32_t settingsVersion = 0x0005;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -276,7 +289,7 @@ namespace Pinetime {
         ClockType clockType = ClockType::H24;
         Notification notificationStatus = Notification::On;
 
-        uint8_t clockFace = 0;
+        Pinetime::Applications::WatchFace watchFace = Pinetime::Applications::WatchFace::Digital;
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;

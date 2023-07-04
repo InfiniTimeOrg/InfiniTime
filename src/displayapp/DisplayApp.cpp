@@ -29,6 +29,7 @@
 #include "displayapp/screens/Steps.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
+#include "displayapp/screens/Weather.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -57,6 +58,11 @@ namespace {
   inline bool in_isr() {
     return (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) != 0;
   }
+
+  void TimerCallback(TimerHandle_t xTimer) {
+    auto* dispApp = static_cast<DisplayApp*>(pvTimerGetTimerID(xTimer));
+    dispApp->PushMessage(Display::Messages::TimerDone);
+  }
 }
 
 DisplayApp::DisplayApp(Drivers::St7789& lcd,
@@ -70,7 +76,6 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Controllers::MotionController& motionController,
-                       Pinetime::Controllers::TimerController& timerController,
                        Pinetime::Controllers::AlarmController& alarmController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
@@ -86,12 +91,12 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     settingsController {settingsController},
     motorController {motorController},
     motionController {motionController},
-    timerController {timerController},
     alarmController {alarmController},
     brightnessController {brightnessController},
     touchHandler {touchHandler},
     filesystem {filesystem},
-    lvgl {lcd, filesystem} {
+    lvgl {lcd, filesystem},
+    timer(this, TimerCallback) {
 }
 
 void DisplayApp::Start(System::BootErrors error) {
@@ -155,6 +160,29 @@ void DisplayApp::Refresh() {
     LoadScreen(returnAppStack.Pop(), returnDirection);
   };
 
+  auto DimScreen = [this]() {
+    if (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
+      isDimmed = true;
+      brightnessController.Set(Controllers::BrightnessController::Levels::Low);
+    }
+  };
+
+  auto RestoreBrightness = [this]() {
+    if (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
+      isDimmed = false;
+      lv_disp_trig_activity(nullptr);
+      ApplyBrightness();
+    }
+  };
+
+  auto IsPastDimTime = [this]() -> bool {
+    return lv_disp_get_inactive_time(nullptr) >= pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000);
+  };
+
+  auto IsPastSleepTime = [this]() -> bool {
+    return lv_disp_get_inactive_time(nullptr) >= pdMS_TO_TICKS(settingsController.GetScreenTimeOut());
+  };
+
   TickType_t queueTimeout;
   switch (state) {
     case States::Idle:
@@ -165,6 +193,18 @@ void DisplayApp::Refresh() {
         LoadPreviousScreen();
       }
       queueTimeout = lv_task_handler();
+
+      if (!systemTask->IsSleepDisabled() && IsPastDimTime()) {
+        if (!isDimmed) {
+          DimScreen();
+        }
+        if (IsPastSleepTime()) {
+          systemTask->PushMessage(System::Messages::GoToSleep);
+          state = States::Idle;
+        }
+      } else if (isDimmed) {
+        RestoreBrightness();
+      }
       break;
     default:
       queueTimeout = portMAX_DELAY;
@@ -175,10 +215,10 @@ void DisplayApp::Refresh() {
   if (xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE) {
     switch (msg) {
       case Messages::DimScreen:
-        brightnessController.Set(Controllers::BrightnessController::Levels::Low);
+        DimScreen();
         break;
       case Messages::RestoreBrightness:
-        ApplyBrightness();
+        RestoreBrightness();
         break;
       case Messages::GoToSleep:
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
@@ -191,11 +231,9 @@ void DisplayApp::Refresh() {
         break;
       case Messages::GoToRunning:
         lcd.Wakeup();
+        lv_disp_trig_activity(nullptr);
         ApplyBrightness();
         state = States::Running;
-        break;
-      case Messages::UpdateTimeOut:
-        PushMessageToSystemTask(System::Messages::UpdateTimeOut);
         break;
       case Messages::UpdateBleConnection:
         //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
@@ -205,7 +243,11 @@ void DisplayApp::Refresh() {
         LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
         break;
       case Messages::TimerDone:
+        if (state != States::Running) {
+          PushMessageToSystemTask(System::Messages::GoToRunning);
+        }
         if (currentApp == Apps::Timer) {
+          lv_disp_trig_activity(nullptr);
           auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
           timer->Reset();
         } else {
@@ -319,6 +361,7 @@ void DisplayApp::Refresh() {
         motorController.RunForDuration(35);
         break;
       case Messages::OnChargingEvent:
+        RestoreBrightness();
         motorController.RunForDuration(15);
         break;
     }
@@ -352,7 +395,7 @@ void DisplayApp::LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direc
 
 void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction) {
   lvgl.CancelTap();
-  ApplyBrightness();
+  lv_disp_trig_activity(nullptr);
   motorController.StopRinging();
 
   currentScreen.reset(nullptr);
@@ -375,6 +418,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                        settingsController,
                                                        heartRateController,
                                                        motionController,
+                                                       systemTask->nimble().weather(),
                                                        filesystem);
       break;
 
@@ -410,7 +454,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                Screens::Notifications::Modes::Preview);
       break;
     case Apps::Timer:
-      currentScreen = std::make_unique<Screens::Timer>(timerController);
+      currentScreen = std::make_unique<Screens::Timer>(timer);
       break;
     case Apps::Alarm:
       currentScreen = std::make_unique<Screens::Alarm>(alarmController, settingsController.GetClockType(), *systemTask, motorController);
@@ -496,6 +540,11 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     case Apps::Metronome:
       currentScreen = std::make_unique<Screens::Metronome>(motorController, *systemTask);
       break;
+    /* Weather debug app
+    case Apps::Weather:
+      currentScreen = std::make_unique<Screens::Weather>(this, systemTask->nimble().weather());
+      break;
+    */
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);
       break;

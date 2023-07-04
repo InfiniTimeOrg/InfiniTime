@@ -8,6 +8,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/BleController.h"
+#include "utility/DirtyValue.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -39,24 +40,17 @@ namespace Pinetime {
         static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
 
       private:
-        uint8_t displayedHour = -1;
-        uint8_t displayedMinute = -1;
-
-        uint16_t currentYear = 1970;
-        Controllers::DateTime::Months currentMonth = Pinetime::Controllers::DateTime::Months::Unknown;
-        Controllers::DateTime::Days currentDayOfWeek = Pinetime::Controllers::DateTime::Days::Unknown;
-        uint8_t currentDay = 0;
-
-        DirtyValue<uint8_t> batteryPercentRemaining {};
-        DirtyValue<bool> powerPresent {};
-        DirtyValue<bool> bleState {};
-        DirtyValue<bool> bleRadioEnabled {};
-        DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
-        DirtyValue<bool> motionSensorOk {};
-        DirtyValue<uint32_t> stepCount {};
-        DirtyValue<uint8_t> heartbeat {};
-        DirtyValue<bool> heartbeatRunning {};
-        DirtyValue<bool> notificationState {};
+        Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
+        Utility::DirtyValue<bool> powerPresent {};
+        Utility::DirtyValue<bool> bleState {};
+        Utility::DirtyValue<bool> bleRadioEnabled {};
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
+        Utility::DirtyValue<uint32_t> stepCount {};
+        Utility::DirtyValue<uint8_t> heartbeat {};
+        Utility::DirtyValue<bool> heartbeatRunning {};
+        Utility::DirtyValue<bool> notificationState {};
+        using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
 
         lv_point_t line_icons_points[3] {{0, 5}, {117, 5}, {122, 0}};
         lv_point_t line_day_of_week_number_points[4] {{0, 0}, {100, 0}, {95, 95}, {0, 95}};
@@ -82,7 +76,7 @@ namespace Pinetime {
         lv_obj_t* backgroundLabel;
         lv_obj_t* bleIcon;
         lv_obj_t* batteryPlug;
-        lv_obj_t* label_battery_vallue;
+        lv_obj_t* label_battery_value;
         lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
         lv_obj_t* stepIcon;

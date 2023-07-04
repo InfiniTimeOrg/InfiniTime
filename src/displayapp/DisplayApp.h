@@ -12,14 +12,14 @@
 #include "components/firmwarevalidator/FirmwareValidator.h"
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
-#include "components/timer/TimerController.h"
+#include "components/timer/Timer.h"
 #include "components/alarm/AlarmController.h"
 #include "touchhandler/TouchHandler.h"
 
 #include "displayapp/Messages.h"
 #include "BootErrors.h"
 
-#include "StaticStack.h"
+#include "utility/StaticStack.h"
 
 namespace Pinetime {
 
@@ -61,7 +61,6 @@ namespace Pinetime {
                  Controllers::Settings& settingsController,
                  Pinetime::Controllers::MotorController& motorController,
                  Pinetime::Controllers::MotionController& motionController,
-                 Pinetime::Controllers::TimerController& timerController,
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
                  Pinetime::Controllers::TouchHandler& touchHandler,
@@ -88,7 +87,6 @@ namespace Pinetime {
       Pinetime::Controllers::Settings& settingsController;
       Pinetime::Controllers::MotorController& motorController;
       Pinetime::Controllers::MotionController& motionController;
-      Pinetime::Controllers::TimerController& timerController;
       Pinetime::Controllers::AlarmController& alarmController;
       Pinetime::Controllers::BrightnessController& brightnessController;
       Pinetime::Controllers::TouchHandler& touchHandler;
@@ -96,6 +94,7 @@ namespace Pinetime {
 
       Pinetime::Controllers::FirmwareValidator validator;
       Pinetime::Components::LittleVgl lvgl;
+      Pinetime::Controllers::Timer timer;
 
       TaskHandle_t taskHandle;
 
@@ -126,8 +125,10 @@ namespace Pinetime {
       void ApplyBrightness();
 
       static constexpr size_t returnAppStackSize = 10;
-      StaticStack<Apps, returnAppStackSize> returnAppStack;
-      StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
+      Utility::StaticStack<Apps, returnAppStackSize> returnAppStack;
+      Utility::StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
+
+      bool isDimmed = false;
     };
   }
 }

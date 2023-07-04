@@ -68,7 +68,7 @@ Pinetime::Drivers::SpiMaster spi {Pinetime::Drivers::SpiMaster::SpiModule::SPI0,
                                    Pinetime::PinMap::SpiMiso}};
 
 Pinetime::Drivers::Spi lcdSpi {spi, Pinetime::PinMap::SpiLcdCsn};
-Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand};
+Pinetime::Drivers::St7789 lcd {lcdSpi, Pinetime::PinMap::LcdDataCommand, Pinetime::PinMap::LcdReset};
 
 Pinetime::Drivers::Spi flashSpi {spi, Pinetime::PinMap::SpiFlashCsn};
 Pinetime::Drivers::SpiNorFlash spiNorFlash {flashSpi};
@@ -83,6 +83,7 @@ Pinetime::Drivers::Cst816S touchPanel {twiMaster, touchPanelTwiAddress};
   #include "displayapp/DisplayAppRecovery.h"
 #else
   #include "displayapp/DisplayApp.h"
+  #include "main.h"
 #endif
 Pinetime::Drivers::Bma421 motionSensor {twiMaster, motionSensorTwiAddress};
 Pinetime::Drivers::Hrs3300 heartRateSensor {twiMaster, heartRateSensorTwiAddress};
@@ -103,7 +104,6 @@ Pinetime::Controllers::DateTime dateTimeController {settingsController};
 Pinetime::Drivers::Watchdog watchdog;
 Pinetime::Controllers::NotificationManager notificationManager;
 Pinetime::Controllers::MotionController motionController;
-Pinetime::Controllers::TimerController timerController;
 Pinetime::Controllers::AlarmController alarmController {dateTimeController};
 Pinetime::Controllers::TouchHandler touchHandler;
 Pinetime::Controllers::ButtonHandler buttonHandler;
@@ -120,7 +120,6 @@ Pinetime::Applications::DisplayApp displayApp(lcd,
                                               settingsController,
                                               motorController,
                                               motionController,
-                                              timerController,
                                               alarmController,
                                               brightnessController,
                                               touchHandler,
@@ -133,7 +132,6 @@ Pinetime::System::SystemTask systemTask(spi,
                                         batteryController,
                                         bleController,
                                         dateTimeController,
-                                        timerController,
                                         alarmController,
                                         watchdog,
                                         notificationManager,
@@ -147,7 +145,17 @@ Pinetime::System::SystemTask systemTask(spi,
                                         fs,
                                         touchHandler,
                                         buttonHandler);
+int mallocFailedCount = 0;
+int stackOverflowCount = 0;
+extern "C" {
+void vApplicationMallocFailedHook() {
+  mallocFailedCount++;
+}
 
+void vApplicationStackOverflowHook(TaskHandle_t /*xTask*/, char* /*pcTaskName*/) {
+  stackOverflowCount++;
+}
+}
 /* Variable Declarations for variables in noinit SRAM
    Increment NoInit_MagicValue upon adding variables to this area
 */
@@ -296,7 +304,12 @@ void calibrate_lf_clock_rc(nrf_drv_clock_evt_type_t /*event*/) {
   nrf_drv_clock_calibration_start(16, calibrate_lf_clock_rc);
 }
 
+void enable_dcdc_regulator() {
+  NRF_POWER->DCDCEN = 1;
+}
+
 int main() {
+  enable_dcdc_regulator();
   logger.Init();
 
   nrf_drv_clock_init();

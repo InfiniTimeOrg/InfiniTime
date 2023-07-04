@@ -1,9 +1,12 @@
 [submodule "src/libs/lvgl"]
 	path = src/libs/lvgl
-	url = https://github.com/joaquimorg/lvgl.git
+	url = https://github.com/InfiniTimeOrg/lvgl.git
 [submodule "src/libs/littlefs"]
 	path = src/libs/littlefs
 	url = https://github.com/littlefs-project/littlefs.git
 [submodule "src/libs/QCBOR"]
 	path = src/libs/QCBOR
 	url = https://github.com/laurencelundblade/QCBOR.git
+[submodule "src/libs/arduinoFFT"]
+	path = src/libs/arduinoFFT
+	url = https://github.com/kosme/arduinoFFT.git

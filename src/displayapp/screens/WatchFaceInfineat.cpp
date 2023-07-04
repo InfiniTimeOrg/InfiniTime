@@ -397,63 +397,37 @@ void WatchFaceInfineat::Refresh() {
     lv_obj_align(notificationIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
   }
 
-  currentDateTime = dateTimeController.CurrentDateTime();
-
+  currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
   if (currentDateTime.IsUpdated()) {
-    auto hour = dateTimeController.Hours();
-    auto minute = dateTimeController.Minutes();
-    auto year = dateTimeController.Year();
-    auto month = dateTimeController.Month();
-    auto dayOfWeek = dateTimeController.DayOfWeek();
-    auto day = dateTimeController.Day();
-
-    char minutesChar[3];
-    sprintf(minutesChar, "%02d", static_cast<int>(minute));
-
-    char hoursChar[3];
-    char ampmChar[3];
+    uint8_t hour = dateTimeController.Hours();
+    uint8_t minute = dateTimeController.Minutes();
 
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-      if (hour < 12) {
-        if (hour == 0) {
-          hour = 12;
-        }
-        sprintf(ampmChar, "AM");
-      } else { // hour >= 12
-        if (hour != 12) {
-          hour = hour - 12;
-        }
-        sprintf(ampmChar, "PM");
+      char ampmChar[3] = "AM";
+      if (hour == 0) {
+        hour = 12;
+      } else if (hour == 12) {
+        ampmChar[0] = 'P';
+      } else if (hour > 12) {
+        hour = hour - 12;
+        ampmChar[0] = 'P';
       }
+      lv_label_set_text(labelTimeAmPm, ampmChar);
     }
-    sprintf(hoursChar, "%02d", hour);
-
-    if ((hoursChar[0] != displayedChar[0]) || (hoursChar[1] != displayedChar[1]) || (minutesChar[0] != displayedChar[2]) ||
-        (minutesChar[1] != displayedChar[3])) {
-      displayedChar[0] = hoursChar[0];
-      displayedChar[1] = hoursChar[1];
-      displayedChar[2] = minutesChar[0];
-      displayedChar[3] = minutesChar[1];
-
-      lv_label_set_text_fmt(labelHour, "%s", hoursChar);
-      lv_label_set_text_fmt(labelMinutes, "%s", minutesChar);
-    }
+    lv_label_set_text_fmt(labelHour, "%02d", hour);
+    lv_label_set_text_fmt(labelMinutes, "%02d", minute);
 
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-      lv_label_set_text(labelTimeAmPm, ampmChar);
       lv_obj_align(labelTimeAmPm, timeContainer, LV_ALIGN_OUT_RIGHT_TOP, 0, 10);
       lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 5);
       lv_obj_align(labelMinutes, timeContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
     }
 
-    if ((year != currentYear) || (month != currentMonth) || (dayOfWeek != currentDayOfWeek) || (day != currentDay)) {
+    currentDate = std::chrono::time_point_cast<days>(currentDateTime.Get());
+    if (currentDate.IsUpdated()) {
+      uint8_t day = dateTimeController.Day();
       lv_label_set_text_fmt(labelDate, "%s %02d", dateTimeController.DayOfWeekShortToStringLow(), day);
       lv_obj_realign(labelDate);
-
-      currentYear = year;
-      currentMonth = month;
-      currentDayOfWeek = dayOfWeek;
-      currentDay = day;
     }
   }
 
@@ -478,8 +452,7 @@ void WatchFaceInfineat::Refresh() {
   }
 
   stepCount = motionController.NbSteps();
-  motionSensorOk = motionController.IsSensorOk();
-  if (stepCount.IsUpdated() || motionSensorOk.IsUpdated()) {
+  if (stepCount.IsUpdated()) {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
     lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 10, 0);
     lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);

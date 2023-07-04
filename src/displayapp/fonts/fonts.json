@@ -3,7 +3,7 @@
       "sources": [
          {
             "file": "JetBrainsMono-Bold.ttf",
-            "range": "0x20-0x7e, 0x410-0x44f"
+            "range": "0x20-0x7e, 0x410-0x44f, 0xB0"
          },
          {
             "file": "FontAwesome5-Solid+Brands+Regular.woff",
@@ -74,5 +74,15 @@
       "bpp": 2,
       "size": 80,
       "compress": true
+   },
+   "fontawesome_weathericons": {
+      "sources": [
+         {
+            "file": "FontAwesome5-Solid+Brands+Regular.woff",
+            "range": "0xf185, 0xf6c4, 0xf743, 0xf740, 0xf75f, 0xf0c2, 0xf05e"
+         }
+      ],
+      "bpp": 1,
+      "size": 25
    }
 }

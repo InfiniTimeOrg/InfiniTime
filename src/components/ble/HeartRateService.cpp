@@ -1,6 +1,6 @@
 #include "components/ble/HeartRateService.h"
 #include "components/heartrate/HeartRateController.h"
-#include "systemtask/SystemTask.h"
+#include "components/ble/NimbleController.h"
 #include <nrf_log.h>
 
 using namespace Pinetime::Controllers;
@@ -16,8 +16,8 @@ namespace {
 }
 
 // TODO Refactoring - remove dependency to SystemTask
-HeartRateService::HeartRateService(Pinetime::System::SystemTask& system, Controllers::HeartRateController& heartRateController)
-  : system {system},
+HeartRateService::HeartRateService(NimbleController& nimble, Controllers::HeartRateController& heartRateController)
+  : nimble {nimble},
     heartRateController {heartRateController},
     characteristicDefinition {{.uuid = &heartRateMeasurementUuid.u,
                                .access_cb = HeartRateServiceCallback,
@@ -63,7 +63,7 @@ void HeartRateService::OnNewHeartRateValue(uint8_t heartRateValue) {
   uint8_t buffer[2] = {0, heartRateValue}; // [0] = flags, [1] = hr value
   auto* om = ble_hs_mbuf_from_flat(buffer, 2);
 
-  uint16_t connectionHandle = system.nimble().connHandle();
+  uint16_t connectionHandle = nimble.connHandle();
 
   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
     return;

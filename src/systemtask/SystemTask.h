@@ -15,7 +15,6 @@
 #include "systemtask/SystemMonitor.h"
 #include "components/ble/NimbleController.h"
 #include "components/ble/NotificationManager.h"
-#include "components/timer/TimerController.h"
 #include "components/alarm/AlarmController.h"
 #include "components/fs/FS.h"
 #include "touchhandler/TouchHandler.h"
@@ -61,7 +60,6 @@ namespace Pinetime {
                  Controllers::Battery& batteryController,
                  Controllers::Ble& bleController,
                  Controllers::DateTime& dateTimeController,
-                 Controllers::TimerController& timerController,
                  Controllers::AlarmController& alarmController,
                  Drivers::Watchdog& watchdog,
                  Pinetime::Controllers::NotificationManager& notificationManager,
@@ -84,6 +82,10 @@ namespace Pinetime {
       void OnIdle();
       void OnDim();
 
+      bool IsSleepDisabled() {
+        return doNotGoToSleep;
+      }
+
       Pinetime::Controllers::NimbleController& nimble() {
         return nimbleController;
       };
@@ -103,7 +105,6 @@ namespace Pinetime {
 
       Pinetime::Controllers::Ble& bleController;
       Pinetime::Controllers::DateTime& dateTimeController;
-      Pinetime::Controllers::TimerController& timerController;
       Pinetime::Controllers::AlarmController& alarmController;
       QueueHandle_t systemTasksMsgQueue;
       Pinetime::Drivers::Watchdog& watchdog;
@@ -123,14 +124,10 @@ namespace Pinetime {
 
       static void Process(void* instance);
       void Work();
-      void ReloadIdleTimer();
       bool isBleDiscoveryTimerRunning = false;
       uint8_t bleDiscoveryTimer = 0;
-      TimerHandle_t dimTimer;
-      TimerHandle_t idleTimer;
       TimerHandle_t measureBatteryTimer;
       bool doNotGoToSleep = false;
-      bool isDimmed = false;
       SystemTaskState state = SystemTaskState::Running;
 
       void HandleButtonAction(Controllers::ButtonActions action);

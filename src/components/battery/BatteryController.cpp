@@ -1,5 +1,5 @@
 #include "components/battery/BatteryController.h"
-#include "components/utility/LinearApproximation.h"
+#include "utility/LinearApproximation.h"
 #include "drivers/PinMap.h"
 #include <hal/nrf_gpio.h>
 #include <nrfx_saadc.h>
