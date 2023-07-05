@@ -8,6 +8,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/weather/WeatherService.h"
+#include "components/ble/MusicService.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -30,6 +31,7 @@ namespace Pinetime {
               Controllers::HeartRateController& heartRateController,
               Controllers::MotionController& motionController,
               Controllers::WeatherService& weatherService,
+              Controllers::MusicService& musicService,
               Controllers::FS& filesystem);
         ~Clock() override;
 
@@ -45,6 +47,7 @@ namespace Pinetime {
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
         Controllers::WeatherService& weatherService;
+        Controllers::MusicService& musicService;
         Controllers::FS& filesystem;
 
         std::unique_ptr<Screen> screen;

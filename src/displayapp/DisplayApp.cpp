@@ -419,6 +419,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                        heartRateController,
                                                        motionController,
                                                        systemTask->nimble().weather(),
+                                                       systemTask->nimble().music(),
                                                        filesystem);
       break;
 

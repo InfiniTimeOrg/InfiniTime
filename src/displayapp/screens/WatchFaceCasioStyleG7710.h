@@ -8,7 +8,9 @@
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/BleController.h"
+#include "components/ble/weather/WeatherService.h"
 #include "utility/DirtyValue.h"
+#include "touchhandler/TouchHandler.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -18,6 +20,7 @@ namespace Pinetime {
     class NotificationManager;
     class HeartRateController;
     class MotionController;
+    class MusicService;
   }
 
   namespace Applications {
@@ -28,11 +31,14 @@ namespace Pinetime {
         WatchFaceCasioStyleG7710(Controllers::DateTime& dateTimeController,
                                  const Controllers::Battery& batteryController,
                                  const Controllers::Ble& bleController,
-                                 Controllers::NotificationManager& notificatioManager,
+                                 Controllers::NotificationManager& notificationManager,
                                  Controllers::Settings& settingsController,
                                  Controllers::HeartRateController& heartRateController,
                                  Controllers::MotionController& motionController,
-                                 Controllers::FS& filesystem);
+                                 Controllers::FS& filesystem,
+                                 Controllers::WeatherService& weather,
+                                 Controllers::TouchHandler& touchHandler,
+                                 Controllers::MusicService& musicService);
         ~WatchFaceCasioStyleG7710() override;
 
         void Refresh() override;
@@ -49,8 +55,13 @@ namespace Pinetime {
         Utility::DirtyValue<uint8_t> heartbeat {};
         Utility::DirtyValue<bool> heartbeatRunning {};
         Utility::DirtyValue<bool> notificationState {};
+        Utility::DirtyValue<int16_t> nowTemp {};
         using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
+
+
+        int16_t clouds = 0;
+        int16_t precip = 0;
 
         lv_point_t line_icons_points[3] {{0, 5}, {117, 5}, {122, 0}};
         lv_point_t line_day_of_week_number_points[4] {{0, 0}, {100, 0}, {95, 95}, {0, 95}};
@@ -70,11 +81,15 @@ namespace Pinetime {
         lv_obj_t* line_date;
         lv_obj_t* label_day_of_week;
         lv_obj_t* label_week_number;
+        lv_obj_t* weatherIcon;
+        lv_obj_t* temperature;
         lv_obj_t* line_day_of_week_number;
         lv_obj_t* label_day_of_year;
         lv_obj_t* line_day_of_year;
         lv_obj_t* backgroundLabel;
         lv_obj_t* bleIcon;
+        lv_obj_t* touchLockFinger;
+        lv_obj_t* touchLockCross;
         lv_obj_t* batteryPlug;
         lv_obj_t* label_battery_value;
         lv_obj_t* heartbeatIcon;
@@ -83,16 +98,25 @@ namespace Pinetime {
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
         lv_obj_t* line_icons;
+        lv_obj_t* txtArtist;
+        lv_obj_t* txtTrack;
 
         BatteryIcon batteryIcon;
 
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
         const Controllers::Ble& bleController;
-        Controllers::NotificationManager& notificatioManager;
+        Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
+        Controllers::WeatherService& weatherService;
+        Controllers::TouchHandler& touchHandler;
+        Controllers::MusicService& musicService;
+
+        std::string artist;
+        std::string album;
+        std::string track;
 
         lv_task_t* taskRefresh;
         lv_font_t* font_dot40 = nullptr;

@@ -12,25 +12,34 @@
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
+#include "components/ble/weather/WeatherService.h"
+#include "components/ble/MusicService.h"
+
 using namespace Pinetime::Applications::Screens;
 
 WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTimeController,
                                                    const Controllers::Battery& batteryController,
                                                    const Controllers::Ble& bleController,
-                                                   Controllers::NotificationManager& notificatioManager,
+                                                   Controllers::NotificationManager& notificationManager,
                                                    Controllers::Settings& settingsController,
                                                    Controllers::HeartRateController& heartRateController,
                                                    Controllers::MotionController& motionController,
-                                                   Controllers::FS& filesystem)
+                                                   Controllers::FS& filesystem,
+                                                   Controllers::WeatherService& weatherService,
+                                                   Controllers::TouchHandler& touchHandler,
+                                                   Pinetime::Controllers::MusicService& musicService)
   : currentDateTime {{}},
     batteryIcon(false),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
-    notificatioManager {notificatioManager},
+    notificationManager {notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
-    motionController {motionController} {
+    motionController {motionController},
+    weatherService {weatherService},
+    touchHandler {touchHandler},
+    musicService {musicService}{
 
   lfs_file f = {};
   if (filesystem.FileOpen(&f, "/fonts/lv_font_dots_40.bin", LFS_O_RDONLY) >= 0) {
@@ -55,22 +64,46 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
 
   batteryIcon.Create(lv_scr_act());
   batteryIcon.SetColor(color_text);
-  lv_obj_align(batteryIcon.GetObject(), label_battery_value, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align(batteryIcon.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -40, 0);
 
   batteryPlug = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_label_set_text_static(batteryPlug, Symbols::plug);
-  lv_obj_align(batteryPlug, batteryIcon.GetObject(), LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align(batteryPlug, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -38, 0);
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_label_set_text_static(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align(bleIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -67, 0);
+
+  touchLockFinger = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(touchLockFinger, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_label_set_text_static(touchLockFinger, "t");
+  lv_obj_align(touchLockFinger, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -120, 0);
+
+  touchLockCross = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(touchLockCross, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_obj_set_style_local_text_font(touchLockCross, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
+  lv_label_set_text_static(touchLockCross, Symbols::ban);
+  lv_obj_align(touchLockCross, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -112, -1); //+1,-1 relative to finger
+
+  weatherIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
+  lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
+  lv_obj_align(weatherIcon, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 4, 25);
+  lv_obj_set_auto_realign(weatherIcon, true);
+  lv_obj_set_hidden(weatherIcon, false);
+
+  temperature = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 4, 50);
+  lv_obj_set_hidden(temperature, false);
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
-  lv_obj_align(notificationIcon, bleIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align(notificationIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -95, 0);
 
   label_day_of_week = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_day_of_week, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, 64);
@@ -155,6 +188,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
 
   heartbeatValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+
   lv_label_set_text_static(heartbeatValue, "");
   lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
@@ -167,6 +201,14 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
+  txtArtist = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_long_mode(txtArtist, LV_LABEL_LONG_SROLL_CIRC);
+  //lv_obj_align(txtArtist, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, -25,0);
+  lv_obj_align(txtArtist, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 10,0);
+  lv_obj_set_style_local_text_color(txtArtist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_obj_set_width(txtArtist, 80);
+  lv_label_set_text_static(txtArtist, "No media playing");
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -196,6 +238,7 @@ WatchFaceCasioStyleG7710::~WatchFaceCasioStyleG7710() {
 void WatchFaceCasioStyleG7710::Refresh() {
   powerPresent = batteryController.IsPowerPresent();
   if (powerPresent.IsUpdated()) {
+    lv_obj_set_hidden(batteryIcon.GetObject(), powerPresent.Get());
     lv_label_set_text_static(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
   }
 
@@ -205,6 +248,40 @@ void WatchFaceCasioStyleG7710::Refresh() {
     batteryIcon.SetBatteryPercentage(batteryPercent);
     lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
   }
+
+  if (weatherService.GetCurrentTemperature()->timestamp != 0 && weatherService.GetCurrentClouds()->timestamp != 0 &&
+      weatherService.GetCurrentPrecipitation()->timestamp != 0) {
+    nowTemp = ((weatherService.GetCurrentTemperature()->temperature / 100) * 1.8 + 32);
+    clouds = (weatherService.GetCurrentClouds()->amount);
+    precip = (weatherService.GetCurrentPrecipitation()->amount);
+    if (nowTemp.IsUpdated()) {
+      lv_label_set_text_fmt(temperature, "%d°", nowTemp.Get());
+      if ((clouds <= 30) && (precip == 0)) {
+        lv_label_set_text(weatherIcon, Symbols::sun);
+      } else if ((clouds >= 70) && (clouds <= 90) && (precip == 1)) {
+        lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
+      } else if ((clouds > 90) && (precip == 0)) {
+        lv_label_set_text(weatherIcon, Symbols::cloud);
+      } else if ((clouds > 70) && (precip >= 2)) {
+        lv_label_set_text(weatherIcon, Symbols::cloudShowersHeavy);
+      } else {
+        lv_label_set_text(weatherIcon, Symbols::cloudSun);
+      };
+      lv_obj_realign(temperature);
+      lv_obj_realign(weatherIcon);
+    }
+  } else {
+    lv_label_set_text_static(temperature, "--");
+    lv_label_set_text(weatherIcon, Symbols::ban);
+    lv_obj_realign(temperature);
+    lv_obj_realign(weatherIcon);
+  }
+
+  //placeholder for adding track data someday
+/*  if (track != musicService.getTrack()) {
+    track = musicService.getTrack();
+    lv_label_set_text(txtArtist, track.data());
+  }*/
 
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
@@ -217,10 +294,11 @@ void WatchFaceCasioStyleG7710::Refresh() {
   lv_obj_realign(bleIcon);
   lv_obj_realign(notificationIcon);
 
-  notificationState = notificatioManager.AreNewNotificationsAvailable();
-  if (notificationState.IsUpdated()) {
-    lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
-  }
+  lv_obj_set_hidden(touchLockCross, touchHandler.touchEnabled);
+
+  uint8_t notifNb = notificationManager.NbNotifications();
+  lv_label_set_text_fmt(notificationIcon, "%i", notifNb);
+
 
   currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
   if (currentDateTime.IsUpdated()) {
@@ -302,6 +380,13 @@ void WatchFaceCasioStyleG7710::Refresh() {
 
     lv_obj_realign(heartbeatIcon);
     lv_obj_realign(heartbeatValue);
+    lv_obj_realign(txtArtist);
+    lv_obj_set_width(txtArtist, 150 - (lv_obj_get_width(stepValue)) - lv_obj_get_width(heartbeatValue));
+  }
+
+  if (artist != musicService.getArtist()) {
+    artist = musicService.getArtist();
+    lv_label_set_text(txtArtist, artist.data());
   }
 
   stepCount = motionController.NbSteps();
@@ -309,6 +394,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
     lv_obj_realign(stepValue);
     lv_obj_realign(stepIcon);
+    lv_obj_set_width(txtArtist, 150 - (lv_obj_get_width(stepValue)) - lv_obj_get_width(heartbeatValue));
   }
 }
 
