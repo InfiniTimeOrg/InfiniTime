@@ -24,22 +24,20 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
                                                    Controllers::Settings& settingsController,
                                                    Controllers::HeartRateController& heartRateController,
                                                    Controllers::MotionController& motionController,
-                                                   Controllers::FS& filesystem,
                                                    Controllers::WeatherService& weatherService,
-                                                   Controllers::TouchHandler& touchHandler,
-                                                   Pinetime::Controllers::MusicService& musicService)
+                                                   Controllers::MusicService& musicService,
+                                                   Controllers::FS& filesystem)
   : currentDateTime {{}},
     batteryIcon(false),
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
-    notificationManager {notificationManager},
+    notificationManager {notificatioManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
     weatherService {weatherService},
-    touchHandler {touchHandler},
-    musicService {musicService}{
+    musicService {musicService} {
 
   lfs_file f = {};
   if (filesystem.FileOpen(&f, "/fonts/lv_font_dots_40.bin", LFS_O_RDONLY) >= 0) {
@@ -64,30 +62,19 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
 
   batteryIcon.Create(lv_scr_act());
   batteryIcon.SetColor(color_text);
-  lv_obj_align(batteryIcon.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -40, 0);
+  lv_obj_align(batteryIcon.GetObject(), label_battery_value, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   batteryPlug = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_label_set_text_static(batteryPlug, Symbols::plug);
-  lv_obj_align(batteryPlug, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -38, 0);
+  lv_obj_align(batteryPlug, batteryIcon.GetObject(), LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_label_set_text_static(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -67, 0);
+  lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
-  touchLockFinger = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(touchLockFinger, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  lv_label_set_text_static(touchLockFinger, "t");
-  lv_obj_align(touchLockFinger, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -120, 0);
-
-  touchLockCross = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(touchLockCross, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  lv_obj_set_style_local_text_font(touchLockCross, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
-  lv_label_set_text_static(touchLockCross, Symbols::ban);
-  lv_obj_align(touchLockCross, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -112, -1); //+1,-1 relative to finger
-
-  weatherIcon = lv_label_create(lv_scr_act(), nullptr);
+   weatherIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
   lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
@@ -103,7 +90,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
-  lv_obj_align(notificationIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -95, 0);
+  lv_obj_align(notificationIcon, bleIcon, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   label_day_of_week = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_day_of_week, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, 64);
@@ -188,7 +175,6 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
 
   heartbeatValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-
   lv_label_set_text_static(heartbeatValue, "");
   lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
@@ -238,7 +224,6 @@ WatchFaceCasioStyleG7710::~WatchFaceCasioStyleG7710() {
 void WatchFaceCasioStyleG7710::Refresh() {
   powerPresent = batteryController.IsPowerPresent();
   if (powerPresent.IsUpdated()) {
-    lv_obj_set_hidden(batteryIcon.GetObject(), powerPresent.Get());
     lv_label_set_text_static(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
   }
 
@@ -248,6 +233,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     batteryIcon.SetBatteryPercentage(batteryPercent);
     lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
   }
+
 
   if (weatherService.GetCurrentTemperature()->timestamp != 0 && weatherService.GetCurrentClouds()->timestamp != 0 &&
       weatherService.GetCurrentPrecipitation()->timestamp != 0) {
@@ -277,11 +263,6 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_obj_realign(weatherIcon);
   }
 
-  //placeholder for adding track data someday
-/*  if (track != musicService.getTrack()) {
-    track = musicService.getTrack();
-    lv_label_set_text(txtArtist, track.data());
-  }*/
 
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
@@ -294,11 +275,14 @@ void WatchFaceCasioStyleG7710::Refresh() {
   lv_obj_realign(bleIcon);
   lv_obj_realign(notificationIcon);
 
-  lv_obj_set_hidden(touchLockCross, touchHandler.touchEnabled);
+  //old notification icon, simply shows if there are unread notifications
+/*  notificationState = notificatioManager.AreNewNotificationsAvailable();
+  if (notificationState.IsUpdated()) {
+    lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
+  }*/
 
   uint8_t notifNb = notificationManager.NbNotifications();
   lv_label_set_text_fmt(notificationIcon, "%i", notifNb);
-
 
   currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
   if (currentDateTime.IsUpdated()) {
