@@ -72,7 +72,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_label_set_text_static(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  lv_obj_align(bleIcon, batteryPlug, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
    weatherIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
@@ -90,7 +90,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
-  lv_obj_align(notificationIcon, bleIcon, LV_ALIGN_OUT_LEFT_MID, -10, 0);
+  lv_obj_align(notificationIcon, bleIcon, LV_ALIGN_OUT_LEFT_MID, -14, 0);
 
   label_day_of_week = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_day_of_week, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, 64);
