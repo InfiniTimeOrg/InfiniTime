@@ -35,10 +35,9 @@ namespace Pinetime {
                                  Controllers::Settings& settingsController,
                                  Controllers::HeartRateController& heartRateController,
                                  Controllers::MotionController& motionController,
-                                 Controllers::FS& filesystem,
                                  Controllers::WeatherService& weather,
-                                 Controllers::TouchHandler& touchHandler,
-                                 Controllers::MusicService& musicService);
+                                 Controllers::MusicService& musicService,
+                                 Controllers::FS& filesystem);
         ~WatchFaceCasioStyleG7710() override;
 
         void Refresh() override;
@@ -111,7 +110,6 @@ namespace Pinetime {
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
         Controllers::WeatherService& weatherService;
-        Controllers::TouchHandler& touchHandler;
         Controllers::MusicService& musicService;
 
         std::string artist;
