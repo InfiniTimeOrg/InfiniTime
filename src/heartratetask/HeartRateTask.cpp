@@ -103,8 +103,8 @@ void HeartRateTask::StopMeasurement() {
 }
 
 void HeartRateTask::StartWaiting() {
-    StopMeasurement();
-    backgroundWaitingStart = xTaskGetTickCount();
+  StopMeasurement();
+  backgroundWaitingStart = xTaskGetTickCount();
 }
 
 void HeartRateTask::HandleBackgroundWaiting() {
@@ -141,22 +141,23 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
       StartWaiting();
     }
   }
-  if (bpm == 0 && state == States::BackgroundMeasuring && xTaskGetTickCount() - measurementStart >= DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED) {
+  if (bpm == 0 && state == States::BackgroundMeasuring &&
+      xTaskGetTickCount() - measurementStart >= DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED) {
     state = States::BackgroundWaiting;
     StartWaiting();
   }
 }
 
 int HeartRateTask::CurrentTaskDelay() {
-    switch (state) {
-      case States::Measuring:
-      case States::BackgroundMeasuring:
-        return ppg.deltaTms;
-      case States::Running:
-        return 100;
-      case States::BackgroundWaiting:
-        return 10000;
-      default:
-        return portMAX_DELAY;
-    }
+  switch (state) {
+    case States::Measuring:
+    case States::BackgroundMeasuring:
+      return ppg.deltaTms;
+    case States::Running:
+      return 100;
+    case States::BackgroundWaiting:
+      return 10000;
+    default:
+      return portMAX_DELAY;
+  }
 }
