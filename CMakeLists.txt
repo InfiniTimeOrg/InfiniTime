@@ -2,15 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose Debug or Release")
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 project(pinetime VERSION 1.13.0 LANGUAGES C CXX ASM)
-=======
-project(pinetime VERSION 1.11.0 LANGUAGES C CXX ASM)
->>>>>>> 71806461 (remove version change in CMakeLists.txt)
-=======
-project(pinetime VERSION 1.12.0 LANGUAGES C CXX ASM)
->>>>>>> d2716701 (remove version change in CMakeLists.txt)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 20)
