@@ -225,7 +225,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_color(txtMedia, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_obj_set_width(txtMedia, 80);
   lv_label_set_text_static(txtMedia, "No media playing");
-  lv_obj_set_hidden(txtMedia, true);
+  lv_obj_set_hidden(txtMedia, false);
   track = "";
 
   btnMedia = lv_btn_create(lv_scr_act(), nullptr);
@@ -239,6 +239,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   switch (settingsController.GetCSGMediaStyle()) {
     case Pinetime::Controllers::Settings::CSGMediaStyle::Off:
       lv_label_set_text_static(lblMedia, "Media: Off");
+      lv_obj_set_hidden(txtMedia, true);
       break;
     case Pinetime::Controllers::Settings::CSGMediaStyle::Artist:
       lv_label_set_text_static(lblMedia, "Media: Artist");
@@ -533,24 +534,24 @@ void WatchFaceCasioStyleG7710::UpdateSelected(lv_obj_t* object, lv_event_t event
     if (object == btnMedia) {
       switch (settingsController.GetCSGMediaStyle()) {
         case Pinetime::Controllers::Settings::CSGMediaStyle::Off:
-          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Artist);
           lv_label_set_text_static(lblMedia, "Media: Artist");
           lv_obj_set_hidden(txtMedia, false);
+          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Artist);
           break;
         case Pinetime::Controllers::Settings::CSGMediaStyle::Artist:
-          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Track);
           lv_label_set_text_static(lblMedia, "Media: Track");
           lv_obj_set_hidden(txtMedia, false);
+          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Track);
           break;
         case Pinetime::Controllers::Settings::CSGMediaStyle::Track:
-          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Album);
           lv_label_set_text_static(lblMedia, "Media: Album");
           lv_obj_set_hidden(txtMedia, false);
+          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Album);
           break;
         case Pinetime::Controllers::Settings::CSGMediaStyle::Album:
-          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Off);
           lv_label_set_text_static(lblMedia, "Media: Off");
           lv_obj_set_hidden(txtMedia, true);
+          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Off);
           break;
       }
       track = "";
