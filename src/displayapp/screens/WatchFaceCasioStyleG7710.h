@@ -40,7 +40,12 @@ namespace Pinetime {
                                  Controllers::FS& filesystem);
         ~WatchFaceCasioStyleG7710() override;
 
+        bool OnTouchEvent(TouchEvents event) override;
+        bool OnButtonPushed() override;
+
         void Refresh() override;
+
+        void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
         static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
 
@@ -58,6 +63,7 @@ namespace Pinetime {
         using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
 
+        uint32_t savedTick = 0;
 
         int16_t clouds = 0;
         int16_t precip = 0;
@@ -73,6 +79,8 @@ namespace Pinetime {
         lv_style_t style_line;
         lv_style_t style_border;
 
+        lv_obj_t* btnWeather;
+        lv_obj_t* btnMedia;
         lv_obj_t* label_time;
         lv_obj_t* line_time;
         lv_obj_t* label_time_ampm;
@@ -97,7 +105,7 @@ namespace Pinetime {
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
         lv_obj_t* line_icons;
-        lv_obj_t* txtArtist;
+        lv_obj_t* txtMedia;
         lv_obj_t* txtTrack;
 
         BatteryIcon batteryIcon;
@@ -115,6 +123,8 @@ namespace Pinetime {
         std::string artist;
         std::string album;
         std::string track;
+
+        void CloseMenu();
 
         lv_task_t* taskRefresh;
         lv_font_t* font_dot40 = nullptr;
