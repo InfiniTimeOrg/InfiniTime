@@ -225,6 +225,8 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_color(txtMedia, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_obj_set_width(txtMedia, 80);
   lv_label_set_text_static(txtMedia, "No media playing");
+  lv_obj_set_hidden(txtMedia, true);
+  track = "";
 
   btnMedia = lv_btn_create(lv_scr_act(), nullptr);
   btnMedia->user_data = this;
@@ -232,9 +234,22 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_align(btnMedia, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
   lv_obj_set_style_local_bg_opa(btnMedia, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_80);
   lblMedia = lv_label_create(btnMedia, nullptr);
-  lv_label_set_text_static(lblMedia, "Media");
   lv_obj_set_event_cb(btnMedia, event_handler);
   lv_obj_set_hidden(btnMedia, true);
+  switch (settingsController.GetCSGMediaStyle()) {
+    case Pinetime::Controllers::Settings::CSGMediaStyle::Off:
+      lv_label_set_text_static(lblMedia, "Media: Off");
+      break;
+    case Pinetime::Controllers::Settings::CSGMediaStyle::Artist:
+      lv_label_set_text_static(lblMedia, "Media: Artist");
+      break;
+    case Pinetime::Controllers::Settings::CSGMediaStyle::Track:
+      lv_label_set_text_static(lblMedia, "Media: Track");
+      break;
+    case Pinetime::Controllers::Settings::CSGMediaStyle::Album:
+      lv_label_set_text_static(lblMedia, "Media: Album");
+      break;
+  }
 
   btnWeather = lv_btn_create(lv_scr_act(), nullptr);
   btnWeather->user_data = this;
@@ -291,7 +306,7 @@ WatchFaceCasioStyleG7710::~WatchFaceCasioStyleG7710() {
 
 bool WatchFaceCasioStyleG7710::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   if (event == Pinetime::Applications::TouchEvents::LongTap && lv_obj_get_hidden(btnWeather)) {
-    //lv_obj_set_hidden(btnMedia, false);
+    lv_obj_set_hidden(btnMedia, false);
     lv_obj_set_hidden(btnWeather, false);
     lv_obj_set_hidden(btnTempUnits, false);
     savedTick = lv_tick_get();
@@ -466,10 +481,31 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_obj_set_width(txtMedia, 150 - (lv_obj_get_width(stepValue)) - lv_obj_get_width(heartbeatValue));
   }
 
-  if (artist != musicService.getArtist()) {
+  if(!lv_obj_get_hidden(txtMedia)) {
+    if (track != musicService.getTrack()) {
+      track = musicService.getTrack();
+      artist = musicService.getArtist();
+      album = musicService.getAlbum();
+      switch (settingsController.GetCSGMediaStyle()) {
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Artist:
+          lv_label_set_text(txtMedia, artist.data());
+          break;
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Track:
+          lv_label_set_text(txtMedia, track.data());
+          break;
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Album:
+          lv_label_set_text(txtMedia, album.data());
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+/*  if (artist != musicService.getArtist()) {
     artist = musicService.getArtist();
     lv_label_set_text(txtMedia, artist.data());
-  }
+  }*/
 
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated()) {
@@ -495,7 +531,29 @@ void WatchFaceCasioStyleG7710::UpdateSelected(lv_obj_t* object, lv_event_t event
   if (event == LV_EVENT_CLICKED) {
     savedTick = lv_tick_get();  //reset 3 second timer to dismiss
     if (object == btnMedia) {
-      //update media stuff
+      switch (settingsController.GetCSGMediaStyle()) {
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Off:
+          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Artist);
+          lv_label_set_text_static(lblMedia, "Media: Artist");
+          lv_obj_set_hidden(txtMedia, false);
+          break;
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Artist:
+          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Track);
+          lv_label_set_text_static(lblMedia, "Media: Track");
+          lv_obj_set_hidden(txtMedia, false);
+          break;
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Track:
+          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Album);
+          lv_label_set_text_static(lblMedia, "Media: Album");
+          lv_obj_set_hidden(txtMedia, false);
+          break;
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Album:
+          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Off);
+          lv_label_set_text_static(lblMedia, "Media: Off");
+          lv_obj_set_hidden(txtMedia, true);
+          break;
+      }
+      track = "";
     } else if (object == btnTempUnits) {  //if units button, switch units
       if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
         settingsController.SetTempUnits(Controllers::Settings::TempUnits::Fahrenheit);

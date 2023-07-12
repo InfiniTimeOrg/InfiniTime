@@ -123,9 +123,9 @@ namespace Pinetime {
         Controllers::WeatherService& weatherService;
         Controllers::MusicService& musicService;
 
-        std::string artist;
-        std::string album;
-        std::string track;
+        std::string artist = "no artist";
+        std::string album = "no album";
+        std::string track = "no track";
 
         void CloseMenu();
 
