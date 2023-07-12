@@ -82,6 +82,9 @@ namespace Pinetime {
         lv_obj_t* btnWeather;
         lv_obj_t* btnMedia;
         lv_obj_t* btnTempUnits;
+        lv_obj_t* lblTempUnits;
+        lv_obj_t* lblMedia;
+        lv_obj_t* lblWeather;
         lv_obj_t* label_time;
         lv_obj_t* line_time;
         lv_obj_t* label_time_ampm;
@@ -107,7 +110,6 @@ namespace Pinetime {
         lv_obj_t* notificationIcon;
         lv_obj_t* line_icons;
         lv_obj_t* txtMedia;
-        lv_obj_t* txtTrack;
 
         BatteryIcon batteryIcon;
 

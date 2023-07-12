@@ -397,10 +397,14 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   lv_obj_set_size(btnTempUnits, 60, 60);
   lv_obj_align(btnTempUnits, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -15, -80);
   lv_obj_set_style_local_bg_opa(btnTempUnits, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
-  lv_obj_t* lblTempUnits = lv_label_create(btnTempUnits, nullptr);
-  lv_label_set_text_static(lblTempUnits, "°C/F");
+  lblTempUnits = lv_label_create(btnTempUnits, nullptr);
   lv_obj_set_event_cb(btnTempUnits, event_handler);
   lv_obj_set_hidden(btnTempUnits, true);
+  if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
+    lv_label_set_text_static(lblTempUnits, "°C");
+  } else {
+    lv_label_set_text_static(lblTempUnits, "°F");
+  }
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -728,8 +732,10 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
     if (object == btnTempUnits) {  //if units button, switch units
       if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
         settingsController.SetTempUnits(Controllers::Settings::TempUnits::Fahrenheit);
+        lv_label_set_text_static(lblTempUnits, "°F");
       } else {
         settingsController.SetTempUnits(Controllers::Settings::TempUnits::Celcius);
+        lv_label_set_text_static(lblTempUnits, "°C");
       }
     }
     if (object == btnWeather) {

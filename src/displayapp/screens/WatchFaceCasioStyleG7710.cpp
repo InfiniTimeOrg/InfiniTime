@@ -231,7 +231,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_size(btnMedia, 160, 60);
   lv_obj_align(btnMedia, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
   lv_obj_set_style_local_bg_opa(btnMedia, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_80);
-  lv_obj_t* lblMedia= lv_label_create(btnMedia, nullptr);
+  lblMedia = lv_label_create(btnMedia, nullptr);
   lv_label_set_text_static(lblMedia, "Media");
   lv_obj_set_event_cb(btnMedia, event_handler);
   lv_obj_set_hidden(btnMedia, true);
@@ -241,7 +241,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_size(btnWeather, 160, 60);
   lv_obj_align(btnWeather, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
   lv_obj_set_style_local_bg_opa(btnWeather, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_80);
-  lv_obj_t* lblWeather = lv_label_create(btnWeather, nullptr);
+  lblWeather = lv_label_create(btnWeather, nullptr);
   lv_label_set_text_static(lblWeather, "Weather");
   lv_obj_set_event_cb(btnWeather, event_handler);
   lv_obj_set_hidden(btnWeather, true);
@@ -251,10 +251,14 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_size(btnTempUnits, 160, 60);
   lv_obj_align(btnTempUnits, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
   lv_obj_set_style_local_bg_opa(btnTempUnits, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_80);
-  lv_obj_t* lblTempUnits = lv_label_create(btnTempUnits, nullptr);
-  lv_label_set_text_static(lblTempUnits, "Units");
+  lblTempUnits = lv_label_create(btnTempUnits, nullptr);
   lv_obj_set_event_cb(btnTempUnits, event_handler);
   lv_obj_set_hidden(btnTempUnits, true);
+  if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
+    lv_label_set_text_static(lblTempUnits, "Units: °C");
+  } else {
+    lv_label_set_text_static(lblTempUnits, "Units: °F");
+  }
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -491,8 +495,10 @@ void WatchFaceCasioStyleG7710::UpdateSelected(lv_obj_t* object, lv_event_t event
     } else if (object == btnTempUnits) {  //if units button, switch units
       if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
         settingsController.SetTempUnits(Controllers::Settings::TempUnits::Fahrenheit);
+        lv_label_set_text_static(lblTempUnits, "Units: °F");
       } else {
         settingsController.SetTempUnits(Controllers::Settings::TempUnits::Celcius);
+        lv_label_set_text_static(lblTempUnits, "Units: °C");
       }
     } else if (object == btnWeather) {  //if weather button pressed
       if (lv_obj_get_hidden(weatherIcon)) { //if weather hidden
