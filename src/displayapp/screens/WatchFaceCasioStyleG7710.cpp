@@ -87,7 +87,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
   //Change weather location based on time format, as there is only room to put it on the side in 12HR
   if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-    lv_obj_align(weatherIcon, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 107, 72); //upper
+    lv_obj_align(weatherIcon, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 112, 72); //upper
   } else {
     lv_obj_align(weatherIcon, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 4, 25); //lower
   }
@@ -102,11 +102,11 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   //Change temperature location based on time format, as there is only room to put it on the side in 12HR
   if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-    lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_CENTER, 5, -2);   //above colon
+    lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_CENTER, 10, -2);   //above colon
+    //lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 4, 20);   //tucked into the 2
   } else {
     lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 4, 50); //lower
   }
-  //lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 4, 20);   //tucked in the 2
   if (settingsController.GetCSGWeatherStyle() == Pinetime::Controllers::Settings::CSGWeatherStyle::Off) {
     lv_obj_set_hidden(temperature, true);
   } else {
@@ -165,9 +165,8 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_obj_set_style_local_text_font(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment40);
   lv_label_set_text_static(label_date, "6-30");
-  //nudge date over to make room for weather in 24HR mode
-  //TODO move this to Refresh() and only nudge if weather is enabled
-  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+  //nudge date over to make room for weather when in 24HR mode with weather enabled
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24 && settingsController.GetCSGWeatherStyle() == Pinetime::Controllers::Settings::CSGWeatherStyle::On) {
     lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 118, 70);  //nudge
   } else {
     lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 70);  //un-nudge
@@ -181,12 +180,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment115);
-  //nudge time over a bit to align temperature in 24HR mode
-  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-    lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, -4, 40);  //nudge
-  } else {
-    lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);  //un-nudge
-  }
+  lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
 
   line_time = lv_line_create(lv_scr_act(), nullptr);
   lv_line_set_points(line_time, line_time_points, 3);
@@ -337,8 +331,8 @@ void WatchFaceCasioStyleG7710::Refresh() {
       lv_obj_realign(weatherIcon);
     }
   } else {
-    lv_label_set_text_static(temperature, "76°");
-    lv_label_set_text(weatherIcon, Symbols::sun);
+    lv_label_set_text_static(temperature, "--°");
+    lv_label_set_text(weatherIcon, Symbols::ban);
     lv_obj_realign(temperature);
     lv_obj_realign(weatherIcon);
   }
@@ -482,12 +476,20 @@ void WatchFaceCasioStyleG7710::UpdateSelected(lv_obj_t* object, lv_event_t event
         // show weather icon and temperature
         lv_obj_set_hidden(weatherIcon, false);
         lv_obj_set_hidden(temperature, false);
+        //if 24HR, nudge date over to make room
+        if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24){
+          lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 118, 70);  //nudge date
+        }
         //save to settings
         settingsController.SetCSGWeatherStyle(Controllers::Settings::CSGWeatherStyle::On);
       } else {
         // hide weather icon and temperature
         lv_obj_set_hidden(weatherIcon, true);
         lv_obj_set_hidden(temperature, true);
+        //if 24HR, un-nudge date
+        if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24){
+          lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 70);  //un-nudge date
+        }
         //save to settings
         settingsController.SetCSGWeatherStyle(Controllers::Settings::CSGWeatherStyle::Off);
       }
