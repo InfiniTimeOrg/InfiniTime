@@ -242,9 +242,13 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_align(btnWeather, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
   lv_obj_set_style_local_bg_opa(btnWeather, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_80);
   lblWeather = lv_label_create(btnWeather, nullptr);
-  lv_label_set_text_static(lblWeather, "Weather");
   lv_obj_set_event_cb(btnWeather, event_handler);
   lv_obj_set_hidden(btnWeather, true);
+  if (settingsController.GetCSGWeatherStyle() == Pinetime::Controllers::Settings::CSGWeatherStyle::Off) {
+    lv_label_set_text_static(lblWeather, "Weather: Off");
+  } else {
+    lv_label_set_text_static(lblWeather, "Weather: On");
+  }
 
   btnTempUnits = lv_btn_create(lv_scr_act(), nullptr);
   btnTempUnits->user_data = this;
@@ -509,16 +513,18 @@ void WatchFaceCasioStyleG7710::UpdateSelected(lv_obj_t* object, lv_event_t event
         if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24){
           lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 118, 70);  //nudge date
         }
+        lv_label_set_text_static(lblWeather, "Weather: On");   //update button text
         //save to settings
         settingsController.SetCSGWeatherStyle(Controllers::Settings::CSGWeatherStyle::On);
       } else {
         // hide weather icon and temperature
         lv_obj_set_hidden(weatherIcon, true);
         lv_obj_set_hidden(temperature, true);
-        //if 24HR, un-nudge date
         if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24){
+        //if 24HR, un-nudge date
           lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 70);  //un-nudge date
         }
+        lv_label_set_text_static(lblWeather, "Weather: Off");   //update button text
         //save to settings
         settingsController.SetCSGWeatherStyle(Controllers::Settings::CSGWeatherStyle::Off);
       }
