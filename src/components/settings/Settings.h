@@ -10,6 +10,7 @@ namespace Pinetime {
     class Settings {
     public:
       enum class ClockType : uint8_t { H24, H12 };
+      enum class TempUnits : uint8_t { Celcius, Fahrenheit };
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t {
@@ -202,6 +203,17 @@ namespace Pinetime {
         return settingsMenu;
       };
 
+      void SetTempUnits(TempUnits tempunits){
+        if (tempunits != settings.tempUnits) {
+          settingsChanged = true;
+        }
+        settings.tempUnits = tempunits;
+      };
+
+      TempUnits GetTempUnits() const {
+        return settings.tempUnits;
+      };
+
       void SetClockType(ClockType clocktype) {
         if (clocktype != settings.clockType) {
           settingsChanged = true;
@@ -316,6 +328,8 @@ namespace Pinetime {
 
         ClockType clockType = ClockType::H24;
         Notification notificationStatus = Notification::On;
+
+        TempUnits tempUnits = TempUnits::Celcius;
 
         Pinetime::Applications::WatchFace watchFace = Pinetime::Applications::WatchFace::Digital;
         ChimesOption chimesOption = ChimesOption::None;

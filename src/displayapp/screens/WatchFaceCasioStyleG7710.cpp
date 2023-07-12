@@ -229,7 +229,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   btnMedia = lv_btn_create(lv_scr_act(), nullptr);
   btnMedia->user_data = this;
   lv_obj_set_size(btnMedia, 160, 60);
-  lv_obj_align(btnMedia, lv_scr_act(), LV_ALIGN_CENTER, 0, -40);
+  lv_obj_align(btnMedia, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
   lv_obj_set_style_local_bg_opa(btnMedia, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_80);
   lv_obj_t* lblMedia= lv_label_create(btnMedia, nullptr);
   lv_label_set_text_static(lblMedia, "Media");
@@ -239,12 +239,22 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   btnWeather = lv_btn_create(lv_scr_act(), nullptr);
   btnWeather->user_data = this;
   lv_obj_set_size(btnWeather, 160, 60);
-  lv_obj_align(btnWeather, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
+  lv_obj_align(btnWeather, lv_scr_act(), LV_ALIGN_CENTER, 0, -10);
   lv_obj_set_style_local_bg_opa(btnWeather, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_80);
   lv_obj_t* lblWeather = lv_label_create(btnWeather, nullptr);
   lv_label_set_text_static(lblWeather, "Weather");
   lv_obj_set_event_cb(btnWeather, event_handler);
   lv_obj_set_hidden(btnWeather, true);
+
+  btnTempUnits = lv_btn_create(lv_scr_act(), nullptr);
+  btnTempUnits->user_data = this;
+  lv_obj_set_size(btnTempUnits, 160, 60);
+  lv_obj_align(btnTempUnits, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
+  lv_obj_set_style_local_bg_opa(btnTempUnits, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_80);
+  lv_obj_t* lblTempUnits = lv_label_create(btnTempUnits, nullptr);
+  lv_label_set_text_static(lblTempUnits, "Units");
+  lv_obj_set_event_cb(btnTempUnits, event_handler);
+  lv_obj_set_hidden(btnTempUnits, true);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -275,6 +285,7 @@ bool WatchFaceCasioStyleG7710::OnTouchEvent(Pinetime::Applications::TouchEvents 
   if (event == Pinetime::Applications::TouchEvents::LongTap && lv_obj_get_hidden(btnWeather)) {
     //lv_obj_set_hidden(btnMedia, false);
     lv_obj_set_hidden(btnWeather, false);
+    lv_obj_set_hidden(btnTempUnits, false);
     savedTick = lv_tick_get();
     return true;
   }
@@ -285,6 +296,7 @@ void WatchFaceCasioStyleG7710::CloseMenu() {
   settingsController.SaveSettings();
   lv_obj_set_hidden(btnMedia, true);
   lv_obj_set_hidden(btnWeather, true);
+  lv_obj_set_hidden(btnTempUnits, true);
 }
 
 bool WatchFaceCasioStyleG7710::OnButtonPushed() {
@@ -311,7 +323,11 @@ void WatchFaceCasioStyleG7710::Refresh() {
 
   if (weatherService.GetCurrentTemperature()->timestamp != 0 && weatherService.GetCurrentClouds()->timestamp != 0 &&
       weatherService.GetCurrentPrecipitation()->timestamp != 0) {
-    nowTemp = ((weatherService.GetCurrentTemperature()->temperature / 100) * 1.8 + 32);
+    if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
+      nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100);  //just use temp as is
+    } else {
+      nowTemp = ((weatherService.GetCurrentTemperature()->temperature / 100) * 1.8 + 32); //convert to F first
+    }
     clouds = (weatherService.GetCurrentClouds()->amount);
     precip = (weatherService.GetCurrentPrecipitation()->amount);
     if (nowTemp.IsUpdated()) {
@@ -460,6 +476,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     if ((savedTick > 0) && (lv_tick_get() - savedTick > 3000)) {
       lv_obj_set_hidden(btnMedia, true);
       lv_obj_set_hidden(btnWeather, true);
+      lv_obj_set_hidden(btnTempUnits, true);
       savedTick = 0;
     }
   }
@@ -471,6 +488,12 @@ void WatchFaceCasioStyleG7710::UpdateSelected(lv_obj_t* object, lv_event_t event
     savedTick = lv_tick_get();  //reset 3 second timer to dismiss
     if (object == btnMedia) {
       //update media stuff
+    } else if (object == btnTempUnits) {  //if units button, switch units
+      if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
+        settingsController.SetTempUnits(Controllers::Settings::TempUnits::Fahrenheit);
+      } else {
+        settingsController.SetTempUnits(Controllers::Settings::TempUnits::Celcius);
+      }
     } else if (object == btnWeather) {  //if weather button pressed
       if (lv_obj_get_hidden(weatherIcon)) { //if weather hidden
         // show weather icon and temperature

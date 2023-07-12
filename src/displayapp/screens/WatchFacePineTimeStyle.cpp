@@ -392,6 +392,16 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
   lv_label_set_text_static(lblSetOpts, Symbols::settings);
   lv_obj_set_hidden(btnSetOpts, true);
 
+  btnTempUnits = lv_btn_create(lv_scr_act(), nullptr);
+  btnTempUnits->user_data = this;
+  lv_obj_set_size(btnTempUnits, 60, 60);
+  lv_obj_align(btnTempUnits, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, -15, -80);
+  lv_obj_set_style_local_bg_opa(btnTempUnits, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_50);
+  lv_obj_t* lblTempUnits = lv_label_create(btnTempUnits, nullptr);
+  lv_label_set_text_static(lblTempUnits, "°C/F");
+  lv_obj_set_event_cb(btnTempUnits, event_handler);
+  lv_obj_set_hidden(btnTempUnits, true);
+
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
 }
@@ -427,6 +437,7 @@ void WatchFacePineTimeStyle::CloseMenu() {
   lv_obj_set_hidden(btnClose, true);
   lv_obj_set_hidden(btnSteps, true);
   lv_obj_set_hidden(btnWeather, true);
+  lv_obj_set_hidden(btnTempUnits, true);
 }
 
 bool WatchFacePineTimeStyle::OnButtonPushed() {
@@ -539,7 +550,11 @@ void WatchFacePineTimeStyle::Refresh() {
 
   if (weatherService.GetCurrentTemperature()->timestamp != 0 && weatherService.GetCurrentClouds()->timestamp != 0 &&
       weatherService.GetCurrentPrecipitation()->timestamp != 0) {
-    nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100);
+    if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
+      nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100);  //just use temp as is
+    } else {
+      nowTemp = ((weatherService.GetCurrentTemperature()->temperature / 100) * 1.8 + 32); //convert to F first
+    }
     clouds = (weatherService.GetCurrentClouds()->amount);
     precip = (weatherService.GetCurrentPrecipitation()->amount);
     if (nowTemp.IsUpdated()) {
@@ -710,6 +725,13 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
         settingsController.SetPTSGaugeStyle(Controllers::Settings::PTSGaugeStyle::Full);
       }
     }
+    if (object == btnTempUnits) {  //if units button, switch units
+      if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
+        settingsController.SetTempUnits(Controllers::Settings::TempUnits::Fahrenheit);
+      } else {
+        settingsController.SetTempUnits(Controllers::Settings::TempUnits::Celcius);
+      }
+    }
     if (object == btnWeather) {
       if (lv_obj_get_hidden(weatherIcon)) {
         // show weather icon and temperature
@@ -759,6 +781,7 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
       lv_obj_set_hidden(btnSetOpts, true);
       lv_obj_set_hidden(btnSteps, false);
       lv_obj_set_hidden(btnWeather, false);
+      lv_obj_set_hidden(btnTempUnits, false);
       lv_obj_set_hidden(btnClose, false);
     }
   }
