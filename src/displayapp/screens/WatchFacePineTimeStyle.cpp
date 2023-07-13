@@ -555,9 +555,9 @@ void WatchFacePineTimeStyle::Refresh() {
   if (weatherService.GetCurrentTemperature()->timestamp != 0 && weatherService.GetCurrentClouds()->timestamp != 0 &&
       weatherService.GetCurrentPrecipitation()->timestamp != 0) {
     if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
-      nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100);  //just use temp as is
+      nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100); // just use temp as is
     } else {
-      nowTemp = ((weatherService.GetCurrentTemperature()->temperature / 100) * 1.8 + 32); //convert to F first
+      nowTemp = ((weatherService.GetCurrentTemperature()->temperature / 100) * 1.8 + 32); // convert to F first
     }
     clouds = (weatherService.GetCurrentClouds()->amount);
     precip = (weatherService.GetCurrentPrecipitation()->amount);
@@ -729,7 +729,7 @@ void WatchFacePineTimeStyle::UpdateSelected(lv_obj_t* object, lv_event_t event) 
         settingsController.SetPTSGaugeStyle(Controllers::Settings::PTSGaugeStyle::Full);
       }
     }
-    if (object == btnTempUnits) {  //if units button, switch units
+    if (object == btnTempUnits) { // if units button, switch units
       if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
         settingsController.SetTempUnits(Controllers::Settings::TempUnits::Fahrenheit);
         lv_label_set_text_static(lblTempUnits, "°F");

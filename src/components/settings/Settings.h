@@ -203,7 +203,7 @@ namespace Pinetime {
         return settingsMenu;
       };
 
-      void SetTempUnits(TempUnits tempunits){
+      void SetTempUnits(TempUnits tempunits) {
         if (tempunits != settings.tempUnits) {
           settingsChanged = true;
         }

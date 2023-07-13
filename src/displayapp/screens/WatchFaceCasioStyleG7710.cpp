@@ -85,11 +85,11 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
   lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
-  //Change weather location based on time format, as there is only room to put it on the side in 12HR
+  // Change weather location based on time format, as there is only room to put it on the side in 12HR
   if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-    lv_obj_align(weatherIcon, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 112, 72); //upper
+    lv_obj_align(weatherIcon, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 112, 72); // upper
   } else {
-    lv_obj_align(weatherIcon, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 4, 25); //lower
+    lv_obj_align(weatherIcon, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 4, 25); // lower
   }
   lv_obj_set_auto_realign(weatherIcon, true);
   if (settingsController.GetCSGWeatherStyle() == Pinetime::Controllers::Settings::CSGWeatherStyle::Off) {
@@ -100,12 +100,12 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
 
   temperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  //Change temperature location based on time format, as there is only room to put it on the side in 12HR
+  // Change temperature location based on time format, as there is only room to put it on the side in 12HR
   if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-    lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_CENTER, 10, -2);   //above colon
-    //lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 4, 20);   //tucked into the 2
+    lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_CENTER, 10, -2); // above colon
+    // lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 4, 20);   //tucked into the 2
   } else {
-    lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 4, 50); //lower
+    lv_obj_align(temperature, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 4, 50); // lower
   }
   if (settingsController.GetCSGWeatherStyle() == Pinetime::Controllers::Settings::CSGWeatherStyle::Off) {
     lv_obj_set_hidden(temperature, true);
@@ -165,11 +165,12 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_obj_set_style_local_text_font(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment40);
   lv_label_set_text_static(label_date, "6-30");
-  //nudge date over to make room for weather when in 24HR mode with weather enabled
-  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24 && settingsController.GetCSGWeatherStyle() == Pinetime::Controllers::Settings::CSGWeatherStyle::On) {
-    lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 118, 70);  //nudge
+  // nudge date over to make room for weather when in 24HR mode with weather enabled
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24 &&
+      settingsController.GetCSGWeatherStyle() == Pinetime::Controllers::Settings::CSGWeatherStyle::On) {
+    lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 118, 70); // nudge
   } else {
-    lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 70);  //un-nudge
+    lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 70); // un-nudge
   }
 
   line_date = lv_line_create(lv_scr_act(), nullptr);
@@ -221,7 +222,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
 
   txtMedia = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_long_mode(txtMedia, LV_LABEL_LONG_SROLL_CIRC);
-  lv_obj_align(txtMedia, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 10,0);
+  lv_obj_align(txtMedia, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
   lv_obj_set_style_local_text_color(txtMedia, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_obj_set_width(txtMedia, 80);
   lv_label_set_text_static(txtMedia, "No media playing");
@@ -344,13 +345,12 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
   }
 
-
   if (weatherService.GetCurrentTemperature()->timestamp != 0 && weatherService.GetCurrentClouds()->timestamp != 0 &&
       weatherService.GetCurrentPrecipitation()->timestamp != 0) {
     if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
-      nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100);  //just use temp as is
+      nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100); // just use temp as is
     } else {
-      nowTemp = ((weatherService.GetCurrentTemperature()->temperature / 100) * 1.8 + 32); //convert to F first
+      nowTemp = ((weatherService.GetCurrentTemperature()->temperature / 100) * 1.8 + 32); // convert to F first
     }
     clouds = (weatherService.GetCurrentClouds()->amount);
     precip = (weatherService.GetCurrentPrecipitation()->amount);
@@ -377,7 +377,6 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_obj_realign(weatherIcon);
   }
 
-
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
@@ -389,11 +388,11 @@ void WatchFaceCasioStyleG7710::Refresh() {
   lv_obj_realign(bleIcon);
   lv_obj_realign(notificationIcon);
 
-  //old notification icon, simply shows if there are unread notifications
-/*  notificationState = notificationManager.AreNewNotificationsAvailable();
-  if (notificationState.IsUpdated()) {
-    lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
-  }*/
+  // old notification icon, simply shows if there are unread notifications
+  /*  notificationState = notificationManager.AreNewNotificationsAvailable();
+    if (notificationState.IsUpdated()) {
+      lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
+    }*/
 
   uint8_t notifNb = notificationManager.NbNotifications();
   lv_label_set_text_fmt(notificationIcon, "%i", notifNb);
@@ -482,7 +481,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_obj_set_width(txtMedia, 150 - (lv_obj_get_width(stepValue)) - lv_obj_get_width(heartbeatValue));
   }
 
-  if(!lv_obj_get_hidden(txtMedia)) {
+  if (!lv_obj_get_hidden(txtMedia)) {
     if (track != musicService.getTrack()) {
       track = musicService.getTrack();
       artist = musicService.getArtist();
@@ -503,10 +502,10 @@ void WatchFaceCasioStyleG7710::Refresh() {
     }
   }
 
-/*  if (artist != musicService.getArtist()) {
-    artist = musicService.getArtist();
-    lv_label_set_text(txtMedia, artist.data());
-  }*/
+  /*  if (artist != musicService.getArtist()) {
+      artist = musicService.getArtist();
+      lv_label_set_text(txtMedia, artist.data());
+    }*/
 
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated()) {
@@ -516,7 +515,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_obj_set_width(txtMedia, 150 - (lv_obj_get_width(stepValue)) - lv_obj_get_width(heartbeatValue));
   }
 
-  //dismiss settings menu after 3 seconds
+  // dismiss settings menu after 3 seconds
   if (!lv_obj_get_hidden(btnWeather)) {
     if ((savedTick > 0) && (lv_tick_get() - savedTick > 3000)) {
       lv_obj_set_hidden(btnMedia, true);
@@ -527,10 +526,10 @@ void WatchFaceCasioStyleG7710::Refresh() {
   }
 }
 
-//handle settings buttons and update settings accordingly
+// handle settings buttons and update settings accordingly
 void WatchFaceCasioStyleG7710::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    savedTick = lv_tick_get();  //reset 3 second timer to dismiss
+    savedTick = lv_tick_get(); // reset 3 second timer to dismiss
     if (object == btnMedia) {
       switch (settingsController.GetCSGMediaStyle()) {
         case Pinetime::Controllers::Settings::CSGMediaStyle::Off:
@@ -555,7 +554,7 @@ void WatchFaceCasioStyleG7710::UpdateSelected(lv_obj_t* object, lv_event_t event
           break;
       }
       track = "";
-    } else if (object == btnTempUnits) {  //if units button, switch units
+    } else if (object == btnTempUnits) { // if units button, switch units
       if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
         settingsController.SetTempUnits(Controllers::Settings::TempUnits::Fahrenheit);
         lv_label_set_text_static(lblTempUnits, "Units: °F");
@@ -563,28 +562,28 @@ void WatchFaceCasioStyleG7710::UpdateSelected(lv_obj_t* object, lv_event_t event
         settingsController.SetTempUnits(Controllers::Settings::TempUnits::Celcius);
         lv_label_set_text_static(lblTempUnits, "Units: °C");
       }
-    } else if (object == btnWeather) {  //if weather button pressed
-      if (lv_obj_get_hidden(weatherIcon)) { //if weather hidden
+    } else if (object == btnWeather) {      // if weather button pressed
+      if (lv_obj_get_hidden(weatherIcon)) { // if weather hidden
         // show weather icon and temperature
         lv_obj_set_hidden(weatherIcon, false);
         lv_obj_set_hidden(temperature, false);
-        //if 24HR, nudge date over to make room
-        if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24){
-          lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 118, 70);  //nudge date
+        // if 24HR, nudge date over to make room
+        if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+          lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 118, 70); // nudge date
         }
-        lv_label_set_text_static(lblWeather, "Weather: On");   //update button text
-        //save to settings
+        lv_label_set_text_static(lblWeather, "Weather: On"); // update button text
+        // save to settings
         settingsController.SetCSGWeatherStyle(Controllers::Settings::CSGWeatherStyle::On);
       } else {
         // hide weather icon and temperature
         lv_obj_set_hidden(weatherIcon, true);
         lv_obj_set_hidden(temperature, true);
-        if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24){
-        //if 24HR, un-nudge date
-          lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 70);  //un-nudge date
+        if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
+          // if 24HR, un-nudge date
+          lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 70); // un-nudge date
         }
-        lv_label_set_text_static(lblWeather, "Weather: Off");   //update button text
-        //save to settings
+        lv_label_set_text_static(lblWeather, "Weather: Off"); // update button text
+        // save to settings
         settingsController.SetCSGWeatherStyle(Controllers::Settings::CSGWeatherStyle::Off);
       }
     }
