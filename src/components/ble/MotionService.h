@@ -9,11 +9,17 @@
 namespace Pinetime {
   namespace Controllers {
     class NimbleController;
-    class MotionController;
 
     class MotionService {
     public:
-      MotionService(NimbleController& nimble, Controllers::MotionController& motionController);
+      explicit MotionService(NimbleController& nimble);
+
+      struct AccelerometerValues {
+        int16_t x;
+        int16_t y;
+        int16_t z;
+      };
+
       void Init();
       int OnStepCountRequested(uint16_t attributeHandle, ble_gatt_access_ctxt* context);
       void OnNewStepCountValue(uint32_t stepCount);
@@ -24,10 +30,12 @@ namespace Pinetime {
 
     private:
       NimbleController& nimble;
-      Controllers::MotionController& motionController;
 
       struct ble_gatt_chr_def characteristicDefinition[3];
       struct ble_gatt_svc_def serviceDefinition[2];
+
+      AccelerometerValues accelerometerValues {};
+      uint32_t stepCount {};
 
       uint16_t stepCountHandle;
       uint16_t motionValuesHandle;

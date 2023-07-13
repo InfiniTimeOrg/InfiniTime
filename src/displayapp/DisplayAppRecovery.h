@@ -19,6 +19,7 @@ namespace Pinetime {
     class St7789;
     class Cst816S;
     class Watchdog;
+    class Bma421;
   }
 
   namespace Controllers {
@@ -53,6 +54,7 @@ namespace Pinetime {
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Controllers::Settings& settingsController,
                  Pinetime::Controllers::MotorController& motorController,
+                 const Pinetime::Drivers::Bma421& motionSensor,
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::BrightnessController& brightnessController,

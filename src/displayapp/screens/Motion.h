@@ -5,7 +5,7 @@
 #include "displayapp/screens/Screen.h"
 #include <lvgl/src/lv_core/lv_style.h>
 #include <lvgl/src/lv_core/lv_obj.h>
-#include <components/motion/MotionController.h>
+#include "drivers/Bma421.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -13,13 +13,13 @@ namespace Pinetime {
 
       class Motion : public Screen {
       public:
-        Motion(Controllers::MotionController& motionController);
+        explicit Motion(const Drivers::Bma421& motionSensor);
         ~Motion() override;
 
         void Refresh() override;
 
       private:
-        Controllers::MotionController& motionController;
+        const Drivers::Bma421& motionSensor;
         lv_obj_t* chart;
         lv_chart_series_t* ser1;
         lv_chart_series_t* ser2;

@@ -99,9 +99,9 @@ void Bma421::Write(uint8_t registerAddress, const uint8_t* data, size_t size) {
   twiMaster.Write(deviceAddress, registerAddress, data, size);
 }
 
-Bma421::Values Bma421::Process() {
+void Bma421::Process() {
   if (not isOk)
-    return {};
+    return;
   struct bma4_accel data;
   bma4_read_accel_xyz(&data, &bma);
 
@@ -116,7 +116,7 @@ Bma421::Values Bma421::Process() {
   bma423_activity_output(&activity, &bma);
 
   // X and Y axis are swapped because of the way the sensor is mounted in the PineTime
-  return {steps, data.y, data.x, data.z};
+  values = {steps, data.y, data.x, data.z};
 }
 
 bool Bma421::IsOk() const {

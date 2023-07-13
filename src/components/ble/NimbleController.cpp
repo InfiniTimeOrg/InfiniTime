@@ -29,7 +29,6 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
                                    Battery& batteryController,
                                    Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                                    HeartRateController& heartRateController,
-                                   MotionController& motionController,
                                    FS& fs)
   : systemTask {systemTask},
     bleController {bleController},
@@ -47,7 +46,7 @@ NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
     batteryInformationService {batteryController},
     immediateAlertService {systemTask, notificationManager},
     heartRateService {*this, heartRateController},
-    motionService {*this, motionController},
+    motionService {*this},
     fsService {systemTask, fs},
     serviceDiscovery({&currentTimeClient, &alertNotificationClient}) {
 }
@@ -397,6 +396,18 @@ uint16_t NimbleController::connHandle() {
 void NimbleController::NotifyBatteryLevel(uint8_t level) {
   if (connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
     batteryInformationService.NotifyBatteryLevel(connectionHandle, level);
+  }
+}
+
+void NimbleController::NotifyStepCount(uint32_t stepCount) {
+  if (connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
+    motionService.OnNewStepCountValue(stepCount);
+  }
+}
+
+void NimbleController::NotifyMotionValues(int16_t x, int16_t y, int16_t z) {
+  if (connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
+    motionService.OnNewMotionValues(x, y, z);
   }
 }
 

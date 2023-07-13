@@ -79,7 +79,6 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                      batteryController,
                      spiNorFlash,
                      heartRateController,
-                     motionController,
                      fs) {
 }
 
@@ -132,7 +131,6 @@ void SystemTask::Work() {
   twiMaster.Init();
 
   motionSensor.Init();
-  motionController.Init(motionSensor.DeviceType());
   settingsController.Init();
 
   displayApp.Register(this);
@@ -424,9 +422,12 @@ void SystemTask::UpdateMotion() {
     stepCounterMustBeReset = false;
   }
 
-  auto motionValues = motionSensor.Process();
+  motionSensor.Process();
 
+  Drivers::Bma421::Values motionValues = motionSensor.GetValues();
   motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
+  nimbleController.NotifyStepCount(motionValues.steps);
+  nimbleController.NotifyMotionValues(motionValues.x, motionValues.y, motionValues.z);
 
   if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep) {
     if ((settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) &&

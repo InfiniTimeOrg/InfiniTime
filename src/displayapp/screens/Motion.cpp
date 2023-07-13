@@ -5,7 +5,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Motion::Motion(Controllers::MotionController& motionController) : motionController {motionController} {
+Motion::Motion(const Pinetime::Drivers::Bma421& motionSensor) : motionSensor {motionSensor} {
   chart = lv_chart_create(lv_scr_act(), nullptr);
   lv_obj_set_size(chart, 240, 240);
   lv_obj_align(chart, nullptr, LV_ALIGN_IN_TOP_MID, 0, 0);
@@ -46,16 +46,14 @@ Motion::~Motion() {
 }
 
 void Motion::Refresh() {
-  lv_chart_set_next(chart, ser1, motionController.X());
-  lv_chart_set_next(chart, ser2, motionController.Y());
-  lv_chart_set_next(chart, ser3, motionController.Z());
+  Drivers::Bma421::Values values = motionSensor.GetValues();
 
-  lv_label_set_text_fmt(labelStep, "Steps %lu", motionController.NbSteps());
+  lv_chart_set_next(chart, ser1, values.x);
+  lv_chart_set_next(chart, ser2, values.y);
+  lv_chart_set_next(chart, ser3, values.z);
 
-  lv_label_set_text_fmt(label,
-                        "X #FF0000 %d# Y #00B000 %d# Z #FFFF00 %d#",
-                        motionController.X() / 0x10,
-                        motionController.Y() / 0x10,
-                        motionController.Z() / 0x10);
+  lv_label_set_text_fmt(labelStep, "Steps %lu", values.steps);
+
+  lv_label_set_text_fmt(label, "X #FF0000 %d# Y #00B000 %d# Z #FFFF00 %d#", values.x / 0x10, values.y / 0x10, values.z / 0x10);
   lv_obj_align(label, nullptr, LV_ALIGN_IN_TOP_MID, 0, 10);
 }

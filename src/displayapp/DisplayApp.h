@@ -15,6 +15,7 @@
 #include "components/timer/Timer.h"
 #include "components/alarm/AlarmController.h"
 #include "touchhandler/TouchHandler.h"
+#include "drivers/Bma421.h"
 
 #include "displayapp/Messages.h"
 #include "BootErrors.h"
@@ -60,6 +61,7 @@ namespace Pinetime {
                  Pinetime::Controllers::HeartRateController& heartRateController,
                  Controllers::Settings& settingsController,
                  Pinetime::Controllers::MotorController& motorController,
+                 const Pinetime::Drivers::Bma421& motionSensor,
                  Pinetime::Controllers::MotionController& motionController,
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
@@ -86,6 +88,7 @@ namespace Pinetime {
       Pinetime::Controllers::HeartRateController& heartRateController;
       Pinetime::Controllers::Settings& settingsController;
       Pinetime::Controllers::MotorController& motorController;
+      const Pinetime::Drivers::Bma421& motionSensor;
       Pinetime::Controllers::MotionController& motionController;
       Pinetime::Controllers::AlarmController& alarmController;
       Pinetime::Controllers::BrightnessController& brightnessController;

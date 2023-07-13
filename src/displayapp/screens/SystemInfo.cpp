@@ -18,13 +18,13 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  const char* ToString(const Pinetime::Controllers::MotionController::DeviceTypes deviceType) {
+  const char* ToString(const Pinetime::Drivers::Bma421::DeviceTypes deviceType) {
     switch (deviceType) {
-      case Pinetime::Controllers::MotionController::DeviceTypes::BMA421:
+      case Pinetime::Drivers::Bma421::DeviceTypes::BMA421:
         return "BMA421";
-      case Pinetime::Controllers::MotionController::DeviceTypes::BMA425:
+      case Pinetime::Drivers::Bma421::DeviceTypes::BMA425:
         return "BMA425";
-      case Pinetime::Controllers::MotionController::DeviceTypes::Unknown:
+      case Pinetime::Drivers::Bma421::DeviceTypes::Unknown:
         return "???";
     }
     return "???";
@@ -37,7 +37,7 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        const Pinetime::Controllers::Ble& bleController,
                        const Pinetime::Drivers::Watchdog& watchdog,
-                       Pinetime::Controllers::MotionController& motionController,
+                       const Pinetime::Drivers::Bma421& motionSensor,
                        const Pinetime::Drivers::Cst816S& touchPanel)
   : app {app},
     dateTimeController {dateTimeController},
@@ -45,7 +45,7 @@ SystemInfo::SystemInfo(Pinetime::Applications::DisplayApp* app,
     brightnessController {brightnessController},
     bleController {bleController},
     watchdog {watchdog},
-    motionController {motionController},
+    motionSensor {motionSensor},
     touchPanel {touchPanel},
     screens {app,
              0,
@@ -168,7 +168,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         batteryController.Voltage(),
                         brightnessController.ToString(),
                         resetReason,
-                        ToString(motionController.DeviceType()),
+                        ToString(motionSensor.DeviceType()),
                         touchPanel.GetChipId(),
                         touchPanel.GetVendorId(),
                         touchPanel.GetFwVersion(),
