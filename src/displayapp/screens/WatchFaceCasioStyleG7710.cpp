@@ -231,20 +231,6 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
     lv_label_set_text_static(lblWeather, "Weather: On");
   }
 
-  btnTempUnits = lv_btn_create(lv_scr_act(), nullptr);
-  btnTempUnits->user_data = this;
-  lv_obj_set_size(btnTempUnits, 160, 60);
-  lv_obj_align(btnTempUnits, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
-  lv_obj_set_style_local_bg_opa(btnTempUnits, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_80);
-  lblTempUnits = lv_label_create(btnTempUnits, nullptr);
-  lv_obj_set_event_cb(btnTempUnits, event_handler);
-  lv_obj_set_hidden(btnTempUnits, true);
-  if (settingsController.GetTempUnits() == Controllers::Settings::TempUnits::Celcius) {
-    lv_label_set_text_static(lblTempUnits, "Units: °C");
-  } else {
-    lv_label_set_text_static(lblTempUnits, "Units: °F");
-  }
-
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
 }
@@ -273,7 +259,6 @@ WatchFaceCasioStyleG7710::~WatchFaceCasioStyleG7710() {
 bool WatchFaceCasioStyleG7710::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   if (event == Pinetime::Applications::TouchEvents::LongTap && lv_obj_get_hidden(btnWeather)) {
     lv_obj_set_hidden(btnWeather, false);
-    lv_obj_set_hidden(btnTempUnits, false);
     savedTick = lv_tick_get();
     return true;
   }
@@ -283,7 +268,6 @@ bool WatchFaceCasioStyleG7710::OnTouchEvent(Pinetime::Applications::TouchEvents 
 void WatchFaceCasioStyleG7710::CloseMenu() {
   settingsController.SaveSettings();
   lv_obj_set_hidden(btnWeather, true);
-  lv_obj_set_hidden(btnTempUnits, true);
 }
 
 bool WatchFaceCasioStyleG7710::OnButtonPushed() {
@@ -346,7 +330,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
   lv_obj_realign(bleIcon);
   lv_obj_realign(notificationIcon);
 
-  notificationState = notificatioManager.AreNewNotificationsAvailable();
+  notificationState = notificationManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
