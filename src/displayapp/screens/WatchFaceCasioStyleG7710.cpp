@@ -436,8 +436,8 @@ void WatchFaceCasioStyleG7710::Refresh() {
 // handle settings buttons and update settings accordingly
 void WatchFaceCasioStyleG7710::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    savedTick = lv_tick_get(); // reset 3 second timer to dismiss
-    if (object == btnWeather) {      // if weather button pressed
+    savedTick = lv_tick_get();              // reset 3 second timer to dismiss
+    if (object == btnWeather) {             // if weather button pressed
       if (lv_obj_get_hidden(weatherIcon)) { // if weather hidden
         // show weather icon and temperature
         lv_obj_set_hidden(weatherIcon, false);
