@@ -12,7 +12,16 @@
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
+#include "components/ble/MusicService.h"
+
 using namespace Pinetime::Applications::Screens;
+
+namespace {
+  void event_handler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<WatchFaceCasioStyleG7710*>(obj->user_data);
+    screen->UpdateSelected(obj, event);
+  }
+}
 
 WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTimeController,
                                                    const Controllers::Battery& batteryController,
@@ -21,7 +30,8 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
                                                    Controllers::Settings& settingsController,
                                                    Controllers::HeartRateController& heartRateController,
                                                    Controllers::MotionController& motionController,
-                                                   Controllers::FS& filesystem)
+                                                   Controllers::FS& filesystem,
+                                                   Controllers::MusicService& musicService)
   : currentDateTime {{}},
     batteryIcon(false),
     dateTimeController {dateTimeController},
@@ -30,7 +40,8 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
     notificatioManager {notificatioManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
-    motionController {motionController} {
+    motionController {motionController},
+    musicService {musicService} {
 
   lfs_file f = {};
   if (filesystem.FileOpen(&f, "/fonts/lv_font_dots_40.bin", LFS_O_RDONLY) >= 0) {
@@ -168,6 +179,39 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
+  txtMedia = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_long_mode(txtMedia, LV_LABEL_LONG_SROLL_CIRC);
+  lv_obj_align(txtMedia, heartbeatValue, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
+  lv_obj_set_style_local_text_color(txtMedia, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_obj_set_width(txtMedia, 80);
+  lv_label_set_text_static(txtMedia, "No media playing");
+  lv_obj_set_hidden(txtMedia, false);
+  track = "";
+
+  btnMedia = lv_btn_create(lv_scr_act(), nullptr);
+  btnMedia->user_data = this;
+  lv_obj_set_size(btnMedia, 160, 60);
+  lv_obj_align(btnMedia, lv_scr_act(), LV_ALIGN_CENTER, 0, -80);
+  lv_obj_set_style_local_bg_opa(btnMedia, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_80);
+  lblMedia = lv_label_create(btnMedia, nullptr);
+  lv_obj_set_event_cb(btnMedia, event_handler);
+  lv_obj_set_hidden(btnMedia, true);
+  switch (settingsController.GetCSGMediaStyle()) {
+    case Pinetime::Controllers::Settings::CSGMediaStyle::Off:
+      lv_label_set_text_static(lblMedia, "Media: Off");
+      lv_obj_set_hidden(txtMedia, true);
+      break;
+    case Pinetime::Controllers::Settings::CSGMediaStyle::Artist:
+      lv_label_set_text_static(lblMedia, "Media: Artist");
+      break;
+    case Pinetime::Controllers::Settings::CSGMediaStyle::Track:
+      lv_label_set_text_static(lblMedia, "Media: Track");
+      break;
+    case Pinetime::Controllers::Settings::CSGMediaStyle::Album:
+      lv_label_set_text_static(lblMedia, "Media: Album");
+      break;
+  }
+
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
 }
@@ -191,6 +235,28 @@ WatchFaceCasioStyleG7710::~WatchFaceCasioStyleG7710() {
   }
 
   lv_obj_clean(lv_scr_act());
+}
+
+bool WatchFaceCasioStyleG7710::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  if (event == Pinetime::Applications::TouchEvents::LongTap && lv_obj_get_hidden(btnMedia)) {
+    lv_obj_set_hidden(btnMedia, false);
+    savedTick = lv_tick_get();
+    return true;
+  }
+  return false;
+}
+
+void WatchFaceCasioStyleG7710::CloseMenu() {
+  settingsController.SaveSettings();
+  lv_obj_set_hidden(btnMedia, true);
+}
+
+bool WatchFaceCasioStyleG7710::OnButtonPushed() {
+  if (!lv_obj_get_hidden(btnMedia)) {
+    CloseMenu();
+    return true;
+  }
+  return false;
 }
 
 void WatchFaceCasioStyleG7710::Refresh() {
@@ -302,6 +368,29 @@ void WatchFaceCasioStyleG7710::Refresh() {
 
     lv_obj_realign(heartbeatIcon);
     lv_obj_realign(heartbeatValue);
+    lv_obj_realign(txtMedia);
+    lv_obj_set_width(txtMedia, 150 - (lv_obj_get_width(stepValue)) - lv_obj_get_width(heartbeatValue));
+  }
+
+  if (!lv_obj_get_hidden(txtMedia)) {
+    if (track != musicService.getTrack()) {
+      track = musicService.getTrack();
+      artist = musicService.getArtist();
+      album = musicService.getAlbum();
+      switch (settingsController.GetCSGMediaStyle()) {
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Artist:
+          lv_label_set_text(txtMedia, artist.data());
+          break;
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Track:
+          lv_label_set_text(txtMedia, track.data());
+          break;
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Album:
+          lv_label_set_text(txtMedia, album.data());
+          break;
+        default:
+          break;
+      }
+    }
   }
 
   stepCount = motionController.NbSteps();
@@ -309,6 +398,47 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
     lv_obj_realign(stepValue);
     lv_obj_realign(stepIcon);
+    lv_obj_set_width(txtMedia, 150 - (lv_obj_get_width(stepValue)) - lv_obj_get_width(heartbeatValue));
+  }
+
+  // dismiss settings menu after 3 seconds
+  if (!lv_obj_get_hidden(btnMedia)) {
+    if ((savedTick > 0) && (lv_tick_get() - savedTick > 3000)) {
+      lv_obj_set_hidden(btnMedia, true);
+      savedTick = 0;
+    }
+  }
+}
+
+// handle settings buttons and update settings accordingly
+void WatchFaceCasioStyleG7710::UpdateSelected(lv_obj_t* object, lv_event_t event) {
+  if (event == LV_EVENT_CLICKED) {
+    savedTick = lv_tick_get(); // reset 3 second timer to dismiss
+    if (object == btnMedia) {
+      switch (settingsController.GetCSGMediaStyle()) {
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Off:
+          lv_label_set_text_static(lblMedia, "Media: Artist");
+          lv_obj_set_hidden(txtMedia, false);
+          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Artist);
+          break;
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Artist:
+          lv_label_set_text_static(lblMedia, "Media: Track");
+          lv_obj_set_hidden(txtMedia, false);
+          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Track);
+          break;
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Track:
+          lv_label_set_text_static(lblMedia, "Media: Album");
+          lv_obj_set_hidden(txtMedia, false);
+          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Album);
+          break;
+        case Pinetime::Controllers::Settings::CSGMediaStyle::Album:
+          lv_label_set_text_static(lblMedia, "Media: Off");
+          lv_obj_set_hidden(txtMedia, true);
+          settingsController.SetCSGMediaStyle(Pinetime::Controllers::Settings::CSGMediaStyle::Off);
+          break;
+      }
+      track = "";
+    }
   }
 }
 
