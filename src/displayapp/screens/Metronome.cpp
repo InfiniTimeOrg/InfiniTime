@@ -115,7 +115,7 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
       }
       break;
     }
-    case LV_EVENT_PRESSED: {  // if bmp is tapped, record the tap...
+    case LV_EVENT_PRESSED: { // if bmp is tapped, record the tap...
       if (obj == bpmTap) {
         delta = xTaskGetTickCount() - tappedTime;
         tappedTime = xTaskGetTickCount();
@@ -167,14 +167,14 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 bool Metronome::OnTouchEvent(TouchEvents event) {
-  if (!inDropdown) {  // only parse swipe events when not in the dropdown menu
+  if (!inDropdown) { // only parse swipe events when not in the dropdown menu
     if (event == TouchEvents::SwipeDown) {
       if (allowExit) {
         return false;
       }
       lv_obj_set_hidden(bpmArc, false);
       lv_obj_set_hidden(bpmCounter.GetObject(), true);
-    } else if (event == TouchEvents::SwipeUp){
+    } else if (event == TouchEvents::SwipeUp) {
       lv_obj_set_hidden(bpmCounter.GetObject(), false);
       lv_obj_set_hidden(bpmArc, true);
       allowExit = false;

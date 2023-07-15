@@ -29,7 +29,7 @@ namespace Pinetime {
 
         bool metronomeStarted = false;
         bool allowExit = false;
-        bool inDropdown = false;  // used to block swipes while dropdown is open
+        bool inDropdown = false; // used to block swipes while dropdown is open
 
         lv_obj_t *bpmArc, *bpmTap, *bpmValue;
         lv_obj_t *bpbDropdown, *currentBpbText;
