@@ -47,8 +47,8 @@ Metronome::Metronome(Controllers::MotorController& motorController, System::Syst
   bpmTap->user_data = this;
   lv_obj_set_event_cb(bpmTap, eventHandler);
   lv_obj_set_style_local_bg_opa(bpmTap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_height(bpmTap, 80);
-  lv_obj_align(bpmTap, bpmCounter.GetObject(), LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_height(bpmTap, 130);
+  lv_obj_align(bpmTap, bpmCounter.GetObject(), LV_ALIGN_CENTER, 0, 30);
 
   bpbDropdown = lv_dropdown_create(lv_scr_act(), nullptr);
   bpbDropdown->user_data = this;
