@@ -20,6 +20,7 @@ namespace Pinetime {
       private:
         TickType_t startTime = 0;
         TickType_t tappedTime = 0;
+        TickType_t delta = 0;
         Controllers::MotorController& motorController;
         System::SystemTask& systemTask;
         int16_t bpm = 120;
@@ -34,7 +35,7 @@ namespace Pinetime {
         lv_obj_t* playPause;
         lv_obj_t* lblPlayPause;
 
-        Widgets::Counter bpmCounter = Widgets::Counter(0, 220, jetbrains_mono_76);
+        Widgets::Counter bpmCounter = Widgets::Counter(40, 220, jetbrains_mono_76);
 
         lv_task_t* taskRefresh;
       };
