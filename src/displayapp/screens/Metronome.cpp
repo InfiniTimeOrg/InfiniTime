@@ -46,7 +46,7 @@ Metronome::Metronome(Controllers::MotorController& motorController, System::Syst
   bpmTap = lv_btn_create(lv_scr_act(), nullptr);
   bpmTap->user_data = this;
   lv_obj_set_event_cb(bpmTap, eventHandler);
-  lv_obj_set_style_local_bg_opa(bpmTap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_60);
+  lv_obj_set_style_local_bg_opa(bpmTap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
   lv_obj_set_height(bpmTap, 80);
   lv_obj_align(bpmTap, bpmCounter.GetObject(), LV_ALIGN_CENTER, 0, 0);
 
@@ -159,19 +159,26 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
     default:
       break;
   }
+  if (obj == bpbDropdown) { // if the user is interacting with the dropdown, take note
+    inDropdown = true;
+  } else {
+    inDropdown = false;
+  }
 }
 
 bool Metronome::OnTouchEvent(TouchEvents event) {
-  if (event == TouchEvents::SwipeDown) {
-    if (allowExit) {
-      return false;
+  if (!inDropdown) {  // only parse swipe events when not in the dropdown menu
+    if (event == TouchEvents::SwipeDown) {
+      if (allowExit) {
+        return false;
+      }
+      lv_obj_set_hidden(bpmArc, false);
+      lv_obj_set_hidden(bpmCounter.GetObject(), true);
+    } else if (event == TouchEvents::SwipeUp){
+      lv_obj_set_hidden(bpmCounter.GetObject(), false);
+      lv_obj_set_hidden(bpmArc, true);
+      allowExit = false;
     }
-    lv_obj_set_hidden(bpmArc, false);
-    lv_obj_set_hidden(bpmCounter.GetObject(), true);
-  } else if (event == TouchEvents::SwipeUp){
-    lv_obj_set_hidden(bpmCounter.GetObject(), false);
-    lv_obj_set_hidden(bpmArc, true);
-    allowExit = false;
   }
   return true;
 }
