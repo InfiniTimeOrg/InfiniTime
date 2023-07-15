@@ -3,6 +3,7 @@
 #include "systemtask/SystemTask.h"
 #include "components/motor/MotorController.h"
 #include "displayapp/screens/Screen.h"
+#include "displayapp/widgets/Counter.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -32,6 +33,8 @@ namespace Pinetime {
         lv_obj_t *bpbDropdown, *currentBpbText;
         lv_obj_t* playPause;
         lv_obj_t* lblPlayPause;
+
+        Widgets::Counter bpmCounter = Widgets::Counter(0, 220, jetbrains_mono_76);
 
         lv_task_t* taskRefresh;
       };

@@ -38,12 +38,18 @@ Metronome::Metronome(Controllers::MotorController& motorController, System::Syst
   bpmValue = createLabel("120", bpmArc, LV_ALIGN_IN_TOP_MID, &jetbrains_mono_76, 0, 55);
   createLabel("bpm", bpmValue, LV_ALIGN_OUT_BOTTOM_MID, &jetbrains_mono_bold_20, 0, 0);
 
+  bpmCounter.Create();
+  bpmCounter.SetValue(120);
+  lv_obj_align(bpmCounter.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_obj_set_hidden(bpmCounter.GetObject(), true);
+  //bpmCounter.HideControls();
+
   bpmTap = lv_btn_create(lv_scr_act(), nullptr);
   bpmTap->user_data = this;
   lv_obj_set_event_cb(bpmTap, eventHandler);
   lv_obj_set_style_local_bg_opa(bpmTap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
   lv_obj_set_height(bpmTap, 80);
-  lv_obj_align(bpmTap, bpmValue, LV_ALIGN_IN_TOP_MID, 0, 0);
+  lv_obj_align(bpmTap, bpmCounter.GetObject(), LV_ALIGN_CENTER, 0, 0);
 
   bpbDropdown = lv_dropdown_create(lv_scr_act(), nullptr);
   bpbDropdown->user_data = this;
@@ -77,6 +83,11 @@ Metronome::~Metronome() {
 }
 
 void Metronome::Refresh() {
+  if (bpm != bpmCounter.GetValue()) {
+    bpm = bpmCounter.GetValue();
+    lv_arc_set_value(bpmArc, bpm);
+    lv_label_set_text_fmt(bpmValue, "%03d", bpm);
+  }
   if (metronomeStarted) {
     if (xTaskGetTickCount() - startTime > 60u * configTICK_RATE_HZ / static_cast<uint16_t>(bpm)) {
       startTime += 60 * configTICK_RATE_HZ / bpm;
@@ -96,6 +107,7 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
     case LV_EVENT_VALUE_CHANGED: {
       if (obj == bpmArc) {
         bpm = lv_arc_get_value(bpmArc);
+        bpmCounter.SetValue(bpm);
         lv_label_set_text_fmt(bpmValue, "%03d", bpm);
       } else if (obj == bpbDropdown) {
         bpb = lv_dropdown_get_selected(obj) + 1;
@@ -111,6 +123,7 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
           bpm = configTICK_RATE_HZ * 60 / delta;
           lv_arc_set_value(bpmArc, bpm);
           lv_label_set_text_fmt(bpmValue, "%03d", bpm);
+          bpmCounter.SetValue(bpm);
         }
         tappedTime = xTaskGetTickCount();
         allowExit = true;
@@ -144,8 +157,18 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 bool Metronome::OnTouchEvent(TouchEvents event) {
-  if (event == TouchEvents::SwipeDown && allowExit) {
-    running = false;
+  if (event == TouchEvents::SwipeDown) {
+    if (allowExit) {
+      return false;
+    }
+    lv_obj_set_hidden(bpmTap, false);
+    lv_obj_set_hidden(bpmArc, false);
+    lv_obj_set_hidden(bpmCounter.GetObject(), true);
+  } else if (event == TouchEvents::SwipeUp){
+    lv_obj_set_hidden(bpmCounter.GetObject(), false);
+    lv_obj_set_hidden(bpmTap, true);
+    lv_obj_set_hidden(bpmArc, true);
+    allowExit = false;
   }
   return true;
 }
