@@ -7,7 +7,7 @@ body:
       label: Verification
       description: Before submitting a bug report, check if similar issues already exist and use those issues to provide your feedback instead.
       options:
-      - label: I searched for similar bug reports and found none was relevant.
+      - label: I searched for similar bug reports (including closed issues) and found none was relevant.
         required: true
   - type: input
     id: desc-brief
