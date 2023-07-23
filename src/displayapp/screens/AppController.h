@@ -3,6 +3,7 @@
 #include <array>
 #include <functional>
 #include <memory>
+#include <nrf_log.h>
 
 #include "displayapp/Apps.h"
 #include "displayapp/screens/Twos.h"
@@ -37,7 +38,6 @@ namespace Pinetime {
       };
 
       std::unique_ptr<Screens::Screen> Get(uint8_t app) const {
-        app -= static_cast<uint8_t>(Apps::Dynamic);
         return constructors[app]();
       };
 
