@@ -4,6 +4,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/settings/Settings.h"
 #include "displayapp/WatchFaces.h"
+#include <vector>
 
 using namespace Pinetime::Applications::Screens;
 
@@ -11,7 +12,9 @@ constexpr const char* SettingWatchFace::title;
 constexpr const char* SettingWatchFace::symbol;
 
 auto SettingWatchFace::CreateScreenList() const {
-  std::array<std::function<std::unique_ptr<Screen>()>, nScreens> screens;
+  std::vector<std::function<std::unique_ptr<Screen>()>> screens;
+  screens.resize(nScreens);
+
   for (size_t i = 0; i < screens.size(); i++) {
     screens[i] = [this, i]() -> std::unique_ptr<Screen> {
       return CreateScreen(i);

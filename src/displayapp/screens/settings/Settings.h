@@ -32,20 +32,20 @@ namespace Pinetime {
         static constexpr int nScreens = 3;
 
         static constexpr std::array<List::Applications, entriesPerScreen * nScreens> entries {{
-          {Symbols::sun, "Display", Apps::SettingDisplay},
-          {Symbols::eye, "Wake Up", Apps::SettingWakeUp},
-          {Symbols::clock, "Time format", Apps::SettingTimeFormat},
-          {Symbols::home, "Watch face", Apps::SettingWatchFace},
+          {Symbols::sun, "Display", static_cast<uint8_t>(Apps::SettingDisplay)},
+          {Symbols::eye, "Wake Up", static_cast<uint8_t>(Apps::SettingWakeUp)},
+          {Symbols::clock, "Time format", static_cast<uint8_t>(Apps::SettingTimeFormat)},
+          {Symbols::home, "Watch face", static_cast<uint8_t>(Apps::SettingWatchFace)},
 
-          {Symbols::shoe, "Steps", Apps::SettingSteps},
-          {Symbols::clock, "Date&Time", Apps::SettingSetDateTime},
-          {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
-          {Symbols::clock, "Chimes", Apps::SettingChimes},
+          {Symbols::shoe, "Steps", static_cast<uint8_t>(Apps::SettingSteps)},
+          {Symbols::clock, "Date&Time", static_cast<uint8_t>(Apps::SettingSetDateTime)},
+          {Symbols::batteryHalf, "Battery", static_cast<uint8_t>(Apps::BatteryInfo)},
+          {Symbols::clock, "Chimes", static_cast<uint8_t>(Apps::SettingChimes)},
 
-          {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
-          {Symbols::check, "Firmware", Apps::FirmwareValidation},
-          {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
-          {Symbols::list, "About", Apps::SysInfo},
+          {Symbols::tachometer, "Shake Calib.", static_cast<uint8_t>(Apps::SettingShakeThreshold)},
+          {Symbols::check, "Firmware", static_cast<uint8_t>(Apps::FirmwareValidation)},
+          {Symbols::bluetooth, "Bluetooth", static_cast<uint8_t>(Apps::SettingBluetooth)},
+          {Symbols::list, "About", static_cast<uint8_t>(Apps::SysInfo)},
 
           // {Symbols::none, "None", Apps::None},
           // {Symbols::none, "None", Apps::None},
@@ -53,7 +53,7 @@ namespace Pinetime {
           // {Symbols::none, "None", Apps::None},
 
         }};
-        ScreenList<nScreens> screens;
+        ScreenList screens;
       };
     }
   }

@@ -2,7 +2,7 @@
 
 namespace Pinetime {
   namespace Applications {
-    enum class Apps {
+    enum class Apps : uint8_t {
       None,
       Launcher,
       Clock,
@@ -18,7 +18,6 @@ namespace Pinetime {
       Music,
       Paint,
       Paddle,
-      Twos,
       HeartRate,
       Navigation,
       StopWatch,
@@ -37,7 +36,8 @@ namespace Pinetime {
       SettingChimes,
       SettingShakeThreshold,
       SettingBluetooth,
-      Error
+      Error,
+      Dynamic,
     };
   }
 }

@@ -10,6 +10,7 @@
 #include "components/battery/BatteryController.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/Tile.h"
+#include "displayapp/screens/AppController.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -20,7 +21,8 @@ namespace Pinetime {
                                  Pinetime::Controllers::Settings& settingsController,
                                  const Pinetime::Controllers::Battery& batteryController,
                                  const Pinetime::Controllers::Ble& bleController,
-                                 Controllers::DateTime& dateTimeController);
+                                 Controllers::DateTime& dateTimeController,
+                                 Pinetime::Applications::AppController& appController);
         ~ApplicationList() override;
         bool OnTouchEvent(TouchEvents event) override;
 
@@ -33,30 +35,31 @@ namespace Pinetime {
         const Pinetime::Controllers::Battery& batteryController;
         const Pinetime::Controllers::Ble& bleController;
         Controllers::DateTime& dateTimeController;
+        const Pinetime::Applications::AppController& appController;
 
         static constexpr int appsPerScreen = 6;
 
         // Increment this when more space is needed
-        static constexpr int nScreens = 2;
+        // static constexpr int nScreens = 2;
 
-        static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
-          {Symbols::stopWatch, Apps::StopWatch},
-          {Symbols::clock, Apps::Alarm},
-          {Symbols::hourGlass, Apps::Timer},
-          {Symbols::shoe, Apps::Steps},
-          {Symbols::heartBeat, Apps::HeartRate},
-          {Symbols::music, Apps::Music},
+        // static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
+        //   {Symbols::stopWatch, Apps::StopWatch},
+        //   {Symbols::clock, Apps::Alarm},
+        //   {Symbols::hourGlass, Apps::Timer},
+        //   {Symbols::shoe, Apps::Steps},
+        //   {Symbols::heartBeat, Apps::HeartRate},
+        //   {Symbols::music, Apps::Music},
 
-          {Symbols::paintbrush, Apps::Paint},
-          {Symbols::paddle, Apps::Paddle},
-          {"2", Apps::Twos},
-          {Symbols::drum, Apps::Metronome},
-          {Symbols::map, Apps::Navigation},
-          {Symbols::none, Apps::None},
+        //   {Symbols::paintbrush, Apps::Paint},
+        //   {Symbols::paddle, Apps::Paddle},
+        //   {AppController::GetSymbol(static_cast<uint8_t>(Apps::Dynamic)), Apps::Dynamic},
+        //   {Symbols::drum, Apps::Metronome},
+        //   {Symbols::map, Apps::Navigation},
+        //   {Symbols::none, Apps::None},
 
-          // {"M", Apps::Motion},
-        }};
-        ScreenList<nScreens> screens;
+        //   // {"M", Apps::Motion},
+        // }};
+        ScreenList screens;
       };
     }
   }

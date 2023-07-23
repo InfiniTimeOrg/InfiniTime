@@ -12,6 +12,7 @@
 #include "components/firmwarevalidator/FirmwareValidator.h"
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
+#include "displayapp/screens/AppController.h"
 #include "components/timer/Timer.h"
 #include "components/alarm/AlarmController.h"
 #include "touchhandler/TouchHandler.h"
@@ -68,7 +69,7 @@ namespace Pinetime {
       void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
 
-      void StartApp(Apps app, DisplayApp::FullRefreshDirections direction);
+      void StartApp(uint8_t app, DisplayApp::FullRefreshDirections direction);
 
       void SetFullRefresh(FullRefreshDirections direction);
 
@@ -91,6 +92,7 @@ namespace Pinetime {
       Pinetime::Controllers::BrightnessController& brightnessController;
       Pinetime::Controllers::TouchHandler& touchHandler;
       Pinetime::Controllers::FS& filesystem;
+      Pinetime::Applications::AppController appController;
 
       Pinetime::Controllers::FirmwareValidator validator;
       Pinetime::Components::LittleVgl lvgl;
@@ -106,8 +108,8 @@ namespace Pinetime {
 
       std::unique_ptr<Screens::Screen> currentScreen;
 
-      Apps currentApp = Apps::None;
-      Apps returnToApp = Apps::None;
+      uint8_t currentApp = static_cast<uint8_t>(Apps::None);
+      uint8_t returnToApp = static_cast<uint8_t>(Apps::None);
       FullRefreshDirections returnDirection = FullRefreshDirections::None;
       TouchEvents returnTouchEvent = TouchEvents::None;
 
@@ -115,17 +117,17 @@ namespace Pinetime {
       static void Process(void* instance);
       void InitHw();
       void Refresh();
-      void LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction);
-      void LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction);
+      void LoadNewScreen(uint8_t app, DisplayApp::FullRefreshDirections direction);
+      void LoadScreen(uint8_t app, DisplayApp::FullRefreshDirections direction);
       void PushMessageToSystemTask(Pinetime::System::Messages message);
 
-      Apps nextApp = Apps::None;
+      uint8_t nextApp = static_cast<uint8_t>(Apps::None);
       DisplayApp::FullRefreshDirections nextDirection;
       System::BootErrors bootError;
       void ApplyBrightness();
 
       static constexpr size_t returnAppStackSize = 10;
-      Utility::StaticStack<Apps, returnAppStackSize> returnAppStack;
+      Utility::StaticStack<uint8_t, returnAppStackSize> returnAppStack;
       Utility::StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
 
       bool isDimmed = false;

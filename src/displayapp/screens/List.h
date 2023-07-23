@@ -18,7 +18,7 @@ namespace Pinetime {
         struct Applications {
           const char* icon;
           const char* name;
-          Pinetime::Applications::Apps application;
+          uint8_t application;
         };
 
         explicit List(uint8_t screenID,
@@ -33,7 +33,7 @@ namespace Pinetime {
       private:
         DisplayApp* app;
         Controllers::Settings& settingsController;
-        Pinetime::Applications::Apps apps[MAXLISTITEMS];
+        uint8_t apps[MAXLISTITEMS];
 
         lv_obj_t* itemApps[MAXLISTITEMS];
 

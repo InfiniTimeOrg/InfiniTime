@@ -107,9 +107,9 @@ void DisplayApp::Start(System::BootErrors error) {
   lvgl.Init();
 
   if (error == System::BootErrors::TouchController) {
-    LoadNewScreen(Apps::Error, DisplayApp::FullRefreshDirections::None);
+    LoadNewScreen(static_cast<uint8_t>(Apps::Error), DisplayApp::FullRefreshDirections::None);
   } else {
-    LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+    LoadNewScreen(static_cast<uint8_t>(Apps::Clock), DisplayApp::FullRefreshDirections::None);
   }
 
   if (pdPASS != xTaskCreate(DisplayApp::Process, "displayapp", 800, this, 0, &taskHandle)) {
@@ -240,31 +240,31 @@ void DisplayApp::Refresh() {
         //        Screens::Clock::BleConnectionStates::NotConnected);
         break;
       case Messages::NewNotification:
-        LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
+        LoadNewScreen(static_cast<uint8_t>(Apps::NotificationsPreview), DisplayApp::FullRefreshDirections::Down);
         break;
       case Messages::TimerDone:
         if (state != States::Running) {
           PushMessageToSystemTask(System::Messages::GoToRunning);
         }
-        if (currentApp == Apps::Timer) {
+        if (currentApp == static_cast<uint8_t>(Apps::Timer)) {
           lv_disp_trig_activity(nullptr);
           auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
           timer->Reset();
         } else {
-          LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Up);
+          LoadNewScreen(static_cast<uint8_t>(Apps::Timer), DisplayApp::FullRefreshDirections::Up);
         }
         motorController.RunForDuration(35);
         break;
       case Messages::AlarmTriggered:
-        if (currentApp == Apps::Alarm) {
+        if (currentApp == static_cast<uint8_t>(Apps::Alarm)) {
           auto* alarm = static_cast<Screens::Alarm*>(currentScreen.get());
           alarm->SetAlerting();
         } else {
-          LoadNewScreen(Apps::Alarm, DisplayApp::FullRefreshDirections::None);
+          LoadNewScreen(static_cast<uint8_t>(Apps::Alarm), DisplayApp::FullRefreshDirections::None);
         }
         break;
       case Messages::ShowPairingKey:
-        LoadNewScreen(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
+        LoadNewScreen(static_cast<uint8_t>(Apps::PassKey), DisplayApp::FullRefreshDirections::Up);
         motorController.RunForDuration(35);
         break;
       case Messages::TouchEvent: {
@@ -290,16 +290,16 @@ void DisplayApp::Refresh() {
           }
         };
         if (!currentScreen->OnTouchEvent(gesture)) {
-          if (currentApp == Apps::Clock) {
+          if (currentApp == static_cast<uint8_t>(Apps::Clock)) {
             switch (gesture) {
               case TouchEvents::SwipeUp:
-                LoadNewScreen(Apps::Launcher, DisplayApp::FullRefreshDirections::Up);
+                LoadNewScreen(static_cast<uint8_t>(Apps::Launcher), DisplayApp::FullRefreshDirections::Up);
                 break;
               case TouchEvents::SwipeDown:
-                LoadNewScreen(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
+                LoadNewScreen(static_cast<uint8_t>(Apps::Notifications), DisplayApp::FullRefreshDirections::Down);
                 break;
               case TouchEvents::SwipeRight:
-                LoadNewScreen(Apps::QuickSettings, DisplayApp::FullRefreshDirections::RightAnim);
+                LoadNewScreen(static_cast<uint8_t>(Apps::QuickSettings), DisplayApp::FullRefreshDirections::RightAnim);
                 break;
               case TouchEvents::DoubleTap:
                 PushMessageToSystemTask(System::Messages::GoToSleep);
@@ -316,7 +316,7 @@ void DisplayApp::Refresh() {
       } break;
       case Messages::ButtonPushed:
         if (!currentScreen->OnButtonPushed()) {
-          if (currentApp == Apps::Clock) {
+          if (currentApp == static_cast<uint8_t>(Apps::Clock)) {
             PushMessageToSystemTask(System::Messages::GoToSleep);
           } else {
             LoadPreviousScreen();
@@ -324,13 +324,13 @@ void DisplayApp::Refresh() {
         }
         break;
       case Messages::ButtonLongPressed:
-        if (currentApp != Apps::Clock) {
-          if (currentApp == Apps::Notifications) {
-            LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::Up);
-          } else if (currentApp == Apps::QuickSettings) {
-            LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::LeftAnim);
+        if (currentApp != static_cast<uint8_t>(Apps::Clock)) {
+          if (currentApp == static_cast<uint8_t>(Apps::Notifications)) {
+            LoadNewScreen(static_cast<uint8_t>(Apps::Clock), DisplayApp::FullRefreshDirections::Up);
+          } else if (currentApp == static_cast<uint8_t>(Apps::QuickSettings)) {
+            LoadNewScreen(static_cast<uint8_t>(Apps::Clock), DisplayApp::FullRefreshDirections::LeftAnim);
           } else {
-            LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::Down);
+            LoadNewScreen(static_cast<uint8_t>(Apps::Clock), DisplayApp::FullRefreshDirections::Down);
           }
           appStackDirections.Reset();
           returnAppStack.Reset();
@@ -338,16 +338,16 @@ void DisplayApp::Refresh() {
         break;
       case Messages::ButtonLongerPressed:
         // Create reboot app and open it instead
-        LoadNewScreen(Apps::SysInfo, DisplayApp::FullRefreshDirections::Up);
+        LoadNewScreen(static_cast<uint8_t>(Apps::SysInfo), DisplayApp::FullRefreshDirections::Up);
         break;
       case Messages::ButtonDoubleClicked:
-        if (currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
-          LoadNewScreen(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
+        if (currentApp != static_cast<uint8_t>(Apps::Notifications) && currentApp != static_cast<uint8_t>(Apps::NotificationsPreview)) {
+          LoadNewScreen(static_cast<uint8_t>(Apps::Notifications), DisplayApp::FullRefreshDirections::Down);
         }
         break;
 
       case Messages::BleFirmwareUpdateStarted:
-        LoadNewScreen(Apps::FirmwareUpdate, DisplayApp::FullRefreshDirections::Down);
+        LoadNewScreen(static_cast<uint8_t>(Apps::FirmwareUpdate), DisplayApp::FullRefreshDirections::Down);
         break;
       case Messages::BleRadioEnableToggle:
         PushMessageToSystemTask(System::Messages::BleRadioEnableToggle);
@@ -357,7 +357,7 @@ void DisplayApp::Refresh() {
         // What should happen here?
         break;
       case Messages::Chime:
-        LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+        LoadNewScreen(static_cast<uint8_t>(Apps::Clock), DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(35);
         break;
       case Messages::OnChargingEvent:
@@ -371,18 +371,18 @@ void DisplayApp::Refresh() {
     currentScreen->OnTouchEvent(touchHandler.GetX(), touchHandler.GetY());
   }
 
-  if (nextApp != Apps::None) {
+  if (nextApp != static_cast<uint8_t>(Apps::None)) {
     LoadNewScreen(nextApp, nextDirection);
-    nextApp = Apps::None;
+    nextApp = static_cast<uint8_t>(Apps::None);
   }
 }
 
-void DisplayApp::StartApp(Apps app, DisplayApp::FullRefreshDirections direction) {
+void DisplayApp::StartApp(uint8_t app, DisplayApp::FullRefreshDirections direction) {
   nextApp = app;
   nextDirection = direction;
 }
 
-void DisplayApp::LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direction) {
+void DisplayApp::LoadNewScreen(uint8_t app, DisplayApp::FullRefreshDirections direction) {
   // Don't add the same screen to the stack back to back.
   // This is mainly to fix an issue with receiving two notifications at the same time
   // and shouldn't happen otherwise.
@@ -393,7 +393,7 @@ void DisplayApp::LoadNewScreen(Apps app, DisplayApp::FullRefreshDirections direc
   LoadScreen(app, direction);
 }
 
-void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections direction) {
+void DisplayApp::LoadScreen(uint8_t app, DisplayApp::FullRefreshDirections direction) {
   lvgl.CancelTap();
   lv_disp_trig_activity(nullptr);
   motorController.StopRinging();
@@ -401,10 +401,15 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
   currentScreen.reset(nullptr);
   SetFullRefresh(direction);
 
-  switch (app) {
+  switch (static_cast<Apps>(app)) {
     case Apps::Launcher:
       currentScreen =
-        std::make_unique<Screens::ApplicationList>(this, settingsController, batteryController, bleController, dateTimeController);
+        std::make_unique<Screens::ApplicationList>(this, 
+                                                   settingsController, 
+                                                   batteryController, 
+                                                   bleController, 
+                                                   dateTimeController,
+                                                   appController);
       break;
     case Apps::Motion:
       // currentScreen = std::make_unique<Screens::Motion>(motionController);
@@ -519,9 +524,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     case Apps::StopWatch:
       currentScreen = std::make_unique<Screens::StopWatch>(*systemTask);
       break;
-    case Apps::Twos:
-      currentScreen = std::make_unique<Screens::Twos>();
-      break;
+    // case Apps::Twos:
+    //   currentScreen = std::make_unique<Screens::Twos>();
+    //   break;
     case Apps::Paint:
       currentScreen = std::make_unique<Screens::InfiniPaint>(lvgl, motorController);
       break;
@@ -547,6 +552,22 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     */
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);
+      break;
+    default:
+      {
+        // Pinetime::Applications::AppInterface appInterface = {
+          // &lvgl,
+          // motorController,
+          // settingsController,
+          // alarmController,
+          // timer,
+          // heartRateController,
+          // systemTask,
+          // systemTask->nimble().music(),
+          // systemTask->nimble().navigation()
+        // };
+        currentScreen = appController.Get(app - static_cast<uint8_t>(Apps::Dynamic));
+      }
       break;
   }
   currentApp = app;

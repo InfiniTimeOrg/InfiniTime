@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <vector>
 #include <functional>
 #include <memory>
 #include "displayapp/screens/Screen.h"
@@ -12,12 +13,11 @@ namespace Pinetime {
 
       enum class ScreenListModes { UpDown, RightLeft, LongPress };
 
-      template <size_t N>
       class ScreenList : public Screen {
       public:
         ScreenList(DisplayApp* app,
                    uint8_t initScreen,
-                   const std::array<std::function<std::unique_ptr<Screen>()>, N>&& screens,
+                   const std::vector<std::function<std::unique_ptr<Screen>()>>&& screens,
                    ScreenListModes mode)
           : app {app},
             initScreen {initScreen},
@@ -104,7 +104,7 @@ namespace Pinetime {
       private:
         DisplayApp* app;
         uint8_t initScreen = 0;
-        const std::array<std::function<std::unique_ptr<Screen>()>, N> screens;
+        const std::vector<std::function<std::unique_ptr<Screen>()>> screens;
         ScreenListModes mode = ScreenListModes::UpDown;
 
         uint8_t screenIndex = 0;

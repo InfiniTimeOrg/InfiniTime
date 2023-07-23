@@ -9,7 +9,9 @@ using namespace Pinetime::Applications::Screens;
 constexpr std::array<List::Applications, Settings::entries.size()> Settings::entries;
 
 auto Settings::CreateScreenList() const {
-  std::array<std::function<std::unique_ptr<Screen>()>, nScreens> screens;
+  std::vector<std::function<std::unique_ptr<Screen>()>> screens;
+  screens.resize(nScreens);
+
   for (size_t i = 0; i < screens.size(); i++) {
     screens[i] = [this, i]() -> std::unique_ptr<Screen> {
       return CreateScreen(i);

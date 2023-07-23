@@ -49,7 +49,7 @@ namespace Pinetime {
            {"Casio G7710", Applications::Screens::WatchFaceCasioStyleG7710::IsAvailable(filesystem)},
            {"", false},
            {"", false}}};
-        ScreenList<nScreens> screens;
+        ScreenList screens;
       };
     }
   }

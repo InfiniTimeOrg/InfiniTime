@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include <lvgl/src/lv_core/lv_obj.h>
 #include "displayapp/screens/Screen.h"
 
@@ -17,6 +19,12 @@ namespace Pinetime {
         ~Twos() override;
 
         bool OnTouchEvent(TouchEvents event) override;
+
+        static Twos Get() {
+          return Twos();
+        }
+
+        static constexpr const char* symbol {"2"};
 
       private:
         static constexpr int nColors = 5;

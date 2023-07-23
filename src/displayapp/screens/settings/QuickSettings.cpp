@@ -137,7 +137,7 @@ void QuickSettings::UpdateScreen() {
 
 void QuickSettings::OnButtonEvent(lv_obj_t* object) {
   if (object == btn2) {
-    app->StartApp(Apps::FlashLight, DisplayApp::FullRefreshDirections::Up);
+    app->StartApp(static_cast<uint8_t>(Apps::FlashLight), DisplayApp::FullRefreshDirections::Up);
   } else if (object == btn1) {
 
     brightness.Step();
@@ -163,6 +163,6 @@ void QuickSettings::OnButtonEvent(lv_obj_t* object) {
 
   } else if (object == btn4) {
     settingsController.SetSettingsMenu(0);
-    app->StartApp(Apps::Settings, DisplayApp::FullRefreshDirections::Up);
+    app->StartApp(static_cast<uint8_t>(Apps::Settings), DisplayApp::FullRefreshDirections::Up);
   }
 }
