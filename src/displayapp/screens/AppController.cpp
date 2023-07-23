@@ -1,8 +1,8 @@
 #include "displayapp/screens/AppController.h"
-#include "displayapp/screens/Twos.h"
 
+using namespace Pinetime::Applications;
 
-void AppController::AppController() {
+AppController::AppController() {
   symbols[current_apps] = Twos::Symbol;
   constructors[current_apps] = Twos::Get;
   current_apps++;

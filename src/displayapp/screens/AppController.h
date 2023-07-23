@@ -29,7 +29,7 @@ namespace Pinetime {
 
     class AppController {
     public:
-      AppController() = default;
+      AppController();
 
       const char* GetSymbol(uint8_t app) const {
         app -= static_cast<uint8_t>(Apps::Dynamic);

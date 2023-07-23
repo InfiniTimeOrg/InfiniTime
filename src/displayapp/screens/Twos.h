@@ -20,11 +20,11 @@ namespace Pinetime {
 
         bool OnTouchEvent(TouchEvents event) override;
 
-        static Twos Get() {
-          return Twos();
+        static std::unique_ptr<Twos> Get() {
+          return std::make_unique<Twos>();
         }
 
-        static constexpr const char* symbol {"2"};
+        static constexpr const char* Symbol {"2"};
 
       private:
         static constexpr int nColors = 5;
