@@ -46,23 +46,34 @@ Dice::Dice(Controllers::MotionController& motion, Controllers::MotorController& 
                       static_cast<uint32_t>(motion.Z())};
   gen.seed(sseq);
 
-  nCounter.Create();
-  lv_obj_align(nCounter.GetObject(), lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 24);
-  nCounter.SetValue(1);
-
-  lv_obj_t* dLabel = MakeLabel(&jetbrains_mono_42,
+  lv_obj_t* nCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
                                LV_COLOR_WHITE,
                                LV_LABEL_LONG_EXPAND,
                                0,
-                               LV_LABEL_ALIGN_LEFT,
-                               "d",
-                               nCounter.GetObject(),
-                               LV_ALIGN_OUT_RIGHT_MID,
+                               LV_LABEL_ALIGN_CENTER,
+                               "count",
+                               lv_scr_act(),
+                               LV_ALIGN_IN_TOP_LEFT,
                                0,
                                0);
 
+  lv_obj_t* dCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
+                               LV_COLOR_WHITE,
+                               LV_LABEL_LONG_EXPAND,
+                               0,
+                               LV_LABEL_ALIGN_CENTER,
+                               "sides",
+                               nCounterLabel,
+                               LV_ALIGN_OUT_RIGHT_MID,
+                               20,
+                               0);
+
+  nCounter.Create();
+  lv_obj_align(nCounter.GetObject(), nCounterLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+  nCounter.SetValue(1);
+
   dCounter.Create();
-  lv_obj_align(dCounter.GetObject(), dLabel, LV_ALIGN_OUT_RIGHT_MID, 2, 0);
+  lv_obj_align(dCounter.GetObject(), dCounterLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
   dCounter.SetValue(6);
 
   std::uniform_int_distribution<> distrib(0, resultColors.size() - 1);
@@ -76,8 +87,8 @@ Dice::Dice(Controllers::MotionController& motion, Controllers::MotorController& 
                                "",
                                lv_scr_act(),
                                LV_ALIGN_IN_TOP_RIGHT,
-                               13,
-                               30);
+                               11,
+                               38);
   resultIndividualLabel = MakeLabel(&jetbrains_mono_bold_20,
                                     resultColors[currentColorIndex],
                                     LV_LABEL_LONG_BREAK,
