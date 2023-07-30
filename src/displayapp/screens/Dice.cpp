@@ -39,7 +39,8 @@ namespace {
   }
 }
 
-Dice::Dice(Controllers::MotionController& motion, Controllers::MotorController& motor) : motor {motor} {
+Dice::Dice(Controllers::MotionController& motion, Controllers::MotorController& motor, Controllers::Settings& settings)
+  : motor {motor}, motion {motion}, settings {settings} {
   std::seed_seq sseq {static_cast<uint32_t>(xTaskGetTickCount()),
                       static_cast<uint32_t>(motion.X()),
                       static_cast<uint32_t>(motion.Y()),
@@ -108,10 +109,34 @@ Dice::Dice(Controllers::MotionController& motion, Controllers::MotorController& 
                            LV_ALIGN_CENTER,
                            0,
                            0);
+
+  // Spagetti code in motion controller: it only updates the shake speed when shake to wake is on...
+  enableShakeForDice = !settings.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake);
+  if (enableShakeForDice)
+    settings.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, true);
+
+  // TODO: try a higher refresh period
+  refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Dice::~Dice() {
+  // reset the shake to wake mode.
+  if (enableShakeForDice) {
+    settings.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, false);
+    enableShakeForDice = false;
+  }
+  lv_task_del(refreshTask);
   lv_obj_clean(lv_scr_act());
+}
+
+void Dice::Refresh() {
+  // we only reset the hysteresis when at rest
+  // also motion.ShouldShakeWake() seems to be broken?
+  if (motion.CurrentShakeSpeed() >= settings.GetShakeThreshold()) {
+    if (rollHysteresis <= 0)
+      Roll();
+  } else if (rollHysteresis > 0)
+    --rollHysteresis;
 }
 
 void Dice::Roll() {
@@ -148,6 +173,7 @@ void Dice::Roll() {
   if (openingRoll == false) {
     motor.RunForDuration(30);
     NextColor();
+    rollHysteresis = ROLL_HYSTERESIS;
   }
 }
 
