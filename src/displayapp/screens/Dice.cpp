@@ -47,26 +47,26 @@ Dice::Dice(Controllers::MotionController& motion, Controllers::MotorController& 
   gen.seed(sseq);
 
   lv_obj_t* nCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
-                               LV_COLOR_WHITE,
-                               LV_LABEL_LONG_EXPAND,
-                               0,
-                               LV_LABEL_ALIGN_CENTER,
-                               "count",
-                               lv_scr_act(),
-                               LV_ALIGN_IN_TOP_LEFT,
-                               0,
-                               0);
+                                      LV_COLOR_WHITE,
+                                      LV_LABEL_LONG_EXPAND,
+                                      0,
+                                      LV_LABEL_ALIGN_CENTER,
+                                      "count",
+                                      lv_scr_act(),
+                                      LV_ALIGN_IN_TOP_LEFT,
+                                      0,
+                                      0);
 
   lv_obj_t* dCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
-                               LV_COLOR_WHITE,
-                               LV_LABEL_LONG_EXPAND,
-                               0,
-                               LV_LABEL_ALIGN_CENTER,
-                               "sides",
-                               nCounterLabel,
-                               LV_ALIGN_OUT_RIGHT_MID,
-                               20,
-                               0);
+                                      LV_COLOR_WHITE,
+                                      LV_LABEL_LONG_EXPAND,
+                                      0,
+                                      LV_LABEL_ALIGN_CENTER,
+                                      "sides",
+                                      nCounterLabel,
+                                      LV_ALIGN_OUT_RIGHT_MID,
+                                      20,
+                                      0);
 
   nCounter.Create();
   lv_obj_align(nCounter.GetObject(), nCounterLabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
