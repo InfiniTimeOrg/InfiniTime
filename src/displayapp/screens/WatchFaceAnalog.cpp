@@ -8,8 +8,6 @@
 #include "components/settings/Settings.h"
 #include "displayapp/InfiniTimeTheme.h"
 
-LV_IMG_DECLARE(bg_clock);
-
 using namespace Pinetime::Applications::Screens;
 
 namespace {
@@ -61,7 +59,7 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   sSecond = 99;
 
   lv_obj_t* bg_clock_img = lv_img_create(lv_scr_act(), nullptr);
-  lv_img_set_src(bg_clock_img, &bg_clock);
+  lv_img_set_src(bg_clock_img, "F:/images/bg_clock.bin");
   lv_obj_align(bg_clock_img, nullptr, LV_ALIGN_CENTER, 0, 0);
 
   batteryIcon.Create(lv_scr_act());
@@ -231,4 +229,15 @@ void WatchFaceAnalog::Refresh() {
       lv_label_set_text_fmt(label_date_day, "%s\n%02i", dateTimeController.DayOfWeekShortToString(), dateTimeController.Day());
     }
   }
+}
+
+bool WatchFaceAnalog::IsAvailable(Pinetime::Controllers::FS& filesystem) {
+  lfs_file file = {};
+
+  if (filesystem.FileOpen(&file, "/images/bg_clock.bin", LFS_O_RDONLY) < 0) {
+    return false;
+  }
+
+  filesystem.FileClose(&file);
+  return true;
 }

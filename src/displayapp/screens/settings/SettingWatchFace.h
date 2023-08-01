@@ -11,6 +11,7 @@
 #include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/WatchFaceInfineat.h"
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
+#include "displayapp/screens/WatchFaceAnalog.h"
 
 namespace Pinetime {
 
@@ -42,7 +43,7 @@ namespace Pinetime {
 
         std::array<Screens::CheckboxList::Item, settingsPerScreen * nScreens> watchfaces {
           {{"Digital face", true},
-           {"Analog face", true},
+           {"Analog face", Applications::Screens::WatchFaceAnalog::IsAvailable(filesystem)},
            {"PineTimeStyle", true},
            {"Terminal", true},
            {"Infineat face", Applications::Screens::WatchFaceInfineat::IsAvailable(filesystem)},
