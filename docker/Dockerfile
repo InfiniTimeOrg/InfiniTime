@@ -40,7 +40,7 @@ RUN pip3 install cbor
 RUN npm i lv_font_conv@1.5.2 -g
 
 RUN npm i ts-node@10.9.1 -g
-RUN npm i @swc/core -g
+RUN npm i @swc/core@1.2.160 -g
 RUN npm i lv_img_conv@0.3.0 -g
 
 # build.sh knows how to compile
