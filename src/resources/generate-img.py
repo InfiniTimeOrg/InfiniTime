@@ -9,8 +9,10 @@ import os.path
 import argparse
 import subprocess
 
-def gen_lvconv_line(lv_img_conv: str, dest: str, color_format: str, output_format: str, binary_format: str, sources: str):
-    args = [lv_img_conv, sources, '--force', '--output-file', dest, '--color-format', color_format, '--output-format', output_format, '--binary-format', binary_format]
+def gen_lvconv_line(lv_img_conv: str, dest: str, color_format: str, output_format: str, sources: str, binary_format: str | None = None):
+    args = [lv_img_conv, sources, '--force', '--output-file', dest, '--color-format', color_format, '--output-format', output_format]
+    if binary_format is not None:
+        args.extend(['--binary-format', binary_format])
 
     return args
 
