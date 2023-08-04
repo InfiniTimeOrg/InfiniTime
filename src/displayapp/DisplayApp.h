@@ -129,6 +129,7 @@ namespace Pinetime {
       DisplayApp::FullRefreshDirections nextDirection;
       System::BootErrors bootError;
       void ApplyBrightness();
+      void HandleDoubleClick();
 
       static constexpr size_t returnAppStackSize = 10;
       Utility::StaticStack<Apps, returnAppStackSize> returnAppStack;

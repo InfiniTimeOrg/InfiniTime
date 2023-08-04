@@ -8,6 +8,7 @@
 #include "components/ble/BleController.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/NotificationManager.h"
+#include "components/ble/MusicService.h"
 #include "components/motion/MotionController.h"
 #include "components/motor/MotorController.h"
 #include "displayapp/screens/ApplicationList.h"
@@ -48,6 +49,7 @@
 #include "displayapp/screens/settings/SettingChimes.h"
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include "displayapp/screens/settings/SettingBluetooth.h"
+#include "displayapp/screens/settings/SettingDoubleClick.h"
 
 #include "libs/lv_conf.h"
 #include "UserApps.h"
@@ -360,9 +362,7 @@ void DisplayApp::Refresh() {
         LoadNewScreen(Apps::SysInfo, DisplayApp::FullRefreshDirections::Up);
         break;
       case Messages::ButtonDoubleClicked:
-        if (currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
-          LoadNewScreen(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
-        }
+        HandleDoubleClick();
         break;
 
       case Messages::BleFirmwareUpdateStarted:
@@ -507,6 +507,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     case Apps::SettingWakeUp:
       currentScreen = std::make_unique<Screens::SettingWakeUp>(settingsController);
       break;
+    case Apps::SettingDoubleClick:
+      currentScreen = std::make_unique<Screens::SettingDoubleClick>(settingsController);
+      break;
     case Apps::SettingDisplay:
       currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);
       break;
@@ -631,4 +634,17 @@ void DisplayApp::ApplyBrightness() {
     brightness = Controllers::BrightnessController::Levels::High;
   }
   brightnessController.Set(brightness);
+}
+
+void DisplayApp::HandleDoubleClick() {
+  switch (settingsController.GetDoubleClickAction()) {
+    case Controllers::Settings::DoubleClickAction::GoToNotifications:
+      if (currentApp != Apps::Notifications && currentApp != Apps::NotificationsPreview) {
+        LoadNewScreen(Apps::Notifications, DisplayApp::FullRefreshDirections::Down);
+      }
+      break;
+    case Controllers::Settings::DoubleClickAction::AudioNext:
+      systemTask->nimble().music().event(Controllers::MusicService::EVENT_MUSIC_NEXT);
+      break;
+  }
 }

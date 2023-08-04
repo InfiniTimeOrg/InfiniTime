@@ -14,6 +14,7 @@ namespace Pinetime {
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t { SingleTap = 0, DoubleTap = 1, RaiseWrist = 2, Shake = 3, LowerWrist = 4 };
+      enum class DoubleClickAction : uint8_t { GoToNotifications, AudioNext };
       enum class Colors : uint8_t {
         White,
         Silver,
@@ -249,6 +250,16 @@ namespace Pinetime {
         return settings.wakeUpMode;
       }
 
+      void SetDoubleClickAction(DoubleClickAction action) {
+        if (settings.doubleClickAction != action)
+          settingsChanged = true;
+        settings.doubleClickAction = action;
+      }
+
+      DoubleClickAction GetDoubleClickAction() {
+        return settings.doubleClickAction;
+      }
+
       bool isWakeUpModeOn(const WakeUpMode mode) const {
         return getWakeUpModes()[static_cast<size_t>(mode)];
       }
@@ -308,6 +319,7 @@ namespace Pinetime {
         uint16_t shakeWakeThreshold = 150;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+        DoubleClickAction doubleClickAction;
       };
 
       SettingsData settings;
