@@ -9,7 +9,7 @@ namespace Pinetime {
       public:
         explicit BatteryIcon(bool colorOnLowBattery);
         void Create(lv_obj_t* parent);
-
+        double ColorRamp(dobule percentage);
         void SetColor(lv_color_t);
         void SetBatteryPercentage(uint8_t percentage);
         lv_obj_t* GetObject();
