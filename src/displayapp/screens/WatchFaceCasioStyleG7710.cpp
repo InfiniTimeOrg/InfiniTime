@@ -198,23 +198,46 @@ void WatchFaceCasioStyleG7710::Refresh() {
   if (powerPresent.IsUpdated()) {
     lv_label_set_text_static(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
   }
-
+  
+  // Create a list of objects that need their color updated
+  std::vector<lv_obj_t*> objectsToUpdate = {
+    label_battery_value,
+    batteryIcon.GetObject(),
+    batteryPlug,
+    bleIcon,
+    notificationIcon,
+    label_day_of_week,
+    label_week_number,
+    label_day_of_year,
+    line_icons,
+    line_day_of_week_number,
+    line_day_of_year,
+    label_date,
+    line_date,
+    label_time,
+    line_time,
+    label_time_ampm,
+    backgroundLabel,
+    heartbeatIcon,
+    heartbeatValue,
+    stepValue,
+    stepIcon
+  };
+  
   batteryPercentRemaining = batteryController.PercentRemaining();
-if (batteryPercentRemaining.IsUpdated()) {
-  auto batteryPercent = batteryPercentRemaining.Get();
-  batteryIcon.SetBatteryPercentage(batteryPercent);
-  lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
-  
-  // Use the ColorRamp function from the batteryIcon object to get the desired color
-  lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), 100, 100);
-  
-  // Update the color of various elements using the new color_text
-  lv_obj_set_style_local_text_color(label_battery_value, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  batteryIcon.SetColor(color_text);
-  lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-}
+  if (batteryPercentRemaining.IsUpdated()) {
+    auto batteryPercent = batteryPercentRemaining.Get();
+    batteryIcon.SetBatteryPercentage(batteryPercent);
+    lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
+    
+    // Use the ColorRamp function from the batteryIcon object to get the desired color
+    lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), 100, 100);
+    
+    // Update the color of each object using the new color_text
+    for (auto obj : objectsToUpdate) {
+      lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+    }
+  }
 
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
