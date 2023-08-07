@@ -66,6 +66,14 @@ namespace Pinetime {
           CleanUpQcbor(&decodeContext);
           return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
         }
+
+        // Do not add already expired events
+        uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+        if (static_cast<uint64_t>(tmpTimestamp + tmpExpires) < currentTimestamp) {
+          CleanUpQcbor(&decodeContext);
+          return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+        }
+
         int64_t tmpEventType = 0;
         QCBORDecode_GetInt64InMapSZ(&decodeContext, "EventType", &tmpEventType);
         if (QCBORDecode_GetError(&decodeContext) != QCBOR_SUCCESS || tmpEventType < 0 ||
@@ -73,6 +81,8 @@ namespace Pinetime {
           CleanUpQcbor(&decodeContext);
           return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
         }
+
+        TidyTimeline();
 
         switch (static_cast<WeatherData::eventtype>(tmpEventType)) {
           case WeatherData::eventtype::AirQuality: {
@@ -363,9 +373,9 @@ namespace Pinetime {
           }
         }
 
+        std::sort(std::begin(timeline), std::end(timeline), CompareTimelineEvents);
+
         QCBORDecode_ExitMap(&decodeContext);
-        GetTimelineLength();
-        TidyTimeline();
 
         if (QCBORDecode_Finish(&decodeContext) != QCBOR_SUCCESS) {
           return BLE_ATT_ERR_INSUFFICIENT_RES;
