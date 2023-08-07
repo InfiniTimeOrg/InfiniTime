@@ -24,7 +24,7 @@ lv_obj_t* BatteryIcon::GetObject() {
 }
 
 // Function to convert a percentage value from 0 to 100 to a value from 0 to 180 with non-linear adjustments
-double ColorRamp(double percentage) {
+double BatteryIcon::ColorRamp(double percentage) {
     double val = percentage / 100.0;
 
     if (val >= 0.05) { 
