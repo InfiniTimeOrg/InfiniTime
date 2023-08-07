@@ -27,15 +27,15 @@ lv_obj_t* BatteryIcon::GetObject() {
 double ColorRamp(double percentage) {
     double val = percentage / 100.0;
 
-    if (val >= 0.1) { 
-        if (val > 0.45 && val < 0.8) {
+    if (val >= 0.05) { 
+        if (val >  0.25 && val < 0.75) {
             return 0.33333 * 360;
-        } else if (val >= 0.99) {
+        } else if (val >= 0.9) {
             return 0.5 * 360;
         } else if (val < 0.5) {
-            return (val - 0.1) * 0.96 * 360;
+            return (val - 0.05) * 1.61 * 360;
         } else {
-            return (val - 0.4) * 0.85 * 360;
+            return (val - 0.35) * 0.85 * 360;
         }
     } else {
         return 0;
