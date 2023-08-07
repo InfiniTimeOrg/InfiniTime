@@ -26,7 +26,25 @@ lv_obj_t* BatteryIcon::GetObject() {
 void BatteryIcon::SetBatteryPercentage(uint8_t percentage) {
   lv_obj_set_height(batteryJuice, percentage * 14 / 100);
   lv_obj_realign(batteryJuice);
+
+  // Function to convert a percentage value from 0 to 100 to a value from 0 to 180 with non-linear adjustments
+  double yeet(double percentage) {
+      double val = percentage / 100.0;
+  
+      if (val >= 0.001) { // Adjusted for a small tolerance to avoid division by zero
+          if (val > 0.45 && val < 0.8) {
+              return 0.33333 * 180;
+          } else if (val < 0.5) {
+              return (val - 0.001) * 0.96 * 180;
+          } else {
+              return (val - 0.4) * 0.85 * 180;
+          }
+      } else {
+          return 0;
+      }
+  }
   SetColor( lv_color_hsv_to_rgb( ( percentage/2 ) ,100,100) );
+  
 //  if (colorOnLowBattery) {
 //    static constexpr int lowBatteryThreshold = 15;
 //    static constexpr int criticalBatteryThreshold = 5;
