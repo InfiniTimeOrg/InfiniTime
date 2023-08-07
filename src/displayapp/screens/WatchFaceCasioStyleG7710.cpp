@@ -200,12 +200,21 @@ void WatchFaceCasioStyleG7710::Refresh() {
   }
 
   batteryPercentRemaining = batteryController.PercentRemaining();
-  if (batteryPercentRemaining.IsUpdated()) {
-    auto batteryPercent = batteryPercentRemaining.Get();
-    batteryIcon.SetBatteryPercentage(batteryPercent);
-    lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
-    lv_color_t color_text = lv_color_hsv_to_rgb( BatteryIcon::ColorRamp(batteryPercent) ,100,100);
-  }
+if (batteryPercentRemaining.IsUpdated()) {
+  auto batteryPercent = batteryPercentRemaining.Get();
+  batteryIcon.SetBatteryPercentage(batteryPercent);
+  lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
+  
+  // Use the ColorRamp function from the batteryIcon object to get the desired color
+  lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), 100, 100);
+  
+  // Update the color of various elements using the new color_text
+  lv_obj_set_style_local_text_color(label_battery_value, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  batteryIcon.SetColor(color_text);
+  lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+}
 
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
