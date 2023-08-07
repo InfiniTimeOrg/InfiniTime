@@ -146,6 +146,9 @@ namespace Pinetime {
       static bool CompareTimelineEvents(const std::unique_ptr<WeatherData::TimelineHeader>& first,
                                         const std::unique_ptr<WeatherData::TimelineHeader>& second);
 
+      template <class T>
+      std::unique_ptr<T>& GetEventOfType(WeatherData::eventtype eventType);
+
       /**
        * Returns current UNIX timestamp
        */

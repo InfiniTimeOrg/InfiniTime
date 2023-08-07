@@ -401,103 +401,52 @@ namespace Pinetime {
       return 0;
     }
 
-    std::unique_ptr<WeatherData::Clouds>& WeatherService::GetCurrentClouds() {
+    template <class T>
+    std::unique_ptr<T>& WeatherService::GetEventOfType(WeatherData::eventtype eventType) {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
       for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Clouds && IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Clouds>&>(header);
+        if (header->eventType == eventType && IsEventStillValid(header, currentTimestamp)) {
+          return reinterpret_cast<std::unique_ptr<T>&>(header);
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Clouds>&>(*this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<T>&>(*this->nullHeader);
+    }
+
+    std::unique_ptr<WeatherData::Clouds>& WeatherService::GetCurrentClouds() {
+      return GetEventOfType<WeatherData::Clouds>(WeatherData::eventtype::Clouds);
     }
 
     std::unique_ptr<WeatherData::Obscuration>& WeatherService::GetCurrentObscuration() {
-      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Obscuration && IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Obscuration>&>(header);
-        }
-      }
-
-      return reinterpret_cast<std::unique_ptr<WeatherData::Obscuration>&>(*this->nullHeader);
+      return GetEventOfType<WeatherData::Obscuration>(WeatherData::eventtype::Obscuration);
     }
 
     std::unique_ptr<WeatherData::Precipitation>& WeatherService::GetCurrentPrecipitation() {
-      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Precipitation && IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Precipitation>&>(header);
-        }
-      }
-
-      return reinterpret_cast<std::unique_ptr<WeatherData::Precipitation>&>(*this->nullHeader);
+      return GetEventOfType<WeatherData::Precipitation>(WeatherData::eventtype::Precipitation);
     }
 
     std::unique_ptr<WeatherData::Wind>& WeatherService::GetCurrentWind() {
-      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Wind && IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Wind>&>(header);
-        }
-      }
-
-      return reinterpret_cast<std::unique_ptr<WeatherData::Wind>&>(*this->nullHeader);
+      return GetEventOfType<WeatherData::Wind>(WeatherData::eventtype::Wind);
     }
 
     std::unique_ptr<WeatherData::Temperature>& WeatherService::GetCurrentTemperature() {
-      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Temperature && IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Temperature>&>(header);
-        }
-      }
-
-      return reinterpret_cast<std::unique_ptr<WeatherData::Temperature>&>(*this->nullHeader);
+      return GetEventOfType<WeatherData::Temperature>(WeatherData::eventtype::Temperature);
     }
 
     std::unique_ptr<WeatherData::Humidity>& WeatherService::GetCurrentHumidity() {
-      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Humidity && IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Humidity>&>(header);
-        }
-      }
-
-      return reinterpret_cast<std::unique_ptr<WeatherData::Humidity>&>(*this->nullHeader);
+      return GetEventOfType<WeatherData::Humidity>(WeatherData::eventtype::Humidity);
     }
 
     std::unique_ptr<WeatherData::Pressure>& WeatherService::GetCurrentPressure() {
-      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Pressure && IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Pressure>&>(header);
-        }
-      }
-
-      return reinterpret_cast<std::unique_ptr<WeatherData::Pressure>&>(*this->nullHeader);
+      return GetEventOfType<WeatherData::Pressure>(WeatherData::eventtype::Pressure);
     }
 
     std::unique_ptr<WeatherData::Location>& WeatherService::GetCurrentLocation() {
-      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::Location && IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Location>&>(header);
-        }
-      }
-
-      return reinterpret_cast<std::unique_ptr<WeatherData::Location>&>(*this->nullHeader);
+      return GetEventOfType<WeatherData::Location>(WeatherData::eventtype::Location);
     }
 
     std::unique_ptr<WeatherData::AirQuality>& WeatherService::GetCurrentQuality() {
-      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
-      for (auto&& header : this->timeline) {
-        if (header->eventType == WeatherData::eventtype::AirQuality && IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::AirQuality>&>(header);
-        }
-      }
-
-      return reinterpret_cast<std::unique_ptr<WeatherData::AirQuality>&>(*this->nullHeader);
+      return GetEventOfType<WeatherData::AirQuality>(WeatherData::eventtype::AirQuality);
     }
 
     size_t WeatherService::GetTimelineLength() const {
