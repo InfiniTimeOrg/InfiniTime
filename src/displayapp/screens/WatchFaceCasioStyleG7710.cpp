@@ -204,7 +204,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     auto batteryPercent = batteryPercentRemaining.Get();
     batteryIcon.SetBatteryPercentage(batteryPercent);
     lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
-    lv_color_t color_text = lv_color_hsv_to_rgb( ColorRamp(batteryPercent) ,100,100)
+    lv_color_t color_text = lv_color_hsv_to_rgb( ColorRamp(batteryPercent) ,100,100);
   }
 
   bleState = bleController.IsConnected();
