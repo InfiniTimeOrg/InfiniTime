@@ -26,17 +26,18 @@ lv_obj_t* BatteryIcon::GetObject() {
 void BatteryIcon::SetBatteryPercentage(uint8_t percentage) {
   lv_obj_set_height(batteryJuice, percentage * 14 / 100);
   lv_obj_realign(batteryJuice);
-  if (colorOnLowBattery) {
-    static constexpr int lowBatteryThreshold = 15;
-    static constexpr int criticalBatteryThreshold = 5;
-    if (percentage > lowBatteryThreshold) {
-      SetColor(LV_COLOR_WHITE);
-    } else if (percentage > criticalBatteryThreshold) {
-      SetColor(LV_COLOR_ORANGE);
-    } else {
-      SetColor(Colors::deepOrange);
-    }
-  }
+  SetColor( lv_color_hsv_to_rgb( round( percentage/2 ) ,38,100) );
+//  if (colorOnLowBattery) {
+//    static constexpr int lowBatteryThreshold = 15;
+//    static constexpr int criticalBatteryThreshold = 5;
+//    if (percentage > lowBatteryThreshold) {
+//      SetColor(LV_COLOR_WHITE);
+//    } else if (percentage > criticalBatteryThreshold) {
+//      SetColor(LV_COLOR_ORANGE);
+//   } else {
+//      SetColor(Colors::deepOrange);
+//    }
+//  }
 }
 
 void BatteryIcon::SetColor(lv_color_t color) {
