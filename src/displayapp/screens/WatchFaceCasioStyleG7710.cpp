@@ -90,15 +90,22 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_font(label_day_of_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment40);
   lv_label_set_text_static(label_day_of_year, "181-184");
 
-  lv_style_init(&style_line);
-  lv_style_set_line_width(&style_line, LV_STATE_DEFAULT, 2);
-  lv_style_set_line_color(&style_line, LV_STATE_DEFAULT, color_text);
-  lv_style_set_line_rounded(&style_line, LV_STATE_DEFAULT, true);
+  lv_style_t style_line;
+  lv_style_t style_border;
+  
+  void WatchFaceCasioStyleG7710::InitStyles(color_text) {
+    lv_style_init(&style_line);
+    lv_style_set_line_width(&style_line, LV_STATE_DEFAULT, 2);
+    lv_style_set_line_color(&style_line, LV_STATE_DEFAULT, color_text);
+    lv_style_set_line_rounded(&style_line, LV_STATE_DEFAULT, true);
+  
+    lv_style_init(&style_border);
+    lv_style_set_line_width(&style_border, LV_STATE_DEFAULT, 6);
+    lv_style_set_line_color(&style_border, LV_STATE_DEFAULT, color_text);
+    lv_style_set_line_rounded(&style_border, LV_STATE_DEFAULT, true);
+  }
 
-  lv_style_init(&style_border);
-  lv_style_set_line_width(&style_border, LV_STATE_DEFAULT, 6);
-  lv_style_set_line_color(&style_border, LV_STATE_DEFAULT, color_text);
-  lv_style_set_line_rounded(&style_border, LV_STATE_DEFAULT, true);
+  InitStyles(color_text);
 
   line_icons = lv_line_create(lv_scr_act(), nullptr);
   lv_line_set_points(line_icons, line_icons_points, 3);
@@ -233,14 +240,16 @@ void WatchFaceCasioStyleG7710::Refresh() {
     
     // Update the color of each object using the new color_text
     for (auto obj : objectsToUpdate) {
-      if (obj == line_icons || obj == line_day_of_week_number || obj == line_day_of_year || obj == line_date || obj == line_time) {
-        // Update the color of the lines (using border color instead of text color)
-        lv_obj_set_style_local_border_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
-      } else {
-        // Update the color of other objects (using text color)
-        lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-      }
+      // Update the color of other objects (using text color)
+      lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
     }
+    InitStyles(color_text);
+    lv_obj_add_style(line_icons, LV_LINE_PART_MAIN, &style_line);
+    lv_obj_add_style(line_day_of_week_number, LV_LINE_PART_MAIN, &style_border);
+    lv_obj_add_style(line_day_of_year, LV_LINE_PART_MAIN, &style_line);
+    lv_obj_add_style(line_date, LV_LINE_PART_MAIN, &style_line);
+    lv_obj_add_style(line_time, LV_LINE_PART_MAIN, &style_line);
+  
     lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_darken(color_text, 127));
     
   }
