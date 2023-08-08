@@ -93,7 +93,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_style_t style_line;
   lv_style_t style_border;
   
-  void WatchFaceCasioStyleG7710::InitStyles(color_text) {
+  void WatchFaceCasioStyleG7710::InitStyles(lv_color_t color_text) {
     lv_style_init(&style_line);
     lv_style_set_line_width(&style_line, LV_STATE_DEFAULT, 2);
     lv_style_set_line_color(&style_line, LV_STATE_DEFAULT, color_text);
