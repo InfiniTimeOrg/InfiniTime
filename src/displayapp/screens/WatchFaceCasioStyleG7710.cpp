@@ -93,7 +93,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_style_t style_line;
   lv_style_t style_border;
   
-  void WatchFaceCasioStyleG7710::InitStyles(lv_color_t color_text) {
+  void WatchFaceCasioStyleG7710::InitStyles() {
     lv_style_init(&style_line);
     lv_style_set_line_width(&style_line, LV_STATE_DEFAULT, 2);
     lv_style_set_line_color(&style_line, LV_STATE_DEFAULT, color_text);
@@ -105,7 +105,7 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
     lv_style_set_line_rounded(&style_border, LV_STATE_DEFAULT, true);
   }
 
-  InitStyles(color_text);
+  InitStyles();
 
   line_icons = lv_line_create(lv_scr_act(), nullptr);
   lv_line_set_points(line_icons, line_icons_points, 3);
@@ -243,7 +243,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
       // Update the color of other objects (using text color)
       lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
     }
-    InitStyles(color_text);
+    InitStyles();
     lv_obj_add_style(line_icons, LV_LINE_PART_MAIN, &style_line);
     lv_obj_add_style(line_day_of_week_number, LV_LINE_PART_MAIN, &style_border);
     lv_obj_add_style(line_day_of_year, LV_LINE_PART_MAIN, &style_line);
