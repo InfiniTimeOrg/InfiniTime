@@ -204,7 +204,6 @@ void WatchFaceCasioStyleG7710::Refresh() {
     label_battery_value,
     batteryIcon.GetObject(),
     batteryPlug,
-    bleIcon,
     notificationIcon,
     label_day_of_week,
     label_week_number,
@@ -218,7 +217,6 @@ void WatchFaceCasioStyleG7710::Refresh() {
     line_time,
     label_time_ampm,
     backgroundLabel,
-    heartbeatIcon,
     heartbeatValue,
     stepValue,
     stepIcon
@@ -235,8 +233,16 @@ void WatchFaceCasioStyleG7710::Refresh() {
     
     // Update the color of each object using the new color_text
     for (auto obj : objectsToUpdate) {
-      lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+      if (obj == line_icons || obj == line_day_of_week_number || obj == line_day_of_year || obj == line_date || obj == line_time) {
+        // Update the color of the lines (using border color instead of text color)
+        lv_obj_set_style_local_border_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
+      } else {
+        // Update the color of other objects (using text color)
+        lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+      }
     }
+    lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+    
   }
 
   bleState = bleController.IsConnected();
