@@ -40,6 +40,7 @@ namespace Pinetime {
         static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
 
       private:
+        void InitStyles();
         Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
         Utility::DirtyValue<bool> powerPresent {};
         Utility::DirtyValue<bool> bleState {};
