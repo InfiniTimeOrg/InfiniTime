@@ -16,6 +16,8 @@ FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController) 
   lv_obj_align(bar1, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_bar_set_range(bar1, 0, 1000);
   lv_bar_set_value(bar1, 0, LV_ANIM_OFF);
+  lv_obj_set_style_local_border_color(bar1, LV_BAR_PART_BG, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(0, 0, 100));
+  lv_obj_set_style_local_border_width(bar1, LV_BAR_PART_BG, LV_STATE_DEFAULT, 2);
 
   percentLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(percentLabel, "Waiting...");
