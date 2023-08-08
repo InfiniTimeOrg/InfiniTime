@@ -47,7 +47,8 @@ void BatteryIcon::SetBatteryPercentage(uint8_t percentage) {
   lv_obj_realign(batteryJuice);
 
   // SetColor( lv_color_hsv_to_rgb( percentage/2, 100, 100) );
-  SetColor( lv_color_hsv_to_rgb( ColorRamp(percentage), (isCharging ? 50 : 100), 100) );
+//  SetColor( lv_color_hsv_to_rgb( ColorRamp(percentage), (isCharging ? 50 : 100), 100) );
+  SetColor( lv_color_hsv_to_rgb( ColorRamp(percentage), 100, 100) );
 }
 
 void BatteryIcon::SetColor(lv_color_t color) {
