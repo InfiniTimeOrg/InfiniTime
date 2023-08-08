@@ -14,6 +14,18 @@
 #include "components/settings/Settings.h"
 using namespace Pinetime::Applications::Screens;
 
+void WatchFaceCasioStyleG7710::InitStyles() {
+  lv_style_init(&style_line);
+  lv_style_set_line_width(&style_line, LV_STATE_DEFAULT, 2);
+  lv_style_set_line_color(&style_line, LV_STATE_DEFAULT, color_text);
+  lv_style_set_line_rounded(&style_line, LV_STATE_DEFAULT, true);
+
+  lv_style_init(&style_border);
+  lv_style_set_line_width(&style_border, LV_STATE_DEFAULT, 6);
+  lv_style_set_line_color(&style_border, LV_STATE_DEFAULT, color_text);
+  lv_style_set_line_rounded(&style_border, LV_STATE_DEFAULT, true);
+}
+
 WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTimeController,
                                                    const Controllers::Battery& batteryController,
                                                    const Controllers::Ble& bleController,
@@ -92,18 +104,6 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
 
   lv_style_t style_line;
   lv_style_t style_border;
-  
-  void WatchFaceCasioStyleG7710::InitStyles() {
-    lv_style_init(&style_line);
-    lv_style_set_line_width(&style_line, LV_STATE_DEFAULT, 2);
-    lv_style_set_line_color(&style_line, LV_STATE_DEFAULT, color_text);
-    lv_style_set_line_rounded(&style_line, LV_STATE_DEFAULT, true);
-  
-    lv_style_init(&style_border);
-    lv_style_set_line_width(&style_border, LV_STATE_DEFAULT, 6);
-    lv_style_set_line_color(&style_border, LV_STATE_DEFAULT, color_text);
-    lv_style_set_line_rounded(&style_border, LV_STATE_DEFAULT, true);
-  }
 
   InitStyles();
 
