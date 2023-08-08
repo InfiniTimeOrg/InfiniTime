@@ -55,5 +55,19 @@
         "streambuf": "cpp",
         "cinttypes": "cpp",
         "typeinfo": "cpp"
-    }
+    },
+    "cSpell.words": [
+        "notificatio"
+    ],
+    "cSpell.languageSettings": [
+        {
+            "languageId": "cpp",
+            "includeRegExpList": [
+                "/\\/\\/.*", // Matches single-line comments (// ...)
+                "/\\/\\*.*?\\*\\//s", // Matches multi-line comments (/* ... */)
+                "/('''|\"\"\")[^\\1]+?\\1/g", // Matches triple-quoted strings
+                "/(\"|')[^\"']+(\\1)/g" // Matches single and double-quoted strings
+            ]
+        }
+    ]
 }
