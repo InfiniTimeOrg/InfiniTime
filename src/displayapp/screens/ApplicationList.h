@@ -52,9 +52,9 @@ namespace Pinetime {
           {"2", Apps::Twos},
           {Symbols::drum, Apps::Metronome},
           {Symbols::map, Apps::Navigation},
-          {Symbols::none, Apps::None},
+        //  {Symbols::none, Apps::None},
 
-          // {"M", Apps::Motion},
+          {"M", Apps::Motion}, // 
         }};
         ScreenList<nScreens> screens;
       };
