@@ -59,7 +59,6 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   sSecond = 99;
 
   minor_scales = lv_linemeter_create(lv_scr_act(), nullptr);
-  // lv_linemeter_set_range(minor_scales, 1, 60);
   lv_linemeter_set_scale(minor_scales, 300, 51);
   lv_linemeter_set_angle_offset(minor_scales, 180);
   lv_obj_set_size(minor_scales, 240, 240);
@@ -70,7 +69,6 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_scale_end_color(minor_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 
   major_scales = lv_linemeter_create(lv_scr_act(), nullptr);
-  // lv_linemeter_set_range(major_scales, 1, 60);
   lv_linemeter_set_scale(major_scales, 300, 11);
   lv_linemeter_set_angle_offset(major_scales, 180);
   lv_obj_set_size(major_scales, 240, 240);
@@ -81,7 +79,6 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_scale_end_color(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
   large_scales = lv_linemeter_create(lv_scr_act(), nullptr);
-  // lv_linemeter_set_range(large_scales, 1, 60);
   lv_linemeter_set_scale(large_scales, 180, 3);
   lv_linemeter_set_angle_offset(large_scales, 180);
   lv_obj_set_size(large_scales, 240, 240);
