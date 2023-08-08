@@ -235,6 +235,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     for (auto obj : objectsToUpdate) {
       // Update the color of other objects (using text color)
       lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+      lv_obj_set_style_local_line_color(list2_line, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
     }
   //  InitStyles();
   //  lv_obj_add_style(line_icons, LV_LINE_PART_MAIN, &style_line);
