@@ -194,10 +194,6 @@ WatchFaceCasioStyleG7710::~WatchFaceCasioStyleG7710() {
 }
 
 void WatchFaceCasioStyleG7710::Refresh() {
-  powerPresent = batteryController.IsPowerPresent();
-  if (powerPresent.IsUpdated()) {
-    lv_label_set_text_static(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
-  }
   
   // Create a list of objects that need their color updated
   std::vector<lv_obj_t*> objectsToUpdate = {
@@ -222,14 +218,12 @@ void WatchFaceCasioStyleG7710::Refresh() {
     stepIcon
   };
   
-  batteryPercentRemaining = batteryController.PercentRemaining();
-  if (batteryPercentRemaining.IsUpdated()) {
-    auto batteryPercent = batteryPercentRemaining.Get();
-    batteryIcon.SetBatteryPercentage(batteryPercent);
-    lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
-    
+  powerPresent = batteryController.IsPowerPresent();
+  if (powerPresent.IsUpdated()) {
+    lv_label_set_text_static(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
+
     // Use the ColorRamp function from the batteryIcon object to get the desired color
-    lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get() != "") ? 50 : 100 ), 100);
+    lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 50 : 100 ), 100);
     
     // Update the color of each object using the new color_text
     for (auto obj : objectsToUpdate) {
@@ -237,15 +231,27 @@ void WatchFaceCasioStyleG7710::Refresh() {
       lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
       lv_obj_set_style_local_line_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
     }
-  //  InitStyles();
-  //  lv_obj_add_style(line_icons, LV_LINE_PART_MAIN, &style_line);
-  //  lv_obj_add_style(line_day_of_week_number, LV_LINE_PART_MAIN, &style_border);
-  //  lv_obj_add_style(line_day_of_year, LV_LINE_PART_MAIN, &style_line);
-  //  lv_obj_add_style(line_date, LV_LINE_PART_MAIN, &style_line);
-  //  lv_obj_add_style(line_time, LV_LINE_PART_MAIN, &style_line);
   
     lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_darken(color_text, 127));
+  }
+
+  batteryPercentRemaining = batteryController.PercentRemaining();
+  if (batteryPercentRemaining.IsUpdated()) {
+    auto batteryPercent = batteryPercentRemaining.Get();
+    batteryIcon.SetBatteryPercentage(batteryPercent);
+    lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
     
+    // Use the ColorRamp function from the batteryIcon object to get the desired color
+    lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 50 : 100 ), 100);
+    
+    // Update the color of each object using the new color_text
+    for (auto obj : objectsToUpdate) {
+      // Update the color of other objects (using text color)
+      lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+      lv_obj_set_style_local_line_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
+    }
+  
+    lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_darken(color_text, 127));
   }
 
   bleState = bleController.IsConnected();
