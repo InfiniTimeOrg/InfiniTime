@@ -77,9 +77,10 @@ void FirmwareUpdate::DisplayProgression() const {
 
   lv_label_set_text_fmt(percentLabel, "%d %%", permille / 10);
 
-  lv_color_t color = lv_hsv_to_rgb(( permille / 10 * 1.2 ), 100, 100)
+  lv_color_t color = lv_color_hsv_to_rgb(( permille / 10 * 1.2 ), 100, 100)
 
   lv_bar_set_value(bar1, permille, LV_ANIM_OFF);
+  lv_obj_set_style_local_bg_color(bar1, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, color);
 }
 
 void FirmwareUpdate::UpdateValidated() {
