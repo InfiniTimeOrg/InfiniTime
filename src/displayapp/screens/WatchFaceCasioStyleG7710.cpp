@@ -14,18 +14,6 @@
 #include "components/settings/Settings.h"
 using namespace Pinetime::Applications::Screens;
 
-void WatchFaceCasioStyleG7710::InitStyles() {
-  lv_style_init(&style_line);
-  lv_style_set_line_width(&style_line, LV_STATE_DEFAULT, 2);
-  lv_style_set_line_color(&style_line, LV_STATE_DEFAULT, color_text);
-  lv_style_set_line_rounded(&style_line, LV_STATE_DEFAULT, true);
-
-  lv_style_init(&style_border);
-  lv_style_set_line_width(&style_border, LV_STATE_DEFAULT, 6);
-  lv_style_set_line_color(&style_border, LV_STATE_DEFAULT, color_text);
-  lv_style_set_line_rounded(&style_border, LV_STATE_DEFAULT, true);
-}
-
 WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTimeController,
                                                    const Controllers::Battery& batteryController,
                                                    const Controllers::Ble& bleController,
@@ -102,10 +90,15 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_font(label_day_of_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment40);
   lv_label_set_text_static(label_day_of_year, "181-184");
 
-  lv_style_t style_line;
-  lv_style_t style_border;
+  lv_style_init(&style_line);
+  lv_style_set_line_width(&style_line, LV_STATE_DEFAULT, 2);
+  lv_style_set_line_color(&style_line, LV_STATE_DEFAULT, color_text);
+  lv_style_set_line_rounded(&style_line, LV_STATE_DEFAULT, true);
 
-  InitStyles();
+  lv_style_init(&style_border);
+  lv_style_set_line_width(&style_border, LV_STATE_DEFAULT, 6);
+  lv_style_set_line_color(&style_border, LV_STATE_DEFAULT, color_text);
+  lv_style_set_line_rounded(&style_border, LV_STATE_DEFAULT, true);
 
   line_icons = lv_line_create(lv_scr_act(), nullptr);
   lv_line_set_points(line_icons, line_icons_points, 3);
@@ -243,12 +236,12 @@ void WatchFaceCasioStyleG7710::Refresh() {
       // Update the color of other objects (using text color)
       lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
     }
-    InitStyles();
-    lv_obj_add_style(line_icons, LV_LINE_PART_MAIN, &style_line);
-    lv_obj_add_style(line_day_of_week_number, LV_LINE_PART_MAIN, &style_border);
-    lv_obj_add_style(line_day_of_year, LV_LINE_PART_MAIN, &style_line);
-    lv_obj_add_style(line_date, LV_LINE_PART_MAIN, &style_line);
-    lv_obj_add_style(line_time, LV_LINE_PART_MAIN, &style_line);
+  //  InitStyles();
+  //  lv_obj_add_style(line_icons, LV_LINE_PART_MAIN, &style_line);
+  //  lv_obj_add_style(line_day_of_week_number, LV_LINE_PART_MAIN, &style_border);
+  //  lv_obj_add_style(line_day_of_year, LV_LINE_PART_MAIN, &style_line);
+  //  lv_obj_add_style(line_date, LV_LINE_PART_MAIN, &style_line);
+  //  lv_obj_add_style(line_time, LV_LINE_PART_MAIN, &style_line);
   
     lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_darken(color_text, 127));
     
