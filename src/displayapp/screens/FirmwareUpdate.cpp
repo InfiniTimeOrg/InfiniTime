@@ -72,10 +72,12 @@ void FirmwareUpdate::Refresh() {
 
 void FirmwareUpdate::DisplayProgression() const {
   const uint32_t current = bleController.FirmwareUpdateCurrentBytes();
-  const uint32_t total = bleController.FirmwareUpdateTotalBytes();
+  const uint32_t total   = bleController.FirmwareUpdateTotalBytes();
   const int16_t permille = current / (total / 1000);
 
   lv_label_set_text_fmt(percentLabel, "%d %%", permille / 10);
+
+  lv_color_t color = lv_hsv_to_rgb(( permille / 10 * 1.2 ), 100, 100)
 
   lv_bar_set_value(bar1, permille, LV_ANIM_OFF);
 }
