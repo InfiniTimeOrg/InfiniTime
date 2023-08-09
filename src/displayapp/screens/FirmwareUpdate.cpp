@@ -31,17 +31,17 @@ FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController) 
   lv_obj_set_style_local_bg_color(bar1, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
   bar2 = lv_bar_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(bar1, 200, 30);
-  lv_obj_align(bar1, nullptr, LV_ALIGN_CENTER, 0, 0);
-  lv_bar_set_range(bar1, 0, 1);
-  lv_bar_set_value(bar1, 1, LV_ANIM_OFF);
+  lv_obj_set_size(bar2, 200, 30);
+  lv_obj_align(bar2, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_bar_set_range(bar2, 0, 1);
+  lv_bar_set_value(bar2, 1, LV_ANIM_OFF);
   lv_obj_set_style_local_bg_color(bar2, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
   bar3 = lv_bar_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(bar1, 200, 30);
-  lv_obj_align(bar1, nullptr, LV_ALIGN_CENTER, 0, 0);
-  lv_bar_set_range(bar1, 0, 1000);
-  lv_bar_set_value(bar1, 0, LV_ANIM_OFF);
+  lv_obj_set_size(bar3, 200, 30);
+  lv_obj_align(bar3, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_bar_set_range(bar3, 0, 1000);
+  lv_bar_set_value(bar3, 0, LV_ANIM_OFF);
 
   percentLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(percentLabel, "Waiting...");
