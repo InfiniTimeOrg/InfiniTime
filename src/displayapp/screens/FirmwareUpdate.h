@@ -22,6 +22,8 @@ namespace Pinetime {
       private:
         enum class States { Idle, Running, Validated, Error };
         const Pinetime::Controllers::Ble& bleController;
+        lv_obj_t* whiteRect;
+        lv_obj_t* blackRect;
         lv_obj_t* bar1;
         lv_obj_t* percentLabel;
         lv_obj_t* titleLabel;

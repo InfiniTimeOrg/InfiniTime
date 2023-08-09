@@ -7,21 +7,21 @@ using namespace Pinetime::Applications::Screens;
 
 FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController) : bleController {bleController} {
 
+  titleLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(titleLabel, "Firmware update");
+  lv_obj_align(titleLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 50);
+
   // Create the white rectangle (outer border)
-  lv_obj_t* whiteRect = lv_obj_create(lv_scr_act(), nullptr);
+  whiteRect = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(whiteRect, 204, 34);  // Two pixels larger in each direction
   lv_obj_align(whiteRect, bar1, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_local_bg_color(whiteRect, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
   // Create the black rectangle (inner border)
-  lv_obj_t* blackRect = lv_obj_create(lv_scr_act(), nullptr);
+  blackRect = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_size(blackRect, 200, 30);  // Same size as the original bar
   lv_obj_align(blackRect, bar1, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_local_bg_color(blackRect, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-
-  titleLabel = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(titleLabel, "Firmware update");
-  lv_obj_align(titleLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 50);
 
   bar1 = lv_bar_create(lv_scr_act(), nullptr);
   lv_obj_set_size(bar1, 200, 30);
