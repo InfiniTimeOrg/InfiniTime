@@ -11,19 +11,33 @@ FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController) 
   lv_label_set_text_static(titleLabel, "Firmware update");
   lv_obj_align(titleLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 50);
 
-  // Create the white rectangle (outer border)
-  whiteRect = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(whiteRect, 204, 34);  // Two pixels larger in each direction
-  lv_obj_align(whiteRect, bar1, LV_ALIGN_CENTER, 0, 0);
-  lv_obj_set_style_local_bg_color(whiteRect, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-
-  // Create the black rectangle (inner border)
-  blackRect = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(blackRect, 200, 30);  // Same size as the original bar
-  lv_obj_align(blackRect, bar1, LV_ALIGN_CENTER, 0, 0);
-  lv_obj_set_style_local_bg_color(blackRect, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+//  // Create the white rectangle (outer border)
+//  whiteRect = lv_obj_create(lv_scr_act(), nullptr);
+//  lv_obj_set_size(whiteRect, 204, 34);  // Two pixels larger in each direction
+//  lv_obj_align(whiteRect, bar1, LV_ALIGN_CENTER, 0, 0);
+//  lv_obj_set_style_local_bg_color(whiteRect, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+//
+//  // Create the black rectangle (inner border)
+//  blackRect = lv_obj_create(lv_scr_act(), nullptr);
+//  lv_obj_set_size(blackRect, 200, 30);  // Same size as the original bar
+//  lv_obj_align(blackRect, bar1, LV_ALIGN_CENTER, 0, 0);
+//  lv_obj_set_style_local_bg_color(blackRect, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
   bar1 = lv_bar_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(bar1, 204, 34);
+  lv_obj_align(bar1, nullptr, LV_ALIGN_CENTER, 0, 0)
+  lv_bar_set_range(bar1, 0, 1);
+  lv_bar_set_value(bar1, 1, LV_ANIM_OFF);
+  lv_obj_set_style_local_bg_color(bar1, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+
+  bar2 = lv_bar_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(bar1, 200, 30);
+  lv_obj_align(bar1, nullptr, LV_ALIGN_CENTER, 0, 0)
+  lv_bar_set_range(bar1, 0, 1);
+  lv_bar_set_value(bar1, 1, LV_ANIM_OFF);
+  lv_obj_set_style_local_bg_color(bar2, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+
+  bar3 = lv_bar_create(lv_scr_act(), nullptr);
   lv_obj_set_size(bar1, 200, 30);
   lv_obj_align(bar1, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_bar_set_range(bar1, 0, 1000);
@@ -98,8 +112,8 @@ void FirmwareUpdate::DisplayProgression() const {
 
   lv_color_t color = lv_color_hsv_to_rgb(( permille / 10 * 1.2 ), 100, 100);
 
-  lv_bar_set_value(bar1, permille, LV_ANIM_OFF);
-  lv_obj_set_style_local_bg_color(bar1, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, color);
+  lv_bar_set_value(bar3, permille, LV_ANIM_OFF);
+  lv_obj_set_style_local_bg_color(bar3, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, color);
 }
 
 void FirmwareUpdate::UpdateValidated() {
@@ -108,6 +122,7 @@ void FirmwareUpdate::UpdateValidated() {
 
 void FirmwareUpdate::UpdateError() {
   lv_label_set_text_static(percentLabel, "#ff0000 Error!#");
+  lv_obj_set_style_local_bg_color(bar3, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(0, 100, 100));
   startTime = xTaskGetTickCount();
 }
 
