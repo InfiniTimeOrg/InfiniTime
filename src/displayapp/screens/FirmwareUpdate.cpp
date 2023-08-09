@@ -12,16 +12,16 @@ FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController) 
   lv_obj_align(titleLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 50);
 
   // Create the white rectangle (outer border)
-  whiteRect = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(whiteRect, 204, 34);  // Two pixels larger in each direction
-  lv_obj_align(whiteRect, bar1, LV_ALIGN_CENTER, 0, 0);
-  lv_obj_set_style_local_bg_color(whiteRect, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-
-  // Create the black rectangle (inner border)
-  blackRect = lv_obj_create(lv_scr_act(), nullptr);
-  lv_obj_set_size(blackRect, 200, 30);  // Same size as the original bar
-  lv_obj_align(blackRect, bar1, LV_ALIGN_CENTER, 0, 0);
-  lv_obj_set_style_local_bg_color(blackRect, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+//  whiteRect = lv_obj_create(lv_scr_act(), nullptr);
+//  lv_obj_set_size(whiteRect, 204, 34);  // Two pixels larger in each direction
+//  lv_obj_align(whiteRect, bar1, LV_ALIGN_CENTER, 0, 0);
+//  lv_obj_set_style_local_bg_color(whiteRect, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+//
+//  // Create the black rectangle (inner border)
+//  blackRect = lv_obj_create(lv_scr_act(), nullptr);
+//  lv_obj_set_size(blackRect, 200, 30);  // Same size as the original bar
+//  lv_obj_align(blackRect, bar1, LV_ALIGN_CENTER, 0, 0);
+//  lv_obj_set_style_local_bg_color(blackRect, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
   bar1 = lv_bar_create(lv_scr_act(), nullptr);
   lv_obj_set_size(bar1, 200, 30);
@@ -37,12 +37,12 @@ FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController) 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   startTime = xTaskGetTickCount();
 
-  // Make sure the bar is on top of the two rectangles
-  lv_obj_move_foreground(bar1);
-
-  // Adjust the z-index of the rectangles to ensure proper layering
-  lv_obj_move_background(whiteRect);
-  lv_obj_move_background(blackRect);
+//  // Make sure the bar is on top of the two rectangles
+//  lv_obj_move_foreground(bar1);
+//
+//  // Adjust the z-index of the rectangles to ensure proper layering
+//  lv_obj_move_background(whiteRect);
+//  lv_obj_move_background(blackRect);
 }
 
 FirmwareUpdate::~FirmwareUpdate() {
