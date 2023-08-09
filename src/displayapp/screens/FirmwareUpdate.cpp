@@ -7,6 +7,18 @@ using namespace Pinetime::Applications::Screens;
 
 FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController) : bleController {bleController} {
 
+  // Create the white rectangle (outer border)
+  lv_obj_t* whiteRect = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(whiteRect, 204, 34);  // Two pixels larger in each direction
+  lv_obj_align(whiteRect, bar1, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_bg_color(whiteRect, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+
+  // Create the black rectangle (inner border)
+  lv_obj_t* blackRect = lv_obj_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(blackRect, 200, 30);  // Same size as the original bar
+  lv_obj_align(blackRect, bar1, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_bg_color(blackRect, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+
   titleLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(titleLabel, "Firmware update");
   lv_obj_align(titleLabel, nullptr, LV_ALIGN_IN_TOP_MID, 0, 50);
@@ -16,8 +28,6 @@ FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController) 
   lv_obj_align(bar1, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_bar_set_range(bar1, 0, 1000);
   lv_bar_set_value(bar1, 0, LV_ANIM_OFF);
-  lv_obj_set_style_local_border_color(bar1, LV_BAR_PART_BG, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(0, 0, 100));
-  lv_obj_set_style_local_border_width(bar1, LV_BAR_PART_BG, LV_STATE_DEFAULT, 2);
 
   percentLabel = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(percentLabel, "Waiting...");
@@ -26,6 +36,13 @@ FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController) 
   lv_obj_align(percentLabel, bar1, LV_ALIGN_OUT_TOP_MID, 0, 60);
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   startTime = xTaskGetTickCount();
+
+  // Make sure the bar is on top of the two rectangles
+  lv_obj_move_foreground(bar1);
+
+  // Adjust the z-index of the rectangles to ensure proper layering
+  lv_obj_move_background(whiteRect);
+  lv_obj_move_background(blackRect);
 }
 
 FirmwareUpdate::~FirmwareUpdate() {
