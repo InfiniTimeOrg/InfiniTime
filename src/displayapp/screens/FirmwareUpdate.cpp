@@ -28,14 +28,12 @@ FirmwareUpdate::FirmwareUpdate(const Pinetime::Controllers::Ble& bleController) 
   lv_obj_align(bar1, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_bar_set_range(bar1, 0, 1);
   lv_bar_set_value(bar1, 1, LV_ANIM_OFF);
-  lv_obj_set_style_local_bg_color(bar1, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
   bar2 = lv_bar_create(lv_scr_act(), nullptr);
   lv_obj_set_size(bar2, 200, 30);
   lv_obj_align(bar2, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_bar_set_range(bar2, 0, 1);
   lv_bar_set_value(bar2, 1, LV_ANIM_OFF);
-  lv_obj_set_style_local_bg_color(bar2, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
   bar3 = lv_bar_create(lv_scr_act(), nullptr);
   lv_obj_set_size(bar3, 200, 30);
@@ -113,6 +111,9 @@ void FirmwareUpdate::DisplayProgression() const {
   lv_color_t color = lv_color_hsv_to_rgb(( permille / 10 * 1.2 ), 100, 100);
 
   lv_bar_set_value(bar3, permille, LV_ANIM_OFF);
+  
+  lv_obj_set_style_local_bg_color(bar1, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(0, 0, 100));
+  lv_obj_set_style_local_bg_color(bar2, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(0, 0, 0));
   lv_obj_set_style_local_bg_color(bar3, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, color);
 }
 
