@@ -87,6 +87,10 @@ namespace Pinetime {
        */
       bool HasTimelineEventOfType(WeatherData::eventtype type) const;
 
+      const std::vector<std::unique_ptr<WeatherData::TimelineHeader>>& GetEventTimeline() const {
+        return timeline;
+      }
+
     private:
       // 00040000-78fc-48fe-8e23-433b3a1942d0
       static constexpr ble_uuid128_t BaseUuid() {

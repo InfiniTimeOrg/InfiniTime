@@ -28,7 +28,9 @@ namespace Pinetime {
 
         Controllers::WeatherService& weatherService;
 
-        ScreenList<5> screens;
+        ScreenList<6> screens;
+
+        std::unique_ptr<Screen> CreateTimelineStatsPage();
 
         std::unique_ptr<Screen> CreateScreenTemperature();
 

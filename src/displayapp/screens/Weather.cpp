@@ -31,6 +31,9 @@ Weather::Weather(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers:
     screens {app,
              0,
              {[this]() -> std::unique_ptr<Screen> {
+                return CreateTimelineStatsPage();
+              },
+              [this]() -> std::unique_ptr<Screen> {
                 return CreateScreenTemperature();
               },
               [this]() -> std::unique_ptr<Screen> {
@@ -65,6 +68,79 @@ bool Weather::OnButtonPushed() {
 
 bool Weather::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   return screens.OnTouchEvent(event);
+}
+
+std::unique_ptr<Screen> Weather::CreateTimelineStatsPage() {
+  static constexpr uint8_t maxTimelineCount = 8;
+
+  const auto& timeline = weatherService.GetEventTimeline();
+
+  lv_obj_t* count_label = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_fmt(count_label, "Size: %u, Cap: %u", timeline.size(), timeline.capacity());
+
+  lv_obj_t* timelineTable = lv_table_create(lv_scr_act(), nullptr);
+  lv_obj_align(timelineTable, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 25);
+  lv_table_set_col_cnt(timelineTable, 3);
+  lv_table_set_row_cnt(timelineTable, maxTimelineCount + 1);
+  lv_obj_set_style_local_pad_all(timelineTable, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 0);
+  lv_obj_set_style_local_border_color(timelineTable, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, LV_COLOR_MAKE(0xb0, 0xb0, 0xb0));
+
+  lv_table_set_cell_value(timelineTable, 0, 0, "#");
+  lv_table_set_col_width(timelineTable, 0, 30);
+  lv_table_set_cell_value(timelineTable, 0, 1, "Type"); // State
+  lv_table_set_col_width(timelineTable, 1, 50);
+  lv_table_set_cell_value(timelineTable, 0, 2, "Expires");
+  lv_table_set_col_width(timelineTable, 2, 150);
+
+  for (uint8_t i = 0; i < timeline.size() && i < maxTimelineCount; i++) {
+    char buffer[12] = {0};
+
+    sprintf(buffer, "%u", i);
+    lv_table_set_cell_value(timelineTable, i + 1, 0, buffer);
+
+    auto& header = timeline[i];
+    switch (header->eventType) {
+      case Controllers::WeatherData::eventtype::Obscuration:
+        lv_table_set_cell_value(timelineTable, i + 1, 1, "Obsc");
+        break;
+      case Controllers::WeatherData::eventtype::Precipitation:
+        lv_table_set_cell_value(timelineTable, i + 1, 1, "Prec");
+        break;
+      case Controllers::WeatherData::eventtype::Wind:
+        lv_table_set_cell_value(timelineTable, i + 1, 1, "Wind");
+        break;
+      case Controllers::WeatherData::eventtype::Temperature:
+        lv_table_set_cell_value(timelineTable, i + 1, 1, "Temp");
+        break;
+      case Controllers::WeatherData::eventtype::AirQuality:
+        lv_table_set_cell_value(timelineTable, i + 1, 1, "AirQ");
+        break;
+      case Controllers::WeatherData::eventtype::Special:
+        lv_table_set_cell_value(timelineTable, i + 1, 1, "Spec");
+        break;
+      case Controllers::WeatherData::eventtype::Pressure:
+        lv_table_set_cell_value(timelineTable, i + 1, 1, "Press");
+        break;
+      case Controllers::WeatherData::eventtype::Location:
+        lv_table_set_cell_value(timelineTable, i + 1, 1, "Loc");
+        break;
+      case Controllers::WeatherData::eventtype::Clouds:
+        lv_table_set_cell_value(timelineTable, i + 1, 1, "Cloud");
+        break;
+      case Controllers::WeatherData::eventtype::Humidity:
+        lv_table_set_cell_value(timelineTable, i + 1, 1, "Humi");
+        break;
+      default:
+        lv_table_set_cell_value(timelineTable, i + 1, 1, "????");
+        break;
+    }
+    memset(buffer, 0, sizeof(buffer));
+    uint64_t expired_at = header->timestamp + header->expires;
+    sprintf(buffer, "%lu", static_cast<uint32_t>(expired_at));
+    lv_table_set_cell_value(timelineTable, i + 1, 2, buffer);
+  }
+
+  return std::make_unique<Screens::Label>(3, 5, timelineTable);
 }
 
 std::unique_ptr<Screen> Weather::CreateScreenTemperature() {
