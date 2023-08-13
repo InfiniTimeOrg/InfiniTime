@@ -8,7 +8,7 @@ You can check the InfiniTime version by first swiping right on the watch face to
 
 ![InfiniTime 1.0 version](version-1.0.jpg)
 
-PineTimes shipped after June 2021 will ship with the latest version of [the bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader/releases/tag/1.0.0) and [recovery firmware](https://github.com/InfiniTimeOrg/InfiniTime/releases/tag/0.14.1)
+PineTimes shipped after June 2021 will ship with the latest version of [the bootloader](https://github.com/InfiniTimeOrg/pinetime-mcuboot-bootloader/releases/tag/1.0.0) and [recovery firmware](https://github.com/InfiniTimeOrg/InfiniTime/releases/tag/0.14.1)
 
 The bootloader is run right before booting into InfiniTime. It is easily recognizable with its white pine cone that is progressively drawn in green. It also displays its own version on the bottom (1.0.0 as of now).
 
@@ -24,10 +24,9 @@ All releases of InfiniTime are available on the [release page of the GitHub repo
 
 To update the firmware, you need to download the DFU of the firmware version that you'd like to install, for example `pinetime-mcuboot-app-dfu-1.6.0.zip`, and flash it with your companion app.
 
-We have prepared instructions for flashing InfiniTime with Gadgetbridge and NRFConnect.
+We have prepared instructions for flashing InfiniTime with Gadgetbridge.
 
 - [Updating with Gadgetbridge](/doc/gettingStarted/ota-gadgetbridge.md)
-- [Updating with NRFConnect](/doc/gettingStarted/ota-nrfconnect.md)
 
 ## Firmware validation
 
