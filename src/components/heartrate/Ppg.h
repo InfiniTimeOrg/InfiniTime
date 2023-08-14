@@ -5,8 +5,9 @@
 #include <cstdint>
 // Note: Change internal define 'sqrt_internal sqrt' to
 // 'sqrt_internal sqrtf' to save ~3KB of flash.
+#define sqrt_internal sqrtf
 #define FFT_SPEED_OVER_PRECISION
-#include "libs/arduinoFFT-develop/src/arduinoFFT.h"
+#include "libs/arduinoFFT/src/arduinoFFT.h"
 
 namespace Pinetime {
   namespace Controllers {
