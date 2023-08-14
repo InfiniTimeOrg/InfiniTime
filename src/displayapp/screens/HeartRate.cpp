@@ -56,7 +56,9 @@ HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, Syst
 
   btn_startStop = lv_btn_create(lv_scr_act(), nullptr);
   btn_startStop->user_data = this;
-  lv_obj_set_height(btn_startStop, 50);
+  lv_obj_set_size(btn_startStop, lv_obj_get_width(lv_scr_act()), 50);
+  lv_obj_set_style_local_radius(btn_startStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+  lv_obj_set_style_local_bg_color(btn_startStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
   lv_obj_set_event_cb(btn_startStop, btnStartStopEventHandler);
   lv_obj_align(btn_startStop, nullptr, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
 
