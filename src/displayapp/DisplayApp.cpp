@@ -31,6 +31,8 @@
 #include "displayapp/screens/Error.h"
 #include "displayapp/screens/Weather.h"
 
+#include "displayapp/screens/Classes.h"
+
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
 #include "drivers/Watchdog.h"
@@ -540,13 +542,17 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     case Apps::Metronome:
       currentScreen = std::make_unique<Screens::Metronome>(motorController, *systemTask);
       break;
-    /* Weather debug app
+     Weather debug app
     case Apps::Weather:
       currentScreen = std::make_unique<Screens::Weather>(this, systemTask->nimble().weather());
       break;
-    */
+    
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);
+      break;
+      
+    case Apps::Classes:
+      currentScreen = std::make_unique<Screens::Classes>(dateTimeController);
       break;
   }
   currentApp = app;
