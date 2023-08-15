@@ -552,7 +552,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       break;
 
     case Apps::Classes:
-      currentScreen = std::make_unique<Screens::Classes>(dateTimeController);
+      currentScreen = std::make_unique<Screens::Classes>(dateTimeControllerx);
       break;
   }
   currentApp = app;

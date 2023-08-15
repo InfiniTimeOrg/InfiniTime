@@ -53,11 +53,11 @@ namespace Pinetime {
           {"2", Apps::Twos},
           {Symbols::drum, Apps::Metronome},
           {Symbols::map, Apps::Navigation},
-        //  {Symbols::none, Apps::None},
+          {"C", Apps::Classes}, //
 
           {"M", Apps::Motion}, // 
+        //  {Symbols::none, Apps::None},
           
-          {"C", Apps::Classes}, //
 
         //  {"W", Apps::Weather}, // 
         
