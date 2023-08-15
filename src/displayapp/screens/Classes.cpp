@@ -1,4 +1,5 @@
 //#include "displayapp/screens/Motion.h"
+#include "displayapp/screens/Classes.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/InfiniTimeTheme.h"
