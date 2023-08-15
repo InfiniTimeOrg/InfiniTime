@@ -596,6 +596,7 @@ set(INCLUDE_FILES
         displayapp/TouchEvents.h
         displayapp/screens/Screen.h
         displayapp/screens/Clock.h
+        displayapp/screens/Classes.h
         displayapp/screens/Tile.h
         displayapp/screens/InfiniPaint.h
         displayapp/screens/StopWatch.h

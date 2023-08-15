@@ -13,9 +13,13 @@ namespace Pinetime {
 
       class Classes : public Screen {
       public:
+        classes(Controllers::DateTime& dateTimeController);
+        ~classes() override;
+
+        void Refresh() override;
 
       private:
-
+      
         lv_obj_t* label;
 
       };

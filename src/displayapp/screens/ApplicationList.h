@@ -9,6 +9,7 @@
 #include "components/settings/Settings.h"
 #include "components/battery/BatteryController.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/Classes.h"
 #include "displayapp/screens/Tile.h"
 
 namespace Pinetime {
@@ -37,7 +38,7 @@ namespace Pinetime {
         static constexpr int appsPerScreen = 6;
 
         // Increment this when more space is needed
-        static constexpr int nScreens = 2;
+        static constexpr int nScreens = 3;
 
         static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
           {Symbols::stopWatch, Apps::StopWatch},
@@ -55,6 +56,8 @@ namespace Pinetime {
         //  {Symbols::none, Apps::None},
 
           {"M", Apps::Motion}, // 
+          
+          {"C", Apps::Classes}, // 
         }};
         ScreenList<nScreens> screens;
       };

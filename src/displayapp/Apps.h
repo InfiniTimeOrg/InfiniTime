@@ -6,6 +6,7 @@ namespace Pinetime {
       None,
       Launcher,
       Clock,
+      Classes,
       SysInfo,
       FirmwareUpdate,
       FirmwareValidation,
