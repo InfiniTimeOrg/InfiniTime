@@ -543,9 +543,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::Metronome>(motorController, *systemTask);
       break;
     // Weather debug app
-    case Apps::Weather:
-      currentScreen = std::make_unique<Screens::Weather>(this, systemTask->nimble().weather());
-      break;
+    //case Apps::Weather:
+    //  currentScreen = std::make_unique<Screens::Weather>(this, systemTask->nimble().weather());
+    //  break;
     
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);

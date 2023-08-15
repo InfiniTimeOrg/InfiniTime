@@ -57,7 +57,10 @@ namespace Pinetime {
 
           {"M", Apps::Motion}, // 
           
-          {"C", Apps::Classes}, // 
+          {"C", Apps::Classes}, //
+
+        //  {"W", Apps::Weather}, // 
+        
         }};
         ScreenList<nScreens> screens;
       };
