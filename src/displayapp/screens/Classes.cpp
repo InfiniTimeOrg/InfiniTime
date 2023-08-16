@@ -24,25 +24,31 @@ Classes::Classes() {
 
   next_class_name = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_name, "Loading Next Class", 0, 0, 0);
-  lv_label_set_align(next_class_name, LV_LABEL_ALIGN_CENTER);
+  lv_label_set_align(next_class_name, LV_LABEL_ALIGN_RIGHT);
   lv_obj_align(next_class_name, label, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
   lv_label_set_recolor(next_class_name, true);
 
   next_class_loc = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_loc, "Loading Class Loc", 0, 0, 0);
-  lv_label_set_align(next_class_loc, LV_LABEL_ALIGN_CENTER);
+  lv_label_set_align(next_class_loc, LV_LABEL_ALIGN_RIGHT);
   lv_obj_align(next_class_loc, next_class_name, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
   lv_label_set_recolor(next_class_loc, true);
 
   next_class_start = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_start, "Loading Class Start", 0, 0, 0);
-  lv_label_set_align(next_class_start, LV_LABEL_ALIGN_CENTER);
+  lv_label_set_align(next_class_start, LV_LABEL_ALIGN_RIGHT);
   lv_obj_align(next_class_start, next_class_loc, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
   lv_label_set_recolor(next_class_start, true);
 
   next_class_end = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_end, "Loading Class End", 0, 0, 0);
-  lv_label_set_align(next_class_end, LV_LABEL_ALIGN_CENTER);
+  lv_label_set_align(next_class_end, LV_LABEL_ALIGN_RIGHT);
+  lv_obj_align(next_class_end, next_class_start, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
+  lv_label_set_recolor(next_class_end, true);
+
+  next_class_dif = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_fmt(next_class_end, "Loading Class End", 0, 0, 0);
+  lv_label_set_align(next_class_end, LV_LABEL_ALIGN_RIGHT);
   lv_obj_align(next_class_end, next_class_start, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
   lv_label_set_recolor(next_class_end, true);
 
@@ -74,12 +80,12 @@ Classes::Classes() {
   name_list[5]  = "Colg Algra, 212";
   name_list[6]  = "Colg Write, 202";
    
-  loc_list[1]   = "Math CSci & Tek";
-  loc_list[2]   = "Math CSci & Tek";
-  loc_list[3]   = "Stanly Russ Hal";
-  loc_list[4]   = "Doyne Heath Cnt";
-  loc_list[5]   = "Math CSci & Tek";
-  loc_list[6]   = "Win Thompson Hl";
+  loc_list[1]   = "Math CSci & Tech";
+  loc_list[2]   = "Math CSci & Tech";
+  loc_list[3]   = "Stanly Russ Hall";
+  loc_list[4]   = "Doyne Heath Center";
+  loc_list[5]   = "Math CSci & Tech";
+  loc_list[6]   = "Win Thompson Hall";
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
@@ -95,7 +101,8 @@ void Classes::Refresh() {
   //lv_label_set_text_fmt(label,            "%s", start_list[1]);
   lv_label_set_text_fmt(next_class_name,  "%s",  name_list[1].c_str());
   lv_label_set_text_fmt(next_class_loc,   "%s",   loc_list[1].c_str());
-  lv_label_set_text_fmt(next_class_start, "%s", start_list[1].c_str());
-  lv_label_set_text_fmt(next_class_end,   "%s",   end_list[1].c_str());
+  lv_label_set_text_fmt(next_class_start, "Start: %s", start_list[1].c_str());
+  lv_label_set_text_fmt(next_class_end,   "End  : %s",   end_list[1].c_str());
+  lv_label_set_text_fmt(next_class_dif,   "%s",   "2:36".c_str());
 
 }

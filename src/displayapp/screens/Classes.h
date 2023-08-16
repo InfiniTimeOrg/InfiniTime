@@ -35,6 +35,7 @@ namespace Pinetime {
         lv_obj_t* next_class_end;
         lv_obj_t* next_class_name;
         lv_obj_t* next_class_loc;
+        lv_obj_t* next_class_dif;
 
         lv_task_t* taskRefresh;
 
