@@ -20,7 +20,20 @@ namespace Pinetime {
 
       private:
       
+        std::unordered_map<std::string, int> num_list;
+        std::unordered_map<int, std::string> start_list;
+        std::unordered_map<int, std::string> end_list;
+        std::unordered_map<int, std::string> name_list;
+        std::unordered_map<int, std::string> loc_list;
+     //   std::unordered_map<std::string, std::string> list;
+       // std::unordered_map<std::string, std::string> list;
+
         lv_obj_t* label;
+        lv_obj_t* next_class_start;
+        lv_obj_t* next_class_end;
+        lv_obj_t* next_class_name;
+        lv_obj_t* next_class_loc;
+        
         lv_task_t* taskRefresh;
 
       };
