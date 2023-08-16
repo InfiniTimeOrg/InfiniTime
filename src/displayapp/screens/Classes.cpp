@@ -25,5 +25,5 @@ Classes::~Classes() {
 }
 
 void Classes::Refresh() {
-  lv_label_set_text_fmt(label, '#ff0fff hello chat!');
+  lv_label_set_text_fmt(label, "#ff0fff hello chat!");
 }
