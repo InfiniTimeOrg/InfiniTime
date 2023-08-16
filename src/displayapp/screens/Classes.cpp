@@ -9,7 +9,7 @@ using namespace Pinetime::Applications::Screens;
 // Function to calculate time until the next class and return class number
 std::string timeUntilNextClass(const std::unordered_map<std::string, int>& num_list,
                                const std::unordered_map<int, std::string>& start_list,
-                               Controllers::DateTime& dateTimeController, int& nextClassNumber) {
+                               Pinetime::Controllers::DateTime& dateTimeController, int& nextClassNumber) {
     auto currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
     if (currentDateTime.IsUpdated()) {
         uint8_t hour = dateTimeController.Hours();
