@@ -9,63 +9,64 @@ using namespace Pinetime::Applications::Screens;
 // Function to calculate time until the next class and return class number
 std::string timeUntilNextClass(const std::unordered_map<std::string, int>& num_list,
                                const std::unordered_map<int, std::string>& start_list,
-                               Pinetime::Controllers::DateTime& dateTimeController, int& nextClassNumber) {
+                               Pinetime::Controllers::DateTime& dateTimeController, int& nextClassNumber) 
+                               {
     auto currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
-    if (currentDateTime.IsUpdated()) {
-        uint8_t hour = dateTimeController.Hours();
-        uint8_t minute = dateTimeController.Minutes();
-        std::string dayOfWeek = dateTimeController.DayOfWeekShortToString();
-        
-        // Convert dayOfWeek to one-letter abbreviation
-        std::string oneLetterDay;
-        if (dayOfWeek == "SUN") oneLetterDay = "U";
-        else if (dayOfWeek == "MON") oneLetterDay = "M";
-        else if (dayOfWeek == "TUE") oneLetterDay = "T";
-        else if (dayOfWeek == "WED") oneLetterDay = "W";
-        else if (dayOfWeek == "THU") oneLetterDay = "R";
-        else if (dayOfWeek == "FRI") oneLetterDay = "F";
-        else if (dayOfWeek == "SAT") oneLetterDay = "S";
-        
-        // Find the list of classes for the current day
-        std::vector<int> classesForToday;
-        for (const auto& entry : num_list) {
-            if (entry.first.find(oneLetterDay) != std::string::npos) {
-                classesForToday.push_back(entry.second);
-            }
+
+    uint8_t hour = dateTimeController.Hours();
+    uint8_t minute = dateTimeController.Minutes();
+    std::string dayOfWeek = dateTimeController.DayOfWeekShortToString();
+    
+    // Convert dayOfWeek to one-letter abbreviation
+    std::string oneLetterDay;
+    if (dayOfWeek == "SUN") oneLetterDay = "U";
+    else if (dayOfWeek == "MON") oneLetterDay = "M";
+    else if (dayOfWeek == "TUE") oneLetterDay = "T";
+    else if (dayOfWeek == "WED") oneLetterDay = "W";
+    else if (dayOfWeek == "THU") oneLetterDay = "R";
+    else if (dayOfWeek == "FRI") oneLetterDay = "F";
+    else if (dayOfWeek == "SAT") oneLetterDay = "S";
+    
+    // Find the list of classes for the current day
+    std::vector<int> classesForToday;
+    for (const auto& entry : num_list) {
+        if (entry.first.find(oneLetterDay) != std::string::npos) {
+            classesForToday.push_back(entry.second);
         }
-        
-        int currentDay = num_list[dayOfWeek];
-        int currentMinutes = hour * 60 + minute;
-        int closestClassTimeDiff = -1;
-        
-        for (int classNumber : classesForToday) {
-            if (start_list.find(classNumber) != start_list.end()) {
-                std::string classStartTime = start_list[classNumber];
-                
-                // Parse the class start time to extract hours and minutes
-                size_t colonPos = classStartTime.find(':');
-                int classStartHour = std::stoi(classStartTime.substr(0, colonPos));
-                int classStartMinute = std::stoi(classStartTime.substr(colonPos + 1, 2));
-                
-                int classStartMinutes = classStartHour * 60 + classStartMinute;
-                
-                if (classStartMinutes > currentMinutes) {
-                    int minutesUntilClass = classStartMinutes - currentMinutes;
-                    if (closestClassTimeDiff == -1 || minutesUntilClass < closestClassTimeDiff) {
-                        closestClassTimeDiff = minutesUntilClass;
-                        nextClassNumber = classNumber;
-                    }
+    }
+    
+    int currentDay = num_list[dayOfWeek];
+    int currentMinutes = hour * 60 + minute;
+    int closestClassTimeDiff = -1;
+    
+    for (int classNumber : classesForToday) {
+        if (start_list.find(classNumber) != start_list.end()) {
+            std::string classStartTime = start_list[classNumber];
+            
+            // Parse the class start time to extract hours and minutes
+            size_t colonPos = classStartTime.find(':');
+            int classStartHour = std::stoi(classStartTime.substr(0, colonPos));
+            int classStartMinute = std::stoi(classStartTime.substr(colonPos + 1, 2));
+            
+            int classStartMinutes = classStartHour * 60 + classStartMinute;
+            
+            if (classStartMinutes > currentMinutes) {
+                int minutesUntilClass = classStartMinutes - currentMinutes;
+                if (closestClassTimeDiff == -1 || minutesUntilClass < closestClassTimeDiff) {
+                    closestClassTimeDiff = minutesUntilClass;
+                    nextClassNumber = classNumber;
                 }
             }
         }
-        
-        if (closestClassTimeDiff != -1) {
-            int hoursUntilClass = closestClassTimeDiff / 60;
-            int remainingMinutes = closestClassTimeDiff % 60;
-            
-            return std::to_string(hoursUntilClass) + ":" + std::to_string(remainingMinutes);
-        }
     }
+    
+    if (closestClassTimeDiff != -1) {
+        int hoursUntilClass = closestClassTimeDiff / 60;
+        int remainingMinutes = closestClassTimeDiff % 60;
+        
+        return std::to_string(hoursUntilClass) + ":" + std::to_string(remainingMinutes);
+    }
+  
     
     nextClassNumber = -1; // No class found
     return "";
