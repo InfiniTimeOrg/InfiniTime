@@ -93,9 +93,9 @@ void Classes::Refresh() {
   //lv_label_set_text_fmt(next_class, "#ff0fff hello chat!");
 
   //lv_label_set_text_fmt(label,            "%s", start_list[1]);
-  lv_label_set_text_fmt(next_class_name,  "%s",  name_list[1]);
-  lv_label_set_text_fmt(next_class_loc,   "%s",   loc_list[1]);
-  lv_label_set_text_fmt(next_class_start, "%s", start_list[1]);
-  lv_label_set_text_fmt(next_class_end,   "%s",   end_list[1]);
+  lv_label_set_text_fmt(next_class_name,  "%s",  name_list[1].c_str());
+  lv_label_set_text_fmt(next_class_loc,   "%s",   loc_list[1].c_str());
+  lv_label_set_text_fmt(next_class_start, "%s", start_list[1].c_str());
+  lv_label_set_text_fmt(next_class_end,   "%s",   end_list[1].c_str());
 
 }
