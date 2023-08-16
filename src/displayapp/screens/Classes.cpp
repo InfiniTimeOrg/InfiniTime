@@ -17,31 +17,31 @@ using namespace Pinetime::Applications::Screens;
 Classes::Classes() {
 
   label = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(label, "Classes:", 0, 0, 0);
+  lv_label_set_text_fmt(label, "Next Class:", 0, 0, 0);
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label, nullptr, LV_ALIGN_IN_TOP_MID, 0, -10);
   lv_label_set_recolor(label, true);
 
   next_class_name = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(next_class, "Loading Next Class", 0, 0, 0);
+  lv_label_set_text_fmt(next_class_name, "Loading Next Class", 0, 0, 0);
   lv_label_set_align(next_class, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(next_class, label, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
   lv_label_set_recolor(next_class, true);
 
   next_class_loc = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(next_class, "Loading Classes", 0, 0, 0);
+  lv_label_set_text_fmt(next_class_loc, "Loading Class Loc", 0, 0, 0);
   lv_label_set_align(next_class, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(next_class, next_class_name, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
   lv_label_set_recolor(next_class, true);
 
   next_class_start = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(next_class, "Loading Classes", 0, 0, 0);
+  lv_label_set_text_fmt(next_class_start, "Loading Class Start", 0, 0, 0);
   lv_label_set_align(next_class, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(next_class, next_class_loc, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
   lv_label_set_recolor(next_class, true);
 
   next_class_end = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(next_class, "Loading Classes", 0, 0, 0);
+  lv_label_set_text_fmt(next_class_end, "Loading Class End", 0, 0, 0);
   lv_label_set_align(next_class, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(next_class, next_class_start, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
   lv_label_set_recolor(next_class, true);
@@ -92,7 +92,7 @@ Classes::~Classes() {
 void Classes::Refresh() {
   //lv_label_set_text_fmt(next_class, "#ff0fff hello chat!");
 
-  lv_label_set_text_fmt(num_list,         "%d", start_list[1]);
+  lv_label_set_text_fmt(lable,            "%d", start_list[1]);
   lv_label_set_text_fmt(next_class_name,  "%d", start_list[1]);
   lv_label_set_text_fmt(next_class_loc,   "%d",   end_list[1]);
   lv_label_set_text_fmt(next_class_start, "%d",  name_list[1]);
