@@ -5,6 +5,7 @@
 #include "displayapp/screens/Screen.h"
 #include <lvgl/src/lv_core/lv_style.h>
 #include <lvgl/src/lv_core/lv_obj.h>
+#include "components/datetime/DateTimeController.h"
 #include <unordered_map>
 #include <string>
 
@@ -14,8 +15,12 @@ namespace Pinetime {
 
       class Classes : public Screen {
       public:
-        //Classes(Controllers::DateTime& dateTimeController);
-        Classes();
+        Classes(Controllers::DateTime& dateTimeController);
+        std::string timeUntilNextClass(const std::unordered_map<std::string, int>& num_list,
+                               const std::unordered_map<int, std::string>& start_list,
+                               Controllers::DateTime& dateTimeController, int& nextClassNumber)
+
+       // Classes();
         ~Classes() override;
 
         void Refresh() override;
