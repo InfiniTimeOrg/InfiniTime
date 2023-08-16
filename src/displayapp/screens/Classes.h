@@ -20,6 +20,8 @@ namespace Pinetime {
 
       private:
       
+        lv_obj_t* label;
+        lv_task_t* taskRefresh;
 
       };
     }
