@@ -19,31 +19,31 @@ Classes::Classes() {
   label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(label, "Next Class:", 0, 0, 0);
   lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label, nullptr, LV_ALIGN_IN_TOP_MID, 0, -10);
+  lv_obj_align(label, nullptr, LV_ALIGN_IN_TOP_MID, 0, 10);
   lv_label_set_recolor(label, true);
 
   next_class_name = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_name, "Loading Next Class", 0, 0, 0);
   lv_label_set_align(next_class_name, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(next_class_name, label, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
+  lv_obj_align(next_class_name, label, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
   lv_label_set_recolor(next_class_name, true);
 
   next_class_loc = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_loc, "Loading Class Loc", 0, 0, 0);
   lv_label_set_align(next_class_loc, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(next_class_loc, next_class_name, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
+  lv_obj_align(next_class_loc, next_class_name, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
   lv_label_set_recolor(next_class_loc, true);
 
   next_class_start = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_start, "Loading Class Start", 0, 0, 0);
   lv_label_set_align(next_class_start, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(next_class_start, next_class_loc, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
+  lv_obj_align(next_class_start, next_class_loc, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
   lv_label_set_recolor(next_class_start, true);
 
   next_class_end = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_end, "Loading Class End", 0, 0, 0);
   lv_label_set_align(next_class_end, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(next_class_end, next_class_start, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
+  lv_obj_align(next_class_end, next_class_start, LV_ALIGN_OUT_BOTTOM_MID, 0, 10);
   lv_label_set_recolor(next_class_end, true);
 
   num_list[ "MWF"] = 1;
@@ -92,10 +92,10 @@ Classes::~Classes() {
 void Classes::Refresh() {
   //lv_label_set_text_fmt(next_class, "#ff0fff hello chat!");
 
-  lv_label_set_text_fmt(label,            "%d", start_list[1]);
-  lv_label_set_text_fmt(next_class_name,  "%d", start_list[1]);
-  lv_label_set_text_fmt(next_class_loc,   "%d",   end_list[1]);
-  lv_label_set_text_fmt(next_class_start, "%d",  name_list[1]);
-  lv_label_set_text_fmt(next_class_end,   "%d",   loc_list[1]);
+  //lv_label_set_text_fmt(label,            "%s", start_list[1]);
+  lv_label_set_text_fmt(next_class_name,  "%s",  name_list[1]);
+  lv_label_set_text_fmt(next_class_loc,   "%s",   loc_list[1]);
+  lv_label_set_text_fmt(next_class_start, "%s", start_list[1]);
+  lv_label_set_text_fmt(next_class_end,   "%s",   end_list[1]);
 
 }
