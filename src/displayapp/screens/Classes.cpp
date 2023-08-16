@@ -103,6 +103,6 @@ void Classes::Refresh() {
   lv_label_set_text_fmt(next_class_loc,   "%s",   loc_list[1].c_str());
   lv_label_set_text_fmt(next_class_start, "Start: %s", start_list[1].c_str());
   lv_label_set_text_fmt(next_class_end,   "End  : %s",   end_list[1].c_str());
-  lv_label_set_text_fmt(next_class_dif,   "%s",   "2:36".c_str());
+  lv_label_set_text_fmt(next_class_dif,   "In   : %s",   "2:36");
 
 }
