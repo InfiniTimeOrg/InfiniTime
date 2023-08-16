@@ -374,6 +374,7 @@ list(APPEND SOURCE_FILES
         displayapp/DisplayApp.cpp
         displayapp/screens/Screen.cpp
         displayapp/screens/Clock.cpp
+        displayapp/screens/Classes.cpp
         displayapp/screens/Tile.cpp
         displayapp/screens/InfiniPaint.cpp
         displayapp/screens/Paddle.cpp
