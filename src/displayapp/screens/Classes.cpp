@@ -6,7 +6,8 @@
 
 using namespace Pinetime::Applications::Screens;
 
-Classes::Classes(Controllers::DateTime& dateTimeController) {
+//Classes::Classes(Controllers::DateTime& dateTimeController) {
+Classes::Classes() {
 
 
   label = lv_label_create(lv_scr_act(), nullptr);
