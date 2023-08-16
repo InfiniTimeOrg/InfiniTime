@@ -92,7 +92,7 @@ Classes::~Classes() {
 void Classes::Refresh() {
   //lv_label_set_text_fmt(next_class, "#ff0fff hello chat!");
 
-  lv_label_set_text_fmt(lable,            "%d", start_list[1]);
+  lv_label_set_text_fmt(label,            "%d", start_list[1]);
   lv_label_set_text_fmt(next_class_name,  "%d", start_list[1]);
   lv_label_set_text_fmt(next_class_loc,   "%d",   end_list[1]);
   lv_label_set_text_fmt(next_class_start, "%d",  name_list[1]);
