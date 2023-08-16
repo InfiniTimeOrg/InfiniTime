@@ -3,6 +3,7 @@
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include <vector>
 
 using namespace Pinetime::Applications::Screens;
 
@@ -110,40 +111,40 @@ Classes::Classes(Controllers::DateTime& dateTimeController) {
   lv_obj_align(next_class_dif, next_class_end, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 5);
   lv_label_set_recolor(next_class_dif, true);
 
-  num_list[ "MWF"] = 1;
-  num_list[   "W"] = 2;
-  num_list[  "TR"] = 3;
-  num_list[  "TR"] = 4;
-  num_list[ "MWF"] = 5;
-  num_list[  "TR"] = 6;
+  num_list["MWF"] = 1;
+  num_list[  "W"] = 2;
+  num_list[ "TR"] = 3;
+  num_list[ "TR"] = 4;
+  num_list["MWF"] = 5;
+  num_list[ "TR"] = 6;
   
-  name_list[1]  = "Comp Sci 2, 339";
-  name_list[2]  = "Comp Lab 2, 329";
-  name_list[3]  = "Film Appri, 108";
-  name_list[4]  = "Health&Wel, 232";
-  name_list[5]  = "Colg Algra, 212";
-  name_list[6]  = "Colg Write, 202";
-   
-  loc_list[1]   = "Math CSci & Tech";
-  loc_list[2]   = "Math CSci & Tech";
-  loc_list[3]   = "Stanly Russ Hall";
-  loc_list[4]   = "Doyne Heath Center";
-  loc_list[5]   = "Math CSci & Tech";
-  loc_list[6]   = "Win Thompson Hall";
-
-  start_list[1] = "10:00 AM";
-  start_list[2] = "12:00 PM";
-  start_list[3] =  "2:40 PM";
-  start_list[4] = "10:50 AM";
-  start_list[5] =  "9:00 AM";
-  start_list[6] =  "2:25 PM";
+  name_list[1]    = "Comp Sci 2, 339";
+  name_list[2]    = "Comp Lab 2, 329";
+  name_list[3]    = "Film Appri, 108";
+  name_list[4]    = "Health&Wel, 232";
+  name_list[5]    = "Colg Algra, 212";
+  name_list[6]    = "Colg Write, 202";
+     
+  loc_list[1]     = "Math CSci & Tech";
+  loc_list[2]     = "Math CSci & Tech";
+  loc_list[3]     = "Stanly Russ Hall";
+  loc_list[4]     = "Doyne Heath Center";
+  loc_list[5]     = "Math CSci & Tech";
+  loc_list[6]     = "Win Thompson Hall";
   
-  end_list[1]   = "10:50 AM";
-  end_list[2]   =  "1:50 PM";
-  end_list[3]   =  "3:55 PM";
-  end_list[4]   = "12:05 PM";
-  end_list[5]   =  "9:50 AM";
-  end_list[6]   = "10:40 AM";
+  start_list[1]   = "10:00 AM";
+  start_list[2]   = "12:00 PM";
+  start_list[3]   =  "2:40 PM";
+  start_list[4]   = "10:50 AM";
+  start_list[5]   =  "9:00 AM";
+  start_list[6]   =  "2:25 PM";
+    
+  end_list[1]     = "10:50 AM";
+  end_list[2]     =  "1:50 PM";
+  end_list[3]     =  "3:55 PM";
+  end_list[4]     = "12:05 PM";
+  end_list[5]     =  "9:50 AM";
+  end_list[6]     = "10:40 AM";
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
