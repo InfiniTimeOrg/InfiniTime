@@ -5,6 +5,7 @@
 #include "displayapp/screens/Screen.h"
 #include <lvgl/src/lv_core/lv_style.h>
 #include <lvgl/src/lv_core/lv_obj.h>
+#include <unordered_map>
 
 namespace Pinetime {
   namespace Applications {
@@ -33,7 +34,7 @@ namespace Pinetime {
         lv_obj_t* next_class_end;
         lv_obj_t* next_class_name;
         lv_obj_t* next_class_loc;
-        
+
         lv_task_t* taskRefresh;
 
       };
