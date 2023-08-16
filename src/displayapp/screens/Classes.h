@@ -18,7 +18,7 @@ namespace Pinetime {
         Classes(Controllers::DateTime& dateTimeController);
         std::string timeUntilNextClass(const std::unordered_map<std::string, int>& num_list,
                                const std::unordered_map<int, std::string>& start_list,
-                               Controllers::DateTime& dateTimeController, int& nextClassNumber)
+                               Controllers::DateTime& dateTimeController, int& nextClassNumber);
 
        // Classes();
         ~Classes() override;
