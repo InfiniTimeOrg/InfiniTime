@@ -9,11 +9,6 @@
 #include <unordered_map>
 #include <string>
 
-namespace Pinetime {
-  namespace Controllers {
-
-  }
-}
 
 namespace Pinetime {
   namespace Applications {
