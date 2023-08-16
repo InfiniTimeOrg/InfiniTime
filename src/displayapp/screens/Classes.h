@@ -10,6 +10,12 @@
 #include <string>
 
 namespace Pinetime {
+  namespace Controllers {
+
+  }
+}
+
+namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
@@ -26,6 +32,8 @@ namespace Pinetime {
         void Refresh() override;
 
       private:
+
+        Controllers::DateTime& dateTimeController;
       
         std::unordered_map<std::string, int> num_list;
         std::unordered_map<int, std::string> start_list;
