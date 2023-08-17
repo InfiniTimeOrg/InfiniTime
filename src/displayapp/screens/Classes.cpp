@@ -7,6 +7,7 @@
 using namespace Pinetime::Applications::Screens;
 
 int Classes::findNextClass(Pinetime::Controllers::DateTime& dateTimeController) {
+
   std::string dayOfWeek = dateTimeController.DayOfWeekShortToString();
   std::string oneLetterDay;
 
@@ -49,12 +50,14 @@ int Classes::findNextClass(Pinetime::Controllers::DateTime& dateTimeController) 
 
   return nextClassNumber;
 }
-    
+
 std::string Classes::formatTime(const std::string& timeStr) {
   int targetHours = std::stoi(timeStr.substr(0, timeStr.find(':')));
   int targetMinutes = std::stoi(timeStr.substr(timeStr.find(':') + 1));
 
-  Pinetime::Controllers::DateTime currentTime = dateTimeController.CurrentDateTime();
+ // Pinetime::Controllers::DateTime currentTime = dateTimeController.CurrentDateTime();
+  std::chrono::time_point<std::chrono::system_clock> currentTime = dateTimeController.CurrentDateTime();
+
   int currentHours = currentTime.Hours();
   int currentMinutes = currentTime.Minutes();
 
@@ -166,7 +169,7 @@ void Classes::Refresh() {
 
  // int nextClassNumber;
  // std::string result = timeUntilNextClass(num_list, start_list, dateTimeController, nextClassNumber);
-  int nextClassNumber = Classes::timeUntilNextClass(dateTimeController);
+  int nextClassNumber = Classes::findNextClass(dateTimeController);
   std::string result  = Classes::formatTime(start_list[nextClassNumber].c_str());
 
 
