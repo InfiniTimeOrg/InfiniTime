@@ -56,10 +56,10 @@ std::string Classes::formatTime(const std::string& timeStr) {
   int targetMinutes = std::stoi(timeStr.substr(timeStr.find(':') + 1));
 
  // Pinetime::Controllers::DateTime currentTime = dateTimeController.CurrentDateTime();
-  std::chrono::time_point<std::chrono::system_clock> currentTime = dateTimeController.CurrentDateTime();
+ // std::chrono::time_point<std::chrono::system_clock> currentTime = dateTimeController.CurrentDateTime();
 
-  int currentHours = currentTime.Hours();
-  int currentMinutes = currentTime.Minutes();
+  int currentHours = dateTimeController.Hours();
+  int currentMinutes = dateTimeController.Minutes();
 
   int hoursDiff = targetHours - currentHours;
   int minutesDiff = targetMinutes - currentMinutes;
