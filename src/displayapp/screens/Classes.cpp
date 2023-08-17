@@ -4,7 +4,6 @@
 #include "displayapp/InfiniTimeTheme.h"
 #include <vector>
 
-printf("Hello, logging in InfiniSim!\n");
 
 using namespace Pinetime::Applications::Screens;
 
@@ -84,6 +83,7 @@ Classes::Classes(Pinetime::Controllers::DateTime& dateTimeController)
     : dateTimeController(dateTimeController) {
 
       int OffSet = 3;
+  printf("Hello, logging in InfiniSim!\n");
 
   label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(label, "Next Class:", 0, 0, 0);
