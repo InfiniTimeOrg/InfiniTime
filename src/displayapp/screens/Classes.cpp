@@ -20,10 +20,13 @@ int Classes::findNextClass(Pinetime::Controllers::DateTime& dateTimeController) 
   else if (dayOfWeek == "FRI") oneLetterDay = "F";
   else if (dayOfWeek == "SAT") oneLetterDay = "S";
 
+  printf("Letter: %s\n", oneLetterDay);
+
   std::vector<int> possibleClasses;
   for (const auto& entry : num_list) {
     if (entry.first.find(oneLetterDay) != std::string::npos) {
       possibleClasses.push_back(entry.second);
+      printf("Found?: %s, %d\n", oneLetterDay, entry);
     }
   }
 
@@ -32,6 +35,8 @@ int Classes::findNextClass(Pinetime::Controllers::DateTime& dateTimeController) 
   int nextClassNumber = -1;
 
   for (int classNumber : possibleClasses) {
+    printf("classNumber: %d\n", classNumber);
+
     if (start_list.find(classNumber) != start_list.end()) {
       std::string classStartTime = start_list[classNumber];
       int classStartHour = std::stoi(classStartTime.substr(0, classStartTime.find(':')));
