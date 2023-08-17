@@ -42,7 +42,11 @@ int Classes::findNextClass(Pinetime::Controllers::DateTime& dateTimeController) 
       int classStartHour = std::stoi(classStartTime.substr(0, classStartTime.find(':')));
       int classStartMinute = std::stoi(classStartTime.substr(classStartTime.find(':') + 1));
 
+      printf( "Start: %dh, %dm\n", classStartHour, classStartMinute );
+
       int classStartMinutes = classStartHour * 60 + classStartMinute;
+
+      printf( "classStartMinutes: %d, currentMinutes: %d", classStartMinutes, currentMinutes );
 
       if (classStartMinutes > currentMinutes) {
         int minutesUntilClass = classStartMinutes - currentMinutes;
