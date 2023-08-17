@@ -13,7 +13,7 @@ std::string timeUntilNextClass(std::unordered_map<std::string, int>& num_list,
                                 Pinetime::Controllers::DateTime& dateTimeController, int& nextClassNumber)
 
                                {
-    auto currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
+  //  auto currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
 
     uint8_t hour = dateTimeController.Hours();
     uint8_t minute = dateTimeController.Minutes();
@@ -37,7 +37,7 @@ std::string timeUntilNextClass(std::unordered_map<std::string, int>& num_list,
         }
     }
     
-    int currentDay = num_list[dayOfWeek];
+  //  int currentDay = num_list[dayOfWeek];
     int currentMinutes = hour * 60 + minute;
     int closestClassTimeDiff = -1;
     
@@ -74,7 +74,8 @@ std::string timeUntilNextClass(std::unordered_map<std::string, int>& num_list,
     return "";
 }
 
-Classes::Classes(Controllers::DateTime& dateTimeController) {
+//Classes::Classes(Controllers::DateTime& dateTimeController) {
+Classes::Classes() {
 
   label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(label, "Next Class:", 0, 0, 0);
