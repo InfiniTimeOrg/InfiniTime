@@ -8,9 +8,10 @@
 using namespace Pinetime::Applications::Screens;
 
 // Function to calculate time until the next class and return class number
-std::string timeUntilNextClass(const std::unordered_map<std::string, int>& num_list,
-                               const std::unordered_map<int, std::string>& start_list,
-                               Pinetime::Controllers::DateTime& dateTimeController, int& nextClassNumber) 
+std::string timeUntilNextClass(std::unordered_map<std::string, int>& num_list,
+                                std::unordered_map<int, std::string>& start_list,
+                                Pinetime::Controllers::DateTime& dateTimeController, int& nextClassNumber)
+
                                {
     auto currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
 
@@ -20,7 +21,7 @@ std::string timeUntilNextClass(const std::unordered_map<std::string, int>& num_l
     
     // Convert dayOfWeek to one-letter abbreviation
     std::string oneLetterDay;
-    if (dayOfWeek == "SUN") oneLetterDay = "U";
+    if      (dayOfWeek == "SUN") oneLetterDay = "U";
     else if (dayOfWeek == "MON") oneLetterDay = "M";
     else if (dayOfWeek == "TUE") oneLetterDay = "T";
     else if (dayOfWeek == "WED") oneLetterDay = "W";
@@ -166,6 +167,6 @@ void Classes::Refresh() {
   lv_label_set_text_fmt(next_class_loc,   "%s",                           loc_list[nextClassNumber].c_str());
   lv_label_set_text_fmt(next_class_start, "Start: %s",                  start_list[nextClassNumber].c_str());
   lv_label_set_text_fmt(next_class_end,   "End  : %s",                    end_list[nextClassNumber].c_str());
-  lv_label_set_text_fmt(next_class_dif,   "In   : %s\nDay  : %s", result, num_list[nextClassNumber].c_str());
+  lv_label_set_text_fmt(next_class_dif,   "In   : %s\nDay  : %s", result, "W");
 
 }
