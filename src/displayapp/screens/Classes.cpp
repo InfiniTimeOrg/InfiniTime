@@ -171,18 +171,27 @@ void Classes::Refresh() {
 
  // int nextClassNumber;
  // std::string result = timeUntilNextClass(num_list, start_list, dateTimeController, nextClassNumber);
-  printf("Claasses!");
+  printf("Classes!\n");
   int nextClassNumber = Classes::findNextClass(dateTimeController);
   printf("My number is: %d\n", nextClassNumber);
   printf("Class: %s\n", start_list[nextClassNumber].c_str() );
-  std::string result  = Classes::formatTime(start_list[nextClassNumber].c_str());
+  if (nextClassNumber != -1) {
+    std::string result  = Classes::formatTime(start_list[nextClassNumber].c_str());
+    lv_label_set_text_fmt(next_class_name,  "%s",                  name_list[nextClassNumber].c_str());
+    lv_label_set_text_fmt(next_class_loc,   "%s",                   loc_list[nextClassNumber].c_str());
+    lv_label_set_text_fmt(next_class_start, "Start: %s",          start_list[nextClassNumber].c_str());
+    lv_label_set_text_fmt(next_class_end,   "End  : %s",            end_list[nextClassNumber].c_str());
+    lv_label_set_text_fmt(next_class_dif,   "In   : %s\nNumber: %d", result, nextClassNumber);
+  }
+  else {
+    lv_label_set_text_fmt(next_class_name,  "%s",               "No Classes Found");
+    lv_label_set_text_fmt(next_class_loc,   "%s",               "For Today!");
+    lv_label_set_text_fmt(next_class_start, "Start: %s",        "!!:!! !M");
+    lv_label_set_text_fmt(next_class_end,   "End  : %s",        "!!:!! !M");
+    lv_label_set_text_fmt(next_class_dif,   "In   : %s\nNumber: %d", "!:!!", nextClassNumber);
+  }
 
 
 
-  lv_label_set_text_fmt(next_class_name,  "%s",                 name_list[nextClassNumber].c_str());
-  lv_label_set_text_fmt(next_class_loc,   "%s",                  loc_list[nextClassNumber].c_str());
-  lv_label_set_text_fmt(next_class_start, "Start: %s",         start_list[nextClassNumber].c_str());
-  lv_label_set_text_fmt(next_class_end,   "End  : %s",           end_list[nextClassNumber].c_str());
-  lv_label_set_text_fmt(next_class_dif,   "In   : %s\nDay  : %d", result, nextClassNumber);
 
 }
