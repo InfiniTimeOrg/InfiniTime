@@ -76,8 +76,8 @@ std::string timeUntilNextClass(std::unordered_map<std::string, int>& num_list,
 
 //Classes::Classes(Controllers::DateTime& dateTimeController) {
 //Classes::Classes() {
-Classes::Classes(Pinetime::Controllers::DateTime& dateTimeController) {
-   this->dateTimeController = dateTimeController;
+Classes::Classes(Pinetime::Controllers::DateTime& dateTimeController)
+    : dateTimeController(dateTimeController) {
 
   label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(label, "Next Class:", 0, 0, 0);
