@@ -26,7 +26,7 @@ int Classes::findNextClass(Pinetime::Controllers::DateTime& dateTimeController) 
   for (const auto& entry : num_list) {
     if (entry.first.find(oneLetterDay) != std::string::npos) {
       possibleClasses.push_back(entry.second);
-      printf("Found?: %s, %d\n", oneLetterDay.c_str(), entry);
+      printf("Found?: %s, %d\n", oneLetterDay.c_str(), entry.second);
     }
   }
 
