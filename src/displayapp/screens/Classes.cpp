@@ -20,13 +20,13 @@ int Classes::findNextClass(Pinetime::Controllers::DateTime& dateTimeController) 
   else if (dayOfWeek == "FRI") oneLetterDay = "F";
   else if (dayOfWeek == "SAT") oneLetterDay = "S";
 
-  printf("Letter: %s\n", oneLetterDay);
+  printf("Letter: %s\n", oneLetterDay.c_str());
 
   std::vector<int> possibleClasses;
   for (const auto& entry : num_list) {
     if (entry.first.find(oneLetterDay) != std::string::npos) {
       possibleClasses.push_back(entry.second);
-      printf("Found?: %s, %d\n", oneLetterDay, entry);
+      printf("Found?: %s, %d\n", oneLetterDay.c_str(), entry);
     }
   }
 
@@ -193,7 +193,7 @@ void Classes::Refresh() {
     lv_label_set_text_fmt(next_class_loc,   "%s",               "For Today!");
     lv_label_set_text_fmt(next_class_start, "Start: %s",        "!!:!! !M");
     lv_label_set_text_fmt(next_class_end,   "End  : %s",        "!!:!! !M");
-    lv_label_set_text_fmt(next_class_dif,   "In   : %s\nNumber: %d", "!:!!", nextClassNumber);
+    lv_label_set_text_fmt(next_class_dif,   "In   : %s\nNumber: %d", "!!:!!", nextClassNumber);
   }
 
 
