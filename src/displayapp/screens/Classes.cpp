@@ -46,7 +46,7 @@ int Classes::findNextClass(Pinetime::Controllers::DateTime& dateTimeController) 
 
       int classStartMinutes = classStartHour * 60 + classStartMinute;
 
-      printf( "classStartMinutes: %d, currentMinutes: %d", classStartMinutes, currentMinutes );
+      printf( "classStartMinutes: %d, currentMinutes: %d\n", classStartMinutes, currentMinutes );
 
       if (classStartMinutes > currentMinutes) {
         int minutesUntilClass = classStartMinutes - currentMinutes;
@@ -65,14 +65,20 @@ std::string Classes::formatTime(const std::string& timeStr) {
   int targetHours = std::stoi(timeStr.substr(0, timeStr.find(':')));
   int targetMinutes = std::stoi(timeStr.substr(timeStr.find(':') + 1));
 
+  printf( "targetHours: %d, targetMinutes: %d\n", targetHours, targetMinutes );
+
  // Pinetime::Controllers::DateTime currentTime = dateTimeController.CurrentDateTime();
  // std::chrono::time_point<std::chrono::system_clock> currentTime = dateTimeController.CurrentDateTime();
 
   int currentHours = dateTimeController.Hours();
   int currentMinutes = dateTimeController.Minutes();
 
+  printf( "currentHours: %d, currentMinutes: %d\n", currentHours, currentMinutes );
+
   int hoursDiff = targetHours - currentHours;
   int minutesDiff = targetMinutes - currentMinutes;
+
+  printf( "hoursDiff: %d, minutesDiff: %d\n", hoursDiff, minutesDiff );
 
   if (minutesDiff < 0) {
     minutesDiff += 60;
@@ -83,6 +89,7 @@ std::string Classes::formatTime(const std::string& timeStr) {
     hoursDiff += 24;
   }
 
+  printf( "hoursDiff: %d, minutesDiff: %d\n", hoursDiff, minutesDiff );
   return std::to_string(hoursDiff) + ":" + (minutesDiff < 10 ? "0" : "") + std::to_string(minutesDiff);
 }
 
@@ -180,7 +187,7 @@ void Classes::Refresh() {
 
  // int nextClassNumber;
  // std::string result = timeUntilNextClass(num_list, start_list, dateTimeController, nextClassNumber);
-  printf("Classes!\n");
+  printf("\n\n\nClasses!\n");
   int nextClassNumber = Classes::findNextClass(dateTimeController);
   printf("My number is: %d\n", nextClassNumber);
   printf("Class: %s\n", start_list[nextClassNumber].c_str() );
