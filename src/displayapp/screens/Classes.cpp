@@ -9,18 +9,21 @@ using namespace Pinetime::Applications::Screens;
 
 int Classes::findNextClass(Pinetime::Controllers::DateTime& dateTimeController) {
 
+  int nextClassNumber = -1;
   std::string dayOfWeek = dateTimeController.DayOfWeekShortToString();
   std::string oneLetterDay;
 
-  if (dayOfWeek == "SUN") oneLetterDay = "U";
+  if      (dayOfWeek == "SUN") nextClassNumber = -2;
   else if (dayOfWeek == "MON") oneLetterDay = "M";
   else if (dayOfWeek == "TUE") oneLetterDay = "T";
   else if (dayOfWeek == "WED") oneLetterDay = "W";
   else if (dayOfWeek == "THU") oneLetterDay = "R";
   else if (dayOfWeek == "FRI") oneLetterDay = "F";
-  else if (dayOfWeek == "SAT") oneLetterDay = "S";
+  else if (dayOfWeek == "SAT") nextClassNumber = -2;
 
   printf("Letter: %s\n", oneLetterDay.c_str());
+
+  if (nextClassNumber == -2) return nextClassNumber;
 
   std::vector<int> possibleClasses;
   for (const auto& entry : num_list) {
@@ -32,7 +35,6 @@ int Classes::findNextClass(Pinetime::Controllers::DateTime& dateTimeController) 
 
   int currentMinutes = dateTimeController.Hours() * 60 + dateTimeController.Minutes();
   int closestClassTimeDiff = -1;
-  int nextClassNumber = -1;
 
   for (int classNumber : possibleClasses) {
     printf("classNumber: %d\n", classNumber);
@@ -96,7 +98,8 @@ std::string Classes::formatTime(const std::string& timeStr) {
   }
 
   printf( "hoursDiff: %d, minutesDiff: %d\n", hoursDiff, minutesDiff );
-  return std::to_string(hoursDiff) + ":" + (minutesDiff < 10 ? "0" : "") + std::to_string(minutesDiff);
+ // return std::to_string(hoursDiff) + ":" + (minutesDiff < 10 ? "0" : "") + std::to_string(minutesDiff);
+  return std::to_string(hoursDiff) + "h, " + std::to_string(minutesDiff) + "m";
 }
 
 //Classes::Classes(Controllers::DateTime& dateTimeController) {
@@ -197,20 +200,27 @@ void Classes::Refresh() {
   int nextClassNumber = Classes::findNextClass(dateTimeController);
   printf("My number is: %d\n", nextClassNumber);
   printf("Class: %s\n", start_list[nextClassNumber].c_str() );
-  if (nextClassNumber != -1) {
+  if (nextClassNumber == -2) {
+    lv_label_set_text_fmt(next_class_name,  "%s",               "Today Is A");
+    lv_label_set_text_fmt(next_class_loc,   "%s",               "Weekend Day!");
+    lv_label_set_text_fmt(next_class_start, "Start : %s",       "..:.. .M");
+    lv_label_set_text_fmt(next_class_end,   "End   : %s",       "..:.. .M");
+    lv_label_set_text_fmt(next_class_dif,   "In    : %s\nNumber: %d", "..:..", nextClassNumber);
+  }
+  else if (nextClassNumber != -1) {
     std::string result = Classes::formatTime(start_list[nextClassNumber].c_str());
-    lv_label_set_text_fmt(next_class_name,  "%s",                  name_list[nextClassNumber].c_str());
-    lv_label_set_text_fmt(next_class_loc,   "%s",                   loc_list[nextClassNumber].c_str());
-    lv_label_set_text_fmt(next_class_start, "Start: %s",          start_list[nextClassNumber].c_str());
-    lv_label_set_text_fmt(next_class_end,   "End  : %s",            end_list[nextClassNumber].c_str());
-    lv_label_set_text_fmt(next_class_dif,   "In   : %s\nNumber: %d", result.c_str(), nextClassNumber);
+    lv_label_set_text_fmt(next_class_name,  "%s",                           name_list[nextClassNumber].c_str());
+    lv_label_set_text_fmt(next_class_loc,   "%s",                            loc_list[nextClassNumber].c_str());
+    lv_label_set_text_fmt(next_class_start, "Start : %s",                  start_list[nextClassNumber].c_str());
+    lv_label_set_text_fmt(next_class_end,   "End   : %s",                    end_list[nextClassNumber].c_str());
+    lv_label_set_text_fmt(next_class_dif,   "In    : %s\nNumber: %d", result.c_str(), nextClassNumber);
   }
   else {
-    lv_label_set_text_fmt(next_class_name,  "%s",               "No Classes Found");
+    lv_label_set_text_fmt(next_class_name,  "%s",               "No More Classes");
     lv_label_set_text_fmt(next_class_loc,   "%s",               "For Today!");
-    lv_label_set_text_fmt(next_class_start, "Start: %s",        "!!:!! !M");
-    lv_label_set_text_fmt(next_class_end,   "End  : %s",        "!!:!! !M");
-    lv_label_set_text_fmt(next_class_dif,   "In   : %s\nNumber: %d", "!!:!!", nextClassNumber);
+    lv_label_set_text_fmt(next_class_start, "Start : %s",       "..:.. .M");
+    lv_label_set_text_fmt(next_class_end,   "End   : %s",       "..:.. .M");
+    lv_label_set_text_fmt(next_class_dif,   "In    : %s\nNumber: %d", "..:..", nextClassNumber);
   }
 
 
