@@ -63,12 +63,18 @@ int Classes::findNextClass(Pinetime::Controllers::DateTime& dateTimeController) 
 
 std::string Classes::formatTime(const std::string& timeStr) {
   int targetHours = std::stoi(timeStr.substr(0, timeStr.find(':')));
-  int targetMinutes = std::stoi(timeStr.substr(timeStr.find(':') + 1));
+  int targetMinutes = std::stoi(timeStr.substr(timeStr.find(':') + 1, 2));
 
   printf( "targetHours: %d, targetMinutes: %d\n", targetHours, targetMinutes );
 
- // Pinetime::Controllers::DateTime currentTime = dateTimeController.CurrentDateTime();
- // std::chrono::time_point<std::chrono::system_clock> currentTime = dateTimeController.CurrentDateTime();
+  std::string amPm = timeStr.substr(timeStr.size() - 2);
+  if (amPm == "PM" && targetHours != 12) {
+    targetHours += 12;
+  } else if (amPm == "AM" && targetHours == 12) {
+    targetHours = 0;
+  }
+
+  printf( "targetHours: %d, targetMinutes: %d\n", targetHours, targetMinutes );
 
   int currentHours = dateTimeController.Hours();
   int currentMinutes = dateTimeController.Minutes();
