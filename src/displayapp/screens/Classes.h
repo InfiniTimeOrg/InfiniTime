@@ -26,7 +26,7 @@ namespace Pinetime {
 
         //std::string timeUntilNextClass(int nextClassNumber,
         //                               Pinetime::Controllers::DateTime& dateTimeController);
-        std::string Classes::formatTime(const std::string& timeStr);
+        std::string formatTime(const std::string& timeStr);
 
 
        // Classes();
