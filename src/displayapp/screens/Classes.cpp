@@ -173,8 +173,8 @@ void Classes::Refresh() {
  // std::string result = timeUntilNextClass(num_list, start_list, dateTimeController, nextClassNumber);
   printf("Claasses!");
   int nextClassNumber = Classes::findNextClass(dateTimeController);
-  printf(nextClassNumber);
-  printf( start_list[nextClassNumber].c_str() );
+  printf("My number is: %d\n", nextClassNumber);
+  printf("Class: %s\n", start_list[nextClassNumber].c_str() );
   std::string result  = Classes::formatTime(start_list[nextClassNumber].c_str());
 
 
