@@ -164,13 +164,16 @@ void Classes::Refresh() {
 
   //lv_label_set_text_fmt(label,            "%s", start_list[1]);
 
-  int nextClassNumber;
-  std::string result = timeUntilNextClass(num_list, start_list, dateTimeController, nextClassNumber);
+ // int nextClassNumber;
+ // std::string result = timeUntilNextClass(num_list, start_list, dateTimeController, nextClassNumber);
+  int nextClassNumber = Classes::timeUntilNextClass(dateTimeController);
+  std::string result  = Classes::formatTime(start_list[nextClassNumber].c_str());
 
-  lv_label_set_text_fmt(next_class_name,  "%s",                          name_list[nextClassNumber].c_str());
-  lv_label_set_text_fmt(next_class_loc,   "%s",                           loc_list[nextClassNumber].c_str());
-  lv_label_set_text_fmt(next_class_start, "Start: %s",                  start_list[nextClassNumber].c_str());
-  lv_label_set_text_fmt(next_class_end,   "End  : %s",                    end_list[nextClassNumber].c_str());
+
+  lv_label_set_text_fmt(next_class_name,  "%s",                 name_list[nextClassNumber].c_str());
+  lv_label_set_text_fmt(next_class_loc,   "%s",                  loc_list[nextClassNumber].c_str());
+  lv_label_set_text_fmt(next_class_start, "Start: %s",         start_list[nextClassNumber].c_str());
+  lv_label_set_text_fmt(next_class_end,   "End  : %s",           end_list[nextClassNumber].c_str());
   lv_label_set_text_fmt(next_class_dif,   "In   : %s\nDay  : %d", result, nextClassNumber);
 
 }
