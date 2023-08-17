@@ -1,4 +1,5 @@
-//#include "displayapp/screens/Motion.h"
+#pragma once
+
 #include "displayapp/screens/Classes.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
@@ -7,12 +8,10 @@
 
 using namespace Pinetime::Applications::Screens;
 
-// Function to calculate time until the next class and return class number
-std::string timeUntilNextClass(std::unordered_map<std::string, int>& num_list,
+std::string Classes::timeUntilNextClass(std::unordered_map<std::string, int>& num_list,
                                 std::unordered_map<int, std::string>& start_list,
-                                Pinetime::Controllers::DateTime& dateTimeController, int& nextClassNumber)
-
-                               {
+                                Pinetime::Controllers::DateTime& dateTimeController, int& nextClassNumber) {
+                                  
   //  auto currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
 
     uint8_t hour = dateTimeController.Hours();
