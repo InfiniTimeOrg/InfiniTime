@@ -113,7 +113,7 @@ void FirmwareUpdate::DisplayProgression() const {
   lv_bar_set_value(bar3, permille, LV_ANIM_OFF);
   
   lv_obj_set_style_local_bg_color(bar1, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(0, 0, 100));
-  lv_obj_set_style_local_bg_color(bar2, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(0, 0, 0));
+  lv_obj_set_style_local_bg_color(bar2, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(0, 0, 20));
   lv_obj_set_style_local_bg_color(bar3, LV_BAR_PART_INDIC, LV_STATE_DEFAULT, color);
 }
 
