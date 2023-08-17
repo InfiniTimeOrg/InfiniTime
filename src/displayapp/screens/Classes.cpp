@@ -3,6 +3,9 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/InfiniTimeTheme.h"
 #include <vector>
+#include <iostream>
+
+std::cout << "Hello, logging in InfiniSim!" << std::endl;
 
 using namespace Pinetime::Applications::Screens;
 
