@@ -1,5 +1,3 @@
-#pragma once
-
 #include "displayapp/screens/Classes.h"
 #include <lvgl/lvgl.h>
 #include "displayapp/DisplayApp.h"
