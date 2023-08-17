@@ -3,9 +3,8 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/InfiniTimeTheme.h"
 #include <vector>
-#include <iostream>
 
-std::cout << "Hello, logging in InfiniSim!" << std::endl;
+printf("Hello, logging in InfiniSim!\n");
 
 using namespace Pinetime::Applications::Screens;
 
@@ -172,8 +171,12 @@ void Classes::Refresh() {
 
  // int nextClassNumber;
  // std::string result = timeUntilNextClass(num_list, start_list, dateTimeController, nextClassNumber);
+  printf("Claasses!");
   int nextClassNumber = Classes::findNextClass(dateTimeController);
+  printf(nextClassNumber);
+  printf( start_list[nextClassNumber].c_str() );
   std::string result  = Classes::formatTime(start_list[nextClassNumber].c_str());
+
 
 
   lv_label_set_text_fmt(next_class_name,  "%s",                 name_list[nextClassNumber].c_str());

@@ -8,6 +8,8 @@
 #include "components/datetime/DateTimeController.h"
 #include <unordered_map>
 #include <string>
+#include <cstdio>
+
 
 
 namespace Pinetime {
