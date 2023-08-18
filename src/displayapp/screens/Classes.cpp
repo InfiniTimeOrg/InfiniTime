@@ -237,7 +237,7 @@ void Classes::Refresh() {
       lv_label_set_text_fmt(next_class_loc,   "%s",               "Weekend Day!");
       lv_label_set_text_fmt(next_class_start, "Start : %s",       "..:.. .M");
       lv_label_set_text_fmt(next_class_end,   "End   : %s",       "..:.. .M");
-      lv_label_set_text_fmt(next_class_dif,   "In    : %s\nNumber: %d", "..:..", nextClassNumber);
+      lv_label_set_text_fmt(next_class_dif,   "In    : %s\nNumber: %d", "..h, ..m", nextClassNumber);
     }
     else if (nextClassNumber != -1) {
       std::string result = Classes::formatTime(start_list[nextClassNumber].c_str());
@@ -252,7 +252,7 @@ void Classes::Refresh() {
       lv_label_set_text_fmt(next_class_loc,   "%s",               "For Today!");
       lv_label_set_text_fmt(next_class_start, "Start : %s",       "..:.. .M");
       lv_label_set_text_fmt(next_class_end,   "End   : %s",       "..:.. .M");
-      lv_label_set_text_fmt(next_class_dif,   "In    : %s\nNumber: %d", "..:..", nextClassNumber);
+      lv_label_set_text_fmt(next_class_dif,   "In    : %s\nNumber: %d", "..h, ..m", nextClassNumber);
     }
   
 //  powerPresent = batteryController.IsPowerPresent();
