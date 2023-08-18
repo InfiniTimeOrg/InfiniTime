@@ -10,6 +10,8 @@
 #include "components/ble/BleController.h"
 #include "utility/DirtyValue.h"
 
+#include "displayapp/screens/Classes.h"
+
 namespace Pinetime {
   namespace Controllers {
     class Settings;
@@ -80,7 +82,7 @@ namespace Pinetime {
         lv_obj_t* bleIcon;
         lv_obj_t* batteryPlug;
         lv_obj_t* label_battery_value;
-        lv_obj_t* heartbeatIcon;
+     //   lv_obj_t* heartbeatIcon;
         lv_obj_t* heartbeatValue;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;

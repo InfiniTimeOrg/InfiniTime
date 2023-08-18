@@ -14,11 +14,11 @@ int Classes::findNextClass(Pinetime::Controllers::DateTime& dateTimeController) 
   std::string oneLetterDay;
 
   if      (dayOfWeek == "SUN") nextClassNumber = -2;
-  else if (dayOfWeek == "MON") oneLetterDay = "M";
-  else if (dayOfWeek == "TUE") oneLetterDay = "T";
-  else if (dayOfWeek == "WED") oneLetterDay = "W";
-  else if (dayOfWeek == "THU") oneLetterDay = "R";
-  else if (dayOfWeek == "FRI") oneLetterDay = "F";
+  else if (dayOfWeek == "MON") oneLetterDay    = "M";
+  else if (dayOfWeek == "TUE") oneLetterDay    = "T";
+  else if (dayOfWeek == "WED") oneLetterDay    = "W";
+  else if (dayOfWeek == "THU") oneLetterDay    = "R";
+  else if (dayOfWeek == "FRI") oneLetterDay    = "F";
   else if (dayOfWeek == "SAT") nextClassNumber = -2;
 
   printf("Letter: %s\n", oneLetterDay.c_str());
@@ -165,7 +165,7 @@ Classes::Classes(Pinetime::Controllers::DateTime& dateTimeController)
 
 
   num_list["MWF"] = 1;
-  num_list[  "W"] = 2;
+  num_list[ "W" ] = 2;
   num_list[ "TR"] = 3;
   num_list[ "TR"] = 4;
   num_list["MWF"] = 5;
