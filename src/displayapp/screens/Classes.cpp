@@ -107,19 +107,19 @@ std::string Classes::formatTime(const std::string& timeStr) {
 Classes::Classes(Pinetime::Controllers::DateTime& dateTimeController)
     : dateTimeController(dateTimeController) {
 
-      int OffSet = 3;
+      int OffSet = 2;
   printf("Hello, logging in InfiniSim!\n");
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(label_time, "..:.. .M", 0, 0, 0);
   lv_label_set_align(label_time, LV_LABEL_ALIGN_LEFT);
-  lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 5, 5);
+  lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 5);
   lv_label_set_recolor(label_time, true);
 
   label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(label, "Next Class:", 0, 0, 0);
   lv_label_set_align(label, LV_LABEL_ALIGN_LEFT);
-  lv_obj_align(label, label_time, LV_ALIGN_IN_TOP_LEFT, 5, 5);
+  lv_obj_align(label, label_time, LV_ALIGN_OUT_BOTTOM_LEFT, 0, OffSet);
   lv_label_set_recolor(label, true);
 
   next_class_name = lv_label_create(lv_scr_act(), nullptr);
