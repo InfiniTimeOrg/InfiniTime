@@ -43,7 +43,6 @@ namespace Pinetime {
         Pinetime::Controllers::DateTime& dateTimeController;
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
 
-
         std::unordered_map<std::string, int> num_list;
         std::unordered_map<int, std::string> start_list;
         std::unordered_map<int, std::string> end_list;

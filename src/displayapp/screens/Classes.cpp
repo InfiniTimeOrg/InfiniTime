@@ -120,38 +120,49 @@ Classes::Classes(Pinetime::Controllers::DateTime& dateTimeController)
   label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(label, "Next Class:", 0, 0, 0);
   lv_label_set_align(label, LV_LABEL_ALIGN_LEFT);
-  lv_obj_align(label, label_time, LV_ALIGN_OUT_BOTTOM_LEFT, Displacement, OffSet);
+  lv_obj_align(label, label_time, LV_ALIGN_OUT_BOTTOM_LEFT, 0, OffSet);
   lv_label_set_recolor(label, true);
 
   next_class_name = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_name, "Loading Next Class", 0, 0, 0);
   lv_label_set_align(next_class_name, LV_LABEL_ALIGN_LEFT);
-  lv_obj_align(next_class_name, label, LV_ALIGN_OUT_BOTTOM_LEFT, Displacement, OffSet);
+  lv_obj_align(next_class_name, label, LV_ALIGN_OUT_BOTTOM_LEFT, 0, OffSet);
   lv_label_set_recolor(next_class_name, true);
 
   next_class_loc = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_loc, "Loading Class Loc", 0, 0, 0);
   lv_label_set_align(next_class_loc, LV_LABEL_ALIGN_LEFT);
-  lv_obj_align(next_class_loc, next_class_name, LV_ALIGN_OUT_BOTTOM_LEFT, Displacement, OffSet);
+  lv_obj_align(next_class_loc, next_class_name, LV_ALIGN_OUT_BOTTOM_LEFT, 0, OffSet);
   lv_label_set_recolor(next_class_loc, true);
 
   next_class_start = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_start, "Loading Class Start", 0, 0, 0);
   lv_label_set_align(next_class_start, LV_LABEL_ALIGN_LEFT);
-  lv_obj_align(next_class_start, next_class_loc, LV_ALIGN_OUT_BOTTOM_LEFT, Displacement, OffSet);
+  lv_obj_align(next_class_start, next_class_loc, LV_ALIGN_OUT_BOTTOM_LEFT, 0, OffSet);
   lv_label_set_recolor(next_class_start, true);
 
   next_class_end = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_end, "Loading Class End", 0, 0, 0);
   lv_label_set_align(next_class_end, LV_LABEL_ALIGN_LEFT);
-  lv_obj_align(next_class_end, next_class_start, LV_ALIGN_OUT_BOTTOM_LEFT, Displacement, OffSet);
+  lv_obj_align(next_class_end, next_class_start, LV_ALIGN_OUT_BOTTOM_LEFT, 0, OffSet);
   lv_label_set_recolor(next_class_end, true);
 
   next_class_dif = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(next_class_dif, "Loading Class End", 0, 0, 0);
   lv_label_set_align(next_class_dif, LV_LABEL_ALIGN_LEFT);
-  lv_obj_align(next_class_dif, next_class_end, LV_ALIGN_OUT_BOTTOM_LEFT, Displacement, OffSet);
+  lv_obj_align(next_class_dif, next_class_end, LV_ALIGN_OUT_BOTTOM_LEFT, 0, OffSet);
   lv_label_set_recolor(next_class_dif, true);
+
+//  ////// battery stuff
+//  batteryIcon.Create(lv_scr_act());
+//  batteryIcon.SetColor(color_text);
+//  lv_obj_align(batteryIcon.GetObject(), label_battery_value, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+//
+//  batteryPlug = lv_label_create(lv_scr_act(), nullptr);
+//  lv_obj_set_style_local_text_color(batteryPlug, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+//  lv_label_set_text_static(batteryPlug, Symbols::plug);
+//  lv_obj_align(batteryPlug, batteryIcon.GetObject(), LV_ALIGN_OUT_LEFT_MID, -5, 0);
+
 
   num_list["MWF"] = 1;
   num_list[  "W"] = 2;
@@ -243,5 +254,38 @@ void Classes::Refresh() {
       lv_label_set_text_fmt(next_class_end,   "End   : %s",       "..:.. .M");
       lv_label_set_text_fmt(next_class_dif,   "In    : %s\nNumber: %d", "..:..", nextClassNumber);
     }
+  
+//  powerPresent = batteryController.IsPowerPresent();
+//  lv_label_set_text_static(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
+//
+//  auto batteryPercent = batteryPercentRemaining.Get();
+//  batteryIcon.SetBatteryPercentage(batteryPercent);
+//
+//  // Use the ColorRamp function from the batteryIcon object to get the desired color
+//  lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 20 : 100 ), 100);
+//  
+//  // Update the color of each object using the new color_text
+//  for (auto obj : objectsToUpdate) {
+//    // Update the color of other objects (using text color)
+//    lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+//    lv_obj_set_style_local_line_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
+//  
+//  }
+//
+//  batteryPercentRemaining = batteryController.PercentRemaining();
+//  auto batteryPercent = batteryPercentRemaining.Get();
+//  batteryIcon.SetBatteryPercentage(batteryPercent);
+//  
+//  // Use the ColorRamp function from the batteryIcon object to get the desired color
+//  lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 20 : 100 ), 100);
+//  
+//  // Update the color of each object using the new color_text
+//  for (auto obj : objectsToUpdate) {
+//    // Update the color of other objects (using text color)
+//    lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+//    lv_obj_set_style_local_line_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
+//  
+//  }
+
   }
 }
