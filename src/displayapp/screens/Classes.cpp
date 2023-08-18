@@ -110,10 +110,16 @@ Classes::Classes(Pinetime::Controllers::DateTime& dateTimeController)
       int OffSet = 3;
   printf("Hello, logging in InfiniSim!\n");
 
+  label_time = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_fmt(label_time, "..:.. .M", 0, 0, 0);
+  lv_label_set_align(label_time, LV_LABEL_ALIGN_LEFT1);
+  lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 5, 5);
+  lv_label_set_recolor(label_time, true);
+
   label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(label, "Next Class:", 0, 0, 0);
-  lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(label, nullptr, LV_ALIGN_IN_TOP_LEFT, 5, 5);
+  lv_label_set_align(label, LV_LABEL_ALIGN_LEFT);
+  lv_obj_align(label, label_time, LV_ALIGN_IN_TOP_LEFT, 5, 5);
   lv_label_set_recolor(label, true);
 
   next_class_name = lv_label_create(lv_scr_act(), nullptr);
@@ -190,16 +196,25 @@ Classes::~Classes() {
 }
 
 void Classes::Refresh() {
-  //lv_label_set_text_fmt(next_class, "#ff0fff hello chat!");
-
-  //lv_label_set_text_fmt(label,            "%s", start_list[1]);
-
- // int nextClassNumber;
- // std::string result = timeUntilNextClass(num_list, start_list, dateTimeController, nextClassNumber);
   printf("\n\n\nClasses!\n");
   int nextClassNumber = Classes::findNextClass(dateTimeController);
   printf("My number is: %d\n", nextClassNumber);
   printf("Class: %s\n", start_list[nextClassNumber].c_str() );
+  uint8_t hour = dateTimeController.Hours();
+  uint8_t minute = dateTimeController.Minutes();
+
+  char ampmChar[3] = "AM";
+  if (hour == 0) {
+    hour = 12;
+  } else if (hour == 12) {
+    ampmChar[0] = 'P';
+  } else if (hour > 12) {
+    hour = hour - 12;
+    ampmChar[0] = 'P';
+  }
+
+  lv_label_set_text_fmt(label_time, "%2d:%02d %s", hour, minute, ampmChar);
+
   if (nextClassNumber == -2) {
     lv_label_set_text_fmt(next_class_name,  "%s",               "Today Is A");
     lv_label_set_text_fmt(next_class_loc,   "%s",               "Weekend Day!");

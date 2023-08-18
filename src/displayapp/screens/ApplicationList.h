@@ -9,7 +9,7 @@
 #include "components/settings/Settings.h"
 #include "components/battery/BatteryController.h"
 #include "displayapp/screens/Symbols.h"
-#include "displayapp/screens/Classes.h"
+//#include "displayapp/screens/Classes.h"
 #include "displayapp/screens/Tile.h"
 
 namespace Pinetime {

@@ -48,6 +48,7 @@ namespace Pinetime {
      //   std::unordered_map<std::string, std::string> list;
        // std::unordered_map<std::string, std::string> list;
 
+        lv_obj_t* label_time;
         lv_obj_t* label;
         lv_obj_t* next_class_start;
         lv_obj_t* next_class_end;
