@@ -112,7 +112,7 @@ Classes::Classes(Pinetime::Controllers::DateTime& dateTimeController)
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(label_time, "..:.. .M", 0, 0, 0);
-  lv_label_set_align(label_time, LV_LABEL_ALIGN_LEFT1);
+  lv_label_set_align(label_time, LV_LABEL_ALIGN_LEFT);
   lv_obj_align(label_time, nullptr, LV_ALIGN_IN_TOP_LEFT, 5, 5);
   lv_label_set_recolor(label_time, true);
 
