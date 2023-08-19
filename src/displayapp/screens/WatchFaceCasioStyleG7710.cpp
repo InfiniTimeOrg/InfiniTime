@@ -156,11 +156,12 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
  // lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
  // lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
 
-  heartbeatValue = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  lv_label_set_text_static(heartbeatValue, "");
-  //lv_obj_align(heartbeatValue, nullptr, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
-  lv_obj_align(heartbeatValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
+  Classes_Text = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(Classes_Text, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  lv_label_set_text_static(Classes_Text, "");
+  //lv_obj_align(Classes_Text, nullptr, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
+  lv_obj_align(Classes_Text, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
+  lv_label_set_long_mode(Classes_Text, LV_LABEL_LONG_SROLL_CIRC)
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
@@ -217,7 +218,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     line_time,
     label_time_ampm,
     backgroundLabel,
-    heartbeatValue,
+    Classes_Text,
     stepValue,
     stepIcon
   };
@@ -345,20 +346,20 @@ void WatchFaceCasioStyleG7710::Refresh() {
     }
   }
 
-  heartbeat = heartRateController.HeartRate();
-  heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
-  if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
-    if (heartbeatRunning.Get()) {
-   //   lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-      lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());
-    } else {
-   //   lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x1B1B1B));
-      lv_label_set_text_static(heartbeatValue, "");
-    }
-
-   // lv_obj_realign(heartbeatIcon);
-    lv_obj_realign(heartbeatValue);
-  }
+ // heartbeat = heartRateController.HeartRate();
+ // heartbeatRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
+ // if (heartbeat.IsUpdated() || heartbeatRunning.IsUpdated()) {
+ //   if (heartbeatRunning.Get()) {
+ //  //   lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+ //     lv_label_set_text_fmt(heartbeatValue, "%d", heartbeat.Get());
+ //   } else {
+ //  //   lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x1B1B1B));
+ //     lv_label_set_text_static(heartbeatValue, "");
+ //   }
+ //
+ //  // lv_obj_realign(heartbeatIcon);
+ //   lv_obj_realign(heartbeatValue);
+ // }
 
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated()) {
