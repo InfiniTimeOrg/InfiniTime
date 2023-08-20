@@ -156,12 +156,12 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
  // lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
  // lv_obj_align(heartbeatIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
 
-  Classes_Text = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(Classes_Text, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  lv_label_set_text_static(Classes_Text, "");
-  //lv_obj_align(Classes_Text, nullptr, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
-  lv_obj_align(Classes_Text, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
-  lv_label_set_long_mode(Classes_Text, LV_LABEL_LONG_SROLL_CIRC)
+ // Classes_Text = lv_label_create(lv_scr_act(), nullptr);
+ // lv_obj_set_style_local_text_color(Classes_Text, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+ // lv_label_set_text_static(Classes_Text, "");
+ // //lv_obj_align(Classes_Text, nullptr, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
+ // lv_obj_align(Classes_Text, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
+ // lv_label_set_long_mode(Classes_Text, LV_LABEL_LONG_SROLL_CIRC)
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
@@ -218,7 +218,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     line_time,
     label_time_ampm,
     backgroundLabel,
-    Classes_Text,
+   // Classes_Text,
     stepValue,
     stepIcon
   };
@@ -232,7 +232,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
 
     // Use the ColorRamp function from the batteryIcon object to get the desired color
-    lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 20 : 100 ), 100);
+    lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ), 100);
     
     // Update the color of each object using the new color_text
     for (auto obj : objectsToUpdate) {
@@ -251,7 +251,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
     
     // Use the ColorRamp function from the batteryIcon object to get the desired color
-    lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 20 : 100 ), 100);
+    lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ), 100);
     
     // Update the color of each object using the new color_text
     for (auto obj : objectsToUpdate) {
