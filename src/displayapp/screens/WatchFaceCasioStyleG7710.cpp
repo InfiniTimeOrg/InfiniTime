@@ -227,12 +227,16 @@ void WatchFaceCasioStyleG7710::Refresh() {
   if (powerPresent.IsUpdated()) {
     lv_label_set_text_static(batteryPlug, BatteryIcon::GetPlugIcon(powerPresent.Get()));
 
+
     auto batteryPercent = batteryPercentRemaining.Get();
     batteryIcon.SetBatteryPercentage(batteryPercent);
     lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
 
     // Use the ColorRamp function from the batteryIcon object to get the desired color
     lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ), 100);
+    
+    printf("powerPresent: %s\npowerPresent.Get(): %s\nBatteryIcon::GetPlugIcon(powerPresent.Get()): %s\n( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ): %s\n",
+      powerPresent, powerPresent.Get(), BatteryIcon::GetPlugIcon(powerPresent.Get()), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ))
     
     // Update the color of each object using the new color_text
     for (auto obj : objectsToUpdate) {
