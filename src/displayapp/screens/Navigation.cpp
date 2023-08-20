@@ -125,7 +125,7 @@ namespace {
   }};
 
   Icon GetIcon(uint8_t index) {
-    if(index < maxIconsPerFile) {
+    if (index < maxIconsPerFile) {
       return {iconsFile0, static_cast<int16_t>(iconHeight * index)};
     }
     return {iconsFile1, static_cast<int16_t>(iconHeight * (index - maxIconsPerFile))};
