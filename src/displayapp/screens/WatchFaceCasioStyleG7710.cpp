@@ -233,15 +233,15 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
 
     // Use the ColorRamp function from the batteryIcon object to get the desired color
-    lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ), 100);
+  //////  lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ), 100);
 
-  //  printf("powerPresent.Get(): %s\nBatteryIcon::GetPlugIcon(powerPresent.Get()): %s\n( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ): %s\n", powerPresent.Get(), BatteryIcon::GetPlugIcon(powerPresent.Get()), BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug);
+    printf("powerPresent.Get(): %s\nBatteryIcon::GetPlugIcon(powerPresent.Get()): %s\n( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ): %s\n", powerPresent.Get(), BatteryIcon::GetPlugIcon(powerPresent.Get()), BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug);
     
     // Update the color of each object using the new color_text
     for (auto obj : objectsToUpdate) {
       // Update the color of other objects (using text color)
-      lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-      lv_obj_set_style_local_line_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  //////    lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  //////    lv_obj_set_style_local_line_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
     }
   
    // lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_darken(color_text, 127));
@@ -254,13 +254,13 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
     
     // Use the ColorRamp function from the batteryIcon object to get the desired color
-    lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ), 100);
+  //////  lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ), 100);
     
     // Update the color of each object using the new color_text
     for (auto obj : objectsToUpdate) {
       // Update the color of other objects (using text color)
-      lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-      lv_obj_set_style_local_line_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  //////    lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+  //////    lv_obj_set_style_local_line_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
     }
   
    // lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_darken(color_text, 127));
