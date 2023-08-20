@@ -201,27 +201,27 @@ WatchFaceCasioStyleG7710::~WatchFaceCasioStyleG7710() {
 void WatchFaceCasioStyleG7710::Refresh() {
   
   // Create a list of objects that need their color updated
-  // //std::vector<lv_obj_t*> objectsToUpdate = {
-  // //  label_battery_value,
-  // //  batteryIcon.GetObject(),
-  // //  batteryPlug,
-  // //  notificationIcon,
-  // //  label_day_of_week,
-  // //  label_week_number,
-  // //  label_day_of_year,
-  // //  line_icons,
-  // //  line_day_of_week_number,
-  // //  line_day_of_year,
-  // //  label_date,
-  // //  line_date,
-  // //  label_time,
-  // //  line_time,
-  // //  label_time_ampm,
-  // //  backgroundLabel,
-  // // // Classes_Text,
-  // //  stepValue,
-  // //  stepIcon
-  // //};
+  std::vector<lv_obj_t*> objectsToUpdate = {
+    label_battery_value,
+    batteryIcon.GetObject(),
+    batteryPlug,
+    notificationIcon,
+    label_day_of_week,
+    label_week_number,
+    label_day_of_year,
+    line_icons,
+    line_day_of_week_number,
+    line_day_of_year,
+    label_date,
+    line_date,
+    label_time,
+    line_time,
+    label_time_ampm,
+    backgroundLabel,
+   // Classes_Text,
+    stepValue,
+    stepIcon
+  };
   
   powerPresent = batteryController.IsPowerPresent();
   if (powerPresent.IsUpdated()) {
@@ -233,16 +233,16 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
 
     // Use the ColorRamp function from the batteryIcon object to get the desired color
-  // //  lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ), 100);
+    lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ), 100);
 
-    printf("powerPresent.Get(): %s\nBatteryIcon::GetPlugIcon(powerPresent.Get()): %s\n( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ): %s\n", powerPresent.Get(), BatteryIcon::GetPlugIcon(powerPresent.Get()), BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug);
+    //printf("powerPresent.Get(): %s\nBatteryIcon::GetPlugIcon(powerPresent.Get()): %s\n( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ): %s\n", powerPresent.Get(), BatteryIcon::GetPlugIcon(powerPresent.Get()), BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug);
     
     // Update the color of each object using the new color_text
-  // //  for (auto obj : objectsToUpdate) {
+    for (auto obj : objectsToUpdate) {
       // Update the color of other objects (using text color)
-  // //    lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  // //    lv_obj_set_style_local_line_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  // //  }
+      lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+      lv_obj_set_style_local_line_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
+    }
   
    // lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_darken(color_text, 127));
   }
@@ -254,14 +254,14 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_label_set_text_fmt(label_battery_value, "%d%%", batteryPercent);
     
     // Use the ColorRamp function from the batteryIcon object to get the desired color
-  // //  lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ), 100);
+    lv_color_t color_text = lv_color_hsv_to_rgb(batteryIcon.ColorRamp(batteryPercent), ( BatteryIcon::GetPlugIcon(powerPresent.Get()) == Symbols::plug ? 35 : 100 ), 100);
     
     // Update the color of each object using the new color_text
-  // //  for (auto obj : objectsToUpdate) {
+    for (auto obj : objectsToUpdate) {
       // Update the color of other objects (using text color)
-  // //    lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  // //    lv_obj_set_style_local_line_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  // //  }
+      lv_obj_set_style_local_text_color(obj, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
+      lv_obj_set_style_local_line_color(obj, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, color_text);
+    }
   
    // lv_obj_set_style_local_text_color(heartbeatIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_darken(color_text, 127));
   }
