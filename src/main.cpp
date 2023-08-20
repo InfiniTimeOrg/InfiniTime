@@ -28,6 +28,7 @@
 #include <drivers/Bma421.h>
 
 #include "BootloaderVersion.h"
+#include "components/activity/ActivityController.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
@@ -108,6 +109,7 @@ Pinetime::Controllers::AlarmController alarmController {dateTimeController};
 Pinetime::Controllers::TouchHandler touchHandler;
 Pinetime::Controllers::ButtonHandler buttonHandler;
 Pinetime::Controllers::BrightnessController brightnessController {};
+Pinetime::Controllers::ActivityController activityController;
 
 Pinetime::Applications::DisplayApp displayApp(lcd,
                                               touchPanel,
@@ -144,7 +146,8 @@ Pinetime::System::SystemTask systemTask(spi,
                                         heartRateApp,
                                         fs,
                                         touchHandler,
-                                        buttonHandler);
+                                        buttonHandler,
+                                        activityController);
 int mallocFailedCount = 0;
 int stackOverflowCount = 0;
 extern "C" {
