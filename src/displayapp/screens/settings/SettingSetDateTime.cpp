@@ -1,6 +1,7 @@
 #include "displayapp/screens/settings/SettingSetDateTime.h"
 #include "displayapp/screens/settings/SettingSetDate.h"
 #include "displayapp/screens/settings/SettingSetTime.h"
+#include "displayapp/screens/settings/SettingSetDateTimeFormat.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/ScreenList.h"
 #include "components/settings/Settings.h"
@@ -25,20 +26,29 @@ SettingSetDateTime::SettingSetDateTime(Pinetime::Applications::DisplayApp* app,
               },
               [this]() -> std::unique_ptr<Screen> {
                 return screenSetTime();
+              },
+              [this]() -> std::unique_ptr<Screen> {
+                return screenSetFormat();
               }},
              Screens::ScreenListModes::UpDown} {
 }
 
 std::unique_ptr<Screen> SettingSetDateTime::screenSetDate() {
-  Widgets::DotIndicator dotIndicator(0, 2);
+  Widgets::DotIndicator dotIndicator(0, 3);
   dotIndicator.Create();
   return std::make_unique<Screens::SettingSetDate>(dateTimeController, *this);
 }
 
 std::unique_ptr<Screen> SettingSetDateTime::screenSetTime() {
-  Widgets::DotIndicator dotIndicator(1, 2);
+  Widgets::DotIndicator dotIndicator(1, 3);
   dotIndicator.Create();
   return std::make_unique<Screens::SettingSetTime>(dateTimeController, settingsController, *this);
+}
+
+std::unique_ptr<Screen> SettingSetDateTime::screenSetFormat() {
+  Widgets::DotIndicator dotIndicator(2, 3);
+  dotIndicator.Create();
+  return std::make_unique<Screens::SettingSetDateTimeFormat>(dateTimeController, settingsController, *this);
 }
 
 SettingSetDateTime::~SettingSetDateTime() {
