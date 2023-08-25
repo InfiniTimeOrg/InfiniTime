@@ -9,77 +9,68 @@
 
 using namespace Pinetime::Applications::Screens;
 
-constexpr const char* SettingHeartRate::title;
-constexpr const char* SettingHeartRate::symbol;
-
 namespace {
-  constexpr std::array<uint32_t, 6> intervalOptions = {{
-    0,
-    30 * 1000,
-    60 * 1000,
-    5 * 60 * 1000,
-    10 * 60 * 1000,
-    30 * 60 * 1000,
-  }};
+  void event_handler(lv_obj_t* obj, lv_event_t event) {
+    auto* screen = static_cast<SettingHeartRate*>(obj->user_data);
+    screen->UpdateSelected(obj, event);
+  }
+}
 
-  constexpr std::array<CheckboxList::Item, 8> options = {{
-    {"Off", true},
-    {"30s", true},
-    {"1 min", true},
-    {"5 min", true},
-    {"10 min", true},
-    {"30 min", true},
-    {"", false},
-    {"", false},
-  }};
+constexpr std::array<Option, 8> SettingHeartRate::options;
 
-  uint32_t GetDefaultOption(uint32_t currentInterval) {
-    for (size_t i = 0; i < intervalOptions.size(); i++) {
-      if (intervalOptions[i] == currentInterval) {
-        return i;
-      }
+SettingHeartRate::SettingHeartRate(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
+  : app {app}, settingsController {settingsController} {
+
+  lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
+
+  lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_style_local_pad_all(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
+  lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
+  lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
+
+  lv_obj_set_pos(container1, 10, 60);
+  lv_obj_set_width(container1, LV_HOR_RES - 20);
+  lv_obj_set_height(container1, LV_VER_RES - 50);
+  lv_cont_set_layout(container1, LV_LAYOUT_PRETTY_TOP);
+
+  lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(title, "Backg. Interval");
+  lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 10, 15);
+
+  lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  lv_label_set_text_static(icon, Symbols::heartBeat);
+  lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
+
+  for (unsigned int i = 0; i < options.size(); i++) {
+    cbOption[i] = lv_checkbox_create(container1, nullptr);
+    lv_checkbox_set_text(cbOption[i], options[i].name);
+    cbOption[i]->user_data = this;
+    lv_obj_set_event_cb(cbOption[i], event_handler);
+    SetRadioButtonStyle(cbOption[i]);
+
+    if (settingsController.GetHeartRateBackgroundMeasurementInterval() == options[i].interval) {
+      lv_checkbox_set_checked(cbOption[i], true);
     }
-    return 0;
   }
-}
-
-auto SettingHeartRate::CreateScreenList() const {
-  std::array<std::function<std::unique_ptr<Screen>()>, nScreens> screens;
-  for (size_t i = 0; i < screens.size(); i++) {
-    screens[i] = [this, i]() -> std::unique_ptr<Screen> {
-      return CreateScreen(i);
-    };
-  }
-  return screens;
-}
-
-SettingHeartRate::SettingHeartRate(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settings)
-  : app {app}, settings {settings}, screens {app, 0, CreateScreenList(), Screens::ScreenListModes::UpDown} {
 }
 
 SettingHeartRate::~SettingHeartRate() {
   lv_obj_clean(lv_scr_act());
+  settingsController.SaveSettings();
 }
 
-bool SettingHeartRate::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-  return screens.OnTouchEvent(event);
-}
-
-std::unique_ptr<Screen> SettingHeartRate::CreateScreen(unsigned int screenNum) const {
-  std::array<Screens::CheckboxList::Item, optionsPerScreen> optionsOnThisScreen;
-  for (int i = 0; i < optionsPerScreen; i++) {
-    optionsOnThisScreen[i] = options[screenNum * optionsPerScreen + i];
+void SettingHeartRate::UpdateSelected(lv_obj_t* object, lv_event_t event) {
+  if (event == LV_EVENT_CLICKED) {
+    for (unsigned int i = 0; i < options.size(); i++) {
+      if (object == cbOption[i]) {
+        lv_checkbox_set_checked(cbOption[i], true);
+        settingsController.SetHeartRateBackgroundMeasurementInterval(options[i].interval);
+      } else {
+        lv_checkbox_set_checked(cbOption[i], false);
+      }
+    }
   }
-
-  return std::make_unique<Screens::CheckboxList>(
-    screenNum,
-    nScreens,
-    title,
-    symbol,
-    GetDefaultOption(settings.GetHeartRateBackgroundMeasurementInterval()),
-    [&settings = settings](uint32_t index) {
-      settings.SetHeartRateBackgroundMeasurementInterval(intervalOptions[index]);
-      settings.SaveSettings();
-    },
-    optionsOnThisScreen);
 }

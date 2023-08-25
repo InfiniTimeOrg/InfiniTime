@@ -320,6 +320,7 @@ namespace Pinetime {
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
 
+        // The interval for measuring the heart rate when the screen is off (in seconds)
         uint32_t heartRateBackgroundMeasurementInterval = 0;
       };
 
