@@ -5,8 +5,10 @@
 
 using namespace Pinetime::Applications;
 
-HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor, Controllers::HeartRateController& controller)
-  : heartRateSensor {heartRateSensor}, controller {controller} {
+HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor,
+                             Controllers::HeartRateController& controller,
+                             Controllers::Settings& settings)
+  : heartRateSensor {heartRateSensor}, controller {controller}, settings {settings} {
 }
 
 void HeartRateTask::Start() {
@@ -108,7 +110,12 @@ void HeartRateTask::StartWaiting() {
 }
 
 void HeartRateTask::HandleBackgroundWaiting() {
-  if (xTaskGetTickCount() - backgroundWaitingStart >= DURATION_BETWEEN_BACKGROUND_MEASUREMENTS) {
+  if (settings.GetHeartRateBackgroundMeasurementInterval() == 0) {
+    // stay waiting
+    return;
+  }
+
+  if (xTaskGetTickCount() - backgroundWaitingStart >= settings.GetHeartRateBackgroundMeasurementInterval()) {
     state = States::BackgroundMeasuring;
     StartMeasurement();
   }

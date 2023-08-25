@@ -283,6 +283,17 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
+      uint32_t GetHeartRateBackgroundMeasurementInterval() const {
+        return settings.heartRateBackgroundMeasurementInterval;
+      }
+
+      void SetHeartRateBackgroundMeasurementInterval(uint32_t newHeartRateBackgroundMeasurementInterval) {
+        if (newHeartRateBackgroundMeasurementInterval != settings.heartRateBackgroundMeasurementInterval) {
+          settingsChanged = true;
+        }
+        settings.heartRateBackgroundMeasurementInterval = newHeartRateBackgroundMeasurementInterval;
+      }
+
     private:
       Pinetime::Controllers::FS& fs;
 
@@ -308,6 +319,8 @@ namespace Pinetime {
         uint16_t shakeWakeThreshold = 150;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        uint32_t heartRateBackgroundMeasurementInterval = 0;
       };
 
       SettingsData settings;

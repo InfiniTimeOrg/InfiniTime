@@ -3,9 +3,9 @@
 #include <task.h>
 #include <queue.h>
 #include <components/heartrate/Ppg.h>
+#include "components/settings/Settings.h"
 
-#define DURATION_BETWEEN_BACKGROUND_MEASUREMENTS        5 * 60 * 1000 // 5 minutes assuming 1 Hz
-#define DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED 30 * 1000     // 30 seconds assuming 1 Hz
+#define DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED 30 * 1000 // 30 seconds assuming 1 Hz
 
 namespace Pinetime {
   namespace Drivers {
@@ -22,7 +22,9 @@ namespace Pinetime {
       enum class Messages : uint8_t { GoToSleep, WakeUp, StartMeasurement, StopMeasurement };
       enum class States { Idle, Running, Measuring, BackgroundWaiting, BackgroundMeasuring };
 
-      explicit HeartRateTask(Drivers::Hrs3300& heartRateSensor, Controllers::HeartRateController& controller);
+      explicit HeartRateTask(Drivers::Hrs3300& heartRateSensor,
+                             Controllers::HeartRateController& controller,
+                             Controllers::Settings& settings);
       void Start();
       void Work();
       void PushMessage(Messages msg);
@@ -42,6 +44,7 @@ namespace Pinetime {
       States state = States::Running;
       Drivers::Hrs3300& heartRateSensor;
       Controllers::HeartRateController& controller;
+      Controllers::Settings& settings;
       Controllers::Ppg ppg;
       TickType_t backgroundWaitingStart = 0;
       TickType_t measurementStart = 0;
