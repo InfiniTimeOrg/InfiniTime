@@ -112,7 +112,7 @@ void HeartRateTask::HandleBackgroundWaiting() {
     return;
   }
 
-  if (xTaskGetTickCount() - backgroundWaitingStart >= settings.GetHeartRateBackgroundMeasurementInterval()) {
+  if (xTaskGetTickCount() - backgroundWaitingStart >= settings.GetHeartRateBackgroundMeasurementInterval() * 1000) {
     state = States::BackgroundMeasuring;
     StartMeasurement();
   }

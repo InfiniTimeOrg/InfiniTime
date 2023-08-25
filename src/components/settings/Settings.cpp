@@ -8,7 +8,6 @@ Settings::Settings(Pinetime::Controllers::FS& fs) : fs {fs} {
 }
 
 void Settings::Init() {
-
   // Load default settings from Flash
   LoadSettingsFromFile();
 }
