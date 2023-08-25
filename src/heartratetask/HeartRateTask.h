@@ -7,9 +7,6 @@
 
 #define DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED 30 * 1000 // 30 seconds assuming 1 Hz
 
-#define DURATION_BETWEEN_BACKGROUND_MEASUREMENTS        5 * 60 * 1000 // 5 minutes assuming 1 Hz
-#define DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED 30 * 1000     // 30 seconds assuming 1 Hz
-
 namespace Pinetime {
   namespace Drivers {
     class Hrs3300;
