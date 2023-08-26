@@ -110,12 +110,12 @@ void HeartRateTask::StartWaiting() {
 }
 
 void HeartRateTask::HandleBackgroundWaiting() {
-  if (settings.GetHeartRateBackgroundMeasurementInterval() == 0) {
-    // stay waiting
+  if (!IsBackgroundMeasurementActivated()) {
     return;
   }
 
-  if (xTaskGetTickCount() - backgroundWaitingStart >= settings.GetHeartRateBackgroundMeasurementInterval() * 1000) {
+  TickType_t ticksSinceWaitingStart = xTaskGetTickCount() - backgroundWaitingStart;
+  if (ticksSinceWaitingStart >= GetHeartRateBackgroundMeasurementIntervalInTicks()) {
     state = States::BackgroundMeasuring;
     StartMeasurement();
   }
@@ -143,13 +143,17 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
   if (bpm != 0) {
     *lastBpm = bpm;
     controller.Update(Controllers::HeartRateController::States::Running, bpm);
+    if (state == States::Measuring || IsContinuosModeActivated()) {
+      return;
+    }
     if (state == States::BackgroundMeasuring) {
       state = States::BackgroundWaiting;
       StartWaiting();
     }
   }
-  if (bpm == 0 && state == States::BackgroundMeasuring &&
-      xTaskGetTickCount() - measurementStart >= DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED) {
+  TickType_t ticksSinceMeasurementStart = xTaskGetTickCount() - measurementStart;
+  if (bpm == 0 && state == States::BackgroundMeasuring && !IsContinuosModeActivated() &&
+      ticksSinceMeasurementStart >= DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED) {
     state = States::BackgroundWaiting;
     StartWaiting();
   }
@@ -167,4 +171,33 @@ int HeartRateTask::CurrentTaskDelay() {
     default:
       return portMAX_DELAY;
   }
+}
+
+uint32_t HeartRateTask::GetHeartRateBackgroundMeasurementIntervalInTicks() {
+  switch (settings.GetHeartRateBackgroundMeasurementInterval()) {
+    case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenSeconds:
+      return 10 * 1000;
+    case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtySeconds:
+      return 30 * 1000;
+    case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::OneMinute:
+      return 60 * 1000;
+    case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::FiveMinutes:
+      return 5 * 60 * 1000;
+    case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenMinutes:
+      return 10 * 60 * 1000;
+    case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtyMinutes:
+      return 30 * 60 * 1000;
+    default:
+      return 0;
+  }
+}
+
+bool HeartRateTask::IsContinuosModeActivated() {
+  return settings.GetHeartRateBackgroundMeasurementInterval() ==
+         Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::Continuous;
+}
+
+bool HeartRateTask::IsBackgroundMeasurementActivated() {
+  return settings.GetHeartRateBackgroundMeasurementInterval() !=
+         Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::Off;
 }

@@ -50,6 +50,17 @@ namespace Pinetime {
         int colorIndex = 0;
       };
 
+      enum class HeartRateBackgroundMeasurementInterval : uint8_t {
+        Off,
+        Continuous,
+        TenSeconds,
+        ThirtySeconds,
+        OneMinute,
+        FiveMinutes,
+        TenMinutes,
+        ThirtyMinutes,
+      };
+
       Settings(Pinetime::Controllers::FS& fs);
 
       Settings(const Settings&) = delete;
@@ -283,11 +294,11 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
-      uint32_t GetHeartRateBackgroundMeasurementInterval() const {
+      HeartRateBackgroundMeasurementInterval GetHeartRateBackgroundMeasurementInterval() const {
         return settings.heartRateBackgroundMeasurementInterval;
       }
 
-      void SetHeartRateBackgroundMeasurementInterval(uint32_t newHeartRateBackgroundMeasurementInterval) {
+      void SetHeartRateBackgroundMeasurementInterval(HeartRateBackgroundMeasurementInterval newHeartRateBackgroundMeasurementInterval) {
         if (newHeartRateBackgroundMeasurementInterval != settings.heartRateBackgroundMeasurementInterval) {
           settingsChanged = true;
         }
@@ -320,8 +331,7 @@ namespace Pinetime {
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
 
-        // The interval for measuring the heart rate when the screen is off (in seconds)
-        uint32_t heartRateBackgroundMeasurementInterval = 0;
+        HeartRateBackgroundMeasurementInterval heartRateBackgroundMeasurementInterval = HeartRateBackgroundMeasurementInterval::Off;
       };
 
       SettingsData settings;

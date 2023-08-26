@@ -39,6 +39,10 @@ namespace Pinetime {
       void HandleSensorData(int* lastBpm);
       int CurrentTaskDelay();
 
+      uint32_t GetHeartRateBackgroundMeasurementIntervalInTicks();
+      bool IsContinuosModeActivated();
+      bool IsBackgroundMeasurementActivated();
+
       TaskHandle_t taskHandle;
       QueueHandle_t messageQueue;
       States state = States::Running;
