@@ -15,7 +15,7 @@ namespace Pinetime {
     namespace Screens {
 
       struct Option {
-        const uint32_t interval;
+        const Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval interval;
         const char* name;
       };
 
@@ -31,14 +31,14 @@ namespace Pinetime {
         Pinetime::Controllers::Settings& settingsController;
 
         static constexpr std::array<Option, 8> options = {{
-          {0, "Off"},
-          {10, "10s"},
-          {30, "30s"},
-          {60, " 1m"},
-          {5 * 60, " 5m"},
-          {10 * 60, "10m"},
-          {30 * 60, "30m"},
-          {60 * 60, " 1h"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::Off, " Off"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::Continuous, "Cont"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenSeconds, " 10s"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtySeconds, " 30s"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::OneMinute, "  1m"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::FiveMinutes, "  5m"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenMinutes, " 10m"},
+          {Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtyMinutes, " 30m"},
         }};
 
         lv_obj_t* cbOption[options.size()];
