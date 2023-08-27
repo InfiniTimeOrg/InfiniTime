@@ -23,6 +23,51 @@
 
 using namespace Pinetime::Applications::Screens;
 
+/* Notes about the navigation icons :
+ *  - Icons are generated from a TTF font converted in PNG images. Those images are all appended
+ *    vertically into a single PNG images. Since LVGL support images width and height up to
+ *    2048 px, the icons needs to be split into 2 separate PNG pictures. More info in
+ *    src/displayapp/fonts/README.md
+ *  - To make the handling of those icons easier, they must all have the same width and height
+ *  - Those PNG are then converted into BINARY format using the classical image generator
+ *    (in src/resources/generate-img.py)
+ *  - The array `iconMap` maps each icon with an index. This index corresponds to the position of
+ *    the icon in the file. All index lower than 25 (`maxIconsPerFile`) represent icons located
+ *    in the first file (navigation0.bin). All the other icons are located in the second file
+ *    (navigation1.bin). Since all icons have the same height, this index must be multiplied by
+ *    80px (`iconHeight`) to get the actual position (in pixels) of the icon in the image.
+ * - This is how the images are laid out in the PNG files :
+ *  *---------------*
+ *  | ICON 0        |
+ *  | FILE 0        |
+ *  | INDEX = 0     |
+ *  | PIXEL# = 0    |
+ *  *---------------*
+ *  | ICON 1        |
+ *  | FILE 0        |
+ *  | INDEX = 1     |
+ *  | PIXEL# = -80  |
+ *  *---------------*
+ *  | ICON 2        |
+ *  | FILE 0        |
+ *  | INDEX = 2     |
+ *  | PIXEL# = -160 |
+ *  *---------------*
+ *  |     ...       |
+ *  *---------------*
+ *  | ICON 25       |
+ *  | FILE 1        |
+ *  | INDEX = 25    |
+ *  | PIXEL# = 0    |
+ *  *---------------*
+ *  | ICON 26       |
+ *  | FILE 1        |
+ *  | INDEX = 26    |
+ *  | PIXEL# = -80  |
+ *  *---------------*
+ *   - The source images are located in `src/resources/navigation0.png` and `src/resources/navigation1.png`
+ */
+
 namespace {
   struct Icon {
     const char* fileName;
@@ -132,12 +177,10 @@ namespace {
   }
 
   Icon GetIcon(const std::string& icon) {
-    uint8_t index = 0;
     for (const auto& iter : iconMap) {
       if (iter.first == icon) {
         return GetIcon(iter.second);
       }
-      index++;
     }
     return GetIcon(flagIndex);
   }
