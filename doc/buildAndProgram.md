@@ -98,4 +98,4 @@ Binary files are generated into the folder `src`:
 - **pinetime-mcuboot-app-image** : MCUBoot image of the firmware
 - **pinetime-mcuboot-app-dfu** : DFU file of the firmware
 
-The same files are generated for **pinetime-recovery** and **pinetime-recoveryloader**
+The same files are generated for **pinetime-recovery** and **pinetime-recovery-loader**
