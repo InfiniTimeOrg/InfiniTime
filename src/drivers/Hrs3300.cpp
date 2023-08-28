@@ -67,40 +67,27 @@ void Hrs3300::Disable() {
   WriteRegister(static_cast<uint8_t>(Registers::PDriver), 0);
 }
 
-uint32_t Hrs3300::ReadHrs() {
-  auto m = ReadRegister(static_cast<uint8_t>(Registers::C0DataM));
-  auto h = ReadRegister(static_cast<uint8_t>(Registers::C0DataH));
-  auto l = ReadRegister(static_cast<uint8_t>(Registers::C0dataL));
-  return ((l & 0x30) << 12) | (m << 8) | ((h & 0x0f) << 4) | (l & 0x0f);
-}
-
-uint32_t Hrs3300::ReadAls() {
-  auto m = ReadRegister(static_cast<uint8_t>(Registers::C1dataM));
-  auto h = ReadRegister(static_cast<uint8_t>(Registers::C1dataH));
-  auto l = ReadRegister(static_cast<uint8_t>(Registers::C1dataL));
-  return ((h & 0x3f) << 11) | (m << 3) | (l & 0x07);
-}
-
-void Hrs3300::SetGain(uint8_t gain) {
-  constexpr uint8_t maxGain = 64U;
-  gain = std::min(gain, maxGain);
-  uint8_t hgain = 0;
-  while ((1 << hgain) < gain) {
-    ++hgain;
+Hrs3300::PackedHrsAls Hrs3300::ReadHrsAls() {
+  uint8_t buf[8];
+  uint8_t base = static_cast<uint8_t>(Registers::C1dataM);
+  Hrs3300::PackedHrsAls res;
+  auto ret = twiMaster.Read(twiAddress, base, buf, 8);
+  if (ret != TwiMaster::ErrorCodes::NoError) {
+    NRF_LOG_INFO("READ ERROR");
   }
+  // hrs
+  uint8_t m = static_cast<uint8_t>(Registers::C0DataM) - base;
+  uint8_t h = static_cast<uint8_t>(Registers::C0DataH) - base;
+  uint8_t l = static_cast<uint8_t>(Registers::C0dataL) - base;
+  res.hrs = (buf[m] << 8) | ((buf[h] & 0x0f) << 4) | (buf[l] & 0x0f);
 
-  WriteRegister(static_cast<uint8_t>(Registers::Hgain), hgain << 2);
-}
+  // als
+  m = static_cast<uint8_t>(Registers::C1dataM) - base;
+  h = static_cast<uint8_t>(Registers::C1dataH) - base;
+  l = static_cast<uint8_t>(Registers::C1dataL) - base;
+  res.als = ((buf[h] & 0x3f) << 11) | (buf[m] << 3) | (buf[l] & 0x07);
 
-void Hrs3300::SetDrive(uint8_t drive) {
-  auto en = ReadRegister(static_cast<uint8_t>(Registers::Enable));
-  auto pd = ReadRegister(static_cast<uint8_t>(Registers::PDriver));
-
-  en = (en & 0xf7) | ((drive & 2) << 2);
-  pd = (pd & 0xbf) | ((drive & 1) << 6);
-
-  WriteRegister(static_cast<uint8_t>(Registers::Enable), en);
-  WriteRegister(static_cast<uint8_t>(Registers::PDriver), pd);
+  return res;
 }
 
 void Hrs3300::WriteRegister(uint8_t reg, uint8_t data) {
