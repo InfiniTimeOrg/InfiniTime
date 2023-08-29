@@ -8,6 +8,7 @@
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/BleController.h"
 #include "displayapp/widgets/StatusIcons.h"
+#include "touchhandler/TouchHandler.h"
 #include "utility/DirtyValue.h"
 
 namespace Pinetime {
@@ -31,7 +32,8 @@ namespace Pinetime {
                          Controllers::NotificationManager& notificationManager,
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
-                         Controllers::MotionController& motionController);
+                         Controllers::MotionController& motionController,
+                         const Controllers::TouchHandler& touchHandler);
         ~WatchFaceDigital() override;
 
         void Refresh() override;

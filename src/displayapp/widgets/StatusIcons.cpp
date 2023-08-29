@@ -3,8 +3,10 @@
 
 using namespace Pinetime::Applications::Widgets;
 
-StatusIcons::StatusIcons(const Controllers::Battery& batteryController, const Controllers::Ble& bleController)
-  : batteryIcon(true), batteryController {batteryController}, bleController {bleController} {
+StatusIcons::StatusIcons(const Controllers::Battery& batteryController,
+                         const Controllers::Ble& bleController,
+                         const Controllers::TouchHandler& touchHandler)
+  : batteryIcon(true), batteryController {batteryController}, bleController {bleController}, touchHandler {touchHandler} {
 }
 
 void StatusIcons::Create() {
@@ -13,6 +15,9 @@ void StatusIcons::Create() {
   lv_cont_set_fit(container, LV_FIT_TIGHT);
   lv_obj_set_style_local_pad_inner(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
   lv_obj_set_style_local_bg_opa(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+
+  screenLockIcon = lv_label_create(container, nullptr);
+  lv_label_set_text_static(screenLockIcon, Screens::Symbols::lock);
 
   bleIcon = lv_label_create(container, nullptr);
   lv_label_set_text_static(bleIcon, Screens::Symbols::bluetooth);
@@ -26,6 +31,8 @@ void StatusIcons::Create() {
 }
 
 void StatusIcons::Update() {
+  lv_obj_set_hidden(screenLockIcon, !touchHandler.GetScreenLockStatus());
+
   powerPresent = batteryController.IsPowerPresent();
   if (powerPresent.IsUpdated()) {
     lv_obj_set_hidden(batteryPlug, !powerPresent.Get());

@@ -26,12 +26,20 @@ namespace Pinetime {
         return currentTouchPoint.y;
       }
 
+      bool GetScreenLockStatus() const {
+        return screenLock;
+      }
+
+      void SetScreenLockStatus(bool screenLock) {
+        this->screenLock = screenLock;
+      }
       Pinetime::Applications::TouchEvents GestureGet();
 
     private:
       Pinetime::Applications::TouchEvents gesture;
       TouchPoint currentTouchPoint = {};
       bool gestureReleased = true;
+      bool screenLock = false;
     };
   }
 }

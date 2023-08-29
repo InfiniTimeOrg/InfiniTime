@@ -27,6 +27,7 @@
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
 #include "displayapp/screens/Steps.h"
+#include "displayapp/screens/ScreenLockConfirmation.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
 #include "displayapp/screens/Weather.h"
@@ -337,6 +338,11 @@ void DisplayApp::Refresh() {
         }
         break;
       case Messages::ButtonLongerPressed:
+        if (touchHandler.GetScreenLockStatus()) {
+          touchHandler.SetScreenLockStatus(false);
+          motorController.RunForDuration(50);
+          break;
+        }
         // Create reboot app and open it instead
         LoadNewScreen(Apps::SysInfo, DisplayApp::FullRefreshDirections::Up);
         break;
@@ -403,8 +409,12 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
 
   switch (app) {
     case Apps::Launcher:
-      currentScreen =
-        std::make_unique<Screens::ApplicationList>(this, settingsController, batteryController, bleController, dateTimeController);
+      currentScreen = std::make_unique<Screens::ApplicationList>(this,
+                                                                 settingsController,
+                                                                 batteryController,
+                                                                 bleController,
+                                                                 dateTimeController,
+                                                                 touchHandler);
       break;
     case Apps::Motion:
       // currentScreen = std::make_unique<Screens::Motion>(motionController);
@@ -419,7 +429,8 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                        heartRateController,
                                                        motionController,
                                                        systemTask->nimble().weather(),
-                                                       filesystem);
+                                                       filesystem,
+                                                       touchHandler);
       break;
 
     case Apps::Error:
@@ -468,7 +479,8 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                brightnessController,
                                                                motorController,
                                                                settingsController,
-                                                               bleController);
+                                                               bleController,
+                                                               touchHandler);
       break;
     case Apps::Settings:
       currentScreen = std::make_unique<Screens::Settings>(this, settingsController);
@@ -547,6 +559,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     */
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);
+      break;
+    case Apps::ScreenLockConfirmation:
+      currentScreen = std::make_unique<Screens::ScreenLockConfirmation>(this, touchHandler);
       break;
   }
   currentApp = app;

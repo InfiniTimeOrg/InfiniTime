@@ -18,7 +18,7 @@ namespace {
     }
 
     Tile* screen = static_cast<Tile*>(obj->user_data);
-    auto* eventDataPtr = (uint32_t*) lv_event_get_data();
+    auto* eventDataPtr = static_cast<const uint32_t*>(lv_event_get_data());
     uint32_t eventData = *eventDataPtr;
     screen->OnValueChangedEvent(obj, eventData);
   }
@@ -31,8 +31,12 @@ Tile::Tile(uint8_t screenID,
            const Controllers::Battery& batteryController,
            const Controllers::Ble& bleController,
            Controllers::DateTime& dateTimeController,
+           const Controllers::TouchHandler& touchHandler,
            std::array<Applications, 6>& applications)
-  : app {app}, dateTimeController {dateTimeController}, pageIndicator(screenID, numScreens), statusIcons(batteryController, bleController) {
+  : app {app},
+    dateTimeController {dateTimeController},
+    pageIndicator(screenID, numScreens),
+    statusIcons(batteryController, bleController, touchHandler) {
 
   settingsController.SetAppMenu(screenID);
 

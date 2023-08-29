@@ -25,6 +25,7 @@ namespace Pinetime {
       Metronome,
       Motion,
       Steps,
+      ScreenLockConfirmation,
       PassKey,
       QuickSettings,
       Settings,

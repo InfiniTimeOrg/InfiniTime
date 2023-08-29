@@ -10,6 +10,7 @@
 #include "components/battery/BatteryController.h"
 #include "displayapp/widgets/PageIndicator.h"
 #include "displayapp/widgets/StatusIcons.h"
+#include "touchhandler/TouchHandler.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -28,6 +29,7 @@ namespace Pinetime {
                       const Controllers::Battery& batteryController,
                       const Controllers::Ble& bleController,
                       Controllers::DateTime& dateTimeController,
+                      const Controllers::TouchHandler& touchHandler,
                       std::array<Applications, 6>& applications);
 
         ~Tile() override;
