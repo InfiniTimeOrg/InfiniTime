@@ -30,3 +30,36 @@ void PageIndicator::Create() {
   lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
 }
+
+void PageIndicator::CreateHorizontal() {
+  pageIndicatorBasePoints[0].x = 0;
+  pageIndicatorBasePoints[0].y = 1;
+  pageIndicatorBasePoints[1].x = LV_HOR_RES - 1;
+  pageIndicatorBasePoints[1].y = 1;
+
+  pageIndicatorBase = lv_line_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_line_width(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
+  lv_obj_set_style_local_line_color(pageIndicatorBase, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
+  lv_line_set_points(pageIndicatorBase, pageIndicatorBasePoints, 2);
+
+  const int16_t indicatorSize = LV_HOR_RES / nScreens;
+  const int16_t indicatorPos = indicatorSize * nCurrentScreen;
+
+  pageIndicatorPoints[0].x = indicatorPos;
+  pageIndicatorPoints[0].y = 1;
+  pageIndicatorPoints[1].x = indicatorPos + indicatorSize;
+  pageIndicatorPoints[1].y = 1;
+
+  pageIndicator = lv_line_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_line_width(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 3);
+  lv_obj_set_style_local_line_color(pageIndicator, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_line_set_points(pageIndicator, pageIndicatorPoints, 2);
+}
+
+void PageIndicator::Hide() {
+  lv_obj_del(pageIndicatorBase);
+  lv_obj_del(pageIndicator);
+
+  pageIndicatorBase = nullptr;
+  pageIndicator = nullptr;
+}
