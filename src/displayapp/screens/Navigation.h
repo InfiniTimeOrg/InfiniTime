@@ -26,6 +26,7 @@
 namespace Pinetime {
   namespace Controllers {
     class NavigationService;
+    class FS;
   }
 
   namespace Applications {
@@ -36,6 +37,7 @@ namespace Pinetime {
         ~Navigation() override;
 
         void Refresh() override;
+        static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
 
       private:
         lv_obj_t* imgFlag;

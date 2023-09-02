@@ -265,3 +265,19 @@ void Navigation::Refresh() {
     }
   }
 }
+
+bool Navigation::IsAvailable(Pinetime::Controllers::FS& filesystem) {
+  lfs_file file = {};
+
+  if (filesystem.FileOpen(&file, "/images/navigation0.bin", LFS_O_RDONLY) < 0) {
+    return false;
+  }
+  filesystem.FileClose(&file);
+
+  if (filesystem.FileOpen(&file, "/images/navigation1.bin", LFS_O_RDONLY) < 0) {
+    return false;
+  }
+  filesystem.FileClose(&file);
+
+  return true;
+}
