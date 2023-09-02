@@ -45,6 +45,15 @@ execute_process(COMMAND git rev-parse --short HEAD
 string(STRIP "${PROJECT_GIT_COMMIT_HASH}" PROJECT_GIT_COMMIT_HASH)
 
 message("PROJECT_GIT_COMMIT_HASH_SUCCESS? " ${PROJECT_GIT_COMMIT_HASH_SUCCESS})
+message("Git command output: ${PROJECT_GIT_COMMIT_HASH}")
+message("Git command result: ${PROJECT_GIT_COMMIT_HASH_SUCCESS}")
+
+execute_process(COMMAND git status
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                OUTPUT_VARIABLE DEBUG_OUTPUT
+                RESULT_VARIABLE DEBUG_RESULT)
+message("DEBUG OUTPUT: ${DEBUG_OUT}")
+message("DEBUG RESULT: ${DEBUG_RESULT}")
 
 message("")
 message("BUILD CONFIGURATION")
