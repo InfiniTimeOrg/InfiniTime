@@ -32,7 +32,7 @@ namespace Pinetime {
     namespace Screens {
       class Navigation : public Screen {
       public:
-        Navigation(Pinetime::Controllers::NavigationService& nav);
+        explicit Navigation(Pinetime::Controllers::NavigationService& nav);
         ~Navigation() override;
 
         void Refresh() override;
@@ -48,7 +48,7 @@ namespace Pinetime {
         std::string flag;
         std::string narrative;
         std::string manDist;
-        int progress;
+        int progress = 0;
 
         lv_task_t* taskRefresh;
       };
