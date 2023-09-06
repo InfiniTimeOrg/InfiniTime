@@ -428,7 +428,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingBluetooth.cpp
 
         ## Watch faces
-        displayapp/icons/bg_clock.c
         displayapp/screens/WatchFaceAnalog.cpp
         displayapp/screens/WatchFaceDigital.cpp
         displayapp/screens/WatchFaceInfineat.cpp
@@ -495,6 +494,8 @@ list(APPEND SOURCE_FILES
 
         buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
+
+        utility/Math.cpp
         )
 
 list(APPEND RECOVERY_SOURCE_FILES
@@ -560,6 +561,8 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/fs/FS.cpp
         buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
+
+        utility/Math.cpp
         )
 
 list(APPEND RECOVERYLOADER_SOURCE_FILES
@@ -680,6 +683,7 @@ set(INCLUDE_FILES
         components/motor/MotorController.h
         buttonhandler/ButtonHandler.h
         touchhandler/TouchHandler.h
+        utility/Math.h
         )
 
 include_directories(
