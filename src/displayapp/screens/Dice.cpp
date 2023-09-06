@@ -8,7 +8,7 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  lv_obj_t* MakeLabel(lv_font_t* font,
+  static lv_obj_t* MakeLabel(lv_font_t* font,
                       lv_color_t color,
                       lv_label_long_mode_t longMode,
                       uint8_t width,
