@@ -393,7 +393,7 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
 void WatchFaceInfineat::Refresh() {
   notificationState = notificationManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
-    lv_obj_set_hidden(notificationIcon, !notificationState.Get());
+    lv_obj_set_hidden(notificationIcon, !(notificationState.Get() || (notificationManager.NbNotifications() > 0)));
     lv_obj_align(notificationIcon, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, 0, 0);
   }
 

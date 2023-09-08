@@ -469,8 +469,17 @@ void WatchFacePineTimeStyle::Refresh() {
   }
 
   notificationState = notificationManager.AreNewNotificationsAvailable();
-  if (notificationState.IsUpdated()) {
-    lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
+  notificationNbState = notificationManager.NbNotifications() > 0;
+  if (notificationState.IsUpdated() || notificationNbState.IsUpdated()) {
+    if (notificationState.Get()) {
+      //lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFFFFFF));
+      lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(true));
+    } else if (notificationNbState.Get()) {
+      //lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x000000));
+      lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(true));
+    } else {
+      lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
+    }
   }
 
   currentDateTime = dateTimeController.CurrentDateTime();

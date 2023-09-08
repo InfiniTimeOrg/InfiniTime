@@ -219,7 +219,15 @@ void WatchFaceCasioStyleG7710::Refresh() {
 
   notificationState = notificatioManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
-    lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
+    if (notificationState.Get()) {
+      lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FF00));
+      lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(true));
+    } else if (notificatioManager.NbNotifications() > 0) {
+      lv_obj_set_style_local_text_color(notificationIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0xFFFFFF));
+      lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(true));
+    } else {
+      lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
+    }
   }
 
   currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
