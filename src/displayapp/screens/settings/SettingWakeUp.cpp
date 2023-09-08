@@ -8,7 +8,7 @@
 
 using namespace Pinetime::Applications::Screens;
 
-constexpr std::array<SettingWakeUp::Option, 5> SettingWakeUp::options;
+constexpr std::array<SettingWakeUp::Option, 6> SettingWakeUp::options;
 
 namespace {
   void event_handler(lv_obj_t* obj, lv_event_t event) {
@@ -27,7 +27,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Controllers::Settings& settingsController
   lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
   lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
-  lv_obj_set_pos(container1, 10, 35);
+  lv_obj_set_pos(container1, 10, 0);
   lv_obj_set_width(container1, LV_HOR_RES - 20);
   lv_obj_set_height(container1, LV_VER_RES - 20);
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
@@ -35,7 +35,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Controllers::Settings& settingsController
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Wake Up");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
+  lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, -4);
 
   lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);

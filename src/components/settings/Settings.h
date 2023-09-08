@@ -12,7 +12,14 @@ namespace Pinetime {
       enum class ClockType : uint8_t { H24, H12 };
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
-      enum class WakeUpMode : uint8_t { SingleTap = 0, DoubleTap = 1, RaiseWrist = 2, Shake = 3, LowerWrist = 4 };
+      enum class WakeUpMode : uint8_t {
+        SingleTap = 0,
+        DoubleTap = 1,
+        RaiseWrist = 2,
+        Shake = 3,
+        LowerWrist = 4,
+        ButtonUnlocks = 5,
+      };
       enum class Colors : uint8_t {
         White,
         Silver,
@@ -233,7 +240,7 @@ namespace Pinetime {
         }
       };
 
-      std::bitset<5> getWakeUpModes() const {
+      std::bitset<6> getWakeUpModes() const {
         return settings.wakeUpMode;
       }
 
@@ -274,7 +281,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0006;
+      static constexpr uint32_t settingsVersion = 0x0007;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -291,7 +298,7 @@ namespace Pinetime {
 
         WatchFaceInfineat watchFaceInfineat;
 
-        std::bitset<5> wakeUpMode {0};
+        std::bitset<6> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
