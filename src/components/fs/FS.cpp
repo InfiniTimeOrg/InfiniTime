@@ -13,6 +13,8 @@ FS::FS(Pinetime::Drivers::SpiNorFlash& driver)
       .prog = SectorProg,
       .erase = SectorErase,
       .sync = SectorSync,
+      .lock = LockFilesystem,
+      .unlock = UnlockFilesystem,
 
       .read_size = 16,
       .prog_size = 8,
@@ -107,6 +109,16 @@ int FS::Stat(const char* path, lfs_info* info) {
 
 lfs_ssize_t FS::GetFSSize() {
   return lfs_fs_size(&lfs);
+}
+
+int FS::LockFilesystem(const struct lfs_config* c) {
+  Pinetime::Controllers::FS& lfs = *(static_cast<Pinetime::Controllers::FS*>(c->context));
+  return xSemaphoreTake(lfs.fsMutex, portMAX_DELAY) == pdTRUE ? 0 : -1;
+}
+
+int FS::UnlockFilesystem(const struct lfs_config* c) {
+  Pinetime::Controllers::FS& lfs = *(static_cast<Pinetime::Controllers::FS*>(c->context));
+  return xSemaphoreGive(lfs.fsMutex) == pdTRUE ? 0 : -1;
 }
 
 /*
