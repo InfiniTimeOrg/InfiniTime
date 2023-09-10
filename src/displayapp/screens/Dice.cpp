@@ -144,8 +144,10 @@ void Dice::Refresh() {
   // we only reset the hysteresis when at rest
   // also motion.ShouldShakeWake() seems to be broken?
   if (motion.CurrentShakeSpeed() >= settings.GetShakeThreshold()) {
-    if (rollHysteresis <= 0)
+    if (rollHysteresis <= 0) {
+      lv_disp_get_next(NULL)->last_activity_time = lv_tick_get();
       Roll();
+    }
   } else if (rollHysteresis > 0)
     --rollHysteresis;
 }
