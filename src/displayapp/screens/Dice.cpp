@@ -145,7 +145,9 @@ void Dice::Refresh() {
   // also motion.ShouldShakeWake() seems to be broken?
   if (motion.CurrentShakeSpeed() >= settings.GetShakeThreshold()) {
     if (rollHysteresis <= 0) {
+      // this timestamp is used for the secreen timeout
       lv_disp_get_next(NULL)->last_activity_time = lv_tick_get();
+      
       Roll();
     }
   } else if (rollHysteresis > 0)
