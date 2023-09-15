@@ -46,7 +46,6 @@ set(SDK_SOURCE_FILES
         # FreeRTOS
         ${NRF5_SDK_PATH}/external/freertos/source/croutine.c
         ${NRF5_SDK_PATH}/external/freertos/source/event_groups.c
-        ${NRF5_SDK_PATH}/external/freertos/source/portable/MemMang/heap_4.c
         ${NRF5_SDK_PATH}/external/freertos/source/list.c
         ${NRF5_SDK_PATH}/external/freertos/source/queue.c
         ${NRF5_SDK_PATH}/external/freertos/source/stream_buffer.c
@@ -368,6 +367,8 @@ list(APPEND IMAGE_FILES
         displayapp/icons/battery/batteryicon.c
         )
 list(APPEND SOURCE_FILES
+        stdlib.c
+        FreeRTOS/heap_4_infinitime.c
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
@@ -426,7 +427,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingBluetooth.cpp
 
         ## Watch faces
-        displayapp/icons/bg_clock.c
         displayapp/screens/WatchFaceAnalog.cpp
         displayapp/screens/WatchFaceDigital.cpp
         displayapp/screens/WatchFaceInfineat.cpp
@@ -488,16 +488,19 @@ list(APPEND SOURCE_FILES
         drivers/TwiMaster.cpp
 
         heartratetask/HeartRateTask.cpp
-        components/heartrate/Ppg.cpp
-        components/heartrate/Biquad.cpp
-        components/heartrate/Ptagc.cpp
         components/heartrate/HeartRateController.cpp
+        components/heartrate/Ppg.cpp
 
         buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
+
+        utility/Math.cpp
         )
 
 list(APPEND RECOVERY_SOURCE_FILES
+        stdlib.c
+        FreeRTOS/heap_4_infinitime.c
+
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayAppRecovery.cpp
@@ -552,15 +555,19 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/heartrate/HeartRateController.cpp
         heartratetask/HeartRateTask.cpp
         components/heartrate/Ppg.cpp
-        components/heartrate/Biquad.cpp
-        components/heartrate/Ptagc.cpp
+
         components/motor/MotorController.cpp
         components/fs/FS.cpp
         buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
+
+        utility/Math.cpp
         )
 
 list(APPEND RECOVERYLOADER_SOURCE_FILES
+        stdlib.c
+        FreeRTOS/heap_4_infinitime.c
+
         # FreeRTOS
         FreeRTOS/port.c
         FreeRTOS/port_cmsis_systick.c
@@ -607,6 +614,7 @@ set(INCLUDE_FILES
         displayapp/screens/ApplicationList.h
         displayapp/screens/CheckboxList.h
         displayapp/Apps.h
+        displayapp/WatchFaces.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
         displayapp/screens/Metronome.h
@@ -666,12 +674,14 @@ set(INCLUDE_FILES
         drivers/TwiMaster.h
         heartratetask/HeartRateTask.h
         components/heartrate/Ppg.h
-        components/heartrate/Biquad.h
-        components/heartrate/Ptagc.h
         components/heartrate/HeartRateController.h
+        libs/arduinoFFT/src/arduinoFFT.h
+        libs/arduinoFFT/src/defs.h
+        libs/arduinoFFT/src/types.h
         components/motor/MotorController.h
         buttonhandler/ButtonHandler.h
         touchhandler/TouchHandler.h
+        utility/Math.h
         )
 
 include_directories(
@@ -783,7 +793,7 @@ add_definitions(-DOS_CPUTIME_FREQ)
 add_definitions(-DNRF52 -DNRF52832 -DNRF52832_XXAA -DNRF52_PAN_74 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040)
 add_definitions(-DFREERTOS)
 add_definitions(-D__STACK_SIZE=1024)
-add_definitions(-D__HEAP_SIZE=4096)
+add_definitions(-D__HEAP_SIZE=0)
 add_definitions(-DMYNEWT_VAL_BLE_LL_RFMGMT_ENABLE_TIME=1500)
 
 # Note: Only use this for debugging

@@ -26,16 +26,18 @@
 namespace Pinetime {
   namespace Controllers {
     class NavigationService;
+    class FS;
   }
 
   namespace Applications {
     namespace Screens {
       class Navigation : public Screen {
       public:
-        Navigation(Pinetime::Controllers::NavigationService& nav);
+        explicit Navigation(Pinetime::Controllers::NavigationService& nav);
         ~Navigation() override;
 
         void Refresh() override;
+        static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
 
       private:
         lv_obj_t* imgFlag;
@@ -48,7 +50,7 @@ namespace Pinetime {
         std::string flag;
         std::string narrative;
         std::string manDist;
-        int progress;
+        int progress = 0;
 
         lv_task_t* taskRefresh;
       };
