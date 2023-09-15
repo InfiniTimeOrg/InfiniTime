@@ -436,6 +436,10 @@ void SystemTask::UpdateMotion() {
       GoToRunning();
     }
   }
+  if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::LowerWrist) && state == SystemTaskState::Running &&
+      motionController.ShouldLowerSleep()) {
+    PushMessage(Messages::GoToSleep);
+  }
 }
 
 void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
