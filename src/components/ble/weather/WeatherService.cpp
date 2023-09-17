@@ -21,6 +21,17 @@
 #include "libs/QCBOR/inc/qcbor/qcbor.h"
 
 namespace {
+  constexpr bool EnableObscuration = false;
+  constexpr bool EnablePrecipitation = true;
+  constexpr bool EnableWind = false;
+  constexpr bool EnableTemperature = true;
+  constexpr bool EnableAirQuality = false;
+  constexpr bool EnableSpecial = false;
+  constexpr bool EnablePressure = false;
+  constexpr bool EnableLocation = false;
+  constexpr bool EnableClouds = true;
+  constexpr bool EnableHumidity = false;
+
   std::unique_ptr<Pinetime::Controllers::WeatherData::AirQuality>
   CreateAirQualityEvent(int64_t timestamp, uint32_t expires, const std::string& polluter, uint32_t amount) {
     auto airquality = std::make_unique<Pinetime::Controllers::WeatherData::AirQuality>();
@@ -311,209 +322,219 @@ namespace Pinetime {
         }
 
         switch (*optEventType) {
-          case WeatherData::eventtype::AirQuality: {
-            auto optPolluter = Get<std::string>(&decodeContext, "Polluter");
-            if (!optPolluter) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+          case WeatherData::eventtype::AirQuality:
+            if constexpr (EnableAirQuality) {
+              auto optPolluter = Get<std::string>(&decodeContext, "Polluter");
+              if (!optPolluter) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto optAmount = Get<uint32_t>(&decodeContext, "Amount");
-            if (!optAmount) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+              auto optAmount = Get<uint32_t>(&decodeContext, "Amount");
+              if (!optAmount) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto airQuality = CreateAirQualityEvent(*optTimestamp, *optExpires, *optPolluter, *optAmount);
-            if (!AddEventToTimeline(std::move(airQuality))) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              auto airQuality = CreateAirQualityEvent(*optTimestamp, *optExpires, *optPolluter, *optAmount);
+              if (!AddEventToTimeline(std::move(airQuality))) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
             }
             break;
-          }
-          case WeatherData::eventtype::Obscuration: {
-            auto optType = Get<WeatherData::obscurationtype>(&decodeContext, "Type");
-            if (!optType) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+          case WeatherData::eventtype::Obscuration:
+            if constexpr (EnableObscuration) {
+              auto optType = Get<WeatherData::obscurationtype>(&decodeContext, "Type");
+              if (!optType) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto optAmount = Get<uint16_t>(&decodeContext, "Amount");
-            if (!optAmount) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+              auto optAmount = Get<uint16_t>(&decodeContext, "Amount");
+              if (!optAmount) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto obscuration = CreateObscurationEvent(*optTimestamp, *optExpires, *optAmount);
-            if (!AddEventToTimeline(std::move(obscuration))) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              auto obscuration = CreateObscurationEvent(*optTimestamp, *optExpires, *optAmount);
+              if (!AddEventToTimeline(std::move(obscuration))) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
             }
             break;
-          }
-          case WeatherData::eventtype::Precipitation: {
-            auto optType = Get<WeatherData::precipitationtype>(&decodeContext, "Type");
-            if (optType) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+          case WeatherData::eventtype::Precipitation:
+            if constexpr (EnablePrecipitation) {
+              auto optType = Get<WeatherData::precipitationtype>(&decodeContext, "Type");
+              if (optType) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto optAmount = Get<uint8_t>(&decodeContext, "Amount");
-            if (!optAmount) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+              auto optAmount = Get<uint8_t>(&decodeContext, "Amount");
+              if (!optAmount) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto precipitation = CreatePrecipitationEvent(*optTimestamp, *optExpires, *optType, *optAmount);
-            if (!AddEventToTimeline(std::move(precipitation))) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              auto precipitation = CreatePrecipitationEvent(*optTimestamp, *optExpires, *optType, *optAmount);
+              if (!AddEventToTimeline(std::move(precipitation))) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
             }
             break;
-          }
-          case WeatherData::eventtype::Wind: {
-            auto optMin = Get<uint8_t>(&decodeContext, "SpeedMin");
-            if (!optMin) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+          case WeatherData::eventtype::Wind:
+            if constexpr (EnableWind) {
+              auto optMin = Get<uint8_t>(&decodeContext, "SpeedMin");
+              if (!optMin) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto optMax = Get<uint8_t>(&decodeContext, "SpeedMax");
-            if (!optMax) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+              auto optMax = Get<uint8_t>(&decodeContext, "SpeedMax");
+              if (!optMax) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto optDMin = Get<uint8_t>(&decodeContext, "DirectionMin");
-            if (!optDMin) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+              auto optDMin = Get<uint8_t>(&decodeContext, "DirectionMin");
+              if (!optDMin) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto optDMax = Get<uint8_t>(&decodeContext, "DirectionMax");
-            if (!optDMax) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+              auto optDMax = Get<uint8_t>(&decodeContext, "DirectionMax");
+              if (!optDMax) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto wind = CreateWindEvent(*optTimestamp, *optExpires, *optMin, *optMax, *optDMin, *optDMax);
-            if (!AddEventToTimeline(std::move(wind))) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              auto wind = CreateWindEvent(*optTimestamp, *optExpires, *optMin, *optMax, *optDMin, *optDMax);
+              if (!AddEventToTimeline(std::move(wind))) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
             }
             break;
-          }
-          case WeatherData::eventtype::Temperature: {
-            int64_t tmpTemperature = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Temperature", &tmpTemperature);
-            if (tmpTemperature < -32768 || tmpTemperature > 32767) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+          case WeatherData::eventtype::Temperature:
+            if constexpr (EnableTemperature) {
+              int64_t tmpTemperature = 0;
+              QCBORDecode_GetInt64InMapSZ(&decodeContext, "Temperature", &tmpTemperature);
+              if (tmpTemperature < -32768 || tmpTemperature > 32767) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            int64_t tmpDewPoint = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "DewPoint", &tmpDewPoint);
-            if (tmpDewPoint < -32768 || tmpDewPoint > 32767) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+              int64_t tmpDewPoint = 0;
+              QCBORDecode_GetInt64InMapSZ(&decodeContext, "DewPoint", &tmpDewPoint);
+              if (tmpDewPoint < -32768 || tmpDewPoint > 32767) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto temperature =
-              CreateTemperatureEvent(*optTimestamp, *optExpires, static_cast<int16_t>(tmpTemperature), static_cast<int16_t>(tmpDewPoint));
-            if (!AddEventToTimeline(std::move(temperature))) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              auto temperature =
+                CreateTemperatureEvent(*optTimestamp, *optExpires, static_cast<int16_t>(tmpTemperature), static_cast<int16_t>(tmpDewPoint));
+              if (!AddEventToTimeline(std::move(temperature))) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
             }
             break;
-          }
-          case WeatherData::eventtype::Special: {
-            auto optType = Get<WeatherData::specialtype>(&decodeContext, "Type");
-            if (!optType) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+          case WeatherData::eventtype::Special:
+            if constexpr (EnableSpecial) {
+              auto optType = Get<WeatherData::specialtype>(&decodeContext, "Type");
+              if (!optType) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto special = CreateSpecialEvent(*optTimestamp, *optExpires, *optType);
-            if (!AddEventToTimeline(std::move(special))) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              auto special = CreateSpecialEvent(*optTimestamp, *optExpires, *optType);
+              if (!AddEventToTimeline(std::move(special))) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
             }
             break;
-          }
-          case WeatherData::eventtype::Pressure: {
-            auto optPressure = Get<uint16_t>(&decodeContext, "Pressure");
-            if (!optPressure) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+          case WeatherData::eventtype::Pressure:
+            if constexpr (EnablePressure) {
+              auto optPressure = Get<uint16_t>(&decodeContext, "Pressure");
+              if (!optPressure) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto pressure = CreatePressureEvent(*optTimestamp, *optExpires, *optPressure);
-            if (!AddEventToTimeline(std::move(pressure))) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              auto pressure = CreatePressureEvent(*optTimestamp, *optExpires, *optPressure);
+              if (!AddEventToTimeline(std::move(pressure))) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
             }
             break;
-          }
-          case WeatherData::eventtype::Location: {
-            auto optLocation = Get<std::string>(&decodeContext, "Location");
-            if (!optLocation) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+          case WeatherData::eventtype::Location:
+            if constexpr (EnableLocation) {
+              auto optLocation = Get<std::string>(&decodeContext, "Location");
+              if (!optLocation) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto optAltitude = Get<int16_t>(&decodeContext, "Altitude");
-            if (!optAltitude) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+              auto optAltitude = Get<int16_t>(&decodeContext, "Altitude");
+              if (!optAltitude) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto optLatitude = Get<int32_t>(&decodeContext, "Latitude");
-            if (!optLatitude) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+              auto optLatitude = Get<int32_t>(&decodeContext, "Latitude");
+              if (!optLatitude) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto optLongitude = Get<int32_t>(&decodeContext, "Longitude");
-            if (!optLongitude) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+              auto optLongitude = Get<int32_t>(&decodeContext, "Longitude");
+              if (!optLongitude) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto location = CreateLocationEvent(*optTimestamp, *optExpires, *optLocation, *optAltitude, *optLatitude, *optLongitude);
-            if (!AddEventToTimeline(std::move(location))) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              auto location = CreateLocationEvent(*optTimestamp, *optExpires, *optLocation, *optAltitude, *optLatitude, *optLongitude);
+              if (!AddEventToTimeline(std::move(location))) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
             }
             break;
-          }
-          case WeatherData::eventtype::Clouds: {
-            auto optAmount = Get<uint8_t>(&decodeContext, "Amount");
-            if (!optAmount) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+          case WeatherData::eventtype::Clouds:
+            if constexpr (EnableClouds) {
+              auto optAmount = Get<uint8_t>(&decodeContext, "Amount");
+              if (!optAmount) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto clouds = CreateCloudsEvent(*optTimestamp, *optExpires, *optAmount);
-            if (!AddEventToTimeline(std::move(clouds))) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              auto clouds = CreateCloudsEvent(*optTimestamp, *optExpires, *optAmount);
+              if (!AddEventToTimeline(std::move(clouds))) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
             }
             break;
-          }
-          case WeatherData::eventtype::Humidity: {
-            auto optType = Get<uint8_t>(&decodeContext, "Humidity");
-            if (!optType) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-            }
+          case WeatherData::eventtype::Humidity:
+            if constexpr (EnableHumidity) {
+              auto optType = Get<uint8_t>(&decodeContext, "Humidity");
+              if (!optType) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
 
-            auto humidity = CreateHumidityEvent(*optTimestamp, *optExpires, *optType);
-            if (!AddEventToTimeline(std::move(humidity))) {
-              CleanUpQcbor(&decodeContext);
-              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              auto humidity = CreateHumidityEvent(*optTimestamp, *optExpires, *optType);
+              if (!AddEventToTimeline(std::move(humidity))) {
+                CleanUpQcbor(&decodeContext);
+                return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+              }
             }
             break;
-          }
           default: {
             CleanUpQcbor(&decodeContext);
             return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
