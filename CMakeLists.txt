@@ -5,7 +5,7 @@ set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose Debug or Release")
 project(pinetime VERSION 1.13.0 LANGUAGES C CXX ASM)
 
 set(CMAKE_C_STANDARD 99)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # set(CMAKE_GENERATOR "Unix Makefiles")
 set(CMAKE_C_EXTENSIONS OFF)
