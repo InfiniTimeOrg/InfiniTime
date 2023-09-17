@@ -20,6 +20,244 @@
 #include "WeatherService.h"
 #include "libs/QCBOR/inc/qcbor/qcbor.h"
 
+namespace {
+  std::unique_ptr<Pinetime::Controllers::WeatherData::AirQuality>
+  CreateAirQualityEvent(int64_t timestamp, uint32_t expires, const std::string& polluter, uint32_t amount) {
+    auto airquality = std::make_unique<Pinetime::Controllers::WeatherData::AirQuality>();
+    airquality->timestamp = timestamp;
+    airquality->eventType = Pinetime::Controllers::WeatherData::eventtype::AirQuality;
+    airquality->expires = expires;
+    airquality->polluter = polluter;
+    airquality->amount = amount; // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
+    return airquality;
+  }
+
+  std::unique_ptr<Pinetime::Controllers::WeatherData::Obscuration>
+  CreateObscurationEvent(int64_t timestamp, uint32_t expires, uint16_t amount) {
+    auto obscuration = std::make_unique<Pinetime::Controllers::WeatherData::Obscuration>();
+    obscuration->timestamp = timestamp;
+    obscuration->eventType = Pinetime::Controllers::WeatherData::eventtype::Obscuration;
+    obscuration->expires = expires;
+    obscuration->amount = amount;
+    return obscuration;
+  }
+
+  std::unique_ptr<Pinetime::Controllers::WeatherData::Precipitation>
+  CreatePrecipitationEvent(int64_t timestamp,
+                           uint32_t expires,
+                           Pinetime::Controllers::WeatherData::precipitationtype type,
+                           uint8_t amount) {
+    auto precipitation = std::make_unique<Pinetime::Controllers::WeatherData::Precipitation>();
+    precipitation->timestamp = timestamp;
+    precipitation->eventType = Pinetime::Controllers::WeatherData::eventtype::Precipitation;
+    precipitation->expires = expires;
+    precipitation->type = type;
+    precipitation->amount = amount;
+    return precipitation;
+  }
+
+  std::unique_ptr<Pinetime::Controllers::WeatherData::Wind>
+  CreateWindEvent(int64_t timestamp, uint32_t expires, uint8_t speedMin, uint8_t speedMax, uint8_t directionMin, uint8_t directionMax) {
+    auto wind = std::make_unique<Pinetime::Controllers::WeatherData::Wind>();
+    wind->timestamp = timestamp;
+    wind->eventType = Pinetime::Controllers::WeatherData::eventtype::Wind;
+    wind->expires = expires;
+    wind->speedMin = speedMin;
+    wind->speedMax = speedMax;
+    wind->directionMin = directionMin;
+    wind->directionMax = directionMax;
+    return wind;
+  }
+
+  std::unique_ptr<Pinetime::Controllers::WeatherData::Temperature>
+  CreateTemperatureEvent(int64_t timestamp, uint32_t expires, uint16_t temperatureValue, uint16_t dewPoint) {
+    auto temperature = std::make_unique<Pinetime::Controllers::WeatherData::Temperature>();
+    temperature->timestamp = timestamp;
+    temperature->eventType = Pinetime::Controllers::WeatherData::eventtype::Temperature;
+    temperature->expires = expires;
+    temperature->temperature = temperatureValue;
+    temperature->dewPoint = dewPoint;
+    return temperature;
+  }
+
+  std::unique_ptr<Pinetime::Controllers::WeatherData::Special>
+  CreateSpecialEvent(int64_t timestamp, uint32_t expires, Pinetime::Controllers::WeatherData::specialtype type) {
+    auto special = std::make_unique<Pinetime::Controllers::WeatherData::Special>();
+    special->timestamp = timestamp;
+    special->eventType = Pinetime::Controllers::WeatherData::eventtype::Special;
+    special->expires = expires;
+    special->type = type;
+    return special;
+  }
+
+  std::unique_ptr<Pinetime::Controllers::WeatherData::Pressure>
+  CreatePressureEvent(int64_t timestamp, uint32_t expires, uint16_t pressureValue) {
+    auto pressure = std::make_unique<Pinetime::Controllers::WeatherData::Pressure>();
+    pressure->timestamp = timestamp;
+    pressure->eventType = Pinetime::Controllers::WeatherData::eventtype::Pressure;
+    pressure->expires = expires;
+    pressure->pressure = pressureValue;
+    return pressure;
+  }
+
+  std::unique_ptr<Pinetime::Controllers::WeatherData::Location> CreateLocationEvent(int64_t timestamp,
+                                                                                    uint32_t expires,
+                                                                                    const std::string& locationValue,
+                                                                                    int16_t altitude,
+                                                                                    int32_t latitude,
+                                                                                    int32_t longitude) {
+    auto location = std::make_unique<Pinetime::Controllers::WeatherData::Location>();
+    location->timestamp = timestamp;
+    location->eventType = Pinetime::Controllers::WeatherData::eventtype::Location;
+    location->expires = expires;
+    location->location = locationValue;
+    location->altitude = altitude;
+    location->latitude = latitude;
+    location->longitude = longitude;
+    return location;
+  }
+
+  std::unique_ptr<Pinetime::Controllers::WeatherData::Clouds> CreateCloudsEvent(int64_t timestamp, uint32_t expires, uint8_t amount) {
+    auto clouds = std::make_unique<Pinetime::Controllers::WeatherData::Clouds>();
+    clouds->timestamp = timestamp;
+    clouds->eventType = Pinetime::Controllers::WeatherData::eventtype::Clouds;
+    clouds->expires = expires;
+    clouds->amount = amount;
+    return clouds;
+  }
+
+  std::unique_ptr<Pinetime::Controllers::WeatherData::Humidity>
+  CreateHumidityEvent(int64_t timestamp, uint32_t expires, uint8_t humidityValue) {
+    auto humidity = std::make_unique<Pinetime::Controllers::WeatherData::Humidity>();
+    humidity->timestamp = timestamp;
+    humidity->eventType = Pinetime::Controllers::WeatherData::eventtype::Humidity;
+    humidity->expires = expires;
+    humidity->humidity = humidityValue;
+    return humidity;
+  }
+
+  template <typename T>
+  std::optional<T> Get(QCBORDecodeContext* /*context*/, const char* /*field*/) = delete;
+
+  template <>
+  std::optional<int64_t> Get<int64_t>(QCBORDecodeContext* context, const char* field) {
+    int64_t tmp = 0;
+    QCBORDecode_GetInt64InMapSZ(context, field, &tmp);
+    if (QCBORDecode_GetError(context) != QCBOR_SUCCESS) {
+      return {};
+    }
+    return {tmp};
+  }
+
+  template <>
+  std::optional<uint32_t> Get<uint32_t>(QCBORDecodeContext* context, const char* field) {
+    int64_t tmp = 0;
+    QCBORDecode_GetInt64InMapSZ(context, field, &tmp);
+    if (QCBORDecode_GetError(context) != QCBOR_SUCCESS || tmp < 0 || tmp > 4294967295) {
+      return {};
+    }
+    return {static_cast<uint32_t>(tmp)};
+  }
+
+  template <>
+  std::optional<int32_t> Get<int32_t>(QCBORDecodeContext* context, const char* field) {
+    int64_t tmp = 0;
+    QCBORDecode_GetInt64InMapSZ(context, field, &tmp);
+    if (QCBORDecode_GetError(context) != QCBOR_SUCCESS || tmp < -2147483648 || tmp >= 2147483647) {
+      return {};
+    }
+    return {static_cast<int32_t>(tmp)};
+  }
+
+  template <>
+  std::optional<uint16_t> Get<uint16_t>(QCBORDecodeContext* context, const char* field) {
+    int64_t tmp = 0;
+    QCBORDecode_GetInt64InMapSZ(context, field, &tmp);
+    if (QCBORDecode_GetError(context) != QCBOR_SUCCESS || tmp < 0 || tmp > 65535) {
+      return {};
+    }
+    return {static_cast<uint16_t>(tmp)};
+  }
+
+  template <>
+  std::optional<int16_t> Get<int16_t>(QCBORDecodeContext* context, const char* field) {
+    int64_t tmp = 0;
+    QCBORDecode_GetInt64InMapSZ(context, field, &tmp);
+    if (QCBORDecode_GetError(context) != QCBOR_SUCCESS || tmp < -32768 || tmp >= 32767) {
+      return {};
+    }
+    return {static_cast<int16_t>(tmp)};
+  }
+
+  template <>
+  std::optional<uint8_t> Get<uint8_t>(QCBORDecodeContext* context, const char* field) {
+    int64_t tmp = 0;
+    QCBORDecode_GetInt64InMapSZ(context, field, &tmp);
+    if (QCBORDecode_GetError(context) != QCBOR_SUCCESS || tmp < 0 || tmp > 255) {
+      return {};
+    }
+    return {static_cast<uint8_t>(tmp)};
+  }
+
+  template <>
+  std::optional<Pinetime::Controllers::WeatherData::eventtype>
+  Get<Pinetime::Controllers::WeatherData::eventtype>(QCBORDecodeContext* context, const char* field) {
+    int64_t tmp = 0;
+    QCBORDecode_GetInt64InMapSZ(context, field, &tmp);
+    if (QCBORDecode_GetError(context) != QCBOR_SUCCESS || tmp < 0 ||
+        tmp >= static_cast<int64_t>(Pinetime::Controllers::WeatherData::eventtype::Length)) {
+      return {};
+    }
+    return {static_cast<Pinetime::Controllers::WeatherData::eventtype>(tmp)};
+  }
+
+  template <>
+  std::optional<std::string> Get<std::string>(QCBORDecodeContext* context, const char* field) {
+    UsefulBufC stringBuf;
+    QCBORDecode_GetTextStringInMapSZ(context, field, &stringBuf);
+    if (UsefulBuf_IsNULLOrEmptyC(stringBuf) != 0) {
+      return {};
+    }
+    return {std::string(static_cast<const char*>(stringBuf.ptr), stringBuf.len)};
+  }
+
+  template <>
+  std::optional<Pinetime::Controllers::WeatherData::obscurationtype>
+  Get<Pinetime::Controllers::WeatherData::obscurationtype>(QCBORDecodeContext* context, const char* field) {
+    int64_t tmp = 0;
+    QCBORDecode_GetInt64InMapSZ(context, field, &tmp);
+    if (QCBORDecode_GetError(context) != QCBOR_SUCCESS || tmp < 0 ||
+        tmp >= static_cast<int64_t>(Pinetime::Controllers::WeatherData::obscurationtype::Length)) {
+      return {};
+    }
+    return {static_cast<Pinetime::Controllers::WeatherData::obscurationtype>(tmp)};
+  }
+
+  template <>
+  std::optional<Pinetime::Controllers::WeatherData::precipitationtype>
+  Get<Pinetime::Controllers::WeatherData::precipitationtype>(QCBORDecodeContext* context, const char* field) {
+    int64_t tmp = 0;
+    QCBORDecode_GetInt64InMapSZ(context, field, &tmp);
+    if (QCBORDecode_GetError(context) != QCBOR_SUCCESS || tmp < 0 ||
+        tmp >= static_cast<int64_t>(Pinetime::Controllers::WeatherData::precipitationtype::Length)) {
+      return {};
+    }
+    return {static_cast<Pinetime::Controllers::WeatherData::precipitationtype>(tmp)};
+  }
+
+  template <>
+  std::optional<Pinetime::Controllers::WeatherData::specialtype>
+  Get<Pinetime::Controllers::WeatherData::specialtype>(QCBORDecodeContext* context, const char* field) {
+    int64_t tmp = 0;
+    QCBORDecode_GetInt64InMapSZ(context, field, &tmp);
+    if (QCBORDecode_GetError(context) != QCBOR_SUCCESS || tmp < 0 ||
+        tmp >= static_cast<int64_t>(Pinetime::Controllers::WeatherData::specialtype::Length)) {
+      return {};
+    }
+    return {static_cast<Pinetime::Controllers::WeatherData::specialtype>(tmp)};
+  }
+}
+
 int WeatherCallback(uint16_t /*connHandle*/, uint16_t /*attrHandle*/, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   return static_cast<Pinetime::Controllers::WeatherService*>(arg)->OnCommand(ctxt);
 }
@@ -54,77 +292,59 @@ namespace Pinetime {
         // KINDLY provide us a fixed-length map
         QCBORDecode_EnterMap(&decodeContext, nullptr);
         // Always encodes to the smallest number of bytes based on the value
-        int64_t tmpTimestamp = 0;
-        QCBORDecode_GetInt64InMapSZ(&decodeContext, "Timestamp", &tmpTimestamp);
-        if (QCBORDecode_GetError(&decodeContext) != QCBOR_SUCCESS) {
-          CleanUpQcbor(&decodeContext);
-          return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-        }
-        int64_t tmpExpires = 0;
-        QCBORDecode_GetInt64InMapSZ(&decodeContext, "Expires", &tmpExpires);
-        if (QCBORDecode_GetError(&decodeContext) != QCBOR_SUCCESS || tmpExpires < 0 || tmpExpires > 4294967295) {
-          CleanUpQcbor(&decodeContext);
-          return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
-        }
-        int64_t tmpEventType = 0;
-        QCBORDecode_GetInt64InMapSZ(&decodeContext, "EventType", &tmpEventType);
-        if (QCBORDecode_GetError(&decodeContext) != QCBOR_SUCCESS || tmpEventType < 0 ||
-            tmpEventType >= static_cast<int64_t>(WeatherData::eventtype::Length)) {
+        auto optTimestamp = Get<int64_t>(&decodeContext, "Timestamp");
+        if (!optTimestamp) {
           CleanUpQcbor(&decodeContext);
           return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
         }
 
-        switch (static_cast<WeatherData::eventtype>(tmpEventType)) {
+        auto optExpires = Get<uint32_t>(&decodeContext, "Expires");
+        if (!optExpires) {
+          CleanUpQcbor(&decodeContext);
+          return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+        }
+
+        auto optEventType = Get<Pinetime::Controllers::WeatherData::eventtype>(&decodeContext, "EventType");
+        if (!optEventType) {
+          CleanUpQcbor(&decodeContext);
+          return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+        }
+
+        switch (*optEventType) {
           case WeatherData::eventtype::AirQuality: {
-            std::unique_ptr<WeatherData::AirQuality> airquality = std::make_unique<WeatherData::AirQuality>();
-            airquality->timestamp = tmpTimestamp;
-            airquality->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
-            airquality->expires = tmpExpires;
-
-            UsefulBufC stringBuf; // TODO: Everything ok with lifecycle here?
-            QCBORDecode_GetTextStringInMapSZ(&decodeContext, "Polluter", &stringBuf);
-            if (UsefulBuf_IsNULLOrEmptyC(stringBuf) != 0) {
+            auto optPolluter = Get<std::string>(&decodeContext, "Polluter");
+            if (!optPolluter) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            airquality->polluter = std::string(static_cast<const char*>(stringBuf.ptr), stringBuf.len);
 
-            int64_t tmpAmount = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Amount", &tmpAmount);
-            if (tmpAmount < 0 || tmpAmount > 4294967295) {
+            auto optAmount = Get<uint32_t>(&decodeContext, "Amount");
+            if (!optAmount) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            airquality->amount = tmpAmount; // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
 
-            if (!AddEventToTimeline(std::move(airquality))) {
+            auto airQuality = CreateAirQualityEvent(*optTimestamp, *optExpires, *optPolluter, *optAmount);
+            if (!AddEventToTimeline(std::move(airQuality))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
             break;
           }
           case WeatherData::eventtype::Obscuration: {
-            std::unique_ptr<WeatherData::Obscuration> obscuration = std::make_unique<WeatherData::Obscuration>();
-            obscuration->timestamp = tmpTimestamp;
-            obscuration->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
-            obscuration->expires = tmpExpires;
-
-            int64_t tmpType = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Type", &tmpType);
-            if (tmpType < 0 || tmpType >= static_cast<int64_t>(WeatherData::obscurationtype::Length)) {
+            auto optType = Get<WeatherData::obscurationtype>(&decodeContext, "Type");
+            if (!optType) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            obscuration->type = static_cast<WeatherData::obscurationtype>(tmpType);
 
-            int64_t tmpAmount = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Amount", &tmpAmount);
-            if (tmpAmount < 0 || tmpAmount > 65535) {
+            auto optAmount = Get<uint16_t>(&decodeContext, "Amount");
+            if (!optAmount) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            obscuration->amount = tmpAmount; // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
 
+            auto obscuration = CreateObscurationEvent(*optTimestamp, *optExpires, *optAmount);
             if (!AddEventToTimeline(std::move(obscuration))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -132,27 +352,19 @@ namespace Pinetime {
             break;
           }
           case WeatherData::eventtype::Precipitation: {
-            std::unique_ptr<WeatherData::Precipitation> precipitation = std::make_unique<WeatherData::Precipitation>();
-            precipitation->timestamp = tmpTimestamp;
-            precipitation->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
-            precipitation->expires = tmpExpires;
-
-            int64_t tmpType = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Type", &tmpType);
-            if (tmpType < 0 || tmpType >= static_cast<int64_t>(WeatherData::precipitationtype::Length)) {
+            auto optType = Get<WeatherData::precipitationtype>(&decodeContext, "Type");
+            if (optType) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            precipitation->type = static_cast<WeatherData::precipitationtype>(tmpType);
 
-            int64_t tmpAmount = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Amount", &tmpAmount);
-            if (tmpAmount < 0 || tmpAmount > 255) {
+            auto optAmount = Get<uint8_t>(&decodeContext, "Amount");
+            if (!optAmount) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            precipitation->amount = tmpAmount; // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
 
+            auto precipitation = CreatePrecipitationEvent(*optTimestamp, *optExpires, *optType, *optAmount);
             if (!AddEventToTimeline(std::move(precipitation))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -160,43 +372,31 @@ namespace Pinetime {
             break;
           }
           case WeatherData::eventtype::Wind: {
-            std::unique_ptr<WeatherData::Wind> wind = std::make_unique<WeatherData::Wind>();
-            wind->timestamp = tmpTimestamp;
-            wind->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
-            wind->expires = tmpExpires;
-
-            int64_t tmpMin = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "SpeedMin", &tmpMin);
-            if (tmpMin < 0 || tmpMin > 255) {
+            auto optMin = Get<uint8_t>(&decodeContext, "SpeedMin");
+            if (!optMin) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            wind->speedMin = tmpMin; // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
 
-            int64_t tmpMax = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "SpeedMin", &tmpMax);
-            if (tmpMax < 0 || tmpMax > 255) {
+            auto optMax = Get<uint8_t>(&decodeContext, "SpeedMax");
+            if (!optMax) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            wind->speedMax = tmpMax; // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
 
-            int64_t tmpDMin = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "DirectionMin", &tmpDMin);
-            if (tmpDMin < 0 || tmpDMin > 255) {
+            auto optDMin = Get<uint8_t>(&decodeContext, "DirectionMin");
+            if (!optDMin) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            wind->directionMin = tmpDMin; // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
 
-            int64_t tmpDMax = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "DirectionMax", &tmpDMax);
-            if (tmpDMax < 0 || tmpDMax > 255) {
+            auto optDMax = Get<uint8_t>(&decodeContext, "DirectionMax");
+            if (!optDMax) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            wind->directionMax = tmpDMax; // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
 
+            auto wind = CreateWindEvent(*optTimestamp, *optExpires, *optMin, *optMax, *optDMin, *optDMax);
             if (!AddEventToTimeline(std::move(wind))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -204,19 +404,12 @@ namespace Pinetime {
             break;
           }
           case WeatherData::eventtype::Temperature: {
-            std::unique_ptr<WeatherData::Temperature> temperature = std::make_unique<WeatherData::Temperature>();
-            temperature->timestamp = tmpTimestamp;
-            temperature->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
-            temperature->expires = tmpExpires;
-
             int64_t tmpTemperature = 0;
             QCBORDecode_GetInt64InMapSZ(&decodeContext, "Temperature", &tmpTemperature);
             if (tmpTemperature < -32768 || tmpTemperature > 32767) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            temperature->temperature =
-              static_cast<int16_t>(tmpTemperature); // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
 
             int64_t tmpDewPoint = 0;
             QCBORDecode_GetInt64InMapSZ(&decodeContext, "DewPoint", &tmpDewPoint);
@@ -224,9 +417,9 @@ namespace Pinetime {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            temperature->dewPoint =
-              static_cast<int16_t>(tmpDewPoint); // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
 
+            auto temperature =
+              CreateTemperatureEvent(*optTimestamp, *optExpires, static_cast<int16_t>(tmpTemperature), static_cast<int16_t>(tmpDewPoint));
             if (!AddEventToTimeline(std::move(temperature))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -234,19 +427,13 @@ namespace Pinetime {
             break;
           }
           case WeatherData::eventtype::Special: {
-            std::unique_ptr<WeatherData::Special> special = std::make_unique<WeatherData::Special>();
-            special->timestamp = tmpTimestamp;
-            special->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
-            special->expires = tmpExpires;
-
-            int64_t tmpType = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Type", &tmpType);
-            if (tmpType < 0 || tmpType >= static_cast<int64_t>(WeatherData::specialtype::Length)) {
+            auto optType = Get<WeatherData::specialtype>(&decodeContext, "Type");
+            if (!optType) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            special->type = static_cast<WeatherData::specialtype>(tmpType);
 
+            auto special = CreateSpecialEvent(*optTimestamp, *optExpires, *optType);
             if (!AddEventToTimeline(std::move(special))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -254,19 +441,13 @@ namespace Pinetime {
             break;
           }
           case WeatherData::eventtype::Pressure: {
-            std::unique_ptr<WeatherData::Pressure> pressure = std::make_unique<WeatherData::Pressure>();
-            pressure->timestamp = tmpTimestamp;
-            pressure->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
-            pressure->expires = tmpExpires;
-
-            int64_t tmpPressure = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Pressure", &tmpPressure);
-            if (tmpPressure < 0 || tmpPressure >= 65535) {
+            auto optPressure = Get<uint16_t>(&decodeContext, "Pressure");
+            if (!optPressure) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            pressure->pressure = tmpPressure; // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
 
+            auto pressure = CreatePressureEvent(*optTimestamp, *optExpires, *optPressure);
             if (!AddEventToTimeline(std::move(pressure))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -274,43 +455,31 @@ namespace Pinetime {
             break;
           }
           case WeatherData::eventtype::Location: {
-            std::unique_ptr<WeatherData::Location> location = std::make_unique<WeatherData::Location>();
-            location->timestamp = tmpTimestamp;
-            location->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
-            location->expires = tmpExpires;
-
-            UsefulBufC stringBuf; // TODO: Everything ok with lifecycle here?
-            QCBORDecode_GetTextStringInMapSZ(&decodeContext, "Location", &stringBuf);
-            if (UsefulBuf_IsNULLOrEmptyC(stringBuf) != 0) {
+            auto optLocation = Get<std::string>(&decodeContext, "Location");
+            if (!optLocation) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            location->location = std::string(static_cast<const char*>(stringBuf.ptr), stringBuf.len);
 
-            int64_t tmpAltitude = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Altitude", &tmpAltitude);
-            if (tmpAltitude < -32768 || tmpAltitude >= 32767) {
+            auto optAltitude = Get<int16_t>(&decodeContext, "Altitude");
+            if (!optAltitude) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            location->altitude = static_cast<int16_t>(tmpAltitude);
 
-            int64_t tmpLatitude = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Latitude", &tmpLatitude);
-            if (tmpLatitude < -2147483648 || tmpLatitude >= 2147483647) {
+            auto optLatitude = Get<int32_t>(&decodeContext, "Latitude");
+            if (!optLatitude) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            location->latitude = static_cast<int32_t>(tmpLatitude);
 
-            int64_t tmpLongitude = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Longitude", &tmpLongitude);
-            if (tmpLongitude < -2147483648 || tmpLongitude >= 2147483647) {
+            auto optLongitude = Get<int32_t>(&decodeContext, "Longitude");
+            if (!optLongitude) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            location->latitude = static_cast<int32_t>(tmpLongitude);
 
+            auto location = CreateLocationEvent(*optTimestamp, *optExpires, *optLocation, *optAltitude, *optLatitude, *optLongitude);
             if (!AddEventToTimeline(std::move(location))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -318,19 +487,13 @@ namespace Pinetime {
             break;
           }
           case WeatherData::eventtype::Clouds: {
-            std::unique_ptr<WeatherData::Clouds> clouds = std::make_unique<WeatherData::Clouds>();
-            clouds->timestamp = tmpTimestamp;
-            clouds->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
-            clouds->expires = tmpExpires;
-
-            int64_t tmpAmount = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Amount", &tmpAmount);
-            if (tmpAmount < 0 || tmpAmount > 255) {
+            auto optAmount = Get<uint8_t>(&decodeContext, "Amount");
+            if (!optAmount) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            clouds->amount = static_cast<uint8_t>(tmpAmount);
 
+            auto clouds = CreateCloudsEvent(*optTimestamp, *optExpires, *optAmount);
             if (!AddEventToTimeline(std::move(clouds))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -338,19 +501,13 @@ namespace Pinetime {
             break;
           }
           case WeatherData::eventtype::Humidity: {
-            std::unique_ptr<WeatherData::Humidity> humidity = std::make_unique<WeatherData::Humidity>();
-            humidity->timestamp = tmpTimestamp;
-            humidity->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
-            humidity->expires = tmpExpires;
-
-            int64_t tmpType = 0;
-            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Humidity", &tmpType);
-            if (tmpType < 0 || tmpType >= 255) {
+            auto optType = Get<uint8_t>(&decodeContext, "Humidity");
+            if (!optType) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
-            humidity->humidity = static_cast<uint8_t>(tmpType);
 
+            auto humidity = CreateHumidityEvent(*optTimestamp, *optExpires, *optType);
             if (!AddEventToTimeline(std::move(humidity))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -505,7 +662,7 @@ namespace Pinetime {
     }
 
     bool WeatherService::AddEventToTimeline(std::unique_ptr<WeatherData::TimelineHeader> event) {
-      if (timeline.size() == timeline.max_size()) {
+      if (timeline.size() == maxNbElements) {
         return false;
       }
 
