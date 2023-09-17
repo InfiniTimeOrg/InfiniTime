@@ -81,7 +81,7 @@ namespace {
   }
 
   std::unique_ptr<Pinetime::Controllers::WeatherData::Temperature>
-  CreateTemperatureEvent(int64_t timestamp, uint32_t expires, uint16_t temperatureValue, uint16_t dewPoint) {
+  CreateTemperatureEvent(int64_t timestamp, uint32_t expires, int16_t temperatureValue, int16_t dewPoint) {
     auto temperature = std::make_unique<Pinetime::Controllers::WeatherData::Temperature>();
     temperature->timestamp = timestamp;
     temperature->eventType = Pinetime::Controllers::WeatherData::eventtype::Temperature;
@@ -420,22 +420,20 @@ namespace Pinetime {
             break;
           case WeatherData::eventtype::Temperature:
             if constexpr (EnableTemperature) {
-              int64_t tmpTemperature = 0;
-              QCBORDecode_GetInt64InMapSZ(&decodeContext, "Temperature", &tmpTemperature);
-              if (tmpTemperature < -32768 || tmpTemperature > 32767) {
+              auto optTemperature = Get<int16_t>(&decodeContext, "Temperature");
+              if (!optTemperature) {
                 CleanUpQcbor(&decodeContext);
                 return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
               }
 
-              int64_t tmpDewPoint = 0;
-              QCBORDecode_GetInt64InMapSZ(&decodeContext, "DewPoint", &tmpDewPoint);
-              if (tmpDewPoint < -32768 || tmpDewPoint > 32767) {
+              auto optDewPoint = Get<int16_t>(&decodeContext, "DewPoint");
+              if (!optDewPoint) {
                 CleanUpQcbor(&decodeContext);
                 return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
               }
 
               auto temperature =
-                CreateTemperatureEvent(*optTimestamp, *optExpires, static_cast<int16_t>(tmpTemperature), static_cast<int16_t>(tmpDewPoint));
+                CreateTemperatureEvent(*optTimestamp, *optExpires, *optTemperature, *optDewPoint);
               if (!AddEventToTimeline(std::move(temperature))) {
                 CleanUpQcbor(&decodeContext);
                 return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
