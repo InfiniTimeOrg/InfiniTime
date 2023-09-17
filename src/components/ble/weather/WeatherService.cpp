@@ -685,7 +685,21 @@ namespace Pinetime {
         return false;
       }
 
-      timeline.push_back(std::move(event));
+      auto existingEvent = std::find_if(timeline.begin(), timeline.end(), [&event](const std::unique_ptr<WeatherData::TimelineHeader>& item) {
+        return event->eventType == item->eventType;
+      });
+
+      // Add the new event in the timeline (and remove the older one) if
+      // the timeline contains an event of the same type with a longer expiry.
+      // If an event with a shorter expiry already exists, keep it and drop the new one
+      if(existingEvent == timeline.end()) {
+        timeline.push_back(std::move(event));
+      } else if(event->expires < (*existingEvent)->expires) {
+        timeline.erase(existingEvent);
+        timeline.push_back(std::move(event));
+      } else {
+        // keep the existing event and to not add this one
+      }
       return true;
     }
 
