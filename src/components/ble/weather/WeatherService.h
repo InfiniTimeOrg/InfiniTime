@@ -99,6 +99,8 @@ namespace Pinetime {
                               .value = {0xd0, 0x42, 0x19, 0x3a, 0x3b, 0x43, 0x23, 0x8e, 0xfe, 0x48, 0xfc, 0x78, y, x, 0x04, 0x00}};
       }
 
+      static constexpr size_t maxNbElements = 10;
+
       ble_uuid128_t weatherUuid {BaseUuid()};
 
       /**
