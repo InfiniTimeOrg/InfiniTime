@@ -34,10 +34,9 @@ Notifications::Notifications(DisplayApp* app,
                                                      notificationManager.NbNotifications(),
                                                      alertNotificationService,
                                                      motorController);
-    validDisplay = true;
   } else {
+    currentId.reset();
     currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
-    validDisplay = false;
   }
   if (mode == Modes::Preview) {
     systemTask.PushMessage(System::Messages::DisableSleeping);
@@ -86,25 +85,25 @@ void Notifications::Refresh() {
 
   } else if (dismissingNotification) {
     dismissingNotification = false;
-    auto notification = notificationManager.Get(currentId);
+    auto notification = notificationManager.Get(currentId.value());
     if (!notification.valid) {
       notification = notificationManager.GetLastNotification();
     }
     currentId = notification.id;
 
     if (!notification.valid) {
-      validDisplay = false;
+      currentId.reset();
     }
 
-    currentItem.reset(nullptr);
     if (afterDismissNextMessageFromAbove) {
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Down);
     } else {
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Up);
     }
 
-    if (validDisplay) {
-      Controllers::NotificationManager::Notification::Idx currentIdx = notificationManager.IndexOf(currentId);
+    currentItem.reset(nullptr);
+    if (currentId.has_value()) {
+      Controllers::NotificationManager::Notification::Idx currentIdx = notificationManager.IndexOf(currentId.value());
       currentItem = std::make_unique<NotificationItem>(notification.Title(),
                                                        notification.Message(),
                                                        currentIdx + 1,
@@ -140,7 +139,7 @@ void Notifications::DismissToBlack() {
 }
 
 void Notifications::OnPreviewDismiss() {
-  notificationManager.Dismiss(currentId);
+  notificationManager.Dismiss(currentId.value());
   if (timeoutLine != nullptr) {
     lv_obj_del(timeoutLine);
     timeoutLine = nullptr;
@@ -163,11 +162,11 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
   switch (event) {
     case Pinetime::Applications::TouchEvents::SwipeRight:
-      if (validDisplay) {
-        auto previousMessage = notificationManager.GetPrevious(currentId);
-        auto nextMessage = notificationManager.GetNext(currentId);
+      if (currentId.has_value()) {
+        auto previousMessage = notificationManager.GetPrevious(currentId.value());
+        auto nextMessage = notificationManager.GetNext(currentId.value());
         afterDismissNextMessageFromAbove = previousMessage.valid;
-        notificationManager.Dismiss(currentId);
+        notificationManager.Dismiss(currentId.value());
         if (previousMessage.valid) {
           currentId = previousMessage.id;
         } else if (nextMessage.valid) {
@@ -181,8 +180,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       return false;
     case Pinetime::Applications::TouchEvents::SwipeDown: {
       Controllers::NotificationManager::Notification previousNotification;
-      if (validDisplay) {
-        previousNotification = notificationManager.GetPrevious(currentId);
+      if (currentId.has_value()) {
+        previousNotification = notificationManager.GetPrevious(currentId.value());
       } else {
         previousNotification = notificationManager.GetLastNotification();
       }
@@ -192,8 +191,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       }
 
       currentId = previousNotification.id;
-      Controllers::NotificationManager::Notification::Idx currentIdx = notificationManager.IndexOf(currentId);
-      validDisplay = true;
+      Controllers::NotificationManager::Notification::Idx currentIdx = notificationManager.IndexOf(currentId.value());
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Down);
       currentItem = std::make_unique<NotificationItem>(previousNotification.Title(),
@@ -207,8 +205,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       return true;
     case Pinetime::Applications::TouchEvents::SwipeUp: {
       Controllers::NotificationManager::Notification nextNotification;
-      if (validDisplay) {
-        nextNotification = notificationManager.GetNext(currentId);
+      if (currentId.has_value()) {
+        nextNotification = notificationManager.GetNext(currentId.value());
       } else {
         nextNotification = notificationManager.GetLastNotification();
       }
@@ -219,8 +217,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       }
 
       currentId = nextNotification.id;
-      Controllers::NotificationManager::Notification::Idx currentIdx = notificationManager.IndexOf(currentId);
-      validDisplay = true;
+      Controllers::NotificationManager::Notification::Idx currentIdx = notificationManager.IndexOf(currentId.value());
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Up);
       currentItem = std::make_unique<NotificationItem>(nextNotification.Title(),
