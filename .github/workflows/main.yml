@@ -31,6 +31,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: Install resource build dependencies
+        run:  |
+          apt-get update
+          apt-get -y install --no-install-recommends python3-pil
       - name: Build
         shell: bash
         run: /opt/build.sh all
