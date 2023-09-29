@@ -24,7 +24,7 @@ Notifications::Notifications(DisplayApp* app,
     mode {mode} {
 
   notificationManager.ClearNewNotificationFlag();
-  auto notification = notificationManager.GetLastNotification();
+  auto notification = notificationManager.GetNewestNotification();
   if (notification.valid) {
     currentId = notification.id;
     currentItem = std::make_unique<NotificationItem>(notification.Title(),
@@ -88,7 +88,7 @@ void Notifications::Refresh() {
     dismissingNotification = false;
     auto notification = notificationManager.Get(currentId);
     if (!notification.valid) {
-      notification = notificationManager.GetLastNotification();
+      notification = notificationManager.GetNewestNotification();
     }
     currentId = notification.id;
 
@@ -104,7 +104,7 @@ void Notifications::Refresh() {
     }
 
     if (validDisplay) {
-      Controllers::NotificationManager::Notification::Idx currentIdx = notificationManager.IndexOf(currentId);
+      Controllers::NotificationManager::Notification::Idx currentIdx = notificationManager.NotificationPosition(currentId);
       currentItem = std::make_unique<NotificationItem>(notification.Title(),
                                                        notification.Message(),
                                                        currentIdx + 1,
@@ -184,7 +184,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       if (validDisplay) {
         previousNotification = notificationManager.GetPrevious(currentId);
       } else {
-        previousNotification = notificationManager.GetLastNotification();
+        previousNotification = notificationManager.GetNewestNotification();
       }
 
       if (!previousNotification.valid) {
@@ -192,7 +192,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       }
 
       currentId = previousNotification.id;
-      Controllers::NotificationManager::Notification::Idx currentIdx = notificationManager.IndexOf(currentId);
+      Controllers::NotificationManager::Notification::Idx currentIdx = notificationManager.NotificationPosition(currentId);
       validDisplay = true;
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Down);
@@ -210,7 +210,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       if (validDisplay) {
         nextNotification = notificationManager.GetNext(currentId);
       } else {
-        nextNotification = notificationManager.GetLastNotification();
+        nextNotification = notificationManager.GetNewestNotification();
       }
 
       if (!nextNotification.valid) {
@@ -219,7 +219,7 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       }
 
       currentId = nextNotification.id;
-      Controllers::NotificationManager::Notification::Idx currentIdx = notificationManager.IndexOf(currentId);
+      Controllers::NotificationManager::Notification::Idx currentIdx = notificationManager.NotificationPosition(currentId);
       validDisplay = true;
       currentItem.reset(nullptr);
       app->SetFullRefresh(DisplayApp::FullRefreshDirections::Up);
