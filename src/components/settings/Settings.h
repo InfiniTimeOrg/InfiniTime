@@ -214,6 +214,17 @@ namespace Pinetime {
         return settings.screenTimeOut;
       };
 
+      void SetAlwaysOnDisplay(bool state) {
+        if (state != settings.alwaysOnDisplay) {
+          settingsChanged = true;
+        }
+        settings.alwaysOnDisplay = state;
+      };
+
+      bool GetAlwaysOnDisplay() const {
+        return settings.alwaysOnDisplay;
+      };
+
       void SetShakeThreshold(uint16_t thresh) {
         if (settings.shakeWakeThreshold != thresh) {
           settings.shakeWakeThreshold = thresh;
@@ -286,12 +297,14 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0007;
+      static constexpr uint32_t settingsVersion = 0x0008;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
         uint32_t screenTimeOut = 15000;
+
+        bool alwaysOnDisplay = false;
 
         ClockType clockType = ClockType::H24;
         WeatherFormat weatherFormat = WeatherFormat::Metric;

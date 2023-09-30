@@ -198,7 +198,10 @@ void SystemTask::Work() {
           doNotGoToSleep = true;
           break;
         case Messages::GoToRunning:
-          spi.Wakeup();
+          // SPI doesn't go to sleep for always on mode
+          if (!settingsController.GetAlwaysOnDisplay()) {
+            spi.Wakeup();
+          }
 
           // Double Tap needs the touch screen to be in normal mode
           if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
@@ -231,7 +234,7 @@ void SystemTask::Work() {
           break;
         }
         case Messages::GoToSleep:
-          if (doNotGoToSleep) {
+          if (doNotGoToSleep or settingsController.GetAlwaysOnDisplay()) {
             break;
           }
           state = SystemTaskState::GoingToSleep; // Already set in PushMessage()
@@ -323,7 +326,11 @@ void SystemTask::Work() {
             // if it's in sleep mode. Avoid bricked device by disabling sleep mode on these versions.
             spiNorFlash.Sleep();
           }
-          spi.Sleep();
+
+          // Must keep SPI awake when still updating the display for always on
+          if (!settingsController.GetAlwaysOnDisplay()) {
+            spi.Sleep();
+          }
 
           // Double Tap needs the touch screen to be in normal mode
           if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
@@ -495,7 +502,7 @@ void SystemTask::OnTouchEvent() {
 }
 
 void SystemTask::PushMessage(System::Messages msg) {
-  if (msg == Messages::GoToSleep && !doNotGoToSleep) {
+  if (msg == Messages::GoToSleep && !doNotGoToSleep && !settingsController.GetAlwaysOnDisplay()) {
     state = SystemTaskState::GoingToSleep;
   }
 
