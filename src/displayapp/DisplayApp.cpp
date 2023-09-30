@@ -203,7 +203,11 @@ void DisplayApp::Refresh() {
   TickType_t queueTimeout;
   switch (state) {
     case States::Idle:
-      queueTimeout = portMAX_DELAY;
+      if (settingsController.GetAlwaysOnDisplay()) {
+        queueTimeout = lv_task_handler();
+      } else {
+        queueTimeout = portMAX_DELAY;
+      }
       break;
     case States::Running:
       if (!currentScreen->IsRunning()) {

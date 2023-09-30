@@ -15,7 +15,7 @@ namespace {
   }
 }
 
-constexpr std::array<uint16_t, 6> SettingDisplay::options;
+constexpr std::array<uint16_t, 7> SettingDisplay::options;
 
 SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : app {app}, settingsController {settingsController} {
@@ -46,7 +46,11 @@ SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime
   char buffer[4];
   for (unsigned int i = 0; i < options.size(); i++) {
     cbOption[i] = lv_checkbox_create(container1, nullptr);
-    snprintf(buffer, sizeof(buffer), "%2" PRIu16 "s", options[i] / 1000);
+    if (options[i] == 0) {
+      sprintf(buffer, "%s", "Always On");
+    } else {
+      sprintf(buffer, "%2ds", options[i] / 1000);
+    }
     lv_checkbox_set_text(cbOption[i], buffer);
     cbOption[i]->user_data = this;
     lv_obj_set_event_cb(cbOption[i], event_handler);
@@ -64,6 +68,12 @@ SettingDisplay::~SettingDisplay() {
 }
 
 void SettingDisplay::UpdateSelected(lv_obj_t* object, lv_event_t event) {
+  if (settingsController.GetScreenTimeOut() == 0) {
+    settingsController.SetAlwaysOnDisplay(true);
+  } else {
+    settingsController.SetAlwaysOnDisplay(false);
+  }
+
   if (event == LV_EVENT_CLICKED) {
     for (unsigned int i = 0; i < options.size(); i++) {
       if (object == cbOption[i]) {
