@@ -9,13 +9,20 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  void event_handler(lv_obj_t* obj, lv_event_t event) {
+  void timeout_event_handler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingDisplay*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
+
+  void alwaysOn_event_handler(lv_obj_t* obj, lv_event_t event) {
+    if (event == LV_EVENT_VALUE_CHANGED) {
+      auto* screen = static_cast<SettingDisplay*>(obj->user_data);
+      screen->ToggleAlwaysOn();
+    }
+  }
 }
 
-constexpr std::array<uint16_t, 7> SettingDisplay::options;
+constexpr std::array<uint16_t, 6> SettingDisplay::options;
 
 SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : app {app}, settingsController {settingsController} {
@@ -46,20 +53,23 @@ SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime
   char buffer[4];
   for (unsigned int i = 0; i < options.size(); i++) {
     cbOption[i] = lv_checkbox_create(container1, nullptr);
-    if (options[i] == 0) {
-      sprintf(buffer, "%s", "Always On");
-    } else {
-      sprintf(buffer, "%2ds", options[i] / 1000);
-    }
+    snprintf(buffer, sizeof(buffer), "%2" PRIu16 "s", options[i] / 1000);
     lv_checkbox_set_text(cbOption[i], buffer);
     cbOption[i]->user_data = this;
-    lv_obj_set_event_cb(cbOption[i], event_handler);
+    lv_obj_set_event_cb(cbOption[i], timeout_event_handler);
     SetRadioButtonStyle(cbOption[i]);
 
     if (settingsController.GetScreenTimeOut() == options[i]) {
       lv_checkbox_set_checked(cbOption[i], true);
     }
   }
+
+  alwaysOn_checkbox = lv_checkbox_create(container1, nullptr);
+  lv_checkbox_set_text(alwaysOn_checkbox, "Always On");
+  lv_checkbox_set_checked(alwaysOn_checkbox, settingsController.GetAlwaysOnDisplay());
+  lv_obj_add_state(alwaysOn_checkbox, LV_STATE_DEFAULT);
+  alwaysOn_checkbox->user_data = this;
+  lv_obj_set_event_cb(alwaysOn_checkbox, alwaysOn_event_handler);
 }
 
 SettingDisplay::~SettingDisplay() {
@@ -67,13 +77,12 @@ SettingDisplay::~SettingDisplay() {
   settingsController.SaveSettings();
 }
 
-void SettingDisplay::UpdateSelected(lv_obj_t* object, lv_event_t event) {
-  if (settingsController.GetScreenTimeOut() == 0) {
-    settingsController.SetAlwaysOnDisplay(true);
-  } else {
-    settingsController.SetAlwaysOnDisplay(false);
-  }
+void SettingDisplay::ToggleAlwaysOn() {
+  settingsController.SetAlwaysOnDisplay(!settingsController.GetAlwaysOnDisplay());
+  lv_checkbox_set_checked(alwaysOn_checkbox, settingsController.GetAlwaysOnDisplay());
+}
 
+void SettingDisplay::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     for (unsigned int i = 0; i < options.size(); i++) {
       if (object == cbOption[i]) {
