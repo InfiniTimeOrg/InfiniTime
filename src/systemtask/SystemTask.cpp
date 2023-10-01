@@ -236,7 +236,7 @@ void SystemTask::Work() {
           break;
         }
         case Messages::GoToSleep:
-          if (doNotGoToSleep or settingsController.GetAlwaysOnDisplay()) {
+          if (doNotGoToSleep) {
             break;
           }
           state = SystemTaskState::GoingToSleep; // Already set in PushMessage()
@@ -512,7 +512,7 @@ void SystemTask::OnTouchEvent() {
 }
 
 void SystemTask::PushMessage(System::Messages msg) {
-  if (msg == Messages::GoToSleep && !doNotGoToSleep && !settingsController.GetAlwaysOnDisplay()) {
+  if (msg == Messages::GoToSleep && !doNotGoToSleep) {
     state = SystemTaskState::GoingToSleep;
   }
 
