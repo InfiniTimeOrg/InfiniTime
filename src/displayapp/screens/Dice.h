@@ -11,18 +11,23 @@
 #include <array>
 #include <random>
 
+#define ROLL_HYSTERESIS 10
+
 namespace Pinetime::Applications::Screens {
   class Dice : public Screen {
   public:
-    Dice(Controllers::MotionController& motion, Controllers::MotorController& motor);
+    Dice(Controllers::MotionController& motion, Controllers::MotorController& motor, Controllers::Settings& settings);
     ~Dice() override;
     void Roll();
+    void Refresh() override;
 
   private:
     lv_obj_t* btnRoll;
     lv_obj_t* btnRollLabel;
     lv_obj_t* resultTotalLabel;
     lv_obj_t* resultIndividualLabel;
+    lv_task_t* refreshTask;
+    bool enableShakeForDice = false;
 
     std::mt19937 gen;
 
@@ -34,7 +39,10 @@ namespace Pinetime::Applications::Screens {
     Widgets::Counter dCounter = Widgets::Counter(2, 99, jetbrains_mono_42);
 
     bool openingRoll = true;
+    unsigned int rollHysteresis = 0;
 
     Controllers::MotorController& motor;
+    Controllers::MotionController& motion;
+    Controllers::Settings& settings;
   };
 }
