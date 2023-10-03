@@ -15,4 +15,4 @@ python3 -m pip install -r tools/mcuboot/requirements.txt
 
 cmake -Bbuild -GNinja -DNRF5_SDK_PATH=$(realpath nRF5_SDK_15.3.0_59ac345) \
   -DARM_NONE_EABI_TOOLCHAIN_PATH=$(dirname $(dirname $(realpath $(which arm-none-eabi-gcc))))
-cmake --build build -t pinetime-app
+cmake --build build -t all #pinetime-app
