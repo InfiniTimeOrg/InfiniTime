@@ -70,7 +70,7 @@ void BrightnessController::Set(BrightnessController::Levels level) {
       pwmVal -= step;
     }
     setPwm(pwmVal);
-    vTaskDelay(15);
+    vTaskDelay(20);
   }
 }
 
