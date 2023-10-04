@@ -66,7 +66,7 @@ SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime
 
   alwaysOn_checkbox = lv_checkbox_create(container1, nullptr);
   lv_checkbox_set_text(alwaysOn_checkbox, "Always On");
-  lv_checkbox_set_checked(alwaysOn_checkbox, settingsController.GetAlwaysOnDisplay());
+  lv_checkbox_set_checked(alwaysOn_checkbox, settingsController.GetAlwaysOnDisplaySetting());
   lv_obj_add_state(alwaysOn_checkbox, LV_STATE_DEFAULT);
   alwaysOn_checkbox->user_data = this;
   lv_obj_set_event_cb(alwaysOn_checkbox, alwaysOn_event_handler);
@@ -78,8 +78,8 @@ SettingDisplay::~SettingDisplay() {
 }
 
 void SettingDisplay::ToggleAlwaysOn() {
-  settingsController.SetAlwaysOnDisplay(!settingsController.GetAlwaysOnDisplay());
-  lv_checkbox_set_checked(alwaysOn_checkbox, settingsController.GetAlwaysOnDisplay());
+  settingsController.SetAlwaysOnDisplaySetting(!settingsController.GetAlwaysOnDisplaySetting());
+  lv_checkbox_set_checked(alwaysOn_checkbox, settingsController.GetAlwaysOnDisplaySetting());
 }
 
 void SettingDisplay::UpdateSelected(lv_obj_t* object, lv_event_t event) {
