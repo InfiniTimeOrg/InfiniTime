@@ -64,17 +64,6 @@
       "bpp": 1,
       "size": 48
    },
-   "lv_font_navi_80": {
-      "sources": [
-         {
-            "file": "navigation.ttf",
-            "range": "0xe900-0xe929"
-         }
-      ],
-      "bpp": 2,
-      "size": 80,
-      "compress": true
-   },
    "fontawesome_weathericons": {
       "sources": [
          {
