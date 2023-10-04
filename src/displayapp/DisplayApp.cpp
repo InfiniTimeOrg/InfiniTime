@@ -382,7 +382,16 @@ void DisplayApp::Refresh() {
         break;
       case Messages::OnChargingEvent:
         RestoreBrightness();
-        motorController.RunForDuration(15);
+        if (batteryController.IsCharging() && currentApp == Apps::Clock) {
+          // Open the battery app if on the clock screen
+          LoadNewScreen(Apps::BatteryInfo, DisplayApp::FullRefreshDirections::None);
+        } else if (!batteryController.IsCharging() && currentApp == Apps::BatteryInfo) {
+          // Close the battery app after being unplugged
+          LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+        } else {
+          // Vibrate normally otherwise as to not close any open app
+          motorController.RunForDuration(15);
+        }
         break;
     }
   }
