@@ -6,8 +6,6 @@
 
 using namespace Pinetime::Applications::Screens;
 
-constexpr std::array<Tile::Applications, ApplicationList::applications.size()> ApplicationList::applications;
-
 auto ApplicationList::CreateScreenList() const {
   std::array<std::function<std::unique_ptr<Screen>()>, nScreens> screens;
   for (size_t i = 0; i < screens.size(); i++) {
@@ -22,12 +20,14 @@ ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp* app,
                                  Pinetime::Controllers::Settings& settingsController,
                                  const Pinetime::Controllers::Battery& batteryController,
                                  const Pinetime::Controllers::Ble& bleController,
-                                 Controllers::DateTime& dateTimeController)
+                                 Controllers::DateTime& dateTimeController,
+                                 Pinetime::Controllers::FS& filesystem)
   : app {app},
     settingsController {settingsController},
     batteryController {batteryController},
     bleController {bleController},
     dateTimeController {dateTimeController},
+    filesystem{filesystem},
     screens {app, settingsController.GetAppMenu(), CreateScreenList(), Screens::ScreenListModes::UpDown} {
 }
 

@@ -48,7 +48,17 @@ CMake configures the project according to variables you specify the command line
 #### (\*) Note about **CMAKE_BUILD_TYPE**
 By default, this variable is set to *Release*. It compiles the code with size and speed optimizations. We use this value for all the binaries we publish when we [release](https://github.com/InfiniTimeOrg/InfiniTime/releases) new versions of InfiniTime.
 
-The *Debug* mode disables all optimizations, which makes the code easier to debug. However, the binary size will likely be too big to fit in the internal flash memory. If you want to build and debug a *Debug* binary, you'll need to disable some parts of the code. For example, the icons for the **Navigation** app use a lot of memory space. You can comment the content of `m_iconMap` in the [Navigation](https://github.com/InfiniTimeOrg/InfiniTime/blob/main/src/displayapp/screens/Navigation.h#L148) application to free some memory.
+The *Debug* mode disables all optimizations, which makes the code easier to debug. However, the binary size will likely be too big to fit in the internal flash memory. If you want to build and debug a *Debug* binary, you can disable some parts of the code that are not needed for the test you want to achieve. You can also apply the *Debug* mode selectively on parts of the application by applying the `DEBUG_FLAGS` only for the part (CMake target) you want to debug. For example, let's say you want to debug code related to LittleFS, simply set the compilation options for the RELEASE configuration of the target to `DEBUG_FLAGS` (in `src/CMakeLists.txt`). This will force the compilation of that target in *Debug* mode while the rest of the project will be built in *Release* mode. Example:
+
+```
+target_compile_options(littlefs PRIVATE
+        ${COMMON_FLAGS}
+        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
+        $<$<CONFIG:RELEASE>: ${DEBUG_FLAGS}> # Change from RELEASE_FLAGS to DEBUG_FLAGS
+        $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
+        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
+        )
+```
 
 #### (\*\*) Note about **BUILD_DFU**
 DFU files are the files you'll need to install your build of InfiniTime using OTA (over-the-air) mechanism. To generate the DFU file, the Python tool [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil) is needed on your system. Check that this tool is properly installed before enabling this option.

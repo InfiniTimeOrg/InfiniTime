@@ -5,5 +5,19 @@
       "output_format": "bin",
       "binary_format": "ARGB8565_RBSWAP",
       "target_path": "/images/"
+   },
+   "navigation0" : {
+      "sources": "images/navigation0.png",
+      "color_format": "CF_INDEXED_1_BIT",
+      "output_format": "bin",
+      "binary_format": "ARGB8565_RBSWAP",
+      "target_path": "/images/"
+   },
+   "navigation1" : {
+      "sources": "images/navigation1.png",
+      "color_format": "CF_INDEXED_1_BIT",
+      "output_format": "bin",
+      "binary_format": "ARGB8565_RBSWAP",
+      "target_path": "/images/"
    }
 }

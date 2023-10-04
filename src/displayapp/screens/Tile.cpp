@@ -76,7 +76,7 @@ Tile::Tile(uint8_t screenID,
 
   for (uint8_t i = 0; i < 6; i++) {
     lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_CLICK_TRIG);
-    if (applications[i].application == Apps::None) {
+    if (applications[i].application == Apps::None || !applications[i].enabled) {
       lv_btnmatrix_set_btn_ctrl(btnm1, i, LV_BTNMATRIX_CTRL_DISABLED);
     }
   }

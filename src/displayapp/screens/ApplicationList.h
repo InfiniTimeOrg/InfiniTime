@@ -10,6 +10,7 @@
 #include "components/battery/BatteryController.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/Tile.h"
+#include "displayapp/screens/Navigation.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -20,7 +21,8 @@ namespace Pinetime {
                                  Pinetime::Controllers::Settings& settingsController,
                                  const Pinetime::Controllers::Battery& batteryController,
                                  const Pinetime::Controllers::Ble& bleController,
-                                 Controllers::DateTime& dateTimeController);
+                                 Controllers::DateTime& dateTimeController,
+                                 Pinetime::Controllers::FS& filesystem);
         ~ApplicationList() override;
         bool OnTouchEvent(TouchEvents event) override;
 
@@ -33,26 +35,27 @@ namespace Pinetime {
         const Pinetime::Controllers::Battery& batteryController;
         const Pinetime::Controllers::Ble& bleController;
         Controllers::DateTime& dateTimeController;
+        Pinetime::Controllers::FS& filesystem;
 
         static constexpr int appsPerScreen = 6;
 
         // Increment this when more space is needed
         static constexpr int nScreens = 2;
 
-        static constexpr std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
-          {Symbols::stopWatch, Apps::StopWatch},
-          {Symbols::clock, Apps::Alarm},
-          {Symbols::hourGlass, Apps::Timer},
-          {Symbols::shoe, Apps::Steps},
-          {Symbols::heartBeat, Apps::HeartRate},
-          {Symbols::music, Apps::Music},
+        std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
+          {Symbols::stopWatch, Apps::StopWatch, true},
+          {Symbols::clock, Apps::Alarm, true},
+          {Symbols::hourGlass, Apps::Timer, true},
+          {Symbols::shoe, Apps::Steps, true},
+          {Symbols::heartBeat, Apps::HeartRate, true},
+          {Symbols::music, Apps::Music, true},
 
-          {Symbols::paintbrush, Apps::Paint},
-          {Symbols::paddle, Apps::Paddle},
-          {"2", Apps::Twos},
-          {Symbols::drum, Apps::Metronome},
-          {Symbols::map, Apps::Navigation},
-          {Symbols::none, Apps::None},
+          {Symbols::paintbrush, Apps::Paint, true},
+          {Symbols::paddle, Apps::Paddle, true},
+          {"2", Apps::Twos, true},
+          {Symbols::drum, Apps::Metronome, true},
+          {Symbols::map, Apps::Navigation, Applications::Screens::Navigation::IsAvailable(filesystem)},
+          {Symbols::none, Apps::None, false},
 
           // {"M", Apps::Motion},
         }};
