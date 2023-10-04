@@ -476,7 +476,24 @@ void DisplayApp::Refresh() {
         motorController.RunForDuration(35);
         break;
       case Messages::OnChargingEvent:
-        motorController.RunForDuration(15);
+        switch (currentApp) {
+          case Apps::Clock:
+            if (batteryController.IsCharging() && settingsController.IsAutoOpenOn(Controllers::Settings::AutoOpen::Battery)) {
+              // Open the battery app if on the clock screen
+              LoadNewScreen(Apps::BatteryInfo, DisplayApp::FullRefreshDirections::None);
+            }
+            break;
+          case Apps::BatteryInfo:
+            if (!batteryController.IsCharging()) {
+              // Close the battery app after being unplugged
+              LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+            }
+            break;
+          default:
+            // Vibrate normally otherwise as to not close any open app
+            motorController.RunForDuration(15);
+            break;
+        }
         break;
     }
   }
