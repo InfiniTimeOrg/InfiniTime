@@ -74,6 +74,11 @@ namespace Pinetime {
           return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
         }
 
+        // Enforce a reasonable limit to the amount of RAM that can be used
+        if (GetTimelineLength() > WeatherData::eventtype::Length) {
+            return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+        }
+
         switch (static_cast<WeatherData::eventtype>(tmpEventType)) {
           case WeatherData::eventtype::AirQuality: {
             std::unique_ptr<WeatherData::AirQuality> airquality = std::make_unique<WeatherData::AirQuality>();
