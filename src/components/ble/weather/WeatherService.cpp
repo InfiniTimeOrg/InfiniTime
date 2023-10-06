@@ -403,110 +403,146 @@ namespace Pinetime {
 
     std::unique_ptr<WeatherData::Clouds>& WeatherService::GetCurrentClouds() {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      auto* best = this->nullHeader;
       for (auto&& header : this->timeline) {
         if (header->eventType == WeatherData::eventtype::Clouds && currentTimestamp >= header->timestamp &&
             IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Clouds>&>(header);
+          if ((*best)->timestamp == 0 || header->expires < (*best)->expires ||
+              (header->expires == (*best)->expires && header->timestamp > (*best)->timestamp)) {
+            best = &header;
+          }
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Clouds>&>(*this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Clouds>&>(*best);
     }
 
     std::unique_ptr<WeatherData::Obscuration>& WeatherService::GetCurrentObscuration() {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      auto* best = this->nullHeader;
       for (auto&& header : this->timeline) {
         if (header->eventType == WeatherData::eventtype::Obscuration && currentTimestamp >= header->timestamp &&
             IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Obscuration>&>(header);
+          if ((*best)->timestamp == 0 || header->expires < (*best)->expires ||
+              (header->expires == (*best)->expires && header->timestamp > (*best)->timestamp)) {
+            best = &header;
+          }
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Obscuration>&>(*this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Obscuration>&>(*best);
     }
 
     std::unique_ptr<WeatherData::Precipitation>& WeatherService::GetCurrentPrecipitation() {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      auto* best = this->nullHeader;
       for (auto&& header : this->timeline) {
         if (header->eventType == WeatherData::eventtype::Precipitation && currentTimestamp >= header->timestamp &&
             IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Precipitation>&>(header);
+          if ((*best)->timestamp == 0 || header->expires < (*best)->expires ||
+              (header->expires == (*best)->expires && header->timestamp > (*best)->timestamp)) {
+            best = &header;
+          }
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Precipitation>&>(*this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Precipitation>&>(*best);
     }
 
     std::unique_ptr<WeatherData::Wind>& WeatherService::GetCurrentWind() {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      auto* best = this->nullHeader;
       for (auto&& header : this->timeline) {
         if (header->eventType == WeatherData::eventtype::Wind && currentTimestamp >= header->timestamp &&
             IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Wind>&>(header);
+          if ((*best)->timestamp == 0 || header->expires < (*best)->expires ||
+              (header->expires == (*best)->expires && header->timestamp > (*best)->timestamp)) {
+            best = &header;
+          }
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Wind>&>(*this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Wind>&>(*best);
     }
 
     std::unique_ptr<WeatherData::Temperature>& WeatherService::GetCurrentTemperature() {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      auto* best = this->nullHeader;
       for (auto&& header : this->timeline) {
         if (header->eventType == WeatherData::eventtype::Temperature && currentTimestamp >= header->timestamp &&
             IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Temperature>&>(header);
+          if ((*best)->timestamp == 0 || header->expires < (*best)->expires ||
+              (header->expires == (*best)->expires && header->timestamp > (*best)->timestamp)) {
+            best = &header;
+          }
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Temperature>&>(*this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Temperature>&>(*best);
     }
 
     std::unique_ptr<WeatherData::Humidity>& WeatherService::GetCurrentHumidity() {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      auto* best = this->nullHeader;
       for (auto&& header : this->timeline) {
         if (header->eventType == WeatherData::eventtype::Humidity && currentTimestamp >= header->timestamp &&
             IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Humidity>&>(header);
+          if ((*best)->timestamp == 0 || header->expires < (*best)->expires ||
+              (header->expires == (*best)->expires && header->timestamp > (*best)->timestamp)) {
+            best = &header;
+          }
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Humidity>&>(*this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Humidity>&>(*best);
     }
 
     std::unique_ptr<WeatherData::Pressure>& WeatherService::GetCurrentPressure() {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      auto* best = this->nullHeader;
       for (auto&& header : this->timeline) {
         if (header->eventType == WeatherData::eventtype::Pressure && currentTimestamp >= header->timestamp &&
             IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Pressure>&>(header);
+          if ((*best)->timestamp == 0 || header->expires < (*best)->expires ||
+              (header->expires == (*best)->expires && header->timestamp > (*best)->timestamp)) {
+            best = &header;
+          }
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Pressure>&>(*this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Pressure>&>(*best);
     }
 
     std::unique_ptr<WeatherData::Location>& WeatherService::GetCurrentLocation() {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      auto* best = this->nullHeader;
       for (auto&& header : this->timeline) {
         if (header->eventType == WeatherData::eventtype::Location && currentTimestamp >= header->timestamp &&
             IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::Location>&>(header);
+          if ((*best)->timestamp == 0 || header->expires < (*best)->expires ||
+              (header->expires == (*best)->expires && header->timestamp > (*best)->timestamp)) {
+            best = &header;
+          }
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::Location>&>(*this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::Location>&>(*best);
     }
 
     std::unique_ptr<WeatherData::AirQuality>& WeatherService::GetCurrentQuality() {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      auto* best = this->nullHeader;
       for (auto&& header : this->timeline) {
         if (header->eventType == WeatherData::eventtype::AirQuality && currentTimestamp >= header->timestamp &&
             IsEventStillValid(header, currentTimestamp)) {
-          return reinterpret_cast<std::unique_ptr<WeatherData::AirQuality>&>(header);
+          if ((*best)->timestamp == 0 || header->expires < (*best)->expires ||
+              (header->expires == (*best)->expires && header->timestamp > (*best)->timestamp)) {
+            best = &header;
+          }
         }
       }
 
-      return reinterpret_cast<std::unique_ptr<WeatherData::AirQuality>&>(*this->nullHeader);
+      return reinterpret_cast<std::unique_ptr<WeatherData::AirQuality>&>(*best);
     }
 
     size_t WeatherService::GetTimelineLength() const {
