@@ -1,200 +1,171 @@
-name: CI
+# GitHub Actions Workflow to build FreeRTOS Firmware for PineTime Smart Watch
+# See https://lupyuen.github.io/pinetime-rust-mynewt/articles/cloud
+# Based on https://github.com/JF002/Pinetime/blob/master/doc/buildAndProgram.md
+# and https://github.com/JF002/Pinetime/blob/master/bootloader/README.md
 
-# Run this workflow whenever the build may be affected
+# Name of this Workflow
+name: Build PineTime Firmware
+
+# When to run this Workflow...
 on:
+
+  # Run this Workflow when files are updated (Pushed) in the "master" Branch
   push:
-    branches: [ main ]
-    paths-ignore:
-      - 'doc/**'
-      - '**.md'
+    branches: [ master ]
+    
+  # Also run this Workflow when a Pull Request is created or updated in the "master" Branch
   pull_request:
-    branches: [ main ]
-    paths-ignore:
-      - 'doc/**'
-      - '**.md'
+    branches: [ master ]
 
+# Steps to run for the Workflow
 jobs:
-  build-firmware:
-    runs-on: ubuntu-22.04
-    container:
-      image: infinitime/infinitime-build
-    outputs:
-      text_size: ${{ steps.output-sizes.outputs.text_size }}
-      data_size: ${{ steps.output-sizes.outputs.data_size }}
-      bss_size: ${{ steps.output-sizes.outputs.bss_size }}
-    env:
-      # InfiniTime sources are downloaded to the current directory.
-      # Override SOURCES_DIR in build.sh
-      SOURCES_DIR: .
+  build:
+
+    # Run these steps on Ubuntu
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout source files
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-      - name: Build
-        shell: bash
-        run: /opt/build.sh all
-      - name: Output build size
-        id: output-sizes
-        run: |
-          . /opt/build.sh
-          .github/workflows/getSize.sh "$BUILD_DIR"/src/pinetime-app-*.out >> $GITHUB_OUTPUT
-      # Unzip the package because Upload Artifact will zip up the files
-      - name: Unzip DFU package
-        run: unzip ./build/output/pinetime-mcuboot-app-dfu-*.zip -d ./build/output/pinetime-mcuboot-app-dfu
-      - name: Upload DFU artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: InfiniTime DFU ${{ github.head_ref }}
-          path: ./build/output/pinetime-mcuboot-app-dfu/*
-      - name: Upload MCUBoot image artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: InfiniTime MCUBoot image ${{ github.head_ref }}
-          path: ./build/output/pinetime-mcuboot-app-image-*.bin
-      - name: Upload resources artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: InfiniTime resources ${{ github.head_ref }}
-          path: ./build/output/infinitime-resources-*.zip
+        
+    #########################################################################################
+    # Download and Cache Dependencies
 
-  build-simulator:
-    runs-on: ubuntu-22.04
-    steps:
-    - name: Install SDL2 and libpng development package
-      run:  |
-        sudo apt-get update
-        sudo apt-get -y install libsdl2-dev libpng-dev
+    - name: Install cmake
+      uses: lukka/get-cmake@v3.18.0
 
-    - name: Install Ninja
-      run:  |
-        sudo apt-get -y install ninja-build
-
-    - name: Install lv_font_conv
-      run:
-        npm i -g lv_font_conv@1.5.2
-
-    - name: Checkout source files
-      uses: actions/checkout@v3
+    - name: Check cache for Embedded Arm Toolchain arm-none-eabi-gcc
+      id:   cache-toolchain
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-toolchain-9-2020-q2
       with:
-        submodules: recursive
+        path: ${{ runner.temp }}/arm-none-eabi
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
 
-    - name: Get InfiniSim repo
+    - name: Install Embedded Arm Toolchain arm-none-eabi-gcc
+      if:   steps.cache-toolchain.outputs.cache-hit != 'true'  # Install toolchain if not found in cache
+      uses: fiam/arm-none-eabi-gcc@v1.0.2
+      with:
+        # GNU Embedded Toolchain for Arm release name, in the V-YYYY-qZ format (e.g. "9-2019-q4")
+        release: 9-2020-q2
+        # Directory to unpack GCC to. Defaults to a temporary directory.
+        directory: ${{ runner.temp }}/arm-none-eabi
+
+    - name: Check cache for nRF5 SDK
+      id:   cache-nrf5sdk
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-nrf5sdk
+      with:
+        path: ${{ runner.temp }}/nrf5_sdk
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+          
+    - name: Install nRF5 SDK
+      if:   steps.cache-nrf5sdk.outputs.cache-hit != 'true'  # Install SDK if not found in cache
       run:  |
-        git clone https://github.com/InfiniTimeOrg/InfiniSim.git --depth 1 --branch main
-        git -C InfiniSim submodule update --init lv_drivers
+        cd ${{ runner.temp }}
+        curl https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip -o nrf5_sdk.zip
+        unzip nrf5_sdk.zip
+        mv nRF5_SDK_15.3.0_59ac345 nrf5_sdk
+
+    - name: Check cache for MCUBoot
+      id:   cache-mcuboot
+      uses: actions/cache@v2
+      env:
+        cache-name: cache-mcuboot
+      with:
+        path: ${{ runner.temp }}/mcuboot
+        key:  ${{ runner.os }}-build-${{ env.cache-name }}
+        restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
+
+    - name: Install MCUBoot
+      if:   steps.cache-mcuboot.outputs.cache-hit != 'true'  # Install MCUBoot if not found in cache
+      run:  |
+        cd ${{ runner.temp }}
+        git clone --branch v1.5.0 https://github.com/JuulLabs-OSS/mcuboot
+
+    - name: Install imgtool dependencies
+      run:  pip3 install --user -r ${{ runner.temp }}/mcuboot/scripts/requirements.txt
+
+    - name: Install adafruit-nrfutil
+      run:  |
+        pip3 install --user wheel
+        pip3 install --user setuptools
+        pip3 install --user adafruit-nrfutil
+        
+    #########################################################################################
+    # Checkout
+      
+    - name: Checkout source files
+      uses: actions/checkout@v2
+
+    - name: Show files
+      run:  set ; pwd ; ls -l
+
+    #########################################################################################
+    # CMake
 
     - name: CMake
-      # disable BUILD_RESOURCES as this is already done when building the firmware
       run:  |
-        cmake -G Ninja -S InfiniSim -B build_lv_sim -DInfiniTime_DIR="${PWD}" -DBUILD_RESOURCES=OFF
-
-    - name: Build simulator executable
+        mkdir -p build
+        cd build
+        cmake -DARM_NONE_EABI_TOOLCHAIN_PATH=${{ runner.temp }}/arm-none-eabi -DNRF5_SDK_PATH=${{ runner.temp }}/nrf5_sdk -DUSE_OPENOCD=1 ../
+      
+    #########################################################################################
+    # Make and Upload DFU Package
+    # pinetime-mcuboot-app.img must be flashed at address 0x8000 in the internal flash memory with OpenOCD:
+    # program image.bin 0x8000
+      
+    # For Debugging Builds: Remove "make" option "-j" for clearer output. Add "--trace" to see details.
+    # For Faster Builds: Add "make" option "-j"
+      
+    - name: Make pinetime-mcuboot-app
       run:  |
-        cmake --build build_lv_sim
+        cd build
+        make pinetime-mcuboot-app
 
-    - name: Upload simulator executable
-      uses: actions/upload-artifact@v3
+    - name: Create firmware image
+      run:  |
+        # The generated firmware binary looks like "pinetime-mcuboot-app-0.8.2.bin"
+        ls -l build/src/pinetime-mcuboot-app*.bin
+        ${{ runner.temp }}/mcuboot/scripts/imgtool.py create --align 4 --version 1.0.0 --header-size 32 --slot-size 475136 --pad-header build/src/pinetime-mcuboot-app*.bin build/src/pinetime-mcuboot-app-img.bin
+        ${{ runner.temp }}/mcuboot/scripts/imgtool.py verify build/src/pinetime-mcuboot-app-img.bin
+
+    - name: Create DFU package
+      run:  |
+        ~/.local/bin/adafruit-nrfutil dfu genpkg --dev-type 0x0052 --application build/src/pinetime-mcuboot-app-img.bin build/src/pinetime-mcuboot-app-dfu.zip
+        unzip -v build/src/pinetime-mcuboot-app-dfu.zip
+        # Unzip the package because Upload Artifact will zip up the files
+        unzip build/src/pinetime-mcuboot-app-dfu.zip -d build/src/pinetime-mcuboot-app-dfu
+
+    - name: Upload DFU package
+      uses: actions/upload-artifact@v2
       with:
-        name: infinisim-${{ github.head_ref }}
-        path: build_lv_sim/infinisim
+        name: pinetime-mcuboot-app-dfu.zip
+        path: build/src/pinetime-mcuboot-app-dfu/*
 
-  get-base-ref-size:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-22.04
-    container:
-      image: infinitime/infinitime-build
-    outputs:
-      text_size: ${{ steps.output-sizes.outputs.text_size }}
-      data_size: ${{ steps.output-sizes.outputs.data_size }}
-      bss_size: ${{ steps.output-sizes.outputs.bss_size }}
-    env:
-      # InfiniTime sources are downloaded to the current directory.
-      # Override SOURCES_DIR in build.sh
-      SOURCES_DIR: .
-    steps:
-    - name: Checkout current base branch files
-      uses: actions/checkout@v3
+    #########################################################################################
+    # Make and Upload Standalone Firmware
+      
+    - name: Make pinetime-app
+      run:  |
+        cd build
+        make pinetime-app
+
+    - name: Upload standalone firmware
+      uses: actions/upload-artifact@v2
       with:
-        ref: ${{ github.base_ref }}
-        submodules: recursive
+        name: pinetime-app.out
+        path: build/src/pinetime-app*.out
 
-    - name: Get base branch SHA
-      id: get-base-sha
-      run: |
-        # Fix for "detected dubious ownership in repository at '/__w/InfiniTime/InfiniTime'"
-        git config --global --add safe.directory /__w/InfiniTime/InfiniTime
-        echo base_sha=$(git rev-parse HEAD) >> $GITHUB_OUTPUT
+    #########################################################################################
+    # Finish
 
-    - name: Cache build
-      id: cache-build
-      uses: actions/cache@v3
-      with:
-        path: ./build
-        key: build-files-${{ steps.get-base-sha.outputs.base_sha }}
-
-    - if: ${{ steps.cache-build.outputs.cache-hit != 'true' }}
-      name: Build
-      shell: bash
-      # Only pinetime-app target is needed, but post_build.sh fails
-      run: /opt/build.sh all
-
-    - name: Output build size
-      id: output-sizes
-      run: |
-        . /opt/build.sh
-        .github/workflows/getSize.sh "$BUILD_DIR"/src/pinetime-app-*.out >> $GITHUB_OUTPUT
-
-  compare-build-size:
-    if: github.event_name == 'pull_request'
-    name: 'Compare build size'
-    needs: [build-firmware, get-base-ref-size]
-    runs-on: ubuntu-latest
-    steps:
-    - name: Compare build size
-      id: output-sizes-diff
-      run: |
-        TEXT_SIZE=${{ needs.build-firmware.outputs.text_size }}
-        DATA_SIZE=${{ needs.build-firmware.outputs.data_size }}
-        BSS_SIZE=${{ needs.build-firmware.outputs.bss_size }}
-
-        echo "text_size=$TEXT_SIZE"
-        echo "data_size=$DATA_SIZE"
-        echo "bss_size=$BSS_SIZE"
-
-        echo "text_size=$TEXT_SIZE" >> $GITHUB_OUTPUT
-        echo "data_size=$DATA_SIZE" >> $GITHUB_OUTPUT
-        echo "bss_size=$BSS_SIZE" >> $GITHUB_OUTPUT
-
-        TEXT_SIZE_BASE=${{ needs.get-base-ref-size.outputs.text_size }}
-        DATA_SIZE_BASE=${{ needs.get-base-ref-size.outputs.data_size }}
-        BSS_SIZE_BASE=${{ needs.get-base-ref-size.outputs.bss_size }}
-
-        TEXT_SIZE_DIFF=$((TEXT_SIZE - TEXT_SIZE_BASE))
-        DATA_SIZE_DIFF=$((DATA_SIZE - DATA_SIZE_BASE))
-        BSS_SIZE_DIFF=$((BSS_SIZE - BSS_SIZE_BASE))
-
-        echo "text_diff=$TEXT_SIZE_DIFF"
-        echo "data_diff=$DATA_SIZE_DIFF"
-        echo "bss_diff=$BSS_SIZE_DIFF"
-
-        echo "text_diff=$TEXT_SIZE_DIFF" >> $GITHUB_OUTPUT
-        echo "data_diff=$DATA_SIZE_DIFF" >> $GITHUB_OUTPUT
-        echo "bss_diff=$BSS_SIZE_DIFF" >> $GITHUB_OUTPUT
-
-    - name: Write comment information to files
-      run: |
-        tee comment << EOF
-        Build size and comparison to ${{ github.base_ref }}:
-        | Section | Size | Difference |
-        | ------- | ---- | ---------- |
-        | text    | ${{ needs.build-firmware.outputs.text_size }}B | ${{ steps.output-sizes-diff.outputs.text_diff }}B |
-        | data    | ${{ needs.build-firmware.outputs.data_size }}B | ${{ steps.output-sizes-diff.outputs.data_diff }}B |
-        | bss     | ${{ needs.build-firmware.outputs.bss_size }}B  | ${{ steps.output-sizes-diff.outputs.bss_diff }}B  |
-        EOF
-
-    - name: Upload comment
-      uses: actions/upload-artifact@v3
-      with:
-        name: comment
-        path: comment
+    - name: Find output
+      run:  |
+        find . -name "pinetime-app.*" -ls
+        find . -name "pinetime-mcuboot-app.*" -ls
+      
+# Embedded Arm Toolchain and nRF5 SDK will only be cached if the build succeeds.
+# So make sure that the first build always succeeds, e.g. comment out the "Make" step.
