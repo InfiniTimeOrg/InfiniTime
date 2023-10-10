@@ -54,7 +54,24 @@
                 "short": "Build DFU",
                 "long": "Build DFU",
                 "settings": {
-                    "BUILD_DFU":"1"
+                    "BUILD_DFU": "1"
+                }
+            }
+        }
+    },
+    "logging": {
+        "default": "no",
+        "choices": {
+            "no": {
+                "short": "No Log",
+                "long": "No Logging"
+            },
+            "yes": {
+                "short": "Log",
+                "long": "Enable Logging",
+                "settings": {
+                    "CMAKE_C_FLAGS": "-DNRF_LOG_BACKEND_RTT_ENABLED=1 -DNRF_LOG_BACKEND_SERIAL_USES_RTT=1 -DNRF_LOG_ENABLED=1 -DDEBUG -DDEBUG_NRF_USER",
+                    "CMAKE_CXX_FLAGS": "-DNRF_LOG_BACKEND_RTT_ENABLED=1 -DNRF_LOG_BACKEND_SERIAL_USES_RTT=1 -DNRF_LOG_ENABLED=1 -DDEBUG -DDEBUG_NRF_USER"
                 }
             }
         }
