@@ -179,6 +179,8 @@ namespace Pinetime {
         eventtype eventType;
       };
 
+#pragma pack(1)
+
       /** The header used for further parsing */
       class TimelineHeader {
       public:
@@ -380,6 +382,8 @@ namespace Pinetime {
          */
         uint32_t amount;
       };
+
+#pragma pack()
     };
   }
 }
