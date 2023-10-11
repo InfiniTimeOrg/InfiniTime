@@ -413,13 +413,17 @@ namespace Pinetime {
 
     std::unique_ptr<WeatherData::TimelineHeader>& WeatherService::GetCurrentEvent(WeatherData::eventtype eventType) {
       uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      auto* best = this->nullHeader;
       for (auto&& header : this->timeline) {
         if (header->eventType == eventType && currentTimestamp >= header->timestamp && IsEventStillValid(header, currentTimestamp)) {
-          return header;
+          if ((*best)->timestamp == 0 || header->expires < (*best)->expires ||
+              (header->expires == (*best)->expires && header->timestamp > (*best)->timestamp)) {
+            best = &header;
+          }
         }
       }
 
-      return *this->nullHeader;
+      return *best;
     }
 
     std::unique_ptr<WeatherData::Clouds>& WeatherService::GetCurrentClouds() {
