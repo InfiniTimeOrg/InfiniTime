@@ -199,6 +199,10 @@ namespace Pinetime {
          */
         uint32_t expires;
         /**
+         * Unique ID for this event
+         */
+        uint16_t eventID;
+        /**
          * What type of weather-related event
          */
         eventtype eventType;

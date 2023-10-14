@@ -150,6 +150,8 @@ namespace Pinetime {
 
       std::unique_ptr<WeatherData::TimelineHeader>& GetCurrentEvent(WeatherData::eventtype eventType);
 
+      std::unique_ptr<WeatherData::TimelineHeader>& GetEventByID(WeatherData::eventtype eventType, uint16_t ID);
+
       /**
        * Returns current UNIX timestamp
        */

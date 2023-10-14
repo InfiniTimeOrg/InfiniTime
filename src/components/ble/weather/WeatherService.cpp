@@ -22,119 +22,142 @@
 #include "libs/QCBOR/inc/qcbor/qcbor.h"
 
 namespace {
-  std::unique_ptr<Pinetime::Controllers::WeatherData::AirQuality>
-  CreateAirQualityEvent(uint64_t timestamp, uint32_t expires, const std::string& polluter, uint32_t amount) {
-    auto airquality = std::make_unique<Pinetime::Controllers::WeatherData::AirQuality>();
-    airquality->timestamp = timestamp;
-    airquality->eventType = Pinetime::Controllers::WeatherData::eventtype::AirQuality;
-    airquality->expires = expires;
-    airquality->polluter = polluter;
-    airquality->amount = amount;
-    return airquality;
+  void CreateAirQualityEvent(std::unique_ptr<Pinetime::Controllers::WeatherData::AirQuality>& event,
+                             uint64_t timestamp,
+                             uint32_t expires,
+                             uint16_t id,
+                             const std::string& polluter,
+                             uint32_t amount) {
+    event->timestamp = timestamp;
+    event->eventType = Pinetime::Controllers::WeatherData::eventtype::AirQuality;
+    event->expires = expires;
+    event->eventID = id;
+    event->polluter = polluter;
+    event->amount = amount;
   }
 
-  std::unique_ptr<Pinetime::Controllers::WeatherData::Obscuration>
-  CreateObscurationEvent(uint64_t timestamp, uint32_t expires, uint16_t amount) {
-    auto obscuration = std::make_unique<Pinetime::Controllers::WeatherData::Obscuration>();
-    obscuration->timestamp = timestamp;
-    obscuration->eventType = Pinetime::Controllers::WeatherData::eventtype::Obscuration;
-    obscuration->expires = expires;
-    obscuration->amount = amount;
-    return obscuration;
+  void CreateObscurationEvent(std::unique_ptr<Pinetime::Controllers::WeatherData::Obscuration>& event,
+                              uint64_t timestamp,
+                              uint32_t expires,
+                              uint16_t id,
+                              uint16_t amount) {
+    event->timestamp = timestamp;
+    event->eventType = Pinetime::Controllers::WeatherData::eventtype::Obscuration;
+    event->expires = expires;
+    event->eventID = id;
+    event->amount = amount;
   }
 
-  std::unique_ptr<Pinetime::Controllers::WeatherData::Precipitation>
-  CreatePrecipitationEvent(uint64_t timestamp,
+  void CreatePrecipitationEvent(std::unique_ptr<Pinetime::Controllers::WeatherData::Precipitation>& event,
+                                uint64_t timestamp,
+                                uint32_t expires,
+                                uint16_t id,
+                                Pinetime::Controllers::WeatherData::precipitationtype type,
+                                uint8_t amount) {
+    event->timestamp = timestamp;
+    event->eventType = Pinetime::Controllers::WeatherData::eventtype::Precipitation;
+    event->expires = expires;
+    event->eventID = id;
+    event->type = type;
+    event->amount = amount;
+  }
+
+  void CreateWindEvent(std::unique_ptr<Pinetime::Controllers::WeatherData::Wind>& event,
+                       uint64_t timestamp,
+                       uint32_t expires,
+                       uint16_t id,
+                       uint8_t speedMin,
+                       uint8_t speedMax,
+                       uint8_t directionMin,
+                       uint8_t directionMax) {
+    event->timestamp = timestamp;
+    event->eventType = Pinetime::Controllers::WeatherData::eventtype::Wind;
+    event->expires = expires;
+    event->eventID = id;
+    event->speedMin = speedMin;
+    event->speedMax = speedMax;
+    event->directionMin = directionMin;
+    event->directionMax = directionMax;
+  }
+
+  void CreateTemperatureEvent(std::unique_ptr<Pinetime::Controllers::WeatherData::Temperature>& event,
+                              uint64_t timestamp,
+                              uint32_t expires,
+                              uint16_t id,
+                              int16_t temperatureValue,
+                              uint16_t dewPoint) {
+    event->timestamp = timestamp;
+    event->eventType = Pinetime::Controllers::WeatherData::eventtype::Temperature;
+    event->expires = expires;
+    event->eventID = id;
+    event->temperature = temperatureValue;
+    event->dewPoint = dewPoint;
+  }
+
+  void CreateSpecialEvent(std::unique_ptr<Pinetime::Controllers::WeatherData::Special>& event,
+                          uint64_t timestamp,
+                          uint32_t expires,
+                          uint16_t id,
+                          Pinetime::Controllers::WeatherData::specialtype type) {
+    event->timestamp = timestamp;
+    event->eventType = Pinetime::Controllers::WeatherData::eventtype::Special;
+    event->expires = expires;
+    event->eventID = id;
+    event->type = type;
+  }
+
+  void CreatePressureEvent(std::unique_ptr<Pinetime::Controllers::WeatherData::Pressure>& event,
+                           uint64_t timestamp,
                            uint32_t expires,
-                           Pinetime::Controllers::WeatherData::precipitationtype type,
-                           uint8_t amount) {
-    auto precipitation = std::make_unique<Pinetime::Controllers::WeatherData::Precipitation>();
-    precipitation->timestamp = timestamp;
-    precipitation->eventType = Pinetime::Controllers::WeatherData::eventtype::Precipitation;
-    precipitation->expires = expires;
-    precipitation->type = type;
-    precipitation->amount = amount;
-    return precipitation;
+                           uint16_t id,
+                           uint16_t pressureValue) {
+    event->timestamp = timestamp;
+    event->eventType = Pinetime::Controllers::WeatherData::eventtype::Pressure;
+    event->expires = expires;
+    event->eventID = id;
+    event->pressure = pressureValue;
   }
 
-  std::unique_ptr<Pinetime::Controllers::WeatherData::Wind>
-  CreateWindEvent(uint64_t timestamp, uint32_t expires, uint8_t speedMin, uint8_t speedMax, uint8_t directionMin, uint8_t directionMax) {
-    auto wind = std::make_unique<Pinetime::Controllers::WeatherData::Wind>();
-    wind->timestamp = timestamp;
-    wind->eventType = Pinetime::Controllers::WeatherData::eventtype::Wind;
-    wind->expires = expires;
-    wind->speedMin = speedMin;
-    wind->speedMax = speedMax;
-    wind->directionMin = directionMin;
-    wind->directionMax = directionMax;
-    return wind;
+  void CreateLocationEvent(std::unique_ptr<Pinetime::Controllers::WeatherData::Location>& event,
+                           uint64_t timestamp,
+                           uint32_t expires,
+                           uint16_t id,
+                           const std::string& locationValue,
+                           int16_t altitude,
+                           int32_t latitude,
+                           int32_t longitude) {
+    event->timestamp = timestamp;
+    event->eventType = Pinetime::Controllers::WeatherData::eventtype::Location;
+    event->expires = expires;
+    event->eventID = id;
+    event->location = locationValue;
+    event->altitude = altitude;
+    event->latitude = latitude;
+    event->longitude = longitude;
   }
 
-  std::unique_ptr<Pinetime::Controllers::WeatherData::Temperature>
-  CreateTemperatureEvent(uint64_t timestamp, uint32_t expires, int16_t temperatureValue, uint16_t dewPoint) {
-    auto temperature = std::make_unique<Pinetime::Controllers::WeatherData::Temperature>();
-    temperature->timestamp = timestamp;
-    temperature->eventType = Pinetime::Controllers::WeatherData::eventtype::Temperature;
-    temperature->expires = expires;
-    temperature->temperature = temperatureValue;
-    temperature->dewPoint = dewPoint;
-    return temperature;
+  void CreateCloudsEvent(std::unique_ptr<Pinetime::Controllers::WeatherData::Clouds>& event,
+                         uint64_t timestamp,
+                         uint32_t expires,
+                         uint16_t id,
+                         uint8_t amount) {
+    event->timestamp = timestamp;
+    event->eventType = Pinetime::Controllers::WeatherData::eventtype::Clouds;
+    event->expires = expires;
+    event->eventID = id;
+    event->amount = amount;
   }
 
-  std::unique_ptr<Pinetime::Controllers::WeatherData::Special>
-  CreateSpecialEvent(uint64_t timestamp, uint32_t expires, Pinetime::Controllers::WeatherData::specialtype type) {
-    auto special = std::make_unique<Pinetime::Controllers::WeatherData::Special>();
-    special->timestamp = timestamp;
-    special->eventType = Pinetime::Controllers::WeatherData::eventtype::Special;
-    special->expires = expires;
-    special->type = type;
-    return special;
-  }
-
-  std::unique_ptr<Pinetime::Controllers::WeatherData::Pressure>
-  CreatePressureEvent(uint64_t timestamp, uint32_t expires, uint16_t pressureValue) {
-    auto pressure = std::make_unique<Pinetime::Controllers::WeatherData::Pressure>();
-    pressure->timestamp = timestamp;
-    pressure->eventType = Pinetime::Controllers::WeatherData::eventtype::Pressure;
-    pressure->expires = expires;
-    pressure->pressure = pressureValue;
-    return pressure;
-  }
-
-  std::unique_ptr<Pinetime::Controllers::WeatherData::Location> CreateLocationEvent(uint64_t timestamp,
-                                                                                    uint32_t expires,
-                                                                                    const std::string& locationValue,
-                                                                                    int16_t altitude,
-                                                                                    int32_t latitude,
-                                                                                    int32_t longitude) {
-    auto location = std::make_unique<Pinetime::Controllers::WeatherData::Location>();
-    location->timestamp = timestamp;
-    location->eventType = Pinetime::Controllers::WeatherData::eventtype::Location;
-    location->expires = expires;
-    location->location = locationValue;
-    location->altitude = altitude;
-    location->latitude = latitude;
-    location->longitude = longitude;
-    return location;
-  }
-
-  std::unique_ptr<Pinetime::Controllers::WeatherData::Clouds> CreateCloudsEvent(uint64_t timestamp, uint32_t expires, uint8_t amount) {
-    auto clouds = std::make_unique<Pinetime::Controllers::WeatherData::Clouds>();
-    clouds->timestamp = timestamp;
-    clouds->eventType = Pinetime::Controllers::WeatherData::eventtype::Clouds;
-    clouds->expires = expires;
-    clouds->amount = amount;
-    return clouds;
-  }
-
-  std::unique_ptr<Pinetime::Controllers::WeatherData::Humidity>
-  CreateHumidityEvent(uint64_t timestamp, uint32_t expires, uint8_t humidityValue) {
-    auto humidity = std::make_unique<Pinetime::Controllers::WeatherData::Humidity>();
-    humidity->timestamp = timestamp;
-    humidity->eventType = Pinetime::Controllers::WeatherData::eventtype::Humidity;
-    humidity->expires = expires;
-    humidity->humidity = humidityValue;
-    return humidity;
+  void CreateHumidityEvent(std::unique_ptr<Pinetime::Controllers::WeatherData::Humidity>& event,
+                           uint64_t timestamp,
+                           uint32_t expires,
+                           uint16_t id,
+                           uint8_t humidityValue) {
+    event->timestamp = timestamp;
+    event->eventType = Pinetime::Controllers::WeatherData::eventtype::Humidity;
+    event->expires = expires;
+    event->eventID = id;
+    event->humidity = humidityValue;
   }
 
   template <typename T>
@@ -268,6 +291,7 @@ namespace Pinetime {
     WeatherService::WeatherService(const DateTime& dateTimeController) : dateTimeController(dateTimeController) {
       nullHeader = &nullTimelineheader;
       nullTimelineheader->timestamp = 0;
+      nullTimelineheader->expires = 0;
     }
 
     void WeatherService::Init() {
@@ -281,13 +305,14 @@ namespace Pinetime {
 
     int WeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
       if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
-        const uint8_t packetLen = OS_MBUF_PKTLEN(ctxt->om); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        const uint16_t packetLen = OS_MBUF_PKTLEN(ctxt->om); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         if (packetLen <= 0) {
           return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
         }
+
         // Decode
         QCBORDecodeContext decodeContext;
-        UsefulBufC encodedCbor = {ctxt->om->om_data, OS_MBUF_PKTLEN(ctxt->om)}; // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        UsefulBufC encodedCbor = {ctxt->om->om_data, packetLen};
 
         QCBORDecode_Init(&decodeContext, encodedCbor, QCBOR_DECODE_MODE_NORMAL);
         // KINDLY provide us a fixed-length map
@@ -319,7 +344,20 @@ namespace Pinetime {
           return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
         }
 
+        auto optID = Get<uint16_t>(&decodeContext, "EventID");
+        if (!optID) {
+          CleanUpQcbor(&decodeContext);
+          return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+        }
+
         TidyTimeline();
+
+        std::unique_ptr<WeatherData::TimelineHeader>& existingEvent = GetEventByID(*optEventType, *optID);
+        bool useExisting = IsEventStillValid(existingEvent, currentTimestamp);
+        if (!useExisting && GetTimelineLength() >= maxNbElements) {
+          CleanUpQcbor(&decodeContext);
+          return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+        }
 
         switch (*optEventType) {
           case WeatherData::eventtype::AirQuality: {
@@ -335,7 +373,18 @@ namespace Pinetime {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
 
-            auto airQuality = CreateAirQualityEvent(*optTimestamp, *optExpires, *optPolluter, *optAmount);
+            if (useExisting) {
+              CreateAirQualityEvent(reinterpret_cast<std::unique_ptr<WeatherData::AirQuality>&>(existingEvent),
+                                    *optTimestamp,
+                                    *optExpires,
+                                    *optID,
+                                    *optPolluter,
+                                    *optAmount);
+              break;
+            }
+
+            auto airQuality = std::make_unique<WeatherData::AirQuality>();
+            CreateAirQualityEvent(airQuality, *optTimestamp, *optExpires, *optID, *optPolluter, *optAmount);
             if (!AddEventToTimeline(std::move(airQuality))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -355,7 +404,17 @@ namespace Pinetime {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
 
-            auto obscuration = CreateObscurationEvent(*optTimestamp, *optExpires, *optAmount);
+            if (useExisting) {
+              CreateObscurationEvent(reinterpret_cast<std::unique_ptr<WeatherData::Obscuration>&>(existingEvent),
+                                     *optTimestamp,
+                                     *optExpires,
+                                     *optID,
+                                     *optAmount);
+              break;
+            }
+
+            auto obscuration = std::make_unique<WeatherData::Obscuration>();
+            CreateObscurationEvent(obscuration, *optTimestamp, *optExpires, *optID, *optAmount);
             if (!AddEventToTimeline(std::move(obscuration))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -375,7 +434,18 @@ namespace Pinetime {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
 
-            auto precipitation = CreatePrecipitationEvent(*optTimestamp, *optExpires, *optType, *optAmount);
+            if (useExisting) {
+              CreatePrecipitationEvent(reinterpret_cast<std::unique_ptr<WeatherData::Precipitation>&>(existingEvent),
+                                       *optTimestamp,
+                                       *optExpires,
+                                       *optID,
+                                       *optType,
+                                       *optAmount);
+              break;
+            }
+
+            auto precipitation = std::make_unique<WeatherData::Precipitation>();
+            CreatePrecipitationEvent(precipitation, *optTimestamp, *optExpires, *optID, *optType, *optAmount);
             if (!AddEventToTimeline(std::move(precipitation))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -407,7 +477,20 @@ namespace Pinetime {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
 
-            auto wind = CreateWindEvent(*optTimestamp, *optExpires, *optMin, *optMax, *optDMin, *optDMax);
+            if (useExisting) {
+              CreateWindEvent(reinterpret_cast<std::unique_ptr<WeatherData::Wind>&>(existingEvent),
+                              *optTimestamp,
+                              *optExpires,
+                              *optID,
+                              *optMin,
+                              *optMax,
+                              *optDMin,
+                              *optDMax);
+              break;
+            }
+
+            auto wind = std::make_unique<WeatherData::Wind>();
+            CreateWindEvent(wind, *optTimestamp, *optExpires, *optID, *optMin, *optMax, *optDMin, *optDMax);
             if (!AddEventToTimeline(std::move(wind))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -427,7 +510,18 @@ namespace Pinetime {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
 
-            auto temperature = CreateTemperatureEvent(*optTimestamp, *optExpires, *optTemperature, *optDewPoint);
+            if (useExisting) {
+              CreateTemperatureEvent(reinterpret_cast<std::unique_ptr<WeatherData::Temperature>&>(existingEvent),
+                                     *optTimestamp,
+                                     *optExpires,
+                                     *optID,
+                                     *optTemperature,
+                                     *optDewPoint);
+              break;
+            }
+
+            auto temperature = std::make_unique<WeatherData::Temperature>();
+            CreateTemperatureEvent(temperature, *optTimestamp, *optExpires, *optID, *optTemperature, *optDewPoint);
             if (!AddEventToTimeline(std::move(temperature))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -441,7 +535,17 @@ namespace Pinetime {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
 
-            auto special = CreateSpecialEvent(*optTimestamp, *optExpires, *optType);
+            if (useExisting) {
+              CreateSpecialEvent(reinterpret_cast<std::unique_ptr<WeatherData::Special>&>(existingEvent),
+                                 *optTimestamp,
+                                 *optExpires,
+                                 *optID,
+                                 *optType);
+              break;
+            }
+
+            auto special = std::make_unique<WeatherData::Special>();
+            CreateSpecialEvent(special, *optTimestamp, *optExpires, *optID, *optType);
             if (!AddEventToTimeline(std::move(special))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -455,7 +559,17 @@ namespace Pinetime {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
 
-            auto pressure = CreatePressureEvent(*optTimestamp, *optExpires, *optPressure);
+            if (useExisting) {
+              CreatePressureEvent(reinterpret_cast<std::unique_ptr<WeatherData::Pressure>&>(existingEvent),
+                                  *optTimestamp,
+                                  *optExpires,
+                                  *optID,
+                                  *optPressure);
+              break;
+            }
+
+            auto pressure = std::make_unique<WeatherData::Pressure>();
+            CreatePressureEvent(pressure, *optTimestamp, *optExpires, *optID, *optPressure);
             if (!AddEventToTimeline(std::move(pressure))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -487,7 +601,20 @@ namespace Pinetime {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
 
-            auto location = CreateLocationEvent(*optTimestamp, *optExpires, *optLocation, *optAltitude, *optLatitude, *optLongitude);
+            if (useExisting) {
+              CreateLocationEvent(reinterpret_cast<std::unique_ptr<WeatherData::Location>&>(existingEvent),
+                                  *optTimestamp,
+                                  *optExpires,
+                                  *optID,
+                                  *optLocation,
+                                  *optAltitude,
+                                  *optLatitude,
+                                  *optLongitude);
+              break;
+            }
+
+            auto location = std::make_unique<WeatherData::Location>();
+            CreateLocationEvent(location, *optTimestamp, *optExpires, *optID, *optLocation, *optAltitude, *optLatitude, *optLongitude);
             if (!AddEventToTimeline(std::move(location))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -501,7 +628,17 @@ namespace Pinetime {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
 
-            auto clouds = CreateCloudsEvent(*optTimestamp, *optExpires, *optAmount);
+            if (useExisting) {
+              CreateCloudsEvent(reinterpret_cast<std::unique_ptr<WeatherData::Clouds>&>(existingEvent),
+                                *optTimestamp,
+                                *optExpires,
+                                *optID,
+                                *optAmount);
+              break;
+            }
+
+            auto clouds = std::make_unique<WeatherData::Clouds>();
+            CreateCloudsEvent(clouds, *optTimestamp, *optExpires, *optID, *optAmount);
             if (!AddEventToTimeline(std::move(clouds))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -515,7 +652,17 @@ namespace Pinetime {
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
             }
 
-            auto humidity = CreateHumidityEvent(*optTimestamp, *optExpires, *optType);
+            if (useExisting) {
+              CreateHumidityEvent(reinterpret_cast<std::unique_ptr<WeatherData::Humidity>&>(existingEvent),
+                                  *optTimestamp,
+                                  *optExpires,
+                                  *optID,
+                                  *optType);
+              break;
+            }
+
+            auto humidity = std::make_unique<WeatherData::Humidity>();
+            CreateHumidityEvent(humidity, *optTimestamp, *optExpires, *optID, *optType);
             if (!AddEventToTimeline(std::move(humidity))) {
               CleanUpQcbor(&decodeContext);
               return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -581,6 +728,17 @@ namespace Pinetime {
       }
 
       return *best;
+    }
+
+    std::unique_ptr<WeatherData::TimelineHeader>& WeatherService::GetEventByID(WeatherData::eventtype eventType, uint16_t id) {
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      for (auto&& header : this->timeline) {
+        if (header->eventType == eventType && IsEventStillValid(header, currentTimestamp) && header->eventID == id) {
+          return header;
+        }
+      }
+
+      return *this->nullHeader;
     }
 
     std::unique_ptr<WeatherData::Clouds>& WeatherService::GetCurrentClouds() {
