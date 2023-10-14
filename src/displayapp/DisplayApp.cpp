@@ -248,6 +248,7 @@ void DisplayApp::Refresh() {
         // Don't actually turn off the display for AlwaysOn mode
         if (settingsController.GetAlwaysOnDisplay()) {
           brightnessController.Set(Controllers::BrightnessController::Levels::AlwaysOn);
+          lcd.LowPowerOn();
         } else {
           brightnessController.Set(Controllers::BrightnessController::Levels::Off);
           lcd.Sleep();
@@ -256,7 +257,11 @@ void DisplayApp::Refresh() {
         state = States::Idle;
         break;
       case Messages::GoToRunning:
-        lcd.Wakeup();
+        if (settingsController.GetAlwaysOnDisplay()) {
+          lcd.LowPowerOff();
+        } else {
+          lcd.Wakeup();
+        }
         lv_disp_trig_activity(nullptr);
         ApplyBrightness();
         state = States::Running;

@@ -138,6 +138,14 @@ void St7789::NormalModeOn() {
   WriteCommand(static_cast<uint8_t>(Commands::NormalModeOn));
 }
 
+void St7789::IdleModeOn() {
+  WriteCommand(static_cast<uint8_t>(Commands::IdleModeOn));
+}
+
+void St7789::IdleModeOff() {
+  WriteCommand(static_cast<uint8_t>(Commands::IdleModeOff));
+}
+
 void St7789::DisplayOn() {
   WriteCommand(static_cast<uint8_t>(Commands::DisplayOn));
 }
@@ -196,6 +204,16 @@ void St7789::HardwareReset() {
   sleepIn = true;
   lastSleepExit = xTaskGetTickCount();
   vTaskDelay(pdMS_TO_TICKS(125));
+}
+
+void St7789::LowPowerOn() {
+  IdleModeOn();
+  NRF_LOG_INFO("[LCD] Low power mode");
+}
+
+void St7789::LowPowerOff() {
+  IdleModeOff();
+  NRF_LOG_INFO("[LCD] Normal power mode");
 }
 
 void St7789::Sleep() {
