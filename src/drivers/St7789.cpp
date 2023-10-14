@@ -16,6 +16,7 @@ void St7789::Init() {
   nrf_gpio_pin_set(pinReset);
   HardwareReset();
   SoftwareReset();
+  Command2Enable();
   SleepOut();
   PixelFormat();
   MemoryDataAccessControl();
@@ -61,6 +62,17 @@ void St7789::SoftwareReset() {
   sleepIn = true;
   lastSleepExit = xTaskGetTickCount();
   vTaskDelay(pdMS_TO_TICKS(125));
+}
+
+void St7789::Command2Enable() {
+  WriteCommand(static_cast<uint8_t>(Commands::Command2Enable));
+  constexpr uint8_t args[] = {
+    0x5a, // Constant
+    0x69, // Constant
+    0x02, // Constant
+    0x01, // Enable
+  };
+  WriteData(args, sizeof(args));
 }
 
 void St7789::SleepOut() {
@@ -133,6 +145,31 @@ void St7789::IdleModeOn() {
 
 void St7789::IdleModeOff() {
   WriteCommand(static_cast<uint8_t>(Commands::IdleModeOff));
+}
+
+void St7789::FrameRateLow() {
+  WriteCommand(static_cast<uint8_t>(Commands::FrameRate));
+  // Enable frame rate control for partial/idle mode, 8x frame divider
+  // According to the datasheet, these controls should apply only to partial/idle mode
+  // However they appear to apply to normal mode, so we have to enable/disable
+  // every time we enter/exit always on
+  // In testing this divider appears to actually be 16x?
+  constexpr uint8_t args[] = {
+    0x13, // Enable frame rate control for partial/idle mode, 8x frame divider
+    0x1f, // Idle mode frame rate (lowest possible)
+    0x1f, // Partial mode frame rate (lowest possible, unused)
+  };
+  WriteData(args, sizeof(args));
+}
+
+void St7789::FrameRateNormal() {
+  WriteCommand(static_cast<uint8_t>(Commands::FrameRate));
+  constexpr uint8_t args[] = {
+    0x00, // Disable frame rate control and divider
+    0x0f, // Idle mode frame rate (normal)
+    0x0f, // Partial mode frame rate (normal, unused)
+  };
+  WriteData(args, sizeof(args));
 }
 
 void St7789::DisplayOn() {
@@ -208,11 +245,13 @@ void St7789::HardwareReset() {
 
 void St7789::LowPowerOn() {
   IdleModeOn();
+  FrameRateLow();
   NRF_LOG_INFO("[LCD] Low power mode");
 }
 
 void St7789::LowPowerOff() {
   IdleModeOff();
+  FrameRateNormal();
   NRF_LOG_INFO("[LCD] Normal power mode");
 }
 

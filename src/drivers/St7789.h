@@ -39,6 +39,7 @@ namespace Pinetime {
 
       void HardwareReset();
       void SoftwareReset();
+      void Command2Enable();
       void SleepOut();
       void EnsureSleepOutPostDelay();
       void SleepIn();
@@ -49,6 +50,8 @@ namespace Pinetime {
       void WriteToRam(const uint8_t* data, size_t size);
       void IdleModeOn();
       void IdleModeOff();
+      void FrameRateNormal();
+      void FrameRateLow();
       void DisplayOn();
       void DisplayOff();
 
@@ -75,7 +78,9 @@ namespace Pinetime {
         IdleModeOff = 0x38,
         IdleModeOn = 0x39,
         PixelFormat = 0x3a,
+        FrameRate = 0xb3,
         VdvSet = 0xc4,
+        Command2Enable = 0xdf,
       };
       void WriteData(uint8_t data);
       void WriteData(const uint8_t* data, size_t size);
