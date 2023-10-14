@@ -237,9 +237,6 @@ void DisplayApp::Refresh() {
       case Messages::DimScreen:
         DimScreen();
         break;
-      case Messages::RestoreBrightness:
-        RestoreBrightness();
-        break;
       case Messages::GoToSleep:
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Low) {
           brightnessController.Lower();
@@ -255,6 +252,9 @@ void DisplayApp::Refresh() {
         }
         PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
         state = States::Idle;
+        break;
+      case Messages::NotifyDeviceActivity:
+        lv_disp_trig_activity(nullptr);
         break;
       case Messages::GoToRunning:
         if (settingsController.GetAlwaysOnDisplay()) {
