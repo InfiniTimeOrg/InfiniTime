@@ -146,6 +146,27 @@ void St7789::IdleModeOff() {
   WriteCommand(static_cast<uint8_t>(Commands::IdleModeOff));
 }
 
+void St7789::FrameRateLow() {
+  WriteCommand(static_cast<uint8_t>(Commands::FrameRate));
+  // Enable frame rate control for partial/idle mode, 8x frame divider
+  // In testing this divider appears to actually be 16x?
+  WriteData(0x13);
+  // Idle mode frame rate (lowest possible)
+  WriteData(0x1f);
+  // Partial mode frame rate (lowest possible, unused)
+  WriteData(0x1f);
+}
+
+void St7789::FrameRateNormal() {
+  WriteCommand(static_cast<uint8_t>(Commands::FrameRate));
+  // Disable frame rate control and divider
+  WriteData(0x00);
+  // Idle mode frame rate (normal)
+  WriteData(0x0f);
+  // Partial mode frame rate (normal, unused)
+  WriteData(0x0f);
+}
+
 void St7789::DisplayOn() {
   WriteCommand(static_cast<uint8_t>(Commands::DisplayOn));
 }
@@ -208,11 +229,13 @@ void St7789::HardwareReset() {
 
 void St7789::LowPowerOn() {
   IdleModeOn();
+  FrameRateLow();
   NRF_LOG_INFO("[LCD] Low power mode");
 }
 
 void St7789::LowPowerOff() {
   IdleModeOff();
+  FrameRateNormal();
   NRF_LOG_INFO("[LCD] Normal power mode");
 }
 
