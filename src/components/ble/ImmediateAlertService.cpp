@@ -73,3 +73,17 @@ int ImmediateAlertService::OnAlertLevelChanged(uint16_t attributeHandle, ble_gat
 
   return 0;
 }
+
+void ImmediateAlertService::sendImmediateAlert(ImmediateAlertService::Levels level) {
+
+  auto* om = ble_hs_mbuf_from_flat(&level, 1);
+
+  uint16_t connectionHandle = systemTask.nimble().connHandle();
+
+  if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
+    return;
+  }
+
+  ble_gattc_notify_custom(connectionHandle, alertLevelHandle, om);
+
+}

@@ -71,6 +71,10 @@ namespace Pinetime {
         return weatherService;
       };
 
+      Pinetime::Controllers::ImmediateAlertService& immediateAlertService() {
+          return iaService;
+      }
+
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);
 
@@ -102,7 +106,7 @@ namespace Pinetime {
       SimpleWeatherService weatherService;
       NavigationService navService;
       BatteryInformationService batteryInformationService;
-      ImmediateAlertService immediateAlertService;
+      ImmediateAlertService iaService;
       HeartRateService heartRateService;
       MotionService motionService;
       FSService fsService;

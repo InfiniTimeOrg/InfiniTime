@@ -386,6 +386,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Notifications.cpp
         displayapp/screens/Twos.cpp
         displayapp/screens/HeartRate.cpp
+        displayapp/screens/FindMyPhone.cpp
         displayapp/screens/FlashLight.cpp
         displayapp/screens/List.cpp
         displayapp/screens/CheckboxList.cpp
@@ -610,6 +611,7 @@ set(INCLUDE_FILES
         displayapp/Apps.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
+        displayapp/screens/FindMyPhone.h
         displayapp/screens/Metronome.h
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
@@ -841,7 +843,7 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   # add_definitions(-DCLOCK_CONFIG_LOG_LEVEL=4)
   # add_definitions(-DRTC_CONFIG_LOG_ENABLED=1)
   # add_definitions(-DRTC_CONFIG_LOG_LEVEL=4)
-  
+
   # Nimble Logging
   add_definitions(-DMYNEWT_VAL_NEWT_FEATURE_LOGCFG=1)
   # add_definitions(-DMYNEWT_VAL_LOG_LEVEL=0)
