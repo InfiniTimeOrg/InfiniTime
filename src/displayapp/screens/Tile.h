@@ -19,6 +19,7 @@ namespace Pinetime {
         struct Applications {
           const char* icon;
           Pinetime::Applications::Apps application;
+          bool enabled;
         };
 
         explicit Tile(uint8_t screenID,

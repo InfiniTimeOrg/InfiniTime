@@ -493,6 +493,8 @@ list(APPEND SOURCE_FILES
 
         buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
+
+        utility/Math.cpp
         )
 
 list(APPEND RECOVERY_SOURCE_FILES
@@ -558,6 +560,8 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/fs/FS.cpp
         buttonhandler/ButtonHandler.cpp
         touchhandler/TouchHandler.cpp
+
+        utility/Math.cpp
         )
 
 list(APPEND RECOVERYLOADER_SOURCE_FILES
@@ -677,6 +681,7 @@ set(INCLUDE_FILES
         components/motor/MotorController.h
         buttonhandler/ButtonHandler.h
         touchhandler/TouchHandler.h
+        utility/Math.h
         )
 
 include_directories(
