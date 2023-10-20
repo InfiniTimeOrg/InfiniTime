@@ -20,12 +20,16 @@ namespace Pinetime {
 
   namespace Controllers {
     class Ble;
+    class Settings;
+    class NotificationManager;
 
     class DfuService {
     public:
       DfuService(Pinetime::System::SystemTask& systemTask,
                  Pinetime::Controllers::Ble& bleController,
-                 Pinetime::Drivers::SpiNorFlash& spiNorFlash);
+                 Pinetime::Drivers::SpiNorFlash& spiNorFlash,
+                 Pinetime::Controllers::Settings& settingsController,
+                 Pinetime::Controllers::NotificationManager& controllerNotificationManager);
       void Init();
       int OnServiceData(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context);
       void OnTimeout();
@@ -80,8 +84,13 @@ namespace Pinetime {
     private:
       Pinetime::System::SystemTask& systemTask;
       Pinetime::Controllers::Ble& bleController;
+      Pinetime::Controllers::Settings& settingsController;
+      Pinetime::Controllers::NotificationManager& controllerNotificationManager;
       DfuImage dfuImage;
       NotificationManager notificationManager;
+
+      static constexpr const char* denyAlert = "InfiniTime\0Firmware update attempted, but disabled.";
+      static constexpr const uint8_t denyAlertLength = 52;
 
       static constexpr uint16_t dfuServiceId {0x1530};
       static constexpr uint16_t packetCharacteristicId {0x1532};
