@@ -17,6 +17,7 @@
 #include "components/ble/FSService.h"
 #include "components/ble/HeartRateService.h"
 #include "components/ble/ImmediateAlertService.h"
+#include "components/ble/ImmediateAlertClient.h"
 #include "components/ble/MusicService.h"
 #include "components/ble/NavigationService.h"
 #include "components/ble/ServiceDiscovery.h"
@@ -71,8 +72,8 @@ namespace Pinetime {
         return weatherService;
       };
 
-      Pinetime::Controllers::ImmediateAlertService& immediateAlertService() {
-          return iaService;
+      Pinetime::Controllers::ImmediateAlertClient& immediateAlertClient() {
+        return iaClient;
       }
 
       uint16_t connHandle();
@@ -106,7 +107,8 @@ namespace Pinetime {
       SimpleWeatherService weatherService;
       NavigationService navService;
       BatteryInformationService batteryInformationService;
-      ImmediateAlertService iaService;
+      ImmediateAlertService immediateAlertService;
+      ImmediateAlertClient iaClient;
       HeartRateService heartRateService;
       MotionService motionService;
       FSService fsService;

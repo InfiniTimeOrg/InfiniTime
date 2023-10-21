@@ -13,9 +13,8 @@ namespace {
   }
 }
 
-FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertService& immediateAlertService)
-  : immediateAlertService {immediateAlertService} {
-  last_level = Pinetime::Controllers::ImmediateAlertService::Levels::NoAlert;
+FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateAlertClient) : immediateAlertClient {immediateAlertClient} {
+  last_level = Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert;
 
   container = lv_cont_create(lv_scr_act(), nullptr);
 
@@ -55,7 +54,7 @@ FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertService& immediate
   lv_obj_align(bt_high, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   label_high = lv_label_create(bt_high, nullptr);
   lv_label_set_text_static(label_high, "High");
-  lv_obj_set_style_local_bg_color(bt_high, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED );
+  lv_obj_set_style_local_bg_color(bt_high, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
 
   UpdateImmediateAlerts();
 }
@@ -67,11 +66,11 @@ FindMyPhone::~FindMyPhone() {
 void FindMyPhone::OnImmediateAlertEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     if (obj == bt_none) {
-      last_level = Pinetime::Controllers::ImmediateAlertService::Levels::NoAlert;
+      last_level = Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert;
     } else if (obj == bt_mild) {
-      last_level = Pinetime::Controllers::ImmediateAlertService::Levels::MildAlert;
+      last_level = Pinetime::Controllers::ImmediateAlertClient::Levels::MildAlert;
     } else if (obj == bt_high) {
-      last_level = Pinetime::Controllers::ImmediateAlertService::Levels::HighAlert;
+      last_level = Pinetime::Controllers::ImmediateAlertClient::Levels::HighAlert;
     }
     UpdateImmediateAlerts();
   }
@@ -79,17 +78,17 @@ void FindMyPhone::OnImmediateAlertEvent(lv_obj_t* obj, lv_event_t event) {
 
 void FindMyPhone::UpdateImmediateAlerts() {
   switch (last_level) {
-    case Pinetime::Controllers::ImmediateAlertService::Levels::NoAlert:
+    case Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert:
       lv_obj_set_style_local_text_color(label_title, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
       break;
-    case Pinetime::Controllers::ImmediateAlertService::Levels::MildAlert:
+    case Pinetime::Controllers::ImmediateAlertClient::Levels::MildAlert:
       lv_obj_set_style_local_text_color(label_title, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
       break;
-    case Pinetime::Controllers::ImmediateAlertService::Levels::HighAlert:
+    case Pinetime::Controllers::ImmediateAlertClient::Levels::HighAlert:
       lv_obj_set_style_local_text_color(label_title, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
       break;
   }
-  immediateAlertService.sendImmediateAlert(last_level);
+  immediateAlertClient.sendImmediateAlert(last_level);
 
 }
 

@@ -21,8 +21,6 @@ namespace Pinetime {
       void Init();
       int OnAlertLevelChanged(uint16_t attributeHandle, ble_gatt_access_ctxt* context);
 
-      void sendImmediateAlert(Levels level);
-
     private:
       Pinetime::System::SystemTask& systemTask;
       NotificationManager& notificationManager;
