@@ -5,7 +5,7 @@
 #include "displayapp/screens/Screen.h"
 #include "Symbols.h"
 #include "systemtask/SystemTask.h"
-#include "components/ble/ImmediateAlertService.h"
+#include "components/ble/ImmediateAlertClient.h"
 
 #include <lvgl/src/lv_core/lv_style.h>
 #include <lvgl/src/lv_core/lv_obj.h>
@@ -13,7 +13,7 @@
 namespace Pinetime {
 
   namespace Controllers {
-    class ImmediateAlertService;
+    class ImmediateAlertClient;
   }
 
   namespace Applications {
@@ -21,13 +21,13 @@ namespace Pinetime {
 
       class FindMyPhone : public Screen {
       public:
-        FindMyPhone(Pinetime::Controllers::ImmediateAlertService& immediateAlertService);
+        explicit FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateAlertClient);
         ~FindMyPhone() override;
 
         void OnImmediateAlertEvent(lv_obj_t* obj, lv_event_t event);
 
       private:
-        Pinetime::Controllers::ImmediateAlertService& immediateAlertService;
+        Pinetime::Controllers::ImmediateAlertClient& immediateAlertClient;
 
         void UpdateImmediateAlerts();
 
@@ -41,14 +41,14 @@ namespace Pinetime {
         lv_obj_t* label_mild;
 
 
-        Pinetime::Controllers::ImmediateAlertService::Levels last_level;
+        Pinetime::Controllers::ImmediateAlertClient::Levels last_level;
       };
     }
 
     template <>
     struct AppTraits<Apps::FindMyPhone> {
       static constexpr Apps app = Apps::FindMyPhone;
-      static constexpr const char* icon = Screens::Symbols::magnifyingGlass ;
+      static constexpr const char* icon = Screens::Symbols::magnifyingGlass;
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::FindMyPhone(controllers.systemTask->nimble().immediateAlertClient());
