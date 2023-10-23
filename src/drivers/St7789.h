@@ -55,6 +55,7 @@ namespace Pinetime {
       void DisplayOn();
       void DisplayOff();
       void PowerControl();
+      void GateControl();
 
       void SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
       void SetVdv();
@@ -84,6 +85,7 @@ namespace Pinetime {
         Command2Enable = 0xdf,
         PowerControl1 = 0xd0,
         PowerControl2 = 0xe8,
+        GateControl = 0xb7,
       };
       void WriteData(uint8_t data);
       void WriteData(const uint8_t* data, size_t size);
