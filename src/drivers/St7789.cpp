@@ -28,6 +28,7 @@ void St7789::Init() {
   NormalModeOn();
   SetVdv();
   PowerControl();
+  GateControl();
   DisplayOn();
 }
 
@@ -188,6 +189,12 @@ void St7789::PowerControl() {
   WriteCommand(static_cast<uint8_t>(Commands::PowerControl2));
   // Lowest possible boost circuit clocks
   WriteData(0xb3);
+}
+
+void St7789::GateControl() {
+  WriteCommand(static_cast<uint8_t>(Commands::GateControl));
+  // Lowest possible VGL/VGH
+  WriteData(0x00);
 }
 
 void St7789::SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
