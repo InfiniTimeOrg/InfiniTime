@@ -27,6 +27,7 @@ namespace Pinetime {
         Controllers::BrightnessController& brightnessController;
 
         Controllers::BrightnessController::Levels brightnessLevel = Controllers::BrightnessController::Levels::High;
+        Controllers::BrightnessController::Levels previousBrightnessLevel;
 
         lv_obj_t* flashLight;
         lv_obj_t* backgroundAction;
