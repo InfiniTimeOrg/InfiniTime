@@ -69,7 +69,7 @@ def main():
         extension = 'c' if font['format'] != 'bin' else 'bin'
         font.pop('target_path')
         line = gen_lvconv_line(args.lv_font_conv, f'{name}.{extension}', **font)
-        print('"' + '", "'.join(line) + '"')
+        print('generate-fonts.py: "' + '", "'.join(line) + '"')
         subprocess.check_call(line)
         if patches:
             for patch in patches:
