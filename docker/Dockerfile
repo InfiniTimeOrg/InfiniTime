@@ -11,6 +11,7 @@ RUN apt-get update -qq \
       make \
       python3 \
       python3-pip \
+      python3-pil \
       python-is-python3 \
       tar \
       unzip \
@@ -38,10 +39,6 @@ RUN pip3 install adafruit-nrfutil
 RUN pip3 install -Iv cryptography==3.3
 RUN pip3 install cbor
 RUN npm i lv_font_conv@1.5.2 -g
-
-RUN npm i ts-node@10.9.1 -g
-RUN npm i @swc/core -g
-RUN npm i lv_img_conv@0.3.0 -g
 
 # build.sh knows how to compile
 COPY build.sh /opt/

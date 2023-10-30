@@ -11,6 +11,16 @@ Based on Ubuntu 22.04 with the following build dependencies:
 - adafruit-nrfutil
 - lv_font_conv
 
+## Clone the repository
+
+Before building, local repository must be fully initialized.
+
+```
+git clone https://github.com/InfiniTimeOrg/InfiniTime.git
+cd InfiniTime
+git submodule update --init
+```
+
 ## Run a container to build the project
 
 The `infinitime-build` image contains all the dependencies you need.

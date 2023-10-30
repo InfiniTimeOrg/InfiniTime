@@ -31,6 +31,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: Install resource build dependencies
+        run:  |
+          apt-get update
+          apt-get -y install --no-install-recommends python3-pil
       - name: Build
         shell: bash
         run: /opt/build.sh all
@@ -61,10 +65,10 @@ jobs:
   build-simulator:
     runs-on: ubuntu-22.04
     steps:
-    - name: Install SDL2 development package
+    - name: Install SDL2 and libpng development package
       run:  |
         sudo apt-get update
-        sudo apt-get -y install libsdl2-dev
+        sudo apt-get -y install libsdl2-dev libpng-dev
 
     - name: Install Ninja
       run:  |
@@ -82,7 +86,7 @@ jobs:
     - name: Get InfiniSim repo
       run:  |
         git clone https://github.com/InfiniTimeOrg/InfiniSim.git --depth 1 --branch main
-        git -C InfiniSim submodule update --init lv_drivers libpng
+        git -C InfiniSim submodule update --init lv_drivers
 
     - name: CMake
       # disable BUILD_RESOURCES as this is already done when building the firmware

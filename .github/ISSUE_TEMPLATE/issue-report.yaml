@@ -6,7 +6,7 @@ body:
     label: Verification
     description: Before submitting an issue, check if similar issues already exist and use those issues to provide your feedback instead.
     options:
-      - label: I searched for similar issues and found none was relevant.
+      - label: I searched for similar issues (including closed issues) and found none was relevant.
         required: true
 - type: textarea
   attributes:
