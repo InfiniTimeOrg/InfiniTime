@@ -32,7 +32,7 @@ namespace Pinetime {
                                Controllers::NotificationManager& notificationManager,
                                Controllers::Settings& settingsController,
                                Controllers::MotionController& motionController,
-                               Controllers::WeatherService& weather);
+                               Controllers::WeatherService& weatherService);
         ~WatchFacePineTimeStyle() override;
 
         bool OnTouchEvent(TouchEvents event) override;
@@ -61,8 +61,6 @@ namespace Pinetime {
         Utility::DirtyValue<uint32_t> stepCount {};
         Utility::DirtyValue<bool> notificationState {};
         Utility::DirtyValue<int16_t> nowTemp {};
-        int16_t clouds = 0;
-        int16_t precip = 0;
 
         static Pinetime::Controllers::Settings::Colors GetNext(Controllers::Settings::Colors color);
         static Pinetime::Controllers::Settings::Colors GetPrevious(Controllers::Settings::Colors color);

@@ -357,6 +357,34 @@ namespace Pinetime {
             }
             break;
           }
+          case WeatherData::eventtype::Condition: {
+            std::unique_ptr<WeatherData::Condition> condition = std::make_unique<WeatherData::Condition>();
+            condition->timestamp = tmpTimestamp;
+            condition->eventType = static_cast<WeatherData::eventtype>(tmpEventType);
+            condition->expires = tmpExpires;
+
+            int64_t tmpType = 0;
+            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Type", &tmpType);
+            if (tmpType < 0 || tmpType >= static_cast<int64_t>(WeatherData::conditiontype::Length)) {
+              CleanUpQcbor(&decodeContext);
+              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+            }
+            condition->type = static_cast<WeatherData::conditiontype>(tmpType);
+
+            int64_t tmpCode = 0;
+            QCBORDecode_GetInt64InMapSZ(&decodeContext, "Code", &tmpCode);
+            if (tmpCode < 0 || tmpCode >= 65535) {
+              CleanUpQcbor(&decodeContext);
+              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+            }
+            condition->code = static_cast<uint16_t>(tmpCode);
+
+            if (!AddEventToTimeline(std::move(condition))) {
+              CleanUpQcbor(&decodeContext);
+              return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
+            }
+            break;
+          }
           default: {
             CleanUpQcbor(&decodeContext);
             return BLE_ATT_ERR_INVALID_ATTR_VALUE_LEN;
@@ -507,6 +535,30 @@ namespace Pinetime {
       }
 
       return reinterpret_cast<std::unique_ptr<WeatherData::AirQuality>&>(*this->nullHeader);
+    }
+
+    std::unique_ptr<WeatherData::Special>& WeatherService::GetCurrentSpecial() {
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      for (auto&& header : this->timeline) {
+        if (header->eventType == WeatherData::eventtype::Special && currentTimestamp >= header->timestamp &&
+            IsEventStillValid(header, currentTimestamp)) {
+          return reinterpret_cast<std::unique_ptr<WeatherData::Special>&>(header);
+        }
+      }
+
+      return reinterpret_cast<std::unique_ptr<WeatherData::Special>&>(*this->nullHeader);
+    }
+
+    std::unique_ptr<WeatherData::Condition>& WeatherService::GetCurrentCondition() {
+      uint64_t currentTimestamp = GetCurrentUnixTimestamp();
+      for (auto&& header : this->timeline) {
+        if (header->eventType == WeatherData::eventtype::Condition && currentTimestamp >= header->timestamp &&
+            IsEventStillValid(header, currentTimestamp)) {
+          return reinterpret_cast<std::unique_ptr<WeatherData::Condition>&>(header);
+        }
+      }
+
+      return reinterpret_cast<std::unique_ptr<WeatherData::Condition>&>(*this->nullHeader);
     }
 
     size_t WeatherService::GetTimelineLength() const {

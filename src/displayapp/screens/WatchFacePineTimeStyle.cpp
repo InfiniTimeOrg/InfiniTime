@@ -30,10 +30,10 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
+#include "components/ble/weather/WeatherService.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
-#include "components/ble/weather/WeatherService.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -537,24 +537,39 @@ void WatchFacePineTimeStyle::Refresh() {
     }
   }
 
-  if (weatherService.GetCurrentTemperature()->timestamp != 0 && weatherService.GetCurrentClouds()->timestamp != 0 &&
-      weatherService.GetCurrentPrecipitation()->timestamp != 0) {
+  if (weatherService.GetCurrentTemperature()->timestamp != 0 && weatherService.GetCurrentCondition()->timestamp != 0) {
     nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100);
-    clouds = (weatherService.GetCurrentClouds()->amount);
-    precip = (weatherService.GetCurrentPrecipitation()->amount);
     if (nowTemp.IsUpdated()) {
       lv_label_set_text_fmt(temperature, "%d°", nowTemp.Get());
-      if ((clouds <= 30) && (precip == 0)) {
-        lv_label_set_text(weatherIcon, Symbols::sun);
-      } else if ((clouds >= 70) && (clouds <= 90) && (precip == 1)) {
-        lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
-      } else if ((clouds > 90) && (precip == 0)) {
-        lv_label_set_text(weatherIcon, Symbols::cloud);
-      } else if ((clouds > 70) && (precip >= 2)) {
-        lv_label_set_text(weatherIcon, Symbols::cloudShowersHeavy);
-      } else {
-        lv_label_set_text(weatherIcon, Symbols::cloudSun);
-      };
+      switch (weatherService.GetCurrentCondition()->type) {
+        case Controllers::WeatherData::conditiontype::ClearSky:
+          lv_label_set_text(weatherIcon, Symbols::sun);
+          break;
+        case Controllers::WeatherData::conditiontype::FewClouds:
+        case Controllers::WeatherData::conditiontype::ScatteredClouds:
+          lv_label_set_text(weatherIcon, Symbols::cloudSun);
+          break;
+        case Controllers::WeatherData::conditiontype::BrokenClouds:
+          lv_label_set_text(weatherIcon, Symbols::cloud);
+          break;
+        case Controllers::WeatherData::conditiontype::ShowerRain:
+          lv_label_set_text(weatherIcon, Symbols::cloudShowersHeavy);
+          break;
+        case Controllers::WeatherData::conditiontype::Rain:
+          lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
+          break;
+        case Controllers::WeatherData::conditiontype::Thunderstorm:
+          lv_label_set_text(weatherIcon, Symbols::bolt);
+          break;
+        case Controllers::WeatherData::conditiontype::Snow:
+          lv_label_set_text(weatherIcon, Symbols::snowflake);
+          break;
+        case Controllers::WeatherData::conditiontype::Mist:
+          lv_label_set_text(weatherIcon, Symbols::smog);
+          break;
+        default:
+          break;
+      }
       lv_obj_realign(temperature);
       lv_obj_realign(weatherIcon);
     }

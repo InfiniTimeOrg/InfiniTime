@@ -34,6 +34,9 @@ Weather::Weather(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers:
                 return CreateScreenTemperature();
               },
               [this]() -> std::unique_ptr<Screen> {
+                return CreateScreenCondition();
+              },
+              [this]() -> std::unique_ptr<Screen> {
                 return CreateScreenAir();
               },
               [this]() -> std::unique_ptr<Screen> {
@@ -60,7 +63,7 @@ void Weather::Refresh() {
 
 bool Weather::OnButtonPushed() {
   running = false;
-  return true;
+  return false;
 }
 
 bool Weather::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
@@ -92,6 +95,40 @@ std::unique_ptr<Screen> Weather::CreateScreenTemperature() {
                           "%lu\n",
                           current->temperature / 100,
                           current->dewPoint,
+                          current->timestamp,
+                          current->expires);
+  }
+  lv_label_set_align(label, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  return std::unique_ptr<Screen>(new Screens::Label(0, 5, label));
+}
+
+std::unique_ptr<Screen> Weather::CreateScreenCondition() {
+  lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_recolor(label, true);
+  std::unique_ptr<Controllers::WeatherData::Condition>& current = weatherService.GetCurrentCondition();
+  if (current->timestamp == 0) {
+    // Do not use the data, it's invalid
+    lv_label_set_text_fmt(label,
+                          "#FFFF00 Condition#\n\n"
+                          "#444444 %d# \n\n"
+                          "#444444 %d# \n\n"
+                          "%d\n"
+                          "%d\n",
+                          0,
+                          0,
+                          0,
+                          0,
+                          0);
+  } else {
+    lv_label_set_text_fmt(label,
+                          "#FFFF00 Condition#\n\n"
+                          "#444444 %d# \n\n"
+                          "#444444 %d# \n\n"
+                          "%llu\n"
+                          "%lu\n",
+                          current->type,
+                          current->code,
                           current->timestamp,
                           current->expires);
   }

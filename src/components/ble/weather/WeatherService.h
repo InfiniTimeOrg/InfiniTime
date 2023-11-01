@@ -58,6 +58,8 @@ namespace Pinetime {
       std::unique_ptr<WeatherData::Humidity>& GetCurrentHumidity();
       std::unique_ptr<WeatherData::Pressure>& GetCurrentPressure();
       std::unique_ptr<WeatherData::AirQuality>& GetCurrentQuality();
+      std::unique_ptr<WeatherData::Special>& GetCurrentSpecial();
+      std::unique_ptr<WeatherData::Condition>& GetCurrentCondition();
 
       /**
        * Searches for the current day's maximum temperature

@@ -127,6 +127,24 @@ namespace Pinetime {
       };
 
       /**
+       * List of weather condition codes used to determine display
+       * (range of thunderstorm, drizzle, rain, snow, clouds, atmosphere including extreme conditions like tornado, hurricane etc.)
+       * https://openweathermap.org/weather-conditions
+       */
+      enum class conditiontype {
+        ClearSky = 0,
+        FewClouds = 1,
+        ScatteredClouds = 2,
+        BrokenClouds = 3,
+        ShowerRain = 4,
+        Rain = 5,
+        Thunderstorm = 6,
+        Snow = 7,
+        Mist = 8,
+        Length
+      };
+
+      /**
        * These are used for weather timeline manipulation
        * that isn't just adding to the stack of weather events
        */
@@ -165,6 +183,8 @@ namespace Pinetime {
         Clouds = 8,
         /** @see humidity */
         Humidity = 9,
+        /** @see condition */
+        Condition = 10,
         Length
       };
 
@@ -324,6 +344,20 @@ namespace Pinetime {
       public:
         /** Special event's type */
         specialtype type;
+      };
+
+      /** How weather condition is stored */
+      class Condition : public TimelineHeader {
+      public:
+        /**
+         * Type of condition
+         */
+        conditiontype type;
+
+        /**
+         * Condition code
+         */
+        uint16_t code;
       };
 
       /**
