@@ -59,10 +59,12 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
     template <>
     struct AppTraits<Apps::StopWatch> {
       static constexpr Apps app = Apps::StopWatch;
       static constexpr const char* icon = Screens::Symbols::stopWatch;
+
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::StopWatch(*controllers.systemTask);
       };

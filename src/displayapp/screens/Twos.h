@@ -36,11 +36,15 @@ namespace Pinetime {
         bool placeNewTile();
       };
     }
-    template<>
+
+    template <>
     struct AppTraits<Apps::Twos> {
       static constexpr Apps app = Apps::Twos;
       static constexpr const char* icon = "2";
-      static Screens::Screen *Create(AppControllers& /*controllers*/) { return new Screens::Twos(); };
+
+      static Screens::Screen* Create(AppControllers& /*controllers*/) {
+        return new Screens::Twos();
+      };
     };
   }
 }

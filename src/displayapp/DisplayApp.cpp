@@ -98,11 +98,24 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     filesystem {filesystem},
     lvgl {lcd, filesystem},
     timer(this, TimerCallback),
-    controllers{
-      batteryController, bleController, dateTimeController, notificationManager, heartRateController,
-      settingsController, motorController, motionController, alarmController, brightnessController,
-      nullptr, filesystem, timer, nullptr, this, lvgl, nullptr, nullptr}
-  {
+    controllers {batteryController,
+                 bleController,
+                 dateTimeController,
+                 notificationManager,
+                 heartRateController,
+                 settingsController,
+                 motorController,
+                 motionController,
+                 alarmController,
+                 brightnessController,
+                 nullptr,
+                 filesystem,
+                 timer,
+                 nullptr,
+                 this,
+                 lvgl,
+                 nullptr,
+                 nullptr} {
 }
 
 void DisplayApp::Start(System::BootErrors error) {
@@ -421,8 +434,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                  dateTimeController,
                                                                  filesystem,
                                                                  std::move(apps));
-    }
-    break;
+    } break;
     case Apps::Clock:
       currentScreen = std::make_unique<Screens::Clock>(dateTimeController,
                                                        batteryController,

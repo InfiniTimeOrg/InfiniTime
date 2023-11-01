@@ -38,10 +38,12 @@ namespace Pinetime {
         uint8_t color = 2;
       };
     }
+
     template <>
     struct AppTraits<Apps::Paint> {
       static constexpr Apps app = Apps::Paint;
       static constexpr const char* icon = Screens::Symbols::paintbrush;
+
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::InfiniPaint(controllers.lvgl, controllers.motorController);
       };

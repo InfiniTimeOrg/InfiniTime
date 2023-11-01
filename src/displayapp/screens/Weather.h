@@ -44,10 +44,12 @@ namespace Pinetime {
         std::unique_ptr<Screen> CreateScreenHumidity();
       };
     }
+
     template <>
     struct AppTraits<Apps::Weather> {
       static constexpr Apps app = Apps::Weather;
       static constexpr const char* icon = Screens::Symbols::sun;
+
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Weather(controllers.displayApp, *controllers.weatherController);
       };

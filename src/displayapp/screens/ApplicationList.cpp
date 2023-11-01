@@ -2,7 +2,7 @@
 #include "displayapp/screens/Tile.h"
 #include <lvgl/lvgl.h>
 #include <functional>
-#include  <algorithm>
+#include <algorithm>
 #include "components/settings/Settings.h"
 
 using namespace Pinetime::Applications::Screens;
@@ -29,8 +29,8 @@ ApplicationList::ApplicationList(DisplayApp* app,
     batteryController {batteryController},
     bleController {bleController},
     dateTimeController {dateTimeController},
-    filesystem{filesystem},
-    apps{std::move(apps)},
+    filesystem {filesystem},
+    apps {std::move(apps)},
     screens {app, settingsController.GetAppMenu(), CreateScreenList(), Screens::ScreenListModes::UpDown} {
 }
 
@@ -45,8 +45,8 @@ bool ApplicationList::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 std::unique_ptr<Screen> ApplicationList::CreateScreen(unsigned int screenNum) const {
   std::array<Tile::Applications, appsPerScreen> pageApps;
 
-  for(int i = 0; i < appsPerScreen; i++) {
-    if(i+(screenNum * appsPerScreen) >= apps.size()) {
+  for (int i = 0; i < appsPerScreen; i++) {
+    if (i + (screenNum * appsPerScreen) >= apps.size()) {
       pageApps[i] = {"", Pinetime::Applications::Apps::None, false};
     } else {
       pageApps[i] = apps[i + (screenNum * appsPerScreen)];

@@ -141,7 +141,7 @@ void Gfx::SetBackgroundColor(uint16_t color) {
 bool Gfx::GetNextBuffer(uint8_t** data, size_t& size) {
   if (!state.busy)
     return false;
-  state.remainingIterations = state.remainingIterations-1;
+  state.remainingIterations = state.remainingIterations - 1;
   if (state.remainingIterations == 0) {
     state.busy = false;
     NotifyEndOfTransfer(state.taskToNotify);

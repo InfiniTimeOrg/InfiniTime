@@ -48,10 +48,12 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
     template <>
     struct AppTraits<Apps::Paddle> {
       static constexpr Apps app = Apps::Paddle;
       static constexpr const char* icon = Screens::Symbols::paddle;
+
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Paddle(controllers.lvgl);
       };

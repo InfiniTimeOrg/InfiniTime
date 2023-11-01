@@ -10,7 +10,7 @@
 #include "components/timer/Timer.h"
 #include "Symbols.h"
 
-namespace Pinetime::Applications{
+namespace Pinetime::Applications {
   namespace Screens {
     class Timer : public Screen {
     public:
@@ -46,10 +46,13 @@ namespace Pinetime::Applications{
     };
   }
 
-  template<>
+  template <>
   struct AppTraits<Apps::Timer> {
     static constexpr Apps app = Apps::Timer;
     static constexpr const char* icon = Screens::Symbols::hourGlass;
-    static Screens::Screen *Create(AppControllers& controllers) { return new Screens::Timer(controllers.timer); };
+
+    static Screens::Screen* Create(AppControllers& controllers) {
+      return new Screens::Timer(controllers.timer);
+    };
   };
 }

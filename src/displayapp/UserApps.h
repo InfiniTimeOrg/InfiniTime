@@ -26,7 +26,7 @@ namespace Pinetime {
       return {AppTraits<t>::app, AppTraits<t>::icon, &AppTraits<t>::Create};
     }
 
-    template <template<Apps...> typename T, Apps ...ts>
+    template <template <Apps...> typename T, Apps... ts>
     consteval std::array<AppDescription, sizeof...(ts)> CreateAppDescriptions(T<ts...>) {
       return {CreateAppDescription<ts>()...};
     }
