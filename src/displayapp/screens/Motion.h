@@ -32,10 +32,12 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
     template <>
     struct AppTraits<Apps::Motion> {
       static constexpr Apps app = Apps::Motion;
       static constexpr const char* icon = "M";
+
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Motion(controllers.motionController);
       };

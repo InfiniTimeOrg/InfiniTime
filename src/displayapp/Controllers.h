@@ -1,11 +1,14 @@
 #pragma once
+
 namespace Pinetime {
   namespace Applications {
     class DisplayApp;
   }
+
   namespace Components {
     class LittleVgl;
   }
+
   namespace Controllers {
     class Battery;
     class Ble;
@@ -23,9 +26,11 @@ namespace Pinetime {
     class MusicService;
     class NavigationService;
   }
+
   namespace System {
     class SystemTask;
   }
+
   namespace Applications {
     struct AppControllers {
       const Pinetime::Controllers::Battery& batteryController;

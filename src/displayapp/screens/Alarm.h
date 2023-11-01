@@ -65,14 +65,18 @@ namespace Pinetime {
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
       };
     }
-    template<>
+
+    template <>
     struct AppTraits<Apps::Alarm> {
       static constexpr Apps app = Apps::Alarm;
       static constexpr const char* icon = Screens::Symbols::clock;
-      static Screens::Screen *Create(AppControllers& controllers) { return new Screens::Alarm(controllers.alarmController,
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Alarm(controllers.alarmController,
                                   controllers.settingsController.GetClockType(),
                                   *controllers.systemTask,
-                                  controllers.motorController); };
+                                  controllers.motorController);
+      };
     };
   }
 }

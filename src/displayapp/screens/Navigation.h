@@ -58,10 +58,12 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
     template <>
     struct AppTraits<Apps::Navigation> {
       static constexpr Apps app = Apps::Navigation;
       static constexpr const char* icon = Screens::Symbols::map;
+
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Navigation(*controllers.navigationService);
       };

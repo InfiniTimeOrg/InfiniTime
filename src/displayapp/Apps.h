@@ -40,10 +40,11 @@ namespace Pinetime {
       Error,
       Weather
     };
+
     template <Apps>
     struct AppTraits {};
 
-    template<Apps ...As>
+    template <Apps... As>
     struct TypeList {
       static constexpr size_t Count = sizeof...(As);
     };
