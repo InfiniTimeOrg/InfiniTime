@@ -7,8 +7,9 @@ namespace Pinetime {
       Analog = 1,
       PineTimeStyle = 2,
       Terminal = 3,
-      Infineat = 4,
-      CasioStyleG7710 = 5,
+      SlowTime = 4,
+      Infineat = 5,
+      CasioStyleG7710 = 6,
     };
   }
 }
