@@ -401,6 +401,8 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
   currentScreen.reset(nullptr);
   SetFullRefresh(direction);
 
+  brightnessController.Set(settingsController.GetBrightness());
+
   switch (app) {
     case Apps::Launcher:
       currentScreen =
