@@ -206,8 +206,7 @@ Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navServi
   lv_label_set_long_mode(txtNarrative, LV_LABEL_LONG_DOT);
   lv_obj_set_width(txtNarrative, LV_HOR_RES);
   lv_obj_set_height(txtNarrative, 80);
-  //lv_label_set_text_static(txtNarrative, "Navigation");
-  lv_label_set_text(txtNarrative, "Navigation blah blah very long text really long road name etc etc etc");
+  lv_label_set_text_static(txtNarrative, "Navigation");
   lv_label_set_align(txtNarrative, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(txtNarrative, nullptr, LV_ALIGN_CENTER, 0, 30);
 
@@ -216,8 +215,7 @@ Navigation::Navigation(Pinetime::Controllers::NavigationService& nav) : navServi
   lv_obj_set_style_local_text_color(txtManDist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
   lv_obj_set_style_local_text_font(txtManDist, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
   lv_obj_set_width(txtManDist, LV_HOR_RES);
-  //lv_label_set_text_static(txtManDist, "--M");
-  lv_label_set_text_static(txtManDist, "123m");
+  lv_label_set_text_static(txtManDist, "--M");
   lv_label_set_align(txtManDist, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(txtManDist, nullptr, LV_ALIGN_CENTER, 0, 90);
 
