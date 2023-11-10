@@ -3,6 +3,7 @@
 #include <lvgl/lvgl.h>
 #include <cstdint>
 #include "displayapp/screens/Screen.h"
+#include "components/motor/MotorController.h"
 
 namespace Pinetime {
   namespace Components {
@@ -14,7 +15,8 @@ namespace Pinetime {
 
       class Paddle : public Screen {
       public:
-        Paddle(Pinetime::Components::LittleVgl& lvgl);
+        Paddle(Pinetime::Components::LittleVgl& lvgl, 
+               Controllers::MotorController& motor);
         ~Paddle() override;
 
         void Refresh() override;
@@ -24,6 +26,7 @@ namespace Pinetime {
 
       private:
         Pinetime::Components::LittleVgl& lvgl;
+        Controllers::MotorController& motor;
 
         const uint8_t ballSize = 16;
 
