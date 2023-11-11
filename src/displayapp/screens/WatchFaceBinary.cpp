@@ -11,32 +11,15 @@
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
 
-
-#define LV_COLOR_MATRIX_GREEN LV_COLOR_MAKE(0x00, 0xC0, 0x16)
-#define BINARY_ON_COLOR LV_COLOR_RED
-#define BINARY_OFF_COLOR LV_COLOR_GRAY
-
-const uint8_t pointSize = 32;
-const uint8_t widthSpacer = 8;
-const uint8_t offsetX = ( LV_HOR_RES - ( ( pointSize * 6 ) + 2 * widthSpacer ) ) / 5;
-const uint8_t offsetY = pointSize * 1.25;
-const int16_t hourY = 32;
-const int16_t minuteY = hourY + offsetY;
-const int16_t secondY = minuteY + offsetY;
-const uint8_t tflHeight = (pointSize - 3) / 2;
-const uint8_t tflOffsetX = 4;
-const int8_t tflOffsetY = -4; 
-bool is12HourModeSet;
-
 using namespace Pinetime::Applications::Screens;
 
 WatchFaceBinary::WatchFaceBinary(Controllers::DateTime& dateTimeController,
-                                   const Controllers::Battery& batteryController,
-                                   const Controllers::Ble& bleController,
-                                   Controllers::NotificationManager& notificationManager,
-                                   Controllers::Settings& settingsController,
-                                   Controllers::HeartRateController& heartRateController,
-                                   Controllers::MotionController& motionController)
+                                 const Controllers::Battery& batteryController,
+                                 const Controllers::Ble& bleController,
+                                 Controllers::NotificationManager& notificationManager,
+                                 Controllers::Settings& settingsController,
+                                 Controllers::HeartRateController& heartRateController,
+                                 Controllers::MotionController& motionController)
   : currentDateTime {{}},
     dateTimeController {dateTimeController},
     notificationManager {notificationManager},
@@ -52,9 +35,79 @@ WatchFaceBinary::WatchFaceBinary(Controllers::DateTime& dateTimeController,
   lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(false));
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
-  label_date = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
-  lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  lableDate = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(lableDate, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
+  lv_obj_set_style_local_text_color(lableDate, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+
+  constexpr lv_coord_t pointSize = 32;
+  constexpr lv_coord_t widthSpacer = 8;
+  auto offsetX = (lv_coord_t) ((LV_HOR_RES - ((pointSize * 6) + 2 * widthSpacer)) / 5);
+
+#if BINARY_SECONDS_ENABLED
+  constexpr lv_coord_t hourY = 32;
+  constexpr lv_coord_t offsetY = pointSize * 1.25;
+#else
+  constexpr lv_coord_t hourY = 48;
+  constexpr lv_coord_t offsetY = pointSize * 1.5;
+#endif
+
+  constexpr lv_coord_t minuteY = hourY + offsetY;
+
+#if BINARY_SECONDS_ENABLED
+  constexpr lv_coord_t secondY = minuteY + offsetY;
+#endif
+
+  constexpr lv_coord_t tflOffsetX = 4;
+  constexpr lv_coord_t tflHeight = (pointSize - tflOffsetX) / 2;
+  constexpr lv_coord_t tflOffsetY = -4;
+
+  auto labelAMpmX = (lv_coord_t) (widthSpacer + tflOffsetX + (pointSize + offsetX) * 5);
+  constexpr lv_coord_t labelAMy = hourY + tflOffsetY;
+
+  for (uint8_t i = 0; i < 6; i++) {
+    // Hours
+    if (5 > i) {
+      hourPoints[i] = lv_obj_create(lv_scr_act(), nullptr);
+
+      lv_obj_set_style_local_bg_color(hourPoints[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
+      lv_obj_set_style_local_radius(hourPoints[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+      lv_obj_set_size(hourPoints[i], pointSize, pointSize);
+      lv_obj_set_pos(hourPoints[i], (lv_coord_t) (widthSpacer + (pointSize + offsetX) * i), hourY);
+    }
+    // Minutes
+    minutePoints[i] = lv_obj_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_bg_color(minutePoints[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
+    lv_obj_set_style_local_radius(minutePoints[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+    lv_obj_set_size(minutePoints[i], pointSize, pointSize);
+    lv_obj_set_pos(minutePoints[i], (lv_coord_t) (widthSpacer + (pointSize + offsetX) * i), minuteY);
+
+// Seconds
+#if BINARY_SECONDS_ENABLED
+    secondPoints[i] = lv_obj_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_bg_color(secondPoints[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
+    lv_obj_set_style_local_radius(secondPoints[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
+    lv_obj_set_size(secondPoints[i], pointSize, pointSize);
+    lv_obj_set_pos(secondPoints[i], (lv_coord_t) (widthSpacer + (pointSize + offsetX) * i), secondY);
+#endif
+  }
+
+  labelAM = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(labelAM, "AM");
+  lv_obj_set_pos(labelAM, labelAMpmX, labelAMy);
+  lv_obj_set_style_local_text_color(labelAM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
+  lv_obj_set_size(labelAM, pointSize, tflHeight);
+
+  labelPM = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(labelPM, "PM");
+  lv_obj_set_pos(labelPM, labelAMpmX, labelAMy + tflHeight + 1);
+  lv_obj_set_style_local_text_color(labelPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
+  lv_obj_set_size(labelPM, pointSize, tflHeight);
+
+  lastClockType = settingsController.GetClockType();
+  is12HourModeSet = (settingsController.GetClockType() == Controllers::Settings::ClockType::H12);
+  lv_obj_set_hidden(hourPoints[4], is12HourModeSet);
+  lv_obj_set_hidden(labelAM, !is12HourModeSet);
+  lv_obj_set_hidden(labelPM, !is12HourModeSet);
 
   heartbeatIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(heartbeatIcon, Symbols::heartBeat);
@@ -66,48 +119,15 @@ WatchFaceBinary::WatchFaceBinary(Controllers::DateTime& dateTimeController,
   lv_label_set_text_static(heartbeatValue, "");
   lv_obj_align(heartbeatValue, heartbeatIcon, LV_ALIGN_OUT_RIGHT_MID, 5, 0);
 
-  for ( uint8_t i = 0; i < 6; i++ )
-  {
-    // Hours
-    if ( 5 > i )
-    {
-      hour_points[i] = lv_obj_create(lv_scr_act(), nullptr);
+  stepValue = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
+  lv_label_set_text_static(stepValue, "0");
+  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
 
-      lv_obj_set_style_local_bg_color(hour_points[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
-      lv_obj_set_style_local_radius(hour_points[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-      lv_obj_set_size(hour_points[i], pointSize, pointSize);
-      lv_obj_set_pos(hour_points[i], widthSpacer + (pointSize + offsetX) * i, hourY);
-    }
-    // Minutes
-    minute_points[i] = lv_obj_create(lv_scr_act(), nullptr);
-    lv_obj_set_style_local_bg_color(minute_points[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
-    lv_obj_set_style_local_radius(minute_points[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-    lv_obj_set_size(minute_points[i], pointSize, pointSize);
-    lv_obj_set_pos(minute_points[i], widthSpacer + (pointSize + offsetX) * i, minuteY);
-    // Seconds
-    second_points[i] = lv_obj_create(lv_scr_act(), nullptr);
-    lv_obj_set_style_local_bg_color(second_points[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
-    lv_obj_set_style_local_radius(second_points[i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-    lv_obj_set_size(second_points[i], pointSize, pointSize);
-    lv_obj_set_pos(second_points[i], widthSpacer + (pointSize + offsetX) * i, secondY);
-  }
-
-  label_am = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(label_am, "AM");
-  lv_obj_set_pos(label_am, widthSpacer + tflOffsetX + (pointSize + offsetX) * 5, hourY + tflOffsetY);
-  lv_obj_set_style_local_text_color(label_am, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
-  lv_obj_set_size(label_am, pointSize, tflHeight);
-  
-  label_pm = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(label_pm, "PM");
-  lv_obj_set_pos(label_pm, widthSpacer + tflOffsetX + (pointSize + offsetX) * 5, hourY + tflOffsetY + tflHeight + 1);
-  lv_obj_set_style_local_text_color(label_pm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
-  lv_obj_set_size(label_pm, pointSize, tflHeight);
-
-  is12HourModeSet = ( settingsController.GetClockType() == Controllers::Settings::ClockType::H12 );
-  lv_obj_set_hidden(hour_points[4], is12HourModeSet);
-  lv_obj_set_hidden(label_am, !is12HourModeSet);
-  lv_obj_set_hidden(label_pm, !is12HourModeSet);
+  stepIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x00FFE7));
+  lv_label_set_text_static(stepIcon, Symbols::shoe);
+  lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -129,102 +149,113 @@ void WatchFaceBinary::Refresh() {
   currentDateTime = std::chrono::time_point_cast<std::chrono::seconds>(dateTimeController.CurrentDateTime());
 
   if (currentDateTime.IsUpdated()) {
-    uint8_t hour = dateTimeController.Hours();
-    uint8_t minute = dateTimeController.Minutes();
-    uint8_t seconds = dateTimeController.Seconds();
+    uint8_t hours = dateTimeController.Hours();
+    const uint8_t minutes = dateTimeController.Minutes();
+#if BINARY_SECONDS_ENABLED
+    const uint8_t seconds = dateTimeController.Seconds();
+#endif
 
-    if ( settingsController.GetClockType() == Controllers::Settings::ClockType::H12 )
-    {
-      if ( !is12HourModeSet )
-      {
+    const bool shouldUpdateHours = (displayedHours != hours);
+    const bool shouldUpdateMinutes = (displayedMinutes != minutes);
+    const bool clockTypeChanged = (settingsController.GetClockType() != lastClockType);
+
+    if ((settingsController.GetClockType() == Controllers::Settings::ClockType::H12) && (shouldUpdateHours || clockTypeChanged)) {
+      lastClockType = Controllers::Settings::ClockType::H12;
+
+      if (!is12HourModeSet) {
         is12HourModeSet = true;
       }
 
-      if ( ( 12 <= hour ) && ( 24 > hour ) )
-      {
-        if ( 12 != hour )
-        {
-          hour -= 12;
+      if ((12 <= hours) && (24 > hours)) {
+        if (12 != hours) {
+          hours -= 12;
         }
-        lv_obj_set_style_local_text_color(label_am, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
-        lv_obj_set_style_local_text_color(label_pm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BINARY_ON_COLOR);
-      }
-      else
-      {
-        if ( 0 == hour )
-        {
-          hour = 12;
+        lv_obj_set_style_local_text_color(labelAM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
+        lv_obj_set_style_local_text_color(labelPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BINARY_ON_COLOR);
+      } else {
+        if (0 == hours) {
+          hours = 12;
         }
-        lv_obj_set_style_local_text_color(label_am, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BINARY_ON_COLOR);
-        lv_obj_set_style_local_text_color(label_pm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
+        lv_obj_set_style_local_text_color(labelAM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BINARY_ON_COLOR);
+        lv_obj_set_style_local_text_color(labelPM, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
       }
-      hour <<= 1;
-    }
-    else if ( is12HourModeSet )
-    {
+      hours <<= 1;
+    } else if (is12HourModeSet) {
       is12HourModeSet = false;
     }
-    lv_obj_set_hidden(hour_points[4], is12HourModeSet);
-    lv_obj_set_hidden(label_am, !is12HourModeSet);
-    lv_obj_set_hidden(label_pm, !is12HourModeSet);
 
-    for ( uint8_t i = 0; i < 6; i++ )
-    {
-      // Hours
-      if ( 5 > i )
-      {
-        switch ( hour >> i & 0b1 )
-        {
-          case 1:
-            lv_obj_set_style_local_bg_color(hour_points[4 - i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_ON_COLOR);
-          break;
-          default:
-            lv_obj_set_style_local_bg_color(hour_points[4 - i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
-          break;
+    if (shouldUpdateHours) {
+      displayedHours = hours;
+    }
+
+    if (shouldUpdateMinutes) {
+      displayedMinutes = minutes;
+    }
+
+    if (clockTypeChanged) {
+      lv_obj_set_hidden(hourPoints[4], is12HourModeSet);
+      lv_obj_set_hidden(labelAM, !is12HourModeSet);
+      lv_obj_set_hidden(labelPM, !is12HourModeSet);
+    }
+
+    if (BINARY_SECONDS_ENABLED || shouldUpdateHours || shouldUpdateMinutes) {
+      for (uint8_t i = 0; i < 6; i++) {
+        // Hours
+        if (shouldUpdateHours && (5 > i)) {
+          switch (hours >> i & 0b1) {
+            case 1:
+              lv_obj_set_style_local_bg_color(hourPoints[4 - i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_ON_COLOR);
+              break;
+            default:
+              lv_obj_set_style_local_bg_color(hourPoints[4 - i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
+              break;
+          }
         }
-      }
-      // Minutes
-      switch ( minute >> i & 0b1 )
-      {
-        case 1:
-          lv_obj_set_style_local_bg_color(minute_points[5 - i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_ON_COLOR);
-        break;
-        default:
-          lv_obj_set_style_local_bg_color(minute_points[5 - i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
-        break;
-      }
-      // Seconds
-      switch ( seconds >> i & 0b1 )
-      {
-        case 1:
-          lv_obj_set_style_local_bg_color(second_points[5 - i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_ON_COLOR);
-        break;
-        default:
-          lv_obj_set_style_local_bg_color(second_points[5 - i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
-        break;
+        // Minutes
+        if (shouldUpdateMinutes) {
+          switch (minutes >> i & 0b1) {
+            case 1:
+              lv_obj_set_style_local_bg_color(minutePoints[5 - i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_ON_COLOR);
+              break;
+            default:
+              lv_obj_set_style_local_bg_color(minutePoints[5 - i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
+              break;
+          }
+        }
+// Seconds
+#if BINARY_SECONDS_ENABLED
+        switch (seconds >> i & 0b1) {
+          case 1:
+            lv_obj_set_style_local_bg_color(secondPoints[5 - i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_ON_COLOR);
+            break;
+          default:
+            lv_obj_set_style_local_bg_color(secondPoints[5 - i], LV_BTN_PART_MAIN, LV_STATE_DEFAULT, BINARY_OFF_COLOR);
+            break;
+        }
+#endif
       }
     }
 
     currentDate = std::chrono::time_point_cast<days>(currentDateTime.Get());
     if (currentDate.IsUpdated()) {
-      uint16_t year = dateTimeController.Year();
-      uint8_t day = dateTimeController.Day();
+      const uint16_t year = dateTimeController.Year();
+      const uint8_t day = dateTimeController.Day();
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
-        lv_label_set_text_fmt(label_date,
+        lv_label_set_text_fmt(lableDate,
                               "%s %d %s %d",
                               dateTimeController.DayOfWeekShortToString(),
                               day,
                               dateTimeController.MonthShortToString(),
                               year);
       } else {
-        lv_label_set_text_fmt(label_date,
+        lv_label_set_text_fmt(lableDate,
                               "%s %s %d %d",
                               dateTimeController.DayOfWeekShortToString(),
                               dateTimeController.MonthShortToString(),
                               day,
                               year);
       }
-      lv_obj_realign(label_date);
+      lv_obj_realign(lableDate);
     }
   }
 
@@ -241,5 +272,12 @@ void WatchFaceBinary::Refresh() {
 
     lv_obj_realign(heartbeatIcon);
     lv_obj_realign(heartbeatValue);
+  }
+
+  stepCount = motionController.NbSteps();
+  if (stepCount.IsUpdated()) {
+    lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
+    lv_obj_realign(stepValue);
+    lv_obj_realign(stepIcon);
   }
 }
