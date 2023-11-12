@@ -37,7 +37,7 @@ namespace Pinetime {
         void UpdateOperation() const;
 
         // change this if you want to change the number of decimals
-        static constexpr uint8_t N_DECIMALS = 4;
+        static constexpr uint8_t N_DECIMALS = 3;
         // this is the constant default offset
         static constexpr int64_t FIXED_POINT_OFFSET = powi(10, N_DECIMALS);
         // this is the current offset, may wary after pressing '.'
@@ -45,7 +45,7 @@ namespace Pinetime {
 
         // the screen can show 12 chars
         // but two are needed for '.' and '-'
-        static constexpr uint8_t MAX_DIGITS = 15;
+        static constexpr uint8_t MAX_DIGITS = 12;
         static constexpr int64_t MAX_VALUE = powi(10, MAX_DIGITS) - 1;
         // this is assumed in the multiplication overflow!
         static constexpr int64_t MIN_VALUE = -MAX_VALUE;
