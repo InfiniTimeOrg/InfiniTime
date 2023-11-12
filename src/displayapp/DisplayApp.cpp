@@ -560,7 +560,15 @@ void DisplayApp::PushMessage(Messages msg) {
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
   } else {
-    xQueueSend(msgQueue, &msg, portMAX_DELAY);
+    TickType_t timeout = portMAX_DELAY;
+    // Make xQueueSend() non-blocking if the message is a Notification message. We do this to avoid
+    // deadlock between SystemTask and DisplayApp when their respective message queues are getting full
+    // when a lot of notifications are received on a very short time span.
+    if (msg == Messages::NewNotification) {
+      timeout = static_cast<TickType_t>(0);
+    }
+
+    xQueueSend(msgQueue, &msg, timeout);
   }
 }
 
