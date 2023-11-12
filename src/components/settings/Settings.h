@@ -36,6 +36,12 @@ namespace Pinetime {
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
 
+      enum class CSGMediaStyle : uint8_t { Off, Artist, Track, Album };
+
+      struct CasioStyleG7710 {
+        CSGMediaStyle mediaStyle = CSGMediaStyle::Off;
+      };
+
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
         Colors ColorBar = Colors::Teal;
@@ -151,6 +157,16 @@ namespace Pinetime {
 
       PTSWeather GetPTSWeather() const {
         return settings.PTS.weatherEnable;
+      };
+
+      void SetCSGMediaStyle(CSGMediaStyle mediaStyle) {
+        if (mediaStyle != settings.CSG.mediaStyle)
+          settingsChanged = true;
+        settings.CSG.mediaStyle = mediaStyle;
+      };
+
+      CSGMediaStyle GetCSGMediaStyle() const {
+        return settings.CSG.mediaStyle;
       };
 
       void SetAppMenu(uint8_t menu) {
@@ -288,6 +304,8 @@ namespace Pinetime {
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
+
+        CasioStyleG7710 CSG;
 
         WatchFaceInfineat watchFaceInfineat;
 

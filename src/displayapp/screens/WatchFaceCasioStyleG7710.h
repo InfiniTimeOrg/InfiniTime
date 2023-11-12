@@ -18,6 +18,7 @@ namespace Pinetime {
     class NotificationManager;
     class HeartRateController;
     class MotionController;
+    class MusicService;
   }
 
   namespace Applications {
@@ -32,10 +33,16 @@ namespace Pinetime {
                                  Controllers::Settings& settingsController,
                                  Controllers::HeartRateController& heartRateController,
                                  Controllers::MotionController& motionController,
-                                 Controllers::FS& filesystem);
+                                 Controllers::FS& filesystem,
+                                 Controllers::MusicService& musicService);
         ~WatchFaceCasioStyleG7710() override;
 
+        bool OnTouchEvent(TouchEvents event) override;
+        bool OnButtonPushed() override;
+
         void Refresh() override;
+
+        void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
         static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
 
@@ -52,6 +59,8 @@ namespace Pinetime {
         using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
 
+        uint32_t savedTick = 0;
+
         lv_point_t line_icons_points[3] {{0, 5}, {117, 5}, {122, 0}};
         lv_point_t line_day_of_week_number_points[4] {{0, 0}, {100, 0}, {95, 95}, {0, 95}};
         lv_point_t line_day_of_year_points[3] {{0, 5}, {130, 5}, {135, 0}};
@@ -63,6 +72,8 @@ namespace Pinetime {
         lv_style_t style_line;
         lv_style_t style_border;
 
+        lv_obj_t* btnMedia;
+        lv_obj_t* lblMedia;
         lv_obj_t* label_time;
         lv_obj_t* line_time;
         lv_obj_t* label_time_ampm;
@@ -83,6 +94,7 @@ namespace Pinetime {
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
         lv_obj_t* line_icons;
+        lv_obj_t* txtMedia;
 
         BatteryIcon batteryIcon;
 
@@ -93,6 +105,13 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
+        Controllers::MusicService& musicService;
+
+        std::string artist = "no artist";
+        std::string album = "no album";
+        std::string track = "no track";
+
+        void CloseMenu();
 
         lv_task_t* taskRefresh;
         lv_font_t* font_dot40 = nullptr;
