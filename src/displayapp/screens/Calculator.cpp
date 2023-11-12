@@ -199,8 +199,10 @@ void Calculator::HandleInput() {
       NRF_LOG_INFO(". value: %" PRId64, value);
       NRF_LOG_INFO(". result: %" PRId64, result);
 
-      operation = ' ';
-      UpdateOperation();
+      if (value == 0) {
+        operation = ' ';
+        UpdateOperation();
+      }
       break;
 
     case '=':
