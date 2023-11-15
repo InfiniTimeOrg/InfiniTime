@@ -2,7 +2,6 @@
 #define min // workaround: nimble's min/max macros conflict with libstdc++
 #define max
 #include <host/ble_gap.h>
-#include <atomic>
 #undef max
 #undef min
 
@@ -35,7 +34,7 @@ namespace Pinetime {
       struct ble_gatt_svc_def serviceDefinition[2];
 
       uint16_t heartRateMeasurementHandle;
-      std::atomic_bool heartRateMeasurementNotificationEnable {false};
+      bool heartRateMeasurementNotificationEnable {false};
     };
   }
 }

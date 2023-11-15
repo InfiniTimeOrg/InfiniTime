@@ -124,8 +124,8 @@ bool NotificationManager::AreNewNotificationsAvailable() const {
   return newNotification;
 }
 
-bool NotificationManager::ClearNewNotificationFlag() {
-  return newNotification.exchange(false);
+void NotificationManager::ClearNewNotificationFlag() {
+  newNotification = false;
 }
 
 size_t NotificationManager::NbNotifications() const {

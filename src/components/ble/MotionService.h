@@ -2,7 +2,6 @@
 #define min // workaround: nimble's min/max macros conflict with libstdc++
 #define max
 #include <host/ble_gap.h>
-#include <atomic>
 #undef max
 #undef min
 
@@ -31,8 +30,8 @@ namespace Pinetime {
 
       uint16_t stepCountHandle;
       uint16_t motionValuesHandle;
-      std::atomic_bool stepCountNoficationEnabled {false};
-      std::atomic_bool motionValuesNoficationEnabled {false};
+      bool stepCountNotificationEnabled {false};
+      bool motionValuesNotificationEnabled {false};
     };
   }
 }
