@@ -4,6 +4,7 @@ import pathlib
 import sys
 import decimal
 from PIL import Image
+from fontTools import ttLib
 
 # pacman -S python-fonttools
 # apt install -y python3-fonttools
@@ -58,9 +59,9 @@ def main():
 #                        -r 32-127,0x1F450
 #                        -r '0x1F450=>0xF005'
 #                        -r '0x1F450-0x1F470=>0xF005'
-#  --symbols SYMBOLS     List of characters to copy, belongs to previously declared "--font". Examples:
-#                        --symbols ,.0123456789
-#                        --symbols abcdefghigklmnopqrstuvwxyz
+    parser.add_argument("--symbols",
+        help="List of characters to copy, belongs to previously declared \"--font\". Examples:"
+        "     '--symbols ,.0123456789' or '--symbols abcdefghigklmnopqrstuvwxyz'")
 #  --autohint-off        Disable autohinting for previously declared "--font"
 #  --autohint-strong     Use more strong autohinting for previously declared "--font" (will break kerning)
 #  --force-fast-kern-format
