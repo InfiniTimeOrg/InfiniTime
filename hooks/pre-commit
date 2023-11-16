@@ -1,23 +1,29 @@
 #!/bin/sh
 
+name="clang-format"
+
+if [ -z "$(command -v "git-$name")" ]; then
+  name="$(basename -a $(find $(echo "$PATH" | tr ':' ' ') -maxdepth 1 -type f -executable -name 'git-clang-format*') | sort | tail -n 1 | sed 's/^git-//')"
+fi
+
 minVersion="14.0.0"
 
-for file in $(find $(echo "$PATH" | tr ':' ' ') -maxdepth 1 -type f -executable -name 'git-clang-format*'); do
-  curName="$(basename "$file" | sed 's/^git-//')"
-  curVersion="$("$curName" --version | cut -d ' ' -f 3)"
+for file in $(find $(echo "$PATH" | tr ':' ' ') -maxdepth 1 -type f -executable -name 'clang-format*'); do
+  curBin="$file"
+  curVersion="$("$curBin" --version | cut -d ' ' -f 3)"
 
   if [ "$(printf '%s\n' "$curVersion" "$version" "$minVersion" | sort -V | tail -n 1)" = "$curVersion" ]; then
-    name="$curName"
+    bin="$curBin"
     version="$curVersion"
   fi
 done
 
-if [ -z "$name" ]; then
+if [ -z "$name" ] || [ -z "$bin" ]; then
   echo "Could not find a suitable clang-format installation. Install clang-format that includes the git-clang-format script, with at least version $minVersion"
   exit 1
 fi
 
-args='-q --extensions cpp,h --style file --staged -- :!src/FreeRTOS :!src/libs'
+args="--binary $bin -q --extensions cpp,h --style file --staged -- :!src/FreeRTOS :!src/libs"
 
 changedFiles="$(git "$name" --diffstat $args)"
 git "$name" $args
