@@ -1,6 +1,8 @@
 #include <nrf_log.h>
 #include "FSService.h"
 #include "components/ble/BleController.h"
+#include "components/ble/NotificationManager.h"
+#include "components/settings/Settings.h"
 #include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Controllers;
@@ -14,9 +16,14 @@ int FSServiceCallback(uint16_t conn_handle, uint16_t attr_handle, struct ble_gat
   return fsService->OnFSServiceRequested(conn_handle, attr_handle, ctxt);
 }
 
-FSService::FSService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::FS& fs)
+FSService::FSService(Pinetime::System::SystemTask& systemTask,
+                     Pinetime::Controllers::FS& fs,
+                     Pinetime::Controllers::Settings& settingsController,
+                     Pinetime::Controllers::NotificationManager& notificationManager)
   : systemTask {systemTask},
     fs {fs},
+    settingsController {settingsController},
+    notificationManager {notificationManager},
     characteristicDefinition {{.uuid = &fsVersionUuid.u,
                                .access_cb = FSServiceCallback,
                                .arg = this,
@@ -49,6 +56,18 @@ void FSService::Init() {
 }
 
 int FSService::OnFSServiceRequested(uint16_t connectionHandle, uint16_t attributeHandle, ble_gatt_access_ctxt* context) {
+#ifndef PINETIME_IS_RECOVERY
+  if (__builtin_expect(settingsController.GetDfuAndFsMode() == Pinetime::Controllers::Settings::DfuAndFsMode::Disabled, 0)) {
+    Pinetime::Controllers::NotificationManager::Notification notif;
+    memcpy(notif.message.data(), denyAlert, denyAlertLength);
+    notif.size = denyAlertLength;
+    notif.category = Pinetime::Controllers::NotificationManager::Categories::SimpleAlert;
+    notificationManager.Push(std::move(notif));
+    systemTask.PushMessage(Pinetime::System::Messages::OnNewNotification);
+    return BLE_ATT_ERR_INSUFFICIENT_RES;
+  }
+#endif
+
   if (attributeHandle == versionCharacteristicHandle) {
     NRF_LOG_INFO("FS_S : handle = %d", versionCharacteristicHandle);
     int res = os_mbuf_append(context->om, &fsVersion, sizeof(fsVersion));

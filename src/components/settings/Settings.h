@@ -35,6 +35,7 @@ namespace Pinetime {
       };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
+      enum class DfuAndFsMode : uint8_t { Disabled = 0, Enabled = 1, EnabledTillReboot = 2 };
 
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
@@ -271,10 +272,21 @@ namespace Pinetime {
         return bleRadioEnabled;
       };
 
+      void SetDfuAndFsMode(DfuAndFsMode mode) {
+        if (mode != settings.dfuAndFsMode) {
+          settingsChanged = true;
+        }
+        settings.dfuAndFsMode = mode;
+      };
+
+      DfuAndFsMode GetDfuAndFsMode() const {
+        return settings.dfuAndFsMode;
+      };
+
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0006;
+      static constexpr uint32_t settingsVersion = 0x0007;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -295,6 +307,8 @@ namespace Pinetime {
         uint16_t shakeWakeThreshold = 150;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        DfuAndFsMode dfuAndFsMode = DfuAndFsMode::Disabled;
       };
 
       SettingsData settings;

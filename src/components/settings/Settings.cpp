@@ -34,6 +34,9 @@ void Settings::LoadSettingsFromFile() {
   if (bufferSettings.version == settingsVersion) {
     settings = bufferSettings;
   }
+  if (settings.dfuAndFsMode == DfuAndFsMode::EnabledTillReboot) {
+    settings.dfuAndFsMode = DfuAndFsMode::Disabled;
+  }
 }
 
 void Settings::SaveSettingsToFile() {
