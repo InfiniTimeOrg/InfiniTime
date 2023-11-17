@@ -58,7 +58,7 @@ namespace Pinetime {
     namespace Screens {
       class MyApp : public Screen {
       public:
-        MyApp(DisplayApp* app);
+        MyApp();
         ~MyApp() override;
       };
     }
@@ -74,7 +74,7 @@ MyApp.cpp:
 
 using namespace Pinetime::Applications::Screens;
 
-MyApp::MyApp(DisplayApp* app) : Screen(app) {
+MyApp::MyApp() {
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "My test application");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);

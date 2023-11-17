@@ -1,7 +1,13 @@
 FROM ubuntu:22.04
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG NODE_MAJOR=20
 RUN apt-get update -qq \
+    && apt-get install -y ca-certificates curl gnupg \
+    && mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
+    && apt-get update -qq \
     && apt-get install -y \
 # x86_64 / generic packages
       bash \
@@ -9,13 +15,14 @@ RUN apt-get update -qq \
       cmake \
       git \
       make \
+      nodejs \
       python3 \
       python3-pip \
+      python3-pil \
       python-is-python3 \
       tar \
       unzip \
       wget \
-      curl \
       # aarch64 packages
       libffi-dev \
       libssl-dev \
@@ -28,8 +35,6 @@ RUN apt-get update -qq \
       libpango-1.0-0 \
       ibpango1.0-dev \
       libpangocairo-1.0-0 \
-    && curl -sL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs \
     && rm -rf /var/cache/apt/* /var/lib/apt/lists/*;
 
 # Git needed for PROJECT_GIT_COMMIT_HASH variable setting
@@ -38,10 +43,6 @@ RUN pip3 install adafruit-nrfutil
 RUN pip3 install -Iv cryptography==3.3
 RUN pip3 install cbor
 RUN npm i lv_font_conv@1.5.2 -g
-
-RUN npm i ts-node@10.9.1 -g
-RUN npm i @swc/core -g
-RUN npm i lv_img_conv@0.3.0 -g
 
 # build.sh knows how to compile
 COPY build.sh /opt/
