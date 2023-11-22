@@ -19,6 +19,10 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/InfiniTimeTheme.h"
+#include "components/settings/Settings.h"
+#include "components/alarm/AlarmController.h"
+#include "components/motor/MotorController.h"
+#include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Applications::Screens;
 using Pinetime::Controllers::AlarmController;

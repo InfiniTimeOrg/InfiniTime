@@ -11,6 +11,9 @@ import subprocess
 
 def gen_lvconv_line(lv_img_conv: str, dest: str, color_format: str, output_format: str, binary_format: str, sources: str):
     args = [lv_img_conv, sources, '--force', '--output-file', dest, '--color-format', color_format, '--output-format', output_format, '--binary-format', binary_format]
+    if lv_img_conv.endswith(".py"):
+        # lv_img_conv is a python script, call with current python executable
+        args = [sys.executable] + args
 
     return args
 

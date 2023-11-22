@@ -62,7 +62,7 @@ Timer::Timer(Controllers::Timer& timerController) : timer {timerController} {
   txtPlayPause = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(txtPlayPause, btnPlayPause, LV_ALIGN_CENTER, 0, 0);
 
-  if (timerController.IsRunning()) {
+  if (timer.IsRunning()) {
     SetTimerRunning();
   } else {
     SetTimerStopped();

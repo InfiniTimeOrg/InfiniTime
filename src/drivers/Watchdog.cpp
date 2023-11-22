@@ -41,7 +41,7 @@ namespace {
     // RRED (Reload Register Enable) is a bitfield of 8 bits. Each bit represent
     // one of the eight reload registers available.
     // In this case, we enable only the first one.
-    NRF_WDT->RREN |= 1;
+    NRF_WDT->RREN = NRF_WDT->RREN | 1;
   }
 
   /// Returns the reset reason provided by the POWER subsystem

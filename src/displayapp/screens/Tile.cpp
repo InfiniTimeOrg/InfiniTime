@@ -1,5 +1,4 @@
 #include "displayapp/screens/Tile.h"
-#include "displayapp/DisplayApp.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "components/ble/BleController.h"
 #include "displayapp/InfiniTimeTheme.h"

@@ -4,6 +4,7 @@
 #include <chrono>
 #include "displayapp/screens/Screen.h"
 #include "systemtask/SystemTask.h"
+#include "Symbols.h"
 #include <lvgl/src/lv_core/lv_style.h>
 #include <lvgl/src/lv_core/lv_obj.h>
 
@@ -37,5 +38,15 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct AppTraits<Apps::HeartRate> {
+      static constexpr Apps app = Apps::HeartRate;
+      static constexpr const char* icon = Screens::Symbols::heartBeat;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::HeartRate(controllers.heartRateController, *controllers.systemTask);
+      };
+    };
   }
 }

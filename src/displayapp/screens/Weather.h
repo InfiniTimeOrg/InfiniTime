@@ -1,9 +1,12 @@
 #pragma once
 
 #include <memory>
-#include <components/ble/weather/WeatherService.h>
+#include "components/ble/weather/WeatherService.h"
 #include "Screen.h"
 #include "ScreenList.h"
+#include "displayapp/Apps.h"
+#include "displayapp/Controllers.h"
+#include "Symbols.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -41,5 +44,15 @@ namespace Pinetime {
         std::unique_ptr<Screen> CreateScreenHumidity();
       };
     }
+
+    template <>
+    struct AppTraits<Apps::Weather> {
+      static constexpr Apps app = Apps::Weather;
+      static constexpr const char* icon = Screens::Symbols::sun;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Weather(controllers.displayApp, *controllers.weatherController);
+      };
+    };
   }
 }
