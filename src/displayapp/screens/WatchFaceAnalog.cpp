@@ -65,7 +65,11 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   sTfHourEnable = true;
 
   minor_scales = lv_linemeter_create(lv_scr_act(), nullptr);
-  lv_linemeter_set_scale(minor_scales, 300, 51);
+  if (settingsController.GetA24HourMode() == Pinetime::Controllers::Settings::A24HourMode::On) {
+    lv_linemeter_set_scale(minor_scales, 360, 61);
+  } else {
+    lv_linemeter_set_scale(minor_scales, 300, 51);
+  }
   lv_linemeter_set_angle_offset(minor_scales, 180);
   lv_obj_set_size(minor_scales, 240, 240);
   lv_obj_align(minor_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
@@ -75,43 +79,143 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_scale_end_color(minor_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
 
   major_scales = lv_linemeter_create(lv_scr_act(), nullptr);
-  lv_linemeter_set_scale(major_scales, 300, 11);
-  lv_linemeter_set_angle_offset(major_scales, 180);
+  if (settingsController.GetA24HourMode() == Pinetime::Controllers::Settings::A24HourMode::On) {
+    lv_linemeter_set_scale(major_scales, 360, 13);
+    lv_linemeter_set_angle_offset(major_scales, 30);
+    lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
+    lv_obj_set_style_local_scale_end_line_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 2);
+  } else {
+    lv_linemeter_set_scale(major_scales, 300, 11);
+    lv_linemeter_set_angle_offset(major_scales, 180);
+    lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 6);
+    lv_obj_set_style_local_scale_end_line_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
+  }
   lv_obj_set_size(major_scales, 240, 240);
   lv_obj_align(major_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_local_bg_opa(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 6);
-  lv_obj_set_style_local_scale_end_line_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
   lv_obj_set_style_local_scale_end_color(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
-  large_scales = lv_linemeter_create(lv_scr_act(), nullptr);
-  lv_linemeter_set_scale(large_scales, 180, 3);
-  lv_linemeter_set_angle_offset(large_scales, 180);
-  lv_obj_set_size(large_scales, 240, 240);
-  lv_obj_align(large_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
-  lv_obj_set_style_local_bg_opa(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
-  lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 20);
-  lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
-  lv_obj_set_style_local_scale_end_color(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
 
-  twelve = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_align(twelve, LV_LABEL_ALIGN_CENTER);
-  lv_label_set_text_static(twelve, "12");
-  lv_obj_set_style_local_text_color(twelve, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+  large_scales = lv_linemeter_create(lv_scr_act(), nullptr);
+  if (settingsController.GetA24HourMode() == Pinetime::Controllers::Settings::A24HourMode::On) {
+    lv_linemeter_set_scale(large_scales, 360, 13);
+    lv_linemeter_set_angle_offset(large_scales, 15);
+    lv_obj_set_size(large_scales, 225, 225);
+    lv_obj_align(large_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 10);
+    lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 3);
+  } else {
+    lv_linemeter_set_scale(large_scales, 180, 3);
+    lv_linemeter_set_angle_offset(large_scales, 180);
+    lv_obj_set_size(large_scales, 240, 240);
+    lv_obj_align(large_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 20);
+    lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
+  }
+  lv_obj_set_style_local_bg_opa(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_style_local_scale_end_color(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
 
   zero = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_align(zero, LV_LABEL_ALIGN_CENTER);
   lv_label_set_text_static(zero, "24");
-  lv_obj_set_pos(zero, 110, 10);
+  lv_obj_set_pos(zero, 107, 17);
   lv_obj_set_style_local_text_color(zero, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
 
+  /* two = lv_label_create(lv_scr_act(), nullptr); */
+  /* lv_label_set_align(two, LV_LABEL_ALIGN_CENTER); */
+  /* lv_label_set_text_static(two, "2"); */
+  /* lv_obj_set_pos(two, 160, 30); */
+  /* lv_obj_set_style_local_text_color(two, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
+
+  /* four = lv_label_create(lv_scr_act(), nullptr); */
+  /* lv_label_set_align(four, LV_LABEL_ALIGN_CENTER); */
+  /* lv_label_set_text_static(four, "4"); */
+  /* lv_obj_set_pos(four, 192, 60); */
+  /* lv_obj_set_style_local_text_color(four, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
+
+  /* six = lv_label_create(lv_scr_act(), nullptr); */
+  /* lv_label_set_align(six, LV_LABEL_ALIGN_CENTER); */
+  /* lv_label_set_text_static(six, "6"); */
+  /* lv_obj_set_pos(six, 206, 107); */
+  /* lv_obj_set_style_local_text_color(six, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
+
+  /* eight = lv_label_create(lv_scr_act(), nullptr); */
+  /* lv_label_set_align(eight, LV_LABEL_ALIGN_CENTER); */
+  /* lv_label_set_text_static(eight, "8"); */
+  /* lv_obj_set_pos(eight, 192, 154); */
+  /* lv_obj_set_style_local_text_color(eight, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
+
+  /* ten = lv_label_create(lv_scr_act(), nullptr); */
+  /* lv_label_set_align(ten, LV_LABEL_ALIGN_CENTER); */
+  /* lv_label_set_text_static(ten, "10"); */
+  /* lv_obj_set_pos(ten, 153, 184); */
+  /* lv_obj_set_style_local_text_color(ten, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
+
+  twelve = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_align(twelve, LV_LABEL_ALIGN_CENTER);
+  lv_label_set_text_static(twelve, "12");
   if (settingsController.GetA24HourMode() == Pinetime::Controllers::Settings::A24HourMode::On) {
-    lv_obj_set_pos(twelve, 110, 210);
+    lv_obj_set_pos(twelve, 107, 198);
+  } else {
+    lv_obj_set_pos(twelve, 107, 10);
+  }
+  lv_obj_set_style_local_text_color(twelve, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+
+  /* fourteen = lv_label_create(lv_scr_act(), nullptr); */
+  /* lv_label_set_align(fourteen, LV_LABEL_ALIGN_CENTER); */
+  /* lv_label_set_text_static(fourteen, "14"); */
+  /* lv_obj_set_pos(fourteen, 62, 184); */
+  /* lv_obj_set_style_local_text_color(fourteen, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
+
+  /* sixteen = lv_label_create(lv_scr_act(), nullptr); */
+  /* lv_label_set_align(sixteen, LV_LABEL_ALIGN_CENTER); */
+  /* lv_label_set_text_static(sixteen, "16"); */
+  /* lv_obj_set_pos(sixteen, 32, 152); */
+  /* lv_obj_set_style_local_text_color(sixteen, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
+
+  /* eighteen = lv_label_create(lv_scr_act(), nullptr); */
+  /* lv_label_set_align(eighteen, LV_LABEL_ALIGN_CENTER); */
+  /* lv_label_set_text_static(eighteen, "18"); */
+  /* lv_obj_set_pos(eighteen, 20, 107); */
+  /* lv_obj_set_style_local_text_color(eighteen, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
+
+  /* twenty = lv_label_create(lv_scr_act(), nullptr); */
+  /* lv_label_set_align(twenty, LV_LABEL_ALIGN_CENTER); */
+  /* lv_label_set_text_static(twenty, "20"); */
+  /* lv_obj_set_pos(twenty, 32, 62); */
+  /* lv_obj_set_style_local_text_color(twenty, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
+
+  /* twentytwo = lv_label_create(lv_scr_act(), nullptr); */
+  /* lv_label_set_align(twentytwo, LV_LABEL_ALIGN_CENTER); */
+  /* lv_label_set_text_static(twentytwo, "22"); */
+  /* lv_obj_set_pos(twentytwo, 62, 30); */
+  /* lv_obj_set_style_local_text_color(twentytwo, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA); */
+
+  if (settingsController.GetA24HourMode() == Pinetime::Controllers::Settings::A24HourMode::On) {
     lv_obj_set_hidden(zero, false);
+    /* lv_obj_set_hidden(two, false); */
+    /* lv_obj_set_hidden(four, false); */
+    /* lv_obj_set_hidden(six, false); */
+    /* lv_obj_set_hidden(eight, false); */
+    /* lv_obj_set_hidden(ten, false); */
+    /* lv_obj_set_hidden(fourteen, false); */
+    /* lv_obj_set_hidden(sixteen, false); */
+    /* lv_obj_set_hidden(eighteen, false); */
+    /* lv_obj_set_hidden(twenty, false); */
+    /* lv_obj_set_hidden(twentytwo, false); */
     tfHourEnable = true;
   } else {
-    lv_obj_set_pos(twelve, 110, 10);
     lv_obj_set_hidden(zero, true);
+    /* lv_obj_set_hidden(two, true); */
+    /* lv_obj_set_hidden(four, true); */
+    /* lv_obj_set_hidden(six, true); */
+    /* lv_obj_set_hidden(eight, true); */
+    /* lv_obj_set_hidden(ten, true); */
+    /* lv_obj_set_hidden(fourteen, true); */
+    /* lv_obj_set_hidden(sixteen, true); */
+    /* lv_obj_set_hidden(eighteen, true); */
+    /* lv_obj_set_hidden(twenty, true); */
+    /* lv_obj_set_hidden(twentytwo, true); */
     tfHourEnable = false;
   }
 
@@ -361,21 +465,55 @@ void WatchFaceAnalog::UpdateSelected(lv_obj_t* object, lv_event_t event) {
     if (object == btnClose) {
       CloseMenu();
     }
+
     if (object == btn24HourMode) {
-      if (lv_obj_get_hidden(zero)) {
+      if (tfHourEnable == false) {
         // set mode to 24 hours
-        lv_obj_set_pos(twelve, 110, 210);
-        lv_obj_set_hidden(zero, false);
         tfHourEnable = true;
+        // digits
+        lv_obj_set_pos(twelve, 107, 198);
+        lv_obj_set_hidden(zero, false);
+        // scales
+        lv_linemeter_set_scale(minor_scales, 360, 61);
+
+        lv_linemeter_set_scale(major_scales, 360, 13);
+        lv_linemeter_set_angle_offset(major_scales, 30);
+        lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
+        lv_obj_set_style_local_scale_end_line_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 2);
+
+        lv_linemeter_set_scale(large_scales, 360, 13);
+        lv_linemeter_set_angle_offset(large_scales, 15);
+        lv_obj_set_size(large_scales, 225, 225);
+        lv_obj_align(large_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
+        lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 10);
+        lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 3);
+
         settingsController.SetA24HourMode(Controllers::Settings::A24HourMode::On);
       } else {
         // set mode to 12 hours
-        lv_obj_set_pos(twelve, 110, 10);
-        lv_obj_set_hidden(zero, true);
         tfHourEnable = false;
+        // digits
+        lv_obj_set_pos(twelve, 107, 10);
+        lv_obj_set_hidden(zero, true);
+        // scales
+        lv_linemeter_set_scale(minor_scales, 300, 51);
+
+        lv_linemeter_set_scale(major_scales, 300, 11);
+        lv_linemeter_set_angle_offset(major_scales, 180);
+        lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 6);
+        lv_obj_set_style_local_scale_end_line_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
+
+        lv_linemeter_set_scale(large_scales, 180, 3);
+        lv_linemeter_set_angle_offset(large_scales, 180);
+        lv_obj_set_size(large_scales, 240, 240);
+        lv_obj_align(large_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
+        lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 20);
+        lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
+
         settingsController.SetA24HourMode(Controllers::Settings::A24HourMode::Off);
       }
     }
+
     if (object == btnSecondHand) {
       if (lv_obj_get_hidden(second_body)) {
         lv_obj_set_hidden(second_body, false);

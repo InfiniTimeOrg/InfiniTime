@@ -60,8 +60,18 @@ namespace Pinetime {
         lv_obj_t* minor_scales;
         lv_obj_t* major_scales;
         lv_obj_t* large_scales;
-        lv_obj_t* twelve;
         lv_obj_t* zero;
+        /* lv_obj_t* two; */
+        /* lv_obj_t* four; */
+        /* lv_obj_t* six; */
+        /* lv_obj_t* eight; */
+        /* lv_obj_t* ten; */
+        lv_obj_t* twelve;
+        /* lv_obj_t* fourteen; */
+        /* lv_obj_t* sixteen; */
+        /* lv_obj_t* eighteen; */
+        /* lv_obj_t* twenty; */
+        /* lv_obj_t* twentytwo; */
 
         lv_obj_t* hour_body;
         /* lv_obj_t* hour_body_trace; */
