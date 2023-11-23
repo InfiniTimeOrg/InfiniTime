@@ -52,6 +52,8 @@ namespace Pinetime {
         using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
 
+        bool tfHourEnable, sTfHourEnable;
+
         lv_obj_t* btnClose;
         lv_obj_t* btn24HourMode;
         lv_obj_t* btnSecondHand;

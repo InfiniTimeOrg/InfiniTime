@@ -62,6 +62,7 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   sHour = 99;
   sMinute = 99;
   sSecond = 99;
+  sTfHourEnable = true;
 
   minor_scales = lv_linemeter_create(lv_scr_act(), nullptr);
   lv_linemeter_set_scale(minor_scales, 300, 51);
@@ -96,22 +97,22 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   twelve = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_align(twelve, LV_LABEL_ALIGN_CENTER);
   lv_label_set_text_static(twelve, "12");
-  if (settingsController.GetA24HourMode() == Pinetime::Controllers::Settings::A24HourMode::On) {
-    lv_obj_set_pos(twelve, 110, 210);
-  } else {
-    lv_obj_set_pos(twelve, 110, 10);
-  }
   lv_obj_set_style_local_text_color(twelve, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
 
   zero = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_align(zero, LV_LABEL_ALIGN_CENTER);
-  lv_label_set_text_static(zero, "00");
+  lv_label_set_text_static(zero, "24");
   lv_obj_set_pos(zero, 110, 10);
   lv_obj_set_style_local_text_color(zero, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+
   if (settingsController.GetA24HourMode() == Pinetime::Controllers::Settings::A24HourMode::On) {
+    lv_obj_set_pos(twelve, 110, 210);
     lv_obj_set_hidden(zero, false);
+    tfHourEnable = true;
   } else {
+    lv_obj_set_pos(twelve, 110, 10);
     lv_obj_set_hidden(zero, true);
+    tfHourEnable = false;
   }
 
   batteryIcon.Create(lv_scr_act());
@@ -274,10 +275,16 @@ void WatchFaceAnalog::UpdateClock() {
     /* lv_line_set_points(minute_body_trace, minute_point_trace, 2); */
   }
 
-  if (sHour != hour || sMinute != minute) {
+  if (sHour != hour || sMinute != minute || sTfHourEnable != tfHourEnable) {
     sHour = hour;
     sMinute = minute;
-    auto const angle = (hour * 30 + minute / 2);
+    sTfHourEnable = tfHourEnable;
+
+    auto angle = (hour * 30 + minute / 2);
+
+    if (tfHourEnable == true) {
+      angle = angle / 2;
+    }
 
     hour_point[0] = CoordinateRelocate(-10, angle);
     hour_point[1] = CoordinateRelocate(HourLength, angle);
@@ -359,11 +366,13 @@ void WatchFaceAnalog::UpdateSelected(lv_obj_t* object, lv_event_t event) {
         // set mode to 24 hours
         lv_obj_set_pos(twelve, 110, 210);
         lv_obj_set_hidden(zero, false);
+        tfHourEnable = true;
         settingsController.SetA24HourMode(Controllers::Settings::A24HourMode::On);
       } else {
         // set mode to 12 hours
         lv_obj_set_pos(twelve, 110, 10);
         lv_obj_set_hidden(zero, true);
+        tfHourEnable = false;
         settingsController.SetA24HourMode(Controllers::Settings::A24HourMode::Off);
       }
     }
