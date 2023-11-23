@@ -21,6 +21,9 @@
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <string>
 #include "displayapp/screens/Screen.h"
+#include "displayapp/Apps.h"
+#include "displayapp/Controllers.h"
+#include "Symbols.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -82,5 +85,15 @@ namespace Pinetime {
         /** Watchapp */
       };
     }
+
+    template <>
+    struct AppTraits<Apps::Music> {
+      static constexpr Apps app = Apps::Music;
+      static constexpr const char* icon = Screens::Symbols::music;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Music(*controllers.musicService);
+      };
+    };
   }
 }

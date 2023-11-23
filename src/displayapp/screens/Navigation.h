@@ -22,6 +22,9 @@
 #include <string>
 #include "displayapp/screens/Screen.h"
 #include <array>
+#include "displayapp/Apps.h"
+#include "displayapp/Controllers.h"
+#include "Symbols.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -55,5 +58,15 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct AppTraits<Apps::Navigation> {
+      static constexpr Apps app = Apps::Navigation;
+      static constexpr const char* icon = Screens::Symbols::map;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Navigation(*controllers.navigationService);
+      };
+    };
   }
 }
