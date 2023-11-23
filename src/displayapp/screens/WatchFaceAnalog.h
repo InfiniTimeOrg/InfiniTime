@@ -33,10 +33,16 @@ namespace Pinetime {
 
         ~WatchFaceAnalog() override;
 
+        bool OnTouchEvent(TouchEvents event) override;
+        bool OnButtonPushed() override;
+
         void Refresh() override;
+
+        void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
       private:
         uint8_t sHour, sMinute, sSecond;
+        uint32_t savedTick = 0;
 
         Utility::DirtyValue<uint8_t> batteryPercentRemaining {0};
         Utility::DirtyValue<bool> isCharging {};
@@ -46,10 +52,14 @@ namespace Pinetime {
         using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
 
+        lv_obj_t* btnClose;
+        lv_obj_t* btn24HourMode;
+        lv_obj_t* btnSecondHand;
         lv_obj_t* minor_scales;
         lv_obj_t* major_scales;
         lv_obj_t* large_scales;
         lv_obj_t* twelve;
+        lv_obj_t* zero;
 
         lv_obj_t* hour_body;
         /* lv_obj_t* hour_body_trace; */
@@ -84,6 +94,7 @@ namespace Pinetime {
 
         void UpdateClock();
         void SetBatteryIcon();
+        void CloseMenu();
 
         lv_task_t* taskRefresh;
       };
