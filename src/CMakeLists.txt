@@ -394,7 +394,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Notifications.cpp
         displayapp/screens/Twos.cpp
         displayapp/screens/HeartRate.cpp
-        displayapp/screens/Motion.cpp
         displayapp/screens/FlashLight.cpp
         displayapp/screens/List.cpp
         displayapp/screens/CheckboxList.cpp
@@ -433,7 +432,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/WatchFaceTerminal.cpp
         displayapp/screens/WatchFacePineTimeStyle.cpp
         displayapp/screens/WatchFaceCasioStyleG7710.cpp
-        displayapp/screens/WatchFaceSlowTime.cpp
 
         ##
 

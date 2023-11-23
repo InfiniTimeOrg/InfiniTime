@@ -1,8 +1,9 @@
 #include "displayapp/screens/ApplicationList.h"
+#include "displayapp/screens/Tile.h"
 #include <lvgl/lvgl.h>
 #include <functional>
-#include "displayapp/Apps.h"
-#include "displayapp/DisplayApp.h"
+#include <algorithm>
+#include "components/settings/Settings.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -16,18 +17,20 @@ auto ApplicationList::CreateScreenList() const {
   return screens;
 }
 
-ApplicationList::ApplicationList(Pinetime::Applications::DisplayApp* app,
+ApplicationList::ApplicationList(DisplayApp* app,
                                  Pinetime::Controllers::Settings& settingsController,
                                  const Pinetime::Controllers::Battery& batteryController,
                                  const Pinetime::Controllers::Ble& bleController,
                                  Controllers::DateTime& dateTimeController,
-                                 Pinetime::Controllers::FS& filesystem)
+                                 Pinetime::Controllers::FS& filesystem,
+                                 std::array<Tile::Applications, UserAppTypes::Count>&& apps)
   : app {app},
     settingsController {settingsController},
     batteryController {batteryController},
     bleController {bleController},
     dateTimeController {dateTimeController},
-    filesystem{filesystem},
+    filesystem {filesystem},
+    apps {std::move(apps)},
     screens {app, settingsController.GetAppMenu(), CreateScreenList(), Screens::ScreenListModes::UpDown} {
 }
 
@@ -40,9 +43,14 @@ bool ApplicationList::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 }
 
 std::unique_ptr<Screen> ApplicationList::CreateScreen(unsigned int screenNum) const {
-  std::array<Tile::Applications, appsPerScreen> apps;
+  std::array<Tile::Applications, appsPerScreen> pageApps;
+
   for (int i = 0; i < appsPerScreen; i++) {
-    apps[i] = applications[screenNum * appsPerScreen + i];
+    if (i + (screenNum * appsPerScreen) >= apps.size()) {
+      pageApps[i] = {"", Pinetime::Applications::Apps::None, false};
+    } else {
+      pageApps[i] = apps[i + (screenNum * appsPerScreen)];
+    }
   }
 
   return std::make_unique<Screens::Tile>(screenNum,
@@ -52,5 +60,5 @@ std::unique_ptr<Screen> ApplicationList::CreateScreen(unsigned int screenNum) co
                                          batteryController,
                                          bleController,
                                          dateTimeController,
-                                         apps);
+                                         pageApps);
 }

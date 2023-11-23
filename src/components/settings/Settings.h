@@ -35,6 +35,8 @@ namespace Pinetime {
       };
       enum class PTSGaugeStyle : uint8_t { Full, Half, Numeric };
       enum class PTSWeather : uint8_t { On, Off };
+      enum class A24HourMode : uint8_t { On, Off };
+      enum class ASecondHand : uint8_t { On, Off };
 
       struct PineTimeStyle {
         Colors ColorTime = Colors::Teal;
@@ -42,6 +44,11 @@ namespace Pinetime {
         Colors ColorBG = Colors::Black;
         PTSGaugeStyle gaugeStyle = PTSGaugeStyle::Full;
         PTSWeather weatherEnable = PTSWeather::Off;
+      };
+
+      struct Analog {
+        A24HourMode tfHourEnable = A24HourMode::Off;
+        ASecondHand secondHandEnable = ASecondHand::On;
       };
 
       struct WatchFaceInfineat {
@@ -151,6 +158,26 @@ namespace Pinetime {
 
       PTSWeather GetPTSWeather() const {
         return settings.PTS.weatherEnable;
+      };
+
+      void SetA24HourMode(A24HourMode tfHourEnable) {
+        if (tfHourEnable != settings.A.tfHourEnable)
+          settingsChanged = true;
+        settings.A.tfHourEnable = tfHourEnable;
+      };
+
+      A24HourMode GetA24HourMode() const {
+        return settings.A.tfHourEnable;
+      };
+
+      void SetASecondHand(ASecondHand secondHandEnable) {
+        if (secondHandEnable != settings.A.secondHandEnable)
+          settingsChanged = true;
+        settings.A.secondHandEnable = secondHandEnable;
+      };
+
+      ASecondHand GetASecondHand() const {
+        return settings.A.secondHandEnable;
       };
 
       void SetAppMenu(uint8_t menu) {
@@ -288,6 +315,7 @@ namespace Pinetime {
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
+        Analog A;
 
         WatchFaceInfineat watchFaceInfineat;
 
