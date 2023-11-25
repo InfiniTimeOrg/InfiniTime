@@ -17,21 +17,22 @@
 */
 #pragma once
 
+#include "displayapp/Apps.h"
+#include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
-#include "systemtask/SystemTask.h"
-#include "displayapp/LittleVgl.h"
-#include "components/alarm/AlarmController.h"
 #include "displayapp/widgets/Counter.h"
+#include "displayapp/Controllers.h"
+#include "Symbols.h"
 
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class Alarm : public Screen {
       public:
-        Alarm(Controllers::AlarmController& alarmController,
-              Controllers::Settings::ClockType clockType,
-              System::SystemTask& systemTask,
-              Controllers::MotorController& motorController);
+        explicit Alarm(Controllers::AlarmController& alarmController,
+                       Controllers::Settings::ClockType clockType,
+                       System::SystemTask& systemTask,
+                       Controllers::MotorController& motorController);
         ~Alarm() override;
         void SetAlerting();
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
@@ -63,6 +64,19 @@ namespace Pinetime {
         Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_76);
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
       };
+    }
+
+    template <>
+    struct AppTraits<Apps::Alarm> {
+      static constexpr Apps app = Apps::Alarm;
+      static constexpr const char* icon = Screens::Symbols::clock;
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Alarm(controllers.alarmController,
+                                  controllers.settingsController.GetClockType(),
+                                  *controllers.systemTask,
+                                  controllers.motorController);
+      };
     };
-  };
+  }
 }
