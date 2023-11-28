@@ -8,7 +8,17 @@
 
 using namespace Pinetime::Applications::Screens;
 
-constexpr std::array<SettingWakeUp::Option, 6> SettingWakeUp::options;
+constexpr std::array<SettingWakeUp::Option, SettingWakeUp::numOptions> SettingWakeUp::options;
+
+auto SettingWakeUp::CreateScreenList() {
+  std::array<std::function<std::unique_ptr<Screen>()>, nScreens> screens;
+  for (size_t i = 0; i < screens.size(); i++) {
+    screens[i] = [this, i]() -> std::unique_ptr<Screen> {
+      return CreateScreen(i);
+    };
+  }
+  return screens;
+}
 
 namespace {
   void event_handler(lv_obj_t* obj, lv_event_t event) {
@@ -19,7 +29,19 @@ namespace {
   }
 }
 
-SettingWakeUp::SettingWakeUp(Pinetime::Controllers::Settings& settingsController) : settingsController {settingsController} {
+SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app,
+                             Pinetime::Controllers::Settings& settingsController)
+  : settingsController {settingsController}
+  , screens {app, 0, CreateScreenList(), Screens::ScreenListModes::UpDown} {
+}
+
+
+SettingWakeUp::~SettingWakeUp() {
+  lv_obj_clean(lv_scr_act());
+  settingsController.SaveSettings();
+}
+
+std::unique_ptr<Screen> SettingWakeUp::CreateScreen(size_t screenNum) {
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
 
   lv_obj_set_style_local_bg_opa(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
@@ -27,7 +49,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Controllers::Settings& settingsController
   lv_obj_set_style_local_pad_inner(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
   lv_obj_set_style_local_border_width(container1, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
-  lv_obj_set_pos(container1, 10, 0);
+  lv_obj_set_pos(container1, 10, 35);
   lv_obj_set_width(container1, LV_HOR_RES - 20);
   lv_obj_set_height(container1, LV_VER_RES - 20);
   lv_cont_set_layout(container1, LV_LAYOUT_COLUMN_LEFT);
@@ -35,7 +57,7 @@ SettingWakeUp::SettingWakeUp(Pinetime::Controllers::Settings& settingsController
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Wake Up");
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, -4);
+  lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 15, 15);
 
   lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
@@ -43,20 +65,29 @@ SettingWakeUp::SettingWakeUp(Pinetime::Controllers::Settings& settingsController
   lv_label_set_align(icon, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(icon, title, LV_ALIGN_OUT_LEFT_MID, -10, 0);
 
-  for (unsigned int i = 0; i < options.size(); i++) {
+  // cleanup any old pointers
+  cbOption.fill(nullptr);
+
+  // only loop as far as the list size aĺlows
+  unsigned int loopMax = screenNum * optionsPerScreen + optionsPerScreen;
+  if (loopMax > options.size()) {
+    loopMax = options.size();
+  }
+
+  for (unsigned int i = screenNum * optionsPerScreen; i < loopMax; i++) {
     cbOption[i] = lv_checkbox_create(container1, nullptr);
     lv_checkbox_set_text(cbOption[i], options[i].name);
-    if (settingsController.isWakeUpModeOn(static_cast<Controllers::Settings::WakeUpMode>(i))) {
+    if (settingsController.isWakeUpModeOn(options[i].wakeUpMode)) {
       lv_checkbox_set_checked(cbOption[i], true);
     }
     cbOption[i]->user_data = this;
     lv_obj_set_event_cb(cbOption[i], event_handler);
   }
+  return std::make_unique<Screens::Page>(screenNum, nScreens, container1);
 }
 
-SettingWakeUp::~SettingWakeUp() {
-  lv_obj_clean(lv_scr_act());
-  settingsController.SaveSettings();
+bool SettingWakeUp::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  return screens.OnTouchEvent(event);
 }
 
 void SettingWakeUp::UpdateSelected(lv_obj_t* object) {
@@ -74,6 +105,8 @@ void SettingWakeUp::UpdateSelected(lv_obj_t* object) {
   // for example, when setting SingleTap, DoubleTap is unset and vice versa.
   auto modes = settingsController.getWakeUpModes();
   for (size_t i = 0; i < options.size(); ++i) {
-    lv_checkbox_set_checked(cbOption[i], modes[i]);
+    if (cbOption[i]) {
+      lv_checkbox_set_checked(cbOption[i], modes[i]);
+    }
   }
 }
