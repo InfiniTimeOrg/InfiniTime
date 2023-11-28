@@ -24,7 +24,6 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
-
         auto CreateScreenList();
         std::unique_ptr<Screen> CreateScreen(size_t screenNum);
 

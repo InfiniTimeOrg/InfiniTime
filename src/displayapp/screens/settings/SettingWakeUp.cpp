@@ -29,12 +29,9 @@ namespace {
   }
 }
 
-SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app,
-                             Pinetime::Controllers::Settings& settingsController)
-  : settingsController {settingsController}
-  , screens {app, 0, CreateScreenList(), Screens::ScreenListModes::UpDown} {
+SettingWakeUp::SettingWakeUp(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
+  : settingsController {settingsController}, screens {app, 0, CreateScreenList(), Screens::ScreenListModes::UpDown} {
 }
-
 
 SettingWakeUp::~SettingWakeUp() {
   lv_obj_clean(lv_scr_act());
