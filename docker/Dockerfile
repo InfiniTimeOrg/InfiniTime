@@ -1,6 +1,5 @@
 FROM ubuntu:22.04
 
-ARG DEVCONTAINER
 ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_MAJOR=20
 RUN apt-get update -qq \

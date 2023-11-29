@@ -2,10 +2,7 @@
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.154.2/containers/cpp
 {
 	"build": {
-		"dockerfile": "docker/Dockerfile",
-		"args": {
-			"DEVCONTAINER": "true"
-		}
+		"dockerfile": "docker/Dockerfile"
 	},
 	"customizations": {
 		"vscode": {
