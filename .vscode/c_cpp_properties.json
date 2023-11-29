@@ -13,6 +13,21 @@
                 "${workspaceFolder}/src"
             ],
             "defines": [],
+            "compilerPath": "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "linux-gcc-arm",
+            "configurationProvider": "ms-vscode.cpp-tools",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
+        },
+        {
+            "name": "nrfCC Devcontainer",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/src/**",
+                "${workspaceFolder}/src"
+            ],
+            "defines": [],
             "compilerPath": "${TOOLS_DIR}/${GCC_ARM_PATH}/bin/arm-none-eabi-gcc",
             "cStandard": "c11",
             "cppStandard": "c++20",
