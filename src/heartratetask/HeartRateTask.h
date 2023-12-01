@@ -5,7 +5,7 @@
 #include <components/heartrate/Ppg.h>
 #include "components/settings/Settings.h"
 
-#define DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED 30 * pdMS_TO_TICKS
+#define DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED pdMS_TO_TICKS(30 * 1000)
 
 namespace Pinetime {
   namespace Drivers {
