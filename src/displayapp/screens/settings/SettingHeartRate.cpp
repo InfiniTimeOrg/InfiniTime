@@ -1,6 +1,5 @@
 #include "displayapp/screens/settings/SettingHeartRate.h"
 #include <lvgl/lvgl.h>
-#include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Styles.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
@@ -18,8 +17,8 @@ namespace {
 
 constexpr std::array<Option, 8> SettingHeartRate::options;
 
-SettingHeartRate::SettingHeartRate(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
-  : app {app}, settingsController {settingsController} {
+SettingHeartRate::SettingHeartRate(Pinetime::Controllers::Settings& settingsController)
+  : settingsController {settingsController} {
 
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
 

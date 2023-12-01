@@ -29,7 +29,7 @@ void HeartRateTask::Work() {
   int lastBpm = 0;
 
   while (true) {
-    auto delay = CurrentTaskDelay();
+    TickType_t delay = CurrentTaskDelay();
     Messages msg;
 
     if (xQueueReceive(messageQueue, &msg, delay) == pdTRUE) {
@@ -163,34 +163,34 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
   }
 }
 
-int HeartRateTask::CurrentTaskDelay() {
+TickType_t HeartRateTask::CurrentTaskDelay() {
   switch (state) {
     case States::Measuring:
     case States::BackgroundMeasuring:
       return ppg.deltaTms;
     case States::Running:
-      return 100;
+      return 100 * pdMS_TO_TICKS;
     case States::BackgroundWaiting:
-      return 10000;
+      return 10000 * pdMS_TO_TICKS;
     default:
       return portMAX_DELAY;
   }
 }
 
-uint32_t HeartRateTask::GetHeartRateBackgroundMeasurementIntervalInTicks() {
+TickType_t HeartRateTask::GetHeartRateBackgroundMeasurementIntervalInTicks() {
   switch (settings.GetHeartRateBackgroundMeasurementInterval()) {
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenSeconds:
-      return 10 * 1000;
+      return 10 * pdMS_TO_TICKS;
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtySeconds:
-      return 30 * 1000;
+      return 30 * pdMS_TO_TICKS;
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::OneMinute:
-      return 60 * 1000;
+      return 60 * pdMS_TO_TICKS;
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::FiveMinutes:
-      return 5 * 60 * 1000;
+      return 5 * 60 * pdMS_TO_TICKS;
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenMinutes:
-      return 10 * 60 * 1000;
+      return 10 * 60 * pdMS_TO_TICKS;
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtyMinutes:
-      return 30 * 60 * 1000;
+      return 30 * 60 * pdMS_TO_TICKS;
     default:
       return 0;
   }
