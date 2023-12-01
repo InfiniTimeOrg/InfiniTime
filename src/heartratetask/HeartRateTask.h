@@ -43,10 +43,6 @@ namespace Pinetime {
       bool IsContinuosModeActivated();
       bool IsBackgroundMeasurementActivated();
 
-      void HandleBackgroundWaiting();
-      void HandleSensorData(int* lastBpm);
-      int CurrentTaskDelay();
-
       TaskHandle_t taskHandle;
       QueueHandle_t messageQueue;
       States state = States::Running;
