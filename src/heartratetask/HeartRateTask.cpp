@@ -154,7 +154,8 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
     state = States::BackgroundWaiting;
     StartWaiting();
   }
-  if (bpm == 0 && state == States::BackgroundMeasuring && xTaskGetTickCount() - measurementStart >= DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED) {
+  if (bpm == 0 && state == States::BackgroundMeasuring &&
+      xTaskGetTickCount() - measurementStart >= DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED) {
     state = States::BackgroundWaiting;
     StartWaiting();
   }
@@ -166,9 +167,9 @@ TickType_t HeartRateTask::CurrentTaskDelay() {
     case States::BackgroundMeasuring:
       return ppg.deltaTms;
     case States::Running:
-      return 100 * pdMS_TO_TICKS;
+      return pdMS_TO_TICKS(100);
     case States::BackgroundWaiting:
-      return 10000 * pdMS_TO_TICKS;
+      return pdMS_TO_TICKS(10000);
     default:
       return portMAX_DELAY;
   }
@@ -177,17 +178,17 @@ TickType_t HeartRateTask::CurrentTaskDelay() {
 TickType_t HeartRateTask::GetHeartRateBackgroundMeasurementIntervalInTicks() {
   switch (settings.GetHeartRateBackgroundMeasurementInterval()) {
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenSeconds:
-      return 10 * pdMS_TO_TICKS;
+      return pdMS_TO_TICKS(10 * 1000);
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtySeconds:
-      return 30 * pdMS_TO_TICKS;
+      return pdMS_TO_TICKS(30 * 1000);
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::OneMinute:
-      return 60 * pdMS_TO_TICKS;
+      return pdMS_TO_TICKS(60 * 1000);
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::FiveMinutes:
-      return 5 * 60 * pdMS_TO_TICKS;
+      return pdMS_TO_TICKS(5 * 60 * 1000);
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenMinutes:
-      return 10 * 60 * pdMS_TO_TICKS;
+      return pdMS_TO_TICKS(10 * 60 * 1000);
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtyMinutes:
-      return 30 * 60 * pdMS_TO_TICKS;
+      return pdMS_TO_TICKS(30 * 60 * 1000);
     default:
       return 0;
   }

@@ -17,8 +17,7 @@ namespace {
 
 constexpr std::array<Option, 8> SettingHeartRate::options;
 
-SettingHeartRate::SettingHeartRate(Pinetime::Controllers::Settings& settingsController)
-  : settingsController {settingsController} {
+SettingHeartRate::SettingHeartRate(Pinetime::Controllers::Settings& settingsController) : settingsController {settingsController} {
 
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
 
