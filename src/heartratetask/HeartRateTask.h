@@ -5,7 +5,7 @@
 #include <components/heartrate/Ppg.h>
 #include "components/settings/Settings.h"
 
-#define DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED 30 * 1000 // 30 seconds assuming 1 Hz
+#define DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED 30 * pdMS_TO_TICKS
 
 namespace Pinetime {
   namespace Drivers {
@@ -37,9 +37,9 @@ namespace Pinetime {
 
       void HandleBackgroundWaiting();
       void HandleSensorData(int* lastBpm);
-      int CurrentTaskDelay();
+      TickType_t CurrentTaskDelay();
 
-      uint32_t GetHeartRateBackgroundMeasurementIntervalInTicks();
+      TickType_t GetHeartRateBackgroundMeasurementIntervalInTicks();
       bool IsContinuosModeActivated();
       bool IsBackgroundMeasurementActivated();
 

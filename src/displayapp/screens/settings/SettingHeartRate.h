@@ -21,13 +21,12 @@ namespace Pinetime {
 
       class SettingHeartRate : public Screen {
       public:
-        SettingHeartRate(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settings);
+        SettingHeartRate(Pinetime::Controllers::Settings& settings);
         ~SettingHeartRate() override;
 
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
 
       private:
-        DisplayApp* app;
         Pinetime::Controllers::Settings& settingsController;
 
         static constexpr std::array<Option, 8> options = {{
