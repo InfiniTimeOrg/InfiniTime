@@ -47,12 +47,12 @@ namespace Pinetime {
       int OnCommand(struct ble_gatt_access_ctxt* ctxt);
 
       enum class Icons : uint8_t {
-        Sun = 0, // ClearSky
+        Sun = 0,       // ClearSky
         CloudsSun = 1, // FewClouds
-        Clouds = 2, // Scattered clouds
+        Clouds = 2,    // Scattered clouds
         BrokenClouds = 3,
         CloudShowerHeavy = 4, // shower rain
-        CloudSunRain = 5, // rain
+        CloudSunRain = 5,     // rain
         Thunderstorm = 6,
         Snow = 7,
         Smog = 8, // Mist
@@ -60,13 +60,21 @@ namespace Pinetime {
       };
 
       struct CurrentWeather {
-        CurrentWeather(uint64_t timestamp, uint8_t temperature, uint8_t minTemperature, uint8_t maxTemperature,
-                       uint8_t iconId, const char* location)
-          : timestamp{timestamp}, temperature{temperature}, minTemperature{minTemperature}, maxTemperature{maxTemperature},
-            iconId{iconId} {
+        CurrentWeather(uint64_t timestamp,
+                       uint8_t temperature,
+                       uint8_t minTemperature,
+                       uint8_t maxTemperature,
+                       uint8_t iconId,
+                       const char* location)
+          : timestamp {timestamp},
+            temperature {temperature},
+            minTemperature {minTemperature},
+            maxTemperature {maxTemperature},
+            iconId {iconId} {
           std::memcpy(this->location, location, 32);
           this->location[32] = 0;
         }
+
         uint64_t timestamp;
         uint8_t temperature;
         uint8_t minTemperature;
@@ -81,17 +89,18 @@ namespace Pinetime {
       struct Forecast {
         uint64_t timestamp;
         uint8_t nbDays;
+
         struct Day {
           uint8_t minTemperature;
           uint8_t maxTemperature;
           uint8_t iconId;
         };
+
         std::array<Day, 5> days;
       };
 
       std::optional<CurrentWeather> Current() const;
       std::optional<Forecast> GetForecast() const;
-
 
     private:
       // 00050000-78fc-48fe-8e23-433b3a1942d0
@@ -109,13 +118,12 @@ namespace Pinetime {
 
       ble_uuid128_t weatherDataCharUuid {CharUuid(0x00, 0x01)};
 
-      const struct ble_gatt_chr_def characteristicDefinition[2] = {
-        {.uuid = &weatherDataCharUuid.u,
-         .access_cb = WeatherCallback,
-         .arg = this,
-         .flags = BLE_GATT_CHR_F_WRITE,
-         .val_handle = &eventHandle},
-        {0}};
+      const struct ble_gatt_chr_def characteristicDefinition[2] = {{.uuid = &weatherDataCharUuid.u,
+                                                                    .access_cb = WeatherCallback,
+                                                                    .arg = this,
+                                                                    .flags = BLE_GATT_CHR_F_WRITE,
+                                                                    .val_handle = &eventHandle},
+                                                                   {0}};
       const struct ble_gatt_svc_def serviceDefinition[2] = {
         {.type = BLE_GATT_SVC_TYPE_PRIMARY, .uuid = &weatherUuid.u, .characteristics = characteristicDefinition},
         {0}};
