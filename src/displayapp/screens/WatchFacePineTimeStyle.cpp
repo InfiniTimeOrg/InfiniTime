@@ -45,16 +45,36 @@ namespace {
 
   const char* GetIcon(const Pinetime::Controllers::SimpleWeatherService::Icons icon) {
     switch (icon) {
-      case Pinetime::Controllers::SimpleWeatherService::Icons::Sun: return Symbols::sun; break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::CloudsSun: return Symbols::cloudSun; break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::Clouds: return Symbols::cloud; break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::BrokenClouds: return Symbols::cloud; break; // TODO missing symbol
-      case Pinetime::Controllers::SimpleWeatherService::Icons::Thunderstorm: return Symbols::cloud; break; // TODO missing symbol
-      case Pinetime::Controllers::SimpleWeatherService::Icons::Snow: return Symbols::cloud; break; // TODO missing symbol
-      case Pinetime::Controllers::SimpleWeatherService::Icons::CloudShowerHeavy: return Symbols::cloudShowersHeavy; break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::CloudSunRain: return Symbols::cloudSunRain; break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::Smog: return Symbols::smog; break;
-      default: return Symbols::ban; break;
+      case Pinetime::Controllers::SimpleWeatherService::Icons::Sun:
+        return Symbols::sun;
+        break;
+      case Pinetime::Controllers::SimpleWeatherService::Icons::CloudsSun:
+        return Symbols::cloudSun;
+        break;
+      case Pinetime::Controllers::SimpleWeatherService::Icons::Clouds:
+        return Symbols::cloud;
+        break;
+      case Pinetime::Controllers::SimpleWeatherService::Icons::BrokenClouds:
+        return Symbols::cloud;
+        break; // TODO missing symbol
+      case Pinetime::Controllers::SimpleWeatherService::Icons::Thunderstorm:
+        return Symbols::cloud;
+        break; // TODO missing symbol
+      case Pinetime::Controllers::SimpleWeatherService::Icons::Snow:
+        return Symbols::cloud;
+        break; // TODO missing symbol
+      case Pinetime::Controllers::SimpleWeatherService::Icons::CloudShowerHeavy:
+        return Symbols::cloudShowersHeavy;
+        break;
+      case Pinetime::Controllers::SimpleWeatherService::Icons::CloudSunRain:
+        return Symbols::cloudSunRain;
+        break;
+      case Pinetime::Controllers::SimpleWeatherService::Icons::Smog:
+        return Symbols::smog;
+        break;
+      default:
+        return Symbols::ban;
+        break;
     }
   }
 }

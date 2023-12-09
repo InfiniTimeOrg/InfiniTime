@@ -22,45 +22,45 @@
 using namespace Pinetime::Controllers;
 
 namespace {
-  enum class MessageType {
-    CurrentWeather,
-    Forecast,
-    Unknown
-  };
+  enum class MessageType { CurrentWeather, Forecast, Unknown };
 
   SimpleWeatherService::CurrentWeather CreateCurrentWeather(const uint8_t* dataBuffer) {
     char cityName[33];
     std::memcpy(&cityName[0], &dataBuffer[13], 32);
     cityName[32] = '\0';
-    return SimpleWeatherService::CurrentWeather{dataBuffer[2] + (dataBuffer[3] << 8) + (dataBuffer[4] << 16) + (dataBuffer[5] << 24) +
-        ((uint64_t) dataBuffer[6] << 32) + ((uint64_t) dataBuffer[7] << 40) + ((uint64_t) dataBuffer[8] << 48) +
-        ((uint64_t) dataBuffer[9] << 54),
-        dataBuffer[10],
-        dataBuffer[11],
-        dataBuffer[12],
-        dataBuffer[13 + 32],
-        cityName};
+    return SimpleWeatherService::CurrentWeather {dataBuffer[2] + (dataBuffer[3] << 8) + (dataBuffer[4] << 16) + (dataBuffer[5] << 24) +
+                                                   ((uint64_t) dataBuffer[6] << 32) + ((uint64_t) dataBuffer[7] << 40) +
+                                                   ((uint64_t) dataBuffer[8] << 48) + ((uint64_t) dataBuffer[9] << 54),
+                                                 dataBuffer[10],
+                                                 dataBuffer[11],
+                                                 dataBuffer[12],
+                                                 dataBuffer[13 + 32],
+                                                 cityName};
   }
 
   SimpleWeatherService::Forecast CreateForecast(const uint8_t* dataBuffer) {
     uint64_t timestamp = static_cast<uint64_t>(dataBuffer[2] + (dataBuffer[3] << 8) + (dataBuffer[4] << 16) + (dataBuffer[5] << 24) +
-                                               ((uint64_t) dataBuffer[6] << 32) + ((uint64_t) dataBuffer[7] << 40) + ((uint64_t) dataBuffer[8] << 48) +
-                                               ((uint64_t) dataBuffer[9] << 54));
+                                               ((uint64_t) dataBuffer[6] << 32) + ((uint64_t) dataBuffer[7] << 40) +
+                                               ((uint64_t) dataBuffer[8] << 48) + ((uint64_t) dataBuffer[9] << 54));
     uint8_t nbDays = dataBuffer[10];
     std::array<SimpleWeatherService::Forecast::Day, 5> days;
     for (int i = 0; i < nbDays; i++) {
-      days[i] = SimpleWeatherService::Forecast::Day {dataBuffer[11 + (i * 3)],
-                                                     dataBuffer[12 + (i * 3)],
-                                                     dataBuffer[13 + (i * 3)]};
+      days[i] = SimpleWeatherService::Forecast::Day {dataBuffer[11 + (i * 3)], dataBuffer[12 + (i * 3)], dataBuffer[13 + (i * 3)]};
     }
     return SimpleWeatherService::Forecast {timestamp, nbDays, days};
   }
 
   MessageType GetMessageType(const uint8_t* dataBuffer) {
-    switch(dataBuffer[0]) {
-      case 0: return MessageType::CurrentWeather; break;
-      case 1: return MessageType::Forecast; break;
-      default: return MessageType::Unknown; break;
+    switch (dataBuffer[0]) {
+      case 0:
+        return MessageType::CurrentWeather;
+        break;
+      case 1:
+        return MessageType::Forecast;
+        break;
+      default:
+        return MessageType::Unknown;
+        break;
     }
   }
 
@@ -74,7 +74,6 @@ int WeatherCallback(uint16_t /*connHandle*/, uint16_t /*attrHandle*/, struct ble
 }
 
 SimpleWeatherService::SimpleWeatherService(const DateTime& dateTimeController) : dateTimeController(dateTimeController) {
-
 }
 
 void SimpleWeatherService::Init() {
@@ -86,9 +85,9 @@ int SimpleWeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
   const auto* buffer = ctxt->om;
   const auto* dataBuffer = buffer->om_data;
 
-  switch(GetMessageType(dataBuffer)) {
+  switch (GetMessageType(dataBuffer)) {
     case MessageType::CurrentWeather:
-      if(GetVersion(dataBuffer) == 0) {
+      if (GetVersion(dataBuffer) == 0) {
         currentWeather = CreateCurrentWeather(dataBuffer);
         NRF_LOG_INFO("Current weather :\n\tTimestamp : %d\n\tTemperature:%d\n\tMin:%d\n\tMax:%d\n\tIcon:%d\n\tLocation:%s",
                      currentWeather->timestamp,
@@ -100,11 +99,15 @@ int SimpleWeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
       }
       break;
     case MessageType::Forecast:
-      if(GetVersion(dataBuffer) == 0) {
+      if (GetVersion(dataBuffer) == 0) {
         forecast = CreateForecast(dataBuffer);
         NRF_LOG_INFO("Forecast : Timestamp : %d", forecast->timestamp);
-        for(int i = 0; i < 5; i++) {
-          NRF_LOG_INFO("\t[%d] Min: %d - Max : %d - Icon : %d", i, forecast->days[i].minTemperature, forecast->days[i].maxTemperature, forecast->days[i].iconId);
+        for (int i = 0; i < 5; i++) {
+          NRF_LOG_INFO("\t[%d] Min: %d - Max : %d - Icon : %d",
+                       i,
+                       forecast->days[i].minTemperature,
+                       forecast->days[i].maxTemperature,
+                       forecast->days[i].iconId);
         }
       }
       break;
@@ -116,13 +119,13 @@ int SimpleWeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
 }
 
 std::optional<SimpleWeatherService::CurrentWeather> SimpleWeatherService::Current() const {
-  if(currentWeather) {
+  if (currentWeather) {
     auto currentTime = dateTimeController.UTCDateTime().time_since_epoch();
-    auto weatherTpSecond = std::chrono::seconds{currentWeather->timestamp};
+    auto weatherTpSecond = std::chrono::seconds {currentWeather->timestamp};
     auto weatherTp = std::chrono::duration_cast<std::chrono::seconds>(weatherTpSecond);
     auto delta = currentTime - weatherTp;
 
-    if(delta < std::chrono::hours{24}) {
+    if (delta < std::chrono::hours {24}) {
       return currentWeather;
     }
   }
@@ -130,13 +133,13 @@ std::optional<SimpleWeatherService::CurrentWeather> SimpleWeatherService::Curren
 }
 
 std::optional<SimpleWeatherService::Forecast> SimpleWeatherService::GetForecast() const {
-  if(forecast) {
+  if (forecast) {
     auto currentTime = dateTimeController.UTCDateTime().time_since_epoch();
-    auto weatherTpSecond = std::chrono::seconds{forecast->timestamp};
+    auto weatherTpSecond = std::chrono::seconds {forecast->timestamp};
     auto weatherTp = std::chrono::duration_cast<std::chrono::seconds>(weatherTpSecond);
     auto delta = currentTime - weatherTp;
 
-    if(delta < std::chrono::hours{24}) {
+    if (delta < std::chrono::hours {24}) {
       return this->forecast;
     }
   }
