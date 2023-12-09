@@ -5,6 +5,8 @@
 
 using namespace Pinetime::Applications::Screens;
 
+constexpr int Pinetime::Applications::Screens::StopWatch::maxLapCount;
+
 namespace {
   TimeSeparated_t convertTicksToTimeSegments(const TickType_t timeElapsed) {
     // Centiseconds

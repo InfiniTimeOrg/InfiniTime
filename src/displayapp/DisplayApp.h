@@ -39,6 +39,7 @@ namespace Pinetime {
     class HeartRateController;
     class MotionController;
     class TouchHandler;
+    class SimpleWeatherService;
   }
 
   namespace System {
@@ -74,7 +75,7 @@ namespace Pinetime {
       void SetFullRefresh(FullRefreshDirections direction);
 
       void Register(Pinetime::System::SystemTask* systemTask);
-      void Register(Pinetime::Controllers::WeatherService* weatherService);
+      void Register(Pinetime::Controllers::SimpleWeatherService* weatherService);
       void Register(Pinetime::Controllers::MusicService* musicService);
       void Register(Pinetime::Controllers::NavigationService* NavigationService);
 

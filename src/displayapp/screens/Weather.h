@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "components/ble/weather/WeatherService.h"
+#include "components/ble/weather/SimpleWeatherService.h"
 #include "Screen.h"
 #include "ScreenList.h"
 #include "displayapp/Apps.h"
