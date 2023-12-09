@@ -28,7 +28,6 @@
 #include "displayapp/screens/Steps.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
-#include "displayapp/screens/Weather.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -607,7 +606,7 @@ void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
   this->controllers.systemTask = systemTask;
 }
 
-void DisplayApp::Register(Pinetime::Controllers::WeatherService* weatherService) {
+void DisplayApp::Register(Pinetime::Controllers::SimpleWeatherService* weatherService) {
   this->controllers.weatherController = weatherService;
 }
 

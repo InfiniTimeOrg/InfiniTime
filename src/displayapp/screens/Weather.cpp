@@ -17,7 +17,7 @@
 */
 #include "Weather.h"
 #include <lvgl/lvgl.h>
-#include <components/ble/weather/WeatherService.h>
+#include <components/ble/weather/SimpleWeatherService.h>
 #include "Label.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"

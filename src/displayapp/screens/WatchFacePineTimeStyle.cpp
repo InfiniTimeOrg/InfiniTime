@@ -33,7 +33,7 @@
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
 #include "displayapp/DisplayApp.h"
-#include "components/ble/weather/WeatherService.h"
+#include "components/ble/SimpleWeatherService.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -41,6 +41,21 @@ namespace {
   void event_handler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<WatchFacePineTimeStyle*>(obj->user_data);
     screen->UpdateSelected(obj, event);
+  }
+
+  const char* GetIcon(const Pinetime::Controllers::SimpleWeatherService::Icons icon) {
+    switch (icon) {
+      case Pinetime::Controllers::SimpleWeatherService::Icons::Sun: return Symbols::sun; break;
+      case Pinetime::Controllers::SimpleWeatherService::Icons::CloudsSun: return Symbols::cloudSun; break;
+      case Pinetime::Controllers::SimpleWeatherService::Icons::Clouds: return Symbols::cloud; break;
+      case Pinetime::Controllers::SimpleWeatherService::Icons::BrokenClouds: return Symbols::cloud; break; // TODO missing symbol
+      case Pinetime::Controllers::SimpleWeatherService::Icons::Thunderstorm: return Symbols::cloud; break; // TODO missing symbol
+      case Pinetime::Controllers::SimpleWeatherService::Icons::Snow: return Symbols::cloud; break; // TODO missing symbol
+      case Pinetime::Controllers::SimpleWeatherService::Icons::CloudShowerHeavy: return Symbols::cloudShowersHeavy; break;
+      case Pinetime::Controllers::SimpleWeatherService::Icons::CloudSunRain: return Symbols::cloudSunRain; break;
+      case Pinetime::Controllers::SimpleWeatherService::Icons::Smog: return Symbols::smog; break;
+      default: return Symbols::ban; break;
+    }
   }
 }
 
@@ -50,7 +65,7 @@ WatchFacePineTimeStyle::WatchFacePineTimeStyle(Controllers::DateTime& dateTimeCo
                                                Controllers::NotificationManager& notificationManager,
                                                Controllers::Settings& settingsController,
                                                Controllers::MotionController& motionController,
-                                               Controllers::WeatherService& weatherService)
+                                               Controllers::SimpleWeatherService& weatherService)
   : currentDateTime {{}},
     batteryIcon(false),
     dateTimeController {dateTimeController},
@@ -537,29 +552,18 @@ void WatchFacePineTimeStyle::Refresh() {
     }
   }
 
-  if (weatherService.GetCurrentTemperature()->timestamp != 0 && weatherService.GetCurrentClouds()->timestamp != 0 &&
-      weatherService.GetCurrentPrecipitation()->timestamp != 0) {
-    nowTemp = (weatherService.GetCurrentTemperature()->temperature / 100);
-    clouds = (weatherService.GetCurrentClouds()->amount);
-    precip = (weatherService.GetCurrentPrecipitation()->amount);
-    if (nowTemp.IsUpdated()) {
-      lv_label_set_text_fmt(temperature, "%d°", nowTemp.Get());
-      if ((clouds <= 30) && (precip == 0)) {
-        lv_label_set_text(weatherIcon, Symbols::sun);
-      } else if ((clouds >= 70) && (clouds <= 90) && (precip == 1)) {
-        lv_label_set_text(weatherIcon, Symbols::cloudSunRain);
-      } else if ((clouds > 90) && (precip == 0)) {
-        lv_label_set_text(weatherIcon, Symbols::cloud);
-      } else if ((clouds > 70) && (precip >= 2)) {
-        lv_label_set_text(weatherIcon, Symbols::cloudShowersHeavy);
-      } else {
-        lv_label_set_text(weatherIcon, Symbols::cloudSun);
-      };
+  currentWeather = weatherService.Current();
+
+  if (currentWeather.IsUpdated()) {
+    auto optCurrentWeather = currentWeather.Get();
+    if (optCurrentWeather) {
+      lv_label_set_text_fmt(temperature, "%d°", optCurrentWeather->temperature);
+      lv_label_set_text(weatherIcon, GetIcon(optCurrentWeather->iconId));
       lv_obj_realign(temperature);
       lv_obj_realign(weatherIcon);
     }
   } else {
-    lv_label_set_text_static(temperature, "--");
+    lv_label_set_text(temperature, "--");
     lv_label_set_text(weatherIcon, Symbols::ban);
     lv_obj_realign(temperature);
     lv_obj_realign(weatherIcon);
