@@ -1,4 +1,5 @@
 #include "displayapp/screens/Notifications.h"
+#include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/DisplayApp.h"
 #include "components/ble/MusicService.h"
 #include "components/ble/AlertNotificationService.h"
@@ -33,10 +34,11 @@ Notifications::Notifications(DisplayApp* app,
                                                      notification.category,
                                                      notificationManager.NbNotifications(),
                                                      alertNotificationService,
-                                                     motorController);
+                                                     motorController,
+                                                     notificationManager);
     validDisplay = true;
   } else {
-    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController, notificationManager);
     validDisplay = false;
   }
   if (mode == Modes::Preview) {
@@ -82,7 +84,7 @@ void Notifications::Refresh() {
 
   } else if (mode == Modes::Preview && dismissingNotification) {
     running = false;
-    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController, notificationManager);
 
   } else if (dismissingNotification) {
     dismissingNotification = false;
@@ -111,9 +113,10 @@ void Notifications::Refresh() {
                                                        notification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       notificationManager);
     } else {
-      currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+      currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController, notificationManager);
     }
   }
 
@@ -202,7 +205,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        previousNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       notificationManager);
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeUp: {
@@ -229,7 +233,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        nextNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       notificationManager);
     }
       return true;
     default:
@@ -245,14 +250,16 @@ namespace {
 }
 
 Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController)
+                                                  Pinetime::Controllers::MotorController& motorController,
+                                                  Pinetime::Controllers::NotificationManager& notificationManager)
   : NotificationItem("Notification",
                      "No notification to display",
                      0,
                      Controllers::NotificationManager::Categories::Unknown,
                      0,
                      alertNotificationService,
-                     motorController) {
+                     motorController,
+                     notificationManager) {
 }
 
 Notifications::NotificationItem::NotificationItem(const char* title,
@@ -261,8 +268,9 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Controllers::NotificationManager::Categories category,
                                                   uint8_t notifNb,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController)
-  : alertNotificationService {alertNotificationService}, motorController {motorController} {
+                                                  Pinetime::Controllers::MotorController& motorController,
+                                                  Pinetime::Controllers::NotificationManager& notificationManager)
+  : alertNotificationService {alertNotificationService}, motorController {motorController}, notificationManager {notificationManager} {
   container = lv_cont_create(lv_scr_act(), nullptr);
   lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_style_local_bg_color(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
@@ -280,6 +288,19 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_set_size(subject_container, LV_HOR_RES, LV_VER_RES - 50);
   lv_cont_set_layout(subject_container, LV_LAYOUT_COLUMN_LEFT);
   lv_cont_set_fit(subject_container, LV_FIT_NONE);
+
+  // draw notification stack
+  if (category != Pinetime::Controllers::NotificationManager::Categories::IncomingCall) {
+    for (int i = 0; i < notifNb; i++) {
+      lv_obj_t* alert_icon = lv_label_create(container, nullptr);
+      if (i + 1 == notifNr) { // currently selected should be orange
+        lv_obj_set_style_local_text_color(alert_icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
+      }
+      // TODO: get categories for the other notifications
+      lv_label_set_text_fmt(alert_icon, NotificationIcon::GetCategoryIcon(notificationManager.CategoryAt(i)));
+      lv_obj_align(alert_icon, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, -22 * i);
+    }
+  }
 
   lv_obj_t* alert_count = lv_label_create(container, nullptr);
   lv_label_set_text_fmt(alert_count, "%i/%i", notifNr, notifNb);

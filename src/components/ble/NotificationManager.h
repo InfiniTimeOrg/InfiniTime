@@ -45,6 +45,7 @@ namespace Pinetime {
       Notification GetPrevious(Notification::Id id) const;
       // Return the index of the notification with the specified id, if not found return NbNotifications()
       Notification::Idx IndexOf(Notification::Id id) const;
+      Categories CategoryAt(Notification::Idx idx) const;
       bool ClearNewNotificationFlag();
       bool AreNewNotificationsAvailable() const;
       void Dismiss(Notification::Id id);

@@ -59,6 +59,19 @@ namespace Pinetime {
 
         static constexpr const char* flashlight = "\xEF\x80\x8B";
         static constexpr const char* paintbrushLg = "\xEE\x90\x8A";
+
+        // used for notification stack icons
+        static constexpr const char* questionCircle = "\xEF\x81\x99"; // F059
+        static constexpr const char* bell = "\xEF\x83\xB3";           // F0F3
+        static constexpr const char* envelope = "\xEF\x83\xA0";       // F0E0
+        static constexpr const char* newspaper = "\xEF\x87\xAA";      // F1EA
+        static constexpr const char* smsBubble = "\xEF\x9F\x8D";      // F7CD
+        // TODO codepoint F897 should exist in fontawesome 5, but our version doesn't have it
+        // need to do something about that
+        // static constexpr const char* voicemail = "\xEF\xA2\x97"; // F897
+        static constexpr const char* voicemail = questionCircle;       // TODO revert to above once fontaweosme issue is resolved
+        static constexpr const char* warningTriangle = "\xEF\x81\xB1"; // F071
+        static constexpr const char* messageBubble = "\xEF\x81\xB5";   // F075
       }
     }
   }
