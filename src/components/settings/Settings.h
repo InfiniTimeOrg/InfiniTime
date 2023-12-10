@@ -3,7 +3,7 @@
 #include <bitset>
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
-#include "displayapp/WatchFaces.h"
+#include "displayapp/Apps.h"
 
 namespace Pinetime {
   namespace Controllers {

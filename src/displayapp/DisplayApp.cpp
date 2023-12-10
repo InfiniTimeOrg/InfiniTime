@@ -11,7 +11,6 @@
 #include "components/motion/MotionController.h"
 #include "components/motor/MotorController.h"
 #include "displayapp/screens/ApplicationList.h"
-#include "displayapp/screens/Clock.h"
 #include "displayapp/screens/FirmwareUpdate.h"
 #include "displayapp/screens/FirmwareValidation.h"
 #include "displayapp/screens/InfiniPaint.h"
@@ -435,17 +434,17 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                  filesystem,
                                                                  std::move(apps));
     } break;
-    case Apps::Clock:
-      currentScreen = std::make_unique<Screens::Clock>(dateTimeController,
-                                                       batteryController,
-                                                       bleController,
-                                                       notificationManager,
-                                                       settingsController,
-                                                       heartRateController,
-                                                       motionController,
-                                                       systemTask->nimble().weather(),
-                                                       filesystem);
-      break;
+    case Apps::Clock: {
+      const auto* watchFace =
+        std::find_if(userWatchFaces.begin(), userWatchFaces.end(), [this](const WatchFaceDescription& watchfaceDescription) {
+          return watchfaceDescription.watchFace == settingsController.GetWatchFace();
+        });
+      if (watchFace != userWatchFaces.end())
+        currentScreen.reset(watchFace->create(controllers));
+      else {
+        currentScreen.reset(userWatchFaces[0].create(controllers));
+      }
+    } break;
     case Apps::Error:
       currentScreen = std::make_unique<Screens::Error>(bootError);
       break;
@@ -489,9 +488,14 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     case Apps::Settings:
       currentScreen = std::make_unique<Screens::Settings>(this, settingsController);
       break;
-    case Apps::SettingWatchFace:
-      currentScreen = std::make_unique<Screens::SettingWatchFace>(this, settingsController, filesystem);
-      break;
+    case Apps::SettingWatchFace: {
+      std::array<Screens::CheckboxList::Item, UserWatchFaceTypes::Count> items;
+      int i = 0;
+      for (const auto& userWatchFace : userWatchFaces) {
+        items[i++] = Screens::CheckboxList::Item {userWatchFace.name, userWatchFace.isAvailable(controllers.filesystem)};
+      }
+      currentScreen = std::make_unique<Screens::SettingWatchFace>(this, std::move(items), settingsController, filesystem);
+    } break;
     case Apps::SettingTimeFormat:
       currentScreen = std::make_unique<Screens::SettingTimeFormat>(settingsController);
       break;
@@ -536,18 +540,10 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       const auto* d = std::find_if(userApps.begin(), userApps.end(), [app](const AppDescription& appDescription) {
         return appDescription.app == app;
       });
-      if (d != userApps.end())
+      if (d != userApps.end()) {
         currentScreen.reset(d->create(controllers));
-      else {
-        currentScreen = std::make_unique<Screens::Clock>(dateTimeController,
-                                                         batteryController,
-                                                         bleController,
-                                                         notificationManager,
-                                                         settingsController,
-                                                         heartRateController,
-                                                         motionController,
-                                                         systemTask->nimble().weather(),
-                                                         filesystem);
+      } else {
+        currentScreen.reset(userWatchFaces[0].create(controllers));
       }
       break;
     }
