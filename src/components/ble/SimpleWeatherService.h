@@ -46,6 +46,8 @@ namespace Pinetime {
 
       int OnCommand(struct ble_gatt_access_ctxt* ctxt);
 
+      static constexpr uint8_t MaxNbForecastDays = 5;
+
       enum class Icons : uint8_t {
         Sun = 0,       // ClearSky
         CloudsSun = 1, // FewClouds
@@ -96,7 +98,7 @@ namespace Pinetime {
           uint8_t iconId;
         };
 
-        std::array<Day, 5> days;
+        std::array<Day, MaxNbForecastDays> days;
       };
 
       std::optional<CurrentWeather> Current() const;

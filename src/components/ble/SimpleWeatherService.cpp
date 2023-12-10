@@ -19,6 +19,8 @@
 #include "SimpleWeatherService.h"
 #include <cstring>
 #include <nrf_log.h>
+#include <array>
+
 using namespace Pinetime::Controllers;
 
 namespace {
@@ -42,8 +44,10 @@ namespace {
     uint64_t timestamp = static_cast<uint64_t>(dataBuffer[2] + (dataBuffer[3] << 8) + (dataBuffer[4] << 16) + (dataBuffer[5] << 24) +
                                                ((uint64_t) dataBuffer[6] << 32) + ((uint64_t) dataBuffer[7] << 40) +
                                                ((uint64_t) dataBuffer[8] << 48) + ((uint64_t) dataBuffer[9] << 54));
-    uint8_t nbDays = dataBuffer[10];
-    std::array<SimpleWeatherService::Forecast::Day, 5> days;
+
+    std::array<SimpleWeatherService::Forecast::Day, SimpleWeatherService::MaxNbForecastDays> days;
+    const uint8_t nbDaysInBuffer = dataBuffer[10];
+    const uint8_t nbDays = std::min(SimpleWeatherService::MaxNbForecastDays, nbDaysInBuffer);
     for (int i = 0; i < nbDays; i++) {
       days[i] = SimpleWeatherService::Forecast::Day {dataBuffer[11 + (i * 3)], dataBuffer[12 + (i * 3)], dataBuffer[13 + (i * 3)]};
     }
