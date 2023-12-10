@@ -38,7 +38,7 @@ namespace Pinetime {
 
         static constexpr int appsPerScreen = 6;
 
-        static constexpr int nScreens = (UserAppTypes::Count - 1) / appsPerScreen + 1;
+        static constexpr int nScreens = UserAppTypes::Count > 0 ? (UserAppTypes::Count - 1) / appsPerScreen + 1 : 1;
 
         ScreenList<nScreens> screens;
       };
