@@ -13,6 +13,7 @@
 #include "displayapp/screens/WatchFaceAnalog.h"
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
+#include "displayapp/screens/WatchFaceFuturistic.h"
 
 using namespace Pinetime::Applications::Screens;
 using namespace Pinetime::Applications;
@@ -54,6 +55,9 @@ Clock::Clock(Controllers::DateTime& dateTimeController,
           break;
         case WatchFace::CasioStyleG7710:
           return WatchFaceCasioStyleG7710();
+          break;
+        case 6:
+          return WatchFaceFuturistic();
           break;
       }
       return WatchFaceDigitalScreen();
@@ -130,4 +134,13 @@ std::unique_ptr<Screen> Clock::WatchFaceCasioStyleG7710() {
                                                              heartRateController,
                                                              motionController,
                                                              filesystem);
+}
+
+std::unique_ptr<Screen> Clock::WatchFaceFuturistic() {
+  return std::make_unique<Screens::WatchFaceFuturistic>(app,
+                                                        dateTimeController,
+                                                        batteryController,
+                                                        bleController,
+                                                        notificationManager,
+                                                        heartRateController);
 }
