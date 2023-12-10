@@ -373,7 +373,6 @@ list(APPEND SOURCE_FILES
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
         displayapp/screens/Screen.cpp
-        displayapp/screens/Clock.cpp
         displayapp/screens/Tile.cpp
         displayapp/screens/InfiniPaint.cpp
         displayapp/screens/Paddle.cpp
@@ -597,7 +596,6 @@ set(INCLUDE_FILES
         displayapp/Messages.h
         displayapp/TouchEvents.h
         displayapp/screens/Screen.h
-        displayapp/screens/Clock.h
         displayapp/screens/Tile.h
         displayapp/screens/InfiniPaint.h
         displayapp/screens/StopWatch.h
@@ -613,7 +611,6 @@ set(INCLUDE_FILES
         displayapp/screens/ApplicationList.h
         displayapp/screens/CheckboxList.h
         displayapp/Apps.h
-        displayapp/WatchFaces.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
         displayapp/screens/Metronome.h

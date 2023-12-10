@@ -3,7 +3,6 @@
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/Screen.h"
 #include "components/settings/Settings.h"
-#include "displayapp/WatchFaces.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -21,9 +20,11 @@ auto SettingWatchFace::CreateScreenList() const {
 }
 
 SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app,
+                                   std::array<Screens::CheckboxList::Item, UserWatchFaceTypes::Count>&& watchfaceItems,
                                    Pinetime::Controllers::Settings& settingsController,
                                    Pinetime::Controllers::FS& filesystem)
   : app {app},
+    watchfaceItems {std::move(watchfaceItems)},
     settingsController {settingsController},
     filesystem {filesystem},
     screens {app, 0, CreateScreenList(), Screens::ScreenListModes::UpDown} {
@@ -40,7 +41,11 @@ bool SettingWatchFace::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 std::unique_ptr<Screen> SettingWatchFace::CreateScreen(unsigned int screenNum) const {
   std::array<Screens::CheckboxList::Item, settingsPerScreen> watchfacesOnThisScreen;
   for (int i = 0; i < settingsPerScreen; i++) {
-    watchfacesOnThisScreen[i] = watchfaces[screenNum * settingsPerScreen + i];
+    if (i + (screenNum * settingsPerScreen) >= watchfaceItems.size()) {
+      watchfacesOnThisScreen[i] = {"", false};
+    } else {
+      watchfacesOnThisScreen[i] = watchfaceItems[i + (screenNum * settingsPerScreen)];
+    }
   }
 
   return std::make_unique<Screens::CheckboxList>(
