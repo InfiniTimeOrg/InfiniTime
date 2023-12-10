@@ -72,7 +72,8 @@ namespace Pinetime {
     struct AppTraits<Apps::Calculator> {
       static constexpr Apps app = Apps::Calculator;
       static constexpr const char* icon = Screens::Symbols::calculator;
-      static Screens::Screen* Create(AppControllers& controllers) {
+
+      static Screens::Screen* Create(AppControllers& /* controllers */) {
         return new Screens::Calculator();
       };
     };
