@@ -1,6 +1,9 @@
 #pragma once
 
-#include "Screen.h"
+#include "displayapp/screens/Screen.h"
+#include "displayapp/Apps.h"
+#include "displayapp/Controllers.h"
+#include "Symbols.h"
 
 namespace {
   int64_t constexpr powi(int64_t base, uint8_t exponent) {
@@ -64,5 +67,14 @@ namespace Pinetime {
         Error error = Error::None;
       };
     }
+
+    template <>
+    struct AppTraits<Apps::Calculator> {
+      static constexpr Apps app = Apps::Calculator;
+      static constexpr const char* icon = Screens::Symbols::calculator;
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::Calculator();
+      };
+    };
   }
 }
