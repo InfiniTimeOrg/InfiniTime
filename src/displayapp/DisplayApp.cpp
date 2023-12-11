@@ -508,7 +508,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::SettingWakeUp>(settingsController);
       break;
     case Apps::SettingHeartRate:
-      currentScreen = std::make_unique<Screens::SettingHeartRate>(this, settingsController);
+      currentScreen = std::make_unique<Screens::SettingHeartRate>(settingsController);
       break;
     case Apps::SettingDisplay:
       currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);
