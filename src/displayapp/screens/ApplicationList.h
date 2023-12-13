@@ -39,26 +39,8 @@ namespace Pinetime {
 
         static constexpr int appsPerScreen = 6;
 
-        // Increment this when more space is needed
-        static constexpr int nScreens = 2;
+	static constexpr int nScreens = UserAppTypes::Count > 0 ? (UserAppTypes::Count - 1) / appsPerScreen + 1 : 1;
 
-        std::array<Tile::Applications, appsPerScreen * nScreens> applications {{
-          {Symbols::stopWatch, Apps::StopWatch, true},
-          {Symbols::clock, Apps::Alarm, true},
-          {Symbols::hourGlass, Apps::Timer, true},
-          {Symbols::shoe, Apps::Steps, true},
-          {Symbols::heartBeat, Apps::HeartRate, true},
-          {Symbols::music, Apps::Music, true},
-
-          {Symbols::paintbrush, Apps::Paint, true},
-          {Symbols::paddle, Apps::Paddle, true},
-          {"2", Apps::Twos, true},
-          {Symbols::drum, Apps::Metronome, true},
-          {Symbols::map, Apps::Navigation, Applications::Screens::Navigation::IsAvailable(filesystem)},
-          {Symbols::dice, Apps::Dice, true},
-
-          // {"M", Apps::Motion},
-        }};
         ScreenList<nScreens> screens;
       };
     }

@@ -549,9 +549,6 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     case Apps::Steps:
       currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);
       break;
-    case Apps::Dice:
-      currentScreen = std::make_unique<Screens::Dice>(motionController, motorController, settingsController);
-      break;
   }
   currentApp = app;
 }
