@@ -51,6 +51,7 @@
 #include "displayapp/screens/settings/SettingBluetooth.h"
 
 #include "libs/lv_conf.h"
+#include "UserApps.h"
 
 using namespace Pinetime::Applications;
 using namespace Pinetime::Applications::Display;
@@ -97,7 +98,25 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     touchHandler {touchHandler},
     filesystem {filesystem},
     lvgl {lcd, filesystem},
-    timer(this, TimerCallback) {
+    timer(this, TimerCallback),
+    controllers {batteryController,
+                 bleController,
+                 dateTimeController,
+                 notificationManager,
+                 heartRateController,
+                 settingsController,
+                 motorController,
+                 motionController,
+                 alarmController,
+                 brightnessController,
+                 nullptr,
+                 filesystem,
+                 timer,
+                 nullptr,
+                 this,
+                 lvgl,
+                 nullptr,
+                 nullptr} {
 }
 
 void DisplayApp::Start(System::BootErrors error) {
@@ -403,14 +422,20 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
   SetFullRefresh(direction);
 
   switch (app) {
-    case Apps::Launcher:
-      currentScreen =
-        std::make_unique<Screens::ApplicationList>(this, settingsController, batteryController, bleController, dateTimeController, filesystem);
-      break;
-    case Apps::Motion:
-      // currentScreen = std::make_unique<Screens::Motion>(motionController);
-      // break;
-    case Apps::None:
+    case Apps::Launcher: {
+      std::array<Screens::Tile::Applications, UserAppTypes::Count> apps;
+      int i = 0;
+      for (const auto& userApp : userApps) {
+        apps[i++] = Screens::Tile::Applications {userApp.icon, userApp.app, true};
+      }
+      currentScreen = std::make_unique<Screens::ApplicationList>(this,
+                                                                 settingsController,
+                                                                 batteryController,
+                                                                 bleController,
+                                                                 dateTimeController,
+                                                                 filesystem,
+                                                                 std::move(apps));
+    } break;
     case Apps::Clock:
       currentScreen = std::make_unique<Screens::Clock>(dateTimeController,
                                                        batteryController,
@@ -422,7 +447,6 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                        systemTask->nimble().weather(),
                                                        filesystem);
       break;
-
     case Apps::Error:
       currentScreen = std::make_unique<Screens::Error>(bootError);
       break;
@@ -454,14 +478,6 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                *systemTask,
                                                                Screens::Notifications::Modes::Preview);
       break;
-    case Apps::Timer:
-      currentScreen = std::make_unique<Screens::Timer>(timer);
-      break;
-    case Apps::Alarm:
-      currentScreen = std::make_unique<Screens::Alarm>(alarmController, settingsController.GetClockType(), *systemTask, motorController);
-      break;
-
-    // Settings
     case Apps::QuickSettings:
       currentScreen = std::make_unique<Screens::QuickSettings>(this,
                                                                batteryController,
@@ -517,38 +533,25 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     case Apps::FlashLight:
       currentScreen = std::make_unique<Screens::FlashLight>(*systemTask, brightnessController);
       break;
-    case Apps::StopWatch:
-      currentScreen = std::make_unique<Screens::StopWatch>(*systemTask);
+    default: {
+      const auto* d = std::find_if(userApps.begin(), userApps.end(), [app](const AppDescription& appDescription) {
+        return appDescription.app == app;
+      });
+      if (d != userApps.end())
+        currentScreen.reset(d->create(controllers));
+      else {
+        currentScreen = std::make_unique<Screens::Clock>(dateTimeController,
+                                                         batteryController,
+                                                         bleController,
+                                                         notificationManager,
+                                                         settingsController,
+                                                         heartRateController,
+                                                         motionController,
+                                                         systemTask->nimble().weather(),
+                                                         filesystem);
+      }
       break;
-    case Apps::Twos:
-      currentScreen = std::make_unique<Screens::Twos>();
-      break;
-    case Apps::Paint:
-      currentScreen = std::make_unique<Screens::InfiniPaint>(lvgl, motorController);
-      break;
-    case Apps::Paddle:
-      currentScreen = std::make_unique<Screens::Paddle>(lvgl);
-      break;
-    case Apps::Music:
-      currentScreen = std::make_unique<Screens::Music>(systemTask->nimble().music());
-      break;
-    case Apps::Navigation:
-      currentScreen = std::make_unique<Screens::Navigation>(systemTask->nimble().navigation());
-      break;
-    case Apps::HeartRate:
-      currentScreen = std::make_unique<Screens::HeartRate>(heartRateController, *systemTask);
-      break;
-    case Apps::Metronome:
-      currentScreen = std::make_unique<Screens::Metronome>(motorController, *systemTask);
-      break;
-    /* Weather debug app
-    case Apps::Weather:
-      currentScreen = std::make_unique<Screens::Weather>(this, systemTask->nimble().weather());
-      break;
-    */
-    case Apps::Steps:
-      currentScreen = std::make_unique<Screens::Steps>(motionController, settingsController);
-      break;
+    }
   }
   currentApp = app;
 }
@@ -561,7 +564,15 @@ void DisplayApp::PushMessage(Messages msg) {
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
   } else {
-    xQueueSend(msgQueue, &msg, portMAX_DELAY);
+    TickType_t timeout = portMAX_DELAY;
+    // Make xQueueSend() non-blocking if the message is a Notification message. We do this to avoid
+    // deadlock between SystemTask and DisplayApp when their respective message queues are getting full
+    // when a lot of notifications are received on a very short time span.
+    if (msg == Messages::NewNotification) {
+      timeout = static_cast<TickType_t>(0);
+    }
+
+    xQueueSend(msgQueue, &msg, timeout);
   }
 }
 
@@ -598,6 +609,19 @@ void DisplayApp::PushMessageToSystemTask(Pinetime::System::Messages message) {
 
 void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
   this->systemTask = systemTask;
+  this->controllers.systemTask = systemTask;
+}
+
+void DisplayApp::Register(Pinetime::Controllers::WeatherService* weatherService) {
+  this->controllers.weatherController = weatherService;
+}
+
+void DisplayApp::Register(Pinetime::Controllers::MusicService* musicService) {
+  this->controllers.musicService = musicService;
+}
+
+void DisplayApp::Register(Pinetime::Controllers::NavigationService* NavigationService) {
+  this->controllers.navigationService = NavigationService;
 }
 
 void DisplayApp::ApplyBrightness() {

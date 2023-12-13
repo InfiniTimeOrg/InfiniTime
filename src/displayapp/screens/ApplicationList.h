@@ -2,15 +2,12 @@
 
 #include <array>
 #include <memory>
-
-#include "displayapp/screens/Screen.h"
-#include "displayapp/screens/ScreenList.h"
-#include "components/datetime/DateTimeController.h"
-#include "components/settings/Settings.h"
-#include "components/battery/BatteryController.h"
-#include "displayapp/screens/Symbols.h"
-#include "displayapp/screens/Tile.h"
-#include "displayapp/screens/Navigation.h"
+#include "displayapp/Apps.h"
+#include "Screen.h"
+#include "ScreenList.h"
+#include "displayapp/Controllers.h"
+#include "Symbols.h"
+#include "Tile.h"
 
 namespace Pinetime {
   namespace Applications {
@@ -22,7 +19,8 @@ namespace Pinetime {
                                  const Pinetime::Controllers::Battery& batteryController,
                                  const Pinetime::Controllers::Ble& bleController,
                                  Controllers::DateTime& dateTimeController,
-                                 Pinetime::Controllers::FS& filesystem);
+                                 Pinetime::Controllers::FS& filesystem,
+                                 std::array<Tile::Applications, UserAppTypes::Count>&& apps);
         ~ApplicationList() override;
         bool OnTouchEvent(TouchEvents event) override;
 
@@ -36,10 +34,11 @@ namespace Pinetime {
         const Pinetime::Controllers::Ble& bleController;
         Controllers::DateTime& dateTimeController;
         Pinetime::Controllers::FS& filesystem;
+        std::array<Tile::Applications, UserAppTypes::Count> apps;
 
         static constexpr int appsPerScreen = 6;
 
-	static constexpr int nScreens = UserAppTypes::Count > 0 ? (UserAppTypes::Count - 1) / appsPerScreen + 1 : 1;
+        static constexpr int nScreens = UserAppTypes::Count > 0 ? (UserAppTypes::Count - 1) / appsPerScreen + 1 : 1;
 
         ScreenList<nScreens> screens;
       };
