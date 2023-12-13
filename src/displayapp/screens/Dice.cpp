@@ -1,23 +1,23 @@
 #include "displayapp/screens/Dice.h"
-
 #include "displayapp/screens/Screen.h"
 #include "displayapp/screens/Symbols.h"
-
-#include <lvgl/lvgl.h>
+#include "components/settings/Settings.h"
+#include "components/motor/MotorController.h"
+#include "components/motion/MotionController.h"
 
 using namespace Pinetime::Applications::Screens;
 
 namespace {
   static lv_obj_t* MakeLabel(lv_font_t* font,
-                      lv_color_t color,
-                      lv_label_long_mode_t longMode,
-                      uint8_t width,
-                      lv_label_align_t labelAlignment,
-                      const char* text,
-                      lv_obj_t* reference,
-                      lv_align_t alignment,
-                      int8_t x,
-                      int8_t y) {
+                             lv_color_t color,
+                             lv_label_long_mode_t longMode,
+                             uint8_t width,
+                             lv_label_align_t labelAlignment,
+                             const char* text,
+                             lv_obj_t* reference,
+                             lv_align_t alignment,
+                             int8_t x,
+                             int8_t y) {
     lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
     lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font);
     lv_obj_set_style_local_text_color(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color);
@@ -39,12 +39,14 @@ namespace {
   }
 }
 
-Dice::Dice(Controllers::MotionController& motion, Controllers::MotorController& motor, Controllers::Settings& settings)
-  : motor {motor}, motion {motion}, settings {settings} {
+Dice::Dice(Controllers::MotionController& motionController,
+           Controllers::MotorController& motorController,
+           Controllers::Settings& settingsController)
+  : motorController {motorController}, motionController {motionController}, settingsController {settingsController} {
   std::seed_seq sseq {static_cast<uint32_t>(xTaskGetTickCount()),
-                      static_cast<uint32_t>(motion.X()),
-                      static_cast<uint32_t>(motion.Y()),
-                      static_cast<uint32_t>(motion.Z())};
+                      static_cast<uint32_t>(motionController.X()),
+                      static_cast<uint32_t>(motionController.Y()),
+                      static_cast<uint32_t>(motionController.Z())};
   gen.seed(sseq);
 
   lv_obj_t* nCounterLabel = MakeLabel(&jetbrains_mono_bold_20,
@@ -122,18 +124,17 @@ Dice::Dice(Controllers::MotionController& motion, Controllers::MotorController& 
                            0);
 
   // Spagetti code in motion controller: it only updates the shake speed when shake to wake is on...
-  enableShakeForDice = !settings.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake);
+  enableShakeForDice = !settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake);
   if (enableShakeForDice)
-    settings.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, true);
+    settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, true);
 
-  // TODO: try a higher refresh period
   refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 Dice::~Dice() {
   // reset the shake to wake mode.
   if (enableShakeForDice) {
-    settings.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, false);
+    settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, false);
     enableShakeForDice = false;
   }
   lv_task_del(refreshTask);
@@ -142,12 +143,11 @@ Dice::~Dice() {
 
 void Dice::Refresh() {
   // we only reset the hysteresis when at rest
-  // also motion.ShouldShakeWake() seems to be broken?
-  if (motion.CurrentShakeSpeed() >= settings.GetShakeThreshold()) {
+  if (motionController.CurrentShakeSpeed() >= settingsController.GetShakeThreshold()) {
     if (rollHysteresis <= 0) {
       // this timestamp is used for the secreen timeout
       lv_disp_get_next(NULL)->last_activity_time = lv_tick_get();
-      
+
       Roll();
     }
   } else if (rollHysteresis > 0)
@@ -186,7 +186,7 @@ void Dice::Roll() {
 
   lv_label_set_text_fmt(resultTotalLabel, "%d", resultTotal);
   if (openingRoll == false) {
-    motor.RunForDuration(30);
+    motorController.RunForDuration(30);
     NextColor();
     rollHysteresis = ROLL_HYSTERESIS;
   }

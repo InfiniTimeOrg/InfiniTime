@@ -8,6 +8,7 @@
 #include "displayapp/screens/Tile.h"
 #include "displayapp/screens/ApplicationList.h"
 #include "displayapp/screens/Clock.h"
+#include "displayapp/screens/Dice.h"
 
 namespace Pinetime {
   namespace Applications {
