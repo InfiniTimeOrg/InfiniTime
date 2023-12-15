@@ -55,7 +55,7 @@ namespace Pinetime {
                                   Apps::Alarm,
                                   Apps::Timer,
                                   Apps::Steps,
-				  Apps::Dice,
+                                  Apps::Dice,
                                   Apps::HeartRate,
                                   Apps::Music,
                                   Apps::Paint,
