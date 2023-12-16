@@ -16,6 +16,7 @@ using namespace Pinetime::Applications::Screens;
 WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
                                    const Controllers::Battery& batteryController,
                                    const Controllers::Ble& bleController,
+                                   const Controllers::AlarmController& alarmController,
                                    Controllers::NotificationManager& notificationManager,
                                    Controllers::Settings& settingsController,
                                    Controllers::HeartRateController& heartRateController,
@@ -26,7 +27,7 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
     settingsController {settingsController},
     heartRateController {heartRateController},
     motionController {motionController},
-    statusIcons(batteryController, bleController) {
+    statusIcons(batteryController, bleController, alarmController) {
 
   statusIcons.Create();
 

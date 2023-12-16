@@ -13,6 +13,7 @@ namespace Pinetime {
     class Settings;
     class Battery;
     class Ble;
+    class AlarmController;
     class NotificationManager;
     class MotionController;
     class DateTime;
@@ -28,6 +29,7 @@ namespace Pinetime {
         Clock(Controllers::DateTime& dateTimeController,
               const Controllers::Battery& batteryController,
               const Controllers::Ble& bleController,
+              const Controllers::AlarmController& alarmController,
               Controllers::NotificationManager& notificationManager,
               Controllers::Settings& settingsController,
               Controllers::HeartRateController& heartRateController,
@@ -43,6 +45,7 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
         const Controllers::Ble& bleController;
+        const Controllers::AlarmController& alarmController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;

@@ -1,10 +1,13 @@
 #include "displayapp/widgets/StatusIcons.h"
 #include "displayapp/screens/Symbols.h"
+#include "components/alarm/AlarmController.h"
 
 using namespace Pinetime::Applications::Widgets;
 
-StatusIcons::StatusIcons(const Controllers::Battery& batteryController, const Controllers::Ble& bleController)
-  : batteryIcon(true), batteryController {batteryController}, bleController {bleController} {
+StatusIcons::StatusIcons(const Controllers::Battery& batteryController,
+                         const Controllers::Ble& bleController,
+                         const Controllers::AlarmController& alarmController)
+  : batteryIcon(true), batteryController {batteryController}, bleController {bleController}, alarmController {alarmController} {
 }
 
 void StatusIcons::Create() {
@@ -19,6 +22,9 @@ void StatusIcons::Create() {
 
   batteryPlug = lv_label_create(container, nullptr);
   lv_label_set_text_static(batteryPlug, Screens::Symbols::plug);
+
+  alarmIcon = lv_label_create(container, nullptr);
+  lv_label_set_text_static(alarmIcon, Screens::Symbols::clock);
 
   batteryIcon.Create(container);
 
@@ -36,6 +42,9 @@ void StatusIcons::Update() {
     auto batteryPercent = batteryPercentRemaining.Get();
     batteryIcon.SetBatteryPercentage(batteryPercent);
   }
+
+  bool alarmNotSet = (alarmController.State() == Pinetime::Controllers::AlarmController::AlarmState::Not_Set);
+  lv_obj_set_hidden(alarmIcon, alarmNotSet);
 
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
