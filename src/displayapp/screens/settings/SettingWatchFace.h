@@ -41,11 +41,11 @@ namespace Pinetime {
         static constexpr int nScreens = 2;
 
         std::array<Screens::CheckboxList::Item, settingsPerScreen * nScreens> watchfaces {
-          {{"Digital face", true},
-           {"Analog face", true},
+          {{"Digital", true},
+           {"Analog", true},
            {"PineTimeStyle", true},
            {"Terminal", true},
-           {"Infineat face", Applications::Screens::WatchFaceInfineat::IsAvailable(filesystem)},
+           {"Infineat", Applications::Screens::WatchFaceInfineat::IsAvailable(filesystem)},
            {"Casio G7710", Applications::Screens::WatchFaceCasioStyleG7710::IsAvailable(filesystem)},
            {"", false},
            {"", false}}};
