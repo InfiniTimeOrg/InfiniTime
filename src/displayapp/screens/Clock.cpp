@@ -131,3 +131,4 @@ std::unique_ptr<Screen> Clock::WatchFaceCasioStyleG7710() {
                                                              motionController,
                                                              filesystem);
 }
+
