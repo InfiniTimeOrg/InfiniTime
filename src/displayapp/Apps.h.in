@@ -63,6 +63,8 @@ namespace Pinetime {
       static constexpr size_t Count = sizeof...(As);
     };
 
+    using UserAppTypes = TypeList<@USERAPP_TYPES@>;
+
     template <WatchFace... Ws>
     struct WatchFaceTypeList {
       static constexpr size_t Count = sizeof...(Ws);
