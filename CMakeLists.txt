@@ -14,7 +14,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(NRF_TARGET "nrf52")
-cmake_policy(SET CMP0140 NEW)
 
 if (NOT ARM_NONE_EABI_TOOLCHAIN_PATH)
   message(FATAL_ERROR "The path to the toolchain (arm-none-eabi) must be specified on the command line (add -DARM_NONE_EABI_TOOLCHAIN_PATH=<path>")
@@ -87,7 +86,8 @@ function(AddToListIfEnabled list enabled type)
   if(${enabled})
     list(APPEND ${list} ${type})
   endif ()
-  return(PROPAGATE ${list})
+  #return(PROPAGATE ${list})
+  set(${list} "${${list}}" PARENT_SCOPE)
 endfunction()
 
 # Generate the list of user apps to be compiled into the firmware
