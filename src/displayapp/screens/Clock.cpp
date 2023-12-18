@@ -10,6 +10,7 @@
 #include "displayapp/screens/WatchFaceDigital.h"
 #include "displayapp/screens/WatchFaceTerminal.h"
 #include "displayapp/screens/WatchFaceInfineat.h"
+#include "displayapp/screens/WatchFaceBinary.h"
 #include "displayapp/screens/WatchFaceAnalog.h"
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
@@ -43,6 +44,9 @@ Clock::Clock(Controllers::DateTime& dateTimeController,
         case WatchFace::Analog:
           return WatchFaceAnalogScreen();
           break;
+        case WatchFace::Binary:
+          return WatchFaceBinaryScreen();
+          break;
         case WatchFace::PineTimeStyle:
           return WatchFacePineTimeStyleScreen();
           break;
@@ -75,6 +79,16 @@ bool Clock::OnButtonPushed() {
 
 std::unique_ptr<Screen> Clock::WatchFaceDigitalScreen() {
   return std::make_unique<Screens::WatchFaceDigital>(dateTimeController,
+                                                     batteryController,
+                                                     bleController,
+                                                     notificationManager,
+                                                     settingsController,
+                                                     heartRateController,
+                                                     motionController);
+}
+
+std::unique_ptr<Screen> Clock::WatchFaceBinaryScreen() {
+  return std::make_unique<Screens::WatchFaceBinary>(dateTimeController,
                                                      batteryController,
                                                      bleController,
                                                      notificationManager,
