@@ -55,14 +55,14 @@ namespace {
         return Symbols::cloud;
         break;
       case Pinetime::Controllers::SimpleWeatherService::Icons::BrokenClouds:
-        return Symbols::cloud;
-        break; // TODO missing symbol
+        return Symbols::cloud_meatball;
+        break;
       case Pinetime::Controllers::SimpleWeatherService::Icons::Thunderstorm:
-        return Symbols::cloud;
-        break; // TODO missing symbol
+        return Symbols::bolt;
+        break;
       case Pinetime::Controllers::SimpleWeatherService::Icons::Snow:
-        return Symbols::cloud;
-        break; // TODO missing symbol
+        return Symbols::snowflake;
+        break;
       case Pinetime::Controllers::SimpleWeatherService::Icons::CloudShowerHeavy:
         return Symbols::cloudShowersHeavy;
         break;

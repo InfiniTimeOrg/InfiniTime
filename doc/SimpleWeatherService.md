@@ -40,8 +40,8 @@ The byte array must contain the following data:
    - 4 = Clouds & rain
    - 5 = Rain
    - 6 = Thunderstorm
-   - 7 = snow
-   - 8 = mist, smog
+   - 7 = Snow
+   - 8 = Mist, smog
 
 ### Forecast
 
@@ -65,4 +65,4 @@ The byte array must contain the following data:
   - [22] Day 3 Icon ID
   - [23] Day 4 Minimum temperature
   - [24] Day 4 Maximum temperature
-  - [25] Day 4 Incon ID
+  - [25] Day 4 Icon ID

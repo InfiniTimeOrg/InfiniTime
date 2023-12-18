@@ -15,24 +15,27 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+
+#include "components/ble/SimpleWeatherService.h"
+
 #include <algorithm>
-#include "SimpleWeatherService.h"
 #include <cstring>
 #include <nrf_log.h>
-#include <array>
 
 using namespace Pinetime::Controllers;
 
 namespace {
-  enum class MessageType { CurrentWeather, Forecast, Unknown };
+  enum class MessageType : uint8_t { CurrentWeather, Forecast, Unknown };
+
+  uint64_t ToUInt64(const uint8_t* data) {
+    return *(reinterpret_cast<const uint64_t*>(data));
+  }
 
   SimpleWeatherService::CurrentWeather CreateCurrentWeather(const uint8_t* dataBuffer) {
     char cityName[33];
     std::memcpy(&cityName[0], &dataBuffer[13], 32);
     cityName[32] = '\0';
-    return SimpleWeatherService::CurrentWeather {dataBuffer[2] + (dataBuffer[3] << 8) + (dataBuffer[4] << 16) + (dataBuffer[5] << 24) +
-                                                   ((uint64_t) dataBuffer[6] << 32) + ((uint64_t) dataBuffer[7] << 40) +
-                                                   ((uint64_t) dataBuffer[8] << 48) + ((uint64_t) dataBuffer[9] << 54),
+    return SimpleWeatherService::CurrentWeather {ToUInt64(&dataBuffer[2]),
                                                  dataBuffer[10],
                                                  dataBuffer[11],
                                                  dataBuffer[12],
@@ -41,9 +44,7 @@ namespace {
   }
 
   SimpleWeatherService::Forecast CreateForecast(const uint8_t* dataBuffer) {
-    uint64_t timestamp = static_cast<uint64_t>(dataBuffer[2] + (dataBuffer[3] << 8) + (dataBuffer[4] << 16) + (dataBuffer[5] << 24) +
-                                               ((uint64_t) dataBuffer[6] << 32) + ((uint64_t) dataBuffer[7] << 40) +
-                                               ((uint64_t) dataBuffer[8] << 48) + ((uint64_t) dataBuffer[9] << 54));
+    auto timestamp = static_cast<uint64_t>(ToUInt64(&dataBuffer[2]));
 
     std::array<SimpleWeatherService::Forecast::Day, SimpleWeatherService::MaxNbForecastDays> days;
     const uint8_t nbDaysInBuffer = dataBuffer[10];
@@ -54,19 +55,13 @@ namespace {
     return SimpleWeatherService::Forecast {timestamp, nbDays, days};
   }
 
-  MessageType GetMessageType(const uint8_t* dataBuffer) {
-    switch (dataBuffer[0]) {
-      case 0:
-        return MessageType::CurrentWeather;
-        break;
-      case 1:
-        return MessageType::Forecast;
-        break;
-      default:
+    MessageType GetMessageType(const uint8_t* data) {
+      auto messageType = static_cast<MessageType>(*data);
+      if(messageType > MessageType::Unknown) {
         return MessageType::Unknown;
-        break;
+      }
+      return messageType;
     }
-  }
 
   uint8_t GetVersion(const uint8_t* dataBuffer) {
     return dataBuffer[1];
@@ -153,8 +148,4 @@ std::optional<SimpleWeatherService::Forecast> SimpleWeatherService::GetForecast(
 bool SimpleWeatherService::CurrentWeather::operator==(const SimpleWeatherService::CurrentWeather& other) const {
   return this->iconId == other.iconId && this->temperature == other.temperature && this->timestamp == other.timestamp &&
          this->maxTemperature == other.maxTemperature && this->minTemperature == other.maxTemperature;
-}
-
-bool SimpleWeatherService::CurrentWeather::operator!=(const SimpleWeatherService::CurrentWeather& other) const {
-  return !operator==(other);
 }

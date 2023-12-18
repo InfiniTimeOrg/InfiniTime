@@ -85,7 +85,6 @@ namespace Pinetime {
         char location[33]; // 32 char + \0 (end of string)
 
         bool operator==(const CurrentWeather& other) const;
-        bool operator!=(const CurrentWeather& other) const;
       };
 
       struct Forecast {
