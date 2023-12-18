@@ -55,13 +55,13 @@ namespace {
     return SimpleWeatherService::Forecast {timestamp, nbDays, days};
   }
 
-    MessageType GetMessageType(const uint8_t* data) {
-      auto messageType = static_cast<MessageType>(*data);
-      if(messageType > MessageType::Unknown) {
-        return MessageType::Unknown;
-      }
-      return messageType;
+  MessageType GetMessageType(const uint8_t* data) {
+    auto messageType = static_cast<MessageType>(*data);
+    if (messageType > MessageType::Unknown) {
+      return MessageType::Unknown;
     }
+    return messageType;
+  }
 
   uint8_t GetVersion(const uint8_t* dataBuffer) {
     return dataBuffer[1];
