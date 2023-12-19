@@ -11,7 +11,7 @@
 #include <components/motor/MotorController.h>
 #include "BootErrors.h"
 #include "displayapp/TouchEvents.h"
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "displayapp/Messages.h"
 
 namespace Pinetime {
