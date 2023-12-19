@@ -6,7 +6,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/motor/MotorController.h"
 #include "Symbols.h"
-#include <displayapp/Apps.h>
+#include "displayapp/apps/Apps.h"
 #include <displayapp/Controllers.h>
 
 namespace Pinetime {

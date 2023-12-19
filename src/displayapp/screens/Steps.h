@@ -4,7 +4,7 @@
 #include <lvgl/lvgl.h>
 #include "displayapp/screens/Screen.h"
 #include <components/motion/MotionController.h>
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
 
