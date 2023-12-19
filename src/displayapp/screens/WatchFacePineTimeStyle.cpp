@@ -55,7 +55,7 @@ namespace {
         return Symbols::cloud;
         break;
       case Pinetime::Controllers::SimpleWeatherService::Icons::BrokenClouds:
-        return Symbols::cloud_meatball;
+        return Symbols::cloudMeatball;
         break;
       case Pinetime::Controllers::SimpleWeatherService::Icons::Thunderstorm:
         return Symbols::bolt;
