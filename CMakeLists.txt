@@ -45,12 +45,6 @@ string(STRIP "${PROJECT_GIT_COMMIT_HASH}" PROJECT_GIT_COMMIT_HASH)
 
 message("PROJECT_GIT_COMMIT_HASH_SUCCESS? " ${PROJECT_GIT_COMMIT_HASH_SUCCESS})
 
-if(DEFINED ENABLE_USERAPPS)
-  set(USERAPP_TYPES ${ENABLE_USERAPPS} CACHE STRING "List of user apps to build into the firmware")
-else ()
-  set(USERAPP_TYPES "Apps::Navigation, Apps::StopWatch, Apps::Alarm, Apps::Timer, Apps::Steps, Apps::HeartRate, Apps::Music, Apps::Paint, Apps::Paddle, Apps::Twos, Apps::Metronome" CACHE STRING "List of user apps to build into the firmware")
-endif ()
-
 message("")
 message("BUILD CONFIGURATION")
 message("-------------------")
