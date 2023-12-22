@@ -12,6 +12,7 @@ namespace Colors {
   static constexpr lv_color_t bg = LV_COLOR_MAKE(0x5d, 0x69, 0x7e);
   static constexpr lv_color_t bgAlt = LV_COLOR_MAKE(0x38, 0x38, 0x38);
   static constexpr lv_color_t bgDark = LV_COLOR_MAKE(0x18, 0x18, 0x18);
+  static constexpr lv_color_t Accent = orange;
   static constexpr lv_color_t highlight = green;
 };
 
