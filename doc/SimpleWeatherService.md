@@ -2,7 +2,8 @@
 
 ## Introduction
 
-The Simple Weather Service provide a simple and straightforward API to specify the current weather and the forecast for the next 5 days. It effectively replaces the original Weather Service (from InfiniTime 1.8) since InfiniTime 1.14 
+The Simple Weather Service provides a simple and straightforward API to specify the current weather and the forecast for the next 5 days.
+It effectively replaces the original Weather Service (from InfiniTime 1.8) since InfiniTime 1.14.
 
 ## Service
 
