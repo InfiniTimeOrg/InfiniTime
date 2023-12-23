@@ -29,18 +29,30 @@ namespace {
   enum class MessageType : uint8_t { CurrentWeather, Forecast, Unknown };
 
   uint64_t ToUInt64(const uint8_t* data) {
-    return *(reinterpret_cast<const uint64_t*>(data));
+    return data[0] +
+           (data[1] << 8) +
+           (data[2] << 16) +
+           (data[3] << 24) +
+           (static_cast<uint64_t>(data[4]) << 32) +
+           (static_cast<uint64_t>(data[5]) << 48) +
+           (static_cast<uint64_t>(data[6]) << 48) +
+           (static_cast<uint64_t>(data[7]) << 56);
+  }
+
+  int16_t ToInt16(const uint8_t* data) {
+    return data[0] +
+           (data[1] << 8);
   }
 
   SimpleWeatherService::CurrentWeather CreateCurrentWeather(const uint8_t* dataBuffer) {
     SimpleWeatherService::Location cityName;
-    std::memcpy(cityName.data(), &dataBuffer[13], 32);
+    std::memcpy(cityName.data(), &dataBuffer[16], 32);
     cityName[32] = '\0';
     return SimpleWeatherService::CurrentWeather (ToUInt64(&dataBuffer[2]),
-                                                 dataBuffer[10],
-                                                 dataBuffer[11],
-                                                 dataBuffer[12],
-                                                 SimpleWeatherService::Icons{dataBuffer[13 + 32]},
+                                                ToInt16(&dataBuffer[10]),
+                                                 ToInt16(&dataBuffer[12]),
+                                                 ToInt16(&dataBuffer[14]),
+                                                 SimpleWeatherService::Icons{dataBuffer[16 + 32]},
                                                  std::move(cityName));
   }
 
@@ -51,7 +63,10 @@ namespace {
     const uint8_t nbDaysInBuffer = dataBuffer[10];
     const uint8_t nbDays = std::min(SimpleWeatherService::MaxNbForecastDays, nbDaysInBuffer);
     for (int i = 0; i < nbDays; i++) {
-      days[i] = SimpleWeatherService::Forecast::Day {dataBuffer[11 + (i * 3)], dataBuffer[12 + (i * 3)], SimpleWeatherService::Icons{dataBuffer[13 + (i * 3)]}};
+      days[i] = SimpleWeatherService::Forecast::Day {
+        ToInt16(&dataBuffer[11 + (i * 5)]),
+        ToInt16(&dataBuffer[13 + (i * 5)]),
+        SimpleWeatherService::Icons{dataBuffer[15 + (i * 5)]}};
     }
     return SimpleWeatherService::Forecast {timestamp, nbDays, days};
   }
@@ -95,7 +110,7 @@ int SimpleWeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
                      currentWeather->minTemperature,
                      currentWeather->maxTemperature,
                      currentWeather->iconId,
-                     currentWeather->location);
+                     currentWeather->location.data());
       }
       break;
     case MessageType::Forecast:
