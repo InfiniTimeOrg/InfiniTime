@@ -30,7 +30,7 @@ namespace {
 
   uint64_t ToUInt64(const uint8_t* data) {
     return data[0] + (data[1] << 8) + (data[2] << 16) + (data[3] << 24) + (static_cast<uint64_t>(data[4]) << 32) +
-           (static_cast<uint64_t>(data[5]) << 48) + (static_cast<uint64_t>(data[6]) << 48) + (static_cast<uint64_t>(data[7]) << 56);
+           (static_cast<uint64_t>(data[5]) << 40) + (static_cast<uint64_t>(data[6]) << 48) + (static_cast<uint64_t>(data[7]) << 56);
   }
 
   int16_t ToInt16(const uint8_t* data) {
