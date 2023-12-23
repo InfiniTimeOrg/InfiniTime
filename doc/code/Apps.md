@@ -59,7 +59,7 @@ and then the function `create` is called to create an instance of the app.
 
 The list of user applications is generated at build time by the `consteval` function `CreateAppDescriptions()`
 in `UserApps.h`. This method takes the list of applications that must be built into the firmware image.
-This list of applications is defined as a list `Apps` enum values named `UserAppTypes` in `Apps.h`. 
+This list of applications is defined as a list `Apps` enum values named `UserAppTypes` in `Apps.h`.
 For each application listed in `UserAppTypes`, an entry of type `AppDescription` is added to the array `userApps`.
 This entry is created by using the information provided by a template `AppTraits`
 that is customized for every user application.
