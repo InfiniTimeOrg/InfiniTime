@@ -61,7 +61,8 @@ namespace Pinetime {
         Unknown = 255
       };
 
-      using Location = std::array<char, 33>;  // 32 char + \0 (end of string)
+      using Location = std::array<char, 33>; // 32 char + \0 (end of string)
+
       struct CurrentWeather {
         CurrentWeather(uint64_t timestamp,
                        int16_t temperature,
@@ -74,7 +75,7 @@ namespace Pinetime {
             minTemperature {minTemperature},
             maxTemperature {maxTemperature},
             iconId {iconId},
-            location{std::move(location)} {
+            location {std::move(location)} {
         }
 
         uint64_t timestamp;

@@ -543,7 +543,7 @@ void WatchFacePineTimeStyle::Refresh() {
   if (currentWeather.IsUpdated()) {
     auto optCurrentWeather = currentWeather.Get();
     if (optCurrentWeather) {
-      lv_label_set_text_fmt(temperature, "%d°", (optCurrentWeather->temperature)/100);
+      lv_label_set_text_fmt(temperature, "%d°", (optCurrentWeather->temperature) / 100);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
       lv_obj_realign(temperature);
       lv_obj_realign(weatherIcon);
