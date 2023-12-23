@@ -27,6 +27,7 @@
 #include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/screens/Symbols.h"
+#include "displayapp/screens/WeatherSymbols.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
@@ -41,41 +42,6 @@ namespace {
   void event_handler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<WatchFacePineTimeStyle*>(obj->user_data);
     screen->UpdateSelected(obj, event);
-  }
-
-  const char* GetIcon(const Pinetime::Controllers::SimpleWeatherService::Icons icon) {
-    switch (icon) {
-      case Pinetime::Controllers::SimpleWeatherService::Icons::Sun:
-        return Symbols::sun;
-        break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::CloudsSun:
-        return Symbols::cloudSun;
-        break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::Clouds:
-        return Symbols::cloud;
-        break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::BrokenClouds:
-        return Symbols::cloudMeatball;
-        break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::Thunderstorm:
-        return Symbols::bolt;
-        break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::Snow:
-        return Symbols::snowflake;
-        break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::CloudShowerHeavy:
-        return Symbols::cloudShowersHeavy;
-        break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::CloudSunRain:
-        return Symbols::cloudSunRain;
-        break;
-      case Pinetime::Controllers::SimpleWeatherService::Icons::Smog:
-        return Symbols::smog;
-        break;
-      default:
-        return Symbols::ban;
-        break;
-    }
   }
 }
 
@@ -578,7 +544,7 @@ void WatchFacePineTimeStyle::Refresh() {
     auto optCurrentWeather = currentWeather.Get();
     if (optCurrentWeather) {
       lv_label_set_text_fmt(temperature, "%d°", optCurrentWeather->temperature);
-      lv_label_set_text(weatherIcon, GetIcon(optCurrentWeather->iconId));
+      lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
       lv_obj_realign(temperature);
       lv_obj_realign(weatherIcon);
     }
