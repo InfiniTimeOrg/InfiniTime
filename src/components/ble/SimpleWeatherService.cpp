@@ -19,6 +19,7 @@
 #include "components/ble/SimpleWeatherService.h"
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 #include <nrf_log.h>
 
@@ -32,15 +33,15 @@ namespace {
   }
 
   SimpleWeatherService::CurrentWeather CreateCurrentWeather(const uint8_t* dataBuffer) {
-    char cityName[33];
-    std::memcpy(&cityName[0], &dataBuffer[13], 32);
+    SimpleWeatherService::Location cityName;
+    std::memcpy(cityName.data(), &dataBuffer[13], 32);
     cityName[32] = '\0';
-    return SimpleWeatherService::CurrentWeather {ToUInt64(&dataBuffer[2]),
+    return SimpleWeatherService::CurrentWeather (ToUInt64(&dataBuffer[2]),
                                                  dataBuffer[10],
                                                  dataBuffer[11],
                                                  dataBuffer[12],
-                                                 dataBuffer[13 + 32],
-                                                 cityName};
+                                                 SimpleWeatherService::Icons{dataBuffer[13 + 32]},
+                                                 std::move(cityName));
   }
 
   SimpleWeatherService::Forecast CreateForecast(const uint8_t* dataBuffer) {
@@ -50,7 +51,7 @@ namespace {
     const uint8_t nbDaysInBuffer = dataBuffer[10];
     const uint8_t nbDays = std::min(SimpleWeatherService::MaxNbForecastDays, nbDaysInBuffer);
     for (int i = 0; i < nbDays; i++) {
-      days[i] = SimpleWeatherService::Forecast::Day {dataBuffer[11 + (i * 3)], dataBuffer[12 + (i * 3)], dataBuffer[13 + (i * 3)]};
+      days[i] = SimpleWeatherService::Forecast::Day {dataBuffer[11 + (i * 3)], dataBuffer[12 + (i * 3)], SimpleWeatherService::Icons{dataBuffer[13 + (i * 3)]}};
     }
     return SimpleWeatherService::Forecast {timestamp, nbDays, days};
   }
@@ -147,5 +148,6 @@ std::optional<SimpleWeatherService::Forecast> SimpleWeatherService::GetForecast(
 
 bool SimpleWeatherService::CurrentWeather::operator==(const SimpleWeatherService::CurrentWeather& other) const {
   return this->iconId == other.iconId && this->temperature == other.temperature && this->timestamp == other.timestamp &&
-         this->maxTemperature == other.maxTemperature && this->minTemperature == other.maxTemperature;
+         this->maxTemperature == other.maxTemperature && this->minTemperature == other.maxTemperature &&
+         std::strcmp(this->location.data(), other.location.data()) == 0;
 }
