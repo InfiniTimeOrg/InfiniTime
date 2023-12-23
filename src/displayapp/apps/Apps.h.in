@@ -70,23 +70,6 @@ namespace Pinetime {
       static constexpr size_t Count = sizeof...(Ws);
     };
 
-    using UserAppTypes = TypeList<Apps::StopWatch,
-                                  Apps::Alarm,
-                                  Apps::Timer,
-                                  Apps::Steps,
-                                  Apps::HeartRate,
-                                  Apps::Music,
-                                  Apps::Paint,
-                                  Apps::Paddle,
-                                  Apps::Twos,
-                                  Apps::Metronome,
-                                  Apps::Navigation
-                                  /*
-                                  Apps::Weather,
-                                  Apps::Motion
-                                  */
-                                  >;
-
     using UserWatchFaceTypes = WatchFaceTypeList<WatchFace::Digital,
                                                  WatchFace::Analog,
                                                  WatchFace::PineTimeStyle,

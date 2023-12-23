@@ -9,7 +9,7 @@
 #include "components/ble/BleController.h"
 #include "displayapp/widgets/StatusIcons.h"
 #include "utility/DirtyValue.h"
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 
 namespace Pinetime {
   namespace Controllers {

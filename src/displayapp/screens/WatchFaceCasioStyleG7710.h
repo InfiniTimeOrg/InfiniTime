@@ -10,7 +10,7 @@
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/BleController.h"
 #include "utility/DirtyValue.h"
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 
 namespace Pinetime {
   namespace Controllers {
