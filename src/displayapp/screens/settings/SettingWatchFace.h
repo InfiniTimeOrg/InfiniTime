@@ -19,8 +19,14 @@ namespace Pinetime {
 
       class SettingWatchFace : public Screen {
       public:
+        struct Item {
+          const char* name;
+          WatchFace watchface;
+          bool enabled;
+        };
+
         SettingWatchFace(DisplayApp* app,
-                         std::array<Screens::CheckboxList::Item, UserWatchFaceTypes::Count>&& watchfaceItems,
+                         std::array<Item, UserWatchFaceTypes::Count>&& watchfaceItems,
                          Pinetime::Controllers::Settings& settingsController,
                          Pinetime::Controllers::FS& filesystem);
         ~SettingWatchFace() override;
@@ -33,7 +39,7 @@ namespace Pinetime {
         std::unique_ptr<Screen> CreateScreen(unsigned int screenNum) const;
 
         static constexpr int settingsPerScreen = 4;
-        std::array<Screens::CheckboxList::Item, UserWatchFaceTypes::Count> watchfaceItems;
+        std::array<Item, UserWatchFaceTypes::Count> watchfaceItems;
         static constexpr int nScreens = UserWatchFaceTypes::Count > 0 ? (UserWatchFaceTypes ::Count - 1) / settingsPerScreen + 1 : 1;
 
         Controllers::Settings& settingsController;
