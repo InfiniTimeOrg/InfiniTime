@@ -4,6 +4,12 @@ else ()
     set(USERAPP_TYPES "Apps::Navigation, Apps::StopWatch, Apps::Alarm, Apps::Timer, Apps::Steps, Apps::HeartRate, Apps::Music, Apps::Paint, Apps::Paddle, Apps::Twos, Apps::Metronome" CACHE STRING "List of user apps to build into the firmware")
 endif ()
 
+if(DEFINED ENABLE_WATCHFACES)
+    set(WATCHFACE_TYPES ${ENABLE_WATCHFACES} CACHE STRING "List of watch faces to build into the firmware")
+else()
+    set(WATCHFACE_TYPES "WatchFace::Digital, WatchFace::Analog, WatchFace::PineTimeStyle, WatchFace::Terminal, WatchFace::Infineat, WatchFace::CasioStyleG7710" CACHE STRING "List of watch faces to build into the firmware")
+endif()
+
 add_library(infinitime_apps INTERFACE)
 target_sources(infinitime_apps INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/Apps.h")
 target_include_directories(infinitime_apps INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/")
