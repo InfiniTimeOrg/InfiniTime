@@ -55,5 +55,8 @@ RUN bash -c "source /opt/build.sh; GetNrfSdk;"
 # McuBoot
 RUN bash -c "source /opt/build.sh; GetMcuBoot;"
 
+# Configure Git to accept the /sources directory as safe
+RUN git config --global --add safe.directory /sources
+
 ENV SOURCES_DIR /sources
 CMD ["/opt/build.sh"]
