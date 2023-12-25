@@ -17,7 +17,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://www.pine64.org/p
 - [Gadgetbridge](https://gadgetbridge.org/) (Android)
 - [AmazFish](https://openrepos.net/content/piggz/amazfish/) (SailfishOS)
 - [Siglo](https://github.com/alexr4535/siglo) (Linux)
-- [InfiniLink](https://github.com/InfiniTimeOrg/InfiniLink) (iOS) **[Looking for a new maintainer]**
+- [InfiniLink](https://github.com/InfiniTimeOrg/InfiniLink) (iOS)
 - [ITD](https://gitea.elara.ws/Elara6331/itd) (Linux)
 - [WatchMate](https://github.com/azymohliad/watchmate) (Linux)
 
