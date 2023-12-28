@@ -47,7 +47,7 @@ AlertNotificationService::AlertNotificationService(System::SystemTask& systemTas
 int AlertNotificationService::OnAlert(struct ble_gatt_access_ctxt* ctxt) {
   if (ctxt->op == BLE_GATT_ACCESS_OP_WRITE_CHR) {
     constexpr size_t stringTerminatorSize = 1; // end of string '\0'
-    constexpr size_t headerSize = 3;
+    constexpr size_t headerSize = 2;
     const auto maxMessageSize {NotificationManager::MaximumMessageSize()};
     const auto maxBufferSize {maxMessageSize + headerSize};
 
