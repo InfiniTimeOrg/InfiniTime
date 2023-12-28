@@ -49,7 +49,7 @@ SettingWeatherFormat::SettingWeatherFormat(Pinetime::Controllers::Settings& sett
       0,
       1,
       "Weather format",
-      Symbols::clock,
+      Symbols::cloudSunRain,
       GetDefaultOption(settingsController.GetWeatherFormat()),
       [&settings = settingsController](uint32_t index) {
         settings.SetWeatherFormat(options[index].weatherFormat);
