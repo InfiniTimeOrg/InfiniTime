@@ -48,7 +48,7 @@ The byte array must contain the following data:
 
 The byte array must contain the following data:
 
-  - [0] : Message type = `0`
+  - [0] : Message type = `1`
   - [1] : Message version = `0`
   - [2][3][4][5][6][7][8][9] : Timestamp (64 bits UNIX timestamp, number of nanoseconds elapsed since 1 JAN 1970)
   - [10] Number of days (Max 5, fields for unused days should be set to `0`)
