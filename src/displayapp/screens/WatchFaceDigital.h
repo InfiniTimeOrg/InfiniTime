@@ -9,6 +9,7 @@
 #include "components/ble/BleController.h"
 #include "displayapp/widgets/StatusIcons.h"
 #include "utility/DirtyValue.h"
+#include "displayapp/apps/Apps.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -71,5 +72,25 @@ namespace Pinetime {
         Widgets::StatusIcons statusIcons;
       };
     }
+
+    template <>
+    struct WatchFaceTraits<WatchFace::Digital> {
+      static constexpr WatchFace watchFace = WatchFace::Digital;
+      static constexpr const char* name = "Digital face";
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::WatchFaceDigital(controllers.dateTimeController,
+                                             controllers.batteryController,
+                                             controllers.bleController,
+                                             controllers.notificationManager,
+                                             controllers.settingsController,
+                                             controllers.heartRateController,
+                                             controllers.motionController);
+      };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      }
+    };
   }
 }

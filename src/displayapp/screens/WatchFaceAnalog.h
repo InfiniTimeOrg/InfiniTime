@@ -46,9 +46,11 @@ namespace Pinetime {
         using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
 
-        lv_obj_t* backdropmain;
-        lv_style_t backdrop;
-        
+        lv_obj_t* minor_scales;
+        lv_obj_t* major_scales;
+        lv_obj_t* large_scales;
+        lv_obj_t* twelve;
+
         lv_obj_t* hour_body;
         lv_obj_t* hour_body_trace;
         lv_obj_t* minute_body;
@@ -86,5 +88,23 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct WatchFaceTraits<WatchFace::Analog> {
+      static constexpr WatchFace watchFace = WatchFace::Analog;
+      static constexpr const char* name = "Analog face";
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::WatchFaceAnalog(controllers.dateTimeController,
+                                            controllers.batteryController,
+                                            controllers.bleController,
+                                            controllers.notificationManager,
+                                            controllers.settingsController);
+      };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      }
+    };
   }
 }
