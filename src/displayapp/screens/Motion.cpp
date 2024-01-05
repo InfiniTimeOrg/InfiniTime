@@ -53,9 +53,9 @@ void Motion::Refresh() {
   lv_label_set_text_fmt(labelStep, "Steps %lu", motionController.NbSteps());
 
   lv_label_set_text_fmt(label,
-                        "X #FF0000 %d# Y #00B000 %d# Z #FFFF00 %d#",
-                        motionController.X() / 0x10,
-                        motionController.Y() / 0x10,
-                        motionController.Z() / 0x10);
+                        "X #FF0000 %d# Y #00B000 %d# Z #FFFF00 %d# mg",
+                        motionController.X(),
+                        motionController.Y(),
+                        motionController.Z());
   lv_obj_align(label, nullptr, LV_ALIGN_IN_TOP_MID, 0, 10);
 }
