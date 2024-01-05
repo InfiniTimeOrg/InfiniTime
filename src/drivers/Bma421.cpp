@@ -24,6 +24,17 @@ namespace {
   }
 }
 
+// Scale factors to convert accelerometer counts to milli-g
+// from datasheet: https://files.pine64.org/doc/datasheet/pinetime/BST-BMA421-FL000.pdf
+// The array index to use is stored in accel_conf.range
+const short Bma421::accelScaleFactors[] = {
+  1024,  // LSB/g +/- 2g range
+  512,   // LSB/g +/- 4g range 
+  256,   // LSB/g +/- 8g range
+  128    // LSB/g +/- 16g range
+};
+
+
 Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}, deviceAddress {twiAddress} {
   bma.intf = BMA4_I2C_INTF;
   bma.bus_read = user_i2c_read;
@@ -74,7 +85,6 @@ void Bma421::Init() {
   if (ret != BMA4_OK)
     return;
 
-  struct bma4_accel_config accel_conf;
   accel_conf.odr = BMA4_OUTPUT_DATA_RATE_100HZ;
   accel_conf.range = BMA4_ACCEL_RANGE_2G;
   accel_conf.bandwidth = BMA4_ACCEL_NORMAL_AVG4;
@@ -102,8 +112,13 @@ void Bma421::Write(uint8_t registerAddress, const uint8_t* data, size_t size) {
 Bma421::Values Bma421::Process() {
   if (not isOk)
     return {};
+  struct bma4_accel rawData;
   struct bma4_accel data;
-  bma4_read_accel_xyz(&data, &bma);
+  bma4_read_accel_xyz(&rawData, &bma);
+
+  data.x = 1000 * rawData.x / accelScaleFactors[accel_conf.range];
+  data.y = 1000 * rawData.y / accelScaleFactors[accel_conf.range];
+  data.z = 1000 * rawData.z / accelScaleFactors[accel_conf.range];
 
   uint32_t steps = 0;
   bma423_step_counter_output(&steps, &bma);
