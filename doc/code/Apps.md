@@ -38,7 +38,7 @@ that will call the method `Refresh()` periodically.
 There are basically 3 types of applications : **system** apps and **user** apps and **watch faces**.
 
 **System** applications are always built into InfiniTime, and InfiniTime cannot work properly without those apps.
-The watch faces, settings, notifications and the application launcher are examples of such system applications.
+Settings, notifications and the application launcher are examples of such system applications.
 
 **User** applications are optionally built into the firmware. They extend the functionalities of the system.
 
