@@ -116,9 +116,13 @@ Bma421::Values Bma421::Process() {
   struct bma4_accel data;
   bma4_read_accel_xyz(&rawData, &bma);
 
-  data.x = 1000 * rawData.x / accelScaleFactors[accel_conf.range];
-  data.y = 1000 * rawData.y / accelScaleFactors[accel_conf.range];
-  data.z = 1000 * rawData.z / accelScaleFactors[accel_conf.range];
+  // Scale the measured ADC counts to units of 'binary milli-g'
+  // where 1g = 1024 'binary milli-g' units.
+  // See https://github.com/InfiniTimeOrg/InfiniTime/pull/1950 for
+  // discussion of why we opted for scaling to 1024 rather than 1000.
+  data.x = 1024 * rawData.x / accelScaleFactors[accel_conf.range];
+  data.y = 1024 * rawData.y / accelScaleFactors[accel_conf.range];
+  data.z = 1024 * rawData.z / accelScaleFactors[accel_conf.range];
 
   uint32_t steps = 0;
   bma423_step_counter_output(&steps, &bma);
