@@ -9,10 +9,6 @@ namespace Pinetime {
     public:
       enum class DeviceTypes : uint8_t { Unknown, BMA421, BMA425 };
 
-      // Scale factors to convert accelerometer counts to milli-g
-      // The array values are initialised in Bma421.cpp
-      static const short accelScaleFactors[];
-
       struct Values {
         uint32_t steps;
         int16_t x;
