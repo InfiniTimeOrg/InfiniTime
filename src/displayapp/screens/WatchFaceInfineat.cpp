@@ -230,16 +230,18 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
   lv_label_set_text_static(bleIcon, Symbols::bluetooth);
   lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
-  stepValue = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
-  lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
-  lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 10, 0);
-  lv_label_set_text_static(stepValue, "0");
+  if (settingsController.IsWidgetOn(Pinetime::Controllers::Settings::Widget::Steps)) {
+    stepValue = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
+    lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+    lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 10, 0);
+    lv_label_set_text_static(stepValue, "0");
 
-  stepIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
-  lv_label_set_text_static(stepIcon, Symbols::shoe);
-  lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+    stepIcon = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
+    lv_label_set_text_static(stepIcon, Symbols::shoe);
+    lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  }
 
   // Setting buttons
   btnClose = lv_btn_create(lv_scr_act(), nullptr);
@@ -455,11 +457,13 @@ void WatchFaceInfineat::Refresh() {
     lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 3);
   }
 
-  stepCount = motionController.NbSteps();
-  if (stepCount.IsUpdated()) {
-    lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
-    lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 10, 0);
-    lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  if (settingsController.IsWidgetOn(Pinetime::Controllers::Settings::Widget::Steps)) {
+    stepCount = motionController.NbSteps();
+    if (stepCount.IsUpdated()) {
+      lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
+      lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 10, 0);
+      lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+    }
   }
 
   if (!lv_obj_get_hidden(btnSettings)) {
