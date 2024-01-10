@@ -42,11 +42,12 @@ namespace Pinetime {
           {Symbols::clock, "Date & Time", Apps::SettingSetDateTime},
           {Symbols::cloudSunRain, "Weather", Apps::SettingWeatherFormat},
 
+          {Symbols::wrench, "Widgets", Apps::SettingWidgets},
           {Symbols::batteryHalf, "Battery", Apps::BatteryInfo},
           {Symbols::clock, "Chimes", Apps::SettingChimes},
           {Symbols::tachometer, "Shake Calib.", Apps::SettingShakeThreshold},
-          {Symbols::check, "Firmware", Apps::FirmwareValidation},
 
+          {Symbols::check, "Firmware", Apps::FirmwareValidation},
           {Symbols::shieldAlt, "Over-the-air", Apps::SettingOTA},
           {Symbols::bluetooth, "Bluetooth", Apps::SettingBluetooth},
           {Symbols::list, "About", Apps::SysInfo},
