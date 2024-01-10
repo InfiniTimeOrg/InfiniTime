@@ -27,10 +27,10 @@ namespace {
   // from datasheet: https://files.pine64.org/doc/datasheet/pinetime/BST-BMA421-FL000.pdf
   // The array index to use is stored in accel_conf.range
   constexpr int16_t accelScaleFactors[] = {
-    [BMA4_ACCEL_RANGE_2G] = 1024,  // LSB/g +/- 2g range
-    [BMA4_ACCEL_RANGE_4G] = 512,   // LSB/g +/- 4g range 
-    [BMA4_ACCEL_RANGE_8G] = 256,   // LSB/g +/- 8g range
-    [BMA4_ACCEL_RANGE_16G] = 128   // LSB/g +/- 16g range
+    [BMA4_ACCEL_RANGE_2G] = 1024, // LSB/g +/- 2g range
+    [BMA4_ACCEL_RANGE_4G] = 512,  // LSB/g +/- 4g range
+    [BMA4_ACCEL_RANGE_8G] = 256,  // LSB/g +/- 8g range
+    [BMA4_ACCEL_RANGE_16G] = 128  // LSB/g +/- 16g range
   };
 }
 
