@@ -7,7 +7,7 @@
 #include <lvgl/src/lv_core/lv_obj.h>
 #include <components/motion/MotionController.h>
 #include "displayapp/Controllers.h"
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 
 namespace Pinetime {
   namespace Applications {
