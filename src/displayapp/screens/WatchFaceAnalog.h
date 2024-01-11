@@ -9,6 +9,7 @@
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
 #include "components/ble/NotificationManager.h"
+#include "components/ble/SimpleWeatherService.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "utility/DirtyValue.h"
 
@@ -33,7 +34,8 @@ namespace Pinetime {
                         Controllers::NotificationManager& notificationManager,
                         Controllers::Settings& settingsController,
                         Controllers::HeartRateController& heartRateController,
-                        Controllers::MotionController& motionController);
+                        Controllers::MotionController& motionController,
+                        Controllers::SimpleWeatherService& weather);
         ~WatchFaceAnalog() override;
 
         void Refresh() override;
@@ -50,6 +52,7 @@ namespace Pinetime {
         Utility::DirtyValue<bool> heartbeatRunning {};
         Utility::DirtyValue<bool> notificationState {false};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
+        Utility::DirtyValue<std::optional<Pinetime::Controllers::SimpleWeatherService::CurrentWeather>> currentWeather {};
 
         lv_obj_t* minor_scales;
         lv_obj_t* major_scales;
@@ -83,6 +86,8 @@ namespace Pinetime {
         lv_obj_t* heartbeatValue;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
+        lv_obj_t* weatherIcon;
+        lv_obj_t* temperature;
 
         BatteryIcon batteryIcon;
 
@@ -93,6 +98,7 @@ namespace Pinetime {
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
         Controllers::MotionController& motionController;
+        Controllers::SimpleWeatherService& weatherService;
 
         void UpdateClock();
         void SetBatteryIcon();
@@ -113,7 +119,8 @@ namespace Pinetime {
                                             controllers.notificationManager,
                                             controllers.settingsController,
                                             controllers.heartRateController,
-                                            controllers.motionController);
+                                            controllers.motionController,
+                                            *controllers.weatherController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
