@@ -6,6 +6,8 @@
 #include "displayapp/screens/BleIcon.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/NotificationIcon.h"
+#include "displayapp/screens/WeatherSymbols.h"
+#include "components/ble/SimpleWeatherService.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
@@ -52,7 +54,8 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
                                  Controllers::NotificationManager& notificationManager,
                                  Controllers::Settings& settingsController,
                                  Controllers::HeartRateController& heartRateController,
-                                 Controllers::MotionController& motionController)
+                                 Controllers::MotionController& motionController,
+                                 Controllers::SimpleWeatherService& weatherService)
   : currentDateTime {{}},
     batteryIcon(true),
     dateTimeController {dateTimeController},
@@ -61,7 +64,8 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
     notificationManager {notificationManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
-    motionController {motionController} {
+    motionController {motionController},
+    weatherService {weatherService} {
 
   sHour = 99;
   sMinute = 99;
@@ -120,12 +124,24 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
 
   // Date - Day / Week day
-
   label_date_day = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(label_date_day, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::orange);
   lv_label_set_text_fmt(label_date_day, "%s\n%02i", dateTimeController.DayOfWeekShortToString(), dateTimeController.Day());
   lv_label_set_align(label_date_day, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(label_date_day, nullptr, LV_ALIGN_CENTER, 50, 0);
+
+  if (settingsController.IsWidgetOn(Pinetime::Controllers::Settings::Widget::Weather)) {
+    weatherIcon = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+    lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
+    lv_label_set_text(weatherIcon, "");
+    lv_obj_align(weatherIcon, nullptr, LV_ALIGN_CENTER, -50, -12);
+
+    temperature = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+    lv_label_set_text(temperature, "");
+    lv_obj_align(temperature, nullptr, LV_ALIGN_CENTER, -50, 12);
+  }
 
   minute_body = lv_line_create(lv_scr_act(), nullptr);
   minute_body_trace = lv_line_create(lv_scr_act(), nullptr);
@@ -318,6 +334,26 @@ void WatchFaceAnalog::Refresh() {
       lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
       lv_obj_realign(stepValue);
       lv_obj_realign(stepIcon);
+    }
+  }
+
+  if (settingsController.IsWidgetOn(Pinetime::Controllers::Settings::Widget::Weather)) {
+    currentWeather = weatherService.Current();
+    if (currentWeather.IsUpdated()) {
+      auto optCurrentWeather = currentWeather.Get();
+      if (optCurrentWeather) {
+        int16_t temp = optCurrentWeather->temperature.Celsius();
+        char tempUnit = 'C';
+        if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
+          temp = optCurrentWeather->temperature.Fahrenheit();
+          tempUnit = 'F';
+        }
+        lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
+        lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
+      } else {
+        lv_label_set_text_static(temperature, "");
+        lv_label_set_text(weatherIcon, "");
+      }
     }
   }
 }
