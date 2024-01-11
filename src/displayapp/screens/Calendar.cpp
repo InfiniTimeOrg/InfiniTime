@@ -1,3 +1,21 @@
+/*  Copyright (C) 2024 thnikk, Boteium, JustScott
+
+    This file is part of InfiniTime.
+
+    InfiniTime is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published
+    by the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    InfiniTime is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include "displayapp/screens/Calendar.h"
 #include "components/datetime/DateTimeController.h"
 
@@ -14,13 +32,6 @@ Calendar::Calendar(Controllers::DateTime& dateTimeController) : dateTimeControll
     // Disable clicks
     lv_obj_set_click(calendar, false);
 
-    // Set background of today's date
-    /*
-    lv_obj_set_style_local_bg_opa(calendar, LV_CALENDAR_PART_DATE, LV_STATE_FOCUSED, LV_OPA_COVER);
-    lv_obj_set_style_local_bg_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_FOCUSED, LV_COLOR_WHITE);
-    lv_obj_set_style_local_radius(calendar, LV_CALENDAR_PART_DATE, LV_STATE_FOCUSED, 3);
-    */
-
     // Set style of today's date
     lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_FOCUSED, LV_COLOR_RED);
 
@@ -28,17 +39,13 @@ Calendar::Calendar(Controllers::DateTime& dateTimeController) : dateTimeControll
     lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_DISABLED, lv_color_hex(0x505050));
 
     // Get today's date
-    today.year = static_cast<int>(dateTimeController.Year());
-    today.month = static_cast<int>(dateTimeController.Month());
-    today.day = static_cast<int>(dateTimeController.Day());
+    current.year = static_cast<int>(dateTimeController.Year());
+    current.month = static_cast<int>(dateTimeController.Month());
+    current.day = static_cast<int>(dateTimeController.Day());
 
     // Set today's date
-    lv_calendar_set_today_date(calendar, &today);
-    lv_calendar_set_showed_date(calendar, &today);
-
-    // Use today's date as a reference for which month to show if moved
-    current = today;
-
+    lv_calendar_set_today_date(calendar, &current);
+    lv_calendar_set_showed_date(calendar, &current);
 }
 
 bool Calendar::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
@@ -51,6 +58,7 @@ bool Calendar::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
             else{
                 current.month++;
             }
+
             lv_calendar_set_showed_date(calendar, &current);
             return true;
         }
@@ -62,6 +70,7 @@ bool Calendar::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
             else{
                 current.month--;
             }
+
             lv_calendar_set_showed_date(calendar, &current);
             return true;
         }
