@@ -383,6 +383,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
         displayapp/screens/Twos.cpp
+        displayapp/screens/Bird.cpp
         displayapp/screens/HeartRate.cpp
         displayapp/screens/FlashLight.cpp
         displayapp/screens/List.cpp
