@@ -2,7 +2,7 @@
 
 #include <array>
 #include <memory>
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "Screen.h"
 #include "ScreenList.h"
 #include "displayapp/Controllers.h"

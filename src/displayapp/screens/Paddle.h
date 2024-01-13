@@ -3,7 +3,7 @@
 #include <lvgl/lvgl.h>
 #include <cstdint>
 #include "displayapp/screens/Screen.h"
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
 

@@ -43,7 +43,7 @@ CMake configures the project according to variables you specify the command line
 **CMAKE_BUILD_TYPE (\*)**| Build type (Release or Debug). Release is applied by default if this variable is not specified.|`-DCMAKE_BUILD_TYPE=Debug`
 **BUILD_DFU (\*\*)**|Build DFU files while building (needs [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil)).|`-DBUILD_DFU=1`
 **BUILD_RESOURCES (\*\*)**| Generate external resource while building (needs [lv_font_conv](https://github.com/lvgl/lv_font_conv) and [python3-pil/pillow](https://pillow.readthedocs.io) module). |`-DBUILD_RESOURCES=1`
-**TARGET_DEVICE**|Target device, used for hardware configuration. Allowed: `PINETIME, MOY-TFK5, MOY-TIN5, MOY-TON5, MOY-UNK`|`-DTARGET_DEVICE=PINETIME` (Default)
+**TARGET_DEVICE**|Target device, used for hardware configuration. Allowed: `PINETIME, MOY_TFK5, MOY_TIN5, MOY_TON5, MOY_UNK`|`-DTARGET_DEVICE=PINETIME` (Default)
 
 #### (\*) Note about **CMAKE_BUILD_TYPE**
 By default, this variable is set to *Release*. It compiles the code with size and speed optimizations. We use this value for all the binaries we publish when we [release](https://github.com/InfiniTimeOrg/InfiniTime/releases) new versions of InfiniTime.

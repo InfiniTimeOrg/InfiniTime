@@ -355,14 +355,6 @@ set(LVGL_SRC
         libs/lvgl/src/lv_widgets/lv_win.c
         )
 
-set(QCBOR_SRC
-        libs/QCBOR/src/ieee754.c
-        libs/QCBOR/src/qcbor_decode.c
-        libs/QCBOR/src/qcbor_encode.c
-        libs/QCBOR/src/qcbor_err_to_str.c
-        libs/QCBOR/src/UsefulBuf.c
-        )
-
 list(APPEND IMAGE_FILES
         displayapp/icons/battery/batteryicon.c
         )
@@ -373,7 +365,6 @@ list(APPEND SOURCE_FILES
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
         displayapp/screens/Screen.cpp
-        displayapp/screens/Clock.cpp
         displayapp/screens/Tile.cpp
         displayapp/screens/InfiniPaint.cpp
         displayapp/screens/Paddle.cpp
@@ -385,7 +376,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Label.cpp
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
-        displayapp/screens/Weather.cpp
         displayapp/screens/Navigation.cpp
         displayapp/screens/Metronome.cpp
         displayapp/screens/Motion.cpp
@@ -415,6 +405,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/Settings.cpp
         displayapp/screens/settings/SettingWatchFace.cpp
         displayapp/screens/settings/SettingTimeFormat.cpp
+        displayapp/screens/settings/SettingWeatherFormat.cpp
         displayapp/screens/settings/SettingWakeUp.cpp
         displayapp/screens/settings/SettingDisplay.cpp
         displayapp/screens/settings/SettingSteps.cpp
@@ -460,7 +451,7 @@ list(APPEND SOURCE_FILES
         components/ble/CurrentTimeService.cpp
         components/ble/AlertNotificationService.cpp
         components/ble/MusicService.cpp
-        components/ble/weather/WeatherService.cpp
+        components/ble/SimpleWeatherService.cpp
         components/ble/NavigationService.cpp
         components/ble/BatteryInformationService.cpp
         components/ble/FSService.cpp
@@ -529,7 +520,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         components/ble/CurrentTimeService.cpp
         components/ble/AlertNotificationService.cpp
         components/ble/MusicService.cpp
-        components/ble/weather/WeatherService.cpp
+        components/ble/SimpleWeatherService.cpp
         components/ble/BatteryInformationService.cpp
         components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
@@ -597,7 +588,6 @@ set(INCLUDE_FILES
         displayapp/Messages.h
         displayapp/TouchEvents.h
         displayapp/screens/Screen.h
-        displayapp/screens/Clock.h
         displayapp/screens/Tile.h
         displayapp/screens/InfiniPaint.h
         displayapp/screens/StopWatch.h
@@ -613,7 +603,6 @@ set(INCLUDE_FILES
         displayapp/screens/ApplicationList.h
         displayapp/screens/CheckboxList.h
         displayapp/Apps.h
-        displayapp/WatchFaces.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
         displayapp/screens/Metronome.h
@@ -658,7 +647,7 @@ set(INCLUDE_FILES
         components/ble/BleClient.h
         components/ble/HeartRateService.h
         components/ble/MotionService.h
-        components/ble/weather/WeatherService.h
+        components/ble/SimpleWeatherService.h
         components/settings/Settings.h
         components/timer/Timer.h
         components/alarm/AlarmController.h
@@ -805,18 +794,18 @@ add_definitions(-DTARGET_DEVICE_NAME="${TARGET_DEVICE}")
 if(TARGET_DEVICE STREQUAL "PINETIME")
   add_definitions(-DDRIVER_PINMAP_PINETIME)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=1) # XTAL
-elseif(TARGET_DEVICE STREQUAL "MOY-TFK5") # P8a
+elseif(TARGET_DEVICE STREQUAL "MOY_TFK5") # P8a
   add_definitions(-DDRIVER_PINMAP_P8)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=1) # XTAL
-elseif(TARGET_DEVICE STREQUAL "MOY-TIN5") # P8a variant 2
+elseif(TARGET_DEVICE STREQUAL "MOY_TIN5") # P8a variant 2
   add_definitions(-DDRIVER_PINMAP_P8)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=1) # XTAL
-elseif(TARGET_DEVICE STREQUAL "MOY-TON5") # P8b
+elseif(TARGET_DEVICE STREQUAL "MOY_TON5") # P8b
   add_definitions(-DDRIVER_PINMAP_P8)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=0) # RC
   add_definitions(-DMYNEWT_VAL_BLE_LL_SCA=500)
   add_definitions(-DCLOCK_CONFIG_LF_CAL_ENABLED=1)
-elseif(TARGET_DEVICE STREQUAL "MOY-UNK") # P8b mirrored
+elseif(TARGET_DEVICE STREQUAL "MOY_UNK") # P8b mirrored
   add_definitions(-DDRIVER_PINMAP_P8)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=0) # RC
   add_definitions(-DMYNEWT_VAL_BLE_LL_SCA=500)
@@ -857,6 +846,8 @@ target_compile_options(infinitime_fonts PUBLIC
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
 
+add_subdirectory(displayapp/apps)
+
 # NRF SDK
 add_library(nrf-sdk STATIC ${SDK_SOURCE_FILES})
 target_include_directories(nrf-sdk SYSTEM PUBLIC . ../)
@@ -894,27 +885,6 @@ target_compile_options(lvgl PRIVATE
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
 
-# QCBOR
-add_library(QCBOR STATIC ${QCBOR_SRC})
-target_include_directories(QCBOR SYSTEM PUBLIC libs/QCBOR/inc)
-# This is required with the current configuration
-target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_FLOAT_HW_USE)
-# These are for space-saving
-target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_PREFERRED_FLOAT)
-target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_EXP_AND_MANTISSA)
-target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_INDEFINITE_LENGTH_STRINGS)
-#target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_INDEFINITE_LENGTH_ARRAYS)
-target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_UNCOMMON_TAGS)
-target_compile_definitions(QCBOR PUBLIC USEFULBUF_CONFIG_LITTLE_ENDIAN)
-set_target_properties(QCBOR PROPERTIES LINKER_LANGUAGE C)
-target_compile_options(QCBOR PRIVATE
-        ${COMMON_FLAGS}
-        $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
-        $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
-        $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        -O3
-        )
-
 # LITTLEFS_SRC
 add_library(littlefs STATIC ${LITTLEFS_SRC})
 target_include_directories(littlefs SYSTEM PUBLIC . ../)
@@ -933,7 +903,7 @@ set(EXECUTABLE_FILE_NAME ${EXECUTABLE_NAME}-${pinetime_VERSION_MAJOR}.${pinetime
 set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
 set_target_properties(${EXECUTABLE_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_FILE_NAME})
-target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs QCBOR infinitime_fonts)
+target_link_libraries(${EXECUTABLE_NAME} nimble nrf-sdk lvgl littlefs infinitime_fonts infinitime_apps)
 target_compile_options(${EXECUTABLE_NAME} PUBLIC
         ${COMMON_FLAGS}
         ${WARNING_FLAGS}
@@ -967,7 +937,7 @@ set(IMAGE_MCUBOOT_FILE_NAME_BIN ${EXECUTABLE_MCUBOOT_NAME}-image-${pinetime_VERS
 set(DFU_MCUBOOT_FILE_NAME ${EXECUTABLE_MCUBOOT_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 set(NRF5_LINKER_SCRIPT_MCUBOOT "${CMAKE_SOURCE_DIR}/gcc_nrf52-mcuboot.ld")
 add_executable(${EXECUTABLE_MCUBOOT_NAME} ${SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs QCBOR infinitime_fonts)
+target_link_libraries(${EXECUTABLE_MCUBOOT_NAME} nimble nrf-sdk lvgl littlefs infinitime_fonts infinitime_apps)
 set_target_properties(${EXECUTABLE_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_NAME} PUBLIC
         ${COMMON_FLAGS}
@@ -1009,7 +979,7 @@ endif()
 set(EXECUTABLE_RECOVERY_NAME "pinetime-recovery")
 set(EXECUTABLE_RECOVERY_FILE_NAME ${EXECUTABLE_RECOVERY_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 add_executable(${EXECUTABLE_RECOVERY_NAME} ${RECOVERY_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_RECOVERY_NAME} nimble nrf-sdk littlefs QCBOR infinitime_fonts)
+target_link_libraries(${EXECUTABLE_RECOVERY_NAME} nimble nrf-sdk littlefs infinitime_fonts infinitime_apps)
 set_target_properties(${EXECUTABLE_RECOVERY_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERY_FILE_NAME})
 target_compile_definitions(${EXECUTABLE_RECOVERY_NAME} PUBLIC "PINETIME_IS_RECOVERY")
 target_compile_options(${EXECUTABLE_RECOVERY_NAME} PUBLIC
@@ -1041,7 +1011,7 @@ set(IMAGE_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-image-$
 set(IMAGE_RECOVERY_MCUBOOT_FILE_NAME_HEX ${IMAGE_RECOVERY_MCUBOOT_FILE_NAME}.hex)
 set(DFU_RECOVERY_MCUBOOT_FILE_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 add_executable(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} ${RECOVERY_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} nimble nrf-sdk littlefs QCBOR infinitime_fonts)
+target_link_libraries(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} nimble nrf-sdk littlefs infinitime_fonts infinitime_apps)
 set_target_properties(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERY_MCUBOOT_FILE_NAME})
 target_compile_definitions(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC "PINETIME_IS_RECOVERY")
 target_compile_options(${EXECUTABLE_RECOVERY_MCUBOOT_NAME} PUBLIC
@@ -1081,7 +1051,7 @@ endif()
 set(EXECUTABLE_RECOVERYLOADER_NAME "pinetime-recovery-loader")
 set(EXECUTABLE_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_RECOVERYLOADER_NAME}-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH})
 add_executable(${EXECUTABLE_RECOVERYLOADER_NAME} ${RECOVERYLOADER_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_RECOVERYLOADER_NAME} nrf-sdk QCBOR infinitime_fonts)
+target_link_libraries(${EXECUTABLE_RECOVERYLOADER_NAME} nrf-sdk infinitime_fonts infinitime_apps)
 set_target_properties(${EXECUTABLE_RECOVERYLOADER_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_RECOVERYLOADER_FILE_NAME})
 target_compile_options(${EXECUTABLE_RECOVERYLOADER_NAME} PUBLIC
         ${COMMON_FLAGS}
@@ -1116,7 +1086,7 @@ set(IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_N
 set(IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME_HEX ${IMAGE_MCUBOOT_RECOVERYLOADER_FILE_NAME}.hex)
 set(DFU_MCUBOOT_RECOVERYLOADER_FILE_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME}-dfu-${pinetime_VERSION_MAJOR}.${pinetime_VERSION_MINOR}.${pinetime_VERSION_PATCH}.zip)
 add_executable(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} ${RECOVERYLOADER_SOURCE_FILES})
-target_link_libraries(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} nrf-sdk QCBOR infinitime_fonts)
+target_link_libraries(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} nrf-sdk infinitime_fonts infinitime_apps)
 set_target_properties(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PROPERTIES OUTPUT_NAME ${EXECUTABLE_MCUBOOT_RECOVERYLOADER_FILE_NAME})
 target_compile_options(${EXECUTABLE_MCUBOOT_RECOVERYLOADER_NAME} PUBLIC
         ${COMMON_FLAGS}

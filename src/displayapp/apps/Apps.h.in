@@ -1,9 +1,10 @@
 #pragma once
 #include <cstddef>
+#include <cstdint>
 
 namespace Pinetime {
   namespace Applications {
-    enum class Apps {
+    enum class Apps : uint8_t {
       None,
       Launcher,
       Clock,
@@ -31,6 +32,7 @@ namespace Pinetime {
       Settings,
       SettingWatchFace,
       SettingTimeFormat,
+      SettingWeatherFormat,
       SettingDisplay,
       SettingWakeUp,
       SettingSteps,
@@ -42,29 +44,35 @@ namespace Pinetime {
       Weather
     };
 
+    enum class WatchFace : uint8_t {
+      Digital,
+      Analog,
+      PineTimeStyle,
+      Terminal,
+      Infineat,
+      CasioStyleG7710,
+    };
+
     template <Apps>
     struct AppTraits {};
+
+    template <WatchFace>
+    struct WatchFaceTraits {};
 
     template <Apps... As>
     struct TypeList {
       static constexpr size_t Count = sizeof...(As);
     };
 
-    using UserAppTypes = TypeList<Apps::StopWatch,
-                                  Apps::Alarm,
-                                  Apps::Timer,
-                                  Apps::Steps,
-                                  Apps::HeartRate,
-                                  Apps::Music,
-                                  Apps::Paint,
-                                  Apps::Paddle,
-                                  Apps::Twos,
-                                  Apps::Metronome,
-                                  Apps::Navigation
-                                  /*
-                                  Apps::Weather,
-                                  Apps::Motion
-                                  */
-                                  >;
+    using UserAppTypes = TypeList<@USERAPP_TYPES@>;
+
+    template <WatchFace... Ws>
+    struct WatchFaceTypeList {
+      static constexpr size_t Count = sizeof...(Ws);
+    };
+
+    using UserWatchFaceTypes = WatchFaceTypeList<@WATCHFACE_TYPES@>;
+
+    static_assert(UserWatchFaceTypes::Count >= 1);
   }
 }
