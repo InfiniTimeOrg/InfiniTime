@@ -1,25 +1,33 @@
-#!/bin/bash
-if clang-format --version | grep -q 'version 11\.'; then
-   CLANG_FORMAT_EXECUTABLE="clang-format"
-else
-   CLANG_FORMAT_EXECUTABLE="clang-format-11"
+#!/bin/sh
+
+name="clang-format"
+
+if [ -z "$(command -v "git-$name")" ]; then
+  name="$(basename -a $(find $(echo "$PATH" | tr ':' ' ') -maxdepth 1 -type f -executable -name 'git-clang-format*') | sort | tail -n 1 | sed 's/^git-//')"
 fi
 
-if ! command -v $CLANG_FORMAT_EXECUTABLE &> /dev/null
-then
-    echo $CLANG_FORMAT_EXECUTABLE does not exist, make sure to install it
-    exit 1
+minVersion="14.0.0"
+
+for file in $(find $(echo "$PATH" | tr ':' ' ') -maxdepth 1 -type f -executable -name 'clang-format*'); do
+  curBin="$file"
+  curVersion="$("$curBin" --version | cut -d ' ' -f 3)"
+
+  if [ "$(printf '%s\n' "$curVersion" "$version" "$minVersion" | sort -V | tail -n 1)" = "$curVersion" ]; then
+    bin="$curBin"
+    version="$curVersion"
+  fi
+done
+
+if [ -z "$name" ] || [ -z "$bin" ]; then
+  echo "Could not find a suitable clang-format installation. Install clang-format that includes the git-clang-format script, with at least version $minVersion"
+  exit 1
 fi
 
-for FILE in $(git diff --cached --name-only)
-do
-	if [[ "$FILE" =~ src/[A-Za-z0-9\ \-]+*\.(c|h|cpp|cc)$ ]]; then
-		echo Autoformatting $FILE with $CLANG_FORMAT_EXECUTABLE
-		$CLANG_FORMAT_EXECUTABLE -style=file -i -- $FILE
-		git add -- $FILE
-	elif [[ "$FILE" =~ src/(components|displayapp|drivers|heartratetask|logging|systemtask)/.*\.(c|h|cpp|cc)$ ]]; then
-		echo Autoformatting $FILE with $CLANG_FORMAT_EXECUTABLE
-		$CLANG_FORMAT_EXECUTABLE -style=file -i -- $FILE
-		git add -- $FILE
-	fi
+args="--binary $bin -q --extensions cpp,h --style file --staged -- :!src/FreeRTOS :!src/libs"
+
+changedFiles="$(git "$name" --diffstat $args)"
+git "$name" $args
+
+echo "$changedFiles" | head -n -1 | cut -d ' ' -f 2 | while read -r file; do
+  git add -- "$file"
 done

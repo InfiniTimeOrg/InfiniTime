@@ -28,7 +28,7 @@ The byte array must contain the following data:
 
  - [0] : Message type = `0`
  - [1] : Message version = `0`
- - [2][3][4][5][6][7][8][9] : Timestamp (64 bits UNIX timestamp, number of nanoseconds elapsed since 1 JAN 1970)
+ - [2][3][4][5][6][7][8][9] : Timestamp (64 bits UNIX timestamp, number of seconds elapsed since 1 JAN 1970)  in local time (the same timezone as the one used to set the time)
  - [10, 11] : Current temperature (°C * 100)
  - [12, 13] : Minimum temperature (°C * 100)
  - [14, 15] : Maximum temperature (°C * 100)
@@ -48,9 +48,9 @@ The byte array must contain the following data:
 
 The byte array must contain the following data:
 
-  - [0] : Message type = `0`
+  - [0] : Message type = `1`
   - [1] : Message version = `0`
-  - [2][3][4][5][6][7][8][9] : Timestamp (64 bits UNIX timestamp, number of nanoseconds elapsed since 1 JAN 1970)
+  - [2][3][4][5][6][7][8][9] : Timestamp (64 bits UNIX timestamp, number of seconds elapsed since 1 JAN 1970) in local time (the same timezone as the one used to set the time)
   - [10] Number of days (Max 5, fields for unused days should be set to `0`)
   - [11,12] Day 0 Minimum temperature (°C * 100)
   - [13,14] Day 0 Maximum temperature (°C * 100)
