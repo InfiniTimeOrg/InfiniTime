@@ -27,15 +27,12 @@ void BatteryIcon::SetBatteryPercentage(uint8_t percentage) {
   lv_obj_set_height(batteryJuice, percentage * 14 / 100);
   lv_obj_realign(batteryJuice);
   if (colorOnLowBattery) {
-    static constexpr int lowBatteryThreshold = 15;
-    static constexpr int criticalBatteryThreshold = 5;
-    if (percentage > lowBatteryThreshold) {
-      SetColor(LV_COLOR_WHITE);
-    } else if (percentage > criticalBatteryThreshold) {
-      SetColor(LV_COLOR_ORANGE);
-    } else {
-      SetColor(Colors::deepOrange);
-    }
+    // HSV color model has red at 0° and green at 120°.
+    // We lock satuation and brightness at 100% and traverse the cilinder
+    // between red and green, thus avoiding the darker RGB on medium battery
+    // charges and giving us a much nicer color range.
+    uint8_t hue = percentage * 120 / 100;
+    SetColor(lv_color_hsv_to_rgb(hue, 100, 100));
   }
 }
 
