@@ -9,15 +9,15 @@ using namespace Pinetime::Applications::Screens;
 
 namespace {
   lv_obj_t* MakeLabel(lv_font_t* font,
-                             lv_color_t color,
-                             lv_label_long_mode_t longMode,
-                             uint8_t width,
-                             lv_label_align_t labelAlignment,
-                             const char* text,
-                             lv_obj_t* reference,
-                             lv_align_t alignment,
-                             int8_t x,
-                             int8_t y) {
+                      lv_color_t color,
+                      lv_label_long_mode_t longMode,
+                      uint8_t width,
+                      lv_label_align_t labelAlignment,
+                      const char* text,
+                      lv_obj_t* reference,
+                      lv_align_t alignment,
+                      int8_t x,
+                      int8_t y) {
     lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
     lv_obj_set_style_local_text_font(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font);
     lv_obj_set_style_local_text_color(label, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color);
@@ -125,9 +125,9 @@ Dice::Dice(Controllers::MotionController& motionController,
 
   // Spagetti code in motion controller: it only updates the shake speed when shake to wake is on...
   enableShakeForDice = !settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake);
-  if (enableShakeForDice)
+  if (enableShakeForDice) {
     settingsController.setWakeUpMode(Pinetime::Controllers::Settings::WakeUpMode::Shake, true);
-
+  }
   refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
@@ -144,14 +144,14 @@ Dice::~Dice() {
 void Dice::Refresh() {
   // we only reset the hysteresis when at rest
   if (motionController.CurrentShakeSpeed() >= settingsController.GetShakeThreshold()) {
-    if (rollHysteresis <= 0) {
-      // this timestamp is used for the secreen timeout
+    if (currentRollHysteresis <= 0) {
+      // this timestamp is used for the screen timeout
       lv_disp_get_next(NULL)->last_activity_time = lv_tick_get();
 
       Roll();
     }
-  } else if (rollHysteresis > 0)
-    --rollHysteresis;
+  } else if (currentRollHysteresis > 0)
+    --currentRollHysteresis;
 }
 
 void Dice::Roll() {
@@ -188,7 +188,7 @@ void Dice::Roll() {
   if (openingRoll == false) {
     motorController.RunForDuration(30);
     NextColor();
-    rollHysteresis = ROLL_HYSTERESIS;
+    currentRollHysteresis = ROLL_HYSTERESIS;
   }
 }
 

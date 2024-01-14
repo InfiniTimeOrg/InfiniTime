@@ -9,8 +9,6 @@
 #include <array>
 #include <random>
 
-#define ROLL_HYSTERESIS 10
-
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
@@ -41,7 +39,8 @@ namespace Pinetime {
         Widgets::Counter dCounter = Widgets::Counter(2, 99, jetbrains_mono_42);
 
         bool openingRoll = true;
-        unsigned int rollHysteresis = 0;
+        uint8_t currentRollHysteresis = 0;
+        static constexpr uint8_t ROLL_HYSTERESIS = 10;
 
         Controllers::MotorController& motorController;
         Controllers::MotionController& motionController;
