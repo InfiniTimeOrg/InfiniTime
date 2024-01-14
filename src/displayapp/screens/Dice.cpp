@@ -31,7 +31,7 @@ namespace {
     return label;
   }
 
-  static void btnRollEventHandler(lv_obj_t* obj, lv_event_t event) {
+  void btnRollEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<Dice*>(obj->user_data);
     if (event == LV_EVENT_CLICKED) {
       screen->Roll();
