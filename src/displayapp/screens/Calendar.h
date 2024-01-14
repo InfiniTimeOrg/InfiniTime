@@ -23,7 +23,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include <lvgl/lvgl.h>
-                                   
+
 #include "Symbols.h"
 
 namespace Pinetime {
@@ -37,6 +37,7 @@ namespace Pinetime {
       public:
         Calendar(Controllers::DateTime& dateTimeController);
         ~Calendar() override;
+
       private:
         bool OnTouchEvent(TouchEvents event);
         Controllers::DateTime& dateTimeController;

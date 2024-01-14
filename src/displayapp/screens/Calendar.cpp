@@ -23,75 +23,73 @@ using namespace Pinetime::Applications::Screens;
 
 Calendar::Calendar(Controllers::DateTime& dateTimeController) : dateTimeController {dateTimeController} {
 
-    // Create calendar object
-    calendar = lv_calendar_create(lv_scr_act(), NULL);
-    // Set size
-    lv_obj_set_size(calendar, LV_HOR_RES, LV_VER_RES);
-    // Set alignment
-    lv_obj_align(calendar, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, -5);
-    // Disable clicks
-    lv_obj_set_click(calendar, false);
+  // Create calendar object
+  calendar = lv_calendar_create(lv_scr_act(), NULL);
+  // Set size
+  lv_obj_set_size(calendar, LV_HOR_RES, LV_VER_RES);
+  // Set alignment
+  lv_obj_align(calendar, NULL, LV_ALIGN_IN_BOTTOM_MID, 0, -5);
+  // Disable clicks
+  lv_obj_set_click(calendar, false);
 
-    // Set style of today's date
-    lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_FOCUSED, LV_COLOR_RED);
+  // Set style of today's date
+  lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_FOCUSED, LV_COLOR_RED);
 
-    // Set style of inactive month's days
-    lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_DISABLED, lv_color_hex(0x505050));
+  // Set style of inactive month's days
+  lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_DISABLED, lv_color_hex(0x505050));
 
-    // Get today's date
-    current.year = static_cast<int>(dateTimeController.Year());
-    current.month = static_cast<int>(dateTimeController.Month());
-    current.day = static_cast<int>(dateTimeController.Day());
+  // Get today's date
+  current.year = static_cast<int>(dateTimeController.Year());
+  current.month = static_cast<int>(dateTimeController.Month());
+  current.day = static_cast<int>(dateTimeController.Day());
 
-    // Set today's date
-    lv_calendar_set_today_date(calendar, &current);
-    lv_calendar_set_showed_date(calendar, &current);
+  // Set today's date
+  lv_calendar_set_today_date(calendar, &current);
+  lv_calendar_set_showed_date(calendar, &current);
 }
 
 bool Calendar::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
-    switch (event) {
-        case TouchEvents::SwipeLeft: {
-            if (current.month == 12) {
-                current.month = 1;
-                current.year++;
-            }
-            else{
-                current.month++;
-            }
+  switch (event) {
+    case TouchEvents::SwipeLeft: {
+      if (current.month == 12) {
+        current.month = 1;
+        current.year++;
+      } else {
+        current.month++;
+      }
 
-            lv_calendar_set_showed_date(calendar, &current);
-            return true;
-        }
-        case TouchEvents::SwipeRight: {
-            if (current.month == 1) {
-                current.month = 12;
-                current.year--;
-            }
-            else{
-                current.month--;
-            }
-
-            lv_calendar_set_showed_date(calendar, &current);
-            return true;
-        }
-        /*
-        case TouchEvents::SwipeUp: {
-            current.year++;
-            lv_calendar_set_showed_date(calendar, &current);
-            return true;
-        }
-        case TouchEvents::SwipeDown: {
-            current.year--;
-            lv_calendar_set_showed_date(calendar, &current);
-            return true;
-        }
-        */
-        default: {
-            return false;
-        }
+      lv_calendar_set_showed_date(calendar, &current);
+      return true;
     }
+    case TouchEvents::SwipeRight: {
+      if (current.month == 1) {
+        current.month = 12;
+        current.year--;
+      } else {
+        current.month--;
+      }
+
+      lv_calendar_set_showed_date(calendar, &current);
+      return true;
+    }
+    /*
+    case TouchEvents::SwipeUp: {
+        current.year++;
+        lv_calendar_set_showed_date(calendar, &current);
+        return true;
+    }
+    case TouchEvents::SwipeDown: {
+        current.year--;
+        lv_calendar_set_showed_date(calendar, &current);
+        return true;
+    }
+    */
+    default: {
+      return false;
+    }
+  }
 }
 
 Calendar::~Calendar() {
-    lv_obj_clean(lv_scr_act());
+  lv_obj_clean(lv_scr_act());
 }
