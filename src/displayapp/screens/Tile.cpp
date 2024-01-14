@@ -25,12 +25,13 @@ Tile::Tile(uint8_t screenID,
            const Controllers::Battery& batteryController,
            const Controllers::Ble& bleController,
            const Controllers::AlarmController& alarmController,
+           const Controllers::Timer& timer,
            Controllers::DateTime& dateTimeController,
            std::array<Applications, 6>& applications)
   : app {app},
     dateTimeController {dateTimeController},
     pageIndicator(screenID, numScreens),
-    statusIcons(batteryController, bleController, alarmController) {
+    statusIcons(batteryController, bleController, alarmController, timer, settingsController) {
 
   settingsController.SetAppMenu(screenID);
 

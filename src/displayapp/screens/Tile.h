@@ -30,6 +30,7 @@ namespace Pinetime {
                       const Controllers::Battery& batteryController,
                       const Controllers::Ble& bleController,
                       const Controllers::AlarmController& alarmController,
+                      const Controllers::Timer& timer,
                       Controllers::DateTime& dateTimeController,
                       std::array<Applications, 6>& applications);
 
