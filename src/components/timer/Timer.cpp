@@ -15,7 +15,7 @@ void Timer::StartTimer(std::chrono::milliseconds duration) {
 
 // nullopt if timer stopped (StopTimer called / StartTimer not yet called)
 // otherwise TimerStatus with the ticks until/since expiry (depending on state of expired flag)
-std::optional<Timer::TimerStatus> Timer::GetTimerState() {
+std::optional<Timer::TimerStatus> Timer::GetTimerState() const {
   if (IsRunning()) {
     TickType_t remainingTime = expiry - xTaskGetTickCount();
     return std::make_optional<Timer::TimerStatus>(
@@ -38,6 +38,6 @@ void Timer::StopTimer() {
   triggered = false;
 }
 
-bool Timer::IsRunning() {
+bool Timer::IsRunning() const {
   return (xTimerIsTimerActive(timer) == pdTRUE);
 }

@@ -21,9 +21,9 @@ namespace Pinetime {
 
       void StopTimer();
 
-      std::optional<TimerStatus> GetTimerState();
+      std::optional<TimerStatus> GetTimerState() const;
 
-      bool IsRunning();
+      bool IsRunning() const;
 
     private:
       TimerHandle_t timer;
