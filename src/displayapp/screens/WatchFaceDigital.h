@@ -20,6 +20,7 @@ namespace Pinetime {
     class NotificationManager;
     class HeartRateController;
     class MotionController;
+    class Timer;
   }
 
   namespace Applications {
@@ -30,6 +31,7 @@ namespace Pinetime {
         WatchFaceDigital(Controllers::DateTime& dateTimeController,
                          const Controllers::Battery& batteryController,
                          const Controllers::Ble& bleController,
+                         const Controllers::Timer& timer,
                          Controllers::NotificationManager& notificationManager,
                          Controllers::Settings& settingsController,
                          Controllers::HeartRateController& heartRateController,
@@ -84,6 +86,7 @@ namespace Pinetime {
         return new Screens::WatchFaceDigital(controllers.dateTimeController,
                                              controllers.batteryController,
                                              controllers.bleController,
+                                             controllers.timer,
                                              controllers.notificationManager,
                                              controllers.settingsController,
                                              controllers.heartRateController,
