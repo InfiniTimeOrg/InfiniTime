@@ -19,6 +19,7 @@ namespace Pinetime {
                                  const Pinetime::Controllers::Battery& batteryController,
                                  const Pinetime::Controllers::Ble& bleController,
                                  const Pinetime::Controllers::AlarmController& alarmController,
+                                 const Pinetime::Controllers::Timer& timer,
                                  Controllers::DateTime& dateTimeController,
                                  Pinetime::Controllers::FS& filesystem,
                                  std::array<Tile::Applications, UserAppTypes::Count>&& apps);
@@ -34,6 +35,7 @@ namespace Pinetime {
         const Pinetime::Controllers::Battery& batteryController;
         const Pinetime::Controllers::Ble& bleController;
         const Pinetime::Controllers::AlarmController& alarmController;
+        const Pinetime::Controllers::Timer& timer;
         Controllers::DateTime& dateTimeController;
         Pinetime::Controllers::FS& filesystem;
         std::array<Tile::Applications, UserAppTypes::Count> apps;
