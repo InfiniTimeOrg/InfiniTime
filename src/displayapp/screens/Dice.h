@@ -40,7 +40,7 @@ namespace Pinetime {
 
         bool openingRoll = true;
         uint8_t currentRollHysteresis = 0;
-        static constexpr uint8_t ROLL_HYSTERESIS = 10;
+        static constexpr uint8_t rollHysteresis = 10;
 
         Controllers::MotorController& motorController;
         Controllers::MotionController& motionController;

@@ -188,7 +188,7 @@ void Dice::Roll() {
   if (openingRoll == false) {
     motorController.RunForDuration(30);
     NextColor();
-    currentRollHysteresis = ROLL_HYSTERESIS;
+    currentRollHysteresis = rollHysteresis;
   }
 }
 
