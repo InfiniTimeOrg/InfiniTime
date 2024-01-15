@@ -45,6 +45,7 @@ namespace Pinetime {
         Schedule = 0x07,
         HighPrioritizedAlert = 0x08,
         InstantMessage = 0x09,
+        CustomHuami = 0xFA,
         All = 0xff
       };
 
