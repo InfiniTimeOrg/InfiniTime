@@ -402,7 +402,6 @@ void NimbleController::NotifyBatteryLevel(uint8_t level) {
 
 void NimbleController::EnableRadio() {
   bleController.EnableRadio();
-  bleController.Disconnect();
   fastAdvCount = 0;
   StartAdvertising();
 }
