@@ -212,11 +212,11 @@ void DisplayApp::Refresh() {
       }
       queueTimeout = lv_task_handler();
 
-      if (!systemTask->IsSleepDisabled() && IsPastDimTime()) {
+      if (settingsController.GetScreenTimeOut() && !systemTask->IsSleepDisabled() && IsPastDimTime()) {
         if (!isDimmed) {
           DimScreen();
         }
-        if (IsPastSleepTime()) {
+        if (settingsController.GetScreenTimeOut() && IsPastSleepTime()) {
           systemTask->PushMessage(System::Messages::GoToSleep);
           state = States::Idle;
         }
