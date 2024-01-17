@@ -37,10 +37,14 @@ void StatusIcons::Update() {
     batteryIcon.SetBatteryPercentage(batteryPercent);
   }
 
-  bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
-  if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
-    lv_obj_set_hidden(bleIcon, !bleState.Get());
+  if (bleRadioEnabled.IsUpdated()) {
+    lv_obj_set_hidden(bleIcon, !bleRadioEnabled.Get());
+  }
+
+  bleState = bleController.IsConnected();
+  if (bleState.IsUpdated()) {
+    lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, bleState.Get()?LV_COLOR_BLUE:LV_COLOR_GRAY);
   }
 
   lv_obj_realign(container);
