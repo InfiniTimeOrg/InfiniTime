@@ -293,15 +293,27 @@ void DisplayApp::Refresh() {
           brightnessController.Lower();
           vTaskDelay(100);
         }
-        // Don't actually turn off the display for AlwaysOn mode
+        // Turn brightness down (or set to AlwaysOn mode)
         if (settingsController.GetAlwaysOnDisplay()) {
           brightnessController.Set(Controllers::BrightnessController::Levels::AlwaysOn);
+        } else {
+          brightnessController.Set(Controllers::BrightnessController::Levels::Off);
+        }
+        // Since the active screen is not really an app, go back to Clock.
+        if (currentApp == Apps::Launcher || currentApp == Apps::Notifications || currentApp == Apps::QuickSettings ||
+            currentApp == Apps::Settings) {
+          LoadScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+          // Wait for the clock app to load before moving on.
+          while (!lv_task_handler()) {
+          };
+        }
+        // Turn LCD display off (or set to low power for AlwaysOn mode)
+        if (settingsController.GetAlwaysOnDisplay()) {
           lcd.LowPowerOn();
           // Record idle entry time
           alwaysOnTickCount = 0;
           alwaysOnStartTime = xTaskGetTickCount();
         } else {
-          brightnessController.Set(Controllers::BrightnessController::Levels::Off);
           lcd.Sleep();
         }
         PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
