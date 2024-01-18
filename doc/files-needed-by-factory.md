@@ -12,7 +12,7 @@ First, convert the bootloader to hex:
 <ARM TOOLCHAIN>/bin/arm-none-eabi-objcopy -I binary -O ihex ./bootloader.bin ./bootloader.hex
 ```
 
-where `bootloader.bin` is the [last stable version](https://github.com/JF002/pinetime-mcuboot-bootloader/releases) of the [bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader).
+where `bootloader.bin` is the [last stable version](https://github.com/InfiniTimeOrg/pinetime-mcuboot-bootloader/releases) of the [bootloader](https://github.com/InfiniTimeOrg/pinetime-mcuboot-bootloader).
 
 Then, convert the MCUBoot image of InfiniTime:
 

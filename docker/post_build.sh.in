@@ -8,7 +8,6 @@ export PROJECT_VERSION="@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT
 
 mkdir -p "$OUTPUT_DIR"
 
-cp "$SOURCES_DIR"/bootloader/bootloader-5.0.4.bin $OUTPUT_DIR/bootloader.bin
 cp "$BUILD_DIR/src/pinetime-mcuboot-app-image-$PROJECT_VERSION.bin" "$OUTPUT_DIR/pinetime-mcuboot-app-image-$PROJECT_VERSION.bin"
 cp "$BUILD_DIR/src/pinetime-mcuboot-app-dfu-$PROJECT_VERSION.zip" "$OUTPUT_DIR/pinetime-mcuboot-app-dfu-$PROJECT_VERSION.zip"
 
