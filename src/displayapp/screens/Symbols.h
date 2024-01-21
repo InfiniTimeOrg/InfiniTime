@@ -20,6 +20,9 @@ namespace Pinetime {
         static constexpr const char* paintbrush = "\xEF\x87\xBC";
         static constexpr const char* paddle = "\xEF\x91\x9D";
         static constexpr const char* map = "\xEF\x96\xa0";
+        static constexpr const char* bone = "\xEF\x97\x97";
+        static constexpr const char* cat = "\xEF\x9a\xbe"; // f6be
+        static constexpr const char* dog = "\xEF\x9b\x93"; // f6d3
         static constexpr const char* phone = "\xEF\x82\x95";
         static constexpr const char* phoneSlash = "\xEF\x8F\x9D";
         static constexpr const char* volumMute = "\xEF\x9A\xA9";
