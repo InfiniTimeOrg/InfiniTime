@@ -3,6 +3,8 @@
 #include <lvgl/lvgl.h>
 #include <cstdint>
 #include "displayapp/screens/Screen.h"
+#include "Symbols.h"
+#include "systemtask/SystemTask.h"
 
 #define BIRD_X        110
 #define BIRD_SIZE     20
@@ -47,5 +49,15 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct AppTraits<Apps::Bird> {
+      static constexpr Apps app = Apps::Bird;
+      static constexpr const char* icon = Screens::Symbols::dove;
+
+      static Screens::Screen* Create(AppControllers& /*controllers*/) {
+        return new Screens::Bird();
+      };
+    };
   }
 }

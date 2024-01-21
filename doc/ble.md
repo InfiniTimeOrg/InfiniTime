@@ -92,7 +92,10 @@ The following custom services are implemented in InfiniTime:
 
 - Since InfiniTime 1.8:
 
-  - [Weather Service](/src/components/ble/weather/WeatherService.h): `00040000-78fc-48fe-8e23-433b3a1942d0`
+  - ~~Weather Service: `00040000-78fc-48fe-8e23-433b3a1942d0`~~ (replaced by Simple Weather Service in InfiniTime 1.14)
+
+- Since InfiniTime 1.14
+  - [Simple Weather Service](SimpleWeatherService.md) : `00050000-78fc-48fe-8e23-433b3a1942d0`
 
 ---
 

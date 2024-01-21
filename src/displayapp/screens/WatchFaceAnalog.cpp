@@ -8,8 +8,6 @@
 #include "components/settings/Settings.h"
 #include "displayapp/InfiniTimeTheme.h"
 
-LV_IMG_DECLARE(bg_clock);
-
 using namespace Pinetime::Applications::Screens;
 
 namespace {
@@ -60,9 +58,41 @@ WatchFaceAnalog::WatchFaceAnalog(Controllers::DateTime& dateTimeController,
   sMinute = 99;
   sSecond = 99;
 
-  lv_obj_t* bg_clock_img = lv_img_create(lv_scr_act(), nullptr);
-  lv_img_set_src(bg_clock_img, &bg_clock);
-  lv_obj_align(bg_clock_img, nullptr, LV_ALIGN_CENTER, 0, 0);
+  minor_scales = lv_linemeter_create(lv_scr_act(), nullptr);
+  lv_linemeter_set_scale(minor_scales, 300, 51);
+  lv_linemeter_set_angle_offset(minor_scales, 180);
+  lv_obj_set_size(minor_scales, 240, 240);
+  lv_obj_align(minor_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_bg_opa(minor_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_style_local_scale_width(minor_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
+  lv_obj_set_style_local_scale_end_line_width(minor_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 1);
+  lv_obj_set_style_local_scale_end_color(minor_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+
+  major_scales = lv_linemeter_create(lv_scr_act(), nullptr);
+  lv_linemeter_set_scale(major_scales, 300, 11);
+  lv_linemeter_set_angle_offset(major_scales, 180);
+  lv_obj_set_size(major_scales, 240, 240);
+  lv_obj_align(major_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_bg_opa(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_style_local_scale_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 6);
+  lv_obj_set_style_local_scale_end_line_width(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
+  lv_obj_set_style_local_scale_end_color(major_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+
+  large_scales = lv_linemeter_create(lv_scr_act(), nullptr);
+  lv_linemeter_set_scale(large_scales, 180, 3);
+  lv_linemeter_set_angle_offset(large_scales, 180);
+  lv_obj_set_size(large_scales, 240, 240);
+  lv_obj_align(large_scales, nullptr, LV_ALIGN_CENTER, 0, 0);
+  lv_obj_set_style_local_bg_opa(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_TRANSP);
+  lv_obj_set_style_local_scale_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 20);
+  lv_obj_set_style_local_scale_end_line_width(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, 4);
+  lv_obj_set_style_local_scale_end_color(large_scales, LV_LINEMETER_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+
+  twelve = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_align(twelve, LV_LABEL_ALIGN_CENTER);
+  lv_label_set_text_static(twelve, "12");
+  lv_obj_set_pos(twelve, 110, 10);
+  lv_obj_set_style_local_text_color(twelve, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
 
   batteryIcon.Create(lv_scr_act());
   lv_obj_align(batteryIcon.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);

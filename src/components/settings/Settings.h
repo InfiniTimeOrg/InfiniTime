@@ -3,21 +3,17 @@
 #include <bitset>
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
-#include "displayapp/WatchFaces.h"
+#include "displayapp/apps/Apps.h"
 
 namespace Pinetime {
   namespace Controllers {
     class Settings {
     public:
       enum class ClockType : uint8_t { H24, H12 };
+      enum class WeatherFormat : uint8_t { Metric, Imperial };
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
-      enum class WakeUpMode : uint8_t {
-        SingleTap = 0,
-        DoubleTap = 1,
-        RaiseWrist = 2,
-        Shake = 3,
-      };
+      enum class WakeUpMode : uint8_t { SingleTap = 0, DoubleTap = 1, RaiseWrist = 2, Shake = 3, LowerWrist = 4 };
       enum class Colors : uint8_t {
         White,
         Silver,
@@ -185,6 +181,17 @@ namespace Pinetime {
         return settings.clockType;
       };
 
+      void SetWeatherFormat(WeatherFormat weatherFormat) {
+        if (weatherFormat != settings.weatherFormat) {
+          settingsChanged = true;
+        }
+        settings.weatherFormat = weatherFormat;
+      };
+
+      WeatherFormat GetWeatherFormat() const {
+        return settings.weatherFormat;
+      };
+
       void SetNotificationStatus(Notification status) {
         if (status != settings.notificationStatus) {
           settingsChanged = true;
@@ -238,7 +245,7 @@ namespace Pinetime {
         }
       };
 
-      std::bitset<4> getWakeUpModes() const {
+      std::bitset<5> getWakeUpModes() const {
         return settings.wakeUpMode;
       }
 
@@ -279,7 +286,7 @@ namespace Pinetime {
     private:
       Pinetime::Controllers::FS& fs;
 
-      static constexpr uint32_t settingsVersion = 0x0005;
+      static constexpr uint32_t settingsVersion = 0x0007;
 
       struct SettingsData {
         uint32_t version = settingsVersion;
@@ -287,6 +294,7 @@ namespace Pinetime {
         uint32_t screenTimeOut = 15000;
 
         ClockType clockType = ClockType::H24;
+        WeatherFormat weatherFormat = WeatherFormat::Metric;
         Notification notificationStatus = Notification::On;
 
         Pinetime::Applications::WatchFace watchFace = Pinetime::Applications::WatchFace::Digital;
@@ -296,8 +304,9 @@ namespace Pinetime {
 
         WatchFaceInfineat watchFaceInfineat;
 
-        std::bitset<4> wakeUpMode {0};
+        std::bitset<5> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
+
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
       };
 
