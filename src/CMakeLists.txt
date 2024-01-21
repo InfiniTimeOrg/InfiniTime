@@ -368,6 +368,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Tile.cpp
         displayapp/screens/InfiniPaint.cpp
         displayapp/screens/Paddle.cpp
+        displayapp/screens/CatDog.cpp
         displayapp/screens/StopWatch.cpp
         displayapp/screens/BatteryIcon.cpp
         displayapp/screens/BleIcon.cpp
@@ -383,6 +384,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
         displayapp/screens/Twos.cpp
+        displayapp/screens/CatDog.cpp
         displayapp/screens/HeartRate.cpp
         displayapp/screens/FlashLight.cpp
         displayapp/screens/List.cpp
