@@ -18,6 +18,7 @@
 
 #include "displayapp/screens/Calendar.h"
 #include "components/datetime/DateTimeController.h"
+#include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
 
@@ -33,10 +34,10 @@ Calendar::Calendar(Controllers::DateTime& dateTimeController) : dateTimeControll
   lv_obj_set_click(calendar, false);
 
   // Set style of today's date
-  lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_FOCUSED, LV_COLOR_RED);
+  lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_FOCUSED, Colors::deepOrange);
 
   // Set style of inactive month's days
-  lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_DISABLED, lv_color_hex(0x505050));
+  lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_DISABLED, Colors::gray);
 
   // Get today's date
   current.year = static_cast<int>(dateTimeController.Year());
