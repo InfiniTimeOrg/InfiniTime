@@ -34,6 +34,7 @@ namespace Pinetime {
         static constexpr const char* hourGlass = "\xEF\x89\x92";
         static constexpr const char* lapsFlag = "\xEF\x80\xA4";
         static constexpr const char* drum = "\xEF\x95\xA9";
+        static constexpr const char* dice = "\xEF\x94\xA2";
         static constexpr const char* eye = "\xEF\x81\xAE";
         static constexpr const char* home = "\xEF\x80\x95";
         static constexpr const char* sleep = "\xEE\xBD\x84";
