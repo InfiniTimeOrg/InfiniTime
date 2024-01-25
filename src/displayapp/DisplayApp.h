@@ -135,6 +135,13 @@ namespace Pinetime {
       Utility::StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
 
       bool isDimmed = false;
+
+      TickType_t CalculateSleepTime();
+      TickType_t alwaysOnTickCount;
+      TickType_t alwaysOnStartTime;
+      // If this is to be changed, make sure the actual always on refresh rate is changed
+      // by configuring the LCD refresh timings
+      static constexpr uint32_t alwaysOnRefreshPeriod = 500;
     };
   }
 }
