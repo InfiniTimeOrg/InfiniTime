@@ -25,6 +25,9 @@ void St7789::Init() {
 #ifndef DRIVER_DISPLAY_MIRROR
   DisplayInversionOn();
 #endif
+  PorchSet();
+  FrameRateNormalSet();
+  IdleFrameRateOff();
   NormalModeOn();
   SetVdv();
   PowerControl();
@@ -149,27 +152,44 @@ void St7789::IdleModeOff() {
   WriteCommand(static_cast<uint8_t>(Commands::IdleModeOff));
 }
 
-void St7789::FrameRateLow() {
-  WriteCommand(static_cast<uint8_t>(Commands::FrameRate));
-  // Enable frame rate control for partial/idle mode, 8x frame divider
+void St7789::PorchSet() {
+  WriteCommand(static_cast<uint8_t>(Commands::Porch));
+  constexpr uint8_t args[] = {
+    0x02, // Normal mode front porch
+    0x03, // Normal mode back porch
+    0x01, // Porch control enable
+    0xed, // Idle mode front:back porch
+    0xed, // Partial mode front:back porch (partial mode unused but set anyway)
+  };
+  WriteData(args, sizeof(args));
+}
+
+void St7789::FrameRateNormalSet() {
+  WriteCommand(static_cast<uint8_t>(Commands::FrameRateNormal));
+  // Note that the datasheet table is imprecise - see formula below table
+  WriteData(0x0a);
+}
+
+void St7789::IdleFrameRateOn() {
+  WriteCommand(static_cast<uint8_t>(Commands::FrameRateIdle));
   // According to the datasheet, these controls should apply only to partial/idle mode
   // However they appear to apply to normal mode, so we have to enable/disable
   // every time we enter/exit always on
   // In testing this divider appears to actually be 16x?
   constexpr uint8_t args[] = {
     0x13, // Enable frame rate control for partial/idle mode, 8x frame divider
-    0x1f, // Idle mode frame rate (lowest possible)
-    0x1f, // Partial mode frame rate (lowest possible, unused)
+    0x1e, // Idle mode frame rate
+    0x1e, // Partial mode frame rate (unused)
   };
   WriteData(args, sizeof(args));
 }
 
-void St7789::FrameRateNormal() {
-  WriteCommand(static_cast<uint8_t>(Commands::FrameRate));
+void St7789::IdleFrameRateOff() {
+  WriteCommand(static_cast<uint8_t>(Commands::FrameRateIdle));
   constexpr uint8_t args[] = {
     0x00, // Disable frame rate control and divider
-    0x0f, // Idle mode frame rate (normal)
-    0x0f, // Partial mode frame rate (normal, unused)
+    0x0a, // Idle mode frame rate (normal)
+    0x0a, // Partial mode frame rate (normal, unused)
   };
   WriteData(args, sizeof(args));
 }
@@ -266,13 +286,13 @@ void St7789::HardwareReset() {
 
 void St7789::LowPowerOn() {
   IdleModeOn();
-  FrameRateLow();
+  IdleFrameRateOn();
   NRF_LOG_INFO("[LCD] Low power mode");
 }
 
 void St7789::LowPowerOff() {
   IdleModeOff();
-  FrameRateNormal();
+  IdleFrameRateOff();
   NRF_LOG_INFO("[LCD] Normal power mode");
 }
 
