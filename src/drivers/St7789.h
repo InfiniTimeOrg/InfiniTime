@@ -50,12 +50,14 @@ namespace Pinetime {
       void WriteToRam(const uint8_t* data, size_t size);
       void IdleModeOn();
       void IdleModeOff();
-      void FrameRateNormal();
-      void FrameRateLow();
+      void FrameRateNormalSet();
+      void IdleFrameRateOff();
+      void IdleFrameRateOn();
       void DisplayOn();
       void DisplayOff();
       void PowerControl();
       void GateControl();
+      void PorchSet();
 
       void SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
       void SetVdv();
@@ -80,12 +82,14 @@ namespace Pinetime {
         IdleModeOff = 0x38,
         IdleModeOn = 0x39,
         PixelFormat = 0x3a,
-        FrameRate = 0xb3,
+        FrameRateIdle = 0xb3,
+        FrameRateNormal = 0xc6,
         VdvSet = 0xc4,
         Command2Enable = 0xdf,
         PowerControl1 = 0xd0,
         PowerControl2 = 0xe8,
         GateControl = 0xb7,
+        Porch = 0xb2,
       };
       void WriteData(uint8_t data);
       void WriteData(const uint8_t* data, size_t size);
