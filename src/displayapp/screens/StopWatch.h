@@ -7,7 +7,7 @@
 #include "portmacro_cmsis.h"
 
 #include "systemtask/SystemTask.h"
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
 

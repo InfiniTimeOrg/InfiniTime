@@ -17,7 +17,7 @@
 */
 #pragma once
 
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"

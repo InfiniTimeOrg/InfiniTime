@@ -120,3 +120,7 @@ void MotionService::UnsubscribeNotification(uint16_t attributeHandle) {
   else if (attributeHandle == motionValuesHandle)
     motionValuesNoficationEnabled = false;
 }
+
+bool MotionService::IsMotionNotificationSubscribed() const {
+  return motionValuesNoficationEnabled;
+}

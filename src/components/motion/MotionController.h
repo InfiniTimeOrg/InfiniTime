@@ -62,6 +62,10 @@ namespace Pinetime {
         this->service = service;
       }
 
+      Pinetime::Controllers::MotionService* GetService() const {
+        return service;
+      }
+
     private:
       uint32_t nbSteps = 0;
       uint32_t currentTripSteps = 0;

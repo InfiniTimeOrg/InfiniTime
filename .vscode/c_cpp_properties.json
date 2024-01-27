@@ -10,7 +10,7 @@
             "defines": [],
             "compilerPath": "${env:ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gcc",
             "cStandard": "c11",
-            "cppStandard": "c++14",
+            "cppStandard": "c++20",
             "intelliSenseMode": "linux-gcc-arm",
             "configurationProvider": "ms-vscode.cpp-tools",
             "compileCommands": "${workspaceFolder}/build/compile_commands.json"

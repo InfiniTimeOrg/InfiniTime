@@ -4,6 +4,7 @@
 #include <chrono>
 #include <cstdint>
 #include <memory>
+#include <displayapp/Controllers.h>
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "utility/DirtyValue.h"
@@ -68,5 +69,25 @@ namespace Pinetime {
         lv_task_t* taskRefresh;
       };
     }
+
+    template <>
+    struct WatchFaceTraits<WatchFace::Terminal> {
+      static constexpr WatchFace watchFace = WatchFace::Terminal;
+      static constexpr const char* name = "Terminal";
+
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::WatchFaceTerminal(controllers.dateTimeController,
+                                              controllers.batteryController,
+                                              controllers.bleController,
+                                              controllers.notificationManager,
+                                              controllers.settingsController,
+                                              controllers.heartRateController,
+                                              controllers.motionController);
+      };
+
+      static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
+        return true;
+      }
+    };
   }
 }

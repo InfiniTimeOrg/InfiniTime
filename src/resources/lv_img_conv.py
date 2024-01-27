@@ -101,6 +101,13 @@ def main():
     img = Image.open(img_path)
     img_height = img.height
     img_width = img.width
+    if args.color_format == "CF_TRUE_COLOR_ALPHA" and img.mode != "RGBA":
+        # support pictures stored in other formats like with a color palette 'P'
+        # see: https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes
+        img = img.convert(mode="RGBA")
+    elif args.color_format == "CF_INDEXED_1_BIT" and img.mode != "L":
+        # for CF_INDEXED_1_BIT we need just a grayscale value per pixel
+        img = img.convert(mode="L")
     if args.color_format == "CF_TRUE_COLOR_ALPHA" and args.binary_format == "ARGB8888":
         buf = bytearray(img_height*img_width*4) # 4 bytes (32 bit) per pixel
         for y in range(img_height):
@@ -140,7 +147,7 @@ def main():
 
         for y in range(img_height):
             for x in range(img_width):
-                c, a = img.getpixel((x,y))
+                c = img.getpixel((x,y))
                 p = w * y + (x >> 3) + 8  # +8 for the palette
                 buf[p] |= (c & 0x1) << (7 - (x & 0x7))
         # write palette information, for indexed-1-bit we need palette with two values
