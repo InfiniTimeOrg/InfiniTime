@@ -7,7 +7,7 @@ namespace Pinetime {
       class PopupMessage {
       public:
         // The caller owns the message string, it is not copied.
-        PopupMessage(const char* msg, int16_t h, int16_t w);
+        PopupMessage(const char* msg);
         void Create();
         void SetHidden(bool hidden);
         bool IsHidden();
@@ -16,8 +16,6 @@ namespace Pinetime {
         const char* message;
         lv_obj_t* btnPopup = nullptr;
         bool isHidden = true;
-        int16_t height;
-        int16_t width;
       };
     }
   }
