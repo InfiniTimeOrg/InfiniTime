@@ -3,7 +3,7 @@
 
 using namespace Pinetime::Applications::Widgets;
 
-PopupMessage::PopupMessage(const char* msg, int16_t h, int16_t w) : message {msg}, height {h}, width {w} {
+PopupMessage::PopupMessage(const char* msg, int16_t h, int16_t w) : message{msg}, height{h}, width{w} {
 }
 
 void PopupMessage::Create() {
