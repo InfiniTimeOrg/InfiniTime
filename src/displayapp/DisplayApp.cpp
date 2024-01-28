@@ -29,6 +29,7 @@
 #include "displayapp/screens/Dice.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
+#include "displayapp/screens/Symbols.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -98,7 +99,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     filesystem {filesystem},
     lvgl {lcd, filesystem},
     timer(this, TimerCallback),
-    popupMessage {"Touch input\nis ignored,\npush button\nto unlock."},
+    popupMessage {Screens::Symbols::lock, 90, 90 },
     controllers {batteryController,
                  bleController,
                  dateTimeController,
