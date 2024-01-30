@@ -15,7 +15,7 @@ namespace Pinetime {
       // Enum describes how the reply from ProcessTouchInfo should be interpreted:
       //  * NoAction: Do nothing, ignore input.
       //  * TouchEvent: The input should be treated as a normal touch event.
-      //  * IgnoreTouchPopup: Show the popup for when ignoring touvh input.
+      //  * IgnoreTouchPopup: Show the popup when ignoring touch input.
       enum class TouchProcessReply { NoAction, TouchEvent, IgnoreTouchPopup };
 
       struct TouchPoint {
