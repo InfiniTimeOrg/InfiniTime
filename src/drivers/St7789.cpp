@@ -1,7 +1,4 @@
 #include "drivers/St7789.h"
-#include <hal/nrf_gpio.h>
-#include <nrfx_log.h>
-#include "drivers/Spi.h"
 
 using namespace Pinetime::Drivers;
 
@@ -43,22 +40,52 @@ void St7789::WriteSpi(const uint8_t* data, size_t size) {
 }
 
 void St7789::SoftwareReset() {
+  EnsureSleepOutPostDelay();
   WriteCommand(static_cast<uint8_t>(Commands::SoftwareReset));
-  vTaskDelay(pdMS_TO_TICKS(150));
+  // If sleep in: must wait 120ms before sleep out can sent (see driver datasheet)
+  // Unconditionally wait as software reset doesn't need to be performant
+  sleepIn = true;
+  lastSleepExit = xTaskGetTickCount();
+  vTaskDelay(pdMS_TO_TICKS(125));
 }
 
 void St7789::SleepOut() {
+  if (!sleepIn) {
+    return;
+  }
   WriteCommand(static_cast<uint8_t>(Commands::SleepOut));
+  // Wait 5ms for clocks to stabilise
+  // pdMS rounds down => 6 used here
+  vTaskDelay(pdMS_TO_TICKS(6));
+  // Cannot send sleep in or software reset for 120ms
+  lastSleepExit = xTaskGetTickCount();
+  sleepIn = false;
+}
+
+void St7789::EnsureSleepOutPostDelay() {
+  TickType_t delta = xTaskGetTickCount() - lastSleepExit;
+  // Due to timer wraparound, there is a chance of delaying when not necessary
+  // It is very low (pdMS_TO_TICKS(125)/2^32) and waiting an extra 125ms isn't too bad
+  if (delta > 0 && delta < pdMS_TO_TICKS(125)) {
+    vTaskDelay(pdMS_TO_TICKS(125) - delta);
+  }
 }
 
 void St7789::SleepIn() {
+  if (sleepIn) {
+    return;
+  }
+  EnsureSleepOutPostDelay();
   WriteCommand(static_cast<uint8_t>(Commands::SleepIn));
+  // Wait 5ms for clocks to stabilise
+  // pdMS rounds down => 6 used here
+  vTaskDelay(pdMS_TO_TICKS(6));
+  sleepIn = true;
 }
 
 void St7789::ColMod() {
   WriteCommand(static_cast<uint8_t>(Commands::ColMod));
   WriteData(0x55);
-  vTaskDelay(pdMS_TO_TICKS(10));
 }
 
 void St7789::MemoryDataAccessControl() {
@@ -95,12 +122,10 @@ void St7789::RowAddressSet() {
 
 void St7789::DisplayInversionOn() {
   WriteCommand(static_cast<uint8_t>(Commands::DisplayInversionOn));
-  vTaskDelay(pdMS_TO_TICKS(10));
 }
 
 void St7789::NormalModeOn() {
   WriteCommand(static_cast<uint8_t>(Commands::NormalModeOn));
-  vTaskDelay(pdMS_TO_TICKS(10));
 }
 
 void St7789::DisplayOn() {
@@ -136,7 +161,6 @@ void St7789::SetVdv() {
 
 void St7789::DisplayOff() {
   WriteCommand(static_cast<uint8_t>(Commands::DisplayOff));
-  vTaskDelay(pdMS_TO_TICKS(500));
 }
 
 void St7789::VerticalScrollStartAddress(uint16_t line) {
@@ -157,8 +181,13 @@ void St7789::DrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height,
 
 void St7789::HardwareReset() {
   nrf_gpio_pin_clear(pinReset);
-  vTaskDelay(pdMS_TO_TICKS(10));
+  vTaskDelay(pdMS_TO_TICKS(1));
   nrf_gpio_pin_set(pinReset);
+  // If hardware reset started while sleep out, reset time may be up to 120ms
+  // Unconditionally wait as hardware reset doesn't need to be performant
+  sleepIn = true;
+  lastSleepExit = xTaskGetTickCount();
+  vTaskDelay(pdMS_TO_TICKS(125));
 }
 
 void St7789::Sleep() {
