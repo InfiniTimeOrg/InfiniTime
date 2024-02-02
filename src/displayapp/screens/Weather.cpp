@@ -9,6 +9,30 @@
 
 using namespace Pinetime::Applications::Screens;
 
+namespace {
+  lv_color_t TemperatureColor(int16_t temperature) {
+    if (temperature <= 0) { // freezing
+      return Colors::blue;
+    } else if (temperature <= 400) { // ice
+      return LV_COLOR_CYAN;
+    } else if (temperature >= 2700) { // hot
+      return Colors::deepOrange;
+    }
+    return Colors::orange; // normal
+  }
+
+  uint8_t TemperatureStyle(int16_t temperature) {
+    if (temperature <= 0) { // freezing
+      return LV_TABLE_PART_CELL3;
+    } else if (temperature <= 400) { // ice
+      return LV_TABLE_PART_CELL4;
+    } else if (temperature >= 2700) { // hot
+      return LV_TABLE_PART_CELL6;
+    }
+    return LV_TABLE_PART_CELL5; // normal
+  }
+}
+
 Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleWeatherService& weatherService)
   : settingsController {settingsController}, weatherService {weatherService} {
 
@@ -56,6 +80,22 @@ Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleW
   lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL2, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_text_font(forecast, LV_TABLE_PART_CELL2, LV_STATE_DEFAULT, &fontawesome_weathericons);
   lv_obj_set_style_local_pad_right(forecast, LV_TABLE_PART_CELL2, LV_STATE_DEFAULT, 6);
+  // LV_TABLE_PART_CELL3: Freezing
+  lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL3, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL3, LV_STATE_DEFAULT, Colors::blue);
+  lv_obj_set_style_local_pad_right(forecast, LV_TABLE_PART_CELL3, LV_STATE_DEFAULT, 6);
+  // LV_TABLE_PART_CELL4: Ice
+  lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL4, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL4, LV_STATE_DEFAULT, LV_COLOR_CYAN);
+  lv_obj_set_style_local_pad_right(forecast, LV_TABLE_PART_CELL4, LV_STATE_DEFAULT, 6);
+  // LV_TABLE_PART_CELL5: Normal
+  lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL5, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL5, LV_STATE_DEFAULT, Colors::orange);
+  lv_obj_set_style_local_pad_right(forecast, LV_TABLE_PART_CELL5, LV_STATE_DEFAULT, 6);
+  // LV_TABLE_PART_CELL6: Hot
+  lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL6, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL6, LV_STATE_DEFAULT, Colors::deepOrange);
+  lv_obj_set_style_local_pad_right(forecast, LV_TABLE_PART_CELL6, LV_STATE_DEFAULT, 6);
 
   lv_obj_align(forecast, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
 
@@ -85,14 +125,7 @@ void Weather::Refresh() {
       int16_t temp = optCurrentWeather->temperature;
       int16_t minTemp = optCurrentWeather->minTemperature;
       int16_t maxTemp = optCurrentWeather->maxTemperature;
-      lv_color_t color = Colors::orange;
-      if (temp <= 0) { // freezing
-        color = Colors::blue;
-      } else if (temp <= 400) { // ice danger
-        color = LV_COLOR_CYAN;
-      } else if (temp >= 2700) { // hot
-        color = Colors::deepOrange;
-      }
+      lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, TemperatureColor(temp));
       char tempUnit = 'C';
       if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
         temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
@@ -106,7 +139,6 @@ void Weather::Refresh() {
       lv_label_set_text(icon, Symbols::GetSymbol(optCurrentWeather->iconId));
       lv_label_set_text(condition, Symbols::GetCondition(optCurrentWeather->iconId));
       lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
-      lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color);
       lv_label_set_text_fmt(minTemperature, "%d°", minTemp);
       lv_label_set_text_fmt(maxTemperature, "%d°", maxTemp);
     } else {
@@ -128,6 +160,8 @@ void Weather::Refresh() {
       for (int i = 0; i < Controllers::SimpleWeatherService::MaxNbForecastDays; i++) {
         int16_t maxTemp = optCurrentForecast->days[i].maxTemperature;
         int16_t minTemp = optCurrentForecast->days[i].minTemperature;
+        lv_table_set_cell_type(forecast, 2, i, TemperatureStyle(maxTemp));
+        lv_table_set_cell_type(forecast, 3, i, TemperatureStyle(minTemp));
         if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
           maxTemp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(maxTemp);
           minTemp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(minTemp);
@@ -150,6 +184,8 @@ void Weather::Refresh() {
         lv_table_set_cell_value(forecast, 1, i, "");
         lv_table_set_cell_value(forecast, 2, i, "");
         lv_table_set_cell_value(forecast, 3, i, "");
+        lv_table_set_cell_type(forecast, 2, i, LV_TABLE_PART_CELL1);
+        lv_table_set_cell_type(forecast, 3, i, LV_TABLE_PART_CELL1);
       }
     }
   }
