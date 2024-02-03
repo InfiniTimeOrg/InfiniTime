@@ -35,26 +35,26 @@ const char* Pinetime::Applications::Screens::Symbols::GetSymbol(const Pinetime::
   }
 }
 
-const char* Pinetime::Applications::Screens::Symbols::GetCondition(const Pinetime::Controllers::SimpleWeatherService::Icons icon) {
+const char* Pinetime::Applications::Screens::Symbols::GetSimpleCondition(const Pinetime::Controllers::SimpleWeatherService::Icons icon) {
   switch (icon) {
     case Pinetime::Controllers::SimpleWeatherService::Icons::Sun:
-      return "Clear sky";
+      return "Clear";
     case Pinetime::Controllers::SimpleWeatherService::Icons::CloudsSun:
-      return "Few clouds";
+      return "Cloudy";
     case Pinetime::Controllers::SimpleWeatherService::Icons::Clouds:
-      return "Scattered clouds";
+      return "Cloudy";
     case Pinetime::Controllers::SimpleWeatherService::Icons::BrokenClouds:
-      return "Broken clouds";
+      return "Cloudy";
     case Pinetime::Controllers::SimpleWeatherService::Icons::CloudShowerHeavy:
-      return "Shower rain";
+      return "Rainy";
     case Pinetime::Controllers::SimpleWeatherService::Icons::CloudSunRain:
-      return "Rain";
+      return "Rainy";
     case Pinetime::Controllers::SimpleWeatherService::Icons::Thunderstorm:
-      return "Thunderstorm";
+      return "Stormy";
     case Pinetime::Controllers::SimpleWeatherService::Icons::Snow:
-      return "Snow";
+      return "Snowy";
     case Pinetime::Controllers::SimpleWeatherService::Icons::Smog:
-      return "Mist";
+     return "Misty";
     default:
       return "";
   }
