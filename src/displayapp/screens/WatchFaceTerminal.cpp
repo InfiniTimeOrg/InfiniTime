@@ -117,7 +117,7 @@ void WatchFaceTerminal::Refresh() {
         hour = hour - 12;
         ampmChar[0] = 'P';
       }
-      lv_label_set_text_fmt(label_time, "[TIME] %02d:%02d:%02d %s#", hour, minute, second, ampmChar);
+      lv_label_set_text_fmt(label_time, "[TIME] %02d:%02d:%02d %s", hour, minute, second, ampmChar);
     } else {
       lv_label_set_text_fmt(label_time, "[TIME] %02d:%02d:%02d", hour, minute, second);
     }
@@ -127,7 +127,7 @@ void WatchFaceTerminal::Refresh() {
       uint16_t year = dateTimeController.Year();
       Controllers::DateTime::Months month = dateTimeController.Month();
       uint8_t day = dateTimeController.Day();
-      lv_label_set_text_fmt(label_date, "[DATE] %04d-%02d-%02d#", short(year), char(month), char(day));
+      lv_label_set_text_fmt(label_date, "[DATE] %04d-%02d-%02d", short(year), char(month), char(day));
     }
   }
   
@@ -170,7 +170,7 @@ void WatchFaceTerminal::Refresh() {
 
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated()) {
-    lv_label_set_text_fmt(stepValue, "[STEP] %lu steps#", stepCount.Get());
+    lv_label_set_text_fmt(stepValue, "[STEP] %lu steps", stepCount.Get());
   }
 
 
@@ -180,9 +180,9 @@ void WatchFaceTerminal::Refresh() {
     if (heartbeatRunning.Get()) {
 
       lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::deepOrange);
-      lv_label_set_text_fmt(heartbeatValue, "[L_HR] %d bpm#", heartbeat.Get());
+      lv_label_set_text_fmt(heartbeatValue, "[L_HR] %d bpm", heartbeat.Get());
     } else {
-      lv_label_set_text_static(heartbeatValue, "[L_HR] ---#");
+      lv_label_set_text_static(heartbeatValue, "[L_HR] ---");
       lv_obj_set_style_local_text_color(heartbeatValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::gray);
     }
   }
@@ -191,14 +191,14 @@ void WatchFaceTerminal::Refresh() {
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated() || bleRadioEnabled.IsUpdated()) {
     if (!bleRadioEnabled.Get()) {
-      lv_label_set_text_static(connectState, "[STAT] Disabled#");
+      lv_label_set_text_static(connectState, "[STAT] Disabled");
       lv_obj_set_style_local_text_color(connectState, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::gray);
     } else {
       if (bleState.Get()) {
-        lv_label_set_text_static(connectState, "[STAT] Connected#");
+        lv_label_set_text_static(connectState, "[STAT] Connected");
         lv_obj_set_style_local_text_color(connectState, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::blue);
       } else {
-        lv_label_set_text_static(connectState, "[STAT] Disconnected#");
+        lv_label_set_text_static(connectState, "[STAT] Disconnected");
         lv_obj_set_style_local_text_color(connectState, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::gray);
       }
     }
