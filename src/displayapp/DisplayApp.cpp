@@ -11,7 +11,6 @@
 #include "components/motion/MotionController.h"
 #include "components/motor/MotorController.h"
 #include "displayapp/screens/ApplicationList.h"
-#include "displayapp/screens/Clock.h"
 #include "displayapp/screens/FirmwareUpdate.h"
 #include "displayapp/screens/FirmwareValidation.h"
 #include "displayapp/screens/InfiniPaint.h"
@@ -27,9 +26,9 @@
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
 #include "displayapp/screens/Steps.h"
+#include "displayapp/screens/Dice.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
-#include "displayapp/screens/Weather.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -41,6 +40,7 @@
 #include "displayapp/screens/settings/Settings.h"
 #include "displayapp/screens/settings/SettingWatchFace.h"
 #include "displayapp/screens/settings/SettingTimeFormat.h"
+#include "displayapp/screens/settings/SettingWeatherFormat.h"
 #include "displayapp/screens/settings/SettingWakeUp.h"
 #include "displayapp/screens/settings/SettingDisplay.h"
 #include "displayapp/screens/settings/SettingSteps.h"
@@ -435,17 +435,17 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                                  filesystem,
                                                                  std::move(apps));
     } break;
-    case Apps::Clock:
-      currentScreen = std::make_unique<Screens::Clock>(dateTimeController,
-                                                       batteryController,
-                                                       bleController,
-                                                       notificationManager,
-                                                       settingsController,
-                                                       heartRateController,
-                                                       motionController,
-                                                       systemTask->nimble().weather(),
-                                                       filesystem);
-      break;
+    case Apps::Clock: {
+      const auto* watchFace =
+        std::find_if(userWatchFaces.begin(), userWatchFaces.end(), [this](const WatchFaceDescription& watchfaceDescription) {
+          return watchfaceDescription.watchFace == settingsController.GetWatchFace();
+        });
+      if (watchFace != userWatchFaces.end())
+        currentScreen.reset(watchFace->create(controllers));
+      else {
+        currentScreen.reset(userWatchFaces[0].create(controllers));
+      }
+    } break;
     case Apps::Error:
       currentScreen = std::make_unique<Screens::Error>(bootError);
       break;
@@ -489,11 +489,20 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     case Apps::Settings:
       currentScreen = std::make_unique<Screens::Settings>(this, settingsController);
       break;
-    case Apps::SettingWatchFace:
-      currentScreen = std::make_unique<Screens::SettingWatchFace>(this, settingsController, filesystem);
-      break;
+    case Apps::SettingWatchFace: {
+      std::array<Screens::SettingWatchFace::Item, UserWatchFaceTypes::Count> items;
+      int i = 0;
+      for (const auto& userWatchFace : userWatchFaces) {
+        items[i++] =
+          Screens::SettingWatchFace::Item {userWatchFace.name, userWatchFace.watchFace, userWatchFace.isAvailable(controllers.filesystem)};
+      }
+      currentScreen = std::make_unique<Screens::SettingWatchFace>(this, std::move(items), settingsController, filesystem);
+    } break;
     case Apps::SettingTimeFormat:
       currentScreen = std::make_unique<Screens::SettingTimeFormat>(settingsController);
+      break;
+    case Apps::SettingWeatherFormat:
+      currentScreen = std::make_unique<Screens::SettingWeatherFormat>(settingsController);
       break;
     case Apps::SettingWakeUp:
       currentScreen = std::make_unique<Screens::SettingWakeUp>(settingsController);
@@ -536,18 +545,10 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       const auto* d = std::find_if(userApps.begin(), userApps.end(), [app](const AppDescription& appDescription) {
         return appDescription.app == app;
       });
-      if (d != userApps.end())
+      if (d != userApps.end()) {
         currentScreen.reset(d->create(controllers));
-      else {
-        currentScreen = std::make_unique<Screens::Clock>(dateTimeController,
-                                                         batteryController,
-                                                         bleController,
-                                                         notificationManager,
-                                                         settingsController,
-                                                         heartRateController,
-                                                         motionController,
-                                                         systemTask->nimble().weather(),
-                                                         filesystem);
+      } else {
+        currentScreen.reset(userWatchFaces[0].create(controllers));
       }
       break;
     }
@@ -611,7 +612,7 @@ void DisplayApp::Register(Pinetime::System::SystemTask* systemTask) {
   this->controllers.systemTask = systemTask;
 }
 
-void DisplayApp::Register(Pinetime::Controllers::WeatherService* weatherService) {
+void DisplayApp::Register(Pinetime::Controllers::SimpleWeatherService* weatherService) {
   this->controllers.weatherController = weatherService;
 }
 

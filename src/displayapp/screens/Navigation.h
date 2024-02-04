@@ -22,7 +22,7 @@
 #include <string>
 #include "displayapp/screens/Screen.h"
 #include <array>
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
 
