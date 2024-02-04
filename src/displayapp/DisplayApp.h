@@ -4,7 +4,7 @@
 #include <task.h>
 #include <memory>
 #include <systemtask/Messages.h>
-#include "displayapp/Apps.h"
+#include "displayapp/apps/Apps.h"
 #include "displayapp/LittleVgl.h"
 #include "displayapp/TouchEvents.h"
 #include "components/brightness/BrightnessController.h"
@@ -20,6 +20,7 @@
 #include "BootErrors.h"
 
 #include "utility/StaticStack.h"
+#include "displayapp/Controllers.h"
 
 namespace Pinetime {
 
@@ -38,6 +39,7 @@ namespace Pinetime {
     class HeartRateController;
     class MotionController;
     class TouchHandler;
+    class SimpleWeatherService;
   }
 
   namespace System {
@@ -73,6 +75,9 @@ namespace Pinetime {
       void SetFullRefresh(FullRefreshDirections direction);
 
       void Register(Pinetime::System::SystemTask* systemTask);
+      void Register(Pinetime::Controllers::SimpleWeatherService* weatherService);
+      void Register(Pinetime::Controllers::MusicService* musicService);
+      void Register(Pinetime::Controllers::NavigationService* NavigationService);
 
     private:
       Pinetime::Drivers::St7789& lcd;
@@ -96,6 +101,7 @@ namespace Pinetime {
       Pinetime::Components::LittleVgl lvgl;
       Pinetime::Controllers::Timer timer;
 
+      AppControllers controllers;
       TaskHandle_t taskHandle;
 
       States state = States::Running;
