@@ -100,7 +100,7 @@ void WatchFaceTerminal::Refresh() {
   notificationState = notificationManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     if (notificationState.Get()) {
-      lv_label_set_text_static(notificationIcon, "You have mail.");
+      lv_label_set_text_static(notificationIcon, "[1]+ Notify");
     } else {
       lv_label_set_text_static(notificationIcon, "");
     }
@@ -144,11 +144,10 @@ void WatchFaceTerminal::Refresh() {
       char tempUnit = 'C';
       lv_obj_set_style_local_text_color(weather, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, temperatureColor(temp));
       if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
-        condition = Symbols::GetSimpleCondition(optCurrentWeather->iconId);
         temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
         tempUnit = 'F';
       }
-      lv_label_set_text_fmt(weather, "#ffffff [WTHR]# %i°%c %s ", temp / 100, tempUnit, condition);
+      lv_label_set_text_fmt(weather, "#ffffff [WTHR]# %i°%c %s ", temp / 100, tempUnit, Symbols::GetSimpleCondition(optCurrentWeather->iconId));
     } else {
       lv_label_set_text(weather, "#ffffff [WTHR]# ---");
       lv_obj_set_style_local_text_color(weather, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::gray);
@@ -165,7 +164,7 @@ void WatchFaceTerminal::Refresh() {
     uint8_t hue = batteryPercentRemaining.Get() * 120 / 100;
     lv_obj_set_style_local_text_color(batteryValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hsv_to_rgb(hue, 100, 100));
     lv_label_set_text_fmt(batteryValue, "#ffffff [BATT]# %d%%", batteryPercentRemaining.Get());
-    if (batteryController.IsPowerPresent()) {
+    if (batteryController.IsCharging()) {
       lv_label_ins_text(batteryValue, LV_LABEL_POS_LAST, " Charging");
     }
   }

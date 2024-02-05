@@ -49,7 +49,6 @@ namespace Pinetime {
         Utility::DirtyValue<bool> notificationState {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
         Utility::DirtyValue<std::optional<Controllers::SimpleWeatherService::CurrentWeather>> currentWeather {};
-        Utility::DirtyValue<const char*> condition {};
 
         lv_obj_t* notificationIcon;
         lv_obj_t* label_prompt_1;
