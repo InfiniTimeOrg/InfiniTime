@@ -357,6 +357,9 @@ void SystemTask::Work() {
             nimbleController.DisableRadio();
           }
           break;
+        case Messages::OnMusicStarted:
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::MusicStarted);
+          break;
         default:
           break;
       }
