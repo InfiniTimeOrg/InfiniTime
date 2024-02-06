@@ -262,6 +262,14 @@ void DisplayApp::Refresh() {
       case Messages::NewNotification:
         LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
         break;
+      case Messages::MusicStarted:
+        if (currentApp == Apps::Clock && AppAvailable(Apps::Music)) {
+          if (state != States::Running) {
+            PushMessageToSystemTask(System::Messages::GoToRunning);
+          }
+          LoadNewScreen(Apps::Music, DisplayApp::FullRefreshDirections::Up);
+        }
+        break;
       case Messages::TimerDone:
         if (state != States::Running) {
           PushMessageToSystemTask(System::Messages::GoToRunning);
