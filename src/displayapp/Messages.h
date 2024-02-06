@@ -14,6 +14,7 @@ namespace Pinetime {
         ButtonLongerPressed,
         ButtonDoubleClicked,
         NewNotification,
+        MusicStarted,
         TimerDone,
         BleFirmwareUpdateStarted,
         // Resets the screen timeout timer when awake
