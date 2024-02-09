@@ -358,10 +358,14 @@ void SystemTask::Work() {
           }
           break;
         case Messages::OnMusicStarted:
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::MusicStarted);
+          if (settingsController.IsAutoOpenOn(Controllers::Settings::AutoOpen::Music)) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::MusicStarted);
+          }
           break;
         case Messages::OnNavChange:
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::NavStarted);
+          if (settingsController.IsAutoOpenOn(Controllers::Settings::AutoOpen::Navigation)) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::NavStarted);
+          }
           break;
         default:
           break;
