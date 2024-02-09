@@ -446,6 +446,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       else {
         currentScreen.reset(userWatchFaces[0].create(controllers));
       }
+      settingsController.SetAppMenu(0);
     } break;
     case Apps::Error:
       currentScreen = std::make_unique<Screens::Error>(bootError);
