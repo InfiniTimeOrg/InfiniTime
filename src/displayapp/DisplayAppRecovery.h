@@ -5,7 +5,6 @@
 #include <drivers/SpiMaster.h>
 #include <bits/unique_ptr.h>
 #include <queue.h>
-#include "components/gfx/Gfx.h"
 #include "drivers/Cst816s.h"
 #include <drivers/Watchdog.h>
 #include <components/motor/MotorController.h>
