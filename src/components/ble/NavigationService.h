@@ -27,11 +27,16 @@
 #undef min
 
 namespace Pinetime {
+
+  namespace System {
+    class SystemTask;
+  }
+
   namespace Controllers {
 
     class NavigationService {
     public:
-      NavigationService();
+      explicit NavigationService(Pinetime::System::SystemTask& systemTask);
 
       void Init();
 
@@ -53,6 +58,8 @@ namespace Pinetime {
       std::string m_narrative;
       std::string m_manDist;
       int m_progress;
+
+      Pinetime::System::SystemTask& systemTask;
     };
   }
 }
