@@ -154,12 +154,11 @@ void St7789::SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
   WriteData(y0 & 0xff);
   WriteData(y1 >> 8);
   WriteData(y1 & 0xff);
-
-  WriteToRam();
 }
 
-void St7789::WriteToRam() {
+void St7789::WriteToRam(const uint8_t* data, size_t size) {
   WriteCommand(static_cast<uint8_t>(Commands::WriteToRam));
+  WriteSpi(data, size, EnableDataMode);
 }
 
 void St7789::SetVdv() {
@@ -185,7 +184,7 @@ void St7789::Uninit() {
 
 void St7789::DrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t* data, size_t size) {
   SetAddrWindow(x, y, x + width - 1, y + height - 1);
-  WriteSpi(data, size, EnableDataMode);
+  WriteToRam(data, size);
 }
 
 void St7789::HardwareReset() {
