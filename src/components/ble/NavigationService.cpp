@@ -17,6 +17,7 @@
 */
 
 #include "components/ble/NavigationService.h"
+#include "systemtask/SystemTask.h"
 
 namespace {
   // 0001yyxx-78fc-48fe-8e23-433b3a1942d0
@@ -43,7 +44,7 @@ namespace {
   }
 } // namespace
 
-Pinetime::Controllers::NavigationService::NavigationService() {
+Pinetime::Controllers::NavigationService::NavigationService(Pinetime::System::SystemTask& systemTask) : systemTask {systemTask} {
   characteristicDefinition[0] = {.uuid = &navFlagCharUuid.u,
                                  .access_cb = NAVCallback,
                                  .arg = this,
@@ -96,6 +97,7 @@ int Pinetime::Controllers::NavigationService::OnCommand(struct ble_gatt_access_c
     } else if (ble_uuid_cmp(ctxt->chr->uuid, &navProgressCharUuid.u) == 0) {
       m_progress = data[0];
     }
+    systemTask.PushMessage(Pinetime::System::Messages::OnNavChange);
   }
   return 0;
 }
