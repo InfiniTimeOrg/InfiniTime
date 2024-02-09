@@ -361,6 +361,9 @@ void SystemTask::Work() {
         case Messages::OnMusicStarted:
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::MusicStarted);
           break;
+        case Messages::OnNavChange:
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::NavStarted);
+          break;
         default:
           break;
       }
