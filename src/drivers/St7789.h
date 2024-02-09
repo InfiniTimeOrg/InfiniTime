@@ -36,7 +36,7 @@ namespace Pinetime {
       void MemoryDataAccessControl();
       void DisplayInversionOn();
       void NormalModeOn();
-      void WriteToRam();
+      void WriteToRam(const uint8_t* data, size_t size);
       void DisplayOn();
       void DisplayOff();
 
