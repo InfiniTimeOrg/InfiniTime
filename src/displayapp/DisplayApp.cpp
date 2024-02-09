@@ -47,6 +47,7 @@
 #include "displayapp/screens/settings/SettingSteps.h"
 #include "displayapp/screens/settings/SettingSetDateTime.h"
 #include "displayapp/screens/settings/SettingChimes.h"
+#include "displayapp/screens/settings/SettingAutoOpen.h"
 #include "displayapp/screens/settings/SettingShakeThreshold.h"
 #include "displayapp/screens/settings/SettingBluetooth.h"
 
@@ -395,15 +396,23 @@ void DisplayApp::Refresh() {
         break;
       case Messages::OnChargingEvent:
         RestoreBrightness();
-        if (batteryController.IsCharging() && currentApp == Apps::Clock) {
-          // Open the battery app if on the clock screen
-          LoadNewScreen(Apps::BatteryInfo, DisplayApp::FullRefreshDirections::None);
-        } else if (!batteryController.IsCharging() && currentApp == Apps::BatteryInfo) {
-          // Close the battery app after being unplugged
-          LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
-        } else {
-          // Vibrate normally otherwise as to not close any open app
-          motorController.RunForDuration(15);
+        switch (currentApp) {
+          case Apps::Clock:
+            if (batteryController.IsCharging() && settingsController.IsAutoOpenOn(Controllers::Settings::AutoOpen::Battery)) {
+              // Open the battery app if on the clock screen
+              LoadNewScreen(Apps::BatteryInfo, DisplayApp::FullRefreshDirections::None);
+            }
+            break;
+          case Apps::BatteryInfo:
+            if (!batteryController.IsCharging()) {
+              // Close the battery app after being unplugged
+              LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+            }
+            break;
+          default:
+            // Vibrate normally otherwise as to not close any open app
+            motorController.RunForDuration(15);
+            break;
         }
         break;
     }
@@ -542,6 +551,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       break;
     case Apps::SettingChimes:
       currentScreen = std::make_unique<Screens::SettingChimes>(settingsController);
+      break;
+    case Apps::SettingAutoOpen:
+      currentScreen = std::make_unique<Screens::SettingAutoOpen>(settingsController);
       break;
     case Apps::SettingShakeThreshold:
       currentScreen = std::make_unique<Screens::SettingShakeThreshold>(settingsController, motionController, *systemTask);
