@@ -74,38 +74,32 @@ Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleW
   // LV_TABLE_PART_CELL1: Default table style
   lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_obj_set_style_local_pad_right(forecast, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, 6);
   // LV_TABLE_PART_CELL2: Condition icon
   lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL2, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL2, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_set_style_local_text_font(forecast, LV_TABLE_PART_CELL2, LV_STATE_DEFAULT, &fontawesome_weathericons);
-  lv_obj_set_style_local_pad_right(forecast, LV_TABLE_PART_CELL2, LV_STATE_DEFAULT, 6);
   // LV_TABLE_PART_CELL3: Freezing
   lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL3, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL3, LV_STATE_DEFAULT, Colors::blue);
-  lv_obj_set_style_local_pad_right(forecast, LV_TABLE_PART_CELL3, LV_STATE_DEFAULT, 6);
   // LV_TABLE_PART_CELL4: Ice
   lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL4, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL4, LV_STATE_DEFAULT, LV_COLOR_CYAN);
-  lv_obj_set_style_local_pad_right(forecast, LV_TABLE_PART_CELL4, LV_STATE_DEFAULT, 6);
   // LV_TABLE_PART_CELL5: Normal
   lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL5, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL5, LV_STATE_DEFAULT, Colors::orange);
-  lv_obj_set_style_local_pad_right(forecast, LV_TABLE_PART_CELL5, LV_STATE_DEFAULT, 6);
   // LV_TABLE_PART_CELL6: Hot
   lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL6, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL6, LV_STATE_DEFAULT, Colors::deepOrange);
-  lv_obj_set_style_local_pad_right(forecast, LV_TABLE_PART_CELL6, LV_STATE_DEFAULT, 6);
 
   lv_obj_align(forecast, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
 
   for (int i = 0; i < Controllers::SimpleWeatherService::MaxNbForecastDays; i++) {
     lv_table_set_col_width(forecast, i, 48);
     lv_table_set_cell_type(forecast, 1, i, LV_TABLE_PART_CELL2);
-    lv_table_set_cell_align(forecast, 0, i, LV_LABEL_ALIGN_RIGHT);
-    lv_table_set_cell_align(forecast, 1, i, LV_LABEL_ALIGN_RIGHT);
-    lv_table_set_cell_align(forecast, 2, i, LV_LABEL_ALIGN_RIGHT);
-    lv_table_set_cell_align(forecast, 3, i, LV_LABEL_ALIGN_RIGHT);
+    lv_table_set_cell_align(forecast, 0, i, LV_LABEL_ALIGN_CENTER);
+    lv_table_set_cell_align(forecast, 1, i, LV_LABEL_ALIGN_CENTER);
+    lv_table_set_cell_align(forecast, 2, i, LV_LABEL_ALIGN_CENTER);
+    lv_table_set_cell_align(forecast, 3, i, LV_LABEL_ALIGN_CENTER);
   }
 
   taskRefresh = lv_task_create(RefreshTaskCallback, 1000, LV_TASK_PRIO_MID, this);
@@ -175,8 +169,19 @@ void Weather::Refresh() {
         const char* dayOfWeek = Controllers::DateTime::DayOfWeekShortToStringLow(static_cast<Controllers::DateTime::Days>(wday));
         lv_table_set_cell_value(forecast, 0, i, dayOfWeek);
         lv_table_set_cell_value(forecast, 1, i, Symbols::GetSymbol(optCurrentForecast->days[i].iconId));
-        lv_table_set_cell_value_fmt(forecast, 2, i, "%d", maxTemp);
-        lv_table_set_cell_value_fmt(forecast, 3, i, "%d", minTemp);
+        // Pad cells based on the largest number of digits on each column
+        char maxPadding[3] = "  ";
+        char minPadding[3] = "  ";
+        int diff = snprintf(nullptr, 0, "%d", maxTemp) - snprintf(nullptr, 0, "%d", minTemp);
+        if (diff <= 0) {
+          maxPadding[-diff] = '\0';
+          minPadding[0] = '\0';
+        } else {
+          maxPadding[0] = '\0';
+          minPadding[diff] = '\0';
+        }
+        lv_table_set_cell_value_fmt(forecast, 2, i, "%s%d", maxPadding, maxTemp);
+        lv_table_set_cell_value_fmt(forecast, 3, i, "%s%d", minPadding, minTemp);
       }
     } else {
       for (int i = 0; i < Controllers::SimpleWeatherService::MaxNbForecastDays; i++) {
