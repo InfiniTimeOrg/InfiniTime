@@ -22,7 +22,7 @@ void SpiNorFlash::Uninit() {
 
 void SpiNorFlash::Sleep() {
   auto cmd = static_cast<uint8_t>(Commands::DeepPowerDown);
-  spi.Write(&cmd, sizeof(uint8_t));
+  spi.Write(&cmd, sizeof(uint8_t), nullptr);
   NRF_LOG_INFO("[SpiNorFlash] Sleep")
 }
 

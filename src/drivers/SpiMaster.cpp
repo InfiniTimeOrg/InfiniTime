@@ -143,6 +143,9 @@ void SpiMaster::OnEndEvent() {
     }
 
     nrf_gpio_pin_set(this->pinCsn);
+    if (this->TransactionHook != nullptr) {
+      this->TransactionHook(false);
+    }
     currentBufferAddr = 0;
     BaseType_t xHigherPriorityTaskWoken2 = pdFALSE;
     xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken2);
@@ -173,13 +176,14 @@ void SpiMaster::PrepareRx(const uint32_t bufferAddress, const size_t size) {
   spiBaseAddress->EVENTS_END = 0;
 }
 
-bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
+bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, void (*TransactionHook)(bool)) {
   if (data == nullptr)
     return false;
   auto ok = xSemaphoreTake(mutex, portMAX_DELAY);
   ASSERT(ok == true);
   taskToNotify = xTaskGetCurrentTaskHandle();
 
+  this->TransactionHook = TransactionHook;
   this->pinCsn = pinCsn;
 
   if (size == 1) {
@@ -188,6 +192,9 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
     DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
   }
 
+  if (this->TransactionHook != nullptr) {
+    this->TransactionHook(true);
+  }
   nrf_gpio_pin_clear(this->pinCsn);
 
   currentBufferAddr = (uint32_t) data;
@@ -203,6 +210,9 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
     while (spiBaseAddress->EVENTS_END == 0)
       ;
     nrf_gpio_pin_set(this->pinCsn);
+    if (this->TransactionHook != nullptr) {
+      this->TransactionHook(false);
+    }
     currentBufferAddr = 0;
 
     DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
@@ -217,7 +227,7 @@ bool SpiMaster::Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t* data
   xSemaphoreTake(mutex, portMAX_DELAY);
 
   taskToNotify = nullptr;
-
+  this->TransactionHook = nullptr;
   this->pinCsn = pinCsn;
   DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
   spiBaseAddress->INTENCLR = (1 << 6);
@@ -266,6 +276,8 @@ bool SpiMaster::WriteCmdAndBuffer(uint8_t pinCsn, const uint8_t* cmd, size_t cmd
   xSemaphoreTake(mutex, portMAX_DELAY);
 
   taskToNotify = nullptr;
+
+  this->TransactionHook = nullptr;
 
   this->pinCsn = pinCsn;
   DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
