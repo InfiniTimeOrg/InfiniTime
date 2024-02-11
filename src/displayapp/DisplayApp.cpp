@@ -142,9 +142,6 @@ void DisplayApp::Process(void* instance) {
   NRF_LOG_INFO("displayapp task started!");
   app->InitHw();
 
-  // Send a dummy notification to unlock the lvgl display driver for the first iteration
-  xTaskNotifyGive(xTaskGetCurrentTaskHandle());
-
   while (true) {
     app->Refresh();
   }
