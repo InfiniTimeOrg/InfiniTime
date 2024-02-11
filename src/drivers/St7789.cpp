@@ -2,13 +2,13 @@
 
 using namespace Pinetime::Drivers;
 
-St7789::St7789(Spi& spi, uint8_t pinDataCommand, uint8_t pinReset) : spi {spi}, pinDataCommand {pinDataCommand}, pinReset {pinReset} {
+St7789::St7789(Spi& spi) : spi {spi} {
 }
 
 void St7789::Init() {
-  nrf_gpio_cfg_output(pinDataCommand);
-  nrf_gpio_cfg_output(pinReset);
-  nrf_gpio_pin_set(pinReset);
+  nrf_gpio_cfg_output(PinMap::LcdDataCommand);
+  nrf_gpio_cfg_output(PinMap::LcdReset);
+  nrf_gpio_pin_set(PinMap::LcdReset);
   HardwareReset();
   SoftwareReset();
   SleepOut();
@@ -25,18 +25,28 @@ void St7789::Init() {
   DisplayOn();
 }
 
+void St7789::EnableDataMode(bool isStart) {
+  if (isStart) {
+    nrf_gpio_pin_set(PinMap::LcdDataCommand);
+  }
+}
+
+void St7789::EnableCommandMode(bool isStart) {
+  if (isStart) {
+    nrf_gpio_pin_clear(PinMap::LcdDataCommand);
+  }
+}
+
 void St7789::WriteCommand(uint8_t cmd) {
-  nrf_gpio_pin_clear(pinDataCommand);
-  WriteSpi(&cmd, 1);
+  WriteSpi(&cmd, 1, EnableCommandMode);
 }
 
 void St7789::WriteData(uint8_t data) {
-  nrf_gpio_pin_set(pinDataCommand);
-  WriteSpi(&data, 1);
+  WriteSpi(&data, 1, EnableDataMode);
 }
 
-void St7789::WriteSpi(const uint8_t* data, size_t size) {
-  spi.Write(data, size);
+void St7789::WriteSpi(const uint8_t* data, size_t size, void (*TransactionHook)(bool)) {
+  spi.Write(data, size, TransactionHook);
 }
 
 void St7789::SoftwareReset() {
@@ -175,14 +185,13 @@ void St7789::Uninit() {
 
 void St7789::DrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t* data, size_t size) {
   SetAddrWindow(x, y, x + width - 1, y + height - 1);
-  nrf_gpio_pin_set(pinDataCommand);
-  WriteSpi(data, size);
+  WriteSpi(data, size, EnableDataMode);
 }
 
 void St7789::HardwareReset() {
-  nrf_gpio_pin_clear(pinReset);
+  nrf_gpio_pin_clear(PinMap::LcdReset);
   vTaskDelay(pdMS_TO_TICKS(1));
-  nrf_gpio_pin_set(pinReset);
+  nrf_gpio_pin_set(PinMap::LcdReset);
   // If hardware reset started while sleep out, reset time may be up to 120ms
   // Unconditionally wait as hardware reset doesn't need to be performant
   sleepIn = true;
@@ -192,12 +201,12 @@ void St7789::HardwareReset() {
 
 void St7789::Sleep() {
   SleepIn();
-  nrf_gpio_cfg_default(pinDataCommand);
+  nrf_gpio_cfg_default(PinMap::LcdDataCommand);
   NRF_LOG_INFO("[LCD] Sleep");
 }
 
 void St7789::Wakeup() {
-  nrf_gpio_cfg_output(pinDataCommand);
+  nrf_gpio_cfg_output(PinMap::LcdDataCommand);
   SleepOut();
   VerticalScrollStartAddress(verticalScrollingStartAddress);
   DisplayOn();
