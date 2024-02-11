@@ -17,6 +17,7 @@ namespace Pinetime::Applications {
       Timer(Controllers::Timer& timerController);
       ~Timer() override;
       void Refresh() override;
+      void Stop();
       void Reset();
       void ToggleRunning();
       void ButtonPressed();
@@ -26,6 +27,7 @@ namespace Pinetime::Applications {
       void SetTimerRunning();
       void SetTimerStopped();
       void UpdateMask();
+      void SetCounters(std::chrono::seconds& duration);
       Pinetime::Controllers::Timer& timer;
 
       lv_obj_t* btnPlayPause;
