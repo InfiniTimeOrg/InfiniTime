@@ -669,6 +669,13 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
   currentApp = app;
 }
 
+bool DisplayApp::AppAvailable(Apps app) {
+  const auto* d = std::find_if(userApps.begin(), userApps.end(), [app](const AppDescription& appDescription) {
+    return appDescription.app == app;
+  });
+  return d != userApps.end();
+}
+
 void DisplayApp::PushMessage(Messages msg) {
   if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
