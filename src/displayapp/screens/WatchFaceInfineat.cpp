@@ -423,7 +423,7 @@ void WatchFaceInfineat::Refresh() {
       lv_obj_align(labelMinutes, timeContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
     }
 
-    currentDate = std::chrono::time_point_cast<days>(currentDateTime.Get());
+    currentDate = std::chrono::time_point_cast<std::chrono::days>(currentDateTime.Get());
     if (currentDate.IsUpdated()) {
       uint8_t day = dateTimeController.Day();
       Controllers::DateTime::Days dayOfWeek = dateTimeController.DayOfWeek();
