@@ -80,7 +80,7 @@ During the project generation, CMake created the following targets:
 - **pinetime-mcuboot-recovery** : build pinetime-recovery with bootloader support
 - **pinetime-mcuboot-recovery-loader** : build pinetime-recovery-loader with bootloader support
 
-If you just want to build the project and run it on the Pinetime, using *pinetime-app* is recommended. See [this page](../bootloader/README.md) for more info about bootloader support.
+If you just want to build the project and run it on the Pinetime, using *pinetime-app* is recommended. See [this page](bootloader/README.md) for more info about bootloader support.
 
 Build:
 

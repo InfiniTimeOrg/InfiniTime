@@ -40,9 +40,9 @@ This firmware is a small utility firmware that writes the boot graphic in the ex
 
 ### Firmware with bootloader
 
-This firmware is intended to be used with our [MCUBoot-based bootloader](../bootloader/README.md).
+This firmware is intended to be used with our [MCUBoot-based bootloader](bootloader/README.md).
 
-- **pinetime-mcuboot-app-image.hex**: Firmware wrapped into an MCUBoot image. This is **the** file that must be flashed at **0x8000** into the flash memory. If the [bootloader](../bootloader/README.md) has been successfully programmed, it should run this firmware after the next reset.
+- **pinetime-mcuboot-app-image.hex**: Firmware wrapped into an MCUBoot image. This is **the** file that must be flashed at **0x8000** into the flash memory. If the [bootloader](bootloader/README.md) has been successfully programmed, it should run this firmware after the next reset.
 
 The following files are not directly usable by the bootloader:
 
@@ -55,6 +55,6 @@ The following files are not directly usable by the bootloader:
 
 Once the bootloader and application firmware are running, it is possible to update the current firmware or even replace it with another firmware **that uses the same bootloader based on MCUBoot**.
 
-**NOTE :** Use this file **only** if you programmed our [MCUBoot-based bootloader](../bootloader/README.md). This file is not compatible with other bootloaders like the one that is based on the closed source NRF SoftDevice !
+**NOTE :** Use this file **only** if you programmed our [MCUBoot-based bootloader](bootloader/README.md). This file is not compatible with other bootloaders like the one that is based on the closed source NRF SoftDevice !
 
 - **pinetime-app-dfu.zip** : This is the file you must provide toNRFConnect to update the firmware over BLE.

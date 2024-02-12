@@ -33,12 +33,24 @@ We have prepared instructions for flashing InfiniTime with Gadgetbridge and NRFC
 
 Firmware updates must be manually validated. If the firmware isn't validated and the watch resets, the watch will revert to the previous firmware. This is a safety feature to prevent bricking your device with faulty firmware.
 
-You can validate your updated firmware on InfiniTime >= 1.0 by following this simple procedure:
+If the new firmware is working correctly, open the settings and select the "Firmware" entry. This setting page displays the version of the firmware that is currently running, and allows you to validate the firmware, or reset the device to rollback to the previous version.
+
+Firmware validation setting:
 
 - From the watch face, swipe **right** to display the *quick settings menu*
 - Open settings by tapping the cogwheel on the bottom right
 - Swipe up until you find an entry named **Firmware** and tap on it
 - If the firmware is not validated yet, you can either validate the running firmware, or reset and revert to the previous firmware version
+
+![Firmware Validation setting](firmwareValidationSetting.png)
+
+The firmware is not validated yet. Tap 'Validate' to validate it, or 'Reset' to rollback to the previous version.
+
+![Firmware Not Validated](firmwareNotValidated.png)
+
+The firmware is validated!
+
+![Firmware Validated](firmwareValidated.png)
 
 # Updating resources
 
