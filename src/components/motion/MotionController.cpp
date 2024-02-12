@@ -40,15 +40,15 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps)
     service->OnNewStepCountValue(nbSteps);
   }
 
-  if (service != nullptr && (this->x != x || yHistory[0] != y || zHistory[0] != z)) {
+  if (service != nullptr && (xHistory[0] != x || yHistory[0] != y || zHistory[0] != z)) {
     service->OnNewMotionValues(x, y, z);
   }
 
   lastTime = time;
   time = xTaskGetTickCount();
 
-  lastX = this->x;
-  this->x = x;
+  xHistory++;
+  xHistory[0] = x;
   yHistory++;
   yHistory[0] = y;
   zHistory++;
@@ -67,20 +67,26 @@ MotionController::AccelStats MotionController::GetAccelStats() const {
   AccelStats stats;
 
   for (uint8_t i = 0; i < AccelStats::numHistory; i++) {
+    stats.xMean += xHistory[histSize - i];
     stats.yMean += yHistory[histSize - i];
     stats.zMean += zHistory[histSize - i];
+    stats.prevXMean += xHistory[1 + i];
     stats.prevYMean += yHistory[1 + i];
     stats.prevZMean += zHistory[1 + i];
   }
+  stats.xMean /= AccelStats::numHistory;
   stats.yMean /= AccelStats::numHistory;
   stats.zMean /= AccelStats::numHistory;
+  stats.prevXMean /= AccelStats::numHistory;
   stats.prevYMean /= AccelStats::numHistory;
   stats.prevZMean /= AccelStats::numHistory;
 
   for (uint8_t i = 0; i < AccelStats::numHistory; i++) {
+    stats.xVariance += (xHistory[histSize - i] - stats.xMean) * (xHistory[histSize - i] - stats.xMean);
     stats.yVariance += (yHistory[histSize - i] - stats.yMean) * (yHistory[histSize - i] - stats.yMean);
     stats.zVariance += (zHistory[histSize - i] - stats.zMean) * (zHistory[histSize - i] - stats.zMean);
   }
+  stats.xVariance /= AccelStats::numHistory;
   stats.yVariance /= AccelStats::numHistory;
   stats.zVariance /= AccelStats::numHistory;
 
@@ -93,7 +99,7 @@ bool MotionController::ShouldRaiseWake() const {
   constexpr int16_t yThresh = -64;
   constexpr int16_t rollDegreesThresh = -45;
 
-  if (x < -xThresh || x > xThresh) {
+  if (std::abs(stats.xMean) > xThresh) {
     return false;
   }
 
@@ -107,8 +113,9 @@ bool MotionController::ShouldRaiseWake() const {
 
 bool MotionController::ShouldShakeWake(uint16_t thresh) {
   /* Currently Polling at 10hz, If this ever goes faster scalar and EMA might need adjusting */
-  int32_t speed =
-    std::abs(zHistory[0] - zHistory[histSize - 1] + (yHistory[0] - yHistory[histSize - 1]) / 2 + (x - lastX) / 4) * 100 / (time - lastTime);
+  int32_t speed = std::abs(zHistory[0] - zHistory[histSize - 1] + (yHistory[0] - yHistory[histSize - 1]) / 2 +
+                           (xHistory[0] - xHistory[histSize - 1]) / 4) *
+                  100 / (time - lastTime);
   // (.2 * speed) + ((1 - .2) * accumulatedSpeed);
   accumulatedSpeed = speed / 5 + accumulatedSpeed * 4 / 5;
 
@@ -116,6 +123,11 @@ bool MotionController::ShouldShakeWake(uint16_t thresh) {
 }
 
 bool MotionController::ShouldLowerSleep() const {
+  if ((stats.xMean > 887 && DegreesRolled(stats.xMean, stats.zMean, stats.prevXMean, stats.prevZMean) > 30) ||
+      (stats.xMean < -887 && DegreesRolled(stats.xMean, stats.zMean, stats.prevXMean, stats.prevZMean) < -30)) {
+    return true;
+  }
+
   if (stats.yMean < 724 || DegreesRolled(stats.yMean, stats.zMean, stats.prevYMean, stats.prevZMean) < 30) {
     return false;
   }
