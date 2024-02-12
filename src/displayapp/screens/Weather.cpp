@@ -31,6 +31,10 @@ namespace {
     }
     return LV_TABLE_PART_CELL5; // normal
   }
+
+  int16_t RoundTemperature(int16_t temp) {
+    return temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
+  }
 }
 
 Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleWeatherService& weatherService)
@@ -127,14 +131,11 @@ void Weather::Refresh() {
         maxTemp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(maxTemp);
         tempUnit = 'F';
       }
-      temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
-      maxTemp = maxTemp / 100 + (maxTemp % 100 >= 50 ? 1 : 0);
-      minTemp = minTemp / 100 + (minTemp % 100 >= 50 ? 1 : 0);
       lv_label_set_text(icon, Symbols::GetSymbol(optCurrentWeather->iconId));
       lv_label_set_text(condition, Symbols::GetCondition(optCurrentWeather->iconId));
-      lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
-      lv_label_set_text_fmt(minTemperature, "%d°", minTemp);
-      lv_label_set_text_fmt(maxTemperature, "%d°", maxTemp);
+      lv_label_set_text_fmt(temperature, "%d°%c", RoundTemperature(temp), tempUnit);
+      lv_label_set_text_fmt(minTemperature, "%d°", RoundTemperature(minTemp));
+      lv_label_set_text_fmt(maxTemperature, "%d°", RoundTemperature(maxTemp));
     } else {
       lv_label_set_text(icon, "");
       lv_label_set_text(condition, "");
@@ -164,8 +165,8 @@ void Weather::Refresh() {
         if (wday > 7) {
           wday -= 7;
         }
-        maxTemp = maxTemp / 100 + (maxTemp % 100 >= 50 ? 1 : 0);
-        minTemp = minTemp / 100 + (minTemp % 100 >= 50 ? 1 : 0);
+        maxTemp = RoundTemperature(maxTemp);
+        minTemp = RoundTemperature(minTemp);
         const char* dayOfWeek = Controllers::DateTime::DayOfWeekShortToStringLow(static_cast<Controllers::DateTime::Days>(wday));
         lv_table_set_cell_value(forecast, 0, i, dayOfWeek);
         lv_table_set_cell_value(forecast, 1, i, Symbols::GetSymbol(optCurrentForecast->days[i].iconId));
