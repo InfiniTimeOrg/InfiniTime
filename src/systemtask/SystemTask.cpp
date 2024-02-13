@@ -512,10 +512,7 @@ void SystemTask::PushMessage(System::Messages msg) {
   if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(systemTasksMsgQueue, &msg, &xHigherPriorityTaskWoken);
-    if (xHigherPriorityTaskWoken == pdTRUE) {
-      /* Actual macro used here is port specific. */
-      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   } else {
     xQueueSend(systemTasksMsgQueue, &msg, portMAX_DELAY);
   }
