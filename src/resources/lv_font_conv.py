@@ -3,7 +3,7 @@ import argparse
 import pathlib
 import sys
 import decimal
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 from fontTools import ttLib
 
 # pacman -S python-fonttools
@@ -88,6 +88,23 @@ def main():
 
     if args.size <= 0:
         raise RuntimeError("--size must be a positive integer greater than 0")
+
+    if not pathlib.Path(args.font[0]).is_file():
+        raise RuntimeError(f"provided font file doesn't exist: {args.font[0]}")
+    #tt = ttLib.TTFont(args.font[0]) # Load an existing font file
+    #print(tt['maxp'].numGlyphs)
+    #print(tt['OS/2'].achVendID)
+    #print(tt['head'].unitsPerEm)
+    #print(tt.getGlyphNames())
+    #print(tt.getGlyphID("zero"))
+    #print(tt.keys())
+    # https://stackoverflow.com/questions/70368410/how-to-render-a-ttf-glyf-to-a-image-with-fonttools
+    # https://pillow.readthedocs.io/en/stable/reference/ImageFont.html
+    font = ImageFont.truetype(args.font[0], args.size)
+    image = Image.new(mode='L', size=(args.size, args.size), color=224)
+    draw = ImageDraw.Draw(image)
+    draw.text((0,0), args.symbols, font=font)
+    image.save("out.png")
 
     return 0
 
