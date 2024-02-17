@@ -59,6 +59,15 @@ def main():
 #                        -r 32-127,0x1F450
 #                        -r '0x1F450=>0xF005'
 #                        -r '0x1F450-0x1F470=>0xF005'
+    parser.add_argument("-r", "--range",
+        help="""Range of glyphs to copy. Can be used multiple times, belongs to previously declared
+      "--font". Examples:
+      -r 0x1F450
+      -r 0x20-0x7F
+      -r 32-127
+      -r 32-127,0x1F450
+      -r '0x1F450=>0xF005'
+      -r '0x1F450-0x1F470=>0xF005'""")
     parser.add_argument("--symbols",
         help="List of characters to copy, belongs to previously declared \"--font\". Examples:"
         "     '--symbols ,.0123456789' or '--symbols abcdefghigklmnopqrstuvwxyz'")
@@ -101,9 +110,25 @@ def main():
     # https://stackoverflow.com/questions/70368410/how-to-render-a-ttf-glyf-to-a-image-with-fonttools
     # https://pillow.readthedocs.io/en/stable/reference/ImageFont.html
     font = ImageFont.truetype(args.font[0], args.size)
-    image = Image.new(mode='L', size=(args.size, args.size), color=224)
+    ascent, descent = font.getmetrics()
+    text = args.symbols if args.symbols else ""
+    if args.range:
+        for code_str in args.range.split(","):
+            # to char
+            if "-" in code_str:
+                begin_str, end_str = code_str.split("-")
+                begin_code = int(begin_str, 0)
+                end_code = int(end_str, 0)
+                for code in range(begin_code, end_code+1):
+                    text += chr(code)
+            else:
+                code = int(code_str, 0)
+                text += chr(code)
+
+    image = Image.new(mode='L', size=(args.size*len(text), args.size), color=224)
+
     draw = ImageDraw.Draw(image)
-    draw.text((0,0), args.symbols, font=font)
+    draw.text((0,-descent), text, font=font)
     image.save("out.png")
 
     return 0
