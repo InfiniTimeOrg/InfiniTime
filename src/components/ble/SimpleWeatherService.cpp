@@ -42,9 +42,9 @@ namespace {
     std::memcpy(cityName.data(), &dataBuffer[16], 32);
     cityName[32] = '\0';
     return SimpleWeatherService::CurrentWeather(ToUInt64(&dataBuffer[2]),
-                                                ToInt16(&dataBuffer[10]),
-                                                ToInt16(&dataBuffer[12]),
-                                                ToInt16(&dataBuffer[14]),
+                                                SimpleWeatherService::Temperature {ToInt16(&dataBuffer[10])},
+                                                SimpleWeatherService::Temperature {ToInt16(&dataBuffer[12])},
+                                                SimpleWeatherService::Temperature {ToInt16(&dataBuffer[14])},
                                                 SimpleWeatherService::Icons {dataBuffer[16 + 32]},
                                                 std::move(cityName));
   }
@@ -56,8 +56,8 @@ namespace {
     const uint8_t nbDaysInBuffer = dataBuffer[10];
     const uint8_t nbDays = std::min(SimpleWeatherService::MaxNbForecastDays, nbDaysInBuffer);
     for (int i = 0; i < nbDays; i++) {
-      days[i] = SimpleWeatherService::Forecast::Day {ToInt16(&dataBuffer[11 + (i * 5)]),
-                                                     ToInt16(&dataBuffer[13 + (i * 5)]),
+      days[i] = SimpleWeatherService::Forecast::Day {SimpleWeatherService::Temperature {ToInt16(&dataBuffer[11 + (i * 5)])},
+                                                     SimpleWeatherService::Temperature {ToInt16(&dataBuffer[13 + (i * 5)])},
                                                      SimpleWeatherService::Icons {dataBuffer[15 + (i * 5)]}};
     }
     return SimpleWeatherService::Forecast {timestamp, nbDays, days};
@@ -154,13 +154,14 @@ std::optional<SimpleWeatherService::Forecast> SimpleWeatherService::GetForecast(
 }
 
 bool SimpleWeatherService::CurrentWeather::operator==(const SimpleWeatherService::CurrentWeather& other) const {
-  return this->iconId == other.iconId && this->temperature == other.temperature && this->timestamp == other.timestamp &&
-         this->maxTemperature == other.maxTemperature && this->minTemperature == other.maxTemperature &&
+  return this->iconId == other.iconId && this->temperature.temp == other.temperature.temp && this->timestamp == other.timestamp &&
+         this->maxTemperature.temp == other.maxTemperature.temp && this->minTemperature.temp == other.maxTemperature.temp &&
          std::strcmp(this->location.data(), other.location.data()) == 0;
 }
 
 bool SimpleWeatherService::Forecast::Day::operator==(const SimpleWeatherService::Forecast::Day& other) const {
-  return this->iconId == other.iconId && this->maxTemperature == other.maxTemperature && this->minTemperature == other.maxTemperature;
+  return this->iconId == other.iconId && this->maxTemperature.temp == other.maxTemperature.temp &&
+         this->minTemperature.temp == other.maxTemperature.temp;
 }
 
 bool SimpleWeatherService::Forecast::operator==(const SimpleWeatherService::Forecast& other) const {

@@ -1,8 +1,11 @@
 #include "displayapp/screens/Weather.h"
+
 #include <lvgl/lvgl.h>
+
 #include "components/ble/SimpleWeatherService.h"
 #include "components/datetime/DateTimeController.h"
 #include "components/settings/Settings.h"
+#include "displayapp/Weather.h"
 #include "displayapp/DisplayApp.h"
 #include "displayapp/screens/WeatherSymbols.h"
 #include "displayapp/InfiniTimeTheme.h"
@@ -10,30 +13,26 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  lv_color_t TemperatureColor(int16_t temperature) {
-    if (temperature <= 0) { // freezing
+  lv_color_t TemperatureColor(Pinetime::Applications::Temperature temp) {
+    if (temp.temp <= 0) { // freezing
       return Colors::blue;
-    } else if (temperature <= 400) { // ice
+    } else if (temp.temp <= 4) { // ice
       return LV_COLOR_CYAN;
-    } else if (temperature >= 2700) { // hot
+    } else if (temp.temp >= 27) { // hot
       return Colors::deepOrange;
     }
     return Colors::orange; // normal
   }
 
-  uint8_t TemperatureStyle(int16_t temperature) {
-    if (temperature <= 0) { // freezing
+  uint8_t TemperatureStyle(Pinetime::Applications::Temperature temp) {
+    if (temp.temp <= 0) { // freezing
       return LV_TABLE_PART_CELL3;
-    } else if (temperature <= 400) { // ice
+    } else if (temp.temp <= 4) { // ice
       return LV_TABLE_PART_CELL4;
-    } else if (temperature >= 2700) { // hot
+    } else if (temp.temp >= 27) { // hot
       return LV_TABLE_PART_CELL6;
     }
     return LV_TABLE_PART_CELL5; // normal
-  }
-
-  int16_t RoundTemperature(int16_t temp) {
-    return temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
   }
 }
 
@@ -120,22 +119,19 @@ void Weather::Refresh() {
   if (currentWeather.IsUpdated()) {
     auto optCurrentWeather = currentWeather.Get();
     if (optCurrentWeather) {
-      int16_t temp = optCurrentWeather->temperature;
-      int16_t minTemp = optCurrentWeather->minTemperature;
-      int16_t maxTemp = optCurrentWeather->maxTemperature;
+      Applications::Temperature temp = Applications::Convert(optCurrentWeather->temperature, settingsController.GetWeatherFormat());
+      Applications::Temperature minTemp = Applications::Convert(optCurrentWeather->minTemperature, settingsController.GetWeatherFormat());
+      Applications::Temperature maxTemp = Applications::Convert(optCurrentWeather->maxTemperature, settingsController.GetWeatherFormat());
       lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, TemperatureColor(temp));
       char tempUnit = 'C';
       if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
-        temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
-        minTemp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(minTemp);
-        maxTemp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(maxTemp);
         tempUnit = 'F';
       }
       lv_label_set_text(icon, Symbols::GetSymbol(optCurrentWeather->iconId));
       lv_label_set_text(condition, Symbols::GetCondition(optCurrentWeather->iconId));
-      lv_label_set_text_fmt(temperature, "%d°%c", RoundTemperature(temp), tempUnit);
-      lv_label_set_text_fmt(minTemperature, "%d°", RoundTemperature(minTemp));
-      lv_label_set_text_fmt(maxTemperature, "%d°", RoundTemperature(maxTemp));
+      lv_label_set_text_fmt(temperature, "%d°%c", temp.temp, tempUnit);
+      lv_label_set_text_fmt(minTemperature, "%d°", minTemp.temp);
+      lv_label_set_text_fmt(maxTemperature, "%d°", maxTemp.temp);
     } else {
       lv_label_set_text(icon, "");
       lv_label_set_text(condition, "");
@@ -153,27 +149,23 @@ void Weather::Refresh() {
       std::tm localTime = *std::localtime(reinterpret_cast<const time_t*>(&optCurrentForecast->timestamp));
 
       for (int i = 0; i < Controllers::SimpleWeatherService::MaxNbForecastDays; i++) {
-        int16_t maxTemp = optCurrentForecast->days[i].maxTemperature;
-        int16_t minTemp = optCurrentForecast->days[i].minTemperature;
+        Applications::Temperature maxTemp =
+          Applications::Convert(optCurrentForecast->days[i].maxTemperature, settingsController.GetWeatherFormat());
+        Applications::Temperature minTemp =
+          Applications::Convert(optCurrentForecast->days[i].minTemperature, settingsController.GetWeatherFormat());
         lv_table_set_cell_type(forecast, 2, i, TemperatureStyle(maxTemp));
         lv_table_set_cell_type(forecast, 3, i, TemperatureStyle(minTemp));
-        if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
-          maxTemp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(maxTemp);
-          minTemp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(minTemp);
-        }
         uint8_t wday = localTime.tm_wday + i + 1;
         if (wday > 7) {
           wday -= 7;
         }
-        maxTemp = RoundTemperature(maxTemp);
-        minTemp = RoundTemperature(minTemp);
         const char* dayOfWeek = Controllers::DateTime::DayOfWeekShortToStringLow(static_cast<Controllers::DateTime::Days>(wday));
         lv_table_set_cell_value(forecast, 0, i, dayOfWeek);
         lv_table_set_cell_value(forecast, 1, i, Symbols::GetSymbol(optCurrentForecast->days[i].iconId));
         // Pad cells based on the largest number of digits on each column
         char maxPadding[3] = "  ";
         char minPadding[3] = "  ";
-        int diff = snprintf(nullptr, 0, "%d", maxTemp) - snprintf(nullptr, 0, "%d", minTemp);
+        int diff = snprintf(nullptr, 0, "%d", maxTemp.temp) - snprintf(nullptr, 0, "%d", minTemp.temp);
         if (diff <= 0) {
           maxPadding[-diff] = '\0';
           minPadding[0] = '\0';
@@ -181,8 +173,8 @@ void Weather::Refresh() {
           maxPadding[0] = '\0';
           minPadding[diff] = '\0';
         }
-        lv_table_set_cell_value_fmt(forecast, 2, i, "%s%d", maxPadding, maxTemp);
-        lv_table_set_cell_value_fmt(forecast, 3, i, "%s%d", minPadding, minTemp);
+        lv_table_set_cell_value_fmt(forecast, 2, i, "%s%d", maxPadding, maxTemp.temp);
+        lv_table_set_cell_value_fmt(forecast, 3, i, "%s%d", minPadding, minTemp.temp);
       }
     } else {
       for (int i = 0; i < Controllers::SimpleWeatherService::MaxNbForecastDays; i++) {
