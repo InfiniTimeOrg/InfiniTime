@@ -13,8 +13,6 @@
 
 <img src="doc/logo/watchface_logo_small_light.png" width="200" height="200">
 
-<br>
-
 # InfiniTime
 
 *Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devices/pinetime/) with many features, written in modern C++.*
