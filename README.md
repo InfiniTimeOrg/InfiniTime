@@ -1,8 +1,23 @@
-# [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
+<br>
 
-![InfiniTime logo](doc/logo/infinitime-logo-small.jpg "InfiniTime Logo")
+<div align="center">
 
-Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devices/pinetime/) with many features, written in modern C++.
+[![GitHub tag](https://img.shields.io/github/tag/InfiniTimeOrg/InfiniTime?include_prereleases=&sort=semver&color=blue)](https://github.com/InfiniTimeOrg/InfiniTime/releases)
+[![GitHub License](https://img.shields.io/github/license/InfiniTimeOrg/InfiniTime)](https://github.com/InfiniTimeOrg/InfiniLink/blob/main/LICENSE)
+[![Issues - InfiniLink](https://img.shields.io/github/issues/InfiniTimeOrg/InfiniTime)](https://github.com/InfiniTimeOrg/InfiniTime/issues)
+[![Pull Requests - InfiniLink](https://img.shields.io/github/issues-pr/InfiniTimeOrg/InfiniTime)](https://github.com/InfiniTimeOrg/InfiniTime/pulls)
+[![Stars - InfiniLink](https://img.shields.io/github/stars/InfiniTimeOrg/InfiniTime?style=social)](https://github.com/InfiniTimeOrg/InfiniTime/stargazers)
+[![Forks - InfiniLink](https://img.shields.io/github/forks/InfiniTimeOrg/InfiniTime?style=social)](https://github.com/InfiniTimeOrg/InfiniTime/network/members)
+
+<br>
+
+<img src="doc/logo/infinitime-logo-small.jpg" width="130" height="130">
+
+# InfiniTime
+
+*Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devices/pinetime/) with many features, written in modern C++.*
+
+</div>
 
 ## New to InfiniTime?
 
