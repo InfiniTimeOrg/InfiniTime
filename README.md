@@ -11,7 +11,9 @@
 
 <br>
 
-<img src="doc/logo/infinitime-logo-small.jpg" width="130" height="130">
+<img src="doc/logo/watchface_logo_small_light.png" width="200" height="200">
+
+<br>
 
 # InfiniTime
 
