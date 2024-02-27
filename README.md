@@ -1,5 +1,3 @@
-<br>
-
 <div align="center">
 
 [![GitHub tag](https://img.shields.io/github/tag/InfiniTimeOrg/InfiniTime?include_prereleases=&sort=semver&color=blue)](https://github.com/InfiniTimeOrg/InfiniTime/releases)
