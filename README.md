@@ -12,7 +12,7 @@
 
 <br>
 
-<img src="doc/logo/watchface_logo_small_light.png" width="160" height="160">
+<img src="doc/logo/watchface_logo_small_dark.png" width="160" height="160">
 
 # InfiniTime
 
