@@ -1,5 +1,3 @@
-<br>
-
 <div align="center">
 
 <img src="doc/logo/watchface_collage.png">
