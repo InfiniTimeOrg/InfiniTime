@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="doc/logo/watchface_collage.png">
+<img src="doc/logo/watchface_collage_no_shadow.png">
 
 <br>
 <br>
