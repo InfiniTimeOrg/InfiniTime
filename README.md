@@ -37,8 +37,13 @@
 - [InfiniLink](https://github.com/InfiniTimeOrg/InfiniLink) (iOS)
 - [ITD](https://gitea.elara.ws/Elara6331/itd) (Linux)
 - [WatchMate](https://github.com/azymohliad/watchmate) (Linux)
+- [InfiniTimeExplorer](https://infinitimeexplorer.netlify.app) (Web)
 
-***Note**: We removed mentions to NRFConnect as this app is closed source and recent versions do not work anymore with InfiniTime (the last version known to work is 4.24.3). If you used NRFConnect in the past, we recommend you switch to [Gadgetbridge](https://gadgetbridge.org/).*
+<br>
+
+> *InfiniTimeExplorer is only compatible with web browsers that support Web BLE. Currently supported browsers include Chrome, Edge, and Firefox.* 
+>
+> *We removed mentions to NRFConnect as this app is closed source and recent versions do not work anymore with InfiniTime (the last version known to work is 4.24.3). If you used NRFConnect in the past, we recommend you switch to [Gadgetbridge](https://gadgetbridge.org/).* 
 
 ## Development
 
