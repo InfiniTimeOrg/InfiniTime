@@ -110,13 +110,9 @@ void DisplayApp::DisplayOtaProgress(uint8_t percent, uint16_t color) {
 }
 
 void DisplayApp::PushMessage(Display::Messages msg) {
-  BaseType_t xHigherPriorityTaskWoken;
-  xHigherPriorityTaskWoken = pdFALSE;
+  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
-  if (xHigherPriorityTaskWoken) {
-    /* Actual macro used here is port specific. */
-    // TODO : should I do something here?
-  }
+  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 void DisplayApp::Register(Pinetime::System::SystemTask* /*systemTask*/) {

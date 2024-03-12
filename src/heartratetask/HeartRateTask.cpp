@@ -103,10 +103,7 @@ void HeartRateTask::Work() {
 void HeartRateTask::PushMessage(HeartRateTask::Messages msg) {
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
   xQueueSendFromISR(messageQueue, &msg, &xHigherPriorityTaskWoken);
-  if (xHigherPriorityTaskWoken) {
-    /* Actual macro used here is port specific. */
-    // TODO : should I do something here?
-  }
+  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
 void HeartRateTask::StartMeasurement() {
