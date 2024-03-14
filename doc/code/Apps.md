@@ -142,7 +142,7 @@ namespace Pinetime {
     template <>
     struct AppTraits<Apps::MyApp> {
       static constexpr Apps app = Apps::MyApp;
-      static constexpr const char* icon = Screens::Symbol::myApp;
+      static constexpr const char* icon = Screens::Symbols::myApp;
       static Screens::Screen* Create(AppController& controllers) {
         return new Screens::MyApp();
       }
