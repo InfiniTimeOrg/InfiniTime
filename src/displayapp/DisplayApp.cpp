@@ -382,7 +382,6 @@ void DisplayApp::Refresh() {
         break;
       case Messages::OnChargingEvent:
         RestoreBrightness();
-        motorController.RunForDuration(15);
         break;
     }
   }
