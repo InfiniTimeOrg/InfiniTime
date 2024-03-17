@@ -543,12 +543,12 @@ void WatchFacePineTimeStyle::Refresh() {
   if (currentWeather.IsUpdated()) {
     auto optCurrentWeather = currentWeather.Get();
     if (optCurrentWeather) {
-      int16_t temp = optCurrentWeather->temperature;
+      Controllers::SimpleWeatherService::PreciseTemp preciseTemp = optCurrentWeather->temperature;
       if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
-        temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
+        preciseTemp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(preciseTemp);
       }
-      temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
-      lv_label_set_text_fmt(temperature, "%d°", temp);
+      Controllers::SimpleWeatherService::DisplayTemp displayTemp = Controllers::SimpleWeatherService::Convert(preciseTemp);
+      lv_label_set_text_fmt(temperature, "%d°", displayTemp);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
     } else {
       lv_label_set_text(temperature, "--");

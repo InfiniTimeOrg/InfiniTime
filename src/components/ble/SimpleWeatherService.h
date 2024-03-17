@@ -62,12 +62,14 @@ namespace Pinetime {
       };
 
       using Location = std::array<char, 33>; // 32 char + \0 (end of string)
+      using PreciseTemp = int16_t;
+      using DisplayTemp = int16_t;
 
       struct CurrentWeather {
         CurrentWeather(uint64_t timestamp,
-                       int16_t temperature,
-                       int16_t minTemperature,
-                       int16_t maxTemperature,
+                       PreciseTemp temperature,
+                       PreciseTemp minTemperature,
+                       PreciseTemp maxTemperature,
                        Icons iconId,
                        Location&& location)
           : timestamp {timestamp},
@@ -79,9 +81,9 @@ namespace Pinetime {
         }
 
         uint64_t timestamp;
-        int16_t temperature;
-        int16_t minTemperature;
-        int16_t maxTemperature;
+        PreciseTemp temperature;
+        PreciseTemp minTemperature;
+        PreciseTemp maxTemperature;
         Icons iconId;
         Location location;
 
@@ -93,8 +95,8 @@ namespace Pinetime {
         uint8_t nbDays;
 
         struct Day {
-          int16_t minTemperature;
-          int16_t maxTemperature;
+          PreciseTemp minTemperature;
+          PreciseTemp maxTemperature;
           Icons iconId;
 
           bool operator==(const Day& other) const;
@@ -108,8 +110,12 @@ namespace Pinetime {
       std::optional<CurrentWeather> Current() const;
       std::optional<Forecast> GetForecast() const;
 
-      static int16_t CelsiusToFahrenheit(int16_t celsius) {
+      static PreciseTemp CelsiusToFahrenheit(PreciseTemp celsius) {
         return celsius * 9 / 5 + 3200;
+      }
+
+      static DisplayTemp Convert(PreciseTemp temp) {
+        return temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
       }
 
     private:
