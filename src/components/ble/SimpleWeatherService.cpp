@@ -127,7 +127,7 @@ int SimpleWeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
 
 std::optional<SimpleWeatherService::CurrentWeather> SimpleWeatherService::Current() const {
   if (currentWeather) {
-    auto currentTime = dateTimeController.UTCDateTime().time_since_epoch();
+    auto currentTime = dateTimeController.CurrentDateTime().time_since_epoch();
     auto weatherTpSecond = std::chrono::seconds {currentWeather->timestamp};
     auto weatherTp = std::chrono::duration_cast<std::chrono::seconds>(weatherTpSecond);
     auto delta = currentTime - weatherTp;
@@ -141,7 +141,7 @@ std::optional<SimpleWeatherService::CurrentWeather> SimpleWeatherService::Curren
 
 std::optional<SimpleWeatherService::Forecast> SimpleWeatherService::GetForecast() const {
   if (forecast) {
-    auto currentTime = dateTimeController.UTCDateTime().time_since_epoch();
+    auto currentTime = dateTimeController.CurrentDateTime().time_since_epoch();
     auto weatherTpSecond = std::chrono::seconds {forecast->timestamp};
     auto weatherTp = std::chrono::duration_cast<std::chrono::seconds>(weatherTpSecond);
     auto delta = currentTime - weatherTp;
@@ -157,4 +157,17 @@ bool SimpleWeatherService::CurrentWeather::operator==(const SimpleWeatherService
   return this->iconId == other.iconId && this->temperature == other.temperature && this->timestamp == other.timestamp &&
          this->maxTemperature == other.maxTemperature && this->minTemperature == other.maxTemperature &&
          std::strcmp(this->location.data(), other.location.data()) == 0;
+}
+
+bool SimpleWeatherService::Forecast::Day::operator==(const SimpleWeatherService::Forecast::Day& other) const {
+  return this->iconId == other.iconId && this->maxTemperature == other.maxTemperature && this->minTemperature == other.maxTemperature;
+}
+
+bool SimpleWeatherService::Forecast::operator==(const SimpleWeatherService::Forecast& other) const {
+  for (int i = 0; i < this->nbDays; i++) {
+    if (this->days[i] != other.days[i]) {
+      return false;
+    }
+  }
+  return this->timestamp == other.timestamp && this->nbDays == other.nbDays;
 }

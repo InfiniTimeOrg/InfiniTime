@@ -27,6 +27,8 @@ namespace Pinetime {
       Metronome,
       Motion,
       Steps,
+      Dice,
+      Weather,
       PassKey,
       QuickSettings,
       Settings,
@@ -41,8 +43,7 @@ namespace Pinetime {
       SettingChimes,
       SettingShakeThreshold,
       SettingBluetooth,
-      Error,
-      Weather
+      Error
     };
 
     enum class WatchFace : uint8_t {
@@ -72,12 +73,7 @@ namespace Pinetime {
       static constexpr size_t Count = sizeof...(Ws);
     };
 
-    using UserWatchFaceTypes = WatchFaceTypeList<WatchFace::Digital,
-                                                 WatchFace::Analog,
-                                                 WatchFace::PineTimeStyle,
-                                                 WatchFace::Terminal,
-                                                 WatchFace::Infineat,
-                                                 WatchFace::CasioStyleG7710>;
+    using UserWatchFaceTypes = WatchFaceTypeList<@WATCHFACE_TYPES@>;
 
     static_assert(UserWatchFaceTypes::Count >= 1);
   }

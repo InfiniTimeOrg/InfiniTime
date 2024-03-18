@@ -540,7 +540,6 @@ void WatchFacePineTimeStyle::Refresh() {
   }
 
   currentWeather = weatherService.Current();
-
   if (currentWeather.IsUpdated()) {
     auto optCurrentWeather = currentWeather.Get();
     if (optCurrentWeather) {
@@ -548,14 +547,13 @@ void WatchFacePineTimeStyle::Refresh() {
       if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
         temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
       }
-      lv_label_set_text_fmt(temperature, "%d°", temp / 100);
+      temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
+      lv_label_set_text_fmt(temperature, "%d°", temp);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
-      lv_obj_realign(temperature);
-      lv_obj_realign(weatherIcon);
+    } else {
+      lv_label_set_text(temperature, "--");
+      lv_label_set_text(weatherIcon, Symbols::ban);
     }
-  } else {
-    lv_label_set_text(temperature, "--");
-    lv_label_set_text(weatherIcon, Symbols::ban);
     lv_obj_realign(temperature);
     lv_obj_realign(weatherIcon);
   }

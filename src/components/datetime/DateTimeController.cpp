@@ -115,8 +115,8 @@ const char* DateTime::MonthShortToStringLow(Months month) {
   return MonthsStringLow[static_cast<uint8_t>(month)];
 }
 
-const char* DateTime::DayOfWeekShortToStringLow() const {
-  return DaysStringShortLow[static_cast<uint8_t>(DayOfWeek())];
+const char* DateTime::DayOfWeekShortToStringLow(Days day) {
+  return DaysStringShortLow[static_cast<uint8_t>(day)];
 }
 
 void DateTime::Register(Pinetime::System::SystemTask* systemTask) {

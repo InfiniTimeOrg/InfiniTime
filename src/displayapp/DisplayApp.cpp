@@ -26,6 +26,8 @@
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
 #include "displayapp/screens/Steps.h"
+#include "displayapp/screens/Dice.h"
+#include "displayapp/screens/Weather.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
 
@@ -445,6 +447,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       else {
         currentScreen.reset(userWatchFaces[0].create(controllers));
       }
+      settingsController.SetAppMenu(0);
     } break;
     case Apps::Error:
       currentScreen = std::make_unique<Screens::Error>(bootError);
@@ -490,10 +493,11 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::Settings>(this, settingsController);
       break;
     case Apps::SettingWatchFace: {
-      std::array<Screens::CheckboxList::Item, UserWatchFaceTypes::Count> items;
+      std::array<Screens::SettingWatchFace::Item, UserWatchFaceTypes::Count> items;
       int i = 0;
       for (const auto& userWatchFace : userWatchFaces) {
-        items[i++] = Screens::CheckboxList::Item {userWatchFace.name, userWatchFace.isAvailable(controllers.filesystem)};
+        items[i++] =
+          Screens::SettingWatchFace::Item {userWatchFace.name, userWatchFace.watchFace, userWatchFace.isAvailable(controllers.filesystem)};
       }
       currentScreen = std::make_unique<Screens::SettingWatchFace>(this, std::move(items), settingsController, filesystem);
     } break;
@@ -562,9 +566,7 @@ void DisplayApp::PushMessage(Messages msg) {
   if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
-    if (xHigherPriorityTaskWoken == pdTRUE) {
-      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   } else {
     TickType_t timeout = portMAX_DELAY;
     // Make xQueueSend() non-blocking if the message is a Notification message. We do this to avoid
