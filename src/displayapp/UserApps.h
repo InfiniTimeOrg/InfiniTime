@@ -28,7 +28,6 @@ namespace Pinetime {
     };
 
     struct WatchFaceDescription {
-      WatchFace watchFace;
       const char* name;
       Screens::Screen* (*create)(AppControllers& controllers);
       bool (*isAvailable)(Controllers::FS& fileSystem);
@@ -39,9 +38,11 @@ namespace Pinetime {
       return {AppTraits<t>::app, AppTraits<t>::icon, &AppTraits<t>::Create};
     }
 
-    template <WatchFace t>
+    template <class t>
     consteval WatchFaceDescription CreateWatchFaceDescription() {
-      return {WatchFaceTraits<t>::watchFace, WatchFaceTraits<t>::name, &WatchFaceTraits<t>::Create, &WatchFaceTraits<t>::IsAvailable};
+      static_assert(std::char_traits<char>::length(WatchFaceTraits<t>::name) < 16,
+                    "The name of the watch faces is limited to 15 characters max");
+      return {WatchFaceTraits<t>::name, &WatchFaceTraits<t>::Create, &WatchFaceTraits<t>::IsAvailable};
     }
 
     template <template <Apps...> typename T, Apps... ts>
@@ -49,7 +50,7 @@ namespace Pinetime {
       return {CreateAppDescription<ts>()...};
     }
 
-    template <template <WatchFace...> typename T, WatchFace... ts>
+    template <template <class...> typename T, class... ts>
     consteval std::array<WatchFaceDescription, sizeof...(ts)> CreateWatchFaceDescriptions(T<ts...>) {
       return {CreateWatchFaceDescription<ts>()...};
     }

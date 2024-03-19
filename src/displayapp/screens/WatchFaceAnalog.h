@@ -13,7 +13,6 @@
 #include "utility/DirtyValue.h"
 #include "displayapp/apps/WatchFaces.h"
 
-
 namespace Pinetime {
   namespace Controllers {
     class Settings;
@@ -92,8 +91,7 @@ namespace Pinetime {
     }
 
     template <>
-    struct WatchFaceTraits<WatchFace::Analog> {
-      static constexpr WatchFace watchFace = WatchFace::Analog;
+    struct WatchFaceTraits<Screens::WatchFaceAnalog> {
       static constexpr const char* name = "Analog face";
 
       static Screens::Screen* Create(AppControllers& controllers) {

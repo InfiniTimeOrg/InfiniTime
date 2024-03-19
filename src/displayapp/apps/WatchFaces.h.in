@@ -2,21 +2,15 @@
 #include <cstddef>
 #include <cstdint>
 
+@WATCHFACE_NAMESPACE@
 namespace Pinetime {
   namespace Applications {
-    enum class WatchFace : uint8_t {
-      Digital,
-      Analog,
-      PineTimeStyle,
-      Terminal,
-      Infineat,
-      CasioStyleG7710,
-    };
+    static constexpr size_t MaxWatchFaceNameSize = 15;
 
-    template <WatchFace T>
+    template <class T>
     struct WatchFaceTraits {};
 
-    template <WatchFace... Ws>
+    template <class... Ws>
     struct WatchFaceTypeList {
       static constexpr size_t Count = sizeof...(Ws);
     };

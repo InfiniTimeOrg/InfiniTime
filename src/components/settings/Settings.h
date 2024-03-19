@@ -1,6 +1,8 @@
 #pragma once
 #include <cstdint>
 #include <bitset>
+#include <cstring>
+#include <array>
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
 #include "displayapp/apps/Apps.h"
@@ -61,15 +63,18 @@ namespace Pinetime {
       void Init();
       void SaveSettings();
 
-      void SetWatchFace(Pinetime::Applications::WatchFace face) {
-        if (face != settings.watchFace) {
+      void SetWatchFace(const char* face) {
+        const char* currentWatchFace = settings.watchFace.data();
+        if (std::strcmp(face, currentWatchFace) != 0) {
           settingsChanged = true;
+          auto len = std::min(std::strlen(face), Pinetime::Applications::MaxWatchFaceNameSize);
+          std::memcpy(settings.watchFace.data(), face, len);
+          settings.watchFace[len] = 0;
         }
-        settings.watchFace = face;
       };
 
-      Pinetime::Applications::WatchFace GetWatchFace() const {
-        return settings.watchFace;
+      const char* GetWatchFace() const {
+        return settings.watchFace.data();
       };
 
       void SetChimeOption(ChimesOption chimeOption) {
@@ -298,7 +303,7 @@ namespace Pinetime {
         WeatherFormat weatherFormat = WeatherFormat::Metric;
         Notification notificationStatus = Notification::On;
 
-        Pinetime::Applications::WatchFace watchFace = Pinetime::Applications::WatchFace::Digital;
+        std::array<char, Pinetime::Applications::MaxWatchFaceNameSize + 1> watchFace = {0};
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
