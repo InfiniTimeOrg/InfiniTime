@@ -49,12 +49,17 @@ foreach (w IN LISTS DEFAULT_WATCHFACE_TYPES)
     string(SUBSTRING ${w} ${beginIndex} ${watchfaceLength} className)
     string(SUBSTRING ${w} 0 ${classIndex} namespaceName)
     string(APPEND WATCHFACE_NAMESPACE "namespace ${namespaceName} { class ${className}; }\n")
+
+    # TODO the include path should be specified by the CMake file of the watchface
+    string(APPEND WATCHFACE_INCLUDE "#include \"displayapp/screens/${className}.h\"\n")
 endforeach ()
 
 add_library(infinitime_apps INTERFACE)
 target_sources(infinitime_apps INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/Apps.h")
 target_include_directories(infinitime_apps INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/")
+target_include_directories(infinitime_apps INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/../")
 
 # Generate the list of user apps to be compiled into the firmware
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Apps.h.in ${CMAKE_CURRENT_BINARY_DIR}/Apps.h)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/WatchFaces.h.in ${CMAKE_CURRENT_BINARY_DIR}/WatchFaces.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/../UserApps.h.in ${CMAKE_CURRENT_BINARY_DIR}/../UserApps.h)
