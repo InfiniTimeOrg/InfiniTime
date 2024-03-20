@@ -21,6 +21,8 @@ RUN apt-get update -qq \
       clang-tidy \
       locales \
       libncurses5 \
+      npm \
+      sudo \
 # aarch64 packages
       libffi-dev \
       libssl-dev \
@@ -59,7 +61,11 @@ RUN rm /tmp/nRF5_SDK_15.3.0_59ac345
 RUN git clone https://github.com/mcu-tools/mcuboot.git
 RUN pip3 install -r ./mcuboot/scripts/requirements.txt
 
+RUN npm install -g lv_font_conv
+RUN pip install cbor  # Upstream mcuboot has moved on to cbor2
+
 RUN adduser infinitime
+RUN adduser infinitime sudo
 
 ENV NRF5_SDK_PATH /opt/nRF5_SDK_15.3.0_59ac345
 ENV ARM_NONE_EABI_TOOLCHAIN_PATH /opt/gcc-arm-none-eabi-9-2020-q2-update
