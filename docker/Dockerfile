@@ -41,7 +41,8 @@ RUN apt-get update -qq \
 RUN apt-get update -qq \
     && apt-get install -y \
         clang-format-14 \
-        clang-tidy
+        clang-tidy \
+        libncurses5
 
 # Git needed for PROJECT_GIT_COMMIT_HASH variable setting
 
