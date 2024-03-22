@@ -33,9 +33,9 @@ Pinetime::Applications::TouchEvents TouchHandler::GestureGet() {
   return returnGesture;
 }
 
-bool TouchHandler::ProcessTouchInfo(Drivers::Cst816S::TouchInfos info) {
+TouchHandler::TouchProcessReply TouchHandler::ProcessTouchInfo(Drivers::Cst816S::TouchInfos info, bool buttonUnlocksOn) {
   if (!info.isValid) {
-    return false;
+    return TouchHandler::TouchProcessReply::NoAction;
   }
 
   // Only a single gesture per touch
@@ -62,5 +62,19 @@ bool TouchHandler::ProcessTouchInfo(Drivers::Cst816S::TouchInfos info) {
 
   currentTouchPoint = {info.x, info.y, info.touching};
 
-  return true;
+  // if the watch was just woken by touch and button must be used to unlock, ignore the first touch event which
+  // is the touch event that woke the watch. Otherwise the lock-popup will be displayed
+  if (buttonUnlocksOn && ignoreNextTouchEvent) {
+    ignoreNextTouchEvent = false;
+    return TouchHandler::TouchProcessReply::NoAction;
+
+  } else if (!buttonUnlocksOn || wokenBy != WokenBy::WakeUpAction) {
+
+    // if we get to here TouchEvents is allowed and the "ButtonUnlocks" requirement can be overridden
+    wokenBy = WokenBy::Other;
+
+    return TouchHandler::TouchProcessReply::TouchEvent;
+  } else {
+    return TouchHandler::TouchProcessReply::IgnoreTouchPopup;
+  }
 }

@@ -30,6 +30,7 @@
 #include "displayapp/screens/Weather.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
+#include "displayapp/screens/Symbols.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
@@ -99,6 +100,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     filesystem {filesystem},
     lvgl {lcd, filesystem},
     timer(this, TimerCallback),
+    popupMessage {Screens::Symbols::lock, 90, 90},
     controllers {batteryController,
                  bleController,
                  dateTimeController,
@@ -384,6 +386,12 @@ void DisplayApp::Refresh() {
         RestoreBrightness();
         motorController.RunForDuration(15);
         break;
+      case Messages::ShowIgnoreTouchPopup:
+        popupMessage.SetHidden(false);
+        break;
+      case Messages::HideIgnoreTouchPopup:
+        popupMessage.SetHidden(true);
+        break;
     }
   }
 
@@ -507,7 +515,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::SettingWeatherFormat>(settingsController);
       break;
     case Apps::SettingWakeUp:
-      currentScreen = std::make_unique<Screens::SettingWakeUp>(settingsController);
+      currentScreen = std::make_unique<Screens::SettingWakeUp>(this, settingsController);
       break;
     case Apps::SettingDisplay:
       currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);

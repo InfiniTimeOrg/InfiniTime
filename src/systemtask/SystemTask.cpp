@@ -217,7 +217,11 @@ void SystemTask::Work() {
           state = SystemTaskState::Running;
           break;
         case Messages::TouchWakeUp: {
-          if (touchHandler.ProcessTouchInfo(touchPanel.GetTouchInfo())) {
+          Pinetime::Controllers::TouchHandler::TouchProcessReply reply;
+          reply =
+            touchHandler.ProcessTouchInfo(touchPanel.GetTouchInfo(),
+                                          settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::ButtonUnlocks));
+          if (reply == Pinetime::Controllers::TouchHandler::TouchProcessReply::TouchEvent) {
             auto gesture = touchHandler.GestureGet();
             if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
                 gesture != Pinetime::Applications::TouchEvents::None &&
@@ -225,12 +229,15 @@ void SystemTask::Work() {
                   settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) ||
                  (gesture == Pinetime::Applications::TouchEvents::Tap &&
                   settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
+              touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::WakeUpAction, true);
               GoToRunning();
             }
           }
           break;
         }
         case Messages::GoToSleep:
+          touchHandler.SetIgnoreTouchPopupHidden(true);
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::HideIgnoreTouchPopup);
           if (doNotGoToSleep) {
             break;
           }
@@ -249,6 +256,7 @@ void SystemTask::Work() {
         case Messages::OnNewNotification:
           if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::On) {
             if (state == SystemTaskState::Sleeping) {
+              touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Other, false);
               GoToRunning();
             } else {
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::RestoreBrightness);
@@ -258,6 +266,7 @@ void SystemTask::Work() {
           break;
         case Messages::SetOffAlarm:
           if (state == SystemTaskState::Sleeping) {
+            touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Other, false);
             GoToRunning();
           }
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
@@ -270,6 +279,7 @@ void SystemTask::Work() {
         case Messages::BleFirmwareUpdateStarted:
           doNotGoToSleep = true;
           if (state == SystemTaskState::Sleeping) {
+            touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Other, false);
             GoToRunning();
           }
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::BleFirmwareUpdateStarted);
@@ -284,6 +294,7 @@ void SystemTask::Work() {
           NRF_LOG_INFO("[systemtask] FS Started");
           doNotGoToSleep = true;
           if (state == SystemTaskState::Sleeping) {
+            touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Other, false);
             GoToRunning();
           }
           // TODO add intent of fs access icon or something
@@ -294,24 +305,39 @@ void SystemTask::Work() {
           // TODO add intent of fs access icon or something
           break;
         case Messages::OnTouchEvent:
-          if (touchHandler.ProcessTouchInfo(touchPanel.GetTouchInfo())) {
+          Pinetime::Controllers::TouchHandler::TouchProcessReply reply;
+          reply =
+            touchHandler.ProcessTouchInfo(touchPanel.GetTouchInfo(),
+                                          settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::ButtonUnlocks));
+          if (reply == Pinetime::Controllers::TouchHandler::TouchProcessReply::TouchEvent) {
             displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
+          } else if (reply == Pinetime::Controllers::TouchHandler::TouchProcessReply::IgnoreTouchPopup) {
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowIgnoreTouchPopup);
+            touchHandler.SetIgnoreTouchPopupHidden(false);
           }
           break;
         case Messages::HandleButtonEvent: {
-          Controllers::ButtonActions action = Controllers::ButtonActions::None;
-          if (nrf_gpio_pin_read(Pinetime::PinMap::Button) == 0) {
-            action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Release);
+          // if the IgnoreTouchPopup is active the first button event unlocks the device
+          if (!touchHandler.IsIgnoreTouchPopupHidden()) {
+            touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Button, false);
+            touchHandler.SetIgnoreTouchPopupHidden(true);
+            displayApp.PushMessage(Pinetime::Applications::Display::Messages::HideIgnoreTouchPopup);
           } else {
-            action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Press);
-            // This is for faster wakeup, sacrificing special longpress and doubleclick handling while sleeping
-            if (IsSleeping()) {
-              fastWakeUpDone = true;
-              GoToRunning();
-              break;
+            Controllers::ButtonActions action = Controllers::ButtonActions::None;
+            if (nrf_gpio_pin_read(Pinetime::PinMap::Button) == 0) {
+              action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Release);
+            } else {
+              action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Press);
+              touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Button, false);
+              // This is for faster wakeup, sacrificing special longpress and doubleclick handling while sleeping
+              if (IsSleeping()) {
+                fastWakeUpDone = true;
+                GoToRunning();
+                break;
+              }
             }
+            HandleButtonAction(action);
           }
-          HandleButtonAction(action);
         } break;
         case Messages::HandleButtonTimerEvent: {
           auto action = buttonHandler.HandleEvent(Controllers::ButtonHandler::Events::Timer);
@@ -331,6 +357,8 @@ void SystemTask::Work() {
           }
 
           state = SystemTaskState::Sleeping;
+          // reset touch restrictions when going to sleep
+          touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Other, false);
           break;
         case Messages::OnNewDay:
           // We might be sleeping (with TWI device disabled.
@@ -345,6 +373,7 @@ void SystemTask::Work() {
             // if sleeping, we can't send a chime to displayApp yet (SPI flash switched off)
             // request running first and repush the chime message
             if (state == SystemTaskState::Sleeping) {
+              touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Other, false);
               GoToRunning();
               PushMessage(msg);
             } else {
@@ -360,6 +389,7 @@ void SystemTask::Work() {
             // if sleeping, we can't send a chime to displayApp yet (SPI flash switched off)
             // request running first and repush the chime message
             if (state == SystemTaskState::Sleeping) {
+              touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Other, false);
               GoToRunning();
               PushMessage(msg);
             } else {
@@ -371,6 +401,7 @@ void SystemTask::Work() {
           batteryController.ReadPowerState();
           displayApp.PushMessage(Applications::Display::Messages::OnChargingEvent);
           if (state == SystemTaskState::Sleeping) {
+            touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Other, false);
             GoToRunning();
           }
           break;
@@ -382,6 +413,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnPairing:
           if (state == SystemTaskState::Sleeping) {
+            touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Other, false);
             GoToRunning();
           }
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
@@ -445,6 +477,9 @@ void SystemTask::UpdateMotion() {
          motionController.ShouldRaiseWake()) ||
         (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) &&
          motionController.ShouldShakeWake(settingsController.GetShakeThreshold()))) {
+      if (state == SystemTaskState::Sleeping) {
+        touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::WakeUpAction, true);
+      }
       GoToRunning();
     }
   }
