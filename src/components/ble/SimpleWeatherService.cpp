@@ -80,7 +80,7 @@ int WeatherCallback(uint16_t /*connHandle*/, uint16_t /*attrHandle*/, struct ble
   return static_cast<Pinetime::Controllers::SimpleWeatherService*>(arg)->OnCommand(ctxt);
 }
 
-SimpleWeatherService::SimpleWeatherService(const DateTime& dateTimeController) : dateTimeController(dateTimeController) {
+SimpleWeatherService::SimpleWeatherService(DateTime& dateTimeController) : dateTimeController(dateTimeController) {
 }
 
 void SimpleWeatherService::Init() {
