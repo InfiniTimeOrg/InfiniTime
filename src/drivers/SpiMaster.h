@@ -5,6 +5,8 @@
 #include <FreeRTOS.h>
 #include <semphr.h>
 #include <task.h>
+#include "nrfx_gpiote.h"
+#include "nrf_ppi.h"
 
 namespace Pinetime {
   namespace Drivers {
@@ -43,8 +45,8 @@ namespace Pinetime {
       void Wakeup();
 
     private:
-      void SetupWorkaroundForFtpan58(NRF_SPIM_Type* spim, uint32_t ppi_channel, uint32_t gpiote_channel);
-      void DisableWorkaroundForFtpan58(NRF_SPIM_Type* spim, uint32_t ppi_channel, uint32_t gpiote_channel);
+      void SetupWorkaroundForErratum58();
+      void DisableWorkaroundForErratum58();
       void PrepareTx(const volatile uint32_t bufferAddress, const volatile size_t size);
       void PrepareRx(const volatile uint32_t bufferAddress, const volatile size_t size);
 
@@ -58,6 +60,8 @@ namespace Pinetime {
       volatile size_t currentBufferSize = 0;
       volatile TaskHandle_t taskToNotify;
       SemaphoreHandle_t mutex = nullptr;
+      static constexpr nrf_ppi_channel_t workaroundPpi = NRF_PPI_CHANNEL0;
+      bool workaroundActive = false;
     };
   }
 }
