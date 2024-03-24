@@ -6,6 +6,8 @@
 
 using namespace Pinetime::Applications::Screens;
 
+static std::chrono::seconds lastTimer;
+
 static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<Timer*>(obj->user_data);
   if (event == LV_EVENT_PRESSED) {
@@ -27,6 +29,7 @@ Timer::Timer(Controllers::Timer& timerController) : timer {timerController} {
 
   minuteCounter.Create();
   secondCounter.Create();
+  SetCounters(lastTimer);
   lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   lv_obj_align(secondCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
 
@@ -105,8 +108,7 @@ void Timer::UpdateMask() {
 void Timer::Refresh() {
   if (timer.IsRunning()) {
     auto secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
-    minuteCounter.SetValue(secondsRemaining.count() / 60);
-    secondCounter.SetValue(secondsRemaining.count() % 60);
+    SetCounters(secondsRemaining);
   } else if (buttonPressing && xTaskGetTickCount() > pressTime + pdMS_TO_TICKS(150)) {
     lv_label_set_text_static(txtPlayPause, "Reset");
     maskPosition += 15;
@@ -131,23 +133,36 @@ void Timer::SetTimerStopped() {
   lv_label_set_text_static(txtPlayPause, "Start");
 }
 
+void Timer::SetCounters(std::chrono::seconds& duration) {
+  minuteCounter.SetValue(duration.count() / 60);
+  secondCounter.SetValue(duration.count() % 60);
+}
+
 void Timer::ToggleRunning() {
   if (timer.IsRunning()) {
     auto secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining());
-    minuteCounter.SetValue(secondsRemaining.count() / 60);
-    secondCounter.SetValue(secondsRemaining.count() % 60);
+    if (secondsRemaining == std::chrono::seconds::zero()) {
+      secondsRemaining = lastTimer;
+    }
+    SetCounters(secondsRemaining);
     timer.StopTimer();
     SetTimerStopped();
+    lastTimer = secondsRemaining;
   } else if (secondCounter.GetValue() + minuteCounter.GetValue() > 0) {
     auto timerDuration = std::chrono::minutes(minuteCounter.GetValue()) + std::chrono::seconds(secondCounter.GetValue());
     timer.StartTimer(timerDuration);
     Refresh();
     SetTimerRunning();
+    lastTimer = timerDuration;
   }
 }
 
 void Timer::Reset() {
-  minuteCounter.SetValue(0);
-  secondCounter.SetValue(0);
+  lastTimer = std::chrono::seconds::zero();
+  Stop();
+}
+
+void Timer::Stop() {
+  SetCounters(lastTimer);
   SetTimerStopped();
 }
