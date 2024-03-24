@@ -11,6 +11,7 @@
 #include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/WatchFaceInfineat.h"
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
+#include "displayapp/apps/WatchFaces.h"
 
 namespace Pinetime {
 
@@ -21,7 +22,6 @@ namespace Pinetime {
       public:
         struct Item {
           const char* name;
-          WatchFace watchface;
           bool enabled;
         };
 

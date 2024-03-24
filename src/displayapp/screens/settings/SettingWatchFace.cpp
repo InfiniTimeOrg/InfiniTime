@@ -12,12 +12,12 @@ constexpr const char* SettingWatchFace::symbol;
 namespace {
   uint32_t IndexOf(const std::array<Pinetime::Applications::Screens::SettingWatchFace::Item,
                                     Pinetime::Applications::UserWatchFaceTypes::Count>& watchfaces,
-                   Pinetime::Applications::WatchFace watchface) {
+                   const char* watchface) {
     size_t index = 0;
     auto found = std::find_if(watchfaces.begin(),
                               watchfaces.end(),
-                              [&index, &watchface](const Pinetime::Applications::Screens::SettingWatchFace::Item& item) {
-                                const bool result = item.watchface == watchface;
+                              [&index, watchface](const Pinetime::Applications::Screens::SettingWatchFace::Item& item) {
+                                const bool result = (std::strcmp(item.name, watchface) == 0);
                                 if (!result) {
                                   index++;
                                 }
@@ -30,13 +30,13 @@ namespace {
     return index;
   }
 
-  Pinetime::Applications::WatchFace IndexToWatchFace(const std::array<Pinetime::Applications::Screens::SettingWatchFace::Item,
-                                                                      Pinetime::Applications::UserWatchFaceTypes::Count>& watchfaces,
+  const char* IndexToWatchFace(const std::array<Pinetime::Applications::Screens::SettingWatchFace::Item,
+                                                Pinetime::Applications::UserWatchFaceTypes::Count>& watchfaces,
                                                      size_t index) {
     if (index >= watchfaces.size()) {
-      return watchfaces[0].watchface;
+      return watchfaces[0].name;
     }
-    return watchfaces[index].watchface;
+    return watchfaces[index].name;
   }
 }
 
