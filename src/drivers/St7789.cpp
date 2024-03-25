@@ -1,4 +1,7 @@
 #include "drivers/St7789.h"
+#include <hal/nrf_gpio.h>
+#include <nrfx_log.h>
+#include "drivers/Spi.h"
 
 using namespace Pinetime::Drivers;
 
