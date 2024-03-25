@@ -5,6 +5,8 @@
 #include <FreeRTOS.h>
 #include <semphr.h>
 #include <task.h>
+#include "nrfx_gpiote.h"
+#include "nrf_ppi.h"
 
 namespace Pinetime {
   namespace Drivers {
@@ -31,7 +33,7 @@ namespace Pinetime {
       SpiMaster& operator=(SpiMaster&&) = delete;
 
       bool Init();
-      bool Write(uint8_t pinCsn, const uint8_t* data, size_t size);
+      bool Write(uint8_t pinCsn, const uint8_t* data, size_t size, void (*TransactionHook)(bool));
       bool Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize);
 
       bool WriteCmdAndBuffer(uint8_t pinCsn, const uint8_t* cmd, size_t cmdSize, const uint8_t* data, size_t dataSize);
@@ -43,21 +45,23 @@ namespace Pinetime {
       void Wakeup();
 
     private:
-      void SetupWorkaroundForFtpan58(NRF_SPIM_Type* spim, uint32_t ppi_channel, uint32_t gpiote_channel);
-      void DisableWorkaroundForFtpan58(NRF_SPIM_Type* spim, uint32_t ppi_channel, uint32_t gpiote_channel);
+      void SetupWorkaroundForErratum58();
+      void DisableWorkaroundForErratum58();
       void PrepareTx(const volatile uint32_t bufferAddress, const volatile size_t size);
       void PrepareRx(const volatile uint32_t bufferAddress, const volatile size_t size);
 
       NRF_SPIM_Type* spiBaseAddress;
       uint8_t pinCsn;
+      void (*TransactionHook)(bool);
 
       SpiMaster::SpiModule spi;
       SpiMaster::Parameters params;
 
       volatile uint32_t currentBufferAddr = 0;
       volatile size_t currentBufferSize = 0;
-      volatile TaskHandle_t taskToNotify;
       SemaphoreHandle_t mutex = nullptr;
+      static constexpr nrf_ppi_channel_t workaroundPpi = NRF_PPI_CHANNEL0;
+      bool workaroundActive = false;
     };
   }
 }

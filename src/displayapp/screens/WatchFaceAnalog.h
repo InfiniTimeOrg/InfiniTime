@@ -75,7 +75,7 @@ namespace Pinetime {
 
         BatteryIcon batteryIcon;
 
-        const Controllers::DateTime& dateTimeController;
+        Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
         const Controllers::Ble& bleController;
         Controllers::NotificationManager& notificationManager;

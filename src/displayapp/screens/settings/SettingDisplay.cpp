@@ -9,9 +9,16 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  void event_handler(lv_obj_t* obj, lv_event_t event) {
+  void timeout_event_handler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingDisplay*>(obj->user_data);
     screen->UpdateSelected(obj, event);
+  }
+
+  void alwaysOn_event_handler(lv_obj_t* obj, lv_event_t event) {
+    if (event == LV_EVENT_VALUE_CHANGED) {
+      auto* screen = static_cast<SettingDisplay*>(obj->user_data);
+      screen->ToggleAlwaysOn();
+    }
   }
 }
 
@@ -49,18 +56,30 @@ SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime
     snprintf(buffer, sizeof(buffer), "%2" PRIu16 "s", options[i] / 1000);
     lv_checkbox_set_text(cbOption[i], buffer);
     cbOption[i]->user_data = this;
-    lv_obj_set_event_cb(cbOption[i], event_handler);
+    lv_obj_set_event_cb(cbOption[i], timeout_event_handler);
     SetRadioButtonStyle(cbOption[i]);
 
     if (settingsController.GetScreenTimeOut() == options[i]) {
       lv_checkbox_set_checked(cbOption[i], true);
     }
   }
+
+  alwaysOn_checkbox = lv_checkbox_create(container1, nullptr);
+  lv_checkbox_set_text(alwaysOn_checkbox, "Always On");
+  lv_checkbox_set_checked(alwaysOn_checkbox, settingsController.GetAlwaysOnDisplaySetting());
+  lv_obj_add_state(alwaysOn_checkbox, LV_STATE_DEFAULT);
+  alwaysOn_checkbox->user_data = this;
+  lv_obj_set_event_cb(alwaysOn_checkbox, alwaysOn_event_handler);
 }
 
 SettingDisplay::~SettingDisplay() {
   lv_obj_clean(lv_scr_act());
   settingsController.SaveSettings();
+}
+
+void SettingDisplay::ToggleAlwaysOn() {
+  settingsController.SetAlwaysOnDisplaySetting(!settingsController.GetAlwaysOnDisplaySetting());
+  lv_checkbox_set_checked(alwaysOn_checkbox, settingsController.GetAlwaysOnDisplaySetting());
 }
 
 void SettingDisplay::UpdateSelected(lv_obj_t* object, lv_event_t event) {
