@@ -3,9 +3,7 @@
 #include <cstdint>
 #include <functional>
 
-#include <hal/nrf_gpio.h>
-#include <nrfx_log.h>
-#include "drivers/Spi.h"
+#include <FreeRTOS.h>
 
 namespace Pinetime {
   namespace Drivers {
