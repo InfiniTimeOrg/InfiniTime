@@ -32,7 +32,7 @@ The .devcontainer folder contains the configuration and scripts for using a Dock
 
 Using the [Remote-Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension is recommended. It will handle configuring the Docker virtual machine and setting everything up.
 
-More documentation is available in the [readme in .devcontainer](../.devcontainer/README.md)
+More documentation is available in the [readme in .devcontainer](usingDevcontainers.md)
 
 ### DevContainer on Ubuntu
 
