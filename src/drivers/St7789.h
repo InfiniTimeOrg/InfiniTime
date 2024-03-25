@@ -2,6 +2,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <FreeRTOS.h>
+
 namespace Pinetime {
   namespace Drivers {
     class Spi;
@@ -29,10 +31,13 @@ namespace Pinetime {
       uint8_t pinDataCommand;
       uint8_t pinReset;
       uint8_t verticalScrollingStartAddress = 0;
+      bool sleepIn;
+      TickType_t lastSleepExit;
 
       void HardwareReset();
       void SoftwareReset();
       void SleepOut();
+      void EnsureSleepOutPostDelay();
       void SleepIn();
       void ColMod();
       void MemoryDataAccessControl();
