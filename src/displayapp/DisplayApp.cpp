@@ -266,14 +266,17 @@ void DisplayApp::Refresh() {
         if (state != States::Running) {
           PushMessageToSystemTask(System::Messages::GoToRunning);
         }
+        // Load timer app if not loaded
+        if (currentApp != Apps::Timer) {
+          LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Up);
+        }
+        // Once loaded, set the timer to ringing mode
         if (currentApp == Apps::Timer) {
           lv_disp_trig_activity(nullptr);
           auto* timer = static_cast<Screens::Timer*>(currentScreen.get());
-          timer->Reset();
-        } else {
-          LoadNewScreen(Apps::Timer, DisplayApp::FullRefreshDirections::Up);
+          timer->SetTimerRinging();
         }
-        motorController.RunForDuration(35);
+        motorController.StartRinging();
         break;
       case Messages::AlarmTriggered:
         if (currentApp == Apps::Alarm) {
