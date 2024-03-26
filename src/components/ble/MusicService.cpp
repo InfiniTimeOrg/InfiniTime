@@ -17,6 +17,7 @@
 */
 #include "components/ble/MusicService.h"
 #include "components/ble/NimbleController.h"
+#include "systemtask/SystemTask.h"
 #include <cstring>
 
 namespace {
@@ -53,7 +54,8 @@ namespace {
   }
 }
 
-Pinetime::Controllers::MusicService::MusicService(Pinetime::Controllers::NimbleController& nimble) : nimble(nimble) {
+Pinetime::Controllers::MusicService::MusicService(Pinetime::System::SystemTask& systemTask, Pinetime::Controllers::NimbleController& nimble)
+  : systemTask {systemTask}, nimble(nimble) {
   characteristicDefinition[0] = {.uuid = &msEventCharUuid.u,
                                  .access_cb = MusicCallback,
                                  .arg = this,
@@ -152,6 +154,7 @@ int Pinetime::Controllers::MusicService::OnCommand(struct ble_gatt_access_ctxt* 
       // These variables need to be updated, because the progress may not be updated immediately,
       // leading to getProgress() returning an incorrect position.
       if (playing) {
+        systemTask.PushMessage(Pinetime::System::Messages::OnMusicStarted);
         trackProgressUpdateTime = xTaskGetTickCount();
       } else {
         trackProgress +=

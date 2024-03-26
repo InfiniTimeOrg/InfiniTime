@@ -14,6 +14,7 @@ namespace Pinetime {
       enum class Notification : uint8_t { On, Off, Sleep };
       enum class ChimesOption : uint8_t { None, Hours, HalfHours };
       enum class WakeUpMode : uint8_t { SingleTap = 0, DoubleTap = 1, RaiseWrist = 2, Shake = 3, LowerWrist = 4 };
+      enum class AutoOpen : uint8_t { Battery = 0, Music = 1, Navigation = 2 };
       enum class Colors : uint8_t {
         White,
         Silver,
@@ -253,6 +254,21 @@ namespace Pinetime {
         return getWakeUpModes()[static_cast<size_t>(mode)];
       }
 
+      void SetAutoOpen(AutoOpen app, bool enabled) {
+        if (enabled != IsAutoOpenOn(app)) {
+          settingsChanged = true;
+        }
+        settings.autoOpen.set(static_cast<size_t>(app), enabled);
+      }
+
+      bool IsAutoOpenOn(const AutoOpen app) const {
+        return GetAutoOpen()[static_cast<size_t>(app)];
+      }
+
+      std::bitset<3> GetAutoOpen() const {
+        return settings.autoOpen;
+      }
+
       void SetBrightness(Controllers::BrightnessController::Levels level) {
         if (level != settings.brightLevel) {
           settingsChanged = true;
@@ -308,6 +324,8 @@ namespace Pinetime {
         uint16_t shakeWakeThreshold = 150;
 
         Controllers::BrightnessController::Levels brightLevel = Controllers::BrightnessController::Levels::Medium;
+
+        std::bitset<3> autoOpen {0b000};
       };
 
       SettingsData settings;
