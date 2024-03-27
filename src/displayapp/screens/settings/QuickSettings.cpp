@@ -33,13 +33,14 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
                              Controllers::BrightnessController& brightness,
                              Controllers::MotorController& motorController,
                              Pinetime::Controllers::Settings& settingsController,
-                             const Controllers::Ble& bleController)
+                             const Controllers::Ble& bleController,
+                             const Controllers::Timer& timer)
   : app {app},
     dateTimeController {dateTimeController},
     brightness {brightness},
     motorController {motorController},
     settingsController {settingsController},
-    statusIcons(batteryController, bleController) {
+    statusIcons(batteryController, bleController, timer) {
 
   statusIcons.Create();
 
@@ -118,7 +119,7 @@ QuickSettings::QuickSettings(Pinetime::Applications::DisplayApp* app,
   lv_obj_set_style_local_text_font(lbl_btn, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &lv_font_sys_48);
   lv_label_set_text_static(lbl_btn, Symbols::settings);
 
-  taskUpdate = lv_task_create(lv_update_task, 5000, LV_TASK_PRIO_MID, this);
+  taskUpdate = lv_task_create(lv_update_task, 500, LV_TASK_PRIO_MID, this);
 
   UpdateScreen();
 }
