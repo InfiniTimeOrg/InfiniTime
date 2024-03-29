@@ -2,6 +2,7 @@
 #include <hal/nrf_gpio.h>
 #include <nrfx_log.h>
 #include "drivers/Spi.h"
+#include "task.h"
 
 using namespace Pinetime::Drivers;
 
