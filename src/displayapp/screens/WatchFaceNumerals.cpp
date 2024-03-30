@@ -31,37 +31,43 @@ WatchFaceNumerals::WatchFaceNumerals(Controllers::DateTime& dateTimeController,
   notificationIcon = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
   lv_obj_set_style_local_radius(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_obj_set_size(notificationIcon, 18, 18);
-  lv_obj_align(notificationIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 2, -65);
+  lv_obj_set_size(notificationIcon, 12, 12);
+  lv_obj_align(notificationIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 6, -65);
   lv_obj_set_hidden(notificationIcon, true);
 
-  label_time_hour = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(label_time_hour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_large);
-  lv_obj_set_style_local_text_color(label_time_hour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
-  lv_obj_align(label_time_hour, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -160, -125);
+  labelTimeHour = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(labelTimeHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_large);
+  lv_obj_set_style_local_text_color(labelTimeHour, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GRAY);
+  lv_obj_align(labelTimeHour, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -160, -125);
 
-  label_time_minute = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(label_time_minute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_large);
-  lv_obj_set_style_local_text_color(label_time_minute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
-  lv_obj_align(label_time_minute, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -160, 0);
+  labelTimeMinute = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(labelTimeMinute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_large);
+  lv_obj_set_style_local_text_color(labelTimeMinute, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
+  lv_obj_align(labelTimeMinute, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -160, 0);
 
-  label_time_ampm = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(label_time_ampm, "");
-  lv_obj_set_style_local_text_font(label_time_ampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_small);
-  lv_obj_set_style_local_text_color(label_time_ampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  lv_obj_align(label_time_ampm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 2, -28);
+  labelTimeAMPM1 = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(labelTimeAMPM1, "");
+  lv_obj_set_style_local_text_font(labelTimeAMPM1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_small);
+  lv_obj_set_style_local_text_color(labelTimeAMPM1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  lv_obj_align(labelTimeAMPM1, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 2, -28);
 
-  dateDay = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(dateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_label_set_text(dateDay, "--");
-  lv_obj_set_style_local_text_font(dateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_small);
-  lv_obj_align(dateDay, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
+  labelTimeAMPM2 = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(labelTimeAMPM2, "");
+  lv_obj_set_style_local_text_font(labelTimeAMPM2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_small);
+  lv_obj_set_style_local_text_color(labelTimeAMPM2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
+  lv_obj_align(labelTimeAMPM2, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 2, 0);
 
   dateDayOfWeek = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(dateDayOfWeek, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_label_set_text(dateDayOfWeek, "---");
   lv_obj_set_style_local_text_font(dateDayOfWeek, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_small);
-  lv_obj_align(dateDayOfWeek, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 26);
+  lv_obj_align(dateDayOfWeek, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 0);
+
+  dateDay = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(dateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_label_set_text(dateDay, "--");
+  lv_obj_set_style_local_text_font(dateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_small);
+  lv_obj_align(dateDay, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 30);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -100,7 +106,7 @@ void WatchFaceNumerals::Refresh() {
       displayedMinute = minute;
 
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-        char ampmChar[4] = "A\nM";
+        char ampmChar[2] = "A";
         if (hour == 0) {
           hour = 12;
         } else if (hour == 12) {
@@ -109,13 +115,13 @@ void WatchFaceNumerals::Refresh() {
           hour = hour - 12;
           ampmChar[0] = 'P';
         }
-        lv_label_set_text(label_time_ampm, ampmChar);
-        // Should be padded with blank spaces, but the space character doesn't exist in the font
-        lv_label_set_text_fmt(label_time_hour, "%02d", hour);
-        lv_label_set_text_fmt(label_time_minute, "%02d", minute);
+        lv_label_set_text(labelTimeAMPM1, ampmChar);
+        lv_label_set_text(labelTimeAMPM2, "M");
+        lv_label_set_text_fmt(labelTimeHour, "%02d", hour);
+        lv_label_set_text_fmt(labelTimeMinute, "%02d", minute);
       } else {
-        lv_label_set_text_fmt(label_time_hour, "%02d", hour);
-        lv_label_set_text_fmt(label_time_minute, "%02d", minute);
+        lv_label_set_text_fmt(labelTimeHour, "%02d", hour);
+        lv_label_set_text_fmt(labelTimeMinute, "%02d", minute);
       }
     }
 

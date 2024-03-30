@@ -42,9 +42,10 @@ namespace Pinetime {
         Utility::DirtyValue<bool> notificationState {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime {};
 
-        lv_obj_t* label_time_hour;
-        lv_obj_t* label_time_minute;
-        lv_obj_t* label_time_ampm;
+        lv_obj_t* labelTimeHour;
+        lv_obj_t* labelTimeMinute;
+        lv_obj_t* labelTimeAMPM1;
+        lv_obj_t* labelTimeAMPM2;
         lv_obj_t* label_date;
         lv_obj_t* notificationIcon;
         lv_obj_t* dateDay;
@@ -64,7 +65,7 @@ namespace Pinetime {
     template <>
     struct WatchFaceTraits<WatchFace::Numerals> {
       static constexpr WatchFace watchFace = WatchFace::Numerals;
-      static constexpr const char* name = "Numeral face";
+      static constexpr const char* name = "Numerals";
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::WatchFaceNumerals(controllers.dateTimeController,
