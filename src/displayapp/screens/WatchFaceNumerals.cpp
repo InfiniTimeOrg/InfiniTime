@@ -49,13 +49,13 @@ WatchFaceNumerals::WatchFaceNumerals(Controllers::DateTime& dateTimeController,
   lv_label_set_text_static(labelTimeAMPM1, "");
   lv_obj_set_style_local_text_font(labelTimeAMPM1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_small);
   lv_obj_set_style_local_text_color(labelTimeAMPM1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  lv_obj_align(labelTimeAMPM1, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 2, -28);
+  lv_obj_align(labelTimeAMPM1, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, -28);
 
   labelTimeAMPM2 = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(labelTimeAMPM2, "");
+  lv_label_set_text_static(labelTimeAMPM2, "M");
   lv_obj_set_style_local_text_font(labelTimeAMPM2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_small);
   lv_obj_set_style_local_text_color(labelTimeAMPM2, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  lv_obj_align(labelTimeAMPM2, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 2, 0);
+  lv_obj_align(labelTimeAMPM2, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
 
   dateDayOfWeek = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(dateDayOfWeek, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
@@ -116,7 +116,6 @@ void WatchFaceNumerals::Refresh() {
           ampmChar[0] = 'P';
         }
         lv_label_set_text(labelTimeAMPM1, ampmChar);
-        lv_label_set_text(labelTimeAMPM2, "M");
         lv_label_set_text_fmt(labelTimeHour, "%02d", hour);
         lv_label_set_text_fmt(labelTimeMinute, "%02d", minute);
       } else {
