@@ -2,6 +2,7 @@
 #include <libraries/log/nrf_log.h>
 #include <systemtask/SystemTask.h>
 #include <hal/nrf_rtc.h>
+#include "nrf_assert.h"
 
 using namespace Pinetime::Controllers;
 
