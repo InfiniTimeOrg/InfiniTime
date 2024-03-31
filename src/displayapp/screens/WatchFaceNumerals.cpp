@@ -31,8 +31,8 @@ WatchFaceNumerals::WatchFaceNumerals(Controllers::DateTime& dateTimeController,
   notificationIcon = lv_obj_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_bg_color(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_AQUA);
   lv_obj_set_style_local_radius(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_RADIUS_CIRCLE);
-  lv_obj_set_size(notificationIcon, 12, 12);
-  lv_obj_align(notificationIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 6, -65);
+  lv_obj_set_size(notificationIcon, 14, 14);
+  lv_obj_align(notificationIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 2, -72);
   lv_obj_set_hidden(notificationIcon, true);
 
   labelTimeHour = lv_label_create(lv_scr_act(), nullptr);
@@ -49,7 +49,7 @@ WatchFaceNumerals::WatchFaceNumerals(Controllers::DateTime& dateTimeController,
   lv_label_set_text_static(labelTimeAMPM1, "");
   lv_obj_set_style_local_text_font(labelTimeAMPM1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_small);
   lv_obj_set_style_local_text_color(labelTimeAMPM1, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
-  lv_obj_align(labelTimeAMPM1, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, -28);
+  lv_obj_align(labelTimeAMPM1, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, -32);
 
   labelTimeAMPM2 = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(labelTimeAMPM2, "M");
@@ -67,7 +67,7 @@ WatchFaceNumerals::WatchFaceNumerals(Controllers::DateTime& dateTimeController,
   lv_obj_set_style_local_text_color(dateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_label_set_text(dateDay, "--");
   lv_obj_set_style_local_text_font(dateDay, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_small);
-  lv_obj_align(dateDay, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 30);
+  lv_obj_align(dateDay, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 0, 34);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
