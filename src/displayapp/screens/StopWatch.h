@@ -6,7 +6,6 @@
 #include <FreeRTOS.h>
 #include "portmacro_cmsis.h"
 
-#include "systemtask/SystemTask.h"
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
@@ -26,7 +25,7 @@ namespace Pinetime {
 
       class StopWatch : public Screen {
       public:
-        explicit StopWatch(System::SystemTask& systemTask);
+        explicit StopWatch();
         ~StopWatch() override;
         void Refresh() override;
 
@@ -43,7 +42,6 @@ namespace Pinetime {
         void Start();
         void Pause();
 
-        Pinetime::System::SystemTask& systemTask;
         States currentState = States::Init;
         TickType_t startTime;
         TickType_t oldTimeElapsed = 0;
@@ -66,7 +64,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::stopWatch;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::StopWatch(*controllers.systemTask);
+        return new Screens::StopWatch();
       };
     };
   }
