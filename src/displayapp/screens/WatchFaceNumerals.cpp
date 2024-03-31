@@ -119,6 +119,7 @@ void WatchFaceNumerals::Refresh() {
         lv_label_set_text_fmt(labelTimeHour, "%02d", hour);
         lv_label_set_text_fmt(labelTimeMinute, "%02d", minute);
       } else {
+        lv_obj_set_hidden(labelTimeAMPM2, true);
         lv_label_set_text_fmt(labelTimeHour, "%02d", hour);
         lv_label_set_text_fmt(labelTimeMinute, "%02d", minute);
       }
