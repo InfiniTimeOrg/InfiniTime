@@ -242,7 +242,9 @@ void DisplayApp::Refresh() {
         // If not true, then wait that amount of time
         queueTimeout = CalculateSleepTime();
         if (queueTimeout == 0) {
-          lv_task_handler();
+          // Keep running the task handler if it still has things to draw
+          while (!lv_task_handler()) {
+          };
           // Drop frames that we've missed if the loop took way longer than expected to execute
           while (queueTimeout == 0) {
             alwaysOnTickCount += 1;
