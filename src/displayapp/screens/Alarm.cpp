@@ -272,6 +272,7 @@ void Alarm::ShowInfo() {
                           hrsToAlarm,
                           minToAlarm,
                           secToAlarm);
+    lv_label_set_align(exitMessage, LV_LABEL_ALIGN_CENTER);
     lv_obj_set_hidden(exitMessageHeader, false);
   } else {
     lv_obj_align(exitMessage, messageContainer, LV_ALIGN_IN_LEFT_MID, 20, 0);
