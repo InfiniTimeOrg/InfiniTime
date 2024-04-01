@@ -9,7 +9,7 @@ Spi::Spi(SpiMaster& spiMaster, uint8_t pinCsn) : spiMaster {spiMaster}, pinCsn {
   nrf_gpio_pin_set(pinCsn);
 }
 
-bool Spi::Write(const uint8_t* data, size_t size, void (*TransactionHook)(bool)) {
+bool Spi::Write(const uint8_t* data, size_t size, std::function<void(bool)> TransactionHook) {
   return spiMaster.Write(pinCsn, data, size, TransactionHook);
 }
 

@@ -170,7 +170,7 @@ void SpiMaster::PrepareRx(const uint32_t bufferAddress, const size_t size) {
   spiBaseAddress->EVENTS_END = 0;
 }
 
-bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, void (*TransactionHook)(bool)) {
+bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, std::function<void(bool)> TransactionHook) {
   if (data == nullptr)
     return false;
   auto ok = xSemaphoreTake(mutex, portMAX_DELAY);

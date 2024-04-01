@@ -1,6 +1,7 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 
 #include <FreeRTOS.h>
 #include <semphr.h>
@@ -31,7 +32,7 @@ namespace Pinetime {
       SpiMaster& operator=(SpiMaster&&) = delete;
 
       bool Init();
-      bool Write(uint8_t pinCsn, const uint8_t* data, size_t size, void (*TransactionHook)(bool));
+      bool Write(uint8_t pinCsn, const uint8_t* data, size_t size, std::function<void(bool)> TransactionHook);
       bool Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize);
 
       bool WriteCmdAndBuffer(uint8_t pinCsn, const uint8_t* cmd, size_t cmdSize, const uint8_t* data, size_t dataSize);
@@ -50,7 +51,7 @@ namespace Pinetime {
 
       NRF_SPIM_Type* spiBaseAddress;
       uint8_t pinCsn;
-      void (*TransactionHook)(bool);
+      std::function<void(bool)> TransactionHook;
 
       SpiMaster::SpiModule spi;
       SpiMaster::Parameters params;
