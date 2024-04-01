@@ -3,17 +3,16 @@
 #include <libraries/delay/nrf_delay.h>
 #include <nrfx_log.h>
 #include "drivers/Spi.h"
-#include "drivers/PinMap.h"
 
 using namespace Pinetime::Drivers;
 
-St7789::St7789(Spi& spi) : spi {spi} {
+St7789::St7789(Spi& spi, uint8_t pinDataCommand, uint8_t pinReset) : spi {spi}, pinDataCommand {pinDataCommand}, pinReset {pinReset} {
 }
 
 void St7789::Init() {
-  nrf_gpio_cfg_output(PinMap::LcdDataCommand);
-  nrf_gpio_cfg_output(PinMap::LcdReset);
-  nrf_gpio_pin_set(PinMap::LcdReset);
+  nrf_gpio_cfg_output(pinDataCommand);
+  nrf_gpio_cfg_output(pinReset);
+  nrf_gpio_pin_set(pinReset);
   HardwareReset();
   SoftwareReset();
   SleepOut();
@@ -32,25 +31,29 @@ void St7789::Init() {
 
 void St7789::EnableDataMode(bool isStart) {
   if (isStart) {
-    nrf_gpio_pin_set(PinMap::LcdDataCommand);
+    nrf_gpio_pin_set(pinDataCommand);
   }
 }
 
 void St7789::EnableCommandMode(bool isStart) {
   if (isStart) {
-    nrf_gpio_pin_clear(PinMap::LcdDataCommand);
+    nrf_gpio_pin_clear(pinDataCommand);
   }
 }
 
-void St7789::WriteCommand(uint8_t cmd) {
-  WriteSpi(&cmd, 1, EnableCommandMode);
-}
-
 void St7789::WriteData(uint8_t data) {
-  WriteSpi(&data, 1, EnableDataMode);
+  WriteSpi(&data, 1, [this](bool isStart) {
+    EnableDataMode(isStart);
+  });
 }
 
-void St7789::WriteSpi(const uint8_t* data, size_t size, void (*TransactionHook)(bool)) {
+void St7789::WriteCommand(uint8_t cmd) {
+  WriteSpi(&cmd, 1, [this](bool isStart) {
+    EnableCommandMode(isStart);
+  });
+}
+
+void St7789::WriteSpi(const uint8_t* data, size_t size, std::function<void(bool)> TransactionHook) {
   spi.Write(data, size, TransactionHook);
 }
 
@@ -135,7 +138,9 @@ void St7789::SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
 
 void St7789::WriteToRam(const uint8_t* data, size_t size) {
   WriteCommand(static_cast<uint8_t>(Commands::WriteToRam));
-  WriteSpi(data, size, EnableDataMode);
+  WriteSpi(data, size, [this](bool isStart) {
+    EnableDataMode(isStart);
+  });
 }
 
 void St7789::SetVdv() {
@@ -166,19 +171,19 @@ void St7789::DrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height,
 }
 
 void St7789::HardwareReset() {
-  nrf_gpio_pin_clear(PinMap::LcdReset);
+  nrf_gpio_pin_clear(pinReset);
   nrf_delay_ms(10);
-  nrf_gpio_pin_set(PinMap::LcdReset);
+  nrf_gpio_pin_set(pinReset);
 }
 
 void St7789::Sleep() {
   SleepIn();
-  nrf_gpio_cfg_default(PinMap::LcdDataCommand);
+  nrf_gpio_cfg_default(pinDataCommand);
   NRF_LOG_INFO("[LCD] Sleep");
 }
 
 void St7789::Wakeup() {
-  nrf_gpio_cfg_output(PinMap::LcdDataCommand);
+  nrf_gpio_cfg_output(pinDataCommand);
   SleepOut();
   VerticalScrollStartAddress(verticalScrollingStartAddress);
   DisplayOn();
