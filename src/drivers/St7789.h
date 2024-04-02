@@ -46,9 +46,8 @@ namespace Pinetime {
       void SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
       void SetVdv();
       void WriteCommand(uint8_t cmd);
+      void WriteCommand(const uint8_t* data, size_t size);
       void WriteSpi(const uint8_t* data, size_t size, std::function<void(bool)> TransactionHook);
-      void EnableDataMode(bool isStart);
-      void EnableCommandMode(bool isStart);
 
       enum class Commands : uint8_t {
         SoftwareReset = 0x01,
@@ -68,6 +67,7 @@ namespace Pinetime {
         VdvSet = 0xc4,
       };
       void WriteData(uint8_t data);
+      void WriteData(const uint8_t* data, size_t size);
       void ColumnAddressSet();
 
       static constexpr uint16_t Width = 240;
