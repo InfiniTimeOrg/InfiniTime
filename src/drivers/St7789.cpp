@@ -29,27 +29,27 @@ void St7789::Init() {
   DisplayOn();
 }
 
-void St7789::EnableDataMode(bool isStart) {
-  if (isStart) {
-    nrf_gpio_pin_set(pinDataCommand);
-  }
-}
-
-void St7789::EnableCommandMode(bool isStart) {
-  if (isStart) {
-    nrf_gpio_pin_clear(pinDataCommand);
-  }
-}
-
 void St7789::WriteData(uint8_t data) {
-  WriteSpi(&data, 1, [this](bool isStart) {
-    EnableDataMode(isStart);
+  WriteData(&data, 1);
+}
+
+void St7789::WriteData(const uint8_t* data, size_t size) {
+  WriteSpi(data, size, [pinDataCommand = pinDataCommand](bool isStart) {
+    if (isStart) {
+      nrf_gpio_pin_set(pinDataCommand);
+    }
   });
 }
 
-void St7789::WriteCommand(uint8_t cmd) {
-  WriteSpi(&cmd, 1, [this](bool isStart) {
-    EnableCommandMode(isStart);
+void St7789::WriteCommand(uint8_t data) {
+  WriteCommand(&data, 1);
+}
+
+void St7789::WriteCommand(const uint8_t* data, size_t size) {
+  WriteSpi(data, size, [pinDataCommand = pinDataCommand](bool isStart) {
+    if (isStart) {
+      nrf_gpio_pin_clear(pinDataCommand);
+    }
   });
 }
 
@@ -138,9 +138,7 @@ void St7789::SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
 
 void St7789::WriteToRam(const uint8_t* data, size_t size) {
   WriteCommand(static_cast<uint8_t>(Commands::WriteToRam));
-  WriteSpi(data, size, [this](bool isStart) {
-    EnableDataMode(isStart);
-  });
+  WriteData(data, size);
 }
 
 void St7789::SetVdv() {
