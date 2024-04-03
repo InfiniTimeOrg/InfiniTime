@@ -41,7 +41,7 @@ HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, Syst
     lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   }
 
-  lv_label_set_text_static(label_hr, "000");
+  lv_label_set_text_static(label_hr, "---");
   lv_obj_align(label_hr, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   label_bpm = lv_label_create(lv_scr_act(), nullptr);
@@ -82,10 +82,14 @@ void HeartRate::Refresh() {
     case Controllers::HeartRateController::States::NoTouch:
     case Controllers::HeartRateController::States::NotEnoughData:
       // case Controllers::HeartRateController::States::Stopped:
-      lv_label_set_text_static(label_hr, "000");
+      lv_label_set_text_static(label_hr, "---");
       break;
     default:
-      lv_label_set_text_fmt(label_hr, "%03d", heartRateController.HeartRate());
+      if (heartRateController.HeartRate() == 0) {
+        lv_label_set_text_static(label_hr, "---");
+      } else {
+        lv_label_set_text_fmt(label_hr, "%03d", heartRateController.HeartRate());
+      }
   }
 
   lv_label_set_text_static(label_status, ToString(state));
