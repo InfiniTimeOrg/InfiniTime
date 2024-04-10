@@ -137,9 +137,6 @@ void SpiMaster::OnEndEvent() {
     spiBaseAddress->TASKS_START = 1;
   } else {
     nrf_gpio_pin_set(this->pinCsn);
-    if (this->TransactionHook != nullptr) {
-      this->TransactionHook(false);
-    }
     currentBufferAddr = 0;
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken);
@@ -170,13 +167,12 @@ void SpiMaster::PrepareRx(const uint32_t bufferAddress, const size_t size) {
   spiBaseAddress->EVENTS_END = 0;
 }
 
-bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, std::function<void(bool)> TransactionHook) {
+bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, const std::function<void()>& transactionHook) {
   if (data == nullptr)
     return false;
   auto ok = xSemaphoreTake(mutex, portMAX_DELAY);
   ASSERT(ok == true);
 
-  this->TransactionHook = TransactionHook;
   this->pinCsn = pinCsn;
 
   if (size == 1) {
@@ -185,8 +181,8 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, std::fun
     DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
   }
 
-  if (this->TransactionHook != nullptr) {
-    this->TransactionHook(true);
+  if (transactionHook != nullptr) {
+    transactionHook();
   }
   nrf_gpio_pin_clear(this->pinCsn);
 
@@ -203,9 +199,6 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, std::fun
     while (spiBaseAddress->EVENTS_END == 0)
       ;
     nrf_gpio_pin_set(this->pinCsn);
-    if (this->TransactionHook != nullptr) {
-      this->TransactionHook(false);
-    }
     currentBufferAddr = 0;
 
     DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
@@ -219,7 +212,6 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, std::fun
 bool SpiMaster::Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize) {
   xSemaphoreTake(mutex, portMAX_DELAY);
 
-  this->TransactionHook = nullptr;
   this->pinCsn = pinCsn;
   DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
   spiBaseAddress->INTENCLR = (1 << 6);
@@ -266,8 +258,6 @@ void SpiMaster::Wakeup() {
 
 bool SpiMaster::WriteCmdAndBuffer(uint8_t pinCsn, const uint8_t* cmd, size_t cmdSize, const uint8_t* data, size_t dataSize) {
   xSemaphoreTake(mutex, portMAX_DELAY);
-
-  this->TransactionHook = nullptr;
 
   this->pinCsn = pinCsn;
   DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
