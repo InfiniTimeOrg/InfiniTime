@@ -34,10 +34,8 @@ void St7789::WriteData(uint8_t data) {
 }
 
 void St7789::WriteData(const uint8_t* data, size_t size) {
-  WriteSpi(data, size, [pinDataCommand = pinDataCommand](bool isStart) {
-    if (isStart) {
-      nrf_gpio_pin_set(pinDataCommand);
-    }
+  WriteSpi(data, size, [pinDataCommand = pinDataCommand]() {
+    nrf_gpio_pin_set(pinDataCommand);
   });
 }
 
@@ -46,15 +44,13 @@ void St7789::WriteCommand(uint8_t data) {
 }
 
 void St7789::WriteCommand(const uint8_t* data, size_t size) {
-  WriteSpi(data, size, [pinDataCommand = pinDataCommand](bool isStart) {
-    if (isStart) {
-      nrf_gpio_pin_clear(pinDataCommand);
-    }
+  WriteSpi(data, size, [pinDataCommand = pinDataCommand]() {
+    nrf_gpio_pin_clear(pinDataCommand);
   });
 }
 
-void St7789::WriteSpi(const uint8_t* data, size_t size, std::function<void(bool)> TransactionHook) {
-  spi.Write(data, size, TransactionHook);
+void St7789::WriteSpi(const uint8_t* data, size_t size, const std::function<void()>& transactionHook) {
+  spi.Write(data, size, transactionHook);
 }
 
 void St7789::SoftwareReset() {
