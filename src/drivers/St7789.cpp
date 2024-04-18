@@ -49,8 +49,8 @@ void St7789::WriteCommand(const uint8_t* data, size_t size) {
   });
 }
 
-void St7789::WriteSpi(const uint8_t* data, size_t size, const std::function<void()>& transactionHook) {
-  spi.Write(data, size, transactionHook);
+void St7789::WriteSpi(const uint8_t* data, size_t size, const std::function<void()>& preTransactionHook) {
+  spi.Write(data, size, preTransactionHook);
 }
 
 void St7789::SoftwareReset() {
