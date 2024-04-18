@@ -47,7 +47,7 @@ namespace Pinetime {
       void SetVdv();
       void WriteCommand(uint8_t cmd);
       void WriteCommand(const uint8_t* data, size_t size);
-      void WriteSpi(const uint8_t* data, size_t size, const std::function<void()>& transactionHook);
+      void WriteSpi(const uint8_t* data, size_t size, const std::function<void()>& preTransactionHook);
 
       enum class Commands : uint8_t {
         SoftwareReset = 0x01,

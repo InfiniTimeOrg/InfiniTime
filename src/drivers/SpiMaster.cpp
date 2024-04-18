@@ -167,7 +167,7 @@ void SpiMaster::PrepareRx(const uint32_t bufferAddress, const size_t size) {
   spiBaseAddress->EVENTS_END = 0;
 }
 
-bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, const std::function<void()>& transactionHook) {
+bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, const std::function<void()>& preTransactionHook) {
   if (data == nullptr)
     return false;
   auto ok = xSemaphoreTake(mutex, portMAX_DELAY);
@@ -181,8 +181,8 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, const st
     DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
   }
 
-  if (transactionHook != nullptr) {
-    transactionHook();
+  if (preTransactionHook != nullptr) {
+    preTransactionHook();
   }
   nrf_gpio_pin_clear(this->pinCsn);
 
