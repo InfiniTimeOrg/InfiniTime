@@ -79,7 +79,8 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen1() {
   lv_obj_t* label = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(label, true);
   lv_label_set_text_fmt(label,
-                        "#FFFF00 InfiniTime#\n\n"
+                        "#FFFF00 InfiniTime#\n"
+                        "modified by\nCaleb Fontenot\n"
                         "#808080 Version# %ld.%ld.%ld\n"
                         "#808080 Short Ref# %s\n"
                         "#808080 Build date#\n"
