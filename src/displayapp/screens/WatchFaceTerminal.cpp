@@ -249,6 +249,7 @@ void WatchFaceTerminal::Refresh() {
         //TemperatureColor(temp);
         NRF_LOG_INFO("Color hex: %s", color);
         lv_label_set_text_fmt(weatherStatus, "[WTHR]#%s %d#°%c %s", color, RoundTemperature(temp), tempUnit, WeatherString(weatherId));
+        delete[] color;
     } else {
       lv_label_set_text_static(weatherStatus, "[WTHR]No Data");
     }
