@@ -61,6 +61,7 @@ namespace Pinetime {
         lv_obj_t* notificationIcon;
         lv_obj_t* connectState;
         lv_obj_t* weatherStatus;
+        lv_obj_t* bytesFree;
 
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;

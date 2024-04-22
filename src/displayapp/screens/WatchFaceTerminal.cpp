@@ -1,3 +1,4 @@
+#include <FreeRTOS.h>
 #include <lvgl/lvgl.h>
 #include "displayapp/screens/WatchFaceTerminal.h"
 #include "displayapp/screens/BatteryIcon.h"
@@ -41,7 +42,7 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
 
   connectState = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(connectState, true);
-  lv_obj_align(connectState, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
+  lv_obj_align(connectState, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 80);
 
   notificationIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(notificationIcon, nullptr, LV_ALIGN_IN_LEFT_MID, 0, -100);
@@ -55,7 +56,7 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
   lv_label_set_text_static(label_prompt_1, "user@watch:~ $ now");
 
   label_prompt_2 = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_prompt_2, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 80);
+  lv_obj_align(label_prompt_2, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 100);
   lv_label_set_text_static(label_prompt_2, "user@watch:~ $");
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
@@ -73,6 +74,10 @@ WatchFaceTerminal::WatchFaceTerminal(Controllers::DateTime& dateTimeController,
   weatherStatus = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_recolor(weatherStatus, true);
   lv_obj_align(weatherStatus, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 40);
+
+  bytesFree = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_recolor(bytesFree, true);
+  lv_obj_align(bytesFree, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, 60);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -254,6 +259,8 @@ void WatchFaceTerminal::Refresh() {
       lv_label_set_text_static(weatherStatus, "[WTHR]No Data");
     }
   }
+
+  lv_label_set_text_fmt(bytesFree, "[MEM] %i B Free", xPortGetFreeHeapSize());
   
 
   currentDateTime = std::chrono::time_point_cast<std::chrono::seconds>(dateTimeController.CurrentDateTime());
