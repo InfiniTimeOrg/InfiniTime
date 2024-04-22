@@ -133,23 +133,42 @@ WatchFaceTerminal::~WatchFaceTerminal() {
     }
   
     std::tuple<float, float, float> hexToFloat(int rgb) {
-      float r = ((rgb >> 16) & 0xFF) / 255;
-      float g = ((rgb >> 8) & 0xFF) / 255;
-      float b = (rgb & 0xFF) / 255;
+      float r = ((rgb >> 16) & 0xFF);
+      float g = ((rgb >> 8) & 0xFF);
+      float b = (rgb & 0xFF);
       return std::tuple<float, float, float>(r, g, b);
     }
+    
+    float normalize(float value) {
+    if (value < 0.0f) {
+        return 0.0f;
+    } else if (value > 1.0f) {
+        return 1.0f;
+    } else {
+        return value;
+    }
+}
+    
     // reference: https://dev.to/ndesmic/linear-color-gradients-from-scratch-1a0e
     
     std::tuple<float, float, float> lerp(std::tuple<float, float, float> pointA, std::tuple<float, float, float> pointB, float normalValue) {
-      return std::tuple<float, float, float>(
+      NRF_LOG_INFO("Normal value: %f", normalValue);
+      auto lerpOutput = std::tuple<float, float, float>(
         get<0>(pointA) + (get<0>(pointB) - get<0>(pointA)) * normalValue,
         get<1>(pointA) + (get<1>(pointB) - get<1>(pointA)) * normalValue,
         get<2>(pointA) + (get<2>(pointB) - get<2>(pointA)) * normalValue
+        //std::lerp(get<0>(pointA), get<0>(pointB), normalValue),
+        //std::lerp(get<1>(pointA), get<1>(pointB), normalValue),
+        //std::lerp(get<2>(pointA), get<2>(pointB), normalValue)
         );
+      NRF_LOG_INFO("pointA: %f, %f, %f", get<0>(pointA), get<1>(pointA), get<2>(pointA));
+      NRF_LOG_INFO("pointB: %f, %f, %f", get<0>(pointB), get<1>(pointB), get<2>(pointB));
+      NRF_LOG_INFO("lerp: %f, %f, %f", get<0>(lerpOutput), get<1>(lerpOutput), get<2>(lerpOutput));
+      return lerpOutput;
     }
     
     const char* TemperatureColor(int16_t temperature) {
-      const std::vector<int> colors = {0x0000ff, 0xff9b00, 0xff0000};
+      const std::vector<int> colors = {0x5555ff, 0xff9b00, 0xff0000};
       std::vector<std::tuple<float, float, float>> stops;
       for (auto colorVal: colors) {
        stops.emplace_back(hexToFloat(colorVal));
@@ -158,11 +177,15 @@ WatchFaceTerminal::~WatchFaceTerminal() {
       if (tempRounded < 0) {
          tempRounded = 1;
       }
-      // convert temperature to range between 0 and 1
-      float oldRange = (56 - 0);
-      float newRange = (1 - 0);
-      float newValue = (((tempRounded - 0) * newRange) / oldRange) + 1;
-      
+      // convert temperature to range between newMin and newMax
+      float oldMax = 100;
+      float oldMin = 0;
+      float newMax = 1;
+      float newMin = 0;
+      float oldRange = (oldMax - oldMin);
+      float newRange = (newMax - newMin);
+      float newValue = (((tempRounded - oldMin) * newRange) / oldRange) + newMin;
+      newValue = normalize(newValue);
       if (newValue <= .5f) {
         return floatToRgbHex(lerp(stops[0], stops[1], newValue));
       } else {
@@ -222,7 +245,7 @@ void WatchFaceTerminal::Refresh() {
           temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
           tempUnit = 'F';
         }
-        auto color = "ff9b00";
+        auto color = TemperatureColor(temp);
         //TemperatureColor(temp);
         NRF_LOG_INFO("Color hex: %s", color);
         lv_label_set_text_fmt(weatherStatus, "[WTHR]#%s %d#°%c %s", color, RoundTemperature(temp), tempUnit, WeatherString(weatherId));
