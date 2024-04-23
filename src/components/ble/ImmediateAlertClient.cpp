@@ -108,6 +108,6 @@ void ImmediateAlertClient::sendImmediateAlert(ImmediateAlertClient::Levels level
     return;
   }
 
-  ble_gattc_notify_custom(connectionHandle, alertLevelHandle, om);
+  ble_gattc_write_no_rsp(connectionHandle, alertLevelHandle, om);
 
 }
