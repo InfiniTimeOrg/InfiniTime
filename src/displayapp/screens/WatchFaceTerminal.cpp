@@ -173,7 +173,7 @@ WatchFaceTerminal::~WatchFaceTerminal() {
     }
     
     const char* TemperatureColor(int16_t temperature) {
-      const std::vector<int> colors = {0x5555ff, 0xff9b00, 0xff0000};
+      const std::vector<int> colors = {0x5555ff, 0x00c9ff, 0xff9b00, 0xff0000};
       std::vector<std::tuple<float, float, float>> stops;
       for (auto colorVal: colors) {
        stops.emplace_back(hexToFloat(colorVal));
@@ -183,7 +183,7 @@ WatchFaceTerminal::~WatchFaceTerminal() {
          tempRounded = 1;
       }
       // convert temperature to range between newMin and newMax
-      float oldMax = 100;
+      float oldMax = 26;
       float oldMin = 0;
       float newMax = 1;
       float newMin = 0;
@@ -191,13 +191,30 @@ WatchFaceTerminal::~WatchFaceTerminal() {
       float newRange = (newMax - newMin);
       float newValue = (((tempRounded - oldMin) * newRange) / oldRange) + newMin;
       newValue = normalize(newValue);
-      if (newValue <= .5f) {
+      if (newValue <= .50f) {
         return floatToRgbHex(lerp(stops[0], stops[1], newValue));
-      } else {
+      } else if (newValue <= .85f) {
         return floatToRgbHex(lerp(stops[1], stops[2], newValue));
-      } 
+      } else {
+        return floatToRgbHex(lerp(stops[2], stops[3], newValue));
+      }
     }
-
+int16_t testVal = 0;
+bool incDec = true;
+    void testColor() {
+     if (incDec) {
+      testVal++; 
+     } else {
+       testVal--;
+     }
+     if (testVal == 26) {
+       incDec = false;
+     }
+     if (testVal == 0) {
+       incDec = true;
+     }
+     NRF_LOG_INFO("testVal: %i", testVal);
+    }
 
 void WatchFaceTerminal::Refresh() {
   powerPresent = batteryController.IsPowerPresent();
@@ -244,14 +261,14 @@ void WatchFaceTerminal::Refresh() {
         uint8_t weatherId = static_cast<int>(optCurrentWeather->iconId);    // weather type
         NRF_LOG_INFO("Raw temp: %d", temp);
         NRF_LOG_INFO("Rounded temp: %d", RoundTemperature(temp));
+        //testColor(); //testVal * 100
+        auto color = TemperatureColor(temp); // call temperature color BEFORE unit conversion
         // unit conversion
         char tempUnit = 'C';
         if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
           temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
           tempUnit = 'F';
         }
-        auto color = TemperatureColor(temp);
-        //TemperatureColor(temp);
         NRF_LOG_INFO("Color hex: %s", color);
         lv_label_set_text_fmt(weatherStatus, "[WTHR]#%s %d#°%c %s", color, RoundTemperature(temp), tempUnit, WeatherString(weatherId));
         delete[] color;
