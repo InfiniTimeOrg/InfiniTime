@@ -98,16 +98,16 @@ void ImmediateAlertClient::Discover(uint16_t connectionHandle, std::function<voi
   ble_gattc_disc_svc_by_uuid(connectionHandle, &immediateAlertClientUuid.u, OnDiscoveryEventCallback, this);
 }
 
-void ImmediateAlertClient::sendImmediateAlert(ImmediateAlertClient::Levels level) {
+bool ImmediateAlertClient::sendImmediateAlert(ImmediateAlertClient::Levels level) {
 
   auto* om = ble_hs_mbuf_from_flat(&level, 1);
 
   uint16_t connectionHandle = systemTask.nimble().connHandle();
 
   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
-    return;
+    return false;
   }
 
   ble_gattc_write_no_rsp(connectionHandle, alertLevelHandle, om);
-
+  return true;
 }

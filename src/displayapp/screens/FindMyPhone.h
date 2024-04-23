@@ -26,6 +26,10 @@ namespace Pinetime {
 
         void OnImmediateAlertEvent(lv_obj_t* obj, lv_event_t event);
 
+        void ScheduleRestoreLabelTask();
+        void StopRestoreLabelTask();
+        void RestoreLabelText();
+
       private:
         Pinetime::Controllers::ImmediateAlertClient& immediateAlertClient;
 
@@ -39,7 +43,7 @@ namespace Pinetime {
         lv_obj_t* label_none;
         lv_obj_t* label_high;
         lv_obj_t* label_mild;
-
+        lv_task_t* taskRestoreLabelText = nullptr;
 
         Pinetime::Controllers::ImmediateAlertClient::Levels last_level;
       };
