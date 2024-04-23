@@ -60,7 +60,7 @@ namespace Pinetime {
         Smog = 8, // Mist
         Unknown = 255
       };
-
+      
       using Location = std::array<char, 33>; // 32 char + \0 (end of string)
 
       struct CurrentWeather {
@@ -111,6 +111,10 @@ namespace Pinetime {
       static int16_t CelsiusToFahrenheit(int16_t celsius) {
         return celsius * 9 / 5 + 3200;
       }
+      
+      static const char* TemperatureColor(int16_t temperature);
+      
+      static int16_t RoundTemperature(int16_t temp);
 
     private:
       // 00050000-78fc-48fe-8e23-433b3a1942d0
@@ -125,7 +129,7 @@ namespace Pinetime {
       }
 
       ble_uuid128_t weatherUuid {BaseUuid()};
-
+      
       ble_uuid128_t weatherDataCharUuid {CharUuid(0x00, 0x01)};
 
       const struct ble_gatt_chr_def characteristicDefinition[2] = {{.uuid = &weatherDataCharUuid.u,

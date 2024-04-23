@@ -11,6 +11,7 @@
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
+#include "components/ble/SimpleWeatherService.h"
 #include <nrfx_log.h>
 #include <tuple>
 #include <vector>
@@ -122,99 +123,6 @@ WatchFaceTerminal::~WatchFaceTerminal() {
     }
     }
   }
-  
-  // TODO: This code is duplicated from Weather.cpp. It would probably be better to put it in its own class, but I'm not really certain where it should go.
-  int16_t RoundTemperature(int16_t temp) {
-    return temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
-  }
-  // End of code duplication.
-  
-  //Linear gradient temperature color calculator :)
-  
-    const char* floatToRgbHex(std::tuple<float, float, float> rgb) {
-      char *rgbHex = new char[7];
-      snprintf(rgbHex, 7, "%02X%02X%02X", static_cast<int>(std::get<0>(rgb)), static_cast<int>(std::get<1>(rgb)), static_cast<int>(std::get<2>(rgb)));
-      return rgbHex;
-    }
-  
-    std::tuple<float, float, float> hexToFloat(int rgb) {
-      float r = ((rgb >> 16) & 0xFF);
-      float g = ((rgb >> 8) & 0xFF);
-      float b = (rgb & 0xFF);
-      return std::tuple<float, float, float>(r, g, b);
-    }
-    
-    float normalize(float value) {
-    if (value < 0.0f) {
-        return 0.0f;
-    } else if (value > 1.0f) {
-        return 1.0f;
-    } else {
-        return value;
-    }
-}
-    
-    // reference: https://dev.to/ndesmic/linear-color-gradients-from-scratch-1a0e
-    
-    std::tuple<float, float, float> lerp(std::tuple<float, float, float> pointA, std::tuple<float, float, float> pointB, float normalValue) {
-      NRF_LOG_INFO("Normal value: %f", normalValue);
-      auto lerpOutput = std::tuple<float, float, float>(
-        get<0>(pointA) + (get<0>(pointB) - get<0>(pointA)) * normalValue,
-        get<1>(pointA) + (get<1>(pointB) - get<1>(pointA)) * normalValue,
-        get<2>(pointA) + (get<2>(pointB) - get<2>(pointA)) * normalValue
-        //std::lerp(get<0>(pointA), get<0>(pointB), normalValue),
-        //std::lerp(get<1>(pointA), get<1>(pointB), normalValue),
-        //std::lerp(get<2>(pointA), get<2>(pointB), normalValue)
-        );
-      NRF_LOG_INFO("pointA: %f, %f, %f", get<0>(pointA), get<1>(pointA), get<2>(pointA));
-      NRF_LOG_INFO("pointB: %f, %f, %f", get<0>(pointB), get<1>(pointB), get<2>(pointB));
-      NRF_LOG_INFO("lerp: %f, %f, %f", get<0>(lerpOutput), get<1>(lerpOutput), get<2>(lerpOutput));
-      return lerpOutput;
-    }
-    
-    const char* TemperatureColor(int16_t temperature) {
-      const std::vector<int> colors = {0x5555ff, 0x00c9ff, 0xff9b00, 0xff0000};
-      std::vector<std::tuple<float, float, float>> stops;
-      for (auto colorVal: colors) {
-       stops.emplace_back(hexToFloat(colorVal));
-      }
-      int tempRounded = RoundTemperature(temperature);
-      if (tempRounded < 0) {
-         tempRounded = 1;
-      }
-      // convert temperature to range between newMin and newMax
-      float oldMax = 26;
-      float oldMin = 0;
-      float newMax = 1;
-      float newMin = 0;
-      float oldRange = (oldMax - oldMin);
-      float newRange = (newMax - newMin);
-      float newValue = (((tempRounded - oldMin) * newRange) / oldRange) + newMin;
-      newValue = normalize(newValue);
-      if (newValue <= .50f) {
-        return floatToRgbHex(lerp(stops[0], stops[1], newValue));
-      } else if (newValue <= .85f) {
-        return floatToRgbHex(lerp(stops[1], stops[2], newValue));
-      } else {
-        return floatToRgbHex(lerp(stops[2], stops[3], newValue));
-      }
-    }
-int16_t testVal = 0;
-bool incDec = true;
-    void testColor() {
-     if (incDec) {
-      testVal++; 
-     } else {
-       testVal--;
-     }
-     if (testVal == 26) {
-       incDec = false;
-     }
-     if (testVal == 0) {
-       incDec = true;
-     }
-     NRF_LOG_INFO("testVal: %i", testVal);
-    }
 
 void WatchFaceTerminal::Refresh() {
   powerPresent = batteryController.IsPowerPresent();
@@ -260,9 +168,9 @@ void WatchFaceTerminal::Refresh() {
         int16_t temp = optCurrentWeather->temperature; // current temperature
         uint8_t weatherId = static_cast<int>(optCurrentWeather->iconId);    // weather type
         NRF_LOG_INFO("Raw temp: %d", temp);
-        NRF_LOG_INFO("Rounded temp: %d", RoundTemperature(temp));
+        NRF_LOG_INFO("Rounded temp: %d", Controllers::SimpleWeatherService::RoundTemperature(temp));
         //testColor(); //testVal * 100
-        auto color = TemperatureColor(temp); // call temperature color BEFORE unit conversion
+        auto color = Controllers::SimpleWeatherService::TemperatureColor(temp); // call temperature color BEFORE unit conversion
         // unit conversion
         char tempUnit = 'C';
         if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
@@ -270,7 +178,7 @@ void WatchFaceTerminal::Refresh() {
           tempUnit = 'F';
         }
         NRF_LOG_INFO("Color hex: %s", color);
-        lv_label_set_text_fmt(weatherStatus, "[WTHR]#%s %d#°%c %s", color, RoundTemperature(temp), tempUnit, WeatherString(weatherId));
+        lv_label_set_text_fmt(weatherStatus, "[WTHR]#%s %d#°%c %s", color, Controllers::SimpleWeatherService::RoundTemperature(temp), tempUnit, WeatherString(weatherId));
         delete[] color;
     } else {
       lv_label_set_text_static(weatherStatus, "[WTHR]No Data");
