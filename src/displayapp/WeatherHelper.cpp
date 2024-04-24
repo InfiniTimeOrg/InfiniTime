@@ -32,17 +32,17 @@ using namespace Pinetime::Applications;
       return temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
     }
   
-    const char* floatToRgbHex(std::tuple<float, float, float> rgb) {
+    const char* WeatherHelper::floatToRgbHex(lv_color_t rgb) {
       char *rgbHex = new char[7];
-      snprintf(rgbHex, 7, "%02X%02X%02X", static_cast<int>(std::get<0>(rgb)), static_cast<int>(std::get<1>(rgb)), static_cast<int>(std::get<2>(rgb)));
+      snprintf(rgbHex, 7, "%02X%02X%02X", rgb.red, rgb.green, rgb.blue);
       return rgbHex;
     }
   
-    std::tuple<float, float, float> hexToFloat(int rgb) {
-      float r = ((rgb >> 16) & 0xFF);
-      float g = ((rgb >> 8) & 0xFF);
-      float b = (rgb & 0xFF);
-      return std::tuple<float, float, float>(r, g, b);
+    lv_color_t hexToFloat(int rgb) {
+      uint8_t r = ((rgb >> 16) & 0xFF);
+      uint8_t g = ((rgb >> 8) & 0xFF);
+      uint8_t b = (rgb & 0xFF);
+      return LV_COLOR_MAKE(r, g, b);
     }
     
     float normalize(float value) {
@@ -54,28 +54,33 @@ using namespace Pinetime::Applications;
         return value;
     }
 }
-    lv_color_t lerp(lv_color_t pointA, lv_color1_t pointB, float normalValue) {
+    lv_color_t lerp(lv_color_t pointA, lv_color_t pointB, float normalValue) {
     // reference: https://dev.to/ndesmic/linear-color-gradients-from-scratch-1a0e
     //std::tuple<float, float, float> lerp(std::tuple<float, float, float> pointA, std::tuple<float, float, float> pointB, float normalValue) {
       NRF_LOG_INFO("Normal value: %f", normalValue);
-      uint8_t red = pointA.red + (pointB,red - pointA.red) * normalValue;
+      auto redA = LV_COLOR_GET_R(pointA);
+      auto redB = LV_COLOR_GET_R(pointA);
+      auto greenA = LV_COLOR_GET_G(pointA);
+      auto greenB = LV_COLOR_GET_G(pointA);
+      auto blueA = LV_COLOR_GET_B(pointA);
+      auto blueB = LV_COLOR_GET_B(pointA);
       auto lerpOutput = LV_COLOR_MAKE(
-
-        pointA.blue + (pointB.blue - pointA.blue) * normalValue,
-        pointA.green + (pointB.green - pointA.green) * normalValue
+        redA + (redB - redA) * normalValue,
+        greenA + (greenB - greenA) * normalValue,
+        blueA + (blueB - blueA) * normalValue
         //std::lerp(get<0>(pointA), get<0>(pointB), normalValue),
         //std::lerp(get<1>(pointA), get<1>(pointB), normalValue),
         //std::lerp(get<2>(pointA), get<2>(pointB), normalValue)
         );
-      NRF_LOG_INFO("pointA: %f, %f, %f", get<0>(pointA), get<1>(pointA), get<2>(pointA));
-      NRF_LOG_INFO("pointB: %f, %f, %f", get<0>(pointB), get<1>(pointB), get<2>(pointB));
-      NRF_LOG_INFO("lerp: %f, %f, %f", get<0>(lerpOutput), get<1>(lerpOutput), get<2>(lerpOutput));
+      NRF_LOG_INFO("pointA: %f, %f, %f", redA, greenA, blueA);
+      NRF_LOG_INFO("pointB: %f, %f, %f", redB, greenB, blueB);
+      NRF_LOG_INFO("lerpOutput: %f, %f, %f", LV_COLOR_GET_R(lerpOutput), LV_COLOR_GET_GlerpOutput), LV_COLOR_GET_B(lerpOutput));
       return lerpOutput;
     }
     
-    const char* WeatherHelper::TemperatureColor(int16_t temperature) {
+    lv_color_t WeatherHelper::TemperatureColor(int16_t temperature) {
       const std::vector<int> colors = {0x5555ff, 0x00c9ff, 0xff9b00, 0xff0000};
-      std::vector<std::tuple<float, float, float>> stops;
+      std::vector<lv_color_t> stops;
       for (auto colorVal: colors) {
        stops.emplace_back(hexToFloat(colorVal));
       }

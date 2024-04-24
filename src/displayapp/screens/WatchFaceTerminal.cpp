@@ -170,7 +170,7 @@ void WatchFaceTerminal::Refresh() {
         NRF_LOG_INFO("Raw temp: %d", temp);
         NRF_LOG_INFO("Rounded temp: %d", WeatherHelper::RoundTemperature(temp));
         //testColor(); //testVal * 100
-        auto color = WeatherHelper::TemperatureColor(temp); // call temperature color BEFORE unit conversion
+        auto color = WeatherHelper::floatToRgbHex(WeatherHelper::TemperatureColor(temp)); // call temperature color BEFORE unit conversion
         // unit conversion
         char tempUnit = 'C';
         if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {

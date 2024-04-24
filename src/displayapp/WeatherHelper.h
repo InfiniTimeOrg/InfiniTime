@@ -23,7 +23,8 @@ namespace Pinetime {
       class WeatherHelper {
         public:
             static int16_t RoundTemperature(int16_t temp);
-            static const char* TemperatureColor(int16_t temperature);
+            static const lv_color_t TemperatureColor(int16_t temperature);
+            static const char* floatToRgbHex(lv_color_t rgb);
       };
     }
  }
