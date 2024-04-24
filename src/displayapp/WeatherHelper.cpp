@@ -54,12 +54,13 @@ using namespace Pinetime::Applications;
         return value;
     }
 }
-    lv_color_t lerp(lv_color_t pointA, lv_color_t pointB float normalValue) {
+    lv_color_t lerp(lv_color_t pointA, lv_color1_t pointB, float normalValue) {
     // reference: https://dev.to/ndesmic/linear-color-gradients-from-scratch-1a0e
     //std::tuple<float, float, float> lerp(std::tuple<float, float, float> pointA, std::tuple<float, float, float> pointB, float normalValue) {
       NRF_LOG_INFO("Normal value: %f", normalValue);
-      auto lerpOutput = lv_color_make(
-        pointA.red + (pointB,red - pointA.red) * normalValue,
+      uint8_t red = pointA.red + (pointB,red - pointA.red) * normalValue;
+      auto lerpOutput = LV_COLOR_MAKE(
+
         pointA.blue + (pointB.blue - pointA.blue) * normalValue,
         pointA.green + (pointB.green - pointA.green) * normalValue
         //std::lerp(get<0>(pointA), get<0>(pointB), normalValue),
