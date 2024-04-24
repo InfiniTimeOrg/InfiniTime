@@ -364,6 +364,7 @@ list(APPEND SOURCE_FILES
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
         displayapp/DisplayApp.cpp
+        displayapp/WeatherHelper.cpp
         displayapp/screens/Screen.cpp
         displayapp/screens/Tile.cpp
         displayapp/screens/InfiniPaint.cpp
@@ -586,6 +587,7 @@ set(INCLUDE_FILES
         logging/Logger.h
         logging/NrfLogger.h
         displayapp/DisplayApp.h
+        displayapp/WeatherHelper.h
         displayapp/Messages.h
         displayapp/TouchEvents.h
         displayapp/screens/Screen.h

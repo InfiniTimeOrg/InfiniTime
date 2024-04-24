@@ -11,7 +11,7 @@
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
 #include "components/settings/Settings.h"
-#include "components/ble/SimpleWeatherService.h"
+#include "displayapp/WeatherHelper.h"
 #include <nrfx_log.h>
 #include <tuple>
 #include <vector>
@@ -168,9 +168,9 @@ void WatchFaceTerminal::Refresh() {
         int16_t temp = optCurrentWeather->temperature; // current temperature
         uint8_t weatherId = static_cast<int>(optCurrentWeather->iconId);    // weather type
         NRF_LOG_INFO("Raw temp: %d", temp);
-        NRF_LOG_INFO("Rounded temp: %d", Controllers::SimpleWeatherService::RoundTemperature(temp));
+        NRF_LOG_INFO("Rounded temp: %d", WeatherHelper::RoundTemperature(temp));
         //testColor(); //testVal * 100
-        auto color = Controllers::SimpleWeatherService::TemperatureColor(temp); // call temperature color BEFORE unit conversion
+        auto color = WeatherHelper::TemperatureColor(temp); // call temperature color BEFORE unit conversion
         // unit conversion
         char tempUnit = 'C';
         if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
@@ -178,7 +178,7 @@ void WatchFaceTerminal::Refresh() {
           tempUnit = 'F';
         }
         NRF_LOG_INFO("Color hex: %s", color);
-        lv_label_set_text_fmt(weatherStatus, "[WTHR]#%s %d#°%c %s", color, Controllers::SimpleWeatherService::RoundTemperature(temp), tempUnit, WeatherString(weatherId));
+        lv_label_set_text_fmt(weatherStatus, "[WTHR]#%s %d#°%c %s", color, WeatherHelper::RoundTemperature(temp), tempUnit, WeatherString(weatherId));
         delete[] color;
     } else {
       lv_label_set_text_static(weatherStatus, "[WTHR]No Data");
