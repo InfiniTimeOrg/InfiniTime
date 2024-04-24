@@ -1,4 +1,5 @@
 #include "displayapp/screens/Weather.h"
+#include "displayapp/WeatherHelper.h"
 #include <lvgl/lvgl.h>
 #include "components/ble/SimpleWeatherService.h"
 #include "components/datetime/DateTimeController.h"
@@ -10,6 +11,7 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
+  /*
   lv_color_t TemperatureColor(int16_t temperature) {
     if (temperature <= 0) { // freezing
       return Colors::blue;
@@ -20,6 +22,7 @@ namespace {
     }
     return Colors::orange; // normal
   }
+  */
 
   uint8_t TemperatureStyle(int16_t temperature) {
     if (temperature <= 0) { // freezing
@@ -30,10 +33,6 @@ namespace {
       return LV_TABLE_PART_CELL6;
     }
     return LV_TABLE_PART_CELL5; // normal
-  }
-
-  int16_t RoundTemperature(int16_t temp) {
-    return temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
   }
 }
 
@@ -133,9 +132,9 @@ void Weather::Refresh() {
       }
       lv_label_set_text(icon, Symbols::GetSymbol(optCurrentWeather->iconId));
       lv_label_set_text(condition, Symbols::GetCondition(optCurrentWeather->iconId));
-      lv_label_set_text_fmt(temperature, "%d°%c", RoundTemperature(temp), tempUnit);
-      lv_label_set_text_fmt(minTemperature, "%d°", RoundTemperature(minTemp));
-      lv_label_set_text_fmt(maxTemperature, "%d°", RoundTemperature(maxTemp));
+      lv_label_set_text_fmt(temperature, "%d°%c", WeatherHelper::RoundTemperature(temp), tempUnit);
+      lv_label_set_text_fmt(minTemperature, "%d°", WeatherHelper::RoundTemperature(minTemp));
+      lv_label_set_text_fmt(maxTemperature, "%d°", WeatherHelper::RoundTemperature(maxTemp));
     } else {
       lv_label_set_text(icon, "");
       lv_label_set_text(condition, "");
@@ -165,8 +164,8 @@ void Weather::Refresh() {
         if (wday > 7) {
           wday -= 7;
         }
-        maxTemp = RoundTemperature(maxTemp);
-        minTemp = RoundTemperature(minTemp);
+        maxTemp = WeatherHelper::RoundTemperature(maxTemp);
+        minTemp = WeatherHelper::RoundTemperature(minTemp);
         const char* dayOfWeek = Controllers::DateTime::DayOfWeekShortToStringLow(static_cast<Controllers::DateTime::Days>(wday));
         lv_table_set_cell_value(forecast, 0, i, dayOfWeek);
         lv_table_set_cell_value(forecast, 1, i, Symbols::GetSymbol(optCurrentForecast->days[i].iconId));
