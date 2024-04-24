@@ -34,15 +34,18 @@ using namespace Pinetime::Applications;
   
     const char* WeatherHelper::floatToRgbHex(lv_color_t rgb) {
       char *rgbHex = new char[7];
-      snprintf(rgbHex, 7, "%02X%02X%02X", rgb.red, rgb.green, rgb.blue);
+      snprintf(rgbHex, 7, "%02X%02X%02X", LV_COLOR_GET_R(rgb), LV_COLOR_GET_G(rgb), LV_COLOR_GET_B(rgb));
       return rgbHex;
     }
   
     lv_color_t hexToFloat(int rgb) {
-      uint8_t r = ((rgb >> 16) & 0xFF);
-      uint8_t g = ((rgb >> 8) & 0xFF);
-      uint8_t b = (rgb & 0xFF);
-      return LV_COLOR_MAKE(r, g, b);
+      //uint16_t r = ((rgb >> 16) & 0xFF);
+      //uint16_t g = ((rgb >> 8) & 0xFF);
+      //int16_t b = (rgb & 0xFF);
+      //NRF_LOG_INFO("hexToFloat: %i, %i, %i", r, g, b);
+      lv_color_t outputLv = lv_color_hex3(rgb);
+      NRF_LOG_INFO("output lv struct: %i, %i, %i", LV_COLOR_GET_R(outputLv), LV_COLOR_GET_G(outputLv), LV_COLOR_GET_B(outputLv));
+      return outputLv;
     }
     
     float normalize(float value) {
@@ -54,31 +57,28 @@ using namespace Pinetime::Applications;
         return value;
     }
 }
-    lv_color_t lerp(lv_color_t pointA, lv_color_t pointB, float normalValue) {
+    const lv_color_t lerp(lv_color_t pointA, lv_color_t pointB, float normalValue) {
     // reference: https://dev.to/ndesmic/linear-color-gradients-from-scratch-1a0e
     //std::tuple<float, float, float> lerp(std::tuple<float, float, float> pointA, std::tuple<float, float, float> pointB, float normalValue) {
       NRF_LOG_INFO("Normal value: %f", normalValue);
       auto redA = LV_COLOR_GET_R(pointA);
-      auto redB = LV_COLOR_GET_R(pointA);
+      auto redB = LV_COLOR_GET_R(pointB);
       auto greenA = LV_COLOR_GET_G(pointA);
-      auto greenB = LV_COLOR_GET_G(pointA);
+      auto greenB = LV_COLOR_GET_G(pointB);
       auto blueA = LV_COLOR_GET_B(pointA);
-      auto blueB = LV_COLOR_GET_B(pointA);
-      auto lerpOutput = LV_COLOR_MAKE(
-        redA + (redB - redA) * normalValue,
-        greenA + (greenB - greenA) * normalValue,
-        blueA + (blueB - blueA) * normalValue
-        //std::lerp(get<0>(pointA), get<0>(pointB), normalValue),
-        //std::lerp(get<1>(pointA), get<1>(pointB), normalValue),
-        //std::lerp(get<2>(pointA), get<2>(pointB), normalValue)
-        );
-      NRF_LOG_INFO("pointA: %f, %f, %f", redA, greenA, blueA);
-      NRF_LOG_INFO("pointB: %f, %f, %f", redB, greenB, blueB);
-      NRF_LOG_INFO("lerpOutput: %f, %f, %f", LV_COLOR_GET_R(lerpOutput), LV_COLOR_GET_GlerpOutput), LV_COLOR_GET_B(lerpOutput));
+      auto blueB = LV_COLOR_GET_B(pointB);
+
+      int outputRed = (redA + (redB - redA) * normalValue);
+      int outputGreen = (greenA + (greenB - greenA) * normalValue);
+      int outputBlue = (blueA + (blueB - blueA) * normalValue);
+      auto lerpOutput = LV_COLOR_MAKE(outputRed, outputGreen, outputBlue);
+      NRF_LOG_INFO("pointA: %i, %i, %i", redA, greenA, blueA);
+      NRF_LOG_INFO("pointB: %i, %i, %i", redB, greenB, blueB);
+      NRF_LOG_INFO("lerpOutput: %i, %i, %i", LV_COLOR_GET_R(lerpOutput), LV_COLOR_GET_G(lerpOutput), LV_COLOR_GET_B(lerpOutput));
       return lerpOutput;
     }
     
-    lv_color_t WeatherHelper::TemperatureColor(int16_t temperature) {
+    const lv_color_t WeatherHelper::TemperatureColor(int16_t temperature) {
       const std::vector<int> colors = {0x5555ff, 0x00c9ff, 0xff9b00, 0xff0000};
       std::vector<lv_color_t> stops;
       for (auto colorVal: colors) {
@@ -98,10 +98,10 @@ using namespace Pinetime::Applications;
       float newValue = (((tempRounded - oldMin) * newRange) / oldRange) + newMin;
       newValue = normalize(newValue);
       if (newValue <= .33f) {
-        return floatToRgbHex(lerp(stops[0], stops[1], newValue));
+        return lerp(stops[0], stops[1], newValue);
       } else if (newValue <= .66f) {
-        return floatToRgbHex(lerp(stops[1], stops[2], newValue));
+        return lerp(stops[1], stops[2], newValue);
       } else {
-        return floatToRgbHex(lerp(stops[2], stops[3], newValue));
+        return lerp(stops[2], stops[3], newValue);
       }
     }

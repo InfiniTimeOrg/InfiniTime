@@ -17,6 +17,7 @@
 */
 
 #include <FreeRTOS.h>
+#include <lvgl/src/lv_misc/lv_color.h>
 
 namespace Pinetime {
   namespace Applications {

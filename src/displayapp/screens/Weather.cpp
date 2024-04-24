@@ -133,8 +133,11 @@ void Weather::Refresh() {
       lv_label_set_text(icon, Symbols::GetSymbol(optCurrentWeather->iconId));
       lv_label_set_text(condition, Symbols::GetCondition(optCurrentWeather->iconId));
       lv_label_set_text_fmt(temperature, "%d°%c", WeatherHelper::RoundTemperature(temp), tempUnit);
+
       lv_label_set_text_fmt(minTemperature, "%d°", WeatherHelper::RoundTemperature(minTemp));
+      //color = WeatherHelper::floatToRgbHex(WeatherHelper::TemperatureColor(maxTemp));
       lv_label_set_text_fmt(maxTemperature, "%d°", WeatherHelper::RoundTemperature(maxTemp));
+      //delete[] color;
     } else {
       lv_label_set_text(icon, "");
       lv_label_set_text(condition, "");
@@ -180,8 +183,11 @@ void Weather::Refresh() {
           maxPadding[0] = '\0';
           minPadding[diff] = '\0';
         }
-        lv_table_set_cell_value_fmt(forecast, 2, i, "%s%d", maxPadding, maxTemp);
-        lv_table_set_cell_value_fmt(forecast, 3, i, "%s%d", minPadding, minTemp);
+        auto color = WeatherHelper::floatToRgbHex(WeatherHelper::TemperatureColor(minTemp));
+        lv_table_set_cell_value_fmt(forecast, 2, i, "# #%s %s%d", color, maxPadding, maxTemp);
+        color = WeatherHelper::floatToRgbHex(WeatherHelper::TemperatureColor(maxTemp));
+        lv_table_set_cell_value_fmt(forecast, 3, i, "# #%s %s%d", color, minPadding, minTemp);
+        delete[] color;
       }
     } else {
       for (int i = 0; i < Controllers::SimpleWeatherService::MaxNbForecastDays; i++) {
