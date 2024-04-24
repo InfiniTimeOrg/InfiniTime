@@ -18,6 +18,7 @@
 
 #include "WeatherHelper.h"
 #include <FreeRTOS.h>
+#include <lvgl/src/lv_misc/lv_color.h>
 #include <tuple>
 #include <vector>
 #include <cmath>
@@ -53,14 +54,14 @@ using namespace Pinetime::Applications;
         return value;
     }
 }
-    
+    lv_color_t lerp(lv_color_t pointA, lv_color_t pointB float normalValue) {
     // reference: https://dev.to/ndesmic/linear-color-gradients-from-scratch-1a0e
-    std::tuple<float, float, float> lerp(std::tuple<float, float, float> pointA, std::tuple<float, float, float> pointB, float normalValue) {
+    //std::tuple<float, float, float> lerp(std::tuple<float, float, float> pointA, std::tuple<float, float, float> pointB, float normalValue) {
       NRF_LOG_INFO("Normal value: %f", normalValue);
-      auto lerpOutput = std::tuple<float, float, float>(
-        get<0>(pointA) + (get<0>(pointB) - get<0>(pointA)) * normalValue,
-        get<1>(pointA) + (get<1>(pointB) - get<1>(pointA)) * normalValue,
-        get<2>(pointA) + (get<2>(pointB) - get<2>(pointA)) * normalValue
+      auto lerpOutput = lv_color_make(
+        pointA.red + (pointB,red - pointA.red) * normalValue,
+        pointA.blue + (pointB.blue - pointA.blue) * normalValue,
+        pointA.green + (pointB.green - pointA.green) * normalValue
         //std::lerp(get<0>(pointA), get<0>(pointB), normalValue),
         //std::lerp(get<1>(pointA), get<1>(pointB), normalValue),
         //std::lerp(get<2>(pointA), get<2>(pointB), normalValue)
