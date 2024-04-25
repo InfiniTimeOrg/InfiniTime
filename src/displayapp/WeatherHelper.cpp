@@ -25,27 +25,31 @@
 #include <cstdint>
 #include <cstdio>
 #include <nrfx_log.h>
+
 using namespace Pinetime::Applications;
     //Linear gradient temperature color calculator :)
-
+    
     int16_t WeatherHelper::RoundTemperature(int16_t temp) {
       return temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
     }
+    std::tuple<int, int, int> rgb565to888(int r, int g, int b) {
+        return std::tuple<int, int, int>(
+        ( r * 527 + 23 ) >> 6,
+        ( g * 259 + 33 ) >> 6,
+        ( b * 527 + 23 ) >> 6
+                                    );
+    }
   
     const char* WeatherHelper::floatToRgbHex(lv_color_t rgb) {
+        
+      std::tuple<int, int, int> tuple = rgb565to888(LV_COLOR_GET_R(rgb), LV_COLOR_GET_G(rgb), LV_COLOR_GET_B(rgb));
       char *rgbHex = new char[7];
-      snprintf(rgbHex, 7, "%02X%02X%02X", LV_COLOR_GET_R(rgb), LV_COLOR_GET_G(rgb), LV_COLOR_GET_B(rgb));
+      snprintf(rgbHex, 7, "%02X%02X%02X", std::get<0>(tuple), std::get<1>(tuple), std::get<2>(tuple));
       return rgbHex;
     }
   
     lv_color_t hexToFloat(int rgb) {
-      //uint16_t r = ((rgb >> 16) & 0xFF);
-      //uint16_t g = ((rgb >> 8) & 0xFF);
-      //int16_t b = (rgb & 0xFF);
-      //NRF_LOG_INFO("hexToFloat: %i, %i, %i", r, g, b);
-      lv_color_t outputLv = lv_color_hex3(rgb);
-      NRF_LOG_INFO("output lv struct: %i, %i, %i", LV_COLOR_GET_R(outputLv), LV_COLOR_GET_G(outputLv), LV_COLOR_GET_B(outputLv));
-      return outputLv;
+      return lv_color_hex(rgb);
     }
     
     float normalize(float value) {
@@ -57,16 +61,19 @@ using namespace Pinetime::Applications;
         return value;
     }
 }
-    const lv_color_t lerp(lv_color_t pointA, lv_color_t pointB, float normalValue) {
+
     // reference: https://dev.to/ndesmic/linear-color-gradients-from-scratch-1a0e
-    //std::tuple<float, float, float> lerp(std::tuple<float, float, float> pointA, std::tuple<float, float, float> pointB, float normalValue) {
+    const lv_color_t lerp(lv_color_t pointA, lv_color_t pointB, float normalValue) {
+      std::tuple<int, int, int> pointAtuple = rgb565to888(LV_COLOR_GET_R(pointA), LV_COLOR_GET_G(pointA), LV_COLOR_GET_B(pointA));
+      std::tuple<int, int, int> pointBtuple = rgb565to888(LV_COLOR_GET_R(pointB), LV_COLOR_GET_G(pointB), LV_COLOR_GET_B(pointB));
+        
       NRF_LOG_INFO("Normal value: %f", normalValue);
-      auto redA = LV_COLOR_GET_R(pointA);
-      auto redB = LV_COLOR_GET_R(pointB);
-      auto greenA = LV_COLOR_GET_G(pointA);
-      auto greenB = LV_COLOR_GET_G(pointB);
-      auto blueA = LV_COLOR_GET_B(pointA);
-      auto blueB = LV_COLOR_GET_B(pointB);
+      auto redA = std::get<0>(pointAtuple);
+      auto redB = std::get<0>(pointBtuple);
+      auto greenA = std::get<1>(pointAtuple);
+      auto greenB = std::get<1>(pointBtuple);
+      auto blueA = std::get<2>(pointAtuple);
+      auto blueB = std::get<2>(pointBtuple);
 
       int outputRed = (redA + (redB - redA) * normalValue);
       int outputGreen = (greenA + (greenB - greenA) * normalValue);
