@@ -20,8 +20,6 @@
 #include <FreeRTOS.h>
 #include <lvgl/src/lv_misc/lv_color.h>
 #include <tuple>
-#include <vector>
-#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <nrfx_log.h>
