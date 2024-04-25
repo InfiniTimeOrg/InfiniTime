@@ -33,15 +33,14 @@ using namespace Pinetime::Applications;
       return temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
     }
     std::tuple<int, int, int> rgb565to888(int r, int g, int b) {
-        return std::tuple<int, int, int>(
+        return {
         ( r * 527 + 23 ) >> 6,
         ( g * 259 + 33 ) >> 6,
         ( b * 527 + 23 ) >> 6
-                                    );
+      };
     }
   
     const char* WeatherHelper::floatToRgbHex(lv_color_t rgb) {
-        
       std::tuple<int, int, int> tuple = rgb565to888(LV_COLOR_GET_R(rgb), LV_COLOR_GET_G(rgb), LV_COLOR_GET_B(rgb));
       char *rgbHex = new char[7];
       snprintf(rgbHex, 7, "%02X%02X%02X", std::get<0>(tuple), std::get<1>(tuple), std::get<2>(tuple));
@@ -64,16 +63,9 @@ using namespace Pinetime::Applications;
 
     // reference: https://dev.to/ndesmic/linear-color-gradients-from-scratch-1a0e
     const lv_color_t lerp(lv_color_t pointA, lv_color_t pointB, float normalValue) {
-      std::tuple<int, int, int> pointAtuple = rgb565to888(LV_COLOR_GET_R(pointA), LV_COLOR_GET_G(pointA), LV_COLOR_GET_B(pointA));
-      std::tuple<int, int, int> pointBtuple = rgb565to888(LV_COLOR_GET_R(pointB), LV_COLOR_GET_G(pointB), LV_COLOR_GET_B(pointB));
-        
+      auto [redA, greenA, blueA] = rgb565to888(LV_COLOR_GET_R(pointA), LV_COLOR_GET_G(pointA), LV_COLOR_GET_B(pointA));
+      auto [redB, greenB, blueB] = rgb565to888(LV_COLOR_GET_R(pointB), LV_COLOR_GET_G(pointB), LV_COLOR_GET_B(pointB));
       NRF_LOG_INFO("Normal value: %f", normalValue);
-      auto redA = std::get<0>(pointAtuple);
-      auto redB = std::get<0>(pointBtuple);
-      auto greenA = std::get<1>(pointAtuple);
-      auto greenB = std::get<1>(pointBtuple);
-      auto blueA = std::get<2>(pointAtuple);
-      auto blueB = std::get<2>(pointBtuple);
 
       int outputRed = (redA + (redB - redA) * normalValue);
       int outputGreen = (greenA + (greenB - greenA) * normalValue);
@@ -86,7 +78,7 @@ using namespace Pinetime::Applications;
     }
     
     const lv_color_t WeatherHelper::TemperatureColor(int16_t temperature) {
-      const std::vector<int> colors = {0x5555ff, 0x00c9ff, 0xff9b00, 0xff0000};
+      const std::vector<int> colors = {0x5555ff, 0x00c9ff, 0x00ff3e, 0xff9b00, 0xff0000};
       std::vector<lv_color_t> stops;
       for (auto colorVal: colors) {
        stops.emplace_back(hexToFloat(colorVal));
@@ -96,7 +88,7 @@ using namespace Pinetime::Applications;
          tempRounded = 1;
       }
       // convert temperature to range between newMin and newMax
-      float oldMax = 50;
+      float oldMax = 40;
       float oldMin = 0;
       float newMax = 1;
       float newMin = 0;
@@ -104,11 +96,13 @@ using namespace Pinetime::Applications;
       float newRange = (newMax - newMin);
       float newValue = (((tempRounded - oldMin) * newRange) / oldRange) + newMin;
       newValue = normalize(newValue);
-      if (newValue <= .33f) {
+      if (newValue <= .25f) {
         return lerp(stops[0], stops[1], newValue);
-      } else if (newValue <= .66f) {
+      } else if (newValue <= .50f) {
         return lerp(stops[1], stops[2], newValue);
-      } else {
+      } else if (newValue <= .75f) {
         return lerp(stops[2], stops[3], newValue);
+      } else {
+        return lerp(stops[3], stops[4], newValue);
       }
     }
