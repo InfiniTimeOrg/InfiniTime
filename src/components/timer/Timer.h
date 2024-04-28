@@ -21,9 +21,6 @@ namespace Pinetime {
 
       std::chrono::milliseconds GetTimeRemaining();
 
-      std::chrono::milliseconds GetLast();
-      void ResetLast();
-
       typedef enum TimerState { Running, Stopped, Paused } TimerState;
 
       TimerState GetState();
@@ -31,7 +28,6 @@ namespace Pinetime {
     private:
       TimerHandle_t timer;
 
-      std::chrono::milliseconds lastTimer;
       std::chrono::milliseconds pausedAtTimer;
 
       TimerState state;

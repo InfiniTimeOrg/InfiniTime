@@ -22,6 +22,7 @@ namespace Pinetime::Applications {
       void ToggleRunning();
       void ButtonPressed();
       void MaskReset();
+      std::chrono::seconds GetCounters();
 
     private:
       void SetInterfaceRunning();

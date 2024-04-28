@@ -4,7 +4,6 @@ using namespace Pinetime::Controllers;
 
 Timer::Timer(void* const timerData, TimerCallbackFunction_t timerCallbackFunction) {
   pausedAtTimer = std::chrono::seconds(0);
-  lastTimer = std::chrono::seconds(0);
   state = Stopped;
   timer = xTimerCreate("Timer", 1, pdFALSE, timerData, timerCallbackFunction);
 }
@@ -21,21 +20,12 @@ std::chrono::milliseconds Timer::GetTimeRemaining() {
   return std::chrono::milliseconds(0);
 }
 
-std::chrono::milliseconds Timer::GetLast() {
-  return lastTimer;
-}
-
-void Timer::ResetLast() {
-  lastTimer = std::chrono::seconds(0);
-}
-
 Timer::TimerState Timer::GetState() {
   return state;
 }
 
 void Timer::Start(const std::chrono::milliseconds duration) {
   TimerStart(duration);
-  lastTimer = duration;
   state = Running;
 }
 

@@ -6,6 +6,8 @@
 
 using namespace Pinetime::Applications::Screens;
 
+static std::chrono::milliseconds lastTimerSetting;
+
 static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<Timer*>(obj->user_data);
   if (event == LV_EVENT_PRESSED) {
@@ -15,6 +17,11 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   } else if (event == LV_EVENT_SHORT_CLICKED) {
     screen->ToggleRunning();
   }
+}
+
+static void counterChangeHandler(void *timerScreen) {
+  Timer* timer = (Timer*)timerScreen;
+  lastTimerSetting = timer->GetCounters();
 }
 
 Timer::Timer(Controllers::Timer& timerController) : timer {timerController} {
@@ -29,6 +36,8 @@ Timer::Timer(Controllers::Timer& timerController) : timer {timerController} {
   secondCounter.Create();
   lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   lv_obj_align(secondCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  minuteCounter.SetValueChangedEventCallback(this, counterChangeHandler);
+  secondCounter.SetValueChangedEventCallback(this, counterChangeHandler);
 
   highlightObjectMask = lv_objmask_create(lv_scr_act(), nullptr);
   lv_obj_set_size(highlightObjectMask, 240, 50);
@@ -63,7 +72,7 @@ Timer::Timer(Controllers::Timer& timerController) : timer {timerController} {
 
   switch (timer.GetState()) {
     case Controllers::Timer::TimerState::Stopped:
-      SetCounters(timer.GetLast());
+      SetCounters(lastTimerSetting);
       SetInterfaceStopped();
       break;
     case Controllers::Timer::TimerState::Running:
@@ -188,11 +197,14 @@ void Timer::SetCounters(const std::chrono::seconds& duration) {
   secondCounter.SetValue(duration.count() % 60);
 }
 
+std::chrono::seconds Timer::GetCounters() {
+  return std::chrono::minutes(minuteCounter.GetValue()) + std::chrono::seconds(secondCounter.GetValue());
+}
+
 void Timer::ToggleRunning() {
   if (timer.GetState() == Controllers::Timer::TimerState::Stopped) {
     if (secondCounter.GetValue() + minuteCounter.GetValue() > 0) {
-      auto timerDuration = std::chrono::minutes(minuteCounter.GetValue()) + std::chrono::seconds(secondCounter.GetValue());
-      timer.Start(timerDuration);
+      timer.Start(GetCounters());
       Refresh();
       SetInterfaceRunning();
     }
@@ -206,12 +218,12 @@ void Timer::ToggleRunning() {
 }
 
 void Timer::Reset() {
-  timer.ResetLast();
+  lastTimerSetting = std::chrono::seconds(0);
   Stop();
 }
 
 void Timer::Stop() {
   timer.Stop();
-  SetCounters(timer.GetLast());
+  SetCounters(lastTimerSetting);
   SetInterfaceStopped();
 }
