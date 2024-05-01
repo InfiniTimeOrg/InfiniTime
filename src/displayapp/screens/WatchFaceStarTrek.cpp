@@ -429,10 +429,11 @@ void WatchFaceStarTrek::Refresh() {
 
   if (settingsController.GetStarTrekWeather()) {
     currentWeather = weatherService.Current();
+    bool isUpdated = currentWeather.IsUpdated();
     auto optCurrentWeather = currentWeather.Get();
 
     if (optCurrentWeather) {
-      if (weatherNeedsRefresh || currentWeather.IsUpdated()) {
+      if (weatherNeedsRefresh || isUpdated) {
         int16_t temp = optCurrentWeather->temperature;
         if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
           temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
