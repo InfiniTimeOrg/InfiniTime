@@ -1,6 +1,7 @@
 #include "components/datetime/DateTimeController.h"
 #include <libraries/log/nrf_log.h>
 #include <systemtask/SystemTask.h>
+#include <nrf_rtc.h>
 
 using namespace Pinetime::Controllers;
 
@@ -12,11 +13,16 @@ namespace {
 }
 
 DateTime::DateTime(Controllers::Settings& settingsController) : settingsController {settingsController} {
+  mutex = xSemaphoreCreateMutex();
+  ASSERT(mutex != nullptr);
+  xSemaphoreGive(mutex);
 }
 
 void DateTime::SetCurrentTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> t) {
+  xSemaphoreTake(mutex, portMAX_DELAY);
   this->currentDateTime = t;
   UpdateTime(previousSystickCounter); // Update internal state without updating the time
+  xSemaphoreGive(mutex);
 }
 
 void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second) {
@@ -35,7 +41,9 @@ void DateTime::SetTime(uint16_t year, uint8_t month, uint8_t day, uint8_t hour, 
   NRF_LOG_INFO("%d %d %d ", day, month, year);
   NRF_LOG_INFO("%d %d %d ", hour, minute, second);
 
+  xSemaphoreTake(mutex, portMAX_DELAY);
   UpdateTime(previousSystickCounter);
+  xSemaphoreGive(mutex);
 
   systemTask->PushMessage(System::Messages::OnNewTime);
 }
@@ -45,29 +53,23 @@ void DateTime::SetTimeZone(int8_t timezone, int8_t dst) {
   dstOffset = dst;
 }
 
-void DateTime::UpdateTime(uint32_t systickCounter) {
+uint32_t DateTime::GetTickFromPreviousSystickCounter(uint32_t systickCounter) const {
   // Handle systick counter overflow
   uint32_t systickDelta = 0;
   if (systickCounter < previousSystickCounter) {
-    systickDelta = 0xffffff - previousSystickCounter;
+    systickDelta = static_cast<uint32_t>(portNRF_RTC_MAXTICKS) - previousSystickCounter;
     systickDelta += systickCounter + 1;
   } else {
     systickDelta = systickCounter - previousSystickCounter;
   }
+  return systickDelta;
+}
 
-  /*
-   * 1000 ms = 1024 ticks
-   */
-  auto correctedDelta = systickDelta / 1024;
-  auto rest = systickDelta % 1024;
-  if (systickCounter >= rest) {
-    previousSystickCounter = systickCounter - rest;
-  } else {
-    previousSystickCounter = 0xffffff - (rest - systickCounter);
-  }
-
-  currentDateTime += std::chrono::seconds(correctedDelta);
-  uptime += std::chrono::seconds(correctedDelta);
+void DateTime::UpdateTime() {
+  xSemaphoreTake(mutex, portMAX_DELAY);
+  uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
+  UpdateTime(systick_counter);
+  xSemaphoreGive(mutex);
 
   std::time_t currentTime = std::chrono::system_clock::to_time_t(currentDateTime);
   localTime = *std::localtime(&currentTime);
@@ -101,6 +103,23 @@ void DateTime::UpdateTime(uint32_t systickCounter) {
   } else if (hour != 0) {
     isMidnightAlreadyNotified = false;
   }
+}
+
+void DateTime::UpdateTime(uint32_t systickCounter) {
+  auto systickDelta = GetTickFromPreviousSystickCounter(systickCounter);
+  auto correctedDelta = systickDelta / configTICK_RATE_HZ;
+
+  /*
+   * 1000 ms = 1024 ticks
+   */
+  auto rest = systickDelta % configTICK_RATE_HZ;
+  if (systickCounter >= rest) {
+    previousSystickCounter = systickCounter - rest;
+  } else {
+    previousSystickCounter = static_cast<uint32_t>(portNRF_RTC_MAXTICKS) - (rest - systickCounter);
+  }
+  currentDateTime += std::chrono::seconds(correctedDelta);
+  uptime += std::chrono::seconds(correctedDelta);
 }
 
 const char* DateTime::MonthShortToString() const {
@@ -145,4 +164,19 @@ std::string DateTime::FormattedTime() {
     snprintf(buff, sizeof(buff), "%02i:%02i", hour, minute);
   }
   return std::string(buff);
+}
+
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> DateTime::CurrentDateTime() const {
+  xSemaphoreTake(mutex, portMAX_DELAY);
+  uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
+  auto correctedDelta = GetTickFromPreviousSystickCounter(systick_counter) / configTICK_RATE_HZ;
+  auto result = currentDateTime + std::chrono::seconds(correctedDelta);
+  ;
+  xSemaphoreGive(mutex);
+
+  return result;
+}
+
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> DateTime::UTCDateTime() const {
+  return CurrentDateTime() - std::chrono::seconds((tzOffset + dstOffset) * 15 * 60);
 }

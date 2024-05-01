@@ -4,6 +4,8 @@
 #include <chrono>
 #include <ctime>
 #include <string>
+#include <FreeRTOS.h>
+#include <semphr.h>
 #include "components/settings/Settings.h"
 
 namespace Pinetime {
@@ -45,7 +47,7 @@ namespace Pinetime {
        */
       void SetTimeZone(int8_t timezone, int8_t dst);
 
-      void UpdateTime(uint32_t systickCounter);
+      void UpdateTime();
 
       uint16_t Year() const {
         return 1900 + localTime.tm_year;
@@ -124,13 +126,9 @@ namespace Pinetime {
       static const char* MonthShortToStringLow(Months month);
       static const char* DayOfWeekShortToStringLow(Days day);
 
-      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const {
-        return currentDateTime;
-      }
+      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const;
 
-      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> UTCDateTime() const {
-        return currentDateTime - std::chrono::seconds((tzOffset + dstOffset) * 15 * 60);
-      }
+      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> UTCDateTime() const;
 
       std::chrono::seconds Uptime() const {
         return uptime;
@@ -141,6 +139,9 @@ namespace Pinetime {
       std::string FormattedTime();
 
     private:
+      uint32_t GetTickFromPreviousSystickCounter(uint32_t systickCounter) const;
+      void UpdateTime(uint32_t systickCounter);
+
       std::tm localTime;
       int8_t tzOffset = 0;
       int8_t dstOffset = 0;
@@ -154,6 +155,7 @@ namespace Pinetime {
       bool isHalfHourAlreadyNotified = true;
       System::SystemTask* systemTask = nullptr;
       Controllers::Settings& settingsController;
+      SemaphoreHandle_t mutex = nullptr;
     };
   }
 }

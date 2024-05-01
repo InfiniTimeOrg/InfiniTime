@@ -1,5 +1,4 @@
 #include "systemtask/SystemTask.h"
-#include <hal/nrf_rtc.h>
 #include <libraries/gpiote/app_gpiote.h>
 #include <libraries/log/nrf_log.h>
 #include "BootloaderVersion.h"
@@ -410,8 +409,7 @@ void SystemTask::Work() {
     }
 
     monitor.Process();
-    uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
-    dateTimeController.UpdateTime(systick_counter);
+    dateTimeController.UpdateTime();
     NoInit_BackUpTime = dateTimeController.CurrentDateTime();
     if (nrf_gpio_pin_read(PinMap::Button) == 0) {
       watchdog.Reload();
