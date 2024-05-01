@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-
+#pragma once
 #include <FreeRTOS.h>
 #include <lvgl/src/lv_misc/lv_color.h>
 
@@ -26,6 +26,10 @@ namespace Pinetime {
             static int16_t RoundTemperature(int16_t temp);
             static const lv_color_t TemperatureColor(int16_t temperature);
             static const char* floatToRgbHex(lv_color_t rgb);
+            constexpr static float oldMax = 50;
+            constexpr static float oldMin = 0;
+            constexpr static float newMax = 1;
+            constexpr static float newMin = 0;
       };
     }
  }

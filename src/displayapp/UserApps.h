@@ -15,6 +15,7 @@
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
 #include "displayapp/screens/WatchFaceTerminal.h"
 #include "displayapp/screens/Weather.h"
+#include "displayapp/screens/WeatherColorTester.h"
 
 namespace Pinetime {
   namespace Applications {

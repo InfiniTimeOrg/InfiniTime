@@ -20,8 +20,11 @@
 #include <FreeRTOS.h>
 #include <lvgl/src/lv_misc/lv_color.h>
 #include <tuple>
+#include <vector>
+#include <array>
 #include <cstdint>
 #include <cstdio>
+#include <algorithm>
 #include <nrfx_log.h>
 
 using namespace Pinetime::Applications;
@@ -68,6 +71,13 @@ using namespace Pinetime::Applications;
       int outputRed = (redA + (redB - redA) * normalValue);
       int outputGreen = (greenA + (greenB - greenA) * normalValue);
       int outputBlue = (blueA + (blueB - blueA) * normalValue);
+      
+      //increase brightness
+      float incAmount = 1.2;
+      outputRed = std::min(255, static_cast<int>(outputRed*incAmount));
+      outputGreen = std::min(255, static_cast<int>(outputGreen*incAmount));
+      outputBlue = std::min(255, static_cast<int>(outputBlue*incAmount));
+      
       auto lerpOutput = LV_COLOR_MAKE(outputRed, outputGreen, outputBlue);
       NRF_LOG_INFO("pointA: %i, %i, %i", redA, greenA, blueA);
       NRF_LOG_INFO("pointB: %i, %i, %i", redB, greenB, blueB);
@@ -75,32 +85,26 @@ using namespace Pinetime::Applications;
       return lerpOutput;
     }
     
-    const lv_color_t WeatherHelper::TemperatureColor(int16_t temperature) {
-      const std::vector<int> colors = {0x5555ff, 0x00c9ff, 0x00ff3e, 0xff9b00, 0xff0000};
-      std::vector<lv_color_t> stops;
+    constexpr std::array<lv_color_t, 4> getColors() {
+      const std::array<int, 4> colors = {0x5555ff, 0x00c9ff, 0xff9b00, 0xff0000};
+      std::array<lv_color_t, 4> stops;
+      int8_t i = 0;
       for (auto colorVal: colors) {
-       stops.emplace_back(hexToFloat(colorVal));
+       stops[i++] = (hexToFloat(colorVal));
       }
+      return stops;
+    }
+    
+    const lv_color_t WeatherHelper::TemperatureColor(int16_t temperature) {
+      std::array<lv_color_t, 4> stops = getColors();
       int tempRounded = RoundTemperature(temperature);
       if (tempRounded < 0) {
          tempRounded = 1;
       }
       // convert temperature to range between newMin and newMax
-      float oldMax = 40;
-      float oldMin = 0;
-      float newMax = 1;
-      float newMin = 0;
       float oldRange = (oldMax - oldMin);
       float newRange = (newMax - newMin);
       float newValue = (((tempRounded - oldMin) * newRange) / oldRange) + newMin;
       newValue = normalize(newValue);
-      if (newValue <= .25f) {
-        return lerp(stops[0], stops[1], newValue);
-      } else if (newValue <= .50f) {
-        return lerp(stops[1], stops[2], newValue);
-      } else if (newValue <= .75f) {
-        return lerp(stops[2], stops[3], newValue);
-      } else {
-        return lerp(stops[3], stops[4], newValue);
-      }
+      return lerp(stops[0], stops[3], newValue);
     }
