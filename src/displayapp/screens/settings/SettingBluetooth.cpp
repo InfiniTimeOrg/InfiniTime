@@ -36,17 +36,19 @@ namespace {
 
 SettingBluetooth::SettingBluetooth(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
   : app {app},
+    settings {settingsController},
     checkboxList(
       0,
       1,
       "Bluetooth",
       Symbols::bluetooth,
       settingsController.GetBleRadioEnabled() ? 0 : 1,
-      [&settings = settingsController](uint32_t index) {
+      [this](uint32_t index) {
         const bool priorMode = settings.GetBleRadioEnabled();
         const bool newMode = options[index].radioEnabled;
         if (newMode != priorMode) {
           settings.SetBleRadioEnabled(newMode);
+          this->app->PushMessage(Pinetime::Applications::Display::Messages::BleRadioEnableToggle);
         }
       },
       CreateOptionArray()) {
@@ -54,6 +56,4 @@ SettingBluetooth::SettingBluetooth(Pinetime::Applications::DisplayApp* app, Pine
 
 SettingBluetooth::~SettingBluetooth() {
   lv_obj_clean(lv_scr_act());
-  // Pushing the message in the OnValueChanged function causes a freeze?
-  app->PushMessage(Pinetime::Applications::Display::Messages::BleRadioEnableToggle);
 }

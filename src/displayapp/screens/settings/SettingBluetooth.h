@@ -20,6 +20,7 @@ namespace Pinetime {
 
       private:
         DisplayApp* app;
+        Pinetime::Controllers::Settings& settings;
         CheckboxList checkboxList;
       };
     }

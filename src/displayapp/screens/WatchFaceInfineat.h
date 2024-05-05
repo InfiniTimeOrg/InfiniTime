@@ -55,8 +55,7 @@ namespace Pinetime {
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
         Utility::DirtyValue<uint32_t> stepCount {};
         Utility::DirtyValue<bool> notificationState {};
-        using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
-        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
 
         // Lines making up the side cover
         lv_obj_t* lineBattery;

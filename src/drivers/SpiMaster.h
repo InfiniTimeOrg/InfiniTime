@@ -1,6 +1,7 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 
 #include <FreeRTOS.h>
 #include <semphr.h>
@@ -31,7 +32,7 @@ namespace Pinetime {
       SpiMaster& operator=(SpiMaster&&) = delete;
 
       bool Init();
-      bool Write(uint8_t pinCsn, const uint8_t* data, size_t size);
+      bool Write(uint8_t pinCsn, const uint8_t* data, size_t size, const std::function<void()>& preTransactionHook);
       bool Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize);
 
       bool WriteCmdAndBuffer(uint8_t pinCsn, const uint8_t* cmd, size_t cmdSize, const uint8_t* data, size_t dataSize);
@@ -56,7 +57,6 @@ namespace Pinetime {
 
       volatile uint32_t currentBufferAddr = 0;
       volatile size_t currentBufferSize = 0;
-      volatile TaskHandle_t taskToNotify;
       SemaphoreHandle_t mutex = nullptr;
     };
   }

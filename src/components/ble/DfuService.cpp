@@ -357,6 +357,8 @@ void DfuService::DfuImage::Init(size_t chunkSize, size_t totalSize, uint16_t exp
   this->totalSize = totalSize;
   this->expectedCrc = expectedCrc;
   this->ready = true;
+  totalWriteIndex = 0;
+  bufferWriteIndex = 0;
 }
 
 void DfuService::DfuImage::Append(uint8_t* data, size_t size) {

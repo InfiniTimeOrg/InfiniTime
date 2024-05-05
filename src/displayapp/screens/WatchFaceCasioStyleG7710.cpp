@@ -244,7 +244,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     }
     lv_obj_realign(label_time);
 
-    currentDate = std::chrono::time_point_cast<days>(currentDateTime.Get());
+    currentDate = std::chrono::time_point_cast<std::chrono::days>(currentDateTime.Get());
     if (currentDate.IsUpdated()) {
       const char* weekNumberFormat = "%V";
 

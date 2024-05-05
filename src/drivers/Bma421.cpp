@@ -22,6 +22,16 @@ namespace {
   void user_delay(uint32_t period_us, void* /*intf_ptr*/) {
     nrf_delay_us(period_us);
   }
+
+  // Scale factors to convert accelerometer counts to milli-g
+  // from datasheet: https://files.pine64.org/doc/datasheet/pinetime/BST-BMA421-FL000.pdf
+  // The array index to use is stored in accel_conf.range
+  constexpr int16_t accelScaleFactors[] = {
+    [BMA4_ACCEL_RANGE_2G] = 1024, // LSB/g +/- 2g range
+    [BMA4_ACCEL_RANGE_4G] = 512,  // LSB/g +/- 4g range
+    [BMA4_ACCEL_RANGE_8G] = 256,  // LSB/g +/- 8g range
+    [BMA4_ACCEL_RANGE_16G] = 128  // LSB/g +/- 16g range
+  };
 }
 
 Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}, deviceAddress {twiAddress} {
@@ -74,7 +84,6 @@ void Bma421::Init() {
   if (ret != BMA4_OK)
     return;
 
-  struct bma4_accel_config accel_conf;
   accel_conf.odr = BMA4_OUTPUT_DATA_RATE_100HZ;
   accel_conf.range = BMA4_ACCEL_RANGE_2G;
   accel_conf.bandwidth = BMA4_ACCEL_NORMAL_AVG4;
@@ -102,8 +111,17 @@ void Bma421::Write(uint8_t registerAddress, const uint8_t* data, size_t size) {
 Bma421::Values Bma421::Process() {
   if (not isOk)
     return {};
+  struct bma4_accel rawData;
   struct bma4_accel data;
-  bma4_read_accel_xyz(&data, &bma);
+  bma4_read_accel_xyz(&rawData, &bma);
+
+  // Scale the measured ADC counts to units of 'binary milli-g'
+  // where 1g = 1024 'binary milli-g' units.
+  // See https://github.com/InfiniTimeOrg/InfiniTime/pull/1950 for
+  // discussion of why we opted for scaling to 1024 rather than 1000.
+  data.x = 1024 * rawData.x / accelScaleFactors[accel_conf.range];
+  data.y = 1024 * rawData.y / accelScaleFactors[accel_conf.range];
+  data.z = 1024 * rawData.z / accelScaleFactors[accel_conf.range];
 
   uint32_t steps = 0;
   bma423_step_counter_output(&steps, &bma);

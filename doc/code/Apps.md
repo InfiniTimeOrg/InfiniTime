@@ -140,10 +140,10 @@ namespace Pinetime {
     }
     
     template <>
-    struct AppTraits<Apps:MyApp> {
+    struct AppTraits<Apps::MyApp> {
       static constexpr Apps app = Apps::MyApp;
-      static constexpr const char* icon = Screens::Symbol::myApp;
-      static Screens::Screens* Create(AppController& controllers) {
+      static constexpr const char* icon = Screens::Symbols::myApp;
+      static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::MyApp();
       }
     };
@@ -176,7 +176,7 @@ Now we have our very own app, but InfiniTime does not know about it yet.
 The first step is to include your `MyApp.cpp` (or any new cpp files for that matter)
 in the compilation by adding it to [CMakeLists.txt](/CMakeLists.txt).
 The next step to making it launch-able is to give your app an id.
-To do this, add an entry in the enum class `Pinetime::Applications::Apps` ([displayapp/Apps.h](/src/displayapp/Apps.h)).
+To do this, add an entry in the enum class `Pinetime::Applications::Apps` ([displayapp/apps/Apps.h](/src/displayapp/apps/Apps.h.in)).
 Name this entry after your app. Add `#include "displayapp/screens/MyApp.h"`
 to the file [displayapp/DisplayApp.cpp](/src/displayapp/DisplayApp.cpp).
 

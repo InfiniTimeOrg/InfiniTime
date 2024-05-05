@@ -136,17 +136,11 @@ void SpiMaster::OnEndEvent() {
 
     spiBaseAddress->TASKS_START = 1;
   } else {
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    if (taskToNotify != nullptr) {
-      vTaskNotifyGiveFromISR(taskToNotify, &xHigherPriorityTaskWoken);
-      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
-
     nrf_gpio_pin_set(this->pinCsn);
     currentBufferAddr = 0;
-    BaseType_t xHigherPriorityTaskWoken2 = pdFALSE;
-    xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken2);
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken | xHigherPriorityTaskWoken2);
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
 }
 
@@ -173,12 +167,11 @@ void SpiMaster::PrepareRx(const uint32_t bufferAddress, const size_t size) {
   spiBaseAddress->EVENTS_END = 0;
 }
 
-bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
+bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, const std::function<void()>& preTransactionHook) {
   if (data == nullptr)
     return false;
   auto ok = xSemaphoreTake(mutex, portMAX_DELAY);
   ASSERT(ok == true);
-  taskToNotify = xTaskGetCurrentTaskHandle();
 
   this->pinCsn = pinCsn;
 
@@ -188,6 +181,9 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
     DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
   }
 
+  if (preTransactionHook != nullptr) {
+    preTransactionHook();
+  }
   nrf_gpio_pin_clear(this->pinCsn);
 
   currentBufferAddr = (uint32_t) data;
@@ -215,8 +211,6 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
 
 bool SpiMaster::Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize) {
   xSemaphoreTake(mutex, portMAX_DELAY);
-
-  taskToNotify = nullptr;
 
   this->pinCsn = pinCsn;
   DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
@@ -264,8 +258,6 @@ void SpiMaster::Wakeup() {
 
 bool SpiMaster::WriteCmdAndBuffer(uint8_t pinCsn, const uint8_t* cmd, size_t cmdSize, const uint8_t* data, size_t dataSize) {
   xSemaphoreTake(mutex, portMAX_DELAY);
-
-  taskToNotify = nullptr;
 
   this->pinCsn = pinCsn;
   DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);

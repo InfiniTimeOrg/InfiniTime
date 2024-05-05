@@ -43,10 +43,6 @@ namespace Pinetime {
         uint8_t displayedHour = -1;
         uint8_t displayedMinute = -1;
 
-        Utility::DirtyValue<uint8_t> batteryPercentRemaining {};
-        Utility::DirtyValue<bool> powerPresent {};
-        Utility::DirtyValue<bool> bleState {};
-        Utility::DirtyValue<bool> bleRadioEnabled {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
         Utility::DirtyValue<uint32_t> stepCount {};
         Utility::DirtyValue<uint8_t> heartbeat {};
@@ -54,8 +50,7 @@ namespace Pinetime {
         Utility::DirtyValue<bool> notificationState {};
         Utility::DirtyValue<std::optional<Pinetime::Controllers::SimpleWeatherService::CurrentWeather>> currentWeather {};
 
-        using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
-        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
 
         lv_obj_t* label_time;
         lv_obj_t* label_time_ampm;

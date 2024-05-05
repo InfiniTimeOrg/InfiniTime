@@ -96,9 +96,13 @@ namespace Pinetime {
           int16_t minTemperature;
           int16_t maxTemperature;
           Icons iconId;
+
+          bool operator==(const Day& other) const;
         };
 
         std::array<Day, MaxNbForecastDays> days;
+
+        bool operator==(const Forecast& other) const;
       };
 
       std::optional<CurrentWeather> Current() const;

@@ -1,0 +1,32 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.154.2/containers/cpp
+{
+	"build": {
+		"dockerfile": "docker/Dockerfile"
+	},
+	"customizations": {
+		"vscode": {
+			"settings": {
+				// Set *default* container specific settings.json values on container create.
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "/bin/bash"
+					}
+				},
+				"terminal.integrated.defaultProfile.linux": "bash",
+				"editor.formatOnSave": true,
+				// FIXME: This and the Dockerfile might get out of sync
+				"clang-format.executable": "clang-format-14"
+			},
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-vscode.cpptools",
+				"ms-vscode.cmake-tools",
+				"marus25.cortex-debug",
+				"notskm.clang-tidy",
+				"mjohns.clang-format"
+			]
+		}
+	},
+	"remoteUser": "infinitime"
+}

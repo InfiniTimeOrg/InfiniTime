@@ -370,9 +370,13 @@ void SystemTask::Work() {
           if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
               settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours &&
               alarmController.State() != AlarmController::AlarmState::Alerting) {
+            // if sleeping, we can't send a chime to displayApp yet (SPI flash switched off)
+            // request running first and repush the chime message
             if (state == SystemTaskState::Sleeping) {
               touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Other, false);
               GoToRunning();
+              PushMessage(msg);
+            } else {
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
             }
           }
@@ -382,9 +386,13 @@ void SystemTask::Work() {
           if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
               settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours &&
               alarmController.State() != AlarmController::AlarmState::Alerting) {
+            // if sleeping, we can't send a chime to displayApp yet (SPI flash switched off)
+            // request running first and repush the chime message
             if (state == SystemTaskState::Sleeping) {
               touchHandler.SetWokenBy(Pinetime::Controllers::TouchHandler::WokenBy::Other, false);
               GoToRunning();
+              PushMessage(msg);
+            } else {
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
             }
           }
@@ -539,10 +547,7 @@ void SystemTask::PushMessage(System::Messages msg) {
   if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(systemTasksMsgQueue, &msg, &xHigherPriorityTaskWoken);
-    if (xHigherPriorityTaskWoken == pdTRUE) {
-      /* Actual macro used here is port specific. */
-      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   } else {
     xQueueSend(systemTasksMsgQueue, &msg, portMAX_DELAY);
   }

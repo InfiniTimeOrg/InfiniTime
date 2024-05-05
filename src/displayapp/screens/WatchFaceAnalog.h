@@ -43,8 +43,7 @@ namespace Pinetime {
         Utility::DirtyValue<bool> bleState {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>> currentDateTime;
         Utility::DirtyValue<bool> notificationState {false};
-        using days = std::chrono::duration<int32_t, std::ratio<86400>>; // TODO: days is standard in c++20
-        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, days>> currentDate;
+        Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
 
         lv_obj_t* minor_scales;
         lv_obj_t* major_scales;
