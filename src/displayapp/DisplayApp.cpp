@@ -375,8 +375,7 @@ void DisplayApp::Refresh() {
         break;
       case Messages::Chime:
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
-        motorController.RunForDuration(15);
-        motorController.RunForDuration(15);
+        motorController.RunForDuration(35);
         break;
       case Messages::OnChargingEvent:
         RestoreBrightness();
