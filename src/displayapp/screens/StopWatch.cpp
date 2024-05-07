@@ -195,7 +195,6 @@ void StopWatch::stopLapBtnEventHandler() {
     lv_label_set_text(lapText, "");
     lapsDone = std::min(lapsDone + 1, maxLapCount);
     if (lapsDone == maxLapCount) {
-      // lv_obj_set_style_local_bg_color(btnStopLap, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, Colors::bgDark);
       lv_obj_set_state(btnStopLap, LV_STATE_DISABLED);
       lv_obj_set_state(txtStopLap, LV_STATE_DISABLED);
     }
