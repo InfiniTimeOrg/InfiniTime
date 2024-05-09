@@ -29,7 +29,6 @@ namespace Pinetime {
       Steps,
       Dice,
       Weather,
-      WeatherColorTester,
       PassKey,
       QuickSettings,
       Settings,

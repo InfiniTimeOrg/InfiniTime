@@ -9,34 +9,7 @@
 #include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
-  /*
-namespace {
 
-  lv_color_t TemperatureColor(int16_t temperature) {
-    if (temperature <= 0) { // freezing
-      return Colors::blue;
-    } else if (temperature <= 400) { // ice
-      return LV_COLOR_CYAN;
-    } else if (temperature >= 2700) { // hot
-      return Colors::deepOrange;
-    }
-    return Colors::orange; // normal
-  }
-
-
-  uint8_t TemperatureStyle(int16_t temperature) {
-    if (temperature <= 0) { // freezing
-      return LV_TABLE_PART_CELL3;
-    } else if (temperature <= 400) { // ice
-      return LV_TABLE_PART_CELL4;
-    } else if (temperature >= 2700) { // hot
-      return LV_TABLE_PART_CELL6;
-    }
-    return LV_TABLE_PART_CELL5; // normal
-
-}
-   }
-   */
 Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleWeatherService& weatherService)
   : settingsController {settingsController}, weatherService {weatherService} {
 
@@ -75,25 +48,6 @@ Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleW
   forecast = lv_table_create(lv_scr_act(), nullptr);
   lv_table_set_col_cnt(forecast, Controllers::SimpleWeatherService::MaxNbForecastDays);
   lv_table_set_row_cnt(forecast, 4);
-  // LV_TABLE_PART_CELL1: Default table style
-  lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, Colors::lightGray);
-  // LV_TABLE_PART_CELL2: Condition icon
-  lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL2, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL2, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_obj_set_style_local_text_font(forecast, LV_TABLE_PART_CELL2, LV_STATE_DEFAULT, &fontawesome_weathericons);
-  // LV_TABLE_PART_CELL3: Freezing
-  lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL3, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL3, LV_STATE_DEFAULT, Colors::blue);
-  // LV_TABLE_PART_CELL4: Ice
-  lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL4, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL4, LV_STATE_DEFAULT, LV_COLOR_CYAN);
-  // LV_TABLE_PART_CELL5: Normal
-  lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL5, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL5, LV_STATE_DEFAULT, Colors::orange);
-  // LV_TABLE_PART_CELL6: Hot
-  lv_obj_set_style_local_border_color(forecast, LV_TABLE_PART_CELL6, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-  lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL6, LV_STATE_DEFAULT, Colors::deepOrange);
 
   lv_obj_align(forecast, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
 
@@ -159,11 +113,11 @@ void Weather::Refresh() {
         int16_t minTemp = optCurrentForecast->days[i].minTemperature;
         
         auto color = WeatherHelper::TemperatureColor(maxTemp);
-        lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL5, LV_STATE_DEFAULT, color);
+        lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL1, LV_STATE_DEFAULT, color);
         lv_table_set_cell_type(forecast, 2, i, LV_TABLE_PART_CELL5);
         
         color = WeatherHelper::TemperatureColor(minTemp);
-        lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL6, LV_STATE_DEFAULT, color);
+        lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL2, LV_STATE_DEFAULT, color);
         lv_table_set_cell_type(forecast, 3, i, LV_TABLE_PART_CELL6);
         if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
           maxTemp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(maxTemp);
