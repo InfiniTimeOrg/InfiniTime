@@ -3,16 +3,16 @@
 #include <lvgl/lvgl.h>
 
 namespace Colors {
-  static constexpr lv_color_t deepOrange = LV_COLOR_MAKE(0xff, 0x40, 0x0);
-  static constexpr lv_color_t orange = LV_COLOR_MAKE(0xff, 0xb0, 0x0);
-  static constexpr lv_color_t green = LV_COLOR_MAKE(0x0, 0xb0, 0x0);
-  static constexpr lv_color_t blue = LV_COLOR_MAKE(0x0, 0x50, 0xff);
-  static constexpr lv_color_t lightGray = LV_COLOR_MAKE(0xb0, 0xb0, 0xb0);
+  static constexpr lv_color_t deepOrange = LV_COLOR_MAKE(0xd6, 0x5d, 0x0e);
+  static constexpr lv_color_t orange = LV_COLOR_MAKE(0xfe, 0x80, 0x19);
+  static constexpr lv_color_t green = LV_COLOR_MAKE(0x98, 0x97, 0x1a);
+  static constexpr lv_color_t blue = LV_COLOR_MAKE(0x45, 0x85, 0x88);
+  static constexpr lv_color_t lightGray = LV_COLOR_MAKE(0xa8, 0x99, 0x84);
 
-  static constexpr lv_color_t bg = LV_COLOR_MAKE(0x5d, 0x69, 0x7e);
-  static constexpr lv_color_t bgAlt = LV_COLOR_MAKE(0x38, 0x38, 0x38);
-  static constexpr lv_color_t bgDark = LV_COLOR_MAKE(0x18, 0x18, 0x18);
-  static constexpr lv_color_t highlight = green;
+  static constexpr lv_color_t bg = LV_COLOR_MAKE(0x50, 0x49, 0x45);
+  static constexpr lv_color_t bgAlt = LV_COLOR_MAKE(0x3c, 0x38, 0x36);
+  static constexpr lv_color_t bgDark = LV_COLOR_MAKE(0x28, 0x28, 0x28);
+  static constexpr lv_color_t highlight = blue;
 };
 
 /**
