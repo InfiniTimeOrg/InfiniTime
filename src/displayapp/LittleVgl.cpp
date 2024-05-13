@@ -260,11 +260,23 @@ void LittleVgl::CancelTap() {
   }
 }
 
+void LittleVgl::SetNewTap(int16_t x, int16_t y) {
+  touchPoint = {x, y};
+  tapped = true;
+  simulate_tap_release = true;
+}
+
 bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
   ptr->point.x = touchPoint.x;
   ptr->point.y = touchPoint.y;
   if (tapped) {
     ptr->state = LV_INDEV_STATE_PR;
+    if (simulate_tap_release) {
+      // If a tap consists of only a single event, enqueue a synthetic release state update
+      tapped = false;
+      simulate_tap_release = false;
+      return true;
+    }
   } else {
     ptr->state = LV_INDEV_STATE_REL;
   }
