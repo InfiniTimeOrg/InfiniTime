@@ -42,6 +42,8 @@ namespace Pinetime {
       uint8_t deviceAddress = 0x18;
       struct bma4_dev bma;
       struct bma4_accel_config accel_conf; // Store the device configuration for later reference.
+      struct bma4_fifo_frame fifo_frame;
+      int16_t fifo[32][3] = {0};
       bool isOk = false;
       bool isResetOk = false;
       DeviceTypes deviceType = DeviceTypes::Unknown;
