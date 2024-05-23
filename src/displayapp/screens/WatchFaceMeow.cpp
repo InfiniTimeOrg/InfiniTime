@@ -240,19 +240,19 @@ WatchFaceMeow::WatchFaceMeow(Controllers::DateTime& dateTimeController,
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
   lv_label_set_text_static(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+  lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_TOP_MID, 0, -10);
 
 
   //version par defaut de l'icône avant qu'il aie regardé le statut de l'alarme ?
   alarmIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
   lv_label_set_text_static(alarmIcon, Symbols::paw);
-  lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
+  lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
   //version par defaut de l'icône avant qu'il aie regardé le statut de l'alarme ?
   labelAlarm = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
   lv_obj_set_style_local_text_font(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
-  lv_obj_align(labelAlarm, alarmIcon, LV_ALIGN_OUT_BOTTOM_MID, -15, 10);
+  lv_obj_align(labelAlarm, alarmIcon, LV_ALIGN_OUT_BOTTOM_MID, -10, 0);
   lv_label_set_text_static(labelAlarm, "00:00");
 
 
@@ -478,14 +478,14 @@ void WatchFaceMeow::Refresh() {
     //bleState.Get : in displayapp/widgets/StatusIcons.cpp:  bleState = bleController.IsConnected();
     //dynamic icons have their definitions in displayApp/screens/BleIcon.h / cpp
     lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
-    lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 3);
+    lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_TOP_MID, 0, -10);
   }
 
   //Add alarm state and time
   // AlarmState is an enum type in class AlarmController that is in namespace controllers
   alarmState = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
   lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(alarmState));
-  lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, -3);
+  lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
   if (alarmState) {
     uint8_t alarmHours = alarmController.Hours();
     uint8_t alarmMinutes = alarmController.Minutes();
