@@ -1,12 +1,14 @@
-#include "displayapp/screens/WatchFaceInfineatColors.h"
+#include "displayapp/screens/WatchFaceMeow.h"
 
 #include <lvgl/lvgl.h>
 #include <cstdio>
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/BleIcon.h"
+#include "displayapp/screens/AlarmIcon.h"
 #include "components/settings/Settings.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
+#include "components/alarm/AlarmController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motion/MotionController.h"
 
@@ -14,7 +16,7 @@ using namespace Pinetime::Applications::Screens;
 
 namespace {
   void event_handler(lv_obj_t* obj, lv_event_t event) {
-    auto* screen = static_cast<WatchFaceInfineatColors*>(obj->user_data);
+    auto* screen = static_cast<WatchFaceMeow*>(obj->user_data);
     screen->UpdateSelected(obj, event);
   }
 
@@ -30,7 +32,7 @@ namespace {
 
   constexpr int nColors = 7; // must match number of colors in InfineatColorsColors
 
-  constexpr int nLines = WatchFaceInfineatColors::nLines;
+  constexpr int nLines = WatchFaceMeow::nLines;
 
   constexpr std::array<lv_color_t, nLines> orangeColors = {LV_COLOR_MAKE(0xfd, 0x87, 0x2b),
                                                            LV_COLOR_MAKE(0xdb, 0x33, 0x16),
@@ -96,9 +98,11 @@ namespace {
                                                               LV_COLOR_MAKE(0xff, 0xff, 0xff),
                                                               LV_COLOR_MAKE(0x2f, 0xb8, 0xa2),
                                                               LV_COLOR_MAKE(0x11, 0x70, 0x5a)};
+
   //define colors for texts and symbols
   //static constexpr lv_color_t grayColor = LV_COLOR_MAKE(0x99, 0x99, 0x99);
-  static constexpr lv_color_t pinkColor = LV_COLOR_MAKE(0xff, 0x93, 0xaf);
+  static constexpr lv_color_t grayColor = LV_COLOR_MAKE(0x99, 0x99, 0x99);
+  static constexpr lv_color_t pinkColor = LV_COLOR_MAKE(0xfc, 0x42, 0xb5);
  
   constexpr const std::array<lv_color_t, nLines>* returnColor(colors color) {
     if (color == colors::orange) {
@@ -123,9 +127,10 @@ namespace {
   }
 }
 
-WatchFaceInfineatColors::WatchFaceInfineatColors(Controllers::DateTime& dateTimeController,
+WatchFaceMeow::WatchFaceMeow(Controllers::DateTime& dateTimeController,
                                      const Controllers::Battery& batteryController,
                                      const Controllers::Ble& bleController,
+                                     Controllers::AlarmController& alarmController,
                                      Controllers::NotificationManager& notificationManager,
                                      Controllers::Settings& settingsController,
                                      Controllers::MotionController& motionController,
@@ -134,6 +139,7 @@ WatchFaceInfineatColors::WatchFaceInfineatColors(Controllers::DateTime& dateTime
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
+    alarmController {alarmController},
     notificationManager {notificationManager},
     settingsController {settingsController},
     motionController {motionController} {
@@ -236,6 +242,20 @@ WatchFaceInfineatColors::WatchFaceInfineatColors(Controllers::DateTime& dateTime
   lv_label_set_text_static(bleIcon, Symbols::bluetooth);
   lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
 
+
+  //version par defaut de l'icône avant qu'il aie regardé le statut de l'alarme ?
+  alarmIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
+  lv_label_set_text_static(alarmIcon, Symbols::paw);
+  lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, -10);
+  //version par defaut de l'icône avant qu'il aie regardé le statut de l'alarme ?
+  labelAlarm = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
+  lv_obj_set_style_local_text_font(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+  lv_obj_align(labelAlarm, alarmIcon, LV_ALIGN_OUT_BOTTOM_MID, -15, 10);
+  lv_label_set_text_static(labelAlarm, "00:00");
+
+
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
   lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
@@ -307,7 +327,7 @@ WatchFaceInfineatColors::WatchFaceInfineatColors(Controllers::DateTime& dateTime
   Refresh();
 }
 
-WatchFaceInfineatColors::~WatchFaceInfineatColors() {
+WatchFaceMeow::~WatchFaceMeow() {
   lv_task_del(taskRefresh);
 
   if (font_bebas != nullptr) {
@@ -320,7 +340,7 @@ WatchFaceInfineatColors::~WatchFaceInfineatColors() {
   lv_obj_clean(lv_scr_act());
 }
 
-bool WatchFaceInfineatColors::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+bool WatchFaceMeow::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnSettings)) {
     lv_obj_set_hidden(btnSettings, false);
     savedTick = lv_tick_get();
@@ -333,7 +353,7 @@ bool WatchFaceInfineatColors::OnTouchEvent(Pinetime::Applications::TouchEvents e
   return false;
 }
 
-void WatchFaceInfineatColors::CloseMenu() {
+void WatchFaceMeow::CloseMenu() {
   settingsController.SaveSettings();
   lv_obj_set_hidden(btnClose, true);
   lv_obj_set_hidden(btnNextColor, true);
@@ -341,7 +361,7 @@ void WatchFaceInfineatColors::CloseMenu() {
   lv_obj_set_hidden(btnToggleCover, true);
 }
 
-bool WatchFaceInfineatColors::OnButtonPushed() {
+bool WatchFaceMeow::OnButtonPushed() {
   if (!lv_obj_get_hidden(btnClose)) {
     CloseMenu();
     return true;
@@ -349,7 +369,7 @@ bool WatchFaceInfineatColors::OnButtonPushed() {
   return false;
 }
 
-void WatchFaceInfineatColors::UpdateSelected(lv_obj_t* object, lv_event_t event) {
+void WatchFaceMeow::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     bool showSideCover = settingsController.GetInfineatShowSideCover();
     int colorIndex = settingsController.GetInfineatColorIndex();
@@ -397,7 +417,7 @@ void WatchFaceInfineatColors::UpdateSelected(lv_obj_t* object, lv_event_t event)
   }
 }
 
-void WatchFaceInfineatColors::Refresh() {
+void WatchFaceMeow::Refresh() {
   notificationState = notificationManager.AreNewNotificationsAvailable();
   if (notificationState.IsUpdated()) {
     lv_obj_set_hidden(notificationIcon, !notificationState.Get());
@@ -455,9 +475,34 @@ void WatchFaceInfineatColors::Refresh() {
   bleState = bleController.IsConnected();
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated()) {
+    //bleState.Get : in displayapp/widgets/StatusIcons.cpp:  bleState = bleController.IsConnected();
+    //dynamic icons have their definitions in displayApp/screens/BleIcon.h / cpp
     lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
     lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 3);
   }
+
+  //Add alarm state and time
+  // AlarmState is an enum type in class AlarmController that is in namespace controllers
+  alarmState = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
+  lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(alarmState));
+  lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, -3);
+  if (alarmState) {
+    uint8_t alarmHours = alarmController.Hours();
+    uint8_t alarmMinutes = alarmController.Minutes();
+    lv_label_set_text_fmt(labelAlarm, "%02d:%02d", alarmHours, alarmMinutes);
+  }
+  else {
+    lv_label_set_text_static(labelAlarm, Symbols::none);
+  }
+
+  //lv_label_set_text_fmt(labelMinutes, "%02d", minute);
+/*
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+    lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 5);
+    lv_obj_align(labelMinutes, timeContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
+  }
+  */
+
 
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated()) {
@@ -474,13 +519,13 @@ void WatchFaceInfineatColors::Refresh() {
   }
 }
 
-void WatchFaceInfineatColors::SetBatteryLevel(uint8_t batteryPercent) {
+void WatchFaceMeow::SetBatteryLevel(uint8_t batteryPercent) {
   // starting point (y) + Pine64 logo height * (100 - batteryPercent) / 100
   lineBatteryPoints[1] = {27, static_cast<lv_coord_t>(105 + 32 * (100 - batteryPercent) / 100)};
   lv_line_set_points(lineBattery, lineBatteryPoints, 2);
 }
 
-void WatchFaceInfineatColors::ToggleBatteryIndicatorColor(bool showSideCover) {
+void WatchFaceMeow::ToggleBatteryIndicatorColor(bool showSideCover) {
   if (!showSideCover) { // make indicator and notification icon color white
     lv_obj_set_style_local_image_recolor_opa(logoPine, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_100);
     lv_obj_set_style_local_image_recolor(logoPine, LV_IMG_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
@@ -494,7 +539,7 @@ void WatchFaceInfineatColors::ToggleBatteryIndicatorColor(bool showSideCover) {
   }
 }
 
-bool WatchFaceInfineatColors::IsAvailable(Pinetime::Controllers::FS& filesystem) {
+bool WatchFaceMeow::IsAvailable(Pinetime::Controllers::FS& filesystem) {
   lfs_file file = {};
 
   if (filesystem.FileOpen(&file, "/fonts/teko.bin", LFS_O_RDONLY) < 0) {

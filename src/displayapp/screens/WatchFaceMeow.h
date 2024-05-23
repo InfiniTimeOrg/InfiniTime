@@ -22,18 +22,19 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
 
-      class WatchFaceInfineatColors : public Screen {
+      class WatchFaceMeow : public Screen {
       public:
         static constexpr int nLines = 9;
-        WatchFaceInfineatColors(Controllers::DateTime& dateTimeController,
+        WatchFaceMeow(Controllers::DateTime& dateTimeController,
                           const Controllers::Battery& batteryController,
                           const Controllers::Ble& bleController,
+                          Controllers::AlarmController& alarmController,
                           Controllers::NotificationManager& notificationManager,
                           Controllers::Settings& settingsController,
                           Controllers::MotionController& motionController,
                           Controllers::FS& fs);
 
-        ~WatchFaceInfineatColors() override;
+        ~WatchFaceMeow() override;
 
         bool OnTouchEvent(TouchEvents event) override;
         bool OnButtonPushed() override;
@@ -52,6 +53,7 @@ namespace Pinetime {
         Utility::DirtyValue<bool> isCharging {};
         Utility::DirtyValue<bool> bleState {};
         Utility::DirtyValue<bool> bleRadioEnabled {};
+        bool alarmState {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
         Utility::DirtyValue<uint32_t> stepCount {};
         Utility::DirtyValue<bool> notificationState {};
@@ -71,6 +73,8 @@ namespace Pinetime {
         lv_obj_t* dateContainer;
         lv_obj_t* labelDate;
         lv_obj_t* bleIcon;
+        lv_obj_t* labelAlarm;
+        lv_obj_t* alarmIcon;
         lv_obj_t* stepIcon;
         lv_obj_t* pawIcon;
         lv_obj_t* stepValue;
@@ -88,6 +92,7 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
         const Controllers::Ble& bleController;
+        Controllers::AlarmController& alarmController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;
@@ -102,14 +107,15 @@ namespace Pinetime {
     }
 
     template <>
-    struct WatchFaceTraits<WatchFace::InfineatColors> {
-      static constexpr WatchFace watchFace = WatchFace::InfineatColors;
-      static constexpr const char* name = "InfineatColors face";
+    struct WatchFaceTraits<WatchFace::Meow> {
+      static constexpr WatchFace watchFace = WatchFace::Meow;
+      static constexpr const char* name = "Meow face";
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::WatchFaceInfineatColors(controllers.dateTimeController,
+        return new Screens::WatchFaceMeow(controllers.dateTimeController,
                                               controllers.batteryController,
                                               controllers.bleController,
+                                              controllers.alarmController,
                                               controllers.notificationManager,
                                               controllers.settingsController,
                                               controllers.motionController,
@@ -117,7 +123,7 @@ namespace Pinetime {
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& filesystem) {
-        return Screens::WatchFaceInfineatColors::IsAvailable(filesystem);
+        return Screens::WatchFaceMeow::IsAvailable(filesystem);
       }
     };
   }

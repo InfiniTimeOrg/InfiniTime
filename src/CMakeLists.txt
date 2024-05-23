@@ -371,7 +371,11 @@ list(APPEND SOURCE_FILES
         displayapp/screens/StopWatch.cpp
         displayapp/screens/BatteryIcon.cpp
         displayapp/screens/BleIcon.cpp
+<<<<<<< HEAD
         displayapp/screens/AlarmIcon.cpp
+=======
+	displayapp/screens/AlarmIcon.cpp
+>>>>>>> f5dfbc44 (added symbols for alarm states, added alarm state and hour to watchface meow, changed steps to paw. Need to align everythign nicely and find where to change release number)
         displayapp/screens/NotificationIcon.cpp
         displayapp/screens/SystemInfo.cpp
         displayapp/screens/Label.cpp
@@ -427,6 +431,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/WatchFaceTerminal.cpp
         displayapp/screens/WatchFacePineTimeStyle.cpp
 	displayapp/screens/WatchFaceInfineatColors.cpp
+	displayapp/screens/WatchFaceMeow.cpp
 	#displayapp/screens/WatchFaceCasioStyleG7710.cpp
 
         ##
@@ -597,6 +602,7 @@ set(INCLUDE_FILES
         displayapp/screens/Paddle.h
         displayapp/screens/BatteryIcon.h
         displayapp/screens/BleIcon.h
+	displayapp/screens/AlarmIcon.h
         displayapp/screens/NotificationIcon.h
         displayapp/screens/SystemInfo.h
         displayapp/screens/ScreenList.h
