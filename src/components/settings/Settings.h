@@ -50,6 +50,12 @@ namespace Pinetime {
         bool showAlarmStatus = true;
 	int colorIndex = 0;
       };
+ 
+      struct WatchFaceInfineatColors {
+        bool showSideCover = true;
+        int colorIndex = 0;
+      };
+           
 
       Settings(Pinetime::Controllers::FS& fs);
 
@@ -315,6 +321,7 @@ namespace Pinetime {
         PineTimeStyle PTS;
 
         WatchFaceInfineat watchFaceInfineat;
+	WatchFaceInfineatColors watchFaceInfineatColors;
 
         std::bitset<5> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;
