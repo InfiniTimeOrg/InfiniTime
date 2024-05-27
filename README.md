@@ -1,8 +1,15 @@
-# [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
+# Infinitime with a new watchface
 
 ![InfiniTime logo](doc/logo/infinitime-logo-small.jpg "InfiniTime Logo")
 
 Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devices/pinetime/) with many features, written in modern C++.
+
+## Quick notes on this InfiniTime version
+
+- I copied the source code from this git repo : [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
+- I added a watch face "WatchFaceMeow" whose main features are to be pink and have info about the alarm status
+- I stored the compile commands in scripts compile.sh to run from InfiniTime/ folder, and make_pine_mcu.sh to build the image must be run from InfiniTime/build/ (compile.sh copies make_pine_mcu.sh to build/ 
+- The file to flash to the pinetime is InfiniTime/build/pinetime-mcuboot-app-dfu-1.14.0.zip : I didn't change the version compared to the one I downloaded from [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime) so make sure not to keep keep a copy of it
 
 ## New to InfiniTime?
 

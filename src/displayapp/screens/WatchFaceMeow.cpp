@@ -1,3 +1,15 @@
+/*********************************************************/
+/*
+ * I modified the watchface Infineat :
+ * - added alarm info on the screen
+ * - modified the colors
+ * - modified step count icon
+ * Except colors, modifications are at line 254 and 500
+ */
+/*********************************************************/
+
+
+
 #include "displayapp/screens/WatchFaceMeow.h"
 
 #include <lvgl/lvgl.h>
@@ -61,15 +73,18 @@ namespace {
                                                           LV_COLOR_MAKE(0xff, 0xff, 0xff),
                                                           LV_COLOR_MAKE(0x62, 0xd5, 0x15),
                                                           LV_COLOR_MAKE(0x00, 0x74, 0x00)};
-  constexpr std::array<lv_color_t, nLines> rainbowColors = {LV_COLOR_MAKE(0x2d, 0xa4, 0x00),  //vert petit triangle le plus haut
-                                                            LV_COLOR_MAKE(0xac, 0x09, 0xc4),  //purple petit triangle bas côté horloge
-                                                            LV_COLOR_MAKE(0xfe, 0x03, 0x03),  //rouge 2 petits triangles à côté de batterie
-                                                            LV_COLOR_MAKE(0x0d, 0x57, 0xff),  //bleu petit triangle le plus bas
+  //added comments to say which color is which triangle
+  constexpr std::array<lv_color_t, nLines> rainbowColors = {LV_COLOR_MAKE(0x2d, 0xa4, 0x00),  //green, small triangle on top
+                                                            LV_COLOR_MAKE(0xac, 0x09, 0xc4),  //purple, smalltriangle in the bottom half part on the clock display side
+                                                            LV_COLOR_MAKE(0xfe, 0x03, 0x03),  //red, the two small triangles above and below the battery
+                                                            LV_COLOR_MAKE(0x0d, 0x57, 0xff),  //blue, the small triangle at the bottom
                                                             LV_COLOR_MAKE(0xff, 0xff, 0xff),
                                                             LV_COLOR_MAKE(0xff, 0xff, 0xff),
                                                             LV_COLOR_MAKE(0xff, 0xff, 0xff),
-                                                            LV_COLOR_MAKE(0xe0, 0xb9, 0x00),  //jaune gd triangle haut
-                                                            LV_COLOR_MAKE(0xe8, 0x51, 0x02)}; //orange gd triangle bas
+                                                            LV_COLOR_MAKE(0xe0, 0xb9, 0x00),  //Yellow, large triangle on top left
+                                                            LV_COLOR_MAKE(0xe8, 0x51, 0x02)}; //orange, large triangle on bottom left
+
+// Add new colors, still rainbow but more pastel like
   constexpr std::array<lv_color_t, nLines> rainbowVividColors ={LV_COLOR_MAKE(0xa5, 0xeb, 0x64),
                                                          	LV_COLOR_MAKE(0xfc, 0x42, 0xb5),
                                                          	LV_COLOR_MAKE(0xe7, 0xc1, 0xff),
@@ -100,8 +115,8 @@ namespace {
                                                               LV_COLOR_MAKE(0x11, 0x70, 0x5a)};
 
   //define colors for texts and symbols
+  // gray is used for text symbols and time. I changed it to pink, because I can.
   //static constexpr lv_color_t grayColor = LV_COLOR_MAKE(0x99, 0x99, 0x99);
-  static constexpr lv_color_t grayColor = LV_COLOR_MAKE(0x99, 0x99, 0x99);
   static constexpr lv_color_t pinkColor = LV_COLOR_MAKE(0xfc, 0x42, 0xb5);
  
   constexpr const std::array<lv_color_t, nLines>* returnColor(colors color) {
@@ -243,12 +258,16 @@ WatchFaceMeow::WatchFaceMeow(Controllers::DateTime& dateTimeController,
   lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_TOP_MID, 0, -10);
 
 
-  //version par defaut de l'icône avant qu'il aie regardé le statut de l'alarme ?
+  // Based on existing code, I understand that items on the screen (date, bluteooth status..)
+  // are declared here with default states, and later below the state (date, ...) is assigned
+  // So I do the same to add the alarm status : I put a symbol that has a default value
+  // and a text that has a default value
+  // symbol
   alarmIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
   lv_label_set_text_static(alarmIcon, Symbols::paw);
   lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
-  //version par defaut de l'icône avant qu'il aie regardé le statut de l'alarme ?
+  // text
   labelAlarm = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
   lv_obj_set_style_local_text_font(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
@@ -481,8 +500,9 @@ void WatchFaceMeow::Refresh() {
     lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_TOP_MID, 0, -10);
   }
 
-  //Add alarm state and time
+  // Add alarm state and time
   // AlarmState is an enum type in class AlarmController that is in namespace controllers
+  // Not sure if it can handle automatically am / pm format (TODO)
   alarmState = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
   lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(alarmState));
   lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
@@ -494,14 +514,6 @@ void WatchFaceMeow::Refresh() {
   else {
     lv_label_set_text_static(labelAlarm, Symbols::none);
   }
-
-  //lv_label_set_text_fmt(labelMinutes, "%02d", minute);
-/*
-  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-    lv_obj_align(labelHour, timeContainer, LV_ALIGN_IN_TOP_MID, 0, 5);
-    lv_obj_align(labelMinutes, timeContainer, LV_ALIGN_IN_BOTTOM_MID, 0, 0);
-  }
-  */
 
 
   stepCount = motionController.NbSteps();
