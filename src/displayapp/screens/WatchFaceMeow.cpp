@@ -502,7 +502,7 @@ void WatchFaceMeow::Refresh() {
 
   // Add alarm state and time
   // AlarmState is an enum type in class AlarmController that is in namespace controllers
-  // Not sure if it can handle automatically am / pm format (TODO)
+  // TODO Eve : Not sure if it can handle automatically am / pm format
   alarmState = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
   lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(alarmState));
   lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
