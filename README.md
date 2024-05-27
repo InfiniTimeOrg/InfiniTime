@@ -11,6 +11,10 @@ Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devic
 - I stored the compile commands in scripts compile.sh to run from InfiniTime/ folder, and make_pine_mcu.sh to build the image must be run from InfiniTime/build/ (compile.sh copies make_pine_mcu.sh to build/ 
 - The file to flash to the pinetime is InfiniTime/build/pinetime-mcuboot-app-dfu-1.14.0.zip : I didn't change the version compared to the one I downloaded from [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime) so make sure not to keep keep a copy of it
 
+Here are pictures with and without alarm set :
+
+![Meow alarm set](doc/ui/meow_alarmset.png "Meow WatchFace, alarm set") ![Meow alarm not set](doc/ui/meow_alarmnotset.png "Meow WatchFace, alarm not set")
+
 ## New to InfiniTime?
 
 - [Getting started with InfiniTime](doc/gettingStarted/gettingStarted-1.0.md)
