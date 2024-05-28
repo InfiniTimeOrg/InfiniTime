@@ -148,6 +148,7 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
     font_bebas = lv_font_load("F:/fonts/bebas.bin");
   }
 
+
   // Side Cover
   static constexpr lv_point_t linePoints[nLines][2] = {{{30, 25}, {68, -8}},
                                                        {{26, 167}, {43, 216}},
@@ -241,14 +242,19 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
   lv_obj_align(labelAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
   lv_label_set_text_static(labelAlarm, "00:00");
 
+  labelTimeAmPmAlarm = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(labelTimeAmPmAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+  lv_label_set_text_static(labelTimeAmPmAlarm, "");
+  lv_obj_set_style_local_text_color(labelTimeAmPmAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
+  lv_obj_align(labelTimeAmPmAlarm, labelAlarm, LV_ALIGN_OUT_TOP_RIGHT, 0, 0);
+
   alarmIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
   lv_label_set_text_static(alarmIcon, Symbols::notbell);
   lv_obj_align(alarmIcon, labelAlarm, LV_ALIGN_OUT_LEFT_MID, -3, 0);
 
-  // if we don't show alarm status
+  // don't show the icons jsut set if we don't show alarm status
   if (!settingsController.GetInfineatShowAlarmStatus()) {
-    //ToggleShowAlarmStatus(false);
     lv_obj_set_hidden(labelAlarm, true);
     lv_obj_set_hidden(alarmIcon, true);
   }
@@ -405,7 +411,7 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       const char* labelToggle = showSideCover ? "OFF" : "ON";
       lv_label_set_text_static(lblToggle, labelToggle);
     }
-    //si je change l'état de l'alarme, ca la re affiche
+
     if (object == btnToggleAlarm) {
       settingsController.SetInfineatShowAlarmStatus(!showAlarmStatus);
       bool newShowAlarmStatus = settingsController.GetInfineatShowAlarmStatus();
@@ -504,11 +510,28 @@ void WatchFaceInfineat::Refresh() {
     alarmState = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
     // sets the icon as bell or barred bell
     lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(alarmState));
-    //displays the time of the alarm or nothing
+    //displays the time of the alarm or nothing if the alarm is not set
     if (alarmState) {
       uint8_t alarmHours = alarmController.Hours();
       uint8_t alarmMinutes = alarmController.Minutes();
+      //handles the am pm format.
+      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+        char ampmChar[3] = "AM";
+        if (alarmHours == 0) {
+          alarmHours = 12;
+          } else if (alarmHours == 12) {
+            ampmChar[0]='P';
+          } else if (alarmHours > 12) {
+          alarmHours = alarmHours - 12;
+          ampmChar[0]='P';
+        }
+        lv_label_set_text(labelTimeAmPmAlarm, ampmChar);
+        lv_obj_set_style_local_text_font(labelTimeAmPmAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+        lv_obj_align(labelTimeAmPmAlarm, labelAlarm, LV_ALIGN_OUT_TOP_RIGHT, 0, 0);
+      }
+
       lv_label_set_text_fmt(labelAlarm, "%02d:%02d", alarmHours, alarmMinutes);
+
       lv_obj_align(alarmIcon, labelAlarm, LV_ALIGN_OUT_LEFT_MID, -3, 0);
       lv_obj_align(labelAlarm, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, -10, 0);
       lv_obj_align(labelAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
@@ -554,31 +577,6 @@ void WatchFaceInfineat::ToggleBatteryIndicatorColor(bool showSideCover) {
     lv_obj_set_style_local_bg_color(notificationIcon, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, (*colors)[7]);
   }
 }
-/*
-void WatchFaceInfineat::ToggleShowAlarmStatus(bool showAlarmStatus) {
-  // If show alarm option is on, check alarm state to display
-  if (showAlarmStatus) {
-    alarmState = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
-    // sets the icon as bell or barred bell
-    lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(alarmState));
-    //displays the time of the alarm or nothing
-    if (alarmState) {
-      uint8_t alarmHours = alarmController.Hours();
-      uint8_t alarmMinutes = alarmController.Minutes();
-      lv_label_set_text_fmt(labelAlarm, "%02d:%02d", alarmHours, alarmMinutes);
-      lv_obj_align(alarmIcon, labelAlarm, LV_ALIGN_OUT_LEFT_MID, -3, 0);
-      lv_obj_align(labelAlarm, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, -10, 0);
-      lv_obj_align(labelAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
-
-    }
-    else {
-      lv_label_set_text_static(labelAlarm, Symbols::none);
-      lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
-      lv_obj_align(alarmIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
-    }
-  }
-}
-*/
 
 bool WatchFaceInfineat::IsAvailable(Pinetime::Controllers::FS& filesystem) {
   lfs_file file = {};
