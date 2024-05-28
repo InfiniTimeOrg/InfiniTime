@@ -232,19 +232,20 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
   lv_label_set_text_static(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_TOP_MID, 0, 0);
+  lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+
+  labelAlarm = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
+  lv_obj_set_style_local_text_font(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+  lv_obj_align(labelAlarm, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, -10, 0);
+  lv_obj_align(labelAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
+  lv_label_set_text_static(labelAlarm, "00:00");
 
   alarmIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
   lv_label_set_text_static(alarmIcon, Symbols::notbell);
-  lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+  lv_obj_align(alarmIcon, labelAlarm, LV_ALIGN_OUT_LEFT_MID, -3, 0);
   
-  labelAlarm = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
-  lv_obj_set_style_local_text_font(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
-  lv_obj_align(labelAlarm, alarmIcon, LV_ALIGN_OUT_BOTTOM_MID, -10, 0);
-  lv_label_set_text_static(labelAlarm, "00:00");
-
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
   lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
@@ -290,13 +291,24 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
   btnToggleCover = lv_btn_create(lv_scr_act(), nullptr);
   btnToggleCover->user_data = this;
   lv_obj_set_size(btnToggleCover, 60, 60);
-  lv_obj_align(btnToggleCover, lv_scr_act(), LV_ALIGN_CENTER, 0, 80);
+  lv_obj_align(btnToggleCover, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 15,-15);
   lv_obj_set_style_local_bg_opa(btnToggleCover, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_70);
   const char* labelToggle = settingsController.GetInfineatShowSideCover() ? "ON" : "OFF";
   lblToggle = lv_label_create(btnToggleCover, nullptr);
   lv_label_set_text_static(lblToggle, labelToggle);
   lv_obj_set_event_cb(btnToggleCover, event_handler);
   lv_obj_set_hidden(btnToggleCover, true);
+
+  btnToggleAlarm = lv_btn_create(lv_scr_act(), nullptr);
+  btnToggleAlarm->user_data = this;
+  lv_obj_set_size(btnToggleAlarm, 60, 60);
+  lv_obj_align(btnToggleAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -15, -15);
+  lv_obj_set_style_local_bg_opa(btnToggleAlarm, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_70);
+  const char* labelToggleAlarm = settingsController.GetInfineatShowAlarmStatus() ? Symbols::notbell : Symbols::bell;
+  lblAlarm = lv_label_create(btnToggleAlarm, nullptr);
+  lv_label_set_text_static(lblAlarm, labelToggleAlarm);
+  lv_obj_set_event_cb(btnToggleAlarm, event_handler);
+  lv_obj_set_hidden(btnToggleAlarm, true);
 
   // Button to access the settings
   btnSettings = lv_btn_create(lv_scr_act(), nullptr);
@@ -347,6 +359,7 @@ void WatchFaceInfineat::CloseMenu() {
   lv_obj_set_hidden(btnNextColor, true);
   lv_obj_set_hidden(btnPrevColor, true);
   lv_obj_set_hidden(btnToggleCover, true);
+  lv_obj_set_hidden(btnToggleAlarm, true);
 }
 
 bool WatchFaceInfineat::OnButtonPushed() {
@@ -361,6 +374,7 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     bool showSideCover = settingsController.GetInfineatShowSideCover();
     int colorIndex = settingsController.GetInfineatColorIndex();
+    bool showAlarmStatus = settingsController.GetInfineatShowAlarmStatus();
 
     if (object == btnSettings) {
       lv_obj_set_hidden(btnSettings, true);
@@ -368,6 +382,7 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       lv_obj_set_hidden(btnNextColor, !showSideCover);
       lv_obj_set_hidden(btnPrevColor, !showSideCover);
       lv_obj_set_hidden(btnToggleCover, false);
+      lv_obj_set_hidden(btnToggleAlarm, false);
     }
     if (object == btnClose) {
       CloseMenu();
@@ -383,6 +398,15 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       const char* labelToggle = showSideCover ? "OFF" : "ON";
       lv_label_set_text_static(lblToggle, labelToggle);
     }
+    if (object == btnToggleAlarm) {
+      settingsController.SetInfineatShowAlarmStatus(!showAlarmStatus);
+      lv_obj_set_hidden(labelAlarm, showAlarmStatus);
+      lv_obj_set_hidden(alarmIcon, showAlarmStatus);
+      const char* labelToggleAlarm = showAlarmStatus ? Symbols::notbell : Symbols::bell;
+      lv_label_set_text_static(lblAlarm, labelToggleAlarm);
+    }
+
+
     if (object == btnNextColor) {
       colorIndex = (colorIndex + 1) % nColors;
       settingsController.SetInfineatColorIndex(colorIndex);
@@ -464,18 +488,23 @@ void WatchFaceInfineat::Refresh() {
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated()) {
     lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
-    lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_TOP_MID, 0, 3);
+    lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 3);
   }
   alarmState = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
   lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(alarmState));
-  lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
   if (alarmState) {
     uint8_t alarmHours = alarmController.Hours();
     uint8_t alarmMinutes = alarmController.Minutes();
     lv_label_set_text_fmt(labelAlarm, "%02d:%02d", alarmHours, alarmMinutes);
+    lv_obj_align(alarmIcon, labelAlarm, LV_ALIGN_OUT_LEFT_MID, -3, 0);
+    lv_obj_align(labelAlarm, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, -10, 0);
+    lv_obj_align(labelAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
+ 
   }
   else {
     lv_label_set_text_static(labelAlarm, Symbols::none);
+    lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+    lv_obj_align(alarmIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
   }
 	  
   stepCount = motionController.NbSteps();

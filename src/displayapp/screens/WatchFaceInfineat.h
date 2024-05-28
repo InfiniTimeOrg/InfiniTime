@@ -81,10 +81,12 @@ namespace Pinetime {
         lv_obj_t* btnClose;
         lv_obj_t* btnNextColor;
         lv_obj_t* btnToggleCover;
+	lv_obj_t* btnToggleAlarm;
         lv_obj_t* btnPrevColor;
         lv_obj_t* btnSettings;
         lv_obj_t* labelBtnSettings;
         lv_obj_t* lblToggle;
+        lv_obj_t* lblAlarm;
 
         lv_obj_t* lines[nLines];
 

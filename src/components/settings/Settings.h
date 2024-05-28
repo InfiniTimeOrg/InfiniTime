@@ -47,7 +47,8 @@ namespace Pinetime {
 
       struct WatchFaceInfineat {
         bool showSideCover = true;
-        int colorIndex = 0;
+        bool showAlarmStatus = true;
+	int colorIndex = 0;
       };
 
       Settings(Pinetime::Controllers::FS& fs);
@@ -121,6 +122,17 @@ namespace Pinetime {
 
       bool GetInfineatShowSideCover() const {
         return settings.watchFaceInfineat.showSideCover;
+      };
+
+      void SetInfineatShowAlarmStatus(bool show) {
+        if (show != settings.watchFaceInfineat.showAlarmStatus) {
+          settings.watchFaceInfineat.showAlarmStatus = show;
+          settingsChanged = true;
+        }
+      };
+
+      bool GetInfineatShowAlarmStatus() const {
+        return settings.watchFaceInfineat.showAlarmStatus;
       };
 
       void SetInfineatColorIndex(int index) {
