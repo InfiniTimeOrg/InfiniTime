@@ -81,7 +81,7 @@ namespace Pinetime {
         lv_obj_t* btnClose;
         lv_obj_t* btnNextColor;
         lv_obj_t* btnToggleCover;
-	lv_obj_t* btnToggleAlarm;
+        lv_obj_t* btnToggleAlarm;
         lv_obj_t* btnPrevColor;
         lv_obj_t* btnSettings;
         lv_obj_t* labelBtnSettings;
@@ -100,6 +100,8 @@ namespace Pinetime {
 
         void SetBatteryLevel(uint8_t batteryPercent);
         void ToggleBatteryIndicatorColor(bool showSideCover);
+
+        void ToggleShowAlarmStatus(bool showAlarmStatus);
 
         lv_task_t* taskRefresh;
         lv_font_t* font_teko = nullptr;
