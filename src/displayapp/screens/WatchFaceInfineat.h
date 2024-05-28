@@ -74,6 +74,7 @@ namespace Pinetime {
         lv_obj_t* labelDate;
         lv_obj_t* bleIcon;
         lv_obj_t* labelAlarm;
+        lv_obj_t* labelTimeAmPmAlarm;
         lv_obj_t* alarmIcon;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
