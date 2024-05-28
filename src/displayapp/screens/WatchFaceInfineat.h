@@ -28,6 +28,7 @@ namespace Pinetime {
         WatchFaceInfineat(Controllers::DateTime& dateTimeController,
                           const Controllers::Battery& batteryController,
                           const Controllers::Ble& bleController,
+                          Controllers::AlarmController& alarmController,
                           Controllers::NotificationManager& notificationManager,
                           Controllers::Settings& settingsController,
                           Controllers::MotionController& motionController,
@@ -52,6 +53,7 @@ namespace Pinetime {
         Utility::DirtyValue<bool> isCharging {};
         Utility::DirtyValue<bool> bleState {};
         Utility::DirtyValue<bool> bleRadioEnabled {};
+        bool alarmState {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
         Utility::DirtyValue<uint32_t> stepCount {};
         Utility::DirtyValue<bool> notificationState {};
@@ -71,6 +73,8 @@ namespace Pinetime {
         lv_obj_t* dateContainer;
         lv_obj_t* labelDate;
         lv_obj_t* bleIcon;
+        lv_obj_t* labelAlarm;
+        lv_obj_t* alarmIcon;
         lv_obj_t* stepIcon;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
@@ -87,6 +91,7 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
         const Controllers::Ble& bleController;
+        Controllers::AlarmController& alarmController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;
@@ -109,6 +114,7 @@ namespace Pinetime {
         return new Screens::WatchFaceInfineat(controllers.dateTimeController,
                                               controllers.batteryController,
                                               controllers.bleController,
+                                              controllers.alarmController,
                                               controllers.notificationManager,
                                               controllers.settingsController,
                                               controllers.motionController,

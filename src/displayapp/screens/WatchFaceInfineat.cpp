@@ -4,9 +4,11 @@
 #include <cstdio>
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/BleIcon.h"
+#include "displayapp/screens/AlarmIcon.h"
 #include "components/settings/Settings.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
+#include "components/alarm/AlarmController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/motion/MotionController.h"
 
@@ -122,7 +124,8 @@ namespace {
 WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
                                      const Controllers::Battery& batteryController,
                                      const Controllers::Ble& bleController,
-                                     Controllers::NotificationManager& notificationManager,
+                                     Controllers::AlarmController& alarmController,
+				     Controllers::NotificationManager& notificationManager,
                                      Controllers::Settings& settingsController,
                                      Controllers::MotionController& motionController,
                                      Controllers::FS& filesystem)
@@ -130,6 +133,7 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
+    alarmController {alarmController},
     notificationManager {notificationManager},
     settingsController {settingsController},
     motionController {motionController} {
@@ -228,7 +232,18 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
   bleIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(bleIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
   lv_label_set_text_static(bleIcon, Symbols::bluetooth);
-  lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+  lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_TOP_MID, 0, 0);
+
+  alarmIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
+  lv_label_set_text_static(alarmIcon, Symbols::notbell);
+  lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+  
+  labelAlarm = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
+  lv_obj_set_style_local_text_font(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+  lv_obj_align(labelAlarm, alarmIcon, LV_ALIGN_OUT_BOTTOM_MID, -10, 0);
+  lv_label_set_text_static(labelAlarm, "00:00");
 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
@@ -449,9 +464,20 @@ void WatchFaceInfineat::Refresh() {
   bleRadioEnabled = bleController.IsRadioEnabled();
   if (bleState.IsUpdated()) {
     lv_label_set_text_static(bleIcon, BleIcon::GetIcon(bleState.Get()));
-    lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 3);
+    lv_obj_align(bleIcon, dateContainer, LV_ALIGN_OUT_TOP_MID, 0, 3);
   }
-
+  alarmState = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
+  lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(alarmState));
+  lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+  if (alarmState) {
+    uint8_t alarmHours = alarmController.Hours();
+    uint8_t alarmMinutes = alarmController.Minutes();
+    lv_label_set_text_fmt(labelAlarm, "%02d:%02d", alarmHours, alarmMinutes);
+  }
+  else {
+    lv_label_set_text_static(labelAlarm, Symbols::none);
+  }
+	  
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated()) {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
