@@ -4,6 +4,9 @@
 
 Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devices/pinetime/) with many features, written in modern C++.
 
+Original repo : [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
+
+
 ## Welcome to my InfiniTime fork ?!
 
 Branches :
