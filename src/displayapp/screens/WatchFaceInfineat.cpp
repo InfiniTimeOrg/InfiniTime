@@ -304,7 +304,7 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
   btnToggleCover = lv_btn_create(lv_scr_act(), nullptr);
   btnToggleCover->user_data = this;
   lv_obj_set_size(btnToggleCover, 60, 60);
-  lv_obj_align(btnToggleCover, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 15,-15);
+  lv_obj_align(btnToggleCover, lv_scr_act(), LV_ALIGN_CENTER, 0,0);
   lv_obj_set_style_local_bg_opa(btnToggleCover, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_70);
   const char* labelToggle = settingsController.GetInfineatShowSideCover() ? "ON" : "OFF";
   lblToggle = lv_label_create(btnToggleCover, nullptr);
@@ -315,7 +315,7 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
   btnToggleAlarm = lv_btn_create(lv_scr_act(), nullptr);
   btnToggleAlarm->user_data = this;
   lv_obj_set_size(btnToggleAlarm, 60, 60);
-  lv_obj_align(btnToggleAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -15, -15);
+  lv_obj_align(btnToggleAlarm, lv_scr_act(), LV_ALIGN_CENTER, 0, 80);
   lv_obj_set_style_local_bg_opa(btnToggleAlarm, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_70);
   const char* labelToggleAlarm = settingsController.GetInfineatShowAlarmStatus() ? Symbols::bell : Symbols::notbell;
   lblAlarm = lv_label_create(btnToggleAlarm, nullptr);
