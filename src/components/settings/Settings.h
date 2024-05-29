@@ -48,11 +48,14 @@ namespace Pinetime {
       struct WatchFaceInfineat {
         bool showSideCover = true;
         bool showAlarmStatus = true;
+<<<<<<< HEAD
 	int colorIndex = 0;
       };
  
       struct WatchFaceInfineatColors {
         bool showSideCover = true;
+=======
+>>>>>>> 70f9025f (now I have the Meow Watchface AND the Infineat Watchface with alarm display)
         int colorIndex = 0;
       };
 <<<<<<< HEAD
