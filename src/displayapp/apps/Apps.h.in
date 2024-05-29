@@ -52,10 +52,6 @@ namespace Pinetime {
       PineTimeStyle,
       Terminal,
       Infineat,
-<<<<<<< HEAD
-      InfineatColors,
-=======
->>>>>>> 504f5774 (copy :( files from gitlab repo)
       Meow,
       CasioStyleG7710,
     };
