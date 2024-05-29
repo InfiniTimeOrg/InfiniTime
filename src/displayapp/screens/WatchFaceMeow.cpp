@@ -193,7 +193,7 @@ WatchFaceMeow::WatchFaceMeow(Controllers::DateTime& dateTimeController,
 
   //Battery indicator
   logoPine = lv_img_create(lv_scr_act(), nullptr);
-  lv_img_set_src(logoPine, "F:/images/cat_small.bin");
+  lv_img_set_src(logoPine, "F:/images/pine_small.bin");
   lv_obj_set_pos(logoPine, 15, 106);
 
   lineBattery = lv_line_create(lv_scr_act(), nullptr);
@@ -565,7 +565,7 @@ bool WatchFaceMeow::IsAvailable(Pinetime::Controllers::FS& filesystem) {
   }
 
   filesystem.FileClose(&file);
-  if (filesystem.FileOpen(&file, "/images/cat_small.bin", LFS_O_RDONLY) < 0) {
+  if (filesystem.FileOpen(&file, "/images/pine_small.bin", LFS_O_RDONLY) < 0) {
     return false;
   }
 
