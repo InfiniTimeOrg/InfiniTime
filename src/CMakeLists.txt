@@ -371,15 +371,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/StopWatch.cpp
         displayapp/screens/BatteryIcon.cpp
         displayapp/screens/BleIcon.cpp
-<<<<<<< HEAD
-<<<<<<< HEAD
-        displayapp/screens/AlarmIcon.cpp
-=======
 	displayapp/screens/AlarmIcon.cpp
->>>>>>> f5dfbc44 (added symbols for alarm states, added alarm state and hour to watchface meow, changed steps to paw. Need to align everythign nicely and find where to change release number)
-=======
-	displayapp/screens/AlarmIcon.cpp
->>>>>>> 9d04c32f (recovering manually changes to original Infineat)
         displayapp/screens/NotificationIcon.cpp
         displayapp/screens/SystemInfo.cpp
         displayapp/screens/Label.cpp
