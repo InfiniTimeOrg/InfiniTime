@@ -257,6 +257,7 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
   if (!settingsController.GetInfineatShowAlarmStatus()) {
     lv_obj_set_hidden(labelAlarm, true);
     lv_obj_set_hidden(alarmIcon, true);
+    lv_obj_set_hidden(labelTimeAmPmAlarm, true);
   }
   
   stepValue = lv_label_create(lv_scr_act(), nullptr);
@@ -417,6 +418,7 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       bool newShowAlarmStatus = settingsController.GetInfineatShowAlarmStatus();
       lv_obj_set_hidden(labelAlarm, !newShowAlarmStatus);
       lv_obj_set_hidden(alarmIcon, !newShowAlarmStatus);
+      lv_obj_set_hidden(labelTimeAmPmAlarm, !newShowAlarmStatus);
       const char* labelToggleAlarm = newShowAlarmStatus ? Symbols::bell : Symbols::notbell;
       lv_label_set_text_static(lblAlarm, labelToggleAlarm);
     }
