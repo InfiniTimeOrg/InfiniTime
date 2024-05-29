@@ -199,7 +199,6 @@ WatchFaceMeow::WatchFaceMeow(Controllers::DateTime& dateTimeController,
   lineBattery = lv_line_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_line_width(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 24);
   lv_obj_set_style_local_line_color(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, (*colors)[4]);
-  lv_obj_set_style_local_line_color(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, (*colors)[4]);
   lv_obj_set_style_local_line_opa(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 190);
   lineBatteryPoints[0] = {27, 105};
   lineBatteryPoints[1] = {27, 106};
@@ -534,6 +533,7 @@ void WatchFaceMeow::Refresh() {
 }
 
 void WatchFaceMeow::SetBatteryLevel(uint8_t batteryPercent) {
+  // starting point (y) + Pine64 logo height * (100 - batteryPercent) / 100
   lineBatteryPoints[1] = {27, static_cast<lv_coord_t>(105 + 32 * (100 - batteryPercent) / 100)};
   lv_line_set_points(lineBattery, lineBatteryPoints, 2);
 }

@@ -55,12 +55,20 @@ namespace Pinetime {
         bool showSideCover = true;
         int colorIndex = 0;
       };
+<<<<<<< HEAD
            
+=======
+
+>>>>>>> 9d04c32f (recovering manually changes to original Infineat)
       struct WatchFaceMeow {
         bool showSideCover = true;
         int colorIndex = 0;
       };
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 9d04c32f (recovering manually changes to original Infineat)
       Settings(Pinetime::Controllers::FS& fs);
 
       Settings(const Settings&) = delete;
@@ -327,6 +335,8 @@ namespace Pinetime {
         WatchFaceInfineat watchFaceInfineat;
 	WatchFaceInfineatColors watchFaceInfineatColors;
 	WatchFaceMeow watchFaceMeow;
+
+        WatchFaceMeow watchFaceMeow;
 
         std::bitset<5> wakeUpMode {0};
         uint16_t shakeWakeThreshold = 150;

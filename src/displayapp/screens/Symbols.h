@@ -10,11 +10,27 @@ namespace Pinetime {
         static constexpr const char* bluetooth = "\xEF\x8A\x94";
         static constexpr const char* plug = "\xEF\x87\xA6";
         static constexpr const char* shoe = "\xEF\x95\x8B";
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 055b75d5 (test combiner tout)
         static constexpr const char* paw = "\xEF\x86\xB0";
         static constexpr const char* clock = "\xEF\x80\x97";
         static constexpr const char* bell = "\xEF\x83\xB3";
         static constexpr const char* notbell = "\xEF\x87\xB6";
 	static constexpr const char* info = "\xEF\x84\xA9";
+<<<<<<< HEAD
+=======
+>>>>>>> 504f5774 (copy :( files from gitlab repo)
+=======
+        static constexpr const char* paw = "\xEF\x86\xB0";
+        static constexpr const char* clock = "\xEF\x80\x97";
+        static constexpr const char* bell = "\xEF\x83\xB3";
+        static constexpr const char* notbell = "\xEF\x87\xB6";
+        static constexpr const char* info = "\xEF\x84\xA9";
+>>>>>>> 9d04c32f (recovering manually changes to original Infineat)
+>>>>>>> 055b75d5 (test combiner tout)
         static constexpr const char* list = "\xEF\x80\xBA";
         static constexpr const char* sun = "\xEF\x86\x85";
         static constexpr const char* check = "\xEF\x95\xA0";
@@ -41,11 +57,28 @@ namespace Pinetime {
         static constexpr const char* eye = "\xEF\x81\xAE";
         static constexpr const char* home = "\xEF\x80\x95";
         static constexpr const char* sleep = "\xEE\xBD\x84";
+<<<<<<< HEAD
         static constexpr const char* calendar = "\xEF\x81\xB3";
         static constexpr const char* bird = "\xEF\x92\xBA";
         static constexpr const char* zzz = "\xEF\x88\xB6";
         
 	// fontawesome_weathericons.c
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+        static constexpr const char* bird = "\xEF\x92\xBA";
+        static constexpr const char* zzz = "\xEF\x88\xB6";
+=======
+	static constexpr const char* bird = "\xEF\x92\xBA";
+	static constexpr const char* zzz = "\xEF\x88\xB6";
+>>>>>>> 504f5774 (copy :( files from gitlab repo)
+=======
+        static constexpr const char* bird = "\xEF\x92\xBA";
+        static constexpr const char* zzz = "\xEF\x88\xB6";
+>>>>>>> 9d04c32f (recovering manually changes to original Infineat)
+
+        // fontawesome_weathericons.c
+>>>>>>> 055b75d5 (test combiner tout)
         // static constexpr const char* sun = "\xEF\x86\x85";
         static constexpr const char* cloudSun = "\xEF\x9B\x84";
         static constexpr const char* cloudSunRain = "\xEF\x9D\x83";
