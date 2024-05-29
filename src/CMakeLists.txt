@@ -427,9 +427,8 @@ list(APPEND SOURCE_FILES
 	displayapp/screens/WatchFaceMeow.cpp
         displayapp/screens/WatchFaceTerminal.cpp
         displayapp/screens/WatchFacePineTimeStyle.cpp
-	displayapp/screens/WatchFaceInfineatColors.cpp
 	displayapp/screens/WatchFaceMeow.cpp
-	#displayapp/screens/WatchFaceCasioStyleG7710.cpp
+	displayapp/screens/WatchFaceCasioStyleG7710.cpp
 
         ##
 

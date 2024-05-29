@@ -320,9 +320,7 @@ namespace Pinetime {
         PineTimeStyle PTS;
 
         WatchFaceInfineat watchFaceInfineat;
-	WatchFaceInfineatColors watchFaceInfineatColors;
-	WatchFaceMeow watchFaceMeow;
-
+	
         WatchFaceMeow watchFaceMeow;
 
         std::bitset<5> wakeUpMode {0};
