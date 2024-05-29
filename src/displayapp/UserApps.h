@@ -12,10 +12,6 @@
 #include "displayapp/screens/WatchFaceAnalog.h"
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
 #include "displayapp/screens/WatchFaceInfineat.h"
-<<<<<<< HEAD
-#include "displayapp/screens/WatchFaceInfineatColors.h"
-=======
->>>>>>> 9d04c32f (recovering manually changes to original Infineat)
 #include "displayapp/screens/WatchFaceMeow.h"
 #include "displayapp/screens/WatchFacePineTimeStyle.h"
 #include "displayapp/screens/WatchFaceTerminal.h"
