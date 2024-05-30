@@ -14,6 +14,7 @@ tools
 
 # My stuff
 #draft_pictures
+node_modules
 
 # Resulting binary files
 *.a
