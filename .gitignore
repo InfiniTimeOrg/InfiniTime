@@ -11,6 +11,7 @@ cmake_install.cmake
 Makefile
 build
 tools
+node_modules
 
 # Resulting binary files
 *.a
