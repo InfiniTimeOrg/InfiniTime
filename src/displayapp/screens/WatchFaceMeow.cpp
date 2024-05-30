@@ -170,16 +170,19 @@ WatchFaceMeow::WatchFaceMeow(Controllers::DateTime& dateTimeController,
   }
 
   // Side Cover
-  static constexpr lv_point_t linePoints[nLines][2] = {{{30, 25}, {68, -8}},
-                                                       {{26, 167}, {43, 216}},
-                                                       {{27, 40}, {27, 196}},
-                                                       {{12, 182}, {65, 249}},
-                                                       {{17, 99}, {17, 144}},
-                                                       {{14, 81}, {40, 127}},
-                                                       {{14, 163}, {40, 118}},
-                                                       {{-20, 124}, {25, -11}},
-                                                       {{-29, 89}, {27, 254}}};
+  //paires de points pour chaque ligne
+  // les lignes sont pas les contours des triangles, elles sont des grosses bandes superposées
 
+  static constexpr lv_point_t linePoints[nLines][2] = {{{30, 25}, {68, -8}}, //1 small triangle on top
+                                                       {{26, 167}, {43, 216}}, //2 purple, smalltriangle in the bottom half part on the clock display side
+                                                       {{27, 40}, {27, 196}},// 3 small triangles up above and below battery
+                                                       {{12, 182}, {65, 249}}, //4 most bottom right triangle
+                                                       {{17, 97}, {17, 147}}, // 5 left part of battery zone, overlapped after by the large triangles
+                                                       {{16, 81}, {42, 127}}, //6 upper part of battery zone
+                                                       {{16, 163}, {42, 118}}, //7 lower part of battery zone
+                                                       {{-20, 124}, {25, -11}}, //8 large upper triangle
+                                                       {{-29, 89}, {27, 254}}}; //9 large lower triangle
+  //largeur des bandes
   static constexpr lv_style_int_t lineWidths[nLines] = {18, 15, 14, 22, 20, 18, 18, 52, 48};
 
   const std::array<lv_color_t, nLines>* colors = returnColor(static_cast<enum colors>(settingsController.GetInfineatColorIndex()));
@@ -193,15 +196,16 @@ WatchFaceMeow::WatchFaceMeow(Controllers::DateTime& dateTimeController,
 
   //Battery indicator
   logoPine = lv_img_create(lv_scr_act(), nullptr);
-  lv_img_set_src(logoPine, "F:/images/pine_small.bin");
-  lv_obj_set_pos(logoPine, 15, 106);
+  lv_img_set_src(logoPine, "F:/images/cat_small.bin");
+  
+  lv_obj_set_pos(logoPine, 12, 108);
 
   lineBattery = lv_line_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_line_width(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 24);
+  lv_obj_set_style_local_line_width(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 30);
   lv_obj_set_style_local_line_color(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, (*colors)[4]);
   lv_obj_set_style_local_line_opa(lineBattery, LV_LINE_PART_MAIN, LV_STATE_DEFAULT, 190);
-  lineBatteryPoints[0] = {27, 105};
-  lineBatteryPoints[1] = {27, 106};
+  lineBatteryPoints[0] = {27, 107};//27 = image x offset + image width / 2
+  lineBatteryPoints[1] = {27, 108};// the line covering the image is initialized as 1 px high
   lv_line_set_points(lineBattery, lineBatteryPoints, 2);
   lv_obj_move_foreground(lineBattery);
 
@@ -533,8 +537,9 @@ void WatchFaceMeow::Refresh() {
 }
 
 void WatchFaceMeow::SetBatteryLevel(uint8_t batteryPercent) {
-  // starting point (y) + Pine64 logo height * (100 - batteryPercent) / 100
-  lineBatteryPoints[1] = {27, static_cast<lv_coord_t>(105 + 32 * (100 - batteryPercent) / 100)};
+  // starting point (y) + Pine64 logo height * (100 - batteryPercent) / 100^
+  //the ligne grows, it covers the icon starting from the top
+  lineBatteryPoints[1] = {27, static_cast<lv_coord_t>(107 + 31 * (100 - batteryPercent) / 100)};
   lv_line_set_points(lineBattery, lineBatteryPoints, 2);
 }
 
@@ -565,7 +570,7 @@ bool WatchFaceMeow::IsAvailable(Pinetime::Controllers::FS& filesystem) {
   }
 
   filesystem.FileClose(&file);
-  if (filesystem.FileOpen(&file, "/images/pine_small.bin", LFS_O_RDONLY) < 0) {
+  if (filesystem.FileOpen(&file, "/images/cat_small.bin", LFS_O_RDONLY) < 0) {
     return false;
   }
 
