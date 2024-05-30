@@ -2,5 +2,5 @@
 
 #cp ./displayapp/apps/Apps.h ../src/displayapp/apps/Apps.h
 
-make -j4 pinetime-mcuboot-app
+make clean -j4 pinetime-mcuboot-app
 

@@ -1,5 +1,5 @@
 #pragma once
-
+//check https://github.com/InfiniTimeOrg/InfiniTime/blob/main/src/displayapp/fonts/README.md  to add new symbols
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
@@ -10,6 +10,7 @@ namespace Pinetime {
         static constexpr const char* bluetooth = "\xEF\x8A\x94";
         static constexpr const char* plug = "\xEF\x87\xA6";
         static constexpr const char* shoe = "\xEF\x95\x8B";
+        static constexpr const char* paw = "\xEF\x86\xB0";
         static constexpr const char* clock = "\xEF\x80\x97";
         static constexpr const char* bell = "\xEF\x83\xB3";
         static constexpr const char* notbell = "\xEF\x87\xB6";
@@ -40,7 +41,12 @@ namespace Pinetime {
         static constexpr const char* eye = "\xEF\x81\xAE";
         static constexpr const char* home = "\xEF\x80\x95";
         static constexpr const char* sleep = "\xEE\xBD\x84";
+<<<<<<< HEAD
         static constexpr const char* calendar = "\xEF\x81\xB3";
+=======
+        static constexpr const char* bird = "\xEF\x92\xBA";
+        static constexpr const char* zzz = "\xEF\x88\xB6";
+>>>>>>> d7de641b (added symbols for alarm states, added alarm state and hour to watchface meow, changed steps to paw. Need to align everythign nicely and find where to change release number)
 
         // fontawesome_weathericons.c
         // static constexpr const char* sun = "\xEF\x86\x85";

@@ -53,6 +53,7 @@ namespace Pinetime {
       Terminal,
       Infineat,
       InfineatColors,
+      Meow,
       CasioStyleG7710,
     };
 
