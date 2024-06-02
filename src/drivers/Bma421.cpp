@@ -126,13 +126,6 @@ Bma421::Values Bma421::Process() {
   uint32_t steps = 0;
   bma423_step_counter_output(&steps, &bma);
 
-  int32_t temperature;
-  bma4_get_temperature(&temperature, BMA4_DEG, &bma);
-  temperature = temperature / 1000;
-
-  uint8_t activity = 0;
-  bma423_activity_output(&activity, &bma);
-
   // X and Y axis are swapped because of the way the sensor is mounted in the PineTime
   return {steps, data.y, data.x, data.z};
 }

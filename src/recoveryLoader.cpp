@@ -121,7 +121,6 @@ void DisplayLogo() {
   Pinetime::Tools::RleDecoder rleDecoder(infinitime_nb, sizeof(infinitime_nb));
   for (int i = 0; i < displayWidth; i++) {
     rleDecoder.DecodeNext(displayBuffer, displayWidth * bytesPerPixel);
-    ulTaskNotifyTake(pdTRUE, 500);
     lcd.DrawBuffer(0, i, displayWidth, 1, reinterpret_cast<const uint8_t*>(displayBuffer), displayWidth * bytesPerPixel);
   }
 }
@@ -130,7 +129,6 @@ void DisplayProgressBar(uint8_t percent, uint16_t color) {
   static constexpr uint8_t barHeight = 20;
   std::fill(displayBuffer, displayBuffer + (displayWidth * bytesPerPixel), color);
   for (int i = 0; i < barHeight; i++) {
-    ulTaskNotifyTake(pdTRUE, 500);
     uint16_t barWidth = std::min(static_cast<float>(percent) * 2.4f, static_cast<float>(displayWidth));
     lcd.DrawBuffer(0, displayWidth - barHeight + i, barWidth, 1, reinterpret_cast<const uint8_t*>(displayBuffer), barWidth * bytesPerPixel);
   }
