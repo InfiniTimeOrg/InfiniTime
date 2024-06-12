@@ -1,5 +1,4 @@
 /*  Copyright (C) 2020 JF, Adam Pigg, Avamander
-
     This file is part of InfiniTime.
 
     InfiniTime is free software: you can redistribute it and/or modify
@@ -23,6 +22,7 @@
 #include "displayapp/icons/music/disc.c"
 #include "displayapp/icons/music/disc_f_1.c"
 #include "displayapp/icons/music/disc_f_2.c"
+#include <libraries/log/nrf_log.h>
 
 using namespace Pinetime::Applications::Screens;
 
@@ -54,6 +54,26 @@ Music::Music(Pinetime::Controllers::MusicService& music) : musicService(music) {
   lv_style_set_radius(&btn_style, LV_STATE_DEFAULT, 20);
   lv_style_set_bg_color(&btn_style, LV_STATE_DEFAULT, LV_COLOR_AQUA);
   lv_style_set_bg_opa(&btn_style, LV_STATE_DEFAULT, LV_OPA_50);
+
+  btnRewind = lv_btn_create(lv_scr_act(), nullptr);
+  btnRewind->user_data = this;
+  lv_obj_set_event_cb(btnRewind, event_handler);
+  lv_obj_set_size(btnRewind, 76, 76);
+  lv_obj_align(btnRewind, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_add_style(btnRewind, LV_STATE_DEFAULT, &btn_style);
+  label = lv_label_create(btnRewind, nullptr);
+  lv_label_set_text_static(label, "-10");
+  lv_obj_set_hidden(btnRewind, true);
+
+  btnForward = lv_btn_create(lv_scr_act(), nullptr);
+  btnForward->user_data = this;
+  lv_obj_set_event_cb(btnForward, event_handler);
+  lv_obj_set_size(btnForward, 76, 76);
+  lv_obj_align(btnForward, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lv_obj_add_style(btnForward, LV_STATE_DEFAULT, &btn_style);
+  label = lv_label_create(btnForward, nullptr);
+  lv_label_set_text_static(label, "+10");
+  lv_obj_set_hidden(btnForward, true);
 
   btnVolDown = lv_btn_create(lv_scr_act(), nullptr);
   btnVolDown->user_data = this;
@@ -223,7 +243,11 @@ void Music::UpdateLength() {
 
 void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    if (obj == btnVolDown) {
+    if (obj == btnForward) {
+      musicService.event(Controllers::MusicService::EVENT_MUSIC_FORWARD);
+    } else if (obj == btnRewind) {
+      musicService.event(Controllers::MusicService::EVENT_MUSIC_REWIND);
+    } else if (obj == btnVolDown) {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_VOLDOWN);
     } else if (obj == btnVolUp) {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_VOLUP);
@@ -248,25 +272,59 @@ void Music::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
   }
 }
 
+void Music::UpdateButtons() {
+  switch(currentButton)
+  {
+    case BTN_NEXT_PREV:
+      lv_obj_set_hidden(btnForward, true);
+      lv_obj_set_hidden(btnRewind, true);
+      lv_obj_set_hidden(btnVolDown, true);
+      lv_obj_set_hidden(btnVolUp, true);
+      lv_obj_set_hidden(btnNext, false);
+      lv_obj_set_hidden(btnPrev, false);
+      break;
+    case BTN_VOL:
+      lv_obj_set_hidden(btnForward, true);
+      lv_obj_set_hidden(btnRewind, true);
+      lv_obj_set_hidden(btnVolDown, false);
+      lv_obj_set_hidden(btnVolUp, false);
+      lv_obj_set_hidden(btnNext, true);
+      lv_obj_set_hidden(btnPrev, true);
+      break;
+    case BTN_FOR_REWIND:
+      lv_obj_set_hidden(btnForward, false);
+      lv_obj_set_hidden(btnRewind, false);
+      lv_obj_set_hidden(btnVolDown, true);
+      lv_obj_set_hidden(btnVolUp, true);
+      lv_obj_set_hidden(btnNext, true);
+      lv_obj_set_hidden(btnPrev, true);
+      break;
+    default:
+      lv_obj_set_hidden(btnForward, true);
+      lv_obj_set_hidden(btnRewind, true);
+      lv_obj_set_hidden(btnVolDown, true);
+      lv_obj_set_hidden(btnVolUp, true);
+      lv_obj_set_hidden(btnNext, false);
+      lv_obj_set_hidden(btnPrev, false);
+      break;
+  }
+}
+
 bool Music::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   switch (event) {
     case TouchEvents::SwipeUp: {
-      lv_obj_set_hidden(btnVolDown, false);
-      lv_obj_set_hidden(btnVolUp, false);
-
-      lv_obj_set_hidden(btnNext, true);
-      lv_obj_set_hidden(btnPrev, true);
+      currentButton++;
+      if (currentButton > BTN_MAX-1)
+        currentButton = 0;
+      UpdateButtons();
       return true;
     }
     case TouchEvents::SwipeDown: {
-      if (lv_obj_get_hidden(btnNext)) {
-        lv_obj_set_hidden(btnNext, false);
-        lv_obj_set_hidden(btnPrev, false);
-        lv_obj_set_hidden(btnVolDown, true);
-        lv_obj_set_hidden(btnVolUp, true);
-        return true;
-      }
-      return false;
+      currentButton--;
+      if (currentButton < 0)
+        currentButton = BTN_MAX-1;
+      UpdateButtons();
+      return true;
     }
     case TouchEvents::SwipeLeft: {
       musicService.event(Controllers::MusicService::EVENT_MUSIC_NEXT);
