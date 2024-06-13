@@ -43,13 +43,9 @@ void AlarmController::SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin) {
   minutes = alarmMin;
 }
 
-void AlarmController::ScheduleAlarm() {
-  // Determine the next time the alarm needs to go off and set the timer
-  xTimerStop(alarmTimer, 0);
-
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> AlarmController::CalculateAlarmTimePoint() const {
   auto now = dateTimeController.CurrentDateTime();
-  alarmTime = now;
-  time_t ttAlarmTime = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::system_clock::duration>(alarmTime));
+  time_t ttAlarmTime = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::system_clock::duration>(now));
   tm* tmAlarmTime = std::localtime(&ttAlarmTime);
 
   // If the time being set has already passed today,the alarm should be set for tomorrow
@@ -74,8 +70,15 @@ void AlarmController::ScheduleAlarm() {
   tmAlarmTime->tm_isdst = -1; // use system timezone setting to determine DST
 
   // now can convert back to a time_point
-  alarmTime = std::chrono::system_clock::from_time_t(std::mktime(tmAlarmTime));
-  auto secondsToAlarm = std::chrono::duration_cast<std::chrono::seconds>(alarmTime - now).count();
+  return std::chrono::system_clock::from_time_t(std::mktime(tmAlarmTime));
+}
+
+void AlarmController::ScheduleAlarm() {
+  // Determine the next time the alarm needs to go off and set the timer
+  xTimerStop(alarmTimer, 0);
+
+  auto secondsToAlarm =
+    std::chrono::duration_cast<std::chrono::seconds>(CalculateAlarmTimePoint() - dateTimeController.CurrentDateTime()).count();
   xTimerChangePeriod(alarmTimer, secondsToAlarm * configTICK_RATE_HZ, 0);
   xTimerStart(alarmTimer, 0);
 
@@ -83,7 +86,7 @@ void AlarmController::ScheduleAlarm() {
 }
 
 uint32_t AlarmController::SecondsToAlarm() const {
-  return std::chrono::duration_cast<std::chrono::seconds>(alarmTime - dateTimeController.CurrentDateTime()).count();
+  return std::chrono::duration_cast<std::chrono::seconds>(CalculateAlarmTimePoint() - dateTimeController.CurrentDateTime()).count();
 }
 
 void AlarmController::DisableAlarm() {

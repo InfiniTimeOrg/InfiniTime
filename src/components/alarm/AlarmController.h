@@ -63,12 +63,13 @@ namespace Pinetime {
       }
 
     private:
+      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CalculateAlarmTimePoint() const;
+
       Controllers::DateTime& dateTimeController;
       System::SystemTask* systemTask = nullptr;
       TimerHandle_t alarmTimer;
       uint8_t hours = 7;
       uint8_t minutes = 0;
-      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> alarmTime;
       AlarmState state = AlarmState::Not_Set;
       RecurType recurrence = RecurType::None;
     };
