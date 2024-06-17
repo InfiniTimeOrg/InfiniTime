@@ -25,7 +25,8 @@ namespace Pinetime {
                                Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                                Pinetime::Controllers::MotorController& motorController,
                                System::SystemTask& systemTask,
-                               Modes mode);
+                               Modes mode,
+                               Controllers::FS& filesystem);
         ~Notifications() override;
 
         void Refresh() override;
@@ -90,6 +91,7 @@ namespace Pinetime {
         bool dismissingNotification = false;
 
         lv_task_t* taskRefresh;
+        lv_font_t* lang_pack = nullptr;
       };
     }
   }
