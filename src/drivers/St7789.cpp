@@ -16,6 +16,7 @@ void St7789::Init() {
   nrf_gpio_pin_set(pinReset);
   HardwareReset();
   SoftwareReset();
+  Command2Enable();
   SleepOut();
   PixelFormat();
   MemoryDataAccessControl();
@@ -24,8 +25,13 @@ void St7789::Init() {
 #ifndef DRIVER_DISPLAY_MIRROR
   DisplayInversionOn();
 #endif
+  PorchSet();
+  FrameRateNormalSet();
+  IdleFrameRateOff();
   NormalModeOn();
   SetVdv();
+  PowerControl();
+  GateControl();
   DisplayOn();
 }
 
@@ -61,6 +67,17 @@ void St7789::SoftwareReset() {
   sleepIn = true;
   lastSleepExit = xTaskGetTickCount();
   vTaskDelay(pdMS_TO_TICKS(125));
+}
+
+void St7789::Command2Enable() {
+  WriteCommand(static_cast<uint8_t>(Commands::Command2Enable));
+  constexpr uint8_t args[] = {
+    0x5a, // Constant
+    0x69, // Constant
+    0x02, // Constant
+    0x01, // Enable
+  };
+  WriteData(args, sizeof(args));
 }
 
 void St7789::SleepOut() {
@@ -127,8 +144,77 @@ void St7789::NormalModeOn() {
   WriteCommand(static_cast<uint8_t>(Commands::NormalModeOn));
 }
 
+void St7789::IdleModeOn() {
+  WriteCommand(static_cast<uint8_t>(Commands::IdleModeOn));
+}
+
+void St7789::IdleModeOff() {
+  WriteCommand(static_cast<uint8_t>(Commands::IdleModeOff));
+}
+
+void St7789::PorchSet() {
+  WriteCommand(static_cast<uint8_t>(Commands::Porch));
+  constexpr uint8_t args[] = {
+    0x02, // Normal mode front porch
+    0x03, // Normal mode back porch
+    0x01, // Porch control enable
+    0xed, // Idle mode front:back porch
+    0xed, // Partial mode front:back porch (partial mode unused but set anyway)
+  };
+  WriteData(args, sizeof(args));
+}
+
+void St7789::FrameRateNormalSet() {
+  WriteCommand(static_cast<uint8_t>(Commands::FrameRateNormal));
+  // Note that the datasheet table is imprecise - see formula below table
+  WriteData(0x0a);
+}
+
+void St7789::IdleFrameRateOn() {
+  WriteCommand(static_cast<uint8_t>(Commands::FrameRateIdle));
+  // According to the datasheet, these controls should apply only to partial/idle mode
+  // However they appear to apply to normal mode, so we have to enable/disable
+  // every time we enter/exit always on
+  // In testing this divider appears to actually be 16x?
+  constexpr uint8_t args[] = {
+    0x13, // Enable frame rate control for partial/idle mode, 8x frame divider
+    0x1e, // Idle mode frame rate
+    0x1e, // Partial mode frame rate (unused)
+  };
+  WriteData(args, sizeof(args));
+}
+
+void St7789::IdleFrameRateOff() {
+  WriteCommand(static_cast<uint8_t>(Commands::FrameRateIdle));
+  constexpr uint8_t args[] = {
+    0x00, // Disable frame rate control and divider
+    0x0a, // Idle mode frame rate (normal)
+    0x0a, // Partial mode frame rate (normal, unused)
+  };
+  WriteData(args, sizeof(args));
+}
+
 void St7789::DisplayOn() {
   WriteCommand(static_cast<uint8_t>(Commands::DisplayOn));
+}
+
+void St7789::PowerControl() {
+  WriteCommand(static_cast<uint8_t>(Commands::PowerControl1));
+  constexpr uint8_t args[] = {
+    0xa4, // Constant
+    0x00, // Lowest possible voltages
+  };
+  WriteData(args, sizeof(args));
+
+  WriteCommand(static_cast<uint8_t>(Commands::PowerControl2));
+  // Lowest possible boost circuit clocks
+  WriteData(0xb3);
+}
+
+void St7789::GateControl() {
+  WriteCommand(static_cast<uint8_t>(Commands::GateControl));
+  // Lowest possible VGL/VGH
+  WriteData(0x00);
 }
 
 void St7789::SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
@@ -196,6 +282,18 @@ void St7789::HardwareReset() {
   sleepIn = true;
   lastSleepExit = xTaskGetTickCount();
   vTaskDelay(pdMS_TO_TICKS(125));
+}
+
+void St7789::LowPowerOn() {
+  IdleModeOn();
+  IdleFrameRateOn();
+  NRF_LOG_INFO("[LCD] Low power mode");
+}
+
+void St7789::LowPowerOff() {
+  IdleModeOff();
+  IdleFrameRateOff();
+  NRF_LOG_INFO("[LCD] Normal power mode");
 }
 
 void St7789::Sleep() {

@@ -18,7 +18,7 @@ namespace Pinetime {
         TimerDone,
         BleFirmwareUpdateStarted,
         DimScreen,
-        RestoreBrightness,
+        NotifyDeviceActivity,
         ShowPairingKey,
         AlarmTriggered,
         Chime,
