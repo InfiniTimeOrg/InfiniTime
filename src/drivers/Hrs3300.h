@@ -21,6 +21,11 @@ namespace Pinetime {
         Hgain = 0x17
       };
 
+      struct PackedHrsAls {
+        uint16_t hrs;
+        uint16_t als;
+      };
+
       Hrs3300(TwiMaster& twiMaster, uint8_t twiAddress);
       Hrs3300(const Hrs3300&) = delete;
       Hrs3300& operator=(const Hrs3300&) = delete;
@@ -30,10 +35,7 @@ namespace Pinetime {
       void Init();
       void Enable();
       void Disable();
-      uint32_t ReadHrs();
-      uint32_t ReadAls();
-      void SetGain(uint8_t gain);
-      void SetDrive(uint8_t drive);
+      PackedHrsAls ReadHrsAls();
 
     private:
       TwiMaster& twiMaster;
