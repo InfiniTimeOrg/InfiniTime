@@ -12,11 +12,13 @@ void Timer::StartTimer(std::chrono::milliseconds duration) {
 }
 
 std::chrono::milliseconds Timer::GetTimeRemaining() {
+  TickType_t remainingTime = 0;
   if (IsRunning()) {
-    TickType_t remainingTime = xTimerGetExpiryTime(timer) - xTaskGetTickCount();
-    return std::chrono::milliseconds(remainingTime * 1000 / configTICK_RATE_HZ);
+    remainingTime = xTimerGetExpiryTime(timer) - xTaskGetTickCount();
+  } else {
+    remainingTime = xTaskGetTickCount() - xTimerGetExpiryTime(timer);
   }
-  return std::chrono::milliseconds(0);
+  return std::chrono::milliseconds(remainingTime * 1000 / configTICK_RATE_HZ);
 }
 
 void Timer::StopTimer() {
