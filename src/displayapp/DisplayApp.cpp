@@ -242,6 +242,9 @@ void DisplayApp::Refresh() {
           brightnessController.Lower();
           vTaskDelay(100);
         }
+        currentScreen->OnLCDSleep();
+        lv_task_handler(); // call to update display, will not be called again in Idle mode
+        vTaskDelay(100);   // give time for display refresh
         lcd.Sleep();
         PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
         state = States::Idle;
@@ -251,6 +254,7 @@ void DisplayApp::Refresh() {
         lv_disp_trig_activity(nullptr);
         ApplyBrightness();
         state = States::Running;
+        currentScreen->OnLCDWakeup();
         break;
       case Messages::UpdateBleConnection:
         //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :

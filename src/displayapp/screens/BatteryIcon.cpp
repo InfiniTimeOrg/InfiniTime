@@ -45,6 +45,11 @@ void BatteryIcon::SetColor(lv_color_t color) {
   lv_obj_set_style_local_bg_color(batteryJuice, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, color);
 }
 
+void BatteryIcon::SetVisible(bool visible) {
+  lv_obj_set_hidden(batteryImg, !visible);
+  lv_obj_set_hidden(batteryJuice, !visible);
+}
+
 const char* BatteryIcon::GetPlugIcon(bool isCharging) {
   if (isCharging)
     return Symbols::plug;
