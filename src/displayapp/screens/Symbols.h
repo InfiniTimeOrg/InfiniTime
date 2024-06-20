@@ -64,6 +64,9 @@ namespace Pinetime {
 
         static constexpr const char* flashlight = "\xEF\x80\x8B";
         static constexpr const char* paintbrushLg = "\xEE\x90\x8A";
+
+        // wake-up screenlock icon, from material icons
+        static constexpr const char* lock = "\xEE\xA2\x97";
       }
     }
   }
