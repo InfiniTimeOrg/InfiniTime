@@ -12,6 +12,7 @@
 #include "components/ble/SimpleWeatherService.h"
 #include "components/ble/BleController.h"
 #include "utility/DirtyValue.h"
+#include "displayapp/apps/WatchFaces.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -122,8 +123,7 @@ namespace Pinetime {
     }
 
     template <>
-    struct WatchFaceTraits<WatchFace::PineTimeStyle> {
-      static constexpr WatchFace watchFace = WatchFace::PineTimeStyle;
+    struct WatchFaceTraits<Screens::WatchFacePineTimeStyle> {
       static constexpr const char* name = "PineTimeStyle";
 
       static Screens::Screen* Create(AppControllers& controllers) {
