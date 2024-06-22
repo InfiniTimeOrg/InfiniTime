@@ -33,10 +33,11 @@ Notifications::Notifications(DisplayApp* app,
                                                      notification.category,
                                                      notificationManager.NbNotifications(),
                                                      alertNotificationService,
-                                                     motorController);
+                                                     motorController,
+                                                     this);
     validDisplay = true;
   } else {
-    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController, this);
     validDisplay = false;
   }
   if (mode == Modes::Preview) {
@@ -82,7 +83,7 @@ void Notifications::Refresh() {
 
   } else if (mode == Modes::Preview && dismissingNotification) {
     running = false;
-    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+    currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController, this);
 
   } else if (dismissingNotification) {
     dismissingNotification = false;
@@ -111,9 +112,10 @@ void Notifications::Refresh() {
                                                        notification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       this);
     } else {
-      currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController);
+      currentItem = std::make_unique<NotificationItem>(alertNotificationService, motorController, this);
     }
   }
 
@@ -137,6 +139,25 @@ void Notifications::DismissToBlack() {
   lv_obj_set_size(blackBox, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_style_local_bg_color(blackBox, LV_OBJ_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
   dismissingNotification = true;
+}
+
+void Notifications::DismissAll() {
+  if (validDisplay) {
+    auto previousMessage = notificationManager.GetPrevious(currentId);
+    auto nextMessage = notificationManager.GetNext(currentId);
+    while (notificationManager.NbNotifications() != 0) {
+      previousMessage = notificationManager.GetPrevious(currentId);
+      nextMessage = notificationManager.GetNext(currentId);
+      afterDismissNextMessageFromAbove = previousMessage.valid;
+      notificationManager.Dismiss(currentId);
+      if (previousMessage.valid) {
+        currentId = previousMessage.id;
+      } else if (nextMessage.valid) {
+        currentId = nextMessage.id;
+      }
+    }
+    DismissToBlack();
+  }
 }
 
 void Notifications::OnPreviewDismiss() {
@@ -163,7 +184,11 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
   switch (event) {
     case Pinetime::Applications::TouchEvents::SwipeRight:
-      if (validDisplay) {
+      if (dismissMenuOpen) {
+        currentItem->hideClearBtn();
+        app->SetFullRefresh(DisplayApp::FullRefreshDirections::Left);
+        dismissMenuOpen = false;
+      } else if (validDisplay) {
         auto previousMessage = notificationManager.GetPrevious(currentId);
         auto nextMessage = notificationManager.GetNext(currentId);
         afterDismissNextMessageFromAbove = previousMessage.valid;
@@ -179,6 +204,14 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
         return true;
       }
       return false;
+    case Pinetime::Applications::TouchEvents::SwipeLeft:
+      if (notificationManager.NbNotifications() == 0) {
+        return false;
+      }
+      currentItem->showClearBtn();
+      app->SetFullRefresh(DisplayApp::FullRefreshDirections::Right);
+      dismissMenuOpen = true;
+      return true;
     case Pinetime::Applications::TouchEvents::SwipeDown: {
       Controllers::NotificationManager::Notification previousNotification;
       if (validDisplay) {
@@ -202,7 +235,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        previousNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       this);
     }
       return true;
     case Pinetime::Applications::TouchEvents::SwipeUp: {
@@ -229,7 +263,8 @@ bool Notifications::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                                        nextNotification.category,
                                                        notificationManager.NbNotifications(),
                                                        alertNotificationService,
-                                                       motorController);
+                                                       motorController,
+                                                       this);
     }
       return true;
     default:
@@ -242,17 +277,23 @@ namespace {
     auto* item = static_cast<Notifications::NotificationItem*>(obj->user_data);
     item->OnCallButtonEvent(obj, event);
   }
+  void DismissEventHandler(lv_obj_t* obj, lv_event_t event) {
+    auto* item = static_cast<Notifications::NotificationItem*>(obj->user_data);
+    item->OnDismissButtonEvent(event);
+  }
 }
 
 Notifications::NotificationItem::NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController)
+                                                  Pinetime::Controllers::MotorController& motorController,
+                                                  Notifications *parent)
   : NotificationItem("Notification",
                      "No notification to display",
                      0,
                      Controllers::NotificationManager::Categories::Unknown,
                      0,
                      alertNotificationService,
-                     motorController) {
+                     motorController,
+                     parent) {
 }
 
 Notifications::NotificationItem::NotificationItem(const char* title,
@@ -261,8 +302,9 @@ Notifications::NotificationItem::NotificationItem(const char* title,
                                                   Controllers::NotificationManager::Categories category,
                                                   uint8_t notifNb,
                                                   Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                                                  Pinetime::Controllers::MotorController& motorController)
-  : alertNotificationService {alertNotificationService}, motorController {motorController} {
+                                                  Pinetime::Controllers::MotorController& motorController,
+                                                  Notifications *parent)
+  : alertNotificationService {alertNotificationService}, motorController {motorController}, parent {parent} {
   container = lv_cont_create(lv_scr_act(), nullptr);
   lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
   lv_obj_set_style_local_bg_color(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
@@ -306,6 +348,20 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   lv_obj_t* alert_subject = lv_label_create(subject_container, nullptr);
   lv_label_set_long_mode(alert_subject, LV_LABEL_LONG_BREAK);
   lv_obj_set_width(alert_subject, LV_HOR_RES - 20);
+
+  btnClearAll = lv_btn_create(lv_scr_act(), nullptr);
+  btnClearAll->user_data = this;
+  lv_obj_set_size(btnClearAll, 100, 100);
+  lv_obj_align(btnClearAll, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
+  lv_obj_set_style_local_bg_color(btnClearAll, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  lv_obj_set_style_local_pad_all(btnClearAll, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 10);
+  lv_obj_set_style_local_pad_inner(btnClearAll, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 5);
+  lv_obj_set_style_local_border_width(btnClearAll, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
+  lv_obj_set_event_cb(btnClearAll, DismissEventHandler);
+  labelBtnClearAll = lv_label_create(btnClearAll, nullptr);
+  lv_label_set_text_static(labelBtnClearAll, "Dismiss\n  All");
+  lv_obj_set_hidden(btnClearAll, true);
+
 
   switch (category) {
     default:
@@ -351,6 +407,16 @@ Notifications::NotificationItem::NotificationItem(const char* title,
   }
 }
 
+void Notifications::NotificationItem::showClearBtn() {
+  lv_obj_set_pos(container, -100, 0);
+  lv_obj_set_hidden(btnClearAll, false);
+}
+
+void Notifications::NotificationItem::hideClearBtn() {
+  lv_obj_set_pos(container, 0, 0);
+  lv_obj_set_hidden(btnClearAll, true);
+}
+
 void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_t event) {
   if (event != LV_EVENT_CLICKED) {
     return;
@@ -367,6 +433,14 @@ void Notifications::NotificationItem::OnCallButtonEvent(lv_obj_t* obj, lv_event_
   }
 
   running = false;
+}
+
+void Notifications::NotificationItem::OnDismissButtonEvent(lv_event_t event) {
+  if (event != LV_EVENT_CLICKED) {
+    return;
+  }
+
+  this->parent->DismissAll();
 }
 
 Notifications::NotificationItem::~NotificationItem() {
