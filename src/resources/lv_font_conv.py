@@ -13,9 +13,55 @@ from fontTools import ttLib
 __version__ = "0.0.1"
 
 class FontArg:
-    font : str # path to input font file
-    ranges : list = [] # ranges of glyps to copy
-    symbols : str = "" # list of characters to copy
+    def __init__(
+        self,
+        font: str, # path to input font file
+         ):
+        self.font = font
+        self.symbols : str = "" # list of characters to copy
+        self.args: str = ""
+    def add_ranges(self, ranges: str):
+        if self.args == "":
+            self.args = f"range({ranges})"
+        else:
+            self.args += f" range({ranges})"
+        for code_str in ranges.split(","):
+            # to char
+            if "-" in code_str:
+                begin_str, end_str = code_str.split("-")
+                begin_code = int(begin_str, 0)
+                end_code = int(end_str, 0)
+                for code in range(begin_code, end_code+1):
+                    self.symbols += chr(code)
+            else:
+                code = int(code_str, 0)
+                self.symbols += chr(code)
+    def add_symbols(self, symbols: str):
+        if self.args == "":
+            self.args = f"symbols({symbols})"
+        else:
+            self.args = f" symbols({symbols})"
+        self.symbols += symbols
+
+class FontAction(argparse.Action):
+    def __init__(self, option_strings, dest, nargs=None, **kwargs):
+        # store all into 'font' destination
+        dest = "font"
+        super().__init__(option_strings, dest, **kwargs)
+    def __call__(self, parser, namespace, values, option_string=None):
+        font = getattr(namespace, self.dest)
+        if option_string == "--font":
+            if font is None:
+                font = [FontArg(values)]
+            else:
+                font.append(FontArg(values))
+        elif option_string == "--range":
+            font[-1].add_ranges(values)
+        elif option_string == "--symbols":
+            font[-1].add_symbols(values)
+        else:
+            raise argparse.ArgumentError("unhandled option_string: " + option_string)
+        setattr(namespace, self.dest, font)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -48,7 +94,7 @@ def main():
         required=True)
     parser.add_argument("--font",
         help="Source font path. Can be used multiple times to merge glyphs from different fonts.",
-        action=argparse._AppendAction,
+        action=FontAction,
         required=True)
 #  -r RANGE, --range RANGE
 #                        Range of glyphs to copy. Can be used multiple times, belongs to previously declared
@@ -67,10 +113,12 @@ def main():
       -r 32-127
       -r 32-127,0x1F450
       -r '0x1F450=>0xF005'
-      -r '0x1F450-0x1F470=>0xF005'""")
+      -r '0x1F450-0x1F470=>0xF005'""",
+      action=FontAction)
     parser.add_argument("--symbols",
         help="List of characters to copy, belongs to previously declared \"--font\". Examples:"
-        "     '--symbols ,.0123456789' or '--symbols abcdefghigklmnopqrstuvwxyz'")
+        "     '--symbols ,.0123456789' or '--symbols abcdefghigklmnopqrstuvwxyz'",
+      action=FontAction)
 #  --autohint-off        Disable autohinting for previously declared "--font"
 #  --autohint-strong     Use more strong autohinting for previously declared "--font" (will break kerning)
 #  --force-fast-kern-format
@@ -97,39 +145,37 @@ def main():
 
     if args.size <= 0:
         raise RuntimeError("--size must be a positive integer greater than 0")
+    if args.font is None:
+        raise RuntimeError("no --font argument supplied")
 
-    if not pathlib.Path(args.font[0]).is_file():
-        raise RuntimeError(f"provided font file doesn't exist: {args.font[0]}")
-    #tt = ttLib.TTFont(args.font[0]) # Load an existing font file
-    #print(tt['maxp'].numGlyphs)
-    #print(tt['OS/2'].achVendID)
-    #print(tt['head'].unitsPerEm)
-    #print(tt.getGlyphNames())
-    #print(tt.getGlyphID("zero"))
-    #print(tt.keys())
-    # https://stackoverflow.com/questions/70368410/how-to-render-a-ttf-glyf-to-a-image-with-fonttools
-    # https://pillow.readthedocs.io/en/stable/reference/ImageFont.html
-    font = ImageFont.truetype(args.font[0], args.size)
-    ascent, descent = font.getmetrics()
-    text = args.symbols if args.symbols else ""
-    if args.range:
-        for code_str in args.range.split(","):
-            # to char
-            if "-" in code_str:
-                begin_str, end_str = code_str.split("-")
-                begin_code = int(begin_str, 0)
-                end_code = int(end_str, 0)
-                for code in range(begin_code, end_code+1):
-                    text += chr(code)
-            else:
-                code = int(code_str, 0)
-                text += chr(code)
+    for idx, font_arg in enumerate(args.font):
+        if not isinstance(font_arg, FontArg):
+            raise RuntimeError(f"font_arg is expected to be a FontArg type, but got type: {type(font_arg)}")
 
-    image = Image.new(mode='L', size=(args.size*len(text), args.size), color=224)
+        if not pathlib.Path(font_arg.font).is_file():
+            raise RuntimeError(f"provided font file doesn't exist: {font_arg.font}")
 
-    draw = ImageDraw.Draw(image)
-    draw.text((0,-descent), text, font=font)
-    image.save("out.png")
+        print(f"processing font: {font_arg.font}")
+        print(f"- args: {font_arg.args}")
+        print(f"- characters: {font_arg.symbols}")
+        #tt = ttLib.TTFont(args.font[0]) # Load an existing font file
+        #print(tt['maxp'].numGlyphs)
+        #print(tt['OS/2'].achVendID)
+        #print(tt['head'].unitsPerEm)
+        #print(tt.getGlyphNames())
+        #print(tt.getGlyphID("zero"))
+        #print(tt.keys())
+        # https://stackoverflow.com/questions/70368410/how-to-render-a-ttf-glyf-to-a-image-with-fonttools
+        # https://pillow.readthedocs.io/en/stable/reference/ImageFont.html
+        font = ImageFont.truetype(font_arg.font, args.size)
+        ascent, descent = font.getmetrics()
+        text = font_arg.symbols
+
+        image = Image.new(mode='L', size=(args.size*len(text), args.size), color=224)
+
+        draw = ImageDraw.Draw(image)
+        draw.text((0,-descent), text, font=font)
+        image.save(f"out_{idx}.png")
 
     return 0
 
