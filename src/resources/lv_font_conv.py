@@ -40,7 +40,7 @@ class FontArg:
         if self.args == "":
             self.args = f"symbols({symbols})"
         else:
-            self.args = f" symbols({symbols})"
+            self.args += f" symbols({symbols})"
         self.symbols += symbols
 
 class FontAction(argparse.Action):
