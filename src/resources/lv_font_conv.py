@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import math
 import pathlib
 import sys
 import decimal
@@ -169,10 +170,17 @@ def main():
         # https://pillow.readthedocs.io/en/stable/reference/ImageFont.html
         font = ImageFont.truetype(font_arg.font, args.size)
         ascent, descent = font.getmetrics()
+        print(f"- ascent/descent: {ascent}, {descent}")
         text = font_arg.symbols
-
         image = Image.new(mode='L', size=(args.size*len(text), args.size), color=224)
+        draw = ImageDraw.Draw(image)
+        for c in text:
+            (width, baseline), (offset_x, offset_y) = font.font.getsize(c)
+            print(f"- '{c}': w x h: {width} x {baseline}, o_xy: {offset_x}, {offset_y}")
+            print(draw.textlength(c, font=font))
 
+        length = math.ceil(draw.textlength(text, font=font))
+        image = Image.new(mode='L', size=(length, args.size), color=224)
         draw = ImageDraw.Draw(image)
         draw.text((0,-descent), text, font=font)
         image.save(f"out_{idx}.png")
