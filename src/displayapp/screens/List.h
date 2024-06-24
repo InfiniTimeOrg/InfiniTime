@@ -8,6 +8,7 @@
 #include "displayapp/apps/Apps.h"
 #include "components/settings/Settings.h"
 
+
 #define MAXLISTITEMS 4
 
 namespace Pinetime {

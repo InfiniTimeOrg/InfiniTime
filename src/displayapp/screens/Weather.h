@@ -24,7 +24,7 @@ namespace Pinetime {
         ~Weather() override;
 
         void Refresh() override;
-
+        
       private:
         Controllers::Settings& settingsController;
         Controllers::SimpleWeatherService& weatherService;
