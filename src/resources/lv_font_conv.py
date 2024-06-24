@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import argparse
+from dataclasses import dataclass, field
 import math
 import pathlib
 import sys
-import decimal
 from PIL import Image, ImageFont, ImageDraw
 from fontTools import ttLib
 
@@ -63,6 +63,24 @@ class FontAction(argparse.Action):
         else:
             raise argparse.ArgumentError("unhandled option_string: " + option_string)
         setattr(namespace, self.dest, font)
+
+@dataclass
+class LVGlyph:
+    character: str
+    bitmap: bytearray
+    advance_width: int
+    bbox_width: int
+    bbox_height: int
+    offset_x: int
+    offset_y: int
+
+@dataclass
+class LVFont:
+    name: str
+    size: int
+    bpp: int = 1
+    opts: str = ""
+    glyphs: list[LVGlyph] = field(default_factory=list)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -149,6 +167,13 @@ def main():
     if args.font is None:
         raise RuntimeError("no --font argument supplied")
 
+    lv_font = LVFont(
+        name=pathlib.Path(args.output).stem.replace("-", "_"),
+        size=args.size,
+        bpp=args.bpp,
+        opts=" ".join(sys.argv[1:]),
+    )
+
     for idx, font_arg in enumerate(args.font):
         if not isinstance(font_arg, FontArg):
             raise RuntimeError(f"font_arg is expected to be a FontArg type, but got type: {type(font_arg)}")
@@ -174,17 +199,66 @@ def main():
         text = font_arg.symbols
         for c in text:
             (width, baseline), (offset_x, offset_y) = font.font.getsize(c)
+            (left, top, right, bottom) = font.getbbox(c)
+            length = font.getlength(c)
             print(f"- '{c}': w x h: {width} x {baseline}, o_xy: {offset_x}, {offset_y}")
-            print(font.getlength(c))
+            print(f"- '{c}': bbox l - r: {left} - {right}, t - b: {top} - {bottom}")
+            print(f"- '{c}': length: {length}")
+            lv_glyph = LVGlyph(
+                character=c,
+                bitmap=bytearray(b" "),
+                advance_width=length,
+                bbox_width=right - left,
+                bbox_height=top - bottom,
+                offset_x=offset_x,
+                offset_y=offset_y,
+            )
+            lv_font.glyphs.append(lv_glyph)
 
         length = math.ceil(font.getlength(text))
         image = Image.new(mode='L', size=(length, args.size), color=224)
         draw = ImageDraw.Draw(image)
         draw.text((0,-descent), text, font=font)
         image.save(f"out_{idx}.png")
+    if args.format == "lvgl":
+        with open(args.output, "w", encoding="utf-8") as f:
+            f.write(to_lvgl(lv_font))
+    elif args.format == "bin":
+        raise NotImplementedError("format 'bin' not yet implemented")
+    else:
+        raise RuntimeError(f"unhandled format: '{args.format}'")
 
     return 0
 
+def to_lvgl(font: LVFont):
+    macro_name = font.name.upper()
+    out = f"""/*******************************************************************************
+ * Size: {font.size} px
+ * Bpp: {font.bpp}
+ * Opts: {font.opts}
+ ******************************************************************************/
+
+#ifdef LV_LVGL_H_INCLUDE_SIMPLE
+#include "lvgl.h"
+#else
+#include "lvgl/lvgl.h"
+#endif
+
+#ifndef {macro_name}
+#define {macro_name} 1
+#endif
+
+#if {macro_name}
+
+/*-----------------
+ *    BITMAPS
+ *----------------*/
+
+/*Store the image of the glyphs*/
+static LV_ATTRIBUTE_LARGE_CONST const uint8_t glyph_bitmap[] = {{
+"""
+
+    return out
 
 if __name__ == '__main__':
     if "--test" in sys.argv:
