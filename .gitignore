@@ -12,6 +12,9 @@ Makefile
 build
 tools
 
+
+node_modules/
+
 # Resulting binary files
 *.a
 *.so
