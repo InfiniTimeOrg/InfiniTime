@@ -71,6 +71,8 @@ class LVGlyph:
     glyph_id: int
     bitmap: bytearray
     bitmap_index: int
+    # length of horizontal skip for glyp, multiplied by 16 and rounded
+    # original js code: adv_w = Math.round(d.glyph.advanceWidth * 16),
     advance_width: int
     bbox_width: int
     bbox_height: int
