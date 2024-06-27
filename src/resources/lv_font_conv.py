@@ -200,38 +200,74 @@ def main():
         # https://stackoverflow.com/questions/70368410/how-to-render-a-ttf-glyf-to-a-image-with-fonttools
         # https://pillow.readthedocs.io/en/stable/reference/ImageFont.html
         # https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
-        font = ImageFont.truetype(font_arg.font, args.size)
+        font = ImageFont.truetype(font_arg.font, args.size, layout_engine=ImageFont.Layout.BASIC)
         ascent, descent = font.getmetrics()
         print(f"- ascent/descent: {ascent}, {descent}")
         # symbols are sorted by their ASCII index, each glyp only once
         text = "".join(sorted(set(font_arg.symbols), key=ord))
 
         bitmap_index = 0
+        features = ["-liga", "-kern"]
+        font_settings = {
+            "features": features,
+            "anchor": "ls",
+        }
+        # image with 1 pixel black line between glyphs
+        image_length = sum([font.getlength(c)+1 for c in text])
+        x_pos = 0
+        image = Image.new(mode='1', size=(int(math.ceil(image_length))+1, args.size), color=224)
+        draw = ImageDraw.Draw(image)
         for c in text:
             (width, baseline), (offset_x, offset_y) = font.font.getsize(c)
+            #(left, top, right, bottom) = font.getbbox(c, **font_settings)
             (left, top, right, bottom) = font.getbbox(c)
+            #length = font.getlength(c, features=features)
             length = font.getlength(c)
-            print(f"- '{c}': w x h: {width} x {baseline}, o_xy: {offset_x}, {offset_y}")
+            #mask: Image.core = font.getmask(c, **font_settings)
+            mask: Image.core = font.getmask(c)
+            if mask.size[1] == 0:
+                mask = b"\0"
+                left = top = right = bottom = 0
+                bbox_width = 1
+                bbox_height = 1
+                offset_x = 0
+                offset_y = 0
+            else:
+                (left, top, right, bottom) = mask.getbbox()
+                bbox_width = right - left - 1
+                bbox_height = bottom - top
+                mask = mask.crop(mask.getbbox())
+            print(f"- '{c}': w x s: {width} x {baseline}, o_xy: {offset_x}, {offset_y}")
             print(f"- '{c}': bbox l - r: {left} - {right}, t - b: {top} - {bottom}")
             print(f"- '{c}': length: {length}")
             lv_glyph = LVGlyph(
                 character=c,
                 glyph_id=len(lv_font.glyphs) + 1,
-                bitmap=bytearray(b" "),
+                bitmap=bytearray(mask),
                 bitmap_index=bitmap_index,
-                advance_width=length,
-                bbox_width=abs(right - left),
-                bbox_height=abs(top - bottom),
+                advance_width=round(length * 16),
+                bbox_width=bbox_width,
+                bbox_height=bbox_height,
                 offset_x=offset_x,
                 offset_y=offset_y,
             )
+            if len(lv_glyph.bitmap) == 1:
+                lv_glyph.bbox_width = 1
+                lv_glyph.bbox_height = 1
             bitmap_index += len(lv_glyph.bitmap)
             lv_font.glyphs.append(lv_glyph)
+            # line between each glyp
+            draw.line([x_pos-1,0, x_pos-1, args.size], fill=0)
+            # draw glyp
+            #draw.text((x_pos,0), c, font=font, features=features) #, **font_settings)
+            draw.text((x_pos,bottom), c, font=font, anchor="ld") #, **font_settings)
 
-        length = math.ceil(font.getlength(text))
-        image = Image.new(mode='L', size=(length, args.size), color=224)
-        draw = ImageDraw.Draw(image)
-        draw.text((0,-descent), text, font=font)
+            # mark bbox
+            #draw.line([x_pos+offset_x,baseline, x_pos+offset_x+width, baseline], fill=128)
+            #draw.line([x_pos,0, x_pos+length, 0], fill=128)
+            x_pos += length+1
+
+        #draw.text((0,-descent), text, font=font)
         image.save(f"out_{idx}.png")
 
     # cmaps of consecutive glyphs
