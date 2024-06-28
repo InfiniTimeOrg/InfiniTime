@@ -126,6 +126,7 @@ void DisplayApp::Start(System::BootErrors error) {
   bootError = error;
 
   lvgl.Init();
+  motorController.Init();
 
   if (error == System::BootErrors::TouchController) {
     LoadNewScreen(Apps::Error, DisplayApp::FullRefreshDirections::None);
@@ -151,7 +152,6 @@ void DisplayApp::Process(void* instance) {
 void DisplayApp::InitHw() {
   brightnessController.Init();
   ApplyBrightness();
-  motorController.Init();
   lcd.Init();
 }
 

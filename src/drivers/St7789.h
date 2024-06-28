@@ -40,7 +40,7 @@ namespace Pinetime {
       void SleepOut();
       void EnsureSleepOutPostDelay();
       void SleepIn();
-      void ColMod();
+      void PixelFormat();
       void MemoryDataAccessControl();
       void DisplayInversionOn();
       void NormalModeOn();
@@ -68,16 +68,17 @@ namespace Pinetime {
         MemoryDataAccessControl = 0x36,
         VerticalScrollDefinition = 0x33,
         VerticalScrollStartAddress = 0x37,
-        ColMod = 0x3a,
+        PixelFormat = 0x3a,
         VdvSet = 0xc4,
       };
       void WriteData(uint8_t data);
       void WriteData(const uint8_t* data, size_t size);
-      void ColumnAddressSet();
 
       static constexpr uint16_t Width = 240;
       static constexpr uint16_t Height = 320;
-      void RowAddressSet();
+
+      uint8_t addrWindowArgs[4];
+      uint8_t verticalScrollArgs[2];
     };
   }
 }
