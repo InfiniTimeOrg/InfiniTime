@@ -20,6 +20,8 @@ namespace Pinetime {
 
   namespace Controllers {
     class Ble;
+    class Settings;
+    class NotificationManager;
 
     class DfuService {
     public:
@@ -82,6 +84,9 @@ namespace Pinetime {
       Pinetime::Controllers::Ble& bleController;
       DfuImage dfuImage;
       NotificationManager notificationManager;
+
+      static constexpr const char* denyAlert = "InfiniTime\0Firmware update attempted, but disabled.";
+      static constexpr const uint8_t denyAlertLength = 52;
 
       static constexpr uint16_t dfuServiceId {0x1530};
       static constexpr uint16_t packetCharacteristicId {0x1532};
