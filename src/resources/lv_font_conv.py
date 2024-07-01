@@ -5,23 +5,25 @@ import itertools
 import math
 import pathlib
 import sys
-from PIL import Image, ImageFont, ImageDraw
+from PIL import Image, ImageFont, ImageDraw, ImageOps
 from fontTools import ttLib
+from typing import Tuple
 
 # pacman -S python-fonttools
 # apt install -y python3-fonttools
-#import fonttools
 
 __version__ = "0.0.1"
+
 
 class FontArg:
     def __init__(
         self,
-        font: str, # path to input font file
+        font: str,  # path to input font file
          ):
         self.font = font
-        self.symbols : str = "" # list of characters to copy
+        self.symbols: str = ""  # list of characters to copy
         self.args: str = ""
+
     def add_ranges(self, ranges: str):
         if self.args == "":
             self.args = f"range({ranges})"
@@ -38,6 +40,7 @@ class FontArg:
             else:
                 code = int(code_str, 0)
                 self.symbols += chr(code)
+
     def add_symbols(self, symbols: str):
         if self.args == "":
             self.args = f"symbols({symbols})"
@@ -45,11 +48,13 @@ class FontArg:
             self.args += f" symbols({symbols})"
         self.symbols += symbols
 
+
 class FontAction(argparse.Action):
     def __init__(self, option_strings, dest, nargs=None, **kwargs):
         # store all into 'font' destination
         dest = "font"
         super().__init__(option_strings, dest, **kwargs)
+
     def __call__(self, parser, namespace, values, option_string=None):
         font = getattr(namespace, self.dest)
         if option_string == "--font":
@@ -65,6 +70,7 @@ class FontAction(argparse.Action):
             raise argparse.ArgumentError("unhandled option_string: " + option_string)
         setattr(namespace, self.dest, font)
 
+
 @dataclass
 class LVGlyph:
     character: str
@@ -79,6 +85,7 @@ class LVGlyph:
     offset_x: int
     offset_y: int
 
+
 @dataclass
 class LVFont:
     name: str
@@ -88,36 +95,43 @@ class LVFont:
     glyphs: list[LVGlyph] = field(default_factory=list)
     cmaps: list[list[LVGlyph]] = field(default_factory=list)
 
+
 def main():
     parser = argparse.ArgumentParser()
 
     # arguments in comments are the help text of the original lv_font_conv.js scrip
     # not implemented in this minimal port
-    parser.add_argument("--version",
+    parser.add_argument(
+        "--version",
         help="show program's version number and exit",
         action="version",
         version=__version__)
-    parser.add_argument("--size",
+    parser.add_argument(
+        "--size",
         help="Output font size, pixels.",
         metavar="PIXELS",
         type=int,
         required=True)
-    parser.add_argument("-o", "--output",
+    parser.add_argument(
+        "-o", "--output",
         help="Output path.")
-    parser.add_argument("--bpp",
+    parser.add_argument(
+        "--bpp",
         help="Bits per pixel, for antialiasing.",
-        choices=[1,2,3,4,8],
+        choices=[1, 2, 3, 4, 8],
         type=int,
         required=True)
 #  --lcd                 Enable subpixel rendering (horizontal pixel layout).
 #  --lcd-v               Enable subpixel rendering (vertical pixel layout).
 #  --use-color-info      Try to use glyph color info from font to create grayscale icons. Since gray tones
 #                        are emulated via transparency, result will be good on contrast background only.
-    parser.add_argument("--format",
+    parser.add_argument(
+        "--format",
         help="Output format.",
         choices=["dump", "bin", "lvgl"],
         required=True)
-    parser.add_argument("--font",
+    parser.add_argument(
+        "--font",
         help="Source font path. Can be used multiple times to merge glyphs from different fonts.",
         action=FontAction,
         required=True)
@@ -130,25 +144,30 @@ def main():
 #                        -r 32-127,0x1F450
 #                        -r '0x1F450=>0xF005'
 #                        -r '0x1F450-0x1F470=>0xF005'
-    parser.add_argument("-r", "--range",
-        help="""Range of glyphs to copy. Can be used multiple times, belongs to previously declared
-      "--font". Examples:
+    parser.add_argument(
+        "-r", "--range",
+        help="""Range of glyphs to copy. Can be used multiple times, belongs to
+      previously declared "--font". Examples:
       -r 0x1F450
       -r 0x20-0x7F
       -r 32-127
       -r 32-127,0x1F450
       -r '0x1F450=>0xF005'
       -r '0x1F450-0x1F470=>0xF005'""",
-      action=FontAction)
-    parser.add_argument("--symbols",
-        help="List of characters to copy, belongs to previously declared \"--font\". Examples:"
-        "     '--symbols ,.0123456789' or '--symbols abcdefghigklmnopqrstuvwxyz'",
-      action=FontAction)
+        action=FontAction)
+    parser.add_argument(
+        "--symbols",
+        help="List of characters to copy, "
+        "belongs to previously declared \"--font\". Examples:"
+        "     '--symbols ,.0123456789' or"
+        "     '--symbols abcdefghigklmnopqrstuvwxyz'",
+        action=FontAction)
 #  --autohint-off        Disable autohinting for previously declared "--font"
 #  --autohint-strong     Use more strong autohinting for previously declared "--font" (will break kerning)
 #  --force-fast-kern-format
 #                        Always use kern classes instead of pairs (might be larger but faster).
-    parser.add_argument("--no-compress",
+    parser.add_argument(
+        "--no-compress",
         help="Disable built-in RLE compression.",
         action="store_true")
 #  --no-prefilter        Disable bitmap lines filter (XOR), used to improve compression ratio.
@@ -162,11 +181,13 @@ def main():
 
     # only implemented the bare minimum, everything else is not implemented
     if args.bpp != 1:
-        raise NotImplementedError(f"--bpp '{args.bpp}' not implemented, only '--bpp 1' implemented")
+        raise NotImplementedError(
+            f"--bpp '{args.bpp}' not implemented, only '--bpp 1' implemented")
     if args.format not in ["bin", "lvgl"]:
         raise NotImplementedError(f"--format '{args.format}' not implemented")
     if not args.no_compress:
-        raise NotImplementedError("compression not implemented, '--no-compress' required")
+        raise NotImplementedError(
+            "compression not implemented, '--no-compress' required")
 
     if args.size <= 0:
         raise RuntimeError("--size must be a positive integer greater than 0")
@@ -179,28 +200,69 @@ def main():
         bpp=args.bpp,
         opts=" ".join(sys.argv[1:]),
     )
+    def Img_from_list_of_bytes(size: Tuple[int,int], b_data: list[int]) -> Image:
+        img = Image.new("1", size, color = 1)
+        byte_idx = 0
+        bit_idx = 7
+        for y in range(size[1]):
+            for x in range(size[0]):
+                val = b_data[byte_idx] & (1 << bit_idx)
+                img.putpixel((x,y), 0 if val else 1)
+                bit_idx -= 1
+                if bit_idx < 0:
+                    byte_idx += 1
+                    bit_idx = 7
+        return img
+
+    img = Img_from_list_of_bytes(
+        (3,14),
+        b_data = [0xff, 0xff, 0xff, 0xfc, 0xf, 0xc0,]
+    )
+    img.save("out_js_u21.png")
+    img = Img_from_list_of_bytes(
+        (7,6),
+        b_data = [0xef, 0xdf, 0xbf, 0x7e, 0xfd, 0xc0,]
+    )
+    img.save("out_js_u22.png")
+    img = Img_from_list_of_bytes(
+        (10,14),
+        b_data = [0xff, 0x3f, 0xee, 0x3f, 0x87, 0xe1, 0xf8, 0xff,
+            0xfb, 0xfc, 0xe0, 0x38, 0xe, 0x3, 0x80, 0xe0,
+            0x38, 0x0,]
+    )
+    img.save("out_js_u50.png")
+    img = Img_from_list_of_bytes(
+        (9,14),
+        b_data = [0xe3, 0xf1, 0xf8, 0xfc, 0x7e, 0x3f, 0x1f, 0x8f,
+            0xc7, 0xe3, 0xf1, 0xf8, 0xfc, 0x77, 0xf1, 0xf0]
+    )
+    img.save("out_js_u55.png")
 
     for idx, font_arg in enumerate(args.font):
         if not isinstance(font_arg, FontArg):
-            raise RuntimeError(f"font_arg is expected to be a FontArg type, but got type: {type(font_arg)}")
+            raise RuntimeError(
+                "font_arg is expected to be a FontArg type, "
+                f"but got type: {type(font_arg)}")
 
         if not pathlib.Path(font_arg.font).is_file():
-            raise RuntimeError(f"provided font file doesn't exist: {font_arg.font}")
+            raise RuntimeError(
+                f"provided font file doesn't exist: {font_arg.font}")
 
         print(f"processing font: {font_arg.font}")
         print(f"- args: {font_arg.args}")
         print(f"- characters: {font_arg.symbols}")
-        #tt = ttLib.TTFont(args.font[0]) # Load an existing font file
-        #print(tt['maxp'].numGlyphs)
-        #print(tt['OS/2'].achVendID)
-        #print(tt['head'].unitsPerEm)
-        #print(tt.getGlyphNames())
-        #print(tt.getGlyphID("zero"))
-        #print(tt.keys())
+        # tt = ttLib.TTFont(args.font[0]) # Load an existing font file
+        # print(tt['maxp'].numGlyphs)
+        # print(tt['OS/2'].achVendID)
+        # print(tt['head'].unitsPerEm)
+        # print(tt.getGlyphNames())
+        # print(tt.getGlyphID("zero"))
+        # print(tt.keys())
         # https://stackoverflow.com/questions/70368410/how-to-render-a-ttf-glyf-to-a-image-with-fonttools
         # https://pillow.readthedocs.io/en/stable/reference/ImageFont.html
         # https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html
-        font = ImageFont.truetype(font_arg.font, args.size, layout_engine=ImageFont.Layout.BASIC)
+        # https://stackoverflow.com/questions/27631736/meaning-of-top-ascent-baseline-descent-bottom-and-leading-in-androids-font
+        font = ImageFont.truetype(font_arg.font, args.size)
         ascent, descent = font.getmetrics()
         print(f"- ascent/descent: {ascent}, {descent}")
         # symbols are sorted by their ASCII index, each glyp only once
@@ -215,40 +277,62 @@ def main():
         # image with 1 pixel black line between glyphs
         image_length = sum([font.getlength(c)+1 for c in text])
         x_pos = 0
-        image = Image.new(mode='1', size=(int(math.ceil(image_length))+1, args.size), color=224)
+        image = Image.new(mode='RGB', size=(int(math.ceil(image_length))+1, args.size*2), color=(224,224,224))
         draw = ImageDraw.Draw(image)
+        draw.line([0, args.size - ascent, image_length, args.size - ascent], fill="green")
+        draw.line([0, args.size + descent, image_length, args.size + descent], fill="blue")
+        draw.line([0, args.size, image_length, args.size], fill="gray")
         for c in text:
             (width, baseline), (offset_x, offset_y) = font.font.getsize(c)
-            #(left, top, right, bottom) = font.getbbox(c, **font_settings)
+            # (left, top, right, bottom) = font.getbbox(c, **font_settings)
             (left, top, right, bottom) = font.getbbox(c)
-            #length = font.getlength(c, features=features)
+            # length = font.getlength(c, features=features)
             length = font.getlength(c)
-            #mask: Image.core = font.getmask(c, **font_settings)
-            mask: Image.core = font.getmask(c)
+            # mask: Image.core = font.getmask(c, **font_settings)
+            mask: Image.core = font.getmask(c, mode="1")
             if mask.size[1] == 0:
                 mask = b"\0"
-                left = top = right = bottom = 0
+                c_image = b"\0"
+                b_array = b"\0"
+                m_left = m_top = m_right = m_bottom = 0
+                c_left = c_top = c_right = c_bottom = 0
                 bbox_width = 1
                 bbox_height = 1
                 offset_x = 0
                 offset_y = 0
             else:
-                (left, top, right, bottom) = mask.getbbox()
-                bbox_width = right - left - 1
-                bbox_height = bottom - top
+                (m_left, m_top, m_right, m_bottom) = mask.getbbox()
+                bbox_width = m_right - m_left
+                bbox_height = m_bottom - m_top
                 mask = mask.crop(mask.getbbox())
+                ImageOps.invert(Image.frombytes(mask.mode, mask.size, bytearray(mask)))\
+                    .save(f"out_{idx}_{ord(c):02x}_m.png")
+                c_image = Image.new(
+                    mode='1',
+                    size=(int(math.ceil(length))+1, args.size*2),
+                    color=255)
+                c_draw = ImageDraw.Draw(c_image)
+                c_draw.text((0, 0), text=c, font=font, fill=0)
+                c_image.save(f"out_{idx}_{ord(c):02x}.png")
+                c_left, c_top, c_right, c_bottom = bbox = \
+                    ImageOps.invert(c_image).getbbox()
+                c_image = c_image.crop(bbox)
+                c_image.save(f"out_{idx}_{ord(c):02x}_c.png")
+                b_array = c_image.tobytes()
             print(f"- '{c}': w x s: {width} x {baseline}, o_xy: {offset_x}, {offset_y}")
             print(f"- '{c}': bbox l - r: {left} - {right}, t - b: {top} - {bottom}")
+            print(f"- '{c}': mask l - r: {m_left} - {m_right}, t - b: {m_top} - {m_bottom}")
+            print(f"- '{c}': img  l - r: {c_left} - {c_right}, t - b: {c_top} - {c_bottom}")
             print(f"- '{c}': length: {length}")
             lv_glyph = LVGlyph(
                 character=c,
                 glyph_id=len(lv_font.glyphs) + 1,
-                bitmap=bytearray(mask),
+                bitmap=bytearray(b_array),
                 bitmap_index=bitmap_index,
                 advance_width=round(length * 16),
                 bbox_width=bbox_width,
                 bbox_height=bbox_height,
-                offset_x=offset_x,
+                offset_x=c_left,
                 offset_y=offset_y,
             )
             if len(lv_glyph.bitmap) == 1:
@@ -260,7 +344,8 @@ def main():
             draw.line([x_pos-1,0, x_pos-1, args.size], fill=0)
             # draw glyp
             #draw.text((x_pos,0), c, font=font, features=features) #, **font_settings)
-            draw.text((x_pos,bottom), c, font=font, anchor="ld") #, **font_settings)
+            draw.text((x_pos,0), c, font=font, fill="black") #, **font_settings)
+
 
             # mark bbox
             #draw.line([x_pos+offset_x,baseline, x_pos+offset_x+width, baseline], fill=128)
@@ -284,9 +369,11 @@ def main():
 
     return 0
 
+
 def to_lvgl(font: LVFont):
     macro_name = font.name.upper()
-    out = f"""/*******************************************************************************
+    out = \
+f"""/*******************************************************************************
  * Size: {font.size} px
  * Bpp: {font.bpp}
  * Opts: {font.opts}
