@@ -112,10 +112,6 @@ namespace Pinetime {
       uint16_t connectionHandle = BLE_HS_CONN_HANDLE_NONE;
       uint8_t fastAdvCount = 0;
       uint8_t bondId[16] = {0};
-
-      ble_uuid128_t dfuServiceUuid {
-        .u {.type = BLE_UUID_TYPE_128},
-        .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15, 0xDE, 0xEF, 0x12, 0x12, 0x30, 0x15, 0x00, 0x00}};
     };
 
     static NimbleController* nptr;
