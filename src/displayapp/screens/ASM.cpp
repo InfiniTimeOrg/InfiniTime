@@ -90,6 +90,10 @@ void ASM::run() {
           ptr += 4;
           break;
 
+        case PushEmptyString:
+          push(Value(new char[1] {0}, 1));
+          break;
+
         case Duplicate:
           // TODO: Check stack_pointer
           push(stack[stack_pointer - 1]);
@@ -124,8 +128,7 @@ void ASM::run() {
           break;
 
         case SetLabelText: {
-          Value str = pop();
-          assert(str.type == String);
+          Value str = pop(String);
           Value obj = pop(LvglObject);
 
           lv_label_set_text(obj.data.obj, str.data.s);
@@ -204,6 +207,53 @@ void ASM::run() {
         case Divide:
           push(Value(pop_uint32() / pop_uint32()));
           break;
+
+        case GrowString: {
+          Value len = pop(Integer);
+          Value str = pop(String);
+
+          size_t new_cap = len.data.i + str.data.cap;
+          asm_assert(new_cap >= str.data.cap);
+
+          char* new_str = new char[new_cap];
+          memcpy(new_str, str.data.s, str.data.cap);
+
+          push(Value(new_str, new_cap));
+          break;
+        }
+
+        case Concat: {
+          Value b = pop();
+          Value a = pop();
+
+          if (a.type == String && b.type == String) {
+            int len_a = strlen(a.data.s);
+            int len_b = strlen(b.data.s);
+
+            size_t new_len = len_a + len_b + 1;
+
+            if (a.data.cap >= new_len) {
+              strcat(a.data.s, b.data.s);
+
+              push(Value(a.data.s, a.data.cap));
+            } else {
+              char* s = new char[new_len + 1];
+              strcpy(s, a.data.s);
+              strcat(s, b.data.s);
+
+              push(Value(s, new_len + 1));
+            }
+          } else if (a.type == String && b.type == Integer) {
+            size_t cap = strlen(a.data.s) + 12 + 1;
+            char* s = new char[cap];
+            snprintf(s, cap, "%s%lu", a.data.s, b.data.i);
+
+            push(Value(s, cap));
+          } else {
+            asm_assert(false);
+          }
+          break;
+        }
 
         default:
           NRF_LOG_ERROR("Unknown opcode: 0x%02X", opcode);

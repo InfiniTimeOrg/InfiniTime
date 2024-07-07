@@ -65,8 +65,10 @@ namespace Pinetime {
           PushU16,
           PushU24,
           PushU32,
+          PushEmptyString,
           Duplicate,
           LoadString,
+
           SetLabelText,
           SetObjectAlign,
           CreateLabel,
@@ -79,7 +81,10 @@ namespace Pinetime {
           Add,
           Subtract,
           Multiply,
-          Divide
+          Divide,
+
+          GrowString,
+          Concat
         };
 
         enum OpcodeLong : uint16_t {};
