@@ -126,7 +126,7 @@ void ASM::run() {
         case SetLabelText: {
           Value str = pop();
           assert(str.type == String);
-          Value obj = pop(); // TODO: Check type
+          Value obj = pop(LvglObject);
 
           lv_label_set_text(obj.data.obj, str.data.s);
           break;
@@ -141,7 +141,7 @@ void ASM::run() {
           int16_t y = pop_uint32();
           int16_t x = pop_uint32();
           uint8_t align = pop_uint32();
-          Value obj = pop(); // TODO: Check type
+          Value obj = pop(LvglObject);
           lv_obj_align(obj.data.obj, lv_scr_act(), align, x, y);
           break;
         }
@@ -153,7 +153,7 @@ void ASM::run() {
           uint32_t value = pop_uint32();
           uint32_t prop = pop_uint32();
           uint32_t part = pop_uint32();
-          Value obj = pop(); // TODO: Check type
+          Value obj = pop(LvglObject);
 
           switch (opcode) {
             case SetStyleLocalInt:
@@ -199,4 +199,12 @@ void ASM::run() {
 
 void ASM::Refresh() {
   run();
+}
+
+void ASM::asm_assert(bool condition) {
+  if (!condition) {
+    // TODO: Handle better
+    for (;;) {
+    }
+  }
 }

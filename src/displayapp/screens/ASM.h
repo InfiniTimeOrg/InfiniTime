@@ -74,7 +74,7 @@ namespace Pinetime {
           SetStyleLocalColor,
           SetStyleLocalOpa,
           SetStyleLocalFont,
-          WaitRefresh,
+          WaitRefresh
         };
 
         enum OpcodeLong : uint16_t {};
@@ -94,20 +94,26 @@ namespace Pinetime {
         uint8_t stack_pointer = 0;
 
         void run();
+        void asm_assert(bool condition);
 
         Value pop() {
-          assert(stack_pointer > 0);
+          asm_assert(stack_pointer > 0);
           return stack[--stack_pointer];
         }
 
+        Value pop(DataType type) {
+          asm_assert(stack_pointer > 0);
+          Value v = stack[--stack_pointer];
+          asm_assert(v.type == type);
+          return v;
+        }
+
         uint32_t pop_uint32() {
-          Value v = pop();
-          assert(v.type == Integer);
-          return v.data.i;
+          return pop(Integer).data.i;
         }
 
         void push(Value v) {
-          assert(stack_pointer < stack_size);
+          asm_assert(stack_pointer < stack_size);
           stack[stack_pointer] = v;
           stack_pointer++;
         }
