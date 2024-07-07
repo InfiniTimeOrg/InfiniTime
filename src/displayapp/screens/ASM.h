@@ -3,17 +3,19 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
+#include "components/datetime/DateTimeController.h"
 #include "Symbols.h"
 
 #include <cassert>
 #include <memory>
+#include <chrono>
 
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class ASM : public Screen {
       public:
-        ASM();
+        ASM(Controllers::DateTime&);
         ~ASM();
 
         void Refresh() override;
@@ -23,7 +25,7 @@ namespace Pinetime {
         static constexpr int max_locals = 16;
         static constexpr int stack_size = 32;
 
-        enum DataType : uint8_t { Integer, String, LvglObject };
+        enum DataType : uint8_t { Integer, String, LvglObject, DateTime };
 
         // TODO: Use fancy C++ type stuff
         struct Value {
@@ -72,6 +74,19 @@ namespace Pinetime {
           }
         };
 
+        struct ValueDateTime : public Value {
+          std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> time;
+          std::tm tm;
+
+          ValueDateTime(std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> time, std::tm tm)
+            : time(time), tm(tm) {
+          }
+
+          DataType type() override {
+            return DateTime;
+          }
+        };
+
         enum OpcodeShort : uint8_t {
           StoreLocal,
           LoadLocal,
@@ -83,6 +98,7 @@ namespace Pinetime {
           PushU24,
           PushU32,
           PushEmptyString,
+          PushCurrentTime,
           Duplicate,
           LoadString,
 
@@ -104,7 +120,9 @@ namespace Pinetime {
           Divide,
 
           GrowString,
-          Concat
+          ClearString,
+          Concat,
+          FormatDateTime
         };
 
         enum OpcodeLong : uint16_t {};
@@ -124,6 +142,8 @@ namespace Pinetime {
         uint8_t stack_pointer = 0;
 
         lv_task_t* taskRefresh = nullptr;
+
+        Controllers::DateTime& dateTimeController;
 
         void run();
         void asm_assert(bool condition);
@@ -166,8 +186,8 @@ namespace Pinetime {
       static constexpr Apps app = Apps::ASM;
       static constexpr const char* icon = Screens::Symbols::eye;
 
-      static Screens::Screen* Create(AppControllers&) {
-        return new Screens::ASM();
+      static Screens::Screen* Create(AppControllers& controllers) {
+        return new Screens::ASM(controllers.dateTimeController);
       };
     };
   };

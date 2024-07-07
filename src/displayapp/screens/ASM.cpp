@@ -10,11 +10,11 @@ using namespace Pinetime::Applications::Screens;
 
 #define u16(n) (n) >> 8, (n) & 0xFF
 
-ASM::ASM() {
+ASM::ASM(Controllers::DateTime& dateTimeController) : dateTimeController(dateTimeController) {
   this->code = out_bin;
   this->code_len = out_bin_len;
 
-  run();
+  Refresh();
 }
 
 ASM::~ASM() {
@@ -244,6 +244,15 @@ void ASM::run() {
           break;
         }
 
+        case ClearString: {
+          auto str = pop<ValueString>(String);
+          if (str->capacity > 0)
+            str->str[0] = '\0';
+
+          push(std::make_shared<ValueString>(str->str, str->capacity));
+          break;
+        }
+
         case Concat: {
           auto b = pop();
           auto a = pop();
@@ -282,6 +291,36 @@ void ASM::run() {
           } else {
             asm_assert(false);
           }
+          break;
+        }
+
+        case PushCurrentTime: {
+          auto time = dateTimeController.CurrentDateTime();
+          std::tm tm {
+            .tm_sec = dateTimeController.Seconds(),
+            .tm_min = dateTimeController.Minutes(),
+            .tm_hour = dateTimeController.Hours(),
+            .tm_mday = dateTimeController.Day(),
+            .tm_mon = static_cast<int>(dateTimeController.Month()) - 1,
+            .tm_year = dateTimeController.Year() - 1900,
+            .tm_wday = static_cast<int>(dateTimeController.DayOfWeek()),
+            .tm_yday = dateTimeController.DayOfYear() - 1,
+          };
+
+          push(std::make_shared<ValueDateTime>(time, tm));
+          break;
+        }
+
+        case FormatDateTime: {
+          auto fmt = pop<ValueString>(String);
+          auto time = pop<ValueDateTime>(DateTime);
+
+          constexpr int max_len = 16;
+          char* str = new char[max_len]; // TODO: Allow user to reuse string in stack
+
+          strftime(str, max_len, fmt->str, &time->tm);
+
+          push(std::make_shared<ValueString>(str, max_len));
           break;
         }
 
