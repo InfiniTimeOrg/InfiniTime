@@ -46,7 +46,7 @@ On the bottom right, you can see how many steps you have taken today.
 ![Settings](ui/settings.jpg)
 
 - Swipe **up** to display the application menus. Apps (stopwatch, music, step, games,...) can be started from this menu.
-- Swipe **down** to display the notification panel. Notification sent by your companion app will be displayed here.
+- Swipe **down** to display the notification panel. Notifications sent by your companion app will be displayed here.
 - Swipe **right** to display the Quick Actions menu. This menu allows you to
   - Set the brightness of the display
   - Start the **flashlight** app
