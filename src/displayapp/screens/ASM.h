@@ -25,51 +25,50 @@ namespace Pinetime {
 
         enum DataType : uint8_t { Integer, String, LvglObject };
 
+        // TODO: Use fancy C++ type stuff
         struct Value {
-          const DataType type;
+          virtual DataType type() = 0;
+        };
 
-          union {
-            uint32_t i;
-            lv_obj_t* lvobj;
+        struct ValueInteger : public Value {
+          uint32_t i;
 
-            struct {
-              char* s;
-              uint16_t cap;
-            };
-          } data;
-
-          Value() : type(Integer), data {0} {
+          ValueInteger(uint32_t i) : i(i) {
           }
 
-          Value(DataType t) : type(t), data {0} {
+          DataType type() override {
+            return Integer;
+          }
+        };
+
+        struct ValueString : public Value {
+          char* str;
+          uint16_t capacity;
+
+          ValueString(char* str, uint16_t cap) : str(str), capacity(cap) {
           }
 
-          Value(uint32_t i) : type(Integer) {
-            data.i = i;
+          ~ValueString() {
+            delete[] str;
           }
 
-          Value(lv_obj_t* obj) : type(LvglObject) {
-            data.lvobj = obj;
+          DataType type() override {
+            return String;
+          }
+        };
+
+        struct ValueLvglObject : public Value {
+          lv_obj_t* obj;
+
+          ValueLvglObject(lv_obj_t* obj) : obj(obj) {
           }
 
-          Value(char* s, uint16_t cap) : type(String) {
-            data.s = s;
-            data.cap = cap;
+          ~ValueLvglObject() {
+            lv_obj_del(obj);
           }
 
-          ~Value() {
-            switch (type) {
-              case String:
-                delete[] data.s;
-                break;
-
-              case LvglObject:
-                lv_obj_del(data.lvobj);
-                break;
-
-              default:
-                break;
-            }
+          DataType type() override {
+            return LvglObject;
           }
         };
 
@@ -140,15 +139,18 @@ namespace Pinetime {
           return v;
         }
 
-        std::shared_ptr<Value> pop(DataType type) {
+        template <typename T>
+        std::shared_ptr<T> pop(DataType type)
+          requires(std::is_base_of_v<Value, T>)
+        {
           auto v = pop();
-          asm_assert(v->type == type);
+          asm_assert(v->type() == type);
 
-          return v;
+          return std::static_pointer_cast<T>(v);
         }
 
         uint32_t pop_uint32() {
-          return pop(Integer)->data.i;
+          return pop<ValueInteger>(Integer)->i;
         }
 
         void push(std::shared_ptr<Value> v) {
