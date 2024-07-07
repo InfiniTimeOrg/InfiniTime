@@ -9,7 +9,7 @@ InfiniTime has 13 apps on the `main` branch at the time of writing.
 - Steps
 - Heartrate
 - Music
-- Painting
+- InfiniPaint
 - Pong
 - 2048
 - Dice
@@ -31,7 +31,7 @@ InfiniTime has 13 apps on the `main` branch at the time of writing.
 - Use the toggle in the bottom left to turn the alarm on/off.
 - Use the button in the bottom right to change the alarm days.
    - You can pick from once, daily, or Monday-Friday.
-
+InfiniPaint
 ### Timer
 ![Timer UI](/doc/gettingStarted/AppsScreenshots/timer.png)
 - Ajust how long the timer should go for with the time picker.
@@ -56,8 +56,8 @@ InfiniTime has 13 apps on the `main` branch at the time of writing.
 - Press the button in the center to play/pause, and the buttons on the left and right to go to the previous and next tracks, respectively.
 - Swipe up to get to volume controls.
 
-### Painting
-![Paint UI](/doc/gettingStarted/AppsScreenshots/Paint.png)
+### InfiniPaint
+![InfiniPaint UI](/doc/gettingStarted/AppsScreenshots/InfiniPaint.png)
 - This app does not allow you to swipe from the top to exit, use the side button instead.
 - Draw on the screen to add lines.
 - Hold down in one spot to change paint colors.
