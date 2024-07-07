@@ -30,7 +30,7 @@ namespace Pinetime {
 
           union {
             uint32_t i;
-            lv_obj_t* obj;
+            lv_obj_t* lvobj;
 
             struct {
               char* s;
@@ -49,7 +49,7 @@ namespace Pinetime {
           }
 
           Value(lv_obj_t* obj) : type(LvglObject) {
-            data.obj = obj;
+            data.lvobj = obj;
           }
 
           Value(char* s, uint16_t cap) : type(String) {
@@ -64,7 +64,7 @@ namespace Pinetime {
                 break;
 
               case LvglObject:
-                lv_obj_del(data.obj);
+                lv_obj_del(data.lvobj);
                 break;
 
               default:

@@ -154,7 +154,7 @@ void ASM::run() {
           auto str = pop(String);
           auto obj = pop(LvglObject);
 
-          lv_label_set_text(obj->data.obj, str->data.s);
+          lv_label_set_text(obj->data.lvobj, str->data.s);
           break;
         }
 
@@ -167,7 +167,7 @@ void ASM::run() {
           int16_t x = pop_uint32();
           uint8_t align = pop_uint32();
           auto obj = pop(LvglObject);
-          lv_obj_align(obj->data.obj, lv_scr_act(), align, x, y);
+          lv_obj_align(obj->data.lvobj, lv_scr_act(), align, x, y);
           break;
         }
 
@@ -181,11 +181,11 @@ void ASM::run() {
 
           switch (opcode) {
             case SetStyleLocalInt:
-              _lv_obj_set_style_local_int(obj->data.obj, part, prop, value);
+              _lv_obj_set_style_local_int(obj->data.lvobj, part, prop, value);
               break;
 
             case SetStyleLocalColor:
-              _lv_obj_set_style_local_color(obj->data.obj, part, prop, lv_color_hex(value));
+              _lv_obj_set_style_local_color(obj->data.lvobj, part, prop, lv_color_hex(value));
               break;
 
             case SetStyleLocalFont: {
@@ -202,7 +202,7 @@ void ASM::run() {
               }
 
               if (font)
-                _lv_obj_set_style_local_ptr(obj->data.obj, part, prop, font);
+                _lv_obj_set_style_local_ptr(obj->data.lvobj, part, prop, font);
 
               break;
             }
