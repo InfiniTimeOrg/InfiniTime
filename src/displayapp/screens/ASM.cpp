@@ -18,7 +18,12 @@ ASM::ASM() {
 }
 
 ASM::~ASM() {
-  lv_obj_clean(lv_scr_act());
+  if (taskRefresh != nullptr) {
+    lv_task_del(taskRefresh);
+  }
+
+  // We don't need to clean the screen since all objects are deleted when their shared_ptr is dropped
+  // lv_obj_clean(lv_scr_act());
 }
 
 uint8_t ASM::read_byte(size_t pos) {
@@ -39,18 +44,18 @@ uint32_t ASM::read_u32(size_t pos) {
 
 void ASM::run() {
   for (;;) {
-    if (ptr >= code_len) {
+    if (pc >= code_len) {
       break;
     }
 
-    OpcodeShort opcode = static_cast<OpcodeShort>(code[ptr]);
+    OpcodeShort opcode = static_cast<OpcodeShort>(code[pc]);
     if (opcode & (1 << 7)) {
       // Long opcode
-      OpcodeLong opcode = static_cast<OpcodeLong>(code[ptr] << 8 | code[ptr + 1]);
+      OpcodeLong opcode = static_cast<OpcodeLong>(code[pc] << 8 | code[pc + 1]);
 
       NRF_LOG_INFO("Long opcode: %d", opcode);
 
-      ptr += 2;
+      pc += 2;
 
       switch (opcode) {
         default:
@@ -58,7 +63,7 @@ void ASM::run() {
           break;
       }
     } else {
-      ptr++;
+      pc++;
 
       NRF_LOG_INFO("Short opcode: %d", opcode);
 
@@ -67,35 +72,34 @@ void ASM::run() {
           return;
 
         case Push0:
-          push(Value((uint32_t) 0));
+          push(std::make_shared<Value>((uint32_t) 0));
           break;
 
         case PushU8:
-          push(Value(read_byte(ptr)));
-          ptr++;
+          push(std::make_shared<Value>(read_byte(pc)));
+          pc++;
           break;
 
         case PushU16:
-          push(Value(read_u16(ptr)));
-          ptr += 2;
+          push(std::make_shared<Value>(read_u16(pc)));
+          pc += 2;
           break;
 
         case PushU24:
-          push(Value(read_u24(ptr)));
-          ptr += 3;
+          push(std::make_shared<Value>(read_u24(pc)));
+          pc += 3;
           break;
 
         case PushU32:
-          push(Value(read_u32(ptr)));
-          ptr += 4;
+          push(std::make_shared<Value>(read_u32(pc)));
+          pc += 4;
           break;
 
         case PushEmptyString:
-          push(Value(new char[1] {0}, 1));
+          push(std::make_shared<Value>(new char[1] {0}, 1));
           break;
 
         case Duplicate:
-          // TODO: Check stack_pointer
           push(stack[stack_pointer - 1]);
           break;
 
@@ -110,28 +114,26 @@ void ASM::run() {
             text[i] = read_byte(ptr + 1 + i);
           }
 
-          push(Value(text, length + 1));
+          push(std::make_shared<Value>(text, length + 1));
           break;
         }
 
         case StoreLocal:
-          locals[read_byte(ptr++)] = pop();
+          locals[read_byte(pc++)] = pop();
           break;
 
         case LoadLocal:
-          push(locals[read_byte(ptr++)]);
+          push(locals[read_byte(pc++)]);
           break;
 
         case Branch:
-          assert(stack_pointer >= 1);
-          ptr = pop_uint32();
+          pc = pop_uint32();
           break;
 
         case Call: {
-          assert(stack_pointer >= 1);
-          uint32_t next = ptr;
-          ptr = pop_uint32();
-          push(Value(next));
+          uint32_t next = pc;
+          pc = pop_uint32();
+          push(std::make_shared<Value>(next));
           break;
         }
 
@@ -149,43 +151,41 @@ void ASM::run() {
           break;
 
         case SetLabelText: {
-          Value str = pop(String);
-          Value obj = pop(LvglObject);
+          auto str = pop(String);
+          auto obj = pop(LvglObject);
 
-          lv_label_set_text(obj.data.obj, str.data.s);
+          lv_label_set_text(obj->data.obj, str->data.s);
           break;
         }
 
         case CreateLabel:
-          push(Value(lv_label_create(lv_scr_act(), NULL)));
+          push(std::make_shared<Value>(lv_label_create(lv_scr_act(), NULL)));
           break;
 
         case SetObjectAlign: {
-          assert(stack_pointer >= 3);
           int16_t y = pop_uint32();
           int16_t x = pop_uint32();
           uint8_t align = pop_uint32();
-          Value obj = pop(LvglObject);
-          lv_obj_align(obj.data.obj, lv_scr_act(), align, x, y);
+          auto obj = pop(LvglObject);
+          lv_obj_align(obj->data.obj, lv_scr_act(), align, x, y);
           break;
         }
 
         case SetStyleLocalInt:
         case SetStyleLocalFont:
         case SetStyleLocalColor: {
-          assert(stack_pointer >= 3);
           uint32_t value = pop_uint32();
           uint32_t prop = pop_uint32();
           uint32_t part = pop_uint32();
-          Value obj = pop(LvglObject);
+          auto obj = pop(LvglObject);
 
           switch (opcode) {
             case SetStyleLocalInt:
-              _lv_obj_set_style_local_int(obj.data.obj, part, prop, value);
+              _lv_obj_set_style_local_int(obj->data.obj, part, prop, value);
               break;
 
             case SetStyleLocalColor:
-              _lv_obj_set_style_local_color(obj.data.obj, part, prop, lv_color_hex(value));
+              _lv_obj_set_style_local_color(obj->data.obj, part, prop, lv_color_hex(value));
               break;
 
             case SetStyleLocalFont: {
@@ -202,7 +202,7 @@ void ASM::run() {
               }
 
               if (font)
-                _lv_obj_set_style_local_ptr(obj.data.obj, part, prop, font);
+                _lv_obj_set_style_local_ptr(obj->data.obj, part, prop, font);
 
               break;
             }
@@ -213,63 +213,64 @@ void ASM::run() {
           break;
         }
 
-        case Add:
-          push(Value(pop_uint32() + pop_uint32()));
+        case Add: {
+          push(std::make_shared<Value>(pop_uint32() + pop_uint32()));
           break;
+        }
 
         case Subtract:
-          push(Value(pop_uint32() - pop_uint32()));
+          push(std::make_shared<Value>(pop_uint32() - pop_uint32()));
           break;
 
         case Multiply:
-          push(Value(pop_uint32() * pop_uint32()));
+          push(std::make_shared<Value>(pop_uint32() * pop_uint32()));
           break;
 
         case Divide:
-          push(Value(pop_uint32() / pop_uint32()));
+          push(std::make_shared<Value>(pop_uint32() / pop_uint32()));
           break;
 
         case GrowString: {
-          Value len = pop(Integer);
-          Value str = pop(String);
+          auto len = pop(Integer);
+          auto str = pop(String);
 
-          size_t new_cap = len.data.i + str.data.cap;
-          asm_assert(new_cap >= str.data.cap);
+          size_t new_cap = len->data.i + str->data.cap;
+          asm_assert(new_cap >= str->data.cap);
 
           char* new_str = new char[new_cap];
-          memcpy(new_str, str.data.s, str.data.cap);
+          memcpy(new_str, str->data.s, str->data.cap);
 
-          push(Value(new_str, new_cap));
+          push(std::make_shared<Value>(new_str, new_cap));
           break;
         }
 
         case Concat: {
-          Value b = pop();
-          Value a = pop();
+          auto b = pop();
+          auto a = pop();
 
-          if (a.type == String && b.type == String) {
-            int len_a = strlen(a.data.s);
-            int len_b = strlen(b.data.s);
+          if (a->type == String && b->type == String) {
+            int len_a = strlen(a->data.s);
+            int len_b = strlen(b->data.s);
 
             size_t new_len = len_a + len_b + 1;
 
-            if (a.data.cap >= new_len) {
-              strcat(a.data.s, b.data.s);
+            if (a->data.cap >= new_len) {
+              strcat(a->data.s, b->data.s);
 
-              push(Value(a.data.s, a.data.cap));
+              push(a);
             } else {
               char* s = new char[new_len + 1];
-              strcpy(s, a.data.s);
-              strcat(s, b.data.s);
+              strcpy(s, a->data.s);
+              strcat(s, b->data.s);
 
-              push(Value(s, new_len + 1));
+              push(std::make_shared<Value>(s, new_len + 1));
             }
-          } else if (a.type == String && b.type == Integer) {
-            size_t cap = strlen(a.data.s) + 12 + 1;
+          } else if (a->type == String && b->type == Integer) {
+            size_t cap = strlen(a->data.s) + 12 + 1;
             char* s = new char[cap];
-            snprintf(s, cap, "%s%lu", a.data.s, b.data.i);
+            snprintf(s, cap, "%s%lu", a->data.s, b->data.i);
 
-            push(Value(s, cap));
+            push(std::make_shared<Value>(s, cap));
           } else {
             asm_assert(false);
           }

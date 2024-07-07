@@ -4,7 +4,9 @@
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
+
 #include <cassert>
+#include <memory>
 
 namespace Pinetime {
   namespace Applications {
@@ -24,7 +26,7 @@ namespace Pinetime {
         enum DataType : uint8_t { Integer, String, LvglObject };
 
         struct Value {
-          DataType type;
+          const DataType type;
 
           union {
             uint32_t i;
@@ -55,21 +57,21 @@ namespace Pinetime {
             data.cap = cap;
           }
 
-          // ~Value() {
-          //   switch (type) {
-          //     case String:
-          //       delete[] data.s;
-          //       break;
+          ~Value() {
+            switch (type) {
+              case String:
+                delete[] data.s;
+                break;
 
-          //     case LvglObject:
-          //       lv_obj_del(data.obj);
-          //       break;
+              case LvglObject:
+                lv_obj_del(data.obj);
+                break;
 
-          //     default:
-          //       break;
-          //   }
-          // }
-        } __packed;
+              default:
+                break;
+            }
+          }
+        };
 
         enum OpcodeShort : uint8_t {
           StoreLocal,
@@ -115,11 +117,11 @@ namespace Pinetime {
 
         uint8_t* code;
         size_t code_len;
-        size_t ptr = 0;
+        size_t pc = 0;
 
-        Value locals[max_locals];
+        std::shared_ptr<Value> locals[max_locals] = {};
 
-        Value stack[stack_size];
+        std::shared_ptr<Value> stack[stack_size] = {};
         uint8_t stack_pointer = 0;
 
         lv_task_t* taskRefresh = nullptr;
@@ -127,26 +129,32 @@ namespace Pinetime {
         void run();
         void asm_assert(bool condition);
 
-        Value pop() {
+        std::shared_ptr<Value> pop() {
           asm_assert(stack_pointer > 0);
-          return stack[--stack_pointer];
+
+          stack_pointer--;
+
+          auto v = stack[stack_pointer];
+          stack[stack_pointer] = nullptr;
+
+          return v;
         }
 
-        Value pop(DataType type) {
-          asm_assert(stack_pointer > 0);
-          Value v = stack[--stack_pointer];
-          asm_assert(v.type == type);
+        std::shared_ptr<Value> pop(DataType type) {
+          auto v = pop();
+          asm_assert(v->type == type);
+
           return v;
         }
 
         uint32_t pop_uint32() {
-          return pop(Integer).data.i;
+          return pop(Integer)->data.i;
         }
 
-        void push(Value v) {
+        void push(std::shared_ptr<Value> v) {
           asm_assert(stack_pointer < stack_size);
-          stack[stack_pointer] = v;
-          stack_pointer++;
+
+          stack[stack_pointer++] = v;
         }
       };
     }
