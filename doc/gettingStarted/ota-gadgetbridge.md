@@ -1,12 +1,14 @@
 # Connecting to Gadgetbridge
 
-Launch Gadgetbridge and tap on the **"+"** button on the bottom right to add a new device:
+Launch Gadgetbridge and tap on the menu button in the top left:
 
 ![Gadgetbridge 0](gadgetbridge0.jpg)
 
-Wait for the scan to complete, your PineTime should be detected:
+Press the "Connect new device" button:
 
 ![Gadgetbridge 1](gadgetbridge1.jpg)
+
+Your PineTime should appear on the list. Tap on it.
 
 Tap on it. Gadgdetbridge will pair and connect to your device:
 
