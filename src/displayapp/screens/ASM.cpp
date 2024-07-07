@@ -127,6 +127,19 @@ void ASM::run() {
           ptr = pop_uint32();
           break;
 
+        case StartPeriodicRefresh:
+          if (taskRefresh == nullptr) {
+            taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+          }
+          break;
+
+        case StopPeriodicRefresh:
+          if (taskRefresh != nullptr) {
+            lv_task_del(taskRefresh);
+            taskRefresh = nullptr;
+          }
+          break;
+
         case SetLabelText: {
           Value str = pop(String);
           Value obj = pop(LvglObject);

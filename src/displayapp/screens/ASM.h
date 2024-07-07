@@ -54,6 +54,21 @@ namespace Pinetime {
             data.s = s;
             data.cap = cap;
           }
+
+          ~Value() {
+            switch (type) {
+              case String:
+                delete[] data.s;
+                break;
+
+              case LvglObject:
+                lv_obj_del(data.obj);
+                break;
+
+              default:
+                break;
+            }
+          }
         } __packed;
 
         enum OpcodeShort : uint8_t {
@@ -68,6 +83,9 @@ namespace Pinetime {
           PushEmptyString,
           Duplicate,
           LoadString,
+
+          StartPeriodicRefresh,
+          StopPeriodicRefresh,
 
           SetLabelText,
           SetObjectAlign,
@@ -102,6 +120,8 @@ namespace Pinetime {
 
         Value stack[stack_size];
         uint8_t stack_pointer = 0;
+
+        lv_task_t* taskRefresh = nullptr;
 
         void run();
         void asm_assert(bool condition);
