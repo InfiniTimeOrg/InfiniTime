@@ -74,7 +74,12 @@ namespace Pinetime {
           SetStyleLocalColor,
           SetStyleLocalOpa,
           SetStyleLocalFont,
-          WaitRefresh
+          WaitRefresh,
+
+          Add,
+          Subtract,
+          Multiply,
+          Divide
         };
 
         enum OpcodeLong : uint16_t {};

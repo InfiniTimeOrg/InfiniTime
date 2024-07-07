@@ -189,6 +189,22 @@ void ASM::run() {
           break;
         }
 
+        case Add:
+          push(Value(pop_uint32() + pop_uint32()));
+          break;
+
+        case Subtract:
+          push(Value(pop_uint32() - pop_uint32()));
+          break;
+
+        case Multiply:
+          push(Value(pop_uint32() * pop_uint32()));
+          break;
+
+        case Divide:
+          push(Value(pop_uint32() / pop_uint32()));
+          break;
+
         default:
           NRF_LOG_ERROR("Unknown opcode: 0x%02X", opcode);
           break;
