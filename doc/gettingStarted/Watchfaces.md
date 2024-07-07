@@ -26,4 +26,4 @@ InfiniTime has 6 apps on the `main` branch at the time of writing.
 ![Infinineat face](/doc/gettingStarted/Watchfaces/Infinineat.png)
 
 ### Casio G7710
-![Casio G7710 face](/doc/gettingStarted/Watchfaces/Casio G7710.png)
+![Casio G7710 face](/doc/gettingStarted/Watchfaces/CasioG7710.png)
