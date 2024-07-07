@@ -35,7 +35,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devic
 
 ### Contributing
 
-- [How to contribute?](CONTRIBUTING.md)
+- [How to contribute](CONTRIBUTING.md)
 - [Coding conventions](doc/coding-convention.md)
 
 ### Build, flash and debug
