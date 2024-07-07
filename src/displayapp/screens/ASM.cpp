@@ -127,6 +127,14 @@ void ASM::run() {
           ptr = pop_uint32();
           break;
 
+        case Call: {
+          assert(stack_pointer >= 1);
+          uint32_t next = ptr;
+          ptr = pop_uint32();
+          push(Value(next));
+          break;
+        }
+
         case StartPeriodicRefresh:
           if (taskRefresh == nullptr) {
             taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);

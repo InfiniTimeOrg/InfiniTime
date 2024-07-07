@@ -55,26 +55,27 @@ namespace Pinetime {
             data.cap = cap;
           }
 
-          ~Value() {
-            switch (type) {
-              case String:
-                delete[] data.s;
-                break;
+          // ~Value() {
+          //   switch (type) {
+          //     case String:
+          //       delete[] data.s;
+          //       break;
 
-              case LvglObject:
-                lv_obj_del(data.obj);
-                break;
+          //     case LvglObject:
+          //       lv_obj_del(data.obj);
+          //       break;
 
-              default:
-                break;
-            }
-          }
+          //     default:
+          //       break;
+          //   }
+          // }
         } __packed;
 
         enum OpcodeShort : uint8_t {
           StoreLocal,
           LoadLocal,
           Branch,
+          Call,
           Push0,
           PushU8,
           PushU16,
