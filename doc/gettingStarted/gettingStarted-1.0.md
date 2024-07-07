@@ -14,7 +14,7 @@ You can sync the time using companion apps.
 
 - Gadgetbridge automatically synchronizes the time when you connect it to your watch. More information on Gadgetbridge [here](/doc/gettingStarted/ota-gadgetbridge.md)
 - [Sync the time with NRFConnect](/doc/gettingStarted/time-nrfconnect.md)
-- Sync the time with your browser https://hubmartin.github.io/WebBLEWatch/
+- [Sync the time with your browser](https://hubmartin.github.io/WebBLEWatch/)
 
 You can also set the time in the settings without a companion app. (version >1.7.0)
 
