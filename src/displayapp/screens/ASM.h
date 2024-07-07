@@ -4,6 +4,7 @@
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
+#include <cassert>
 
 namespace Pinetime {
   namespace Applications {
@@ -17,17 +18,55 @@ namespace Pinetime {
 
       private:
         static constexpr int num_slots = 16;
+        static constexpr int max_locals = 16;
         static constexpr int stack_size = 32;
 
+        enum DataType : uint8_t { Integer, String, LvglObject };
+
+        struct Value {
+          DataType type;
+
+          union {
+            uint32_t i;
+            lv_obj_t* obj;
+
+            struct {
+              char* s;
+              uint16_t cap;
+            };
+          } data;
+
+          Value() : type(Integer), data {0} {
+          }
+
+          Value(DataType t) : type(t), data {0} {
+          }
+
+          Value(uint32_t i) : type(Integer) {
+            data.i = i;
+          }
+
+          Value(lv_obj_t* obj) : type(LvglObject) {
+            data.obj = obj;
+          }
+
+          Value(char* s, uint16_t cap) : type(String) {
+            data.s = s;
+            data.cap = cap;
+          }
+        } __packed;
+
         enum OpcodeShort : uint8_t {
+          StoreLocal,
+          LoadLocal,
           Branch,
           Push0,
           PushU8,
           PushU16,
           PushU24,
           PushU32,
-          SelectSlot0,
-          SelectSlotMax = SelectSlot0 + ASM::num_slots - 1,
+          Duplicate,
+          LoadString,
           SetLabelText,
           SetObjectAlign,
           CreateLabel,
@@ -49,14 +88,29 @@ namespace Pinetime {
         size_t code_len;
         size_t ptr = 0;
 
-        lv_obj_t* slots[num_slots] = {0};
+        Value locals[max_locals];
 
-        uint32_t stack[stack_size] = {0};
+        Value stack[stack_size];
         uint8_t stack_pointer = 0;
 
-        uint8_t current_slot = 0;
-
         void run();
+
+        Value pop() {
+          assert(stack_pointer > 0);
+          return stack[--stack_pointer];
+        }
+
+        uint32_t pop_uint32() {
+          Value v = pop();
+          assert(v.type == Integer);
+          return v.data.i;
+        }
+
+        void push(Value v) {
+          assert(stack_pointer < stack_size);
+          stack[stack_pointer] = v;
+          stack_pointer++;
+        }
       };
     }
 

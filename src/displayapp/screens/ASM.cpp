@@ -2,6 +2,7 @@
 
 #include <libraries/log/nrf_log.h>
 #include <assert.h>
+#include <cstdio>
 
 #include "asm_data.h"
 
@@ -61,47 +62,41 @@ void ASM::run() {
 
       NRF_LOG_INFO("Short opcode: %d", opcode);
 
-      if (opcode >= SelectSlot0 && opcode <= SelectSlotMax) {
-        current_slot = opcode - SelectSlot0;
-        continue;
-      }
-
       switch (opcode) {
         case WaitRefresh:
           return;
 
         case Push0:
-          stack[stack_pointer++] = 0;
+          push(Value((uint32_t) 0));
           break;
 
         case PushU8:
-          stack[stack_pointer++] = read_byte(ptr);
+          push(Value(read_byte(ptr)));
           ptr++;
           break;
 
         case PushU16:
-          stack[stack_pointer++] = read_u16(ptr);
+          push(Value(read_u16(ptr)));
           ptr += 2;
           break;
 
         case PushU24:
-          stack[stack_pointer++] = read_u24(ptr);
+          push(Value(read_u24(ptr)));
           ptr += 3;
           break;
 
         case PushU32:
-          stack[stack_pointer++] = read_u32(ptr);
+          push(Value(read_u32(ptr)));
           ptr += 4;
           break;
 
-        case Branch:
-          assert(stack_pointer >= 1);
-          ptr = stack[--stack_pointer];
+        case Duplicate:
+          // TODO: Check stack_pointer
+          push(stack[stack_pointer - 1]);
           break;
 
-        case SetLabelText: { // TODO: Remove double allocation here
-          assert(stack_pointer >= 1);
-          size_t ptr = stack[--stack_pointer];
+        case LoadString: {
+          uint32_t ptr = pop_uint32();
 
           int length = read_byte(ptr);
           char* text = new char[length + 1];
@@ -111,22 +106,43 @@ void ASM::run() {
             text[i] = read_byte(ptr + 1 + i);
           }
 
-          lv_label_set_text(slots[current_slot], text);
+          push(Value(text, length + 1));
+          break;
+        }
 
-          delete[] text;
+        case StoreLocal:
+          locals[read_byte(ptr++)] = pop();
+          break;
+
+        case LoadLocal:
+          push(locals[read_byte(ptr++)]);
+          break;
+
+        case Branch:
+          assert(stack_pointer >= 1);
+          ptr = pop_uint32();
+          break;
+
+        case SetLabelText: {
+          Value str = pop();
+          assert(str.type == String);
+          Value obj = pop(); // TODO: Check type
+
+          lv_label_set_text(obj.data.obj, str.data.s);
           break;
         }
 
         case CreateLabel:
-          slots[current_slot] = lv_label_create(lv_scr_act(), NULL); //
+          push(Value(lv_label_create(lv_scr_act(), NULL)));
           break;
 
         case SetObjectAlign: {
-          assert(stack_pointer >= 3); // TODO: Compactize this
-          int16_t y = stack[--stack_pointer];
-          int16_t x = stack[--stack_pointer];
-          uint8_t align = stack[--stack_pointer];
-          lv_obj_align(slots[current_slot], lv_scr_act(), align, x, y);
+          assert(stack_pointer >= 3);
+          int16_t y = pop_uint32();
+          int16_t x = pop_uint32();
+          uint8_t align = pop_uint32();
+          Value obj = pop(); // TODO: Check type
+          lv_obj_align(obj.data.obj, lv_scr_act(), align, x, y);
           break;
         }
 
@@ -134,17 +150,18 @@ void ASM::run() {
         case SetStyleLocalFont:
         case SetStyleLocalColor: {
           assert(stack_pointer >= 3);
-          uint32_t value = stack[--stack_pointer];
-          uint32_t prop = stack[--stack_pointer];
-          uint32_t part = stack[--stack_pointer];
+          uint32_t value = pop_uint32();
+          uint32_t prop = pop_uint32();
+          uint32_t part = pop_uint32();
+          Value obj = pop(); // TODO: Check type
 
           switch (opcode) {
             case SetStyleLocalInt:
-              _lv_obj_set_style_local_int(slots[current_slot], part, prop, value);
+              _lv_obj_set_style_local_int(obj.data.obj, part, prop, value);
               break;
 
             case SetStyleLocalColor:
-              _lv_obj_set_style_local_color(slots[current_slot], part, prop, lv_color_hex(value));
+              _lv_obj_set_style_local_color(obj.data.obj, part, prop, lv_color_hex(value));
               break;
 
             case SetStyleLocalFont: {
@@ -161,7 +178,7 @@ void ASM::run() {
               }
 
               if (font)
-                _lv_obj_set_style_local_ptr(slots[current_slot], part, prop, font);
+                _lv_obj_set_style_local_ptr(obj.data.obj, part, prop, font);
 
               break;
             }
