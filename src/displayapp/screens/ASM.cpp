@@ -8,6 +8,17 @@
 
 using namespace Pinetime::Applications::Screens;
 
+constexpr lv_font_t* fonts[] = {
+  &fontawesome_weathericons,
+  &jetbrains_mono_42,
+  &jetbrains_mono_76,
+  &jetbrains_mono_bold_20,
+  &jetbrains_mono_extrabold_compressed,
+  &lv_font_sys_48,
+  &open_sans_light,
+};
+constexpr int num_fonts = sizeof(fonts) / sizeof(fonts[0]);
+
 ASM::ASM(Controllers::DateTime& dateTimeController) : dateTimeController(dateTimeController) {
   this->code = out_bin;
   this->code_len = out_bin_len;
@@ -171,21 +182,9 @@ void ASM::run() {
               break;
 
             case SetStyleLocalFont: {
-              lv_font_t* font = NULL;
-
-              switch (value) {
-                case 0:
-                  font = &jetbrains_mono_extrabold_compressed;
-                  break;
-
-                default:
-                  NRF_LOG_ERROR("Unknown font: %d", value);
-                  break;
+              if (value < num_fonts) {
+                _lv_obj_set_style_local_ptr(obj->obj, part, prop, fonts[value]);
               }
-
-              if (font)
-                _lv_obj_set_style_local_ptr(obj->obj, part, prop, font);
-
               break;
             }
 
