@@ -3,6 +3,7 @@
 #include "displayapp/screens/Screen.h"
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
+#include "displayapp/widgets/StatusIcons.h"
 #include "components/datetime/DateTimeController.h"
 #include "Symbols.h"
 
@@ -15,7 +16,7 @@ namespace Pinetime {
     namespace Screens {
       class ASM : public Screen {
       public:
-        ASM(Controllers::DateTime&);
+        ASM(Controllers::DateTime&, const Controllers::Battery&, const Controllers::Ble&);
         ~ASM();
 
         void Refresh() override;
@@ -104,6 +105,7 @@ namespace Pinetime {
 
           StartPeriodicRefresh,
           StopPeriodicRefresh,
+          ShowStatusIcons,
 
           SetLabelText,
           SetObjectAlign,
@@ -156,6 +158,9 @@ namespace Pinetime {
         lv_task_t* taskRefresh = nullptr;
 
         Controllers::DateTime& dateTimeController;
+        Widgets::StatusIcons statusIcons;
+
+        bool showingStatusIcons = false;
 
         void run();
         void asm_assert(bool condition);
@@ -199,7 +204,7 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::eye;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::ASM(controllers.dateTimeController);
+        return new Screens::ASM(controllers.dateTimeController, controllers.batteryController, controllers.bleController);
       };
     };
   };

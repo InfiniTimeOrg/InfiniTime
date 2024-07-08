@@ -19,7 +19,8 @@ constexpr lv_font_t* fonts[] = {
 };
 constexpr int num_fonts = sizeof(fonts) / sizeof(fonts[0]);
 
-ASM::ASM(Controllers::DateTime& dateTimeController) : dateTimeController(dateTimeController) {
+ASM::ASM(Controllers::DateTime& dateTimeController, const Controllers::Battery& batteryController, const Controllers::Ble& bleController)
+  : dateTimeController(dateTimeController), statusIcons(batteryController, bleController) {
   this->code = out_bin;
   this->code_len = out_bin_len;
 
@@ -309,6 +310,13 @@ void ASM::run() {
           lv_obj_realign(pop<ValueLvglObject>(LvglObject)->obj);
           break;
 
+        case ShowStatusIcons:
+          if (!showingStatusIcons) {
+            showingStatusIcons = true;
+            statusIcons.Create();
+          }
+          break;
+
         default:
           NRF_LOG_ERROR("Unknown opcode: 0x%02X", opcode);
           break;
@@ -319,6 +327,10 @@ void ASM::run() {
 
 void ASM::Refresh() {
   run();
+
+  if (showingStatusIcons) {
+    statusIcons.Update();
+  }
 }
 
 void ASM::asm_assert(bool condition) {
