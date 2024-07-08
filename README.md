@@ -10,7 +10,7 @@ Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devic
 - [Updating the software](doc/gettingStarted/updating-software.md)
 - [About the firmware and bootloader](doc/gettingStarted/about-software.md)
 - [Available apps](doc/gettingStarted/Applications.md)
-- [All watch faces](/doc/gettingStarted/Watchfaces.md)
+- [Available watch faces](/doc/gettingStarted/Watchfaces.md)
 - [PineTimeStyle Watch face](https://pine64.org/documentation/PineTime/Watchfaces/PineTimeStyle)
   - [Weather integration](https://pine64.org/documentation/PineTime/Software/InfiniTime_weather/)
 
