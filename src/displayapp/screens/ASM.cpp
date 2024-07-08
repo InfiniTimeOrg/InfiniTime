@@ -351,7 +351,7 @@ void ASM::run() {
           break;
         }
 
-        case OpcodeShort::PushCurrentTime: {
+        case OpcodeShort::PushCurrentDateTime: {
           auto time = dateTimeController.CurrentDateTime();
           std::tm tm {
             .tm_sec = dateTimeController.Seconds(),
@@ -367,6 +367,10 @@ void ASM::run() {
           push(std::make_shared<ValueDateTime>(time, tm));
           break;
         }
+
+        case OpcodeShort::PushCurrentTicks:
+          push(std::make_shared<ValueInteger>((xTaskGetTickCount() * configTICK_RATE_HZ) / 1000));
+          break;
 
         case OpcodeShort::FormatDateTime: {
           auto fmt = pop<ValueString>(String);
