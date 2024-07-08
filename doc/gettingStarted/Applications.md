@@ -12,7 +12,7 @@ InfiniTime has 13 apps on the `main` branch at the time of writing.
 - InfiniPaint
 - Paddle
 - 2
-- Dice
+- InfiniDice
 - Metronome
 - Maps
 - Weather
