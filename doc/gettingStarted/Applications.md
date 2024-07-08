@@ -22,15 +22,15 @@ InfiniTime has 13 apps on the `main` branch at the time of writing.
 - Press the Start button (bottom right) to start or stop the timer.
    - You can also press the side button while the timer is running to pause the timer.
 - Press the Flag button (bottom left) to add a lap.
-- The stopwatch will not yet contimue counting time while the app is closed.
+- The stopwatch will not yet continue counting time while the app is closed.
 
 ### Alarm
 ![Alarm UI](/doc/gettingStarted/AppsScreenshots/alarm.png)
 - Ajust the time with the time picker.
 - Press the Info button in the top middle to see time remaning.
 - Use the toggle in the bottom left to turn the alarm on/off.
-- Use the button in the bottom right to change the alarm days.
-   - You can pick from once, daily, or Monday-Friday.
+- Use the button in the bottom right to change the alarm frequency.
+   - You can choose between once, daily, or Monday - Friday.
 InfiniPaint
 ### Timer
 ![Timer UI](/doc/gettingStarted/AppsScreenshots/timer.png)
@@ -62,22 +62,22 @@ InfiniPaint
 - Draw on the screen to add lines.
 - Hold down in one spot to change paint colors.
 
-### Pong
-![Pong UI](/doc/gettingStarted/AppsScreenshots/Pong.png)
+### Paddle
+![Paddle UI](/doc/gettingStarted/AppsScreenshots/Pong.png)
 - This app does not allow you to swipe from the top to exit, use the side button instead.
 - Drag your finger to move the paddle.
 - Goal: Don't let the ball go off the left side of the screen.
 
 ### 2048
-![2048 UI](/doc/gettingStarted/AppsScreenshots/2048.png)
+![2 UI](/doc/gettingStarted/AppsScreenshots/2048.png)
 - This app does not allow you to swipe from the top to exit, use the side button instead.
 - Play a game of 2048.
 - Swipe up, down, left, or right tomove the tiles.
 - When two tiles with the same number run into each other, they will add together.
 - Goal: Don't let the screen fill up with tiles, and get to the 2048 tile to win.
 
-### Dice
-![Dice UI](/doc/gettingStarted/AppsScreenshots/Dice.png)
+### InfiniDice
+![InfiniDice UI](/doc/gettingStarted/AppsScreenshots/Dice.png)
 - This app is not in InfiniTime 1.14.
 - Ajust the count to change the number of dice.
 - Ajust the sides to change the number of sides.
