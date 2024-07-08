@@ -158,6 +158,7 @@ namespace Pinetime {
           SetLabelText,
           SetObjectAlign,
           SetObjectSize,
+          SetObjectParent,
           SetStyleLocalInt,
           SetStyleLocalColor,
           SetStyleLocalOpa,
@@ -237,11 +238,11 @@ namespace Pinetime {
         }
 
         template <typename T>
-        std::shared_ptr<T> pop(DataType type)
+        std::shared_ptr<T> pop(DataType wantType)
           requires(std::is_base_of_v<Value, T>)
         {
           auto v = pop();
-          asm_assert(v->type() == type);
+          asm_assert(v->type() == wantType);
 
           return std::static_pointer_cast<T>(v);
         }

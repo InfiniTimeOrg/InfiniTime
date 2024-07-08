@@ -221,6 +221,13 @@ void ASM::run() {
           break;
         }
 
+        case OpcodeShort::SetObjectParent: {
+          auto parent = pop<ValueLvglObject>(LvglObject);
+          auto child = pop<ValueLvglObject>(LvglObject);
+          lv_obj_set_parent(child->obj, parent->obj);
+          break;
+        }
+
         case OpcodeShort::SetStyleLocalInt:
         case OpcodeShort::SetStyleLocalFont:
         case OpcodeShort::SetStyleLocalColor: {
