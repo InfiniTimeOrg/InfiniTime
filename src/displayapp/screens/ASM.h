@@ -24,7 +24,7 @@ namespace Pinetime {
     namespace Screens {
       class ASM : public Screen {
       public:
-        ASM(Controllers::DateTime&, const Controllers::Battery&, const Controllers::Ble&);
+        ASM(Controllers::DateTime&, const Controllers::Battery&, const Controllers::Ble&, Controllers::FS&);
         ~ASM();
 
         void Refresh() override;
@@ -33,6 +33,7 @@ namespace Pinetime {
         static constexpr int num_slots = 16;
         static constexpr int max_locals = 16;
         static constexpr int stack_size = 32;
+        static constexpr int cache_size = 16;
 
         enum DataType : uint8_t { Integer, String, LvglObject, DateTime };
 
@@ -174,24 +175,32 @@ namespace Pinetime {
 
         enum class OpcodeLong : uint16_t {};
 
+        void populate_cache(size_t pos);
+
         uint8_t read_byte(size_t pos) {
-          return code[pos];
+          if (pos < cache_start || pos >= cache_start + cache_size) {
+            populate_cache(pos);
+          }
+
+          return cache[pos - cache_start];
         }
 
         uint16_t read_u16(size_t pos) {
-          return static_cast<uint16_t>(code[pos + 1] << 8 | code[pos]);
+          return static_cast<uint16_t>(read_byte(pos + 1) << 8 | read_byte(pos));
         }
 
         uint32_t read_u24(size_t pos) {
-          return static_cast<uint32_t>(code[pos + 2] << 16 | code[pos + 1] << 8 | code[pos]);
+          return static_cast<uint32_t>(read_byte(pos + 2) << 16 | read_byte(pos + 1) << 8 | read_byte(pos));
         }
 
         uint32_t read_u32(size_t pos) {
-          return static_cast<uint32_t>(code[pos + 3] << 24 | code[pos + 2] << 16 | code[pos + 1] << 8 | code[pos]);
+          return static_cast<uint32_t>(read_byte(pos + 3) << 24 | read_byte(pos + 2) << 16 | read_byte(pos + 1) << 8 | read_byte(pos));
         }
 
-        uint8_t* code;
-        size_t code_len;
+        lfs_file_t file;
+        uint8_t cache[cache_size];
+        size_t cache_start;
+        size_t program_size;
         size_t pc = 0;
 
         std::shared_ptr<Value> locals[max_locals] = {};
@@ -203,6 +212,7 @@ namespace Pinetime {
 
         Controllers::DateTime& dateTimeController;
         Widgets::StatusIcons statusIcons;
+        Controllers::FS& fs;
 
         bool showingStatusIcons = false;
 
@@ -248,7 +258,10 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::eye;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::ASM(controllers.dateTimeController, controllers.batteryController, controllers.bleController);
+        return new Screens::ASM(controllers.dateTimeController,
+                                controllers.batteryController,
+                                controllers.bleController,
+                                controllers.filesystem);
       };
     };
   };

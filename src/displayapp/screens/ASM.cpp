@@ -4,8 +4,6 @@
 #include <assert.h>
 #include <cstdio>
 
-#include "asm_data.h"
-
 using namespace Pinetime::Applications::Screens;
 
 constexpr lv_font_t* fonts[] = {
@@ -19,10 +17,16 @@ constexpr lv_font_t* fonts[] = {
 };
 constexpr int num_fonts = sizeof(fonts) / sizeof(fonts[0]);
 
-ASM::ASM(Controllers::DateTime& dateTimeController, const Controllers::Battery& batteryController, const Controllers::Ble& bleController)
-  : dateTimeController(dateTimeController), statusIcons(batteryController, bleController) {
-  this->code = out_bin;
-  this->code_len = out_bin_len;
+ASM::ASM(Controllers::DateTime& dateTimeController,
+         const Controllers::Battery& batteryController,
+         const Controllers::Ble& bleController,
+         Controllers::FS& fsController)
+  : dateTimeController(dateTimeController), statusIcons(batteryController, bleController), fs(fsController) {
+
+  int result = fsController.FileOpen(&file, "program.bin", LFS_O_RDONLY);
+  asm_assert(result >= 0);
+
+  populate_cache(0);
 
   Refresh();
 }
@@ -32,13 +36,25 @@ ASM::~ASM() {
     lv_task_del(taskRefresh);
   }
 
+  fs.FileClose(&file);
+
   // We don't need to clean the screen since all objects are deleted when their shared_ptr is dropped
   // lv_obj_clean(lv_scr_act());
 }
 
+void ASM::populate_cache(size_t pos) {
+  int result = fs.FileSeek(&file, pos);
+  asm_assert(result >= 0);
+
+  result = fs.FileRead(&file, cache, cache_size);
+  asm_assert(result >= 0);
+
+  cache_start = pos;
+}
+
 void ASM::run() {
   for (;;) {
-    if (pc >= code_len) {
+    if (pc >= program_size) {
       break;
     }
 
