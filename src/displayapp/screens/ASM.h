@@ -112,6 +112,7 @@ namespace Pinetime {
           SetStyleLocalColor,
           SetStyleLocalOpa,
           SetStyleLocalFont,
+          RealignObject,
           WaitRefresh,
 
           Add,

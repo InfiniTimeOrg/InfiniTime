@@ -324,6 +324,10 @@ void ASM::run() {
           break;
         }
 
+        case RealignObject:
+          lv_obj_realign(pop<ValueLvglObject>(LvglObject)->obj);
+          break;
+
         default:
           NRF_LOG_ERROR("Unknown opcode: 0x%02X", opcode);
           break;
