@@ -319,6 +319,17 @@ void ASM::run() {
           }
           break;
 
+        case Equals: {
+          auto b = pop();
+          auto a = pop();
+          push(std::make_shared<ValueInteger>(a.get()->equals(b.get()) ? 1 : 0));
+          break;
+        }
+
+        case Negate:
+          push(std::make_shared<ValueInteger>(pop().get()->isTruthy() ? 0 : 1));
+          break;
+
         default:
           NRF_LOG_ERROR("Unknown opcode: 0x%02X", opcode);
           break;

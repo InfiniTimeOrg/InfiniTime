@@ -31,6 +31,8 @@ namespace Pinetime {
         // TODO: Use fancy C++ type stuff
         struct Value {
           virtual DataType type() = 0;
+          virtual bool equals(Value* other) = 0;
+          virtual bool isTruthy() = 0;
         };
 
         struct ValueInteger : public Value {
@@ -41,6 +43,14 @@ namespace Pinetime {
 
           DataType type() override {
             return Integer;
+          }
+
+          bool equals(Value* other) override {
+            return other->type() == Integer && i == static_cast<ValueInteger*>(other)->i;
+          }
+
+          bool isTruthy() override {
+            return i != 0;
           }
         };
 
@@ -58,6 +68,14 @@ namespace Pinetime {
           DataType type() override {
             return String;
           }
+
+          bool equals(Value* other) override {
+            return other->type() == String && strcmp(str, static_cast<ValueString*>(other)->str) == 0;
+          }
+
+          bool isTruthy() override {
+            return capacity > 0 && str[0] != '\0';
+          }
         };
 
         struct ValueLvglObject : public Value {
@@ -73,6 +91,14 @@ namespace Pinetime {
           DataType type() override {
             return LvglObject;
           }
+
+          bool equals(Value* other) override {
+            return other->type() == LvglObject && obj == static_cast<ValueLvglObject*>(other)->obj;
+          }
+
+          bool isTruthy() override {
+            return obj != nullptr;
+          }
         };
 
         struct ValueDateTime : public Value {
@@ -85,6 +111,14 @@ namespace Pinetime {
 
           DataType type() override {
             return DateTime;
+          }
+
+          bool equals(Value* other) override {
+            return other->type() == DateTime && time == static_cast<ValueDateTime*>(other)->time;
+          }
+
+          bool isTruthy() override {
+            return true;
           }
         };
 
@@ -121,6 +155,8 @@ namespace Pinetime {
           Subtract,
           Multiply,
           Divide,
+          Equals,
+          Negate,
 
           GrowString,
           ClearString,
