@@ -8,8 +8,6 @@
 
 using namespace Pinetime::Applications::Screens;
 
-#define u16(n) (n) >> 8, (n) & 0xFF
-
 ASM::ASM(Controllers::DateTime& dateTimeController) : dateTimeController(dateTimeController) {
   this->code = out_bin;
   this->code_len = out_bin_len;
@@ -26,32 +24,16 @@ ASM::~ASM() {
   // lv_obj_clean(lv_scr_act());
 }
 
-uint8_t ASM::read_byte(size_t pos) {
-  return code[pos];
-}
-
-uint16_t ASM::read_u16(size_t pos) {
-  return static_cast<uint16_t>(code[pos + 1] << 8 | code[pos]);
-}
-
-uint32_t ASM::read_u24(size_t pos) {
-  return static_cast<uint32_t>(code[pos + 2] << 16 | code[pos + 1] << 8 | code[pos]);
-}
-
-uint32_t ASM::read_u32(size_t pos) {
-  return static_cast<uint32_t>(code[pos + 3] << 24 | code[pos + 2] << 16 | code[pos + 1] << 8 | code[pos]);
-}
-
 void ASM::run() {
   for (;;) {
     if (pc >= code_len) {
       break;
     }
 
-    OpcodeShort opcode = static_cast<OpcodeShort>(code[pc]);
+    OpcodeShort opcode = static_cast<OpcodeShort>(read_byte(pc));
     if (opcode & (1 << 7)) {
       // Long opcode
-      OpcodeLong opcode = static_cast<OpcodeLong>(code[pc] << 8 | code[pc + 1]);
+      OpcodeLong opcode = static_cast<OpcodeLong>(read_u16(pc));
 
       NRF_LOG_INFO("Long opcode: %d", opcode);
 

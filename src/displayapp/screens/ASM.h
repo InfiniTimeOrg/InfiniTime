@@ -128,10 +128,21 @@ namespace Pinetime {
 
         enum OpcodeLong : uint16_t {};
 
-        uint8_t read_byte(size_t pos);
-        uint16_t read_u16(size_t pos);
-        uint32_t read_u24(size_t pos);
-        uint32_t read_u32(size_t pos);
+        uint8_t read_byte(size_t pos) {
+          return code[pos];
+        }
+
+        uint16_t read_u16(size_t pos) {
+          return static_cast<uint16_t>(code[pos + 1] << 8 | code[pos]);
+        }
+
+        uint32_t read_u24(size_t pos) {
+          return static_cast<uint32_t>(code[pos + 2] << 16 | code[pos + 1] << 8 | code[pos]);
+        }
+
+        uint32_t read_u32(size_t pos) {
+          return static_cast<uint32_t>(code[pos + 3] << 24 | code[pos + 2] << 16 | code[pos + 1] << 8 | code[pos]);
+        }
 
         uint8_t* code;
         size_t code_len;
