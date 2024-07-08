@@ -42,7 +42,8 @@ namespace Pinetime {
       SettingChimes,
       SettingShakeThreshold,
       SettingBluetooth,
-      Error
+      Error,
+      ASM
     };
 
     enum class WatchFace : uint8_t {
