@@ -410,8 +410,6 @@ void SystemTask::Work() {
     }
 
     monitor.Process();
-    uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
-    dateTimeController.UpdateTime(systick_counter);
     NoInit_BackUpTime = dateTimeController.CurrentDateTime();
     if (nrf_gpio_pin_read(PinMap::Button) == 0) {
       watchdog.Reload();

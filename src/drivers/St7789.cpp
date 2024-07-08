@@ -1,3 +1,4 @@
+#include <cstring>
 #include "drivers/St7789.h"
 #include <hal/nrf_gpio.h>
 #include <nrfx_log.h>
@@ -16,10 +17,9 @@ void St7789::Init() {
   HardwareReset();
   SoftwareReset();
   SleepOut();
-  ColMod();
+  PixelFormat();
   MemoryDataAccessControl();
-  ColumnAddressSet();
-  RowAddressSet();
+  SetAddrWindow(0, 0, Width, Height);
 // P8B Mirrored version does not need display inversion.
 #ifndef DRIVER_DISPLAY_MIRROR
   DisplayInversionOn();
@@ -97,8 +97,9 @@ void St7789::SleepIn() {
   sleepIn = true;
 }
 
-void St7789::ColMod() {
-  WriteCommand(static_cast<uint8_t>(Commands::ColMod));
+void St7789::PixelFormat() {
+  WriteCommand(static_cast<uint8_t>(Commands::PixelFormat));
+  // 65K colours, 16-bit per pixel
   WriteData(0x55);
 }
 
@@ -118,22 +119,6 @@ void St7789::MemoryDataAccessControl() {
 #endif
 }
 
-void St7789::ColumnAddressSet() {
-  WriteCommand(static_cast<uint8_t>(Commands::ColumnAddressSet));
-  WriteData(0x00);
-  WriteData(0x00);
-  WriteData(Width >> 8u);
-  WriteData(Width & 0xffu);
-}
-
-void St7789::RowAddressSet() {
-  WriteCommand(static_cast<uint8_t>(Commands::RowAddressSet));
-  WriteData(0x00);
-  WriteData(0x00);
-  WriteData(320u >> 8u);
-  WriteData(320u & 0xffu);
-}
-
 void St7789::DisplayInversionOn() {
   WriteCommand(static_cast<uint8_t>(Commands::DisplayInversionOn));
 }
@@ -148,16 +133,23 @@ void St7789::DisplayOn() {
 
 void St7789::SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1) {
   WriteCommand(static_cast<uint8_t>(Commands::ColumnAddressSet));
-  WriteData(x0 >> 8);
-  WriteData(x0 & 0xff);
-  WriteData(x1 >> 8);
-  WriteData(x1 & 0xff);
+  uint8_t colArgs[] = {
+    static_cast<uint8_t>(x0 >> 8), // x start MSB
+    static_cast<uint8_t>(x0),      // x start LSB
+    static_cast<uint8_t>(x1 >> 8), // x end MSB
+    static_cast<uint8_t>(x1)       // x end LSB
+  };
+  WriteData(colArgs, sizeof(colArgs));
 
   WriteCommand(static_cast<uint8_t>(Commands::RowAddressSet));
-  WriteData(y0 >> 8);
-  WriteData(y0 & 0xff);
-  WriteData(y1 >> 8);
-  WriteData(y1 & 0xff);
+  uint8_t rowArgs[] = {
+    static_cast<uint8_t>(y0 >> 8), // y start MSB
+    static_cast<uint8_t>(y0),      // y start LSB
+    static_cast<uint8_t>(y1 >> 8), // y end MSB
+    static_cast<uint8_t>(y1)       // y end LSB
+  };
+  memcpy(addrWindowArgs, rowArgs, sizeof(rowArgs));
+  WriteData(addrWindowArgs, sizeof(addrWindowArgs));
 }
 
 void St7789::WriteToRam(const uint8_t* data, size_t size) {
@@ -179,8 +171,12 @@ void St7789::DisplayOff() {
 void St7789::VerticalScrollStartAddress(uint16_t line) {
   verticalScrollingStartAddress = line;
   WriteCommand(static_cast<uint8_t>(Commands::VerticalScrollStartAddress));
-  WriteData(line >> 8u);
-  WriteData(line & 0x00ffu);
+  uint8_t args[] = {
+    static_cast<uint8_t>(line >> 8), // Frame memory line pointer MSB
+    static_cast<uint8_t>(line)       // Frame memory line pointer LSB
+  };
+  memcpy(verticalScrollArgs, args, sizeof(args));
+  WriteData(verticalScrollArgs, sizeof(verticalScrollArgs));
 }
 
 void St7789::Uninit() {
