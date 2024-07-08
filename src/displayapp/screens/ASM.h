@@ -122,7 +122,7 @@ namespace Pinetime {
           }
         };
 
-        enum OpcodeShort : uint8_t {
+        enum class OpcodeShort : uint8_t {
           StoreLocal,
           LoadLocal,
           Branch,
@@ -164,7 +164,7 @@ namespace Pinetime {
           FormatDateTime
         };
 
-        enum OpcodeLong : uint16_t {};
+        enum class OpcodeLong : uint16_t {};
 
         uint8_t read_byte(size_t pos) {
           return code[pos];

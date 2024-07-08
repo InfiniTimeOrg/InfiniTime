@@ -43,7 +43,7 @@ void ASM::run() {
     }
 
     OpcodeShort opcode = static_cast<OpcodeShort>(read_byte(pc));
-    if (opcode & (1 << 7)) {
+    if (static_cast<uint8_t>(opcode) & (1 << 7)) {
       // Long opcode
       OpcodeLong opcode = static_cast<OpcodeLong>(read_u16(pc));
 
@@ -62,42 +62,42 @@ void ASM::run() {
       NRF_LOG_INFO("Short opcode: %d", opcode);
 
       switch (opcode) {
-        case WaitRefresh:
+        case OpcodeShort::WaitRefresh:
           return;
 
-        case Push0:
+        case OpcodeShort::Push0:
           push(std::make_shared<ValueInteger>(0));
           break;
 
-        case PushU8:
+        case OpcodeShort::PushU8:
           push(std::make_shared<ValueInteger>(read_byte(pc)));
           pc++;
           break;
 
-        case PushU16:
+        case OpcodeShort::PushU16:
           push(std::make_shared<ValueInteger>(read_u16(pc)));
           pc += 2;
           break;
 
-        case PushU24:
+        case OpcodeShort::PushU24:
           push(std::make_shared<ValueInteger>(read_u24(pc)));
           pc += 3;
           break;
 
-        case PushU32:
+        case OpcodeShort::PushU32:
           push(std::make_shared<ValueInteger>(read_u32(pc)));
           pc += 4;
           break;
 
-        case PushEmptyString:
+        case OpcodeShort::PushEmptyString:
           push(std::make_shared<ValueString>(new char[1] {0}, 1));
           break;
 
-        case Duplicate:
+        case OpcodeShort::Duplicate:
           push(stack[stack_pointer - 1]);
           break;
 
-        case LoadString: {
+        case OpcodeShort::LoadString: {
           uint32_t ptr = pop_uint32();
 
           int length = read_byte(ptr);
@@ -112,39 +112,39 @@ void ASM::run() {
           break;
         }
 
-        case StoreLocal:
+        case OpcodeShort::StoreLocal:
           locals[read_byte(pc++)] = pop();
           break;
 
-        case LoadLocal:
+        case OpcodeShort::LoadLocal:
           push(locals[read_byte(pc++)]);
           break;
 
-        case Branch:
+        case OpcodeShort::Branch:
           pc = pop_uint32();
           break;
 
-        case Call: {
+        case OpcodeShort::Call: {
           uint32_t next = pc;
           pc = pop_uint32();
           push(std::make_shared<ValueInteger>(next));
           break;
         }
 
-        case StartPeriodicRefresh:
+        case OpcodeShort::StartPeriodicRefresh:
           if (taskRefresh == nullptr) {
             taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
           }
           break;
 
-        case StopPeriodicRefresh:
+        case OpcodeShort::StopPeriodicRefresh:
           if (taskRefresh != nullptr) {
             lv_task_del(taskRefresh);
             taskRefresh = nullptr;
           }
           break;
 
-        case SetLabelText: {
+        case OpcodeShort::SetLabelText: {
           auto str = pop<ValueString>(String);
           auto obj = pop<ValueLvglObject>(LvglObject);
 
@@ -152,11 +152,11 @@ void ASM::run() {
           break;
         }
 
-        case CreateLabel:
+        case OpcodeShort::CreateLabel:
           push(std::make_shared<ValueLvglObject>(lv_label_create(lv_scr_act(), NULL)));
           break;
 
-        case SetObjectAlign: {
+        case OpcodeShort::SetObjectAlign: {
           int16_t y = pop_uint32();
           int16_t x = pop_uint32();
           uint8_t align = pop_uint32();
@@ -165,24 +165,24 @@ void ASM::run() {
           break;
         }
 
-        case SetStyleLocalInt:
-        case SetStyleLocalFont:
-        case SetStyleLocalColor: {
+        case OpcodeShort::SetStyleLocalInt:
+        case OpcodeShort::SetStyleLocalFont:
+        case OpcodeShort::SetStyleLocalColor: {
           uint32_t value = pop_uint32();
           uint32_t prop = pop_uint32();
           uint32_t part = pop_uint32();
           auto obj = pop<ValueLvglObject>(LvglObject);
 
           switch (opcode) {
-            case SetStyleLocalInt:
+            case OpcodeShort::SetStyleLocalInt:
               _lv_obj_set_style_local_int(obj->obj, part, prop, value);
               break;
 
-            case SetStyleLocalColor:
+            case OpcodeShort::SetStyleLocalColor:
               _lv_obj_set_style_local_color(obj->obj, part, prop, lv_color_hex(value));
               break;
 
-            case SetStyleLocalFont: {
+            case OpcodeShort::SetStyleLocalFont: {
               if (value < num_fonts) {
                 _lv_obj_set_style_local_ptr(obj->obj, part, prop, fonts[value]);
               }
@@ -195,26 +195,26 @@ void ASM::run() {
           break;
         }
 
-        case Add:
+        case OpcodeShort::Add:
           push(std::make_shared<ValueInteger>(pop_uint32() + pop_uint32()));
           break;
 
-        case Subtract:
+        case OpcodeShort::Subtract:
           push(std::make_shared<ValueInteger>(pop_uint32() - pop_uint32()));
           break;
 
-        case Multiply:
+        case OpcodeShort::Multiply:
           push(std::make_shared<ValueInteger>(pop_uint32() * pop_uint32()));
           break;
 
-        case Divide: {
+        case OpcodeShort::Divide: {
           uint32_t b = pop_uint32();
           uint32_t a = pop_uint32();
           push(std::make_shared<ValueInteger>(a / b));
           break;
         }
 
-        case GrowString: {
+        case OpcodeShort::GrowString: {
           auto len = pop_uint32();
           auto str = pop<ValueString>(String);
 
@@ -228,7 +228,7 @@ void ASM::run() {
           break;
         }
 
-        case ClearString: {
+        case OpcodeShort::ClearString: {
           auto str = pop<ValueString>(String);
           if (str->capacity > 0)
             str->str[0] = '\0';
@@ -237,7 +237,7 @@ void ASM::run() {
           break;
         }
 
-        case Concat: {
+        case OpcodeShort::Concat: {
           auto b = pop();
           auto a = pop();
 
@@ -278,7 +278,7 @@ void ASM::run() {
           break;
         }
 
-        case PushCurrentTime: {
+        case OpcodeShort::PushCurrentTime: {
           auto time = dateTimeController.CurrentDateTime();
           std::tm tm {
             .tm_sec = dateTimeController.Seconds(),
@@ -295,7 +295,7 @@ void ASM::run() {
           break;
         }
 
-        case FormatDateTime: {
+        case OpcodeShort::FormatDateTime: {
           auto fmt = pop<ValueString>(String);
           auto time = pop<ValueDateTime>(DateTime);
 
@@ -308,25 +308,25 @@ void ASM::run() {
           break;
         }
 
-        case RealignObject:
+        case OpcodeShort::RealignObject:
           lv_obj_realign(pop<ValueLvglObject>(LvglObject)->obj);
           break;
 
-        case ShowStatusIcons:
+        case OpcodeShort::ShowStatusIcons:
           if (!showingStatusIcons) {
             showingStatusIcons = true;
             statusIcons.Create();
           }
           break;
 
-        case Equals: {
+        case OpcodeShort::Equals: {
           auto b = pop();
           auto a = pop();
           push(std::make_shared<ValueInteger>(a.get()->equals(b.get()) ? 1 : 0));
           break;
         }
 
-        case Negate:
+        case OpcodeShort::Negate:
           push(std::make_shared<ValueInteger>(pop().get()->isTruthy() ? 0 : 1));
           break;
 
