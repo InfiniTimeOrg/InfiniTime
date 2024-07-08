@@ -81,7 +81,7 @@ InfiniPaint
 - This app is not in InfiniTime 1.14.
 - Ajust the count to change the number of dice.
 - Ajust the sides to change the number of sides.
-- Press the button at the bottom to roll the die.
+- Press the button at the bottom to roll.
 - The result will be on the right side of the screen.
 
 ### Metronome
