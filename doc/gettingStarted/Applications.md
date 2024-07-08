@@ -47,7 +47,6 @@ InfiniPaint
 ![Heartrate UI](/doc/gettingStarted/AppsScreenshots/Heartrate.png)
 - Press Start to start measuring your heartrate.
     - It may take a bit to get the first measurement.
-    - The monitoring currently does not happen while your screen is off, however the screen will not go to sleep while the heartrate app is open.
 
 ### Music
 ![Music UI](/doc/gettingStarted/AppsScreenshots/Music.png)
