@@ -29,6 +29,8 @@ namespace Pinetime {
 
         void Refresh() override;
 
+        void OnObjectEvent(lv_obj_t* obj, lv_event_t event);
+
       private:
         static constexpr int num_slots = 16;
         static constexpr int max_locals = 16;
@@ -144,19 +146,23 @@ namespace Pinetime {
           PushEmptyString,
           PushCurrentTime,
           Duplicate,
+          Pop,
           LoadString,
 
           StartPeriodicRefresh,
           StopPeriodicRefresh,
           ShowStatusIcons,
 
+          CreateLabel,
+          CreateButton,
           SetLabelText,
           SetObjectAlign,
-          CreateLabel,
+          SetObjectSize,
           SetStyleLocalInt,
           SetStyleLocalColor,
           SetStyleLocalOpa,
           SetStyleLocalFont,
+          SetEventHandler,
           RealignObject,
           WaitRefresh,
 

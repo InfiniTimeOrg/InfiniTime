@@ -17,6 +17,18 @@ constexpr lv_font_t* fonts[] = {
 };
 constexpr int num_fonts = sizeof(fonts) / sizeof(fonts[0]);
 
+constexpr uint32_t handler_return_pc_mark = 1 << 31;
+
+struct CallbackInfo {
+  ASM* instance;
+  uint32_t callback_pc;
+};
+
+static void event_handler(lv_obj_t* obj, lv_event_t event) {
+  CallbackInfo* cbInfo = static_cast<CallbackInfo*>(lv_obj_get_user_data(obj));
+  cbInfo->instance->OnObjectEvent(obj, event);
+}
+
 ASM::ASM(Controllers::DateTime& dateTimeController,
          const Controllers::Battery& batteryController,
          const Controllers::Ble& bleController,
@@ -117,6 +129,10 @@ void ASM::run() {
           push(stack[stack_pointer - 1]);
           break;
 
+        case OpcodeShort::Pop:
+          pop();
+          break;
+
         case OpcodeShort::LoadString: {
           uint32_t ptr = pop_uint32();
 
@@ -140,9 +156,17 @@ void ASM::run() {
           push(locals[read_byte(pc++)]);
           break;
 
-        case OpcodeShort::Branch:
-          pc = pop_uint32();
+        case OpcodeShort::Branch: {
+          uint32_t value = pop_uint32();
+
+          if ((value & handler_return_pc_mark) != 0) {
+            pc = value & ~handler_return_pc_mark;
+            return;
+          }
+
+          pc = value;
           break;
+        }
 
         case OpcodeShort::Call: {
           uint32_t next = pc;
@@ -176,12 +200,24 @@ void ASM::run() {
           push(std::make_shared<ValueLvglObject>(lv_label_create(lv_scr_act(), NULL)));
           break;
 
+        case OpcodeShort::CreateButton:
+          push(std::make_shared<ValueLvglObject>(lv_btn_create(lv_scr_act(), NULL)));
+          break;
+
         case OpcodeShort::SetObjectAlign: {
           int16_t y = pop_uint32();
           int16_t x = pop_uint32();
           uint8_t align = pop_uint32();
           auto obj = pop<ValueLvglObject>(LvglObject);
           lv_obj_align(obj->obj, lv_scr_act(), align, x, y);
+          break;
+        }
+
+        case OpcodeShort::SetObjectSize: {
+          int16_t h = pop_uint32();
+          int16_t w = pop_uint32();
+          auto obj = pop<ValueLvglObject>(LvglObject);
+          lv_obj_set_size(obj->obj, w, h);
           break;
         }
 
@@ -212,6 +248,16 @@ void ASM::run() {
             default:
               break;
           }
+          break;
+        }
+
+        case OpcodeShort::SetEventHandler: {
+          uint32_t cb_pc = pop_uint32();
+          auto obj = pop<ValueLvglObject>(LvglObject);
+          CallbackInfo* cb = new CallbackInfo {this, cb_pc};
+
+          lv_obj_set_user_data(obj->obj, cb);
+          lv_obj_set_event_cb(obj->obj, event_handler);
           break;
         }
 
@@ -375,5 +421,19 @@ void ASM::_asm_assert(bool condition, const char* msg) {
 
     for (;;) {
     }
+  }
+}
+
+void ASM::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {
+  if (event != LV_EVENT_CLICKED)
+    return;
+
+  CallbackInfo* cb = static_cast<CallbackInfo*>(lv_obj_get_user_data(obj));
+
+  if (cb) {
+    push(std::make_shared<ValueInteger>(pc | handler_return_pc_mark));
+    pc = cb->callback_pc;
+
+    run();
   }
 }
