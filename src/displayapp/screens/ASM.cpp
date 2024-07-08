@@ -38,7 +38,9 @@ ASM::ASM(Controllers::DateTime& dateTimeController,
   int result = fsController.FileOpen(&file, "program.bin", LFS_O_RDONLY);
   asm_assert(result >= 0);
 
-  program_size = fsController.FileSeek(&file, 0, LFS_SEEK_END);
+  result = fsController.FileSeek(&file, 0, LFS_SEEK_END);
+  asm_assert(result >= 0);
+  program_size = result;
   fsController.FileSeek(&file, 0, LFS_SEEK_SET);
 
   populate_cache(0);
@@ -71,9 +73,7 @@ void ASM::populate_cache(size_t pos) {
 }
 
 void ASM::run() {
-  for (;;) {
-    asm_assert(pc < program_size);
-
+  while (pc < program_size) {
     OpcodeShort opcode = static_cast<OpcodeShort>(read_byte(pc));
     if (static_cast<uint8_t>(opcode) & (1 << 7)) {
       // Long opcode
@@ -292,7 +292,6 @@ void ASM::run() {
           auto str = pop<ValueString>(String);
 
           size_t new_cap = len + str->capacity;
-          asm_assert(new_cap >= str->capacity);
 
           char* new_str = new char[new_cap];
           memcpy(new_str, str->str, str->capacity);
@@ -306,7 +305,7 @@ void ASM::run() {
           if (str->capacity > 0)
             str->str[0] = '\0';
 
-          push(std::make_shared<ValueString>(str->str, str->capacity));
+          push(str);
           break;
         }
 
@@ -338,12 +337,19 @@ void ASM::run() {
             auto aString = static_cast<ValueString*>(a.get());
             auto bInt = static_cast<ValueInteger*>(b.get());
 
-            if (bInt) {
-              size_t cap = strlen(aString->str) + 12 + 1;
-              char* s = new char[cap];
-              snprintf(s, cap, "%s%lu", aString->str, bInt->i);
+            size_t aLen = strlen(aString->str);
+            size_t need_cap = aLen + 12 + 1;
 
-              push(std::make_shared<ValueString>(s, cap));
+            if (aString->capacity - aLen >= need_cap) {
+              snprintf(aString->str + aLen, aString->capacity - aLen, "%lu", bInt->i);
+
+              push(a);
+            } else {
+              char* s = new char[need_cap];
+              memcpy(s, aString->str, aLen);
+              snprintf(s + aLen, need_cap - aLen, "%lu", bInt->i);
+
+              push(std::make_shared<ValueString>(s, need_cap));
             }
           } else {
             asm_assert(false);
