@@ -38,6 +38,9 @@ ASM::~ASM() {
   if (taskRefresh != nullptr) {
     lv_task_del(taskRefresh);
   }
+  if (showingStatusIcons) {
+    lv_obj_del(statusIcons.GetObject());
+  }
 
   fs.FileClose(&file);
 
