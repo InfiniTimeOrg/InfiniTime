@@ -68,7 +68,7 @@ InfiniPaint
 - Drag your finger to move the paddle.
 - Goal: Don't let the ball go off the left side of the screen.
 
-### 2048
+### 2
 ![2 UI](/doc/gettingStarted/AppsScreenshots/2048.png)
 - This app does not allow you to swipe from the top to exit, use the side button instead.
 - Play a game of 2048.
@@ -78,7 +78,6 @@ InfiniPaint
 
 ### InfiniDice
 ![InfiniDice UI](/doc/gettingStarted/AppsScreenshots/Dice.png)
-- This app is not in InfiniTime 1.14.
 - Ajust the count to change the number of dice.
 - Ajust the sides to change the number of sides.
 - Press the button at the bottom to roll.
@@ -97,6 +96,5 @@ InfiniPaint
 
 ### Weather
 ![Weather UI](/doc/gettingStarted/AppsScreenshots/Weather.png)
-- This app is not in InfiniTime 1.14.
 - This app shows weather info.
     - Please note that this app is not very useful without a device connected.
