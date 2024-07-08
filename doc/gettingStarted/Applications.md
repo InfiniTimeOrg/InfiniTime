@@ -10,7 +10,7 @@ InfiniTime has 13 apps on the `main` branch at the time of writing.
 - Heartrate
 - Music
 - InfiniPaint
-- Pong
+- Paddle
 - 2048
 - Dice
 - Metronome
