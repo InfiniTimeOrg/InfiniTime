@@ -346,9 +346,13 @@ void ASM::Refresh() {
   }
 }
 
-void ASM::asm_assert(bool condition) {
+void ASM::_asm_assert(bool condition, const char* msg) {
   if (!condition) {
     // TODO: Handle better
+
+    if (msg)
+      NRF_LOG_ERROR("Assertion failed: %s", msg);
+
     for (;;) {
     }
   }

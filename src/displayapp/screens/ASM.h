@@ -11,6 +11,14 @@
 #include <memory>
 #include <chrono>
 
+#if DEBUG
+  #define STRINGIZE_DETAIL(x)   #x
+  #define STRINGIZE(x)          STRINGIZE_DETAIL(x)
+  #define asm_assert(condition) _asm_assert(condition, __FILE__ ":" STRINGIZE(__LINE__) " " #condition)
+#else
+  #define asm_assert(condition) _asm_assert(condition, NULL)
+#endif
+
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
@@ -199,7 +207,7 @@ namespace Pinetime {
         bool showingStatusIcons = false;
 
         void run();
-        void asm_assert(bool condition);
+        void _asm_assert(bool condition, const char* msg);
 
         std::shared_ptr<Value> pop() {
           asm_assert(stack_pointer > 0);
