@@ -195,10 +195,9 @@ void ASM::run() {
           break;
         }
 
-        case Add: {
+        case Add:
           push(std::make_shared<ValueInteger>(pop_uint32() + pop_uint32()));
           break;
-        }
 
         case Subtract:
           push(std::make_shared<ValueInteger>(pop_uint32() - pop_uint32()));
@@ -208,9 +207,12 @@ void ASM::run() {
           push(std::make_shared<ValueInteger>(pop_uint32() * pop_uint32()));
           break;
 
-        case Divide:
-          push(std::make_shared<ValueInteger>(pop_uint32() / pop_uint32()));
+        case Divide: {
+          uint32_t b = pop_uint32();
+          uint32_t a = pop_uint32();
+          push(std::make_shared<ValueInteger>(a / b));
           break;
+        }
 
         case GrowString: {
           auto len = pop_uint32();
