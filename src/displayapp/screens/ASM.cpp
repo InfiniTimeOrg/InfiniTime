@@ -26,6 +26,9 @@ ASM::ASM(Controllers::DateTime& dateTimeController,
   int result = fsController.FileOpen(&file, "program.bin", LFS_O_RDONLY);
   asm_assert(result >= 0);
 
+  program_size = fsController.FileSeek(&file, 0, LFS_SEEK_END);
+  fsController.FileSeek(&file, 0, LFS_SEEK_SET);
+
   populate_cache(0);
 
   Refresh();
@@ -54,9 +57,7 @@ void ASM::populate_cache(size_t pos) {
 
 void ASM::run() {
   for (;;) {
-    if (pc >= program_size) {
-      break;
-    }
+    asm_assert(pc < program_size);
 
     OpcodeShort opcode = static_cast<OpcodeShort>(read_byte(pc));
     if (static_cast<uint8_t>(opcode) & (1 << 7)) {
