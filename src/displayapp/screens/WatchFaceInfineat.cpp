@@ -544,6 +544,8 @@ void WatchFaceInfineat::Refresh() {
       lv_obj_align(alarmIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
     }
   }
+
+
   stepCount = motionController.NbSteps();
   if (stepCount.IsUpdated()) {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
