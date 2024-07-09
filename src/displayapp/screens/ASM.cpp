@@ -73,7 +73,9 @@ void ASM::populate_cache(size_t pos) {
 }
 
 void ASM::run() {
-  while (pc < program_size) {
+  bool stop = false;
+
+  while (!stop && pc < program_size) {
     OpcodeShort opcode = static_cast<OpcodeShort>(read_byte(pc));
     if (static_cast<uint8_t>(opcode) & (1 << 7)) {
       // Long opcode
@@ -91,7 +93,8 @@ void ASM::run() {
 
       switch (opcode) {
         case OpcodeShort::WaitRefresh:
-          return;
+          stop = true;
+          break;
 
         case OpcodeShort::Push0:
           push(std::make_shared<ValueInteger>(0));
@@ -154,7 +157,7 @@ void ASM::run() {
 
         case OpcodeShort::Branch: {
           if (doBranch(pop_uint32()))
-            return;
+            stop = true;
           break;
         }
 
@@ -163,7 +166,7 @@ void ASM::run() {
           auto cond = pop();
 
           if (cond->isTruthy() && doBranch(to))
-            return;
+            stop = true;
           break;
         }
 
