@@ -193,6 +193,57 @@ void ASM::run() {
           auto obj = pop<ValueLvglObject>(LvglObject);
 
           lv_label_set_text(obj->obj, str->str);
+          push(obj);
+          break;
+        }
+
+        case OpcodeShort::SetArcRange: {
+          uint32_t max = pop_uint32();
+          uint32_t min = pop_uint32();
+          auto obj = pop<ValueLvglObject>(LvglObject);
+          lv_arc_set_range(obj->obj, min, max);
+          push(obj);
+          break;
+        }
+
+        case OpcodeShort::SetArcRotation: {
+          uint32_t rot = pop_uint32();
+          auto obj = pop<ValueLvglObject>(LvglObject);
+          lv_arc_set_rotation(obj->obj, rot);
+          push(obj);
+          break;
+        }
+
+        case OpcodeShort::SetArcBgAngles: {
+          uint32_t end = pop_uint32();
+          uint32_t start = pop_uint32();
+          auto obj = pop<ValueLvglObject>(LvglObject);
+          lv_arc_set_bg_angles(obj->obj, start, end);
+          push(obj);
+          break;
+        }
+
+        case OpcodeShort::SetArcAdjustable: {
+          auto val = pop();
+          auto obj = pop<ValueLvglObject>(LvglObject);
+          lv_arc_set_adjustable(obj->obj, val->isTruthy());
+          push(obj);
+          break;
+        }
+
+        case OpcodeShort::SetArcStartAngle: {
+          uint32_t angle = pop_uint32();
+          auto obj = pop<ValueLvglObject>(LvglObject);
+          lv_arc_set_start_angle(obj->obj, angle);
+          push(obj);
+          break;
+        }
+
+        case OpcodeShort::SetArcValue: {
+          uint32_t value = pop_uint32();
+          auto obj = pop<ValueLvglObject>(LvglObject);
+          lv_arc_set_value(obj->obj, value);
+          push(obj);
           break;
         }
 
@@ -204,12 +255,17 @@ void ASM::run() {
           push(std::make_shared<ValueLvglObject>(lv_btn_create(lv_scr_act(), NULL)));
           break;
 
+        case OpcodeShort::CreateArc:
+          push(std::make_shared<ValueLvglObject>(lv_arc_create(lv_scr_act(), NULL)));
+          break;
+
         case OpcodeShort::SetObjectAlign: {
           int16_t y = pop_uint32();
           int16_t x = pop_uint32();
           uint8_t align = pop_uint32();
           auto obj = pop<ValueLvglObject>(LvglObject);
           lv_obj_align(obj->obj, lv_scr_act(), align, x, y);
+          push(obj);
           break;
         }
 
@@ -218,6 +274,7 @@ void ASM::run() {
           int16_t w = pop_uint32();
           auto obj = pop<ValueLvglObject>(LvglObject);
           lv_obj_set_size(obj->obj, w, h);
+          push(obj);
           break;
         }
 
@@ -225,6 +282,7 @@ void ASM::run() {
           auto parent = pop<ValueLvglObject>(LvglObject);
           auto child = pop<ValueLvglObject>(LvglObject);
           lv_obj_set_parent(child->obj, parent->obj);
+          push(child);
           break;
         }
 
@@ -255,6 +313,8 @@ void ASM::run() {
             default:
               break;
           }
+
+          push(obj);
           break;
         }
 
@@ -265,6 +325,7 @@ void ASM::run() {
 
           lv_obj_set_user_data(obj->obj, cb);
           lv_obj_set_event_cb(obj->obj, event_handler);
+          push(obj);
           break;
         }
 
