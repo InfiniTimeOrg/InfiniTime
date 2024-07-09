@@ -219,10 +219,10 @@ namespace Pinetime {
         lv_task_t* taskRefresh = nullptr;
 
         Controllers::DateTime& dateTimeController;
-        Widgets::StatusIcons statusIcons;
+        const Controllers::Battery& batteryController;
+        const Controllers::Ble& bleController;
         Controllers::FS& fs;
-
-        bool showingStatusIcons = false;
+        std::unique_ptr<Widgets::StatusIcons> statusIcons;
 
         void run();
         void _asm_assert(bool condition, const char* msg);

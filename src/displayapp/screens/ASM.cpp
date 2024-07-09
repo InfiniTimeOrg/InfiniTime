@@ -33,7 +33,7 @@ ASM::ASM(Controllers::DateTime& dateTimeController,
          const Controllers::Battery& batteryController,
          const Controllers::Ble& bleController,
          Controllers::FS& fsController)
-  : dateTimeController(dateTimeController), statusIcons(batteryController, bleController), fs(fsController) {
+  : dateTimeController(dateTimeController), batteryController(batteryController), bleController(bleController), fs(fsController) {
 
   int result = fsController.FileOpen(&file, "program.bin", LFS_O_RDONLY);
   asm_assert(result >= 0);
@@ -52,8 +52,8 @@ ASM::~ASM() {
   if (taskRefresh != nullptr) {
     lv_task_del(taskRefresh);
   }
-  if (showingStatusIcons) {
-    lv_obj_del(statusIcons.GetObject());
+  if (statusIcons) {
+    lv_obj_del(statusIcons->GetObject());
   }
 
   fs.FileClose(&file);
@@ -396,9 +396,9 @@ void ASM::run() {
           break;
 
         case OpcodeShort::ShowStatusIcons:
-          if (!showingStatusIcons) {
-            showingStatusIcons = true;
-            statusIcons.Create();
+          if (!statusIcons) {
+            statusIcons = std::make_unique<Widgets::StatusIcons>(batteryController, bleController);
+            statusIcons->Create();
           }
           break;
 
@@ -424,8 +424,8 @@ void ASM::run() {
 void ASM::Refresh() {
   run();
 
-  if (showingStatusIcons) {
-    statusIcons.Update();
+  if (statusIcons) {
+    statusIcons->Update();
   }
 }
 
