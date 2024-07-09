@@ -89,7 +89,7 @@ void ASM::run() {
     } else {
       pc++;
 
-      NRF_LOG_INFO("Short opcode: %d", opcode);
+      switch (opcode) {
         case OpcodeShort::WaitRefresh:
           return;
 
@@ -153,14 +153,17 @@ void ASM::run() {
           break;
 
         case OpcodeShort::Branch: {
-          uint32_t value = pop_uint32();
-
-          if ((value & handler_return_pc_mark) != 0) {
-            pc = value & ~handler_return_pc_mark;
+          if (doBranch(pop_uint32()))
             return;
-          }
+          break;
+        }
 
-          pc = value;
+        case OpcodeShort::BranchIfTrue: {
+          uint32_t to = pop_uint32();
+          auto cond = pop();
+
+          if (cond->isTruthy() && doBranch(to))
+            return;
           break;
         }
 
@@ -329,9 +332,12 @@ void ASM::run() {
           push(std::make_shared<ValueInteger>(pop_uint32() + pop_uint32()));
           break;
 
-        case OpcodeShort::Subtract:
-          push(std::make_shared<ValueInteger>(pop_uint32() - pop_uint32()));
+        case OpcodeShort::Subtract: {
+          uint32_t b = pop_uint32();
+          uint32_t a = pop_uint32();
+          push(std::make_shared<ValueInteger>(a - b));
           break;
+        }
 
         case OpcodeShort::Multiply:
           push(std::make_shared<ValueInteger>(pop_uint32() * pop_uint32()));
@@ -462,7 +468,21 @@ void ASM::run() {
         case OpcodeShort::Equals: {
           auto b = pop();
           auto a = pop();
-          push(std::make_shared<ValueInteger>(a.get()->equals(b.get()) ? 1 : 0));
+          push(std::make_shared<ValueInteger>(a.get()->compare(b.get()) == 0 ? 1 : 0));
+          break;
+        }
+
+        case OpcodeShort::Greater: {
+          auto b = pop();
+          auto a = pop();
+          push(std::make_shared<ValueInteger>(a.get()->compare(b.get()) > 0 ? 1 : 0));
+          break;
+        }
+
+        case OpcodeShort::Lesser: {
+          auto b = pop();
+          auto a = pop();
+          push(std::make_shared<ValueInteger>(a.get()->compare(b.get()) < 0 ? 1 : 0));
           break;
         }
 
@@ -514,6 +534,16 @@ void ASM::_asm_assert(bool condition, const char* msg) {
     for (;;) {
     }
   }
+}
+
+bool ASM::doBranch(uint32_t to) {
+  if ((to & handler_return_pc_mark) != 0) {
+    pc = to & ~handler_return_pc_mark;
+    return true;
+  }
+
+  pc = to;
+  return false;
 }
 
 void ASM::OnObjectEvent(lv_obj_t* obj, lv_event_t event) {

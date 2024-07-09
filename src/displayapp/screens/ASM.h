@@ -42,7 +42,7 @@ namespace Pinetime {
         // TODO: Use fancy C++ type stuff
         struct Value {
           virtual DataType type() = 0;
-          virtual bool equals(Value* other) = 0;
+          virtual int compare(Value* other) = 0;
           virtual bool isTruthy() = 0;
         };
 
@@ -56,8 +56,20 @@ namespace Pinetime {
             return Integer;
           }
 
-          bool equals(Value* other) override {
-            return other->type() == Integer && i == static_cast<ValueInteger*>(other)->i;
+          int compare(Value* other) override {
+            if (other->type() != Integer) {
+              return -1;
+            }
+
+            auto otherInt = static_cast<ValueInteger*>(other)->i;
+
+            if (i < otherInt) {
+              return -1;
+            } else if (i > otherInt) {
+              return 1;
+            }
+
+            return 0;
           }
 
           bool isTruthy() override {
@@ -80,8 +92,12 @@ namespace Pinetime {
             return String;
           }
 
-          bool equals(Value* other) override {
-            return other->type() == String && strcmp(str, static_cast<ValueString*>(other)->str) == 0;
+          int compare(Value* other) override {
+            if (other->type() != String) {
+              return -1;
+            }
+
+            return strcmp(str, static_cast<ValueString*>(other)->str);
           }
 
           bool isTruthy() override {
@@ -103,8 +119,8 @@ namespace Pinetime {
             return LvglObject;
           }
 
-          bool equals(Value* other) override {
-            return other->type() == LvglObject && obj == static_cast<ValueLvglObject*>(other)->obj;
+          int compare(Value*) override {
+            return -1;
           }
 
           bool isTruthy() override {
@@ -124,8 +140,20 @@ namespace Pinetime {
             return DateTime;
           }
 
-          bool equals(Value* other) override {
-            return other->type() == DateTime && time == static_cast<ValueDateTime*>(other)->time;
+          int compare(Value* other) override {
+            if (other->type() != DateTime) {
+              return -1;
+            }
+
+            auto otherTime = static_cast<ValueDateTime*>(other)->time;
+
+            if (time < otherTime) {
+              return -1;
+            } else if (time > otherTime) {
+              return 1;
+            }
+
+            return 0;
           }
 
           bool isTruthy() override {
@@ -137,6 +165,7 @@ namespace Pinetime {
           StoreLocal,
           LoadLocal,
           Branch,
+          BranchIfTrue,
           Call,
           Push0,
           PushU8,
@@ -180,6 +209,8 @@ namespace Pinetime {
           Multiply,
           Divide,
           Equals,
+          Greater,
+          Lesser,
           Negate,
 
           GrowString,
@@ -237,6 +268,7 @@ namespace Pinetime {
 
         void run();
         void _asm_assert(bool condition, const char* msg);
+        bool doBranch(uint32_t to);
 
         std::shared_ptr<Value> pop() {
           asm_assert(stack_pointer > 0);
