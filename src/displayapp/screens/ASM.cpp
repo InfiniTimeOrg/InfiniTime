@@ -79,8 +79,6 @@ void ASM::run() {
       // Long opcode
       OpcodeLong opcode = static_cast<OpcodeLong>(read_u16(pc));
 
-      NRF_LOG_INFO("Long opcode: %d", opcode);
-
       pc += 2;
 
       switch (opcode) {
@@ -92,8 +90,6 @@ void ASM::run() {
       pc++;
 
       NRF_LOG_INFO("Short opcode: %d", opcode);
-
-      switch (opcode) {
         case OpcodeShort::WaitRefresh:
           return;
 
