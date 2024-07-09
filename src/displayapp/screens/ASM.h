@@ -185,7 +185,11 @@ namespace Pinetime {
           GrowString,
           ClearString,
           Concat,
-          FormatDateTime
+          FormatDateTime,
+
+          GetDateTimeHour,
+          GetDateTimeMinute,
+          GetDateTimeSecond
         };
 
         enum class OpcodeLong : uint16_t {};

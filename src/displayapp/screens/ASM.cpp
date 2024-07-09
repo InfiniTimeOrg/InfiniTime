@@ -474,6 +474,24 @@ void ASM::run() {
           push(std::make_shared<ValueInteger>(pop().get()->isTruthy() ? 0 : 1));
           break;
 
+        case OpcodeShort::GetDateTimeHour: {
+          auto time = pop<ValueDateTime>(DateTime);
+          push(std::make_shared<ValueInteger>(time->tm.tm_hour));
+          break;
+        }
+
+        case OpcodeShort::GetDateTimeMinute: {
+          auto time = pop<ValueDateTime>(DateTime);
+          push(std::make_shared<ValueInteger>(time->tm.tm_min));
+          break;
+        }
+
+        case OpcodeShort::GetDateTimeSecond: {
+          auto time = pop<ValueDateTime>(DateTime);
+          push(std::make_shared<ValueInteger>(time->tm.tm_sec));
+          break;
+        }
+
         default:
           NRF_LOG_ERROR("Unknown opcode: 0x%02X", opcode);
           break;
