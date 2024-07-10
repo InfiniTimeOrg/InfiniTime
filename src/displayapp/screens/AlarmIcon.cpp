@@ -4,8 +4,8 @@ using namespace Pinetime::Applications::Screens;
 
 const char* AlarmIcon::GetIcon(bool isSet) {
   if (isSet) {
-   return Symbols::bird;
+   return Symbols::bell;
   }
 
-  return Symbols::zzz;
+  return Symbols::notbell;
 }

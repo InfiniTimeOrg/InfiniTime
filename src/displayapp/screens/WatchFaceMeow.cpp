@@ -16,7 +16,7 @@
 #include <cstdio>
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/BleIcon.h"
-#include "displayapp/screens/AlarmIcon.h"
+//#include "displayapp/screens/AlarmIcon.h"
 #include "components/settings/Settings.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
@@ -542,7 +542,11 @@ void WatchFaceMeow::Refresh() {
   if (settingsController.GetInfineatShowAlarmStatus()) {
     alarmState = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
     // sets the icon as bird or bed
-    lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(alarmState));
+    const char* alarmSymbol = Symbols::zzz;
+    if(alarmState) {
+      alarmSymbol = Symbols::bird;
+    }
+    lv_label_set_text_static(alarmIcon, alarmSymbol);
     //displays the time of the alarm or nothing if the alarm is not set
     if (alarmState) {
       uint8_t alarmHours = alarmController.Hours();
