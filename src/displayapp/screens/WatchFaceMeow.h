@@ -64,7 +64,7 @@ namespace Pinetime {
 
         lv_point_t lineBatteryPoints[2];
 
-        lv_obj_t* logoPine;
+        lv_obj_t* logoCat;
 
         lv_obj_t* timeContainer;
         lv_obj_t* labelHour;
@@ -74,18 +74,20 @@ namespace Pinetime {
         lv_obj_t* labelDate;
         lv_obj_t* bleIcon;
         lv_obj_t* labelAlarm;
+        lv_obj_t* labelTimeAmPmAlarm;
         lv_obj_t* alarmIcon;
-        lv_obj_t* stepIcon;
         lv_obj_t* pawIcon;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
         lv_obj_t* btnClose;
         lv_obj_t* btnNextColor;
         lv_obj_t* btnToggleCover;
+        lv_obj_t* btnToggleAlarm;
         lv_obj_t* btnPrevColor;
         lv_obj_t* btnSettings;
         lv_obj_t* labelBtnSettings;
         lv_obj_t* lblToggle;
+        lv_obj_t* lblAlarm;
 
         lv_obj_t* lines[nLines];
 
@@ -99,6 +101,8 @@ namespace Pinetime {
 
         void SetBatteryLevel(uint8_t batteryPercent);
         void ToggleBatteryIndicatorColor(bool showSideCover);
+
+        void ToggleShowAlarmStatus(bool showAlarmStatus);
 
         lv_task_t* taskRefresh;
         lv_font_t* font_teko = nullptr;

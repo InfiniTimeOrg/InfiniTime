@@ -292,10 +292,10 @@ WatchFaceMeow::WatchFaceMeow(Controllers::DateTime& dateTimeController,
   lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 10, 0);
   lv_label_set_text_static(stepValue, "0");
 
-  stepIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
-  lv_label_set_text_static(stepIcon, Symbols::paw);
-  lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+  pawIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(pawIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
+  lv_label_set_text_static(pawIcon, Symbols::paw);
+  lv_obj_align(pawIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
 
 
   // Setting buttons
@@ -582,7 +582,7 @@ void WatchFaceMeow::Refresh() {
   if (stepCount.IsUpdated()) {
     lv_label_set_text_fmt(stepValue, "%lu", stepCount.Get());
     lv_obj_align(stepValue, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 10, 0);
-    lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
+    lv_obj_align(pawIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
   }
 
   if (!lv_obj_get_hidden(btnSettings)) {
