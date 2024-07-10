@@ -35,10 +35,10 @@ Calendar::Calendar(Controllers::DateTime& dateTimeController) : dateTimeControll
 
   // Set style of today's date
   lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_FOCUSED, Colors::deepOrange);
-
+  
   // Set style of inactive month's days
   lv_obj_set_style_local_text_color(calendar, LV_CALENDAR_PART_DATE, LV_STATE_DISABLED, Colors::gray);
-
+  
   // Get today's date
   current.year = static_cast<int>(dateTimeController.Year());
   current.month = static_cast<int>(dateTimeController.Month());
