@@ -5,6 +5,21 @@
 
 using namespace Pinetime::Applications;
 
+TickType_t CurrentTaskDelay(HeartRateTask::States state, TickType_t ppgDeltaTms) {
+  switch (state) {
+    case HeartRateTask::States::Measuring:
+    case HeartRateTask::States::BackgroundMeasuring:
+      return ppgDeltaTms;
+    case HeartRateTask::States::Running:
+      return pdMS_TO_TICKS(100);
+    case HeartRateTask::States::BackgroundWaiting:
+      return pdMS_TO_TICKS(10000);
+    default:
+      return portMAX_DELAY;
+  }
+}
+
+
 HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor,
                              Controllers::HeartRateController& controller,
                              Controllers::Settings& settings)
@@ -26,10 +41,10 @@ void HeartRateTask::Process(void* instance) {
 }
 
 void HeartRateTask::Work() {
-  lastBpm = 0;
+  int lastBpm = 0;
 
   while (true) {
-    TickType_t delay = CurrentTaskDelay();
+    TickType_t delay = CurrentTaskDelay(state, ppg.deltaTms);
     Messages msg;
 
     if (xQueueReceive(messageQueue, &msg, delay) == pdTRUE) {
@@ -41,7 +56,7 @@ void HeartRateTask::Work() {
           HandleWakeUp();
           break;
         case Messages::StartMeasurement:
-          HandleStartMeasurement();
+          HandleStartMeasurement(&lastBpm);
           break;
         case Messages::StopMeasurement:
           HandleStopMeasurement();
@@ -117,12 +132,12 @@ void HeartRateTask::HandleWakeUp() {
   }
 }
 
-void HeartRateTask::HandleStartMeasurement() {
+void HeartRateTask::HandleStartMeasurement(int* lastBpm) {
   switch (state) {
     case States::Idle:
     case States::Running:
       state = States::Measuring;
-      lastBpm = 0;
+      *lastBpm = 0;
       StartMeasurement();
       break;
     case States::Measuring:
@@ -198,20 +213,6 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
       ticksSinceMeasurementStart >= DURATION_UNTIL_BACKGROUND_MEASUREMENT_IS_STOPPED) {
     state = States::BackgroundWaiting;
     StartWaiting();
-  }
-}
-
-TickType_t HeartRateTask::CurrentTaskDelay() {
-  switch (state) {
-    case States::Measuring:
-    case States::BackgroundMeasuring:
-      return ppg.deltaTms;
-    case States::Running:
-      return pdMS_TO_TICKS(100);
-    case States::BackgroundWaiting:
-      return pdMS_TO_TICKS(10000);
-    default:
-      return portMAX_DELAY;
   }
 }
 

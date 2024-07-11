@@ -58,12 +58,11 @@ namespace Pinetime {
 
       void HandleGoToSleep();
       void HandleWakeUp();
-      void HandleStartMeasurement();
+      void HandleStartMeasurement(int* lastBpm);
       void HandleStopMeasurement();
 
       void HandleBackgroundWaiting();
       void HandleSensorData(int* lastBpm);
-      TickType_t CurrentTaskDelay();
 
       TickType_t GetHeartRateBackgroundMeasurementIntervalInTicks();
       bool IsContinuosModeActivated();
@@ -78,7 +77,6 @@ namespace Pinetime {
       Controllers::Ppg ppg;
       TickType_t backgroundWaitingStart = 0;
       TickType_t measurementStart = 0;
-      int lastBpm = 0;
     };
 
   }
