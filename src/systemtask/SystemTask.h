@@ -79,9 +79,6 @@ namespace Pinetime {
 
       void OnTouchEvent();
 
-      void OnIdle();
-      void OnDim();
-
       bool IsSleepDisabled() {
         return doNotGoToSleep;
       }
