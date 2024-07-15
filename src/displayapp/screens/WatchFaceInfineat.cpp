@@ -259,6 +259,7 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
     lv_obj_set_hidden(alarmIcon, true);
     lv_obj_set_hidden(labelTimeAmPmAlarm, true);
   }
+
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
   lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);

@@ -284,8 +284,16 @@ WatchFaceMeow::WatchFaceMeow(Controllers::DateTime& dateTimeController,
   // symbol
   alarmIcon = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
-  lv_label_set_text_static(alarmIcon, Symbols::paw);
+  lv_label_set_text_static(alarmIcon, Symbols::zzz);
   lv_obj_align(alarmIcon, labelAlarm, LV_ALIGN_OUT_LEFT_MID, -3, 0);
+
+  // don't show the icons jsut set if we don't show alarm status
+  if (!settingsController.GetInfineatShowAlarmStatus()) {
+    lv_obj_set_hidden(labelAlarm, true);
+    lv_obj_set_hidden(alarmIcon, true);
+    lv_obj_set_hidden(labelTimeAmPmAlarm, true);
+  }
+
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
   lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
