@@ -314,7 +314,6 @@ void Calculator::UpdateValueLabel() {
       uint8_t min_width = 0;
       int64_t tmp_offset = offset;
 
-      // TODO there has to be a simpler way to do this
       if (tmp_offset == 0) {
         tmp_offset = 1;
         min_width = 1;
