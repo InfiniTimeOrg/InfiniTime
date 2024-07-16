@@ -30,6 +30,7 @@ namespace Pinetime {
         WatchFaceCasioStyleG7710(Controllers::DateTime& dateTimeController,
                                  const Controllers::Battery& batteryController,
                                  const Controllers::Ble& bleController,
+                                 Controllers::AlarmController& alarmController,
                                  Controllers::NotificationManager& notificatioManager,
                                  Controllers::Settings& settingsController,
                                  Controllers::HeartRateController& heartRateController,
@@ -46,6 +47,7 @@ namespace Pinetime {
         Utility::DirtyValue<bool> powerPresent {};
         Utility::DirtyValue<bool> bleState {};
         Utility::DirtyValue<bool> bleRadioEnabled {};
+        bool alarmState {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
         Utility::DirtyValue<uint32_t> stepCount {};
         Utility::DirtyValue<uint8_t> heartbeat {};
@@ -76,6 +78,9 @@ namespace Pinetime {
         lv_obj_t* line_day_of_year;
         lv_obj_t* backgroundLabel;
         lv_obj_t* bleIcon;
+        lv_obj_t* labelAlarm;
+        lv_obj_t* labelTimeAmPmAlarm;
+        lv_obj_t* alarmIcon;
         lv_obj_t* batteryPlug;
         lv_obj_t* label_battery_value;
         lv_obj_t* heartbeatIcon;
@@ -90,6 +95,7 @@ namespace Pinetime {
         Controllers::DateTime& dateTimeController;
         const Controllers::Battery& batteryController;
         const Controllers::Ble& bleController;
+        Controllers::AlarmController& alarmController;
         Controllers::NotificationManager& notificatioManager;
         Controllers::Settings& settingsController;
         Controllers::HeartRateController& heartRateController;
@@ -111,6 +117,7 @@ namespace Pinetime {
         return new Screens::WatchFaceCasioStyleG7710(controllers.dateTimeController,
                                                      controllers.batteryController,
                                                      controllers.bleController,
+                                                     controllers.alarmController,
                                                      controllers.notificationManager,
                                                      controllers.settingsController,
                                                      controllers.heartRateController,
