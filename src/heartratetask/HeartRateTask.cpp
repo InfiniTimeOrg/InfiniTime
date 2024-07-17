@@ -102,8 +102,7 @@ void HeartRateTask::HandleGoToSleep() {
       state = States::Idle;
       break;
     case States::Measuring:
-      state = States::BackgroundWaiting;
-      StartWaiting();
+      state = States::BackgroundMeasuring;
       break;
     case States::Idle:
     case States::BackgroundWaiting:
