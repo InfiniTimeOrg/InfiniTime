@@ -196,14 +196,6 @@ namespace Pinetime {
         if (status != settings.notificationStatus) {
           settingsChanged = true;
         }
-        // Disable always on screen while sleep mode is enabled
-        if (settings.alwaysOnDisplay.enabled) {
-          if (status == Notification::Sleep) {
-            settings.alwaysOnDisplay.state = false;
-          } else {
-            settings.alwaysOnDisplay.state = true;
-          }
-        }
         settings.notificationStatus = status;
       };
 
@@ -222,31 +214,19 @@ namespace Pinetime {
         return settings.screenTimeOut;
       };
 
-      void SetAlwaysOnDisplay(bool state) {
-        if (state != settings.alwaysOnDisplay.state) {
-          settingsChanged = true;
-        }
-        settings.alwaysOnDisplay.state = state;
-      };
-
       bool GetAlwaysOnDisplay() const {
-        return settings.alwaysOnDisplay.state;
+        return settings.alwaysOnDisplay && GetNotificationStatus() != Notification::Sleep;
       };
 
       void SetAlwaysOnDisplaySetting(bool state) {
-        if (state != settings.alwaysOnDisplay.enabled) {
+        if (state != settings.alwaysOnDisplay) {
           settingsChanged = true;
         }
-        settings.alwaysOnDisplay.enabled = state;
-
-        // Don't enable always on if we are currently in notification sleep
-        if (GetNotificationStatus() != Notification::Sleep) {
-          SetAlwaysOnDisplay(state);
-        }
+        settings.alwaysOnDisplay = state;
       }
 
       bool GetAlwaysOnDisplaySetting() const {
-        return settings.alwaysOnDisplay.enabled;
+        return settings.alwaysOnDisplay;
       }
 
       void SetShakeThreshold(uint16_t thresh) {
@@ -323,19 +303,12 @@ namespace Pinetime {
 
       static constexpr uint32_t settingsVersion = 0x0008;
 
-      // To enable disabling it during notification sleep, differentiate between
-      // the setting being on, and the setting being set by the user
-      struct alwaysOnDisplayData {
-        bool enabled = false;
-        bool state = false;
-      };
-
       struct SettingsData {
         uint32_t version = settingsVersion;
         uint32_t stepsGoal = 10000;
         uint32_t screenTimeOut = 15000;
 
-        alwaysOnDisplayData alwaysOnDisplay;
+        bool alwaysOnDisplay = false;
 
         ClockType clockType = ClockType::H24;
         WeatherFormat weatherFormat = WeatherFormat::Metric;
