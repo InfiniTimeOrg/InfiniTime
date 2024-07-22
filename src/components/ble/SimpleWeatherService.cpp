@@ -80,7 +80,7 @@ int WeatherCallback(uint16_t /*connHandle*/, uint16_t /*attrHandle*/, struct ble
   return static_cast<Pinetime::Controllers::SimpleWeatherService*>(arg)->OnCommand(ctxt);
 }
 
-SimpleWeatherService::SimpleWeatherService(const DateTime& dateTimeController) : dateTimeController(dateTimeController) {
+SimpleWeatherService::SimpleWeatherService(DateTime& dateTimeController) : dateTimeController(dateTimeController) {
 }
 
 void SimpleWeatherService::Init() {
@@ -157,4 +157,17 @@ bool SimpleWeatherService::CurrentWeather::operator==(const SimpleWeatherService
   return this->iconId == other.iconId && this->temperature == other.temperature && this->timestamp == other.timestamp &&
          this->maxTemperature == other.maxTemperature && this->minTemperature == other.maxTemperature &&
          std::strcmp(this->location.data(), other.location.data()) == 0;
+}
+
+bool SimpleWeatherService::Forecast::Day::operator==(const SimpleWeatherService::Forecast::Day& other) const {
+  return this->iconId == other.iconId && this->maxTemperature == other.maxTemperature && this->minTemperature == other.maxTemperature;
+}
+
+bool SimpleWeatherService::Forecast::operator==(const SimpleWeatherService::Forecast& other) const {
+  for (int i = 0; i < this->nbDays; i++) {
+    if (this->days[i] != other.days[i]) {
+      return false;
+    }
+  }
+  return this->timestamp == other.timestamp && this->nbDays == other.nbDays;
 }

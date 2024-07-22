@@ -94,32 +94,45 @@ bool SpiMaster::Init() {
   return true;
 }
 
-void SpiMaster::SetupWorkaroundForFtpan58(NRF_SPIM_Type* spim, uint32_t ppi_channel, uint32_t gpiote_channel) {
-  // Create an event when SCK toggles.
-  NRF_GPIOTE->CONFIG[gpiote_channel] = (GPIOTE_CONFIG_MODE_Event << GPIOTE_CONFIG_MODE_Pos) | (spim->PSEL.SCK << GPIOTE_CONFIG_PSEL_Pos) |
-                                       (GPIOTE_CONFIG_POLARITY_Toggle << GPIOTE_CONFIG_POLARITY_Pos);
+void SpiMaster::SetupWorkaroundForErratum58() {
+  nrfx_gpiote_pin_t pin = spiBaseAddress->PSEL.SCK;
+  nrfx_gpiote_in_config_t gpioteCfg = {.sense = NRF_GPIOTE_POLARITY_TOGGLE,
+                                       .pull = NRF_GPIO_PIN_NOPULL,
+                                       .is_watcher = false,
+                                       .hi_accuracy = true,
+                                       .skip_gpio_setup = true};
+  if (!workaroundActive) {
+    // Create an event when SCK toggles.
+    APP_ERROR_CHECK(nrfx_gpiote_in_init(pin, &gpioteCfg, NULL));
+    nrfx_gpiote_in_event_enable(pin, false);
 
-  // Stop the spim instance when SCK toggles.
-  NRF_PPI->CH[ppi_channel].EEP = (uint32_t) &NRF_GPIOTE->EVENTS_IN[gpiote_channel];
-  NRF_PPI->CH[ppi_channel].TEP = (uint32_t) &spim->TASKS_STOP;
-  NRF_PPI->CHENSET = 1U << ppi_channel;
+    // Stop the spim instance when SCK toggles.
+    nrf_ppi_channel_endpoint_setup(workaroundPpi, nrfx_gpiote_in_event_addr_get(pin), spiBaseAddress->TASKS_STOP);
+    nrf_ppi_channel_enable(workaroundPpi);
+  }
+
   spiBaseAddress->EVENTS_END = 0;
 
   // Disable IRQ
-  spim->INTENCLR = (1 << 6);
-  spim->INTENCLR = (1 << 1);
-  spim->INTENCLR = (1 << 19);
+  spiBaseAddress->INTENCLR = (1 << 6);
+  spiBaseAddress->INTENCLR = (1 << 1);
+  spiBaseAddress->INTENCLR = (1 << 19);
+  workaroundActive = true;
 }
 
-void SpiMaster::DisableWorkaroundForFtpan58(NRF_SPIM_Type* spim, uint32_t ppi_channel, uint32_t gpiote_channel) {
-  NRF_GPIOTE->CONFIG[gpiote_channel] = 0;
-  NRF_PPI->CH[ppi_channel].EEP = 0;
-  NRF_PPI->CH[ppi_channel].TEP = 0;
-  NRF_PPI->CHENSET = ppi_channel;
+void SpiMaster::DisableWorkaroundForErratum58() {
+  nrfx_gpiote_pin_t pin = spiBaseAddress->PSEL.SCK;
+  if (workaroundActive) {
+    nrfx_gpiote_in_uninit(pin);
+    nrf_ppi_channel_disable(workaroundPpi);
+  }
   spiBaseAddress->EVENTS_END = 0;
-  spim->INTENSET = (1 << 6);
-  spim->INTENSET = (1 << 1);
-  spim->INTENSET = (1 << 19);
+
+  // Enable IRQ
+  spiBaseAddress->INTENSET = (1 << 6);
+  spiBaseAddress->INTENSET = (1 << 1);
+  spiBaseAddress->INTENSET = (1 << 19);
+  workaroundActive = false;
 }
 
 void SpiMaster::OnEndEvent() {
@@ -136,17 +149,11 @@ void SpiMaster::OnEndEvent() {
 
     spiBaseAddress->TASKS_START = 1;
   } else {
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    if (taskToNotify != nullptr) {
-      vTaskNotifyGiveFromISR(taskToNotify, &xHigherPriorityTaskWoken);
-      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
-
     nrf_gpio_pin_set(this->pinCsn);
     currentBufferAddr = 0;
-    BaseType_t xHigherPriorityTaskWoken2 = pdFALSE;
-    xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken2);
-    portYIELD_FROM_ISR(xHigherPriorityTaskWoken | xHigherPriorityTaskWoken2);
+    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+    xSemaphoreGiveFromISR(mutex, &xHigherPriorityTaskWoken);
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   }
 }
 
@@ -173,21 +180,23 @@ void SpiMaster::PrepareRx(const uint32_t bufferAddress, const size_t size) {
   spiBaseAddress->EVENTS_END = 0;
 }
 
-bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
+bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size, const std::function<void()>& preTransactionHook) {
   if (data == nullptr)
     return false;
   auto ok = xSemaphoreTake(mutex, portMAX_DELAY);
   ASSERT(ok == true);
-  taskToNotify = xTaskGetCurrentTaskHandle();
 
   this->pinCsn = pinCsn;
 
   if (size == 1) {
-    SetupWorkaroundForFtpan58(spiBaseAddress, 0, 0);
+    SetupWorkaroundForErratum58();
   } else {
-    DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
+    DisableWorkaroundForErratum58();
   }
 
+  if (preTransactionHook != nullptr) {
+    preTransactionHook();
+  }
   nrf_gpio_pin_clear(this->pinCsn);
 
   currentBufferAddr = (uint32_t) data;
@@ -205,7 +214,7 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
     nrf_gpio_pin_set(this->pinCsn);
     currentBufferAddr = 0;
 
-    DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
+    DisableWorkaroundForErratum58();
 
     xSemaphoreGive(mutex);
   }
@@ -216,10 +225,8 @@ bool SpiMaster::Write(uint8_t pinCsn, const uint8_t* data, size_t size) {
 bool SpiMaster::Read(uint8_t pinCsn, uint8_t* cmd, size_t cmdSize, uint8_t* data, size_t dataSize) {
   xSemaphoreTake(mutex, portMAX_DELAY);
 
-  taskToNotify = nullptr;
-
   this->pinCsn = pinCsn;
-  DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
+  DisableWorkaroundForErratum58();
   spiBaseAddress->INTENCLR = (1 << 6);
   spiBaseAddress->INTENCLR = (1 << 1);
   spiBaseAddress->INTENCLR = (1 << 19);
@@ -265,10 +272,8 @@ void SpiMaster::Wakeup() {
 bool SpiMaster::WriteCmdAndBuffer(uint8_t pinCsn, const uint8_t* cmd, size_t cmdSize, const uint8_t* data, size_t dataSize) {
   xSemaphoreTake(mutex, portMAX_DELAY);
 
-  taskToNotify = nullptr;
-
   this->pinCsn = pinCsn;
-  DisableWorkaroundForFtpan58(spiBaseAddress, 0, 0);
+  DisableWorkaroundForErratum58();
   spiBaseAddress->INTENCLR = (1 << 6);
   spiBaseAddress->INTENCLR = (1 << 1);
   spiBaseAddress->INTENCLR = (1 << 19);

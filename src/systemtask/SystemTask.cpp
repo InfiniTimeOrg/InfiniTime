@@ -342,8 +342,12 @@ void SystemTask::Work() {
           if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
               settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours &&
               alarmController.State() != AlarmController::AlarmState::Alerting) {
+            // if sleeping, we can't send a chime to displayApp yet (SPI flash switched off)
+            // request running first and repush the chime message
             if (state == SystemTaskState::Sleeping) {
               GoToRunning();
+              PushMessage(msg);
+            } else {
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
             }
           }
@@ -353,8 +357,12 @@ void SystemTask::Work() {
           if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
               settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours &&
               alarmController.State() != AlarmController::AlarmState::Alerting) {
+            // if sleeping, we can't send a chime to displayApp yet (SPI flash switched off)
+            // request running first and repush the chime message
             if (state == SystemTaskState::Sleeping) {
               GoToRunning();
+              PushMessage(msg);
+            } else {
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Chime);
             }
           }
@@ -402,8 +410,6 @@ void SystemTask::Work() {
     }
 
     monitor.Process();
-    uint32_t systick_counter = nrf_rtc_counter_get(portNRF_RTC_REG);
-    dateTimeController.UpdateTime(systick_counter);
     NoInit_BackUpTime = dateTimeController.CurrentDateTime();
     if (nrf_gpio_pin_read(PinMap::Button) == 0) {
       watchdog.Reload();
@@ -418,7 +424,8 @@ void SystemTask::UpdateMotion() {
   }
 
   if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
+                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) ||
+                                              motionController.GetService()->IsMotionNotificationSubscribed())) {
     return;
   }
 
@@ -503,10 +510,7 @@ void SystemTask::PushMessage(System::Messages msg) {
   if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(systemTasksMsgQueue, &msg, &xHigherPriorityTaskWoken);
-    if (xHigherPriorityTaskWoken == pdTRUE) {
-      /* Actual macro used here is port specific. */
-      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   } else {
     xQueueSend(systemTasksMsgQueue, &msg, portMAX_DELAY);
   }

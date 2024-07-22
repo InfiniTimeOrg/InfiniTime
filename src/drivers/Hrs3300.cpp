@@ -19,7 +19,7 @@ namespace {
 }
 
 /** Driver for the HRS3300 heart rate sensor.
- * Original implementation from wasp-os : https://github.com/daniel-thompson/wasp-os/blob/master/wasp/drivers/hrs3300.py
+ * Original implementation from wasp-os : https://github.com/wasp-os/wasp-os/blob/master/wasp/drivers/hrs3300.py
  *
  * Experimentaly derived changes to improve signal/noise (see comments below) - Ceimour
  */

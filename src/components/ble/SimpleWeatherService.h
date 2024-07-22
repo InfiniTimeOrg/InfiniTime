@@ -40,7 +40,7 @@ namespace Pinetime {
 
     class SimpleWeatherService {
     public:
-      explicit SimpleWeatherService(const DateTime& dateTimeController);
+      explicit SimpleWeatherService(DateTime& dateTimeController);
 
       void Init();
 
@@ -96,9 +96,13 @@ namespace Pinetime {
           int16_t minTemperature;
           int16_t maxTemperature;
           Icons iconId;
+
+          bool operator==(const Day& other) const;
         };
 
         std::array<Day, MaxNbForecastDays> days;
+
+        bool operator==(const Forecast& other) const;
       };
 
       std::optional<CurrentWeather> Current() const;
@@ -136,7 +140,7 @@ namespace Pinetime {
 
       uint16_t eventHandle {};
 
-      const Pinetime::Controllers::DateTime& dateTimeController;
+      Pinetime::Controllers::DateTime& dateTimeController;
 
       std::optional<CurrentWeather> currentWeather;
       std::optional<Forecast> forecast;

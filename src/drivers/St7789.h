@@ -1,6 +1,9 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
+#include <functional>
+
+#include <FreeRTOS.h>
 
 namespace Pinetime {
   namespace Drivers {
@@ -16,9 +19,7 @@ namespace Pinetime {
 
       void Init();
       void Uninit();
-      void DrawPixel(uint16_t x, uint16_t y, uint32_t color);
 
-      void VerticalScrollDefinition(uint16_t topFixedLines, uint16_t scrollLines, uint16_t bottomFixedLines);
       void VerticalScrollStartAddress(uint16_t line);
 
       void DrawBuffer(uint16_t x, uint16_t y, uint16_t width, uint16_t height, const uint8_t* data, size_t size);
@@ -31,23 +32,27 @@ namespace Pinetime {
       uint8_t pinDataCommand;
       uint8_t pinReset;
       uint8_t verticalScrollingStartAddress = 0;
+      bool sleepIn;
+      TickType_t lastSleepExit;
 
       void HardwareReset();
       void SoftwareReset();
       void SleepOut();
+      void EnsureSleepOutPostDelay();
       void SleepIn();
-      void ColMod();
+      void PixelFormat();
       void MemoryDataAccessControl();
       void DisplayInversionOn();
       void NormalModeOn();
-      void WriteToRam();
+      void WriteToRam(const uint8_t* data, size_t size);
       void DisplayOn();
       void DisplayOff();
 
       void SetAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
       void SetVdv();
       void WriteCommand(uint8_t cmd);
-      void WriteSpi(const uint8_t* data, size_t size);
+      void WriteCommand(const uint8_t* data, size_t size);
+      void WriteSpi(const uint8_t* data, size_t size, const std::function<void()>& preTransactionHook);
 
       enum class Commands : uint8_t {
         SoftwareReset = 0x01,
@@ -63,15 +68,17 @@ namespace Pinetime {
         MemoryDataAccessControl = 0x36,
         VerticalScrollDefinition = 0x33,
         VerticalScrollStartAddress = 0x37,
-        ColMod = 0x3a,
+        PixelFormat = 0x3a,
         VdvSet = 0xc4,
       };
       void WriteData(uint8_t data);
-      void ColumnAddressSet();
+      void WriteData(const uint8_t* data, size_t size);
 
       static constexpr uint16_t Width = 240;
       static constexpr uint16_t Height = 320;
-      void RowAddressSet();
+
+      uint8_t addrWindowArgs[4];
+      uint8_t verticalScrollArgs[2];
     };
   }
 }

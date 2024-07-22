@@ -26,6 +26,8 @@
 #include "displayapp/screens/FlashLight.h"
 #include "displayapp/screens/BatteryInfo.h"
 #include "displayapp/screens/Steps.h"
+#include "displayapp/screens/Dice.h"
+#include "displayapp/screens/Weather.h"
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
 
@@ -123,6 +125,7 @@ void DisplayApp::Start(System::BootErrors error) {
   bootError = error;
 
   lvgl.Init();
+  motorController.Init();
 
   if (error == System::BootErrors::TouchController) {
     LoadNewScreen(Apps::Error, DisplayApp::FullRefreshDirections::None);
@@ -140,9 +143,6 @@ void DisplayApp::Process(void* instance) {
   NRF_LOG_INFO("displayapp task started!");
   app->InitHw();
 
-  // Send a dummy notification to unlock the lvgl display driver for the first iteration
-  xTaskNotifyGive(xTaskGetCurrentTaskHandle());
-
   while (true) {
     app->Refresh();
   }
@@ -151,7 +151,6 @@ void DisplayApp::Process(void* instance) {
 void DisplayApp::InitHw() {
   brightnessController.Init();
   ApplyBrightness();
-  motorController.Init();
   lcd.Init();
 }
 
@@ -444,6 +443,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       else {
         currentScreen.reset(userWatchFaces[0].create(controllers));
       }
+      settingsController.SetAppMenu(0);
     } break;
     case Apps::Error:
       currentScreen = std::make_unique<Screens::Error>(bootError);
@@ -559,9 +559,7 @@ void DisplayApp::PushMessage(Messages msg) {
   if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     xQueueSendFromISR(msgQueue, &msg, &xHigherPriorityTaskWoken);
-    if (xHigherPriorityTaskWoken == pdTRUE) {
-      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
+    portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
   } else {
     TickType_t timeout = portMAX_DELAY;
     // Make xQueueSend() non-blocking if the message is a Notification message. We do this to avoid
