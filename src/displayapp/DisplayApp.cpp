@@ -81,7 +81,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::AlarmController& alarmController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
-                       Pinetime::Controllers::FS& filesystem)
+                       Pinetime::Controllers::FS& filesystem,
+                       Pinetime::Drivers::SpiNorFlash& spiNorFlash)
   : lcd {lcd},
     touchPanel {touchPanel},
     batteryController {batteryController},
@@ -97,6 +98,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     brightnessController {brightnessController},
     touchHandler {touchHandler},
     filesystem {filesystem},
+    spiNorFlash {spiNorFlash},
     lvgl {lcd, filesystem},
     timer(this, TimerCallback),
     controllers {batteryController,
@@ -601,7 +603,8 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                             bleController,
                                                             watchdog,
                                                             motionController,
-                                                            touchPanel);
+                                                            touchPanel,
+                                                            spiNorFlash);
       break;
     case Apps::FlashLight:
       currentScreen = std::make_unique<Screens::FlashLight>(*systemTask, brightnessController);
