@@ -7,6 +7,7 @@
 #include <displayapp/Controllers.h>
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
+#include "displayapp/screens/Timer.h"
 #include "utility/DirtyValue.h"
 #include "displayapp/apps/Apps.h"
 
@@ -29,6 +30,7 @@ namespace Pinetime {
                           const Controllers::Battery& batteryController,
                           const Controllers::Ble& bleController,
                           Controllers::AlarmController& alarmController,
+                          Controllers::Timer& timerController,
                           Controllers::NotificationManager& notificationManager,
                           Controllers::Settings& settingsController,
                           Controllers::MotionController& motionController,
@@ -55,6 +57,7 @@ namespace Pinetime {
         Utility::DirtyValue<bool> bleRadioEnabled {};
         bool alarmState {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
+        bool timerRunning {};
         Utility::DirtyValue<uint32_t> stepCount {};
         Utility::DirtyValue<bool> notificationState {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::days>> currentDate;
@@ -76,6 +79,8 @@ namespace Pinetime {
         lv_obj_t* labelAlarm;
         lv_obj_t* labelTimeAmPmAlarm;
         lv_obj_t* alarmIcon;
+        lv_obj_t* labelTimer;
+        lv_obj_t* timerIcon;
         lv_obj_t* pawIcon;
         lv_obj_t* stepValue;
         lv_obj_t* notificationIcon;
@@ -95,6 +100,7 @@ namespace Pinetime {
         const Controllers::Battery& batteryController;
         const Controllers::Ble& bleController;
         Controllers::AlarmController& alarmController;
+        Controllers::Timer& timerController;
         Controllers::NotificationManager& notificationManager;
         Controllers::Settings& settingsController;
         Controllers::MotionController& motionController;
@@ -120,6 +126,7 @@ namespace Pinetime {
                                               controllers.batteryController,
                                               controllers.bleController,
                                               controllers.alarmController,
+                                              controllers.timer,
                                               controllers.notificationManager,
                                               controllers.settingsController,
                                               controllers.motionController,

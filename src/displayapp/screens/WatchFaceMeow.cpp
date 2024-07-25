@@ -146,6 +146,7 @@ WatchFaceMeow::WatchFaceMeow(Controllers::DateTime& dateTimeController,
                                      const Controllers::Battery& batteryController,
                                      const Controllers::Ble& bleController,
                                      Controllers::AlarmController& alarmController,
+                                     Controllers::Timer& timerController,
                                      Controllers::NotificationManager& notificationManager,
                                      Controllers::Settings& settingsController,
                                      Controllers::MotionController& motionController,
@@ -155,6 +156,7 @@ WatchFaceMeow::WatchFaceMeow(Controllers::DateTime& dateTimeController,
     batteryController {batteryController},
     bleController {bleController},
     alarmController {alarmController},
+    timerController {timerController},
     notificationManager {notificationManager},
     settingsController {settingsController},
     motionController {motionController} {
@@ -293,7 +295,27 @@ WatchFaceMeow::WatchFaceMeow(Controllers::DateTime& dateTimeController,
     lv_obj_set_hidden(alarmIcon, true);
     lv_obj_set_hidden(labelTimeAmPmAlarm, true);
   }
+  
+  // text
+  labelTimer = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(labelTimer, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
+  lv_obj_set_style_local_text_font(labelTimer, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+  //lv_obj_align(labelAlarm, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, -10, 0);
+  lv_obj_align(labelAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
+  lv_label_set_text_static(labelTimer, "00:00");
 
+  // symbol
+  timerIcon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(timerIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
+  lv_label_set_text_static(timerIcon, Symbols::hourGlass);
+  lv_obj_align(timerIcon, labelTimer, LV_ALIGN_OUT_LEFT_MID, -3, 0);
+
+  // don't show the icons jsut set if we don't show alarm status
+  if (!settingsController.GetInfineatShowAlarmStatus()) {
+    lv_obj_set_hidden(labelTimer, true);
+    lv_obj_set_hidden(timerIcon, true);
+  }
+ 
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, pinkColor);
   lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
@@ -549,38 +571,51 @@ void WatchFaceMeow::Refresh() {
   // AlarmState is an enum type in class AlarmController that is in namespace controllers
   if (settingsController.GetInfineatShowAlarmStatus()) {
     alarmState = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
-    // sets the icon as bird or bed
-    const char* alarmSymbol = Symbols::zzz;
-    if(alarmState) {
-      alarmSymbol = Symbols::bird;
-    }
-    lv_label_set_text_static(alarmIcon, alarmSymbol);
-    //displays the time of the alarm or nothing if the alarm is not set
-    if (alarmState) {
-      uint8_t alarmHours = alarmController.Hours();
-      uint8_t alarmMinutes = alarmController.Minutes();
-      //handles the am pm format.
-      if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-        char ampmChar[3] = "AM";
-        if (alarmHours == 0) {
-          alarmHours = 12;
-          } else if (alarmHours == 12) {
-            ampmChar[0]='P';
-          } else if (alarmHours > 12) {
-          alarmHours = alarmHours - 12;
-          ampmChar[0]='P';
-        }
-        lv_label_set_text(labelTimeAmPmAlarm, ampmChar);
-        lv_obj_set_style_local_text_font(labelTimeAmPmAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
-        lv_obj_align(labelTimeAmPmAlarm, labelAlarm, LV_ALIGN_OUT_TOP_RIGHT, 0, 0);
+    timerRunning = Pinetime::Controllers::Timer::timerController.IsRunning()
+    if(!timerRunning)
+      // sets the icon as bird or bed
+      const char* alarmSymbol = Symbols::zzz;
+      if(alarmState) {
+        alarmSymbol = Symbols::bird;
       }
-
-      lv_label_set_text_fmt(labelAlarm, "%02d:%02d", alarmHours, alarmMinutes);
-
-      lv_obj_align(alarmIcon, labelAlarm, LV_ALIGN_OUT_LEFT_MID, -3, 0);
-      lv_obj_align(labelAlarm, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, -10, 0);
-      lv_obj_align(labelAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
-
+      lv_label_set_text_static(alarmIcon, alarmSymbol);
+      //displays the time of the alarm or nothing if the alarm is not set
+      if (alarmState) {
+        uint8_t alarmHours = alarmController.Hours();
+        uint8_t alarmMinutes = alarmController.Minutes();
+        //handles the am pm format.
+        if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+          char ampmChar[3] = "AM";
+          if (alarmHours == 0) {
+            alarmHours = 12;
+            } else if (alarmHours == 12) {
+              ampmChar[0]='P';
+            } else if (alarmHours > 12) {
+            alarmHours = alarmHours - 12;
+            ampmChar[0]='P';
+          }
+          lv_label_set_text(labelTimeAmPmAlarm, ampmChar);
+          lv_obj_set_style_local_text_font(labelTimeAmPmAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
+          lv_obj_align(labelTimeAmPmAlarm, labelAlarm, LV_ALIGN_OUT_TOP_RIGHT, 0, 0);
+        }
+  
+        lv_label_set_text_fmt(labelAlarm, "%02d:%02d", alarmHours, alarmMinutes);
+  
+        lv_obj_align(alarmIcon, labelAlarm, LV_ALIGN_OUT_LEFT_MID, -3, 0);
+        lv_obj_align(labelAlarm, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, -10, 0);
+        lv_obj_align(labelAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
+    else{ //timer is running, display timer instead of alarm
+        const char* timerSymbol = Symbols::hourGlass;
+        lv_label_set_text_static(timerIcon, timerSymbol);
+        auto secondsRemaining = std::chrono::duration_cast<std::chrono::seconds>(timer.GetTimeRemaining())/1000;
+        timerMinutes = secondsRemaining.count() / 60;
+        timerSeconds = secondsRemaining.count() % 60;
+        lv_label_set_text_fmt(labelTimer, "%02d:%02d", timerMinutes, timerSeconds); 
+   
+        lv_obj_align(timerIcon, labelTimer, LV_ALIGN_OUT_LEFT_MID, -3, 0);
+        lv_obj_align(labelTimer, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, -10, 0);
+        lv_obj_align(labelTimer, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
+      }
     }
     else {
       lv_label_set_text_static(labelAlarm, Symbols::none);
