@@ -92,14 +92,14 @@ WatchFaceCasioStyleG7710Weather::WatchFaceCasioStyleG7710Weather(Controllers::Da
   lv_obj_set_style_local_text_color(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_obj_set_style_local_text_font(weatherIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &fontawesome_weathericons);
   lv_label_set_text_static(weatherIcon, "");
-  lv_obj_align(weatherIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 120, 30);
+  lv_obj_align(weatherIcon, nullptr, LV_ALIGN_IN_TOP_LEFT, 110, 30);
   lv_obj_set_auto_realign(weatherIcon, true);
 
   label_temperature = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(label_temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_obj_set_style_local_text_font(label_temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment40);
   lv_label_set_text(label_temperature, "");
-  lv_obj_align(label_temperature, nullptr, LV_ALIGN_IN_TOP_RIGHT, -7, 30);
+  lv_obj_align(label_temperature, nullptr, LV_ALIGN_IN_TOP_RIGHT, -5, 30);
 
   lv_style_init(&style_line);
   lv_style_set_line_width(&style_line, LV_STATE_DEFAULT, 2);
@@ -127,7 +127,7 @@ WatchFaceCasioStyleG7710Weather::WatchFaceCasioStyleG7710Weather(Controllers::Da
   lv_obj_align(line_day_of_year, nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 60);
 
   label_date = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 100, 70);
+  lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -45, 70);
   lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_obj_set_style_local_text_font(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment40);
   lv_label_set_text_static(label_date, "6-30");
@@ -259,10 +259,8 @@ void WatchFaceCasioStyleG7710Weather::Refresh() {
     if (currentDate.IsUpdated()) {
       const char* weekNumberFormat = "%V";
 
-      uint16_t year = dateTimeController.Year();
       Controllers::DateTime::Months month = dateTimeController.Month();
       uint8_t day = dateTimeController.Day();
-      int dayOfYear = dateTimeController.DayOfYear();
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H24) {
         // 24h mode: ddmmyyyy, first DOW=Monday;
         lv_label_set_text_fmt(label_date, "%3d-%2d", day, month);
@@ -280,10 +278,6 @@ void WatchFaceCasioStyleG7710Weather::Refresh() {
       time_t ttTime =
         std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::system_clock::duration>(currentDateTime.Get()));
       tm* tmTime = std::localtime(&ttTime);
-
-      // TODO: When we start using C++20, use std::chrono::year::is_leap
-      int daysInCurrentYear = (year % 4 == 0 && year % 100 != 0) || year % 400 == 0 ? 366 : 365;
-      uint16_t daysTillEndOfYearNumber = daysInCurrentYear - dayOfYear;
 
       char buffer[8];
       strftime(buffer, 8, weekNumberFormat, tmTime);
@@ -335,7 +329,7 @@ void WatchFaceCasioStyleG7710Weather::Refresh() {
       }
 
       temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
-      lv_label_set_text_fmt(label_temperature, "%d %c", temp, tempUnit);
+      lv_label_set_text_fmt(label_temperature, "%d°%c", temp, tempUnit);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
     } else {
       lv_label_set_text_static(label_temperature, "");
