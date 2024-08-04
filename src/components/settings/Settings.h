@@ -46,6 +46,10 @@ namespace Pinetime {
         PTSWeather weatherEnable = PTSWeather::Off;
       };
 
+      struct CasioStyleG7710 {
+        PTSWeather weatherEnable = PTSWeather::Off;
+      };
+
       struct WatchFaceInfineat {
         bool showSideCover = true;
         int colorIndex = 0;
@@ -154,6 +158,16 @@ namespace Pinetime {
       PTSWeather GetPTSWeather() const {
         return settings.PTS.weatherEnable;
       };
+
+      void SetCasioWeather(PTSWeather weatherEnable) {
+        if (weatherEnable != settings.casio.weatherEnable)
+          settingsChanged = true;
+        settings.casio.weatherEnable = weatherEnable;
+      }
+
+      PTSWeather GetCasioWeather() const {
+        return settings.casio.weatherEnable;
+      }
 
       void SetAppMenu(uint8_t menu) {
         appMenu = menu;
@@ -324,6 +338,8 @@ namespace Pinetime {
         ChimesOption chimesOption = ChimesOption::None;
 
         PineTimeStyle PTS;
+
+        CasioStyleG7710 casio;
 
         WatchFaceInfineat watchFaceInfineat;
 
