@@ -102,9 +102,9 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_font(label_day_of_year, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_segment40);
   lv_label_set_text_static(label_day_of_year, "181-184");
   if (settingsController.GetCasioWeather() == Pinetime::Controllers::Settings::PTSWeather::On) {
-    lv_obj_set_hidden(label_day_of_year, false);
-  } else {
     lv_obj_set_hidden(label_day_of_year, true);
+  } else {
+    lv_obj_set_hidden(label_day_of_year, false);
   }
 
   weatherIcon = lv_label_create(lv_scr_act(), nullptr);
