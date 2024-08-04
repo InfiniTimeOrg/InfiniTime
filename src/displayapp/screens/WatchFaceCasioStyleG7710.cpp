@@ -429,6 +429,9 @@ bool WatchFaceCasioStyleG7710::IsAvailable(Pinetime::Controllers::FS& filesystem
 }
 
 bool WatchFaceCasioStyleG7710::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  if (lv_obj_get_hidden(btnClose) == false) {
+    savedTick = lv_tick_get();
+  }
   if ((event == Pinetime::Applications::TouchEvents::LongTap) && lv_obj_get_hidden(btnClose)) {
     lv_obj_set_hidden(btnWeather, false);
     lv_obj_set_hidden(btnClose, false);
