@@ -51,8 +51,7 @@ namespace Pinetime {
       PineTimeStyle,
       Terminal,
       Infineat,
-      CasioStyleG7710,
-      CasioStyleG7710Weather
+      CasioStyleG7710
     };
 
     template <Apps>

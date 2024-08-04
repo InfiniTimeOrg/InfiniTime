@@ -11,7 +11,6 @@
 #include "displayapp/screens/CheckboxList.h"
 #include "displayapp/screens/WatchFaceInfineat.h"
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
-#include "displayapp/screens/WatchFaceCasioStyleG7710Weather.h"
 
 namespace Pinetime {
 
