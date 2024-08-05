@@ -415,6 +415,7 @@ typedef void* lv_indev_drv_user_data_t;            /*Type of user data in the in
 
 #define LV_FONT_CUSTOM_DECLARE LV_FONT_DECLARE(jetbrains_mono_bold_20) \
                                LV_FONT_DECLARE(jetbrains_mono_extrabold_compressed) \
+                               LV_FONT_DECLARE(jetbrains_mono_16) \
                                LV_FONT_DECLARE(jetbrains_mono_42) \
                                LV_FONT_DECLARE(jetbrains_mono_76) \
                                LV_FONT_DECLARE(open_sans_light) \
@@ -538,7 +539,7 @@ typedef void* lv_font_user_data_t;
 #define lv_snprintf     snprintf
 #define lv_vsnprintf    vsnprintf
 #else   /*!LV_SPRINTF_CUSTOM*/
-#define LV_SPRINTF_DISABLE_FLOAT 1
+#define LV_SPRINTF_DISABLE_FLOAT 0
 #endif  /*LV_SPRINTF_CUSTOM*/
 
 /*===================

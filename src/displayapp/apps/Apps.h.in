@@ -52,6 +52,7 @@ namespace Pinetime {
       Analog,
       PineTimeStyle,
       Terminal,
+      Json,
       Infineat,
       CasioStyleG7710
     };
