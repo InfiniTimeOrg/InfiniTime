@@ -31,27 +31,34 @@ namespace Pinetime {
         void Refresh() override;
         bool OnTouchEvent(Pinetime::Applications::TouchEvents event) override;
         void DismissToBlack();
+        void DismissAll();
         void OnPreviewInteraction();
         void OnPreviewDismiss();
 
         class NotificationItem {
         public:
           NotificationItem(Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                           Pinetime::Controllers::MotorController& motorController);
+                           Pinetime::Controllers::MotorController& motorController,
+                           Notifications *parent);
           NotificationItem(const char* title,
                            const char* msg,
                            uint8_t notifNr,
                            Controllers::NotificationManager::Categories,
                            uint8_t notifNb,
                            Pinetime::Controllers::AlertNotificationService& alertNotificationService,
-                           Pinetime::Controllers::MotorController& motorController);
+                           Pinetime::Controllers::MotorController& motorController,
+                           Notifications *parent);
           ~NotificationItem();
 
           bool IsRunning() const {
             return running;
           }
 
+          void showClearBtn();
+          void hideClearBtn();
+
           void OnCallButtonEvent(lv_obj_t*, lv_event_t event);
+          void OnDismissButtonEvent(lv_event_t event);
 
         private:
           lv_obj_t* container;
@@ -62,8 +69,11 @@ namespace Pinetime {
           lv_obj_t* label_accept;
           lv_obj_t* label_mute;
           lv_obj_t* label_reject;
+          lv_obj_t* btnClearAll;
+          lv_obj_t* labelBtnClearAll;
           Pinetime::Controllers::AlertNotificationService& alertNotificationService;
           Pinetime::Controllers::MotorController& motorController;
+          Notifications *parent;
 
           bool running = true;
         };
@@ -86,6 +96,7 @@ namespace Pinetime {
 
         static const TickType_t timeoutLength = pdMS_TO_TICKS(7000);
         bool interacted = true;
+        bool dismissMenuOpen = false;
 
         bool dismissingNotification = false;
 
