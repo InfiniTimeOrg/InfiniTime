@@ -6,7 +6,7 @@ If you just want to flash or upgrade InfiniTime on your PineTime, this page is f
 
 You can check the InfiniTime version by first swiping right on the watch face to open quick settings, tapping the cogwheel to open settings, swipe up until you find an entry named "About" and tap on it.
 
-![InfiniTime 1.0 version](version-1.0.jpg)
+![InfiniTime 1.14 version](version.png)
 
 PineTimes shipped after June 2021 will ship with the latest version of [the bootloader](https://github.com/JF002/pinetime-mcuboot-bootloader/releases/tag/1.0.0) and [recovery firmware](https://github.com/InfiniTimeOrg/InfiniTime/releases/tag/0.14.1)
 
@@ -49,7 +49,7 @@ Since those resources are not part of the firmware, they need to be flashed and 
 Resources are packaged into a single .zip file named `infinitime-resources-x.y.z.zip` (where `x`, `y` and `z` are the version numbers of InfiniTime). 
 You can use the companion app of your choice to flash the resources.
 
-**Note : at the time of writing this page, [Amazfish](https://github.com/piggz/harbour-amazfish) and [ITD](https://gitea.arsenm.dev/Arsen6331/itd) have already integrated this functionality. Other companion apps will hopefully implement it soon!*
+**Note: at the time of writing this page, [Amazfish](https://github.com/piggz/harbour-amazfish) and [ITD](https://gitea.arsenm.dev/Arsen6331/itd) have already integrated this functionality. Other companion apps will hopefully implement it soon!*
 
 ## Amazfish
 Use the `Download file` functionality of Amazfish. 
