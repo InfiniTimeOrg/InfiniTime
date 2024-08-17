@@ -8,7 +8,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "utility/DirtyValue.h"
-#include "displayapp/apps/WatchFaces.h"
+#include "displayapp/WatchFaces.h"
 
 namespace Pinetime {
   namespace Controllers {

@@ -1,5 +1,5 @@
 #include <lvgl/lvgl.h>
-#include "displayapp/screens/WatchFaceTerminal.h"
+#include "displayapp/watchfaces/terminal/WatchFaceTerminal.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/screens/Symbols.h"

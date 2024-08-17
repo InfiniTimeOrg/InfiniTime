@@ -12,7 +12,7 @@
 #include "components/ble/SimpleWeatherService.h"
 #include "components/ble/BleController.h"
 #include "utility/DirtyValue.h"
-#include "displayapp/apps/WatchFaces.h"
+#include "displayapp/WatchFaces.h"
 
 namespace Pinetime {
   namespace Controllers {

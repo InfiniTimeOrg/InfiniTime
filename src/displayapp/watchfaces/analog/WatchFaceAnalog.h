@@ -11,7 +11,7 @@
 #include "components/ble/NotificationManager.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "utility/DirtyValue.h"
-#include "displayapp/apps/WatchFaces.h"
+#include "displayapp/WatchFaces.h"
 
 namespace Pinetime {
   namespace Controllers {

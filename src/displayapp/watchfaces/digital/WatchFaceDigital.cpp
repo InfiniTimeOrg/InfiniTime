@@ -1,4 +1,4 @@
-#include "displayapp/screens/WatchFaceDigital.h"
+#include "displayapp/watchfaces/digital/WatchFaceDigital.h"
 
 #include <lvgl/lvgl.h>
 #include <cstdio>

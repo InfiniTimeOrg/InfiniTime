@@ -1,4 +1,4 @@
-#include "displayapp/screens/WatchFaceAnalog.h"
+#include "displayapp/watchfaces/analog/WatchFaceAnalog.h"
 #include <cmath>
 #include <lvgl/lvgl.h>
 #include "displayapp/screens/BatteryIcon.h"

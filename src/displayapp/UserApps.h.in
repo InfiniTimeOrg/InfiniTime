@@ -1,5 +1,5 @@
 #pragma once
-#include "displayapp/apps/Apps.h"
+#include "displayapp/Apps.h"
 #include "displayapp/Controllers.h"
 
 #include "displayapp/screens/Alarm.h"

@@ -19,7 +19,7 @@
  * Style/layout copied from TimeStyle for Pebble by Dan Tilden (github.com/tilden)
  */
 
-#include "displayapp/screens/WatchFacePineTimeStyle.h"
+#include "displayapp/watchfaces/pinetimestyle/WatchFacePineTimeStyle.h"
 #include <lvgl/lvgl.h>
 #include <cstdio>
 #include <displayapp/Colors.h>

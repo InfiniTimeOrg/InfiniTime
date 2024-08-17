@@ -1,4 +1,4 @@
-#include "displayapp/screens/WatchFaceInfineat.h"
+#include "displayapp/watchfaces/infineat/WatchFaceInfineat.h"
 
 #include <lvgl/lvgl.h>
 #include <cstdio>

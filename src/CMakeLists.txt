@@ -28,6 +28,7 @@ endif ()
 set(CMAKE_OSX_SYSROOT "/")
 set(CMAKE_OSX_DEPLOYMENT_TARGET "")
 
+add_subdirectory(displayapp)
 
 set(SDK_SOURCE_FILES
         # Startup
@@ -420,12 +421,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/settings/SettingBluetooth.cpp
 
         ## Watch faces
-        displayapp/screens/WatchFaceAnalog.cpp
-        displayapp/screens/WatchFaceDigital.cpp
-        displayapp/screens/WatchFaceInfineat.cpp
-        displayapp/screens/WatchFaceTerminal.cpp
-        displayapp/screens/WatchFacePineTimeStyle.cpp
-        displayapp/screens/WatchFaceCasioStyleG7710.cpp
+        ${WATCHFACE_SOURCES}
 
         ##
 
@@ -847,8 +843,6 @@ target_compile_options(infinitime_fonts PUBLIC
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
         )
-
-add_subdirectory(displayapp/apps)
 
 # NRF SDK
 add_library(nrf-sdk STATIC ${SDK_SOURCE_FILES})

@@ -1,4 +1,4 @@
-#include "displayapp/screens/WatchFaceCasioStyleG7710.h"
+#include "displayapp/watchfaces/casioStyleG7710/WatchFaceCasioStyleG7710.h"
 
 #include <lvgl/lvgl.h>
 #include <cstdio>
