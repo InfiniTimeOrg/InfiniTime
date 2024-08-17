@@ -504,7 +504,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
     case Apps::Clock: {
       const auto* watchFace =
         std::find_if(userWatchFaces.begin(), userWatchFaces.end(), [this](const WatchFaceDescription& watchfaceDescription) {
-          return watchfaceDescription.watchFace == settingsController.GetWatchFace();
+          return std::strcmp(watchfaceDescription.name, settingsController.GetWatchFace()) == 0;
         });
       if (watchFace != userWatchFaces.end())
         currentScreen.reset(watchFace->create(controllers));
@@ -560,8 +560,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       std::array<Screens::SettingWatchFace::Item, UserWatchFaceTypes::Count> items;
       int i = 0;
       for (const auto& userWatchFace : userWatchFaces) {
-        items[i++] =
-          Screens::SettingWatchFace::Item {userWatchFace.name, userWatchFace.watchFace, userWatchFace.isAvailable(controllers.filesystem)};
+        items[i++] = Screens::SettingWatchFace::Item {userWatchFace.name, userWatchFace.isAvailable(controllers.filesystem)};
       }
       currentScreen = std::make_unique<Screens::SettingWatchFace>(this, std::move(items), settingsController, filesystem);
     } break;

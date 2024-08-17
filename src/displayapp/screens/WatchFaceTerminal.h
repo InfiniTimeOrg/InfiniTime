@@ -8,6 +8,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/datetime/DateTimeController.h"
 #include "utility/DirtyValue.h"
+#include "displayapp/apps/WatchFaces.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -70,8 +71,7 @@ namespace Pinetime {
     }
 
     template <>
-    struct WatchFaceTraits<WatchFace::Terminal> {
-      static constexpr WatchFace watchFace = WatchFace::Terminal;
+    struct WatchFaceTraits<Screens::WatchFaceTerminal> {
       static constexpr const char* name = "Terminal";
 
       static Screens::Screen* Create(AppControllers& controllers) {

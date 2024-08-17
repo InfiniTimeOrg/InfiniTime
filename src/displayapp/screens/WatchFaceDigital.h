@@ -10,7 +10,7 @@
 #include "components/ble/BleController.h"
 #include "displayapp/widgets/StatusIcons.h"
 #include "utility/DirtyValue.h"
-#include "displayapp/apps/Apps.h"
+#include "displayapp/apps/WatchFaces.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -76,8 +76,7 @@ namespace Pinetime {
     }
 
     template <>
-    struct WatchFaceTraits<WatchFace::Digital> {
-      static constexpr WatchFace watchFace = WatchFace::Digital;
+    struct WatchFaceTraits<Screens::WatchFaceDigital> {
       static constexpr const char* name = "Digital face";
 
       static Screens::Screen* Create(AppControllers& controllers) {

@@ -10,7 +10,7 @@
 #include "components/datetime/DateTimeController.h"
 #include "components/ble/BleController.h"
 #include "utility/DirtyValue.h"
-#include "displayapp/apps/Apps.h"
+#include "displayapp/apps/WatchFaces.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -103,8 +103,7 @@ namespace Pinetime {
     }
 
     template <>
-    struct WatchFaceTraits<WatchFace::CasioStyleG7710> {
-      static constexpr WatchFace watchFace = WatchFace::CasioStyleG7710;
+    struct WatchFaceTraits<Screens::WatchFaceCasioStyleG7710> {
       static constexpr const char* name = "Casio G7710";
 
       static Screens::Screen* Create(AppControllers& controllers) {

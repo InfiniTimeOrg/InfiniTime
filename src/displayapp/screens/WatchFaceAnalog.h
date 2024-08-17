@@ -11,6 +11,7 @@
 #include "components/ble/NotificationManager.h"
 #include "displayapp/screens/BatteryIcon.h"
 #include "utility/DirtyValue.h"
+#include "displayapp/apps/WatchFaces.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -89,8 +90,7 @@ namespace Pinetime {
     }
 
     template <>
-    struct WatchFaceTraits<WatchFace::Analog> {
-      static constexpr WatchFace watchFace = WatchFace::Analog;
+    struct WatchFaceTraits<Screens::WatchFaceAnalog> {
       static constexpr const char* name = "Analog face";
 
       static Screens::Screen* Create(AppControllers& controllers) {
