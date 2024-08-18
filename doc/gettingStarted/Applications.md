@@ -31,7 +31,7 @@ InfiniTime has 13 apps on the `main` branch at the time of writing.
 - Use the toggle in the bottom left to turn the alarm on/off.
 - Use the button in the bottom right to change the alarm frequency.
    - You can choose between once, daily, or Monday - Friday.
-InfiniPaint
+
 ### Timer
 ![Timer UI](/doc/gettingStarted/AppsScreenshots/timer.png)
 - Ajust how long the timer should go for with the time picker.
@@ -56,7 +56,7 @@ InfiniPaint
 - Swipe up to get to volume controls.
 
 ### InfiniPaint
-![InfiniPaint UI](/doc/gettingStarted/AppsScreenshots/InfiniPaint.png)
+![InfiniPaint UI](/doc/gettingStarted/AppsScreenshots/Paint.png)
 - This app does not allow you to swipe from the top to exit, use the side button instead.
 - Draw on the screen to add lines.
 - Hold down in one spot to change paint colors.
