@@ -22,7 +22,7 @@ namespace {
 }
 
 Metronome::Metronome(Controllers::MotorController& motorController, System::SystemTask& systemTask)
-  : motorController {motorController}, systemTask {systemTask} {
+  : motorController {motorController}, wakeLock(systemTask) {
 
   bpmArc = lv_arc_create(lv_scr_act(), nullptr);
   bpmArc->user_data = this;
@@ -72,7 +72,6 @@ Metronome::Metronome(Controllers::MotorController& motorController, System::Syst
 
 Metronome::~Metronome() {
   lv_task_del(taskRefresh);
-  systemTask.PushMessage(System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }
 
@@ -128,12 +127,12 @@ void Metronome::OnEvent(lv_obj_t* obj, lv_event_t event) {
         metronomeStarted = !metronomeStarted;
         if (metronomeStarted) {
           lv_label_set_text_static(lblPlayPause, Symbols::pause);
-          systemTask.PushMessage(System::Messages::DisableSleeping);
+          wakeLock.Lock();
           startTime = xTaskGetTickCount();
           counter = 1;
         } else {
           lv_label_set_text_static(lblPlayPause, Symbols::play);
-          systemTask.PushMessage(System::Messages::EnableSleeping);
+          wakeLock.Release();
         }
       }
       break;

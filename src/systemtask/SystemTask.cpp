@@ -189,15 +189,11 @@ void SystemTask::Work() {
     if (xQueueReceive(systemTasksMsgQueue, &msg, 100) == pdTRUE) {
       switch (msg) {
         case Messages::EnableSleeping:
-          // Make sure that exiting an app doesn't enable sleeping,
-          // if the exiting was caused by a firmware update
-          if (!bleController.IsFirmwareUpdating()) {
-            doNotGoToSleep = false;
-          }
+          wakeLocksHeld--;
           break;
         case Messages::DisableSleeping:
           GoToRunning();
-          doNotGoToSleep = true;
+          wakeLocksHeld++;
           break;
         case Messages::GoToRunning:
           GoToRunning();
@@ -243,24 +239,24 @@ void SystemTask::Work() {
           break;
         case Messages::BleFirmwareUpdateStarted:
           GoToRunning();
-          doNotGoToSleep = true;
+          wakeLocksHeld++;
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::BleFirmwareUpdateStarted);
           break;
         case Messages::BleFirmwareUpdateFinished:
           if (bleController.State() == Pinetime::Controllers::Ble::FirmwareUpdateStates::Validated) {
             NVIC_SystemReset();
           }
-          doNotGoToSleep = false;
+          wakeLocksHeld--;
           break;
         case Messages::StartFileTransfer:
           NRF_LOG_INFO("[systemtask] FS Started");
           GoToRunning();
-          doNotGoToSleep = true;
+          wakeLocksHeld++;
           // TODO add intent of fs access icon or something
           break;
         case Messages::StopFileTransfer:
           NRF_LOG_INFO("[systemtask] FS Stopped");
-          doNotGoToSleep = false;
+          wakeLocksHeld--;
           // TODO add intent of fs access icon or something
           break;
         case Messages::OnTouchEvent:
