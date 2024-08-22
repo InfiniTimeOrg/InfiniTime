@@ -860,7 +860,6 @@ target_compile_options(nrf-sdk PRIVATE
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        -O3
         )
 
 # NimBLE
