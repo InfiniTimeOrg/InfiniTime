@@ -80,7 +80,7 @@ namespace Pinetime {
       void OnTouchEvent();
 
       bool IsSleepDisabled() {
-        return doNotGoToSleep;
+        return wakeLocksHeld > 0;
       }
 
       Pinetime::Controllers::NimbleController& nimble() {
@@ -124,7 +124,7 @@ namespace Pinetime {
       bool isBleDiscoveryTimerRunning = false;
       uint8_t bleDiscoveryTimer = 0;
       TimerHandle_t measureBatteryTimer;
-      bool doNotGoToSleep = false;
+      uint8_t wakeLocksHeld = 0;
       SystemTaskState state = SystemTaskState::Running;
 
       void HandleButtonAction(Controllers::ButtonActions action);

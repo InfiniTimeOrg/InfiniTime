@@ -34,7 +34,7 @@ namespace {
   constexpr TickType_t blinkInterval = pdMS_TO_TICKS(1000);
 }
 
-StopWatch::StopWatch(System::SystemTask& systemTask) : systemTask {systemTask} {
+StopWatch::StopWatch(System::SystemTask& systemTask) : wakeLock(systemTask) {
   static constexpr uint8_t btnWidth = 115;
   static constexpr uint8_t btnHeight = 80;
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
@@ -79,7 +79,6 @@ StopWatch::StopWatch(System::SystemTask& systemTask) : systemTask {systemTask} {
 
 StopWatch::~StopWatch() {
   lv_task_del(taskRefresh);
-  systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
   lv_obj_clean(lv_scr_act());
 }
 
@@ -135,7 +134,7 @@ void StopWatch::Start() {
   SetInterfaceRunning();
   startTime = xTaskGetTickCount();
   currentState = States::Running;
-  systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
+  wakeLock.Lock();
 }
 
 void StopWatch::Pause() {
@@ -145,7 +144,7 @@ void StopWatch::Pause() {
   oldTimeElapsed = laps[lapsDone];
   blinkTime = xTaskGetTickCount() + blinkInterval;
   currentState = States::Halted;
-  systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
+  wakeLock.Release();
 }
 
 void StopWatch::Refresh() {
