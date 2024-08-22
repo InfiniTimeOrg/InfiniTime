@@ -209,21 +209,6 @@ void DisplayApp::Refresh() {
     LoadScreen(returnAppStack.Pop(), returnDirection);
   };
 
-  auto DimScreen = [this]() {
-    if (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
-      isDimmed = true;
-      brightnessController.Set(Controllers::BrightnessController::Levels::Low);
-    }
-  };
-
-  auto RestoreBrightness = [this]() {
-    if (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
-      isDimmed = false;
-      lv_disp_trig_activity(nullptr);
-      ApplyBrightness();
-    }
-  };
-
   auto IsPastDimTime = [this]() -> bool {
     return lv_disp_get_inactive_time(nullptr) >= pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000);
   };
@@ -267,14 +252,16 @@ void DisplayApp::Refresh() {
 
       if (!systemTask->IsSleepDisabled() && IsPastDimTime()) {
         if (!isDimmed) {
-          DimScreen();
+          isDimmed = true;
+          brightnessController.Set(Controllers::BrightnessController::Levels::Low);
         }
         if (IsPastSleepTime()) {
           systemTask->PushMessage(System::Messages::GoToSleep);
           state = States::Idle;
         }
       } else if (isDimmed) {
-        RestoreBrightness();
+        isDimmed = false;
+        ApplyBrightness();
       }
       break;
     default:
@@ -285,9 +272,6 @@ void DisplayApp::Refresh() {
   Messages msg;
   if (xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE) {
     switch (msg) {
-      case Messages::DimScreen:
-        DimScreen();
-        break;
       case Messages::GoToSleep:
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Low) {
           brightnessController.Lower();
@@ -333,8 +317,7 @@ void DisplayApp::Refresh() {
         state = States::Running;
         break;
       case Messages::UpdateBleConnection:
-        //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
-        //        Screens::Clock::BleConnectionStates::NotConnected);
+        // Only used for recovery firmware
         break;
       case Messages::NewNotification:
         LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
@@ -449,16 +432,11 @@ void DisplayApp::Refresh() {
       case Messages::BleRadioEnableToggle:
         PushMessageToSystemTask(System::Messages::BleRadioEnableToggle);
         break;
-      case Messages::UpdateDateTime:
-        // Added to remove warning
-        // What should happen here?
-        break;
       case Messages::Chime:
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(35);
         break;
       case Messages::OnChargingEvent:
-        RestoreBrightness();
         motorController.RunForDuration(15);
         break;
     }

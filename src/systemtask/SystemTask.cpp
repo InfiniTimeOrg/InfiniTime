@@ -194,7 +194,6 @@ void SystemTask::Work() {
           if (!bleController.IsFirmwareUpdating()) {
             doNotGoToSleep = false;
           }
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::NotifyDeviceActivity);
           break;
         case Messages::DisableSleeping:
           doNotGoToSleep = true;
@@ -245,8 +244,6 @@ void SystemTask::Work() {
           heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
           break;
         case Messages::OnNewTime:
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::NotifyDeviceActivity);
-          displayApp.PushMessage(Pinetime::Applications::Display::Messages::UpdateDateTime);
           if (alarmController.State() == Controllers::AlarmController::AlarmState::Set) {
             alarmController.ScheduleAlarm();
           }
@@ -255,8 +252,6 @@ void SystemTask::Work() {
           if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::On) {
             if (state == SystemTaskState::Sleeping) {
               GoToRunning();
-            } else {
-              displayApp.PushMessage(Pinetime::Applications::Display::Messages::NotifyDeviceActivity);
             }
             displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           }
