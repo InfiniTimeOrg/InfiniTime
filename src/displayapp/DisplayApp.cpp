@@ -255,9 +255,20 @@ void DisplayApp::Refresh() {
           isDimmed = true;
           brightnessController.Set(Controllers::BrightnessController::Levels::Low);
         }
-        if (IsPastSleepTime()) {
-          systemTask->PushMessage(System::Messages::GoToSleep);
-          state = States::Idle;
+        if (IsPastSleepTime() && uxQueueMessagesWaiting(msgQueue) == 0) {
+          PushMessageToSystemTask(System::Messages::GoToSleep);
+          // Can't set state to Idle here, something may send
+          // DisableSleeping before this GoToSleep arrives
+          // Instead we check we have no messages queued before sending GoToSleep
+          // This works as the SystemTask is higher priority than DisplayApp
+          // As soon as we send GoToSleep, SystemTask pre-empts DisplayApp
+          // Whenever DisplayApp is running again, it is guaranteed that
+          // SystemTask has handled the message
+          // If it responded, we will have a GoToSleep waiting in the queue
+          // By checking that there are no messages in the queue, we avoid
+          // resending GoToSleep when we already have a response
+          // SystemTask is resilient to duplicate messages, this is an
+          // optimisation to reduce pressure on the message queues
         }
       } else if (isDimmed) {
         isDimmed = false;
@@ -273,6 +284,9 @@ void DisplayApp::Refresh() {
   if (xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE) {
     switch (msg) {
       case Messages::GoToSleep:
+        if (state != States::Running) {
+          break;
+        }
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Low) {
           brightnessController.Lower();
           vTaskDelay(100);
@@ -307,6 +321,9 @@ void DisplayApp::Refresh() {
         lv_disp_trig_activity(nullptr);
         break;
       case Messages::GoToRunning:
+        if (state == States::Running) {
+          break;
+        }
         if (settingsController.GetAlwaysOnDisplay()) {
           lcd.LowPowerOff();
         } else {
