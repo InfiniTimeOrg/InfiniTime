@@ -454,9 +454,15 @@ void NimbleController::PersistBond(struct ble_gap_conn_desc& desc) {
     /* Wakeup Spi and SpiNorFlash before accessing the file system
      * This should be fixed in the FS driver
      */
-    systemTask.PushMessage(Pinetime::System::Messages::GoToRunning);
     systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
-    vTaskDelay(10);
+
+    // This isn't quite correct
+    // SystemTask could receive EnableSleeping right after passing this check
+    // We need some guarantee that the SystemTask has processed the above message
+    // before we can continue
+    while (!systemTask.IsSleepDisabled()) {
+      vTaskDelay(pdMS_TO_TICKS(5));
+    }
 
     lfs_file_t file_p;
 

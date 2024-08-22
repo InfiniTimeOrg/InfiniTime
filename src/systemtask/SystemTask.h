@@ -52,7 +52,7 @@ namespace Pinetime {
   namespace System {
     class SystemTask {
     public:
-      enum class SystemTaskState { Sleeping, Running, GoingToSleep, WakingUp };
+      enum class SystemTaskState { Sleeping, Running, GoingToSleep };
       SystemTask(Drivers::SpiMaster& spi,
                  Pinetime::Drivers::SpiNorFlash& spiNorFlash,
                  Drivers::TwiMaster& twiMaster,
@@ -88,7 +88,7 @@ namespace Pinetime {
       };
 
       bool IsSleeping() const {
-        return state == SystemTaskState::Sleeping || state == SystemTaskState::WakingUp;
+        return state != SystemTaskState::Running;
       }
 
     private:
@@ -131,6 +131,7 @@ namespace Pinetime {
       bool fastWakeUpDone = false;
 
       void GoToRunning();
+      void GoToSleep();
       void UpdateMotion();
       bool stepCounterMustBeReset = false;
       static constexpr TickType_t batteryMeasurementPeriod = pdMS_TO_TICKS(10 * 60 * 1000);
