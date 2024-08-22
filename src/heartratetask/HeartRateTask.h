@@ -5,7 +5,7 @@
 #include <components/heartrate/Ppg.h>
 #include "components/settings/Settings.h"
 
-#define DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED pdMS_TO_TICKS(30 * 1000)
+#define DURATION_UNTIL_BACKGROUND_MEASUREMENT_IS_STOPPED pdMS_TO_TICKS(30 * 1000)
 
 namespace Pinetime {
   namespace Drivers {
@@ -19,8 +19,29 @@ namespace Pinetime {
   namespace Applications {
     class HeartRateTask {
     public:
-      enum class Messages : uint8_t { GoToSleep, WakeUp, StartMeasurement, StopMeasurement };
-      enum class States { Idle, Running, Measuring, BackgroundWaiting, BackgroundMeasuring };
+      enum class Messages : uint8_t {
+        // Screen gets turned off
+        GoToSleep,
+        // Screen gets turned on
+        WakeUp,
+        // Start button pressed
+        StartMeasurement,
+        // Stop button pressed
+        StopMeasurement
+      };
+
+      enum class States {
+        // Screen turned off, heartrate not measured
+        Idle,
+        // Screen turned on, heartrate app open, heartrate not measured
+        Running,
+        // Screen turned on, heartrate app open, heartrate actively measured
+        Measuring,
+        // Screen turned off, heartrate task is waiting until the next measurement should be started
+        BackgroundWaiting,
+        // Screen turned off, heartrate actively measured
+        BackgroundMeasuring
+      };
 
       explicit HeartRateTask(Drivers::Hrs3300& heartRateSensor,
                              Controllers::HeartRateController& controller,
@@ -35,9 +56,13 @@ namespace Pinetime {
       void StopMeasurement();
       void StartWaiting();
 
+      void HandleGoToSleep();
+      void HandleWakeUp();
+      void HandleStartMeasurement(int* lastBpm);
+      void HandleStopMeasurement();
+
       void HandleBackgroundWaiting();
       void HandleSensorData(int* lastBpm);
-      TickType_t CurrentTaskDelay();
 
       TickType_t GetHeartRateBackgroundMeasurementIntervalInTicks();
       bool IsContinuosModeActivated();

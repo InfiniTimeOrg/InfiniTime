@@ -5,6 +5,21 @@
 
 using namespace Pinetime::Applications;
 
+TickType_t CurrentTaskDelay(HeartRateTask::States state, TickType_t ppgDeltaTms) {
+  switch (state) {
+    case HeartRateTask::States::Measuring:
+    case HeartRateTask::States::BackgroundMeasuring:
+      return ppgDeltaTms;
+    case HeartRateTask::States::Running:
+      return pdMS_TO_TICKS(100);
+    case HeartRateTask::States::BackgroundWaiting:
+      return pdMS_TO_TICKS(10000);
+    default:
+      return portMAX_DELAY;
+  }
+}
+
+
 HeartRateTask::HeartRateTask(Drivers::Hrs3300& heartRateSensor,
                              Controllers::HeartRateController& controller,
                              Controllers::Settings& settings)
@@ -29,47 +44,22 @@ void HeartRateTask::Work() {
   int lastBpm = 0;
 
   while (true) {
-    TickType_t delay = CurrentTaskDelay();
+    TickType_t delay = CurrentTaskDelay(state, ppg.deltaTms);
     Messages msg;
 
     if (xQueueReceive(messageQueue, &msg, delay) == pdTRUE) {
       switch (msg) {
         case Messages::GoToSleep:
-          if (state == States::Running) {
-            state = States::Idle;
-          } else if (state == States::Measuring) {
-            state = States::BackgroundWaiting;
-            StartWaiting();
-          }
+          HandleGoToSleep();
           break;
         case Messages::WakeUp:
-          if (state == States::Idle) {
-            state = States::Running;
-          } else if (state == States::BackgroundMeasuring) {
-            state = States::Measuring;
-          } else if (state == States::BackgroundWaiting) {
-            state = States::Measuring;
-            StartMeasurement();
-          }
+          HandleWakeUp();
           break;
         case Messages::StartMeasurement:
-          if (state == States::Measuring || state == States::BackgroundMeasuring) {
-            break;
-          }
-          state = States::Measuring;
-          lastBpm = 0;
-          StartMeasurement();
+          HandleStartMeasurement(&lastBpm);
           break;
         case Messages::StopMeasurement:
-          if (state == States::Running || state == States::Idle) {
-            break;
-          }
-          if (state == States::Measuring) {
-            state = States::Running;
-          } else if (state == States::BackgroundMeasuring) {
-            state = States::Idle;
-          }
-          StopMeasurement();
+          HandleStopMeasurement();
           break;
       }
     }
@@ -104,6 +94,75 @@ void HeartRateTask::StopMeasurement() {
 void HeartRateTask::StartWaiting() {
   StopMeasurement();
   backgroundWaitingStart = xTaskGetTickCount();
+}
+
+void HeartRateTask::HandleGoToSleep() {
+  switch (state) {
+    case States::Running:
+      state = States::Idle;
+      break;
+    case States::Measuring:
+      state = States::BackgroundMeasuring;
+      break;
+    case States::Idle:
+    case States::BackgroundWaiting:
+    case States::BackgroundMeasuring:
+      // shouldn't happen -> ignore
+      break;
+  }
+}
+
+void HeartRateTask::HandleWakeUp() {
+  switch (state) {
+    case States::Idle:
+      state = States::Running;
+      break;
+    case States::BackgroundMeasuring:
+      state = States::Measuring;
+      break;
+    case States::BackgroundWaiting:
+      state = States::Measuring;
+      StartMeasurement();
+      break;
+    case States::Running:
+    case States::Measuring:
+      // shouldn't happen -> ignore
+      break;
+  }
+}
+
+void HeartRateTask::HandleStartMeasurement(int* lastBpm) {
+  switch (state) {
+    case States::Idle:
+    case States::Running:
+      state = States::Measuring;
+      *lastBpm = 0;
+      StartMeasurement();
+      break;
+    case States::Measuring:
+    case States::BackgroundMeasuring:
+    case States::BackgroundWaiting:
+      // shouldn't happen -> ignore
+      break;
+  }
+}
+
+void HeartRateTask::HandleStopMeasurement() {
+  switch (state) {
+    case States::Measuring:
+      state = States::Running;
+      StopMeasurement();
+      break;
+    case States::BackgroundMeasuring:
+    case States::BackgroundWaiting:
+      state = States::Idle;
+      StopMeasurement();
+      break;
+    case States::Running:
+    case States::Idle:
+      // shouldn't happen -> ignore
+      break;
+  }
 }
 
 void HeartRateTask::HandleBackgroundWaiting() {
@@ -150,48 +209,38 @@ void HeartRateTask::HandleSensorData(int* lastBpm) {
   }
   TickType_t ticksSinceMeasurementStart = xTaskGetTickCount() - measurementStart;
   if (bpm == 0 && state == States::BackgroundMeasuring && !IsContinuosModeActivated() &&
-      ticksSinceMeasurementStart >= DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED) {
+      ticksSinceMeasurementStart >= DURATION_UNTIL_BACKGROUND_MEASUREMENT_IS_STOPPED) {
     state = States::BackgroundWaiting;
     StartWaiting();
-  }
-  if (bpm == 0 && state == States::BackgroundMeasuring &&
-      xTaskGetTickCount() - measurementStart >= DURATION_UNTIL_BACKGROUND_MEASURMENT_IS_STOPPED) {
-    state = States::BackgroundWaiting;
-    StartWaiting();
-  }
-}
-
-TickType_t HeartRateTask::CurrentTaskDelay() {
-  switch (state) {
-    case States::Measuring:
-    case States::BackgroundMeasuring:
-      return ppg.deltaTms;
-    case States::Running:
-      return pdMS_TO_TICKS(100);
-    case States::BackgroundWaiting:
-      return pdMS_TO_TICKS(10000);
-    default:
-      return portMAX_DELAY;
   }
 }
 
 TickType_t HeartRateTask::GetHeartRateBackgroundMeasurementIntervalInTicks() {
+  int ms;
   switch (settings.GetHeartRateBackgroundMeasurementInterval()) {
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenSeconds:
-      return pdMS_TO_TICKS(10 * 1000);
+      ms = 10 * 1000;
+      break;
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtySeconds:
-      return pdMS_TO_TICKS(30 * 1000);
+      ms = 30 * 1000;
+      break;
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::OneMinute:
-      return pdMS_TO_TICKS(60 * 1000);
+      ms = 60 * 1000;
+      break;
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::FiveMinutes:
-      return pdMS_TO_TICKS(5 * 60 * 1000);
+      ms = 5 * 60 * 1000;
+      break;
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::TenMinutes:
-      return pdMS_TO_TICKS(10 * 60 * 1000);
+      ms = 10 * 60 * 1000;
+      break;
     case Pinetime::Controllers::Settings::HeartRateBackgroundMeasurementInterval::ThirtyMinutes:
-      return pdMS_TO_TICKS(30 * 60 * 1000);
+      ms = 30 * 60 * 1000;
+      break;
     default:
-      return 0;
+      ms = 0;
+      break;
   }
+  return pdMS_TO_TICKS(ms);
 }
 
 bool HeartRateTask::IsContinuosModeActivated() {
