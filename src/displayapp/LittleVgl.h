@@ -26,6 +26,7 @@ namespace Pinetime {
       void SetFullRefresh(FullRefreshDirections direction);
       void SetNewTouchPoint(int16_t x, int16_t y, bool contact);
       void CancelTap();
+      void ClearTouchState();
 
       bool GetFullRefresh() {
         bool returnValue = fullRefresh;
