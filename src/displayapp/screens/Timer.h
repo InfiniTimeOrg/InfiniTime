@@ -17,15 +17,23 @@ namespace Pinetime::Applications {
       Timer(Controllers::Timer& timerController);
       ~Timer() override;
       void Refresh() override;
+      void Stop();
       void Reset();
       void ToggleRunning();
       void ButtonPressed();
       void MaskReset();
+      std::chrono::seconds GetCounters();
 
     private:
-      void SetTimerRunning();
-      void SetTimerStopped();
+      void SetInterfaceRunning();
+      void SetInterfacePaused();
+      void SetInterfaceStopped();
+      void HandleHold();
       void UpdateMask();
+      void HandleLongPress();
+      void SetCounters(const std::chrono::milliseconds& duration);
+      void SetCounters(const std::chrono::seconds& duration);
+      void SetButtonText(const char* text);
       Pinetime::Controllers::Timer& timer;
 
       lv_obj_t* btnPlayPause;
