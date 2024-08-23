@@ -159,8 +159,11 @@ void DisplayApp::InitHw() {
 TickType_t DisplayApp::CalculateSleepTime() {
   TickType_t ticksElapsed = xTaskGetTickCount() - alwaysOnStartTime;
   // Divide both the numerator and denominator by 8 to increase the number of ticks (frames) before the overflow tick is reached
-  TickType_t elapsedTarget = ROUNDED_DIV((configTICK_RATE_HZ / 8) * alwaysOnTickCount * alwaysOnRefreshPeriod, 1000 / 8);
-  // ROUNDED_DIV overflows when numerator + (denominator floordiv 2) > uint32 max
+  auto RoundedDiv = [](uint32_t a, uint32_t b) {
+    return ((a + (b / 2)) / b);
+  };
+  TickType_t elapsedTarget = RoundedDiv((configTICK_RATE_HZ / 8) * alwaysOnTickCount * alwaysOnRefreshPeriod, 1000 / 8);
+  // RoundedDiv overflows when numerator + (denominator floordiv 2) > uint32 max
   // in this case around 9 hours
   constexpr TickType_t overflowTick = (UINT32_MAX - (1000 / 16)) / ((configTICK_RATE_HZ / 8) * alwaysOnRefreshPeriod);
 
