@@ -220,28 +220,27 @@ void DisplayApp::Refresh() {
   TickType_t queueTimeout;
   switch (state) {
     case States::Idle:
-      if (settingsController.GetAlwaysOnDisplay()) {
-        if (!currentScreen->IsRunning()) {
-          LoadPreviousScreen();
+      queueTimeout = portMAX_DELAY;
+      break;
+    case States::AOD:
+      if (!currentScreen->IsRunning()) {
+        LoadPreviousScreen();
+      }
+      // Check we've slept long enough
+      // Might not be true if the loop received an event
+      // If not true, then wait that amount of time
+      queueTimeout = CalculateSleepTime();
+      if (queueTimeout == 0) {
+        // Only advance the tick count when LVGL is done
+        // Otherwise keep running the task handler while it still has things to draw
+        // Note: under high graphics load, LVGL will always have more work to do
+        if (lv_task_handler() > 0) {
+          // Drop frames that we've missed if drawing/event handling took way longer than expected
+          while (queueTimeout == 0) {
+            alwaysOnTickCount += 1;
+            queueTimeout = CalculateSleepTime();
+          }
         }
-        // Check we've slept long enough
-        // Might not be true if the loop received an event
-        // If not true, then wait that amount of time
-        queueTimeout = CalculateSleepTime();
-        if (queueTimeout == 0) {
-          // Only advance the tick count when LVGL is done
-          // Otherwise keep running the task handler while it still has things to draw
-          // Note: under high graphics load, LVGL will always have more work to do
-          if (lv_task_handler() > 0) {
-            // Drop frames that we've missed if drawing/event handling took way longer than expected
-            while (queueTimeout == 0) {
-              alwaysOnTickCount += 1;
-              queueTimeout = CalculateSleepTime();
-            }
-          };
-        }
-      } else {
-        queueTimeout = portMAX_DELAY;
       }
       break;
     case States::Running:
@@ -284,6 +283,7 @@ void DisplayApp::Refresh() {
   if (xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE) {
     switch (msg) {
       case Messages::GoToSleep:
+      case Messages::GoToAOD:
         if (state != States::Running) {
           break;
         }
@@ -292,7 +292,7 @@ void DisplayApp::Refresh() {
           vTaskDelay(100);
         }
         // Turn brightness down (or set to AlwaysOn mode)
-        if (settingsController.GetAlwaysOnDisplay()) {
+        if (msg == Messages::GoToAOD) {
           brightnessController.Set(Controllers::BrightnessController::Levels::AlwaysOn);
         } else {
           brightnessController.Set(Controllers::BrightnessController::Levels::Off);
@@ -305,17 +305,18 @@ void DisplayApp::Refresh() {
           while (!lv_task_handler()) {
           };
         }
-        // Turn LCD display off (or set to low power for AlwaysOn mode)
-        if (settingsController.GetAlwaysOnDisplay()) {
+        if (msg == Messages::GoToAOD) {
           lcd.LowPowerOn();
           // Record idle entry time
           alwaysOnTickCount = 0;
           alwaysOnStartTime = xTaskGetTickCount();
+          PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskAOD);
+          state = States::AOD;
         } else {
           lcd.Sleep();
+          PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
+          state = States::Idle;
         }
-        PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
-        state = States::Idle;
         break;
       case Messages::NotifyDeviceActivity:
         lv_disp_trig_activity(nullptr);
@@ -324,7 +325,7 @@ void DisplayApp::Refresh() {
         if (state == States::Running) {
           break;
         }
-        if (settingsController.GetAlwaysOnDisplay()) {
+        if (state == States::AOD) {
           lcd.LowPowerOff();
         } else {
           lcd.Wakeup();
