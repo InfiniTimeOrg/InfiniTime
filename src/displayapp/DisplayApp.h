@@ -49,7 +49,7 @@ namespace Pinetime {
   namespace Applications {
     class DisplayApp {
     public:
-      enum class States { Idle, Running };
+      enum class States { Idle, Running, AOD };
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
 
       DisplayApp(Drivers::St7789& lcd,

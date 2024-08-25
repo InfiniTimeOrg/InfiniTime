@@ -284,9 +284,10 @@ void SystemTask::Work() {
           HandleButtonAction(action);
         } break;
         case Messages::OnDisplayTaskSleeping:
+        case Messages::OnDisplayTaskAOD:
           // The state was set to GoingToSleep when GoToSleep() was called
           // If the state is no longer GoingToSleep, we have since transitioned back to Running
-          // In this case absorb the OnDisplayTaskSleeping
+          // In this case absorb the OnDisplayTaskSleeping/AOD
           // as DisplayApp is about to receive GoToRunning
           if (state != SystemTaskState::GoingToSleep) {
             break;
@@ -298,7 +299,7 @@ void SystemTask::Work() {
           }
 
           // Must keep SPI awake when still updating the display for always on
-          if (!settingsController.GetAlwaysOnDisplay()) {
+          if (msg == Messages::OnDisplayTaskSleeping) {
             spi.Sleep();
           }
 
@@ -307,7 +308,11 @@ void SystemTask::Work() {
             touchPanel.Sleep();
           }
 
-          state = SystemTaskState::Sleeping;
+          if (msg == Messages::OnDisplayTaskSleeping) {
+            state = SystemTaskState::Sleeping;
+          } else {
+            state = SystemTaskState::AODSleeping;
+          }
           break;
         case Messages::OnNewDay:
           // We might be sleeping (with TWI device disabled.
@@ -381,8 +386,8 @@ void SystemTask::GoToRunning() {
   if (state == SystemTaskState::Running) {
     return;
   }
-  // SPI doesn't go to sleep for always on mode
-  if (!settingsController.GetAlwaysOnDisplay()) {
+  // SPI only switched off when entering Sleeping, not AOD or GoingToSleep
+  if (state == SystemTaskState::Sleeping) {
     spi.Wakeup();
   }
 
@@ -411,16 +416,22 @@ void SystemTask::GoToSleep() {
     return;
   }
   NRF_LOG_INFO("[systemtask] Going to sleep");
-  displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
+  if (settingsController.GetAlwaysOnDisplay()) {
+    displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToAOD);
+  } else {
+    displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
+  }
   heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
 
   state = SystemTaskState::GoingToSleep;
 };
 
 void SystemTask::UpdateMotion() {
-  if (IsSleeping() && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                        settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) ||
-                        motionController.GetService()->IsMotionNotificationSubscribed())) {
+  // Only consider disabling motion updates specifically in the Sleeping state
+  // AOD needs motion on to show up to date step counts
+  if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
+                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) ||
+                                              motionController.GetService()->IsMotionNotificationSubscribed())) {
     return;
   }
 
