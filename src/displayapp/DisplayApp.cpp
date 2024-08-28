@@ -376,6 +376,7 @@ void DisplayApp::Refresh() {
         // What should happen here?
         break;
       case Messages::Chime:
+        LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(static_cast<uint8_t>(settingsController.GetChimeVibration()));
         break;
       case Messages::OnChargingEvent:
