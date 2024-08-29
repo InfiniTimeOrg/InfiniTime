@@ -56,6 +56,11 @@ jobs:
         with:
           name: InfiniTime MCUBoot image ${{ github.head_ref }}
           path: ./build/output/pinetime-mcuboot-app-image-*.bin
+      - name: Upload standalone ELF artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: InfiniTime image ${{ github.head_ref }}
+          path: ./build/output/src/pinetime-app-*.out
       - name: Upload resources artifacts
         uses: actions/upload-artifact@v3
         with:
