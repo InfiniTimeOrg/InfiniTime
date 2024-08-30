@@ -18,6 +18,7 @@ namespace Pinetime {
         ~SettingDisplay() override;
 
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
+        void ToggleAlwaysOn();
 
       private:
         DisplayApp* app;
@@ -25,6 +26,7 @@ namespace Pinetime {
 
         Controllers::Settings& settingsController;
         lv_obj_t* cbOption[options.size()];
+        lv_obj_t* alwaysOnCheckbox;
       };
     }
   }
