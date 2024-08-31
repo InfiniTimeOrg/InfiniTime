@@ -16,7 +16,7 @@ Calculator::~Calculator() {
   lv_obj_clean(lv_scr_act());
 }
 
-static const char* buttonMap[] = {
+static const char* const buttonMap[] = {
   "7", "8", "9", Symbols::backspace, "\n", "4", "5", "6", "+ -", "\n", "1", "2", "3", "* /", "\n", "0", ".", "(-)", "=", ""};
 
 Calculator::Calculator() {
@@ -37,7 +37,7 @@ Calculator::Calculator() {
   buttonMatrix = lv_btnmatrix_create(lv_scr_act(), nullptr);
   buttonMatrix->user_data = this;
   lv_obj_set_event_cb(buttonMatrix, eventHandler);
-  lv_btnmatrix_set_map(buttonMatrix, buttonMap);
+  lv_btnmatrix_set_map(buttonMatrix, const_cast<const char**>(buttonMap));
   lv_btnmatrix_set_one_check(buttonMatrix, true);
   lv_obj_set_size(buttonMatrix, 238, 180);
   lv_obj_set_style_local_bg_color(buttonMatrix, LV_BTNMATRIX_PART_BTN, LV_STATE_DEFAULT, Colors::bgAlt);
