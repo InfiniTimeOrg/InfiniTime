@@ -66,7 +66,8 @@ namespace Pinetime {
                  Pinetime::Controllers::AlarmController& alarmController,
                  Pinetime::Controllers::BrightnessController& brightnessController,
                  Pinetime::Controllers::TouchHandler& touchHandler,
-                 Pinetime::Controllers::FS& filesystem);
+                 Pinetime::Controllers::FS& filesystem,
+                 Pinetime::Drivers::SpiNorFlash& spiNorFlash);
       void Start(System::BootErrors error);
       void PushMessage(Display::Messages msg);
 
@@ -96,6 +97,7 @@ namespace Pinetime {
       Pinetime::Controllers::BrightnessController& brightnessController;
       Pinetime::Controllers::TouchHandler& touchHandler;
       Pinetime::Controllers::FS& filesystem;
+      Pinetime::Drivers::SpiNorFlash& spiNorFlash;
 
       Pinetime::Controllers::FirmwareValidator validator;
       Pinetime::Components::LittleVgl lvgl;
@@ -135,6 +137,13 @@ namespace Pinetime {
       Utility::StaticStack<FullRefreshDirections, returnAppStackSize> appStackDirections;
 
       bool isDimmed = false;
+
+      TickType_t CalculateSleepTime();
+      TickType_t alwaysOnTickCount;
+      TickType_t alwaysOnStartTime;
+      // If this is to be changed, make sure the actual always on refresh rate is changed
+      // by configuring the LCD refresh timings
+      static constexpr uint32_t alwaysOnRefreshPeriod = 500;
     };
   }
 }
