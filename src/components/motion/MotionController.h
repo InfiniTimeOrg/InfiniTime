@@ -18,7 +18,9 @@ namespace Pinetime {
         BMA425,
       };
 
-      void Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps);
+      using step_t = uint32_t;
+
+      void Update(int16_t x, int16_t y, int16_t z, step_t nbSteps);
 
       int16_t X() const {
         return xHistory[0];
@@ -32,7 +34,7 @@ namespace Pinetime {
         return zHistory[0];
       }
 
-      uint32_t NbSteps() const {
+      step_t NbSteps() const {
         return nbSteps;
       }
 
@@ -40,7 +42,7 @@ namespace Pinetime {
         currentTripSteps = 0;
       }
 
-      uint32_t GetTripSteps() const {
+      step_t GetTripSteps() const {
         return currentTripSteps;
       }
 
@@ -67,8 +69,8 @@ namespace Pinetime {
       }
 
     private:
-      uint32_t nbSteps = 0;
-      uint32_t currentTripSteps = 0;
+      step_t nbSteps = 0;
+      step_t currentTripSteps = 0;
 
       TickType_t lastTime = 0;
       TickType_t time = 0;
