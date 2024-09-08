@@ -36,6 +36,11 @@ namespace {
   }
 }
 
+void MotionController::AdvanceDay() {
+  --nbSteps; // Higher index = further in the past
+  nbSteps[today] = -1; // Ensure that the `this->nbSteps[today] != nbSteps` condition in `Update()` will be FALSE
+}
+
 void MotionController::Update(int16_t x, int16_t y, int16_t z, MotionController::step_t nbSteps) {
   if (this->nbSteps[today] != nbSteps && service != nullptr) {
     service->OnNewStepCountValue(nbSteps);

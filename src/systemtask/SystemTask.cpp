@@ -428,6 +428,7 @@ void SystemTask::UpdateMotion() {
 
   if (stepCounterMustBeReset) {
     motionSensor.ResetStepCounter();
+    motionController.AdvanceDay();
     stepCounterMustBeReset = false;
   }
 

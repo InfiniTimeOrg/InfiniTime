@@ -27,6 +27,8 @@ namespace Pinetime {
       using step_t = uint32_t;
       static constexpr size_t stepHistorySize = 2; // Store this many day's step counter
 
+      void AdvanceDay();
+
       void Update(int16_t x, int16_t y, int16_t z, step_t nbSteps);
 
       int16_t X() const {
