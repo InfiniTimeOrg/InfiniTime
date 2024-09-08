@@ -20,6 +20,7 @@ namespace Pinetime {
       };
 
       using step_t = uint32_t;
+      static constexpr size_t stepHistorySize = 2; // Store this many day's step counter
 
       void Update(int16_t x, int16_t y, int16_t z, step_t nbSteps);
 
@@ -36,7 +37,7 @@ namespace Pinetime {
       }
 
       step_t NbSteps() const {
-        return nbSteps;
+        return nbSteps[0];
       }
 
       void ResetTrip() {
@@ -70,7 +71,7 @@ namespace Pinetime {
       }
 
     private:
-      step_t nbSteps = 0;
+      Utility::CircularBuffer<step_t, stepHistorySize> nbSteps = {0};
       step_t currentTripSteps = 0;
 
       TickType_t lastTime = 0;
