@@ -11,7 +11,7 @@ static void lap_event_handler(lv_obj_t* obj, lv_event_t event) {
 }
 
 Steps::Steps(Controllers::MotionController& motionController, Controllers::Settings& settingsController)
-  : motionController {motionController}, settingsController {settingsController} {
+  : motionController {motionController}, settingsController {settingsController}, yesterdayStr {"Yest: %5lu"}, stepsCount {motionController.StepCounterHistory()} {
 
   stepsArc = lv_arc_create(lv_scr_act(), nullptr);
 
@@ -25,21 +25,26 @@ Steps::Steps(Controllers::MotionController& motionController, Controllers::Setti
   lv_arc_set_range(stepsArc, 0, 500);
   lv_obj_align(stepsArc, nullptr, LV_ALIGN_CENTER, 0, 0);
 
-  stepsCount = motionController.NbSteps();
-  currentTripSteps = stepsCount - motionController.GetTripSteps();
+  currentTripSteps = stepsCount[Controllers::MotionController::Days::today] - motionController.GetTripSteps();
 
-  lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
+  lv_arc_set_value(stepsArc, int16_t(500 * stepsCount[Controllers::MotionController::Days::today] / settingsController.GetStepsGoal()));
 
   lSteps = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_LIME);
   lv_obj_set_style_local_text_font(lSteps, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_42);
-  lv_label_set_text_fmt(lSteps, "%li", stepsCount);
+  lv_label_set_text_fmt(lSteps, "%lu", stepsCount[Controllers::MotionController::Days::today]);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   lv_obj_t* lstepsL = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lstepsL, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
   lv_label_set_text_static(lstepsL, "Steps");
-  lv_obj_align(lstepsL, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
+  lv_obj_align(lstepsL, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+
+  lStepsYesterday = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(lStepsYesterday, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_label_set_text_fmt(lStepsYesterday, yesterdayStr, stepsCount[Controllers::MotionController::Days::yesterday]);
+  lv_label_set_align(lStepsYesterday, LV_LABEL_ALIGN_CENTER);
+  lv_obj_align(lStepsYesterday, lSteps, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
 
   lv_obj_t* lstepsGoal = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lstepsGoal, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_CYAN);
@@ -73,10 +78,12 @@ Steps::~Steps() {
 }
 
 void Steps::Refresh() {
-  stepsCount = motionController.NbSteps();
   currentTripSteps = motionController.GetTripSteps();
 
-  lv_label_set_text_fmt(lSteps, "%li", stepsCount);
+  lv_label_set_text_fmt(lSteps, "%lu", stepsCount[Controllers::MotionController::Days::today]);
+  lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
+
+  lv_label_set_text_fmt(lStepsYesterday, yesterdayStr, stepsCount[Controllers::MotionController::Days::yesterday]);
   lv_obj_align(lSteps, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   if (currentTripSteps < 100000) {
@@ -84,14 +91,13 @@ void Steps::Refresh() {
   } else {
     lv_label_set_text_fmt(tripLabel, "Trip: 99999+");
   }
-  lv_arc_set_value(stepsArc, int16_t(500 * stepsCount / settingsController.GetStepsGoal()));
+  lv_arc_set_value(stepsArc, int16_t(500 * stepsCount[Controllers::MotionController::Days::today] / settingsController.GetStepsGoal()));
 }
 
 void Steps::lapBtnEventHandler(lv_event_t event) {
   if (event != LV_EVENT_CLICKED) {
     return;
   }
-  stepsCount = motionController.NbSteps();
   motionController.ResetTrip();
   Refresh();
 }
