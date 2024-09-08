@@ -10,13 +10,18 @@
 namespace Pinetime {
   namespace Controllers {
     class MotionService;
-  
+
     class MotionController {
     public:
       enum class DeviceTypes {
         Unknown,
         BMA421,
         BMA425,
+      };
+
+      enum Days {
+        today = 0,
+        yesterday = 1,
       };
 
       using step_t = uint32_t;
@@ -37,7 +42,7 @@ namespace Pinetime {
       }
 
       step_t NbSteps() const {
-        return nbSteps[0];
+        return nbSteps[today];
       }
 
       void ResetTrip() {
