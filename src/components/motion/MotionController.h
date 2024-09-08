@@ -47,7 +47,7 @@ namespace Pinetime {
         return nbSteps[today];
       }
 
-      const Utility::CircularBuffer<step_t, stepHistorySize> &StepCounterHistory() const {
+      const Utility::CircularBuffer<step_t, stepHistorySize>& StepCounterHistory() const {
         return nbSteps;
       }
 

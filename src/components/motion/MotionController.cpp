@@ -37,7 +37,7 @@ namespace {
 }
 
 void MotionController::AdvanceDay() {
-  --nbSteps; // Higher index = further in the past
+  --nbSteps;           // Higher index = further in the past
   nbSteps[today] = -1; // Ensure that the `this->nbSteps[today] != nbSteps` condition in `Update()` will be FALSE
 }
 
