@@ -38,9 +38,9 @@ namespace Pinetime {
         lv_obj_t* resetButtonLabel;
         lv_obj_t* tripLabel;
 
-        const char *yesterdayStr;
+        const char* yesterdayStr;
 
-        const Utility::CircularBuffer<Controllers::MotionController::step_t, Controllers::MotionController::stepHistorySize> &stepsCount;
+        const Utility::CircularBuffer<Controllers::MotionController::step_t, Controllers::MotionController::stepHistorySize>& stepsCount;
 
         lv_task_t* taskRefresh;
       };

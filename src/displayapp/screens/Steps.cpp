@@ -11,7 +11,10 @@ static void lap_event_handler(lv_obj_t* obj, lv_event_t event) {
 }
 
 Steps::Steps(Controllers::MotionController& motionController, Controllers::Settings& settingsController)
-  : motionController {motionController}, settingsController {settingsController}, yesterdayStr {"Yest: %5lu"}, stepsCount {motionController.StepCounterHistory()} {
+  : motionController {motionController},
+    settingsController {settingsController},
+    yesterdayStr {"Yest: %5lu"},
+    stepsCount {motionController.StepCounterHistory()} {
 
   stepsArc = lv_arc_create(lv_scr_act(), nullptr);
 
