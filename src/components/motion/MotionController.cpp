@@ -37,7 +37,7 @@ namespace {
 }
 
 void MotionController::Update(int16_t x, int16_t y, int16_t z, MotionController::step_t nbSteps) {
-  if (this->nbSteps[0] != nbSteps && service != nullptr) {
+  if (this->nbSteps[today] != nbSteps && service != nullptr) {
     service->OnNewStepCountValue(nbSteps);
   }
 
@@ -57,11 +57,11 @@ void MotionController::Update(int16_t x, int16_t y, int16_t z, MotionController:
 
   stats = GetAccelStats();
 
-  int32_t deltaSteps = nbSteps - this->nbSteps[0];
+  int32_t deltaSteps = nbSteps - this->nbSteps[today];
   if (deltaSteps > 0) {
     currentTripSteps += deltaSteps;
   }
-  this->nbSteps[0] = nbSteps;
+  this->nbSteps[today] = nbSteps;
 }
 
 MotionController::AccelStats MotionController::GetAccelStats() const {
