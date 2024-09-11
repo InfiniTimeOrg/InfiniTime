@@ -20,8 +20,8 @@ namespace Pinetime {
       };
 
       enum Days {
-        today = 0,
-        yesterday = 1,
+        Today = 0,
+        Yesterday = 1,
       };
 
       using step_t = uint32_t;
@@ -44,7 +44,7 @@ namespace Pinetime {
       }
 
       step_t NbSteps() const {
-        return nbSteps[today];
+        return nbSteps[Today];
       }
 
       const Utility::CircularBuffer<step_t, stepHistorySize>& StepCounterHistory() const {
