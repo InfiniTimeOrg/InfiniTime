@@ -43,8 +43,8 @@ namespace Pinetime {
         return zHistory[0];
       }
 
-      step_t NbSteps() const {
-        return nbSteps[Today];
+      step_t NbSteps(Days day = Today) const {
+        return nbSteps[day];
       }
 
       const Utility::CircularBuffer<step_t, stepHistorySize>& StepCounterHistory() const {
