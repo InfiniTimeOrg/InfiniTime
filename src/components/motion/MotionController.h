@@ -21,10 +21,9 @@ namespace Pinetime {
       enum class Days : uint8_t {
         Today = 0,
         Yesterday,
-        Last,
       };
 
-      static constexpr size_t stepHistorySize = static_cast<std::underlying_type_t<Days>>(Days::Last); // Store this many day's step counter
+      static constexpr size_t stepHistorySize = 2; // Store this many day's step counter
 
       void AdvanceDay();
 
