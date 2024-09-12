@@ -44,7 +44,7 @@ void MotionController::AdvanceDay() {
   }
 }
 
-void MotionController::Update(int16_t x, int16_t y, int16_t z, MotionController::step_t nbSteps) {
+void MotionController::Update(int16_t x, int16_t y, int16_t z, uint32_t nbSteps) {
   if (this->nbSteps[Today] != nbSteps && service != nullptr) {
     service->OnNewStepCountValue(nbSteps);
   }
