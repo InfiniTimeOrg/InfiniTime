@@ -5,12 +5,11 @@
 #include <FreeRTOS.h>
 
 #include "drivers/Bma421.h"
+#include "components/ble/MotionService.h"
 #include "utility/CircularBuffer.h"
 
 namespace Pinetime {
   namespace Controllers {
-    class MotionService;
-
     class MotionController {
     public:
       enum class DeviceTypes {

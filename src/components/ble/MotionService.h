@@ -6,11 +6,10 @@
 #undef max
 #undef min
 
-#include "components/motion/MotionController.h"
-
 namespace Pinetime {
   namespace Controllers {
     class NimbleController;
+    class MotionController;
 
     class MotionService {
     public:
