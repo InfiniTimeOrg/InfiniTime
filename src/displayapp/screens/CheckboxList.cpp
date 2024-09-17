@@ -17,9 +17,12 @@ CheckboxList::CheckboxList(const uint8_t screenID,
                            const char* optionsSymbol,
                            uint32_t originalValue,
                            std::function<void(uint32_t)> OnValueChanged,
-                           std::array<Item, MaxItems> options)
+                           std::array<Item, MaxItems> options,
+                           bool radioButton,
+                           std::function<bool(uint32_t)> IsChecked)
   : screenID {screenID},
     OnValueChanged {std::move(OnValueChanged)},
+    IsChecked_ {std::move(IsChecked)},
     options {options},
     value {originalValue},
     pageIndicator(screenID, numScreens) {
@@ -62,10 +65,16 @@ CheckboxList::CheckboxList(const uint8_t screenID,
       }
       cbOption[i]->user_data = this;
       lv_obj_set_event_cb(cbOption[i], event_handler);
-      SetRadioButtonStyle(cbOption[i]);
+      if (radioButton) {
+        SetRadioButtonStyle(cbOption[i]);
+      }
 
-      if (static_cast<unsigned int>(originalValue - MaxItems * screenID) == i) {
-        lv_checkbox_set_checked(cbOption[i], true);
+      if (IsChecked_) {
+        lv_checkbox_set_checked(cbOption[i], IsChecked_(MaxItems * screenID + i));
+      } else {
+        if (static_cast<unsigned int>(originalValue - MaxItems * screenID) == i) {
+          lv_checkbox_set_checked(cbOption[i], true);
+        }
       }
     }
   }
@@ -73,21 +82,43 @@ CheckboxList::CheckboxList(const uint8_t screenID,
 
 CheckboxList::~CheckboxList() {
   lv_obj_clean(lv_scr_act());
-  OnValueChanged(value);
+  if (!IsChecked_) {
+    OnValueChanged(value);
+  }
 }
 
 void CheckboxList::UpdateSelected(lv_obj_t* object, lv_event_t event) {
   if (event == LV_EVENT_VALUE_CHANGED) {
-    for (unsigned int i = 0; i < options.size(); i++) {
-      if (strcmp(options[i].name, "")) {
-        if (object == cbOption[i]) {
-          lv_checkbox_set_checked(cbOption[i], true);
-          value = MaxItems * screenID + i;
-        } else {
-          lv_checkbox_set_checked(cbOption[i], false);
+    if (!IsChecked_) {
+      for (unsigned int i = 0; i < options.size(); i++) {
+        if (strcmp(options[i].name, "")) {
+          if (object == cbOption[i]) {
+            lv_checkbox_set_checked(cbOption[i], true);
+            value = MaxItems * screenID + i;
+          } else {
+            lv_checkbox_set_checked(cbOption[i], false);
+          }
+          if (!options[i].enabled) {
+            lv_checkbox_set_disabled(cbOption[i]);
+          }
         }
-        if (!options[i].enabled) {
-          lv_checkbox_set_disabled(cbOption[i]);
+      }
+    } else {
+      for (unsigned int i = 0; i < options.size(); i++) {
+        if (strcmp(options[i].name, "")) {
+          if (object == cbOption[i]) {
+            OnValueChanged(MaxItems * screenID + i);
+          }
+          if (!options[i].enabled) {
+            lv_checkbox_set_disabled(cbOption[i]);
+          }
+        }
+      }
+      for (unsigned int i = 0; i < options.size(); i++) {
+        if (strcmp(options[i].name, "")) {
+          if (options[i].enabled) {
+            lv_checkbox_set_checked(cbOption[i], IsChecked_(MaxItems * screenID + i));
+          }
         }
       }
     }
