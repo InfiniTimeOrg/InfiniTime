@@ -565,7 +565,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::SettingWakeUp>(settingsController);
       break;
     case Apps::SettingDisplay:
-      currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);
+      currentScreen = std::make_unique<Screens::SettingDisplay>(settingsController);
       break;
     case Apps::SettingSteps:
       currentScreen = std::make_unique<Screens::SettingSteps>(settingsController);
