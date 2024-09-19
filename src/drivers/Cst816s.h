@@ -1,5 +1,6 @@
 #pragma once
 
+#include "drivers/Cst816s_registers.h"
 #include "drivers/TwiMaster.h"
 
 namespace Pinetime {
@@ -7,14 +8,15 @@ namespace Pinetime {
     class Cst816S {
     public:
       enum class Gestures : uint8_t {
-        None = 0x00,
-        SlideDown = 0x01,
-        SlideUp = 0x02,
-        SlideLeft = 0x03,
-        SlideRight = 0x04,
-        SingleTap = 0x05,
-        DoubleTap = 0x0B,
-        LongPress = 0x0C
+        None = GESTURE_ID_NONE,
+        SlideDown = GESTURE_ID_SLIDE_DOWN,
+        SlideUp = GESTURE_ID_SLIDE_UP,
+        SlideLeft = GESTURE_ID_SLIDE_LEFT,
+        SlideRight = GESTURE_ID_SLIDE_RIGHT,
+        SingleTap = GESTURE_ID_SINGLE_TAP,
+        DoubleTap = GESTURE_ID_DOUBLE_TAP,
+        LongPress = GESTURE_ID_LONG_PRESS,
+        Invalid = 0xFF
       };
 
       struct TouchInfos {
@@ -49,21 +51,6 @@ namespace Pinetime {
       }
 
     private:
-      bool CheckDeviceIds();
-
-      // Unused/Unavailable commented out
-      static constexpr uint8_t gestureIndex = 1;
-      static constexpr uint8_t touchPointNumIndex = 2;
-      // static constexpr uint8_t touchEventIndex = 3;
-      static constexpr uint8_t touchXHighIndex = 3;
-      static constexpr uint8_t touchXLowIndex = 4;
-      // static constexpr uint8_t touchIdIndex = 5;
-      static constexpr uint8_t touchYHighIndex = 5;
-      static constexpr uint8_t touchYLowIndex = 6;
-      // static constexpr uint8_t touchStep = 6;
-      // static constexpr uint8_t touchXYIndex = 7;
-      // static constexpr uint8_t touchMiscIndex = 8;
-
       static constexpr uint8_t maxX = 240;
       static constexpr uint8_t maxY = 240;
 
@@ -73,6 +60,8 @@ namespace Pinetime {
       uint8_t chipId;
       uint8_t vendorId;
       uint8_t fwVersion;
+
+      bool firstEvent = true;
     };
 
   }

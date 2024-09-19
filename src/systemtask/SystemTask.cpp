@@ -331,7 +331,13 @@ void SystemTask::Work() {
 
           // Double Tap needs the touch screen to be in normal mode
           if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
-            touchPanel.Sleep();
+// REPORT and GESTURE mode sensors must be normal mode for single tap as well
+#if !defined(DRIVER_TOUCH_DYNAMIC)
+            if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap))
+#endif
+            {
+              touchPanel.Sleep();
+            }
           }
 
           state = SystemTaskState::Sleeping;

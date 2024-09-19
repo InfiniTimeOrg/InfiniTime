@@ -654,6 +654,7 @@ set(INCLUDE_FILES
         components/timer/Timer.h
         components/alarm/AlarmController.h
         drivers/Cst816s.h
+        drivers/Cst816s_registers.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
         displayapp/LittleVgl.h
@@ -796,23 +797,28 @@ add_definitions(-DTARGET_DEVICE_NAME="${TARGET_DEVICE}")
 if(TARGET_DEVICE STREQUAL "PINETIME")
   add_definitions(-DDRIVER_PINMAP_PINETIME)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=1) # XTAL
+  add_definitions(-DDRIVER_TOUCH_DYNAMIC)
 elseif(TARGET_DEVICE STREQUAL "MOY_TFK5") # P8a
   add_definitions(-DDRIVER_PINMAP_P8)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=1) # XTAL
+  add_definitions(-DDRIVER_TOUCH_GESTURE)
 elseif(TARGET_DEVICE STREQUAL "MOY_TIN5") # P8a variant 2
   add_definitions(-DDRIVER_PINMAP_P8)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=1) # XTAL
+  add_definitions(-DDRIVER_TOUCH_GESTURE)
 elseif(TARGET_DEVICE STREQUAL "MOY_TON5") # P8b
   add_definitions(-DDRIVER_PINMAP_P8)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=0) # RC
   add_definitions(-DMYNEWT_VAL_BLE_LL_SCA=500)
   add_definitions(-DCLOCK_CONFIG_LF_CAL_ENABLED=1)
+  add_definitions(-DDRIVER_TOUCH_REPORT)
 elseif(TARGET_DEVICE STREQUAL "MOY_UNK") # P8b mirrored
   add_definitions(-DDRIVER_PINMAP_P8)
   add_definitions(-DCLOCK_CONFIG_LF_SRC=0) # RC
   add_definitions(-DMYNEWT_VAL_BLE_LL_SCA=500)
   add_definitions(-DCLOCK_CONFIG_LF_CAL_ENABLED=1)
   add_definitions(-DDRIVER_DISPLAY_MIRROR)
+  add_definitions(-DDRIVER_TOUCH_REPORT)
 else()
   message(FATAL_ERROR "Invalid TARGET_DEVICE")
 endif()

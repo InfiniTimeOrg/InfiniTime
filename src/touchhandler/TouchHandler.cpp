@@ -37,8 +37,40 @@ bool TouchHandler::ProcessTouchInfo(Drivers::Cst816S::TouchInfos info) {
   if (!info.isValid) {
     return false;
   }
+  
+  // REPORT configurations (P8b variants) of the fused (usually) Cst716
+  // generate multiple "none" gesture events with info.touching == true during the physical gesture.
+  // The last event is a e.g. "slide" event with info.touching == true.
+  // gestureReleased state does not have to be computed manually, instead it occurs when event != "none".
 
-  // Only a single gesture per touch
+  // GESTURE configurations (P8a variants) of the fused (usually) Cst716 generate no events during the physical gesture.
+  // The only event is a e.g. "slide" event with info.touching == true.
+  // gestureReleased state does not have to be computed manually, instead it occurs everytime.
+
+  // DYNAMIC configurations (PineTime) are configured in reporting mode during initialisation.
+  // Usually based on the Cst816s, they generate multiple e.g. "slide" gesture events with info.touching == true during the physical
+  // gesture. The last of these e.g. "slide" events has info.touching == false. gestureReleased state is computed manually by checking for
+  // the transition to info.touching == false.
+
+  // Unfortunately, there is no way to reliably obtain which configuration is used at runtime.
+  // In all cases, the event is bubbled up once the gesture is released.
+
+#if defined(DRIVER_TOUCH_REPORT)
+  if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
+    gesture = ConvertGesture(info.gesture);
+    info.touching = false;
+  }
+#elif defined(DRIVER_TOUCH_GESTURE)
+  if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
+    gesture = ConvertGesture(info.gesture);
+    // A new variant configuration behaves in a way such that it generates a gesture event at the start of a physical gesture,
+    // but does not set the info.touching flag at all. Since gestures are handled separately, special behaviour is only needed
+    // for the tap event. For the original P8b, which always sets info.touching = true, this operation is idempotent.
+    if (gesture == TouchEvents::Tap) {
+      info.touching = true;
+    }
+  }
+#elif defined(DRIVER_TOUCH_DYNAMIC)
   if (info.gesture != Pinetime::Drivers::Cst816S::Gestures::None) {
     if (gestureReleased) {
       if (info.gesture == Pinetime::Drivers::Cst816S::Gestures::SlideDown ||
@@ -59,8 +91,30 @@ bool TouchHandler::ProcessTouchInfo(Drivers::Cst816S::TouchInfos info) {
   if (!info.touching) {
     gestureReleased = true;
   }
+#endif
 
   currentTouchPoint = {info.x, info.y, info.touching};
 
   return true;
+}
+
+void TouchHandler::UpdateLvglTouchPoint() {
+  if (info.touching) {
+#if defined(DRIVER_TOUCH_GESTURE)
+    // GESTURE config only generates a single event / state change
+    // so the LVGL wrapper is used to generate a successive release state update
+    lvgl.SetNewTap(info.x, info.y);
+#else
+    if (!isCancelled) {
+      lvgl.SetNewTouchPoint(info.x, info.y, true);
+    }
+#endif
+  } else {
+    if (isCancelled) {
+      lvgl.SetNewTouchPoint(-1, -1, false);
+      isCancelled = false;
+    } else {
+      lvgl.SetNewTouchPoint(info.x, info.y, false);
+    }
+  }
 }
