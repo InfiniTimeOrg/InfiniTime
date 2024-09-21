@@ -35,6 +35,7 @@ namespace Pinetime {
       SettingWatchFace,
       SettingTimeFormat,
       SettingWeatherFormat,
+      SettingHeartRate,
       SettingDisplay,
       SettingWakeUp,
       SettingSteps,
