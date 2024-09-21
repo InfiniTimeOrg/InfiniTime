@@ -139,7 +139,7 @@ namespace Pinetime {
       bool isDimmed = false;
 
       TickType_t CalculateSleepTime();
-      TickType_t alwaysOnTickCount;
+      TickType_t alwaysOnFrameCount;
       TickType_t alwaysOnStartTime;
       // If this is to be changed, make sure the actual always on refresh rate is changed
       // by configuring the LCD refresh timings
