@@ -388,17 +388,19 @@ void SystemTask::GoToRunning() {
   if (state == SystemTaskState::Running) {
     return;
   }
-  // SPI only switched off when entering Sleeping, not AOD or GoingToSleep
-  if (state == SystemTaskState::Sleeping) {
-    spi.Wakeup();
-  }
+  if (state == SystemTaskState::Sleeping || state == SystemTaskState::AODSleeping) {
+    // SPI only switched off when entering Sleeping, not AOD or GoingToSleep
+    if (state == SystemTaskState::Sleeping) {
+      spi.Wakeup();
+    }
 
-  // Double Tap needs the touch screen to be in normal mode
-  if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
-    touchPanel.Wakeup();
-  }
+    // Double Tap needs the touch screen to be in normal mode
+    if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
+      touchPanel.Wakeup();
+    }
 
-  spiNorFlash.Wakeup();
+    spiNorFlash.Wakeup();
+  }
 
   displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
   heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
