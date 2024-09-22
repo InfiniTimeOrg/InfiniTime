@@ -6,6 +6,7 @@
 
 #include "drivers/Hrs3300.h"
 #include <algorithm>
+#include <iterator>
 #include <nrf_gpio.h>
 
 #include <FreeRTOS.h>
