@@ -45,7 +45,6 @@ namespace Pinetime {
                 bool OnButtonPushed() override;
                 void UpdateSelected(lv_obj_t* object, lv_event_t event);
                 void CloseMenu();
-
                 void Refresh() override;
 
                 static bool IsAvailable(Pinetime::Controllers::FS& filesystem);

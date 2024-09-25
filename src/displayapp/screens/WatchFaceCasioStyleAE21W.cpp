@@ -640,7 +640,7 @@ WatchFaceCasioStyleAE21W::WatchFaceCasioStyleAE21W(Controllers::DateTime& dateTi
     lv_label_set_text_static(labelBtnSettings, Symbols::settings);
     lv_obj_set_hidden(btnSettings, true);
 
-    taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
+   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
     Refresh();
 }
 
@@ -727,6 +727,7 @@ void WatchFaceCasioStyleAE21W::Refresh() {
     }
 
     notificationState = notificationManager.AreNewNotificationsAvailable();
+
     if (notificationState.IsUpdated()) {
         lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
     }

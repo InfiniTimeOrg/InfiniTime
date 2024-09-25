@@ -431,6 +431,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/WatchFaceCasioStyleG7710.cpp
         displayapp/screens/WatchFaceCasioStyleAE21W.cpp
         displayapp/screens/WatchFacePrideFlag.cpp
+        displayapp/screens/WatchFaceCasioStyleAE21W.cpp
 
         ##
 
