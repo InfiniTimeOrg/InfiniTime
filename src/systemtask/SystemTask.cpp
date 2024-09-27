@@ -198,20 +198,6 @@ void SystemTask::Work() {
         case Messages::GoToRunning:
           GoToRunning();
           break;
-        case Messages::TouchWakeUp: {
-          if (touchHandler.ProcessTouchInfo(touchPanel.GetTouchInfo())) {
-            auto gesture = touchHandler.GestureGet();
-            if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
-                gesture != Pinetime::Applications::TouchEvents::None &&
-                ((gesture == Pinetime::Applications::TouchEvents::DoubleTap &&
-                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) ||
-                 (gesture == Pinetime::Applications::TouchEvents::Tap &&
-                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
-              GoToRunning();
-            }
-          }
-          break;
-        }
         case Messages::GoToSleep:
           GoToSleep();
           break;
@@ -260,8 +246,23 @@ void SystemTask::Work() {
           // TODO add intent of fs access icon or something
           break;
         case Messages::OnTouchEvent:
-          if (touchHandler.ProcessTouchInfo(touchPanel.GetTouchInfo())) {
+          // Finish immediately if no new events
+          if (!touchHandler.ProcessTouchInfo(touchPanel.GetTouchInfo())) {
+            break;
+          }
+          if (state == SystemTaskState::Running) {
             displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
+          } else {
+            // If asleep, check for touch panel wake triggers
+            auto gesture = touchHandler.GestureGet();
+            if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
+                gesture != Pinetime::Applications::TouchEvents::None &&
+                ((gesture == Pinetime::Applications::TouchEvents::DoubleTap &&
+                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) ||
+                 (gesture == Pinetime::Applications::TouchEvents::Tap &&
+                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
+              GoToRunning();
+            }
           }
           break;
         case Messages::HandleButtonEvent: {
@@ -493,14 +494,7 @@ void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
 }
 
 void SystemTask::OnTouchEvent() {
-  if (state == SystemTaskState::Running) {
-    PushMessage(Messages::OnTouchEvent);
-  } else {
-    if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) or
-        settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
-      PushMessage(Messages::TouchWakeUp);
-    }
-  }
+  PushMessage(Messages::OnTouchEvent);
 }
 
 void SystemTask::PushMessage(System::Messages msg) {
