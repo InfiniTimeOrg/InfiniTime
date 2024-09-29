@@ -25,7 +25,7 @@
 #include <host/ble_uuid.h>
 #undef max
 #undef min
-#include "portmacro_cmsis.h"
+#include <FreeRTOS.h>
 
 namespace Pinetime {
   namespace Controllers {
