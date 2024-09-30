@@ -24,7 +24,7 @@ namespace Pinetime {
         bool touching;
       };
 
-      TouchProcessReply ProcessTouchInfo(Drivers::Cst816S::TouchInfos info, bool buttonUnlocksOn);
+      TouchProcessReply ProcessTouchInfo(Drivers::Cst816S::TouchInfos info, bool buttonUnlocksOn = false);
 
       bool IsTouching() const {
         return currentTouchPoint.touching;
