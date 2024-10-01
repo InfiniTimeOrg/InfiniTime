@@ -25,8 +25,10 @@
 - [Getting started with InfiniTime](doc/gettingStarted/gettingStarted-1.0.md)
 - [Updating the software](doc/gettingStarted/updating-software.md)
 - [About the firmware and bootloader](doc/gettingStarted/about-software.md)
-- [PineTimeStyle Watch face](https://wiki.pine64.org/wiki/PineTimeStyle)
-  - [Weather integration](https://wiki.pine64.org/wiki/Infinitime-Weather)
+- [Available apps](doc/gettingStarted/Applications.md)
+- [Available watch faces](/doc/gettingStarted/Watchfaces.md)
+- [PineTimeStyle Watch face](https://pine64.org/documentation/PineTime/Watchfaces/PineTimeStyle)
+  - [Weather integration](https://pine64.org/documentation/PineTime/Software/InfiniTime_weather/)
 
 ### Companion apps
 
@@ -56,7 +58,7 @@
 
 ### Contributing
 
-- [How to contribute?](CONTRIBUTING.md)
+- [How to contribute](CONTRIBUTING.md)
 - [Coding conventions](doc/coding-convention.md)
 
 ### Build, flash and debug

@@ -48,7 +48,7 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
              Controllers::Settings::ClockType clockType,
              System::SystemTask& systemTask,
              Controllers::MotorController& motorController)
-  : alarmController {alarmController}, systemTask {systemTask}, motorController {motorController} {
+  : alarmController {alarmController}, wakeLock(systemTask), motorController {motorController} {
 
   hourCounter.Create();
   lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
@@ -117,7 +117,7 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
 
   UpdateAlarmTime();
 
-  if (alarmController.State() == Controllers::AlarmController::AlarmState::Alerting) {
+  if (alarmController.IsAlerting()) {
     SetAlerting();
   } else {
     SetSwitchState(LV_ANIM_OFF);
@@ -125,14 +125,15 @@ Alarm::Alarm(Controllers::AlarmController& alarmController,
 }
 
 Alarm::~Alarm() {
-  if (alarmController.State() == AlarmController::AlarmState::Alerting) {
+  if (alarmController.IsAlerting()) {
     StopAlerting();
   }
   lv_obj_clean(lv_scr_act());
+  alarmController.SaveAlarm();
 }
 
 void Alarm::DisableAlarm() {
-  if (alarmController.State() == AlarmController::AlarmState::Set) {
+  if (alarmController.IsEnabled()) {
     alarmController.DisableAlarm();
     lv_switch_off(enableSwitch, LV_ANIM_ON);
   }
@@ -172,7 +173,7 @@ bool Alarm::OnButtonPushed() {
     HideInfo();
     return true;
   }
-  if (alarmController.State() == AlarmController::AlarmState::Alerting) {
+  if (alarmController.IsAlerting()) {
     StopAlerting();
     return true;
   }
@@ -181,7 +182,7 @@ bool Alarm::OnButtonPushed() {
 
 bool Alarm::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
   // Don't allow closing the screen by swiping while the alarm is alerting
-  return alarmController.State() == AlarmController::AlarmState::Alerting && event == TouchEvents::SwipeDown;
+  return alarmController.IsAlerting() && event == TouchEvents::SwipeDown;
 }
 
 void Alarm::OnValueChanged() {
@@ -205,7 +206,7 @@ void Alarm::SetAlerting() {
   lv_obj_set_hidden(btnStop, false);
   taskStopAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(60 * 1000), LV_TASK_PRIO_MID, this);
   motorController.StartRinging();
-  systemTask.PushMessage(System::Messages::DisableSleeping);
+  wakeLock.Lock();
 }
 
 void Alarm::StopAlerting() {
@@ -216,21 +217,16 @@ void Alarm::StopAlerting() {
     lv_task_del(taskStopAlarm);
     taskStopAlarm = nullptr;
   }
-  systemTask.PushMessage(System::Messages::EnableSleeping);
+  wakeLock.Release();
   lv_obj_set_hidden(enableSwitch, false);
   lv_obj_set_hidden(btnStop, true);
 }
 
 void Alarm::SetSwitchState(lv_anim_enable_t anim) {
-  switch (alarmController.State()) {
-    case AlarmController::AlarmState::Set:
-      lv_switch_on(enableSwitch, anim);
-      break;
-    case AlarmController::AlarmState::Not_Set:
-      lv_switch_off(enableSwitch, anim);
-      break;
-    default:
-      break;
+  if (alarmController.IsEnabled()) {
+    lv_switch_on(enableSwitch, anim);
+  } else {
+    lv_switch_off(enableSwitch, anim);
   }
 }
 
@@ -247,7 +243,7 @@ void Alarm::ShowInfo() {
   txtMessage = lv_label_create(btnMessage, nullptr);
   lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
 
-  if (alarmController.State() == AlarmController::AlarmState::Set) {
+  if (alarmController.IsEnabled()) {
     auto timeToAlarm = alarmController.SecondsToAlarm();
 
     auto daysToAlarm = timeToAlarm / 86400;
