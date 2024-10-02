@@ -1,4 +1,0 @@
-compare infineat and meow .h files to make declaration correct
-faire en sorte to keep bell and not bell for inifneat wf
-check the orig files and the files in lib if they need to be in git
-
