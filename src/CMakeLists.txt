@@ -398,7 +398,6 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Styles.cpp
         displayapp/screens/WeatherSymbols.cpp
         displayapp/Colors.cpp
-        displayapp/Weather.cpp
         displayapp/widgets/Counter.cpp
         displayapp/widgets/PageIndicator.cpp
         displayapp/widgets/DotIndicator.cpp
@@ -607,7 +606,6 @@ set(INCLUDE_FILES
         displayapp/screens/ApplicationList.h
         displayapp/screens/CheckboxList.h
         displayapp/Apps.h
-        displayapp/Weather.h
         displayapp/screens/Notifications.h
         displayapp/screens/HeartRate.h
         displayapp/screens/Metronome.h

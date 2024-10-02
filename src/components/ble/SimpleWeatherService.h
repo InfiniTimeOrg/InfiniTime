@@ -61,8 +61,33 @@ namespace Pinetime {
         Unknown = 255
       };
 
-      struct Temperature {
-        int16_t temp;
+      class Temperature {
+      public:
+        explicit Temperature(int16_t raw = 0) : raw {raw} {
+        }
+
+        [[nodiscard]] int16_t PreciseCelsius() const {
+          return raw;
+        }
+
+        [[nodiscard]] int16_t PreciseFahrenheit() const {
+          return raw * 9 / 5 + 3200;
+        }
+
+        [[nodiscard]] int16_t Celsius() const {
+          return (PreciseCelsius() + 50) / 100;
+        }
+
+        [[nodiscard]] int16_t Fahrenheit() const {
+          return (PreciseFahrenheit() + 50) / 100;
+        }
+
+        bool operator==(const Temperature& other) const {
+          return raw == other.raw;
+        }
+
+      private:
+        int16_t raw;
       };
 
       using Location = std::array<char, 33>; // 32 char + \0 (end of string)

@@ -3,7 +3,6 @@
 #include <lvgl/lvgl.h>
 #include <cstdio>
 
-#include "displayapp/Weather.h"
 #include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/screens/Symbols.h"
 #include "displayapp/screens/WeatherSymbols.h"
@@ -176,12 +175,13 @@ void WatchFaceDigital::Refresh() {
   if (currentWeather.IsUpdated()) {
     auto optCurrentWeather = currentWeather.Get();
     if (optCurrentWeather) {
+      int16_t temp = optCurrentWeather->temperature.Celsius();
       char tempUnit = 'C';
       if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
+        temp = optCurrentWeather->temperature.Fahrenheit();
         tempUnit = 'F';
       }
-      Applications::Temperature temp = Applications::Convert(optCurrentWeather->temperature, settingsController.GetWeatherFormat());
-      lv_label_set_text_fmt(temperature, "%d°%c", temp.temp, tempUnit);
+      lv_label_set_text_fmt(temperature, "%d°%c", temp, tempUnit);
       lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
     } else {
       lv_label_set_text_static(temperature, "");
