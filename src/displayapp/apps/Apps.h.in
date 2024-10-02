@@ -23,6 +23,7 @@ namespace Pinetime {
       Twos,
       HeartRate,
       Navigation,
+      Calendar,
       StopWatch,
       Metronome,
       Motion,
@@ -51,6 +52,7 @@ namespace Pinetime {
       PineTimeStyle,
       Terminal,
       Infineat,
+      Meow,
       CasioStyleG7710,
     };
 

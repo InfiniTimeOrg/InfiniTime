@@ -13,6 +13,10 @@ build
 tools
 node_modules
 
+# My stuff
+#draft_pictures
+node_modules
+
 # Resulting binary files
 *.a
 *.so

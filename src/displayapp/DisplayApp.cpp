@@ -19,6 +19,7 @@
 #include "displayapp/screens/Metronome.h"
 #include "displayapp/screens/Music.h"
 #include "displayapp/screens/Navigation.h"
+#include "displayapp/screens/Calendar.h"
 #include "displayapp/screens/Notifications.h"
 #include "displayapp/screens/SystemInfo.h"
 #include "displayapp/screens/Tile.h"
@@ -125,6 +126,7 @@ void DisplayApp::Start(System::BootErrors error) {
   bootError = error;
 
   lvgl.Init();
+  motorController.Init();
 
   if (error == System::BootErrors::TouchController) {
     LoadNewScreen(Apps::Error, DisplayApp::FullRefreshDirections::None);
@@ -150,7 +152,6 @@ void DisplayApp::Process(void* instance) {
 void DisplayApp::InitHw() {
   brightnessController.Init();
   ApplyBrightness();
-  motorController.Init();
   lcd.Init();
 }
 
