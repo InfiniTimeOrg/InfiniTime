@@ -53,7 +53,7 @@ namespace Pinetime {
         Utility::DirtyValue<bool> isCharging {};
         Utility::DirtyValue<bool> bleState {};
         Utility::DirtyValue<bool> bleRadioEnabled {};
-        bool alarmState {};
+        Utility::DirtyValue<bool> isAlarmSet{};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
         Utility::DirtyValue<uint32_t> stepCount {};
         Utility::DirtyValue<bool> notificationState {};
@@ -101,8 +101,6 @@ namespace Pinetime {
 
         void SetBatteryLevel(uint8_t batteryPercent);
         void ToggleBatteryIndicatorColor(bool showSideCover);
-
-        void ToggleShowAlarmStatus(bool showAlarmStatus);
 
         lv_task_t* taskRefresh;
         lv_font_t* font_teko = nullptr;

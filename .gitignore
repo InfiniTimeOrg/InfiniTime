@@ -11,11 +11,7 @@ cmake_install.cmake
 Makefile
 build
 tools
-node_modules
 
-# My stuff
-#draft_pictures
-node_modules
 
 # Resulting binary files
 *.a

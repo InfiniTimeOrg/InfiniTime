@@ -253,7 +253,7 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
   lv_label_set_text_static(alarmIcon, Symbols::notbell);
   lv_obj_align(alarmIcon, labelAlarm, LV_ALIGN_OUT_LEFT_MID, -3, 0);
 
-  // don't show the icons jsut set if we don't show alarm status
+  // don't show the icons just set if we don't show alarm status
   if (!settingsController.GetInfineatShowAlarmStatus()) {
     lv_obj_set_hidden(labelAlarm, true);
     lv_obj_set_hidden(alarmIcon, true);
