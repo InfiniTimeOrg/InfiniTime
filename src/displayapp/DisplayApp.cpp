@@ -31,6 +31,7 @@
 #include "displayapp/screens/PassKey.h"
 #include "displayapp/screens/Error.h"
 #include "displayapp/screens/Calculator.h"
+#include "displayapp/screens/SleepTracker.h"
 
 #include "drivers/Cst816s.h"
 #include "drivers/St7789.h"
