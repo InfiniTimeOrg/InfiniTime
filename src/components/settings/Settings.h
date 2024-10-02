@@ -155,6 +155,13 @@ namespace Pinetime {
         return settings.PTS.weatherEnable;
       };
 
+      void SetInfineatShowAlarmStatus(bool show) {
+        if (show != settings.watchFaceInfineat.showAlarmStatus) {
+          settings.watchFaceInfineat.showAlarmStatus = show;
+          settingsChanged = true;
+        }
+      };
+
       void SetAppMenu(uint8_t menu) {
         appMenu = menu;
       };
