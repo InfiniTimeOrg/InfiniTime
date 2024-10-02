@@ -509,11 +509,11 @@ void WatchFaceInfineat::Refresh() {
   }
 
   if (settingsController.GetInfineatShowAlarmStatus()) {
-    alarmState = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
+    isAlarmSet = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
     // sets the icon as bell or barred bell
-    lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(alarmState));
+    lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(isAlarmSet.Get()));
     //displays the time of the alarm or nothing if the alarm is not set
-    if (alarmState) {
+    if (isAlarmSet.Get()) {
       uint8_t alarmHours = alarmController.Hours();
       uint8_t alarmMinutes = alarmController.Minutes();
       //handles the am pm format.
