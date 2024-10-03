@@ -147,7 +147,11 @@ void WatchFaceTerminal::Refresh() {
         temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
         tempUnit = 'F';
       }
-      lv_label_set_text_fmt(weather, "#ffffff [WTHR]# %i°%c %s ", temp / 100, tempUnit, Symbols::GetSimpleCondition(optCurrentWeather->iconId));
+      lv_label_set_text_fmt(weather,
+                            "#ffffff [WTHR]# %i°%c %s ",
+                            temp / 100,
+                            tempUnit,
+                            Symbols::GetSimpleCondition(optCurrentWeather->iconId));
     } else {
       lv_label_set_text(weather, "#ffffff [WTHR]# ---");
       lv_obj_set_style_local_text_color(weather, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::gray);
