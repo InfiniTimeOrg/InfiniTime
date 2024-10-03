@@ -7,7 +7,6 @@ namespace Pinetime {
       enum class Messages : uint8_t {
         GoToSleep,
         GoToRunning,
-        UpdateDateTime,
         UpdateBleConnection,
         TouchEvent,
         ButtonPushed,
@@ -17,7 +16,8 @@ namespace Pinetime {
         NewNotification,
         TimerDone,
         BleFirmwareUpdateStarted,
-        DimScreen,
+        // Resets the screen timeout timer when awake
+        // Does nothing when asleep
         NotifyDeviceActivity,
         ShowPairingKey,
         AlarmTriggered,

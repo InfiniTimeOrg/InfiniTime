@@ -1,5 +1,5 @@
 #include "systemtask/SystemTask.h"
-#if configUSE_TRACE_FACILITY == 1
+#if NRF_LOG_ENABLED
   // FreeRtosMonitor
   #include <FreeRTOS.h>
   #include <task.h>

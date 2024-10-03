@@ -142,7 +142,7 @@ Ppg::Ppg() {
   spectrum.fill(0.0f);
 }
 
-int8_t Ppg::Preprocess(uint32_t hrs, uint32_t als) {
+int8_t Ppg::Preprocess(uint16_t hrs, uint16_t als) {
   if (dataIndex < dataLength) {
     dataHRS[dataIndex++] = hrs;
   }
