@@ -3,6 +3,7 @@
 #include <lvgl/lvgl.h>
 #include <components/heartrate/HeartRateController.h>
 #include <components/datetime/DateTimeController.h>
+#include <components/fs/FS.h>
 #include <nrf_log.h>
 
 using namespace Pinetime::Applications::Screens;
@@ -16,8 +17,8 @@ namespace {
 
 }
 
-SleepTracker::SleepTracker(Controllers::HeartRateController& heartRateController, Controllers::DateTime& dateTimeController, System::SystemTask& systemTask)
-  : heartRateController {heartRateController}, dateTimeController {dateTimeController}, wakeLock(systemTask) {
+SleepTracker::SleepTracker(Controllers::HeartRateController& heartRateController, Controllers::DateTime& dateTimeController, Controllers::FS& fsController, System::SystemTask& systemTask)
+  : heartRateController {heartRateController}, dateTimeController {dateTimeController}, fsController {fsController}, wakeLock(systemTask) {
 
   wakeLock.Lock();
   
@@ -66,10 +67,60 @@ void SleepTracker::GetBPM() {
   // Log the BPM and current time
   NRF_LOG_INFO("BPM: %d at %02d:%02d:%02d", rollingBpm, hours, minutes, seconds);
 
+  // Write data to CSV
+  int motion = 0; // Placeholder for motion data
+  std::vector<std::tuple<int, int, int, int, int>> data = {std::make_tuple(hours, minutes, seconds, rollingBpm, motion)};
+  WriteDataCSV("SleepTracker_Data.csv", data);
 
   // if (bpm == 0) {
   //   lv_label_set_text_static(label_hr, "---");
   // } else {
   //   lv_label_set_text_fmt(label_hr, "%03d", bpm);
   // }
+}
+
+// File IO Stuff
+
+/*
+* Write data to a CSV file
+* Format: Time,BPM,Motion
+*/
+void SleepTracker::WriteDataCSV(const char* fileName, const std::vector<std::tuple<int, int, int, int, int>>& data) {
+  lfs_file_t file;
+  int err = fsController.FileOpen(&file, fileName, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND);
+  if (err < 0) {
+    // Handle error
+    NRF_LOG_INFO("Error opening file: %d", err);
+    return;
+  }
+
+  // Check if the file is empty
+  // int fileSize = fsController.FileSeek(&file, 0);
+  // if (fileSize == 0) {
+  //   // Write header if file is empty
+  //   const char* header = "Time,BPM,Motion\n";
+  //   err = fsController.FileWrite(&file, reinterpret_cast<const uint8_t*>(header), strlen(header));
+  //   if (err < 0) {
+  //     // Handle error
+  //     NRF_LOG_INFO("Error writing to file: %d", err);
+  //     fsController.FileClose(&file);
+  //     return;
+  //   }
+  // }
+
+  // Write data
+  for (const auto& entry : data) {
+    int hours, minutes, seconds, bpm, motion;
+    std::tie(hours, minutes, seconds, bpm, motion) = entry;
+    char buffer[64];
+    int len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d,%d,%d\n", hours, minutes, seconds, bpm, motion);
+    int err = fsController.FileWrite(&file, reinterpret_cast<const uint8_t*>(buffer), len);
+    if (err < 0) {
+      // Handle error
+      NRF_LOG_INFO("Error writing to file: %d", err);
+      return;
+    }
+  }
+
+  fsController.FileClose(&file);
 }

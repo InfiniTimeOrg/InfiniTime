@@ -7,12 +7,14 @@
 #include "systemtask/WakeLock.h"
 #include "Symbols.h"
 
+#include <vector>
+
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class SleepTracker : public Screen {
       public:
-        SleepTracker(Controllers::HeartRateController& HeartRateController, Controllers::DateTime& DateTimeController, System::SystemTask& systemTask);
+        SleepTracker(Controllers::HeartRateController& HeartRateController, Controllers::DateTime& DateTimeController, Controllers::FS& fsController, System::SystemTask& systemTask);
         ~SleepTracker() override;
 
         void Refresh() override;
@@ -23,7 +25,12 @@ namespace Pinetime {
       private:
         Controllers::HeartRateController& heartRateController;
         Controllers::DateTime& dateTimeController;
+        Controllers::FS& fsController;
         Pinetime::System::WakeLock wakeLock;
+
+        // For File IO
+        void WriteDataCSV(const char* fileName, const std::vector<std::tuple<int, int, int, int, int>>& data);
+        std::vector<std::tuple<int, int, int, int, int>> ReadDataCSV(const char* fileName);
 
         int bpm = 0;
         int prevBpm = 0;
@@ -41,7 +48,7 @@ namespace Pinetime {
       static constexpr Apps app = Apps::SleepTracker;
       static constexpr const char* icon = Screens::Symbols::bed;
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::SleepTracker(controllers.heartRateController, controllers.dateTimeController, *controllers.systemTask);
+        return new Screens::SleepTracker(controllers.heartRateController, controllers.dateTimeController, controllers.filesystem, *controllers.systemTask);
       }
     };
   }
