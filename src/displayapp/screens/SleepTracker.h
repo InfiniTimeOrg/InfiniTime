@@ -21,6 +21,8 @@ namespace Pinetime {
 
         void GetBPM();
 
+        void ClearDataCSV(const char* filename);
+
 
       private:
         Controllers::HeartRateController& heartRateController;
