@@ -53,7 +53,7 @@ SleepTracker::SleepTracker(Controllers::HeartRateController& heartRateController
 
   // Create the refresh task
   mainRefreshTask = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
-  hrRefreshTask = lv_task_create(BpmDataCallback, 3000, LV_TASK_PRIO_MID, this);
+  hrRefreshTask = lv_task_create(BpmDataCallback, 180000, LV_TASK_PRIO_MID, this);
 
   // Create the clear data button
   lv_obj_t* btnClear = lv_btn_create(lv_scr_act(), nullptr);
@@ -125,7 +125,7 @@ std::vector<std::pair<double, double>> SleepTracker::DetectSleepRegions(const st
     double start_time = -1;
     bool in_sleep = false;
     
-    for (int i = 0; i < bpmData.size(); ++i) {
+    for (unsigned int i = 0; i < bpmData.size(); ++i) {
         if (bpmData[i] < threshold) {
             if (!in_sleep) {
                 start_time = time[i];  // Mark the start of sleep
