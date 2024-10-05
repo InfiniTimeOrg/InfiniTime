@@ -8,6 +8,8 @@
 #include "Symbols.h"
 
 #include <vector>
+#include <numeric>  // for accumulate
+#include <cmath>    // for abs
 
 namespace Pinetime {
   namespace Applications {
@@ -23,6 +25,17 @@ namespace Pinetime {
 
         void ClearDataCSV(const char* filename);
 
+        // Data Processing functions
+        double ConvertToMinutes(int hours, int minutes, int seconds);
+        // Get the moving average of BPM Values
+        std::vector<double> MovingAverage(const std::vector<int>& bpm, int windowSize);
+        // Detect the sleep regions
+        std::vector<std::pair<double, double>> DetectSleepRegions(const std::vector<double>& bpmData, const std::vector<double>& time, double threshold);
+        // Get the sleep info
+        void GetSleepInfo(std::vector<std::tuple<int, int, int, int, int>> data);
+
+        // Read IO
+        std::vector<std::tuple<int, int, int, int, int>> ReadDataCSV(const char* fileName);
 
       private:
         Controllers::HeartRateController& heartRateController;
@@ -32,7 +45,6 @@ namespace Pinetime {
 
         // For File IO
         void WriteDataCSV(const char* fileName, const std::vector<std::tuple<int, int, int, int, int>>& data);
-        std::vector<std::tuple<int, int, int, int, int>> ReadDataCSV(const char* fileName);
 
         int bpm = 0;
         int prevBpm = 0;
