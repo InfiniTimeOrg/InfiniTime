@@ -23,19 +23,19 @@ namespace Pinetime {
 
         void GetBPM();
 
-        void ClearDataCSV(const char* filename);
+        void ClearDataCSV(const char* filename) const;
 
         // Data Processing functions
-        double ConvertToMinutes(int hours, int minutes, int seconds);
+        float ConvertToMinutes(int hours, int minutes, int seconds) const;
         // Get the moving average of BPM Values
-        std::vector<double> MovingAverage(const std::vector<int>& bpm, int windowSize);
+        std::vector<float> MovingAverage(const std::vector<int>& bpm, int windowSize) const;
         // Detect the sleep regions
-        std::vector<std::pair<double, double>> DetectSleepRegions(const std::vector<double>& bpmData, const std::vector<double>& time, double threshold);
+        std::vector<std::pair<float, float>> DetectSleepRegions(const std::vector<float>& bpmData, const std::vector<float>& time, float threshold) const;
         // Get the sleep info
-        void GetSleepInfo(std::vector<std::tuple<int, int, int, int, int>> data);
+        void GetSleepInfo(const std::vector<std::tuple<int, int, int, int, int>>& data) const;
 
         // Read IO
-        std::vector<std::tuple<int, int, int, int, int>> ReadDataCSV(const char* fileName);
+        std::vector<std::tuple<int, int, int, int, int>> ReadDataCSV(const char* fileName) const;
 
       private:
         Controllers::HeartRateController& heartRateController;
@@ -44,7 +44,7 @@ namespace Pinetime {
         Pinetime::System::WakeLock wakeLock;
 
         // For File IO
-        void WriteDataCSV(const char* fileName, const std::vector<std::tuple<int, int, int, int, int>>& data);
+        void WriteDataCSV(const char* fileName, const std::vector<std::tuple<int, int, int, int, int>>& data) const;
 
         int bpm = 0;
         int prevBpm = 0;
