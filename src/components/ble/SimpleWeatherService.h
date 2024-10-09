@@ -63,7 +63,7 @@ namespace Pinetime {
 
       class Temperature {
       public:
-        explicit Temperature(int16_t raw = 0) : raw {raw} {
+        explicit Temperature(int16_t raw) : raw {raw} {
         }
 
         [[nodiscard]] int16_t PreciseCelsius() const {
@@ -129,7 +129,7 @@ namespace Pinetime {
           bool operator==(const Day& other) const;
         };
 
-        std::array<Day, MaxNbForecastDays> days;
+        std::array<std::optional<Day>, MaxNbForecastDays> days;
 
         bool operator==(const Forecast& other) const;
       };
