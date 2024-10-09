@@ -76,8 +76,9 @@ int MotionService::OnStepCountRequested(uint16_t attributeHandle, ble_gatt_acces
 }
 
 void MotionService::OnNewStepCountValue(uint32_t stepCount) {
-  if (!stepCountNoficationEnabled)
+  if (!stepCountNoficationEnabled) {
     return;
+  }
 
   uint32_t buffer = stepCount;
   auto* om = ble_hs_mbuf_from_flat(&buffer, 4);
@@ -92,8 +93,9 @@ void MotionService::OnNewStepCountValue(uint32_t stepCount) {
 }
 
 void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
-  if (!motionValuesNoficationEnabled)
+  if (!motionValuesNoficationEnabled) {
     return;
+  }
 
   int16_t buffer[3] = {x, y, z};
   auto* om = ble_hs_mbuf_from_flat(buffer, 3 * sizeof(int16_t));
@@ -108,17 +110,19 @@ void MotionService::OnNewMotionValues(int16_t x, int16_t y, int16_t z) {
 }
 
 void MotionService::SubscribeNotification(uint16_t attributeHandle) {
-  if (attributeHandle == stepCountHandle)
+  if (attributeHandle == stepCountHandle) {
     stepCountNoficationEnabled = true;
-  else if (attributeHandle == motionValuesHandle)
+  } else if (attributeHandle == motionValuesHandle) {
     motionValuesNoficationEnabled = true;
+  }
 }
 
 void MotionService::UnsubscribeNotification(uint16_t attributeHandle) {
-  if (attributeHandle == stepCountHandle)
+  if (attributeHandle == stepCountHandle) {
     stepCountNoficationEnabled = false;
-  else if (attributeHandle == motionValuesHandle)
+  } else if (attributeHandle == motionValuesHandle) {
     motionValuesNoficationEnabled = false;
+  }
 }
 
 bool MotionService::IsMotionNotificationSubscribed() const {

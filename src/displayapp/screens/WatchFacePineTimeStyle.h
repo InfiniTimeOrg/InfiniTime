@@ -134,7 +134,7 @@ namespace Pinetime {
                                                    controllers.settingsController,
                                                    controllers.motionController,
                                                    *controllers.weatherController);
-      };
+      }
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
         return true;

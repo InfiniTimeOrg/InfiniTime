@@ -50,7 +50,7 @@ namespace Pinetime {
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Steps(controllers.motionController, controllers.settingsController);
-      };
+      }
     };
   }
 }

@@ -103,14 +103,16 @@ Hrs3300::PackedHrsAls Hrs3300::ReadHrsAls() {
 
 void Hrs3300::WriteRegister(uint8_t reg, uint8_t data) {
   auto ret = twiMaster.Write(twiAddress, reg, &data, 1);
-  if (ret != TwiMaster::ErrorCodes::NoError)
+  if (ret != TwiMaster::ErrorCodes::NoError) {
     NRF_LOG_INFO("WRITE ERROR");
+  }
 }
 
 uint8_t Hrs3300::ReadRegister(uint8_t reg) {
   uint8_t value;
   auto ret = twiMaster.Read(twiAddress, reg, &value, 1);
-  if (ret != TwiMaster::ErrorCodes::NoError)
+  if (ret != TwiMaster::ErrorCodes::NoError) {
     NRF_LOG_INFO("READ ERROR");
+  }
   return value;
 }

@@ -116,7 +116,7 @@ namespace Pinetime {
                                                      controllers.heartRateController,
                                                      controllers.motionController,
                                                      controllers.filesystem);
-      };
+      }
 
       static bool IsAvailable(Pinetime::Controllers::FS& filesystem) {
         return Screens::WatchFaceCasioStyleG7710::IsAvailable(filesystem);
