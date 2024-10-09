@@ -81,7 +81,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::AlarmController& alarmController,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
-                       Pinetime::Controllers::FS& filesystem)
+                       Pinetime::Controllers::FS& filesystem,
+                       Pinetime::Drivers::SpiNorFlash& spiNorFlash)
   : lcd {lcd},
     touchPanel {touchPanel},
     batteryController {batteryController},
@@ -97,6 +98,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     brightnessController {brightnessController},
     touchHandler {touchHandler},
     filesystem {filesystem},
+    spiNorFlash {spiNorFlash},
     lvgl {lcd, filesystem},
     timer(this, TimerCallback),
     controllers {batteryController,
@@ -125,6 +127,7 @@ void DisplayApp::Start(System::BootErrors error) {
   bootError = error;
 
   lvgl.Init();
+  motorController.Init();
 
   if (error == System::BootErrors::TouchController) {
     LoadNewScreen(Apps::Error, DisplayApp::FullRefreshDirections::None);
@@ -142,9 +145,6 @@ void DisplayApp::Process(void* instance) {
   NRF_LOG_INFO("displayapp task started!");
   app->InitHw();
 
-  // Send a dummy notification to unlock the lvgl display driver for the first iteration
-  xTaskNotifyGive(xTaskGetCurrentTaskHandle());
-
   while (true) {
     app->Refresh();
   }
@@ -153,8 +153,37 @@ void DisplayApp::Process(void* instance) {
 void DisplayApp::InitHw() {
   brightnessController.Init();
   ApplyBrightness();
-  motorController.Init();
   lcd.Init();
+}
+
+TickType_t DisplayApp::CalculateSleepTime() {
+  TickType_t ticksElapsed = xTaskGetTickCount() - alwaysOnStartTime;
+  // Divide both the numerator and denominator by 8 to increase the number of ticks (frames) before the overflow tick is reached
+  TickType_t elapsedTarget = ROUNDED_DIV((configTICK_RATE_HZ / 8) * alwaysOnTickCount * alwaysOnRefreshPeriod, 1000 / 8);
+  // ROUNDED_DIV overflows when numerator + (denominator floordiv 2) > uint32 max
+  // in this case around 9 hours
+  constexpr TickType_t overflowTick = (UINT32_MAX - (1000 / 16)) / ((configTICK_RATE_HZ / 8) * alwaysOnRefreshPeriod);
+
+  // Assumptions
+
+  // Tick rate is multiple of 8
+  // Needed for division trick above
+  static_assert(configTICK_RATE_HZ % 8 == 0);
+
+  // Local tick count must always wraparound before the system tick count does
+  // As a static assert we can use 64 bit ints and therefore dodge overflows
+  // Always on overflow time (ms) < system tick overflow time (ms)
+  static_assert((uint64_t) overflowTick * (uint64_t) alwaysOnRefreshPeriod < (uint64_t) UINT32_MAX * 1000ULL / configTICK_RATE_HZ);
+
+  if (alwaysOnTickCount == overflowTick) {
+    alwaysOnTickCount = 0;
+    alwaysOnStartTime = xTaskGetTickCount();
+  }
+  if (elapsedTarget > ticksElapsed) {
+    return elapsedTarget - ticksElapsed;
+  } else {
+    return 0;
+  }
 }
 
 void DisplayApp::Refresh() {
@@ -180,21 +209,6 @@ void DisplayApp::Refresh() {
     LoadScreen(returnAppStack.Pop(), returnDirection);
   };
 
-  auto DimScreen = [this]() {
-    if (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
-      isDimmed = true;
-      brightnessController.Set(Controllers::BrightnessController::Levels::Low);
-    }
-  };
-
-  auto RestoreBrightness = [this]() {
-    if (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
-      isDimmed = false;
-      lv_disp_trig_activity(nullptr);
-      ApplyBrightness();
-    }
-  };
-
   auto IsPastDimTime = [this]() -> bool {
     return lv_disp_get_inactive_time(nullptr) >= pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000);
   };
@@ -206,7 +220,29 @@ void DisplayApp::Refresh() {
   TickType_t queueTimeout;
   switch (state) {
     case States::Idle:
-      queueTimeout = portMAX_DELAY;
+      if (settingsController.GetAlwaysOnDisplay()) {
+        if (!currentScreen->IsRunning()) {
+          LoadPreviousScreen();
+        }
+        // Check we've slept long enough
+        // Might not be true if the loop received an event
+        // If not true, then wait that amount of time
+        queueTimeout = CalculateSleepTime();
+        if (queueTimeout == 0) {
+          // Only advance the tick count when LVGL is done
+          // Otherwise keep running the task handler while it still has things to draw
+          // Note: under high graphics load, LVGL will always have more work to do
+          if (lv_task_handler() > 0) {
+            // Drop frames that we've missed if drawing/event handling took way longer than expected
+            while (queueTimeout == 0) {
+              alwaysOnTickCount += 1;
+              queueTimeout = CalculateSleepTime();
+            }
+          };
+        }
+      } else {
+        queueTimeout = portMAX_DELAY;
+      }
       break;
     case States::Running:
       if (!currentScreen->IsRunning()) {
@@ -216,14 +252,27 @@ void DisplayApp::Refresh() {
 
       if (!systemTask->IsSleepDisabled() && IsPastDimTime()) {
         if (!isDimmed) {
-          DimScreen();
+          isDimmed = true;
+          brightnessController.Set(Controllers::BrightnessController::Levels::Low);
         }
-        if (IsPastSleepTime()) {
-          systemTask->PushMessage(System::Messages::GoToSleep);
-          state = States::Idle;
+        if (IsPastSleepTime() && uxQueueMessagesWaiting(msgQueue) == 0) {
+          PushMessageToSystemTask(System::Messages::GoToSleep);
+          // Can't set state to Idle here, something may send
+          // DisableSleeping before this GoToSleep arrives
+          // Instead we check we have no messages queued before sending GoToSleep
+          // This works as the SystemTask is higher priority than DisplayApp
+          // As soon as we send GoToSleep, SystemTask pre-empts DisplayApp
+          // Whenever DisplayApp is running again, it is guaranteed that
+          // SystemTask has handled the message
+          // If it responded, we will have a GoToSleep waiting in the queue
+          // By checking that there are no messages in the queue, we avoid
+          // resending GoToSleep when we already have a response
+          // SystemTask is resilient to duplicate messages, this is an
+          // optimisation to reduce pressure on the message queues
         }
       } else if (isDimmed) {
-        RestoreBrightness();
+        isDimmed = false;
+        ApplyBrightness();
       }
       break;
     default:
@@ -234,30 +283,58 @@ void DisplayApp::Refresh() {
   Messages msg;
   if (xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE) {
     switch (msg) {
-      case Messages::DimScreen:
-        DimScreen();
-        break;
-      case Messages::RestoreBrightness:
-        RestoreBrightness();
-        break;
       case Messages::GoToSleep:
-        while (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
+        if (state != States::Running) {
+          break;
+        }
+        while (brightnessController.Level() != Controllers::BrightnessController::Levels::Low) {
           brightnessController.Lower();
           vTaskDelay(100);
         }
-        lcd.Sleep();
+        // Turn brightness down (or set to AlwaysOn mode)
+        if (settingsController.GetAlwaysOnDisplay()) {
+          brightnessController.Set(Controllers::BrightnessController::Levels::AlwaysOn);
+        } else {
+          brightnessController.Set(Controllers::BrightnessController::Levels::Off);
+        }
+        // Since the active screen is not really an app, go back to Clock.
+        if (currentApp == Apps::Launcher || currentApp == Apps::Notifications || currentApp == Apps::QuickSettings ||
+            currentApp == Apps::Settings) {
+          LoadScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
+          // Wait for the clock app to load before moving on.
+          while (!lv_task_handler()) {
+          };
+        }
+        // Turn LCD display off (or set to low power for AlwaysOn mode)
+        if (settingsController.GetAlwaysOnDisplay()) {
+          lcd.LowPowerOn();
+          // Record idle entry time
+          alwaysOnTickCount = 0;
+          alwaysOnStartTime = xTaskGetTickCount();
+        } else {
+          lcd.Sleep();
+        }
         PushMessageToSystemTask(Pinetime::System::Messages::OnDisplayTaskSleeping);
         state = States::Idle;
         break;
+      case Messages::NotifyDeviceActivity:
+        lv_disp_trig_activity(nullptr);
+        break;
       case Messages::GoToRunning:
-        lcd.Wakeup();
+        if (state == States::Running) {
+          break;
+        }
+        if (settingsController.GetAlwaysOnDisplay()) {
+          lcd.LowPowerOff();
+        } else {
+          lcd.Wakeup();
+        }
         lv_disp_trig_activity(nullptr);
         ApplyBrightness();
         state = States::Running;
         break;
       case Messages::UpdateBleConnection:
-        //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
-        //        Screens::Clock::BleConnectionStates::NotConnected);
+        // Only used for recovery firmware
         break;
       case Messages::NewNotification:
         LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
@@ -372,16 +449,11 @@ void DisplayApp::Refresh() {
       case Messages::BleRadioEnableToggle:
         PushMessageToSystemTask(System::Messages::BleRadioEnableToggle);
         break;
-      case Messages::UpdateDateTime:
-        // Added to remove warning
-        // What should happen here?
-        break;
       case Messages::Chime:
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(35);
         break;
       case Messages::OnChargingEvent:
-        RestoreBrightness();
         motorController.RunForDuration(15);
         break;
     }
@@ -510,7 +582,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::SettingWakeUp>(settingsController);
       break;
     case Apps::SettingDisplay:
-      currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);
+      currentScreen = std::make_unique<Screens::SettingDisplay>(settingsController);
       break;
     case Apps::SettingSteps:
       currentScreen = std::make_unique<Screens::SettingSteps>(settingsController);
@@ -538,7 +610,8 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
                                                             bleController,
                                                             watchdog,
                                                             motionController,
-                                                            touchPanel);
+                                                            touchPanel,
+                                                            spiNorFlash);
       break;
     case Apps::FlashLight:
       currentScreen = std::make_unique<Screens::FlashLight>(*systemTask, brightnessController);

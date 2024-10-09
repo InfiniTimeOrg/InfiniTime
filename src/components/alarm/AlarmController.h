@@ -30,47 +30,65 @@ namespace Pinetime {
   namespace Controllers {
     class AlarmController {
     public:
-      AlarmController(Controllers::DateTime& dateTimeController);
+      AlarmController(Controllers::DateTime& dateTimeController, Controllers::FS& fs);
 
       void Init(System::SystemTask* systemTask);
+      void SaveAlarm();
       void SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin);
       void ScheduleAlarm();
       void DisableAlarm();
       void SetOffAlarmNow();
       uint32_t SecondsToAlarm() const;
       void StopAlerting();
-      enum class AlarmState { Not_Set, Set, Alerting };
       enum class RecurType { None, Daily, Weekdays };
 
       uint8_t Hours() const {
-        return hours;
+        return alarm.hours;
       }
 
       uint8_t Minutes() const {
-        return minutes;
+        return alarm.minutes;
       }
 
-      AlarmState State() const {
-        return state;
+      bool IsAlerting() const {
+        return isAlerting;
+      }
+
+      bool IsEnabled() const {
+        return alarm.isEnabled;
       }
 
       RecurType Recurrence() const {
-        return recurrence;
+        return alarm.recurrence;
       }
 
-      void SetRecurrence(RecurType recurType) {
-        recurrence = recurType;
-      }
+      void SetRecurrence(RecurType recurrence);
 
     private:
+      // Versions 255 is reserved for now, so the version field can be made
+      // bigger, should it ever be needed.
+      static constexpr uint8_t alarmFormatVersion = 1;
+
+      struct AlarmSettings {
+        uint8_t version = alarmFormatVersion;
+        uint8_t hours = 7;
+        uint8_t minutes = 0;
+        RecurType recurrence = RecurType::None;
+        bool isEnabled = false;
+      };
+
+      bool isAlerting = false;
+      bool alarmChanged = false;
+
       Controllers::DateTime& dateTimeController;
+      Controllers::FS& fs;
       System::SystemTask* systemTask = nullptr;
       TimerHandle_t alarmTimer;
-      uint8_t hours = 7;
-      uint8_t minutes = 0;
+      AlarmSettings alarm;
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> alarmTime;
-      AlarmState state = AlarmState::Not_Set;
-      RecurType recurrence = RecurType::None;
+
+      void LoadSettingsFromFile();
+      void SaveSettingsToFile() const;
     };
   }
 }

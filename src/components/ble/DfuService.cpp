@@ -124,9 +124,11 @@ int DfuService::WritePacketHandler(uint16_t connectionHandle, os_mbuf* om) {
                    bootloaderSize,
                    applicationSize);
 
-      // wait until SystemTask has finished waking up all devices
-      while (systemTask.IsSleeping()) {
-        vTaskDelay(50); // 50ms
+      // Wait until SystemTask has disabled sleeping
+      // This isn't quite correct, as we don't actually know
+      // if BleFirmwareUpdateStarted has been received yet
+      while (!systemTask.IsSleepDisabled()) {
+        vTaskDelay(pdMS_TO_TICKS(5));
       }
 
       dfuImage.Erase();
