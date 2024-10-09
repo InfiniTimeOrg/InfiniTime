@@ -153,22 +153,22 @@ void Weather::Refresh() {
     if (optCurrentForecast) {
       std::tm localTime = *std::localtime(reinterpret_cast<const time_t*>(&optCurrentForecast->timestamp));
 
-      for (int i = 0; i < Controllers::SimpleWeatherService::MaxNbForecastDays; i++) {
-        int16_t minTemp = optCurrentForecast->days[i].maxTemperature.Celsius();
-        int16_t maxTemp = optCurrentForecast->days[i].minTemperature.Celsius();
+      for (int i = 0; i < optCurrentForecast->nbDays; i++) {
+        int16_t minTemp = optCurrentForecast->days[i]->maxTemperature.Celsius();
+        int16_t maxTemp = optCurrentForecast->days[i]->minTemperature.Celsius();
         if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
-          minTemp = optCurrentForecast->days[i].maxTemperature.Fahrenheit();
-          maxTemp = optCurrentForecast->days[i].minTemperature.Fahrenheit();
+          minTemp = optCurrentForecast->days[i]->maxTemperature.Fahrenheit();
+          maxTemp = optCurrentForecast->days[i]->minTemperature.Fahrenheit();
         }
-        lv_table_set_cell_type(forecast, 2, i, TemperatureStyle(optCurrentForecast->days[i].maxTemperature));
-        lv_table_set_cell_type(forecast, 3, i, TemperatureStyle(optCurrentForecast->days[i].minTemperature));
+        lv_table_set_cell_type(forecast, 2, i, TemperatureStyle(optCurrentForecast->days[i]->maxTemperature));
+        lv_table_set_cell_type(forecast, 3, i, TemperatureStyle(optCurrentForecast->days[i]->minTemperature));
         uint8_t wday = localTime.tm_wday + i + 1;
         if (wday > 7) {
           wday -= 7;
         }
         const char* dayOfWeek = Controllers::DateTime::DayOfWeekShortToStringLow(static_cast<Controllers::DateTime::Days>(wday));
         lv_table_set_cell_value(forecast, 0, i, dayOfWeek);
-        lv_table_set_cell_value(forecast, 1, i, Symbols::GetSymbol(optCurrentForecast->days[i].iconId));
+        lv_table_set_cell_value(forecast, 1, i, Symbols::GetSymbol(optCurrentForecast->days[i]->iconId));
         // Pad cells based on the largest number of digits on each column
         char maxPadding[3] = "  ";
         char minPadding[3] = "  ";
