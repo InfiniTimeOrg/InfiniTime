@@ -1,4 +1,5 @@
 #include "displayapp/screens/Weather.h"
+#include "displayapp/WeatherHelper.h"
 #include <lvgl/lvgl.h>
 #include "components/ble/SimpleWeatherService.h"
 #include "components/datetime/DateTimeController.h"
@@ -8,34 +9,6 @@
 #include "displayapp/InfiniTimeTheme.h"
 
 using namespace Pinetime::Applications::Screens;
-
-namespace {
-  lv_color_t TemperatureColor(int16_t temperature) {
-    if (temperature <= 0) { // freezing
-      return Colors::blue;
-    } else if (temperature <= 400) { // ice
-      return LV_COLOR_CYAN;
-    } else if (temperature >= 2700) { // hot
-      return Colors::deepOrange;
-    }
-    return Colors::orange; // normal
-  }
-
-  uint8_t TemperatureStyle(int16_t temperature) {
-    if (temperature <= 0) { // freezing
-      return LV_TABLE_PART_CELL3;
-    } else if (temperature <= 400) { // ice
-      return LV_TABLE_PART_CELL4;
-    } else if (temperature >= 2700) { // hot
-      return LV_TABLE_PART_CELL6;
-    }
-    return LV_TABLE_PART_CELL5; // normal
-  }
-
-  int16_t RoundTemperature(int16_t temp) {
-    return temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
-  }
-}
 
 Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleWeatherService& weatherService)
   : settingsController {settingsController}, weatherService {weatherService} {
@@ -123,7 +96,7 @@ void Weather::Refresh() {
       int16_t temp = optCurrentWeather->temperature;
       int16_t minTemp = optCurrentWeather->minTemperature;
       int16_t maxTemp = optCurrentWeather->maxTemperature;
-      lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, TemperatureColor(temp));
+      lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, WeatherHelper::TemperatureColor(temp));
       char tempUnit = 'C';
       if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
         temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
@@ -133,9 +106,11 @@ void Weather::Refresh() {
       }
       lv_label_set_text(icon, Symbols::GetSymbol(optCurrentWeather->iconId));
       lv_label_set_text(condition, Symbols::GetCondition(optCurrentWeather->iconId));
-      lv_label_set_text_fmt(temperature, "%d°%c", RoundTemperature(temp), tempUnit);
-      lv_label_set_text_fmt(minTemperature, "%d°", RoundTemperature(minTemp));
-      lv_label_set_text_fmt(maxTemperature, "%d°", RoundTemperature(maxTemp));
+      lv_label_set_text_fmt(temperature, "%d°%c", WeatherHelper::RoundTemperature(temp), tempUnit);
+
+      lv_label_set_text_fmt(minTemperature, "%d°", WeatherHelper::RoundTemperature(minTemp));
+      lv_label_set_text_fmt(maxTemperature, "%d°", WeatherHelper::RoundTemperature(maxTemp));
+      
     } else {
       lv_label_set_text(icon, "");
       lv_label_set_text(condition, "");
@@ -155,8 +130,14 @@ void Weather::Refresh() {
       for (int i = 0; i < Controllers::SimpleWeatherService::MaxNbForecastDays; i++) {
         int16_t maxTemp = optCurrentForecast->days[i].maxTemperature;
         int16_t minTemp = optCurrentForecast->days[i].minTemperature;
-        lv_table_set_cell_type(forecast, 2, i, TemperatureStyle(maxTemp));
-        lv_table_set_cell_type(forecast, 3, i, TemperatureStyle(minTemp));
+        
+        auto color = WeatherHelper::TemperatureColor(maxTemp);
+        lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL5, LV_STATE_DEFAULT, color);
+        lv_table_set_cell_type(forecast, 2, i, LV_TABLE_PART_CELL5);
+        
+        color = WeatherHelper::TemperatureColor(minTemp);
+        lv_obj_set_style_local_text_color(forecast, LV_TABLE_PART_CELL6, LV_STATE_DEFAULT, color);
+        lv_table_set_cell_type(forecast, 3, i, LV_TABLE_PART_CELL6);
         if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
           maxTemp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(maxTemp);
           minTemp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(minTemp);
@@ -165,8 +146,8 @@ void Weather::Refresh() {
         if (wday > 7) {
           wday -= 7;
         }
-        maxTemp = RoundTemperature(maxTemp);
-        minTemp = RoundTemperature(minTemp);
+        maxTemp = WeatherHelper::RoundTemperature(maxTemp);
+        minTemp = WeatherHelper::RoundTemperature(minTemp);
         const char* dayOfWeek = Controllers::DateTime::DayOfWeekShortToStringLow(static_cast<Controllers::DateTime::Days>(wday));
         lv_table_set_cell_value(forecast, 0, i, dayOfWeek);
         lv_table_set_cell_value(forecast, 1, i, Symbols::GetSymbol(optCurrentForecast->days[i].iconId));
@@ -181,7 +162,11 @@ void Weather::Refresh() {
           maxPadding[0] = '\0';
           minPadding[diff] = '\0';
         }
+        //auto color = WeatherHelper::TemperatureColor(maxTemp);
+        //lv_obj_set_style_local_text_color(forecast, 2, i, color);
         lv_table_set_cell_value_fmt(forecast, 2, i, "%s%d", maxPadding, maxTemp);
+        //color = WeatherHelper::TemperatureColor(minTemp);
+        //lv_obj_set_style_local_text_color(forecast, 3, i, color);
         lv_table_set_cell_value_fmt(forecast, 3, i, "%s%d", minPadding, minTemp);
       }
     } else {
