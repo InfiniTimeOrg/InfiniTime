@@ -14,17 +14,18 @@ namespace Pinetime {
 
       class SettingDisplay : public Screen {
       public:
-        SettingDisplay(DisplayApp* app, Pinetime::Controllers::Settings& settingsController);
+        SettingDisplay(Pinetime::Controllers::Settings& settingsController);
         ~SettingDisplay() override;
 
         void UpdateSelected(lv_obj_t* object, lv_event_t event);
+        void ToggleAlwaysOn();
 
       private:
-        DisplayApp* app;
         static constexpr std::array<uint16_t, 6> options = {5000, 7000, 10000, 15000, 20000, 30000};
 
         Controllers::Settings& settingsController;
         lv_obj_t* cbOption[options.size()];
+        lv_obj_t* alwaysOnCheckbox;
       };
     }
   }
