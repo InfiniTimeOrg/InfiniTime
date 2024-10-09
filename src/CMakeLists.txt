@@ -367,7 +367,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Screen.cpp
         displayapp/screens/Tile.cpp
         displayapp/screens/InfiniPaint.cpp
-        #displayapp/screens/Paddle.cpp
+        displayapp/screens/Paddle.cpp
         displayapp/screens/StopWatch.cpp
         displayapp/screens/BatteryIcon.cpp
         displayapp/screens/BleIcon.cpp
@@ -376,7 +376,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Label.cpp
         displayapp/screens/FirmwareUpdate.cpp
         displayapp/screens/Music.cpp
-        #displayapp/screens/Navigation.cpp
+        displayapp/screens/Navigation.cpp
         displayapp/screens/Metronome.cpp
         displayapp/screens/Motion.cpp
         displayapp/screens/Weather.cpp
@@ -458,7 +458,7 @@ list(APPEND SOURCE_FILES
         components/ble/AlertNotificationService.cpp
         components/ble/MusicService.cpp
         components/ble/SimpleWeatherService.cpp
-        #components/ble/NavigationService.cpp
+        components/ble/NavigationService.cpp
         components/ble/BatteryInformationService.cpp
         components/ble/FSService.cpp
         components/ble/ImmediateAlertService.cpp
@@ -597,7 +597,7 @@ set(INCLUDE_FILES
         displayapp/screens/Tile.h
         displayapp/screens/InfiniPaint.h
         displayapp/screens/StopWatch.h
-        #displayapp/screens/Paddle.h
+        displayapp/screens/Paddle.h
         displayapp/screens/BatteryIcon.h
         displayapp/screens/BleIcon.h
         displayapp/screens/NotificationIcon.h

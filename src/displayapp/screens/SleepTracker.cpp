@@ -52,7 +52,7 @@ SleepTracker::SleepTracker(Controllers::HeartRateController& heartRateController
 
   // Create the refresh task
   mainRefreshTask = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
-  hrRefreshTask = lv_task_create(BpmDataCallback, 180000, LV_TASK_PRIO_MID, this);
+  hrRefreshTask = lv_task_create(BpmDataCallback, 3000, LV_TASK_PRIO_MID, this);
 
   // Create the clear data button
   lv_obj_t* btnClear = lv_btn_create(lv_scr_act(), nullptr);
@@ -263,6 +263,7 @@ void SleepTracker::WriteDataCSV(const char* fileName, const std::tuple<int, int,
       // Handle error
       NRF_LOG_INFO("Error writing to file: %d", err);
       fsController.FileClose(&file);
+
       return;
     }
   }
