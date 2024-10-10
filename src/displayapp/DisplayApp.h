@@ -49,7 +49,7 @@ namespace Pinetime {
   namespace Applications {
     class DisplayApp {
     public:
-      enum class States { Idle, Running };
+      enum class States { Idle, Running, AOD };
       enum class FullRefreshDirections { None, Up, Down, Left, Right, LeftAnim, RightAnim };
 
       DisplayApp(Drivers::St7789& lcd,
@@ -139,7 +139,7 @@ namespace Pinetime {
       bool isDimmed = false;
 
       TickType_t CalculateSleepTime();
-      TickType_t alwaysOnTickCount;
+      TickType_t alwaysOnFrameCount;
       TickType_t alwaysOnStartTime;
       // If this is to be changed, make sure the actual always on refresh rate is changed
       // by configuring the LCD refresh timings
