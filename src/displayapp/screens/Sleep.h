@@ -14,10 +14,10 @@
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
-      class SleepTracker : public Screen {
+      class Sleep : public Screen {
       public:
-        SleepTracker(Controllers::HeartRateController& HeartRateController, Controllers::DateTime& DateTimeController, Controllers::FS& fsController, System::SystemTask& systemTask);
-        ~SleepTracker() override;
+        Sleep(Controllers::HeartRateController& HeartRateController, Controllers::DateTime& DateTimeController, Controllers::FS& fsController, System::SystemTask& systemTask);
+        ~Sleep() override;
 
         void Refresh() override;
 
@@ -58,11 +58,11 @@ namespace Pinetime {
     }
     
     template <>
-    struct AppTraits<Apps::SleepTracker> {
-      static constexpr Apps app = Apps::SleepTracker;
+    struct AppTraits<Apps::Sleep> {
+      static constexpr Apps app = Apps::Sleep;
       static constexpr const char* icon = Screens::Symbols::bed;
       static Screens::Screen* Create(AppControllers& controllers) {
-        return new Screens::SleepTracker(controllers.heartRateController, controllers.dateTimeController, controllers.filesystem, *controllers.systemTask);
+        return new Screens::Sleep(controllers.heartRateController, controllers.dateTimeController, controllers.filesystem, *controllers.systemTask);
       }
     };
   }

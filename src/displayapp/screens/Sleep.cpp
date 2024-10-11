@@ -1,4 +1,4 @@
-#include "displayapp/screens/SleepTracker.h"
+#include "displayapp/screens/Sleep.h"
 
 #include <lvgl/lvgl.h>
 #include <components/heartrate/HeartRateController.h>
@@ -14,33 +14,33 @@ using namespace Pinetime::Applications::Screens;
 namespace {
 
   void BpmDataCallback(lv_task_t* task) {
-    auto* screen = static_cast<SleepTracker*>(task->user_data);
+    auto* screen = static_cast<Sleep*>(task->user_data);
     screen->GetBPM();
   }
 
   void ClearDataCallback(lv_obj_t* btn, lv_event_t event) {
     if (event == LV_EVENT_CLICKED) {
-      auto* screen = static_cast<SleepTracker*>(lv_obj_get_user_data(btn));
-      screen->ClearDataCSV("SleepTracker_Data.csv");
+      auto* screen = static_cast<Sleep*>(lv_obj_get_user_data(btn));
+      screen->ClearDataCSV("Sleep_Data.csv");
     }
   }
 
   // void GetSleepInfoCallback(lv_obj_t* btn, lv_event_t event) {
   //   if (event == LV_EVENT_CLICKED) {
-  //     auto* screen = static_cast<SleepTracker*>(lv_obj_get_user_data(btn));
+  //     auto* screen = static_cast<Sleep*>(lv_obj_get_user_data(btn));
   //     screen->GetSleepInfo(screen->ReadDataCSV("SleepTracker_Data.csv"));
   //   }
   // }
 
 }
 
-SleepTracker::SleepTracker(Controllers::HeartRateController& heartRateController, Controllers::DateTime& dateTimeController, Controllers::FS& fsController, System::SystemTask& systemTask)
+Sleep::Sleep(Controllers::HeartRateController& heartRateController, Controllers::DateTime& dateTimeController, Controllers::FS& fsController, System::SystemTask& systemTask)
   : heartRateController {heartRateController}, dateTimeController {dateTimeController}, fsController {fsController}, wakeLock(systemTask) {
 
   wakeLock.Lock();
 
   constexpr uint8_t btnWidth = 115;
-  constexpr uint8_t btnHeight = 80;
+  constexpr uint8_t btnHeight = 45;
   
   lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(title, "Sleep Tracker");
@@ -81,7 +81,7 @@ SleepTracker::SleepTracker(Controllers::HeartRateController& heartRateController
   // NRF_LOG_INFO("-------------------------------");
 }
 
-SleepTracker::~SleepTracker() {
+Sleep::~Sleep() {
   wakeLock.Release();
 
   lv_obj_clean(lv_scr_act());
@@ -90,17 +90,17 @@ SleepTracker::~SleepTracker() {
 }
 
 // This function is called periodically from the refresh task
-void SleepTracker::Refresh() {
+void Sleep::Refresh() {
   // Get the current heart rate
 }
 
 // Convert time to minutes
-float SleepTracker::ConvertToMinutes(int hours, int minutes, int seconds) const {
+float Sleep::ConvertToMinutes(int hours, int minutes, int seconds) const {
   return hours * 60 + minutes + seconds / 60.0f;
 }
 
 // Get the moving average of BPM Values
-// std::vector<float> SleepTracker::MovingAverage(const std::vector<int>& bpmData, int windowSize) const {
+// std::vector<float> Sleep::MovingAverage(const std::vector<int>& bpmData, int windowSize) const {
 //   std::vector<float> smoothedBpm;
 //   const int n = bpmData.size();
     
@@ -116,7 +116,7 @@ float SleepTracker::ConvertToMinutes(int hours, int minutes, int seconds) const 
 // }
 
 // Detect the sleep regions
-// std::vector<std::pair<float, float>> SleepTracker::DetectSleepRegions(const std::vector<float>& bpmData, const std::vector<float>& time, float threshold) const {
+// std::vector<std::pair<float, float>> Sleep::DetectSleepRegions(const std::vector<float>& bpmData, const std::vector<float>& time, float threshold) const {
 //   std::vector<std::pair<float, float>> sleep_regions;
 //   float start_time = -1;
 //   bool in_sleep = false;
@@ -145,7 +145,7 @@ float SleepTracker::ConvertToMinutes(int hours, int minutes, int seconds) const 
 // }
 
 // // Get Sleep Info
-// void SleepTracker::GetSleepInfo(const std::vector<std::tuple<int, int, int, int, int>>& data) const {
+// void Sleep::GetSleepInfo(const std::vector<std::tuple<int, int, int, int, int>>& data) const {
 //   std::vector<float> time;
 //   std::vector<int> bpm;
     
@@ -214,7 +214,7 @@ float SleepTracker::ConvertToMinutes(int hours, int minutes, int seconds) const 
 //   NRF_LOG_INFO("Sleep info written to SleepTracker_SleepInfo.csv");
 // }
 
-void SleepTracker::GetBPM() {
+void Sleep::GetBPM() {
   // Get the heart rate from the controller
   prevBpm = bpm;
   bpm = heartRateController.HeartRate();
@@ -244,7 +244,7 @@ void SleepTracker::GetBPM() {
 * Write data to a CSV file
 * Format: Time,BPM,Motion
 */
-void SleepTracker::WriteDataCSV(const char* fileName, const std::tuple<int, int, int, int, int>* data, int dataSize) const {
+void Sleep::WriteDataCSV(const char* fileName, const std::tuple<int, int, int, int, int>* data, int dataSize) const {
   lfs_file_t file;
   int err = fsController.FileOpen(&file, fileName, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND);
   if (err < 0) {
@@ -272,7 +272,7 @@ void SleepTracker::WriteDataCSV(const char* fileName, const std::tuple<int, int,
 }
 
 // Read data from CSV
-// std::vector<std::tuple<int, int, int, int, int>> SleepTracker::ReadDataCSV(const char* filename) const {
+// std::vector<std::tuple<int, int, int, int, int>> Sleep::ReadDataCSV(const char* filename) const {
 //   lfs_file_t file;
 //   int err = fsController.FileOpen(&file, filename, LFS_O_RDONLY);
 //   if (err < 0) {
@@ -310,7 +310,7 @@ void SleepTracker::WriteDataCSV(const char* fileName, const std::tuple<int, int,
 // }
 
 // Clear data in CSV
-void SleepTracker::ClearDataCSV(const char* filename) const {
+void Sleep::ClearDataCSV(const char* filename) const {
   lfs_file_t file;
   int err = fsController.FileOpen(&file, filename, LFS_O_WRONLY | LFS_O_TRUNC);
   if (err < 0) {

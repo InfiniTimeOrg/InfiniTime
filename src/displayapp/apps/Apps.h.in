@@ -22,7 +22,7 @@ namespace Pinetime {
       Paddle,
       Twos,
       HeartRate,
-      SleepTracker,
+      Sleep,
       Navigation,
       StopWatch,
       Metronome,
