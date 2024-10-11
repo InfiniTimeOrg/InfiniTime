@@ -180,6 +180,7 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
 
 extern int mallocFailedCount;
 extern int stackOverflowCount;
+
 std::unique_ptr<Screen> SystemInfo::CreateScreen3() {
   lv_mem_monitor_t mon;
   lv_mem_monitor(&mon);

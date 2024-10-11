@@ -93,7 +93,7 @@ namespace Pinetime {
 
       static Screens::Screen* Create(AppControllers& controllers) {
         return new Screens::Music(*controllers.musicService);
-      };
+      }
     };
   }
 }
