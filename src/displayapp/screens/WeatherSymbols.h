@@ -6,7 +6,7 @@ namespace Pinetime {
   namespace Applications {
     namespace Screens {
       namespace Symbols {
-        const char* GetSymbol(const Pinetime::Controllers::SimpleWeatherService::Icons icon);
+        const char* GetSymbol(const Pinetime::Controllers::SimpleWeatherService::Icons icon, const bool isNight);
         const char* GetCondition(const Pinetime::Controllers::SimpleWeatherService::Icons icon);
       }
     }

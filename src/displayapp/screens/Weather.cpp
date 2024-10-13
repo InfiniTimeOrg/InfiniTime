@@ -131,7 +131,7 @@ void Weather::Refresh() {
         maxTemp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(maxTemp);
         tempUnit = 'F';
       }
-      lv_label_set_text(icon, Symbols::GetSymbol(optCurrentWeather->iconId));
+      lv_label_set_text(icon, Symbols::GetSymbol(optCurrentWeather->iconId, weatherService.IsNight()));
       lv_label_set_text(condition, Symbols::GetCondition(optCurrentWeather->iconId));
       lv_label_set_text_fmt(temperature, "%d°%c", RoundTemperature(temp), tempUnit);
       lv_label_set_text_fmt(minTemperature, "%d°", RoundTemperature(minTemp));
@@ -169,7 +169,7 @@ void Weather::Refresh() {
         minTemp = RoundTemperature(minTemp);
         const char* dayOfWeek = Controllers::DateTime::DayOfWeekShortToStringLow(static_cast<Controllers::DateTime::Days>(wday));
         lv_table_set_cell_value(forecast, 0, i, dayOfWeek);
-        lv_table_set_cell_value(forecast, 1, i, Symbols::GetSymbol(optCurrentForecast->days[i].iconId));
+        lv_table_set_cell_value(forecast, 1, i, Symbols::GetSymbol(optCurrentForecast->days[i].iconId, false));
         // Pad cells based on the largest number of digits on each column
         char maxPadding[3] = "  ";
         char minPadding[3] = "  ";
