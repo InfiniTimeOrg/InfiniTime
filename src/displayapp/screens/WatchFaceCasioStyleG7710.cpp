@@ -331,43 +331,6 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_obj_realign(stepValue);
     lv_obj_realign(stepIcon);
   }
-  alarmState = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
-  // sets the icon as bell or barred bell
-  lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(alarmState));
-  //displays the time of the alarm or nothing if the alarm is not set
-  if (alarmState) {
-  uint8_t alarmHours = alarmController.Hours();
-  uint8_t alarmMinutes = alarmController.Minutes();
-  //handles the am pm format.
-  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-  char ampmChar[3] = "AM";
-  if (alarmHours == 0) {
-    alarmHours = 12;
-    } else if (alarmHours == 12) {
-      ampmChar[0]='P';
-    } else if (alarmHours > 12) {
-    alarmHours = alarmHours - 12;
-    ampmChar[0]='P';
-  }
-  lv_label_set_text(labelTimeAmPmAlarm, ampmChar);
-//  lv_obj_set_style_local_text_font(labelTimeAmPmAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
-  lv_obj_align(labelTimeAmPmAlarm, labelAlarm, LV_ALIGN_OUT_RIGHT_MID, 3, 0);
-  }
-
-  lv_label_set_text_fmt(labelAlarm, "%02d:%02d", alarmHours, alarmMinutes);
-
-  lv_obj_align(alarmIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
-  lv_obj_align(labelAlarm, alarmIcon, LV_ALIGN_OUT_RIGHT_MID, 3, 0);
-
-  }
-  else {
-  lv_label_set_text_static(labelAlarm, Symbols::none);
-  lv_obj_align(alarmIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
-  lv_obj_align(labelAlarm, alarmIcon, LV_ALIGN_OUT_RIGHT_MID, 3, 0);
-  }
-
-}
-
 bool WatchFaceCasioStyleG7710::IsAvailable(Pinetime::Controllers::FS& filesystem) {
   lfs_file file = {};
 

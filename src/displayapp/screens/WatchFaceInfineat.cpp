@@ -509,7 +509,7 @@ void WatchFaceInfineat::Refresh() {
   }
 
   if (settingsController.GetInfineatShowAlarmStatus()) {
-    isAlarmSet = alarmController.State()==Pinetime::Controllers::AlarmController::AlarmState::Set;
+    isAlarmSet = alarmController.IsEnabled()==true;
     // sets the icon as bell or barred bell
     lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(isAlarmSet.Get()));
     //displays the time of the alarm or nothing if the alarm is not set
