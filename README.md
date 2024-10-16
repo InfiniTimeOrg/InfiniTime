@@ -1,8 +1,40 @@
-# [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
+# [InfiniTime](https://github.com/Eve1374/InfiniTime)
 
 ![InfiniTime logo](doc/logo/infinitime-logo-small.jpg "InfiniTime Logo")
 
 Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devices/pinetime/) with many features, written in modern C++.
+
+## Quick notes on this InfiniTime version
+
+- I copied the source code from this git repo : [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
+- I added a watch face "WatchFaceMeow" whose main features are to be pink and have info about the alarm status
+- I stored the compile commands in scripts compile.sh to run from InfiniTime/ folder, and make_pine_mcu.sh to build the image must be run from InfiniTime/build/ (compile.sh copies make_pine_mcu.sh to build/ 
+- The file to flash to the pinetime is InfiniTime/build/pinetime-mcuboot-app-dfu-1.14.0.zip : I didn't change the version compared to the one I downloaded from [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime) so make sure not to keep keep a copy of it
+
+Here are pictures with and without alarm set :
+
+
+Original repo : [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
+
+- [Getting started with InfiniTime](doc/gettingStarted/gettingStarted-1.0.md)
+- [Updating the software](doc/gettingStarted/updating-software.md)
+- [About the firmware and bootloader](doc/gettingStarted/about-software.md)
+- [Available apps](doc/gettingStarted/Applications.md)
+- [Available watch faces](/doc/gettingStarted/Watchfaces.md)
+- [PineTimeStyle Watch face](https://pine64.org/documentation/PineTime/Watchfaces/PineTimeStyle)
+  - [Weather integration](https://pine64.org/documentation/PineTime/Software/InfiniTime_weather/)
+
+## Welcome to my InfiniTime fork ?!
+
+Branches :
+
+- main : shows this doc
+- alarm-status-on-infineat : shows the alarm status on infineat, can be enabled or disabled from the settigns menu that is updated accordingly :
+
+![Infineat settings](doc/ui/infineat_settings.png "Infineat settings")
+
+- my-custom-infinitime : branch were I put things that I want for myself, like a watchface with paw instead of shoe icon for steps counter :
+
 
 ## New to InfiniTime?
 
@@ -88,3 +120,4 @@ Here are some people I would like to highlight:
 - [Atc1441](https://github.com/atc1441/): He works on an Arduino based firmware for the Pinetime and many other smartwatches based on similar hardware. He was of great help when I was implementing support for the BMA421 motion sensor and I²C driver.
 - [Koen](https://github.com/bosmoment): He’s working on a firmware based on RiotOS. He integrated similar libs as me: NimBLE, LittleVGL,… His help was invaluable too!
 - [Lup Yuen Lee](https://github.com/lupyuen): He is everywhere: he works on a Rust firmware, builds a MCUBoot based bootloader for the Pinetime, designs a Flutter based companion app for smartphones and writes a lot of articles about the Pinetime!
+>>>>>>>>> Temporary merge branch 2
