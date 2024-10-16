@@ -479,6 +479,7 @@ list(APPEND SOURCE_FILES
 
         systemtask/SystemTask.cpp
         systemtask/SystemMonitor.cpp
+        systemtask/WakeLock.cpp
         drivers/TwiMaster.cpp
 
         heartratetask/HeartRateTask.cpp
@@ -543,6 +544,7 @@ list(APPEND RECOVERY_SOURCE_FILES
 
         systemtask/SystemTask.cpp
         systemtask/SystemMonitor.cpp
+        systemtask/WakeLock.cpp
         drivers/TwiMaster.cpp
         components/rle/RleDecoder.cpp
         components/heartrate/HeartRateController.cpp
@@ -661,6 +663,7 @@ set(INCLUDE_FILES
         displayapp/InfiniTimeTheme.h
         systemtask/SystemTask.h
         systemtask/SystemMonitor.h
+        systemtask/WakeLock.h
         displayapp/screens/Symbols.h
         drivers/TwiMaster.h
         heartratetask/HeartRateTask.h
@@ -861,7 +864,6 @@ target_compile_options(nrf-sdk PRIVATE
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        -O3
         )
 
 # NimBLE

@@ -209,21 +209,6 @@ void DisplayApp::Refresh() {
     LoadScreen(returnAppStack.Pop(), returnDirection);
   };
 
-  auto DimScreen = [this]() {
-    if (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
-      isDimmed = true;
-      brightnessController.Set(Controllers::BrightnessController::Levels::Low);
-    }
-  };
-
-  auto RestoreBrightness = [this]() {
-    if (brightnessController.Level() != Controllers::BrightnessController::Levels::Off) {
-      isDimmed = false;
-      lv_disp_trig_activity(nullptr);
-      ApplyBrightness();
-    }
-  };
-
   auto IsPastDimTime = [this]() -> bool {
     return lv_disp_get_inactive_time(nullptr) >= pdMS_TO_TICKS(settingsController.GetScreenTimeOut() - 2000);
   };
@@ -267,14 +252,27 @@ void DisplayApp::Refresh() {
 
       if (!systemTask->IsSleepDisabled() && IsPastDimTime()) {
         if (!isDimmed) {
-          DimScreen();
+          isDimmed = true;
+          brightnessController.Set(Controllers::BrightnessController::Levels::Low);
         }
-        if (IsPastSleepTime()) {
-          systemTask->PushMessage(System::Messages::GoToSleep);
-          state = States::Idle;
+        if (IsPastSleepTime() && uxQueueMessagesWaiting(msgQueue) == 0) {
+          PushMessageToSystemTask(System::Messages::GoToSleep);
+          // Can't set state to Idle here, something may send
+          // DisableSleeping before this GoToSleep arrives
+          // Instead we check we have no messages queued before sending GoToSleep
+          // This works as the SystemTask is higher priority than DisplayApp
+          // As soon as we send GoToSleep, SystemTask pre-empts DisplayApp
+          // Whenever DisplayApp is running again, it is guaranteed that
+          // SystemTask has handled the message
+          // If it responded, we will have a GoToSleep waiting in the queue
+          // By checking that there are no messages in the queue, we avoid
+          // resending GoToSleep when we already have a response
+          // SystemTask is resilient to duplicate messages, this is an
+          // optimisation to reduce pressure on the message queues
         }
       } else if (isDimmed) {
-        RestoreBrightness();
+        isDimmed = false;
+        ApplyBrightness();
       }
       break;
     default:
@@ -285,10 +283,10 @@ void DisplayApp::Refresh() {
   Messages msg;
   if (xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE) {
     switch (msg) {
-      case Messages::DimScreen:
-        DimScreen();
-        break;
       case Messages::GoToSleep:
+        if (state != States::Running) {
+          break;
+        }
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Low) {
           brightnessController.Lower();
           vTaskDelay(100);
@@ -323,6 +321,9 @@ void DisplayApp::Refresh() {
         lv_disp_trig_activity(nullptr);
         break;
       case Messages::GoToRunning:
+        if (state == States::Running) {
+          break;
+        }
         if (settingsController.GetAlwaysOnDisplay()) {
           lcd.LowPowerOff();
         } else {
@@ -333,8 +334,7 @@ void DisplayApp::Refresh() {
         state = States::Running;
         break;
       case Messages::UpdateBleConnection:
-        //        clockScreen.SetBleConnectionState(bleController.IsConnected() ? Screens::Clock::BleConnectionStates::Connected :
-        //        Screens::Clock::BleConnectionStates::NotConnected);
+        // Only used for recovery firmware
         break;
       case Messages::NewNotification:
         LoadNewScreen(Apps::NotificationsPreview, DisplayApp::FullRefreshDirections::Down);
@@ -449,16 +449,11 @@ void DisplayApp::Refresh() {
       case Messages::BleRadioEnableToggle:
         PushMessageToSystemTask(System::Messages::BleRadioEnableToggle);
         break;
-      case Messages::UpdateDateTime:
-        // Added to remove warning
-        // What should happen here?
-        break;
       case Messages::Chime:
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(35);
         break;
       case Messages::OnChargingEvent:
-        RestoreBrightness();
         motorController.RunForDuration(15);
         break;
     }
@@ -587,7 +582,7 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
       currentScreen = std::make_unique<Screens::SettingWakeUp>(settingsController);
       break;
     case Apps::SettingDisplay:
-      currentScreen = std::make_unique<Screens::SettingDisplay>(this, settingsController);
+      currentScreen = std::make_unique<Screens::SettingDisplay>(settingsController);
       break;
     case Apps::SettingSteps:
       currentScreen = std::make_unique<Screens::SettingSteps>(settingsController);

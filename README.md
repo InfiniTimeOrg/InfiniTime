@@ -13,13 +13,14 @@ Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devic
 
 Here are pictures with and without alarm set :
 
-![Meow alarm set](doc/ui/meow_alarmset.png "Meow WatchFace, alarm set") ![Meow alarm not set](doc/ui/meow_alarmnotset.png "Meow WatchFace, alarm not set")
 
 Original repo : [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
 
 - [Getting started with InfiniTime](doc/gettingStarted/gettingStarted-1.0.md)
 - [Updating the software](doc/gettingStarted/updating-software.md)
 - [About the firmware and bootloader](doc/gettingStarted/about-software.md)
+- [Available apps](doc/gettingStarted/Applications.md)
+- [Available watch faces](/doc/gettingStarted/Watchfaces.md)
 - [PineTimeStyle Watch face](https://pine64.org/documentation/PineTime/Watchfaces/PineTimeStyle)
   - [Weather integration](https://pine64.org/documentation/PineTime/Software/InfiniTime_weather/)
 
@@ -34,7 +35,6 @@ Branches :
 
 - my-custom-infinitime : branch were I put things that I want for myself, like a watchface with paw instead of shoe icon for steps counter :
 
-![Meow watchface](doc/ui/meow_alarmset.png "Meow watchface")
 
 ## New to InfiniTime?
 
@@ -120,3 +120,4 @@ Here are some people I would like to highlight:
 - [Atc1441](https://github.com/atc1441/): He works on an Arduino based firmware for the Pinetime and many other smartwatches based on similar hardware. He was of great help when I was implementing support for the BMA421 motion sensor and I²C driver.
 - [Koen](https://github.com/bosmoment): He’s working on a firmware based on RiotOS. He integrated similar libs as me: NimBLE, LittleVGL,… His help was invaluable too!
 - [Lup Yuen Lee](https://github.com/lupyuen): He is everywhere: he works on a Rust firmware, builds a MCUBoot based bootloader for the Pinetime, designs a Flutter based companion app for smartphones and writes a lot of articles about the Pinetime!
+>>>>>>>>> Temporary merge branch 2

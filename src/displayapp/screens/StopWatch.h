@@ -7,6 +7,7 @@
 #include "portmacro_cmsis.h"
 
 #include "systemtask/SystemTask.h"
+#include "systemtask/WakeLock.h"
 #include "displayapp/apps/Apps.h"
 #include "displayapp/Controllers.h"
 #include "Symbols.h"
@@ -43,7 +44,7 @@ namespace Pinetime {
         void Start();
         void Pause();
 
-        Pinetime::System::SystemTask& systemTask;
+        Pinetime::System::WakeLock wakeLock;
         States currentState = States::Init;
         TickType_t startTime;
         TickType_t oldTimeElapsed = 0;
