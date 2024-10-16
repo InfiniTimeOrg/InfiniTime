@@ -124,6 +124,18 @@ namespace Pinetime {
         return settings.watchFaceInfineat.showSideCover;
       };
 
+      void SetInfineatShowAlarmStatus(bool show) {
+        if (show != settings.watchFaceInfineat.showAlarmStatus) {
+          settings.watchFaceInfineat.showAlarmStatus = show;
+          settingsChanged = true;
+        }
+      };
+
+      bool GetInfineatShowAlarmStatus() const {
+        return settings.watchFaceInfineat.showAlarmStatus;
+      };
+
+
       void SetInfineatColorIndex(int index) {
         if (index != settings.watchFaceInfineat.colorIndex) {
           settings.watchFaceInfineat.colorIndex = index;
@@ -153,13 +165,6 @@ namespace Pinetime {
 
       PTSWeather GetPTSWeather() const {
         return settings.PTS.weatherEnable;
-      };
-
-      void SetInfineatShowAlarmStatus(bool show) {
-        if (show != settings.watchFaceInfineat.showAlarmStatus) {
-          settings.watchFaceInfineat.showAlarmStatus = show;
-          settingsChanged = true;
-        }
       };
 
       void SetAppMenu(uint8_t menu) {
