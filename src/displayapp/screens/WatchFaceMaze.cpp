@@ -131,9 +131,11 @@ WatchFaceMaze::~WatchFaceMaze() {
 }
 
 void WatchFaceMaze::Refresh() {
-  currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
-  // refresh time if either a minute has passed, or maze is still WIP
-  if (pausedGeneration || currentDateTime.IsUpdated()) {
+  auto time = dateTimeController.CurrentDateTime();
+  currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(time);
+  // refresh time if either a minute has passed, or loss timer expired.
+  // if minute passes while lossrefresh is required, ignore it. loss refresh timer will handle it.
+  if (pausedGeneration || (!lossRefreshRequired && currentDateTime.IsUpdated()) || (lossRefreshRequired && time > lossTargetRefreshTime)) {
     // if generation wasn't paused (i.e. doing a ground up maze gen), set everything up
     if (!pausedGeneration) {
       prng.seed(currentDateTime.Get().time_since_epoch().count());
@@ -144,7 +146,30 @@ void WatchFaceMaze::Refresh() {
     // only draw once maze is fully generated (not paused)
     if (!pausedGeneration) {
       DrawMaze();
+      lossRefreshRequired = false;
     }
+  }
+}
+
+bool WatchFaceMaze::OnTouchEvent(TouchEvents event) {
+  switch (event) {
+    case Pinetime::Applications::TouchEvents::LongTap:
+      // if generation is paused, let it continue working on that. This should really never trigger.
+      if (pausedGeneration) {return false;}
+      // don't _reeeally_ need to reset prng seed...
+      InitializeMaze();
+      PutLoss();  // also works as the seed to generate the maze onto
+      GenerateMaze();
+      // if GenerateMaze() here somehow timed out, the main Refresh() function will handle finishing it. just don't draw it here
+      if (!pausedGeneration) {
+        DrawMaze();
+      }
+      // display loss for 2 seconds then refresh screen again
+      lossTargetRefreshTime = dateTimeController.CurrentDateTime() + std::chrono::seconds(2);
+      lossRefreshRequired = true;
+      return true;
+    default:
+      return false;
   }
 }
 
@@ -200,6 +225,10 @@ void WatchFaceMaze::PutNumbers() {
       break; // get out of the for loop
     }
   }
+}
+
+void WatchFaceMaze::PutLoss() {
+  maze.transparentPaste(0, 0, 11, 23, loss);
 }
 
 void WatchFaceMaze::GenerateMaze() {
