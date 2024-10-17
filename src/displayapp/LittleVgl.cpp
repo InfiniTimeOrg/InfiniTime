@@ -248,11 +248,20 @@ void LittleVgl::SetNewTouchPoint(int16_t x, int16_t y, bool contact) {
   }
 }
 
+// Cancel an ongoing tap
+// Signifies that LVGL should not handle the current tap
 void LittleVgl::CancelTap() {
   if (tapped) {
     isCancelled = true;
     touchPoint = {-1, -1};
   }
+}
+
+// Clear the current tapped state
+// Signifies that touch input processing is suspended
+void LittleVgl::ClearTouchState() {
+  touchPoint = {-1, -1};
+  tapped = false;
 }
 
 bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
