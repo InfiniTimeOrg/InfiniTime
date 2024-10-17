@@ -493,10 +493,6 @@ void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
   fastWakeUpDone = false;
 }
 
-void SystemTask::OnTouchEvent() {
-  PushMessage(Messages::OnTouchEvent);
-}
-
 void SystemTask::PushMessage(System::Messages msg) {
   if (in_isr()) {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
