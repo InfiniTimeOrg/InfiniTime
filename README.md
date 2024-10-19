@@ -42,7 +42,7 @@
 
 <br>
 
-> *InfiniTimeExplorer is only compatible with web browsers that support Web BLE. Currently supported browsers include Chrome, Edge, and Firefox.* 
+> *InfiniTimeExplorer is only compatible with web browsers that support Web BLE. Current fully supported browsers include Chrome and Microsoft Edge.* 
 >
 > *We removed mentions to NRFConnect as this app is closed source and recent versions do not work anymore with InfiniTime (the last version known to work is 4.24.3). If you used NRFConnect in the past, we recommend you switch to [Gadgetbridge](https://gadgetbridge.org/).* 
 
