@@ -132,13 +132,27 @@ namespace Pinetime {
         bool OnButtonPushed() override;
 
       private:
+        // Functions related to touching the screen, for better separation of processes
+        bool HandleLongTap();
+        bool HandleTap();
+        bool HandleSwipe(uint8_t direction);
+
+        // Seed the maze with whatever the currentState dictates should be shown
+        void SeedMaze();
+
         // Put numbers onto the screen. Acts as a seed to generate from.
         void PutNumbers();
+
+        // Very simple function which just resets the maze to what is considered blank
+        void InitializeMaze();
 
         // Generate the maze around whatever the maze was seeded with.
         // MAZE MUST BE SEEDED ELSE ALL YOU'LL GENERATE IS AN INFINITE LOOP!
         // If seed has disconnected components, maze will not be perfect.
         void GenerateMaze();
+
+        // Generates a single path starting at the provided x,y coords
+        void GeneratePath(int x, int y);
 
         // If the maze has any disconnected components (such as if seeded with multiple disconnected blocks),
         // poke holes to force all components to be connected.
