@@ -315,7 +315,7 @@ void WatchFaceMaze::SeedMaze() {
     case Displaying::amogus:
       maze.pasteMazeSeed(3, 0, 21, 23, amogus); break;
     case Displaying::autismcreature:
-      maze.pasteMazeSeed(0, 2, 11, 22, autismcreature); break;
+      maze.pasteMazeSeed(0, 2, 23, 22, autismcreature); break;
     case Displaying::foxgame:
       maze.pasteMazeSeed(0, 1, 23, 22, foxgame); break;
     case Displaying::reminder:
