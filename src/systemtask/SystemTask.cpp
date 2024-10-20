@@ -182,11 +182,28 @@ void SystemTask::Work() {
   measureBatteryTimer = xTimerCreate("measureBattery", batteryMeasurementPeriod, pdTRUE, this, MeasureBatteryTimerCallback);
   xTimerStart(measureBatteryTimer, portMAX_DELAY);
 
+  constexpr TickType_t stateUpdatePeriod = pdMS_TO_TICKS(100);
+  // Stores when the state (motion, watchdog, time persistence etc) was last updated
+  // If there are many events being received by the message queue, this prevents
+  // having to update motion etc after every single event, which is bad
+  // for efficiency and for motion wake algorithms which expect motion readings
+  // to be 100ms apart
+  TickType_t lastStateUpdate = xTaskGetTickCount() - stateUpdatePeriod; // Force immediate run
+  TickType_t elapsed;
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "EndlessLoop"
   while (true) {
     Messages msg;
-    if (xQueueReceive(systemTasksMsgQueue, &msg, 100) == pdTRUE) {
+
+    elapsed = xTaskGetTickCount() - lastStateUpdate;
+    TickType_t waitTime;
+    if (elapsed >= stateUpdatePeriod) {
+      waitTime = 0;
+    } else {
+      waitTime = stateUpdatePeriod - elapsed;
+    }
+    if (xQueueReceive(systemTasksMsgQueue, &msg, waitTime) == pdTRUE) {
       switch (msg) {
         case Messages::EnableSleeping:
           wakeLocksHeld--;
@@ -359,23 +376,25 @@ void SystemTask::Work() {
           break;
       }
     }
-
-    UpdateMotion();
-    if (isBleDiscoveryTimerRunning) {
-      if (bleDiscoveryTimer == 0) {
-        isBleDiscoveryTimerRunning = false;
-        // Services discovery is deferred from 3 seconds to avoid the conflicts between the host communicating with the
-        // target and vice-versa. I'm not sure if this is the right way to handle this...
-        nimbleController.StartDiscovery();
-      } else {
-        bleDiscoveryTimer--;
+    elapsed = xTaskGetTickCount() - lastStateUpdate;
+    if (elapsed >= stateUpdatePeriod) {
+      UpdateMotion();
+      if (isBleDiscoveryTimerRunning) {
+        if (bleDiscoveryTimer == 0) {
+          isBleDiscoveryTimerRunning = false;
+          // Services discovery is deferred from 3 seconds to avoid the conflicts between the host communicating with the
+          // target and vice-versa. I'm not sure if this is the right way to handle this...
+          nimbleController.StartDiscovery();
+        } else {
+          bleDiscoveryTimer--;
+        }
       }
-    }
-
-    monitor.Process();
-    NoInit_BackUpTime = dateTimeController.CurrentDateTime();
-    if (nrf_gpio_pin_read(PinMap::Button) == 0) {
-      watchdog.Reload();
+      monitor.Process();
+      NoInit_BackUpTime = dateTimeController.CurrentDateTime();
+      if (nrf_gpio_pin_read(PinMap::Button) == 0) {
+        watchdog.Reload();
+      }
+      lastStateUpdate = xTaskGetTickCount();
     }
   }
 #pragma clang diagnostic pop
