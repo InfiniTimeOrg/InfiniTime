@@ -123,7 +123,12 @@ namespace Pinetime {
       // The watchface itself
       class WatchFaceMaze : public Screen {
       public:
-        WatchFaceMaze(Pinetime::Components::LittleVgl&, Controllers::DateTime&, Controllers::Settings&, Controllers::MotorController&);
+        WatchFaceMaze(Pinetime::Components::LittleVgl&,
+                      Controllers::DateTime&,
+                      Controllers::Settings&,
+                      Controllers::MotorController&,
+                      const Controllers::Battery&,
+                      const Controllers::Ble&);
         ~WatchFaceMaze() override;
 
         // Functions required for app operation.
@@ -161,12 +166,19 @@ namespace Pinetime {
         // Draws the maze to the screen.
         void DrawMaze();
 
+        // Draw the indicators at the top right.
+        void UpdateBatteryDisplay(bool forceRedraw);
+        void UpdateBleDisplay(bool forceRedraw);
+        void ClearIndicators();
+
 
         // Stuff necessary for interacting with the OS and whatnot
         lv_task_t* taskRefresh;
         Controllers::DateTime& dateTimeController;
         Controllers::Settings& settingsController;
         Controllers::MotorController& motor;
+        const Controllers::Battery& batteryController;
+        const Controllers::Ble& bleController;
         Components::LittleVgl& lvgl;
 
         // Maze and internal RNG (so it doesn't mess with other things by reseeding the regular C RNG provider)
@@ -181,10 +193,17 @@ namespace Pinetime {
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
         std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> realTime {};
 
+        // Indicator stuff
+        Utility::DirtyValue<uint8_t> batteryPercent;
+        Utility::DirtyValue<bool> charging;
+        Utility::DirtyValue<bool> bleConnected;
+
         // Buffers for use during printing. There's two it flips between because if there was only one,
         //  it would start being overwritten before the DMA finishes, so it'd corrupt parts of the display.
+        // activeBuffer is, well, the currently active one. Flip with `activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;`
         lv_color_t buf1[480];
         lv_color_t buf2[480];
+        lv_color_t *activeBuffer = buf1;
 
         // All concerning the printing of the screen. If screenRefreshRequired is set and screenRefreshTargetTime is
         //  greater than the current time, it waits until that target time before refreshing. Otherwise, it refreshes
@@ -209,6 +228,8 @@ namespace Pinetime {
                               {0xF5,0x7C,0x01,0x8F,0x88,0xF8,0x85,0x0E,0x00,0xFF,0x8F,0xF8,0xF5,0x0E,0x03}};
         constexpr static uint8_t am[10] /*5x8*/ = {0xF5,0xF0,0x18,0xE2,0x38,0x84,0x20,0x08,0xE2,0x38};
         constexpr static uint8_t pm[10] /*5x8*/ = {0xD5,0xE0,0x18,0xE2,0x38,0x84,0x20,0x38,0xFE,0x3F};
+        constexpr static uint8_t blankseed[1] /*4x1*/ = {0xD5};
+        constexpr static uint8_t indicatorSpace[3] /*3x3*/ = {0xF6,0x8A,0x00};
 
         // Used for swipe sequences for easter eggs.
         // currentState is what is being displayed. It's generally categorized into "watchface" and "not watchface".
@@ -250,9 +271,9 @@ namespace Pinetime {
         return new Screens::WatchFaceMaze(controllers.lvgl,
                                           controllers.dateTimeController,
                                           controllers.settingsController,
-                                          controllers.motorController/*,
+                                          controllers.motorController,
                                           controllers.batteryController,
-                                          controllers.bleController*/);
+                                          controllers.bleController);
       };
 
       static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {

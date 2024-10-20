@@ -133,10 +133,14 @@ void Maze::pasteMazeSeed(int x1, int y1, int x2, int y2, const uint8_t toPaste[]
 WatchFaceMaze::WatchFaceMaze(Pinetime::Components::LittleVgl& lvgl,
                              Controllers::DateTime& dateTimeController,
                              Controllers::Settings& settingsController,
-                             Controllers::MotorController& motor)
+                             Controllers::MotorController& motor,
+                             const Controllers::Battery& batteryController,
+                             const Controllers::Ble& bleController)
   : dateTimeController {dateTimeController},
     settingsController {settingsController},
     motor {motor},
+    batteryController {batteryController},
+    bleController {bleController},
     lvgl {lvgl},
     maze {Maze()},
     prng {MazeRNG()} {
@@ -178,9 +182,21 @@ void WatchFaceMaze::Refresh() {
     // only draw once maze is fully generated (not paused)
     if (!pausedGeneration) {
       ForceValidMaze();
+      if (currentState != Displaying::watchface) {ClearIndicators();}
       DrawMaze();
       screenRefreshRequired = false;
+      // if switched to watchface, also add indicators for BLE and battery
+      if (currentState == Displaying::watchface) {
+        UpdateBatteryDisplay(true);
+        UpdateBleDisplay(true);
+      }
     }
+  }
+
+  // update battery and ble displays if on main watchface
+  if (currentState == Displaying::watchface) {
+    UpdateBatteryDisplay(false);
+    UpdateBleDisplay(false);
   }
 }
 
@@ -295,6 +311,8 @@ void WatchFaceMaze::PutTimeDate() {
   maze.pasteMazeSeed(3, 13, 8, 22, numbers[minutes / 10]); // bottom left: minutes major digit
   maze.pasteMazeSeed(10, 13, 15, 22, numbers[minutes % 10]); // bottom right: minutes minor digit
 
+  // reserve some space at the top right to put the battery and BLE indicators there
+  maze.pasteMazeSeed(21, 0, 23, 2, indicatorSpace);
 }
 
 
@@ -304,10 +322,9 @@ void WatchFaceMaze::SeedMaze() {
     case Displaying::watchface:
       PutTimeDate(); break;
     case Displaying::blank: { // seed maze with 4 tiles
-      const uint8_t seed[1] = {0xD5};
       const int randx = prng.rand(0, 20);
       const int randy = prng.rand(3, 20);
-      maze.pasteMazeSeed(randx, randy, randx + 3, randy, seed);
+      maze.pasteMazeSeed(randx, randy, randx + 3, randy, blankseed);
       break;
     }
     case Displaying::loss:
@@ -556,7 +573,7 @@ void WatchFaceMaze::DrawMaze() {
   // this used to be nice code, but it was retrofitted to print offset by 1 pixel for a fancy border.
   // I'm not proud of the logic but it works.
   lv_area_t area;
-  lv_color_t *curbuf = buf1;  // currently active buffer. Flips between buf1 and buf2 to give time for DMA to finish.
+  activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer, who knows if the buffer was used just before this
 
   // Print horizontal lines
   // This doesn't bother with corners, those just get overwritten by the vertical lines
@@ -564,15 +581,15 @@ void WatchFaceMaze::DrawMaze() {
   area.x2 = 238;
   for (int y = 1; y < Maze::HEIGHT; y++) {
     for (int x = 0; x < Maze::WIDTH; x++) {
-      if (maze.get(x, y).getUp())  {std::fill_n(&curbuf[x*Maze::TILESIZE], Maze::TILESIZE, LV_COLOR_WHITE);}
-      else                         {std::fill_n(&curbuf[x*Maze::TILESIZE], Maze::TILESIZE, LV_COLOR_BLACK);}
+      if (maze.get(x, y).getUp())  {std::fill_n(&activeBuffer[x*Maze::TILESIZE], Maze::TILESIZE, LV_COLOR_WHITE);}
+      else                         {std::fill_n(&activeBuffer[x*Maze::TILESIZE], Maze::TILESIZE, LV_COLOR_BLACK);}
     }
-    std::copy_n(curbuf, 238, &curbuf[238]);
+    std::copy_n(activeBuffer, 238, &activeBuffer[238]);
     area.y1 = Maze::TILESIZE * y - 1;
     area.y2 = Maze::TILESIZE * y;
     lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-    lvgl.FlushDisplay(&area, curbuf);
-    curbuf = (curbuf==buf1) ? buf2 : buf1;  // switch buffer
+    lvgl.FlushDisplay(&area, activeBuffer);
+    activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer
   }
 
   // Print vertical lines
@@ -583,28 +600,81 @@ void WatchFaceMaze::DrawMaze() {
       MazeTile curblock = maze.get(x,y);
       // handle corners: if any of the touching lines are present, add corner. else leave it black
       if (curblock.getUp() || curblock.getLeft() || maze.get(x-1,y).getUp() || maze.get(x,y-1).getLeft())
-            {std::fill_n(&curbuf[y*Maze::TILESIZE*2], 4, LV_COLOR_WHITE);}
-      else  {std::fill_n(&curbuf[y*Maze::TILESIZE*2], 4, LV_COLOR_BLACK);}
+            {std::fill_n(&activeBuffer[y*Maze::TILESIZE*2], 4, LV_COLOR_WHITE);}
+      else  {std::fill_n(&activeBuffer[y*Maze::TILESIZE*2], 4, LV_COLOR_BLACK);}
       // handle actual wall segments
-      if (curblock.getLeft()) {std::fill_n(&curbuf[y*Maze::TILESIZE*2+4], Maze::TILESIZE*2-4, LV_COLOR_WHITE);}
-      else                    {std::fill_n(&curbuf[y*Maze::TILESIZE*2+4], Maze::TILESIZE*2-4, LV_COLOR_BLACK);}
+      if (curblock.getLeft()) {std::fill_n(&activeBuffer[y*Maze::TILESIZE*2+4], Maze::TILESIZE*2-4, LV_COLOR_WHITE);}
+      else                    {std::fill_n(&activeBuffer[y*Maze::TILESIZE*2+4], Maze::TILESIZE*2-4, LV_COLOR_BLACK);}
     }
     area.x1 = Maze::TILESIZE * x - 1;
     area.x2 = Maze::TILESIZE * x;
     lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-    lvgl.FlushDisplay(&area, &curbuf[4]);
-    curbuf = (curbuf==buf1) ? buf2 : buf1;  // switch buffer
+    lvgl.FlushDisplay(&area, &activeBuffer[4]);
+    activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer
   }
 
   // Print borders
   // don't need to worry about switching buffers here since buffer contents aren't changing
-  std::fill_n(curbuf, 240, LV_COLOR_GRAY);
+  std::fill_n(activeBuffer, 240, LV_COLOR_GRAY);
   for (int i = 0; i < 4; i++) {
     if (i==0)      {area.x1=0;   area.x2=239; area.y1=0;   area.y2=0;  } // top
     else if (i==1) {area.x1=0;   area.x2=239; area.y1=239; area.y2=239;} // bottom
     else if (i==2) {area.x1=0;   area.x2=0;   area.y1=0;   area.y2=239;} // left
     else if (i==3) {area.x1=239; area.x2=239; area.y1=0;   area.y2=239;} // right
     lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-    lvgl.FlushDisplay(&area, curbuf);
+    lvgl.FlushDisplay(&area, activeBuffer);
   }
+}
+
+
+void WatchFaceMaze::UpdateBatteryDisplay(bool forceRedraw) {
+  batteryPercent = batteryController.PercentRemaining();
+  charging = batteryController.IsCharging();
+  if (forceRedraw || batteryPercent.IsUpdated() || charging.IsUpdated()) {
+    // need to redraw battery stuff
+    activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer
+
+    // number of pixels between top of indicator and fill line. rounds up, so 0% is 24px but 1% is 23px
+    lv_area_t area = {223,3,236,26};
+    uint8_t fillLevel = 24 - ((uint16_t)(batteryPercent.Get()) * 24) / 100;
+
+    // gray/green if not charging, blue-gray/aqua if charging
+    std::fill_n(activeBuffer, fillLevel*14, (charging.Get() ? LV_COLOR_MAKE(0x80,0x80,0xC0) : LV_COLOR_GRAY));
+    std::fill_n((activeBuffer+fillLevel*14), (24-fillLevel)*14, (charging.Get() ? LV_COLOR_MAKE(0,0xC0,0x80) : LV_COLOR_GREEN));
+
+    lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
+    lvgl.FlushDisplay(&area, activeBuffer);
+  }
+}
+
+
+void WatchFaceMaze::UpdateBleDisplay(bool forceRedraw) {
+  bleConnected = bleController.IsConnected();
+  if (forceRedraw || bleConnected.IsUpdated()) {
+    // need to redraw BLE indicator
+    activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer
+
+    lv_area_t area = {213,3,216,26};
+    std::fill_n(activeBuffer, 96, (bleConnected.Get() ? LV_COLOR_BLUE : LV_COLOR_GRAY));
+
+    lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
+    lvgl.FlushDisplay(&area, activeBuffer);
+  }
+}
+
+
+void WatchFaceMaze::ClearIndicators() {
+  activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer
+  lv_area_t area;
+  std::fill_n(activeBuffer, 24*14, LV_COLOR_BLACK);
+
+  // battery indicator
+  area.x1=223; area.y1=3; area.x2=236; area.y2=26;
+  lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
+  lvgl.FlushDisplay(&area, activeBuffer);
+
+  // BLE indicator
+  area.x1=213; area.y1=3; area.x2=216; area.y2=26;
+  lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
+  lvgl.FlushDisplay(&area, activeBuffer);
 }
