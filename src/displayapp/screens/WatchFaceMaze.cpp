@@ -93,18 +93,26 @@ bool Maze::getSide(int x, int y, TileAttr attr) {
   return getSide(y*WIDTH+x, attr);
 }
 
-void Maze::transparentPaste(int x1, int y1, int x2, int y2, const uint8_t toPaste[]) {
-  int pastewidth = x2-x1+1;
-  for (int y = 0; y <= y2-y1; y++) {
-    for (int x = 0; x <= x2-x1; x++) {
-      const int pasteFlatEquiv = y*pastewidth+x;
-      const int mazeFlatEquiv = ((y+y1)*(WIDTH/2))+(x+x1);
-      // high nibble
-      if (!(toPaste[pasteFlatEquiv] & (MazeTile::FLAGEMPTYMASK << 4)))  // only do anything if empty flag is not set
-        {mazemap[mazeFlatEquiv] = (mazemap[mazeFlatEquiv] & 0b00001111) | (toPaste[pasteFlatEquiv] & 0b11110000);}
-      // low nibble
-      if (!(toPaste[pasteFlatEquiv] & MazeTile::FLAGEMPTYMASK))  // only do anything if empty flag is not set
-        {mazemap[mazeFlatEquiv] = (mazemap[mazeFlatEquiv] & 0b11110000) | (toPaste[pasteFlatEquiv] & 0b00001111);}
+void Maze::pasteMazeSeed(int x1, int y1, int x2, int y2, const uint8_t toPaste[]) {
+  // Assumes a maze with empty flags all true, and all walls present
+  uint16_t flatcoord = 0;  // the position in the array (inside the byte, so index 1 would be mask 0b00110000 in the first byte)
+  for (int y = y1; y <= y2; y++) {
+    for (int x = x1; x <= x2; x++) {
+      // get target wall out of the paste buffer into the low two bits of a byte
+      uint8_t working = (toPaste[flatcoord/4] & (0b11 << ((3-(flatcoord%4))*2))) >> ((3-(flatcoord%4))*2);
+      // handle left wall
+      if (!(working & 0b10)) {
+        setSide(x, y, TileAttr::left, false);
+        setSide(x, y, TileAttr::flagempty, false);
+        if (x > 0) setSide(x-1, y, TileAttr::flagempty, false);
+      }
+      // handle up wall
+      if (!(working & 0b01)) {
+        setSide(x, y, TileAttr::up, false);
+        setSide(x, y, TileAttr::flagempty, false);
+        if (y > 0) setSide(x, y-1, TileAttr::flagempty, false);
+      }
+      flatcoord++;
     }
   }
 }
@@ -114,9 +122,11 @@ void Maze::transparentPaste(int x1, int y1, int x2, int y2, const uint8_t toPast
 
 WatchFaceMaze::WatchFaceMaze(Pinetime::Components::LittleVgl& lvgl,
                              Controllers::DateTime& dateTimeController,
-                             Controllers::Settings& settingsController)
+                             Controllers::Settings& settingsController,
+                             Controllers::MotorController& motor)
   : dateTimeController {dateTimeController},
     settingsController {settingsController},
+    motor {motor},
     lvgl {lvgl},
     maze {Maze()},
     prng {MazeRNG()} {
@@ -131,104 +141,210 @@ WatchFaceMaze::~WatchFaceMaze() {
 }
 
 void WatchFaceMaze::Refresh() {
-  auto time = dateTimeController.CurrentDateTime();
-  currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(time);
-  // refresh time if either a minute has passed, or loss timer expired.
-  // if minute passes while lossrefresh is required, ignore it. loss refresh timer will handle it.
-  if (pausedGeneration || (!lossRefreshRequired && currentDateTime.IsUpdated()) || (lossRefreshRequired && time > lossTargetRefreshTime)) {
+  realTime = dateTimeController.CurrentDateTime();
+  currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(realTime);
+  // refresh time if either a minute has passed, or screen refresh timer expired.
+  // if minute rolls over while screenrefresh is required, ignore it. the refresh timer will handle it.
+  if (pausedGeneration ||  // if generation paused, need to complete it
+      (currentState == Displaying::watchface && !screenRefreshRequired && currentDateTime.IsUpdated()) ||  // already on watchface, not waiting for a screen refresh, and time updated
+      (screenRefreshRequired && realTime > screenRefreshTargetTime)) {  // waiting on a refresh
     // if generation wasn't paused (i.e. doing a ground up maze gen), set everything up
     if (!pausedGeneration) {
-      prng.seed(currentDateTime.Get().time_since_epoch().count());
-      InitializeMaze();
-      PutNumbers();  // also works as the seed to generate the maze onto
+      // only reseed PRNG if got here by the minute rolling over
+      if (!screenRefreshRequired) prng.seed(currentDateTime.Get().time_since_epoch().count());
+      // prepare maze by filling it with all walls and empty tiles
+      maze.fill(MazeTile().setLeft(true).setUp(true).setFlagEmpty(true));
+      // seed the maze with whatever is required at the moment
+      if (currentState == Displaying::watchface) {PutNumbers();}
+      else if (currentState == Displaying::blank) {
+        // seed maze with 4 tiles
+        uint8_t seed[1] = {0xD5};
+        int randx = prng.rand(0,20);
+        int randy = prng.rand(3,20);
+        maze.pasteMazeSeed(randx, randy, randx + 3, randy, seed);
+      }
+      else if (currentState == Displaying::loss) {
+        maze.pasteMazeSeed(2, 2, 22, 21, loss);}
+      else if (currentState == Displaying::amogus) {
+        maze.pasteMazeSeed(3, 0, 21, 23, amogus);}
+      else if (currentState == Displaying::autismcreature) {
+        maze.pasteMazeSeed(0, 2, 11, 22, autismcreature);}
+      else if (currentState == Displaying::foxgame) {
+        maze.pasteMazeSeed(0, 1, 23, 22, foxgame);}
+      else if (currentState == Displaying::reminder) {
+        maze.pasteMazeSeed(0, 3, 23, 19, reminder);}
+      else if (currentState == Displaying::pinetime) {
+        maze.pasteMazeSeed(2, 0, 21, 23, pinetime);}
     }
     GenerateMaze();
     // only draw once maze is fully generated (not paused)
     if (!pausedGeneration) {
+      ForceValidMaze();
       DrawMaze();
-      lossRefreshRequired = false;
+      screenRefreshRequired = false;
     }
   }
 }
 
-bool WatchFaceMaze::OnTouchEvent(TouchEvents event) {
-  switch (event) {
-    case Pinetime::Applications::TouchEvents::LongTap:
-      // if generation is paused, let it continue working on that. This should really never trigger.
-      if (pausedGeneration) {return false;}
-      // don't _reeeally_ need to reset prng seed...
-      InitializeMaze();
-      PutLoss();  // also works as the seed to generate the maze onto
-      GenerateMaze();
-      // if GenerateMaze() here somehow timed out, the main Refresh() function will handle finishing it. just don't draw it here
-      if (!pausedGeneration) {
-        DrawMaze();
-      }
-      // display loss for 2 seconds then refresh screen again
-      lossTargetRefreshTime = dateTimeController.CurrentDateTime() + std::chrono::seconds(2);
-      lossRefreshRequired = true;
-      return true;
-    default:
-      return false;
+// allow pushing the button to go back to the main watchface
+bool WatchFaceMaze::OnButtonPushed() {
+  if (currentState != Displaying::watchface) {
+    screenRefreshRequired = true;
+    currentState = Displaying::watchface;
+    return true;
   }
+  return false;
 }
 
-
-void WatchFaceMaze::InitializeMaze() {
-  // prepare maze by filling it with all walls and empty tiles
-  maze.fill(MazeTile().setLeft(true).setUp(true).setFlagEmpty(true));
+bool WatchFaceMaze::OnTouchEvent(TouchEvents event) {
+  // if generation is paused, let it continue working on that. This should really never trigger.
+  if (pausedGeneration) {return false;}
+  auto time = realTime;
+  //std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> time {};
+  if (event == Pinetime::Applications::TouchEvents::LongTap) {
+    // LONG TAPPED
+    if (currentState ==  Displaying::watchface) {
+      // on watchface; either refresh maze or go to blank state
+      if (lastInputTime + std::chrono::milliseconds(2500) > time) {
+        // long tapped twice in sequence; switch to blank maze
+        currentState = Displaying::blank;
+        screenRefreshRequired = true;
+        std::fill_n(currentCode, sizeof(currentCode), 255);  // clear current code in preparation for code entry
+      } else {
+        // long tapped not in main watchface; go back to previous state
+        screenRefreshRequired = true;
+      }
+      lastInputTime = time;
+      motor.RunForDuration(20);
+      return true;
+    } else {
+      screenRefreshRequired = true;
+      currentState = Displaying::watchface;
+      // reset lastInputTime so it always needs two long taps to get back to blank, even if you're fast
+      lastInputTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>();
+      motor.RunForDuration(20);
+      return true;
+    }
+  }
+  // handle swipes to input code on blank screen
+  if (currentState != Displaying::watchface) {
+    uint8_t swipeDir = 255;
+    switch(event) {
+      case Pinetime::Applications::TouchEvents::SwipeUp:    swipeDir = 0; break;
+      case Pinetime::Applications::TouchEvents::SwipeRight: swipeDir = 1; break;
+      case Pinetime::Applications::TouchEvents::SwipeDown:  swipeDir = 2; break;
+      case Pinetime::Applications::TouchEvents::SwipeLeft:  swipeDir = 3; break;
+      default: return false;  // only handle swipe events
+    }
+    for (int i = sizeof(currentCode)-1; i > 0; i--) {currentCode[i] = currentCode[i-1];}
+    currentCode[0] = swipeDir;
+    // check if valid code has been entered on non-main screen
+    // structure also has the effect that if code gets entered while on the destination page, it doesn't refresh.
+    Displaying newState = currentState;
+    if (std::memcmp(currentCode, lossCode, sizeof(lossCode)) == 0)               {newState = Displaying::loss;}   // loss
+    else if (std::memcmp(currentCode, amogusCode, sizeof(amogusCode)) == 0)      {newState = Displaying::amogus;}  // amogus
+    else if (std::memcmp(currentCode, autismCode, sizeof(autismCode)) == 0)      {newState = Displaying::autismcreature;}  // autismcreature/tbh
+    else if (std::memcmp(currentCode, foxCode, sizeof(foxCode)) == 0)            {newState = Displaying::foxgame;}  // foxxo game
+    else if (std::memcmp(currentCode, reminderCode, sizeof(reminderCode)) == 0)  {newState = Displaying::reminder;}  // reminder
+    else if (std::memcmp(currentCode, pinetimeCode, sizeof(pinetimeCode)) == 0)  {newState = Displaying::pinetime;}  // pinetime logo
+    if (newState != currentState) {
+      currentState = newState;
+      screenRefreshRequired = true;
+      motor.RunForDuration(10);
+    }
+    return true;
+  }
+  return false;
 }
+
 
 void WatchFaceMaze::PutNumbers() {
   uint8_t hours = dateTimeController.Hours();
   uint8_t minutes = dateTimeController.Minutes();
-  // TODO 12 hour format support
-  /*
+  // modify hours to account for 12 hour format
   if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-    // 12 hour format
-    // don't have handling, just make a tiny seed and gen a normal maze
-    maze.setSide(prng.rand(0,Maze::WIDTH), prng.rand(0,Maze::HEIGHT), TileAttr::flagempty, false);
+    if (hours == 0) hours = 12;
+    if (hours > 12) {
+      maze.pasteMazeSeed(18, 15, 23, 22, pm);
+      hours -= 12;
+    } else {
+      maze.pasteMazeSeed(18, 15, 23, 22, am);
+    }
   }
-   */
-  //maze.setSide(prng.rand(0,Maze::WIDTH), prng.rand(0,Maze::HEIGHT), TileAttr::flagempty, false);
-
-  // 24 hour format only right now
+  // put numbers on screen
   // top left: hours major digit
-  maze.transparentPaste(2, 1, 4, 10, numbers[hours/10]);
+  maze.pasteMazeSeed(3, 1, 8, 10, numbers[hours / 10]);
   // top right: hours minor digit
-  maze.transparentPaste(5, 1, 7, 10, numbers[hours%10]);
+  maze.pasteMazeSeed(10, 1, 15, 10, numbers[hours % 10]);
   // bottom left: minutes major digit
-  maze.transparentPaste(2, 13, 4, 22, numbers[minutes/10]);
+  maze.pasteMazeSeed(3, 13, 8, 22, numbers[minutes / 10]);
   // bottom right: minutes minor digit
-  maze.transparentPaste(5, 13, 7, 22, numbers[minutes%10]);
-  // put horizontal line connecting the digits horizontally. working in actual tile coords here
-  for (int stripLoc : {prng.rand(1,10), prng.rand(13,22)} ) {
-    for (int y = stripLoc, x = 9; x > 4; x--) {
-      if (maze.getSide(x, y, TileAttr::flagempty) == false) {
-        do {
-          maze.setSide(x, y, TileAttr::flagempty, false);
-          maze.setSide(x, y, TileAttr::right, false);
-          x++;
-        } while (maze.getSide(x, y, TileAttr::flagempty) == true);
-        break; // get out of the for loop
+  maze.pasteMazeSeed(10, 13, 15, 22, numbers[minutes % 10]);
+}
+
+// goes through the maze, finds disconnected segments and connects them
+void WatchFaceMaze::ForceValidMaze() {
+  // flood fill
+  // this function repurposes flaggen for traversed tiles, so it expects it to be false on all tiles (should be in this program)
+  // initialize x and y to bottom right
+  int x = Maze::WIDTH-1, y = Maze::HEIGHT - 1;
+  while (true) {
+    ForceValidMazeLoop:
+    maze.setSide(x, y, TileAttr::flaggen, true);
+    // move cursor
+    if (y > 0 && !maze.getSide(x, y, TileAttr::up) && !maze.getSide(x, y-1, TileAttr::flaggen)) {y--;}
+    else if (x < Maze::WIDTH-1 && !maze.getSide(x, y, TileAttr::right) && !maze.getSide(x+1, y, TileAttr::flaggen)) {x++;}
+    else if (y < Maze::HEIGHT-1 && !maze.getSide(x, y, TileAttr::down) && !maze.getSide(x, y+1, TileAttr::flaggen)) {y++;}
+    else if (x > 0 && !maze.getSide(x, y, TileAttr::left) && !maze.getSide(x-1, y, TileAttr::flaggen)) {x--;}
+    else {
+      int pokeLocationCount = 0;
+      // couldn't find any position to move to, need to set cursor to a different usable location
+      for (int proposedy = 0; proposedy < Maze::HEIGHT; proposedy++) {
+        for (int proposedx = 0; proposedx < Maze::WIDTH; proposedx++) {
+          bool ownState = maze.getSide(proposedx, proposedy, TileAttr::flaggen);
+          // if tile to the left is of a different traversal state (is traversed boundary)
+          if (proposedx > 0 && (maze.getSide(proposedx-1, proposedy, TileAttr::flaggen) != ownState)) {
+            // if found boundary AND can get to it, just continue working from here
+            if (maze.getSide(proposedx, proposedy, TileAttr::left) == false) {x = proposedx, y = proposedy; goto ForceValidMazeLoop;}
+            pokeLocationCount++;
+          }
+          // if tile to up is of a different traversal state (is traversed boundary)
+          if (proposedy > 0 && (maze.getSide(proposedx, proposedy-1, TileAttr::flaggen) != ownState)) {
+            // if found boundary AND can get to it, just continue working from here
+            if (maze.getSide(proposedx, proposedy, TileAttr::up) == false) {x = proposedx, y = proposedy; goto ForceValidMazeLoop;}
+            pokeLocationCount++;
+          }
+        }
+      }
+      // if no poke locations found, maze is finished
+      if (pokeLocationCount == 0) {return;}
+      // if execution gets here, then no valid position to start filling from was found. need to poke a hole.
+      // choose a random poke location to poke a hole through. pokeLocationCount is now used as an index
+      pokeLocationCount = prng.rand(1, pokeLocationCount);
+      for (int proposedy = 0; proposedy < Maze::HEIGHT; proposedy++) {
+        for (int proposedx = 0; proposedx < Maze::WIDTH; proposedx++) {
+          bool ownState = maze.getSide(proposedx, proposedy, TileAttr::flaggen);
+          if (proposedx > 0 && (maze.getSide(proposedx-1, proposedy, TileAttr::flaggen) != ownState)) {
+            pokeLocationCount--;
+            if (pokeLocationCount == 0) {
+              maze.setSide(proposedx, proposedy, TileAttr::left, false);
+              x = proposedx, y = proposedy;
+              continue;
+            }
+          }
+          // if tile to up is of a different traversal state (is traversed boundary)
+          if (proposedy > 0 && (maze.getSide(proposedx, proposedy-1, TileAttr::flaggen) != ownState)) {
+            pokeLocationCount--;
+            if (pokeLocationCount == 0) {
+              maze.setSide(proposedx, proposedy, TileAttr::up, false);
+              x = proposedx, y = proposedy;
+              continue;
+            }
+          }
+        }
       }
     }
   }
-  // now make a vertical stripe in the same way
-  for (int x = prng.rand(4,15), y = 10; y > 0; y--) {
-    if (maze.getSide(x, y, TileAttr::flagempty) == false) {
-      do {
-        maze.setSide(x, y, TileAttr::flagempty, false);
-        maze.setSide(x, y, TileAttr::down, false);
-        y++;
-      } while (maze.getSide(x, y, TileAttr::flagempty) == true);
-      break; // get out of the for loop
-    }
-  }
-}
-
-void WatchFaceMaze::PutLoss() {
-  maze.transparentPaste(0, 0, 11, 23, loss);
 }
 
 void WatchFaceMaze::GenerateMaze() {
@@ -236,7 +352,6 @@ void WatchFaceMaze::GenerateMaze() {
   // task should only run for 3/4 the time it takes for the task to refresh.
   // Will go over; only checks once it's finished with current line. It won't go too far over though.
   auto maxGenTarget = dateTimeController.CurrentDateTime() + std::chrono::milliseconds((taskRefresh->period*3)/4);
-
   while (true) {
     // FIND POSITION TO START BRANCH FROM
     for (uint8_t i = 0; i < 30; i++) {
@@ -256,8 +371,8 @@ void WatchFaceMaze::GenerateMaze() {
           return;
         }
         // if maze gen not done, select random index from valid tiles to start from
-        //count = prng.rand(0, count);
-        //printf("bruteforce chosen count: %i", count);
+        // 'count' is now used as an index
+        count = prng.rand(1, count);
         for (int j = 0; j < Maze::WIDTH*Maze::HEIGHT; j++) {
           if (maze.getSide(j, TileAttr::flagempty)) {count--;}
           if (count == 0) {
@@ -279,7 +394,6 @@ void WatchFaceMaze::GenerateMaze() {
       // move to next tile
       // this is very scuffed, but it prevents backtracking.
       while (true) {
-        // effectively turn tbe cursor so it will never go straight back
         switch (direction = prng.rand(0,3)) {
           case 0:  // moved up
             if (y <= 0 || !maze.getSide(x,y,TileAttr::up)) {continue;}
@@ -337,6 +451,9 @@ void WatchFaceMaze::GenerateMaze() {
             maze.setSide(x, y, TileAttr::flaggen, false);
             maze.setSide(x, y, TileAttr::flagempty, true);
             x += 1;
+          } else {
+            // bad backtrack; die
+            std::abort();
           }
         }
       }
