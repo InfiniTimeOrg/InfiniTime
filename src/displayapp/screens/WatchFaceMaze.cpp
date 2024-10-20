@@ -273,8 +273,8 @@ bool WatchFaceMaze::HandleSwipe(uint8_t direction) {
 }
 
 
-// Put the current time onto the maze. Acts as a seed.
-void WatchFaceMaze::PutNumbers() {
+// Put time and date info on the screen.
+void WatchFaceMaze::PutTimeDate() {
   uint8_t hours = dateTimeController.Hours();
   uint8_t minutes = dateTimeController.Minutes();
 
@@ -282,22 +282,19 @@ void WatchFaceMaze::PutNumbers() {
   if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
     if (hours == 0) hours = 12;
     if (hours > 12) {
-      maze.pasteMazeSeed(18, 15, 23, 22, pm);
+      maze.pasteMazeSeed(18, 15, 22, 22, pm);
       hours -= 12;
     } else {
-      maze.pasteMazeSeed(18, 15, 23, 22, am);
+      maze.pasteMazeSeed(18, 15, 22, 22, am);
     }
   }
 
-  // put numbers on screen
-  // top left: hours major digit
-  maze.pasteMazeSeed(3, 1, 8, 10, numbers[hours / 10]);
-  // top right: hours minor digit
-  maze.pasteMazeSeed(10, 1, 15, 10, numbers[hours % 10]);
-  // bottom left: minutes major digit
-  maze.pasteMazeSeed(3, 13, 8, 22, numbers[minutes / 10]);
-  // bottom right: minutes minor digit
-  maze.pasteMazeSeed(10, 13, 15, 22, numbers[minutes % 10]);
+  // put time on screen
+  maze.pasteMazeSeed(3, 1, 8, 10, numbers[hours / 10]); // top left: hours major digit
+  maze.pasteMazeSeed(10, 1, 15, 10, numbers[hours % 10]); // top right: hours minor digit
+  maze.pasteMazeSeed(3, 13, 8, 22, numbers[minutes / 10]); // bottom left: minutes major digit
+  maze.pasteMazeSeed(10, 13, 15, 22, numbers[minutes % 10]); // bottom right: minutes minor digit
+
 }
 
 
@@ -305,7 +302,7 @@ void WatchFaceMaze::PutNumbers() {
 void WatchFaceMaze::SeedMaze() {
   switch (currentState) {
     case Displaying::watchface:
-      PutNumbers(); break;
+      PutTimeDate(); break;
     case Displaying::blank: { // seed maze with 4 tiles
       const uint8_t seed[1] = {0xD5};
       const int randx = prng.rand(0, 20);
