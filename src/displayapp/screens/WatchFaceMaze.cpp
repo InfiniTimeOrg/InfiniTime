@@ -635,13 +635,25 @@ void WatchFaceMaze::UpdateBatteryDisplay(bool forceRedraw) {
     activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer
 
     // number of pixels between top of indicator and fill line. rounds up, so 0% is 24px but 1% is 23px
-    lv_area_t area = {223,3,236,26};
     uint8_t fillLevel = 24 - ((uint16_t)(batteryPercent.Get()) * 24) / 100;
+    lv_area_t area = {223,3,236,26};
 
-    // gray/green if not charging, blue-gray/aqua if charging
-    std::fill_n(activeBuffer, fillLevel*14, (charging.Get() ? LV_COLOR_MAKE(0x80,0x80,0xC0) : LV_COLOR_GRAY));
-    std::fill_n((activeBuffer+fillLevel*14), (24-fillLevel)*14, (charging.Get() ? LV_COLOR_MAKE(0,0xC0,0x80) : LV_COLOR_GREEN));
+    // battery body color - green >25%, orange >10%, red <=10%. Charging always makes it yellow.
+    lv_color_t batteryBodyColor;
+    if (charging.Get()) {batteryBodyColor = LV_COLOR_YELLOW;}
+    else if (batteryPercent.Get() > 25) {batteryBodyColor = LV_COLOR_GREEN;}
+    else if (batteryPercent.Get() > 10) {batteryBodyColor = LV_COLOR_ORANGE;}
+    else {batteryBodyColor = LV_COLOR_RED;}
 
+    // battery top color (upper gray section) - gray normally, light blue when charging, light red at <=10% charge
+    lv_color_t batteryTopColor;
+    if (charging.Get()) {batteryTopColor = LV_COLOR_MAKE(0x80,0x80,0xC0);}
+    else if (batteryPercent.Get() <= 10) {batteryTopColor = LV_COLOR_MAKE(0xC0,0x80,0x80);}
+    else {batteryTopColor = LV_COLOR_GRAY;}
+
+    // actually fill the buffer with the chosen colors and print it
+    std::fill_n(activeBuffer, fillLevel*14, batteryTopColor);
+    std::fill_n((activeBuffer+fillLevel*14), (24-fillLevel)*14, batteryBodyColor);
     lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
     lvgl.FlushDisplay(&area, activeBuffer);
   }
