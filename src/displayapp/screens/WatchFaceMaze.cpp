@@ -195,8 +195,8 @@ void WatchFaceMaze::Refresh() {
 
   // update battery and ble displays if on main watchface
   if (currentState == Displaying::watchface) {
-    UpdateBatteryDisplay(false);
-    UpdateBleDisplay(false);
+    UpdateBatteryDisplay();
+    UpdateBleDisplay();
   }
 }
 

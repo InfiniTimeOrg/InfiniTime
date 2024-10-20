@@ -167,8 +167,8 @@ namespace Pinetime {
         void DrawMaze();
 
         // Draw the indicators at the top right.
-        void UpdateBatteryDisplay(bool forceRedraw);
-        void UpdateBleDisplay(bool forceRedraw);
+        void UpdateBatteryDisplay(bool forceRedraw = false);
+        void UpdateBleDisplay(bool forceRedraw = false);
         void ClearIndicators();
 
 
