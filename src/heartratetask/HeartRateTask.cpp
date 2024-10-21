@@ -64,10 +64,34 @@ void HeartRateTask::Work() {
       }
     }
 
-    if (state == States::BackgroundWaiting) {
-      HandleBackgroundWaiting();
-    } else if (state == States::BackgroundMeasuring || state == States::Measuring) {
-      HandleSensorData(&lastBpm);
+    if (measurementStarted) {
+      auto sensorData = heartRateSensor.ReadHrsAls();
+      int8_t ambient = ppg.Preprocess(sensorData.hrs, sensorData.als);
+      int bpm = ppg.HeartRate();
+
+      // If ambient light detected or a reset requested (bpm < 0)
+      if (ambient > 0) {
+        // Reset all DAQ buffers
+        ppg.Reset(true);
+        // Force state to NotEnoughData (below)
+        lastBpm = 0;
+        bpm = 0;
+      } else if (bpm < 0) {
+        // Reset all DAQ buffers except HRS buffer
+        ppg.Reset(false);
+        // Set HR to zero and update
+        bpm = 0;
+        controller.Update(Controllers::HeartRateController::States::Running, bpm);
+      }
+
+      if (lastBpm == 0 && bpm == 0) {
+        controller.Update(Controllers::HeartRateController::States::NotEnoughData, bpm);
+      }
+
+      if (bpm != 0) {
+        lastBpm = bpm;
+        controller.Update(Controllers::HeartRateController::States::Running, lastBpm);
+      }
     }
   }
 }

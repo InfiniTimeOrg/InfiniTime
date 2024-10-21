@@ -18,6 +18,8 @@
 #include "components/ble/MusicService.h"
 #include "components/ble/NimbleController.h"
 #include <cstring>
+#include <FreeRTOS.h>
+#include <task.h>
 
 namespace {
   // 0000yyxx-78fc-48fe-8e23-433b3a1942d0

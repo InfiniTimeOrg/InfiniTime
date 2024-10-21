@@ -19,11 +19,13 @@
 #include "systemtask/SystemTask.h"
 #include "task.h"
 #include <chrono>
+#include <libraries/log/nrf_log.h>
 
 using namespace Pinetime::Controllers;
 using namespace std::chrono_literals;
 
-AlarmController::AlarmController(Controllers::DateTime& dateTimeController) : dateTimeController {dateTimeController} {
+AlarmController::AlarmController(Controllers::DateTime& dateTimeController, Controllers::FS& fs)
+  : dateTimeController {dateTimeController}, fs {fs} {
 }
 
 namespace {
@@ -36,11 +38,28 @@ namespace {
 void AlarmController::Init(System::SystemTask* systemTask) {
   this->systemTask = systemTask;
   alarmTimer = xTimerCreate("Alarm", 1, pdFALSE, this, SetOffAlarm);
+  LoadSettingsFromFile();
+  if (alarm.isEnabled) {
+    NRF_LOG_INFO("[AlarmController] Loaded alarm was enabled, scheduling");
+    ScheduleAlarm();
+  }
+}
+
+void AlarmController::SaveAlarm() {
+  // verify if it is necessary to save
+  if (alarmChanged) {
+    SaveSettingsToFile();
+  }
+  alarmChanged = false;
 }
 
 void AlarmController::SetAlarmTime(uint8_t alarmHr, uint8_t alarmMin) {
-  hours = alarmHr;
-  minutes = alarmMin;
+  if (alarm.hours == alarmHr && alarm.minutes == alarmMin) {
+    return;
+  }
+  alarm.hours = alarmHr;
+  alarm.minutes = alarmMin;
+  alarmChanged = true;
 }
 
 void AlarmController::ScheduleAlarm() {
@@ -53,18 +72,19 @@ void AlarmController::ScheduleAlarm() {
   tm* tmAlarmTime = std::localtime(&ttAlarmTime);
 
   // If the time being set has already passed today,the alarm should be set for tomorrow
-  if (hours < dateTimeController.Hours() || (hours == dateTimeController.Hours() && minutes <= dateTimeController.Minutes())) {
+  if (alarm.hours < dateTimeController.Hours() ||
+      (alarm.hours == dateTimeController.Hours() && alarm.minutes <= dateTimeController.Minutes())) {
     tmAlarmTime->tm_mday += 1;
     // tm_wday doesn't update automatically
     tmAlarmTime->tm_wday = (tmAlarmTime->tm_wday + 1) % 7;
   }
 
-  tmAlarmTime->tm_hour = hours;
-  tmAlarmTime->tm_min = minutes;
+  tmAlarmTime->tm_hour = alarm.hours;
+  tmAlarmTime->tm_min = alarm.minutes;
   tmAlarmTime->tm_sec = 0;
 
   // if alarm is in weekday-only mode, make sure it shifts to the next weekday
-  if (recurrence == RecurType::Weekdays) {
+  if (alarm.recurrence == RecurType::Weekdays) {
     if (tmAlarmTime->tm_wday == 0) { // Sunday, shift 1 day
       tmAlarmTime->tm_mday += 1;
     } else if (tmAlarmTime->tm_wday == 6) { // Saturday, shift 2 days
@@ -79,7 +99,10 @@ void AlarmController::ScheduleAlarm() {
   xTimerChangePeriod(alarmTimer, secondsToAlarm * configTICK_RATE_HZ, 0);
   xTimerStart(alarmTimer, 0);
 
-  state = AlarmState::Set;
+  if (!alarm.isEnabled) {
+    alarm.isEnabled = true;
+    alarmChanged = true;
+  }
 }
 
 uint32_t AlarmController::SecondsToAlarm() const {
@@ -88,20 +111,72 @@ uint32_t AlarmController::SecondsToAlarm() const {
 
 void AlarmController::DisableAlarm() {
   xTimerStop(alarmTimer, 0);
-  state = AlarmState::Not_Set;
+  isAlerting = false;
+  if (alarm.isEnabled) {
+    alarm.isEnabled = false;
+    alarmChanged = true;
+  }
 }
 
 void AlarmController::SetOffAlarmNow() {
-  state = AlarmState::Alerting;
+  isAlerting = true;
   systemTask->PushMessage(System::Messages::SetOffAlarm);
 }
 
 void AlarmController::StopAlerting() {
-  // Alarm state is off unless this is a recurring alarm
-  if (recurrence == RecurType::None) {
-    state = AlarmState::Not_Set;
+  isAlerting = false;
+  // Disable alarm unless it is recurring
+  if (alarm.recurrence == RecurType::None) {
+    alarm.isEnabled = false;
+    alarmChanged = true;
   } else {
     // set next instance
     ScheduleAlarm();
   }
+}
+
+void AlarmController::SetRecurrence(RecurType recurrence) {
+  if (alarm.recurrence != recurrence) {
+    alarm.recurrence = recurrence;
+    alarmChanged = true;
+  }
+}
+
+void AlarmController::LoadSettingsFromFile() {
+  lfs_file_t alarmFile;
+  AlarmSettings alarmBuffer;
+
+  if (fs.FileOpen(&alarmFile, "/.system/alarm.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
+    NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file");
+    return;
+  }
+
+  fs.FileRead(&alarmFile, reinterpret_cast<uint8_t*>(&alarmBuffer), sizeof(alarmBuffer));
+  fs.FileClose(&alarmFile);
+  if (alarmBuffer.version != alarmFormatVersion) {
+    NRF_LOG_WARNING("[AlarmController] Loaded alarm settings has version %u instead of %u, discarding",
+                    alarmBuffer.version,
+                    alarmFormatVersion);
+    return;
+  }
+
+  alarm = alarmBuffer;
+  NRF_LOG_INFO("[AlarmController] Loaded alarm settings from file");
+}
+
+void AlarmController::SaveSettingsToFile() const {
+  lfs_dir systemDir;
+  if (fs.DirOpen("/.system", &systemDir) != LFS_ERR_OK) {
+    fs.DirCreate("/.system");
+  }
+  fs.DirClose(&systemDir);
+  lfs_file_t alarmFile;
+  if (fs.FileOpen(&alarmFile, "/.system/alarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
+    NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file for saving");
+    return;
+  }
+
+  fs.FileWrite(&alarmFile, reinterpret_cast<const uint8_t*>(&alarm), sizeof(alarm));
+  fs.FileClose(&alarmFile);
+  NRF_LOG_INFO("[AlarmController] Saved alarm settings with format version %u to file", alarm.version);
 }

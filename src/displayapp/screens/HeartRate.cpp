@@ -29,7 +29,7 @@ namespace {
 }
 
 HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, System::SystemTask& systemTask)
-  : heartRateController {heartRateController}, systemTask {systemTask} {
+  : heartRateController {heartRateController}, wakeLock(systemTask) {
   bool isHrRunning = heartRateController.State() != Controllers::HeartRateController::States::Stopped;
   label_hr = lv_label_create(lv_scr_act(), nullptr);
 
@@ -63,7 +63,7 @@ HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, Syst
   label_startStop = lv_label_create(btn_startStop, nullptr);
   UpdateStartStopButton(isHrRunning);
   if (isHrRunning) {
-    systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
+    wakeLock.Lock();
   }
 
   taskRefresh = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
@@ -72,7 +72,6 @@ HeartRate::HeartRate(Controllers::HeartRateController& heartRateController, Syst
 HeartRate::~HeartRate() {
   lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
-  systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
 }
 
 void HeartRate::Refresh() {
@@ -101,12 +100,12 @@ void HeartRate::OnStartStopEvent(lv_event_t event) {
     if (heartRateController.State() == Controllers::HeartRateController::States::Stopped) {
       heartRateController.Start();
       UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
-      systemTask.PushMessage(Pinetime::System::Messages::DisableSleeping);
+      wakeLock.Lock();
       lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::highlight);
     } else {
       heartRateController.Stop();
       UpdateStartStopButton(heartRateController.State() != Controllers::HeartRateController::States::Stopped);
-      systemTask.PushMessage(Pinetime::System::Messages::EnableSleeping);
+      wakeLock.Release();
       lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
     }
   }
