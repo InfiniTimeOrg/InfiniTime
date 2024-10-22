@@ -55,7 +55,7 @@ namespace Pinetime {
         }
 
         // Random in range, inclusive on both ends (don't make max<min)
-        uint32_t rand(uint32_t min, uint32_t max) {assert(max>=min); return rand()%(max-min+1)+min;}
+        uint32_t rand(uint32_t min, uint32_t max) {assert(max>=min); return (rand()%(max-min+1))+min;}
 
       private:
         uint64_t state;
@@ -114,6 +114,39 @@ namespace Pinetime {
 
 
 
+      class ConfettiParticle {
+      public:
+        // steps the confetti simulation. Importantly, updates the maze equivalent position.
+        // Returns true if the particle has finished processing, else false.
+        // Need to save the maze equiv pos elsewhere before stepping to be able to clear the old particle position (if redraw needed).
+        // I couldn't really figure a better way to do it without saving the old positions in the class itself...
+        bool step();
+
+        // reset position and generate new velocity using the passed prng
+        void reset(MazeRNG &prng);
+
+        // holds the previous maze tile and which side of said tile the particle was drawn on
+        // used so it doesn't draw EVERY confetti particle every frame, but only when they update
+        int16_t tilex;
+        int16_t tiley;
+        uint8_t side;
+
+      private:
+        // update the internal store of where the tile should be drawn on screen. Called automatically from step() and reset().
+        void updateMazeEquiv();
+
+        // positions and velocities of particle, in pixels and pixels/step (~50 steps per second)
+        float xpos;
+        float ypos;
+        float xvel;
+        float yvel;
+
+        // first apply gravity, then apply damping factor, then add velocity to position
+        static constexpr float GRAVITY = 0.1;  // added to yvel every step (remember up is -y)
+        static constexpr float DAMPING_FACTOR = 0.99;  // keep this much of the velocity every step (applied after gravity)
+      };
+
+
 
       // What is currently being displayed.
       // Watchface is normal operation; anything else is an easter egg. Really only used to indicate what
@@ -166,10 +199,20 @@ namespace Pinetime {
         // Draws the maze to the screen.
         void DrawMaze();
 
+        // Draw a single side. Really only used for confetti, but is generic.
+        // CAVEAT: If drawing to a wall with no more walls around one of its endpoints (the wall is jutting out like a spike), the
+        //  tip of this 'spike' will not get redrawn despite it maybe being more intuitive if it did.
+        // Given the use case in this code, I believe it is not worthwhile to fix.
+        void DrawMazeSide(int16_t x, int16_t y, TileAttr side, lv_color_t wallcolor, lv_color_t bgcolor);
+
         // Draw the indicators at the top right.
         void UpdateBatteryDisplay(bool forceRedraw = false);
         void UpdateBleDisplay(bool forceRedraw = false);
         void ClearIndicators();
+
+        // Draw and generally deal with confetti
+        void ProcessConfetti();
+        void ClearConfetti();
 
 
         // Stuff necessary for interacting with the OS and whatnot
@@ -197,6 +240,11 @@ namespace Pinetime {
         Utility::DirtyValue<uint8_t> batteryPercent;
         Utility::DirtyValue<bool> charging;
         Utility::DirtyValue<bool> bleConnected;
+
+        // Confetti for autism creature
+        ConfettiParticle confettiArr[20];  // can freely increase/decrease number of particles
+        bool initConfetti = false;  // don't want to touch confettiArr in touch event handler, so use a flag and do it in refresh()
+        bool confettiActive = false;
 
         // Buffers for use during printing. There's two it flips between because if there was only one,
         //  it would start being overwritten before the DMA finishes, so it'd corrupt parts of the display.
