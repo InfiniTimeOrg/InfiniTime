@@ -2,20 +2,6 @@
 
 using namespace Pinetime::Controllers;
 
-namespace {
-  TickType_t CalculateDelta(const TickType_t startTime, const TickType_t currentTime) {
-    TickType_t delta = 0;
-    // Take care of overflow
-    if (startTime > currentTime) {
-      delta = 0xffffffff - startTime;
-      delta += (currentTime + 1);
-    } else {
-      delta = currentTime - startTime;
-    }
-    return delta;
-  }
-}
-
 StopWatchController::StopWatchController() {
   Clear();
 }
@@ -29,14 +15,14 @@ void StopWatchController::Start() {
 
 void StopWatchController::Pause() {
   currentState = StopWatchStates::Paused;
-  timeElapsedPreviously += CalculateDelta(startTime, xTaskGetTickCount());
+  timeElapsedPreviously += xTaskGetTickCount() - startTime;
 }
 
 void StopWatchController::Clear() {
   currentState = StopWatchStates::Cleared;
   timeElapsedPreviously = 0;
 
-  for (int i = 0; i < LAP_CAPACITY; i++) {
+  for (int i = 0; i < lapCapacity; i++) {
     laps[i].count = 0;
     laps[i].time = 0;
   }
@@ -51,14 +37,7 @@ void StopWatchController::PushLap() {
   laps[lapHead].time = lapEnd;
   laps[lapHead].count = lapCount + 1;
   lapCount += 1;
-  lapHead = lapCount % LAP_CAPACITY;
-}
-
-int StopWatchController::GetLapNum() {
-  if (lapCount < LAP_CAPACITY)
-    return lapCount;
-  else
-    return LAP_CAPACITY;
+  lapHead = lapCount % lapCapacity;
 }
 
 int StopWatchController::GetLapCount() {
@@ -66,17 +45,17 @@ int StopWatchController::GetLapCount() {
 }
 
 int Wrap(int index) {
-  return ((index % LAP_CAPACITY) + LAP_CAPACITY) % LAP_CAPACITY;
+  return ((index % lapCapacity) + lapCapacity) % lapCapacity;
 }
 
-LapInfo* StopWatchController::LastLap(int lap) {
-  if (lap >= LAP_CAPACITY || lap > lapCount || lapCount == 0) {
-    // Return "empty" LapInfo_t
-    return &emptyLapInfo;
+std::optional<LapInfo> StopWatchController::LastLap(int lap) {
+  if (lap >= lapCapacity || lap >= lapCount) {
+    return {};
   }
   // Index backwards
-  int index = Wrap(lapHead - lap);
-  return &laps[index];
+  int mostRecentLap = lapHead - 1;
+  int index = Wrap(mostRecentLap - lap);
+  return laps[index];
 }
 
 // Data / State acess
@@ -85,7 +64,7 @@ TickType_t StopWatchController::GetElapsedTime() {
   if (!IsRunning()) {
     return timeElapsedPreviously;
   }
-  return timeElapsedPreviously + CalculateDelta(startTime, xTaskGetTickCount());
+  return timeElapsedPreviously + (xTaskGetTickCount() - startTime);
 }
 
 bool StopWatchController::IsRunning() {
