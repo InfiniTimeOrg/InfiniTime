@@ -17,6 +17,7 @@ namespace Pinetime {
       HandleButtonEvent,
       HandleButtonTimerEvent,
       OnDisplayTaskSleeping,
+      OnDisplayTaskAOD,
       EnableSleeping,
       DisableSleeping,
       OnNewDay,

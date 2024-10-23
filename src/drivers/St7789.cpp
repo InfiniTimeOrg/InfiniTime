@@ -175,9 +175,8 @@ void St7789::IdleFrameRateOn() {
   // According to the datasheet, these controls should apply only to partial/idle mode
   // However they appear to apply to normal mode, so we have to enable/disable
   // every time we enter/exit always on
-  // In testing this divider appears to actually be 16x?
   constexpr uint8_t args[] = {
-    0x13, // Enable frame rate control for partial/idle mode, 8x frame divider
+    0x12, // Enable frame rate control for partial/idle mode, 4x frame divider
     0x1e, // Idle mode frame rate
     0x1e, // Partial mode frame rate (unused)
   };
