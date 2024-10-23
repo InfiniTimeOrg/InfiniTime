@@ -14,6 +14,8 @@ namespace Pinetime {
 
   namespace Controllers {
     class Ble;
+    class Settings;
+    class NotificationManager;
 
     class FSService {
     public:
@@ -26,6 +28,10 @@ namespace Pinetime {
     private:
       Pinetime::System::SystemTask& systemTask;
       Pinetime::Controllers::FS& fs;
+
+      static constexpr const char denyAlert[] = "InfiniTime\0File access attempted, but disabled in settings.";
+      static constexpr const uint8_t denyAlertLength = sizeof(denyAlert); // for this to work denyAlert MUST be array
+
       static constexpr uint16_t FSServiceId {0xFEBB};
       static constexpr uint16_t fsVersionId {0x0100};
       static constexpr uint16_t fsTransferId {0x0200};

@@ -87,6 +87,14 @@ namespace Pinetime {
         return nimbleController;
       };
 
+      Pinetime::Controllers::NotificationManager& GetNotificationManager() {
+        return notificationManager;
+      };
+
+      Pinetime::Controllers::Settings& GetSettings() {
+        return settingsController;
+      };
+
       bool IsSleeping() const {
         return state != SystemTaskState::Running;
       }
