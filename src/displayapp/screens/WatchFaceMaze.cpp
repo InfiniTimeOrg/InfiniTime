@@ -32,13 +32,44 @@ MazeTile Maze::get(int index) {
 // if out of bounds, does nothing
 void Maze::set(int x, int y, MazeTile tile) {
   if (x<0||x>WIDTH||y<0||y>HEIGHT) {return;}
-  set(y * WIDTH + x, tile);
+  set((y * WIDTH) + x, tile);
 }
 void Maze::set(int index, MazeTile tile) {
   if (index < 0 || index/2 >= FLATSIZE) {return;}
   // odd means right (low) nibble, even means left (high) nibble
-  if (index & 0b1) mazemap[index/2] = (mazemap[index/2] & 0b11110000) | tile.map;
-  else             mazemap[index/2] = (mazemap[index/2] & 0b00001111) | tile.map << 4;
+  if (index & 0b1) {mazemap[index/2] = (mazemap[index/2] & 0b11110000) | tile.map;}
+  else             {mazemap[index/2] = (mazemap[index/2] & 0b00001111) | tile.map << 4;}
+}
+
+
+// For quickly manipulating. Also allows better abstraction by allowing setting of down and right sides.
+// Silently does nothing if given invalid values.
+void Maze::setSide(int index, TileAttr attr, bool value) {
+  switch(attr) {
+    case up:    set(index, get(index).setUp(value)); break;
+    case down:  set(index+WIDTH, get(index+WIDTH).setUp(value)); break;
+    case left:  set(index, get(index).setLeft(value)); break;
+    case right: set(index+1, get(index+1).setLeft(value)); break;
+    case flagempty: set(index, get(index).setFlagEmpty(value)); break;
+    case flaggen: set(index, get(index).setFlagGen(value)); break;
+  }
+}
+void Maze::setSide(int x, int y, TileAttr attr, bool value) {
+  setSide((y*WIDTH)+x, attr, value);
+}
+bool Maze::getSide(int index, TileAttr attr) {
+  switch(attr) {
+    case up:    return get(index).getUp();
+    case down:  return get(index+WIDTH).getUp();
+    case left:  return get(index).getLeft();
+    case right: return get(index+1).getLeft();
+    case flagempty: return get(index).getFlagEmpty();
+    case flaggen: return get(index).getFlagGen();
+  }
+  return false;
+}
+bool Maze::getSide(int x, int y, TileAttr attr) {
+  return getSide((y*WIDTH)+x, attr);
 }
 
 
@@ -69,36 +100,6 @@ inline void Maze::fill(MazeTile tile, uint8_t mask)
   {fill(tile.map, mask);}
 
 
-// For quickly manipulating. Also allows better abstraction by allowing setting of down and right sides.
-// Silently does nothing if given invalid values.
-void Maze::setSide(int index, TileAttr attr, bool value) {
-  switch(attr) {
-    case up:    set(index, get(index).setUp(value)); break;
-    case down:  set(index+WIDTH, get(index+WIDTH).setUp(value)); break;
-    case left:  set(index, get(index).setLeft(value)); break;
-    case right: set(index+1, get(index+1).setLeft(value)); break;
-    case flagempty: set(index, get(index).setFlagEmpty(value)); break;
-    case flaggen: set(index, get(index).setFlagGen(value)); break;
-  }
-}
-void Maze::setSide(int x, int y, TileAttr attr, bool value) {
-  setSide(y*WIDTH+x, attr, value);
-}
-bool Maze::getSide(int index, TileAttr attr) {
-  switch(attr) {
-    case up:    return get(index).getUp();
-    case down:  return get(index+WIDTH).getUp();
-    case left:  return get(index).getLeft();
-    case right: return get(index+1).getLeft();
-    case flagempty: return get(index).getFlagEmpty();
-    case flaggen: return get(index).getFlagGen();
-  }
-  return false;
-}
-bool Maze::getSide(int x, int y, TileAttr attr) {
-  return getSide(y*WIDTH+x, attr);
-}
-
 // Paste a set of tiles into the given coords.
 void Maze::pasteMazeSeed(int x1, int y1, int x2, int y2, const uint8_t toPaste[]) {
   // Assumes a maze with empty flags all true, and all walls present
@@ -106,7 +107,7 @@ void Maze::pasteMazeSeed(int x1, int y1, int x2, int y2, const uint8_t toPaste[]
   for (int y = y1; y <= y2; y++) {
     for (int x = x1; x <= x2; x++) {
       // working holds the target wall (bit 2 for left wall, bit 1 for up wall)
-      uint8_t working = (toPaste[flatcoord/4] & (0b11 << ((3-(flatcoord%4))*2))) >> ((3-(flatcoord%4))*2);
+      const uint8_t working = (toPaste[flatcoord/4] & (0b11 << ((3-(flatcoord%4))*2))) >> ((3-(flatcoord%4))*2);
 
       // handle left wall
       if (!(working & 0b10)) {
@@ -150,9 +151,9 @@ void ConfettiParticle::reset(MazeRNG &prng) {
   ypos = 240;
 
   // velocity in pixels/tick
-  float velocity = ((float)prng.rand(MIN_START_VELOCITY*100, MAX_START_VELOCITY*100))/100;
+  const float velocity = ((float)prng.rand(MIN_START_VELOCITY*100, MAX_START_VELOCITY*100))/100;
   // angle, in radians, for going up at the chosen degree angle
-  float angle = ((float)prng.rand(0,MAX_START_ANGLE*2) - MAX_START_ANGLE + 90) * ((float)3.14159265 / 180);
+  const float angle = ((float)prng.rand(0,MAX_START_ANGLE*2) - MAX_START_ANGLE + 90) * ((float)3.14159265 / 180);
 
   xvel = std::cos(angle) * velocity * START_X_COMPRESS;
   yvel = -std::sin(angle) * velocity;
@@ -194,15 +195,28 @@ WatchFaceMaze::~WatchFaceMaze() {
 
 
 void WatchFaceMaze::Refresh() {
-  // store time for other functions to use, and update time if needed
+  // store time for other functions to use. functions called directly from Refresh() can just assume this is accurate.
   realTime = dateTimeController.CurrentDateTime();
-  currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(realTime);
 
-  // refresh time if either a minute has passed, or screen refresh timer expired.
+  // handle everything related to refreshing and printing stuff to the screen
+  HandleMazeRefresh();
+  
+  // handle confetti printing
+  // yeah it's not very pretty how this is hanging out in the refresh() function but I don't want to modify anything related
+  //  to printing in the touch interrupts
+  HandleConfetti();
+}
+
+
+void WatchFaceMaze::HandleMazeRefresh() {
+  // convert time to minutes and update if needed
+  currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(realTime);
+  
+  // refresh if generation isn't complete, a minute has passed on the watchface, or the screen refresh timer expired.
   // if minute rolls over while screenrefresh is required, ignore it. the refresh timer will handle it.
   if (pausedGeneration ||  // if generation paused, need to complete it
-    (currentState == Displaying::watchface && !screenRefreshRequired && currentDateTime.IsUpdated()) ||  // already on watchface, not waiting for a screen refresh, and time updated
-    (screenRefreshRequired && realTime > screenRefreshTargetTime)) {  // waiting on a refresh
+      (currentState == Displaying::watchface && !screenRefreshRequired && currentDateTime.IsUpdated()) ||  // already on watchface, not waiting for a screen refresh, and time updated
+      (screenRefreshRequired && realTime > screenRefreshTargetTime)) {  // waiting on a refresh
 
     // if generation wasn't paused (i.e. doing a ground up maze gen), set everything up
     if (!pausedGeneration) {
@@ -212,7 +226,7 @@ void WatchFaceMaze::Refresh() {
       SeedMaze();
     }
 
-    // always need to run GenerateMaze().
+    // always need to run GenerateMaze() when refreshing. This is a maze watchface after all.
     GenerateMaze();
 
     // only draw once maze is fully generated (not paused)
@@ -228,19 +242,21 @@ void WatchFaceMaze::Refresh() {
       }
     }
   }
-
+  
   // update battery and ble displays if on main watchface
   if (currentState == Displaying::watchface) {
     UpdateBatteryDisplay();
     UpdateBleDisplay();
   }
+}
 
-  // deal with confetti
+
+void WatchFaceMaze::HandleConfetti() {
   // initialize confetti if tapped on autism creature
   if (initConfetti) {
     ClearConfetti();
     for (ConfettiParticle &particle : confettiArr)
-      {particle.reset(prng);}
+    {particle.reset(prng);}
     confettiActive = true;
     initConfetti = false;
   }
@@ -257,19 +273,74 @@ void WatchFaceMaze::Refresh() {
   }
 }
 
-// allow pushing the button to go back to the watchface
-bool WatchFaceMaze::OnButtonPushed() {
-  if (currentState != Displaying::watchface) {
-    screenRefreshRequired = true;
-    currentState = Displaying::watchface;
-    // reset lastInputTime so it always needs two long taps to get back to blank, even if you're fast
-    lastInputTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>();
-    return true;
+
+void WatchFaceMaze::UpdateBatteryDisplay(bool forceRedraw) {
+  batteryPercent = batteryController.PercentRemaining();
+  charging = batteryController.IsCharging();
+  if (forceRedraw || batteryPercent.IsUpdated() || charging.IsUpdated()) {
+    // need to redraw battery stuff
+    swapActiveBuffer();
+
+    // number of pixels between top of indicator and fill line. rounds up, so 0% is 24px but 1% is 23px
+    uint8_t fillLevel = 24 - ((uint16_t)(batteryPercent.Get()) * 24) / 100;
+    lv_area_t area = {223,3,236,26};
+
+    // battery body color - green >25%, orange >10%, red <=10%. Charging always makes it yellow.
+    lv_color_t batteryBodyColor;
+    if (charging.Get()) {batteryBodyColor = LV_COLOR_YELLOW;}
+    else if (batteryPercent.Get() > 25) {batteryBodyColor = LV_COLOR_GREEN;}
+    else if (batteryPercent.Get() > 10) {batteryBodyColor = LV_COLOR_ORANGE;}
+    else {batteryBodyColor = LV_COLOR_RED;}
+
+    // battery top color (upper gray section) - gray normally, light blue when charging, light red at <=10% charge
+    lv_color_t batteryTopColor;
+    if (charging.Get()) {batteryTopColor = LV_COLOR_MAKE(0x80,0x80,0xC0);}
+    else if (batteryPercent.Get() <= 10) {batteryTopColor = LV_COLOR_MAKE(0xC0,0x80,0x80);}
+    else {batteryTopColor = LV_COLOR_GRAY;}
+
+    // actually fill the buffer with the chosen colors and print it
+    std::fill_n(activeBuffer, fillLevel*14, batteryTopColor);
+    std::fill_n((activeBuffer+(fillLevel*14)), (24-fillLevel)*14, batteryBodyColor);
+    lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
+    lvgl.FlushDisplay(&area, activeBuffer);
   }
-  return false;
 }
 
+
+void WatchFaceMaze::UpdateBleDisplay(bool forceRedraw) {
+  bleConnected = bleController.IsConnected();
+  if (forceRedraw || bleConnected.IsUpdated()) {
+    // need to redraw BLE indicator
+    swapActiveBuffer();
+
+    lv_area_t area = {213,3,216,26};
+    std::fill_n(activeBuffer, 96, (bleConnected.Get() ? LV_COLOR_BLUE : LV_COLOR_GRAY));
+
+    lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
+    lvgl.FlushDisplay(&area, activeBuffer);
+  }
+}
+
+
+void WatchFaceMaze::ClearIndicators() {
+  swapActiveBuffer();
+  lv_area_t area;
+  std::fill_n(activeBuffer, 24*14, LV_COLOR_BLACK);
+
+  // battery indicator
+  area.x1=223; area.y1=3; area.x2=236; area.y2=26;
+  lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
+  lvgl.FlushDisplay(&area, activeBuffer);
+
+  // BLE indicator
+  area.x1=213; area.y1=3; area.x2=216; area.y2=26;
+  lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
+  lvgl.FlushDisplay(&area, activeBuffer);
+}
+
+
 bool WatchFaceMaze::OnTouchEvent(TouchEvents event) {
+  // TODO ADD MUTEX OR SMTH
   // if generation is paused, let it continue working on that. This should really never trigger.
   if (pausedGeneration) {return false;}
 
@@ -282,6 +353,18 @@ bool WatchFaceMaze::OnTouchEvent(TouchEvents event) {
     case Pinetime::Applications::TouchEvents::SwipeLeft:  return HandleSwipe(3);
     default: return false;  // only handle swipe events
   }
+}
+
+// allow pushing the button to go back to the watchface
+bool WatchFaceMaze::OnButtonPushed() {
+  if (currentState != Displaying::watchface) {
+    screenRefreshRequired = true;
+    currentState = Displaying::watchface;
+    // reset lastInputTime so it always needs two long taps to get back to blank, even if you're fast
+    lastInputTime = std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>();
+    return true;
+  }
+  return false;
 }
 
 
@@ -351,30 +434,9 @@ bool WatchFaceMaze::HandleSwipe(uint8_t direction) {
 }
 
 
-// Put time and date info on the screen.
-void WatchFaceMaze::PutTimeDate() {
-  uint8_t hours = dateTimeController.Hours();
-  uint8_t minutes = dateTimeController.Minutes();
-
-  // modify hours to account for 12 hour format
-  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
-    if (hours == 0) hours = 12;
-    if (hours > 12) {
-      maze.pasteMazeSeed(18, 15, 22, 22, pm);
-      hours -= 12;
-    } else {
-      maze.pasteMazeSeed(18, 15, 22, 22, am);
-    }
-  }
-
-  // put time on screen
-  maze.pasteMazeSeed(3, 1, 8, 10, numbers[hours / 10]); // top left: hours major digit
-  maze.pasteMazeSeed(10, 1, 15, 10, numbers[hours % 10]); // top right: hours minor digit
-  maze.pasteMazeSeed(3, 13, 8, 22, numbers[minutes / 10]); // bottom left: minutes major digit
-  maze.pasteMazeSeed(10, 13, 15, 22, numbers[minutes % 10]); // bottom right: minutes minor digit
-
-  // reserve some space at the top right to put the battery and BLE indicators there
-  maze.pasteMazeSeed(21, 0, 23, 2, indicatorSpace);
+// Clear maze
+void WatchFaceMaze::InitializeMaze() {
+  maze.fill(MazeTile().setLeft(true).setUp(true).setFlagEmpty(true));
 }
 
 
@@ -405,86 +467,32 @@ void WatchFaceMaze::SeedMaze() {
 }
 
 
-// goes through the maze, finds disconnected segments and connects them
-void WatchFaceMaze::ForceValidMaze() {
-  // crude maze-optimized flood fill: follow a path until can't move any more, then find some other location to follow from. repeat.
-  // this function repurposes flaggen for traversed tiles, so it expects it to be false on all tiles (should be in normal control flow)
-  // initialize cursor x and y to bottom right
-  int x = Maze::WIDTH-1, y = Maze::HEIGHT - 1;
-  while (true) {
-    ForceValidMazeLoop:
-    maze.setSide(x, y, TileAttr::flaggen, true);
-    // move cursor
-    if (y > 0 && !maze.getSide(x, y, TileAttr::up) && !maze.getSide(x, y-1, TileAttr::flaggen)) {y--;}
-    else if (x < Maze::WIDTH-1 && !maze.getSide(x, y, TileAttr::right) && !maze.getSide(x+1, y, TileAttr::flaggen)) {x++;}
-    else if (y < Maze::HEIGHT-1 && !maze.getSide(x, y, TileAttr::down) && !maze.getSide(x, y+1, TileAttr::flaggen)) {y++;}
-    else if (x > 0 && !maze.getSide(x, y, TileAttr::left) && !maze.getSide(x-1, y, TileAttr::flaggen)) {x--;}
-    else {
-      int pokeLocationCount = 0;
-      // couldn't find any position to move to, need to set cursor to a different usable location
-      for (int proposedy = 0; proposedy < Maze::HEIGHT; proposedy++) {
-        for (int proposedx = 0; proposedx < Maze::WIDTH; proposedx++) {
-          bool ownState = maze.getSide(proposedx, proposedy, TileAttr::flaggen);
+// Put time and date info on the screen.
+void WatchFaceMaze::PutTimeDate() {
+  uint8_t hours = dateTimeController.Hours();
+  uint8_t minutes = dateTimeController.Minutes();
 
-          // if tile to the left is of a different traversal state (is traversed boundary)
-          if (proposedx > 0 && (maze.getSide(proposedx-1, proposedy, TileAttr::flaggen) != ownState)) {
-            // if found boundary AND can get to it, just continue working from here
-            if (maze.getSide(proposedx, proposedy, TileAttr::left) == false) {x = proposedx, y = proposedy; goto ForceValidMazeLoop;}
-            pokeLocationCount++;
-          }
-
-          // if tile to up is of a different traversal state (is traversed boundary)
-          if (proposedy > 0 && (maze.getSide(proposedx, proposedy-1, TileAttr::flaggen) != ownState)) {
-            // if found boundary AND can get to it, just continue working from here
-            if (maze.getSide(proposedx, proposedy, TileAttr::up) == false) {x = proposedx, y = proposedy; goto ForceValidMazeLoop;}
-            pokeLocationCount++;
-          }
-        }
-      }
-      // finished scanning maze; there are no locations the cursor can be placed for it to continue scanning
-
-      // if there are no walls that can be poked through to increase reachable area, maze is finished
-      if (pokeLocationCount == 0) {return;}
-
-      // if execution gets here, need to poke a hole.
-      // choose a random poke location to poke a hole through. pokeLocationCount is now used as an index
-      pokeLocationCount = prng.rand(1, pokeLocationCount);
-      for (int proposedy = 0; proposedy < Maze::HEIGHT; proposedy++) {
-        for (int proposedx = 0; proposedx < Maze::WIDTH; proposedx++) {
-          // pretty much a copy of the previous code which FINDS poke locations, but now with the goal of actually doing the poking
-          bool ownState = maze.getSide(proposedx, proposedy, TileAttr::flaggen);
-
-          if (proposedx > 0 && (maze.getSide(proposedx-1, proposedy, TileAttr::flaggen) != ownState)) {
-            pokeLocationCount--;
-            // found the target poke location, poke and loop
-            if (pokeLocationCount == 0) {
-              maze.setSide(proposedx, proposedy, TileAttr::left, false);
-              x = proposedx, y = proposedy;
-              goto ForceValidMazeLoop; // continue OUTSIDE loop
-            }
-          }
-
-          // if tile to up is of a different traversal state (is traversed boundary)
-          if (proposedy > 0 && (maze.getSide(proposedx, proposedy-1, TileAttr::flaggen) != ownState)) {
-            pokeLocationCount--;
-            // found the target poke location, poke and loop
-            if (pokeLocationCount == 0) {
-              maze.setSide(proposedx, proposedy, TileAttr::up, false);
-              x = proposedx, y = proposedy;
-              goto ForceValidMazeLoop;  // continue processing
-            }
-          }
-        }
-      }
+  // modify hours to account for 12 hour format
+  if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
+    // if 0am in 12 hour format, it's 12am
+    if (hours == 0) {hours = 12;}
+    // if after noon in 12 hour format, shift over by 12 hours
+    if (hours > 12) {
+      maze.pasteMazeSeed(18, 15, 22, 22, pm);
+      hours -= 12;
+    } else {
+      maze.pasteMazeSeed(18, 15, 22, 22, am);
     }
-    // done poking a hole in the maze to expand the reachable area
   }
-}
 
+  // put time on screen
+  maze.pasteMazeSeed(3, 1, 8, 10, numbers[hours / 10]); // top left: hours major digit
+  maze.pasteMazeSeed(10, 1, 15, 10, numbers[hours % 10]); // top right: hours minor digit
+  maze.pasteMazeSeed(3, 13, 8, 22, numbers[minutes / 10]); // bottom left: minutes major digit
+  maze.pasteMazeSeed(10, 13, 15, 22, numbers[minutes % 10]); // bottom right: minutes minor digit
 
-// Clear maze
-void WatchFaceMaze::InitializeMaze() {
-  maze.fill(MazeTile().setLeft(true).setUp(true).setFlagEmpty(true));
+  // reserve some space at the top right to put the battery and BLE indicators there
+  maze.pasteMazeSeed(21, 0, 23, 2, indicatorSpace);
 }
 
 
@@ -498,8 +506,8 @@ void WatchFaceMaze::GenerateMaze() {
   while (true) {
     // find position to start generating a path from
     for (uint8_t i = 0; i < 30; i++) {
-      x = prng.rand(0, Maze::WIDTH-1);
-      y = prng.rand(0, Maze::HEIGHT-1);
+      x = (int)prng.rand(0, Maze::WIDTH-1);
+      y = (int)prng.rand(0, Maze::HEIGHT-1);
       if (maze.getSide(x,y, TileAttr::flagempty)) {break;}  // found solution tile
       if (i == 29) {
         // failed all 30 attempts (this is inside the for loop for 'organization')
@@ -543,8 +551,8 @@ void WatchFaceMaze::GenerateMaze() {
 
 
 void WatchFaceMaze::GeneratePath(int x, int y) {
-  int oldx = -1, oldy = -1;
-  uint8_t direction = -1;  // which direction the cursor moved in
+  int oldx, oldy;  // used in backtracking
+  uint8_t direction;  // which direction the cursor moved in
   while (true) {
     // set current tile to reflect that it's been worked on
     maze.setSide(x, y, TileAttr::flagempty, false); // no longer empty
@@ -594,7 +602,7 @@ void WatchFaceMaze::GeneratePath(int x, int y) {
     } else {
       // DID loop in on self, track down and eliminate loop
       // targets are the coordinates of where it needs to backtrack to
-      int targetx = x, targety = y;
+      const int targetx = x, targety = y;
       x = oldx, y = oldy;
       while (x != targetx || y != targety) {
         if (y > 0 && (maze.getSide(x, y, TileAttr::up) == false)) { // backtrack up
@@ -631,11 +639,93 @@ void WatchFaceMaze::GeneratePath(int x, int y) {
 }
 
 
+// goes through the maze, finds disconnected segments and connects them
+void WatchFaceMaze::ForceValidMaze() {
+  // crude maze-optimized flood fill: follow a path until can't move any more, then find some other location to follow from. repeat.
+  // once it's traversed all reachable tiles, checks if there are any tiles that have not been traversed. if there are, then find a border
+  //  between the traversed and non-traversed segments. poke a hole at one of these borders randomly.
+  // once the hole has been poked, more maze is reachable. continue this "fill-search then poke" scheme until the entire maze is accessible.
+  // this function repurposes flaggen for traversed tiles, so it expects it to be false on all tiles (should be in normal control flow)
+  
+  // initialize cursor x and y to bottom right
+  int x = Maze::WIDTH-1, y = Maze::HEIGHT - 1;
+  while (true) {
+    // sorry for using goto but this needs to be really nested and the components are too integrated to split out into functions...
+    ForceValidMazeLoop:
+    maze.setSide(x, y, TileAttr::flaggen, true);
+    // move cursor
+    if (y > 0 && !maze.getSide(x, y, TileAttr::up) && !maze.getSide(x, y-1, TileAttr::flaggen)) {y--;}
+    else if (x < Maze::WIDTH-1 && !maze.getSide(x, y, TileAttr::right) && !maze.getSide(x+1, y, TileAttr::flaggen)) {x++;}
+    else if (y < Maze::HEIGHT-1 && !maze.getSide(x, y, TileAttr::down) && !maze.getSide(x, y+1, TileAttr::flaggen)) {y++;}
+    else if (x > 0 && !maze.getSide(x, y, TileAttr::left) && !maze.getSide(x-1, y, TileAttr::flaggen)) {x--;}
+    else {
+      int pokeLocationCount = 0;
+      // couldn't find any position to move to, need to set cursor to a different usable location
+      for (int proposedy = 0; proposedy < Maze::HEIGHT; proposedy++) {
+        for (int proposedx = 0; proposedx < Maze::WIDTH; proposedx++) {
+          const bool ownState = maze.getSide(proposedx, proposedy, TileAttr::flaggen);
+
+          // if tile to the left is of a different traversal state (is traversed boundary)
+          if (proposedx > 0 && (maze.getSide(proposedx-1, proposedy, TileAttr::flaggen) != ownState)) {
+            // if found boundary AND can get to it, just continue working from here
+            if (maze.getSide(proposedx, proposedy, TileAttr::left) == false) {x = proposedx, y = proposedy; goto ForceValidMazeLoop;}
+            pokeLocationCount++;
+          }
+
+          // if tile to up is of a different traversal state (is traversed boundary)
+          if (proposedy > 0 && (maze.getSide(proposedx, proposedy-1, TileAttr::flaggen) != ownState)) {
+            // if found boundary AND can get to it, just continue working from here
+            if (maze.getSide(proposedx, proposedy, TileAttr::up) == false) {x = proposedx, y = proposedy; goto ForceValidMazeLoop;}
+            pokeLocationCount++;
+          }
+        }
+      }
+      // finished scanning maze; there are no locations the cursor can be placed for it to continue scanning
+
+      // if there are no walls that can be poked through to increase reachable area, maze is finished
+      if (pokeLocationCount == 0) {return;}
+
+      // if execution gets here, need to poke a hole.
+      // choose a random poke location to poke a hole through. pokeLocationCount is now used as an index
+      pokeLocationCount = prng.rand(1, pokeLocationCount);
+      for (int proposedy = 0; proposedy < Maze::HEIGHT; proposedy++) {
+        for (int proposedx = 0; proposedx < Maze::WIDTH; proposedx++) {
+          // pretty much a copy of the previous code which FINDS poke locations, but now with the goal of actually doing the poking
+          const bool ownState = maze.getSide(proposedx, proposedy, TileAttr::flaggen);
+
+          if (proposedx > 0 && (maze.getSide(proposedx-1, proposedy, TileAttr::flaggen) != ownState)) {
+            pokeLocationCount--;
+            // found the target poke location, poke and loop
+            if (pokeLocationCount == 0) {
+              maze.setSide(proposedx, proposedy, TileAttr::left, false);
+              x = proposedx, y = proposedy;
+              goto ForceValidMazeLoop; // continue OUTSIDE loop
+            }
+          }
+
+          // if tile to up is of a different traversal state (is traversed boundary)
+          if (proposedy > 0 && (maze.getSide(proposedx, proposedy-1, TileAttr::flaggen) != ownState)) {
+            pokeLocationCount--;
+            // found the target poke location, poke and loop
+            if (pokeLocationCount == 0) {
+              maze.setSide(proposedx, proposedy, TileAttr::up, false);
+              x = proposedx, y = proposedy;
+              goto ForceValidMazeLoop;  // continue processing
+            }
+          }
+        }
+      }
+    }
+    // done poking a hole in the maze to expand the reachable area
+  }
+}
+
+
 void WatchFaceMaze::DrawMaze() {
   // this used to be nice code, but it was retrofitted to print offset by 1 pixel for a fancy border.
   // I'm not proud of the logic but it works.
   lv_area_t area;
-  activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer, who knows if the buffer was used just before this
+  swapActiveBuffer();  // who knows who used the buffer before this
 
   // Print horizontal lines
   // This doesn't bother with corners, those just get overwritten by the vertical lines
@@ -647,11 +737,11 @@ void WatchFaceMaze::DrawMaze() {
       else                         {std::fill_n(&activeBuffer[x*Maze::TILESIZE], Maze::TILESIZE, LV_COLOR_BLACK);}
     }
     std::copy_n(activeBuffer, 238, &activeBuffer[238]);
-    area.y1 = Maze::TILESIZE * y - 1;
-    area.y2 = Maze::TILESIZE * y;
+    area.y1 = (Maze::TILESIZE * y) - 1;
+    area.y2 = (Maze::TILESIZE * y);
     lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
     lvgl.FlushDisplay(&area, activeBuffer);
-    activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer
+    swapActiveBuffer();
   }
 
   // Print vertical lines
@@ -665,14 +755,14 @@ void WatchFaceMaze::DrawMaze() {
             {std::fill_n(&activeBuffer[y*Maze::TILESIZE*2], 4, LV_COLOR_WHITE);}
       else  {std::fill_n(&activeBuffer[y*Maze::TILESIZE*2], 4, LV_COLOR_BLACK);}
       // handle actual wall segments
-      if (curblock.getLeft()) {std::fill_n(&activeBuffer[y*Maze::TILESIZE*2+4], Maze::TILESIZE*2-4, LV_COLOR_WHITE);}
-      else                    {std::fill_n(&activeBuffer[y*Maze::TILESIZE*2+4], Maze::TILESIZE*2-4, LV_COLOR_BLACK);}
+      if (curblock.getLeft()) {std::fill_n(&activeBuffer[(y*Maze::TILESIZE*2)+4], (Maze::TILESIZE*2)-4, LV_COLOR_WHITE);}
+      else                    {std::fill_n(&activeBuffer[(y*Maze::TILESIZE*2)+4], (Maze::TILESIZE*2)-4, LV_COLOR_BLACK);}
     }
     area.x1 = Maze::TILESIZE * x - 1;
     area.x2 = Maze::TILESIZE * x;
     lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
     lvgl.FlushDisplay(&area, &activeBuffer[4]);
-    activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer
+    swapActiveBuffer();
   }
 
   // Print borders
@@ -695,82 +785,17 @@ void WatchFaceMaze::DrawTileInner(int16_t x, int16_t y, lv_color_t color) {
     {return;}
 
   // prepare buffer
-  activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;
+  swapActiveBuffer();
   std::fill_n(activeBuffer, 64, color);
   lv_area_t area;
 
   // define bounds
-  area.x1 = 10*x + 1;
-  area.x2 = 10*x + 8;
-  area.y1 = 10*y + 1;
-  area.y2 = 10*y + 8;
+  area.x1 = (Maze::TILESIZE * x) + 1;
+  area.x2 = (Maze::TILESIZE * x) + (Maze::TILESIZE - 2);
+  area.y1 = (Maze::TILESIZE * y) + 1;
+  area.y2 = (Maze::TILESIZE * y) + (Maze::TILESIZE - 2);
 
   // print to screen
-  lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-  lvgl.FlushDisplay(&area, activeBuffer);
-}
-
-
-void WatchFaceMaze::UpdateBatteryDisplay(bool forceRedraw) {
-  batteryPercent = batteryController.PercentRemaining();
-  charging = batteryController.IsCharging();
-  if (forceRedraw || batteryPercent.IsUpdated() || charging.IsUpdated()) {
-    // need to redraw battery stuff
-    activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer
-
-    // number of pixels between top of indicator and fill line. rounds up, so 0% is 24px but 1% is 23px
-    uint8_t fillLevel = 24 - ((uint16_t)(batteryPercent.Get()) * 24) / 100;
-    lv_area_t area = {223,3,236,26};
-
-    // battery body color - green >25%, orange >10%, red <=10%. Charging always makes it yellow.
-    lv_color_t batteryBodyColor;
-    if (charging.Get()) {batteryBodyColor = LV_COLOR_YELLOW;}
-    else if (batteryPercent.Get() > 25) {batteryBodyColor = LV_COLOR_GREEN;}
-    else if (batteryPercent.Get() > 10) {batteryBodyColor = LV_COLOR_ORANGE;}
-    else {batteryBodyColor = LV_COLOR_RED;}
-
-    // battery top color (upper gray section) - gray normally, light blue when charging, light red at <=10% charge
-    lv_color_t batteryTopColor;
-    if (charging.Get()) {batteryTopColor = LV_COLOR_MAKE(0x80,0x80,0xC0);}
-    else if (batteryPercent.Get() <= 10) {batteryTopColor = LV_COLOR_MAKE(0xC0,0x80,0x80);}
-    else {batteryTopColor = LV_COLOR_GRAY;}
-
-    // actually fill the buffer with the chosen colors and print it
-    std::fill_n(activeBuffer, fillLevel*14, batteryTopColor);
-    std::fill_n((activeBuffer+fillLevel*14), (24-fillLevel)*14, batteryBodyColor);
-    lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-    lvgl.FlushDisplay(&area, activeBuffer);
-  }
-}
-
-
-void WatchFaceMaze::UpdateBleDisplay(bool forceRedraw) {
-  bleConnected = bleController.IsConnected();
-  if (forceRedraw || bleConnected.IsUpdated()) {
-    // need to redraw BLE indicator
-    activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer
-
-    lv_area_t area = {213,3,216,26};
-    std::fill_n(activeBuffer, 96, (bleConnected.Get() ? LV_COLOR_BLUE : LV_COLOR_GRAY));
-
-    lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-    lvgl.FlushDisplay(&area, activeBuffer);
-  }
-}
-
-
-void WatchFaceMaze::ClearIndicators() {
-  activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;  // switch buffer
-  lv_area_t area;
-  std::fill_n(activeBuffer, 24*14, LV_COLOR_BLACK);
-
-  // battery indicator
-  area.x1=223; area.y1=3; area.x2=236; area.y2=26;
-  lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
-  lvgl.FlushDisplay(&area, activeBuffer);
-
-  // BLE indicator
-  area.x1=213; area.y1=3; area.x2=216; area.y2=26;
   lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
   lvgl.FlushDisplay(&area, activeBuffer);
 }
