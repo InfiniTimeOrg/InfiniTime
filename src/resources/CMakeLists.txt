@@ -10,6 +10,7 @@ message(STATUS "Using ${LV_IMG_CONV} to generate font files")
 if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.12)
    # FindPython3 module introduces with CMake 3.12
    # https://cmake.org/cmake/help/latest/module/FindPython3.html
+   set(Python3_FIND_STRATEGY LOCATION) # https://discourse.cmake.org/t/find-package-python3-is-not-finding-the-correct-python/10563
    find_package(Python3 REQUIRED)
 else()
    set(Python3_EXECUTABLE "python")
