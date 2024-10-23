@@ -77,8 +77,6 @@ namespace Pinetime {
       void Start();
       void PushMessage(Messages msg);
 
-      void OnTouchEvent();
-
       bool IsSleepDisabled() {
         return wakeLocksHeld > 0;
       }

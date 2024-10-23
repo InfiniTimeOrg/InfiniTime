@@ -168,7 +168,7 @@ std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> NoI
 
 void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   if (pin == Pinetime::PinMap::Cst816sIrq) {
-    systemTask.OnTouchEvent();
+    systemTask.PushMessage(Pinetime::System::Messages::OnTouchEvent);
     return;
   }
 
