@@ -142,6 +142,10 @@ namespace Pinetime {
         // first apply gravity, then apply damping factor, then add velocity to position
         static constexpr float GRAVITY = 0.3;  // added to yvel every step (remember up is -y)
         static constexpr float DAMPING_FACTOR = 0.99;  // keep this much of the velocity every step (applied after gravity)
+        static constexpr uint8_t MAX_START_ANGLE = 45;  // degrees off from straight vertical a particle can be going when spawned (<90)
+        static constexpr uint8_t MIN_START_VELOCITY = 5;  // minimum velocity a particle can spawn with
+        static constexpr uint8_t MAX_START_VELOCITY = 14;  // maximum velocity a particle can spawn with
+        static constexpr float START_X_COMPRESS = 1./2.;  // multiply X velocity by this value. can give a more concentrated confetti blast.
       };
 
 
@@ -239,7 +243,7 @@ namespace Pinetime {
 
         // Confetti for autism creature
         // Infinisim warning: because each confetti moving causes 2 draw calls, this is really slow in Infinisim. Lower if using Infinisim.
-        constexpr static uint16_t CONFETTI_COUNT = 1;
+        constexpr static uint16_t CONFETTI_COUNT = 50;
         ConfettiParticle confettiArr[CONFETTI_COUNT];  // can freely increase/decrease number of particles
         bool initConfetti = false;  // don't want to touch confettiArr in touch event handler, so use a flag and do it in refresh()
         bool confettiActive = false;

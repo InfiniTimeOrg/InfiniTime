@@ -149,13 +149,13 @@ void ConfettiParticle::reset(MazeRNG &prng) {
   xpos = 120;
   ypos = 240;
 
-  // produces float in range -5 to 5 with resolution of 0.01. very stupid but it works.
-  // technically 0.00 has 2x chance of being chosen compared to other values but idc
-  xvel = (((float)prng.rand(0,500))/100);
-  if (prng.rand(0,1)) {xvel = -xvel;}
+  // velocity in pixels/tick
+  float velocity = ((float)prng.rand(MIN_START_VELOCITY*100, MAX_START_VELOCITY*100))/100;
+  // angle, in radians, for going up at the chosen degree angle
+  float angle = ((float)prng.rand(0,MAX_START_ANGLE*2) - MAX_START_ANGLE + 90) * ((float)3.14159265 / 180);
 
-  // float -4 to -13 (remember up is -y);
-  yvel = -(((float)prng.rand(400,1300))/100);
+  xvel = std::cos(angle) * velocity * START_X_COMPRESS;
+  yvel = -std::sin(angle) * velocity;
 
   // Low 3 bits represent red, green, and blue. Also don't allow all three off or all three on at once.
   // Effectively choose any max saturation color except black or white.
