@@ -340,10 +340,12 @@ void WatchFaceMaze::ClearIndicators() {
 
 
 bool WatchFaceMaze::OnTouchEvent(TouchEvents event) {
-  // TODO ADD MUTEX OR SMTH
   // if generation is paused, let it continue working on that. This should really never trigger.
   if (pausedGeneration) {return false;}
-
+  
+  // Interrupts never seem to overlap (instead they're queued) so I don't have to worry about anything happening while one of
+  //  these handlers are running
+  
   switch (event) {
     case Pinetime::Applications::TouchEvents::LongTap:    return HandleLongTap();
     case Pinetime::Applications::TouchEvents::Tap:        return HandleTap();
@@ -351,7 +353,7 @@ bool WatchFaceMaze::OnTouchEvent(TouchEvents event) {
     case Pinetime::Applications::TouchEvents::SwipeRight: return HandleSwipe(1);
     case Pinetime::Applications::TouchEvents::SwipeDown:  return HandleSwipe(2);
     case Pinetime::Applications::TouchEvents::SwipeLeft:  return HandleSwipe(3);
-    default: return false;  // only handle swipe events
+    default: return false;
   }
 }
 
