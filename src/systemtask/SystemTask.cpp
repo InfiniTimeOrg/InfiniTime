@@ -332,6 +332,7 @@ void SystemTask::Work() {
           break;
         case Messages::OnChargingEvent:
           batteryController.ReadPowerState();
+          nimbleController.NotifyBatteryCharging(batteryController.IsCharging());
           GoToRunning();
           displayApp.PushMessage(Applications::Display::Messages::OnChargingEvent);
           break;

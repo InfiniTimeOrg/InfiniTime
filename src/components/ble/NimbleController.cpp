@@ -403,6 +403,12 @@ void NimbleController::NotifyBatteryLevel(uint8_t level) {
   }
 }
 
+void NimbleController::NotifyBatteryCharging(bool isCharging) {
+  if (connectionHandle != BLE_HS_CONN_HANDLE_NONE) {
+    batteryInformationService.NotifyBatteryCharging(connectionHandle, isCharging);
+  }
+}
+
 void NimbleController::EnableRadio() {
   bleController.EnableRadio();
   bleController.Disconnect();
