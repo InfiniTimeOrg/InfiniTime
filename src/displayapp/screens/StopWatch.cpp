@@ -7,7 +7,7 @@ using namespace Pinetime::Applications::Screens;
 using namespace Pinetime::Controllers;
 
 namespace {
-  TimeSeparated convertTicksToTimeSegments(const TickType_t timeElapsed) {
+  TimeSeparated ConvertTicksToTimeSegments(const TickType_t timeElapsed) {
     // Centiseconds
     const int timeElapsedCentis = timeElapsed * 100 / configTICK_RATE_HZ;
 
@@ -18,14 +18,14 @@ namespace {
     return TimeSeparated {hours, mins, secs, hundredths};
   }
 
-  void play_pause_event_handler(lv_obj_t* obj, lv_event_t event) {
+  void PlayPauseEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
     if (event == LV_EVENT_CLICKED) {
       stopWatch->PlayPauseBtnEventHandler();
     }
   }
 
-  void stop_lap_event_handler(lv_obj_t* obj, lv_event_t event) {
+  void StopLapEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* stopWatch = static_cast<StopWatch*>(obj->user_data);
     if (event == LV_EVENT_CLICKED) {
       stopWatch->StopLapBtnEventHandler();
@@ -42,14 +42,14 @@ StopWatch::StopWatch(System::SystemTask& systemTask,
   static constexpr uint8_t btnHeight = 80;
   btnPlayPause = lv_btn_create(lv_scr_act(), nullptr);
   btnPlayPause->user_data = this;
-  lv_obj_set_event_cb(btnPlayPause, play_pause_event_handler);
+  lv_obj_set_event_cb(btnPlayPause, PlayPauseEventHandler);
   lv_obj_set_size(btnPlayPause, btnWidth, btnHeight);
   lv_obj_align(btnPlayPause, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   txtPlayPause = lv_label_create(btnPlayPause, nullptr);
 
   btnStopLap = lv_btn_create(lv_scr_act(), nullptr);
   btnStopLap->user_data = this;
-  lv_obj_set_event_cb(btnStopLap, stop_lap_event_handler);
+  lv_obj_set_event_cb(btnStopLap, StopLapEventHandler);
   lv_obj_set_size(btnStopLap, btnWidth, btnHeight);
   lv_obj_align(btnStopLap, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   txtStopLap = lv_label_create(btnStopLap, nullptr);
@@ -146,7 +146,7 @@ void StopWatch::DisplayCleared() {
 }
 
 void StopWatch::RenderTime() {
-  TimeSeparated currentTimeSeparated = convertTicksToTimeSegments(stopWatchController.GetElapsedTime());
+  TimeSeparated currentTimeSeparated = ConvertTicksToTimeSegments(stopWatchController.GetElapsedTime());
   if (currentTimeSeparated.hours == 0) {
     lv_label_set_text_fmt(time, "%02d:%02d", currentTimeSeparated.mins, currentTimeSeparated.secs);
   } else {
@@ -176,14 +176,16 @@ void StopWatch::RenderPause() {
 
 void StopWatch::RenderLaps() {
   lv_label_set_text(lapText, "");
-  for (int i = 0; i < displayedLaps; i++) {
-    LapInfo* lap = stopWatchController.LastLap(i);
+  for (int i = displayedLaps - 1; i >= 0; i--) {
+    std::optional<LapInfo> lap = stopWatchController.LastLap(i);
 
-    if (lap->count != 0) {
-      TimeSeparated laptime = convertTicksToTimeSegments(lap->time);
+    if (lap) {
+      TimeSeparated laptime = ConvertTicksToTimeSegments(lap->time);
       char buffer[16];
       sprintf(buffer, "#%2d   %2d:%02d.%02d\n", lap->count, laptime.mins, laptime.secs, laptime.hundredths);
       lv_label_ins_text(lapText, LV_LABEL_POS_LAST, buffer);
+    } else {
+      lv_label_ins_text(lapText, LV_LABEL_POS_LAST, "\n");
     }
   }
 }
