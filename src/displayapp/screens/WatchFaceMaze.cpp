@@ -152,10 +152,16 @@ void ConfettiParticle::reset(MazeRNG &prng) {
 
   // produces float in range -5 to 5 with resolution of 0.01. very stupid but it works.
   // technically 0.00 has 2x chance of being chosen as other values but idc
-  xvel = (((float)prng.rand(0,500))/100);
+  xvel = (((float)prng.rand(0,300))/100);
   if (prng.rand(0,1)) {xvel = -xvel;}
   // float -3 to -8.5 (remember up is -y);
   yvel = -(((float)prng.rand(200,850))/100);
+
+  // Low 3 bits represent red, green, and blue. Also don't allow all three off or all three on at once.
+  // Effectively choose any max saturation color except black or white.
+  const uint8_t color = prng.rand(1,6);
+  wallcolor = LV_COLOR_MAKE((color&0b001) * 0xFF, ((color&0b010)>>1) * 0xFF, ((color&0b100)>>2) * 0xFF);
+  bgcolor = LV_COLOR_MAKE((color&0b001) * 0x80, ((color&0b010)>>1) * 0x80, ((color&0b100)>>2) * 0x80);
 
   updateMazeEquiv();
 }
@@ -849,7 +855,7 @@ void WatchFaceMaze::ProcessConfetti() {
     // need to redraw?
     if (oldx != particle.tilex || oldy != particle.tiley || oldside != particle.side) {
       DrawMazeSide(oldx, oldy, TileAttr(oldside), LV_COLOR_WHITE, LV_COLOR_BLACK);
-      DrawMazeSide(particle.tilex, particle.tiley, TileAttr(particle.side), LV_COLOR_RED, LV_COLOR_MAKE(0x80,0,0));
+      DrawMazeSide(particle.tilex, particle.tiley, TileAttr(particle.side), particle.wallcolor, particle.bgcolor);
     }
   }
 

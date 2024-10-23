@@ -131,6 +131,9 @@ namespace Pinetime {
         int16_t tiley;
         uint8_t side;
 
+        lv_color_t wallcolor;
+        lv_color_t bgcolor;
+
       private:
         // update the internal store of where the tile should be drawn on screen. Called automatically from step() and reset().
         void updateMazeEquiv();
@@ -242,7 +245,9 @@ namespace Pinetime {
         Utility::DirtyValue<bool> bleConnected;
 
         // Confetti for autism creature
-        ConfettiParticle confettiArr[20];  // can freely increase/decrease number of particles
+        // Infinisim warning: because each confetti moving causes 2 draw calls, this is really slow in Infinisim. Lower if using Infinisim.
+        constexpr static uint16_t CONFETTI_COUNT = 50;
+        ConfettiParticle confettiArr[CONFETTI_COUNT];  // can freely increase/decrease number of particles
         bool initConfetti = false;  // don't want to touch confettiArr in touch event handler, so use a flag and do it in refresh()
         bool confettiActive = false;
 
