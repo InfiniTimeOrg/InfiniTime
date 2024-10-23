@@ -26,7 +26,7 @@ namespace Pinetime {
       Controllers::Battery& batteryController;
       static constexpr uint16_t batteryInformationServiceId {0x180F};
       static constexpr uint16_t batteryLevelId {0x2A19};
-      static constexpr uint16_t isChargingId {0x2A1B};
+      static constexpr uint16_t isChargingId {0x2BED};
 
       static constexpr ble_uuid16_t batteryInformationServiceUuid {.u {.type = BLE_UUID_TYPE_16}, .value = batteryInformationServiceId};
 
