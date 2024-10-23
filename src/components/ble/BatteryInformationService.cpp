@@ -20,7 +20,7 @@ BatteryInformationService::BatteryInformationService(Controllers::Battery& batte
                                .arg = this,
                                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
                                .val_handle = &batteryLevelHandle},
-                               {.uuid = &isChargingUuid.u,
+                              {.uuid = &isChargingUuid.u,
                                .access_cb = BatteryInformationServiceCallback,
                                .arg = this,
                                .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
@@ -50,7 +50,7 @@ int BatteryInformationService::OnBatteryServiceRequested(uint16_t attributeHandl
     uint8_t batteryValue = batteryController.PercentRemaining();
     int res = os_mbuf_append(context->om, &batteryValue, 1);
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
-    
+
   } else if (attributeHandle == isChargingHandle) {
     NRF_LOG_INFO("BATTERY : handle = %d (isCharging)", isChargingHandle);
     uint8_t isCharging = batteryController.IsCharging() ? 1 : 0;
