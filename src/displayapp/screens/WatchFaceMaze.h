@@ -118,26 +118,21 @@ namespace Pinetime {
       public:
         // steps the confetti simulation. Importantly, updates the maze equivalent position.
         // Returns true if the particle has finished processing, else false.
-        // Need to save the maze equiv pos elsewhere before stepping to be able to clear the old particle position (if redraw needed).
-        // I couldn't really figure a better way to do it without saving the old positions in the class itself...
+        // Need to save the particle position elsewhere before stepping to be able to clear the old particle position (if redraw needed).
+        // I couldn't really figure a better way to do it other than saving the old positions in the class itself and that's just awful.
         bool step();
 
         // reset position and generate new velocity using the passed prng
         void reset(MazeRNG &prng);
 
-        // holds the previous maze tile and which side of said tile the particle was drawn on
-        // used so it doesn't draw EVERY confetti particle every frame, but only when they update
-        int16_t tilex;
-        int16_t tiley;
-        uint8_t side;
+        // x and y positions of the particle. Positions are in pixels, so just divide by tile size to get the tile it's in.
+        int16_t tileX() const {return xpos > 0 ? xpos/((float)Maze::TILESIZE) : -1;}  // need positive check else particles can get stuck to left wall
+        int16_t tileY() const {return ypos/((float)Maze::TILESIZE);}
 
-        lv_color_t wallcolor;
-        lv_color_t bgcolor;
+        // color of the particle
+        lv_color_t color;
 
       private:
-        // update the internal store of where the tile should be drawn on screen. Called automatically from step() and reset().
-        void updateMazeEquiv();
-
         // positions and velocities of particle, in pixels and pixels/step (~50 steps per second)
         float xpos;
         float ypos;
@@ -145,7 +140,7 @@ namespace Pinetime {
         float yvel;
 
         // first apply gravity, then apply damping factor, then add velocity to position
-        static constexpr float GRAVITY = 0.1;  // added to yvel every step (remember up is -y)
+        static constexpr float GRAVITY = 0.3;  // added to yvel every step (remember up is -y)
         static constexpr float DAMPING_FACTOR = 0.99;  // keep this much of the velocity every step (applied after gravity)
       };
 
@@ -202,11 +197,9 @@ namespace Pinetime {
         // Draws the maze to the screen.
         void DrawMaze();
 
-        // Draw a single side. Really only used for confetti, but is generic.
-        // CAVEAT: If drawing to a wall with no more walls around one of its endpoints (the wall is jutting out like a spike), the
-        //  tip of this 'spike' will not get redrawn despite it maybe being more intuitive if it did.
-        // Given the use case in this code, I believe it is not worthwhile to fix.
-        void DrawMazeSide(int16_t x, int16_t y, TileAttr side, lv_color_t wallcolor, lv_color_t bgcolor);
+        // Fill in the inside of a maze square. Wall states don't affect this; it never draws in the area where walls go.
+        // Generic, but only actually used for confetti.
+        void DrawTileInner(int16_t x, int16_t y, lv_color_t color);
 
         // Draw the indicators at the top right.
         void UpdateBatteryDisplay(bool forceRedraw = false);
@@ -246,7 +239,7 @@ namespace Pinetime {
 
         // Confetti for autism creature
         // Infinisim warning: because each confetti moving causes 2 draw calls, this is really slow in Infinisim. Lower if using Infinisim.
-        constexpr static uint16_t CONFETTI_COUNT = 50;
+        constexpr static uint16_t CONFETTI_COUNT = 1;
         ConfettiParticle confettiArr[CONFETTI_COUNT];  // can freely increase/decrease number of particles
         bool initConfetti = false;  // don't want to touch confettiArr in touch event handler, so use a flag and do it in refresh()
         bool confettiActive = false;

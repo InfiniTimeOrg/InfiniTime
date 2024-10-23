@@ -131,14 +131,13 @@ void Maze::pasteMazeSeed(int x1, int y1, int x2, int y2, const uint8_t toPaste[]
 
 
 bool ConfettiParticle::step() {
-  // first apply gravity (if needed), then dampening, then apply velocity to position.
+  // first apply gravity (only to y), then dampening, then apply velocity to position.
   xvel *= DAMPING_FACTOR;
+  xpos += xvel;
+
   yvel += GRAVITY;
   yvel *= DAMPING_FACTOR;
-  xpos += xvel;
   ypos += yvel;
-
-  updateMazeEquiv();
 
   // return true if particle is finished (went OOB (ignore top; particle can still fall down))
   return (xpos < 0 || xpos > 240 || ypos > 240);
@@ -151,48 +150,17 @@ void ConfettiParticle::reset(MazeRNG &prng) {
   ypos = 240;
 
   // produces float in range -5 to 5 with resolution of 0.01. very stupid but it works.
-  // technically 0.00 has 2x chance of being chosen as other values but idc
-  xvel = (((float)prng.rand(0,300))/100);
+  // technically 0.00 has 2x chance of being chosen compared to other values but idc
+  xvel = (((float)prng.rand(0,500))/100);
   if (prng.rand(0,1)) {xvel = -xvel;}
-  // float -3 to -8.5 (remember up is -y);
-  yvel = -(((float)prng.rand(200,850))/100);
+
+  // float -4 to -13 (remember up is -y);
+  yvel = -(((float)prng.rand(400,1300))/100);
 
   // Low 3 bits represent red, green, and blue. Also don't allow all three off or all three on at once.
   // Effectively choose any max saturation color except black or white.
-  const uint8_t color = prng.rand(1,6);
-  wallcolor = LV_COLOR_MAKE((color&0b001) * 0xFF, ((color&0b010)>>1) * 0xFF, ((color&0b100)>>2) * 0xFF);
-  bgcolor = LV_COLOR_MAKE((color&0b001) * 0x80, ((color&0b010)>>1) * 0x80, ((color&0b100)>>2) * 0x80);
-
-  updateMazeEquiv();
-}
-
-
-// Probably not pixel perfect because of stuff like the maze border but it's close enough for this purpose
-// actually it might be but I don't want to think about it more than necessary
-void ConfettiParticle::updateMazeEquiv() {
-  // calculating tile is easy
-  tilex = xpos / 10;
-  tiley = ypos / 10;
-
-  // calculating side is gross
-  if (tilex%10 > tiley%10) {
-    // top or right
-    if (tilex%10 > 10-(tiley%10)) {side = 1;}  // right side
-    else {side = 0;}  // top side
-  } else {
-    // bottom or left
-    if (tilex%10 > 10-(tiley%10)) {side = 2;}  // bottom side
-    else {side = 3;}  // left side
-  }
-
-  // and now because I want ONLY unique sides, if it's bottom or right then just change it to the top/left of a neighboring tile
-  if (side == 1) {  // right
-    tilex++;
-    side = 3;
-  } else if (side == 2) {  // down
-    tiley++;
-    side = 0;
-  }
+  const uint8_t colorBits = prng.rand(1,6);
+  color = LV_COLOR_MAKE((colorBits&0b001) * 0xFF, ((colorBits&0b010)>>1) * 0xFF, ((colorBits&0b100)>>2) * 0xFF);
 }
 
 
@@ -720,44 +688,21 @@ void WatchFaceMaze::DrawMaze() {
 }
 
 
-void WatchFaceMaze::DrawMazeSide(int16_t x, int16_t y, TileAttr side, lv_color_t wallcolor, lv_color_t bgcolor) {
-  // convert right and down sides to up and left, makes rest of the code easier
-  if (side == TileAttr::right) {
-    x++;
-    side = TileAttr::left;
-  } else if (side == TileAttr::down) {
-    y++;
-    side = TileAttr::up;
-  }
-
+void WatchFaceMaze::DrawTileInner(int16_t x, int16_t y, lv_color_t color) {
   // early exit if would print OOB
-  if ((x == 0 && side == TileAttr::left) ||
-      (x < 0) ||
-      (x >= Maze::WIDTH) ||
-      (y == 0 && side == TileAttr::up) ||
-      (y < 0) ||
-      (y >= Maze::HEIGHT))
+  if (x < 0 || y < 0 || x > Maze::WIDTH-1 || y > Maze::HEIGHT-1)
     {return;}
 
   // prepare buffer
   activeBuffer = (activeBuffer==buf1) ? buf2 : buf1;
-  std::fill_n(activeBuffer, 16, maze.getSide(x, y, side) ? wallcolor : bgcolor);
+  std::fill_n(activeBuffer, 64, color);
   lv_area_t area;
 
-  // figure where to print
-  if (side == TileAttr::up) {
-    // drawing top side
-    area.x1 = 10*x + 1;
-    area.x2 = 10*x + 8;
-    area.y1 = 10*y - 1;
-    area.y2 = 10*y;
-  } else if (side == TileAttr::left) {
-    // drawing left side
-    area.x1 = 10*x - 1;
-    area.x2 = 10*x;
-    area.y1 = 10*y + 1;
-    area.y2 = 10*y + 8;
-  }
+  // define bounds
+  area.x1 = 10*x + 1;
+  area.x2 = 10*x + 8;
+  area.y1 = 10*y + 1;
+  area.y2 = 10*y + 8;
 
   // print to screen
   lvgl.SetFullRefresh(Components::LittleVgl::FullRefreshDirections::None);
@@ -836,7 +781,7 @@ void WatchFaceMaze::ClearConfetti() {
 
   // clear all particles and reset state
   for (const ConfettiParticle &particle : confettiArr) {
-    DrawMazeSide(particle.tilex, particle.tiley, TileAttr(particle.side), LV_COLOR_WHITE, LV_COLOR_BLACK);
+    DrawTileInner(particle.tileX(), particle.tileY(), LV_COLOR_BLACK);
   }
   confettiActive = false;
 }
@@ -847,15 +792,14 @@ void WatchFaceMaze::ProcessConfetti() {
   // flag "done" stays true if all step() calls stated that the particle was done, otherwise it goes false
   bool done = true;
   for (ConfettiParticle &particle : confettiArr) {
-    int16_t oldx = particle.tilex;
-    int16_t oldy = particle.tiley;
-    uint8_t oldside = particle.side;
+    int16_t oldx = particle.tileX();
+    int16_t oldy = particle.tileY();
     // if any step() calls return false (i.e. not finished), done gets set to false as well
     done = particle.step() && done;
     // need to redraw?
-    if (oldx != particle.tilex || oldy != particle.tiley || oldside != particle.side) {
-      DrawMazeSide(oldx, oldy, TileAttr(oldside), LV_COLOR_WHITE, LV_COLOR_BLACK);
-      DrawMazeSide(particle.tilex, particle.tiley, TileAttr(particle.side), particle.wallcolor, particle.bgcolor);
+    if (oldx != particle.tileX() || oldy != particle.tileY()) {
+      DrawTileInner(oldx, oldy, LV_COLOR_BLACK);
+      DrawTileInner(particle.tileX(), particle.tileY(), particle.color);
     }
   }
 
