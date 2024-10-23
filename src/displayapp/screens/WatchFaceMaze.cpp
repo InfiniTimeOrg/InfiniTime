@@ -331,8 +331,8 @@ bool WatchFaceMaze::HandleSwipe(uint8_t direction) {
   currentCode[0] = direction;
 
   // check if valid code has been entered
-  // this structure also has the effect that if code gets entered while on the requested page, it doesn't refresh.
-  Displaying newState = currentState;
+  // Displaying::watchface is used here simply as a dummy value, and it will never transition to that
+  Displaying newState = Displaying::watchface;
   if (std::memcmp(currentCode, lossCode, sizeof(lossCode)) == 0)              {newState = Displaying::loss;}   // loss
   else if (std::memcmp(currentCode, amogusCode, sizeof(amogusCode)) == 0)     {newState = Displaying::amogus;}  // amogus
   else if (std::memcmp(currentCode, autismCode, sizeof(autismCode)) == 0)     {newState = Displaying::autismcreature;}  // autismcreature/tbh
@@ -341,10 +341,11 @@ bool WatchFaceMaze::HandleSwipe(uint8_t direction) {
   else if (std::memcmp(currentCode, pinetimeCode, sizeof(pinetimeCode)) == 0) {newState = Displaying::pinetime;}  // pinetime logo
 
   // only request a screen refresh if state has been updated
-  if (newState != currentState) {
+  if (newState != Displaying::watchface) {
     currentState = newState;
     screenRefreshRequired = true;
     motor.RunForDuration(10);
+    std::fill_n(currentCode, sizeof(currentCode), 255);  // clear code
   }
   return true;
 }
