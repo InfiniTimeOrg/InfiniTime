@@ -42,9 +42,9 @@ namespace {
     std::memcpy(cityName.data(), &dataBuffer[16], 32);
     cityName[32] = '\0';
     return SimpleWeatherService::CurrentWeather(ToUInt64(&dataBuffer[2]),
-                                                ToInt16(&dataBuffer[10]),
-                                                ToInt16(&dataBuffer[12]),
-                                                ToInt16(&dataBuffer[14]),
+                                                SimpleWeatherService::Temperature(ToInt16(&dataBuffer[10])),
+                                                SimpleWeatherService::Temperature(ToInt16(&dataBuffer[12])),
+                                                SimpleWeatherService::Temperature(ToInt16(&dataBuffer[14])),
                                                 SimpleWeatherService::Icons {dataBuffer[16 + 32]},
                                                 std::move(cityName));
   }
@@ -52,12 +52,12 @@ namespace {
   SimpleWeatherService::Forecast CreateForecast(const uint8_t* dataBuffer) {
     auto timestamp = static_cast<uint64_t>(ToUInt64(&dataBuffer[2]));
 
-    std::array<SimpleWeatherService::Forecast::Day, SimpleWeatherService::MaxNbForecastDays> days;
+    std::array<std::optional<SimpleWeatherService::Forecast::Day>, SimpleWeatherService::MaxNbForecastDays> days;
     const uint8_t nbDaysInBuffer = dataBuffer[10];
     const uint8_t nbDays = std::min(SimpleWeatherService::MaxNbForecastDays, nbDaysInBuffer);
     for (int i = 0; i < nbDays; i++) {
-      days[i] = SimpleWeatherService::Forecast::Day {ToInt16(&dataBuffer[11 + (i * 5)]),
-                                                     ToInt16(&dataBuffer[13 + (i * 5)]),
+      days[i] = SimpleWeatherService::Forecast::Day {SimpleWeatherService::Temperature(ToInt16(&dataBuffer[11 + (i * 5)])),
+                                                     SimpleWeatherService::Temperature(ToInt16(&dataBuffer[13 + (i * 5)])),
                                                      SimpleWeatherService::Icons {dataBuffer[15 + (i * 5)]}};
     }
     return SimpleWeatherService::Forecast {timestamp, nbDays, days};
@@ -98,9 +98,9 @@ int SimpleWeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
         currentWeather = CreateCurrentWeather(dataBuffer);
         NRF_LOG_INFO("Current weather :\n\tTimestamp : %d\n\tTemperature:%d\n\tMin:%d\n\tMax:%d\n\tIcon:%d\n\tLocation:%s",
                      currentWeather->timestamp,
-                     currentWeather->temperature,
-                     currentWeather->minTemperature,
-                     currentWeather->maxTemperature,
+                     currentWeather->temperature.PreciseCelsius(),
+                     currentWeather->minTemperature.PreciseCelsius(),
+                     currentWeather->maxTemperature.PreciseCelsius(),
                      currentWeather->iconId,
                      currentWeather->location.data());
       }
@@ -112,9 +112,9 @@ int SimpleWeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
         for (int i = 0; i < 5; i++) {
           NRF_LOG_INFO("\t[%d] Min: %d - Max : %d - Icon : %d",
                        i,
-                       forecast->days[i].minTemperature,
-                       forecast->days[i].maxTemperature,
-                       forecast->days[i].iconId);
+                       forecast->days[i]->minTemperature.PreciseCelsius(),
+                       forecast->days[i]->maxTemperature.PreciseCelsius(),
+                       forecast->days[i]->iconId);
         }
       }
       break;
