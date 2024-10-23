@@ -58,7 +58,7 @@ int BatteryInformationService::OnBatteryServiceRequested(uint16_t attributeHandl
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
   }
 
-  return BLE_ATT_ERR_UNLIKELY;
+  return 0;
 }
 
 void BatteryInformationService::NotifyBatteryLevel(uint16_t connectionHandle, uint8_t level) {
