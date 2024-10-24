@@ -29,7 +29,7 @@ namespace Pinetime {
 
         Widgets::Counter dayCounter = Widgets::Counter(1, 31, jetbrains_mono_bold_20);
         Widgets::Counter monthCounter = Widgets::Counter(1, 12, jetbrains_mono_bold_20);
-        Widgets::Counter yearCounter = Widgets::Counter(1970, 9999, jetbrains_mono_bold_20);
+        Widgets::Counter yearCounter = Widgets::Counter(2024, 9999, jetbrains_mono_bold_20);
       };
     }
   }
