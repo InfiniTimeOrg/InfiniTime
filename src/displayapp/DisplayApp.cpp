@@ -29,6 +29,7 @@
 #include "displayapp/screens/Dice.h"
 #include "displayapp/screens/Weather.h"
 #include "displayapp/screens/PassKey.h"
+#include "displayapp/screens/TicTacToe.h"
 #include "displayapp/screens/Error.h"
 
 #include "drivers/Cst816s.h"
