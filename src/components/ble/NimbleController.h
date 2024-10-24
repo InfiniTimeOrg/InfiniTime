@@ -73,6 +73,7 @@ namespace Pinetime {
 
       uint16_t connHandle();
       void NotifyBatteryLevel(uint8_t level);
+      void NotifyBatteryLevelStatus(bool isCharging);
 
       void RestartFastAdv() {
         fastAdvCount = 0;
