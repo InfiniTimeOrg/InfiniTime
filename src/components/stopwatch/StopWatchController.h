@@ -3,6 +3,7 @@
 #include <FreeRTOS.h>
 #include <optional>
 #include <timers.h>
+#include "utility/CircularBuffer.h"
 
 namespace Pinetime {
   namespace System {
@@ -17,7 +18,6 @@ namespace Pinetime {
       TickType_t time = 0; // Delta time from beginning of stopwatch
     };
 
-    constexpr int lapCapacity = 2;
 
     class StopWatchController {
     public:
@@ -45,19 +45,20 @@ namespace Pinetime {
       bool IsCleared();
       bool IsPaused();
 
-    // private:
+    private:
       // Current state of stopwatch
       StopWatchStates currentState = StopWatchStates::Cleared;
       // Start time of current duration
       TickType_t startTime = 0;
       // How much time was elapsed before current duration
       TickType_t timeElapsedPreviously = 0;
-      // Stores lap times
-      LapInfo laps[lapCapacity];
+
+      // Number of stored laps
+      static constexpr int lapCapacity = 2;
+      // Lap storage
+      Utility::CircularBuffer<LapInfo, lapCapacity> laps;
       // Total lap count; may exceed lapCapacity
       int lapCount = 0;
-      // Index for next lap time; must be lower than lapCapacity
-      int lapHead = 0;
     };
   }
 }
