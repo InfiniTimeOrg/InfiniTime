@@ -6,7 +6,7 @@ using namespace Pinetime::Controllers;
 
 constexpr ble_uuid16_t BatteryInformationService::batteryInformationServiceUuid;
 constexpr ble_uuid16_t BatteryInformationService::batteryLevelUuid;
-constexpr ble_uuid16_t BatteryInformationService::isChargingUuid;
+constexpr ble_uuid16_t BatteryInformationService::batteryLevelStatusUuid; // Renamed
 
 int BatteryInformationServiceCallback(uint16_t /*conn_handle*/, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   auto* batteryInformationService = static_cast<BatteryInformationService*>(arg);
@@ -15,24 +15,28 @@ int BatteryInformationServiceCallback(uint16_t /*conn_handle*/, uint16_t attr_ha
 
 BatteryInformationService::BatteryInformationService(Controllers::Battery& batteryController)
   : batteryController {batteryController},
-    characteristicDefinition {{.uuid = &batteryLevelUuid.u,
-                               .access_cb = BatteryInformationServiceCallback,
-                               .arg = this,
-                               .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
-                               .val_handle = &batteryLevelHandle},
-                              {.uuid = &isChargingUuid.u,
-                               .access_cb = BatteryInformationServiceCallback,
-                               .arg = this,
-                               .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
-                               .val_handle = &isChargingHandle},
-                              {0}},
-    serviceDefinition {
-      {/* Device Information Service */
-       .type = BLE_GATT_SVC_TYPE_PRIMARY,
-       .uuid = &batteryInformationServiceUuid.u,
-       .characteristics = characteristicDefinition},
-      {0},
-    } {
+    characteristicDefinition {{
+      .uuid = &batteryLevelUuid.u,
+      .access_cb = BatteryInformationServiceCallback,
+      .arg = this,
+      .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
+      .val_handle = &batteryLevelHandle
+    },
+    {
+      .uuid = &batteryLevelStatusUuid.u, // Updated UUID
+      .access_cb = BatteryInformationServiceCallback,
+      .arg = this,
+      .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
+      .val_handle = &batteryLevelStatusHandle // Updated handle
+    },
+    {0}},
+    serviceDefinition {{
+      /* Device Information Service */
+      .type = BLE_GATT_SVC_TYPE_PRIMARY,
+      .uuid = &batteryInformationServiceUuid.u,
+      .characteristics = characteristicDefinition
+    },
+    {0}} {
 }
 
 void BatteryInformationService::Init() {
@@ -51,10 +55,21 @@ int BatteryInformationService::OnBatteryServiceRequested(uint16_t attributeHandl
     int res = os_mbuf_append(context->om, &batteryValue, 1);
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
 
-  } else if (attributeHandle == isChargingHandle) {
-    NRF_LOG_INFO("BATTERY : handle = %d (isCharging)", isChargingHandle);
-    uint8_t isCharging = batteryController.IsCharging() ? 1 : 0;
-    int res = os_mbuf_append(context->om, &isCharging, 1);
+  } else if (attributeHandle == batteryLevelStatusHandle) {
+    NRF_LOG_INFO("BATTERY : handle = %d (batteryLevelStatus)", batteryLevelStatusHandle);
+    uint8_t powerState = 0;
+
+    powerState |= 1 << 0;
+    powerState |= (2 << 1);
+    powerState |= (2 << 3);
+
+    if (batteryController.IsCharging()) {
+      powerState |= (1 << 5);
+    } else {
+      powerState &= ~(1 << 5);
+    }
+
+    int res = os_mbuf_append(context->om, &powerState, 1);
     return (res == 0) ? 0 : BLE_ATT_ERR_INSUFFICIENT_RES;
   }
 
@@ -66,8 +81,19 @@ void BatteryInformationService::NotifyBatteryLevel(uint16_t connectionHandle, ui
   ble_gattc_notify_custom(connectionHandle, batteryLevelHandle, om);
 }
 
-void BatteryInformationService::NotifyBatteryCharging(uint16_t connectionHandle, bool isCharging) {
-  uint8_t chargingValue = isCharging ? 1 : 0;
-  auto* om = ble_hs_mbuf_from_flat(&chargingValue, 1);
-  ble_gattc_notify_custom(connectionHandle, isChargingHandle, om);
+void BatteryInformationService::NotifyBatteryLevelStatus(uint16_t connectionHandle, bool isCharging) { // Renamed method
+  uint8_t powerState = 0;
+
+  powerState |= 1 << 0;
+  powerState |= (2 << 1);
+  powerState |= (2 << 3);
+
+  if (isCharging) {
+    powerState |= (1 << 5);
+  } else {
+    powerState &= ~(1 << 5);
+  }
+
+  auto* om = ble_hs_mbuf_from_flat(&powerState, 1);
+  ble_gattc_notify_custom(connectionHandle, batteryLevelStatusHandle, om); // Updated handle
 }
