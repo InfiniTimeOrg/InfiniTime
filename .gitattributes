@@ -1,8 +1,9 @@
 # Set the default behavior, in case people don't have core.autocrlf set.
-* text=auto
+# Prevent build errors on non lf systems (like Windows), we need files with lf as newlines.
+* text=auto eol=lf
 
 # Explicitly declare text files you want to always be normalized and converted
-# to native line endings on checkout.
+# to lf line endings on checkout.
 *.c text
 *.cpp text
 *.h text
