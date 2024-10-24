@@ -81,8 +81,9 @@ int AlertNotificationClient::OnCharacteristicsDiscoveryEvent(uint16_t connection
     NRF_LOG_INFO("ANS Characteristic discovery complete");
     if (isCharacteristicDiscovered) {
       ble_gattc_disc_all_dscs(connectionHandle, newAlertHandle, ansEndHandle, OnAlertNotificationDescriptorDiscoveryEventCallback, this);
-    } else
+    } else {
       onServiceDiscovered(connectionHandle);
+    }
   } else {
     if (characteristic != nullptr && ble_uuid_cmp(&supportedNewAlertCategoryUuid.u, &characteristic->uuid.u) == 0) {
       NRF_LOG_INFO("ANS Characteristic discovered : supportedNewAlertCategoryUuid");
@@ -101,8 +102,9 @@ int AlertNotificationClient::OnCharacteristicsDiscoveryEvent(uint16_t connection
     } else if (characteristic != nullptr && ble_uuid_cmp(&controlPointUuid.u, &characteristic->uuid.u) == 0) {
       NRF_LOG_INFO("ANS Characteristic discovered : controlPointUuid");
       controlPointHandle = characteristic->val_handle;
-    } else
+    } else {
       NRF_LOG_INFO("ANS Characteristic discovered : 0x%x", characteristic->val_handle);
+    }
   }
   return 0;
 }
@@ -135,8 +137,9 @@ int AlertNotificationClient::OnDescriptorDiscoveryEventCallback(uint16_t connect
       }
     }
   } else {
-    if (!isDescriptorFound)
+    if (!isDescriptorFound) {
       onServiceDiscovered(connectionHandle);
+    }
   }
   return 0;
 }
@@ -150,8 +153,9 @@ void AlertNotificationClient::OnNotification(ble_gap_event* event) {
 
     // Ignore notifications with empty message
     const auto packetLen = OS_MBUF_PKTLEN(event->notify_rx.om);
-    if (packetLen <= headerSize)
+    if (packetLen <= headerSize) {
       return;
+    }
 
     size_t bufferSize = std::min(packetLen + stringTerminatorSize, maxBufferSize);
     auto messageSize = std::min(maxMessageSize, (bufferSize - headerSize));

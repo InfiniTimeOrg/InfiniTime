@@ -113,7 +113,7 @@ namespace Pinetime {
                                               controllers.settingsController,
                                               controllers.motionController,
                                               controllers.filesystem);
-      };
+      }
 
       static bool IsAvailable(Pinetime::Controllers::FS& filesystem) {
         return Screens::WatchFaceInfineat::IsAvailable(filesystem);

@@ -513,9 +513,9 @@ void DisplayApp::LoadScreen(Apps app, DisplayApp::FullRefreshDirections directio
         std::find_if(userWatchFaces.begin(), userWatchFaces.end(), [this](const WatchFaceDescription& watchfaceDescription) {
           return watchfaceDescription.watchFace == settingsController.GetWatchFace();
         });
-      if (watchFace != userWatchFaces.end())
+      if (watchFace != userWatchFaces.end()) {
         currentScreen.reset(watchFace->create(controllers));
-      else {
+      } else {
         currentScreen.reset(userWatchFaces[0].create(controllers));
       }
       settingsController.SetAppMenu(0);

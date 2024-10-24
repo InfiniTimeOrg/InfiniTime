@@ -66,7 +66,7 @@ namespace Pinetime {
 
       void Start(Pinetime::System::BootErrors) {
         Start();
-      };
+      }
 
       void PushMessage(Pinetime::Applications::Display::Messages msg);
       void Register(Pinetime::System::SystemTask* systemTask);
