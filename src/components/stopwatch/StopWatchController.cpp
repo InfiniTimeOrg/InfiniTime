@@ -27,35 +27,26 @@ void StopWatchController::Clear() {
     laps[i].time = 0;
   }
   lapCount = 0;
-  lapHead = 0;
 }
 
 // Lap
 
 void StopWatchController::PushLap() {
   TickType_t lapEnd = GetElapsedTime();
-  laps[lapHead].time = lapEnd;
-  laps[lapHead].count = lapCount + 1;
-  lapCount += 1;
-  lapHead = lapCount % lapCapacity;
+  laps[0].time = lapEnd;
+  laps[0].count = ++lapCount;
+  laps--;
 }
 
 int StopWatchController::GetLapCount() {
   return lapCount;
 }
 
-int Wrap(int index) {
-  return ((index % lapCapacity) + lapCapacity) % lapCapacity;
-}
-
 std::optional<LapInfo> StopWatchController::LastLap(int lap) {
-  if (lap >= lapCapacity || lap >= lapCount) {
+  if (lap < 0 || lap >= lapCapacity || laps[lap].count == 0) {
     return {};
   }
-  // Index backwards
-  int mostRecentLap = lapHead - 1;
-  int index = Wrap(mostRecentLap - lap);
-  return laps[index];
+  return laps[lap];
 }
 
 // Data / State acess

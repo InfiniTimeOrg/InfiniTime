@@ -176,7 +176,7 @@ void StopWatch::RenderPause() {
 
 void StopWatch::RenderLaps() {
   lv_label_set_text(lapText, "");
-  for (int i = displayedLaps - 1; i >= 0; i--) {
+  for (int i = 0; i < displayedLaps; i++) {
     std::optional<LapInfo> lap = stopWatchController.LastLap(i);
 
     if (lap) {
