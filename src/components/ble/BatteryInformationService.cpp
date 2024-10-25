@@ -6,7 +6,7 @@ using namespace Pinetime::Controllers;
 
 constexpr ble_uuid16_t BatteryInformationService::batteryInformationServiceUuid;
 constexpr ble_uuid16_t BatteryInformationService::batteryLevelUuid;
-constexpr ble_uuid16_t BatteryInformationService::batteryLevelStatusUuid; // Renamed
+constexpr ble_uuid16_t BatteryInformationService::batteryLevelStatusUuid;
 
 int BatteryInformationServiceCallback(uint16_t /*conn_handle*/, uint16_t attr_handle, struct ble_gatt_access_ctxt* ctxt, void* arg) {
   auto* batteryInformationService = static_cast<BatteryInformationService*>(arg);
@@ -23,11 +23,11 @@ BatteryInformationService::BatteryInformationService(Controllers::Battery& batte
       .val_handle = &batteryLevelHandle
     },
     {
-      .uuid = &batteryLevelStatusUuid.u, // Updated UUID
+      .uuid = &batteryLevelStatusUuid.u,
       .access_cb = BatteryInformationServiceCallback,
       .arg = this,
       .flags = BLE_GATT_CHR_F_READ | BLE_GATT_CHR_F_NOTIFY,
-      .val_handle = &batteryLevelStatusHandle // Updated handle
+      .val_handle = &batteryLevelStatusHandle
     },
     {0}},
     serviceDefinition {{
@@ -95,5 +95,5 @@ void BatteryInformationService::NotifyBatteryLevelStatus(uint16_t connectionHand
   }
 
   auto* om = ble_hs_mbuf_from_flat(&powerState, 1);
-  ble_gattc_notify_custom(connectionHandle, batteryLevelStatusHandle, om); // Updated handle
+  ble_gattc_notify_custom(connectionHandle, batteryLevelStatusHandle, om);
 }
