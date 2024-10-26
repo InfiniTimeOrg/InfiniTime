@@ -81,7 +81,7 @@ StopWatch::StopWatch(System::SystemTask& systemTask,
   if (stopWatchController.IsCleared()) {
     DisplayCleared();
   } else  {
-    if (stopWatchController.GetLapCount() > 0) {
+    if (stopWatchController.GetMaxLapNumber() > 0) {
       RenderLaps();
     }
     RenderTime();
@@ -177,12 +177,12 @@ void StopWatch::RenderPause() {
 void StopWatch::RenderLaps() {
   lv_label_set_text(lapText, "");
   for (int i = 0; i < displayedLaps; i++) {
-    std::optional<LapInfo> lap = stopWatchController.LastLap(i);
+    std::optional<LapInfo> lap = stopWatchController.GetLapFromHistory(i);
 
     if (lap) {
-      TimeSeparated laptime = ConvertTicksToTimeSegments(lap->time);
+      TimeSeparated laptime = ConvertTicksToTimeSegments(lap->timeSinceStart);
       char buffer[16];
-      sprintf(buffer, "#%2d   %2d:%02d.%02d\n", lap->count, laptime.mins, laptime.secs, laptime.hundredths);
+      sprintf(buffer, "#%2d   %2d:%02d.%02d\n", lap->number, laptime.mins, laptime.secs, laptime.hundredths);
       lv_label_ins_text(lapText, LV_LABEL_POS_LAST, buffer);
     } else {
       lv_label_ins_text(lapText, LV_LABEL_POS_LAST, "\n");
@@ -213,7 +213,7 @@ void StopWatch::PlayPauseBtnEventHandler() {
 
 void StopWatch::StopLapBtnEventHandler() {
   if (stopWatchController.IsRunning()) {
-    stopWatchController.PushLap();
+    stopWatchController.AddLapToHistory();
     RenderLaps();
   } else if (stopWatchController.IsPaused()) {
     stopWatchController.Clear();
