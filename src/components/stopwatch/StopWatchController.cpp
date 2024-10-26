@@ -22,31 +22,31 @@ void StopWatchController::Clear() {
   currentState = StopWatchStates::Cleared;
   timeElapsedPreviously = 0;
 
-  for (int i = 0; i < lapCapacity; i++) {
-    laps[i].count = 0;
-    laps[i].time = 0;
+  for (int i = 0; i < histSize; i++) {
+    history[i].number = 0;
+    history[i].timeSinceStart = 0;
   }
-  lapCount = 0;
+  maxLapNumber = 0;
 }
 
 // Lap
 
-void StopWatchController::PushLap() {
+void StopWatchController::AddLapToHistory() {
   TickType_t lapEnd = GetElapsedTime();
-  laps[0].time = lapEnd;
-  laps[0].count = ++lapCount;
-  laps--;
+  history[0].timeSinceStart = lapEnd;
+  history[0].number = ++maxLapNumber;
+  history--;
 }
 
-int StopWatchController::GetLapCount() {
-  return lapCount;
+int StopWatchController::GetMaxLapNumber() {
+  return maxLapNumber;
 }
 
-std::optional<LapInfo> StopWatchController::LastLap(int lap) {
-  if (lap < 0 || lap >= lapCapacity || laps[lap].count == 0) {
+std::optional<LapInfo> StopWatchController::GetLapFromHistory(int index) {
+  if (index < 0 || index >= histSize || history[index].number == 0) {
     return {};
   }
-  return laps[lap];
+  return history[index];
 }
 
 // Data / State acess
