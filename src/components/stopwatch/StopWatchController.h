@@ -49,16 +49,16 @@ namespace Pinetime {
       // Current state of stopwatch
       StopWatchStates currentState = StopWatchStates::Cleared;
       // Start time of current duration
-      TickType_t startTime = 0;
+      TickType_t startTime;
       // How much time was elapsed before current duration
-      TickType_t timeElapsedPreviously = 0;
+      TickType_t timeElapsedPreviously;
 
       // Maximum number of stored laps
       static constexpr int histSize = 2;
       // Lap storage
       Utility::CircularBuffer<LapInfo, histSize> history;
       // Highest lap number; may exceed histSize
-      int maxLapNumber = 0;
+      int maxLapNumber;
     };
   }
 }
