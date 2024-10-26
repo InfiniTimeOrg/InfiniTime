@@ -14,8 +14,8 @@ namespace Pinetime {
     enum class StopWatchStates { Cleared, Running, Paused };
 
     struct LapInfo {
-      int count = 0;       // Used to label the lap
-      TickType_t time = 0; // Delta time from beginning of stopwatch
+      int number = 0;                // Used to label the lap
+      TickType_t timeSinceStart = 0; // Excluding pauses
     };
 
 
@@ -32,14 +32,14 @@ namespace Pinetime {
 
       // Lap functionality
 
-      /// Only the latest laps are stored, the lap count is saved until reset
-      void PushLap();
+      /// Only the latest histSize laps are stored
+      void AddLapToHistory();
 
-      /// Returns lapCount
-      int GetLapCount();
+      /// Returns maxLapNumber
+      int GetMaxLapNumber();
 
       /// Indexes into lap history, with 0 being the latest lap.
-      std::optional<LapInfo> LastLap(int lap = 0);
+      std::optional<LapInfo> GetLapFromHistory(int index);
 
       bool IsRunning();
       bool IsCleared();
@@ -53,12 +53,12 @@ namespace Pinetime {
       // How much time was elapsed before current duration
       TickType_t timeElapsedPreviously = 0;
 
-      // Number of stored laps
-      static constexpr int lapCapacity = 2;
+      // Maximum number of stored laps
+      static constexpr int histSize = 2;
       // Lap storage
-      Utility::CircularBuffer<LapInfo, lapCapacity> laps;
-      // Total lap count; may exceed lapCapacity
-      int lapCount = 0;
+      Utility::CircularBuffer<LapInfo, histSize> history;
+      // Highest lap number; may exceed histSize
+      int maxLapNumber = 0;
     };
   }
 }
