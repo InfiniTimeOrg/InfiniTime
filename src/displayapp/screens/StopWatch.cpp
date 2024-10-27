@@ -207,6 +207,7 @@ void StopWatch::PlayPauseBtnEventHandler() {
     stopWatchController.Pause();
     blinkTime = xTaskGetTickCount() + blinkInterval;
     DisplayPaused();
+    RenderTime();
     wakeLock.Release();
   }
 }
