@@ -9,6 +9,7 @@ namespace Pinetime {
   namespace System {
     class SystemTask;
   }
+
   namespace Controllers {
 
     enum class StopWatchStates { Cleared, Running, Paused };
@@ -17,7 +18,6 @@ namespace Pinetime {
       int number = 0;                // Used to label the lap
       TickType_t timeSinceStart = 0; // Excluding pauses
     };
-
 
     class StopWatchController {
     public:
