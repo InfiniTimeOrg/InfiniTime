@@ -51,7 +51,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Pinetime::Applications::HeartRateTask& heartRateApp,
                        Pinetime::Controllers::FS& fs,
                        Pinetime::Controllers::TouchHandler& touchHandler,
-                       Pinetime::Controllers::ButtonHandler& buttonHandler)
+                       Pinetime::Controllers::ButtonHandler& buttonHandler,
+                       Pinetime::Controllers::InfiniSleepController& infiniSleepController)
   : spi {spi},
     spiNorFlash {spiNorFlash},
     twiMaster {twiMaster},
@@ -80,7 +81,8 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                      spiNorFlash,
                      heartRateController,
                      motionController,
-                     fs) {
+                     fs),
+    infiniSleepController {infiniSleepController} {
 }
 
 void SystemTask::Start() {
@@ -128,6 +130,7 @@ void SystemTask::Work() {
   batteryController.Register(this);
   motionSensor.SoftReset();
   alarmController.Init(this);
+  infiniSleepController.Init(this);
 
   // Reset the TWI device because the motion sensor chip most probably crashed it...
   twiMaster.Sleep();
@@ -217,6 +220,9 @@ void SystemTask::Work() {
         case Messages::SetOffAlarm:
           GoToRunning();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::AlarmTriggered);
+          break;
+        case Messages::SetOffWakeAlarm:
+          // Code the screen trigger here
           break;
         case Messages::BleConnected:
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NotifyDeviceActivity);
