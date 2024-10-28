@@ -63,7 +63,7 @@
       "sources": [
          {
             "file": "fonts/BloggerSans-Bold.ttf",
-            "range": "0x30-0x3a"
+            "symbols": "0123456789"
          }
       ],
       "bpp": 1,
@@ -75,7 +75,7 @@
       "sources": [
          {
             "file": "fonts/BloggerSans-Bold.ttf",
-            "range": "0x20-0x7e, 0x410-0x44f, 0xB0"
+            "symbols": "0123456789APMONTUEWDHRFIS"
          }
       ],
       "bpp": 1,
