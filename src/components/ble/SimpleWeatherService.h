@@ -19,7 +19,7 @@
 
 #include <cstdint>
 #include <string>
-#include <vector>
+#include <array>
 #include <memory>
 
 #define min // workaround: nimble's min/max macros conflict with libstdc++

@@ -198,20 +198,6 @@ void SystemTask::Work() {
         case Messages::GoToRunning:
           GoToRunning();
           break;
-        case Messages::TouchWakeUp: {
-          if (touchHandler.ProcessTouchInfo(touchPanel.GetTouchInfo())) {
-            auto gesture = touchHandler.GestureGet();
-            if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
-                gesture != Pinetime::Applications::TouchEvents::None &&
-                ((gesture == Pinetime::Applications::TouchEvents::DoubleTap &&
-                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) ||
-                 (gesture == Pinetime::Applications::TouchEvents::Tap &&
-                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
-              GoToRunning();
-            }
-          }
-          break;
-        }
         case Messages::GoToSleep:
           GoToSleep();
           break;
@@ -260,8 +246,23 @@ void SystemTask::Work() {
           // TODO add intent of fs access icon or something
           break;
         case Messages::OnTouchEvent:
-          if (touchHandler.ProcessTouchInfo(touchPanel.GetTouchInfo())) {
+          // Finish immediately if no new events
+          if (!touchHandler.ProcessTouchInfo(touchPanel.GetTouchInfo())) {
+            break;
+          }
+          if (state == SystemTaskState::Running) {
             displayApp.PushMessage(Pinetime::Applications::Display::Messages::TouchEvent);
+          } else {
+            // If asleep, check for touch panel wake triggers
+            auto gesture = touchHandler.GestureGet();
+            if (settingsController.GetNotificationStatus() != Controllers::Settings::Notification::Sleep &&
+                gesture != Pinetime::Applications::TouchEvents::None &&
+                ((gesture == Pinetime::Applications::TouchEvents::DoubleTap &&
+                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) ||
+                 (gesture == Pinetime::Applications::TouchEvents::Tap &&
+                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
+              GoToRunning();
+            }
           }
           break;
         case Messages::HandleButtonEvent: {
@@ -284,9 +285,10 @@ void SystemTask::Work() {
           HandleButtonAction(action);
         } break;
         case Messages::OnDisplayTaskSleeping:
+        case Messages::OnDisplayTaskAOD:
           // The state was set to GoingToSleep when GoToSleep() was called
           // If the state is no longer GoingToSleep, we have since transitioned back to Running
-          // In this case absorb the OnDisplayTaskSleeping
+          // In this case absorb the OnDisplayTaskSleeping/AOD
           // as DisplayApp is about to receive GoToRunning
           if (state != SystemTaskState::GoingToSleep) {
             break;
@@ -298,7 +300,7 @@ void SystemTask::Work() {
           }
 
           // Must keep SPI awake when still updating the display for always on
-          if (!settingsController.GetAlwaysOnDisplay()) {
+          if (msg == Messages::OnDisplayTaskSleeping) {
             spi.Sleep();
           }
 
@@ -307,7 +309,11 @@ void SystemTask::Work() {
             touchPanel.Sleep();
           }
 
-          state = SystemTaskState::Sleeping;
+          if (msg == Messages::OnDisplayTaskSleeping) {
+            state = SystemTaskState::Sleeping;
+          } else {
+            state = SystemTaskState::AODSleeping;
+          }
           break;
         case Messages::OnNewDay:
           // We might be sleeping (with TWI device disabled.
@@ -381,17 +387,19 @@ void SystemTask::GoToRunning() {
   if (state == SystemTaskState::Running) {
     return;
   }
-  // SPI doesn't go to sleep for always on mode
-  if (!settingsController.GetAlwaysOnDisplay()) {
-    spi.Wakeup();
-  }
+  if (state == SystemTaskState::Sleeping || state == SystemTaskState::AODSleeping) {
+    // SPI only switched off when entering Sleeping, not AOD or GoingToSleep
+    if (state == SystemTaskState::Sleeping) {
+      spi.Wakeup();
+    }
 
-  // Double Tap needs the touch screen to be in normal mode
-  if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
-    touchPanel.Wakeup();
-  }
+    // Double Tap needs the touch screen to be in normal mode
+    if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
+      touchPanel.Wakeup();
+    }
 
-  spiNorFlash.Wakeup();
+    spiNorFlash.Wakeup();
+  }
 
   displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToRunning);
   heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::WakeUp);
@@ -411,16 +419,22 @@ void SystemTask::GoToSleep() {
     return;
   }
   NRF_LOG_INFO("[systemtask] Going to sleep");
-  displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
+  if (settingsController.GetAlwaysOnDisplay()) {
+    displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToAOD);
+  } else {
+    displayApp.PushMessage(Pinetime::Applications::Display::Messages::GoToSleep);
+  }
   heartRateApp.PushMessage(Pinetime::Applications::HeartRateTask::Messages::GoToSleep);
 
   state = SystemTaskState::GoingToSleep;
 };
 
 void SystemTask::UpdateMotion() {
-  if (IsSleeping() && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                        settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) ||
-                        motionController.GetService()->IsMotionNotificationSubscribed())) {
+  // Only consider disabling motion updates specifically in the Sleeping state
+  // AOD needs motion on to show up to date step counts
+  if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
+                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake) ||
+                                              motionController.GetService()->IsMotionNotificationSubscribed())) {
     return;
   }
 
@@ -477,17 +491,6 @@ void SystemTask::HandleButtonAction(Controllers::ButtonActions action) {
   }
 
   fastWakeUpDone = false;
-}
-
-void SystemTask::OnTouchEvent() {
-  if (state == SystemTaskState::Running) {
-    PushMessage(Messages::OnTouchEvent);
-  } else {
-    if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) or
-        settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
-      PushMessage(Messages::TouchWakeUp);
-    }
-  }
 }
 
 void SystemTask::PushMessage(System::Messages msg) {
