@@ -20,8 +20,7 @@ namespace Pinetime::Applications {
 
     class StopWatch : public Screen {
     public:
-      explicit StopWatch(System::SystemTask& systemTask,
-                         Controllers::StopWatchController& stopWatchController);
+      explicit StopWatch(System::SystemTask& systemTask, Controllers::StopWatchController& stopWatchController);
       ~StopWatch() override;
       void Refresh() override;
 
@@ -56,8 +55,7 @@ namespace Pinetime::Applications {
     static constexpr const char* icon = Screens::Symbols::stopWatch;
 
     static Screens::Screen* Create(AppControllers& controllers) {
-      return new Screens::StopWatch(*controllers.systemTask,
-                                    controllers.stopWatchController);
+      return new Screens::StopWatch(*controllers.systemTask, controllers.stopWatchController);
     }
     static bool IsAvailable(Pinetime::Controllers::FS& /*filesystem*/) {
       return true;
