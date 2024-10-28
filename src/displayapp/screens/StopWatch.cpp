@@ -35,8 +35,7 @@ namespace {
   constexpr TickType_t blinkInterval = pdMS_TO_TICKS(1000);
 }
 
-StopWatch::StopWatch(System::SystemTask& systemTask,
-                     StopWatchController& stopWatchController)
+StopWatch::StopWatch(System::SystemTask& systemTask, StopWatchController& stopWatchController)
   : wakeLock(systemTask), stopWatchController {stopWatchController} {
   static constexpr uint8_t btnWidth = 115;
   static constexpr uint8_t btnHeight = 80;
@@ -80,7 +79,7 @@ StopWatch::StopWatch(System::SystemTask& systemTask,
   // Figure out what the current state of the stopwatch is and select the correct display
   if (stopWatchController.IsCleared()) {
     DisplayCleared();
-  } else  {
+  } else {
     if (stopWatchController.GetMaxLapNumber() > 0) {
       RenderLaps();
     }
