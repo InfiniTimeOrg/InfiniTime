@@ -27,7 +27,7 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
         void OnValueChanged();
         void StopAlerting();
-        
+        void UpdateDisplay();
         enum class SleepDisplayState { Alarm, Info, Settings };
         SleepDisplayState displayState = SleepDisplayState::Alarm;
 
@@ -53,6 +53,7 @@ namespace Pinetime {
         Controllers::InfiniSleepController& infiniSleepController;
         System::WakeLock wakeLock;
         Controllers::MotorController& motorController;
+        Controllers::Settings::ClockType clockType;
 
         lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch;
         lv_obj_t* lblampm = nullptr;
@@ -71,6 +72,10 @@ namespace Pinetime {
         void UpdateWakeAlarmTime();
         Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_76);
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
+
+        void DrawAlarmScreen();
+        void DrawInfoScreen();
+        void DrawSettingsScreen();
 
         // Controllers::HeartRateController& heartRateController;
         // Controllers::DateTime& dateTimeController;

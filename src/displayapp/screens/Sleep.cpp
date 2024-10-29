@@ -33,8 +33,44 @@ Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
              Controllers::Settings::ClockType clockType,
              System::SystemTask& systemTask,
              Controllers::MotorController& motorController)
-  : infiniSleepController {infiniSleepController}, wakeLock(systemTask), motorController {motorController} {
+  : infiniSleepController {infiniSleepController}, wakeLock(systemTask), motorController {motorController}, clockType {clockType} {
 
+  UpdateDisplay();
+}
+
+Sleep::~Sleep() {
+  if (infiniSleepController.IsAlerting()) {
+    StopAlerting();
+  }
+  lv_obj_clean(lv_scr_act());
+  infiniSleepController.SaveWakeAlarm();
+}
+
+void Sleep::DisableWakeAlarm() {
+  if (infiniSleepController.IsEnabled()) {
+    infiniSleepController.DisableWakeAlarm();
+    lv_switch_off(enableSwitch, LV_ANIM_ON);
+  }
+}
+
+void Sleep::UpdateDisplay() {
+  // Clear the screen
+  lv_obj_clean(lv_scr_act());
+  // Draw the screen
+  switch (displayState) {
+    case SleepDisplayState::Alarm:
+      DrawAlarmScreen();
+      break;
+    case SleepDisplayState::Info:
+      DrawInfoScreen();
+      break;
+    case SleepDisplayState::Settings:
+      DrawSettingsScreen();
+      break;
+  }
+}
+
+void Sleep::DrawAlarmScreen() {
   hourCounter.Create();
   lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
   if (clockType == Controllers::Settings::ClockType::H12) {
@@ -109,19 +145,12 @@ Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
   }
 }
 
-Sleep::~Sleep() {
-  if (infiniSleepController.IsAlerting()) {
-    StopAlerting();
-  }
-  lv_obj_clean(lv_scr_act());
-  infiniSleepController.SaveWakeAlarm();
+void Sleep::DrawInfoScreen() {
+
 }
 
-void Sleep::DisableWakeAlarm() {
-  if (infiniSleepController.IsEnabled()) {
-    infiniSleepController.DisableWakeAlarm();
-    lv_switch_off(enableSwitch, LV_ANIM_ON);
-  }
+void Sleep::DrawSettingsScreen() {
+
 }
 
 void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
@@ -172,12 +201,14 @@ bool Sleep::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
     case TouchEvents::SwipeLeft:
       if (displayState != SleepDisplayState::Alarm) {
         displayState = static_cast<SleepDisplayState>(static_cast<int>(displayState) - 1);
+        UpdateDisplay();
       }
       NRF_LOG_INFO("SwipeLeft: %d", static_cast<int>(displayState));
       return true;
     case TouchEvents::SwipeRight:
       if (displayState != SleepDisplayState::Settings) {
         displayState = static_cast<SleepDisplayState>(static_cast<int>(displayState) + 1);
+        UpdateDisplay();
       }
       NRF_LOG_INFO("SwipeRight: %d", static_cast<int>(displayState));
       return true;
