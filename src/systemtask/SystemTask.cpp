@@ -223,6 +223,8 @@ void SystemTask::Work() {
           break;
         case Messages::SetOffWakeAlarm:
           // Code the screen trigger here
+          GoToRunning();
+          displayApp.PushMessage(Pinetime::Applications::Display::Messages::WakeAlarmTriggered);
           break;
         case Messages::BleConnected:
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NotifyDeviceActivity);

@@ -86,7 +86,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::BrightnessController& brightnessController,
                        Pinetime::Controllers::TouchHandler& touchHandler,
                        Pinetime::Controllers::FS& filesystem,
-                       Pinetime::Drivers::SpiNorFlash& spiNorFlash)
+                       Pinetime::Drivers::SpiNorFlash& spiNorFlash,
+                       Pinetime::Controllers::InfiniSleepController& infiniSleepController)
   : lcd {lcd},
     touchPanel {touchPanel},
     batteryController {batteryController},
@@ -103,6 +104,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
     touchHandler {touchHandler},
     filesystem {filesystem},
     spiNorFlash {spiNorFlash},
+    infiniSleepController {infiniSleepController},
     lvgl {lcd, filesystem},
     timer(this, TimerCallback),
     controllers {batteryController,
@@ -114,6 +116,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                  motorController,
                  motionController,
                  alarmController,
+                 infiniSleepController,
                  brightnessController,
                  nullptr,
                  filesystem,
@@ -383,6 +386,14 @@ void DisplayApp::Refresh() {
           alarm->SetAlerting();
         } else {
           LoadNewScreen(Apps::Alarm, DisplayApp::FullRefreshDirections::None);
+        }
+        break;
+      case Messages::WakeAlarmTriggered:
+        if (currentApp == Apps::Sleep) {
+          auto* sleep = static_cast<Screens::Sleep*>(currentScreen.get());
+          sleep->SetAlerting();
+        } else {
+          LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::None);
         }
         break;
       case Messages::ShowPairingKey:

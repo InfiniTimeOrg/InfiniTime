@@ -1,324 +1,281 @@
 #include "displayapp/screens/Sleep.h"
-
-#include <lvgl/lvgl.h>
-#include <components/heartrate/HeartRateController.h>
-#include <components/datetime/DateTimeController.h>
-#include <components/fs/FS.h>
-#include <nrf_log.h>
-
-#include <sstream>
-#include <numeric>
+#include "displayapp/screens/Screen.h"
+#include "displayapp/screens/Symbols.h"
+#include "displayapp/InfiniTimeTheme.h"
+#include "components/settings/Settings.h"
+#include "components/alarm/AlarmController.h"
+#include "components/motor/MotorController.h"
+#include "systemtask/SystemTask.h"
 
 using namespace Pinetime::Applications::Screens;
+using Pinetime::Controllers::InfiniSleepController;
 
 namespace {
-
-  void BpmDataCallback(lv_task_t* task) {
-    auto* screen = static_cast<Sleep*>(task->user_data);
-    screen->GetBPM();
+  void ValueChangedHandler(void* userData) {
+    auto* screen = static_cast<Sleep*>(userData);
+    screen->OnValueChanged();
   }
-
-  void ClearDataCallback(lv_obj_t* btn, lv_event_t event) {
-    if (event == LV_EVENT_CLICKED) {
-      auto* screen = static_cast<Sleep*>(lv_obj_get_user_data(btn));
-      screen->ClearDataCSV("Sleep_Data.csv");
-    }
-  }
-
-  // void GetSleepInfoCallback(lv_obj_t* btn, lv_event_t event) {
-  //   if (event == LV_EVENT_CLICKED) {
-  //     auto* screen = static_cast<Sleep*>(lv_obj_get_user_data(btn));
-  //     screen->GetSleepInfo(screen->ReadDataCSV("SleepTracker_Data.csv"));
-  //   }
-  // }
-
 }
 
-Sleep::Sleep(Controllers::HeartRateController& heartRateController, Controllers::DateTime& dateTimeController, Controllers::FS& fsController, System::SystemTask& systemTask)
-  : heartRateController {heartRateController}, dateTimeController {dateTimeController}, fsController {fsController}, wakeLock(systemTask) {
+static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
+  auto* screen = static_cast<Sleep*>(obj->user_data);
+  screen->OnButtonEvent(obj, event);
+}
 
-  wakeLock.Lock();
+static void StopAlarmTaskCallback(lv_task_t* task) {
+  auto* screen = static_cast<Sleep*>(task->user_data);
+  screen->StopAlerting();
+}
 
-  constexpr uint8_t btnWidth = 115;
-  constexpr uint8_t btnHeight = 45;
-  
-  lv_obj_t* title = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(title, "Sleep Tracker");
-  lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
-  lv_obj_align(title, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
+             Controllers::Settings::ClockType clockType,
+             System::SystemTask& systemTask,
+             Controllers::MotorController& motorController)
+  : infiniSleepController {infiniSleepController}, wakeLock(systemTask), motorController {motorController} {
 
-  label_hr = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  hourCounter.Create();
+  lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+  if (clockType == Controllers::Settings::ClockType::H12) {
+    hourCounter.EnableTwelveHourMode();
 
-  // Create the refresh task
-  mainRefreshTask = lv_task_create(RefreshTaskCallback, 100, LV_TASK_PRIO_MID, this);
-  hrRefreshTask = lv_task_create(BpmDataCallback, 3000, LV_TASK_PRIO_MID, this);
+    lblampm = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+    lv_label_set_text_static(lblampm, "AM");
+    lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
+    lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
+  }
+  hourCounter.SetValue(infiniSleepController.Hours());
+  hourCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
-  // Create the clear data button
-  lv_obj_t* btnClear = lv_btn_create(lv_scr_act(), nullptr);
-  btnClear->user_data = this;
-  lv_obj_set_event_cb(btnClear, ClearDataCallback);
-  lv_obj_set_size(btnClear, btnWidth, btnHeight);
-  lv_obj_align(btnClear, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
-  lv_obj_t* txtClear = lv_label_create(btnClear, nullptr);
-  lv_label_set_text(txtClear, "X");
+  minuteCounter.Create();
+  lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  minuteCounter.SetValue(infiniSleepController.Minutes());
+  minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
-  // Create the get info button
-  // lv_obj_t* btnInfo = lv_btn_create(lv_scr_act(), nullptr);
-  // btnInfo->user_data = this;
-  // lv_obj_set_event_cb(btnInfo, GetSleepInfoCallback);
-  // lv_obj_set_size(btnInfo, btnWidth, btnHeight);
-  // lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  // lv_obj_t* txtInfo = lv_label_create(btnInfo, nullptr);
-  // lv_label_set_text(txtInfo, "?");
+  lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_label_set_text_static(colonLabel, ":");
+  lv_obj_align(colonLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
 
-  // const auto data = ReadDataCSV("SleepTracker_Data.csv");
-  // for (const auto& entry : data) {
-  //   int hours, minutes, seconds, bpm, motion;
-  //   std::tie(hours, minutes, seconds, bpm, motion) = entry;
-  //   NRF_LOG_INFO("Read data: %02d:%02d:%02d, %d, %d", hours, minutes, seconds, bpm, motion);
-  // }
-  // NRF_LOG_INFO("-------------------------------");
+  btnStop = lv_btn_create(lv_scr_act(), nullptr);
+  btnStop->user_data = this;
+  lv_obj_set_event_cb(btnStop, btnEventHandler);
+  lv_obj_set_size(btnStop, 115, 50);
+  lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_set_style_local_bg_color(btnStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  txtStop = lv_label_create(btnStop, nullptr);
+  lv_label_set_text_static(txtStop, Symbols::stop);
+  lv_obj_set_hidden(btnStop, true);
+
+  static constexpr lv_color_t bgColor = Colors::bgAlt;
+
+  btnRecur = lv_btn_create(lv_scr_act(), nullptr);
+  btnRecur->user_data = this;
+  lv_obj_set_event_cb(btnRecur, btnEventHandler);
+  lv_obj_set_size(btnRecur, 115, 50);
+  lv_obj_align(btnRecur, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  txtRecur = lv_label_create(btnRecur, nullptr);
+  SetRecurButtonState();
+  lv_obj_set_style_local_bg_color(btnRecur, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+
+  btnInfo = lv_btn_create(lv_scr_act(), nullptr);
+  btnInfo->user_data = this;
+  lv_obj_set_event_cb(btnInfo, btnEventHandler);
+  lv_obj_set_size(btnInfo, 50, 50);
+  lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, -4);
+  lv_obj_set_style_local_bg_color(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+  lv_obj_set_style_local_border_width(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 4);
+  lv_obj_set_style_local_border_color(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+
+  lv_obj_t* txtInfo = lv_label_create(btnInfo, nullptr);
+  lv_label_set_text_static(txtInfo, "i");
+
+  enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
+  enableSwitch->user_data = this;
+  lv_obj_set_event_cb(enableSwitch, btnEventHandler);
+  lv_obj_set_size(enableSwitch, 100, 50);
+  // Align to the center of 115px from edge
+  lv_obj_align(enableSwitch, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 7, 0);
+  lv_obj_set_style_local_bg_color(enableSwitch, LV_SWITCH_PART_BG, LV_STATE_DEFAULT, bgColor);
+
+  UpdateWakeAlarmTime();
+
+  if (infiniSleepController.IsAlerting()) {
+    SetAlerting();
+  } else {
+    SetSwitchState(LV_ANIM_OFF);
+  }
 }
 
 Sleep::~Sleep() {
-  wakeLock.Release();
-
-  lv_obj_clean(lv_scr_act());
-  lv_task_del(mainRefreshTask);
-  lv_task_del(hrRefreshTask);
-}
-
-// This function is called periodically from the refresh task
-void Sleep::Refresh() {
-  // Get the current heart rate
-}
-
-// Convert time to minutes
-float Sleep::ConvertToMinutes(int hours, int minutes, int seconds) const {
-  return hours * 60 + minutes + seconds / 60.0f;
-}
-
-// Get the moving average of BPM Values
-// std::vector<float> Sleep::MovingAverage(const std::vector<int>& bpmData, int windowSize) const {
-//   std::vector<float> smoothedBpm;
-//   const int n = bpmData.size();
-    
-//   for (int i = 0; i < n - windowSize + 1; ++i) {
-//     float sum = 0;
-//     for (int j = 0; j < windowSize; ++j) {
-//       sum += bpmData[i + j];
-//     }
-//     smoothedBpm.push_back(sum / windowSize);
-//   }
-    
-//   return smoothedBpm;
-// }
-
-// Detect the sleep regions
-// std::vector<std::pair<float, float>> Sleep::DetectSleepRegions(const std::vector<float>& bpmData, const std::vector<float>& time, float threshold) const {
-//   std::vector<std::pair<float, float>> sleep_regions;
-//   float start_time = -1;
-//   bool in_sleep = false;
-    
-//   for (size_t i = 0; i < bpmData.size(); ++i) {
-//     if (bpmData[i] < threshold) {
-//       if (!in_sleep) {
-//         start_time = time[i];  // Mark the start of sleep
-//         in_sleep = true;
-//       }
-//     } else {
-//       if (in_sleep) {
-//         float end_time = time[i];  // Mark the end of sleep
-//         sleep_regions.emplace_back(start_time, end_time);
-//         in_sleep = false;
-//       }
-//     }
-//   }
-    
-//   // In case the last region extends to the end of the data
-//   if (in_sleep) {
-//     sleep_regions.emplace_back(start_time, time.back());
-//   }
-    
-//   return sleep_regions;
-// }
-
-// // Get Sleep Info
-// void Sleep::GetSleepInfo(const std::vector<std::tuple<int, int, int, int, int>>& data) const {
-//   std::vector<float> time;
-//   std::vector<int> bpm;
-    
-//   // Extract the time (in minutes) and bpm from the data
-//   for (const auto& entry : data) {
-//     int hours, minutes, seconds, bpm_value, motion;
-//     std::tie(hours, minutes, seconds, bpm_value, motion) = entry;
-//     time.push_back(ConvertToMinutes(hours, minutes, seconds));
-//     bpm.push_back(bpm_value);
-//   }
-  
-//   // Compute the moving average with a window size of 5 (15 minutes smoothing, since each data point is 3 minutes)
-//   const auto smoothed_bpm = MovingAverage(bpm, 5);
-  
-//   // Calculate a threshold as 80% of the average BPM
-//   const float average_bpm = std::accumulate(bpm.begin(), bpm.end(), 0.0f) / bpm.size();
-//   const float threshold = average_bpm * 0.8f;
-  
-//   // Detect multiple sleep regions
-//   const auto sleep_regions = DetectSleepRegions(smoothed_bpm, time, threshold);
-  
-//   // Output sleep regions
-//   if (!sleep_regions.empty()) {
-//     for (const auto& region : sleep_regions) {
-//       NRF_LOG_INFO("Sleep detected from %.2f minutes to %.2f minutes.", region.first, region.second);
-//     }
-//   } else {
-//     NRF_LOG_INFO("No significant sleep regions detected.");
-//   }
-
-//   // Open the output file
-//   lfs_file_t file;
-//   int err = fsController.FileOpen(&file, "SleepTracker_SleepInfo.csv", LFS_O_WRONLY | LFS_O_CREAT | LFS_O_TRUNC);
-//   if (err < 0) {
-//     // Handle error
-//     NRF_LOG_INFO("Error opening file: %d", err);
-//     return;
-//   }
-
-//   // Write sleep regions to the file
-//   if (!sleep_regions.empty()) {
-//     for (const auto& region : sleep_regions) {
-//       char buffer[64];
-//       int len = snprintf(buffer, sizeof(buffer), "Sleep detected from %.2f minutes to %.2f minutes.\n", region.first, region.second);
-//       err = fsController.FileWrite(&file, reinterpret_cast<const uint8_t*>(buffer), len);
-//       if (err < 0) {
-//         // Handle error
-//         NRF_LOG_INFO("Error writing to file: %d", err);
-//         fsController.FileClose(&file);
-//         return;
-//       }
-//     }
-//   } else {
-//     const char* noSleepMsg = "No significant sleep regions detected.\n";
-//     err = fsController.FileWrite(&file, reinterpret_cast<const uint8_t*>(noSleepMsg), strlen(noSleepMsg));
-//     if (err < 0) {
-//       // Handle error
-//       NRF_LOG_INFO("Error writing to file: %d", err);
-//       fsController.FileClose(&file);
-//       return;
-//     }
-//   }
-
-//   // Close the file
-//   fsController.FileClose(&file);
-//   NRF_LOG_INFO("Sleep info written to SleepTracker_SleepInfo.csv");
-// }
-
-void Sleep::GetBPM() {
-  // Get the heart rate from the controller
-  prevBpm = bpm;
-  bpm = heartRateController.HeartRate();
-
-  if(prevBpm != 0)
-    rollingBpm = (rollingBpm + bpm) / 2;
-  else
-    rollingBpm = bpm;
-
-  // Get the current time from DateTimeController
-  int hours = dateTimeController.Hours();
-  int minutes = dateTimeController.Minutes();
-  int seconds = dateTimeController.Seconds();
-
-  // Log the BPM and current time
-  NRF_LOG_INFO("BPM: %d at %02d:%02d:%02d", rollingBpm, hours, minutes, seconds);
-
-  // Write data to CSV
-  const int motion = 0; // Placeholder for motion data
-  std::tuple<int, int, int, int, int> data[1] = {std::make_tuple(hours, minutes, seconds, bpm, motion)};
-  WriteDataCSV("SleepTracker_Data.csv", data, 1);
-}
-
-// File IO Stuff
-
-/*
-* Write data to a CSV file
-* Format: Time,BPM,Motion
-*/
-void Sleep::WriteDataCSV(const char* fileName, const std::tuple<int, int, int, int, int>* data, int dataSize) const {
-  lfs_file_t file;
-  int err = fsController.FileOpen(&file, fileName, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND);
-  if (err < 0) {
-    // Handle error
-    NRF_LOG_INFO("Error opening file: %d", err);
-    return;
+  if (infiniSleepController.IsAlerting()) {
+    StopAlerting();
   }
+  lv_obj_clean(lv_scr_act());
+  infiniSleepController.SaveWakeAlarm();
+}
 
-  for (int i = 0; i < dataSize; ++i) {
-    int hours, minutes, seconds, bpm, motion;
-    std::tie(hours, minutes, seconds, bpm, motion) = data[i];
-    char buffer[64];
-    int len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d,%d,%d\n", hours, minutes, seconds, bpm, motion);
-    err = fsController.FileWrite(&file, reinterpret_cast<const uint8_t*>(buffer), len);
-    if (err < 0) {
-      // Handle error
-      NRF_LOG_INFO("Error writing to file: %d", err);
-      fsController.FileClose(&file);
+void Sleep::DisableWakeAlarm() {
+  if (infiniSleepController.IsEnabled()) {
+    infiniSleepController.DisableWakeAlarm();
+    lv_switch_off(enableSwitch, LV_ANIM_ON);
+  }
+}
 
+void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
+  if (event == LV_EVENT_CLICKED) {
+    if (obj == btnStop) {
+      StopAlerting();
       return;
     }
+    if (obj == btnInfo) {
+      ShowAlarmInfo();
+      return;
+    }
+    if (obj == btnMessage) {
+      HideAlarmInfo();
+      return;
+    }
+    if (obj == enableSwitch) {
+      if (lv_switch_get_state(enableSwitch)) {
+        infiniSleepController.ScheduleWakeAlarm();
+      } else {
+        infiniSleepController.DisableWakeAlarm();
+      }
+      return;
+    }
+    if (obj == btnRecur) {
+      DisableWakeAlarm();
+      ToggleRecurrence();
+    }
   }
-
-  fsController.FileClose(&file);
 }
 
-// Read data from CSV
-// std::vector<std::tuple<int, int, int, int, int>> Sleep::ReadDataCSV(const char* filename) const {
-//   lfs_file_t file;
-//   int err = fsController.FileOpen(&file, filename, LFS_O_RDONLY);
-//   if (err < 0) {
-//     // Handle error
-//     NRF_LOG_INFO("Error opening file: %d", err);
-//     return {};
-//   }
+bool Sleep::OnButtonPushed() {
+  if (txtMessage != nullptr && btnMessage != nullptr) {
+    HideAlarmInfo();
+    return true;
+  }
+  if (infiniSleepController.IsAlerting()) {
+    StopAlerting();
+    return true;
+  }
+  return false;
+}
 
-//   std::vector<std::tuple<int, int, int, int, int>> data;
-//   char buffer[128];
-//   int bytesRead;
+bool Sleep::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+  // Don't allow closing the screen by swiping while the alarm is alerting
+  return infiniSleepController.IsAlerting() && event == TouchEvents::SwipeDown;
+}
 
-//   // Read data
-//   while ((bytesRead = fsController.FileRead(&file, reinterpret_cast<uint8_t*>(buffer), sizeof(buffer))) > 0) {
-//     std::istringstream dataStream(buffer);
-//     std::string line;
-//     while (std::getline(dataStream, line)) {
-//       int hours, minutes, seconds, bpm, motion;
-//       char colon1, colon2, comma1, comma2;
-//       std::istringstream lineStream(line);
-//       if (lineStream >> hours >> colon1 >> minutes >> colon2 >> seconds >> comma1 >> bpm >> comma2 >> motion) {
-//         if (colon1 == ':' && colon2 == ':' && comma1 == ',' && comma2 == ',') {
-//           data.emplace_back(hours, minutes, seconds, bpm, motion);
-//         } else {
-//           NRF_LOG_INFO("Parsing error: incorrect format in line: %s", line.c_str());
-//         }
-//       } else {
-//         NRF_LOG_INFO("Parsing error: failed to parse line: %s", line.c_str());
-//       }
-//     }
-//   }
+void Sleep::OnValueChanged() {
+  DisableWakeAlarm();
+  UpdateWakeAlarmTime();
+}
 
-//   fsController.FileClose(&file);
-//   return data;
-// }
+void Sleep::UpdateWakeAlarmTime() {
+  if (lblampm != nullptr) {
+    if (hourCounter.GetValue() >= 12) {
+      lv_label_set_text_static(lblampm, "PM");
+    } else {
+      lv_label_set_text_static(lblampm, "AM");
+    }
+  }
+  infiniSleepController.SetWakeAlarmTime(hourCounter.GetValue(), minuteCounter.GetValue());
+}
 
-// Clear data in CSV
-void Sleep::ClearDataCSV(const char* filename) const {
-  lfs_file_t file;
-  int err = fsController.FileOpen(&file, filename, LFS_O_WRONLY | LFS_O_TRUNC);
-  if (err < 0) {
-    // Handle error
-    NRF_LOG_INFO("Error opening file: %d", err);
+void Sleep::SetAlerting() {
+  lv_obj_set_hidden(enableSwitch, true);
+  lv_obj_set_hidden(btnStop, false);
+  taskStopWakeAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(60 * 1000), LV_TASK_PRIO_MID, this);
+  motorController.StartRinging();
+  wakeLock.Lock();
+}
+
+void Sleep::StopAlerting() {
+  infiniSleepController.StopAlerting();
+  motorController.StopRinging();
+  SetSwitchState(LV_ANIM_OFF);
+  if (taskStopWakeAlarm != nullptr) {
+    lv_task_del(taskStopWakeAlarm);
+    taskStopWakeAlarm = nullptr;
+  }
+  wakeLock.Release();
+  lv_obj_set_hidden(enableSwitch, false);
+  lv_obj_set_hidden(btnStop, true);
+}
+
+void Sleep::SetSwitchState(lv_anim_enable_t anim) {
+  if (infiniSleepController.IsEnabled()) {
+    lv_switch_on(enableSwitch, anim);
+  } else {
+    lv_switch_off(enableSwitch, anim);
+  }
+}
+
+void Sleep::ShowAlarmInfo() {
+  if (btnMessage != nullptr) {
     return;
   }
+  btnMessage = lv_btn_create(lv_scr_act(), nullptr);
+  btnMessage->user_data = this;
+  lv_obj_set_event_cb(btnMessage, btnEventHandler);
+  lv_obj_set_height(btnMessage, 200);
+  lv_obj_set_width(btnMessage, 150);
+  lv_obj_align(btnMessage, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  txtMessage = lv_label_create(btnMessage, nullptr);
+  lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
 
-  fsController.FileClose(&file);
-  NRF_LOG_INFO("CSV data cleared");
+  if (infiniSleepController.IsEnabled()) {
+    auto timeToAlarm = infiniSleepController.SecondsToWakeAlarm();
+
+    auto daysToAlarm = timeToAlarm / 86400;
+    auto hrsToAlarm = (timeToAlarm % 86400) / 3600;
+    auto minToAlarm = (timeToAlarm % 3600) / 60;
+    auto secToAlarm = timeToAlarm % 60;
+
+    lv_label_set_text_fmt(txtMessage,
+                          "Time to\nalarm:\n%2lu Days\n%2lu Hours\n%2lu Minutes\n%2lu Seconds",
+                          daysToAlarm,
+                          hrsToAlarm,
+                          minToAlarm,
+                          secToAlarm);
+  } else {
+    lv_label_set_text_static(txtMessage, "Alarm\nis not\nset.");
+  }
+}
+
+void Sleep::HideAlarmInfo() {
+  lv_obj_del(btnMessage);
+  txtMessage = nullptr;
+  btnMessage = nullptr;
+}
+
+void Sleep::SetRecurButtonState() {
+  using Pinetime::Controllers::AlarmController;
+  switch (infiniSleepController.Recurrence()) {
+    case InfiniSleepController::RecurType::None:
+      lv_label_set_text_static(txtRecur, "ONCE");
+      break;
+    case InfiniSleepController::RecurType::Daily:
+      lv_label_set_text_static(txtRecur, "DAILY");
+      break;
+    case InfiniSleepController::RecurType::Weekdays:
+      lv_label_set_text_static(txtRecur, "MON-FRI");
+  }
+}
+
+void Sleep::ToggleRecurrence() {
+  using Pinetime::Controllers::AlarmController;
+  switch (infiniSleepController.Recurrence()) {
+    case InfiniSleepController::RecurType::None:
+      infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::Daily);
+      break;
+    case InfiniSleepController::RecurType::Daily:
+      infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::Weekdays);
+      break;
+    case InfiniSleepController::RecurType::Weekdays:
+      infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::None);
+  }
+  SetRecurButtonState();
 }

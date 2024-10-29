@@ -130,7 +130,7 @@ void InfiniSleepController::LoadSettingsFromFile() {
   lfs_file_t wakeAlarmFile;
   WakeAlarmSettings wakeAlarmBuffer;
 
-  if (fs.FileOpen(&wakeAlarmFile, "/.system/wakeAlarm.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
+  if (fs.FileOpen(&wakeAlarmFile, "/.system/sleep/wakeAlarm.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
     NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file");
     return;
   }
@@ -150,12 +150,12 @@ void InfiniSleepController::LoadSettingsFromFile() {
 
 void InfiniSleepController::SaveSettingsToFile() const {
   lfs_dir systemDir;
-  if (fs.DirOpen("/.system", &systemDir) != LFS_ERR_OK) {
-    fs.DirCreate("/.system");
+  if (fs.DirOpen("/.system/sleep", &systemDir) != LFS_ERR_OK) {
+    fs.DirCreate("/.system/sleep");
   }
   fs.DirClose(&systemDir);
   lfs_file_t alarmFile;
-  if (fs.FileOpen(&alarmFile, "/.system/wakeAlarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
+  if (fs.FileOpen(&alarmFile, "/.system/sleep/wakeAlarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
     NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file for saving");
     return;
   }
