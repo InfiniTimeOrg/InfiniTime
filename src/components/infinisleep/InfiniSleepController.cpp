@@ -131,21 +131,21 @@ void InfiniSleepController::LoadSettingsFromFile() {
   WakeAlarmSettings wakeAlarmBuffer;
 
   if (fs.FileOpen(&wakeAlarmFile, "/.system/sleep/wakeAlarm.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
-    NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file");
+    NRF_LOG_WARNING("[InfiniSleepController] Failed to open alarm data file");
     return;
   }
 
   fs.FileRead(&wakeAlarmFile, reinterpret_cast<uint8_t*>(&wakeAlarmBuffer), sizeof(wakeAlarmBuffer));
   fs.FileClose(&wakeAlarmFile);
   if (wakeAlarmBuffer.version != wakeAlarmFormatVersion) {
-    NRF_LOG_WARNING("[AlarmController] Loaded alarm settings has version %u instead of %u, discarding",
+    NRF_LOG_WARNING("[InfiniSleepController] Loaded alarm settings has version %u instead of %u, discarding",
                     wakeAlarmBuffer.version,
                     wakeAlarmFormatVersion);
     return;
   }
 
   wakeAlarm = wakeAlarmBuffer;
-  NRF_LOG_INFO("[AlarmController] Loaded alarm settings from file");
+  NRF_LOG_INFO("[InfiniSleepController] Loaded alarm settings from file");
 }
 
 void InfiniSleepController::SaveSettingsToFile() const {
@@ -156,11 +156,11 @@ void InfiniSleepController::SaveSettingsToFile() const {
   fs.DirClose(&systemDir);
   lfs_file_t alarmFile;
   if (fs.FileOpen(&alarmFile, "/.system/sleep/wakeAlarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
-    NRF_LOG_WARNING("[AlarmController] Failed to open alarm data file for saving");
+    NRF_LOG_WARNING("[InfiniSleepController] Failed to open alarm data file for saving");
     return;
   }
 
   fs.FileWrite(&alarmFile, reinterpret_cast<const uint8_t*>(&wakeAlarm), sizeof(wakeAlarm));
   fs.FileClose(&alarmFile);
-  NRF_LOG_INFO("[AlarmController] Saved alarm settings with format version %u to file", wakeAlarm.version);
+  NRF_LOG_INFO("[InfiniSleepController] Saved alarm settings with format version %u to file", wakeAlarm.version);
 }
