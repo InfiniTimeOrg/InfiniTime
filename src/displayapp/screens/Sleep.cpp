@@ -146,11 +146,45 @@ void Sleep::DrawAlarmScreen() {
 }
 
 void Sleep::DrawInfoScreen() {
-
+  lv_obj_t* lblInfo = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(lblInfo, "InfiniTime\nSleep\nApp");
+  lv_obj_align(lblInfo, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
 }
 
 void Sleep::DrawSettingsScreen() {
+  lv_obj_t* lblSettings = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(lblSettings, "Settings");
+  lv_obj_align(lblSettings, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 10);
 
+  struct Setting {
+    const char* name;
+    bool enabled;
+    int offsetAfter = 30;
+  };
+
+  Setting settings[] = {
+    {"Body Tracking", false},
+    {"Heart Rate\nTracking", false, 60},
+    {"Gradual Wake", false},
+    {"Smart Alarm\n(alpha)", false}
+  };
+
+  int y_offset = 50;
+  for (const auto& setting : settings) {
+    lv_obj_t* lblSetting = lv_label_create(lv_scr_act(), nullptr);
+    lv_label_set_text_static(lblSetting, setting.name);
+    lv_obj_align(lblSetting, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
+
+    lv_obj_t* toggle = lv_switch_create(lv_scr_act(), nullptr);
+    if (setting.enabled) {
+      lv_switch_on(toggle, LV_ANIM_OFF);
+    } else {
+      lv_switch_off(toggle, LV_ANIM_OFF);
+    }
+    lv_obj_align(toggle, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -10, y_offset);
+
+    y_offset += setting.offsetAfter; // Increase the offset to provide better spacing
+  }
 }
 
 void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
