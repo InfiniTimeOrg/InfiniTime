@@ -27,6 +27,9 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
         void OnValueChanged();
         void StopAlerting();
+        
+        enum class SleepDisplayState { Alarm, Info, Settings };
+        SleepDisplayState displayState = SleepDisplayState::Alarm;
 
         // void Refresh() override;
 

@@ -7,6 +7,8 @@
 #include "components/motor/MotorController.h"
 #include "systemtask/SystemTask.h"
 
+#include <libraries/log/nrf_log.h>
+
 using namespace Pinetime::Applications::Screens;
 using Pinetime::Controllers::InfiniSleepController;
 
@@ -164,6 +166,23 @@ bool Sleep::OnButtonPushed() {
 }
 
 bool Sleep::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
+
+  // The cases for swiping to change page on app
+  switch (event) {
+    case TouchEvents::SwipeLeft:
+      if (displayState != SleepDisplayState::Alarm) {
+        displayState = static_cast<SleepDisplayState>(static_cast<int>(displayState) - 1);
+      }
+      NRF_LOG_INFO("SwipeLeft: %d", static_cast<int>(displayState));
+      return true;
+    case TouchEvents::SwipeRight:
+      if (displayState != SleepDisplayState::Settings) {
+        displayState = static_cast<SleepDisplayState>(static_cast<int>(displayState) + 1);
+      }
+      NRF_LOG_INFO("SwipeRight: %d", static_cast<int>(displayState));
+      return true;
+  }
+
   // Don't allow closing the screen by swiping while the alarm is alerting
   return infiniSleepController.IsAlerting() && event == TouchEvents::SwipeDown;
 }
@@ -252,7 +271,7 @@ void Sleep::HideAlarmInfo() {
 }
 
 void Sleep::SetRecurButtonState() {
-  using Pinetime::Controllers::AlarmController;
+  using Pinetime::Controllers::InfiniSleepController;
   switch (infiniSleepController.Recurrence()) {
     case InfiniSleepController::RecurType::None:
       lv_label_set_text_static(txtRecur, "ONCE");
@@ -266,7 +285,7 @@ void Sleep::SetRecurButtonState() {
 }
 
 void Sleep::ToggleRecurrence() {
-  using Pinetime::Controllers::AlarmController;
+  using Pinetime::Controllers::InfiniSleepController;
   switch (infiniSleepController.Recurrence()) {
     case InfiniSleepController::RecurType::None:
       infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::Daily);
