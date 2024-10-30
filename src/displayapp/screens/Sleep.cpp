@@ -8,6 +8,7 @@
 #include "systemtask/SystemTask.h"
 
 #include <libraries/log/nrf_log.h>
+#include <lvgl/lvgl.h>
 
 using namespace Pinetime::Applications::Screens;
 using Pinetime::Controllers::InfiniSleepController;
@@ -18,6 +19,25 @@ namespace {
     screen->OnValueChanged();
   }
 }
+
+extern InfiniSleepController infiniSleepController;
+
+static void settingsToggleEventHandler(lv_obj_t* obj, lv_event_t e) {
+    lv_obj_t* toggle = obj;
+    const char* setting_name = static_cast<const char*>(obj->user_data);
+
+    bool enabled = lv_switch_get_state(toggle);
+
+    if (strcmp(setting_name, "Body Tracking") == 0) {
+      infiniSleepController.SetBodyTrackingEnabled(enabled);
+    } else if (strcmp(setting_name, "Heart Rate\nTracking") == 0) {
+      infiniSleepController.SetHeartRateTrackingEnabled(enabled);
+    } else if (strcmp(setting_name, "Gradual Wake") == 0) {
+      infiniSleepController.SetGradualWakeEnabled(enabled);
+    } else if (strcmp(setting_name, "Smart Alarm\n(alpha)") == 0) {
+      infiniSleepController.SetSmartAlarmEnabled(enabled);
+    }
+  }
 
 static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<Sleep*>(obj->user_data);
@@ -163,10 +183,10 @@ void Sleep::DrawSettingsScreen() {
   };
 
   Setting settings[] = {
-    {"Body Tracking", false},
-    {"Heart Rate\nTracking", false, 60},
-    {"Gradual Wake", false},
-    {"Smart Alarm\n(alpha)", false}
+    {"Body Tracking", infiniSleepController.BodyTrackingEnabled()},
+    {"Heart Rate\nTracking", infiniSleepController.HeartRateTrackingEnabled(), 60},
+    {"Gradual Wake", infiniSleepController.GradualWakeEnabled()},
+    {"Smart Alarm\n(alpha)", infiniSleepController.SmartAlarmEnabled()}
   };
 
   int y_offset = 50;
@@ -176,12 +196,15 @@ void Sleep::DrawSettingsScreen() {
     lv_obj_align(lblSetting, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
 
     lv_obj_t* toggle = lv_switch_create(lv_scr_act(), nullptr);
+    toggle->user_data = const_cast<char*>(setting.name);
     if (setting.enabled) {
       lv_switch_on(toggle, LV_ANIM_OFF);
     } else {
       lv_switch_off(toggle, LV_ANIM_OFF);
     }
     lv_obj_align(toggle, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -10, y_offset);
+
+    lv_obj_set_event_cb(toggle, settingsToggleEventHandler);
 
     y_offset += setting.offsetAfter; // Increase the offset to provide better spacing
   }

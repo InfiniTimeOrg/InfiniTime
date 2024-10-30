@@ -47,6 +47,38 @@ namespace Pinetime {
 
                 void SetRecurrence(RecurType recurrence);
 
+                bool BodyTrackingEnabled() const {
+                    return infiniSleepSettings.bodyTracking;
+                }
+
+                void SetBodyTrackingEnabled(bool enabled) {
+                    infiniSleepSettings.bodyTracking = enabled;
+                }
+
+                bool HeartRateTrackingEnabled() const {
+                    return infiniSleepSettings.heartRateTracking;
+                }
+
+                void SetHeartRateTrackingEnabled(bool enabled) {
+                    infiniSleepSettings.heartRateTracking = enabled;
+                }
+
+                bool GradualWakeEnabled() const {
+                    return infiniSleepSettings.graddualWake;
+                }
+
+                void SetGradualWakeEnabled(bool enabled) {
+                    infiniSleepSettings.graddualWake = enabled;
+                }
+
+                bool SmartAlarmEnabled() const {
+                    return infiniSleepSettings.smartAlarm;
+                }
+
+                void SetSmartAlarmEnabled(bool enabled) {
+                    infiniSleepSettings.smartAlarm = enabled;
+                }
+
             private:
                 // Versions 255 is reserved for now, so the version field can be made
                 // bigger, should it ever be needed.
@@ -60,8 +92,18 @@ namespace Pinetime {
                     bool isEnabled = false;
                 };
 
+                struct InfiniSleepSettings {
+                    bool bodyTracking = false;
+                    bool heartRateTracking = true;
+                    bool graddualWake = false;
+                    bool smartAlarm = false;
+                };
+
                 bool isAlerting = false;
                 bool wakeAlarmChanged = false;
+                bool isEnabled = false;
+
+                InfiniSleepSettings infiniSleepSettings;
 
                 Controllers::DateTime& dateTimeController;
                 Controllers::FS& fs;
