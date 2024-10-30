@@ -23,9 +23,12 @@ namespace {
 extern InfiniSleepController infiniSleepController;
 
 static void settingsToggleEventHandler(lv_obj_t* obj, lv_event_t e) {
+    if (e != LV_EVENT_VALUE_CHANGED) {
+      return;
+    }
     lv_obj_t* toggle = obj;
     const char* setting_name = static_cast<const char*>(obj->user_data);
-
+    
     bool enabled = lv_switch_get_state(toggle);
 
     if (strcmp(setting_name, "Body Tracking") == 0) {
@@ -269,6 +272,8 @@ bool Sleep::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
       }
       NRF_LOG_INFO("SwipeRight: %d", static_cast<int>(displayState));
       return true;
+    default:
+      break;
   }
 
   // Don't allow closing the screen by swiping while the alarm is alerting
