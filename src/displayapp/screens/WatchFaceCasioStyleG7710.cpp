@@ -4,12 +4,10 @@
 #include <cstdio>
 #include "displayapp/screens/BatteryIcon.h"
 #include "displayapp/screens/BleIcon.h"
-#include "displayapp/screens/AlarmIcon.h"
 #include "displayapp/screens/NotificationIcon.h"
 #include "displayapp/screens/Symbols.h"
 #include "components/battery/BatteryController.h"
 #include "components/ble/BleController.h"
-#include "components/alarm/AlarmController.h"
 #include "components/ble/NotificationManager.h"
 #include "components/heartrate/HeartRateController.h"
 #include "components/motion/MotionController.h"
@@ -19,7 +17,6 @@ using namespace Pinetime::Applications::Screens;
 WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTimeController,
                                                    const Controllers::Battery& batteryController,
                                                    const Controllers::Ble& bleController,
-                                                   Controllers::AlarmController& alarmController,
                                                    Controllers::NotificationManager& notificatioManager,
                                                    Controllers::Settings& settingsController,
                                                    Controllers::HeartRateController& heartRateController,
@@ -30,7 +27,6 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
     dateTimeController {dateTimeController},
     batteryController {batteryController},
     bleController {bleController},
-    alarmController {alarmController},
     notificatioManager {notificatioManager},
     settingsController {settingsController},
     heartRateController {heartRateController},
@@ -171,23 +167,6 @@ WatchFaceCasioStyleG7710::WatchFaceCasioStyleG7710(Controllers::DateTime& dateTi
   lv_obj_set_style_local_text_color(stepIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
   lv_label_set_text_static(stepIcon, Symbols::shoe);
   lv_obj_align(stepIcon, stepValue, LV_ALIGN_OUT_LEFT_MID, -5, 0);
-
-  alarmIcon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(alarmIcon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  lv_label_set_text_static(alarmIcon, Symbols::notbell);
-  lv_obj_align(alarmIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 5, -2);
-
-  labelAlarm = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-//  lv_obj_set_style_local_text_font(labelAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
-  lv_obj_align(labelAlarm, alarmIcon, LV_ALIGN_OUT_RIGHT_MID, 3, 0);
-  lv_label_set_text_static(labelAlarm, "00:00");
-
-  labelTimeAmPmAlarm = lv_label_create(lv_scr_act(), nullptr);
-//  lv_obj_set_style_local_text_font(labelTimeAmPmAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
-  lv_label_set_text_static(labelTimeAmPmAlarm, "");
-  lv_obj_set_style_local_text_color(labelTimeAmPmAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, color_text);
-  lv_obj_align(labelTimeAmPmAlarm, labelAlarm, LV_ALIGN_OUT_RIGHT_MID, 3, 0);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
   Refresh();
@@ -331,6 +310,7 @@ void WatchFaceCasioStyleG7710::Refresh() {
     lv_obj_realign(stepValue);
     lv_obj_realign(stepIcon);
   }
+}
 bool WatchFaceCasioStyleG7710::IsAvailable(Pinetime::Controllers::FS& filesystem) {
   lfs_file file = {};
 
