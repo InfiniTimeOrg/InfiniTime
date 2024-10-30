@@ -29,6 +29,8 @@ namespace Pinetime::Applications {
       bool OnButtonPushed() override;
 
     private:
+      void OnPause();
+
       void DisplayPaused();
       void DisplayStarted();
       void DisplayCleared();
