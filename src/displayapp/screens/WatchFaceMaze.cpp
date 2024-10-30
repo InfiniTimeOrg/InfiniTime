@@ -212,8 +212,8 @@ WatchFaceMaze::WatchFaceMaze(Pinetime::Components::LittleVgl& lvgl,
   lastLongClickTime = xTaskGetTickCount() - doubleDoubleClickDelay;
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
-  // refreshing here seems to cause issues in infinisim
-  // Refresh();
+
+  // Calling Refresh() here causes all sorts of issues, rely on task to refresh instead
 }
 
 WatchFaceMaze::~WatchFaceMaze() {
