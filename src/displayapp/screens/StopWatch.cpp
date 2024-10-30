@@ -203,11 +203,7 @@ void StopWatch::PlayPauseBtnEventHandler() {
     DisplayStarted();
     wakeLock.Lock();
   } else if (stopWatchController.IsRunning()) {
-    stopWatchController.Pause();
-    blinkTime = xTaskGetTickCount() + blinkInterval;
-    DisplayPaused();
-    RenderTime();
-    wakeLock.Release();
+    OnPause();
   }
 }
 
@@ -224,10 +220,16 @@ void StopWatch::StopLapBtnEventHandler() {
 
 bool StopWatch::OnButtonPushed() {
   if (stopWatchController.IsRunning()) {
-    stopWatchController.Pause();
-    DisplayPaused();
-    wakeLock.Release();
+    OnPause();
     return true;
   }
   return false;
+}
+
+void StopWatch::OnPause() {
+  stopWatchController.Pause();
+  blinkTime = xTaskGetTickCount() + blinkInterval;
+  RenderTime(); // make sure displayed time is not stale
+  DisplayPaused();
+  wakeLock.Release();
 }
