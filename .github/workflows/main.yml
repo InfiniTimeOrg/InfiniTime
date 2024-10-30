@@ -205,7 +205,7 @@ jobs:
         | data    | ${{ needs.build-firmware.outputs.data_size }}B | ${{ steps.output-sizes-diff.outputs.data_diff }}B |
         | bss     | ${{ needs.build-firmware.outputs.bss_size }}B  | ${{ steps.output-sizes-diff.outputs.bss_diff }}B  |
 
-        [Run in InfiniEmu](https://infiniemu.pipe01.net/?firmware=https://corsproxy.io/?https://nightly.link/${{ github.repository }}/actions/artifacts/${{ needs.build-firmware.outputs.firmware_artifact }}.zip&resources=https://corsproxy.io/?https://nightly.link/${{ github.repository }}/actions/artifacts/${{ needs.build-firmware.outputs.resources_artifact }}.zip)
+        [Run in InfiniEmu](https://infiniemu.pipe01.net/?firmware=artifact://${{ github.repository }}/${{ needs.build-firmware.outputs.firmware_artifact }}&resources=artifact://${{ github.repository }}/${{ needs.build-firmware.outputs.resources_artifact }})
         EOF
 
     - name: Upload comment
