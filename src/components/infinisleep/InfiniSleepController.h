@@ -121,7 +121,7 @@ namespace Pinetime {
 
                 bool isAlerting = false;
                 bool isGradualWakeAlerting = false;
-                uint8_t gradualWakeStep = 8; // used to keep track of which step to use
+                uint8_t gradualWakeStep = 9; // used to keep track of which step to use, in position form not idex
                 bool wakeAlarmChanged = false;
                 bool isEnabled = false;
                 bool settingsChanged = false;

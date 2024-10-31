@@ -68,7 +68,7 @@ void InfiniSleepController::ScheduleWakeAlarm() {
     xTimerStop(wakeAlarmTimer, 0);
     xTimerStop(gradualWakeTimer, 0);
 
-    gradualWakeStep = 8;
+    gradualWakeStep = 9;
 
     auto now = dateTimeController.CurrentDateTime();
     wakeAlarmTime = now;
@@ -104,13 +104,13 @@ void InfiniSleepController::ScheduleWakeAlarm() {
     xTimerStart(wakeAlarmTimer, 0);
 
     // make sure graudal wake steps are possible
-    while (gradualWakeStep > -1 && secondsToWakeAlarm <= wakeAlarm.gradualWakeSteps[gradualWakeStep]) {
+    while (gradualWakeStep != 0 && secondsToWakeAlarm <= wakeAlarm.gradualWakeSteps[gradualWakeStep-1]) {
       gradualWakeStep--;
     }
 
     // Calculate the period for the gradualWakeTimer
-    if (infiniSleepSettings.graddualWake && gradualWakeStep >= 0) {
-      int64_t gradualWakePeriod = ((secondsToWakeAlarm - wakeAlarm.gradualWakeSteps[gradualWakeStep--])) * (configTICK_RATE_HZ);
+    if (infiniSleepSettings.graddualWake && gradualWakeStep != 0) {
+      int64_t gradualWakePeriod = ((secondsToWakeAlarm - wakeAlarm.gradualWakeSteps[-1+gradualWakeStep--])) * (configTICK_RATE_HZ);
       xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
       xTimerStart(gradualWakeTimer, 0);
     }
@@ -145,8 +145,8 @@ void InfiniSleepController::SetOffGradualWakeNow() {
   //isGradualWakeAlerting = true;
   systemTask->PushMessage(System::Messages::SetOffGradualWake);
   // Calculate the period for the gradualWakeTimer
-  if (infiniSleepSettings.graddualWake && gradualWakeStep >= 0) {
-    int64_t gradualWakePeriod = ((SecondsToWakeAlarm() - wakeAlarm.gradualWakeSteps[gradualWakeStep--])) * (configTICK_RATE_HZ);
+  if (infiniSleepSettings.graddualWake && gradualWakeStep != 0) {
+    int64_t gradualWakePeriod = ((SecondsToWakeAlarm() - wakeAlarm.gradualWakeSteps[-1+gradualWakeStep--])) * (configTICK_RATE_HZ);
     xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
     xTimerStart(gradualWakeTimer, 0);
   }
