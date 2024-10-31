@@ -323,7 +323,7 @@ void Sleep::StopAlerting() {
 }
 
 void Sleep::SetSwitchState(lv_anim_enable_t anim) {
-  if (infiniSleepController.IsEnabled()) {
+  if (infiniSleepController.GetWakeAlarm().isEnabled) {
     lv_switch_on(enableSwitch, anim);
   } else {
     lv_switch_off(enableSwitch, anim);

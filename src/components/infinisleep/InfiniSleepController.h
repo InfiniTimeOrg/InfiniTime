@@ -5,6 +5,8 @@
 #include <cstdint>
 #include "components/datetime/DateTimeController.h"
 
+#include <chrono>
+
 namespace Pinetime {
     namespace System {
         class SystemTask;
@@ -22,6 +24,7 @@ namespace Pinetime {
                 void ScheduleWakeAlarm();
                 void DisableWakeAlarm();
                 void SetOffWakeAlarmNow();
+                void SetOffGradualWakeNow();
                 uint32_t SecondsToWakeAlarm() const;
                 void StopAlerting();
                 enum class RecurType { None, Daily, Weekdays };
@@ -84,7 +87,6 @@ namespace Pinetime {
                     settingsChanged = true;
                 }
 
-            private:
                 // Versions 255 is reserved for now, so the version field can be made
                 // bigger, should it ever be needed.
                 static constexpr uint8_t wakeAlarmFormatVersion = 1;
@@ -95,8 +97,12 @@ namespace Pinetime {
                     uint8_t minutes = 0;
                     RecurType recurrence = RecurType::None;
                     bool isEnabled = false;
-                    uint16_t gradualWakeSteps[9] = {30, 60, 90, 120, 180, 240, 300, 350, 600};
-                };;
+                    uint16_t gradualWakeSteps[9] = {30, 60, 90, 120, 180, 240, 300, 350, 600}; // In seconds
+                };
+
+                WakeAlarmSettings GetWakeAlarm() const {
+                    return wakeAlarm;
+                }
 
                 struct InfiniSleepSettings {
                     bool bodyTracking = false;
@@ -105,7 +111,17 @@ namespace Pinetime {
                     bool smartAlarm = false;
                 };
 
+                InfiniSleepSettings GetInfiniSleepSettings() const {
+                    return infiniSleepSettings;
+                }
+
+                int64_t secondsToWakeAlarm = 0;
+
+            private:
+
                 bool isAlerting = false;
+                bool isGradualWakeAlerting = false;
+                uint8_t gradualWakeStep = 8; // used to keep track of which step to use
                 bool wakeAlarmChanged = false;
                 bool isEnabled = false;
                 bool settingsChanged = false;
@@ -116,6 +132,7 @@ namespace Pinetime {
                 Controllers::FS& fs;
                 System::SystemTask* systemTask = nullptr;
                 TimerHandle_t wakeAlarmTimer;
+                TimerHandle_t gradualWakeTimer;
                 WakeAlarmSettings wakeAlarm;
                 std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> wakeAlarmTime;
 

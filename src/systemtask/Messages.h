@@ -26,6 +26,7 @@ namespace Pinetime {
       OnPairing,
       SetOffAlarm,
       SetOffWakeAlarm,
+      SetOffGradualWake,
       MeasureBatteryTimerExpired,
       BatteryPercentageUpdated,
       StartFileTransfer,

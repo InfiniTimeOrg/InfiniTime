@@ -396,6 +396,16 @@ void DisplayApp::Refresh() {
           LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::None);
         }
         break;
+      case Messages::GradualWakeTriggered:
+        if (currentApp == Apps::Sleep) {
+          //auto* sleep = static_cast<Screens::Sleep*>(currentScreen.get());
+          //sleep->SetGradualWakeAlerting();
+        } else {
+          LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::None);
+        }
+        motorController.RunForDuration(static_cast<uint8_t>(3000));
+        NRF_LOG_INFO("Gradual wake triggered");
+        break;
       case Messages::ShowPairingKey:
         LoadNewScreen(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
         motorController.RunForDuration(35);

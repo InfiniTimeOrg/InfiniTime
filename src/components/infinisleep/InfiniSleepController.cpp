@@ -16,11 +16,21 @@ namespace {
     auto* controller = static_cast<Pinetime::Controllers::InfiniSleepController*>(pvTimerGetTimerID(xTimer));
     controller->SetOffWakeAlarmNow();
   }
+
+  void SetOffGradualWake(TimerHandle_t xTimer) {
+    auto* controller = static_cast<Pinetime::Controllers::InfiniSleepController*>(pvTimerGetTimerID(xTimer));
+    if (controller->GetInfiniSleepSettings().graddualWake) {
+      return;
+    }
+    controller->SetOffGradualWakeNow();
+  }
 }
 
 void InfiniSleepController::Init(System::SystemTask* systemTask) {
     this->systemTask = systemTask;
     wakeAlarmTimer = xTimerCreate("WakeAlarm", 1, pdFALSE, this, SetOffWakeAlarm);
+    gradualWakeTimer = xTimerCreate("GradualWake", 1, pdFALSE, this, SetOffGradualWake);
+
     LoadSettingsFromFile();
     if (wakeAlarm.isEnabled) {
         NRF_LOG_INFO("[InfiniSleepController] Loaded wake alarm was enabled, scheduling");
@@ -56,6 +66,9 @@ void InfiniSleepController::SetWakeAlarmTime(uint8_t wakeAlarmHr, uint8_t wakeAl
 void InfiniSleepController::ScheduleWakeAlarm() {
     // Determine the next time the wake alarm needs to go off and set the timer
     xTimerStop(wakeAlarmTimer, 0);
+    xTimerStop(gradualWakeTimer, 0);
+
+    gradualWakeStep = 2;
 
     auto now = dateTimeController.CurrentDateTime();
     wakeAlarmTime = now;
@@ -86,9 +99,21 @@ void InfiniSleepController::ScheduleWakeAlarm() {
 
     // now can convert back to a time_point
     wakeAlarmTime = std::chrono::system_clock::from_time_t(std::mktime(tmWakeAlarmTime));
-    auto secondsToWakeAlarm = std::chrono::duration_cast<std::chrono::seconds>(wakeAlarmTime - now).count();
+    secondsToWakeAlarm = std::chrono::duration_cast<std::chrono::seconds>(wakeAlarmTime - now).count();
     xTimerChangePeriod(wakeAlarmTimer, secondsToWakeAlarm * configTICK_RATE_HZ, 0);
     xTimerStart(wakeAlarmTimer, 0);
+
+    // make sure graudal wake steps are possible
+    while (gradualWakeStep > -1 && secondsToWakeAlarm <= wakeAlarm.gradualWakeSteps[gradualWakeStep]) {
+      gradualWakeStep--;
+    }
+
+    // Calculate the period for the gradualWakeTimer
+    if (infiniSleepSettings.graddualWake && gradualWakeStep >= 0) {
+      int64_t gradualWakePeriod = ((secondsToWakeAlarm - wakeAlarm.gradualWakeSteps[gradualWakeStep--])) / (configTICK_RATE_HZ);
+      xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
+      xTimerStart(gradualWakeTimer, 0);
+    }
 
     if (!wakeAlarm.isEnabled) {
         wakeAlarm.isEnabled = true;
@@ -102,6 +127,8 @@ uint32_t InfiniSleepController::SecondsToWakeAlarm() const {
 
 void InfiniSleepController::DisableWakeAlarm() {
   xTimerStop(wakeAlarmTimer, 0);
+  xTimerStop(gradualWakeTimer, 0);
+  gradualWakeStep = 9;
   isAlerting = false;
   if (wakeAlarm.isEnabled) {
     wakeAlarm.isEnabled = false;
@@ -112,6 +139,17 @@ void InfiniSleepController::DisableWakeAlarm() {
 void InfiniSleepController::SetOffWakeAlarmNow() {
   isAlerting = true;
   systemTask->PushMessage(System::Messages::SetOffWakeAlarm);
+}
+
+void InfiniSleepController::SetOffGradualWakeNow() {
+  //isGradualWakeAlerting = true;
+  systemTask->PushMessage(System::Messages::SetOffGradualWake);
+  // Calculate the period for the gradualWakeTimer
+  if (infiniSleepSettings.graddualWake && gradualWakeStep >= 0) {
+    int64_t gradualWakePeriod = ((secondsToWakeAlarm - wakeAlarm.gradualWakeSteps[gradualWakeStep--])) / (configTICK_RATE_HZ);
+    xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
+    xTimerStart(gradualWakeTimer, 0);
+  }
 }
 
 void InfiniSleepController::StopAlerting() {
