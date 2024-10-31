@@ -75,7 +75,7 @@ Sleep::~Sleep() {
 }
 
 void Sleep::DisableWakeAlarm() {
-  if (infiniSleepController.IsEnabled()) {
+  if (infiniSleepController.GetWakeAlarm().isEnabled) {
     infiniSleepController.DisableWakeAlarm();
     lv_switch_off(enableSwitch, LV_ANIM_ON);
   }
@@ -343,7 +343,7 @@ void Sleep::ShowAlarmInfo() {
   txtMessage = lv_label_create(btnMessage, nullptr);
   lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
 
-  if (infiniSleepController.IsEnabled()) {
+  if (infiniSleepController.GetWakeAlarm().isEnabled) {
     auto timeToAlarm = infiniSleepController.SecondsToWakeAlarm();
 
     auto daysToAlarm = timeToAlarm / 86400;

@@ -115,7 +115,7 @@ namespace Pinetime {
                     return infiniSleepSettings;
                 }
 
-                int64_t secondsToWakeAlarm = 0;
+                //int64_t secondsToWakeAlarm = 0;
 
             private:
 

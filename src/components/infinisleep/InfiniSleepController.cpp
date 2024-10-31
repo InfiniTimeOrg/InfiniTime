@@ -19,7 +19,7 @@ namespace {
 
   void SetOffGradualWake(TimerHandle_t xTimer) {
     auto* controller = static_cast<Pinetime::Controllers::InfiniSleepController*>(pvTimerGetTimerID(xTimer));
-    if (controller->GetInfiniSleepSettings().graddualWake) {
+    if (controller->GetInfiniSleepSettings().graddualWake == false) {
       return;
     }
     controller->SetOffGradualWakeNow();
@@ -68,7 +68,7 @@ void InfiniSleepController::ScheduleWakeAlarm() {
     xTimerStop(wakeAlarmTimer, 0);
     xTimerStop(gradualWakeTimer, 0);
 
-    gradualWakeStep = 2;
+    gradualWakeStep = 8;
 
     auto now = dateTimeController.CurrentDateTime();
     wakeAlarmTime = now;
@@ -99,7 +99,7 @@ void InfiniSleepController::ScheduleWakeAlarm() {
 
     // now can convert back to a time_point
     wakeAlarmTime = std::chrono::system_clock::from_time_t(std::mktime(tmWakeAlarmTime));
-    secondsToWakeAlarm = std::chrono::duration_cast<std::chrono::seconds>(wakeAlarmTime - now).count();
+    int64_t secondsToWakeAlarm = std::chrono::duration_cast<std::chrono::seconds>(wakeAlarmTime - now).count();
     xTimerChangePeriod(wakeAlarmTimer, secondsToWakeAlarm * configTICK_RATE_HZ, 0);
     xTimerStart(wakeAlarmTimer, 0);
 
@@ -110,7 +110,7 @@ void InfiniSleepController::ScheduleWakeAlarm() {
 
     // Calculate the period for the gradualWakeTimer
     if (infiniSleepSettings.graddualWake && gradualWakeStep >= 0) {
-      int64_t gradualWakePeriod = ((secondsToWakeAlarm - wakeAlarm.gradualWakeSteps[gradualWakeStep--])) / (configTICK_RATE_HZ);
+      int64_t gradualWakePeriod = ((secondsToWakeAlarm - wakeAlarm.gradualWakeSteps[gradualWakeStep--])) * (configTICK_RATE_HZ);
       xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
       xTimerStart(gradualWakeTimer, 0);
     }
@@ -146,7 +146,7 @@ void InfiniSleepController::SetOffGradualWakeNow() {
   systemTask->PushMessage(System::Messages::SetOffGradualWake);
   // Calculate the period for the gradualWakeTimer
   if (infiniSleepSettings.graddualWake && gradualWakeStep >= 0) {
-    int64_t gradualWakePeriod = ((secondsToWakeAlarm - wakeAlarm.gradualWakeSteps[gradualWakeStep--])) / (configTICK_RATE_HZ);
+    int64_t gradualWakePeriod = ((SecondsToWakeAlarm() - wakeAlarm.gradualWakeSteps[gradualWakeStep--])) * (configTICK_RATE_HZ);
     xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
     xTimerStart(gradualWakeTimer, 0);
   }
