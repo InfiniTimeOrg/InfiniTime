@@ -36,6 +36,14 @@ void InfiniSleepController::SaveWakeAlarm() {
     wakeAlarmChanged = false;
 }
 
+void InfiniSleepController::SaveInfiniSleepSettings() {
+    // verify is save needed
+    if (settingsChanged) {
+        SaveSettingsToFile();
+    }
+    settingsChanged = false;
+}
+
 void InfiniSleepController::SetWakeAlarmTime(uint8_t wakeAlarmHr, uint8_t wakeAlarmMin) {
     if (wakeAlarm.hours == wakeAlarmHr && wakeAlarm.minutes == wakeAlarmMin) {
         return;
@@ -146,6 +154,20 @@ void InfiniSleepController::LoadSettingsFromFile() {
 
   wakeAlarm = wakeAlarmBuffer;
   NRF_LOG_INFO("[InfiniSleepController] Loaded alarm settings from file");
+
+  lfs_file_t infiniSleepSettingsFile;
+  InfiniSleepSettings infiniSleepSettingsBuffer;
+
+  if (fs.FileOpen(&infiniSleepSettingsFile, "/.system/sleep/infiniSleepSettings.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
+    NRF_LOG_WARNING("[InfiniSleepController] Failed to open InfiniSleep settings file");
+    return;
+  }
+
+  fs.FileRead(&infiniSleepSettingsFile, reinterpret_cast<uint8_t*>(&infiniSleepSettingsBuffer), sizeof(infiniSleepSettingsBuffer));
+  fs.FileClose(&infiniSleepSettingsFile);
+
+  infiniSleepSettings = infiniSleepSettingsBuffer;
+  NRF_LOG_INFO("[InfiniSleepController] Loaded InfiniSleep settings from file");
 }
 
 void InfiniSleepController::SaveSettingsToFile() const {
@@ -163,4 +185,14 @@ void InfiniSleepController::SaveSettingsToFile() const {
   fs.FileWrite(&alarmFile, reinterpret_cast<const uint8_t*>(&wakeAlarm), sizeof(wakeAlarm));
   fs.FileClose(&alarmFile);
   NRF_LOG_INFO("[InfiniSleepController] Saved alarm settings with format version %u to file", wakeAlarm.version);
+
+  lfs_file_t settingsFile;
+  if (fs.FileOpen(&settingsFile, "/.system/sleep/infiniSleepSettings.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
+    NRF_LOG_WARNING("[InfiniSleepController] Failed to open  InfiniSleep settings file for saving");
+    return;
+  }
+
+  fs.FileWrite(&settingsFile, reinterpret_cast<const uint8_t*>(&infiniSleepSettings), sizeof(infiniSleepSettings));
+  fs.FileClose(&settingsFile);
+  NRF_LOG_INFO("[InfiniSleepController] Saved InfiniSleep settings");
 }

@@ -33,12 +33,16 @@ static void settingsToggleEventHandler(lv_obj_t* obj, lv_event_t e) {
 
     if (strcmp(setting_name, "Body Tracking") == 0) {
       infiniSleepController.SetBodyTrackingEnabled(enabled);
+      infiniSleepController.SetSettingsChanged();
     } else if (strcmp(setting_name, "Heart Rate\nTracking") == 0) {
       infiniSleepController.SetHeartRateTrackingEnabled(enabled);
+      infiniSleepController.SetSettingsChanged();
     } else if (strcmp(setting_name, "Gradual Wake") == 0) {
       infiniSleepController.SetGradualWakeEnabled(enabled);
+      infiniSleepController.SetSettingsChanged();
     } else if (strcmp(setting_name, "Smart Alarm\n(alpha)") == 0) {
       infiniSleepController.SetSmartAlarmEnabled(enabled);
+      infiniSleepController.SetSettingsChanged();
     }
   }
 
@@ -67,6 +71,7 @@ Sleep::~Sleep() {
   }
   lv_obj_clean(lv_scr_act());
   infiniSleepController.SaveWakeAlarm();
+  infiniSleepController.SaveInfiniSleepSettings();
 }
 
 void Sleep::DisableWakeAlarm() {

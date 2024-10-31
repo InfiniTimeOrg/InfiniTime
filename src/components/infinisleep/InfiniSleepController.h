@@ -17,6 +17,7 @@ namespace Pinetime {
 
                 void Init(System::SystemTask* systemTask);
                 void SaveWakeAlarm();
+                void SaveInfiniSleepSettings();
                 void SetWakeAlarmTime(uint8_t wakeAlarmHr, uint8_t wakeAlarmMin);
                 void ScheduleWakeAlarm();
                 void DisableWakeAlarm();
@@ -79,6 +80,10 @@ namespace Pinetime {
                     infiniSleepSettings.smartAlarm = enabled;
                 }
 
+                void SetSettingsChanged() {
+                    settingsChanged = true;
+                }
+
             private:
                 // Versions 255 is reserved for now, so the version field can be made
                 // bigger, should it ever be needed.
@@ -90,7 +95,8 @@ namespace Pinetime {
                     uint8_t minutes = 0;
                     RecurType recurrence = RecurType::None;
                     bool isEnabled = false;
-                };
+                    uint16_t gradualWakeSteps[9] = {30, 60, 90, 120, 180, 240, 300, 350, 600};
+                };;
 
                 struct InfiniSleepSettings {
                     bool bodyTracking = false;
@@ -102,6 +108,7 @@ namespace Pinetime {
                 bool isAlerting = false;
                 bool wakeAlarmChanged = false;
                 bool isEnabled = false;
+                bool settingsChanged = false;
 
                 InfiniSleepSettings infiniSleepSettings;
 
