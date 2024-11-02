@@ -403,7 +403,7 @@ void DisplayApp::Refresh() {
         } else {
           LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::None);
         }
-        motorController.RunForDuration(static_cast<uint8_t>(3000));
+        motorController.RunForDuration(GRADUAL_WAKE_MOTOR_DURATION_MS);
         NRF_LOG_INFO("Gradual wake triggered");
         break;
       case Messages::ShowPairingKey:
