@@ -31,7 +31,7 @@ namespace Pinetime {
         void StopAlerting();
         void UpdateDisplay();
         enum class SleepDisplayState { Alarm, Info, Settings };
-        SleepDisplayState displayState = SleepDisplayState::Alarm;
+        SleepDisplayState displayState = SleepDisplayState::Info;
 
         // void Refresh() override;
 

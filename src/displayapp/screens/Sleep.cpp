@@ -83,6 +83,9 @@ void Sleep::DisableWakeAlarm() {
 void Sleep::UpdateDisplay() {
   // Clear the screen
   lv_obj_clean(lv_scr_act());
+  if (infiniSleepController.IsAlerting()) {
+    displayState = SleepDisplayState::Alarm;
+  }
   // Draw the screen
   switch (displayState) {
     case SleepDisplayState::Alarm:
