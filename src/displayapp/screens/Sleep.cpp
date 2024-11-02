@@ -50,10 +50,10 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   screen->OnButtonEvent(obj, event);
 }
 
-static void StopAlarmTaskCallback(lv_task_t* task) {
-  auto* screen = static_cast<Sleep*>(task->user_data);
-  screen->StopAlerting();
-}
+// static void StopAlarmTaskCallback(lv_task_t* task) {
+//   auto* screen = static_cast<Sleep*>(task->user_data);
+//   screen->StopAlerting();
+// }
 
 Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
              Controllers::Settings::ClockType clockType,
@@ -177,8 +177,14 @@ void Sleep::DrawAlarmScreen() {
 
 void Sleep::DrawInfoScreen() {
   lv_obj_t* lblInfo = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(lblInfo, "InfiniTime\nSleep\nApp");
-  lv_obj_align(lblInfo, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+  lv_label_set_text_static(lblInfo, "InfiniSleep");
+  lv_obj_align(lblInfo, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 5);
+ 
+  trackerToggleBtn = lv_btn_create(lv_scr_act(), nullptr);
+  lv_obj_align(trackerToggleBtn, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
+
+  trackerToggleLabel = lv_label_create(trackerToggleBtn, nullptr);
+  lv_label_set_text(trackerToggleLabel, "Start");
 }
 
 void Sleep::DrawSettingsScreen() {
@@ -309,7 +315,7 @@ void Sleep::UpdateWakeAlarmTime() {
 void Sleep::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
   lv_obj_set_hidden(btnStop, false);
-  taskStopWakeAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(600 * 1000), LV_TASK_PRIO_MID, this);
+  //taskStopWakeAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(60 * 1000), LV_TASK_PRIO_MID, this);
   motorController.StartRinging();
   wakeLock.Lock();
 }
