@@ -26,10 +26,9 @@ static void settingsToggleEventHandler(lv_obj_t* obj, lv_event_t e) {
     if (e != LV_EVENT_VALUE_CHANGED) {
       return;
     }
-    lv_obj_t* toggle = obj;
+
     const char* setting_name = static_cast<const char*>(obj->user_data);
-    
-    bool enabled = lv_switch_get_state(toggle);
+    bool enabled = lv_checkbox_is_checked(obj);
 
     if (strcmp(setting_name, "Body Tracking") == 0) {
       infiniSleepController.SetBodyTrackingEnabled(enabled);
@@ -199,20 +198,23 @@ void Sleep::DrawSettingsScreen() {
 
   int y_offset = 50;
   for (const auto& setting : settings) {
-    lv_obj_t* lblSetting = lv_label_create(lv_scr_act(), nullptr);
-    lv_label_set_text_static(lblSetting, setting.name);
-    lv_obj_align(lblSetting, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
+    //lv_obj_t* lblSetting = lv_label_create(lv_scr_act(), nullptr);
+   // lv_label_set_text_static(lblSetting, setting.name);
+   // lv_obj_align(lblSetting, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
 
-    lv_obj_t* toggle = lv_switch_create(lv_scr_act(), nullptr);
-    toggle->user_data = const_cast<char*>(setting.name);
+    lv_obj_t* checkbox = lv_checkbox_create(lv_scr_act(), nullptr);
+    checkbox->user_data = const_cast<char*>(setting.name);
+    lv_checkbox_set_text_static(checkbox, const_cast<char*>(setting.name));
+
     if (setting.enabled) {
-      lv_switch_on(toggle, LV_ANIM_OFF);
+      lv_checkbox_set_checked(checkbox, true);
     } else {
-      lv_switch_off(toggle, LV_ANIM_OFF);
+      lv_checkbox_set_checked(checkbox, false);
     }
-    lv_obj_align(toggle, lv_scr_act(), LV_ALIGN_IN_TOP_RIGHT, -10, y_offset);
+    lv_obj_align(checkbox, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
 
-    lv_obj_set_event_cb(toggle, settingsToggleEventHandler);
+    lv_obj_set_event_cb(checkbox, settingsToggleEventHandler);
+    //lv_obj_set_event_cb(lblSetting, settingsToggleEventHandler);
 
     y_offset += setting.offsetAfter; // Increase the offset to provide better spacing
   }
