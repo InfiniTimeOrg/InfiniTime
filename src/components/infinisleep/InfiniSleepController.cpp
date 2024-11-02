@@ -104,13 +104,13 @@ void InfiniSleepController::ScheduleWakeAlarm() {
     xTimerStart(wakeAlarmTimer, 0);
 
     // make sure graudal wake steps are possible
-    while (gradualWakeStep != 0 && secondsToWakeAlarm <= wakeAlarm.gradualWakeSteps[gradualWakeStep-1]) {
+    while (gradualWakeStep != 0 && secondsToWakeAlarm <= gradualWakeSteps[gradualWakeStep-1]) {
       gradualWakeStep--;
     }
 
     // Calculate the period for the gradualWakeTimer
     if (infiniSleepSettings.graddualWake && gradualWakeStep != 0) {
-      int64_t gradualWakePeriod = ((secondsToWakeAlarm - wakeAlarm.gradualWakeSteps[-1+gradualWakeStep--])) * (configTICK_RATE_HZ);
+      int64_t gradualWakePeriod = ((secondsToWakeAlarm - gradualWakeSteps[-1+gradualWakeStep--])) * (configTICK_RATE_HZ);
       xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
       xTimerStart(gradualWakeTimer, 0);
     }
@@ -146,7 +146,7 @@ void InfiniSleepController::SetOffGradualWakeNow() {
   systemTask->PushMessage(System::Messages::SetOffGradualWake);
   // Calculate the period for the gradualWakeTimer
   if (infiniSleepSettings.graddualWake && gradualWakeStep != 0) {
-    int64_t gradualWakePeriod = ((SecondsToWakeAlarm() - wakeAlarm.gradualWakeSteps[-1+gradualWakeStep--])) * (configTICK_RATE_HZ);
+    int64_t gradualWakePeriod = ((SecondsToWakeAlarm() - gradualWakeSteps[-1+gradualWakeStep--])) * (configTICK_RATE_HZ);
     xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
     xTimerStart(gradualWakeTimer, 0);
   }
@@ -176,7 +176,7 @@ void InfiniSleepController::LoadSettingsFromFile() {
   lfs_file_t wakeAlarmFile;
   WakeAlarmSettings wakeAlarmBuffer;
 
-  if (fs.FileOpen(&wakeAlarmFile, "/.system/sleep/wakeAlarm.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
+  if (fs.FileOpen(&wakeAlarmFile, "wakeAlarm.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
     NRF_LOG_WARNING("[InfiniSleepController] Failed to open alarm data file");
     return;
   }
@@ -196,7 +196,7 @@ void InfiniSleepController::LoadSettingsFromFile() {
   lfs_file_t infiniSleepSettingsFile;
   InfiniSleepSettings infiniSleepSettingsBuffer;
 
-  if (fs.FileOpen(&infiniSleepSettingsFile, "/.system/sleep/infiniSleepSettings.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
+  if (fs.FileOpen(&infiniSleepSettingsFile, "infiniSleepSettings.dat", LFS_O_RDONLY) != LFS_ERR_OK) {
     NRF_LOG_WARNING("[InfiniSleepController] Failed to open InfiniSleep settings file");
     return;
   }
@@ -209,13 +209,13 @@ void InfiniSleepController::LoadSettingsFromFile() {
 }
 
 void InfiniSleepController::SaveSettingsToFile() const {
-  lfs_dir systemDir;
-  if (fs.DirOpen("/.system/sleep", &systemDir) != LFS_ERR_OK) {
-    fs.DirCreate("/.system/sleep");
-  }
-  fs.DirClose(&systemDir);
+  // lfs_dir systemDir;
+  // if (fs.DirOpen("/system/sleep", &systemDir) != LFS_ERR_OK) {
+  //   fs.DirCreate("/system/sleep");
+  // }
+  // fs.DirClose(&systemDir);
   lfs_file_t alarmFile;
-  if (fs.FileOpen(&alarmFile, "/.system/sleep/wakeAlarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
+  if (fs.FileOpen(&alarmFile, "wakeAlarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
     NRF_LOG_WARNING("[InfiniSleepController] Failed to open alarm data file for saving");
     return;
   }
@@ -225,7 +225,7 @@ void InfiniSleepController::SaveSettingsToFile() const {
   NRF_LOG_INFO("[InfiniSleepController] Saved alarm settings with format version %u to file", wakeAlarm.version);
 
   lfs_file_t settingsFile;
-  if (fs.FileOpen(&settingsFile, "/.system/sleep/infiniSleepSettings.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
+  if (fs.FileOpen(&settingsFile, "infiniSleepSettings.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
     NRF_LOG_WARNING("[InfiniSleepController] Failed to open  InfiniSleep settings file for saving");
     return;
   }

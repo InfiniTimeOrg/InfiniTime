@@ -263,14 +263,14 @@ bool Sleep::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
   // The cases for swiping to change page on app
   switch (event) {
-    case TouchEvents::SwipeLeft:
+    case TouchEvents::SwipeRight:
       if (displayState != SleepDisplayState::Alarm) {
         displayState = static_cast<SleepDisplayState>(static_cast<int>(displayState) - 1);
         UpdateDisplay();
       }
       NRF_LOG_INFO("SwipeLeft: %d", static_cast<int>(displayState));
       return true;
-    case TouchEvents::SwipeRight:
+    case TouchEvents::SwipeLeft:
       if (displayState != SleepDisplayState::Settings) {
         displayState = static_cast<SleepDisplayState>(static_cast<int>(displayState) + 1);
         UpdateDisplay();
@@ -304,7 +304,7 @@ void Sleep::UpdateWakeAlarmTime() {
 void Sleep::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
   lv_obj_set_hidden(btnStop, false);
-  taskStopWakeAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(60 * 1000), LV_TASK_PRIO_MID, this);
+  taskStopWakeAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(600 * 1000), LV_TASK_PRIO_MID, this);
   motorController.StartRinging();
   wakeLock.Lock();
 }

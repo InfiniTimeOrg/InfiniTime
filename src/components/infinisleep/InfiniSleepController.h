@@ -97,8 +97,10 @@ namespace Pinetime {
                     uint8_t minutes = 0;
                     RecurType recurrence = RecurType::None;
                     bool isEnabled = false;
-                    uint16_t gradualWakeSteps[9] = {30, 60, 90, 120, 180, 240, 300, 350, 600}; // In seconds
                 };
+
+                uint16_t gradualWakeSteps[9] = {30, 60, 90, 120, 180, 240, 300, 350, 600}; // In seconds
+
 
                 WakeAlarmSettings GetWakeAlarm() const {
                     return wakeAlarm;
