@@ -849,6 +849,10 @@ if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
   # add_definitions(-DMYNEWT_VAL_BLE_HS_LOG_LVL=0)
 endif()
 
+if (CMAKE_BUILD_TYPE MATCHES Release)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 add_subdirectory(displayapp/fonts)
 target_compile_options(infinitime_fonts PUBLIC
         ${COMMON_FLAGS}
