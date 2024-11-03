@@ -108,6 +108,7 @@ Weather::Weather(Controllers::Settings& settingsController, Controllers::SimpleW
 
   taskRefresh = lv_task_create(RefreshTaskCallback, 1000, LV_TASK_PRIO_MID, this);
   Refresh();
+
 }
 
 Weather::~Weather() {
@@ -120,6 +121,7 @@ void Weather::Refresh() {
   if (currentWeather.IsUpdated()) {
     auto optCurrentWeather = currentWeather.Get();
     if (optCurrentWeather) {
+      uint32_t currentTimestamp = GetCurrentTimestamp();
       int16_t temp = optCurrentWeather->temperature;
       int16_t minTemp = optCurrentWeather->minTemperature;
       int16_t maxTemp = optCurrentWeather->maxTemperature;
@@ -136,6 +138,9 @@ void Weather::Refresh() {
       lv_label_set_text_fmt(temperature, "%d°%c", RoundTemperature(temp), tempUnit);
       lv_label_set_text_fmt(minTemperature, "%d°", RoundTemperature(minTemp));
       lv_label_set_text_fmt(maxTemperature, "%d°", RoundTemperature(maxTemp));
+      uint32_t timeDifference = currentTimestamp - lastUpdateTimestamp;
+      lv_label_set_text_fmt(updateTimeLabel, "Updated %d seconds ago", timeDifference);
+      lastUpdateTimestamp = currentTimestamp;
     } else {
       lv_label_set_text(icon, "");
       lv_label_set_text(condition, "");
@@ -143,8 +148,14 @@ void Weather::Refresh() {
       lv_obj_set_style_local_text_color(temperature, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
       lv_label_set_text(minTemperature, "");
       lv_label_set_text(maxTemperature, "");
+      lv_label_set_text(updateTimeLabel, "No update");
     }
+  } else {
+    uint32_t currentTimestamp = GetCurrentTimestamp();
+    uint32_t timeDifference = currentTimestamp - lastUpdateTimestamp;
+    lv_label_set_text_fmt(updateTimeLabel, "Updated %d seconds ago", timeDifference);
   }
+}
 
   currentForecast = weatherService.GetForecast();
   if (currentForecast.IsUpdated()) {
