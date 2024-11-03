@@ -117,6 +117,15 @@ namespace Pinetime {
                     return infiniSleepSettings;
                 }
 
+                bool ToggleTracker() {
+                    isEnabled = !isEnabled;
+                    return isEnabled;
+                }
+
+                bool IsTrackerEnabled() const {
+                    return isEnabled;
+                }
+
                 //int64_t secondsToWakeAlarm = 0;
 
             private:

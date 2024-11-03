@@ -181,10 +181,18 @@ void Sleep::DrawInfoScreen() {
   lv_obj_align(lblInfo, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 5);
  
   trackerToggleBtn = lv_btn_create(lv_scr_act(), nullptr);
+  trackerToggleBtn->user_data = this;
   lv_obj_align(trackerToggleBtn, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);
 
   trackerToggleLabel = lv_label_create(trackerToggleBtn, nullptr);
-  lv_label_set_text(trackerToggleLabel, "Start");
+  if (infiniSleepController.IsTrackerEnabled()) {
+    lv_label_set_text_static(trackerToggleLabel, "Stop");
+    lv_obj_set_style_local_bg_color(trackerToggleBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  } else {
+    lv_label_set_text_static(trackerToggleLabel, "Start");
+    lv_obj_set_style_local_bg_color(trackerToggleBtn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_GREEN);
+  }
+  lv_obj_set_event_cb(trackerToggleBtn, btnEventHandler);
 }
 
 void Sleep::DrawSettingsScreen() {
@@ -249,6 +257,11 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       } else {
         infiniSleepController.DisableWakeAlarm();
       }
+      return;
+    }
+    if (obj == trackerToggleBtn) {
+      infiniSleepController.ToggleTracker();
+      UpdateDisplay();
       return;
     }
     if (obj == btnRecur) {
