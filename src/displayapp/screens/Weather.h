@@ -38,7 +38,6 @@ namespace Pinetime {
         lv_obj_t* minTemperature;
         lv_obj_t* maxTemperature;
         lv_obj_t* forecast;
-        lv_obj_t* lastUpdatedLabel;
 
         lv_task_t* taskRefresh;
       };
