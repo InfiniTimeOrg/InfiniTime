@@ -208,6 +208,9 @@ void SystemTask::Work() {
           if (alarmController.IsEnabled()) {
             alarmController.ScheduleAlarm();
           }
+          if (infiniSleepController.GetWakeAlarm().isEnabled) {
+            infiniSleepController.ScheduleWakeAlarm();
+          }
           break;
         case Messages::OnNewNotification:
           if (settingsController.GetNotificationStatus() == Pinetime::Controllers::Settings::Notification::On) {
