@@ -403,6 +403,11 @@ void Sleep::SetRecurButtonState() {
       break;
     case InfiniSleepController::RecurType::Weekdays:
       lv_label_set_text_static(txtRecur, "MON-FRI");
+      break;
+    default:
+      infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::None);
+      SetRecurButtonState();
+      break;
   }
 }
 
