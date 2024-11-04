@@ -285,6 +285,12 @@ bool Sleep::OnButtonPushed() {
 
 bool Sleep::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
+  // Swiping should be ignored when in alerting state
+  if (infiniSleepController.IsAlerting() && 
+    (event != TouchEvents::SwipeDown && event != TouchEvents::SwipeUp && event != TouchEvents::SwipeLeft && event != TouchEvents::SwipeRight)) {
+    return true;
+  }
+
   // The cases for swiping to change page on app
   switch (event) {
     case TouchEvents::SwipeRight:
