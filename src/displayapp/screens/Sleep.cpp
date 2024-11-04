@@ -406,7 +406,7 @@ void Sleep::SetRecurButtonState() {
       break;
     default:
       infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::None);
-      SetRecurButtonState();
+      lv_label_set_text_static(txtRecur, "ONCE");
       break;
   }
 }
