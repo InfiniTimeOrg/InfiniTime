@@ -419,9 +419,6 @@ void Sleep::ToggleRecurrence() {
     case InfiniSleepController::RecurType::Weekdays:
       infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::None);
       break;
-    default:
-      infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::None);
-      break;
   }
   SetRecurButtonState();
 }
