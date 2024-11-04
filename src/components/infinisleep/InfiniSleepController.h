@@ -7,6 +7,8 @@
 
 #include <chrono>
 
+#define PSUHES_TO_STOP_ALARM 5
+
 namespace Pinetime {
     namespace System {
         class SystemTask;
@@ -28,6 +30,23 @@ namespace Pinetime {
                 uint32_t SecondsToWakeAlarm() const;
                 void StopAlerting();
                 enum class RecurType { None, Daily, Weekdays };
+
+                uint8_t pushesLeftToStopWakeAlarm = PSUHES_TO_STOP_ALARM;
+
+                bool isSnoozing = false;
+                uint8_t preSnoozeMinutes = 10;
+                uint8_t preSnnoozeHours = 0;
+
+                void SetPreSnoozeTime() {
+                    preSnoozeMinutes = wakeAlarm.minutes;
+                    preSnnoozeHours = wakeAlarm.hours;
+                }
+
+                void RestorePreSnoozeTime() {
+                    wakeAlarm.minutes = preSnoozeMinutes;
+                    wakeAlarm.hours = preSnnoozeHours;
+                }
+
 
                 uint8_t Hours() const {
                     return wakeAlarm.hours;
@@ -126,6 +145,14 @@ namespace Pinetime {
                     return isEnabled;
                 }
 
+                uint8_t GetCurrentHour() {
+                    return dateTimeController.Hours();
+                }
+
+                uint8_t GetCurrentMinute() {
+                    return dateTimeController.Minutes();
+                }
+
                 //int64_t secondsToWakeAlarm = 0;
 
             private:
@@ -144,6 +171,7 @@ namespace Pinetime {
                 System::SystemTask* systemTask = nullptr;
                 TimerHandle_t wakeAlarmTimer;
                 TimerHandle_t gradualWakeTimer;
+                TimerHandle_t trackerUpdateTimer;
                 WakeAlarmSettings wakeAlarm;
                 std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> wakeAlarmTime;
 

@@ -69,6 +69,7 @@ namespace Pinetime {
         void SetRecurButtonState();
         void SetSwitchState(lv_anim_enable_t anim);
         void SetWakeAlarm();
+        void SnoozeWakeAlarm();
         void ShowAlarmInfo();
         void HideAlarmInfo();
         void ToggleRecurrence();

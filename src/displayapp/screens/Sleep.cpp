@@ -130,7 +130,7 @@ void Sleep::DrawAlarmScreen() {
   lv_obj_set_event_cb(btnStop, btnEventHandler);
   lv_obj_set_size(btnStop, 115, 50);
   lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
-  lv_obj_set_style_local_bg_color(btnStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  lv_obj_set_style_local_bg_color(btnStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
   txtStop = lv_label_create(btnStop, nullptr);
   lv_label_set_text_static(txtStop, Symbols::stop);
   lv_obj_set_hidden(btnStop, true);
@@ -241,6 +241,7 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     if (obj == btnStop) {
       StopAlerting();
+      SnoozeWakeAlarm();
       return;
     }
     if (obj == btnInfo) {
@@ -277,8 +278,16 @@ bool Sleep::OnButtonPushed() {
     return true;
   }
   if (infiniSleepController.IsAlerting()) {
-    StopAlerting();
-    return true;
+    if (infiniSleepController.pushesLeftToStopWakeAlarm > 1) {
+      infiniSleepController.pushesLeftToStopWakeAlarm--;
+      return true;
+    } else {
+      infiniSleepController.isSnoozing = false;
+      infiniSleepController.RestorePreSnoozeTime();
+      StopAlerting();
+      UpdateDisplay();
+      return true;
+    }
   }
   return false;
 }
@@ -318,6 +327,21 @@ bool Sleep::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 void Sleep::OnValueChanged() {
   DisableWakeAlarm();
   UpdateWakeAlarmTime();
+}
+
+// Currently snoozes 5 minutes
+void Sleep::SnoozeWakeAlarm() {
+  if (minuteCounter.GetValue() >= 55) {
+    minuteCounter.SetValue(0);
+    hourCounter.SetValue((infiniSleepController.GetCurrentHour() + 1));
+  } else {
+    minuteCounter.SetValue(infiniSleepController.GetCurrentMinute() + 5);
+  }
+  infiniSleepController.SetPreSnoozeTime();
+  infiniSleepController.isSnoozing = true;
+  UpdateWakeAlarmTime();
+  SetSwitchState(LV_ANIM_OFF);
+  infiniSleepController.ScheduleWakeAlarm();
 }
 
 void Sleep::UpdateWakeAlarmTime() {
