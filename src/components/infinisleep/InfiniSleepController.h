@@ -39,6 +39,9 @@ namespace Pinetime {
                 uint8_t preSnnoozeHours = 0;
 
                 void SetPreSnoozeTime() {
+                    if (preSnoozeMinutes != 255 || preSnnoozeHours != 255) {
+                        return;
+                    }
                     preSnoozeMinutes = wakeAlarm.minutes;
                     preSnnoozeHours = wakeAlarm.hours;
                 }
@@ -46,6 +49,8 @@ namespace Pinetime {
                 void RestorePreSnoozeTime() {
                     wakeAlarm.minutes = preSnoozeMinutes;
                     wakeAlarm.hours = preSnnoozeHours;
+                    preSnoozeMinutes = 255;
+                    preSnnoozeHours = 255;
                 }
 
 
