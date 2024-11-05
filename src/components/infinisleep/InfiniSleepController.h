@@ -8,6 +8,7 @@
 #include <chrono>
 
 #define PSUHES_TO_STOP_ALARM 5
+#define TRACKER_UPDATE_INTERVAL_MINS 5
 
 namespace Pinetime {
     namespace System {
@@ -61,8 +62,12 @@ namespace Pinetime {
                 }
 
                 bool IsEnabled() const {
-                    return wakeAlarm.isEnabled;
+                    return isEnabled;
                 }
+
+                void EnableTracker();
+                void DisableTracker();
+                void UpdateTracker();
 
                 RecurType Recurrence() const {
                     return wakeAlarm.recurrence;
@@ -137,7 +142,11 @@ namespace Pinetime {
                 }
 
                 bool ToggleTracker() {
-                    isEnabled = !isEnabled;
+                    if (isEnabled) {
+                        DisableTracker();
+                    } else {
+                        EnableTracker();
+                    }
                     return isEnabled;
                 }
 

@@ -24,6 +24,11 @@ namespace {
     }
     controller->SetOffGradualWakeNow();
   }
+
+  void SetOffTrackerUpdate(TimerHandle_t xTimer) {
+    auto* controller = static_cast<Pinetime::Controllers::InfiniSleepController*>(pvTimerGetTimerID(xTimer));
+    controller->UpdateTracker();
+  }
 }
 
 void InfiniSleepController::Init(System::SystemTask* systemTask) {
@@ -36,6 +41,26 @@ void InfiniSleepController::Init(System::SystemTask* systemTask) {
         NRF_LOG_INFO("[InfiniSleepController] Loaded wake alarm was enabled, scheduling");
         ScheduleWakeAlarm();
     }
+}
+
+void InfiniSleepController::EnableTracker() {
+  DisableTracker();
+  NRF_LOG_INFO("[InfiniSleepController] Enabling tracker");
+  isEnabled = true;
+  trackerUpdateTimer = xTimerCreate("TrackerUpdate", 5 * configTICK_RATE_HZ, pdFALSE, this, SetOffTrackerUpdate);
+  xTimerStart(trackerUpdateTimer, 0);
+}
+
+void InfiniSleepController::DisableTracker() {
+  NRF_LOG_INFO("[InfiniSleepController] Disabling tracker");
+  xTimerStop(trackerUpdateTimer, 0);
+  isEnabled = false;
+}
+
+void InfiniSleepController::UpdateTracker() {
+  NRF_LOG_INFO("[InfiniSleepController] Updating tracker");
+  xTimerStop(trackerUpdateTimer, 0);
+  xTimerStart(trackerUpdateTimer, 0);
 }
 
 void InfiniSleepController::SaveWakeAlarm() {
