@@ -24,6 +24,19 @@ SettingShakeThreshold::SettingShakeThreshold(Controllers::Settings& settingsCont
   lv_label_set_align(title, LV_LABEL_ALIGN_CENTER);
   lv_obj_align(title, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 0);
 
+  if (settingsController.GetNotificationStatus() == Controllers::Settings::Notification::Sleep) {
+    lv_obj_t* explanation = lv_label_create(lv_scr_act(), nullptr);
+    lv_label_set_long_mode(explanation, LV_LABEL_LONG_BREAK);
+    lv_label_set_align(explanation, LV_LABEL_ALIGN_AUTO);
+    lv_obj_set_width(explanation, LV_HOR_RES_MAX);
+    lv_label_set_text_static(
+      explanation,
+      "\nShake detector is disabled in sleep mode, and will neither wake up the watch nor calibrate.\nDisable sleep mode to calibrate.");
+    calibrating = 255;
+    lv_obj_align(explanation, title, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+    return;
+  }
+
   positionArc = lv_arc_create(lv_scr_act(), nullptr);
   positionArc->user_data = this;
 
@@ -72,6 +85,9 @@ SettingShakeThreshold::SettingShakeThreshold(Controllers::Settings& settingsCont
 }
 
 SettingShakeThreshold::~SettingShakeThreshold() {
+  if (calibrating == 255)
+    return;
+
   settingsController.SetShakeThreshold(lv_arc_get_value(positionArc));
 
   if (EnableForCal) {
