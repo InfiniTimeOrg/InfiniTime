@@ -93,7 +93,7 @@ namespace Pinetime {
         // int prevBpm = 0;
         // int rollingBpm = 0;
 
-        // lv_obj_t* label_hr;
+        lv_obj_t* label_hr;
 
         // lv_task_t* mainRefreshTask;
         // lv_task_t* hrRefreshTask;

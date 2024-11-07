@@ -179,6 +179,12 @@ void Sleep::DrawInfoScreen() {
   lv_obj_t* lblInfo = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_static(lblInfo, "InfiniSleep");
   lv_obj_align(lblInfo, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 5);
+  lv_obj_set_style_local_text_color(lblInfo, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
+
+  label_hr = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_fmt(label_hr, "HR: %d", infiniSleepController.rollingBpm);
+  lv_obj_align(label_hr, lblInfo, LV_ALIGN_CENTER, 0, 50);
+  lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
  
   trackerToggleBtn = lv_btn_create(lv_scr_act(), nullptr);
   trackerToggleBtn->user_data = this;

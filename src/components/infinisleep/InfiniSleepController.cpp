@@ -7,8 +7,8 @@
 using namespace Pinetime::Controllers;
 using namespace std::chrono_literals;
 
-InfiniSleepController::InfiniSleepController(Controllers::DateTime& dateTimeController, Controllers::FS& fs)
-  : dateTimeController {dateTimeController}, fs {fs} {
+InfiniSleepController::InfiniSleepController(Controllers::DateTime& dateTimeController, Controllers::FS& fs, Controllers::HeartRateController& heartRateController)
+  : dateTimeController {dateTimeController}, fs {fs}, heartRateController {heartRateController} {
 }
 
 namespace {
@@ -59,6 +59,10 @@ void InfiniSleepController::DisableTracker() {
 
 void InfiniSleepController::UpdateTracker() {
   NRF_LOG_INFO("[InfiniSleepController] Updating tracker");
+
+  UpdateBPM();
+  systemTask->PushMessage(System::Messages::SleepTrackerUpdate);
+
   xTimerStop(trackerUpdateTimer, 0);
   xTimerStart(trackerUpdateTimer, 0);
 }
@@ -198,6 +202,75 @@ void InfiniSleepController::SetRecurrence(RecurType recurrence) {
   wakeAlarm.recurrence = recurrence;
   wakeAlarmChanged = true;
 }
+
+/* Sleep Tracking Section */
+
+void InfiniSleepController::UpdateBPM() {
+  // Get the heart rate from the controller
+  prevBpm = bpm;
+  bpm = heartRateController.HeartRate();
+
+  if(prevBpm != 0)
+    rollingBpm = (rollingBpm + bpm) / 2;
+  else
+    rollingBpm = bpm;
+
+  // Get the current time from DateTimeController
+  int hours = dateTimeController.Hours();
+  int minutes = dateTimeController.Minutes();
+  int seconds = dateTimeController.Seconds();
+
+  // Log the BPM and current time
+  NRF_LOG_INFO("BPM: %d at %02d:%02d:%02d", rollingBpm, hours, minutes, seconds);
+
+  // Write data to CSV
+  const int motion = 0; // Placeholder for motion data
+  std::tuple<int, int, int, int, int> data[1] = {std::make_tuple(hours, minutes, seconds, bpm, motion)};
+  WriteDataCSV("SleepTracker_Data.csv", data, 1);
+}
+
+void InfiniSleepController::WriteDataCSV(const char* fileName, const std::tuple<int, int, int, int, int>* data, int dataSize) const {
+  lfs_file_t file;
+  int err = fs.FileOpen(&file, fileName, LFS_O_WRONLY | LFS_O_CREAT | LFS_O_APPEND);
+  if (err < 0) {
+    // Handle error
+    NRF_LOG_INFO("Error opening file: %d", err);
+    return;
+  }
+
+  for (int i = 0; i < dataSize; ++i) {
+    int hours, minutes, seconds, bpm, motion;
+    std::tie(hours, minutes, seconds, bpm, motion) = data[i];
+    char buffer[64];
+    int len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d,%d,%d\n", hours, minutes, seconds, bpm, motion);
+    err = fs.FileWrite(&file, reinterpret_cast<const uint8_t*>(buffer), len);
+    if (err < 0) {
+      // Handle error
+      NRF_LOG_INFO("Error writing to file: %d", err);
+      fs.FileClose(&file);
+
+      return;
+    }
+  }
+
+  fs.FileClose(&file);
+}
+
+// Clear data in CSV
+void InfiniSleepController::ClearDataCSV(const char* filename) const {
+  lfs_file_t file;
+  int err = fs.FileOpen(&file, filename, LFS_O_WRONLY | LFS_O_TRUNC);
+  if (err < 0) {
+    // Handle error
+    NRF_LOG_INFO("Error opening file: %d", err);
+    return;
+  }
+
+  fs.FileClose(&file);
+  NRF_LOG_INFO("CSV data cleared");
+}
+
+/* Sleep Tracking Section End */
 
 void InfiniSleepController::LoadSettingsFromFile() {
   lfs_file_t wakeAlarmFile;

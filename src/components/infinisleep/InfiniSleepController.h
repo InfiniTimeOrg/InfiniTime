@@ -4,6 +4,8 @@
 #include <timers.h>
 #include <cstdint>
 #include "components/datetime/DateTimeController.h"
+#include "components/fs/FS.h"
+#include "components/heartrate/HeartRateController.h"
 
 #include <chrono>
 
@@ -18,7 +20,7 @@ namespace Pinetime {
     namespace Controllers {
         class InfiniSleepController {
             public:
-                InfiniSleepController(Controllers::DateTime& dateTimeCOntroller, Controllers::FS& fs);
+                InfiniSleepController(Controllers::DateTime& dateTimeCOntroller, Controllers::FS& , Controllers::HeartRateController& heartRateController);
 
                 void Init(System::SystemTask* systemTask);
                 void SaveWakeAlarm();
@@ -35,8 +37,8 @@ namespace Pinetime {
                 uint8_t pushesLeftToStopWakeAlarm = PSUHES_TO_STOP_ALARM;
 
                 bool isSnoozing = false;
-                uint8_t preSnoozeMinutes = 10;
-                uint8_t preSnnoozeHours = 0;
+                uint8_t preSnoozeMinutes = 255;
+                uint8_t preSnnoozeHours = 255;
 
                 void SetPreSnoozeTime() {
                     if (preSnoozeMinutes != 255 || preSnnoozeHours != 255) {
@@ -47,6 +49,9 @@ namespace Pinetime {
                 }
 
                 void RestorePreSnoozeTime() {
+                    if (preSnoozeMinutes == 255 || preSnnoozeHours == 255) {
+                        return;
+                    }
                     wakeAlarm.minutes = preSnoozeMinutes;
                     wakeAlarm.hours = preSnnoozeHours;
                     preSnoozeMinutes = 255;
@@ -169,6 +174,12 @@ namespace Pinetime {
 
                 //int64_t secondsToWakeAlarm = 0;
 
+                int bpm = 0;
+                int prevBpm = 0;
+                int rollingBpm = 0;
+
+                void UpdateBPM();
+
             private:
 
                 bool isAlerting = false;
@@ -182,6 +193,7 @@ namespace Pinetime {
 
                 Controllers::DateTime& dateTimeController;
                 Controllers::FS& fs;
+                Controllers::HeartRateController& heartRateController;
                 System::SystemTask* systemTask = nullptr;
                 TimerHandle_t wakeAlarmTimer;
                 TimerHandle_t gradualWakeTimer;
@@ -191,6 +203,10 @@ namespace Pinetime {
 
                 void LoadSettingsFromFile();
                 void SaveSettingsToFile() const;
+
+                // For File IO
+                void WriteDataCSV(const char* fileName, const std::tuple<int, int, int, int, int>* data, int dataSize) const;
+                void ClearDataCSV(const char* fileName) const;
         };
     }
 
