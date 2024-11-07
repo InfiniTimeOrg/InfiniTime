@@ -226,7 +226,7 @@ void InfiniSleepController::UpdateBPM() {
   // Write data to CSV
   const int motion = 0; // Placeholder for motion data
   std::tuple<int, int, int, int, int> data[1] = {std::make_tuple(hours, minutes, seconds, bpm, motion)};
-  WriteDataCSV("SleepTracker_Data.csv", data, 1);
+  WriteDataCSV(TrackerDataFile, data, 1);
 }
 
 void InfiniSleepController::WriteDataCSV(const char* fileName, const std::tuple<int, int, int, int, int>* data, int dataSize) const {

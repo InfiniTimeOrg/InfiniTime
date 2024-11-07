@@ -11,6 +11,7 @@
 
 #define PSUHES_TO_STOP_ALARM 5
 #define TRACKER_UPDATE_INTERVAL_MINS 5
+#define TrackerDataFile "SleepTracker_Data.csv"
 
 namespace Pinetime {
     namespace System {
@@ -155,6 +156,7 @@ namespace Pinetime {
                     if (isEnabled) {
                         DisableTracker();
                     } else {
+                        ClearDataCSV(TrackerDataFile);
                         EnableTracker();
                     }
                     return isEnabled;
