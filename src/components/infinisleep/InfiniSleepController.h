@@ -40,6 +40,8 @@ namespace Pinetime {
                 bool isSnoozing = false;
                 uint8_t preSnoozeMinutes = 255;
                 uint8_t preSnnoozeHours = 255;
+                uint8_t startTimeHours = 0;
+                uint8_t startTimeMinutes = 0;
 
                 void SetPreSnoozeTime() {
                     if (preSnoozeMinutes != 255 || preSnnoozeHours != 255) {
@@ -157,6 +159,8 @@ namespace Pinetime {
                         DisableTracker();
                     } else {
                         ClearDataCSV(TrackerDataFile);
+                        startTimeHours = GetCurrentHour();
+                        startTimeMinutes = GetCurrentMinute();
                         EnableTracker();
                     }
                     return isEnabled;

@@ -62,12 +62,14 @@ Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
   : infiniSleepController {infiniSleepController}, wakeLock(systemTask), motorController {motorController}, clockType {clockType} {
 
   UpdateDisplay();
+  taskRefresh = lv_task_create(RefreshTaskCallback, 2000, LV_TASK_PRIO_MID, this);
 }
 
 Sleep::~Sleep() {
   if (infiniSleepController.IsAlerting()) {
     StopAlerting();
   }
+  lv_task_del(taskRefresh);
   lv_obj_clean(lv_scr_act());
   infiniSleepController.SaveWakeAlarm();
   infiniSleepController.SaveInfiniSleepSettings();
@@ -78,6 +80,10 @@ void Sleep::DisableWakeAlarm() {
     infiniSleepController.DisableWakeAlarm();
     lv_switch_off(enableSwitch, LV_ANIM_ON);
   }
+}
+
+void Sleep::Refresh() {
+  UpdateDisplay();
 }
 
 void Sleep::UpdateDisplay() {
@@ -176,16 +182,23 @@ void Sleep::DrawAlarmScreen() {
 }
 
 void Sleep::DrawInfoScreen() {
-  lv_obj_t* lblInfo = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_static(lblInfo, "InfiniSleep");
-  lv_obj_align(lblInfo, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 5);
-  lv_obj_set_style_local_text_color(lblInfo, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
+  lv_obj_t* lblTime = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_fmt(lblTime, "%02d:%02d", infiniSleepController.GetCurrentHour(), infiniSleepController.GetCurrentMinute());
+  lv_obj_align(lblTime, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 5);
+  lv_obj_set_style_local_text_color(lblTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
   label_hr = lv_label_create(lv_scr_act(), nullptr);
   lv_label_set_text_fmt(label_hr, "HR: %d", infiniSleepController.rollingBpm);
-  lv_obj_align(label_hr, lblInfo, LV_ALIGN_CENTER, 0, 50);
+  lv_obj_align(label_hr, lblTime, LV_ALIGN_CENTER, 0, 50);
   lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
- 
+  
+  if (infiniSleepController.IsEnabled()) {
+    label_start_time = lv_label_create(lv_scr_act(), nullptr);
+    lv_label_set_text_fmt(label_start_time, "Began at: %02d:%02d", infiniSleepController.startTimeHours, infiniSleepController.startTimeMinutes);
+    lv_obj_align(label_start_time, label_hr, LV_ALIGN_CENTER, 0, 20);
+    lv_obj_set_style_local_text_color(label_start_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  }
+
   trackerToggleBtn = lv_btn_create(lv_scr_act(), nullptr);
   trackerToggleBtn->user_data = this;
   lv_obj_align(trackerToggleBtn, lv_scr_act(), LV_ALIGN_CENTER, 0, 40);

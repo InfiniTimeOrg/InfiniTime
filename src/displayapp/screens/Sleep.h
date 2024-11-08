@@ -23,6 +23,7 @@ namespace Pinetime {
         //explicit Sleep(Controllers::HeartRateController& HeartRateController, Controllers::DateTime& DateTimeController, Controllers::FS& fsController, System::SystemTask& systemTask);
         explicit Sleep(Controllers::InfiniSleepController& infiniSleepController, Controllers::Settings::ClockType clockType, System::SystemTask& systemTask, Controllers::MotorController& motorController);
         ~Sleep() override;
+        void Refresh() override;
         void SetAlerting();
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
         bool OnButtonPushed() override;
@@ -64,6 +65,8 @@ namespace Pinetime {
         lv_obj_t* btnMessage = nullptr;
         lv_task_t* taskStopWakeAlarm = nullptr;
 
+        lv_task_t* taskRefresh = nullptr;
+
         enum class EnableButtonState { On, Off, Alerting };
         void DisableWakeAlarm();
         void SetRecurButtonState();
@@ -94,6 +97,7 @@ namespace Pinetime {
         // int rollingBpm = 0;
 
         lv_obj_t* label_hr;
+        lv_obj_t* label_start_time;
 
         // lv_task_t* mainRefreshTask;
         // lv_task_t* hrRefreshTask;
