@@ -365,13 +365,13 @@ void Sleep::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
   lv_obj_set_hidden(btnStop, false);
   //taskStopWakeAlarm = lv_task_create(StopAlarmTaskCallback, pdMS_TO_TICKS(60 * 1000), LV_TASK_PRIO_MID, this);
-  motorController.StartRinging();
+  motorController.StartAlarm();
   wakeLock.Lock();
 }
 
 void Sleep::StopAlerting() {
   infiniSleepController.StopAlerting();
-  motorController.StopRinging();
+  motorController.StopAlarm();
   SetSwitchState(LV_ANIM_OFF);
   if (taskStopWakeAlarm != nullptr) {
     lv_task_del(taskStopWakeAlarm);
