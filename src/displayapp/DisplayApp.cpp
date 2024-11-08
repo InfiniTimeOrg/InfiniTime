@@ -406,6 +406,12 @@ void DisplayApp::Refresh() {
         motorController.RunForDuration(GRADUAL_WAKE_MOTOR_DURATION_MS);
         NRF_LOG_INFO("Gradual wake triggered");
         break;
+      case Messages::SleepTrackerUpdate:
+        if (currentApp == Apps::Sleep) {
+          auto* sleep = static_cast<Screens::Sleep*>(currentScreen.get());
+          sleep->UpdateDisplay();
+        }
+        break;
       case Messages::ShowPairingKey:
         LoadNewScreen(Apps::PassKey, DisplayApp::FullRefreshDirections::Up);
         motorController.RunForDuration(35);
