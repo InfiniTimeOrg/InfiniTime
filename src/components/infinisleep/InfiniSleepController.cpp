@@ -315,14 +315,19 @@ void InfiniSleepController::SaveSettingsToFile() const {
   // }
   // fs.DirClose(&systemDir);
   lfs_file_t alarmFile;
+  WakeAlarmSettings tempWakeAlarm = wakeAlarm;
+  if (isSnoozing) {
+    tempWakeAlarm.hours = preSnnoozeHours;
+    tempWakeAlarm.minutes = preSnoozeMinutes;
+  }
   if (fs.FileOpen(&alarmFile, "wakeAlarm.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
     NRF_LOG_WARNING("[InfiniSleepController] Failed to open alarm data file for saving");
     return;
   }
 
-  fs.FileWrite(&alarmFile, reinterpret_cast<const uint8_t*>(&wakeAlarm), sizeof(wakeAlarm));
+  fs.FileWrite(&alarmFile, reinterpret_cast<const uint8_t*>(&tempWakeAlarm), sizeof(tempWakeAlarm));
   fs.FileClose(&alarmFile);
-  NRF_LOG_INFO("[InfiniSleepController] Saved alarm settings with format version %u to file", wakeAlarm.version);
+  NRF_LOG_INFO("[InfiniSleepController] Saved alarm settings with format version %u to file", tempWakeAlarm.version);
 
   lfs_file_t settingsFile;
   if (fs.FileOpen(&settingsFile, "infiniSleepSettings.dat", LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
