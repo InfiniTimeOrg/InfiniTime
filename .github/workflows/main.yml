@@ -46,25 +46,30 @@ jobs:
       # Unzip the package because Upload Artifact will zip up the files
       - name: Unzip DFU package
         run: unzip ./build/output/pinetime-mcuboot-app-dfu-*.zip -d ./build/output/pinetime-mcuboot-app-dfu
+      - name: Set ref_name, but replace slashes with dashes.
+        shell: bash
+        env:
+          ref_name: ${{ github.head_ref || github.ref_name }}
+        run: echo "REF_NAME=${ref_name//\//-}" >> $GITHUB_ENV
       - name: Upload DFU artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: InfiniTime DFU ${{ github.head_ref }}
+          name: InfiniTime DFU ${{ env.REF_NAME }}
           path: ./build/output/pinetime-mcuboot-app-dfu/*
       - name: Upload MCUBoot image artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: InfiniTime MCUBoot image ${{ github.head_ref }}
+          name: InfiniTime MCUBoot image ${{ env.REF_NAME }}
           path: ./build/output/pinetime-mcuboot-app-image-*.bin
       - name: Upload standalone ELF artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: InfiniTime image ${{ github.head_ref }}
+          name: InfiniTime image ${{ env.REF_NAME }}
           path: ./build/output/src/pinetime-app-*.out
       - name: Upload resources artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: InfiniTime resources ${{ github.head_ref }}
+          name: InfiniTime resources ${{ env.REF_NAME }}
           path: ./build/output/infinitime-resources-*.zip
 
   build-simulator:
@@ -105,7 +110,7 @@ jobs:
     - name: Upload simulator executable
       uses: actions/upload-artifact@v3
       with:
-        name: infinisim-${{ github.head_ref }}
+        name: infinisim-${{ env.REF_NAME }}
         path: build_lv_sim/infinisim
 
   get-base-ref-size:
