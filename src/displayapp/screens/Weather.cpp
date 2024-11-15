@@ -154,8 +154,8 @@ void Weather::Refresh() {
       std::tm localTime = *std::localtime(reinterpret_cast<const time_t*>(&optCurrentForecast->timestamp));
 
       for (int i = 0; i < optCurrentForecast->nbDays; i++) {
-        int16_t minTemp = optCurrentForecast->days[i]->maxTemperature.Celsius();
-        int16_t maxTemp = optCurrentForecast->days[i]->minTemperature.Celsius();
+        int16_t minTemp = optCurrentForecast->days[i]->minTemperature.Celsius();
+        int16_t maxTemp = optCurrentForecast->days[i]->maxTemperature.Celsius();
         if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
           minTemp = optCurrentForecast->days[i]->maxTemperature.Fahrenheit();
           maxTemp = optCurrentForecast->days[i]->minTemperature.Fahrenheit();
