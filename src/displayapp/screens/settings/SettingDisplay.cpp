@@ -9,16 +9,22 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  void event_handler(lv_obj_t* obj, lv_event_t event) {
+  void TimeoutEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<SettingDisplay*>(obj->user_data);
     screen->UpdateSelected(obj, event);
+  }
+
+  void AlwaysOnEventHandler(lv_obj_t* obj, lv_event_t event) {
+    if (event == LV_EVENT_VALUE_CHANGED) {
+      auto* screen = static_cast<SettingDisplay*>(obj->user_data);
+      screen->ToggleAlwaysOn();
+    }
   }
 }
 
 constexpr std::array<uint16_t, 6> SettingDisplay::options;
 
-SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime::Controllers::Settings& settingsController)
-  : app {app}, settingsController {settingsController} {
+SettingDisplay::SettingDisplay(Pinetime::Controllers::Settings& settingsController) : settingsController {settingsController} {
 
   lv_obj_t* container1 = lv_cont_create(lv_scr_act(), nullptr);
 
@@ -49,18 +55,30 @@ SettingDisplay::SettingDisplay(Pinetime::Applications::DisplayApp* app, Pinetime
     snprintf(buffer, sizeof(buffer), "%2" PRIu16 "s", options[i] / 1000);
     lv_checkbox_set_text(cbOption[i], buffer);
     cbOption[i]->user_data = this;
-    lv_obj_set_event_cb(cbOption[i], event_handler);
+    lv_obj_set_event_cb(cbOption[i], TimeoutEventHandler);
     SetRadioButtonStyle(cbOption[i]);
 
     if (settingsController.GetScreenTimeOut() == options[i]) {
       lv_checkbox_set_checked(cbOption[i], true);
     }
   }
+
+  alwaysOnCheckbox = lv_checkbox_create(container1, nullptr);
+  lv_checkbox_set_text(alwaysOnCheckbox, "Always On");
+  lv_checkbox_set_checked(alwaysOnCheckbox, settingsController.GetAlwaysOnDisplaySetting());
+  lv_obj_add_state(alwaysOnCheckbox, LV_STATE_DEFAULT);
+  alwaysOnCheckbox->user_data = this;
+  lv_obj_set_event_cb(alwaysOnCheckbox, AlwaysOnEventHandler);
 }
 
 SettingDisplay::~SettingDisplay() {
   lv_obj_clean(lv_scr_act());
   settingsController.SaveSettings();
+}
+
+void SettingDisplay::ToggleAlwaysOn() {
+  settingsController.SetAlwaysOnDisplaySetting(!settingsController.GetAlwaysOnDisplaySetting());
+  lv_checkbox_set_checked(alwaysOnCheckbox, settingsController.GetAlwaysOnDisplaySetting());
 }
 
 void SettingDisplay::UpdateSelected(lv_obj_t* object, lv_event_t event) {
