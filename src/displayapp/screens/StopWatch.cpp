@@ -8,13 +8,13 @@ using namespace Pinetime::Controllers;
 
 namespace {
   TimeSeparated ConvertTicksToTimeSegments(const TickType_t timeElapsed) {
-    // Centiseconds
-    const int timeElapsedCentis = timeElapsed * 100 / configTICK_RATE_HZ;
+    const int timeElapsedSecs = timeElapsed / configTICK_RATE_HZ;
+    const int timeElapsedFraction = timeElapsed % configTICK_RATE_HZ;
 
-    const int hundredths = (timeElapsedCentis % 100);
-    const int secs = (timeElapsedCentis / 100) % 60;
-    const int mins = ((timeElapsedCentis / 100) / 60) % 60;
-    const int hours = ((timeElapsedCentis / 100) / 60) / 60;
+    const int hundredths = timeElapsedFraction * 100 / configTICK_RATE_HZ;
+    const int secs = (timeElapsedSecs) % 60;
+    const int mins = (timeElapsedSecs / 60) % 60;
+    const int hours = (timeElapsedSecs / 60) / 60;
     return TimeSeparated {hours, mins, secs, hundredths};
   }
 
