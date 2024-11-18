@@ -100,6 +100,7 @@ void InfiniSleepController::ScheduleWakeAlarm() {
     pushesLeftToStopWakeAlarm = PSUHES_TO_STOP_ALARM;
 
     gradualWakeStep = 9;
+    gradualWakeVibration = 9;
 
     auto now = dateTimeController.CurrentDateTime();
     wakeAlarmTime = now;

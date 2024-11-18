@@ -136,7 +136,12 @@ namespace Pinetime {
                     bool isEnabled = false;
                 };
 
+                // Dertermine the steps for the gradual wake alarm, the corresponding vibration durations determine the power of the vibration
                 uint16_t gradualWakeSteps[9] = {30, 60, 90, 120, 180, 240, 300, 350, 600}; // In seconds
+                uint16_t gradualWakeVibrationDurations[9] = {1200, 1200, 1000, 1000, 1000, 700, 700, 700, 500}; // In ms
+
+                uint8_t gradualWakeVibration = 9; // used to keep track of which vibration duration to use, in position form not idex
+
 
 
                 WakeAlarmSettings GetWakeAlarm() const {
@@ -185,6 +190,10 @@ namespace Pinetime {
                 int rollingBpm = 0;
 
                 void UpdateBPM();
+
+                uint8_t GetGradualWakeStep() const {
+                    return (9 - gradualWakeStep) + 1;
+                }
 
             private:
 

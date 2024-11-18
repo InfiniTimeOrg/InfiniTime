@@ -9,7 +9,7 @@
 #include "systemtask/WakeLock.h"
 #include "Symbols.h"
 
-#define GRADUAL_WAKE_MOTOR_DURATION_MS 1000
+//#define GRADUAL_WAKE_MOTOR_DURATION_MS 1000
 
 //#include <vector>
 //#include <numeric>  // for accumulate
