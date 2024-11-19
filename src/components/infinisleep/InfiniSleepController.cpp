@@ -140,6 +140,7 @@ void InfiniSleepController::ScheduleWakeAlarm() {
     // make sure graudal wake steps are possible
     while (gradualWakeStep != 0 && secondsToWakeAlarm <= gradualWakeSteps[gradualWakeStep-1]) {
       gradualWakeStep--;
+      gradualWakeVibration = gradualWakeStep;
     }
 
     // Calculate the period for the gradualWakeTimer
