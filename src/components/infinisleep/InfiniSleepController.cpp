@@ -95,6 +95,9 @@ void InfiniSleepController::SetWakeAlarmTime(uint8_t wakeAlarmHr, uint8_t wakeAl
 }
 
 void InfiniSleepController::ScheduleWakeAlarm() {
+    // This line essentially removes the ability to change recurrance type and sets it to daily
+    SetRecurrence(RecurType::Daily);
+
     // Determine the next time the wake alarm needs to go off and set the timer
     xTimerStop(wakeAlarmTimer, 0);
     xTimerStop(gradualWakeTimer, 0);
@@ -230,7 +233,7 @@ void InfiniSleepController::UpdateBPM() {
   // Write data to CSV
   const int motion = 0; // Placeholder for motion data
   std::tuple<int, int, int, int, int> data[1] = {std::make_tuple(hours, minutes, seconds, bpm, motion)};
-  WriteDataCSV(TrackerDataFile, data, 1);
+  WriteDataCSV(TRACKER_DATA_FILE_NAME, data, 1);
 }
 
 void InfiniSleepController::WriteDataCSV(const char* fileName, const std::tuple<int, int, int, int, int>* data, int dataSize) const {

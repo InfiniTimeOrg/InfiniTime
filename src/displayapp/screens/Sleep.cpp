@@ -144,14 +144,22 @@ void Sleep::DrawAlarmScreen() {
 
   static constexpr lv_color_t bgColor = Colors::bgAlt;
 
-  btnRecur = lv_btn_create(lv_scr_act(), nullptr);
-  btnRecur->user_data = this;
-  lv_obj_set_event_cb(btnRecur, btnEventHandler);
-  lv_obj_set_size(btnRecur, 115, 50);
-  lv_obj_align(btnRecur, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  txtRecur = lv_label_create(btnRecur, nullptr);
-  SetRecurButtonState();
-  lv_obj_set_style_local_bg_color(btnRecur, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+  btnSuggestedAlarm = lv_btn_create(lv_scr_act(), nullptr);
+  btnSuggestedAlarm->user_data = this;
+  lv_obj_set_event_cb(btnSuggestedAlarm, btnEventHandler);
+  lv_obj_set_size(btnSuggestedAlarm, 115, 50);
+  lv_obj_align(btnSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  txtSuggestedAlarm = lv_label_create(btnSuggestedAlarm, nullptr);
+  lv_label_set_text_static(txtSuggestedAlarm, "Suggested");
+
+  // btnRecur = lv_btn_create(lv_scr_act(), nullptr);
+  // btnRecur->user_data = this;
+  // lv_obj_set_event_cb(btnRecur, btnEventHandler);
+  // lv_obj_set_size(btnRecur, 115, 50);
+  // lv_obj_align(btnRecur, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  // txtRecur = lv_label_create(btnRecur, nullptr);
+  // SetRecurButtonState();
+  // lv_obj_set_style_local_bg_color(btnRecur, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
 
   btnInfo = lv_btn_create(lv_scr_act(), nullptr);
   btnInfo->user_data = this;
@@ -319,6 +327,25 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
     if (obj == trackerToggleBtn) {
       infiniSleepController.ToggleTracker();
       UpdateDisplay();
+      return;
+    }
+    if (obj == btnSuggestedAlarm) {
+      // Set the suggested time
+      uint16_t totalSuggestedMinutes = infiniSleepController.GetSuggestedSleepTime();
+      uint8_t suggestedHours = totalSuggestedMinutes / 60;
+      uint8_t suggestedMinutes = totalSuggestedMinutes % 60;
+
+      // Time for alarm, current time + suggested sleep time
+      uint8_t alarmHour = (infiniSleepController.GetCurrentHour() + suggestedHours) % 24;
+      uint8_t alarmMinute = (infiniSleepController.GetCurrentMinute() + suggestedMinutes) % 60;
+
+      hourCounter.SetValue(alarmHour);
+      minuteCounter.SetValue(alarmMinute);
+
+      infiniSleepController.DisableWakeAlarm();
+      UpdateWakeAlarmTime();
+      lv_switch_on(enableSwitch, LV_ANIM_OFF);
+      infiniSleepController.ScheduleWakeAlarm();
       return;
     }
     if (obj == btnRecur) {

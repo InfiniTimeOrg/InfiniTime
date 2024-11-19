@@ -12,8 +12,9 @@
 #define SNOOZE_MINUTES 3
 #define PSUHES_TO_STOP_ALARM 5
 #define TRACKER_UPDATE_INTERVAL_MINS 5
-#define TrackerDataFile "SleepTracker_Data.csv"
+#define TRACKER_DATA_FILE_NAME "SleepTracker_Data.csv"
 #define SLEEP_CYCLE_DURATION 90 // sleep cycle duration in minutes
+#define DESIRED_CYCLES 5 // desired number of sleep cycles
 
 namespace Pinetime {
     namespace System {
@@ -136,7 +137,7 @@ namespace Pinetime {
                     uint8_t version = wakeAlarmFormatVersion;
                     uint8_t hours = 7;
                     uint8_t minutes = 0;
-                    RecurType recurrence = RecurType::None;
+                    RecurType recurrence = RecurType::Daily;
                     bool isEnabled = false;
                 };
 
@@ -160,6 +161,10 @@ namespace Pinetime {
                     return hours * 60 + minutes;
                 }
 
+                uint16_t GetSuggestedSleepTime() {
+                    return SLEEP_CYCLE_DURATION * DESIRED_CYCLES;
+                }
+
                 WakeAlarmSettings GetWakeAlarm() const {
                     return wakeAlarm;
                 }
@@ -181,7 +186,7 @@ namespace Pinetime {
                         endTimeMinutes = GetCurrentMinute();
                         DisableTracker();
                     } else {
-                        ClearDataCSV(TrackerDataFile);
+                        ClearDataCSV(TRACKER_DATA_FILE_NAME);
                         startTimeHours = GetCurrentHour();
                         startTimeMinutes = GetCurrentMinute();
                         EnableTracker();
