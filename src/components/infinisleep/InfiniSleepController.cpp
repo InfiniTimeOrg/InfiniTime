@@ -60,7 +60,9 @@ void InfiniSleepController::DisableTracker() {
 void InfiniSleepController::UpdateTracker() {
   NRF_LOG_INFO("[InfiniSleepController] Updating tracker");
 
-  UpdateBPM();
+  if (infiniSleepSettings.heartRateTracking) {
+    UpdateBPM();
+  }
   systemTask->PushMessage(System::Messages::SleepTrackerUpdate);
 
   xTimerStop(trackerUpdateTimer, 0);

@@ -13,6 +13,7 @@
 #define PSUHES_TO_STOP_ALARM 5
 #define TRACKER_UPDATE_INTERVAL_MINS 5
 #define TrackerDataFile "SleepTracker_Data.csv"
+#define SLEEP_CYCLE_DURATION 90 // sleep cycle duration in minutes
 
 namespace Pinetime {
     namespace System {
@@ -43,6 +44,8 @@ namespace Pinetime {
                 uint8_t preSnnoozeHours = 255;
                 uint8_t startTimeHours = 0;
                 uint8_t startTimeMinutes = 0;
+                uint8_t endTimeHours = 0;
+                uint8_t endTimeMinutes = 0;
 
                 void SetPreSnoozeTime() {
                     if (preSnoozeMinutes != 255 || preSnnoozeHours != 255) {
@@ -143,13 +146,18 @@ namespace Pinetime {
 
                 uint8_t gradualWakeVibration = 9; // used to keep track of which vibration duration to use, in position form not idex
 
-                uint16_t sleepCycleDuration = 90; // sleep cycle duration in minutes
-
                 uint16_t GetSleepCycles() {
-                    uint8_t hours = GetCurrentHour() - startTimeHours;
-                    uint8_t minutes = GetCurrentMinute() - startTimeMinutes;
-                    uint16_t totalMinutes = hours * 60 + minutes;
-                    return totalMinutes * 100 / sleepCycleDuration;
+                    uint16_t totalMinutes = GetTotalSleep();
+                    return (totalMinutes * 100 / SLEEP_CYCLE_DURATION);
+                }
+
+                uint16_t GetTotalSleep() {
+                    uint8_t hours = (IsEnabled() ? GetCurrentHour() : endTimeHours) - startTimeHours;
+                    uint8_t minutes = (IsEnabled() ? GetCurrentMinute() : endTimeMinutes) - startTimeMinutes;
+                    if (hours <= 0 && minutes <= 0) {
+                        return 0;
+                    }
+                    return hours * 60 + minutes;
                 }
 
                 WakeAlarmSettings GetWakeAlarm() const {
@@ -169,6 +177,8 @@ namespace Pinetime {
 
                 bool ToggleTracker() {
                     if (isEnabled) {
+                        endTimeHours = GetCurrentHour();
+                        endTimeMinutes = GetCurrentMinute();
                         DisableTracker();
                     } else {
                         ClearDataCSV(TrackerDataFile);
