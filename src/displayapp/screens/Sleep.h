@@ -30,6 +30,7 @@ namespace Pinetime {
         bool OnTouchEvent(TouchEvents event) override;
         void OnValueChanged();
         void StopAlerting();
+        void SnoozeWakeAlarm();
         void UpdateDisplay();
         enum class SleepDisplayState { Alarm, Info, Settings };
         SleepDisplayState displayState = SleepDisplayState::Info;
@@ -63,7 +64,7 @@ namespace Pinetime {
         lv_obj_t* lblampm = nullptr;
         lv_obj_t* txtMessage = nullptr;
         lv_obj_t* btnMessage = nullptr;
-        lv_task_t* taskStopWakeAlarm = nullptr;
+        lv_task_t* taskSnoozeWakeAlarm = nullptr;
 
         lv_task_t* taskRefresh = nullptr;
 
@@ -72,7 +73,6 @@ namespace Pinetime {
         void SetRecurButtonState();
         void SetSwitchState(lv_anim_enable_t anim);
         void SetWakeAlarm();
-        void SnoozeWakeAlarm();
         void ShowAlarmInfo();
         void HideAlarmInfo();
         void ToggleRecurrence();
@@ -98,6 +98,10 @@ namespace Pinetime {
 
         lv_obj_t* label_hr;
         lv_obj_t* label_start_time;
+        lv_obj_t* label_alarm_time;
+        lv_obj_t* label_gradual_wake;
+        lv_obj_t* label_total_sleep;
+        lv_obj_t* label_sleep_cycles;
 
         // lv_task_t* mainRefreshTask;
         // lv_task_t* hrRefreshTask;

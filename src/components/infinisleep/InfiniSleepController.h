@@ -9,6 +9,7 @@
 
 #include <chrono>
 
+#define SNOOZE_MINUTES 3
 #define PSUHES_TO_STOP_ALARM 5
 #define TRACKER_UPDATE_INTERVAL_MINS 5
 #define TrackerDataFile "SleepTracker_Data.csv"
@@ -142,7 +143,14 @@ namespace Pinetime {
 
                 uint8_t gradualWakeVibration = 9; // used to keep track of which vibration duration to use, in position form not idex
 
+                uint16_t sleepCycleDuration = 90; // sleep cycle duration in minutes
 
+                uint16_t GetSleepCycles() {
+                    uint8_t hours = GetCurrentHour() - startTimeHours;
+                    uint8_t minutes = GetCurrentMinute() - startTimeMinutes;
+                    uint16_t totalMinutes = hours * 60 + minutes;
+                    return totalMinutes * 100 / sleepCycleDuration;
+                }
 
                 WakeAlarmSettings GetWakeAlarm() const {
                     return wakeAlarm;
