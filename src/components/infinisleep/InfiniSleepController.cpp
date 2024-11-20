@@ -47,7 +47,7 @@ void InfiniSleepController::EnableTracker() {
   DisableTracker();
   NRF_LOG_INFO("[InfiniSleepController] Enabling tracker");
   isEnabled = true;
-  trackerUpdateTimer = xTimerCreate("TrackerUpdate", 5 * configTICK_RATE_HZ, pdFALSE, this, SetOffTrackerUpdate);
+  trackerUpdateTimer = xTimerCreate("TrackerUpdate", pdMS_TO_TICKS(TRACKER_UPDATE_INTERVAL_MINS * 60 * 1000), pdFALSE, this, SetOffTrackerUpdate);
   xTimerStart(trackerUpdateTimer, 0);
 }
 

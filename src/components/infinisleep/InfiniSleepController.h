@@ -153,12 +153,21 @@ namespace Pinetime {
                 }
 
                 uint16_t GetTotalSleep() {
-                    uint8_t hours = (IsEnabled() ? GetCurrentHour() : endTimeHours) - startTimeHours;
-                    uint8_t minutes = (IsEnabled() ? GetCurrentMinute() : endTimeMinutes) - startTimeMinutes;
-                    if (hours <= 0 && minutes <= 0) {
-                        return 0;
+                    uint8_t endHours = IsEnabled() ? GetCurrentHour() : endTimeHours;
+                    uint8_t endMinutes = IsEnabled() ? GetCurrentMinute() : endTimeMinutes;
+
+                    // Calculate total minutes for start and end times
+                    uint16_t startTotalMinutes = startTimeHours * 60 + startTimeMinutes;
+                    uint16_t endTotalMinutes = endHours * 60 + endMinutes;
+
+                    // If end time is before start time, add 24 hours to end time (handle crossing midnight)
+                    if (endTotalMinutes < startTotalMinutes) {
+                        endTotalMinutes += 24 * 60;
                     }
-                    return hours * 60 + minutes;
+
+                    uint16_t sleepMinutes = endTotalMinutes - startTotalMinutes;
+
+                    return sleepMinutes;
                 }
 
                 uint16_t GetSuggestedSleepTime() {

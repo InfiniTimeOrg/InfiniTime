@@ -230,7 +230,7 @@ void Sleep::DrawInfoScreen() {
 
   // Sleep Cycles Info
   label_sleep_cycles = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(label_sleep_cycles, "Sleep Cycles: %d.%d", infiniSleepController.GetSleepCycles() / 100, infiniSleepController.GetSleepCycles() % 100);
+  lv_label_set_text_fmt(label_sleep_cycles, "Sleep Cycles: %d.%02d", infiniSleepController.GetSleepCycles() / 100, infiniSleepController.GetSleepCycles() % 100);
   lv_obj_align(label_sleep_cycles, label_hr, LV_ALIGN_CENTER, 0, 80);
   lv_obj_set_style_local_text_color(label_sleep_cycles, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
 
