@@ -15,6 +15,7 @@
 #define TRACKER_DATA_FILE_NAME "SleepTracker_Data.csv"
 #define SLEEP_CYCLE_DURATION 90 // sleep cycle duration in minutes
 #define DESIRED_CYCLES 5 // desired number of sleep cycles
+#define PUSHES_TO_STOP_ALARM_TIMEOUT 2 // in seconds
 
 namespace Pinetime {
     namespace System {

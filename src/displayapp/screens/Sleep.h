@@ -53,8 +53,9 @@ namespace Pinetime {
         // Read IO
         //std::vector<std::tuple<int, int, int, int, int>> ReadDataCSV(const char* fileName) const;
 
-      private:
         Controllers::InfiniSleepController& infiniSleepController;
+
+      private:
         System::WakeLock wakeLock;
         Controllers::MotorController& motorController;
         Controllers::Settings::ClockType clockType;
@@ -67,6 +68,8 @@ namespace Pinetime {
         lv_task_t* taskSnoozeWakeAlarm = nullptr;
 
         lv_task_t* taskRefresh = nullptr;
+
+        lv_task_t* taskPressesToStopAlarmTimeout = nullptr;
 
         enum class EnableButtonState { On, Off, Alerting };
         void DisableWakeAlarm();
