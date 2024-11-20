@@ -356,6 +356,11 @@ void DisplayApp::Refresh() {
           lcd.LowPowerOff();
         } else {
           lcd.Wakeup();
+          if (infiniSleepController.IsEnabled()) {
+            if (currentApp != Apps::Sleep) {
+              LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::Up);
+            }
+          }
         }
         lv_disp_trig_activity(nullptr);
         ApplyBrightness();
