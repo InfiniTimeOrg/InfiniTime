@@ -386,7 +386,6 @@ void WatchFaceCasioStyleG7710::Refresh() {
           tempUnit = 'F';
         }
 
-        temp = temp / 100 + (temp % 100 >= 50 ? 1 : 0);
         lv_label_set_text_fmt(label_temperature, "%d°%c", temp, tempUnit);
         lv_label_set_text(weatherIcon, Symbols::GetSymbol(optCurrentWeather->iconId));
       } else {
