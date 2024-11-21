@@ -58,7 +58,7 @@ static void SnoozeAlarmTaskCallback(lv_task_t* task) {
 
 static void PressesToStopAlarmTimeoutCallback(lv_task_t* task) {
   auto* screen = static_cast<Sleep*>(task->user_data);
-  screen->infiniSleepController.pushesLeftToStopWakeAlarm = PSUHES_TO_STOP_ALARM;
+  screen->infiniSleepController.pushesLeftToStopWakeAlarm = PUSHES_TO_STOP_ALARM;
   screen->UpdateDisplay();
 }
 
@@ -70,6 +70,7 @@ Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
 
   UpdateDisplay();
   taskRefresh = lv_task_create(RefreshTaskCallback, 2000, LV_TASK_PRIO_MID, this);
+  taskPressesToStopAlarmTimeout = lv_task_create(PressesToStopAlarmTimeoutCallback, PUSHES_TO_STOP_ALARM_TIMEOUT * 1000, LV_TASK_PRIO_MID, this);
 }
 
 Sleep::~Sleep() {
@@ -77,9 +78,7 @@ Sleep::~Sleep() {
     StopAlerting();
   }
   lv_task_del(taskRefresh);
-  if (taskPressesToStopAlarmTimeout != nullptr) {
-    lv_task_del(taskPressesToStopAlarmTimeout);
-  }
+  lv_task_del(taskPressesToStopAlarmTimeout);
   lv_obj_clean(lv_scr_act());
   infiniSleepController.SaveWakeAlarm();
   infiniSleepController.SaveInfiniSleepSettings();
@@ -370,11 +369,7 @@ bool Sleep::OnButtonPushed() {
   }
   if (infiniSleepController.IsAlerting()) {
     if (infiniSleepController.pushesLeftToStopWakeAlarm > 1) {
-      if (taskPressesToStopAlarmTimeout == nullptr) {
-        taskPressesToStopAlarmTimeout = lv_task_create(PressesToStopAlarmTimeoutCallback, PUSHES_TO_STOP_ALARM_TIMEOUT * 1000, LV_TASK_PRIO_MID, this);
-      } else {
-        lv_task_reset(taskPressesToStopAlarmTimeout);
-      }
+      lv_task_reset(taskPressesToStopAlarmTimeout);
       infiniSleepController.pushesLeftToStopWakeAlarm--;
       return true;
     } else {

@@ -10,7 +10,7 @@
 #include <chrono>
 
 #define SNOOZE_MINUTES 3
-#define PSUHES_TO_STOP_ALARM 5
+#define PUSHES_TO_STOP_ALARM 5
 #define TRACKER_UPDATE_INTERVAL_MINS 5
 #define TRACKER_DATA_FILE_NAME "SleepTracker_Data.csv"
 #define SLEEP_CYCLE_DURATION 90 // sleep cycle duration in minutes
@@ -39,7 +39,7 @@ namespace Pinetime {
                 void StopAlerting();
                 enum class RecurType { None, Daily, Weekdays };
 
-                uint8_t pushesLeftToStopWakeAlarm = PSUHES_TO_STOP_ALARM;
+                uint8_t pushesLeftToStopWakeAlarm = PUSHES_TO_STOP_ALARM;
 
                 bool isSnoozing = false;
                 uint8_t preSnoozeMinutes = 255;

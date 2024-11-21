@@ -102,7 +102,7 @@ void InfiniSleepController::ScheduleWakeAlarm() {
     xTimerStop(wakeAlarmTimer, 0);
     xTimerStop(gradualWakeTimer, 0);
 
-    pushesLeftToStopWakeAlarm = PSUHES_TO_STOP_ALARM;
+    pushesLeftToStopWakeAlarm = PUSHES_TO_STOP_ALARM;
 
     gradualWakeStep = 9;
     gradualWakeVibration = 9;
