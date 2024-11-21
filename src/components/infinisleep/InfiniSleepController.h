@@ -13,6 +13,7 @@
 #define PUSHES_TO_STOP_ALARM 5
 #define TRACKER_UPDATE_INTERVAL_MINS 5
 #define TRACKER_DATA_FILE_NAME "SleepTracker_Data.csv"
+#define PREV_SESSION_DATA_FILE_NAME "SleepTracker_PrevSession.csv"
 #define SLEEP_CYCLE_DURATION 90 // sleep cycle duration in minutes
 #define DESIRED_CYCLES 5 // desired number of sleep cycles
 #define PUSHES_TO_STOP_ALARM_TIMEOUT 2 // in seconds
@@ -44,10 +45,16 @@ namespace Pinetime {
                 bool isSnoozing = false;
                 uint8_t preSnoozeMinutes = 255;
                 uint8_t preSnnoozeHours = 255;
-                uint8_t startTimeHours = 0;
-                uint8_t startTimeMinutes = 0;
-                uint8_t endTimeHours = 0;
-                uint8_t endTimeMinutes = 0;
+
+                // Struct for sessions
+                struct SessionData {
+                    uint8_t startTimeHours = 0;
+                    uint8_t startTimeMinutes = 0;
+                    uint8_t endTimeHours = 0;
+                    uint8_t endTimeMinutes = 0;
+                };
+
+                SessionData prevSessionData;
 
                 void SetPreSnoozeTime() {
                     if (preSnoozeMinutes != 255 || preSnnoozeHours != 255) {
@@ -153,12 +160,12 @@ namespace Pinetime {
                     return (totalMinutes * 100 / SLEEP_CYCLE_DURATION);
                 }
 
-                uint16_t GetTotalSleep() {
-                    uint8_t endHours = IsEnabled() ? GetCurrentHour() : endTimeHours;
-                    uint8_t endMinutes = IsEnabled() ? GetCurrentMinute() : endTimeMinutes;
+                uint16_t GetTotalSleep() const {
+                    uint8_t endHours = IsEnabled() ? GetCurrentHour() : prevSessionData.endTimeHours;
+                    uint8_t endMinutes = IsEnabled() ? GetCurrentMinute() : prevSessionData.endTimeMinutes;
 
                     // Calculate total minutes for start and end times
-                    uint16_t startTotalMinutes = startTimeHours * 60 + startTimeMinutes;
+                    uint16_t startTotalMinutes = prevSessionData.startTimeHours * 60 + prevSessionData.startTimeMinutes;
                     uint16_t endTotalMinutes = endHours * 60 + endMinutes;
 
                     // If end time is before start time, add 24 hours to end time (handle crossing midnight)
@@ -192,13 +199,14 @@ namespace Pinetime {
 
                 bool ToggleTracker() {
                     if (isEnabled) {
-                        endTimeHours = GetCurrentHour();
-                        endTimeMinutes = GetCurrentMinute();
+                        prevSessionData.endTimeHours = GetCurrentHour();
+                        prevSessionData.endTimeMinutes = GetCurrentMinute();
+                        SavePrevSessionData();
                         DisableTracker();
                     } else {
                         ClearDataCSV(TRACKER_DATA_FILE_NAME);
-                        startTimeHours = GetCurrentHour();
-                        startTimeMinutes = GetCurrentMinute();
+                        prevSessionData.startTimeHours = GetCurrentHour();
+                        prevSessionData.startTimeMinutes = GetCurrentMinute();
                         EnableTracker();
                     }
                     return isEnabled;
@@ -208,11 +216,11 @@ namespace Pinetime {
                     return isEnabled;
                 }
 
-                uint8_t GetCurrentHour() {
+                uint8_t GetCurrentHour() const {
                     return dateTimeController.Hours();
                 }
 
-                uint8_t GetCurrentMinute() {
+                uint8_t GetCurrentMinute() const {
                     return dateTimeController.Minutes();
                 }
 
@@ -251,6 +259,8 @@ namespace Pinetime {
 
                 void LoadSettingsFromFile();
                 void SaveSettingsToFile() const;
+                void LoadPrevSessionData();
+                void SavePrevSessionData() const;
 
                 // For File IO
                 void WriteDataCSV(const char* fileName, const std::tuple<int, int, int, int, int>* data, int dataSize) const;

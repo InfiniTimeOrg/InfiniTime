@@ -205,13 +205,17 @@ void Sleep::DrawInfoScreen() {
   lv_obj_set_style_local_text_color(lblTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 
   label_hr = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(label_hr, "HR: %d", infiniSleepController.rollingBpm);
+  if (infiniSleepController.rollingBpm == 0) {
+    lv_label_set_text_static(label_hr, "HR: --");
+  } else {
+    lv_label_set_text_fmt(label_hr, "HR: %d", infiniSleepController.rollingBpm);
+  }
   lv_obj_align(label_hr, lblTime, LV_ALIGN_CENTER, 0, 50);
   lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
   
   if (infiniSleepController.IsEnabled()) {
     label_start_time = lv_label_create(lv_scr_act(), nullptr);
-    lv_label_set_text_fmt(label_start_time, "Began at: %02d:%02d", infiniSleepController.startTimeHours, infiniSleepController.startTimeMinutes);
+    lv_label_set_text_fmt(label_start_time, "Began at: %02d:%02d", infiniSleepController.prevSessionData.startTimeHours, infiniSleepController.prevSessionData.startTimeMinutes);
     lv_obj_align(label_start_time, label_hr, LV_ALIGN_CENTER, 0, 20);
     lv_obj_set_style_local_text_color(label_start_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   }

@@ -37,6 +37,7 @@ void InfiniSleepController::Init(System::SystemTask* systemTask) {
     gradualWakeTimer = xTimerCreate("GradualWake", 1, pdFALSE, this, SetOffGradualWake);
 
     LoadSettingsFromFile();
+    LoadPrevSessionData();
     if (wakeAlarm.isEnabled) {
         NRF_LOG_INFO("[InfiniSleepController] Loaded wake alarm was enabled, scheduling");
         ScheduleWakeAlarm();
@@ -345,4 +346,28 @@ void InfiniSleepController::SaveSettingsToFile() const {
   fs.FileWrite(&settingsFile, reinterpret_cast<const uint8_t*>(&infiniSleepSettings), sizeof(infiniSleepSettings));
   fs.FileClose(&settingsFile);
   NRF_LOG_INFO("[InfiniSleepController] Saved InfiniSleep settings");
+}
+
+void InfiniSleepController::SavePrevSessionData() const {
+  lfs_file_t prevSessionFile;
+  if (fs.FileOpen(&prevSessionFile, PREV_SESSION_DATA_FILE_NAME, LFS_O_WRONLY | LFS_O_CREAT) != LFS_ERR_OK) {
+    NRF_LOG_WARNING("[InfiniSleepController] Failed to open previous session data file for saving");
+    return;
+  }
+
+  fs.FileWrite(&prevSessionFile, reinterpret_cast<const uint8_t*>(&prevSessionData), sizeof(prevSessionData));
+  fs.FileClose(&prevSessionFile);
+  NRF_LOG_INFO("[InfiniSleepController] Saved previous session data");
+}
+
+void InfiniSleepController::LoadPrevSessionData() {
+  lfs_file_t prevSessionFile;
+  if (fs.FileOpen(&prevSessionFile, PREV_SESSION_DATA_FILE_NAME, LFS_O_RDONLY) != LFS_ERR_OK) {
+    NRF_LOG_WARNING("[InfiniSleepController] Failed to open previous session data file");
+    return;
+  }
+
+  fs.FileRead(&prevSessionFile, reinterpret_cast<uint8_t*>(&prevSessionData), sizeof(prevSessionData));
+  fs.FileClose(&prevSessionFile);
+  NRF_LOG_INFO("[InfiniSleepController] Loaded previous session data");
 }
