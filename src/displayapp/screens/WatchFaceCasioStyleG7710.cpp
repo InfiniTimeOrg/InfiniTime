@@ -378,11 +378,11 @@ void WatchFaceCasioStyleG7710::Refresh() {
       auto optCurrentWeather = currentWeather.Get();
       
       if (optCurrentWeather) {
-        int16_t temp = optCurrentWeather->temperature;
+        int16_t temp = optCurrentWeather->temperature.Celsius();
         char tempUnit = 'C';
 
         if (settingsController.GetWeatherFormat() == Controllers::Settings::WeatherFormat::Imperial) {
-          temp = Controllers::SimpleWeatherService::CelsiusToFahrenheit(temp);
+          temp = optCurrentWeather->temperature.Fahrenheit();
           tempUnit = 'F';
         }
 
