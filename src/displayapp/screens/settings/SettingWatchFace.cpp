@@ -54,8 +54,7 @@ SettingWatchFace::SettingWatchFace(Pinetime::Applications::DisplayApp* app,
                                    std::array<Screens::SettingWatchFace::Item, UserWatchFaceTypes::Count>&& watchfaceItems,
                                    Pinetime::Controllers::Settings& settingsController,
                                    Pinetime::Controllers::FS& filesystem)
-  : app {app},
-    watchfaceItems {std::move(watchfaceItems)},
+  : watchfaceItems {std::move(watchfaceItems)},
     settingsController {settingsController},
     filesystem {filesystem},
     screens {app, 0, CreateScreenList(), Screens::ScreenListModes::UpDown} {
