@@ -50,11 +50,11 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   screen->OnButtonEvent(obj, event);
 }
 
-static void SnoozeAlarmTaskCallback(lv_task_t* task) {
-  auto* screen = static_cast<Sleep*>(task->user_data);
-  screen->StopAlerting();
-  screen->SnoozeWakeAlarm();
-}
+// static void SnoozeAlarmTaskCallback(lv_task_t* task) {
+//   auto* screen = static_cast<Sleep*>(task->user_data);
+//   screen->StopAlerting();
+//   screen->SnoozeWakeAlarm();
+// }
 
 static void PressesToStopAlarmTimeoutCallback(lv_task_t* task) {
   auto* screen = static_cast<Sleep*>(task->user_data);
@@ -79,6 +79,9 @@ Sleep::~Sleep() {
   }
   lv_task_del(taskRefresh);
   lv_task_del(taskPressesToStopAlarmTimeout);
+  if (taskSnoozeWakeAlarm != nullptr) {
+    lv_task_del(taskSnoozeWakeAlarm);
+  }
   lv_obj_clean(lv_scr_act());
   infiniSleepController.SaveWakeAlarm();
   infiniSleepController.SaveInfiniSleepSettings();
@@ -88,6 +91,13 @@ void Sleep::DisableWakeAlarm() {
   if (infiniSleepController.GetWakeAlarm().isEnabled) {
     infiniSleepController.DisableWakeAlarm();
     lv_switch_off(enableSwitch, LV_ANIM_ON);
+  }
+}
+
+void Sleep::EnableWakeAlarm() {
+  if (!infiniSleepController.GetWakeAlarm().isEnabled) {
+    infiniSleepController.EnableWakeAlarm();
+    lv_switch_on(enableSwitch, LV_ANIM_ON);
   }
 }
 
@@ -127,12 +137,12 @@ void Sleep::DrawAlarmScreen() {
     lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
     lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
   }
-  hourCounter.SetValue(infiniSleepController.Hours());
+  hourCounter.SetValue(infiniSleepController.GetWakeAlarm().hours);
   hourCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   minuteCounter.Create();
   lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-  minuteCounter.SetValue(infiniSleepController.Minutes());
+  minuteCounter.SetValue(infiniSleepController.GetWakeAlarm().minutes);
   minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
   lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
@@ -351,6 +361,8 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       uint8_t alarmHour = (infiniSleepController.GetCurrentHour() + suggestedHours) % 24;
       uint8_t alarmMinute = (infiniSleepController.GetCurrentMinute() + suggestedMinutes) % 60;
 
+      infiniSleepController.SetWakeAlarmTime(alarmHour, alarmMinute);
+
       hourCounter.SetValue(alarmHour);
       minuteCounter.SetValue(alarmMinute);
 
@@ -426,16 +438,23 @@ void Sleep::OnValueChanged() {
 
 // Currently snoozes baeed on define statement in InfiniSleepController.h
 void Sleep::SnoozeWakeAlarm() {
-  if (minuteCounter.GetValue() >= 55) {
-    minuteCounter.SetValue(0);
-    hourCounter.SetValue((infiniSleepController.GetCurrentHour() + 1));
-  } else {
-    minuteCounter.SetValue(infiniSleepController.GetCurrentMinute() + SNOOZE_MINUTES);
+  if (taskSnoozeWakeAlarm != nullptr) {
+    lv_task_del(taskSnoozeWakeAlarm);
+    taskSnoozeWakeAlarm = nullptr;
   }
+
+  uint16_t totalAlarmMinutes = infiniSleepController.GetCurrentHour() * 60 + infiniSleepController.GetCurrentMinute();
+  uint16_t newSnoozeMinutes = totalAlarmMinutes + SNOOZE_MINUTES;
+
   infiniSleepController.SetPreSnoozeTime();
   infiniSleepController.isSnoozing = true;
-  UpdateWakeAlarmTime();
-  SetSwitchState(LV_ANIM_OFF);
+
+  infiniSleepController.SetWakeAlarmTime(newSnoozeMinutes / 60, newSnoozeMinutes % 60);
+
+  hourCounter.SetValue(newSnoozeMinutes / 60);
+  minuteCounter.SetValue(newSnoozeMinutes % 60);
+  
+  lv_switch_on(enableSwitch, LV_ANIM_OFF);
   infiniSleepController.ScheduleWakeAlarm();
 }
 
@@ -453,7 +472,7 @@ void Sleep::UpdateWakeAlarmTime() {
 void Sleep::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
   lv_obj_set_hidden(btnStop, false);
-  taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, pdMS_TO_TICKS(180 * 1000), LV_TASK_PRIO_MID, this);
+  //taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, pdMS_TO_TICKS(5 * 1000), LV_TASK_PRIO_MID, this);
   motorController.StartAlarm();
   wakeLock.Lock();
 }

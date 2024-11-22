@@ -34,6 +34,7 @@ namespace Pinetime {
                 void SetWakeAlarmTime(uint8_t wakeAlarmHr, uint8_t wakeAlarmMin);
                 void ScheduleWakeAlarm();
                 void DisableWakeAlarm();
+                void EnableWakeAlarm();
                 void SetOffWakeAlarmNow();
                 void SetOffGradualWakeNow();
                 uint32_t SecondsToWakeAlarm() const;
@@ -155,6 +156,8 @@ namespace Pinetime {
 
                 uint8_t gradualWakeVibration = 9; // used to keep track of which vibration duration to use, in position form not idex
 
+                uint8_t gradualWakeStep = 9; // used to keep track of which step to use, in position form not idex
+
                 uint16_t GetSleepCycles() {
                     uint16_t totalMinutes = GetTotalSleep();
                     return (totalMinutes * 100 / SLEEP_CYCLE_DURATION);
@@ -240,7 +243,6 @@ namespace Pinetime {
 
                 bool isAlerting = false;
                 bool isGradualWakeAlerting = false;
-                uint8_t gradualWakeStep = 9; // used to keep track of which step to use, in position form not idex
                 bool wakeAlarmChanged = false;
                 bool isEnabled = false;
                 bool settingsChanged = false;

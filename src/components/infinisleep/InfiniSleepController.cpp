@@ -150,6 +150,7 @@ void InfiniSleepController::ScheduleWakeAlarm() {
     // Calculate the period for the gradualWakeTimer
     if (infiniSleepSettings.graddualWake && gradualWakeStep != 0) {
       int64_t gradualWakePeriod = ((secondsToWakeAlarm - gradualWakeSteps[-1+gradualWakeStep--])) * (configTICK_RATE_HZ);
+      gradualWakeVibration = gradualWakeStep;
       xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
       xTimerStart(gradualWakeTimer, 0);
     }
@@ -168,11 +169,18 @@ void InfiniSleepController::DisableWakeAlarm() {
   xTimerStop(wakeAlarmTimer, 0);
   xTimerStop(gradualWakeTimer, 0);
   gradualWakeStep = 9;
+  gradualWakeVibration = 9;
   isAlerting = false;
   if (wakeAlarm.isEnabled) {
     wakeAlarm.isEnabled = false;
     wakeAlarmChanged = true;
   }
+}
+
+void InfiniSleepController::EnableWakeAlarm() {
+  wakeAlarm.isEnabled = true;
+  wakeAlarmChanged = true;
+  ScheduleWakeAlarm();
 }
 
 void InfiniSleepController::SetOffWakeAlarmNow() {
@@ -186,6 +194,7 @@ void InfiniSleepController::SetOffGradualWakeNow() {
   // Calculate the period for the gradualWakeTimer
   if (infiniSleepSettings.graddualWake && gradualWakeStep != 0) {
     int64_t gradualWakePeriod = ((SecondsToWakeAlarm() - gradualWakeSteps[-1+gradualWakeStep--])) * (configTICK_RATE_HZ);
+    gradualWakeVibration = gradualWakeStep;
     xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
     xTimerStart(gradualWakeTimer, 0);
   }
