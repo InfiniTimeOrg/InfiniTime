@@ -202,6 +202,7 @@ void SystemTask::Work() {
           GoToRunning();
           break;
         case Messages::GoToSleep:
+          infiniSleepController.pushesLeftToStopWakeAlarm = PUSHES_TO_STOP_ALARM;
           GoToSleep();
           break;
         case Messages::OnNewTime:

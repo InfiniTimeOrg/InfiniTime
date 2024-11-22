@@ -297,7 +297,6 @@ void DisplayApp::Refresh() {
   if (xQueueReceive(msgQueue, &msg, queueTimeout) == pdTRUE) {
     switch (msg) {
       case Messages::GoToSleep:
-        infiniSleepController.pushesLeftToStopWakeAlarm = PUSHES_TO_STOP_ALARM;
       case Messages::GoToAOD:
         // Checking if SystemTask is sleeping is purely an optimisation.
         // If it's no longer sleeping since it sent GoToSleep, it has
