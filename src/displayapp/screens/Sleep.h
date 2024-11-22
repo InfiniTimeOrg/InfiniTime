@@ -60,7 +60,7 @@ namespace Pinetime {
         Controllers::MotorController& motorController;
         Controllers::Settings::ClockType clockType;
 
-        lv_obj_t *btnStop, *txtStop, *btnRecur, *txtRecur, *btnInfo, *enableSwitch;
+        lv_obj_t *btnStop, *txtStop, /**btnRecur, *txtRecur,*/ *btnInfo, *enableSwitch;
         lv_obj_t *trackerToggleBtn, *trackerToggleLabel;
         lv_obj_t* lblampm = nullptr;
         lv_obj_t* txtMessage = nullptr;
@@ -74,12 +74,12 @@ namespace Pinetime {
         enum class EnableButtonState { On, Off, Alerting };
         void DisableWakeAlarm();
         void EnableWakeAlarm();
-        void SetRecurButtonState();
+        //void SetRecurButtonState();
         void SetSwitchState(lv_anim_enable_t anim);
         void SetWakeAlarm();
         void ShowAlarmInfo();
         void HideAlarmInfo();
-        void ToggleRecurrence();
+        //void ToggleRecurrence();
         void UpdateWakeAlarmTime();
         Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_76);
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);

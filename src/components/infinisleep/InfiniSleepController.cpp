@@ -97,7 +97,7 @@ void InfiniSleepController::SetWakeAlarmTime(uint8_t wakeAlarmHr, uint8_t wakeAl
 
 void InfiniSleepController::ScheduleWakeAlarm() {
     // This line essentially removes the ability to change recurrance type and sets it to daily
-    SetRecurrence(RecurType::Daily);
+    //SetRecurrence(RecurType::Daily);
 
     // Determine the next time the wake alarm needs to go off and set the timer
     xTimerStop(wakeAlarmTimer, 0);
@@ -126,13 +126,13 @@ void InfiniSleepController::ScheduleWakeAlarm() {
     tmWakeAlarmTime->tm_sec = 0;
 
     // if alarm is in weekday-only mode, make sure it shifts to the next weekday
-    if (wakeAlarm.recurrence == RecurType::Weekdays) {
-      if (tmWakeAlarmTime->tm_wday == 0) {// Sunday, shift 1 day
-        tmWakeAlarmTime->tm_mday += 1;
-      } else if (tmWakeAlarmTime->tm_wday == 6) { // Saturday, shift 2 days
-        tmWakeAlarmTime->tm_mday += 2;
-      }
-    }
+    // if (wakeAlarm.recurrence == RecurType::Weekdays) {
+    //   if (tmWakeAlarmTime->tm_wday == 0) {// Sunday, shift 1 day
+    //     tmWakeAlarmTime->tm_mday += 1;
+    //   } else if (tmWakeAlarmTime->tm_wday == 6) { // Saturday, shift 2 days
+    //     tmWakeAlarmTime->tm_mday += 2;
+    //   }
+    // }
     tmWakeAlarmTime->tm_isdst = -1; // use system timezone setting to determine DST
 
     // now can convert back to a time_point
@@ -203,22 +203,22 @@ void InfiniSleepController::SetOffGradualWakeNow() {
 void InfiniSleepController::StopAlerting() {
   isAlerting = false;
   // Disable the alarm unless it is recurring
-  if (wakeAlarm.recurrence == RecurType::None) {
+  //if (wakeAlarm.recurrence == RecurType::None) {
     wakeAlarm.isEnabled = false;
     wakeAlarmChanged = true;
-  } else {
-    // Schedule the alarm for the next day
-    ScheduleWakeAlarm();
-  }
+  // } else {
+  //   // Schedule the alarm for the next day
+  //   ScheduleWakeAlarm();
+  // }
 }
 
-void InfiniSleepController::SetRecurrence(RecurType recurrence) {
-  if (wakeAlarm.recurrence == recurrence) {
-    return;
-  }
-  wakeAlarm.recurrence = recurrence;
-  wakeAlarmChanged = true;
-}
+// void InfiniSleepController::SetRecurrence(RecurType recurrence) {
+//   if (wakeAlarm.recurrence == recurrence) {
+//     return;
+//   }
+//   wakeAlarm.recurrence = recurrence;
+//   wakeAlarmChanged = true;
+// }
 
 /* Sleep Tracking Section */
 

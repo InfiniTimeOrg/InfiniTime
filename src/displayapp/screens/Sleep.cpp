@@ -371,10 +371,10 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       infiniSleepController.ScheduleWakeAlarm();
       return;
     }
-    if (obj == btnRecur) {
-      DisableWakeAlarm();
-      ToggleRecurrence();
-    }
+    // if (obj == btnRecur) {
+    //   DisableWakeAlarm();
+    //   ToggleRecurrence();
+    // }
   }
 }
 
@@ -536,33 +536,33 @@ void Sleep::HideAlarmInfo() {
   btnMessage = nullptr;
 }
 
-void Sleep::SetRecurButtonState() {
-  using Pinetime::Controllers::InfiniSleepController;
-  switch (infiniSleepController.Recurrence()) {
-    case InfiniSleepController::RecurType::None:
-      lv_label_set_text_static(txtRecur, "ONCE");
-      break;
-    case InfiniSleepController::RecurType::Daily:
-      lv_label_set_text_static(txtRecur, "DAILY");
-      break;
-    case InfiniSleepController::RecurType::Weekdays:
-      lv_label_set_text_static(txtRecur, "MON-FRI");
-      break;
-  }
-}
+// void Sleep::SetRecurButtonState() {
+//   using Pinetime::Controllers::InfiniSleepController;
+//   switch (infiniSleepController.Recurrence()) {
+//     case InfiniSleepController::RecurType::None:
+//       lv_label_set_text_static(txtRecur, "ONCE");
+//       break;
+//     case InfiniSleepController::RecurType::Daily:
+//       lv_label_set_text_static(txtRecur, "DAILY");
+//       break;
+//     case InfiniSleepController::RecurType::Weekdays:
+//       lv_label_set_text_static(txtRecur, "MON-FRI");
+//       break;
+//   }
+// }
 
-void Sleep::ToggleRecurrence() {
-  using Pinetime::Controllers::InfiniSleepController;
-  switch (infiniSleepController.Recurrence()) {
-    case InfiniSleepController::RecurType::None:
-      infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::Daily);
-      break;
-    case InfiniSleepController::RecurType::Daily:
-      infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::Weekdays);
-      break;
-    case InfiniSleepController::RecurType::Weekdays:
-      infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::None);
-      break;
-  }
-  SetRecurButtonState();
-}
+// void Sleep::ToggleRecurrence() {
+//   using Pinetime::Controllers::InfiniSleepController;
+//   switch (infiniSleepController.Recurrence()) {
+//     case InfiniSleepController::RecurType::None:
+//       infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::Daily);
+//       break;
+//     case InfiniSleepController::RecurType::Daily:
+//       infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::Weekdays);
+//       break;
+//     case InfiniSleepController::RecurType::Weekdays:
+//       infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::None);
+//       break;
+//   }
+//   SetRecurButtonState();
+// }

@@ -6,6 +6,7 @@
 #include "components/datetime/DateTimeController.h"
 #include "components/fs/FS.h"
 #include "components/heartrate/HeartRateController.h"
+#include "components/alarm/AlarmController.h"
 
 #include <chrono>
 
@@ -39,7 +40,7 @@ namespace Pinetime {
                 void SetOffGradualWakeNow();
                 uint32_t SecondsToWakeAlarm() const;
                 void StopAlerting();
-                enum class RecurType { None, Daily, Weekdays };
+                //enum class RecurType { None, Daily, Weekdays };
 
                 uint8_t pushesLeftToStopWakeAlarm = PUSHES_TO_STOP_ALARM;
 
@@ -96,11 +97,11 @@ namespace Pinetime {
                 void DisableTracker();
                 void UpdateTracker();
 
-                RecurType Recurrence() const {
-                    return wakeAlarm.recurrence;
-                }
+                // RecurType Recurrence() const {
+                //     return wakeAlarm.recurrence;
+                // }
 
-                void SetRecurrence(RecurType recurrence);
+                // void SetRecurrence(RecurType recurrence);
 
                 bool BodyTrackingEnabled() const {
                     return infiniSleepSettings.bodyTracking;
@@ -143,16 +144,16 @@ namespace Pinetime {
                 static constexpr uint8_t wakeAlarmFormatVersion = 1;
 
                 struct WakeAlarmSettings {
-                    uint8_t version = wakeAlarmFormatVersion;
+                    static constexpr uint8_t version = wakeAlarmFormatVersion;
                     uint8_t hours = 7;
                     uint8_t minutes = 0;
-                    RecurType recurrence = RecurType::Daily;
+                    AlarmController::RecurType recurrence = AlarmController::RecurType::Daily;
                     bool isEnabled = false;
                 };
 
                 // Dertermine the steps for the gradual wake alarm, the corresponding vibration durations determine the power of the vibration
-                uint16_t gradualWakeSteps[9] = {30, 60, 90, 120, 180, 240, 300, 350, 600}; // In seconds
-                uint16_t gradualWakeVibrationDurations[9] = {1200, 1200, 1000, 1000, 1000, 700, 700, 700, 500}; // In ms
+                static constexpr uint16_t gradualWakeSteps[9] = {30, 60, 90, 120, 180, 240, 300, 350, 600}; // In seconds
+                static constexpr uint16_t gradualWakeVibrationDurations[9] = {1200, 1200, 1000, 1000, 1000, 700, 700, 700, 500}; // In ms
 
                 uint8_t gradualWakeVibration = 9; // used to keep track of which vibration duration to use, in position form not idex
 
