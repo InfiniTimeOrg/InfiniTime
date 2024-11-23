@@ -151,6 +151,8 @@ namespace Pinetime {
                     bool isEnabled = false;
                 };
 
+                WakeAlarmSettings wakeAlarm;
+
                 // Dertermine the steps for the gradual wake alarm, the corresponding vibration durations determine the power of the vibration
                 static constexpr uint16_t gradualWakeSteps[9] = {30, 60, 90, 120, 180, 240, 300, 350, 600}; // In seconds
                 static constexpr uint16_t gradualWakeVibrationDurations[9] = {1200, 1200, 1000, 1000, 1000, 700, 700, 700, 500}; // In ms
@@ -183,7 +185,7 @@ namespace Pinetime {
                 }
 
                 uint16_t GetSuggestedSleepTime() {
-                    return SLEEP_CYCLE_DURATION * DESIRED_CYCLES;
+                    return infiniSleepSettings.desiredCycles * infiniSleepSettings.sleepCycleDuration;
                 }
 
                 WakeAlarmSettings GetWakeAlarm() const {
@@ -195,7 +197,11 @@ namespace Pinetime {
                     bool heartRateTracking = true;
                     bool graddualWake = false;
                     bool smartAlarm = false;
+                    uint8_t sleepCycleDuration = SLEEP_CYCLE_DURATION;
+                    uint8_t desiredCycles = DESIRED_CYCLES;
                 };
+
+                InfiniSleepSettings infiniSleepSettings;
 
                 InfiniSleepSettings GetInfiniSleepSettings() const {
                     return infiniSleepSettings;
@@ -248,8 +254,6 @@ namespace Pinetime {
                 bool isEnabled = false;
                 bool settingsChanged = false;
 
-                InfiniSleepSettings infiniSleepSettings;
-
                 Controllers::DateTime& dateTimeController;
                 Controllers::FS& fs;
                 Controllers::HeartRateController& heartRateController;
@@ -257,7 +261,6 @@ namespace Pinetime {
                 TimerHandle_t wakeAlarmTimer;
                 TimerHandle_t gradualWakeTimer;
                 TimerHandle_t trackerUpdateTimer;
-                WakeAlarmSettings wakeAlarm;
                 std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> wakeAlarmTime;
 
                 void LoadSettingsFromFile();

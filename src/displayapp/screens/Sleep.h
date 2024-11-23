@@ -73,7 +73,7 @@ namespace Pinetime {
 
         enum class EnableButtonState { On, Off, Alerting };
         void DisableWakeAlarm();
-        void EnableWakeAlarm();
+        //void EnableWakeAlarm();
         //void SetRecurButtonState();
         void SetSwitchState(lv_anim_enable_t anim);
         void SetWakeAlarm();

@@ -94,12 +94,12 @@ void Sleep::DisableWakeAlarm() {
   }
 }
 
-void Sleep::EnableWakeAlarm() {
-  if (!infiniSleepController.GetWakeAlarm().isEnabled) {
-    infiniSleepController.EnableWakeAlarm();
-    lv_switch_on(enableSwitch, LV_ANIM_ON);
-  }
-}
+// void Sleep::EnableWakeAlarm() {
+//   if (!infiniSleepController.GetWakeAlarm().isEnabled) {
+//     infiniSleepController.EnableWakeAlarm();
+//     lv_switch_on(enableSwitch, LV_ANIM_ON);
+//   }
+// }
 
 void Sleep::Refresh() {
   UpdateDisplay();
@@ -292,11 +292,11 @@ void Sleep::DrawSettingsScreen() {
     int offsetAfter = 30;
   };
 
-  Setting settings[] = {
-    {"Body Tracking", infiniSleepController.BodyTrackingEnabled()},
+  const Setting settings[] = {
+    //{"Body Tracking", infiniSleepController.BodyTrackingEnabled()},
     {"Heart Rate\nTracking", infiniSleepController.HeartRateTrackingEnabled(), 60},
     {"Gradual Wake", infiniSleepController.GradualWakeEnabled()},
-    {"Smart Alarm\n(alpha)", infiniSleepController.SmartAlarmEnabled()}
+    //{"Smart Alarm\n(alpha)", infiniSleepController.SmartAlarmEnabled()}
   };
 
   int y_offset = 50;
@@ -321,6 +321,57 @@ void Sleep::DrawSettingsScreen() {
 
     y_offset += setting.offsetAfter; // Increase the offset to provide better spacing
   }
+
+  lv_obj_t* lblCycles = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(lblCycles, "Cycles <----> Mins");
+  lv_obj_align(lblCycles, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
+
+  lv_obj_t* btnCycles = lv_btn_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(btnCycles, 100, 50);
+  lv_obj_align(btnCycles, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset + 30);
+  btnCycles->user_data = this;
+  lv_obj_set_event_cb(btnCycles, [](lv_obj_t* obj, lv_event_t e) {
+    if (e == LV_EVENT_CLICKED) {
+      auto* screen = static_cast<Sleep*>(obj->user_data);
+      int value = screen->infiniSleepController.infiniSleepSettings.desiredCycles;
+      value = (value % 10) + 1; // Cycle through values 1 to 10
+      screen->infiniSleepController.infiniSleepSettings.desiredCycles = value;
+      screen->infiniSleepController.SetSettingsChanged();
+      lv_label_set_text_fmt(lv_obj_get_child(obj, nullptr), "%d", value);
+    }
+  });
+
+  lv_obj_t* lblCycleValue = lv_label_create(btnCycles, nullptr);
+  lv_label_set_text_fmt(lblCycleValue, "%d", infiniSleepController.infiniSleepSettings.desiredCycles);
+  lv_obj_align(lblCycleValue, nullptr, LV_ALIGN_CENTER, 0, 0);
+
+  lv_obj_t* btnCycleDuration = lv_btn_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(btnCycleDuration, 100, 50);
+  lv_obj_align(btnCycleDuration, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 120, y_offset + 30);
+  btnCycleDuration->user_data = this;
+  lv_obj_set_event_cb(btnCycleDuration, [](lv_obj_t* obj, lv_event_t e) {
+    if (e == LV_EVENT_CLICKED) {
+      auto* screen = static_cast<Sleep*>(obj->user_data);
+      int value = screen->infiniSleepController.infiniSleepSettings.sleepCycleDuration;
+      switch (value) {
+        case 80: value = 85; break;
+        case 85: value = 90; break;
+        case 90: value = 95; break;
+        case 95: value = 100; break;
+        case 100: value = 80; break;
+        default: value = 80; break;
+      }
+      screen->infiniSleepController.infiniSleepSettings.sleepCycleDuration = value;
+      screen->infiniSleepController.SetSettingsChanged();
+      lv_label_set_text_fmt(lv_obj_get_child(obj, nullptr), "%d", value);
+    }
+  });
+
+  lv_obj_t* lblCycleDurationValue = lv_label_create(btnCycleDuration, nullptr);
+  lv_label_set_text_fmt(lblCycleDurationValue, "%d", infiniSleepController.infiniSleepSettings.sleepCycleDuration);
+  lv_obj_align(lblCycleDurationValue, nullptr, LV_ALIGN_CENTER, 0, 0);
+
+  y_offset += 70; // Adjust the offset for the next UI element
 }
 
 void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
@@ -367,7 +418,6 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       minuteCounter.SetValue(alarmMinute);
 
       OnValueChanged();
-      lv_switch_on(enableSwitch, LV_ANIM_OFF);
       infiniSleepController.ScheduleWakeAlarm();
       return;
     }
@@ -454,7 +504,6 @@ void Sleep::SnoozeWakeAlarm() {
   hourCounter.SetValue(newSnoozeMinutes / 60);
   minuteCounter.SetValue(newSnoozeMinutes % 60);
   
-  lv_switch_on(enableSwitch, LV_ANIM_OFF);
   infiniSleepController.ScheduleWakeAlarm();
 }
 
@@ -467,6 +516,7 @@ void Sleep::UpdateWakeAlarmTime() {
     }
   }
   infiniSleepController.SetWakeAlarmTime(hourCounter.GetValue(), minuteCounter.GetValue());
+  SetSwitchState(LV_ANIM_OFF);
 }
 
 void Sleep::SetAlerting() {
