@@ -29,7 +29,7 @@ namespace Pinetime {
         bool OnButtonPushed() override;
         bool OnTouchEvent(TouchEvents event) override;
         void OnValueChanged();
-        void StopAlerting();
+        void StopAlerting(bool setSwitch = true);
         void SnoozeWakeAlarm();
         void UpdateDisplay();
         enum class SleepDisplayState { Alarm, Info, Settings };

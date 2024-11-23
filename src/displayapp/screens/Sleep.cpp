@@ -50,11 +50,12 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   screen->OnButtonEvent(obj, event);
 }
 
-// static void SnoozeAlarmTaskCallback(lv_task_t* task) {
-//   auto* screen = static_cast<Sleep*>(task->user_data);
-//   screen->StopAlerting();
-//   screen->SnoozeWakeAlarm();
-// }
+static void SnoozeAlarmTaskCallback(lv_task_t* task) {
+  auto* screen = static_cast<Sleep*>(task->user_data);
+  lv_task_del(task);
+  screen->StopAlerting(false);
+  screen->SnoozeWakeAlarm();
+}
 
 static void PressesToStopAlarmTimeoutCallback(lv_task_t* task) {
   auto* screen = static_cast<Sleep*>(task->user_data);
@@ -179,17 +180,17 @@ void Sleep::DrawAlarmScreen() {
   // SetRecurButtonState();
   // lv_obj_set_style_local_bg_color(btnRecur, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
 
-  btnInfo = lv_btn_create(lv_scr_act(), nullptr);
-  btnInfo->user_data = this;
-  lv_obj_set_event_cb(btnInfo, btnEventHandler);
-  lv_obj_set_size(btnInfo, 50, 50);
-  lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, -4);
-  lv_obj_set_style_local_bg_color(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
-  lv_obj_set_style_local_border_width(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 4);
-  lv_obj_set_style_local_border_color(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
+  // btnInfo = lv_btn_create(lv_scr_act(), nullptr);
+  // btnInfo->user_data = this;
+  // lv_obj_set_event_cb(btnInfo, btnEventHandler);
+  // lv_obj_set_size(btnInfo, 50, 50);
+  // lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, -4);
+  // lv_obj_set_style_local_bg_color(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
+  // lv_obj_set_style_local_border_width(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 4);
+  // lv_obj_set_style_local_border_color(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
 
-  lv_obj_t* txtInfo = lv_label_create(btnInfo, nullptr);
-  lv_label_set_text_static(txtInfo, "i");
+  // lv_obj_t* txtInfo = lv_label_create(btnInfo, nullptr);
+  // lv_label_set_text_static(txtInfo, "i");
 
   enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
   enableSwitch->user_data = this;
@@ -242,8 +243,8 @@ void Sleep::DrawInfoScreen() {
 
   // Gradual Wake info
   label_gradual_wake = lv_label_create(lv_scr_act(), nullptr);
-  if (infiniSleepController.GetInfiniSleepSettings().graddualWake) {
-    lv_label_set_text_fmt(label_gradual_wake, "Gradual Wake: %d/9", infiniSleepController.gradualWakeVibration);
+  if (infiniSleepController.GetWakeAlarm().isEnabled && infiniSleepController.GetInfiniSleepSettings().graddualWake && infiniSleepController.gradualWakeStep > 0) {
+    lv_label_set_text_fmt(label_gradual_wake, "Gradual Wake: %d/9", infiniSleepController.gradualWakeStep);
   } else {
     lv_label_set_text_static(label_gradual_wake, "Gradual Wake: OFF");
   }
@@ -381,10 +382,10 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       SnoozeWakeAlarm();
       return;
     }
-    if (obj == btnInfo) {
-      ShowAlarmInfo();
-      return;
-    }
+    // if (obj == btnInfo) {
+    //   ShowAlarmInfo();
+    //   return;
+    // }
     if (obj == btnMessage) {
       HideAlarmInfo();
       return;
@@ -488,10 +489,8 @@ void Sleep::OnValueChanged() {
 
 // Currently snoozes baeed on define statement in InfiniSleepController.h
 void Sleep::SnoozeWakeAlarm() {
-  if (taskSnoozeWakeAlarm != nullptr) {
-    lv_task_del(taskSnoozeWakeAlarm);
-    taskSnoozeWakeAlarm = nullptr;
-  }
+  lv_task_del(taskSnoozeWakeAlarm);
+  taskSnoozeWakeAlarm = nullptr;
 
   uint16_t totalAlarmMinutes = infiniSleepController.GetCurrentHour() * 60 + infiniSleepController.GetCurrentMinute();
   uint16_t newSnoozeMinutes = totalAlarmMinutes + SNOOZE_MINUTES;
@@ -522,19 +521,19 @@ void Sleep::UpdateWakeAlarmTime() {
 void Sleep::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
   lv_obj_set_hidden(btnStop, false);
-  //taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, pdMS_TO_TICKS(5 * 1000), LV_TASK_PRIO_MID, this);
+  taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, pdMS_TO_TICKS(5 * 1000), LV_TASK_PRIO_MID, this);
   motorController.StartAlarm();
   wakeLock.Lock();
 }
 
-void Sleep::StopAlerting() {
+void Sleep::StopAlerting(bool setSwitch) {
   infiniSleepController.StopAlerting();
   motorController.StopAlarm();
-  SetSwitchState(LV_ANIM_OFF);
-  if (taskSnoozeWakeAlarm != nullptr) {
-    lv_task_del(taskSnoozeWakeAlarm);
-    taskSnoozeWakeAlarm = nullptr;
+  if (setSwitch) {
+    SetSwitchState(LV_ANIM_OFF);
   }
+  lv_task_del(taskSnoozeWakeAlarm);
+  taskSnoozeWakeAlarm = nullptr;
   wakeLock.Release();
   lv_obj_set_hidden(enableSwitch, false);
   lv_obj_set_hidden(btnStop, true);
