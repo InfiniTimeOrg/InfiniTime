@@ -408,7 +408,7 @@ void DisplayApp::Refresh() {
         } else {
           LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::None);
         }
-        motorController.RunForDuration(infiniSleepController.gradualWakeVibrationDurations[-1+infiniSleepController.gradualWakeVibration]);
+        motorController.RunForDuration(infiniSleepController.gradualWakeVibrationDurations[-1+infiniSleepController.gradualWakeStep]);
 
         NRF_LOG_INFO("Gradual wake triggered");
 
