@@ -475,9 +475,6 @@ void DisplayApp::Refresh() {
         LoadNewScreen(Apps::Clock, DisplayApp::FullRefreshDirections::None);
         motorController.RunForDuration(35);
         break;
-      case Messages::OnChargingEvent:
-        // do nothing
-        break;
     }
   }
 
