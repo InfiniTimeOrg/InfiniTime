@@ -77,6 +77,10 @@ namespace Pinetime {
         uint16_t ComputeCrc(uint8_t const* p_data, uint32_t size, uint16_t const* p_crc);
       };
 
+      static constexpr ble_uuid128_t serviceUuid {
+        .u {.type = BLE_UUID_TYPE_128},
+        .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15, 0xDE, 0xEF, 0x12, 0x12, 0x30, 0x15, 0x00, 0x00}};
+
     private:
       Pinetime::System::SystemTask& systemTask;
       Pinetime::Controllers::Ble& bleController;
@@ -89,10 +93,6 @@ namespace Pinetime {
       static constexpr uint16_t revisionCharacteristicId {0x1534};
 
       uint16_t revision {0x0008};
-
-      static constexpr ble_uuid128_t serviceUuid {
-        .u {.type = BLE_UUID_TYPE_128},
-        .value = {0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15, 0xDE, 0xEF, 0x12, 0x12, 0x30, 0x15, 0x00, 0x00}};
 
       static constexpr ble_uuid128_t packetCharacteristicUuid {
         .u {.type = BLE_UUID_TYPE_128},

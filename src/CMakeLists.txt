@@ -379,6 +379,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/Navigation.cpp
         displayapp/screens/Metronome.cpp
         displayapp/screens/Motion.cpp
+        displayapp/screens/Weather.cpp
         displayapp/screens/FirmwareValidation.cpp
         displayapp/screens/ApplicationList.cpp
         displayapp/screens/Notifications.cpp
@@ -390,10 +391,12 @@ list(APPEND SOURCE_FILES
         displayapp/screens/BatteryInfo.cpp
         displayapp/screens/Steps.cpp
         displayapp/screens/Timer.cpp
+        displayapp/screens/Dice.cpp
         displayapp/screens/PassKey.cpp
         displayapp/screens/Error.cpp
         displayapp/screens/Alarm.cpp
         displayapp/screens/Styles.cpp
+        displayapp/screens/WeatherSymbols.cpp
         displayapp/Colors.cpp
         displayapp/widgets/Counter.cpp
         displayapp/widgets/PageIndicator.cpp
@@ -475,6 +478,7 @@ list(APPEND SOURCE_FILES
 
         systemtask/SystemTask.cpp
         systemtask/SystemMonitor.cpp
+        systemtask/WakeLock.cpp
         drivers/TwiMaster.cpp
 
         heartratetask/HeartRateTask.cpp
@@ -539,8 +543,8 @@ list(APPEND RECOVERY_SOURCE_FILES
 
         systemtask/SystemTask.cpp
         systemtask/SystemMonitor.cpp
+        systemtask/WakeLock.cpp
         drivers/TwiMaster.cpp
-        components/gfx/Gfx.cpp
         components/rle/RleDecoder.cpp
         components/heartrate/HeartRateController.cpp
         heartratetask/HeartRateTask.cpp
@@ -570,7 +574,6 @@ list(APPEND RECOVERYLOADER_SOURCE_FILES
 
         components/rle/RleDecoder.cpp
 
-        components/gfx/Gfx.cpp
         drivers/St7789.cpp
         components/brightness/BrightnessController.cpp
 
@@ -608,6 +611,7 @@ set(INCLUDE_FILES
         displayapp/screens/Metronome.h
         displayapp/screens/Motion.h
         displayapp/screens/Timer.h
+        displayapp/screens/Dice.h
         displayapp/screens/Alarm.h
         displayapp/Colors.h
         displayapp/widgets/Counter.h
@@ -658,6 +662,7 @@ set(INCLUDE_FILES
         displayapp/InfiniTimeTheme.h
         systemtask/SystemTask.h
         systemtask/SystemMonitor.h
+        systemtask/WakeLock.h
         displayapp/screens/Symbols.h
         drivers/TwiMaster.h
         heartratetask/HeartRateTask.h
@@ -858,7 +863,6 @@ target_compile_options(nrf-sdk PRIVATE
         $<$<CONFIG:RELEASE>: ${RELEASE_FLAGS}>
         $<$<COMPILE_LANGUAGE:CXX>: ${CXX_FLAGS}>
         $<$<COMPILE_LANGUAGE:ASM>: ${ASM_FLAGS}>
-        -O3
         )
 
 # NimBLE

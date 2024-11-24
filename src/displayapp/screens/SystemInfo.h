@@ -29,12 +29,12 @@ namespace Pinetime {
                             const Pinetime::Controllers::Ble& bleController,
                             const Pinetime::Drivers::Watchdog& watchdog,
                             Pinetime::Controllers::MotionController& motionController,
-                            const Pinetime::Drivers::Cst816S& touchPanel);
+                            const Pinetime::Drivers::Cst816S& touchPanel,
+                            const Pinetime::Drivers::SpiNorFlash& spiNorFlash);
         ~SystemInfo() override;
         bool OnTouchEvent(TouchEvents event) override;
 
       private:
-        DisplayApp* app;
         Pinetime::Controllers::DateTime& dateTimeController;
         const Pinetime::Controllers::Battery& batteryController;
         Pinetime::Controllers::BrightnessController& brightnessController;
@@ -42,6 +42,7 @@ namespace Pinetime {
         const Pinetime::Drivers::Watchdog& watchdog;
         Pinetime::Controllers::MotionController& motionController;
         const Pinetime::Drivers::Cst816S& touchPanel;
+        const Pinetime::Drivers::SpiNorFlash& spiNorFlash;
 
         ScreenList<5> screens;
 

@@ -5,6 +5,8 @@
 #include <ctime>
 #include <string>
 #include "components/settings/Settings.h"
+#include <FreeRTOS.h>
+#include <semphr.h>
 
 namespace Pinetime {
   namespace System {
@@ -44,8 +46,6 @@ namespace Pinetime {
        * dst field.
        */
       void SetTimeZone(int8_t timezone, int8_t dst);
-
-      void UpdateTime(uint32_t systickCounter);
 
       uint16_t Year() const {
         return 1900 + localTime.tm_year;
@@ -122,14 +122,12 @@ namespace Pinetime {
       const char* MonthShortToString() const;
       const char* DayOfWeekShortToString() const;
       static const char* MonthShortToStringLow(Months month);
-      const char* DayOfWeekShortToStringLow() const;
+      static const char* DayOfWeekShortToStringLow(Days day);
 
-      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime() const {
-        return currentDateTime;
-      }
+      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> CurrentDateTime();
 
-      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> UTCDateTime() const {
-        return currentDateTime - std::chrono::seconds((tzOffset + dstOffset) * 15 * 60);
+      std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> UTCDateTime() {
+        return CurrentDateTime() - std::chrono::seconds((tzOffset + dstOffset) * 15 * 60);
       }
 
       std::chrono::seconds Uptime() const {
@@ -141,9 +139,13 @@ namespace Pinetime {
       std::string FormattedTime();
 
     private:
+      void UpdateTime(uint32_t systickCounter, bool forceUpdate);
+
       std::tm localTime;
       int8_t tzOffset = 0;
       int8_t dstOffset = 0;
+
+      SemaphoreHandle_t mutex = nullptr;
 
       uint32_t previousSystickCounter = 0;
       std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> currentDateTime;
