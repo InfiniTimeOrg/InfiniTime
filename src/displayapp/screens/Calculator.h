@@ -43,7 +43,7 @@ namespace Pinetime {
         static constexpr uint8_t N_DECIMALS = 3;
         // this is the constant default offset
         static constexpr int64_t FIXED_POINT_OFFSET = powi(10, N_DECIMALS);
-        // this is the current offset, may wary after pressing '.'
+        // this is the current offset, may vary after pressing '.'
         int64_t offset = FIXED_POINT_OFFSET;
 
         // the screen can show 12 chars
