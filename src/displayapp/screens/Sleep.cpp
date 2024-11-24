@@ -559,7 +559,7 @@ void Sleep::UpdateWakeAlarmTime() {
 void Sleep::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
   lv_obj_set_hidden(btnStop, false);
-  taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, pdMS_TO_TICKS(5 * 1000), LV_TASK_PRIO_MID, this);
+  taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, pdMS_TO_TICKS(120 * 1000), LV_TASK_PRIO_MID, this);
   motorController.StartAlarm();
   wakeLock.Lock();
 }

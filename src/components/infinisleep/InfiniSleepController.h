@@ -40,6 +40,7 @@ namespace Pinetime {
       void EnableWakeAlarm();
       void SetOffWakeAlarmNow();
       void SetOffGradualWakeNow();
+      void UpdateGradualWake();
       uint32_t SecondsToWakeAlarm() const;
       void StopAlerting();
       // enum class RecurType { None, Daily, Weekdays };
@@ -164,7 +165,7 @@ namespace Pinetime {
 
       uint16_t GetSleepCycles() {
         uint16_t totalMinutes = GetTotalSleep();
-        return (totalMinutes * 100 / SLEEP_CYCLE_DURATION);
+        return (totalMinutes * 100 / infiniSleepSettings.sleepCycleDuration);
       }
 
       uint16_t GetTotalSleep() const {

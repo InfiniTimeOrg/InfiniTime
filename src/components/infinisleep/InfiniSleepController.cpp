@@ -196,7 +196,9 @@ void InfiniSleepController::SetOffGradualWakeNow() {
   // isGradualWakeAlerting = true;
 
   systemTask->PushMessage(System::Messages::SetOffGradualWake);
+}
 
+void InfiniSleepController::UpdateGradualWake() {
   // make sure graudal wake steps are possible
   while (gradualWakeStep > 0 && SecondsToWakeAlarm() <= gradualWakeSteps[gradualWakeStep - 1]) {
     gradualWakeStep--;
