@@ -40,6 +40,8 @@ namespace Pinetime {
         void UpdateOperation() const;
 
         // change this if you want to change the number of decimals
+        // keep in mind, that we only have 12 digits in total (see MAX_DIGITS)
+        // due to the fixed point implementation
         static constexpr uint8_t N_DECIMALS = 3;
         // this is the constant default offset
         static constexpr int64_t FIXED_POINT_OFFSET = powi(10, N_DECIMALS);
