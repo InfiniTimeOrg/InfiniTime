@@ -14,6 +14,7 @@
 #include "displayapp/screens/Screen.h"
 #include "components/timer/Timer.h"
 #include "components/alarm/AlarmController.h"
+#include "components/infinisleep/InfiniSleepController.h"
 #include "touchhandler/TouchHandler.h"
 
 #include "displayapp/Messages.h"
