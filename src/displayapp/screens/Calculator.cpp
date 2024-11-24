@@ -1,6 +1,5 @@
 #include <cmath>
 #include <cinttypes>
-#include <libraries/log/nrf_log.h>
 #include "Calculator.h"
 #include "displayapp/InfiniTimeTheme.h"
 #include "Symbols.h"
@@ -96,30 +95,17 @@ void Calculator::HandleInput() {
         value *= 10;
         value += sign * offset * digit;
       }
-
-      NRF_LOG_INFO(". offset: %" PRId64, offset);
-      NRF_LOG_INFO(". value: %" PRId64, value);
-      NRF_LOG_INFO(". result: %" PRId64, result);
     } break;
 
     // unary minus
     case '(':
       value = -value;
-
-      NRF_LOG_INFO(". offset: %" PRId64, offset);
-      NRF_LOG_INFO(". value: %" PRId64, value);
-      NRF_LOG_INFO(". result: %" PRId64, result);
-
       break;
 
     case '.':
       if (offset == FIXED_POINT_OFFSET) {
         offset /= 10;
       }
-
-      NRF_LOG_INFO(". offset: %" PRId64, offset);
-      NRF_LOG_INFO(". value: %" PRId64, value);
-      NRF_LOG_INFO(". result: %" PRId64, result);
       break;
 
     // for every operator we:
@@ -195,10 +181,6 @@ void Calculator::HandleInput() {
         result = 0;
       }
 
-      NRF_LOG_INFO(". offset: %" PRId64, offset);
-      NRF_LOG_INFO(". value: %" PRId64, value);
-      NRF_LOG_INFO(". result: %" PRId64, result);
-
       if (value == 0) {
         operation = ' ';
         UpdateOperation();
@@ -214,11 +196,6 @@ void Calculator::HandleInput() {
       if (operation == ' ') {
         ResetInput();
       }
-
-      NRF_LOG_INFO(". offset: %" PRId64, offset);
-      NRF_LOG_INFO(". value: %" PRId64, value);
-      NRF_LOG_INFO(". result: %" PRId64, result);
-
       break;
   }
 
