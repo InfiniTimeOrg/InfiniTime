@@ -109,7 +109,6 @@ void InfiniSleepController::ScheduleWakeAlarm() {
   pushesLeftToStopWakeAlarm = PUSHES_TO_STOP_ALARM;
 
   gradualWakeStep = 9;
-  // gradualWakeVibration = 9;
 
   auto now = dateTimeController.CurrentDateTime();
   wakeAlarmTime = now;
@@ -129,14 +128,6 @@ void InfiniSleepController::ScheduleWakeAlarm() {
   tmWakeAlarmTime->tm_min = wakeAlarm.minutes;
   tmWakeAlarmTime->tm_sec = 0;
 
-  // if alarm is in weekday-only mode, make sure it shifts to the next weekday
-  // if (wakeAlarm.recurrence == RecurType::Weekdays) {
-  //   if (tmWakeAlarmTime->tm_wday == 0) {// Sunday, shift 1 day
-  //     tmWakeAlarmTime->tm_mday += 1;
-  //   } else if (tmWakeAlarmTime->tm_wday == 6) { // Saturday, shift 2 days
-  //     tmWakeAlarmTime->tm_mday += 2;
-  //   }
-  // }
   tmWakeAlarmTime->tm_isdst = -1; // use system timezone setting to determine DST
 
   // now can convert back to a time_point
@@ -154,7 +145,6 @@ void InfiniSleepController::ScheduleWakeAlarm() {
   // Calculate the period for the gradualWakeTimer
   if (infiniSleepSettings.graddualWake && gradualWakeStep > 0) {
     int64_t gradualWakePeriod = ((secondsToWakeAlarm - gradualWakeSteps[-1 + gradualWakeStep])) * (configTICK_RATE_HZ);
-    // gradualWakeVibration = gradualWakeStep;
     xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
     xTimerStart(gradualWakeTimer, 0);
   }
@@ -173,7 +163,6 @@ void InfiniSleepController::DisableWakeAlarm() {
   xTimerStop(wakeAlarmTimer, 0);
   xTimerStop(gradualWakeTimer, 0);
   gradualWakeStep = 9;
-  // gradualWakeVibration = 9;
   isAlerting = false;
   if (wakeAlarm.isEnabled) {
     wakeAlarm.isEnabled = false;
@@ -202,13 +191,11 @@ void InfiniSleepController::UpdateGradualWake() {
   // make sure graudal wake steps are possible
   while (gradualWakeStep > 0 && SecondsToWakeAlarm() <= gradualWakeSteps[gradualWakeStep - 1]) {
     gradualWakeStep--;
-    // gradualWakeVibration = gradualWakeStep;
   }
 
   // Calculate the period for the gradualWakeTimer
   if (infiniSleepSettings.graddualWake && gradualWakeStep > 0) {
     int64_t gradualWakePeriod = ((SecondsToWakeAlarm() - gradualWakeSteps[-1 + gradualWakeStep])) * (configTICK_RATE_HZ);
-    // gradualWakeVibration = gradualWakeStep;
     xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
     xTimerStart(gradualWakeTimer, 0);
   } else {
@@ -218,23 +205,9 @@ void InfiniSleepController::UpdateGradualWake() {
 
 void InfiniSleepController::StopAlerting() {
   isAlerting = false;
-  // Disable the alarm unless it is recurring
-  // if (wakeAlarm.recurrence == RecurType::None) {
   wakeAlarm.isEnabled = false;
   wakeAlarmChanged = true;
-  // } else {
-  //   // Schedule the alarm for the next day
-  //   ScheduleWakeAlarm();
-  // }
 }
-
-// void InfiniSleepController::SetRecurrence(RecurType recurrence) {
-//   if (wakeAlarm.recurrence == recurrence) {
-//     return;
-//   }
-//   wakeAlarm.recurrence = recurrence;
-//   wakeAlarmChanged = true;
-// }
 
 /* Sleep Tracking Section */
 
@@ -342,11 +315,6 @@ void InfiniSleepController::LoadSettingsFromFile() {
 }
 
 void InfiniSleepController::SaveSettingsToFile() const {
-  // lfs_dir systemDir;
-  // if (fs.DirOpen("/system/sleep", &systemDir) != LFS_ERR_OK) {
-  //   fs.DirCreate("/system/sleep");
-  // }
-  // fs.DirClose(&systemDir);
   lfs_file_t alarmFile;
   WakeAlarmSettings tempWakeAlarm = wakeAlarm;
   if (isSnoozing) {

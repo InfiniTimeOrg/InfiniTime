@@ -96,13 +96,6 @@ void Sleep::DisableWakeAlarm() {
   }
 }
 
-// void Sleep::EnableWakeAlarm() {
-//   if (!infiniSleepController.GetWakeAlarm().isEnabled) {
-//     infiniSleepController.EnableWakeAlarm();
-//     lv_switch_on(enableSwitch, LV_ANIM_ON);
-//   }
-// }
-
 void Sleep::Refresh() {
   UpdateDisplay();
 }
@@ -171,27 +164,6 @@ void Sleep::DrawAlarmScreen() {
   lv_obj_align(btnSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   txtSuggestedAlarm = lv_label_create(btnSuggestedAlarm, nullptr);
   lv_label_set_text_static(txtSuggestedAlarm, "Suggested");
-
-  // btnRecur = lv_btn_create(lv_scr_act(), nullptr);
-  // btnRecur->user_data = this;
-  // lv_obj_set_event_cb(btnRecur, btnEventHandler);
-  // lv_obj_set_size(btnRecur, 115, 50);
-  // lv_obj_align(btnRecur, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  // txtRecur = lv_label_create(btnRecur, nullptr);
-  // SetRecurButtonState();
-  // lv_obj_set_style_local_bg_color(btnRecur, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
-
-  // btnInfo = lv_btn_create(lv_scr_act(), nullptr);
-  // btnInfo->user_data = this;
-  // lv_obj_set_event_cb(btnInfo, btnEventHandler);
-  // lv_obj_set_size(btnInfo, 50, 50);
-  // lv_obj_align(btnInfo, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, -4);
-  // lv_obj_set_style_local_bg_color(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, bgColor);
-  // lv_obj_set_style_local_border_width(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, 4);
-  // lv_obj_set_style_local_border_color(btnInfo, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_BLACK);
-
-  // lv_obj_t* txtInfo = lv_label_create(btnInfo, nullptr);
-  // lv_label_set_text_static(txtInfo, "i");
 
   enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
   enableSwitch->user_data = this;
@@ -328,9 +300,6 @@ void Sleep::DrawSettingsScreen() {
 
   int y_offset = 50;
   for (const auto& setting : settings) {
-    // lv_obj_t* lblSetting = lv_label_create(lv_scr_act(), nullptr);
-    // lv_label_set_text_static(lblSetting, setting.name);
-    // lv_obj_align(lblSetting, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
 
     lv_obj_t* checkbox = lv_checkbox_create(lv_scr_act(), nullptr);
     checkbox->user_data = const_cast<char*>(setting.name);
@@ -344,8 +313,6 @@ void Sleep::DrawSettingsScreen() {
     lv_obj_align(checkbox, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
 
     lv_obj_set_event_cb(checkbox, settingsToggleEventHandler);
-    // lv_obj_set_event_cb(lblSetting, settingsToggleEventHandler);
-
     y_offset += setting.offsetAfter; // Increase the offset to provide better spacing
   }
 
@@ -420,10 +387,6 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       SnoozeWakeAlarm();
       return;
     }
-    // if (obj == btnInfo) {
-    //   ShowAlarmInfo();
-    //   return;
-    // }
     if (obj == btnMessage) {
       HideAlarmInfo();
       return;
@@ -460,10 +423,6 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       infiniSleepController.ScheduleWakeAlarm();
       return;
     }
-    // if (obj == btnRecur) {
-    //   DisableWakeAlarm();
-    //   ToggleRecurrence();
-    // }
   }
 }
 
@@ -622,34 +581,3 @@ void Sleep::HideAlarmInfo() {
   txtMessage = nullptr;
   btnMessage = nullptr;
 }
-
-// void Sleep::SetRecurButtonState() {
-//   using Pinetime::Controllers::InfiniSleepController;
-//   switch (infiniSleepController.Recurrence()) {
-//     case InfiniSleepController::RecurType::None:
-//       lv_label_set_text_static(txtRecur, "ONCE");
-//       break;
-//     case InfiniSleepController::RecurType::Daily:
-//       lv_label_set_text_static(txtRecur, "DAILY");
-//       break;
-//     case InfiniSleepController::RecurType::Weekdays:
-//       lv_label_set_text_static(txtRecur, "MON-FRI");
-//       break;
-//   }
-// }
-
-// void Sleep::ToggleRecurrence() {
-//   using Pinetime::Controllers::InfiniSleepController;
-//   switch (infiniSleepController.Recurrence()) {
-//     case InfiniSleepController::RecurType::None:
-//       infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::Daily);
-//       break;
-//     case InfiniSleepController::RecurType::Daily:
-//       infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::Weekdays);
-//       break;
-//     case InfiniSleepController::RecurType::Weekdays:
-//       infiniSleepController.SetRecurrence(InfiniSleepController::RecurType::None);
-//       break;
-//   }
-//   SetRecurButtonState();
-// }

@@ -9,19 +9,11 @@
 #include "systemtask/WakeLock.h"
 #include "Symbols.h"
 
-//#define GRADUAL_WAKE_MOTOR_DURATION_MS 1000
-
-//#include <vector>
-//#include <numeric>  // for accumulate
-//#include <cmath>    // for abs
-
 namespace Pinetime {
   namespace Applications {
     namespace Screens {
       class Sleep : public Screen {
       public:
-        // explicit Sleep(Controllers::HeartRateController& HeartRateController, Controllers::DateTime& DateTimeController, Controllers::FS&
-        // fsController, System::SystemTask& systemTask);
         explicit Sleep(Controllers::InfiniSleepController& infiniSleepController,
                        Controllers::Settings::ClockType clockType,
                        System::SystemTask& systemTask,
@@ -38,25 +30,6 @@ namespace Pinetime {
         void UpdateDisplay();
         enum class SleepDisplayState { Alarm, Info, Settings };
         SleepDisplayState displayState = SleepDisplayState::Info;
-
-        // void Refresh() override;
-
-        // void GetBPM();
-
-        // void ClearDataCSV(const char* filename) const;
-
-        // // Data Processing functions
-        // float ConvertToMinutes(int hours, int minutes, int seconds) const;
-        // Get the moving average of BPM Values
-        // std::vector<float> MovingAverage(const std::vector<int>& bpm, int windowSize) const;
-        // Detect the sleep regions
-        // std::vector<std::pair<float, float>> DetectSleepRegions(const std::vector<float>& bpmData, const std::vector<float>& time, float
-        // threshold) const;
-        // Get the sleep info
-        // void GetSleepInfo(const std::vector<std::tuple<int, int, int, int, int>>& data) const;
-
-        // Read IO
-        // std::vector<std::tuple<int, int, int, int, int>> ReadDataCSV(const char* fileName) const;
 
         Controllers::InfiniSleepController& infiniSleepController;
 
@@ -78,13 +51,10 @@ namespace Pinetime {
 
         enum class EnableButtonState { On, Off, Alerting };
         void DisableWakeAlarm();
-        // void EnableWakeAlarm();
-        // void SetRecurButtonState();
         void SetSwitchState(lv_anim_enable_t anim);
         void SetWakeAlarm();
         void ShowAlarmInfo();
         void HideAlarmInfo();
-        // void ToggleRecurrence();
         void UpdateWakeAlarmTime();
         Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_76);
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
@@ -93,18 +63,6 @@ namespace Pinetime {
         void DrawInfoScreen();
         void DrawSettingsScreen();
 
-        // Controllers::HeartRateController& heartRateController;
-        // Controllers::DateTime& dateTimeController;
-        // Controllers::FS& fsController;
-        // Pinetime::System::WakeLock wakeLock;
-
-        // // For File IO
-        // void WriteDataCSV(const char* fileName, const std::tuple<int, int, int, int, int>* data, int dataSize) const;
-
-        // int bpm = 0;
-        // int prevBpm = 0;
-        // int rollingBpm = 0;
-
         lv_obj_t* label_hr;
         lv_obj_t* label_start_time;
         lv_obj_t* label_alarm_time;
@@ -112,9 +70,6 @@ namespace Pinetime {
         lv_obj_t* label_total_sleep;
         lv_obj_t* label_sleep_cycles;
         lv_obj_t *btnSuggestedAlarm, *txtSuggestedAlarm;
-
-        // lv_task_t* mainRefreshTask;
-        // lv_task_t* hrRefreshTask;
       };
     }
 
@@ -124,8 +79,6 @@ namespace Pinetime {
       static constexpr const char* icon = Screens::Symbols::bed;
 
       static Screens::Screen* Create(AppControllers& controllers) {
-        // return new Screens::Sleep(controllers.heartRateController, controllers.dateTimeController, controllers.filesystem,
-        // *controllers.systemTask);
         return new Screens::Sleep(controllers.infiniSleepController,
                                   controllers.settingsController.GetClockType(),
                                   *controllers.systemTask,
