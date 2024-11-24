@@ -293,7 +293,13 @@ void DisplayApp::Refresh() {
     switch (msg) {
       case Messages::GoToSleep:
       case Messages::GoToAOD:
-        if (state != States::Running) {
+        // Checking if SystemTask is sleeping is purely an optimisation.
+        // If it's no longer sleeping since it sent GoToSleep, it has
+        // cancelled the sleep and transitioned directly from
+        // GoingToSleep->Running, so we are about to receive GoToRunning
+        // and can ignore this message. If it wasn't ignored, DisplayApp
+        // would go to sleep and then immediately re-wake
+        if (state != States::Running || !systemTask->IsSleeping()) {
           break;
         }
         while (brightnessController.Level() != Controllers::BrightnessController::Levels::Low) {
@@ -335,7 +341,10 @@ void DisplayApp::Refresh() {
         lv_disp_trig_activity(nullptr);
         break;
       case Messages::GoToRunning:
-        if (state == States::Running) {
+        // If SystemTask is sleeping, the GoToRunning message is old
+        // and must be ignored. Otherwise DisplayApp will use SPI
+        // that is powered down and cause bad behaviour
+        if (state == States::Running || systemTask->IsSleeping()) {
           break;
         }
         if (state == States::AOD) {
