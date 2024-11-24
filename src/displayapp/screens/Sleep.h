@@ -20,8 +20,12 @@ namespace Pinetime {
     namespace Screens {
       class Sleep : public Screen {
       public:
-        //explicit Sleep(Controllers::HeartRateController& HeartRateController, Controllers::DateTime& DateTimeController, Controllers::FS& fsController, System::SystemTask& systemTask);
-        explicit Sleep(Controllers::InfiniSleepController& infiniSleepController, Controllers::Settings::ClockType clockType, System::SystemTask& systemTask, Controllers::MotorController& motorController);
+        // explicit Sleep(Controllers::HeartRateController& HeartRateController, Controllers::DateTime& DateTimeController, Controllers::FS&
+        // fsController, System::SystemTask& systemTask);
+        explicit Sleep(Controllers::InfiniSleepController& infiniSleepController,
+                       Controllers::Settings::ClockType clockType,
+                       System::SystemTask& systemTask,
+                       Controllers::MotorController& motorController);
         ~Sleep() override;
         void Refresh() override;
         void SetAlerting();
@@ -44,14 +48,15 @@ namespace Pinetime {
         // // Data Processing functions
         // float ConvertToMinutes(int hours, int minutes, int seconds) const;
         // Get the moving average of BPM Values
-        //std::vector<float> MovingAverage(const std::vector<int>& bpm, int windowSize) const;
+        // std::vector<float> MovingAverage(const std::vector<int>& bpm, int windowSize) const;
         // Detect the sleep regions
-        //std::vector<std::pair<float, float>> DetectSleepRegions(const std::vector<float>& bpmData, const std::vector<float>& time, float threshold) const;
+        // std::vector<std::pair<float, float>> DetectSleepRegions(const std::vector<float>& bpmData, const std::vector<float>& time, float
+        // threshold) const;
         // Get the sleep info
-        //void GetSleepInfo(const std::vector<std::tuple<int, int, int, int, int>>& data) const;
+        // void GetSleepInfo(const std::vector<std::tuple<int, int, int, int, int>>& data) const;
 
         // Read IO
-        //std::vector<std::tuple<int, int, int, int, int>> ReadDataCSV(const char* fileName) const;
+        // std::vector<std::tuple<int, int, int, int, int>> ReadDataCSV(const char* fileName) const;
 
         Controllers::InfiniSleepController& infiniSleepController;
 
@@ -73,13 +78,13 @@ namespace Pinetime {
 
         enum class EnableButtonState { On, Off, Alerting };
         void DisableWakeAlarm();
-        //void EnableWakeAlarm();
-        //void SetRecurButtonState();
+        // void EnableWakeAlarm();
+        // void SetRecurButtonState();
         void SetSwitchState(lv_anim_enable_t anim);
         void SetWakeAlarm();
         void ShowAlarmInfo();
         void HideAlarmInfo();
-        //void ToggleRecurrence();
+        // void ToggleRecurrence();
         void UpdateWakeAlarmTime();
         Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_76);
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);
@@ -112,14 +117,19 @@ namespace Pinetime {
         // lv_task_t* hrRefreshTask;
       };
     }
-    
+
     template <>
     struct AppTraits<Apps::Sleep> {
       static constexpr Apps app = Apps::Sleep;
       static constexpr const char* icon = Screens::Symbols::bed;
+
       static Screens::Screen* Create(AppControllers& controllers) {
-        //return new Screens::Sleep(controllers.heartRateController, controllers.dateTimeController, controllers.filesystem, *controllers.systemTask);
-        return new Screens::Sleep(controllers.infiniSleepController, controllers.settingsController.GetClockType(), *controllers.systemTask, controllers.motorController);
+        // return new Screens::Sleep(controllers.heartRateController, controllers.dateTimeController, controllers.filesystem,
+        // *controllers.systemTask);
+        return new Screens::Sleep(controllers.infiniSleepController,
+                                  controllers.settingsController.GetClockType(),
+                                  *controllers.systemTask,
+                                  controllers.motorController);
       }
     };
   }

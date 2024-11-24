@@ -23,27 +23,27 @@ namespace {
 extern InfiniSleepController infiniSleepController;
 
 static void settingsToggleEventHandler(lv_obj_t* obj, lv_event_t e) {
-    if (e != LV_EVENT_VALUE_CHANGED) {
-      return;
-    }
-
-    const char* setting_name = static_cast<const char*>(obj->user_data);
-    bool enabled = lv_checkbox_is_checked(obj);
-
-    if (strcmp(setting_name, "Body Tracking") == 0) {
-      infiniSleepController.SetBodyTrackingEnabled(enabled);
-      infiniSleepController.SetSettingsChanged();
-    } else if (strcmp(setting_name, "Heart Rate\nTracking") == 0) {
-      infiniSleepController.SetHeartRateTrackingEnabled(enabled);
-      infiniSleepController.SetSettingsChanged();
-    } else if (strcmp(setting_name, "Gradual Wake") == 0) {
-      infiniSleepController.SetGradualWakeEnabled(enabled);
-      infiniSleepController.SetSettingsChanged();
-    } else if (strcmp(setting_name, "Smart Alarm\n(alpha)") == 0) {
-      infiniSleepController.SetSmartAlarmEnabled(enabled);
-      infiniSleepController.SetSettingsChanged();
-    }
+  if (e != LV_EVENT_VALUE_CHANGED) {
+    return;
   }
+
+  const char* setting_name = static_cast<const char*>(obj->user_data);
+  bool enabled = lv_checkbox_is_checked(obj);
+
+  if (strcmp(setting_name, "Body Tracking") == 0) {
+    infiniSleepController.SetBodyTrackingEnabled(enabled);
+    infiniSleepController.SetSettingsChanged();
+  } else if (strcmp(setting_name, "Heart Rate\nTracking") == 0) {
+    infiniSleepController.SetHeartRateTrackingEnabled(enabled);
+    infiniSleepController.SetSettingsChanged();
+  } else if (strcmp(setting_name, "Gradual Wake") == 0) {
+    infiniSleepController.SetGradualWakeEnabled(enabled);
+    infiniSleepController.SetSettingsChanged();
+  } else if (strcmp(setting_name, "Smart Alarm\n(alpha)") == 0) {
+    infiniSleepController.SetSmartAlarmEnabled(enabled);
+    infiniSleepController.SetSettingsChanged();
+  }
+}
 
 static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<Sleep*>(obj->user_data);
@@ -71,7 +71,8 @@ Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
 
   UpdateDisplay();
   taskRefresh = lv_task_create(RefreshTaskCallback, 2000, LV_TASK_PRIO_MID, this);
-  taskPressesToStopAlarmTimeout = lv_task_create(PressesToStopAlarmTimeoutCallback, PUSHES_TO_STOP_ALARM_TIMEOUT * 1000, LV_TASK_PRIO_MID, this);
+  taskPressesToStopAlarmTimeout =
+    lv_task_create(PressesToStopAlarmTimeoutCallback, PUSHES_TO_STOP_ALARM_TIMEOUT * 1000, LV_TASK_PRIO_MID, this);
 }
 
 Sleep::~Sleep() {
@@ -222,11 +223,17 @@ void Sleep::DrawInfoScreen() {
     lv_label_set_text_fmt(label_hr, "HR: %d", infiniSleepController.rollingBpm);
   }
   lv_obj_align(label_hr, lblTime, LV_ALIGN_CENTER, 0, 50);
-  lv_obj_set_style_local_text_color(label_hr, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
-  
+  lv_obj_set_style_local_text_color(label_hr,
+                                    LV_LABEL_PART_MAIN,
+                                    LV_STATE_DEFAULT,
+                                    infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
+
   if (infiniSleepController.IsEnabled()) {
     label_start_time = lv_label_create(lv_scr_act(), nullptr);
-    lv_label_set_text_fmt(label_start_time, "Began at: %02d:%02d", infiniSleepController.prevSessionData.startTimeHours, infiniSleepController.prevSessionData.startTimeMinutes);
+    lv_label_set_text_fmt(label_start_time,
+                          "Began at: %02d:%02d",
+                          infiniSleepController.prevSessionData.startTimeHours,
+                          infiniSleepController.prevSessionData.startTimeMinutes);
     lv_obj_align(label_start_time, label_hr, LV_ALIGN_CENTER, 0, 20);
     lv_obj_set_style_local_text_color(label_start_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   }
@@ -234,28 +241,44 @@ void Sleep::DrawInfoScreen() {
   // The alarm info
   label_alarm_time = lv_label_create(lv_scr_act(), nullptr);
   if (infiniSleepController.GetWakeAlarm().isEnabled) {
-    lv_label_set_text_fmt(label_alarm_time, "Alarm at: %02d:%02d", infiniSleepController.GetWakeAlarm().hours, infiniSleepController.GetWakeAlarm().minutes);
+    lv_label_set_text_fmt(label_alarm_time,
+                          "Alarm at: %02d:%02d",
+                          infiniSleepController.GetWakeAlarm().hours,
+                          infiniSleepController.GetWakeAlarm().minutes);
   } else {
     lv_label_set_text_static(label_alarm_time, "Alarm is not set.");
   }
   lv_obj_align(label_alarm_time, label_hr, LV_ALIGN_CENTER, 0, 40);
-  lv_obj_set_style_local_text_color(label_alarm_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
+  lv_obj_set_style_local_text_color(label_alarm_time,
+                                    LV_LABEL_PART_MAIN,
+                                    LV_STATE_DEFAULT,
+                                    infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
 
   // Gradual Wake info
   label_gradual_wake = lv_label_create(lv_scr_act(), nullptr);
-  if (infiniSleepController.GetWakeAlarm().isEnabled && infiniSleepController.GetInfiniSleepSettings().graddualWake && infiniSleepController.gradualWakeStep > 0) {
+  if (infiniSleepController.GetWakeAlarm().isEnabled && infiniSleepController.GetInfiniSleepSettings().graddualWake &&
+      infiniSleepController.gradualWakeStep > 0) {
     lv_label_set_text_fmt(label_gradual_wake, "Gradual Wake: %d/9", infiniSleepController.gradualWakeStep);
   } else {
     lv_label_set_text_static(label_gradual_wake, "Gradual Wake: OFF");
   }
   lv_obj_align(label_gradual_wake, label_hr, LV_ALIGN_CENTER, 0, 60);
-  lv_obj_set_style_local_text_color(label_gradual_wake, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
+  lv_obj_set_style_local_text_color(label_gradual_wake,
+                                    LV_LABEL_PART_MAIN,
+                                    LV_STATE_DEFAULT,
+                                    infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
 
   // Sleep Cycles Info
   label_sleep_cycles = lv_label_create(lv_scr_act(), nullptr);
-  lv_label_set_text_fmt(label_sleep_cycles, "Sleep Cycles: %d.%02d", infiniSleepController.GetSleepCycles() / 100, infiniSleepController.GetSleepCycles() % 100);
+  lv_label_set_text_fmt(label_sleep_cycles,
+                        "Sleep Cycles: %d.%02d",
+                        infiniSleepController.GetSleepCycles() / 100,
+                        infiniSleepController.GetSleepCycles() % 100);
   lv_obj_align(label_sleep_cycles, label_hr, LV_ALIGN_CENTER, 0, 80);
-  lv_obj_set_style_local_text_color(label_sleep_cycles, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
+  lv_obj_set_style_local_text_color(label_sleep_cycles,
+                                    LV_LABEL_PART_MAIN,
+                                    LV_STATE_DEFAULT,
+                                    infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
 
   // Total sleep time
   label_total_sleep = lv_label_create(lv_scr_act(), nullptr);
@@ -264,7 +287,10 @@ void Sleep::DrawInfoScreen() {
 
   lv_label_set_text_fmt(label_total_sleep, "Total Sleep: %dh%dm", totalMinutes / 60, totalMinutes % 60);
   lv_obj_align(label_total_sleep, label_hr, LV_ALIGN_CENTER, 0, 100);
-  lv_obj_set_style_local_text_color(label_total_sleep, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
+  lv_obj_set_style_local_text_color(label_total_sleep,
+                                    LV_LABEL_PART_MAIN,
+                                    LV_STATE_DEFAULT,
+                                    infiniSleepController.IsEnabled() ? LV_COLOR_RED : LV_COLOR_WHITE);
 
   trackerToggleBtn = lv_btn_create(lv_scr_act(), nullptr);
   trackerToggleBtn->user_data = this;
@@ -302,9 +328,9 @@ void Sleep::DrawSettingsScreen() {
 
   int y_offset = 50;
   for (const auto& setting : settings) {
-    //lv_obj_t* lblSetting = lv_label_create(lv_scr_act(), nullptr);
-   // lv_label_set_text_static(lblSetting, setting.name);
-   // lv_obj_align(lblSetting, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
+    // lv_obj_t* lblSetting = lv_label_create(lv_scr_act(), nullptr);
+    // lv_label_set_text_static(lblSetting, setting.name);
+    // lv_obj_align(lblSetting, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
 
     lv_obj_t* checkbox = lv_checkbox_create(lv_scr_act(), nullptr);
     checkbox->user_data = const_cast<char*>(setting.name);
@@ -318,7 +344,7 @@ void Sleep::DrawSettingsScreen() {
     lv_obj_align(checkbox, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
 
     lv_obj_set_event_cb(checkbox, settingsToggleEventHandler);
-    //lv_obj_set_event_cb(lblSetting, settingsToggleEventHandler);
+    // lv_obj_set_event_cb(lblSetting, settingsToggleEventHandler);
 
     y_offset += setting.offsetAfter; // Increase the offset to provide better spacing
   }
@@ -355,12 +381,24 @@ void Sleep::DrawSettingsScreen() {
       auto* screen = static_cast<Sleep*>(obj->user_data);
       int value = screen->infiniSleepController.infiniSleepSettings.sleepCycleDuration;
       switch (value) {
-        case 80: value = 85; break;
-        case 85: value = 90; break;
-        case 90: value = 95; break;
-        case 95: value = 100; break;
-        case 100: value = 80; break;
-        default: value = 80; break;
+        case 80:
+          value = 85;
+          break;
+        case 85:
+          value = 90;
+          break;
+        case 90:
+          value = 95;
+          break;
+        case 95:
+          value = 100;
+          break;
+        case 100:
+          value = 80;
+          break;
+        default:
+          value = 80;
+          break;
       }
       screen->infiniSleepController.infiniSleepSettings.sleepCycleDuration = value;
       screen->infiniSleepController.SetSettingsChanged();
@@ -453,8 +491,8 @@ bool Sleep::OnButtonPushed() {
 bool Sleep::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
 
   // Swiping should be ignored when in alerting state
-  if (infiniSleepController.IsAlerting() && 
-    (event != TouchEvents::SwipeDown && event != TouchEvents::SwipeUp && event != TouchEvents::SwipeLeft && event != TouchEvents::SwipeRight)) {
+  if (infiniSleepController.IsAlerting() && (event != TouchEvents::SwipeDown && event != TouchEvents::SwipeUp &&
+                                             event != TouchEvents::SwipeLeft && event != TouchEvents::SwipeRight)) {
     return true;
   }
 
@@ -502,7 +540,7 @@ void Sleep::SnoozeWakeAlarm() {
 
   hourCounter.SetValue(newSnoozeMinutes / 60);
   minuteCounter.SetValue(newSnoozeMinutes % 60);
-  
+
   infiniSleepController.ScheduleWakeAlarm();
 }
 

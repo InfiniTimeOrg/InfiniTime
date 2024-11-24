@@ -1,4 +1,4 @@
-# include "components/infinisleep/InfiniSleepController.h"
+#include "components/infinisleep/InfiniSleepController.h"
 #include "systemtask/SystemTask.h"
 #include "task.h"
 #include <chrono>
@@ -7,7 +7,9 @@
 using namespace Pinetime::Controllers;
 using namespace std::chrono_literals;
 
-InfiniSleepController::InfiniSleepController(Controllers::DateTime& dateTimeController, Controllers::FS& fs, Controllers::HeartRateController& heartRateController)
+InfiniSleepController::InfiniSleepController(Controllers::DateTime& dateTimeController,
+                                             Controllers::FS& fs,
+                                             Controllers::HeartRateController& heartRateController)
   : dateTimeController {dateTimeController}, fs {fs}, heartRateController {heartRateController} {
 }
 
@@ -32,23 +34,24 @@ namespace {
 }
 
 void InfiniSleepController::Init(System::SystemTask* systemTask) {
-    this->systemTask = systemTask;
-    wakeAlarmTimer = xTimerCreate("WakeAlarm", 1, pdFALSE, this, SetOffWakeAlarm);
-    gradualWakeTimer = xTimerCreate("GradualWake", 1, pdFALSE, this, SetOffGradualWake);
+  this->systemTask = systemTask;
+  wakeAlarmTimer = xTimerCreate("WakeAlarm", 1, pdFALSE, this, SetOffWakeAlarm);
+  gradualWakeTimer = xTimerCreate("GradualWake", 1, pdFALSE, this, SetOffGradualWake);
 
-    LoadSettingsFromFile();
-    LoadPrevSessionData();
-    if (wakeAlarm.isEnabled) {
-        NRF_LOG_INFO("[InfiniSleepController] Loaded wake alarm was enabled, scheduling");
-        ScheduleWakeAlarm();
-    }
+  LoadSettingsFromFile();
+  LoadPrevSessionData();
+  if (wakeAlarm.isEnabled) {
+    NRF_LOG_INFO("[InfiniSleepController] Loaded wake alarm was enabled, scheduling");
+    ScheduleWakeAlarm();
+  }
 }
 
 void InfiniSleepController::EnableTracker() {
   DisableTracker();
   NRF_LOG_INFO("[InfiniSleepController] Enabling tracker");
   isEnabled = true;
-  trackerUpdateTimer = xTimerCreate("TrackerUpdate", pdMS_TO_TICKS(TRACKER_UPDATE_INTERVAL_MINS * 60 * 1000), pdFALSE, this, SetOffTrackerUpdate);
+  trackerUpdateTimer =
+    xTimerCreate("TrackerUpdate", pdMS_TO_TICKS(TRACKER_UPDATE_INTERVAL_MINS * 60 * 1000), pdFALSE, this, SetOffTrackerUpdate);
   xTimerStart(trackerUpdateTimer, 0);
 }
 
@@ -71,105 +74,106 @@ void InfiniSleepController::UpdateTracker() {
 }
 
 void InfiniSleepController::SaveWakeAlarm() {
-    // verify is save needed
-    if (wakeAlarmChanged) {
-        SaveSettingsToFile();
-    }
-    wakeAlarmChanged = false;
+  // verify is save needed
+  if (wakeAlarmChanged) {
+    SaveSettingsToFile();
+  }
+  wakeAlarmChanged = false;
 }
 
 void InfiniSleepController::SaveInfiniSleepSettings() {
-    // verify is save needed
-    if (settingsChanged) {
-        SaveSettingsToFile();
-    }
-    settingsChanged = false;
+  // verify is save needed
+  if (settingsChanged) {
+    SaveSettingsToFile();
+  }
+  settingsChanged = false;
 }
 
 void InfiniSleepController::SetWakeAlarmTime(uint8_t wakeAlarmHr, uint8_t wakeAlarmMin) {
-    if (wakeAlarm.hours == wakeAlarmHr && wakeAlarm.minutes == wakeAlarmMin) {
-        return;
-    }
-    wakeAlarm.hours = wakeAlarmHr;
-    wakeAlarm.minutes = wakeAlarmMin;
-    wakeAlarmChanged = true;
+  if (wakeAlarm.hours == wakeAlarmHr && wakeAlarm.minutes == wakeAlarmMin) {
+    return;
+  }
+  wakeAlarm.hours = wakeAlarmHr;
+  wakeAlarm.minutes = wakeAlarmMin;
+  wakeAlarmChanged = true;
 }
 
 void InfiniSleepController::ScheduleWakeAlarm() {
-    // This line essentially removes the ability to change recurrance type and sets it to daily
-    //SetRecurrence(RecurType::Daily);
+  // This line essentially removes the ability to change recurrance type and sets it to daily
+  // SetRecurrence(RecurType::Daily);
 
-    // Determine the next time the wake alarm needs to go off and set the timer
-    xTimerStop(wakeAlarmTimer, 0);
-    xTimerStop(gradualWakeTimer, 0);
+  // Determine the next time the wake alarm needs to go off and set the timer
+  xTimerStop(wakeAlarmTimer, 0);
+  xTimerStop(gradualWakeTimer, 0);
 
-    pushesLeftToStopWakeAlarm = PUSHES_TO_STOP_ALARM;
+  pushesLeftToStopWakeAlarm = PUSHES_TO_STOP_ALARM;
 
-    gradualWakeStep = 9;
-    //gradualWakeVibration = 9;
+  gradualWakeStep = 9;
+  // gradualWakeVibration = 9;
 
-    auto now = dateTimeController.CurrentDateTime();
-    wakeAlarmTime = now;
-    time_t ttWakeAlarmTime = std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::system_clock::duration>(wakeAlarmTime));
-    tm* tmWakeAlarmTime = std::localtime(&ttWakeAlarmTime);
+  auto now = dateTimeController.CurrentDateTime();
+  wakeAlarmTime = now;
+  time_t ttWakeAlarmTime =
+    std::chrono::system_clock::to_time_t(std::chrono::time_point_cast<std::chrono::system_clock::duration>(wakeAlarmTime));
+  tm* tmWakeAlarmTime = std::localtime(&ttWakeAlarmTime);
 
-    // If the time being set has already passed today, the wake alarm should be set for tomorrow
-    if (wakeAlarm.hours < dateTimeController.Hours() ||
-        (wakeAlarm.hours == dateTimeController.Hours() && wakeAlarm.minutes <= dateTimeController.Minutes())) {
-      tmWakeAlarmTime->tm_mday += 1;
-      // tm_wday doesn't update automatically
-      tmWakeAlarmTime->tm_wday = (tmWakeAlarmTime->tm_wday + 1) % 7;
-    }
+  // If the time being set has already passed today, the wake alarm should be set for tomorrow
+  if (wakeAlarm.hours < dateTimeController.Hours() ||
+      (wakeAlarm.hours == dateTimeController.Hours() && wakeAlarm.minutes <= dateTimeController.Minutes())) {
+    tmWakeAlarmTime->tm_mday += 1;
+    // tm_wday doesn't update automatically
+    tmWakeAlarmTime->tm_wday = (tmWakeAlarmTime->tm_wday + 1) % 7;
+  }
 
-    tmWakeAlarmTime->tm_hour = wakeAlarm.hours;
-    tmWakeAlarmTime->tm_min = wakeAlarm.minutes;
-    tmWakeAlarmTime->tm_sec = 0;
+  tmWakeAlarmTime->tm_hour = wakeAlarm.hours;
+  tmWakeAlarmTime->tm_min = wakeAlarm.minutes;
+  tmWakeAlarmTime->tm_sec = 0;
 
-    // if alarm is in weekday-only mode, make sure it shifts to the next weekday
-    // if (wakeAlarm.recurrence == RecurType::Weekdays) {
-    //   if (tmWakeAlarmTime->tm_wday == 0) {// Sunday, shift 1 day
-    //     tmWakeAlarmTime->tm_mday += 1;
-    //   } else if (tmWakeAlarmTime->tm_wday == 6) { // Saturday, shift 2 days
-    //     tmWakeAlarmTime->tm_mday += 2;
-    //   }
-    // }
-    tmWakeAlarmTime->tm_isdst = -1; // use system timezone setting to determine DST
+  // if alarm is in weekday-only mode, make sure it shifts to the next weekday
+  // if (wakeAlarm.recurrence == RecurType::Weekdays) {
+  //   if (tmWakeAlarmTime->tm_wday == 0) {// Sunday, shift 1 day
+  //     tmWakeAlarmTime->tm_mday += 1;
+  //   } else if (tmWakeAlarmTime->tm_wday == 6) { // Saturday, shift 2 days
+  //     tmWakeAlarmTime->tm_mday += 2;
+  //   }
+  // }
+  tmWakeAlarmTime->tm_isdst = -1; // use system timezone setting to determine DST
 
-    // now can convert back to a time_point
-    wakeAlarmTime = std::chrono::system_clock::from_time_t(std::mktime(tmWakeAlarmTime));
-    int64_t secondsToWakeAlarm = std::chrono::duration_cast<std::chrono::seconds>(wakeAlarmTime - now).count();
-    xTimerChangePeriod(wakeAlarmTimer, secondsToWakeAlarm * configTICK_RATE_HZ, 0);
-    xTimerStart(wakeAlarmTimer, 0);
+  // now can convert back to a time_point
+  wakeAlarmTime = std::chrono::system_clock::from_time_t(std::mktime(tmWakeAlarmTime));
+  int64_t secondsToWakeAlarm = std::chrono::duration_cast<std::chrono::seconds>(wakeAlarmTime - now).count();
+  xTimerChangePeriod(wakeAlarmTimer, secondsToWakeAlarm * configTICK_RATE_HZ, 0);
+  xTimerStart(wakeAlarmTimer, 0);
 
-    // make sure graudal wake steps are possible
-    while (gradualWakeStep > 0 && secondsToWakeAlarm <= gradualWakeSteps[gradualWakeStep-1]) {
-      gradualWakeStep--;
-      //gradualWakeVibration = gradualWakeStep;
-    }
+  // make sure graudal wake steps are possible
+  while (gradualWakeStep > 0 && secondsToWakeAlarm <= gradualWakeSteps[gradualWakeStep - 1]) {
+    gradualWakeStep--;
+    // gradualWakeVibration = gradualWakeStep;
+  }
 
-    // Calculate the period for the gradualWakeTimer
-    if (infiniSleepSettings.graddualWake && gradualWakeStep > 0) {
-      int64_t gradualWakePeriod = ((secondsToWakeAlarm - gradualWakeSteps[-1+gradualWakeStep])) * (configTICK_RATE_HZ);
-      //gradualWakeVibration = gradualWakeStep;
-      xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
-      xTimerStart(gradualWakeTimer, 0);
-    }
+  // Calculate the period for the gradualWakeTimer
+  if (infiniSleepSettings.graddualWake && gradualWakeStep > 0) {
+    int64_t gradualWakePeriod = ((secondsToWakeAlarm - gradualWakeSteps[-1 + gradualWakeStep])) * (configTICK_RATE_HZ);
+    // gradualWakeVibration = gradualWakeStep;
+    xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
+    xTimerStart(gradualWakeTimer, 0);
+  }
 
-    if (!wakeAlarm.isEnabled) {
-        wakeAlarm.isEnabled = true;
-        wakeAlarmChanged = true;
-    }
+  if (!wakeAlarm.isEnabled) {
+    wakeAlarm.isEnabled = true;
+    wakeAlarmChanged = true;
+  }
 }
 
 uint32_t InfiniSleepController::SecondsToWakeAlarm() const {
-    return std::chrono::duration_cast<std::chrono::seconds>(wakeAlarmTime - dateTimeController.CurrentDateTime()).count();
+  return std::chrono::duration_cast<std::chrono::seconds>(wakeAlarmTime - dateTimeController.CurrentDateTime()).count();
 }
 
 void InfiniSleepController::DisableWakeAlarm() {
   xTimerStop(wakeAlarmTimer, 0);
   xTimerStop(gradualWakeTimer, 0);
   gradualWakeStep = 9;
-  //gradualWakeVibration = 9;
+  // gradualWakeVibration = 9;
   isAlerting = false;
   if (wakeAlarm.isEnabled) {
     wakeAlarm.isEnabled = false;
@@ -189,20 +193,20 @@ void InfiniSleepController::SetOffWakeAlarmNow() {
 }
 
 void InfiniSleepController::SetOffGradualWakeNow() {
-  //isGradualWakeAlerting = true;
+  // isGradualWakeAlerting = true;
 
   systemTask->PushMessage(System::Messages::SetOffGradualWake);
 
   // make sure graudal wake steps are possible
-  while (gradualWakeStep > 0 && SecondsToWakeAlarm() <= gradualWakeSteps[gradualWakeStep-1]) {
+  while (gradualWakeStep > 0 && SecondsToWakeAlarm() <= gradualWakeSteps[gradualWakeStep - 1]) {
     gradualWakeStep--;
-    //gradualWakeVibration = gradualWakeStep;
+    // gradualWakeVibration = gradualWakeStep;
   }
 
   // Calculate the period for the gradualWakeTimer
   if (infiniSleepSettings.graddualWake && gradualWakeStep > 0) {
-    int64_t gradualWakePeriod = ((SecondsToWakeAlarm() - gradualWakeSteps[-1+gradualWakeStep])) * (configTICK_RATE_HZ);
-    //gradualWakeVibration = gradualWakeStep;
+    int64_t gradualWakePeriod = ((SecondsToWakeAlarm() - gradualWakeSteps[-1 + gradualWakeStep])) * (configTICK_RATE_HZ);
+    // gradualWakeVibration = gradualWakeStep;
     xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
     xTimerStart(gradualWakeTimer, 0);
   } else {
@@ -213,9 +217,9 @@ void InfiniSleepController::SetOffGradualWakeNow() {
 void InfiniSleepController::StopAlerting() {
   isAlerting = false;
   // Disable the alarm unless it is recurring
-  //if (wakeAlarm.recurrence == RecurType::None) {
-    wakeAlarm.isEnabled = false;
-    wakeAlarmChanged = true;
+  // if (wakeAlarm.recurrence == RecurType::None) {
+  wakeAlarm.isEnabled = false;
+  wakeAlarmChanged = true;
   // } else {
   //   // Schedule the alarm for the next day
   //   ScheduleWakeAlarm();
@@ -237,7 +241,7 @@ void InfiniSleepController::UpdateBPM() {
   prevBpm = bpm;
   bpm = heartRateController.HeartRate();
 
-  if(prevBpm != 0)
+  if (prevBpm != 0)
     rollingBpm = (rollingBpm + bpm) / 2;
   else
     rollingBpm = bpm;
