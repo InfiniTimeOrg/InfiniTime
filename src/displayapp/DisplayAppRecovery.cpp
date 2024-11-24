@@ -7,6 +7,7 @@
 #include "touchhandler/TouchHandler.h"
 #include "displayapp/icons/infinitime/infinitime-nb.c"
 #include "components/ble/BleController.h"
+#include "displayapp/screens/Sleep.h"
 
 using namespace Pinetime::Applications;
 
@@ -25,7 +26,8 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::BrightnessController& /*brightnessController*/,
                        Pinetime::Controllers::TouchHandler& /*touchHandler*/,
                        Pinetime::Controllers::FS& /*filesystem*/,
-                       Pinetime::Drivers::SpiNorFlash& /*spiNorFlash*/)
+                       Pinetime::Drivers::SpiNorFlash& /*spiNorFlash*/,
+                       Pinetime::Controllers::InfiniSleepController& infiniSleepController)
   : lcd {lcd}, bleController {bleController} {
 }
 

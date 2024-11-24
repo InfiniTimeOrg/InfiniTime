@@ -61,7 +61,8 @@ namespace Pinetime {
                  Pinetime::Controllers::BrightnessController& brightnessController,
                  Pinetime::Controllers::TouchHandler& touchHandler,
                  Pinetime::Controllers::FS& filesystem,
-                 Pinetime::Drivers::SpiNorFlash& spiNorFlash);
+                 Pinetime::Drivers::SpiNorFlash& spiNorFlash,
+                 Pinetime::Controllers::InfiniSleepController& infiniSleepController);
       void Start();
 
       void Start(Pinetime::System::BootErrors) {
