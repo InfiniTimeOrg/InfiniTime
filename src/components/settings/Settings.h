@@ -45,8 +45,11 @@ namespace Pinetime {
         PTSWeather weatherEnable = PTSWeather::Off;
       };
 
+      enum class CasioWeatherSegment : uint8_t { WeekNumber, DayCounter, DayOfWeek };
+
       struct CasioStyleG7710 {
         PTSWeather weatherEnable = PTSWeather::Off;
+        CasioWeatherSegment weatherSegment = CasioWeatherSegment::DayCounter;
       };
 
       struct WatchFaceInfineat {
@@ -166,6 +169,17 @@ namespace Pinetime {
 
       PTSWeather GetCasioWeather() const {
         return settings.casio.weatherEnable;
+      }
+
+      void SetCasioWeatherSegment(CasioWeatherSegment weatherSegment) {
+        if (weatherSegment != settings.casio.weatherSegment)
+          settingsChanged = true;
+
+        settings.casio.weatherSegment = weatherSegment;
+      }
+
+      CasioWeatherSegment GetCasioWeatherSegment() const {
+        return settings.casio.weatherSegment;
       }
 
       void SetAppMenu(uint8_t menu) {
