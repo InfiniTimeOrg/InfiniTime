@@ -85,6 +85,7 @@ namespace Pinetime {
       void Refresh();
       Pinetime::Drivers::St7789& lcd;
       const Controllers::Ble& bleController;
+      const Controllers::InfiniSleepController& infiniSleepController;
 
       static constexpr uint8_t queueSize = 10;
       static constexpr uint8_t itemSize = 1;

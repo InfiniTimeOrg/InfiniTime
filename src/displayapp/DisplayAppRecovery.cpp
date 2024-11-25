@@ -28,7 +28,7 @@ DisplayApp::DisplayApp(Drivers::St7789& lcd,
                        Pinetime::Controllers::FS& /*filesystem*/,
                        Pinetime::Drivers::SpiNorFlash& /*spiNorFlash*/,
                        Pinetime::Controllers::InfiniSleepController& infiniSleepController)
-  : lcd {lcd}, bleController {bleController} {
+  : lcd {lcd}, bleController {bleController}, infiniSleepController {infiniSleepController} {
 }
 
 void DisplayApp::Start() {
