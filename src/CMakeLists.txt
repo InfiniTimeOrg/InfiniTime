@@ -360,6 +360,7 @@ list(APPEND IMAGE_FILES
         )
 list(APPEND SOURCE_FILES
         stdlib.c
+        lfs_config.c
         FreeRTOS/heap_4_infinitime.c
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
@@ -788,6 +789,7 @@ add_definitions(-DFREERTOS)
 add_definitions(-D__STACK_SIZE=1024)
 add_definitions(-D__HEAP_SIZE=0)
 add_definitions(-DMYNEWT_VAL_BLE_LL_RFMGMT_ENABLE_TIME=1500)
+add_definitions(-DLFS_CONFIG=lfs_config.h)
 
 # Note: Only use this for debugging
 # Derive the low frequency clock from the main clock (SYNT)
