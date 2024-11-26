@@ -21,6 +21,7 @@ namespace Pinetime {
         ~Sleep() override;
         void Refresh() override;
         void SetAlerting();
+        void RedrawSetAlerting();
         void OnButtonEvent(lv_obj_t* obj, lv_event_t event);
         bool OnButtonPushed() override;
         bool OnTouchEvent(TouchEvents event) override;
@@ -30,6 +31,7 @@ namespace Pinetime {
         void UpdateDisplay();
         enum class SleepDisplayState { Alarm, Info, Settings };
         SleepDisplayState displayState = SleepDisplayState::Info;
+        SleepDisplayState lastDisplayState = SleepDisplayState::Info;
 
         Controllers::InfiniSleepController& infiniSleepController;
 
@@ -49,7 +51,7 @@ namespace Pinetime {
 
         lv_task_t* taskPressesToStopAlarmTimeout = nullptr;
 
-        enum class EnableButtonState { On, Off, Alerting };
+        //enum class EnableButtonState { On, Off, Alerting };
         void DisableWakeAlarm();
         void SetSwitchState(lv_anim_enable_t anim);
         void SetWakeAlarm();
@@ -62,6 +64,8 @@ namespace Pinetime {
         void DrawAlarmScreen();
         void DrawInfoScreen();
         void DrawSettingsScreen();
+
+        bool alreadyAlerting = false;
 
         lv_obj_t* label_hr;
         lv_obj_t* label_start_time;

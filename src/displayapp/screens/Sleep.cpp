@@ -52,7 +52,7 @@ static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
 
 static void SnoozeAlarmTaskCallback(lv_task_t* task) {
   auto* screen = static_cast<Sleep*>(task->user_data);
-  lv_task_del(task);
+  lv_task_set_prio(task, LV_TASK_PRIO_OFF);
   screen->StopAlerting(false);
   screen->SnoozeWakeAlarm();
 }
@@ -174,6 +174,12 @@ void Sleep::DrawAlarmScreen() {
   lv_obj_set_style_local_bg_color(enableSwitch, LV_SWITCH_PART_BG, LV_STATE_DEFAULT, bgColor);
 
   UpdateWakeAlarmTime();
+
+  if (alreadyAlerting) {
+    RedrawSetAlerting();
+    return;
+  }
+
 
   if (infiniSleepController.IsAlerting()) {
     SetAlerting();
@@ -437,8 +443,10 @@ bool Sleep::OnButtonPushed() {
       infiniSleepController.pushesLeftToStopWakeAlarm--;
       return true;
     } else {
+      if (infiniSleepController.isSnoozing) {
+        infiniSleepController.RestorePreSnoozeTime();
+      }
       infiniSleepController.isSnoozing = false;
-      infiniSleepController.RestorePreSnoozeTime();
       StopAlerting();
       UpdateDisplay();
       return true;
@@ -454,6 +462,9 @@ bool Sleep::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
                                              event != TouchEvents::SwipeLeft && event != TouchEvents::SwipeRight)) {
     return true;
   }
+
+  lastDisplayState = displayState;
+  NRF_LOG_INFO("Last Display State: %d", static_cast<int>(lastDisplayState));
 
   // The cases for swiping to change page on app
   switch (event) {
@@ -486,8 +497,12 @@ void Sleep::OnValueChanged() {
 
 // Currently snoozes baeed on define statement in InfiniSleepController.h
 void Sleep::SnoozeWakeAlarm() {
-  lv_task_del(taskSnoozeWakeAlarm);
-  taskSnoozeWakeAlarm = nullptr;
+  if (taskSnoozeWakeAlarm != nullptr) {
+    lv_task_del(taskSnoozeWakeAlarm);
+    taskSnoozeWakeAlarm = nullptr;
+  }
+
+  NRF_LOG_INFO("Snoozing alarm for %d minutes", SNOOZE_MINUTES);
 
   uint16_t totalAlarmMinutes = infiniSleepController.GetCurrentHour() * 60 + infiniSleepController.GetCurrentMinute();
   uint16_t newSnoozeMinutes = totalAlarmMinutes + SNOOZE_MINUTES;
@@ -518,8 +533,16 @@ void Sleep::UpdateWakeAlarmTime() {
 void Sleep::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
   lv_obj_set_hidden(btnStop, false);
-  taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, pdMS_TO_TICKS(120 * 1000), LV_TASK_PRIO_MID, this);
+  NRF_LOG_INFO("Alarm is alerting");
+  taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, 120 * 1000, LV_TASK_PRIO_MID, this);
   motorController.StartAlarm();
+  wakeLock.Lock();
+  alreadyAlerting = true;
+}
+
+void Sleep::RedrawSetAlerting() {
+  lv_obj_set_hidden(enableSwitch, true);
+  lv_obj_set_hidden(btnStop, false);
   wakeLock.Lock();
 }
 
@@ -529,11 +552,10 @@ void Sleep::StopAlerting(bool setSwitch) {
   if (setSwitch) {
     SetSwitchState(LV_ANIM_OFF);
   }
-  lv_task_del(taskSnoozeWakeAlarm);
-  taskSnoozeWakeAlarm = nullptr;
   wakeLock.Release();
   lv_obj_set_hidden(enableSwitch, false);
   lv_obj_set_hidden(btnStop, true);
+  alreadyAlerting = false;
 }
 
 void Sleep::SetSwitchState(lv_anim_enable_t anim) {
