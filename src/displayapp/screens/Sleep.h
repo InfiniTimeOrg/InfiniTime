@@ -51,7 +51,7 @@ namespace Pinetime {
 
         lv_task_t* taskPressesToStopAlarmTimeout = nullptr;
 
-        //enum class EnableButtonState { On, Off, Alerting };
+        // enum class EnableButtonState { On, Off, Alerting };
         void DisableWakeAlarm();
         void SetSwitchState(lv_anim_enable_t anim);
         void SetWakeAlarm();

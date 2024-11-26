@@ -180,7 +180,6 @@ void Sleep::DrawAlarmScreen() {
     return;
   }
 
-
   if (infiniSleepController.IsAlerting()) {
     SetAlerting();
   } else {
