@@ -27,5 +27,6 @@ void* realloc( void *ptr, size_t newSize) {
 }
 
 void* _sbrk(int size) {
-  return *(void **)0;
+  (void)size;
+  return *(void **)0; // Force fault
 }
