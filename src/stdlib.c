@@ -27,5 +27,5 @@ void* realloc( void *ptr, size_t newSize) {
 }
 
 void* _sbrk(int size) {
-  return pvPortMalloc(size);
+  return *(void **)0;
 }
