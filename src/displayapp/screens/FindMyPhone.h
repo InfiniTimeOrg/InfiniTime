@@ -39,10 +39,8 @@ namespace Pinetime {
         lv_obj_t* label_title;
         lv_obj_t* bt_none;
         lv_obj_t* bt_high;
-        lv_obj_t* bt_mild;
         lv_obj_t* label_none;
         lv_obj_t* label_high;
-        lv_obj_t* label_mild;
         lv_task_t* taskRestoreLabelText = nullptr;
 
         Pinetime::Controllers::ImmediateAlertClient::Levels last_level;
