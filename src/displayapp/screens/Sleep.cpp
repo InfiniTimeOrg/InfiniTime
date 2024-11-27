@@ -163,7 +163,7 @@ void Sleep::DrawAlarmScreen() {
   lv_obj_set_size(btnSuggestedAlarm, 115, 50);
   lv_obj_align(btnSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
   txtSuggestedAlarm = lv_label_create(btnSuggestedAlarm, nullptr);
-  lv_label_set_text_static(txtSuggestedAlarm, "Suggested");
+  lv_label_set_text_static(txtSuggestedAlarm, "Use Sugg.\nAlarmTime");
 
   enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
   enableSwitch->user_data = this;
