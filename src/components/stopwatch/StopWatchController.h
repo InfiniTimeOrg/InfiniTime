@@ -55,9 +55,10 @@ namespace Pinetime {
 
       // Maximum number of stored laps
       static constexpr int histSize = 2;
+      static constexpr int lapNumberBoundary = 1000;
       // Lap storage
       Utility::CircularBuffer<LapInfo, histSize> history;
-      // Highest lap number; may exceed histSize
+      // Highest lap number; less than lapNumberBoundary, may exceed histSize
       int maxLapNumber;
     };
   }

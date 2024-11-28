@@ -34,7 +34,7 @@ void StopWatchController::Clear() {
 void StopWatchController::AddLapToHistory() {
   TickType_t lapEnd = GetElapsedTime();
   history[0].timeSinceStart = lapEnd;
-  history[0].number = ++maxLapNumber;
+  history[0].number = ++maxLapNumber % lapNumberBoundary;
   history--;
 }
 
