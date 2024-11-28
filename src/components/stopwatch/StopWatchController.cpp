@@ -14,8 +14,8 @@ void StopWatchController::Start() {
 }
 
 void StopWatchController::Pause() {
+  timeElapsedPreviously = GetElapsedTime();
   currentState = StopWatchStates::Paused;
-  timeElapsedPreviously += xTaskGetTickCount() - startTime;
 }
 
 void StopWatchController::Clear() {
@@ -55,7 +55,8 @@ TickType_t StopWatchController::GetElapsedTime() {
   if (!IsRunning()) {
     return timeElapsedPreviously;
   }
-  return timeElapsedPreviously + (xTaskGetTickCount() - startTime);
+  TickType_t delta = xTaskGetTickCount() - startTime;
+  return (timeElapsedPreviously + delta) % elapsedTimeBoundary;
 }
 
 bool StopWatchController::IsRunning() {
