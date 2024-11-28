@@ -46,6 +46,8 @@ namespace Pinetime {
       bool IsPaused();
 
     private:
+      // Time at which stopwatch wraps around to zero (1000 hours)
+      TickType_t elapsedTimeBoundary = configTICK_RATE_HZ * 60 * 60 * 1000;
       // Current state of stopwatch
       StopWatchStates currentState = StopWatchStates::Cleared;
       // Start time of current duration
@@ -55,6 +57,7 @@ namespace Pinetime {
 
       // Maximum number of stored laps
       static constexpr int histSize = 2;
+      // Value at which lap numbers wrap around to zero
       static constexpr int lapNumberBoundary = 1000;
       // Lap storage
       Utility::CircularBuffer<LapInfo, histSize> history;
