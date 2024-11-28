@@ -42,6 +42,7 @@ set(SDK_SOURCE_FILES
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_gpiote.c"
         "${NRF5_SDK_PATH}/modules/nrfx/soc/nrfx_atomic.c"
         "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_saadc.c"
+        "${NRF5_SDK_PATH}/modules/nrfx/drivers/src/nrfx_pwm.c"
 
         # FreeRTOS
         ${NRF5_SDK_PATH}/external/freertos/source/croutine.c

@@ -5633,7 +5633,7 @@
 // <e> PWM_ENABLED - nrf_drv_pwm - PWM peripheral driver - legacy layer
 //==========================================================
 #ifndef PWM_ENABLED
-  #define PWM_ENABLED 0
+  #define PWM_ENABLED 1
 #endif
 // <o> PWM_DEFAULT_CONFIG_OUT0_PIN - Out0 pin  <0-31>
 
@@ -5739,7 +5739,7 @@
 // <q> PWM2_ENABLED  - Enable PWM2 instance
 
 #ifndef PWM2_ENABLED
-  #define PWM2_ENABLED 0
+  #define PWM2_ENABLED 1
 #endif
 
 // <e> PWM_NRF52_ANOMALY_109_WORKAROUND_ENABLED - Enables nRF52 Anomaly 109 workaround for PWM.
