@@ -105,8 +105,8 @@ void MotorController::StopMotor(TimerHandle_t /*xTimer*/) {
 }
 
 void MotorController::GradualWakeBuzz() {
-  SetMotorStrength(40);
-  RunForDuration(540);
+  SetMotorStrength(80);
+  RunForDuration(100);
   //xTimerStart(gradualWakeBuzzDelay, 0);
   //xTimerStart(gradualWakeBuzzEnd, 0);
 }
