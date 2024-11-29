@@ -207,7 +207,7 @@ namespace Pinetime {
           SavePrevSessionData();
           DisableTracker();
         } else {
-          ClearDataCSV(TRACKER_DATA_FILE_NAME);
+          //ClearDataCSV(TRACKER_DATA_FILE_NAME);
           prevSessionData.startTimeHours = GetCurrentHour();
           prevSessionData.startTimeMinutes = GetCurrentMinute();
           EnableTracker();
