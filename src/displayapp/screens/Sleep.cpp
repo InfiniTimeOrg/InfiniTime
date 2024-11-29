@@ -154,7 +154,7 @@ void Sleep::DrawAlarmScreen() {
   lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   lv_obj_set_style_local_bg_color(btnStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
   txtStop = lv_label_create(btnStop, nullptr);
-  lv_label_set_text_static(txtStop, Symbols::stop);
+  lv_label_set_text_static(txtStop, "ZzZz");
   lv_obj_set_hidden(btnStop, true);
 
   static constexpr lv_color_t bgColor = Colors::bgAlt;
@@ -164,8 +164,19 @@ void Sleep::DrawAlarmScreen() {
   lv_obj_set_event_cb(btnSuggestedAlarm, btnEventHandler);
   lv_obj_set_size(btnSuggestedAlarm, 115, 50);
   lv_obj_align(btnSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  txtSuggestedAlarm = lv_label_create(btnSuggestedAlarm, nullptr);
-  lv_label_set_text_static(txtSuggestedAlarm, "Use Sugg.\nAlarmTime");
+  //txtSuggestedAlarm = lv_label_create(btnSuggestedAlarm, nullptr);
+  //lv_label_set_text_static(txtSuggestedAlarm, "Use Sugg.\nAlarmTime");
+
+  txtSuggestedAlarm = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_align(txtSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -15, -10);
+  lv_label_set_text_static(txtSuggestedAlarm, "Auto");
+
+
+  lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_align(icon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -50, -10);
+  lv_label_set_text_static(icon, Symbols::sun);
+
 
   enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
   enableSwitch->user_data = this;
@@ -235,8 +246,8 @@ void Sleep::DrawInfoScreen() {
 
   // Gradual Wake info
   label_gradual_wake = lv_label_create(lv_scr_act(), nullptr);
-  if (infiniSleepController.GetWakeAlarm().isEnabled && infiniSleepController.GetInfiniSleepSettings().graddualWake &&
-      infiniSleepController.gradualWakeStep > 0) {
+  if (infiniSleepController.GetInfiniSleepSettings().graddualWake &&
+      infiniSleepController.gradualWakeStep >= 0) {
     lv_label_set_text_fmt(label_gradual_wake, "Gradual Wake: %d/9", infiniSleepController.gradualWakeStep);
   } else {
     lv_label_set_text_static(label_gradual_wake, "Gradual Wake: OFF");
