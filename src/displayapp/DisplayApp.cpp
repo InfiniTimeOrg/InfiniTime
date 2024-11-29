@@ -406,7 +406,7 @@ void DisplayApp::Refresh() {
           // auto* sleep = static_cast<Screens::Sleep*>(currentScreen.get());
           // sleep->SetGradualWakeAlerting();
         } else {
-          LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::None);
+          //LoadNewScreen(Apps::Sleep, DisplayApp::FullRefreshDirections::None);
         }
         //motorController.RunForDuration(infiniSleepController.gradualWakeVibrationDurations[-1 + infiniSleepController.gradualWakeStep]);
         motorController.GradualWakeBuzz();

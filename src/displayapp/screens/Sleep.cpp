@@ -460,6 +460,13 @@ bool Sleep::OnButtonPushed() {
       }
       infiniSleepController.isSnoozing = false;
       StopAlerting();
+      if (infiniSleepController.IsTrackerEnabled()) {
+        displayState = SleepDisplayState::Info;
+        UpdateDisplay();
+        OnButtonEvent(trackerToggleBtn, LV_EVENT_CLICKED);
+        return true;
+      }
+      displayState = SleepDisplayState::Info;
       UpdateDisplay();
       return true;
     }
