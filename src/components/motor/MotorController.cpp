@@ -2,60 +2,52 @@
 #include <hal/nrf_gpio.h>
 #include "systemtask/SystemTask.h"
 #include "drivers/PinMap.h"
-#include "nrf_drv_pwm.h"
+#include "nrf_pwm.h"
 
 using namespace Pinetime::Controllers;
 
-static nrf_drv_pwm_t m_pwm2 = NRF_DRV_PWM_INSTANCE(2);
-static nrf_pwm_values_individual_t seq_values;
-static nrf_pwm_sequence_t const seq = {
-    {
-        .p_individual = &seq_values
-    },
-    NRF_PWM_VALUES_LENGTH(seq_values),
-    0,
-    0
-};
+static uint16_t pwmValue = 0; // Declare the variable for PWM value
 
 void MotorController::Init() {
+  // Configure the motor pin as an output
   nrf_gpio_cfg_output(PinMap::Motor);
   nrf_gpio_pin_set(PinMap::Motor);
 
+  // Configure the PWM sequence
+  static nrf_pwm_sequence_t seq;
+  seq.values.p_common = &pwmValue; // Use the PWM value array
+  seq.length = NRF_PWM_VALUES_LENGTH(pwmValue);
+  seq.repeats = 0;
+  seq.end_delay = 0;
+
+  // Configure the PWM pins
+  uint32_t out_pins[] = {PinMap::Motor, NRF_PWM_PIN_NOT_CONNECTED, NRF_PWM_PIN_NOT_CONNECTED, NRF_PWM_PIN_NOT_CONNECTED};
+  nrf_pwm_pins_set(NRF_PWM2, out_pins);
+
+  // Enable and configure the PWM peripheral
+  nrf_pwm_enable(NRF_PWM2);
+  nrf_pwm_configure(NRF_PWM2, NRF_PWM_CLK_1MHz, NRF_PWM_MODE_UP, 255); // Top value determines the resolution
+  nrf_pwm_loop_set(NRF_PWM2, 0);                                       // Infinite loop
+  nrf_pwm_decoder_set(NRF_PWM2, NRF_PWM_LOAD_COMMON, NRF_PWM_STEP_AUTO);
+  nrf_pwm_sequence_set(NRF_PWM2, 0, &seq);
+
+  // Start the PWM with an initial value of 0
+  pwmValue = 0;
+  nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_SEQSTART0);
+
+  // Initialize timers for motor actions
   shortVib = xTimerCreate("shortVib", 1, pdFALSE, nullptr, StopMotor);
   longVib = xTimerCreate("longVib", pdMS_TO_TICKS(1000), pdTRUE, this, Ring);
   alarmVib = xTimerCreate("alarmVib", pdMS_TO_TICKS(500), pdTRUE, this, AlarmRing);
-  //gradualWakeBuzzDelay = xTimerCreate("gradualWakeBuzzDelay", pdMS_TO_TICKS(15), pdTRUE, this, GradualWakeBuzzRing);
-  //gradualWakeBuzzEnd = xTimerCreate("gradualWakeBuzzEnd", pdMS_TO_TICKS(550), pdTRUE, this, StopGradualWakeBuzzCallback);
-
-  InitPWM();
-}
-
-void MotorController::InitPWM() {
-  nrf_drv_pwm_config_t const config2 = {
-      .output_pins = {
-          PinMap::Motor, // channel 0
-          NRF_DRV_PWM_PIN_NOT_USED, // channel 1
-          NRF_DRV_PWM_PIN_NOT_USED, // channel 2
-          NRF_DRV_PWM_PIN_NOT_USED  // channel 3
-      },
-      .irq_priority = APP_IRQ_PRIORITY_LOWEST,
-      .base_clock = NRF_PWM_CLK_1MHz,
-      .count_mode = NRF_PWM_MODE_UP,
-      .top_value = 100,
-      .load_mode = NRF_PWM_LOAD_INDIVIDUAL,
-      .step_mode = NRF_PWM_STEP_AUTO
-  };
-
-  nrf_drv_pwm_init(&m_pwm2, &config2, NULL);
-  seq_values.channel_0 = 0;
-  nrf_drv_pwm_simple_playback(&m_pwm2, &seq, 1, NRF_DRV_PWM_FLAG_LOOP);
-
-  SetMotorStrength(100);
 }
 
 void MotorController::SetMotorStrength(uint8_t strength) {
-  if (strength > 100) strength = 100;
-  seq_values.channel_0 = strength;
+  // Ensure strength is within bounds (0-100)
+  if (strength > 100)
+    strength = 100;
+
+  // Map the strength to the PWM value (0-100 -> 0-top_value)
+  pwmValue = (strength * 255) / 100;
 }
 
 void MotorController::Ring(TimerHandle_t xTimer) {
@@ -65,13 +57,14 @@ void MotorController::Ring(TimerHandle_t xTimer) {
 
 void MotorController::AlarmRing(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->SetMotorStrength(80);
   motorController->RunForDuration(300);
 }
 
 void MotorController::RunForDuration(uint16_t motorDuration) {
   if (motorDuration > 0 && xTimerChangePeriod(shortVib, pdMS_TO_TICKS(motorDuration), 0) == pdPASS && xTimerStart(shortVib, 0) == pdPASS) {
-    nrf_gpio_pin_clear(PinMap::Motor);
-    nrf_drv_pwm_simple_playback(&m_pwm2, &seq, 1, NRF_DRV_PWM_FLAG_LOOP);
+    // nrf_gpio_pin_clear(PinMap::Motor);
+    nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_SEQSTART0); // Restart the PWM sequence with the updated value
   }
 }
 
@@ -83,32 +76,35 @@ void MotorController::StartRinging() {
 
 void MotorController::StopRinging() {
   xTimerStop(longVib, 0);
+  nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_STOP); // Stop the PWM sequence
+  pwmValue = 0;                                      // Reset the PWM value
   nrf_gpio_pin_set(PinMap::Motor);
-  nrf_drv_pwm_stop(&m_pwm2, true);
 }
 
 void MotorController::StartAlarm() {
-  SetMotorStrength(100);
+  SetMotorStrength(80);
   RunForDuration(300);
   xTimerStart(alarmVib, 0);
 }
 
 void MotorController::StopAlarm() {
   xTimerStop(alarmVib, 0);
+  nrf_pwm_task_trigger(NRF_PWM0, NRF_PWM_TASK_STOP); // Stop the PWM sequence
+  pwmValue = 0;                                      // Reset the PWM value
   nrf_gpio_pin_set(PinMap::Motor);
-  nrf_drv_pwm_stop(&m_pwm2, true);
 }
 
 void MotorController::StopMotor(TimerHandle_t /*xTimer*/) {
-  nrf_gpio_pin_set(PinMap::Motor);
-  nrf_drv_pwm_stop(&m_pwm2, true);
+  nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_STOP); // Stop the PWM sequence
+  pwmValue = 0;                                      // Reset the PWM value
+  nrf_gpio_pin_set(PinMap::Motor);                   // Set the motor pin to the off state
 }
 
 void MotorController::GradualWakeBuzz() {
-  SetMotorStrength(80);
+  SetMotorStrength(60);
   RunForDuration(100);
-  //xTimerStart(gradualWakeBuzzDelay, 0);
-  //xTimerStart(gradualWakeBuzzEnd, 0);
+  // xTimerStart(gradualWakeBuzzDelay, 0);
+  // xTimerStart(gradualWakeBuzzEnd, 0);
 }
 
 void MotorController::GradualWakeBuzzRing(TimerHandle_t xTimer) {
@@ -122,8 +118,7 @@ void MotorController::StopGradualWakeBuzzCallback(TimerHandle_t xTimer) {
 }
 
 void MotorController::StopGradualWakeBuzz() {
-  //xTimerStop(gradualWakeBuzzDelay, 0);
+  // xTimerStop(gradualWakeBuzzDelay, 0);
   xTimerStop(gradualWakeBuzzEnd, 0);
-  SetMotorStrength(100);
-  StopMotor(nullptr);
+  // StopMotor(nullptr);
 }
