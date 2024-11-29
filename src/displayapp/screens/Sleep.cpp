@@ -69,6 +69,8 @@ Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
              Controllers::MotorController& motorController)
   : infiniSleepController {infiniSleepController}, wakeLock(systemTask), motorController {motorController}, clockType {clockType} {
 
+  infiniSleepController.SetHeartRateTrackingEnabled(false);
+  infiniSleepController.SetSettingsChanged();
   UpdateDisplay();
   taskRefresh = lv_task_create(RefreshTaskCallback, 2000, LV_TASK_PRIO_MID, this);
   taskPressesToStopAlarmTimeout =
@@ -298,7 +300,7 @@ void Sleep::DrawSettingsScreen() {
 
   const Setting settings[] = {
     //{"Body Tracking", infiniSleepController.BodyTrackingEnabled()},
-    {"Heart Rate\nTracking", infiniSleepController.HeartRateTrackingEnabled(), 60},
+    // {"Heart Rate\nTracking", infiniSleepController.HeartRateTrackingEnabled(), 60},
     {"Gradual Wake", infiniSleepController.GradualWakeEnabled()},
     //{"Smart Alarm\n(alpha)", infiniSleepController.SmartAlarmEnabled()}
   };
