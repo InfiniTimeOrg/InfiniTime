@@ -39,13 +39,15 @@ namespace Pinetime::Applications {
       void RenderPause();
       void RenderLaps();
 
+      void SetHoursVisible(bool visible);
+
       Pinetime::System::WakeLock wakeLock;
       Controllers::StopWatchController& stopWatchController;
       TickType_t blinkTime = 0;
       static constexpr int displayedLaps = 2;
       lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
       lv_obj_t* lapText;
-      bool isHoursLabelUpdated = false;
+      bool hoursVisible = false;
 
       lv_task_t* taskRefresh;
     };
