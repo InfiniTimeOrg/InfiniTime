@@ -360,7 +360,7 @@ list(APPEND IMAGE_FILES
         )
 list(APPEND SOURCE_FILES
         stdlib.c
-        lfs_config.c
+        lfs_util.c
         FreeRTOS/heap_4_infinitime.c
         BootloaderVersion.cpp
         logging/NrfLogger.cpp
@@ -494,7 +494,7 @@ list(APPEND SOURCE_FILES
 
 list(APPEND RECOVERY_SOURCE_FILES
         stdlib.c
-        lfs_config.c
+        lfs_util.c
         FreeRTOS/heap_4_infinitime.c
 
         BootloaderVersion.cpp
@@ -562,7 +562,7 @@ list(APPEND RECOVERY_SOURCE_FILES
 
 list(APPEND RECOVERYLOADER_SOURCE_FILES
         stdlib.c
-        lfs_config.c
+        lfs_util.c
         FreeRTOS/heap_4_infinitime.c
 
         # FreeRTOS
