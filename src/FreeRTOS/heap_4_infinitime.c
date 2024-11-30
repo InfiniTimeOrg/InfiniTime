@@ -104,6 +104,8 @@ application.  When the bit is free the block is still part of the free heap
 space. */
 static size_t xBlockAllocatedBit = 0;
 
+static size_t xHeapSize = 0;
+
 /*-----------------------------------------------------------*/
 
 void *pvPortMalloc( size_t xWantedSize )
@@ -323,6 +325,12 @@ size_t xPortGetMinimumEverFreeHeapSize( void )
 }
 /*-----------------------------------------------------------*/
 
+size_t xPortGetHeapSize( void )
+{
+ return xHeapSize;
+}
+/*-----------------------------------------------------------*/
+
 void vPortInitialiseBlocks( void )
 {
  /* This just exists to keep the linker quiet. */
@@ -338,6 +346,8 @@ static void prvHeapInit( void )
  size_t uxAddress;
  size_t xTotalHeapSize = ( size_t ) &__StackLimit - ( size_t ) &__HeapLimit;
  uint8_t *pucHeap = ( uint8_t * ) &__HeapLimit;
+
+ xHeapSize = xTotalHeapSize;
 
  /* Ensure the heap starts on a correctly aligned boundary. */
  uxAddress = ( size_t ) pucHeap;
