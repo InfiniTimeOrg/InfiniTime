@@ -149,14 +149,24 @@ void Sleep::DrawAlarmScreen() {
   lv_label_set_text_static(colonLabel, ":");
   lv_obj_align(colonLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
 
+  btnSnooze = lv_btn_create(lv_scr_act(), nullptr);
+  btnSnooze->user_data = this;
+  lv_obj_set_event_cb(btnSnooze, btnEventHandler);
+  lv_obj_set_size(btnSnooze, 115, 50);
+  lv_obj_align(btnSnooze, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lv_obj_set_style_local_bg_color(btnSnooze, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+  txtSnooze = lv_label_create(btnSnooze, nullptr);
+  lv_label_set_text_static(txtSnooze, "ZzZz");
+  lv_obj_set_hidden(btnSnooze, true);
+
   btnStop = lv_btn_create(lv_scr_act(), nullptr);
   btnStop->user_data = this;
   lv_obj_set_event_cb(btnStop, btnEventHandler);
   lv_obj_set_size(btnStop, 115, 50);
   lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
-  lv_obj_set_style_local_bg_color(btnStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
+  lv_obj_set_style_local_bg_color(btnStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   txtStop = lv_label_create(btnStop, nullptr);
-  lv_label_set_text_static(txtStop, "ZzZz");
+  lv_label_set_text_fmt(txtStop, "Stop: %d", infiniSleepController.pushesLeftToStopWakeAlarm);
   lv_obj_set_hidden(btnStop, true);
 
   static constexpr lv_color_t bgColor = Colors::bgAlt;
@@ -358,9 +368,13 @@ void Sleep::DrawSettingsScreen() {
 
 void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    if (obj == btnStop) {
+    if (obj == btnSnooze) {
       StopAlerting();
       SnoozeWakeAlarm();
+      return;
+    }
+    if (obj == btnStop) {
+      StopAlarmPush();
       return;
     }
     if (obj == btnMessage) {
@@ -408,28 +422,35 @@ bool Sleep::OnButtonPushed() {
     return true;
   }
   if (infiniSleepController.IsAlerting()) {
-    if (infiniSleepController.pushesLeftToStopWakeAlarm > 1) {
-      lv_task_reset(taskPressesToStopAlarmTimeout);
-      infiniSleepController.pushesLeftToStopWakeAlarm--;
-      return true;
-    } else {
-      if (infiniSleepController.isSnoozing) {
-        infiniSleepController.RestorePreSnoozeTime();
-      }
-      infiniSleepController.isSnoozing = false;
-      StopAlerting();
-      if (infiniSleepController.IsTrackerEnabled()) {
-        displayState = SleepDisplayState::Info;
-        UpdateDisplay();
-        OnButtonEvent(trackerToggleBtn, LV_EVENT_CLICKED);
-        return true;
-      }
-      displayState = SleepDisplayState::Info;
-      UpdateDisplay();
+    if (StopAlarmPush()) {
       return true;
     }
   }
   return false;
+}
+
+bool Sleep::StopAlarmPush() {
+  if (infiniSleepController.pushesLeftToStopWakeAlarm > 1) {
+    lv_task_reset(taskPressesToStopAlarmTimeout);
+    infiniSleepController.pushesLeftToStopWakeAlarm--;
+    UpdateDisplay();
+    return true;
+  } else {
+    if (infiniSleepController.isSnoozing) {
+      infiniSleepController.RestorePreSnoozeTime();
+    }
+    infiniSleepController.isSnoozing = false;
+    StopAlerting();
+    if (infiniSleepController.IsTrackerEnabled()) {
+      displayState = SleepDisplayState::Info;
+      UpdateDisplay();
+      OnButtonEvent(trackerToggleBtn, LV_EVENT_CLICKED);
+      return true;
+    }
+    displayState = SleepDisplayState::Info;
+    UpdateDisplay();
+    return true;
+  }
 }
 
 bool Sleep::OnTouchEvent(Pinetime::Applications::TouchEvents event) {
@@ -511,7 +532,10 @@ void Sleep::UpdateWakeAlarmTime() {
 
 void Sleep::SetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
+  lv_obj_set_hidden(btnSnooze, false);
   lv_obj_set_hidden(btnStop, false);
+  lv_obj_set_hidden(btnSuggestedAlarm, true);
+  lv_obj_set_hidden(txtSuggestedAlarm, true);
   NRF_LOG_INFO("Alarm is alerting");
   taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, 120 * 1000, LV_TASK_PRIO_MID, this);
   motorController.StartAlarm();
@@ -521,7 +545,10 @@ void Sleep::SetAlerting() {
 
 void Sleep::RedrawSetAlerting() {
   lv_obj_set_hidden(enableSwitch, true);
+  lv_obj_set_hidden(btnSnooze, false);
   lv_obj_set_hidden(btnStop, false);
+  lv_obj_set_hidden(btnSuggestedAlarm, true);
+  lv_obj_set_hidden(txtSuggestedAlarm, true);
   wakeLock.Lock();
 }
 
@@ -533,7 +560,10 @@ void Sleep::StopAlerting(bool setSwitch) {
   }
   wakeLock.Release();
   lv_obj_set_hidden(enableSwitch, false);
+  lv_obj_set_hidden(btnSnooze, true);
   lv_obj_set_hidden(btnStop, true);
+  lv_obj_set_hidden(btnSuggestedAlarm, false);
+  lv_obj_set_hidden(txtSuggestedAlarm, false);
   alreadyAlerting = false;
 }
 

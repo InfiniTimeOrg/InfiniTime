@@ -40,7 +40,7 @@ namespace Pinetime {
         Controllers::MotorController& motorController;
         Controllers::Settings::ClockType clockType;
 
-        lv_obj_t *btnStop, *txtStop, /**btnRecur, *txtRecur,*/ *btnInfo, *enableSwitch;
+        lv_obj_t *btnStop, *btnSnooze, *txtStop, *txtSnooze, /**btnRecur, *txtRecur,*/ *btnInfo, *enableSwitch;
         lv_obj_t *trackerToggleBtn, *trackerToggleLabel;
         lv_obj_t* lblampm = nullptr;
         lv_obj_t* txtMessage = nullptr;
@@ -64,6 +64,7 @@ namespace Pinetime {
         void DrawAlarmScreen();
         void DrawInfoScreen();
         void DrawSettingsScreen();
+        bool StopAlarmPush();
 
         bool alreadyAlerting = false;
 
