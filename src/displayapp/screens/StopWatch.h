@@ -44,7 +44,7 @@ namespace Pinetime::Applications {
       Pinetime::System::WakeLock wakeLock;
       Controllers::StopWatchController& stopWatchController;
       TickType_t blinkTime = 0;
-      static constexpr int displayedLaps = 2;
+      int displayedLaps = 3;
       lv_obj_t *time, *msecTime, *btnPlayPause, *btnStopLap, *txtPlayPause, *txtStopLap;
       lv_obj_t* lapText;
       bool hoursVisible = false;
