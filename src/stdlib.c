@@ -10,23 +10,40 @@ void* malloc(size_t size) {
   return pvPortMalloc(size);
 }
 
+void* __wrap_malloc(size_t size) {
+  return malloc(size);
+}
+
+void* __wrap__malloc_r(struct _reent* reent, size_t size) {
+  (void) reent;
+  return malloc(size);
+}
+
 void free(void* ptr) {
   vPortFree(ptr);
 }
 
+void __wrap_free(void* ptr) {
+  free(ptr);
+}
+
 void* calloc(size_t num, size_t size) {
-  (void)(num);
-  (void)(size);
+  (void) num;
+  (void) size;
   // Not supported
   return NULL;
 }
 
-void *pvPortRealloc(void *ptr, size_t xWantedSize);
-void* realloc( void *ptr, size_t newSize) {
+void* __wrap_calloc(size_t num, size_t size) {
+  return calloc(num, size);
+}
+
+void* pvPortRealloc(void* ptr, size_t xWantedSize);
+
+void* realloc(void* ptr, size_t newSize) {
   return pvPortRealloc(ptr, newSize);
 }
 
-void* _sbrk(int size) {
-  (void)size;
-  return *(void **)0; // Force fault
+void* __wrap_realloc(void* ptr, size_t newSize) {
+  return realloc(ptr, newSize);
 }
