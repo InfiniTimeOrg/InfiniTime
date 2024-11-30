@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <string.h>
 #include <FreeRTOS.h>
 
 // Override malloc() and free() to use the memory manager from FreeRTOS.
