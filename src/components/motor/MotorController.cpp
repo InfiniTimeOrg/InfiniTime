@@ -44,12 +44,12 @@ void MotorController::Init() {
 
 void MotorController::SetMotorStrength(uint8_t strength) {
   // Ensure strength is within bounds (0-100)
-  if (strength > 100)
-    strength = 100;
+  // if (strength > 100)
+  //   strength = 100;
 
   // Map the strength to the PWM value (0-100 -> 0-top_value)
-  pwmValue = (strength * 255) / 100;
-  // pwmValue = strength;
+  // pwmValue = (strength * 255) / 100;
+  pwmValue = strength;
 }
 
 void MotorController::Ring(TimerHandle_t xTimer) {
@@ -66,7 +66,7 @@ void MotorController::AlarmRing(TimerHandle_t xTimer) {
 void MotorController::RunForDuration(uint16_t motorDuration) {
   if (motorDuration > 0 && xTimerChangePeriod(shortVib, pdMS_TO_TICKS(motorDuration), 0) == pdPASS && xTimerStart(shortVib, 0) == pdPASS) {
     if (pwmValue == 0) {
-      SetMotorStrength(100);
+      SetMotorStrength(255);
     }
     // nrf_gpio_pin_clear(PinMap::Motor);
     nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_SEQSTART0); // Restart the PWM sequence with the updated value
@@ -109,7 +109,7 @@ void MotorController::StartWakeAlarm() {
 
 void MotorController::WakeAlarmRing(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  if (motorController->wakeAlarmStrength > 20) {
+  if (motorController->wakeAlarmStrength > 40) {
     motorController->wakeAlarmStrength -= 1;
   }
   if (motorController->wakeAlarmDuration < 500) {
