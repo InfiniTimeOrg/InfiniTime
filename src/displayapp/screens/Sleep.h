@@ -4,9 +4,11 @@
 #include "components/settings/Settings.h"
 #include "displayapp/screens/Screen.h"
 #include "displayapp/widgets/Counter.h"
+#include "displayapp/widgets/PageIndicator.h"
 #include "displayapp/Controllers.h"
 #include "systemtask/SystemTask.h"
 #include "systemtask/WakeLock.h"
+#include "displayapp/DisplayApp.h"
 #include "Symbols.h"
 
 namespace Pinetime {
@@ -17,7 +19,8 @@ namespace Pinetime {
         explicit Sleep(Controllers::InfiniSleepController& infiniSleepController,
                        Controllers::Settings::ClockType clockType,
                        System::SystemTask& systemTask,
-                       Controllers::MotorController& motorController);
+                       Controllers::MotorController& motorController,
+                       DisplayApp& displayApp);
         ~Sleep() override;
         void Refresh() override;
         void SetAlerting();
@@ -39,6 +42,7 @@ namespace Pinetime {
         System::WakeLock wakeLock;
         Controllers::MotorController& motorController;
         Controllers::Settings::ClockType clockType;
+        DisplayApp& displayApp;
 
         lv_obj_t *btnStop, *btnSnooze, *txtStop, *txtSnooze, /**btnRecur, *txtRecur,*/ *btnInfo, *enableSwitch;
         lv_obj_t *trackerToggleBtn, *trackerToggleLabel;
@@ -75,6 +79,10 @@ namespace Pinetime {
         lv_obj_t* label_total_sleep;
         lv_obj_t* label_sleep_cycles;
         lv_obj_t *btnSuggestedAlarm, *txtSuggestedAlarm, *iconSuggestedAlarm;
+
+        Widgets::PageIndicator pageIndicator1 = Widgets::PageIndicator(0,3);
+        Widgets::PageIndicator pageIndicator2 = Widgets::PageIndicator(1,3);
+        Widgets::PageIndicator pageIndicator3 = Widgets::PageIndicator(2,3);
       };
     }
 
@@ -87,7 +95,8 @@ namespace Pinetime {
         return new Screens::Sleep(controllers.infiniSleepController,
                                   controllers.settingsController.GetClockType(),
                                   *controllers.systemTask,
-                                  controllers.motorController);
+                                  controllers.motorController,
+                                  *controllers.displayApp);
       }
     };
   }
