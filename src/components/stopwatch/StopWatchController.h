@@ -56,7 +56,7 @@ namespace Pinetime {
       TickType_t timeElapsedPreviously;
 
       // Maximum number of stored laps
-      static constexpr int histSize = 2;
+      static constexpr int histSize = 4;
       // Value at which lap numbers wrap around to zero
       static constexpr int lapNumberBoundary = 1000;
       // Lap storage
