@@ -29,7 +29,7 @@ namespace Pinetime {
         void StopAlerting(bool setSwitch = true);
         void SnoozeWakeAlarm();
         void UpdateDisplay();
-        enum class SleepDisplayState { Alarm, Info, Settings };
+        enum class SleepDisplayState { Info, Alarm, Settings };
         SleepDisplayState displayState = SleepDisplayState::Info;
         SleepDisplayState lastDisplayState = SleepDisplayState::Info;
 
