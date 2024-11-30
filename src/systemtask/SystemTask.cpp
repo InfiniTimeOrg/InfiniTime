@@ -231,7 +231,7 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::WakeAlarmTriggered);
           break;
         case Messages::SetOffGradualWake:
-          //GoToRunning();
+          // GoToRunning();
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::GradualWakeTriggered);
           break;
         case Messages::BleConnected:
