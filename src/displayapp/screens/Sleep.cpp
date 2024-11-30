@@ -405,6 +405,7 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     if (obj == btnSnooze) {
       StopAlerting();
+      UpdateDisplay();
       SnoozeWakeAlarm();
       return;
     }
