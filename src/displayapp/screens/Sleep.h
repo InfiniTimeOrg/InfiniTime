@@ -74,7 +74,7 @@ namespace Pinetime {
         lv_obj_t* label_gradual_wake;
         lv_obj_t* label_total_sleep;
         lv_obj_t* label_sleep_cycles;
-        lv_obj_t *btnSuggestedAlarm, *txtSuggestedAlarm;
+        lv_obj_t *btnSuggestedAlarm, *txtSuggestedAlarm, *iconSuggestedAlarm;
       };
     }
 

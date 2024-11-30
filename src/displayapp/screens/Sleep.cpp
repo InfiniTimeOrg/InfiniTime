@@ -184,10 +184,10 @@ void Sleep::DrawAlarmScreen() {
   lv_label_set_text_static(txtSuggestedAlarm, "Auto");
 
 
-  lv_obj_t* icon = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_color(icon, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_obj_align(icon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -50, -10);
-  lv_label_set_text_static(icon, Symbols::sun);
+  iconSuggestedAlarm = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_color(iconSuggestedAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  lv_obj_align(iconSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -50, -10);
+  lv_label_set_text_static(iconSuggestedAlarm, Symbols::sun);
 
 
   enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
@@ -536,6 +536,7 @@ void Sleep::SetAlerting() {
   lv_obj_set_hidden(btnStop, false);
   lv_obj_set_hidden(btnSuggestedAlarm, true);
   lv_obj_set_hidden(txtSuggestedAlarm, true);
+  lv_obj_set_hidden(iconSuggestedAlarm, true);
   NRF_LOG_INFO("Alarm is alerting");
   taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, 120 * 1000, LV_TASK_PRIO_MID, this);
   motorController.StartAlarm();
@@ -549,6 +550,7 @@ void Sleep::RedrawSetAlerting() {
   lv_obj_set_hidden(btnStop, false);
   lv_obj_set_hidden(btnSuggestedAlarm, true);
   lv_obj_set_hidden(txtSuggestedAlarm, true);
+  lv_obj_set_hidden(iconSuggestedAlarm, true);
   wakeLock.Lock();
 }
 
@@ -564,6 +566,7 @@ void Sleep::StopAlerting(bool setSwitch) {
   lv_obj_set_hidden(btnStop, true);
   lv_obj_set_hidden(btnSuggestedAlarm, false);
   lv_obj_set_hidden(txtSuggestedAlarm, false);
+  lv_obj_set_hidden(iconSuggestedAlarm, false);
   alreadyAlerting = false;
 }
 
