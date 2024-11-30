@@ -28,10 +28,11 @@ void __wrap_free(void* ptr) {
 }
 
 void* calloc(size_t num, size_t size) {
-  (void) num;
-  (void) size;
-  // Not supported
-  return NULL;
+  void *ptr = malloc(num * size);
+  if (ptr) {
+    memset(ptr, 0, num * size);
+  }
+  return ptr;
 }
 
 void* __wrap_calloc(size_t num, size_t size) {
