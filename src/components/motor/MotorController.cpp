@@ -39,6 +39,7 @@ void MotorController::Init() {
   shortVib = xTimerCreate("shortVib", 1, pdFALSE, nullptr, StopMotor);
   longVib = xTimerCreate("longVib", pdMS_TO_TICKS(1000), pdTRUE, this, Ring);
   alarmVib = xTimerCreate("alarmVib", pdMS_TO_TICKS(500), pdTRUE, this, AlarmRing);
+  wakeAlarmVib = xTimerCreate("wakeAlarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, WakeAlarmRing);
 }
 
 void MotorController::SetMotorStrength(uint8_t strength) {
@@ -48,6 +49,7 @@ void MotorController::SetMotorStrength(uint8_t strength) {
 
   // Map the strength to the PWM value (0-100 -> 0-top_value)
   pwmValue = (strength * 255) / 100;
+  // pwmValue = strength;
 }
 
 void MotorController::Ring(TimerHandle_t xTimer) {
@@ -63,6 +65,9 @@ void MotorController::AlarmRing(TimerHandle_t xTimer) {
 
 void MotorController::RunForDuration(uint16_t motorDuration) {
   if (motorDuration > 0 && xTimerChangePeriod(shortVib, pdMS_TO_TICKS(motorDuration), 0) == pdPASS && xTimerStart(shortVib, 0) == pdPASS) {
+    if (pwmValue == 0) {
+      SetMotorStrength(100);
+    }
     // nrf_gpio_pin_clear(PinMap::Motor);
     nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_SEQSTART0); // Restart the PWM sequence with the updated value
   }
@@ -89,6 +94,33 @@ void MotorController::StartAlarm() {
 
 void MotorController::StopAlarm() {
   xTimerStop(alarmVib, 0);
+  nrf_pwm_task_trigger(NRF_PWM0, NRF_PWM_TASK_STOP); // Stop the PWM sequence
+  pwmValue = 0;                                      // Reset the PWM value
+  nrf_gpio_pin_set(PinMap::Motor);
+}
+
+void MotorController::StartWakeAlarm() {
+  wakeAlarmStrength = 80;
+  wakeAlarmDuration = 100;
+  SetMotorStrength(wakeAlarmStrength);
+  RunForDuration(wakeAlarmDuration);
+  xTimerStart(wakeAlarmVib, 0);
+}
+
+void MotorController::WakeAlarmRing(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  if (motorController->wakeAlarmStrength > 20) {
+    motorController->wakeAlarmStrength -= 1;
+  }
+  if (motorController->wakeAlarmDuration < 500) {
+    motorController->wakeAlarmDuration += 6;
+  }
+  motorController->SetMotorStrength(motorController->wakeAlarmStrength);
+  motorController->RunForDuration(motorController->wakeAlarmDuration);
+}
+
+void MotorController::StopWakeAlarm() {
+  xTimerStop(wakeAlarmVib, 0);
   nrf_pwm_task_trigger(NRF_PWM0, NRF_PWM_TASK_STOP); // Stop the PWM sequence
   pwmValue = 0;                                      // Reset the PWM value
   nrf_gpio_pin_set(PinMap::Motor);

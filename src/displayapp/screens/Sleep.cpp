@@ -539,7 +539,7 @@ void Sleep::SetAlerting() {
   lv_obj_set_hidden(iconSuggestedAlarm, true);
   NRF_LOG_INFO("Alarm is alerting");
   taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, 120 * 1000, LV_TASK_PRIO_MID, this);
-  motorController.StartAlarm();
+  motorController.StartWakeAlarm();
   wakeLock.Lock();
   alreadyAlerting = true;
 }
@@ -556,7 +556,7 @@ void Sleep::RedrawSetAlerting() {
 
 void Sleep::StopAlerting(bool setSwitch) {
   infiniSleepController.StopAlerting();
-  motorController.StopAlarm();
+  motorController.StopWakeAlarm();
   if (setSwitch) {
     SetSwitchState(LV_ANIM_OFF);
   }
