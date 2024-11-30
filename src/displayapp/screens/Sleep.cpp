@@ -68,7 +68,11 @@ Sleep::Sleep(Controllers::InfiniSleepController& infiniSleepController,
              System::SystemTask& systemTask,
              Controllers::MotorController& motorController,
              DisplayApp& displayApp)
-  : infiniSleepController {infiniSleepController}, wakeLock(systemTask), motorController {motorController}, clockType {clockType}, displayApp {displayApp} {
+  : infiniSleepController {infiniSleepController},
+    wakeLock(systemTask),
+    motorController {motorController},
+    clockType {clockType},
+    displayApp {displayApp} {
 
   infiniSleepController.SetHeartRateTrackingEnabled(false);
   infiniSleepController.SetSettingsChanged();
@@ -192,19 +196,17 @@ void Sleep::DrawAlarmScreen() {
   lv_obj_set_event_cb(btnSuggestedAlarm, btnEventHandler);
   lv_obj_set_size(btnSuggestedAlarm, 115, 50);
   lv_obj_align(btnSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  //txtSuggestedAlarm = lv_label_create(btnSuggestedAlarm, nullptr);
-  //lv_label_set_text_static(txtSuggestedAlarm, "Use Sugg.\nAlarmTime");
+  // txtSuggestedAlarm = lv_label_create(btnSuggestedAlarm, nullptr);
+  // lv_label_set_text_static(txtSuggestedAlarm, "Use Sugg.\nAlarmTime");
 
   txtSuggestedAlarm = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(txtSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -15, -10);
   lv_label_set_text_static(txtSuggestedAlarm, "Auto");
 
-
   iconSuggestedAlarm = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(iconSuggestedAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_align(iconSuggestedAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -50, -10);
   lv_label_set_text_static(iconSuggestedAlarm, Symbols::sun);
-
 
   enableSwitch = lv_switch_create(lv_scr_act(), nullptr);
   enableSwitch->user_data = this;
@@ -290,9 +292,9 @@ void Sleep::DrawInfoScreen() {
                             infiniSleepController.GetWakeAlarm().minutes);
     } else {
       lv_label_set_text_fmt(label_alarm_time,
-                      "Alarm at: %02d:%02d",
-                      (infiniSleepController.GetWakeAlarm().hours % 12 == 0) ? 12 : infiniSleepController.GetWakeAlarm().hours % 12,
-                      infiniSleepController.GetWakeAlarm().minutes);
+                            "Alarm at: %02d:%02d",
+                            (infiniSleepController.GetWakeAlarm().hours % 12 == 0) ? 12 : infiniSleepController.GetWakeAlarm().hours % 12,
+                            infiniSleepController.GetWakeAlarm().minutes);
     }
   } else {
     lv_label_set_text_static(label_alarm_time, "Alarm is not set.");
@@ -305,8 +307,7 @@ void Sleep::DrawInfoScreen() {
 
   // Gradual Wake info
   label_gradual_wake = lv_label_create(lv_scr_act(), nullptr);
-  if (infiniSleepController.GetInfiniSleepSettings().graddualWake &&
-      infiniSleepController.gradualWakeStep >= 0) {
+  if (infiniSleepController.GetInfiniSleepSettings().graddualWake && infiniSleepController.gradualWakeStep >= 0) {
     lv_label_set_text_fmt(label_gradual_wake, "Gradual Wake: ON");
   } else {
     lv_label_set_text_static(label_gradual_wake, "Gradual Wake: OFF");

@@ -230,9 +230,9 @@ void InfiniSleepController::UpdateBPM() {
   NRF_LOG_INFO("BPM: %d at %02d:%02d:%02d", rollingBpm, hours, minutes, seconds);
 
   // Write data to CSV
-  //const int motion = 0; // Placeholder for motion data
-  //std::tuple<int, int, int, int, int> data[1] = {std::make_tuple(hours, minutes, seconds, bpm, motion)};
-  //WriteDataCSV(TRACKER_DATA_FILE_NAME, data, 1);
+  // const int motion = 0; // Placeholder for motion data
+  // std::tuple<int, int, int, int, int> data[1] = {std::make_tuple(hours, minutes, seconds, bpm, motion)};
+  // WriteDataCSV(TRACKER_DATA_FILE_NAME, data, 1);
 }
 
 void InfiniSleepController::WriteDataCSV(const char* fileName, const std::tuple<int, int, int, int, int>* data, int dataSize) const {

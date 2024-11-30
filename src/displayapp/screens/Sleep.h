@@ -80,9 +80,9 @@ namespace Pinetime {
         lv_obj_t* label_sleep_cycles;
         lv_obj_t *btnSuggestedAlarm, *txtSuggestedAlarm, *iconSuggestedAlarm;
 
-        Widgets::PageIndicator pageIndicator1 = Widgets::PageIndicator(0,3);
-        Widgets::PageIndicator pageIndicator2 = Widgets::PageIndicator(1,3);
-        Widgets::PageIndicator pageIndicator3 = Widgets::PageIndicator(2,3);
+        Widgets::PageIndicator pageIndicator1 = Widgets::PageIndicator(0, 3);
+        Widgets::PageIndicator pageIndicator2 = Widgets::PageIndicator(1, 3);
+        Widgets::PageIndicator pageIndicator3 = Widgets::PageIndicator(2, 3);
       };
     }
 
