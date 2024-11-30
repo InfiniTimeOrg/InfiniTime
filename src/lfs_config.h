@@ -7,7 +7,7 @@
 #define LFS_WARN(fmt, ...) NRF_LOG_WARNING("[LFS] %s:%d:warn: " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 #define LFS_ERROR(fmt, ...) NRF_LOG_ERROR("[LFS] %s:%d:error: " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 
-// ====== Everything below this line is copied from lfs_utils.h ======
+// ====== Everything below this line is copied from lfs_util.h except for the last #undef LFS_CONFIG ======
 
 // System includes
 #include <stdint.h>
@@ -229,3 +229,5 @@ static inline void lfs_free(void *p) {
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
+
+#undef LFS_CONFIG
