@@ -57,7 +57,7 @@ StopWatch::StopWatch(System::SystemTask& systemTask, StopWatchController& stopWa
 
   lapText = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(lapText, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_label_set_text_static(lapText, "\n");
+  lv_label_set_text_static(lapText, "");
   lv_label_set_long_mode(lapText, LV_LABEL_LONG_BREAK);
   lv_label_set_align(lapText, LV_LABEL_ALIGN_CENTER);
   lv_obj_set_width(lapText, LV_HOR_RES_MAX);
@@ -170,24 +170,23 @@ void StopWatch::RenderPause() {
 
 void StopWatch::RenderLaps() {
   lv_label_set_text(lapText, "");
-  for (int i = 0; i < displayedLaps; i++) {
+  for (int i = displayedLaps - 1; i >= 0; i--) {
     std::optional<LapInfo> lap = stopWatchController.GetLapFromHistory(i);
 
     if (lap) {
       TimeSeparated laptime = ConvertTicksToTimeSegments(lap->timeSinceStart);
       char buffer[19];
       if (laptime.hours == 0) {
-        snprintf(buffer, sizeof(buffer), "#%-3d     %2d:%02d.%02d\n",
+        snprintf(buffer, sizeof(buffer), "\n#%-3d     %2d:%02d.%02d",
           lap->number, laptime.mins, laptime.secs, laptime.hundredths);
       } else {
-        snprintf(buffer, sizeof(buffer), "#%-3d %3d:%02d:%02d.%02d\n",
+        snprintf(buffer, sizeof(buffer), "\n#%-3d %3d:%02d:%02d.%02d",
           lap->number, laptime.hours, laptime.mins, laptime.secs, laptime.hundredths);
       }
       lv_label_ins_text(lapText, LV_LABEL_POS_LAST, buffer);
-    } else {
-      lv_label_ins_text(lapText, LV_LABEL_POS_LAST, "\n");
     }
   }
+  lv_obj_realign(lapText);
 }
 
 void StopWatch::SetHoursVisible(bool visible) {
@@ -196,7 +195,11 @@ void StopWatch::SetHoursVisible(bool visible) {
     lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font);
     lv_obj_set_height(time, font->line_height);
     lv_obj_realign(msecTime);
+    displayedLaps = visible ? 4 : 3;
     hoursVisible = visible;
+    if (stopWatchController.GetLapFromHistory(0)) {
+      RenderLaps();
+    }
   }
 }
 
