@@ -143,7 +143,7 @@ void InfiniSleepController::ScheduleWakeAlarm() {
   }
 
   // Calculate the period for the gradualWakeTimer
-  if (infiniSleepSettings.graddualWake && gradualWakeStep > 0) {
+  if (isSnoozing != true && infiniSleepSettings.graddualWake && gradualWakeStep > 0) {
     int64_t gradualWakePeriod = ((secondsToWakeAlarm - gradualWakeSteps[-1 + gradualWakeStep])) * (configTICK_RATE_HZ);
     xTimerChangePeriod(gradualWakeTimer, gradualWakePeriod, 0);
     xTimerStart(gradualWakeTimer, 0);

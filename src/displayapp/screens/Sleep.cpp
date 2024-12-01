@@ -134,60 +134,72 @@ void Sleep::UpdateDisplay() {
 }
 
 void Sleep::DrawAlarmScreen() {
-  if (!infiniSleepController.IsAlerting()) {
-    hourCounter.Create();
-    lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
-    if (clockType == Controllers::Settings::ClockType::H12) {
-      hourCounter.EnableTwelveHourMode();
+  hourCounter.Create();
+  lv_obj_align(hourCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_LEFT, 0, 0);
+  if (clockType == Controllers::Settings::ClockType::H12) {
+    hourCounter.EnableTwelveHourMode();
 
-      lblampm = lv_label_create(lv_scr_act(), nullptr);
-      lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
-      lv_label_set_text_static(lblampm, "AM");
-      lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
-      lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
-    }
-    hourCounter.SetValue(infiniSleepController.GetWakeAlarm().hours);
-    hourCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
+    lblampm = lv_label_create(lv_scr_act(), nullptr);
+    lv_obj_set_style_local_text_font(lblampm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+    lv_label_set_text_static(lblampm, "AM");
+    lv_label_set_align(lblampm, LV_LABEL_ALIGN_CENTER);
+    lv_obj_align(lblampm, lv_scr_act(), LV_ALIGN_CENTER, 0, 30);
+  }
+  hourCounter.SetValue(infiniSleepController.GetWakeAlarm().hours);
+  hourCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
-    minuteCounter.Create();
-    lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
-    minuteCounter.SetValue(infiniSleepController.GetWakeAlarm().minutes);
-    minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
+  minuteCounter.Create();
+  lv_obj_align(minuteCounter.GetObject(), nullptr, LV_ALIGN_IN_TOP_RIGHT, 0, 0);
+  minuteCounter.SetValue(infiniSleepController.GetWakeAlarm().minutes);
+  minuteCounter.SetValueChangedEventCallback(this, ValueChangedHandler);
 
-    lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
-    lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
-    lv_label_set_text_static(colonLabel, ":");
-    lv_obj_align(colonLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
-  } else {
+  lv_obj_t* colonLabel = lv_label_create(lv_scr_act(), nullptr);
+  lv_obj_set_style_local_text_font(colonLabel, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+  lv_label_set_text_static(colonLabel, ":");
+  lv_obj_align(colonLabel, lv_scr_act(), LV_ALIGN_CENTER, 0, -29);
+
+  if (infiniSleepController.IsAlerting()) {
+    lv_obj_set_hidden(hourCounter.GetObject(), true);
+    lv_obj_set_hidden(minuteCounter.GetObject(), true);
+    lv_obj_set_hidden(colonLabel, true);
+
     lv_obj_t* lblTime = lv_label_create(lv_scr_act(), nullptr);
     if (clockType == Controllers::Settings::ClockType::H24) {
       lv_label_set_text_fmt(lblTime, "%02d:%02d", infiniSleepController.GetCurrentHour(), infiniSleepController.GetCurrentMinute());
     } else {
-      lv_label_set_text_fmt(lblTime, "%02d:%02d", infiniSleepController.GetCurrentHour() % 12, infiniSleepController.GetCurrentMinute());
+      lv_label_set_text_fmt(lblTime, "%02d:%02d", (infiniSleepController.GetCurrentHour() % 12 == 0) ? 12 : infiniSleepController.GetCurrentHour() % 12, infiniSleepController.GetCurrentMinute());
     }
-    lv_obj_align(lblTime, lv_scr_act(), LV_ALIGN_CENTER, -90, -50);
+    lv_obj_align(lblTime, lv_scr_act(), LV_ALIGN_CENTER, -87, -100);
     lv_obj_set_style_local_text_color(lblTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-    lv_obj_set_style_local_text_font(lblTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
+    lv_label_set_align(lblTime, LV_LABEL_ALIGN_CENTER);
+    lv_obj_set_style_local_text_font(lblTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_76);
+
+    lv_obj_t* lblWaketxt = lv_label_create(lv_scr_act(), nullptr);
+    lv_label_set_text_static(lblWaketxt, "Wake Up!");
+    lv_obj_align(lblWaketxt, lv_scr_act(), LV_ALIGN_CENTER, 0, -22);
+    lv_label_set_align(lblWaketxt, LV_LABEL_ALIGN_CENTER);
+    lv_obj_set_style_local_text_font(lblWaketxt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_bold_20);
+    lv_obj_set_style_local_text_color(lblWaketxt, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   }
 
   btnSnooze = lv_btn_create(lv_scr_act(), nullptr);
   btnSnooze->user_data = this;
   lv_obj_set_event_cb(btnSnooze, btnEventHandler);
-  lv_obj_set_size(btnSnooze, 115, 100);
-  lv_obj_align(btnSnooze, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lv_obj_set_size(btnSnooze, 200, 63);
+  lv_obj_align(btnSnooze, lv_scr_act(), LV_ALIGN_CENTER, 0, 28);
   lv_obj_set_style_local_bg_color(btnSnooze, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_ORANGE);
   txtSnooze = lv_label_create(btnSnooze, nullptr);
-  lv_label_set_text_static(txtSnooze, "ZzZz");
+  lv_label_set_text_static(txtSnooze, "Snooze");
   lv_obj_set_hidden(btnSnooze, true);
 
   btnStop = lv_btn_create(lv_scr_act(), nullptr);
   btnStop->user_data = this;
   lv_obj_set_event_cb(btnStop, btnEventHandler);
-  lv_obj_set_size(btnStop, 115, 50);
-  lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lv_obj_set_size(btnStop, 130, 50);
+  lv_obj_align(btnStop, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, 0);
   lv_obj_set_style_local_bg_color(btnStop, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
   txtStop = lv_label_create(btnStop, nullptr);
-  lv_label_set_text_fmt(txtStop, "Stop: %d", infiniSleepController.pushesLeftToStopWakeAlarm);
+  lv_label_set_text_fmt(txtStop, "Stop: %d/%d", PUSHES_TO_STOP_ALARM - infiniSleepController.pushesLeftToStopWakeAlarm, PUSHES_TO_STOP_ALARM);
   lv_obj_set_hidden(btnStop, true);
 
   static constexpr lv_color_t bgColor = Colors::bgAlt;
@@ -234,9 +246,15 @@ void Sleep::DrawAlarmScreen() {
 void Sleep::DrawInfoScreen() {
   lv_obj_t* lblTime = lv_label_create(lv_scr_act(), nullptr);
   if (clockType == Controllers::Settings::ClockType::H24) {
-    lv_label_set_text_fmt(lblTime, "%02d:%02d", infiniSleepController.GetCurrentHour(), infiniSleepController.GetCurrentMinute());
+    lv_label_set_text_fmt(lblTime,
+                          "%02d:%02d",
+                          infiniSleepController.GetCurrentHour(),
+                          infiniSleepController.GetCurrentMinute());
   } else {
-    lv_label_set_text_fmt(lblTime, "%02d:%02d", infiniSleepController.GetCurrentHour() % 12, infiniSleepController.GetCurrentMinute());
+    lv_label_set_text_fmt(lblTime,
+                          "%02d:%02d",
+                          (infiniSleepController.GetCurrentHour() % 12 == 0) ? 12 : infiniSleepController.GetCurrentHour() % 12,
+                          infiniSleepController.GetCurrentMinute());
   }
   lv_obj_align(lblTime, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 5);
   lv_obj_set_style_local_text_color(lblTime, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
@@ -276,7 +294,7 @@ void Sleep::DrawInfoScreen() {
     } else {
       lv_label_set_text_fmt(label_start_time,
                             "Began at: %02d:%02d",
-                            infiniSleepController.prevSessionData.startTimeHours % 12,
+                            (infiniSleepController.prevSessionData.startTimeHours % 12 == 0) ? 12 : infiniSleepController.prevSessionData.startTimeHours % 12,
                             infiniSleepController.prevSessionData.startTimeMinutes);
     }
     lv_obj_align(label_start_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
