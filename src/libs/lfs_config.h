@@ -7,7 +7,10 @@
 #define LFS_WARN(fmt, ...) NRF_LOG_WARNING("[LFS] %s:%d:warn: " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 #define LFS_ERROR(fmt, ...) NRF_LOG_ERROR("[LFS] %s:%d:error: " fmt "\n", __FILE__, __LINE__, ##__VA_ARGS__)
 
-// ====== Everything below this line is copied from lfs_util.h except for the last #undef LFS_CONFIG ======
+// This is required in order for the CRC implementation in littlefs/lfs_util.c to be compiled
+#undef LFS_CONFIG
+
+// ====== Everything below this line is copied from lfs_util.h ======
 
 // System includes
 #include <stdint.h>
@@ -229,6 +232,3 @@ static inline void lfs_free(void *p) {
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
-
-// This is required in order for the CRC implementation in littlefs/lfs_util.c to be compiled
-#undef LFS_CONFIG
