@@ -230,4 +230,5 @@ static inline void lfs_free(void *p) {
 } /* extern "C" */
 #endif
 
+// This is required in order for the CRC implementation in littlefs/lfs_util.c to be compiled
 #undef LFS_CONFIG
