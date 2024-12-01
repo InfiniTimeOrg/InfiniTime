@@ -8,7 +8,6 @@
 #include "displayapp/Controllers.h"
 #include "systemtask/SystemTask.h"
 #include "systemtask/WakeLock.h"
-#include "displayapp/DisplayApp.h"
 #include "Symbols.h"
 
 namespace Pinetime {
