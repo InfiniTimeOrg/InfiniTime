@@ -54,6 +54,7 @@ static void SnoozeAlarmTaskCallback(lv_task_t* task) {
   auto* screen = static_cast<Sleep*>(task->user_data);
   lv_task_set_prio(task, LV_TASK_PRIO_OFF);
   screen->StopAlerting(false);
+  screen->UpdateDisplay();
   screen->SnoozeWakeAlarm();
 }
 
