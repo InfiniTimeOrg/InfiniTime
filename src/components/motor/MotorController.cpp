@@ -94,7 +94,7 @@ void MotorController::StartAlarm() {
 
 void MotorController::StopAlarm() {
   xTimerStop(alarmVib, 0);
-  nrf_pwm_task_trigger(NRF_PWM0, NRF_PWM_TASK_STOP); // Stop the PWM sequence
+  nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_STOP); // Stop the PWM sequence
   pwmValue = 0;                                      // Reset the PWM value
   nrf_gpio_pin_set(PinMap::Motor);
 }
@@ -121,7 +121,7 @@ void MotorController::WakeAlarmRing(TimerHandle_t xTimer) {
 
 void MotorController::StopWakeAlarm() {
   xTimerStop(wakeAlarmVib, 0);
-  nrf_pwm_task_trigger(NRF_PWM0, NRF_PWM_TASK_STOP); // Stop the PWM sequence
+  nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_STOP); // Stop the PWM sequence
   pwmValue = 0;                                      // Reset the PWM value
   nrf_gpio_pin_set(PinMap::Motor);
 }
