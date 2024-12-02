@@ -46,6 +46,9 @@ namespace Pinetime {
 
         void Refresh() override;
 
+        void UpdateWeatherPosition();
+        void DrawWeather();
+
         static bool IsAvailable(Pinetime::Controllers::FS& filesystem);
 
       private:
@@ -95,9 +98,11 @@ namespace Pinetime {
         lv_obj_t* notificationIcon;
         lv_obj_t* line_icons;
         lv_obj_t* btnWeather;
+        lv_obj_t* btnSegment;
         lv_obj_t* btnClose;
         lv_obj_t* weatherIcon;
         lv_obj_t* label_temperature;
+        lv_obj_t* label_temperature_segment;
 
         BatteryIcon batteryIcon;
 
@@ -114,8 +119,11 @@ namespace Pinetime {
         lv_font_t* font_dot40 = nullptr;
         lv_font_t* font_segment40 = nullptr;
         lv_font_t* font_segment115 = nullptr;
+        lv_font_t* font_teko_light = nullptr;
 
         void CloseMenu();
+        void HandleWeatherButton();
+        void HandleSegmentButton();
       };
     }
 

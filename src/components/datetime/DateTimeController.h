@@ -41,7 +41,7 @@ namespace Pinetime {
        *
        * used to update difference between utc and local time (see UtcOffset())
        *
-       * parameters are in quarters of an our. Following the BLE CTS specification,
+       * parameters are in quarters of an hour. Following the BLE CTS specification,
        * timezone is expected to be constant over DST which will be reported in
        * dst field.
        */
