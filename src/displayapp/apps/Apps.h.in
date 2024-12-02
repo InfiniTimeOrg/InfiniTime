@@ -42,6 +42,8 @@ namespace Pinetime {
       SettingChimes,
       SettingShakeThreshold,
       SettingBluetooth,
+      SettingNotifVibration,
+      SettingChimeVibration,
       Error
     };
 
@@ -50,6 +52,7 @@ namespace Pinetime {
       Analog,
       PineTimeStyle,
       Terminal,
+      Json,
       Infineat,
       CasioStyleG7710
     };
