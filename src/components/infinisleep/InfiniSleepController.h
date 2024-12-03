@@ -192,6 +192,7 @@ namespace Pinetime {
         bool smartAlarm = false;
         uint8_t sleepCycleDuration = SLEEP_CYCLE_DURATION;
         uint8_t desiredCycles = DESIRED_CYCLES;
+        uint8_t motorStrength = 100;
       };
 
       InfiniSleepSettings infiniSleepSettings;

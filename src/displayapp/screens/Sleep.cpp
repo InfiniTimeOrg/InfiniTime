@@ -56,6 +56,8 @@ static void SnoozeAlarmTaskCallback(lv_task_t* task) {
   screen->StopAlerting(false);
   screen->UpdateDisplay();
   screen->SnoozeWakeAlarm();
+  screen->displayState = Sleep::SleepDisplayState::Info;
+  screen->UpdateDisplay();
 }
 
 static void PressesToStopAlarmTimeoutCallback(lv_task_t* task) {
@@ -377,7 +379,7 @@ void Sleep::DrawSettingsScreen() {
     //{"Smart Alarm\n(alpha)", infiniSleepController.SmartAlarmEnabled()}
   };
 
-  int y_offset = 50;
+  int y_offset = 30;
   for (const auto& setting : settings) {
 
     lv_obj_t* checkbox = lv_checkbox_create(lv_scr_act(), nullptr);
@@ -421,6 +423,51 @@ void Sleep::DrawSettingsScreen() {
   infiniSleepController.infiniSleepSettings.sleepCycleDuration = 90;
   infiniSleepController.SetSettingsChanged();
 
+  y_offset += 60; // Adjust the offset for the next UI element
+
+  lv_obj_t* lblMotorStrength = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_text_static(lblMotorStrength, "Vibration\nStrength");
+  lv_obj_align(lblMotorStrength, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
+
+  lv_obj_t* btnMotorStrength = lv_btn_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(btnMotorStrength, 100, 50);
+  lv_obj_align(btnMotorStrength, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 130, y_offset);
+  btnMotorStrength->user_data = this;
+  lv_obj_set_event_cb(btnMotorStrength, [](lv_obj_t* obj, lv_event_t e) {
+    if (e == LV_EVENT_CLICKED) {
+      auto* screen = static_cast<Sleep*>(obj->user_data);
+      uint8_t value = screen->infiniSleepController.infiniSleepSettings.motorStrength;
+      value += 25;
+      if (value > 200) value = 100;
+      screen->infiniSleepController.infiniSleepSettings.motorStrength = value;
+      screen->infiniSleepController.SetSettingsChanged();
+      lv_label_set_text_fmt(lv_obj_get_child(obj, nullptr), "%d%", value);
+      screen->motorController.infiniSleepMotorStrength = value;
+    }
+  });
+
+  lv_obj_t* lblMotorStrengthValue = lv_label_create(btnMotorStrength, nullptr);
+  lv_label_set_text_fmt(lblMotorStrengthValue, "%d%", infiniSleepController.infiniSleepSettings.motorStrength);
+  motorController.infiniSleepMotorStrength = infiniSleepController.infiniSleepSettings.motorStrength;
+  lv_obj_align(lblMotorStrengthValue, nullptr, LV_ALIGN_CENTER, 0, 0);
+
+  y_offset += 60; // Adjust the offset for the next UI element
+
+  lv_obj_t* btnTestMotorGradual = lv_btn_create(lv_scr_act(), nullptr);
+  lv_obj_set_size(btnTestMotorGradual, 220, 50);
+  lv_obj_align(btnTestMotorGradual, lv_scr_act(), LV_ALIGN_IN_TOP_LEFT, 10, y_offset);
+  btnTestMotorGradual->user_data = this;
+  lv_obj_set_event_cb(btnTestMotorGradual, [](lv_obj_t* obj, lv_event_t e) {
+    if (e == LV_EVENT_CLICKED) {
+      auto* screen = static_cast<Sleep*>(obj->user_data);
+      screen->motorController.GradualWakeBuzz();
+    }
+  });
+
+  lv_obj_t* txtTestMotorGradual = lv_label_create(btnTestMotorGradual, nullptr);
+  lv_label_set_text_static(txtTestMotorGradual, "Test Motor");
+  lv_obj_align(txtTestMotorGradual, nullptr, LV_ALIGN_CENTER, 0, 0);
+
   y_offset += 70; // Adjust the offset for the next UI element
 }
 
@@ -430,6 +477,8 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       StopAlerting();
       UpdateDisplay();
       SnoozeWakeAlarm();
+      displayState = SleepDisplayState::Info;
+      UpdateDisplay();
       return;
     }
     if (obj == btnStop) {
@@ -446,6 +495,10 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       } else {
         infiniSleepController.DisableWakeAlarm();
       }
+      if (infiniSleepController.isSnoozing) {
+        infiniSleepController.RestorePreSnoozeTime();
+      }
+      infiniSleepController.isSnoozing = false;
       return;
     }
     if (obj == trackerToggleBtn) {
@@ -484,6 +537,11 @@ bool Sleep::OnButtonPushed() {
     if (StopAlarmPush()) {
       return true;
     }
+  }
+  if (displayState != SleepDisplayState::Info) {
+    displayState = SleepDisplayState::Info;
+    UpdateDisplay();
+    return true;
   }
   return false;
 }

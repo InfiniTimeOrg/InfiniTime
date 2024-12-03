@@ -38,7 +38,6 @@ void MotorController::Init() {
   // Initialize timers for motor actions
   shortVib = xTimerCreate("shortVib", 1, pdFALSE, nullptr, StopMotor);
   longVib = xTimerCreate("longVib", pdMS_TO_TICKS(1000), pdTRUE, this, Ring);
-  alarmVib = xTimerCreate("alarmVib", pdMS_TO_TICKS(500), pdTRUE, this, AlarmRing);
   wakeAlarmVib = xTimerCreate("wakeAlarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, WakeAlarmRing);
 }
 
@@ -55,12 +54,6 @@ void MotorController::SetMotorStrength(uint8_t strength) {
 void MotorController::Ring(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
   motorController->RunForDuration(50);
-}
-
-void MotorController::AlarmRing(TimerHandle_t xTimer) {
-  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->SetMotorStrength(80);
-  motorController->RunForDuration(300);
 }
 
 void MotorController::RunForDuration(uint16_t motorDuration) {
@@ -86,21 +79,8 @@ void MotorController::StopRinging() {
   nrf_gpio_pin_set(PinMap::Motor);
 }
 
-void MotorController::StartAlarm() {
-  SetMotorStrength(80);
-  RunForDuration(300);
-  xTimerStart(alarmVib, 0);
-}
-
-void MotorController::StopAlarm() {
-  xTimerStop(alarmVib, 0);
-  nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_STOP); // Stop the PWM sequence
-  pwmValue = 0;                                      // Reset the PWM value
-  nrf_gpio_pin_set(PinMap::Motor);
-}
-
 void MotorController::StartWakeAlarm() {
-  wakeAlarmStrength = 80;
+  wakeAlarmStrength = (80 * infiniSleepMotorStrength) / 100;
   wakeAlarmDuration = 100;
   SetMotorStrength(wakeAlarmStrength);
   RunForDuration(wakeAlarmDuration);
@@ -109,8 +89,8 @@ void MotorController::StartWakeAlarm() {
 
 void MotorController::WakeAlarmRing(TimerHandle_t xTimer) {
   auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  if (motorController->wakeAlarmStrength > 40) {
-    motorController->wakeAlarmStrength -= 1;
+  if (motorController->wakeAlarmStrength > (40 * motorController->infiniSleepMotorStrength) / 100) {
+    motorController->wakeAlarmStrength -= (1 * motorController->infiniSleepMotorStrength) / 100;
   }
   if (motorController->wakeAlarmDuration < 500) {
     motorController->wakeAlarmDuration += 6;
@@ -133,24 +113,6 @@ void MotorController::StopMotor(TimerHandle_t /*xTimer*/) {
 }
 
 void MotorController::GradualWakeBuzz() {
-  SetMotorStrength(60);
+  SetMotorStrength((60 * infiniSleepMotorStrength) / 100);
   RunForDuration(100);
-  // xTimerStart(gradualWakeBuzzDelay, 0);
-  // xTimerStart(gradualWakeBuzzEnd, 0);
-}
-
-void MotorController::GradualWakeBuzzRing(TimerHandle_t xTimer) {
-  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->RunForDuration(12);
-}
-
-void MotorController::StopGradualWakeBuzzCallback(TimerHandle_t xTimer) {
-  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
-  motorController->StopGradualWakeBuzz();
-}
-
-void MotorController::StopGradualWakeBuzz() {
-  // xTimerStop(gradualWakeBuzzDelay, 0);
-  xTimerStop(gradualWakeBuzzEnd, 0);
-  // StopMotor(nullptr);
 }
