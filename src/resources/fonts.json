@@ -39,7 +39,7 @@
       "sources": [
          {
             "file": "fonts/7segment.woff",
-            "symbols": "0123456789: -"
+            "symbols": "0123456789: -°CF"
          }
       ],
       "bpp": 1,

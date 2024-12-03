@@ -50,3 +50,5 @@ src/arm-none-eabi
 
 # clangd
 .cache/
+
+node_modules/

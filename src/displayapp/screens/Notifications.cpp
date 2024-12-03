@@ -14,6 +14,7 @@ Notifications::Notifications(DisplayApp* app,
                              Pinetime::Controllers::NotificationManager& notificationManager,
                              Pinetime::Controllers::AlertNotificationService& alertNotificationService,
                              Pinetime::Controllers::MotorController& motorController,
+                             Pinetime::Controllers::Settings& settingsController,
                              System::SystemTask& systemTask,
                              Modes mode)
   : app {app},
@@ -44,7 +45,7 @@ Notifications::Notifications(DisplayApp* app,
     if (notification.category == Controllers::NotificationManager::Categories::IncomingCall) {
       motorController.StartRinging();
     } else {
-      motorController.RunForDuration(35);
+      motorController.RunForDuration(static_cast<uint8_t>(settingsController.GetNotifVibration()));
     }
 
     timeoutLine = lv_line_create(lv_scr_act(), nullptr);
