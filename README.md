@@ -1,40 +1,24 @@
-# [InfiniTime](https://github.com/Eve1374/InfiniTime)
+<div align="center">
 
-![InfiniTime logo](doc/logo/infinitime-logo-small.jpg "InfiniTime Logo")
+![Header Image](doc/logo/watchface_collage.png)
 
-Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devices/pinetime/) with many features, written in modern C++.
+<br>
 
-## Quick notes on this InfiniTime version
+[![GitHub tag](https://img.shields.io/github/tag/InfiniTimeOrg/InfiniTime?include_prereleases=&sort=semver&color=blue)](https://github.com/InfiniTimeOrg/InfiniTime/releases)
+[![GitHub License](https://img.shields.io/github/license/InfiniTimeOrg/InfiniTime)](https://github.com/InfiniTimeOrg/InfiniLink/blob/main/LICENSE)
+[![Issues - InfiniTime](https://img.shields.io/github/issues/InfiniTimeOrg/InfiniTime)](https://github.com/InfiniTimeOrg/InfiniTime/issues)
+[![Pull Requests - InfiniTime](https://img.shields.io/github/issues-pr/InfiniTimeOrg/InfiniTime)](https://github.com/InfiniTimeOrg/InfiniTime/pulls)
+[![Downloads - InfiniTime](https://img.shields.io/github/downloads/InfiniTimeOrg/InfiniTime/total)](https://github.com/InfiniTimeOrg/InfiniTime)
+[![Stars - InfiniTime](https://img.shields.io/github/stars/InfiniTimeOrg/InfiniTime?style=social)](https://github.com/InfiniTimeOrg/InfiniTime/stargazers)
+[![Forks - InfiniTime](https://img.shields.io/github/forks/InfiniTimeOrg/InfiniTime?style=social)](https://github.com/InfiniTimeOrg/InfiniTime/network/members)
 
-- I copied the source code from this git repo : [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
-- I added a watch face "WatchFaceMeow" whose main features are to be pink and have info about the alarm status
-- I stored the compile commands in scripts compile.sh to run from InfiniTime/ folder, and make_pine_mcu.sh to build the image must be run from InfiniTime/build/ (compile.sh copies make_pine_mcu.sh to build/ 
-- The file to flash to the pinetime is InfiniTime/build/pinetime-mcuboot-app-dfu-1.14.0.zip : I didn't change the version compared to the one I downloaded from [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime) so make sure not to keep keep a copy of it
+# InfiniTime
 
-Here are pictures with and without alarm set :
+*Fast open-source firmware for the [PineTime smartwatch](https://pine64.org/devices/pinetime/) with many features, written in modern C++.*
 
+<br>
 
-Original repo : [InfiniTime](https://github.com/InfiniTimeOrg/InfiniTime)
-
-- [Getting started with InfiniTime](doc/gettingStarted/gettingStarted-1.0.md)
-- [Updating the software](doc/gettingStarted/updating-software.md)
-- [About the firmware and bootloader](doc/gettingStarted/about-software.md)
-- [Available apps](doc/gettingStarted/Applications.md)
-- [Available watch faces](/doc/gettingStarted/Watchfaces.md)
-- [PineTimeStyle Watch face](https://pine64.org/documentation/PineTime/Watchfaces/PineTimeStyle)
-  - [Weather integration](https://pine64.org/documentation/PineTime/Software/InfiniTime_weather/)
-
-## Welcome to my InfiniTime fork ?!
-
-Branches :
-
-- main : shows this doc
-- alarm-status-on-infineat : shows the alarm status on infineat, can be enabled or disabled from the settigns menu that is updated accordingly :
-
-![Infineat settings](doc/ui/infineat_settings.png "Infineat settings")
-
-- my-custom-infinitime : branch were I put things that I want for myself, like a watchface with paw instead of shoe icon for steps counter :
-
+</div>
 
 ## New to InfiniTime?
 
@@ -49,13 +33,18 @@ Branches :
 ### Companion apps
 
 - [Gadgetbridge](https://gadgetbridge.org/) (Android)
-- [AmazFish](https://openrepos.net/content/piggz/amazfish/) (SailfishOS)
+- [Amazfish](https://github.com/piggz/harbour-amazfish/) ([SailfishOS](https://sailfishos-chum.github.io/apps/harbour-amazfish/), [Ubuntu Touch](https://open-store.io/app/uk.co.piggz.amazfish), [Flatpak](https://flathub.org/apps/uk.co.piggz.amazfish))
 - [Siglo](https://github.com/alexr4535/siglo) (Linux)
 - [InfiniLink](https://github.com/InfiniTimeOrg/InfiniLink) (iOS)
 - [ITD](https://gitea.elara.ws/Elara6331/itd) (Linux)
 - [WatchMate](https://github.com/azymohliad/watchmate) (Linux)
+- [InfiniTimeExplorer](https://infinitimeexplorer.netlify.app) (Web)
 
-***Note**: We removed mentions to NRFConnect as this app is closed source and recent versions do not work anymore with InfiniTime (the last version known to work is 4.24.3). If you used NRFConnect in the past, we recommend you switch to [Gadgetbridge](https://gadgetbridge.org/).*
+<br>
+
+> *InfiniTimeExplorer is only compatible with web browsers that support Web BLE. Current fully supported browsers include Chrome and Microsoft Edge.* 
+>
+> *We removed mentions to NRFConnect as this app is closed source and recent versions do not work anymore with InfiniTime (the last version known to work is 4.24.3). If you used NRFConnect in the past, we recommend you switch to [Gadgetbridge](https://gadgetbridge.org/).* 
 
 ## Development
 
@@ -120,4 +109,3 @@ Here are some people I would like to highlight:
 - [Atc1441](https://github.com/atc1441/): He works on an Arduino based firmware for the Pinetime and many other smartwatches based on similar hardware. He was of great help when I was implementing support for the BMA421 motion sensor and I²C driver.
 - [Koen](https://github.com/bosmoment): He’s working on a firmware based on RiotOS. He integrated similar libs as me: NimBLE, LittleVGL,… His help was invaluable too!
 - [Lup Yuen Lee](https://github.com/lupyuen): He is everywhere: he works on a Rust firmware, builds a MCUBoot based bootloader for the Pinetime, designs a Flutter based companion app for smartphones and writes a lot of articles about the Pinetime!
->>>>>>>>> Temporary merge branch 2
