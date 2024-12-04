@@ -51,9 +51,6 @@ namespace Pinetime {
       uint16_t iasEndHandle;
       bool isCharacteristicDiscovered = false;
 
-      struct ble_gatt_chr_def characteristicDefinition[3];
-      struct ble_gatt_svc_def serviceDefinition[2];
-
       uint16_t alertLevelHandle;
       std::function<void(uint16_t)> onServiceDiscovered;
     };
