@@ -41,7 +41,7 @@ FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateA
   lblTitle = lv_label_create(lv_scr_act(), nullptr);
 
   lv_label_set_text_static(lblTitle, defaultLabelText);
-  lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
   lv_obj_align(lblTitle, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   btnNone = lv_btn_create(container, nullptr);
@@ -51,7 +51,7 @@ FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateA
   lv_obj_align(btnNone, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
   lblNone = lv_label_create(btnNone, nullptr);
   lv_label_set_text_static(lblNone, noneLabelText);
-  lv_obj_set_style_local_bg_color(btnNone, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_bg_color(btnNone, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::bgAlt);
 
   btnHigh = lv_btn_create(container, nullptr);
   btnHigh->user_data = this;
@@ -81,7 +81,7 @@ void FindMyPhone::OnImmediateAlertEvent(lv_obj_t* obj, lv_event_t event) {
 void FindMyPhone::UpdateImmediateAlerts() {
   switch (lastLevel) {
     case Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert:
-      lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+      lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
       break;
     case Pinetime::Controllers::ImmediateAlertClient::Levels::HighAlert:
       lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
@@ -115,5 +115,5 @@ void FindMyPhone::StopRestoreLabelTask() {
 
 void FindMyPhone::RestoreLabelText() {
   lv_label_set_text_static(lblTitle, defaultLabelText);
-  lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
 }
