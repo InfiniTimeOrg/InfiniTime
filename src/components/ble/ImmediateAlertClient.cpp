@@ -32,18 +32,18 @@ void ImmediateAlertClient::Init() {
 bool ImmediateAlertClient::OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_svc* service) {
   if (service == nullptr && error->status == BLE_HS_EDONE) {
     if (isDiscovered) {
-      NRF_LOG_INFO("IAS found, starting characteristics discovery");
+      NRF_LOG_INFO("[IAS] service found, starting characteristics discovery");
 
       ble_gattc_disc_all_chrs(connectionHandle, iasStartHandle, iasEndHandle, OnImmediateAlertCharacteristicDiscoveredCallback, this);
     } else {
-      NRF_LOG_INFO("IAS not found");
+      NRF_LOG_INFO("[IAS] service not found");
       onServiceDiscovered(connectionHandle);
     }
     return true;
   }
 
   if (service != nullptr && ble_uuid_cmp(&immediateAlertClientUuid.u, &service->uuid.u) == 0) {
-    NRF_LOG_INFO("IAS discovered : 0x%x - 0x%x", service->start_handle, service->end_handle);
+    NRF_LOG_INFO("[IAS] discovered : 0x%x - 0x%x", service->start_handle, service->end_handle);
     isDiscovered = true;
     iasStartHandle = service->start_handle;
     iasEndHandle = service->end_handle;
@@ -56,14 +56,14 @@ int ImmediateAlertClient::OnCharacteristicDiscoveryEvent(uint16_t conn_handle,
                                                          const ble_gatt_chr* characteristic) {
 
   if (error->status != 0 && error->status != BLE_HS_EDONE) {
-    NRF_LOG_INFO("IAS Characteristic discovery ERROR");
+    NRF_LOG_INFO("[IAS] Characteristic discovery ERROR");
     onServiceDiscovered(conn_handle);
     return 0;
   }
 
   if (characteristic == nullptr && error->status == BLE_HS_EDONE) {
     if (!isCharacteristicDiscovered) {
-      NRF_LOG_INFO("IAS Characteristic discovery unsuccessful");
+      NRF_LOG_INFO("[IAS] Characteristic discovery unsuccessful");
       onServiceDiscovered(conn_handle);
     }
 
@@ -71,7 +71,7 @@ int ImmediateAlertClient::OnCharacteristicDiscoveryEvent(uint16_t conn_handle,
   }
 
   if (characteristic != nullptr && ble_uuid_cmp(&alertLevelCharacteristicUuid.u, &characteristic->uuid.u) == 0) {
-    NRF_LOG_INFO("AIS Characteristic discovered : 0x%x", characteristic->val_handle);
+    NRF_LOG_INFO("[IAS] Characteristic discovered : 0x%x", characteristic->val_handle);
     isCharacteristicDiscovered = true;
     alertLevelHandle = characteristic->val_handle;
   }
