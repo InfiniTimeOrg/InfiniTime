@@ -27,7 +27,7 @@ namespace {
 }
 
 FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateAlertClient) : immediateAlertClient {immediateAlertClient} {
-  last_level = Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert;
+  lastLevel = Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert;
 
   container = lv_cont_create(lv_scr_act(), nullptr);
 
@@ -37,29 +37,29 @@ FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateA
   lv_obj_set_style_local_pad_inner(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
   lv_obj_set_style_local_border_width(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
-  label_title = lv_label_create(lv_scr_act(), nullptr);
+  lblTitle = lv_label_create(lv_scr_act(), nullptr);
 
-  lv_label_set_text_static(label_title, defaultLabelText);
-  lv_obj_set_style_local_text_color(label_title, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
-  lv_obj_align(label_title, nullptr, LV_ALIGN_CENTER, 0, -40);
+  lv_label_set_text_static(lblTitle, defaultLabelText);
+  lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_obj_align(lblTitle, nullptr, LV_ALIGN_CENTER, 0, -40);
 
-  bt_none = lv_btn_create(container, nullptr);
-  bt_none->user_data = this;
-  lv_obj_set_event_cb(bt_none, btnImmediateAlertEventHandler);
-  lv_obj_set_size(bt_none, 114, 76);
-  lv_obj_align(bt_none, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
-  label_none = lv_label_create(bt_none, nullptr);
-  lv_label_set_text_static(label_none, noneLabelText);
-  lv_obj_set_style_local_bg_color(bt_none, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  btnNone = lv_btn_create(container, nullptr);
+  btnNone->user_data = this;
+  lv_obj_set_event_cb(btnNone, btnImmediateAlertEventHandler);
+  lv_obj_set_size(btnNone, 114, 76);
+  lv_obj_align(btnNone, nullptr, LV_ALIGN_IN_BOTTOM_LEFT, 0, 0);
+  lblNone = lv_label_create(btnNone, nullptr);
+  lv_label_set_text_static(lblNone, noneLabelText);
+  lv_obj_set_style_local_bg_color(btnNone, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 
-  bt_high = lv_btn_create(container, nullptr);
-  bt_high->user_data = this;
-  lv_obj_set_event_cb(bt_high, btnImmediateAlertEventHandler);
-  lv_obj_set_size(bt_high, 114, 76);
-  lv_obj_align(bt_high, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
-  label_high = lv_label_create(bt_high, nullptr);
-  lv_label_set_text_static(label_high, highLabelText);
-  lv_obj_set_style_local_bg_color(bt_high, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  btnHigh = lv_btn_create(container, nullptr);
+  btnHigh->user_data = this;
+  lv_obj_set_event_cb(btnHigh, btnImmediateAlertEventHandler);
+  lv_obj_set_size(btnHigh, 114, 76);
+  lv_obj_align(btnHigh, nullptr, LV_ALIGN_IN_BOTTOM_RIGHT, 0, 0);
+  lblHigh = lv_label_create(btnHigh, nullptr);
+  lv_label_set_text_static(lblHigh, highLabelText);
+  lv_obj_set_style_local_bg_color(btnHigh, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
 }
 
 FindMyPhone::~FindMyPhone() {
@@ -68,32 +68,32 @@ FindMyPhone::~FindMyPhone() {
 
 void FindMyPhone::OnImmediateAlertEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
-    if (obj == bt_none) {
-      last_level = Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert;
-    } else if (obj == bt_high) {
-      last_level = Pinetime::Controllers::ImmediateAlertClient::Levels::HighAlert;
+    if (obj == btnNone) {
+      lastLevel = Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert;
+    } else if (obj == btnHigh) {
+      lastLevel = Pinetime::Controllers::ImmediateAlertClient::Levels::HighAlert;
     }
     UpdateImmediateAlerts();
   }
 }
 
 void FindMyPhone::UpdateImmediateAlerts() {
-  switch (last_level) {
+  switch (lastLevel) {
     case Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert:
-      lv_obj_set_style_local_text_color(label_title, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+      lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
       break;
     case Pinetime::Controllers::ImmediateAlertClient::Levels::HighAlert:
-      lv_obj_set_style_local_text_color(label_title, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+      lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
       break;
     case Pinetime::Controllers::ImmediateAlertClient::Levels::MildAlert:
       // Not supported.
       ASSERT(false);
       break;
   }
-  if (immediateAlertClient.sendImmediateAlert(last_level)) {
-    lv_label_set_text_static(label_title, alertSentLabelText);
+  if (immediateAlertClient.SendImmediateAlert(lastLevel)) {
+    lv_label_set_text_static(lblTitle, alertSentLabelText);
   } else {
-    lv_label_set_text_static(label_title, noConnectionLabelText);
+    lv_label_set_text_static(lblTitle, noConnectionLabelText);
   }
   ScheduleRestoreLabelTask();
 }
@@ -113,6 +113,6 @@ void FindMyPhone::StopRestoreLabelTask() {
 }
 
 void FindMyPhone::RestoreLabelText() {
-  lv_label_set_text_static(label_title, defaultLabelText);
-  lv_obj_set_style_local_text_color(label_title, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
+  lv_label_set_text_static(lblTitle, defaultLabelText);
+  lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, Colors::lightGray);
 }

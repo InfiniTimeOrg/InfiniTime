@@ -25,7 +25,7 @@ namespace Pinetime {
       bool OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_svc* service);
       int OnCharacteristicDiscoveryEvent(uint16_t conn_handle, const ble_gatt_error* error, const ble_gatt_chr* characteristic);
 
-      bool sendImmediateAlert(Levels level);
+      bool SendImmediateAlert(Levels level);
 
       static constexpr const ble_uuid16_t* Uuid() {
         return &ImmediateAlertClient::immediateAlertClientUuid;

@@ -98,7 +98,7 @@ void ImmediateAlertClient::Discover(uint16_t connectionHandle, std::function<voi
   ble_gattc_disc_svc_by_uuid(connectionHandle, &immediateAlertClientUuid.u, OnDiscoveryEventCallback, this);
 }
 
-bool ImmediateAlertClient::sendImmediateAlert(ImmediateAlertClient::Levels level) {
+bool ImmediateAlertClient::SendImmediateAlert(ImmediateAlertClient::Levels level) {
 
   auto* om = ble_hs_mbuf_from_flat(&level, 1);
 
