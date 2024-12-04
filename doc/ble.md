@@ -119,12 +119,12 @@ The following custom services are implemented in InfiniTime:
 
 ### IAC
 
-InfiniTime implements Immediade Alert Service client, that can be used to send notifications to companion app.
+InfiniTime implements an Immediate Alert Service client, which can be used to send alerts to the companion app.
 This is useful for "Find my Phone" functionality.
 
 More documentation about this service can be found here.
 
-[Immediade Alert Service](https://www.bluetooth.com/specifications/specs/immediate-alert-service-1-0/)
+[Immediate Alert Service](https://www.bluetooth.com/specifications/specs/immediate-alert-service-1-0/)
 ---
 
 ### Getting Information
