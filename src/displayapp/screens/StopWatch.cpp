@@ -61,7 +61,7 @@ StopWatch::StopWatch(System::SystemTask& systemTask, StopWatchController& stopWa
   lv_label_set_long_mode(lapText, LV_LABEL_LONG_BREAK);
   lv_label_set_align(lapText, LV_LABEL_ALIGN_CENTER);
   lv_obj_set_width(lapText, LV_HOR_RES_MAX);
-  lv_obj_align(lapText, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -btnHeight);
+  lv_obj_align(lapText, lv_scr_act(), LV_ALIGN_IN_BOTTOM_MID, 0, -btnHeight - 2);
 
   time = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(time, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
@@ -75,7 +75,7 @@ StopWatch::StopWatch(System::SystemTask& systemTask, StopWatchController& stopWa
   msecTime = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(msecTime, LV_LABEL_PART_MAIN, LV_STATE_DISABLED, Colors::lightGray);
   lv_label_set_text_static(msecTime, "00");
-  lv_obj_align(msecTime, time, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+  lv_obj_align(msecTime, time, LV_ALIGN_OUT_BOTTOM_MID, 0, -2);
 
   taskRefresh = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 
@@ -194,7 +194,8 @@ void StopWatch::SetHoursVisible(bool visible) {
     lv_font_t *font = visible ? &jetbrains_mono_42 : &jetbrains_mono_76;
     lv_obj_set_style_local_text_font(time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font);
     lv_obj_set_height(time, font->line_height);
-    lv_obj_realign(msecTime);
+    lv_obj_align(time, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, visible ? 5 : 0);
+    lv_obj_align(msecTime, time, LV_ALIGN_OUT_BOTTOM_MID, 0, visible ? 5 : -2);
     displayedLaps = visible ? 4 : 3;
     hoursVisible = visible;
     if (stopWatchController.GetLapFromHistory(0)) {
