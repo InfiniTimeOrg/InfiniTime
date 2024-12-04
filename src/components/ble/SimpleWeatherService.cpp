@@ -33,6 +33,10 @@ namespace {
            (static_cast<uint64_t>(data[5]) << 40) + (static_cast<uint64_t>(data[6]) << 48) + (static_cast<uint64_t>(data[7]) << 56);
   }
 
+  uint16_t ToUInt16(const uint8_t* data) {
+    return data[0] + (data[1] << 8);
+  }
+
   int16_t ToInt16(const uint8_t* data) {
     return data[0] + (data[1] << 8);
   }
@@ -41,12 +45,20 @@ namespace {
     SimpleWeatherService::Location cityName;
     std::memcpy(cityName.data(), &dataBuffer[16], 32);
     cityName[32] = '\0';
+    uint16_t sunrise = 0;
+    uint16_t sunset = 0;
+    if (dataBuffer[1] > 0) {
+      sunrise = ToUInt16(&dataBuffer[49]);
+      sunset = ToUInt16(&dataBuffer[51]);
+    }
     return SimpleWeatherService::CurrentWeather(ToUInt64(&dataBuffer[2]),
                                                 SimpleWeatherService::Temperature(ToInt16(&dataBuffer[10])),
                                                 SimpleWeatherService::Temperature(ToInt16(&dataBuffer[12])),
                                                 SimpleWeatherService::Temperature(ToInt16(&dataBuffer[14])),
                                                 SimpleWeatherService::Icons {dataBuffer[16 + 32]},
-                                                std::move(cityName));
+                                                std::move(cityName),
+                                                sunrise,
+                                                sunset);
   }
 
   SimpleWeatherService::Forecast CreateForecast(const uint8_t* dataBuffer) {
@@ -94,7 +106,7 @@ int SimpleWeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
 
   switch (GetMessageType(dataBuffer)) {
     case MessageType::CurrentWeather:
-      if (GetVersion(dataBuffer) == 0) {
+      if (GetVersion(dataBuffer) <= 1) {
         currentWeather = CreateCurrentWeather(dataBuffer);
         NRF_LOG_INFO("Current weather :\n\tTimestamp : %d\n\tTemperature:%d\n\tMin:%d\n\tMax:%d\n\tIcon:%d\n\tLocation:%s",
                      currentWeather->timestamp,
@@ -103,6 +115,9 @@ int SimpleWeatherService::OnCommand(struct ble_gatt_access_ctxt* ctxt) {
                      currentWeather->maxTemperature.PreciseCelsius(),
                      currentWeather->iconId,
                      currentWeather->location.data());
+        if (GetVersion(dataBuffer) == 1) {
+          NRF_LOG_INFO("Sunrise: %d\n\tSunset: %d", currentWeather->sunrise, currentWeather->sunset);
+        }
       }
       break;
     case MessageType::Forecast:
@@ -153,10 +168,26 @@ std::optional<SimpleWeatherService::Forecast> SimpleWeatherService::GetForecast(
   return {};
 }
 
+bool SimpleWeatherService::IsNight() const {
+  if (currentWeather && currentWeather->sunrise > 0 && currentWeather->sunset > 0) {
+    auto currentTime = dateTimeController.CurrentDateTime().time_since_epoch();
+
+    // Get timestamp for last midnight
+    auto midnight = std::chrono::floor<std::chrono::days>(currentTime);
+
+    // Calculate minutes since midnight
+    auto currentMinutes = std::chrono::duration_cast<std::chrono::minutes>(currentTime - midnight).count();
+
+    return currentMinutes < currentWeather->sunrise || currentMinutes > currentWeather->sunset;
+  }
+
+  return false;
+}
+
 bool SimpleWeatherService::CurrentWeather::operator==(const SimpleWeatherService::CurrentWeather& other) const {
   return this->iconId == other.iconId && this->temperature == other.temperature && this->timestamp == other.timestamp &&
          this->maxTemperature == other.maxTemperature && this->minTemperature == other.maxTemperature &&
-         std::strcmp(this->location.data(), other.location.data()) == 0;
+         std::strcmp(this->location.data(), other.location.data()) == 0 && this->sunrise == other.sunrise && this->sunset == other.sunset;
 }
 
 bool SimpleWeatherService::Forecast::Day::operator==(const SimpleWeatherService::Forecast::Day& other) const {
