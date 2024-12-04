@@ -23,21 +23,7 @@ namespace {
   }
 }
 
-ImmediateAlertClient::ImmediateAlertClient(Pinetime::System::SystemTask& systemTask)
-  : systemTask {systemTask},
-    characteristicDefinition {{
-                                .uuid = &alertLevelCharacteristicUuid.u,
-                                .arg = this,
-                                .flags = BLE_GATT_CHR_F_WRITE_NO_RSP,
-                              },
-                              {0}},
-    serviceDefinition {
-      {/* Device Information Service */
-       .type = BLE_GATT_SVC_TYPE_PRIMARY,
-       .uuid = &immediateAlertClientUuid.u,
-       .characteristics = characteristicDefinition},
-      {0},
-    } {
+ImmediateAlertClient::ImmediateAlertClient(Pinetime::System::SystemTask& systemTask) : systemTask {systemTask} {
 }
 
 void ImmediateAlertClient::Init() {

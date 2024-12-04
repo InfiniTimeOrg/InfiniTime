@@ -12,7 +12,8 @@ namespace {
   static constexpr char noConnectionLabelText[] = "No connection";
   static constexpr char noneLabelText[] = "Stop";
   static constexpr char highLabelText[] = "Ring";
-  static constexpr auto restoreLabelTimeoutTicks = pdMS_TO_TICKS(2 * 1000);
+  static constexpr int restoreLabelTimeoutSec = 2;
+  static constexpr TickType_t restoreLabelTimeoutTicks = restoreLabelTimeoutSec * configTICK_RATE_HZ;
 
   void btnImmediateAlertEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<FindMyPhone*>(obj->user_data);
