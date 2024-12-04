@@ -36,14 +36,14 @@ namespace Pinetime {
         void UpdateImmediateAlerts();
 
         lv_obj_t* container;
-        lv_obj_t* label_title;
-        lv_obj_t* bt_none;
-        lv_obj_t* bt_high;
-        lv_obj_t* label_none;
-        lv_obj_t* label_high;
+        lv_obj_t* lblTitle;
+        lv_obj_t* btnNone;
+        lv_obj_t* btnHigh;
+        lv_obj_t* lblNone;
+        lv_obj_t* lblHigh;
         lv_task_t* taskRestoreLabelText = nullptr;
 
-        Pinetime::Controllers::ImmediateAlertClient::Levels last_level;
+        Pinetime::Controllers::ImmediateAlertClient::Levels lastLevel;
       };
     }
 
