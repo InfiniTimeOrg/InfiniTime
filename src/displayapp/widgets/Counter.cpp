@@ -42,7 +42,7 @@ void Counter::UpBtnPressed() {
   if (ValueChangedHandler != nullptr) {
     ValueChangedHandler(userData);
   }
-};
+}
 
 void Counter::DownBtnPressed() {
   value--;
@@ -54,7 +54,7 @@ void Counter::DownBtnPressed() {
   if (ValueChangedHandler != nullptr) {
     ValueChangedHandler(userData);
   }
-};
+}
 
 void Counter::SetValue(int newValue) {
   value = newValue;
