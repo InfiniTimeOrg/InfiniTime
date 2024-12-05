@@ -7,29 +7,43 @@
 using namespace Pinetime::Applications::Screens;
 
 namespace {
-  static constexpr char defaultLabelText[] = "Find my phone";
-  static constexpr char alertSentLabelText[] = "Alert sent";
-  static constexpr char noConnectionLabelText[] = "No connection";
+  static constexpr char alertSentLabelText[] = "Alerting";
+
   static constexpr char noneLabelText[] = "Stop";
   static constexpr char highLabelText[] = "Ring";
-  static constexpr int restoreLabelTimeoutSec = 2;
-  static constexpr TickType_t restoreLabelTimeoutTicks = restoreLabelTimeoutSec * configTICK_RATE_HZ;
 
   void btnImmediateAlertEventHandler(lv_obj_t* obj, lv_event_t event) {
     auto* screen = static_cast<FindMyPhone*>(obj->user_data);
     screen->OnImmediateAlertEvent(obj, event);
   }
-
-  void RestoreLabelTaskCallback(lv_task_t* task) {
-    auto* screen = static_cast<FindMyPhone*>(task->user_data);
-    screen->RestoreLabelText();
-    screen->StopRestoreLabelTask();
-  }
 }
 
-FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateAlertClient) : immediateAlertClient {immediateAlertClient} {
-  lastLevel = Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert;
+const FindMyPhone::LabelState FindMyPhone::stoppedLabelState {
+  .text = "Alert stopped",
+  .color = LV_COLOR_WHITE,
+};
 
+const FindMyPhone::LabelState FindMyPhone::noConnectionLabelState {
+  .text = "No connection",
+  .color = LV_COLOR_WHITE,
+};
+
+const FindMyPhone::LabelState FindMyPhone::noServiceLabelState {
+  .text = "No service",
+  .color = LV_COLOR_WHITE,
+};
+
+const FindMyPhone::LabelState FindMyPhone::defaultLabelState {
+  .text = "Ready",
+  .color = LV_COLOR_WHITE,
+};
+
+const FindMyPhone::LabelState FindMyPhone::alertingLabelState {
+  .text = "Alerting",
+  .color = LV_COLOR_RED,
+};
+
+FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateAlertClient) : immediateAlertClient {immediateAlertClient} {
   container = lv_cont_create(lv_scr_act(), nullptr);
 
   lv_obj_set_size(container, LV_HOR_RES, LV_VER_RES);
@@ -39,10 +53,6 @@ FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateA
   lv_obj_set_style_local_border_width(container, LV_CONT_PART_MAIN, LV_STATE_DEFAULT, 0);
 
   lblTitle = lv_label_create(lv_scr_act(), nullptr);
-
-  lv_label_set_text_static(lblTitle, defaultLabelText);
-  lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-  lv_obj_align(lblTitle, nullptr, LV_ALIGN_CENTER, 0, -40);
 
   btnNone = lv_btn_create(container, nullptr);
   btnNone->user_data = this;
@@ -61,59 +71,68 @@ FindMyPhone::FindMyPhone(Pinetime::Controllers::ImmediateAlertClient& immediateA
   lblHigh = lv_label_create(btnHigh, nullptr);
   lv_label_set_text_static(lblHigh, highLabelText);
   lv_obj_set_style_local_bg_color(btnHigh, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+  refreshTask = lv_task_create(RefreshTaskCallback, LV_DISP_DEF_REFR_PERIOD, LV_TASK_PRIO_MID, this);
 }
 
 FindMyPhone::~FindMyPhone() {
+  lv_task_del(refreshTask);
   lv_obj_clean(lv_scr_act());
 }
 
 void FindMyPhone::OnImmediateAlertEvent(lv_obj_t* obj, lv_event_t event) {
   if (event == LV_EVENT_CLICKED) {
     if (obj == btnNone) {
-      lastLevel = Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert;
+      lastUserInitiatedLevel = Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert;
     } else if (obj == btnHigh) {
-      lastLevel = Pinetime::Controllers::ImmediateAlertClient::Levels::HighAlert;
-    }
-    UpdateImmediateAlerts();
-  }
-}
-
-void FindMyPhone::UpdateImmediateAlerts() {
-  switch (lastLevel) {
-    case Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert:
-      lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
-      break;
-    case Pinetime::Controllers::ImmediateAlertClient::Levels::HighAlert:
-      lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
-      break;
-    case Pinetime::Controllers::ImmediateAlertClient::Levels::MildAlert:
-      // Not supported.
+      lastUserInitiatedLevel = Pinetime::Controllers::ImmediateAlertClient::Levels::HighAlert;
+    } else {
+      // Unknown button?
       ASSERT(false);
+      return;
+    }
+    immediateAlertClient.SendImmediateAlert(*lastUserInitiatedLevel);
+  }
+}
+
+const FindMyPhone::LabelState& FindMyPhone::GetLabelState() const {
+  const auto service_state = immediateAlertClient.GetState();
+  switch (service_state) {
+    case Pinetime::Controllers::ImmediateAlertClient::State::NoConnection:
+      return noConnectionLabelState;
+    case Pinetime::Controllers::ImmediateAlertClient::State::NoIAS:
+      return noServiceLabelState;
+    case Pinetime::Controllers::ImmediateAlertClient::State::Connected:
       break;
   }
-  if (immediateAlertClient.SendImmediateAlert(lastLevel)) {
-    lv_label_set_text_static(lblTitle, alertSentLabelText);
+  // Conntected state handling.
+  if (!lastUserInitiatedLevel.has_value()) {
+    return defaultLabelState;
+  }
+  switch (*lastUserInitiatedLevel) {
+    case Pinetime::Controllers::ImmediateAlertClient::Levels::NoAlert:
+      return stoppedLabelState;
+    case Pinetime::Controllers::ImmediateAlertClient::Levels::HighAlert:
+      return alertingLabelState;
+    case Pinetime::Controllers::ImmediateAlertClient::Levels::MildAlert:
+      // Not supported
+    default:
+      ASSERT(false);
+      return alertingLabelState;
+  }
+}
+
+void FindMyPhone::Refresh() {
+  const auto service_state = immediateAlertClient.GetState();
+  if (service_state == Pinetime::Controllers::ImmediateAlertClient::State::Connected) {
+    lv_obj_clear_state(btnNone, LV_STATE_DISABLED);
+    lv_obj_clear_state(btnHigh, LV_STATE_DISABLED);
   } else {
-    lv_label_set_text_static(lblTitle, noConnectionLabelText);
+    lv_obj_add_state(btnNone, LV_STATE_DISABLED);
+    lv_obj_add_state(btnHigh, LV_STATE_DISABLED);
+    lastUserInitiatedLevel = std::nullopt;
   }
-  ScheduleRestoreLabelTask();
-}
-
-void FindMyPhone::ScheduleRestoreLabelTask() {
-  if (taskRestoreLabelText) {
-    return;
-  }
-  taskRestoreLabelText = lv_task_create(RestoreLabelTaskCallback, restoreLabelTimeoutTicks, LV_TASK_PRIO_MID, this);
-}
-
-void FindMyPhone::StopRestoreLabelTask() {
-  if (taskRestoreLabelText) {
-    lv_task_del(taskRestoreLabelText);
-    taskRestoreLabelText = nullptr;
-  }
-}
-
-void FindMyPhone::RestoreLabelText() {
-  lv_label_set_text_static(lblTitle, defaultLabelText);
-  lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_WHITE);
+  const auto& label_state = GetLabelState();
+  lv_obj_set_style_local_text_color(lblTitle, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, label_state.color);
+  lv_label_set_text_static(lblTitle, label_state.text);
+  lv_obj_align(lblTitle, nullptr, LV_ALIGN_CENTER, 0, -40);
 }

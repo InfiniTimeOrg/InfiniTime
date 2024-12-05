@@ -63,6 +63,7 @@ int ImmediateAlertClient::OnCharacteristicDiscoveryEvent(uint16_t conn_handle,
   if (characteristic != nullptr && ble_uuid_cmp(&alertLevelCharacteristicUuid.u, &characteristic->uuid.u) == 0) {
     NRF_LOG_INFO("[IAS] Characteristic discovered : 0x%x", characteristic->val_handle);
     alertLevelHandle = characteristic->val_handle;
+    state = State::Connected;
   }
   return 0;
 }
@@ -70,7 +71,14 @@ int ImmediateAlertClient::OnCharacteristicDiscoveryEvent(uint16_t conn_handle,
 void ImmediateAlertClient::Discover(uint16_t connectionHandle, std::function<void(uint16_t)> onServiceDiscovered) {
   NRF_LOG_INFO("[IAS] Starting discovery");
   this->onServiceDiscovered = onServiceDiscovered;
+  state = State::NoIAS;
   ble_gattc_disc_svc_by_uuid(connectionHandle, &immediateAlertClientUuid.u, OnDiscoveryEventCallback, this);
+}
+
+void ImmediateAlertClient::Reset() {
+  state = State::NoConnection;
+  iasHandles = std::nullopt;
+  alertLevelHandle = std::nullopt;
 }
 
 bool ImmediateAlertClient::SendImmediateAlert(ImmediateAlertClient::Levels level) {
