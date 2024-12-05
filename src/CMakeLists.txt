@@ -371,6 +371,7 @@ list(APPEND SOURCE_FILES
         displayapp/screens/StopWatch.cpp
         displayapp/screens/BatteryIcon.cpp
         displayapp/screens/BleIcon.cpp
+	displayapp/screens/AlarmIcon.cpp
         displayapp/screens/NotificationIcon.cpp
         displayapp/screens/SystemInfo.cpp
         displayapp/screens/Label.cpp
