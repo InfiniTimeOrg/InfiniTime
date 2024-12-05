@@ -46,12 +46,13 @@ namespace Pinetime {
       static constexpr ble_uuid16_t immediateAlertClientUuid {.u {.type = BLE_UUID_TYPE_16}, .value = immediateAlertClientId};
       static constexpr ble_uuid16_t alertLevelCharacteristicUuid {.u {.type = BLE_UUID_TYPE_16}, .value = alertLevelId};
 
-      bool isDiscovered = false;
-      uint16_t iasStartHandle;
-      uint16_t iasEndHandle;
-      bool isCharacteristicDiscovered = false;
+      struct HandleRange {
+        uint16_t startHandle;
+        uint16_t endHandle;
+      };
 
-      uint16_t alertLevelHandle;
+      std::optional<HandleRange> iasHandles;
+      std::optional<uint16_t> alertLevelHandle;
       std::function<void(uint16_t)> onServiceDiscovered;
     };
   }
