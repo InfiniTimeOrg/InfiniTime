@@ -18,13 +18,23 @@ namespace Pinetime {
     class ImmediateAlertClient : public BleClient {
     public:
       enum class Levels : uint8_t { NoAlert = 0, MildAlert = 1, HighAlert = 2 };
+      enum class State {
+        NoConnection,
+        NoIAS,
+        Connected,
+      };
 
       explicit ImmediateAlertClient(Pinetime::System::SystemTask& systemTask);
       void Init();
 
       bool SendImmediateAlert(Levels level);
 
+      State GetState() const {
+        return state;
+      }
+
       void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
+      void Reset();
 
     private:
       bool OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_svc* service);
@@ -61,6 +71,7 @@ namespace Pinetime {
       std::optional<HandleRange> iasHandles;
       std::optional<uint16_t> alertLevelHandle;
       std::function<void(uint16_t)> onServiceDiscovered;
+      State state {State::NoConnection};
     };
   }
 }

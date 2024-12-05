@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <chrono>
+#include <optional>
 #include "displayapp/screens/Screen.h"
 #include "Symbols.h"
 #include "systemtask/SystemTask.h"
@@ -26,14 +27,24 @@ namespace Pinetime {
 
         void OnImmediateAlertEvent(lv_obj_t* obj, lv_event_t event);
 
-        void ScheduleRestoreLabelTask();
         void StopRestoreLabelTask();
         void RestoreLabelText();
+        void Refresh() override;
 
       private:
         Pinetime::Controllers::ImmediateAlertClient& immediateAlertClient;
 
-        void UpdateImmediateAlerts();
+        struct LabelState {
+          const char* text;
+          lv_color_t color;
+        };
+
+        static const LabelState stoppedLabelState;
+        static const LabelState noConnectionLabelState;
+        static const LabelState noServiceLabelState;
+        static const LabelState defaultLabelState;
+        static const LabelState alertingLabelState;
+        const LabelState& GetLabelState() const;
 
         lv_obj_t* container;
         lv_obj_t* lblTitle;
@@ -41,9 +52,9 @@ namespace Pinetime {
         lv_obj_t* btnHigh;
         lv_obj_t* lblNone;
         lv_obj_t* lblHigh;
-        lv_task_t* taskRestoreLabelText = nullptr;
+        lv_task_t* refreshTask = nullptr;
 
-        Pinetime::Controllers::ImmediateAlertClient::Levels lastLevel;
+        std::optional<Pinetime::Controllers::ImmediateAlertClient::Levels> lastUserInitiatedLevel;
       };
     }
 
