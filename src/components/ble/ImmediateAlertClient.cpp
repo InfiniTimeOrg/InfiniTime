@@ -31,10 +31,14 @@ void ImmediateAlertClient::Init() {
 
 bool ImmediateAlertClient::OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_svc* service) {
   if (service == nullptr && error->status == BLE_HS_EDONE) {
-    if (isDiscovered) {
+    if (iasHandles.has_value()) {
       NRF_LOG_INFO("[IAS] service found, starting characteristics discovery");
 
-      ble_gattc_disc_all_chrs(connectionHandle, iasStartHandle, iasEndHandle, OnImmediateAlertCharacteristicDiscoveredCallback, this);
+      ble_gattc_disc_all_chrs(connectionHandle,
+                              iasHandles->startHandle,
+                              iasHandles->endHandle,
+                              OnImmediateAlertCharacteristicDiscoveredCallback,
+                              this);
     } else {
       NRF_LOG_INFO("[IAS] service not found");
       onServiceDiscovered(connectionHandle);
@@ -44,9 +48,10 @@ bool ImmediateAlertClient::OnDiscoveryEvent(uint16_t connectionHandle, const ble
 
   if (service != nullptr && ble_uuid_cmp(&immediateAlertClientUuid.u, &service->uuid.u) == 0) {
     NRF_LOG_INFO("[IAS] discovered : 0x%x - 0x%x", service->start_handle, service->end_handle);
-    isDiscovered = true;
-    iasStartHandle = service->start_handle;
-    iasEndHandle = service->end_handle;
+    iasHandles.emplace(HandleRange {
+      .startHandle = service->start_handle,
+      .endHandle = service->end_handle,
+    });
   }
   return false;
 }
@@ -62,8 +67,8 @@ int ImmediateAlertClient::OnCharacteristicDiscoveryEvent(uint16_t conn_handle,
   }
 
   if (characteristic == nullptr && error->status == BLE_HS_EDONE) {
-    if (!isCharacteristicDiscovered) {
-      NRF_LOG_INFO("[IAS] Characteristic discovery unsuccessful");
+    if (!alertLevelHandle.has_value()) {
+      NRF_LOG_INFO("[IAS] Alert level characteristic not found.");
       onServiceDiscovered(conn_handle);
     }
 
@@ -72,7 +77,6 @@ int ImmediateAlertClient::OnCharacteristicDiscoveryEvent(uint16_t conn_handle,
 
   if (characteristic != nullptr && ble_uuid_cmp(&alertLevelCharacteristicUuid.u, &characteristic->uuid.u) == 0) {
     NRF_LOG_INFO("[IAS] Characteristic discovered : 0x%x", characteristic->val_handle);
-    isCharacteristicDiscovered = true;
     alertLevelHandle = characteristic->val_handle;
   }
   return 0;
@@ -93,7 +97,10 @@ bool ImmediateAlertClient::SendImmediateAlert(ImmediateAlertClient::Levels level
   if (connectionHandle == 0 || connectionHandle == BLE_HS_CONN_HANDLE_NONE) {
     return false;
   }
+  if (!alertLevelHandle.has_value()) {
+    return false;
+  }
 
-  ble_gattc_write_no_rsp(connectionHandle, alertLevelHandle, om);
+  ble_gattc_write_no_rsp(connectionHandle, *alertLevelHandle, om);
   return true;
 }
