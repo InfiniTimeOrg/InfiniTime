@@ -8,21 +8,6 @@ using namespace Pinetime::Controllers;
 constexpr ble_uuid16_t ImmediateAlertClient::immediateAlertClientUuid;
 constexpr ble_uuid16_t ImmediateAlertClient::alertLevelCharacteristicUuid;
 
-namespace {
-  int OnDiscoveryEventCallback(uint16_t conn_handle, const struct ble_gatt_error* error, const struct ble_gatt_svc* service, void* arg) {
-    auto client = static_cast<ImmediateAlertClient*>(arg);
-    return client->OnDiscoveryEvent(conn_handle, error, service);
-  }
-
-  int OnImmediateAlertCharacteristicDiscoveredCallback(uint16_t conn_handle,
-                                                       const struct ble_gatt_error* error,
-                                                       const struct ble_gatt_chr* chr,
-                                                       void* arg) {
-    auto client = static_cast<ImmediateAlertClient*>(arg);
-    return client->OnCharacteristicDiscoveryEvent(conn_handle, error, chr);
-  }
-}
-
 ImmediateAlertClient::ImmediateAlertClient(Pinetime::System::SystemTask& systemTask) : systemTask {systemTask} {
 }
 
@@ -103,4 +88,20 @@ bool ImmediateAlertClient::SendImmediateAlert(ImmediateAlertClient::Levels level
 
   ble_gattc_write_no_rsp(connectionHandle, *alertLevelHandle, om);
   return true;
+}
+
+int ImmediateAlertClient::OnDiscoveryEventCallback(uint16_t conn_handle,
+                                                   const struct ble_gatt_error* error,
+                                                   const struct ble_gatt_svc* service,
+                                                   void* arg) {
+  auto client = static_cast<ImmediateAlertClient*>(arg);
+  return client->OnDiscoveryEvent(conn_handle, error, service);
+}
+
+int ImmediateAlertClient::OnImmediateAlertCharacteristicDiscoveredCallback(uint16_t conn_handle,
+                                                                           const struct ble_gatt_error* error,
+                                                                           const struct ble_gatt_chr* chr,
+                                                                           void* arg) {
+  auto client = static_cast<ImmediateAlertClient*>(arg);
+  return client->OnCharacteristicDiscoveryEvent(conn_handle, error, chr);
 }

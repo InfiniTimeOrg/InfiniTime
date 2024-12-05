@@ -19,13 +19,16 @@ namespace Pinetime {
     public:
       enum class Levels : uint8_t { NoAlert = 0, MildAlert = 1, HighAlert = 2 };
 
-      ImmediateAlertClient(Pinetime::System::SystemTask& systemTask);
+      explicit ImmediateAlertClient(Pinetime::System::SystemTask& systemTask);
       void Init();
 
+      bool SendImmediateAlert(Levels level);
+
+      void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
+
+    private:
       bool OnDiscoveryEvent(uint16_t connectionHandle, const ble_gatt_error* error, const ble_gatt_svc* service);
       int OnCharacteristicDiscoveryEvent(uint16_t conn_handle, const ble_gatt_error* error, const ble_gatt_chr* characteristic);
-
-      bool SendImmediateAlert(Levels level);
 
       static constexpr const ble_uuid16_t* Uuid() {
         return &ImmediateAlertClient::immediateAlertClientUuid;
@@ -35,9 +38,13 @@ namespace Pinetime {
         return &ImmediateAlertClient::alertLevelCharacteristicUuid;
       }
 
-      void Discover(uint16_t connectionHandle, std::function<void(uint16_t)> lambda) override;
+      static int
+      OnDiscoveryEventCallback(uint16_t conn_handle, const struct ble_gatt_error* error, const struct ble_gatt_svc* service, void* arg);
+      static int OnImmediateAlertCharacteristicDiscoveredCallback(uint16_t conn_handle,
+                                                                  const struct ble_gatt_error* error,
+                                                                  const struct ble_gatt_chr* chr,
+                                                                  void* arg);
 
-    private:
       Pinetime::System::SystemTask& systemTask;
 
       static constexpr uint16_t immediateAlertClientId {0x1802};
