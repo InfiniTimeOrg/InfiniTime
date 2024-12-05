@@ -53,7 +53,7 @@ namespace Pinetime {
         Utility::DirtyValue<bool> isCharging {};
         Utility::DirtyValue<bool> bleState {};
         Utility::DirtyValue<bool> bleRadioEnabled {};
-        Utility::DirtyValue<bool> isAlarmSet{};
+        Utility::DirtyValue<bool> isAlarmSet {};
         Utility::DirtyValue<std::chrono::time_point<std::chrono::system_clock, std::chrono::minutes>> currentDateTime {};
         Utility::DirtyValue<uint32_t> stepCount {};
         Utility::DirtyValue<bool> notificationState {};

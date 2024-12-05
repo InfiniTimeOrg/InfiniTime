@@ -12,8 +12,6 @@
 #include "displayapp/screens/WatchFaceInfineat.h"
 #include "displayapp/screens/WatchFaceCasioStyleG7710.h"
 
-
-
 namespace Pinetime {
 
   namespace Applications {

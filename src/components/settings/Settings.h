@@ -135,7 +135,6 @@ namespace Pinetime {
         return settings.watchFaceInfineat.showAlarmStatus;
       };
 
-
       void SetInfineatColorIndex(int index) {
         if (index != settings.watchFaceInfineat.colorIndex) {
           settings.watchFaceInfineat.colorIndex = index;
