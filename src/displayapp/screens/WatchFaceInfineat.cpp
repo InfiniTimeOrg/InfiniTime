@@ -148,7 +148,6 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
     font_bebas = lv_font_load("F:/fonts/bebas.bin");
   }
 
-
   // Side Cover
   static constexpr lv_point_t linePoints[nLines][2] = {{{30, 25}, {68, -8}},
                                                        {{26, 167}, {43, 216}},
@@ -259,7 +258,7 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
     lv_obj_set_hidden(alarmIcon, true);
     lv_obj_set_hidden(labelTimeAmPmAlarm, true);
   }
-  
+
   stepValue = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_set_style_local_text_color(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, grayColor);
   lv_obj_set_style_local_text_font(stepValue, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
@@ -305,7 +304,7 @@ WatchFaceInfineat::WatchFaceInfineat(Controllers::DateTime& dateTimeController,
   btnToggleCover = lv_btn_create(lv_scr_act(), nullptr);
   btnToggleCover->user_data = this;
   lv_obj_set_size(btnToggleCover, 60, 60);
-  lv_obj_align(btnToggleCover, lv_scr_act(), LV_ALIGN_CENTER, 0,0);
+  lv_obj_align(btnToggleCover, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   lv_obj_set_style_local_bg_opa(btnToggleCover, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_OPA_70);
   const char* labelToggle = settingsController.GetInfineatShowSideCover() ? "ON" : "OFF";
   lblToggle = lv_label_create(btnToggleCover, nullptr);
@@ -423,7 +422,6 @@ void WatchFaceInfineat::UpdateSelected(lv_obj_t* object, lv_event_t event) {
       lv_label_set_text_static(lblAlarm, labelToggleAlarm);
     }
 
-
     if (object == btnNextColor) {
       colorIndex = (colorIndex + 1) % nColors;
       settingsController.SetInfineatColorIndex(colorIndex);
@@ -512,20 +510,20 @@ void WatchFaceInfineat::Refresh() {
     isAlarmSet = alarmController.IsEnabled() == true;
     // sets the icon as bell or barred bell
     lv_label_set_text_static(alarmIcon, AlarmIcon::GetIcon(isAlarmSet.Get()));
-    //displays the time of the alarm or nothing if the alarm is not set
+    // displays the time of the alarm or nothing if the alarm is not set
     if (isAlarmSet.Get()) {
       uint8_t alarmHours = alarmController.Hours();
       uint8_t alarmMinutes = alarmController.Minutes();
-      //handles the am pm format.
+      // handles the am pm format.
       if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
         char ampmChar[3] = "AM";
         if (alarmHours == 0) {
           alarmHours = 12;
-          } else if (alarmHours == 12) {
-            ampmChar[0]='P';
-          } else if (alarmHours > 12) {
+        } else if (alarmHours == 12) {
+          ampmChar[0] = 'P';
+        } else if (alarmHours > 12) {
           alarmHours = alarmHours - 12;
-          ampmChar[0]='P';
+          ampmChar[0] = 'P';
         }
         lv_label_set_text(labelTimeAmPmAlarm, ampmChar);
         lv_obj_set_style_local_text_font(labelTimeAmPmAlarm, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, font_teko);
@@ -538,8 +536,7 @@ void WatchFaceInfineat::Refresh() {
       lv_obj_align(labelAlarm, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, -10, 0);
       lv_obj_align(labelAlarm, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
 
-    }
-    else {
+    } else {
       lv_label_set_text_static(labelAlarm, Symbols::none);
       lv_obj_align(alarmIcon, dateContainer, LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
       lv_obj_align(alarmIcon, lv_scr_act(), LV_ALIGN_IN_BOTTOM_RIGHT, -3, 0);
