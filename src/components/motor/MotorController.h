@@ -17,6 +17,8 @@ namespace Pinetime {
       void StopRinging();
       void StartWakeAlarm();
       void StopWakeAlarm();
+      void StartNaturalWakeAlarm();
+      void StopNaturalWakeAlarm();
       void GradualWakeBuzz();
       void StopGradualWakeBuzz();
       void SetMotorStrength(uint8_t strength);
@@ -28,12 +30,14 @@ namespace Pinetime {
     private:
       static void Ring(TimerHandle_t xTimer);
       static void WakeAlarmRing(TimerHandle_t xTimer);
+      static void NaturalWakeAlarmRing(TimerHandle_t xTimer);
       static void StopMotor(TimerHandle_t xTimer);
 
       TimerHandle_t shortVib;
       TimerHandle_t longVib;
 
       TimerHandle_t wakeAlarmVib;
+      TimerHandle_t naturalWakeAlarmVib;
     };
   }
 }

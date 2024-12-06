@@ -58,8 +58,6 @@ namespace Pinetime {
         void DisableWakeAlarm();
         void SetSwitchState(lv_anim_enable_t anim);
         void SetWakeAlarm();
-        void ShowAlarmInfo();
-        void HideAlarmInfo();
         void UpdateWakeAlarmTime();
         Widgets::Counter hourCounter = Widgets::Counter(0, 23, jetbrains_mono_76);
         Widgets::Counter minuteCounter = Widgets::Counter(0, 59, jetbrains_mono_76);

@@ -39,6 +39,7 @@ void MotorController::Init() {
   shortVib = xTimerCreate("shortVib", 1, pdFALSE, nullptr, StopMotor);
   longVib = xTimerCreate("longVib", pdMS_TO_TICKS(1000), pdTRUE, this, Ring);
   wakeAlarmVib = xTimerCreate("wakeAlarmVib", pdMS_TO_TICKS(1000), pdTRUE, this, WakeAlarmRing);
+  naturalWakeAlarmVib = xTimerCreate("natWakeVib", pdMS_TO_TICKS(30 * 1000), pdTRUE, this, NaturalWakeAlarmRing);
 }
 
 void MotorController::SetMotorStrength(uint8_t strength) {
@@ -101,6 +102,25 @@ void MotorController::WakeAlarmRing(TimerHandle_t xTimer) {
 
 void MotorController::StopWakeAlarm() {
   xTimerStop(wakeAlarmVib, 0);
+  nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_STOP); // Stop the PWM sequence
+  pwmValue = 0;                                      // Reset the PWM value
+  nrf_gpio_pin_set(PinMap::Motor);
+}
+
+void MotorController::StartNaturalWakeAlarm() {
+  SetMotorStrength((60 * infiniSleepMotorStrength) / 100);
+  RunForDuration(280);
+  xTimerStart(naturalWakeAlarmVib, 0);
+}
+
+void MotorController::NaturalWakeAlarmRing(TimerHandle_t xTimer) {
+  auto* motorController = static_cast<MotorController*>(pvTimerGetTimerID(xTimer));
+  motorController->SetMotorStrength((60 * motorController->infiniSleepMotorStrength) / 100);
+  motorController->RunForDuration(280);
+}
+
+void MotorController::StopNaturalWakeAlarm() {
+  xTimerStop(naturalWakeAlarmVib, 0);
   nrf_pwm_task_trigger(NRF_PWM2, NRF_PWM_TASK_STOP); // Stop the PWM sequence
   pwmValue = 0;                                      // Reset the PWM value
   nrf_gpio_pin_set(PinMap::Motor);

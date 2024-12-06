@@ -20,31 +20,6 @@ namespace {
   }
 }
 
-extern InfiniSleepController infiniSleepController;
-
-static void settingsToggleEventHandler(lv_obj_t* obj, lv_event_t e) {
-  if (e != LV_EVENT_VALUE_CHANGED) {
-    return;
-  }
-
-  const char* setting_name = static_cast<const char*>(obj->user_data);
-  bool enabled = lv_checkbox_is_checked(obj);
-
-  if (strcmp(setting_name, "Body Tracking") == 0) {
-    infiniSleepController.SetBodyTrackingEnabled(enabled);
-    infiniSleepController.SetSettingsChanged();
-  } else if (strcmp(setting_name, "Heart Rate\nTracking") == 0) {
-    infiniSleepController.SetHeartRateTrackingEnabled(enabled);
-    infiniSleepController.SetSettingsChanged();
-  } else if (strcmp(setting_name, "Gradual Wake") == 0) {
-    infiniSleepController.SetGradualWakeEnabled(enabled);
-    infiniSleepController.SetSettingsChanged();
-  } else if (strcmp(setting_name, "Smart Alarm\n(alpha)") == 0) {
-    infiniSleepController.SetSmartAlarmEnabled(enabled);
-    infiniSleepController.SetSettingsChanged();
-  }
-}
-
 static void btnEventHandler(lv_obj_t* obj, lv_event_t event) {
   auto* screen = static_cast<Sleep*>(obj->user_data);
   screen->OnButtonEvent(obj, event);
@@ -517,10 +492,6 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
       StopAlarmPush();
       return;
     }
-    if (obj == btnMessage) {
-      HideAlarmInfo();
-      return;
-    }
     if (obj == enableSwitch) {
       if (lv_switch_get_state(enableSwitch)) {
         infiniSleepController.ScheduleWakeAlarm();
@@ -561,10 +532,6 @@ void Sleep::OnButtonEvent(lv_obj_t* obj, lv_event_t event) {
 }
 
 bool Sleep::OnButtonPushed() {
-  if (txtMessage != nullptr && btnMessage != nullptr) {
-    HideAlarmInfo();
-    return true;
-  }
   if (infiniSleepController.IsAlerting()) {
     if (StopAlarmPush()) {
       return true;
@@ -692,8 +659,12 @@ void Sleep::SetAlerting() {
   taskSnoozeWakeAlarm = lv_task_create(SnoozeAlarmTaskCallback, 120 * 1000, LV_TASK_PRIO_MID, this);
   if (infiniSleepController.infiniSleepSettings.graddualWake) {
     motorController.StartWakeAlarm();
+  } else if (infiniSleepController.infiniSleepSettings.naturalWake) {
+    motorController.StartNaturalWakeAlarm();
   }
-  wakeLock.Lock();
+  if (infiniSleepController.infiniSleepSettings.naturalWake != true) {
+    wakeLock.Lock();
+  }
   alreadyAlerting = true;
 }
 
@@ -704,13 +675,17 @@ void Sleep::RedrawSetAlerting() {
   lv_obj_set_hidden(btnSuggestedAlarm, true);
   lv_obj_set_hidden(txtSuggestedAlarm, true);
   lv_obj_set_hidden(iconSuggestedAlarm, true);
-  wakeLock.Lock();
+  if (infiniSleepController.infiniSleepSettings.naturalWake != true) {
+    wakeLock.Lock();
+  }
 }
 
 void Sleep::StopAlerting(bool setSwitch) {
   infiniSleepController.StopAlerting();
   if (infiniSleepController.infiniSleepSettings.graddualWake) {
     motorController.StopWakeAlarm();
+  } else if (infiniSleepController.infiniSleepSettings.naturalWake) {
+    motorController.StopNaturalWakeAlarm();
   }
   if (setSwitch) {
     SetSwitchState(LV_ANIM_OFF);
@@ -731,42 +706,4 @@ void Sleep::SetSwitchState(lv_anim_enable_t anim) {
   } else {
     lv_switch_off(enableSwitch, anim);
   }
-}
-
-void Sleep::ShowAlarmInfo() {
-  if (btnMessage != nullptr) {
-    return;
-  }
-  btnMessage = lv_btn_create(lv_scr_act(), nullptr);
-  btnMessage->user_data = this;
-  lv_obj_set_event_cb(btnMessage, btnEventHandler);
-  lv_obj_set_height(btnMessage, 200);
-  lv_obj_set_width(btnMessage, 150);
-  lv_obj_align(btnMessage, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
-  txtMessage = lv_label_create(btnMessage, nullptr);
-  lv_obj_set_style_local_bg_color(btnMessage, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_NAVY);
-
-  if (infiniSleepController.GetWakeAlarm().isEnabled) {
-    auto timeToAlarm = infiniSleepController.SecondsToWakeAlarm();
-
-    auto daysToAlarm = timeToAlarm / 86400;
-    auto hrsToAlarm = (timeToAlarm % 86400) / 3600;
-    auto minToAlarm = (timeToAlarm % 3600) / 60;
-    auto secToAlarm = timeToAlarm % 60;
-
-    lv_label_set_text_fmt(txtMessage,
-                          "Time to\nalarm:\n%2lu Days\n%2lu Hours\n%2lu Minutes\n%2lu Seconds",
-                          daysToAlarm,
-                          hrsToAlarm,
-                          minToAlarm,
-                          secToAlarm);
-  } else {
-    lv_label_set_text_static(txtMessage, "Alarm\nis not\nset.");
-  }
-}
-
-void Sleep::HideAlarmInfo() {
-  lv_obj_del(btnMessage);
-  txtMessage = nullptr;
-  btnMessage = nullptr;
 }
