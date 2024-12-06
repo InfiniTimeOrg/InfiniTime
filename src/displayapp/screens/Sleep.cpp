@@ -366,6 +366,14 @@ void Sleep::DrawSettingsScreen() {
   // lv_label_set_text_static(lblSettings, "Settings");
   // lv_obj_align(lblSettings, lv_scr_act(), LV_ALIGN_IN_TOP_MID, 0, 10);
 
+  if (infiniSleepController.wakeAlarm.isEnabled) {
+    lv_obj_t* lblWarning = lv_label_create(lv_scr_act(), nullptr);
+    lv_label_set_text_static(lblWarning, "Disable alarm to\nchange settings.");
+    lv_obj_align(lblWarning, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
+    lv_obj_set_style_local_text_color(lblWarning, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, LV_COLOR_RED);
+    return;
+  }
+
   int y_offset = 10;
 
   lv_obj_t* lblWakeMode = lv_label_create(lv_scr_act(), nullptr);
